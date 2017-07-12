@@ -1,2 +1,23 @@
-*.pyc
+# Distribution / packaging
+.Python
+dist/
+*.egg*
 
+# Sphinx documentation
+docs/_build/
+doc/generated/
+doc/auto_examples/
+doc/auto_tutorials/
+doc/modules/generated/
+doc/sphinxext/cachedir
+pip-log.txt
+.coverage
+tags
+doc/coverages
+doc/samples
+cover
+
+# Pycharm
+.idea/
+
+*.pyc
