@@ -29,24 +29,29 @@ def _channel_tsv(raw, fname):
 
     map_chs = dict(grad='MEG', mag='MEG', stim='TRIG', eeg='EEG',
                    eog='EOG', misc='MISC')
-    map_desc = dict(grad='sensor gradiometer', mag='magnetometer',
-                    stim='analogue trigger',
-                    eeg='electro-encephalography channel',
-                    eog='electro-oculogram', misc='miscellaneous channel')
+    map_desc = dict(grad='Gradiometer', mag='Magnetometer',
+                    stim='Trigger',
+                    eeg='ElectroEncephaloGram',
+                    ecg='ElectroCardioGram',
+                    eog='ElectrOculogram', misc='Miscellaneous')
 
     status, ch_type, description = list(), list(), list()
     for idx, ch in enumerate(raw.info['ch_names']):
         status.append('bad' if ch in raw.info['bads'] else 'good')
         ch_type.append(map_chs[channel_type(raw.info, idx)])
         description.append(map_desc[channel_type(raw.info, idx)])
-
-    onlinefilter = '%0.2f-%0.2f' % (raw.info['highpass'], raw.info['lowpass'])
-    df = pd.DataFrame({'name': raw.info['ch_names'], 'type': ch_type,
-                       'description': description,
-                       'onlinefilter': onlinefilter,
-                       'samplingrate': '%f' % raw.info['sfreq'],
-                       'status': status
-                       })
+    low_cutoff, high_cutoff = (raw.info['highpass'], raw.info['lowpass'])
+    n = raw.info['nchan']
+    df = pd.DataFrame(columns=[['name', 'type', 'description',
+                                'sampling_frequency', 'low_cutoff',
+                                'high_cutoff', 'status']])
+    for col, data in zip(df.columns, [raw.info['ch_names'], ch_type,
+                                      description,
+                                      ['%.2f' % raw.info['sfreq']] * n,
+                                      ['%.2f' % low_cutoff] * n,
+                                      ['%.2f' % high_cutoff] * n,
+                                      status]):
+        df[col] = pd.Series(data)
     df.to_csv(fname, sep='\t', index=False)
 
 
