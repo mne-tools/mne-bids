@@ -118,7 +118,7 @@ def folder_to_bids(input_path, output_path, fnames, subject, run, task,
                              % (subject, task, run))
     _channel_tsv(raw, channels_fname)
 
-    events_fname = op.join(meg_path, 'sub-%s_task-%s_run-%s_channel.tsv'
+    events_fname = op.join(meg_path, 'sub-%s_task-%s_run-%s_events.tsv'
                            % (subject, task, run))
     _events_tsv(raw, events, events_fname)
 
