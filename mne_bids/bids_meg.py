@@ -6,6 +6,7 @@
 import errno
 import os
 import os.path as op
+from collections import OrderedDict as OD
 import pandas as pd
 
 import mne
@@ -41,17 +42,14 @@ def _channel_tsv(raw, fname):
         ch_type.append(map_chs[channel_type(raw.info, idx)])
         description.append(map_desc[channel_type(raw.info, idx)])
     low_cutoff, high_cutoff = (raw.info['highpass'], raw.info['lowpass'])
-    n = raw.info['nchan']
-    df = pd.DataFrame(columns=[['name', 'type', 'description',
-                                'sampling_frequency', 'low_cutoff',
-                                'high_cutoff', 'status']])
-    for col, data in zip(df.columns, [raw.info['ch_names'], ch_type,
-                                      description,
-                                      ['%.2f' % raw.info['sfreq']] * n,
-                                      ['%.2f' % low_cutoff] * n,
-                                      ['%.2f' % high_cutoff] * n,
-                                      status]):
-        df[col] = pd.Series(data)
+    n_channels = raw.info['nchan']
+    sfreq = raw.info['sfreq']
+    df = pd.DataFrame(OD([('name', raw.info['ch_names']),
+                          ('type', ch_type), ('discription', description),
+                          ('sampling_frequency', ['%.2f' % sfreq] * n_channels),
+                          ('low_cutoff', ['%.2f' % low_cutoff] * n_channels),
+                          ('high_cutoff', ['%.2f' % high_cutoff] * n_channels),
+                          ('status', status)]))
     df.to_csv(fname, sep='\t', index=False)
 
 
