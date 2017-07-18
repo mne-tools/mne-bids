@@ -6,7 +6,6 @@
 import errno
 import os
 import os.path as op
-from collections import OrderedDict as OD
 import pandas as pd
 
 import mne
@@ -28,7 +27,7 @@ def _mkdir_p(path):
 def _channel_tsv(raw, fname):
     """Create channel tsv."""
 
-    map_chs = dict(grad='MEG', mag='MEG', stim='TRIG', eeg='EEG',
+    map_chs = dict(grad='GRAD', mag='MAG', stim='TRIG', eeg='EEG',
                    eog='EOG', misc='MISC')
     map_desc = dict(grad='Gradiometer', mag='Magnetometer',
                     stim='Trigger',
@@ -44,12 +43,14 @@ def _channel_tsv(raw, fname):
     low_cutoff, high_cutoff = (raw.info['highpass'], raw.info['lowpass'])
     n_channels = raw.info['nchan']
     sfreq = raw.info['sfreq']
-    df = pd.DataFrame(OD([('name', raw.info['ch_names']),
-                          ('type', ch_type), ('discription', description),
-                          ('sampling_frequency', ['%.2f' % sfreq] * n_channels),
-                          ('low_cutoff', ['%.2f' % low_cutoff] * n_channels),
-                          ('high_cutoff', ['%.2f' % high_cutoff] * n_channels),
-                          ('status', status)]))
+    df = pd.DataFrame({'name': raw.info['ch_names'], 'type': ch_type,
+                       'description': description,
+                       'sampling_frequency': ['%.2f' % sfreq] * n_channels,
+                       'low_cutoff': ['%.2f' % low_cutoff] * n_channels,
+                       'high_cutoff': ['%.2f' % high_cutoff] * n_channels,
+                       'status': status})
+    df = df[['name', 'type', 'description', 'sampling_frequency', 'low_cutoff',
+             'high_cutoff', 'status']]
     df.to_csv(fname, sep='\t', index=False)
 
 
