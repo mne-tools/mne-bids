@@ -59,7 +59,8 @@ def _events_tsv(raw, events, fname):
 
     event_id_map = {v: k for k, v in event_id.items()}
 
-    df = pd.DataFrame(events[:, [0, 2]], columns=['Sample', 'Condition'])
+    df = pd.DataFrame(events[:, [0, 2]] / raw.info['sfreq'],
+                      columns=['Onset', 'Condition'])
     df.Condition = df.Condition.map(event_id_map)
 
     df.to_csv(fname, sep='\t', index=False)
