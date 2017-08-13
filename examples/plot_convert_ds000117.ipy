@@ -1,0 +1,41 @@
+"""
+===============================
+Create BIDS-compatible ds000117
+===============================
+
+Here, we show how to do BIDS conversion for group studies
+"""
+
+# Authors: Mainak Jas <mainak.jas@telecom-paristech.fr>
+
+# License: BSD (3-clause)
+
+import os
+import os.path as op
+from mne_bids import folder_to_bids
+
+data_path = './ds000117'
+
+# Fetch the data
+# !git clone http://datasets.datalad.org/openfmri/ds000117/.git/
+os.chdir(data_path)
+for subject_id in range(1, 2):
+    subject = 'sub%03d' % subject_id
+    input_path = op.join(data_path, subject, 'MEG')
+    for run in range(1, 7):
+        raw_fname = op.join(subject, 'MEG', 'run_%02d_raw.fif' % run)
+        !git annex get {raw_fname}
+
+for subject_id in range(1, 2):
+    subject = 'sub%03d' % subject_id
+
+    input_path = op.join(data_path, subject, 'MEG')
+    output_path = op.join(data_path, '..', 'ds000117-bids')
+
+    for run in range(1, 7):
+        fnames = dict(events='sample_audvis_raw-eve.fif',
+                      raw='run_%02d_raw.fif' % run)
+
+        folder_to_bids(input_path=input_path, output_path=output_path,
+                       fnames=fnames, subject=subject, run=run,
+                       task='visual_faces', overwrite=True)
