@@ -27,8 +27,8 @@ def _mkdir_p(path):
 def _channel_tsv(raw, fname):
     """Create channel tsv."""
 
-    map_chs = dict(grad='GRAD', mag='MAG', stim='TRIG', eeg='EEG',
-                   eog='EOG', misc='MISC')
+    map_chs = dict(grad='MEGGRAD', mag='MEGMAG', stim='TRIG', eeg='EEG',
+                   eog='EOG', ecg='ECG', misc='MISC')
     map_desc = dict(grad='Gradiometer', mag='Magnetometer',
                     stim='Trigger',
                     eeg='ElectroEncephaloGram',
