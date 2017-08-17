@@ -33,7 +33,7 @@ def _channel_tsv(raw, fname):
                     stim='Trigger',
                     eeg='ElectroEncephaloGram',
                     ecg='ElectroCardioGram',
-                    eog='ElectrOculogram', misc='Miscellaneous')
+                    eog='ElectrOculoGram', misc='Miscellaneous')
 
     status, ch_type, description = list(), list(), list()
     for idx, ch in enumerate(raw.info['ch_names']):
