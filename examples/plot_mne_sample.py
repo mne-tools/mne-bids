@@ -25,5 +25,5 @@ fnames = dict(events='sample_audvis_raw-eve.fif',
 input_path = op.join(data_path, 'MEG', 'sample')
 output_path = op.join(data_path, '..', 'MNE-sample-data-bids')
 folder_to_bids(input_path=input_path, output_path=output_path,
-               fnames=fnames, subject='01', run='01', task='audiovisual',
+               fnames=fnames, subject_id='01', run='01', task='audiovisual',
                overwrite=True)

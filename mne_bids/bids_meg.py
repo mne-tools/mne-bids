@@ -84,7 +84,7 @@ def _scans_tsv(raw, fname):
     df.to_csv(fname, sep='\t', index=False)
 
 
-def folder_to_bids(input_path, output_path, fnames, subject, run, task,
+def folder_to_bids(input_path, output_path, fnames, subject_id, run, task,
                    overwrite=True):
     """Walk over a folder of files and create bids compatible folder.
 
@@ -106,29 +106,33 @@ def folder_to_bids(input_path, output_path, fnames, subject, run, task,
         If the file already exists, whether to overwrite it.
     """
 
-    meg_path = op.join(output_path, 'sub-%s' % subject, 'MEG')
+    meg_path = op.join(output_path, 'sub-%s' % subject_id, 'MEG')
     if not op.exists(output_path):
-        os.mkdir(output_path)
+        _mkdir_p(output_path)
         if not op.exists(meg_path):
             _mkdir_p(meg_path)
 
     for key in fnames:
         fnames[key] = op.join(input_path, fnames[key])
 
-    events = mne.read_events(fnames['events']).astype(int)
     raw = mne.io.read_raw_fif(fnames['raw'])
+    if 'events' in fnames.keys():
+        events = mne.read_events(fnames['events']).astype(int)
+    else:
+        events = mne.find_events(raw, min_duration=0.001)
 
     # save stuff
     channels_fname = op.join(meg_path, 'sub-%s_task-%s_run-%s_channel.tsv'
-                             % (subject, task, run))
+                             % (subject_id, task, run))
     _channel_tsv(raw, channels_fname)
 
     events_fname = op.join(meg_path, 'sub-%s_task-%s_run-%s_events.tsv'
-                           % (subject, task, run))
+                           % (subject_id, task, run))
     _events_tsv(raw, events, events_fname)
 
-    _scans_tsv(raw, op.join(meg_path, 'sub-%s_scans.tsv' % subject))
+    _scans_tsv(raw, op.join(meg_path, 'sub-%s_scans.tsv' % subject_id))
 
     raw_fname = op.join(meg_path,
-                        'sub-%s_task-%s_run-%s_meg.fif' % (subject, task, run))
+                        'sub-%s_task-%s_run-%s_meg.fif'
+                        % (subject_id, task, run))
     raw.save(raw_fname, overwrite=overwrite)
