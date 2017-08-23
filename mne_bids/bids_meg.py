@@ -65,13 +65,13 @@ def _events_tsv(raw, events, fname, event_id):
     df.to_csv(fname, sep='\t', index=False)
 
 
-def _scans_tsv(raw, fname):
+def _scans_tsv(raw, raw_fname, fname):
     """Create tsv file for scans."""
 
     acq_time = datetime.fromtimestamp(raw.info['meas_date'][0]
                                       ).strftime('%Y-%m-%dT%H:%M:%S')
 
-    df = pd.DataFrame({'filename': ['meg/%s' % raw.filenames[0]],
+    df = pd.DataFrame({'filename': ['meg/%s' % raw_fname],
                        'acq_time': [acq_time]})
 
     print(df.head())
@@ -103,7 +103,8 @@ def folder_to_bids(input_path, output_path, fnames, subject_id, run, task,
         If the file already exists, whether to overwrite it.
     """
 
-    meg_path = op.join(output_path, 'sub-%s' % subject_id, 'MEG')
+    ses_path = op.join(output_path, 'sub-%s' % subject_id, 'ses-01')
+    meg_path = op.join(ses_path, 'meg')
     if not op.exists(output_path):
         _mkdir_p(output_path)
         if not op.exists(meg_path):
@@ -127,7 +128,8 @@ def folder_to_bids(input_path, output_path, fnames, subject_id, run, task,
                            % (subject_id, task, run))
     _events_tsv(raw, events, events_fname, event_id)
 
-    _scans_tsv(raw, op.join(meg_path, 'sub-%s_scans.tsv' % subject_id))
+    _scans_tsv(raw, fnames['raw'],
+               op.join(ses_path, 'sub-%s_ses-01_scans.tsv' % subject_id))
 
     raw_fname = op.join(meg_path,
                         'sub-%s_task-%s_run-%s_meg.fif'
