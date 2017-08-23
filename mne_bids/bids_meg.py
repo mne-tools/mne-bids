@@ -54,18 +54,17 @@ def _channel_tsv(raw, fname):
     df.to_csv(fname, sep='\t', index=False)
 
 
-def _events_tsv(raw, events, fname):
+def _events_tsv(raw, events, fname, event_id):
     """Create tsv file for events."""
 
-    event_id = {'Auditory/Left': 1, 'Auditory/Right': 2, 'Visual/Left': 3,
-                'Visual/Right': 4, 'Smiley': 5, 'Button': 32}
     events[:, 0] -= raw.first_samp
 
     event_id_map = {v: k for k, v in event_id.items()}
 
-    df = pd.DataFrame(events[:, [0, 2]] / raw.info['sfreq'],
+    df = pd.DataFrame(events[:, [0, 2]],
                       columns=['Onset', 'Condition'])
     df.Condition = df.Condition.map(event_id_map)
+    df.Onset /= raw.info['sfreq']
 
     df.to_csv(fname, sep='\t', index=False)
 
@@ -85,7 +84,7 @@ def _scans_tsv(raw, fname):
 
 
 def folder_to_bids(input_path, output_path, fnames, subject_id, run, task,
-                   overwrite=True):
+                   event_id, overwrite=True):
     """Walk over a folder of files and create bids compatible folder.
 
     Parameters
@@ -102,6 +101,8 @@ def folder_to_bids(input_path, output_path, fnames, subject_id, run, task,
         The run number in BIDS compatible format.
     task : str
         The task name.
+    event_id : dict
+        The event id dict
     overwrite : bool
         If the file already exists, whether to overwrite it.
     """
@@ -128,7 +129,7 @@ def folder_to_bids(input_path, output_path, fnames, subject_id, run, task,
 
     events_fname = op.join(meg_path, 'sub-%s_task-%s_run-%s_events.tsv'
                            % (subject_id, task, run))
-    _events_tsv(raw, events, events_fname)
+    _events_tsv(raw, events, events_fname, event_id)
 
     _scans_tsv(raw, op.join(meg_path, 'sub-%s_scans.tsv' % subject_id))
 

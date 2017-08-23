@@ -18,6 +18,17 @@ data_path = './ds000117'
 
 subject_ids = [1]
 runs = [1]
+event_id = {
+    'face/famous/first': 5,
+    'face/famous/immediate': 6,
+    'face/famous/long': 7,
+    'face/unfamiliar/first': 13,
+    'face/unfamiliar/immediate': 14,
+    'face/unfamiliar/long': 15,
+    'scrambled/first': 17,
+    'scrambled/immediate': 18,
+    'scrambled/long': 19,
+}
 
 # Fetch the data
 # !git clone http://datasets.datalad.org/openfmri/ds000117/.git/
@@ -42,4 +53,5 @@ for subject_id in subject_ids:
 
         folder_to_bids(input_path=input_path, output_path=output_path,
                        fnames=fnames, subject_id='%02d' % subject_id,
-                       run=run, task='visual_faces', overwrite=True)
+                       run=run, task='visual_faces', 
+                       event_id=event_id, overwrite=True)
