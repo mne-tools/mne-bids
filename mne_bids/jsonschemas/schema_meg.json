@@ -27,7 +27,7 @@
                 "SoftwareFilters": {"type" : "string"},
                 "RecordingDuration": {"type" : "number"},
                 "RecordingType": {"type" : "string"},
-                "EpochLength": {"type" : "number"},
+                "EpochLength": {"type" : ["number","string"]},
                 "DeviceSoftwareVersion": {"type" : "string"},
                 "ContinuousHeadLocalization": {"type" : "string"},
                 "CoilFrequency": {"type" : "number"},
