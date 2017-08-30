@@ -1,14 +1,17 @@
 # Authors: Mainak Jas <mainak.jas@telecom-paristech.fr>
 #          Alexandre Gramfort <alexandre.gramfort@telecom-paristech.fr>
+#          Teon Brooks <teon.brooks@gmail.com>
 #
 # License: BSD (3-clause)
 
 import errno
 import os
 import os.path as op
+import shutil as sh
 import pandas as pd
 
 import mne
+import mne.io as io
 from mne.io.pick import channel_type
 
 from datetime import datetime
@@ -57,6 +60,14 @@ def _channel_tsv(raw, fname):
 def _events_tsv(raw, events, fname, event_id):
     """Create tsv file for events."""
 
+    ### may change
+    raw = mne.io.read_raw_fif(fnames['raw'])
+    if 'events' in fnames.keys():
+        events = mne.read_events(fnames['events']).astype(int)
+    else:
+        events = mne.find_events(raw, min_duration=0.001)
+    ###
+
     events[:, 0] -= raw.first_samp
 
     event_id_map = {v: k for k, v in event_id.items()}
@@ -83,14 +94,14 @@ def _scans_tsv(raw, raw_fname, fname):
     df.to_csv(fname, sep='\t', index=False)
 
 
-def folder_to_bids(input_path, output_path, fnames, subject_id, run, task,
-                   event_id, overwrite=True):
+def raw_to_bids(subject, run, task, input_fname, hpi=None, electrode=None, hsp=None,
+                config=None, events=None, output_path, overwrite=True):
     """Walk over a folder of files and create bids compatible folder.
 
     Parameters
     ----------
-    input_path : str
-        The path to the folder from which to read files
+    fname : str
+        The path to the raw MEG file.
     output_path : str
         The path of the BIDS compatible folder
     fnames : dict
@@ -114,14 +125,26 @@ def folder_to_bids(input_path, output_path, fnames, subject_id, run, task,
         if not op.exists(meg_path):
             _mkdir_p(meg_path)
 
-    for key in fnames:
-        fnames[key] = op.join(input_path, fnames[key])
+    events = mne.read_events(events).astype(int)
 
-    raw = mne.io.read_raw_fif(fnames['raw'])
-    if 'events' in fnames.keys():
-        events = mne.read_events(fnames['events']).astype(int)
-    else:
-        events = mne.find_events(raw, min_duration=0.001)
+    fname, ext = os.path.splitext(input_fname)
+
+     # KIT systems
+     if ext in ['.con', '.sqd']:
+         raw = io.read_raw_kit(input_fname, preload=False)
+
+     # Neuromag or converted-to-fif systems
+     elif ext in ['.fif', '.gz']:
+         raw = io.read_raw_fif(input_fname, preload=False)
+
+     # BTi systems
+     elif ext == '':
+         if os.path.isfile(input_fname):
+             raw = io.read_raw_bti(input_fname, preload=preload, verbose=verbose,
+                                   **kwargs)
+
+    # CTF systems
+    elif ext == '':
 
     # save stuff
     channels_fname = op.join(meg_path, 'sub-%s_task-%s_run-%s_channel.tsv'
@@ -136,6 +159,11 @@ def folder_to_bids(input_path, output_path, fnames, subject_id, run, task,
                op.join(ses_path, 'sub-%s_ses-01_scans.tsv' % subject_id))
 
     raw_fname = op.join(meg_path,
-                        'sub-%s_task-%s_run-%s_meg.fif'
-                        % (subject_id, task, run))
-    raw.save(raw_fname, overwrite=overwrite)
+                        'sub-%s_task-%s_run-%s_meg%s'
+                        % (subject, task, run, ext))
+    if ext in ['.fif', '.gz']:
+        raw.save(raw_fname, overwrite=overwrite)
+    else:
+        sh.copyfile(input_fname, raw_fname)
+
+    return output_path
