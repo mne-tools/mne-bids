@@ -6,7 +6,7 @@
                 "ManufacturerModelName": {"type": "string"},
                 "TaskDescription": {"type": "string"},
                 "Instructions": {"type": "string"},
-                "PowerLineFrequency": {"type": "number"},
+                "SamplingFrequency": {"type": "number"},
                 "CogAtlasID": {"type": "string"},
                 "CogPOID": {"type": "string"},
                 "InstitutionName": {"type": "string"},
