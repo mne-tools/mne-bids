@@ -10,8 +10,8 @@ import os.path as op
 import shutil as sh
 import pandas as pd
 
-import mne
-import mne.io as io
+from mne import events, io
+from mne.io.constants import FIFF
 from mne.io.pick import channel_type
 
 from datetime import datetime
@@ -61,11 +61,11 @@ def _events_tsv(raw, events, fname, event_id):
     """Create tsv file for events."""
 
     ### may change
-    raw = mne.io.read_raw_fif(fnames['raw'])
+    raw = io.read_raw_fif(fnames['raw'])
     if 'events' in fnames.keys():
-        events = mne.read_events(fnames['events']).astype(int)
+        events = read_events(fnames['events']).astype(int)
     else:
-        events = mne.find_events(raw, min_duration=0.001)
+        events = find_events(raw, min_duration=0.001)
     ###
 
     events[:, 0] -= raw.first_samp
@@ -94,26 +94,70 @@ def _scans_tsv(raw, raw_fname, fname):
     df.to_csv(fname, sep='\t', index=False)
 
 
+def _fid_json(raw):
+    dig = raw.info['dig']
+    coords = list()
+    fids = {d['ident']: d for d in dig if d['kind'] ==
+            FIFF.FIFFV_POINT_CARDINAL}
+    if fids:
+        if FIFF.FIFFV_POINT_NASION in fids:
+            coords.append({'NAS': fids[FIFF.FIFFV_POINT_NASION]['r']})
+        if FIFF.FIFFV_POINT_LPA in fids:
+            coords.append({'LPA': fids[FIFF.FIFFV_POINT_LPA]['r']})
+        if FIFF.FIFFV_POINT_RPA in fids:
+            coords.append({'RPA': fids[FIFF.FIFFV_POINT_RPA]['r']})
+
+    hpi = [d['ident']: d for d in dig if d['kind'] == FIFF.FIFFV_POINT_HPI}
+    if hpi:
+        coords.extend([{'coil%d' %ii: hpi[ii]['r']} for ii in range(len(hpi))])
+
+    coord_frame = set([dig[ii]['coord_frame'] for ii in range(len(dig))])
+    if len(coord_frame) > 1:
+        err = 'All HPI and Fiducials must be in the same coordinate frame.'
+        raise ValueError(err)
+
+    {'MEGCoordinateSystem': 'a string of the manufacturer type'
+     'MEGCoordinateUnits'
+     'CoilCoordinates': coords
+     'CoilCoordinateSystem':
+     'CoilCoordinateUnits': 'm'
+     }
+
+     ## TO DO lookup table for systems based on info
+
+
 def raw_to_bids(subject, run, task, input_fname, hpi=None, electrode=None, hsp=None,
                 config=None, events=None, output_path, overwrite=True):
     """Walk over a folder of files and create bids compatible folder.
 
     Parameters
     ----------
-    fname : str
-        The path to the raw MEG file.
-    output_path : str
-        The path of the BIDS compatible folder
-    fnames : dict
-        Dictionary of filenames. Valid keys are 'events' and 'raw'.
     subject : str
         The subject name in BIDS compatible format (01, 02, etc.)
     run : str
         The run number in BIDS compatible format.
     task : str
         The task name.
+    input_fname : str
+        The path to the raw MEG file.
+    hpi : None | str | list of str
+        Marker points representing the location of the marker coils with
+        respect to the MEG Sensors, or path to a marker file.
+        If list, all of the markers will be averaged together.
+    electrode : None | str
+        Digitizer points representing the location of the fiducials and the
+        marker coils with respect to the digitized head shape, or path to a
+        file containing these points.
+    hsp : None | str | array, shape = (n_points, 3)
+        Digitizer head shape points, or path to head shape file. If more than
+        10`000 points are in the head shape, they are automatically decimated.
+
     event_id : dict
         The event id dict
+    output_path : str
+        The path of the BIDS compatible folder
+    fnames : dict
+        Dictionary of filenames. Valid keys are 'events' and 'raw'.
     overwrite : bool
         If the file already exists, whether to overwrite it.
     """
@@ -125,26 +169,27 @@ def raw_to_bids(subject, run, task, input_fname, hpi=None, electrode=None, hsp=N
         if not op.exists(meg_path):
             _mkdir_p(meg_path)
 
-    events = mne.read_events(events).astype(int)
+    events = read_events(events).astype(int)
 
     fname, ext = os.path.splitext(input_fname)
 
-     # KIT systems
-     if ext in ['.con', '.sqd']:
+    # KIT systems
+    if ext in ['.con', '.sqd']:
          raw = io.read_raw_kit(input_fname, preload=False)
 
-     # Neuromag or converted-to-fif systems
-     elif ext in ['.fif', '.gz']:
-         raw = io.read_raw_fif(input_fname, preload=False)
+    # Neuromag or converted-to-fif systems
+    elif ext in ['.fif', '.gz']:
+        raw = io.read_raw_fif(input_fname, preload=False)
 
      # BTi systems
-     elif ext == '':
-         if os.path.isfile(input_fname):
-             raw = io.read_raw_bti(input_fname, preload=preload, verbose=verbose,
+    elif ext == '.pdf':
+        if os.path.isfile(input_fname):
+            raw = io.read_raw_bti(input_fname, preload=preload, verbose=verbose,
                                    **kwargs)
 
     # CTF systems
     elif ext == '':
+        pass
 
     # save stuff
     channels_fname = op.join(meg_path, 'sub-%s_task-%s_run-%s_channel.tsv'
@@ -161,6 +206,9 @@ def raw_to_bids(subject, run, task, input_fname, hpi=None, electrode=None, hsp=N
     raw_fname = op.join(meg_path,
                         'sub-%s_task-%s_run-%s_meg%s'
                         % (subject, task, run, ext))
+
+    # for FIF, we need to re-save the file to fix the file pointer
+    # for files with multiple parts
     if ext in ['.fif', '.gz']:
         raw.save(raw_fname, overwrite=overwrite)
     else:
