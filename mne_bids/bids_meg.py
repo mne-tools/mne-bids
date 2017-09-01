@@ -115,23 +115,23 @@ def _scans_tsv(raw, fname):
     return fname
 
 
-def _fid_json(raw, unit, orient, fname):
+def _fid_json(raw, unit, orient, manufacturer, fname):
     dig = raw.info['dig']
-    coords = list()
+    coords = dict()
     fids = {d['ident']: d for d in dig if d['kind'] ==
             FIFF.FIFFV_POINT_CARDINAL}
     if fids:
         if FIFF.FIFFV_POINT_NASION in fids:
-            coords.append({'NAS': list(fids[FIFF.FIFFV_POINT_NASION]['r'])})
+            coords['NAS'] = list(fids[FIFF.FIFFV_POINT_NASION]['r'])
         if FIFF.FIFFV_POINT_LPA in fids:
-            coords.append({'LPA': list(fids[FIFF.FIFFV_POINT_LPA]['r'])})
+            coords['LPA'] = list(fids[FIFF.FIFFV_POINT_LPA]['r'])
         if FIFF.FIFFV_POINT_RPA in fids:
-            coords.append({'RPA': list(fids[FIFF.FIFFV_POINT_RPA]['r'])})
+            coords['RPA'] = list(fids[FIFF.FIFFV_POINT_RPA]['r'])
 
     hpi = {d['ident']: d for d in dig if d['kind'] == FIFF.FIFFV_POINT_HPI}
     if hpi:
-        coords.extend([{'coil%d' % ident: list(hpi[ident]['r'])}
-                       for ident in hpi.keys()])
+        for ident in hpi.keys():
+            coords['coil%d' % ident] = list(hpi[ident]['r'])
 
     coord_frame = set([dig[ii]['coord_frame'] for ii in range(len(dig))])
     if len(coord_frame) > 1:
@@ -139,11 +139,11 @@ def _fid_json(raw, unit, orient, fname):
         raise ValueError(err)
 
 
-    fid_json = {'MEGCoordinateSystem': 'a string of the manufacturer type',
+    fid_json = {'MEGCoordinateSystem': manufacturer,
         'MEGCoordinateUnits': unit, # XXX validate that this is correct
         'CoilCoordinates': coords,
         'CoilCoordinateSystem': orient,
-        'CoilCoordinateUnits': 'm', # XXX validate that this is correct too
+        'CoilCoordinateUnits': unit, # XXX validate that this is correct too
      }
     json_output = json.dumps(fid_json)
     open(fname, 'w').write(json_output)
@@ -270,7 +270,7 @@ def raw_to_bids(subject_id, run, task, input_fname, output_path,
 
     # save stuff
     _scans_tsv(raw, scans_fname)
-    _fid_json(raw, unit, orient, fname)
+    _fid_json(raw, unit, orient, manufacturer, fname)
     _meg_json(raw, task, manufacturer, meg_fname)
     _channel_tsv(raw, channels_fname)
     if events_fname:
