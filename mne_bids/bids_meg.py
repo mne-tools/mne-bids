@@ -11,7 +11,7 @@ import shutil as sh
 import pandas as pd
 import json
 
-from mne import events, io
+from mne import read_events, io
 from mne.io.constants import FIFF
 from mne.io.pick import channel_type
 
@@ -24,12 +24,21 @@ orientation = {'.sqd': 'ALS',
                '.gz': 'RAS',
                '.pdf': 'ALS',
               }
+
 units = {'.sqd': 'm',
         '.con': 'm',
         '.fif': 'm',
         '.gz': 'm',
         '.pdf': 'm',
         }
+
+manufacturers = {'.sqd': 'KIT/Yokogawa',
+                 '.con': 'KIT/Yokogawa',
+                 '.fif': 'Elekta',
+                 '.gz': 'Elekta',
+                 '.pdf': '4D Magnes',
+                 }
+
 
 def _mkdir_p(path):
     try:
@@ -70,17 +79,11 @@ def _channel_tsv(raw, fname):
              'high_cutoff', 'status']]
     df.to_csv(fname, sep='\t', index=False)
 
+    return fname
 
-def _events_tsv(raw, events, fname, event_id):
+
+def _events_tsv(events, fname, event_id):
     """Create tsv file for events."""
-
-    ### may change
-    raw = io.read_raw_fif(fnames['raw'])
-    if 'events' in fnames.keys():
-        events = read_events(fnames['events']).astype(int)
-    else:
-        events = find_events(raw, min_duration=0.001)
-    ###
 
     events[:, 0] -= raw.first_samp
 
@@ -93,37 +96,42 @@ def _events_tsv(raw, events, fname, event_id):
 
     df.to_csv(fname, sep='\t', index=False)
 
+    return fname
 
-def _scans_tsv(raw, raw_fname, fname):
+
+def _scans_tsv(raw, fname):
     """Create tsv file for scans."""
 
     acq_time = datetime.fromtimestamp(raw.info['meas_date'][0]
                                       ).strftime('%Y-%m-%dT%H:%M:%S')
 
-    df = pd.DataFrame({'filename': ['meg/%s' % raw_fname],
+    df = pd.DataFrame({'filename': ['meg/%s' % fname],
                        'acq_time': [acq_time]})
 
     print(df.head())
 
     df.to_csv(fname, sep='\t', index=False)
 
+    return fname
 
-def _fid_json(raw, fid_fname):
+
+def _fid_json(raw, unit, orient, fname):
     dig = raw.info['dig']
     coords = list()
     fids = {d['ident']: d for d in dig if d['kind'] ==
             FIFF.FIFFV_POINT_CARDINAL}
     if fids:
         if FIFF.FIFFV_POINT_NASION in fids:
-            coords.append({'NAS': fids[FIFF.FIFFV_POINT_NASION]['r']})
+            coords.append({'NAS': list(fids[FIFF.FIFFV_POINT_NASION]['r'])})
         if FIFF.FIFFV_POINT_LPA in fids:
-            coords.append({'LPA': fids[FIFF.FIFFV_POINT_LPA]['r']})
+            coords.append({'LPA': list(fids[FIFF.FIFFV_POINT_LPA]['r'])})
         if FIFF.FIFFV_POINT_RPA in fids:
-            coords.append({'RPA': fids[FIFF.FIFFV_POINT_RPA]['r']})
+            coords.append({'RPA': list(fids[FIFF.FIFFV_POINT_RPA]['r'])})
 
-    hpi = [d['ident']: d for d in dig if d['kind'] == FIFF.FIFFV_POINT_HPI}
+    hpi = {d['ident']: d for d in dig if d['kind'] == FIFF.FIFFV_POINT_HPI}
     if hpi:
-        coords.extend([{'coil%d' %ii: hpi[ii]['r']} for ii in range(len(hpi))])
+        coords.extend([{'coil%d' % ident: list(hpi[ident]['r'])}
+                       for ident in hpi.keys()])
 
     coord_frame = set([dig[ii]['coord_frame'] for ii in range(len(dig))])
     if len(coord_frame) > 1:
@@ -131,27 +139,65 @@ def _fid_json(raw, fid_fname):
         raise ValueError(err)
 
 
-    meg_json = {'MEGCoordinateSystem': 'a string of the manufacturer type',
+    fid_json = {'MEGCoordinateSystem': 'a string of the manufacturer type',
         'MEGCoordinateUnits': unit, # XXX validate that this is correct
         'CoilCoordinates': coords,
         'CoilCoordinateSystem': orient,
         'CoilCoordinateUnits': 'm', # XXX validate that this is correct too
      }
-     json_output = json.dumps(meg_json)
-     open(fid_fname, 'w').write(json_output)
+    json_output = json.dumps(fid_json)
+    open(fname, 'w').write(json_output)
+
+    return fname
 
 
-     ## TO DO lookup table for systems based on info
+def _meg_json(raw, task, manufacturer, fname):
+
+    sfreq = raw.info['sfreq']
+
+    n_megchan = len([ch for ch in raw.info['chs']
+                     if ch['kind'] == FIFF.FIFFV_MEG_CH])
+    n_megrefchan = len([ch for ch in raw.info['chs']
+                     if ch['kind'] == FIFF.FIFFV_REF_MEG_CH])
+    n_eegchan = len([ch for ch in raw.info['chs']
+                     if ch['kind'] == FIFF.FIFFV_EEG_CH])
+    n_eogchan = len([ch for ch in raw.info['chs']
+                     if ch['kind'] == FIFF.FIFFV_EOG_CH])
+    n_ecgchan = len([ch for ch in raw.info['chs']
+                     if ch['kind'] == FIFF.FIFFV_ECG_CH])
+    n_emgchan = len([ch for ch in raw.info['chs']
+                     if ch['kind'] == FIFF.FIFFV_EMG_CH])
+    n_miscchan = len([ch for ch in raw.info['chs']
+                     if ch['kind'] == FIFF.FIFFV_EOG_CH])
+    n_stimchan = len([ch for ch in raw.info['chs']
+                     if ch['kind'] == FIFF.FIFFV_STIM_CH])
 
 
-def raw_to_bids(subject, run, task, input_fname, events=None, event_id=None,
-                hpi=None, electrode=None, hsp=None, config=None,
-                output_path, overwrite=True):
+    meg_json = {'TaskName': task,
+                'SamplingFrequency': sfreq,
+                'Manufacturer': manufacturer,
+                'MEGChannelCount': n_megchan,
+                'MEGREFChannelCount': n_megrefchan,
+                'EEGChannelCount': n_eegchan,
+                'EOGChannelCount': n_eogchan,
+                'ECGChannelCount': n_ecgchan,
+                'EMGChannelCount': n_emgchan,
+                'MiscChannelCount': n_miscchan,
+                'TriggerChannelCount': n_stimchan,
+                }
+    json_output = json.dumps(meg_json)
+    open(fname, 'w').write(meg_output)
+
+    return fname
+
+def raw_to_bids(subject_id, run, task, input_fname, output_path,
+                events_fname=None, event_id=None, hpi=None, electrode=None,
+                hsp=None, config=None, overwrite=True):
     """Walk over a folder of files and create bids compatible folder.
 
     Parameters
     ----------
-    subject : str
+    subject_id : str
         The subject name in BIDS compatible format (01, 02, etc.)
     run : str
         The run number in BIDS compatible format.
@@ -159,7 +205,9 @@ def raw_to_bids(subject, run, task, input_fname, events=None, event_id=None,
         The task name.
     input_fname : str
         The path to the raw MEG file.
-    events : str
+    output_path : str
+        The path of the BIDS compatible folder
+    events_fname : str
         The path to the events file.
     event_id : dict
         The event id dict
@@ -174,12 +222,11 @@ def raw_to_bids(subject, run, task, input_fname, events=None, event_id=None,
     hsp : None | str | array, shape = (n_points, 3)
         Digitizer head shape points, or path to head shape file. If more than
         10`000 points are in the head shape, they are automatically decimated.
-    output_path : str
-        The path of the BIDS compatible folder
     overwrite : bool
         If the file already exists, whether to overwrite it.
     """
 
+    fname, ext = os.path.splitext(input_fname)
     ses_path = op.join(output_path, 'sub-%s' % subject_id, 'ses-01')
     meg_path = op.join(ses_path, 'meg')
     if not op.exists(output_path):
@@ -187,11 +234,20 @@ def raw_to_bids(subject, run, task, input_fname, events=None, event_id=None,
         if not op.exists(meg_path):
             _mkdir_p(meg_path)
 
-    events = read_events(events).astype(int)
+    # create the fnames
+    channels_fname = op.join(meg_path, 'sub-%s_task-%s_run-%s_channel.tsv'
+                             % (subject_id, task, run))
+    events_fname = op.join(meg_path, 'sub-%s_task-%s_run-%s_events.tsv'
+                           % (subject_id, task, run))
+    scans_fname = op.join(ses_path, 'sub-%s_ses-01_scans.tsv' % subject_id)
+    fid_fname = op.join(ses_path, 'sub-%s_ses-01_fid.json' % subject_id)
+    meg_fname = op.join(ses_path, 'sub-%s_ses-01_meg.json' % subject_id)
+    raw_fname = op.join(meg_path, 'sub-%s_task-%s_run-%s_meg%s'
+                        % (subject_id, task, run, ext))
 
-    fname, ext = os.path.splitext(input_fname)
     orient = orientation[ext]
     unit = units[ext]
+    manufacturer = manufacturers[ext]
 
     # KIT systems
     if ext in ['.con', '.sqd']:
@@ -212,26 +268,18 @@ def raw_to_bids(subject, run, task, input_fname, events=None, event_id=None,
     elif ext == '':
         pass
 
-    # create the fnames
-    channels_fname = op.join(meg_path, 'sub-%s_task-%s_run-%s_channel.tsv'
-                             % (subject_id, task, run))
-    events_fname = op.join(meg_path, 'sub-%s_task-%s_run-%s_events.tsv'
-                           % (subject_id, task, run))
-    scans_fname = op.join(ses_path, 'sub-%s_ses-01_scans.tsv' % subject_id)
-    fid_fname = op.join(ses_path, 'sub-%s_ses-01_fid.json' % subject_id)
-    raw_fname = op.join(meg_path, 'sub-%s_task-%s_run-%s_meg%s'
-                        % (subject, task, run, ext))
-
     # save stuff
+    _scans_tsv(raw, scans_fname)
+    _fid_json(raw, unit, orient, fname)
+    _meg_json(raw, task, manufacturer, meg_fname)
     _channel_tsv(raw, channels_fname)
-    if events:
-        events = mne.read_events(fnames['events']).astype(int)
+    if events_fname:
+        events = mne.read_events(events_fname).astype(int)
     else:
         events = mne.find_events(raw, min_duration=0.001)
+
     if events:
-        _events_tsv(raw, events, events_fname, event_id)
-    _scans_tsv(raw, input_fname, scans_fname)
-    _fid_json(raw, input_fname, fid_fname)
+        _events_tsv(events, events_fname, event_id)
 
     # for FIF, we need to re-save the file to fix the file pointer
     # for files with multiple parts

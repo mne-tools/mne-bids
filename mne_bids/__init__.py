@@ -1,1 +1,1 @@
-from .bids_meg import folder_to_bids
+from .bids_meg import raw_to_bids
