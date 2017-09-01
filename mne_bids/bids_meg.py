@@ -9,6 +9,7 @@ import os
 import os.path as op
 import shutil as sh
 import pandas as pd
+import json
 
 from mne import events, io
 from mne.io.constants import FIFF
@@ -16,6 +17,19 @@ from mne.io.pick import channel_type
 
 from datetime import datetime
 
+
+orientation = {'.sqd': 'ALS',
+               '.con': 'ALS',
+               '.fif': 'RAS',
+               '.gz': 'RAS',
+               '.pdf': 'ALS',
+              }
+units = {'.sqd': 'm',
+        '.con': 'm',
+        '.fif': 'm',
+        '.gz': 'm',
+        '.pdf': 'm',
+        }
 
 def _mkdir_p(path):
     try:
@@ -94,7 +108,7 @@ def _scans_tsv(raw, raw_fname, fname):
     df.to_csv(fname, sep='\t', index=False)
 
 
-def _fid_json(raw):
+def _fid_json(raw, fid_fname):
     dig = raw.info['dig']
     coords = list()
     fids = {d['ident']: d for d in dig if d['kind'] ==
@@ -116,18 +130,23 @@ def _fid_json(raw):
         err = 'All HPI and Fiducials must be in the same coordinate frame.'
         raise ValueError(err)
 
-    {'MEGCoordinateSystem': 'a string of the manufacturer type'
-     'MEGCoordinateUnits'
-     'CoilCoordinates': coords
-     'CoilCoordinateSystem':
-     'CoilCoordinateUnits': 'm'
+
+    meg_json = {'MEGCoordinateSystem': 'a string of the manufacturer type',
+        'MEGCoordinateUnits': unit, # XXX validate that this is correct
+        'CoilCoordinates': coords,
+        'CoilCoordinateSystem': orient,
+        'CoilCoordinateUnits': 'm', # XXX validate that this is correct too
      }
+     json_output = json.dumps(meg_json)
+     open(fid_fname, 'w').write(json_output)
+
 
      ## TO DO lookup table for systems based on info
 
 
-def raw_to_bids(subject, run, task, input_fname, hpi=None, electrode=None, hsp=None,
-                config=None, events=None, output_path, overwrite=True):
+def raw_to_bids(subject, run, task, input_fname, events=None, event_id=None,
+                hpi=None, electrode=None, hsp=None, config=None,
+                output_path, overwrite=True):
     """Walk over a folder of files and create bids compatible folder.
 
     Parameters
@@ -140,6 +159,10 @@ def raw_to_bids(subject, run, task, input_fname, hpi=None, electrode=None, hsp=N
         The task name.
     input_fname : str
         The path to the raw MEG file.
+    events : str
+        The path to the events file.
+    event_id : dict
+        The event id dict
     hpi : None | str | list of str
         Marker points representing the location of the marker coils with
         respect to the MEG Sensors, or path to a marker file.
@@ -151,13 +174,8 @@ def raw_to_bids(subject, run, task, input_fname, hpi=None, electrode=None, hsp=N
     hsp : None | str | array, shape = (n_points, 3)
         Digitizer head shape points, or path to head shape file. If more than
         10`000 points are in the head shape, they are automatically decimated.
-
-    event_id : dict
-        The event id dict
     output_path : str
         The path of the BIDS compatible folder
-    fnames : dict
-        Dictionary of filenames. Valid keys are 'events' and 'raw'.
     overwrite : bool
         If the file already exists, whether to overwrite it.
     """
@@ -172,10 +190,13 @@ def raw_to_bids(subject, run, task, input_fname, hpi=None, electrode=None, hsp=N
     events = read_events(events).astype(int)
 
     fname, ext = os.path.splitext(input_fname)
+    orient = orientation[ext]
+    unit = units[ext]
 
     # KIT systems
     if ext in ['.con', '.sqd']:
-         raw = io.read_raw_kit(input_fname, preload=False)
+         raw = io.read_raw_kit(input_fname, elp=electrode, hsp=hsp,
+                               mrk=hpi, preload=False)
 
     # Neuromag or converted-to-fif systems
     elif ext in ['.fif', '.gz']:
@@ -184,28 +205,33 @@ def raw_to_bids(subject, run, task, input_fname, hpi=None, electrode=None, hsp=N
      # BTi systems
     elif ext == '.pdf':
         if os.path.isfile(input_fname):
-            raw = io.read_raw_bti(input_fname, preload=preload, verbose=verbose,
-                                   **kwargs)
+            raw = io.read_raw_bti(input_fname, config_fname=config,
+                                  preload=preload, verbose=verbose)
 
     # CTF systems
     elif ext == '':
         pass
 
-    # save stuff
+    # create the fnames
     channels_fname = op.join(meg_path, 'sub-%s_task-%s_run-%s_channel.tsv'
                              % (subject_id, task, run))
-    _channel_tsv(raw, channels_fname)
-
     events_fname = op.join(meg_path, 'sub-%s_task-%s_run-%s_events.tsv'
                            % (subject_id, task, run))
-    _events_tsv(raw, events, events_fname, event_id)
-
-    _scans_tsv(raw, fnames['raw'],
-               op.join(ses_path, 'sub-%s_ses-01_scans.tsv' % subject_id))
-
-    raw_fname = op.join(meg_path,
-                        'sub-%s_task-%s_run-%s_meg%s'
+    scans_fname = op.join(ses_path, 'sub-%s_ses-01_scans.tsv' % subject_id)
+    fid_fname = op.join(ses_path, 'sub-%s_ses-01_fid.json' % subject_id)
+    raw_fname = op.join(meg_path, 'sub-%s_task-%s_run-%s_meg%s'
                         % (subject, task, run, ext))
+
+    # save stuff
+    _channel_tsv(raw, channels_fname)
+    if events:
+        events = mne.read_events(fnames['events']).astype(int)
+    else:
+        events = mne.find_events(raw, min_duration=0.001)
+    if events:
+        _events_tsv(raw, events, events_fname, event_id)
+    _scans_tsv(raw, input_fname, scans_fname)
+    _fid_json(raw, input_fname, fid_fname)
 
     # for FIF, we need to re-save the file to fix the file pointer
     # for files with multiple parts
