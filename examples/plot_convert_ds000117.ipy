@@ -4,17 +4,21 @@ Create BIDS-compatible ds000117
 ===============================
 
 Here, we show how to do BIDS conversion for group studies
+
 """
 
 # Authors: Mainak Jas <mainak.jas@telecom-paristech.fr>
+#          Teon Brooks <teon.brooks@gmail.com>
 
 # License: BSD (3-clause)
 
 import os
 import os.path as op
-from mne_bids import folder_to_bids
+from mne_bids import raw_to_bids
 
-data_path = './ds000117'
+
+data_path = op.join(op.expanduser('~'), 'mne_data', 'ds000117')
+output_path = op.join(data_path, '..', 'ds000117-bids')
 
 subject_ids = [1]
 runs = [1]
@@ -31,27 +35,23 @@ event_id = {
 }
 
 # Fetch the data
+# This requires git-annex
+# os.chdir(data_path)
+# this command must be executed in the terminal
 # !git clone http://datasets.datalad.org/openfmri/ds000117/.git/
 cwd = os.getcwd()
 os.chdir(data_path)
+
+
 for subject_id in subject_ids:
     subject = 'sub%03d' % subject_id
-    input_path = op.join(data_path, subject, 'MEG')
     for run in runs:
-        raw_fname = op.join(subject, 'MEG', 'run_%02d_raw.fif' % run)
-        !git annex get {raw_fname}
-os.chdir(cwd)
+        # retrieve the file from git-annex
+        input_fname = op.join(data_path, subject, 'MEG',
+                              'run_%02d_raw.fif' % run)
+        !git annex get {input_fname}
 
-# Make it BIDS compatible
-for subject_id in subject_ids:
-
-    input_path = op.join(data_path, subject, 'MEG')
-    output_path = op.join(data_path, '..', 'ds000117-bids')
-
-    for run in runs:
-        fnames = dict(raw='run_%02d_raw.fif' % run)
-
-        folder_to_bids(input_path=input_path, output_path=output_path,
-                       fnames=fnames, subject_id='%02d' % subject_id,
-                       run=run, task='visual_faces', 
-                       event_id=event_id, overwrite=True)
+        # Make it BIDS compatible
+        raw_to_bids(subject_id='%02d' % subject_id, run=run,
+                    task='visual_faces', input_fname=input_fname,
+                    output_path=output_path, event_id=event_id, overwrite=True)
