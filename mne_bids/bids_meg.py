@@ -50,7 +50,7 @@ def _mkdir_p(path):
             raise
 
 
-def _channel_tsv(raw, fname):
+def _channel_tsv(raw, fname, verbose):
     """Create channel tsv."""
 
     map_chs = dict(grad='MEGGRAD', mag='MEGMAG', stim='TRIG', eeg='EEG',
@@ -79,10 +79,14 @@ def _channel_tsv(raw, fname):
              'high_cutoff', 'status']]
     df.to_csv(fname, sep='\t', index=False)
 
+    if verbose:
+        print(os.linesep + "Writing '%s'..." %fname + os.linesep)
+        print (df.head())
+
     return fname
 
 
-def _events_tsv(events, raw, fname, event_id):
+def _events_tsv(events, raw, fname, event_id, verbose):
     """Create tsv file for events."""
 
     first_samp = raw.first_samp
@@ -98,10 +102,14 @@ def _events_tsv(events, raw, fname, event_id):
 
     df.to_csv(fname, sep='\t', index=False)
 
+    if verbose:
+        print(os.linesep + "Writing '%s'..." %fname + os.linesep)
+        print (df.head())
+
     return fname
 
 
-def _scans_tsv(raw, fname):
+def _scans_tsv(raw, fname, verbose):
     """Create tsv file for scans."""
 
     acq_time = datetime.fromtimestamp(raw.info['meas_date'][0]
@@ -110,14 +118,16 @@ def _scans_tsv(raw, fname):
     df = pd.DataFrame({'filename': ['meg/%s' % fname],
                        'acq_time': [acq_time]})
 
-    print(df.head())
-
     df.to_csv(fname, sep='\t', index=False)
+
+    if verbose:
+        print(os.linesep + "Writing '%s'..." %fname + os.linesep)
+        print (df.head())
 
     return fname
 
 
-def _fid_json(raw, unit, orient, manufacturer, fname):
+def _fid_json(raw, unit, orient, manufacturer, fname, verbose):
     dig = raw.info['dig']
     coords = dict()
     fids = {d['ident']: d for d in dig if d['kind'] ==
@@ -140,7 +150,6 @@ def _fid_json(raw, unit, orient, manufacturer, fname):
         err = 'All HPI and Fiducials must be in the same coordinate frame.'
         raise ValueError(err)
 
-
     fid_json = {'MEGCoordinateSystem': manufacturer,
         'MEGCoordinateUnits': unit, # XXX validate that this is correct
         'CoilCoordinates': coords,
@@ -148,12 +157,17 @@ def _fid_json(raw, unit, orient, manufacturer, fname):
         'CoilCoordinateUnits': unit # XXX validate that this is correct too
      }
     json_output = json.dumps(fid_json, indent=4, sort_keys=True)
-    open(fname, 'w').write(json_output)
+    with open(fname, 'w') as fid:
+        fid.write(json_output)
+
+    if verbose:
+        print(os.linesep + "Writing '%s'..." %fname + os.linesep)
+        print (json_output)
 
     return fname
 
 
-def _meg_json(raw, task, manufacturer, fname):
+def _meg_json(raw, task, manufacturer, fname, verbose):
 
     sfreq = raw.info['sfreq']
 
@@ -188,13 +202,18 @@ def _meg_json(raw, task, manufacturer, fname):
                 'TriggerChannelCount': n_stimchan,
                 }
     json_output = json.dumps(meg_json, indent=4, sort_keys=True)
-    open(fname, 'w').write(json_output)
+    with open(fname, 'w') as fid:
+        fid.write(json_output)
+
+    if verbose:
+        print(os.linesep + "Writing '%s'..." %fname + os.linesep)
+        print (json_output)
 
     return fname
 
 def raw_to_bids(subject_id, run, task, input_fname, output_path,
                 events_fname=None, event_id=None, hpi=None, electrode=None,
-                hsp=None, config=None, overwrite=True):
+                hsp=None, config=None, overwrite=True, verbose=False):
     """Walk over a folder of files and create bids compatible folder.
 
     Parameters
@@ -226,6 +245,9 @@ def raw_to_bids(subject_id, run, task, input_fname, output_path,
         10`000 points are in the head shape, they are automatically decimated.
     overwrite : bool
         If the file already exists, whether to overwrite it.
+    verbose : bool
+        If verbose is True, this will print a snippet of the sidecar files. If
+        False, no content will be printed.
     """
 
     fname, ext = os.path.splitext(input_fname)
@@ -271,17 +293,17 @@ def raw_to_bids(subject_id, run, task, input_fname, output_path,
         pass
 
     # save stuff
-    _scans_tsv(raw, scans_fname)
-    _fid_json(raw, unit, orient, manufacturer, fid_fname)
-    _meg_json(raw, task, manufacturer, meg_fname)
-    _channel_tsv(raw, channels_fname)
+    _scans_tsv(raw, scans_fname, verbose)
+    _fid_json(raw, unit, orient, manufacturer, fid_fname, verbose)
+    _meg_json(raw, task, manufacturer, meg_fname, verbose)
+    _channel_tsv(raw, channels_fname, verbose)
     if events_fname:
         events = read_events(events_fname).astype(int)
     else:
         events = find_events(raw, min_duration=0.001)
 
     if len(events) > 0:
-        _events_tsv(events, raw, events_tsv_fname, event_id)
+        _events_tsv(events, raw, events_tsv_fname, event_id, verbose)
 
     # for FIF, we need to re-save the file to fix the file pointer
     # for files with multiple parts
