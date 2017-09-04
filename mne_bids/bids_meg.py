@@ -11,7 +11,7 @@ import shutil as sh
 import pandas as pd
 import json
 
-from mne import read_events, io
+from mne import read_events, find_events, io
 from mne.io.constants import FIFF
 from mne.io.pick import channel_type
 
@@ -82,17 +82,19 @@ def _channel_tsv(raw, fname):
     return fname
 
 
-def _events_tsv(events, fname, event_id):
+def _events_tsv(events, raw, fname, event_id):
     """Create tsv file for events."""
 
-    events[:, 0] -= raw.first_samp
-
-    event_id_map = {v: k for k, v in event_id.items()}
+    first_samp = raw.first_samp
+    sfreq = raw.info['sfreq']
+    events[:, 0] -= first_samp
 
     df = pd.DataFrame(events[:, [0, 2]],
                       columns=['Onset', 'Condition'])
-    df.Condition = df.Condition.map(event_id_map)
-    df.Onset /= raw.info['sfreq']
+    if event_id:
+        event_id_map = {v: k for k, v in event_id.items()}
+        df.Condition = df.Condition.map(event_id_map)
+    df.Onset /= sfreq
 
     df.to_csv(fname, sep='\t', index=False)
 
@@ -237,7 +239,7 @@ def raw_to_bids(subject_id, run, task, input_fname, output_path,
     # create the fnames
     channels_fname = op.join(meg_path, 'sub-%s_task-%s_run-%s_channel.tsv'
                              % (subject_id, task, run))
-    events_fname = op.join(meg_path, 'sub-%s_task-%s_run-%s_events.tsv'
+    events_tsv_fname = op.join(meg_path, 'sub-%s_task-%s_run-%s_events.tsv'
                            % (subject_id, task, run))
     scans_fname = op.join(ses_path, 'sub-%s_ses-01_scans.tsv' % subject_id)
     fid_fname = op.join(ses_path, 'sub-%s_ses-01_fid.json' % subject_id)
@@ -270,16 +272,16 @@ def raw_to_bids(subject_id, run, task, input_fname, output_path,
 
     # save stuff
     _scans_tsv(raw, scans_fname)
-    _fid_json(raw, unit, orient, manufacturer, fname)
+    _fid_json(raw, unit, orient, manufacturer, fid_fname)
     _meg_json(raw, task, manufacturer, meg_fname)
     _channel_tsv(raw, channels_fname)
     if events_fname:
         events = read_events(events_fname).astype(int)
     else:
-        events = mne.find_events(raw, min_duration=0.001)
+        events = find_events(raw, min_duration=0.001)
 
-    if events:
-        _events_tsv(events, events_fname, event_id)
+    if len(events) > 0:
+        _events_tsv(events, raw, events_tsv_fname, event_id)
 
     # for FIF, we need to re-save the file to fix the file pointer
     # for files with multiple parts
