@@ -17,7 +17,8 @@ import os.path as op
 from mne_bids import raw_to_bids
 
 
-data_path = op.join(op.expanduser('~'), 'mne_data', 'ds000117')
+data_path = op.join(op.expanduser('~'), 'mne_data')
+repo = 'ds000117'
 output_path = op.join(data_path, '..', 'ds000117-bids')
 
 subject_ids = [1]
@@ -36,10 +37,11 @@ event_id = {
 
 # Fetch the data
 # This requires git-annex
-# os.chdir(data_path)
-# this command must be executed in the terminal
-# !git clone http://datasets.datalad.org/openfmri/ds000117/.git/
-cwd = os.getcwd()
+if op.exists(op.join(data_path, repo)):
+    os.chdir(op.join(data_path, repo))
+else:
+    os.chdir(data_path)
+    !git clone http://datasets.datalad.org/openfmri/ds000117/.git/
 os.chdir(data_path)
 
 
@@ -47,7 +49,7 @@ for subject_id in subject_ids:
     subject = 'sub%03d' % subject_id
     for run in runs:
         # retrieve the file from git-annex
-        input_fname = op.join(data_path, subject, 'MEG',
+        input_fname = op.join(data_path, repo, subject, 'MEG',
                               'run_%02d_raw.fif' % run)
         !git annex get {input_fname}
 
