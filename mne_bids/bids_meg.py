@@ -109,13 +109,13 @@ def _events_tsv(events, raw, fname, event_id, verbose):
     return fname
 
 
-def _scans_tsv(raw, fname, verbose):
+def _scans_tsv(raw, raw_fname, fname, verbose):
     """Create tsv file for scans."""
 
     acq_time = datetime.fromtimestamp(raw.info['meas_date'][0]
                                       ).strftime('%Y-%m-%dT%H:%M:%S')
 
-    df = pd.DataFrame({'filename': ['meg/%s' % fname],
+    df = pd.DataFrame({'filename': ['%s' % raw_fname],
                        'acq_time': [acq_time]})
 
     df.to_csv(fname, sep='\t', index=False)
@@ -293,7 +293,7 @@ def raw_to_bids(subject_id, run, task, input_fname, output_path,
         pass
 
     # save stuff
-    _scans_tsv(raw, scans_fname, verbose)
+    _scans_tsv(raw, raw_fname, scans_fname, verbose)
     _fid_json(raw, unit, orient, manufacturer, fid_fname, verbose)
     _meg_json(raw, task, manufacturer, meg_fname, verbose)
     _channel_tsv(raw, channels_fname, verbose)
