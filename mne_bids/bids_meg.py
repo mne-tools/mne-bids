@@ -147,7 +147,7 @@ def _fid_json(raw, unit, orient, manufacturer, fname):
         'CoilCoordinateSystem': orient,
         'CoilCoordinateUnits': unit # XXX validate that this is correct too
      }
-    json_output = json.dumps(fid_json)
+    json_output = json.dumps(fid_json, indent=4, sort_keys=True)
     open(fname, 'w').write(json_output)
 
     return fname
@@ -187,7 +187,7 @@ def _meg_json(raw, task, manufacturer, fname):
                 'MiscChannelCount': n_miscchan,
                 'TriggerChannelCount': n_stimchan,
                 }
-    json_output = json.dumps(meg_json)
+    json_output = json.dumps(meg_json, indent=4, sort_keys=True)
     open(fname, 'w').write(json_output)
 
     return fname
