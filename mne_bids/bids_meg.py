@@ -122,16 +122,16 @@ def _fid_json(raw, unit, orient, manufacturer, fname):
             FIFF.FIFFV_POINT_CARDINAL}
     if fids:
         if FIFF.FIFFV_POINT_NASION in fids:
-            coords['NAS'] = list(fids[FIFF.FIFFV_POINT_NASION]['r'])
+            coords['NAS'] = fids[FIFF.FIFFV_POINT_NASION]['r'].tolist()
         if FIFF.FIFFV_POINT_LPA in fids:
-            coords['LPA'] = list(fids[FIFF.FIFFV_POINT_LPA]['r'])
+            coords['LPA'] = fids[FIFF.FIFFV_POINT_LPA]['r'].tolist()
         if FIFF.FIFFV_POINT_RPA in fids:
-            coords['RPA'] = list(fids[FIFF.FIFFV_POINT_RPA]['r'])
+            coords['RPA'] = fids[FIFF.FIFFV_POINT_RPA]['r'].tolist()
 
     hpi = {d['ident']: d for d in dig if d['kind'] == FIFF.FIFFV_POINT_HPI}
     if hpi:
         for ident in hpi.keys():
-            coords['coil%d' % ident] = list(hpi[ident]['r'])
+            coords['coil%d' % ident] = hpi[ident]['r'].tolist()
 
     coord_frame = set([dig[ii]['coord_frame'] for ii in range(len(dig))])
     if len(coord_frame) > 1:
@@ -143,7 +143,7 @@ def _fid_json(raw, unit, orient, manufacturer, fname):
         'MEGCoordinateUnits': unit, # XXX validate that this is correct
         'CoilCoordinates': coords,
         'CoilCoordinateSystem': orient,
-        'CoilCoordinateUnits': unit, # XXX validate that this is correct too
+        'CoilCoordinateUnits': unit # XXX validate that this is correct too
      }
     json_output = json.dumps(fid_json)
     open(fname, 'w').write(json_output)
@@ -186,7 +186,7 @@ def _meg_json(raw, task, manufacturer, fname):
                 'TriggerChannelCount': n_stimchan,
                 }
     json_output = json.dumps(meg_json)
-    open(fname, 'w').write(meg_output)
+    open(fname, 'w').write(json_output)
 
     return fname
 
@@ -274,7 +274,7 @@ def raw_to_bids(subject_id, run, task, input_fname, output_path,
     _meg_json(raw, task, manufacturer, meg_fname)
     _channel_tsv(raw, channels_fname)
     if events_fname:
-        events = mne.read_events(events_fname).astype(int)
+        events = read_events(events_fname).astype(int)
     else:
         events = mne.find_events(raw, min_duration=0.001)
 
