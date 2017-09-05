@@ -18,26 +18,13 @@ from mne.io.pick import channel_type
 from datetime import datetime
 
 
-orientation = {'.sqd': 'ALS',
-               '.con': 'ALS',
-               '.fif': 'RAS',
-               '.gz': 'RAS',
-               '.pdf': 'ALS',
-              }
+orientation = {'.sqd': 'ALS', '.con': 'ALS', '.fif': 'RAS', '.gz': 'RAS',
+               '.pdf': 'ALS'}
 
-units = {'.sqd': 'm',
-        '.con': 'm',
-        '.fif': 'm',
-        '.gz': 'm',
-        '.pdf': 'm',
-        }
+units = {'.sqd': 'm', '.con': 'm', '.fif': 'm', '.gz': 'm', '.pdf': 'm'}
 
-manufacturers = {'.sqd': 'KIT/Yokogawa',
-                 '.con': 'KIT/Yokogawa',
-                 '.fif': 'Elekta',
-                 '.gz': 'Elekta',
-                 '.pdf': '4D Magnes',
-                 }
+manufacturers = {'.sqd': 'KIT/Yokogawa', '.con': 'KIT/Yokogawa',
+                 '.fif': 'Elekta', '.gz': 'Elekta', '.pdf': '4D Magnes'}
 
 
 def _mkdir_p(path):
@@ -80,7 +67,7 @@ def _channel_tsv(raw, fname, verbose):
     df.to_csv(fname, sep='\t', index=False)
 
     if verbose:
-        print(os.linesep + "Writing '%s'..." %fname + os.linesep)
+        print(os.linesep + "Writing '%s'..." % fname + os.linesep)
         print (df.head())
 
     return fname
@@ -103,7 +90,7 @@ def _events_tsv(events, raw, fname, event_id, verbose):
     df.to_csv(fname, sep='\t', index=False)
 
     if verbose:
-        print(os.linesep + "Writing '%s'..." %fname + os.linesep)
+        print(os.linesep + "Writing '%s'..." % fname + os.linesep)
         print (df.head())
 
     return fname
@@ -121,7 +108,7 @@ def _scans_tsv(raw, raw_fname, fname, verbose):
     df.to_csv(fname, sep='\t', index=False)
 
     if verbose:
-        print(os.linesep + "Writing '%s'..." %fname + os.linesep)
+        print(os.linesep + "Writing '%s'..." % fname + os.linesep)
         print (df.head())
 
     return fname
@@ -151,17 +138,17 @@ def _fid_json(raw, unit, orient, manufacturer, fname, verbose):
         raise ValueError(err)
 
     fid_json = {'MEGCoordinateSystem': manufacturer,
-        'MEGCoordinateUnits': unit, # XXX validate that this is correct
-        'CoilCoordinates': coords,
-        'CoilCoordinateSystem': orient,
-        'CoilCoordinateUnits': unit # XXX validate that this is correct too
-     }
+                'MEGCoordinateUnits': unit,  # XXX validate this
+                'CoilCoordinates': coords,
+                'CoilCoordinateSystem': orient,
+                'CoilCoordinateUnits': unit  # XXX validate this
+                }
     json_output = json.dumps(fid_json, indent=4, sort_keys=True)
     with open(fname, 'w') as fid:
         fid.write(json_output)
 
     if verbose:
-        print(os.linesep + "Writing '%s'..." %fname + os.linesep)
+        print(os.linesep + "Writing '%s'..." % fname + os.linesep)
         print (json_output)
 
     return fname
@@ -174,7 +161,7 @@ def _meg_json(raw, task, manufacturer, fname, verbose):
     n_megchan = len([ch for ch in raw.info['chs']
                      if ch['kind'] == FIFF.FIFFV_MEG_CH])
     n_megrefchan = len([ch for ch in raw.info['chs']
-                     if ch['kind'] == FIFF.FIFFV_REF_MEG_CH])
+                        if ch['kind'] == FIFF.FIFFV_REF_MEG_CH])
     n_eegchan = len([ch for ch in raw.info['chs']
                      if ch['kind'] == FIFF.FIFFV_EEG_CH])
     n_eogchan = len([ch for ch in raw.info['chs']
@@ -187,7 +174,6 @@ def _meg_json(raw, task, manufacturer, fname, verbose):
                      if ch['kind'] == FIFF.FIFFV_EOG_CH])
     n_stimchan = len([ch for ch in raw.info['chs']
                      if ch['kind'] == FIFF.FIFFV_STIM_CH])
-
 
     meg_json = {'TaskName': task,
                 'SamplingFrequency': sfreq,
@@ -206,10 +192,11 @@ def _meg_json(raw, task, manufacturer, fname, verbose):
         fid.write(json_output)
 
     if verbose:
-        print(os.linesep + "Writing '%s'..." %fname + os.linesep)
+        print(os.linesep + "Writing '%s'..." % fname + os.linesep)
         print (json_output)
 
     return fname
+
 
 def raw_to_bids(subject_id, run, task, input_fname, output_path,
                 events_fname=None, event_id=None, hpi=None, electrode=None,
@@ -262,7 +249,7 @@ def raw_to_bids(subject_id, run, task, input_fname, output_path,
     channels_fname = op.join(meg_path, 'sub-%s_task-%s_run-%s_channel.tsv'
                              % (subject_id, task, run))
     events_tsv_fname = op.join(meg_path, 'sub-%s_task-%s_run-%s_events.tsv'
-                           % (subject_id, task, run))
+                               % (subject_id, task, run))
     scans_fname = op.join(ses_path, 'sub-%s_ses-01_scans.tsv' % subject_id)
     fid_fname = op.join(ses_path, 'sub-%s_ses-01_fid.json' % subject_id)
     meg_fname = op.join(ses_path, 'sub-%s_ses-01_meg.json' % subject_id)
@@ -275,18 +262,18 @@ def raw_to_bids(subject_id, run, task, input_fname, output_path,
 
     # KIT systems
     if ext in ['.con', '.sqd']:
-         raw = io.read_raw_kit(input_fname, elp=electrode, hsp=hsp,
-                               mrk=hpi, preload=False)
+        raw = io.read_raw_kit(input_fname, elp=electrode, hsp=hsp,
+                              mrk=hpi, preload=False)
 
     # Neuromag or converted-to-fif systems
     elif ext in ['.fif', '.gz']:
         raw = io.read_raw_fif(input_fname, preload=False)
 
-     # BTi systems
+    # BTi systems
     elif ext == '.pdf':
         if os.path.isfile(input_fname):
             raw = io.read_raw_bti(input_fname, config_fname=config,
-                                  preload=preload, verbose=verbose)
+                                  preload=False, verbose=verbose)
 
     # CTF systems
     elif ext == '':

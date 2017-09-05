@@ -19,7 +19,7 @@ from mne_bids import raw_to_bids
 
 data_path = op.join(op.expanduser('~'), 'mne_data')
 repo = 'ds000117'
-output_path = op.join(data_path, '..', 'ds000117-bids')
+output_path = op.join(data_path, 'ds000117-bids')
 
 subject_ids = [1]
 runs = [1]
