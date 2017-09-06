@@ -198,9 +198,9 @@ def _meg_json(raw, task, manufacturer, fname, verbose):
     return fname
 
 
-def raw_to_bids(subject_id, run, task, input_fname, output_path,
+def raw_to_bids(subject_id, run, task, raw_fname, output_path,
                 events_fname=None, event_id=None, hpi=None, electrode=None,
-                hsp=None, config=None, overwrite=True, verbose=False):
+                hsp=None, config=None, overwrite=True, verbose=True):
     """Walk over a folder of files and create bids compatible folder.
 
     Parameters
@@ -211,7 +211,7 @@ def raw_to_bids(subject_id, run, task, input_fname, output_path,
         The run number in BIDS compatible format.
     task : str
         The task name.
-    input_fname : str
+    raw_fname : str
         The path to the raw MEG file.
     output_path : str
         The path of the BIDS compatible folder
@@ -237,7 +237,7 @@ def raw_to_bids(subject_id, run, task, input_fname, output_path,
         False, no content will be printed.
     """
 
-    fname, ext = os.path.splitext(input_fname)
+    fname, ext = os.path.splitext(raw_fname)
     ses_path = op.join(output_path, 'sub-%s' % subject_id, 'ses-01')
     meg_path = op.join(ses_path, 'meg')
     if not op.exists(output_path):
@@ -253,8 +253,8 @@ def raw_to_bids(subject_id, run, task, input_fname, output_path,
     scans_fname = op.join(ses_path, 'sub-%s_ses-01_scans.tsv' % subject_id)
     fid_fname = op.join(ses_path, 'sub-%s_ses-01_fid.json' % subject_id)
     meg_fname = op.join(ses_path, 'sub-%s_ses-01_meg.json' % subject_id)
-    raw_fname = op.join(meg_path, 'sub-%s_task-%s_run-%s_meg%s'
-                        % (subject_id, task, run, ext))
+    raw_fname_bids = op.join(meg_path, 'sub-%s_task-%s_run-%s_meg%s'
+                             % (subject_id, task, run, ext))
 
     orient = orientation[ext]
     unit = units[ext]
@@ -262,17 +262,17 @@ def raw_to_bids(subject_id, run, task, input_fname, output_path,
 
     # KIT systems
     if ext in ['.con', '.sqd']:
-        raw = io.read_raw_kit(input_fname, elp=electrode, hsp=hsp,
+        raw = io.read_raw_kit(raw_fname, elp=electrode, hsp=hsp,
                               mrk=hpi, preload=False)
 
     # Neuromag or converted-to-fif systems
     elif ext in ['.fif', '.gz']:
-        raw = io.read_raw_fif(input_fname, preload=False)
+        raw = io.read_raw_fif(raw_fname, preload=False)
 
     # BTi systems
     elif ext == '.pdf':
-        if os.path.isfile(input_fname):
-            raw = io.read_raw_bti(input_fname, config_fname=config,
+        if os.path.isfile(raw_fname):
+            raw = io.read_raw_bti(raw_fname, config_fname=config,
                                   preload=False, verbose=verbose)
 
     # CTF systems
@@ -280,7 +280,7 @@ def raw_to_bids(subject_id, run, task, input_fname, output_path,
         pass
 
     # save stuff
-    _scans_tsv(raw, raw_fname, scans_fname, verbose)
+    _scans_tsv(raw, raw_fname_bids, scans_fname, verbose)
     _fid_json(raw, unit, orient, manufacturer, fid_fname, verbose)
     _meg_json(raw, task, manufacturer, meg_fname, verbose)
     _channel_tsv(raw, channels_fname, verbose)
@@ -295,8 +295,8 @@ def raw_to_bids(subject_id, run, task, input_fname, output_path,
     # for FIF, we need to re-save the file to fix the file pointer
     # for files with multiple parts
     if ext in ['.fif', '.gz']:
-        raw.save(raw_fname, overwrite=overwrite)
+        raw.save(raw_fname_bids, overwrite=overwrite)
     else:
-        sh.copyfile(input_fname, raw_fname)
+        sh.copyfile(raw_fname, raw_fname_bids)
 
     return output_path
