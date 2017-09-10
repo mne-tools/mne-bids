@@ -242,8 +242,8 @@ def raw_to_bids(subject_id, run, task, raw_fname, output_path,
     meg_path = op.join(ses_path, 'meg')
     if not op.exists(output_path):
         _mkdir_p(output_path)
-        if not op.exists(meg_path):
-            _mkdir_p(meg_path)
+    if not op.exists(meg_path):
+        _mkdir_p(meg_path)
 
     # create the fnames
     channels_fname = op.join(meg_path, 'sub-%s_task-%s_run-%s_channel.tsv'

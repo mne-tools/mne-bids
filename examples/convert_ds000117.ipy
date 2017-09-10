@@ -42,7 +42,7 @@ if op.exists(op.join(data_path, repo)):
 else:
     os.chdir(data_path)
     !git clone http://datasets.datalad.org/openfmri/ds000117/.git/
-os.chdir(data_path)
+os.chdir(op.join(data_path, repo))
 
 
 for subject_id in subject_ids:
@@ -51,7 +51,7 @@ for subject_id in subject_ids:
         # retrieve the file from git-annex
         raw_fname = op.join(data_path, repo, subject, 'MEG',
                             'run_%02d_raw.fif' % run)
-        !git annex get {input_fname}
+        !git annex get {raw_fname}
 
         # Make it BIDS compatible
         raw_to_bids(subject_id='%02d' % subject_id, run=run,
