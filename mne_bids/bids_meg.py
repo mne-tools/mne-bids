@@ -42,12 +42,13 @@ def _channel_tsv(raw, fname, verbose):
     """Create channel tsv."""
 
     map_chs = dict(grad='MEGGRAD', mag='MEGMAG', stim='TRIG', eeg='EEG',
-                   eog='EOG', ecg='ECG', misc='MISC')
+                   eog='EOG', ecg='ECG', misc='MISC', ref_meg='REFMEG')
     map_desc = dict(grad='Gradiometer', mag='Magnetometer',
                     stim='Trigger',
                     eeg='ElectroEncephaloGram',
                     ecg='ElectroCardioGram',
-                    eog='ElectrOculoGram', misc='Miscellaneous')
+                    eog='ElectrOculoGram', misc='Miscellaneous',
+                    ref_meg='Reference channel')
 
     status, ch_type, description = list(), list(), list()
     for idx, ch in enumerate(raw.info['ch_names']):
