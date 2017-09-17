@@ -1,5 +1,7 @@
 [![Join the chat at https://gitter.im/mne-tools/mne-bids](https://badges.gitter.im/mne-tools/mne-bids.svg)](https://gitter.im/mne-tools/mne-bids?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
+[Documentation and examples](http://mne-tools.github.io/mne-bids/)
+
 This is a repository for experimental code for creating BIDS-compatible folders with MNE. 
 All of this is considered as work-in-progress.
 
