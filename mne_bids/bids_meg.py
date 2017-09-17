@@ -11,6 +11,7 @@ import shutil as sh
 import pandas as pd
 import json
 
+import numpy as np
 from mne import read_events, find_events, io
 from mne.io.constants import FIFF
 from mne.io.pick import channel_type
@@ -99,7 +100,11 @@ def _events_tsv(events, raw, fname, event_id, verbose):
 def _scans_tsv(raw, raw_fname, fname, verbose):
     """Create tsv file for scans."""
 
-    acq_time = datetime.fromtimestamp(raw.info['meas_date'][0]
+    meas_date = raw.info['meas_date']
+    if isinstance(meas_date, np.ndarray):
+        meas_date = meas_date[0]
+
+    acq_time = datetime.fromtimestamp(meas_date
                                       ).strftime('%Y-%m-%dT%H:%M:%S')
 
     df = pd.DataFrame({'filename': ['%s' % raw_fname],
