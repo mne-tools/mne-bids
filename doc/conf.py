@@ -110,6 +110,7 @@ html_theme_options = {
     'bootstrap_version': "3",
     'navbar_links': [
         ("Gallery", "auto_examples/index"),
+        ("Github", "https://github.com/mne-tools/mne-bids", True),
     ]}
 
 # Add any paths that contain custom static files (such as style sheets) here,

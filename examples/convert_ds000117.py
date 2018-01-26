@@ -3,7 +3,15 @@
 Create BIDS-compatible ds000117
 ===============================
 
-Here, we show how to do BIDS conversion for group studies
+Here, we show how to do BIDS conversion for group studies.
+The data is available here: https://openfmri.org/dataset/ds000117/
+
+References
+----------
+
+[1] Wakeman, Daniel G., and Richard N. Henson.
+"A multi-subject, multi-modal human neuroimaging dataset."
+Scientific data, 2 (2015): 150001.
 
 """
 
@@ -12,17 +20,30 @@ Here, we show how to do BIDS conversion for group studies
 
 # License: BSD (3-clause)
 
-import os
+###############################################################################
+# Let us import ``mne_bids``
+
 import os.path as op
 from mne_bids import raw_to_bids
+from mne_bids.datasets import fetch_faces_data
 
+###############################################################################
+# And fetch the data.
+
+subject_ids = [1]
+runs = range(1, 7)
 
 data_path = op.join(op.expanduser('~'), 'mne_data')
 repo = 'ds000117'
+fetch_faces_data(data_path, repo, subject_ids)
+
 output_path = op.join(data_path, 'ds000117-bids')
 
-subject_ids = [1]
-runs = [1]
+###############################################################################
+#
+# .. warning:: This will download 7.9 GB of data for one subject!
+# Define event_ids.
+
 event_id = {
     'face/famous/first': 5,
     'face/famous/immediate': 6,
@@ -35,23 +56,14 @@ event_id = {
     'scrambled/long': 19,
 }
 
-# Fetch the data
-# This requires git-annex
-if op.exists(op.join(data_path, repo)):
-    os.chdir(op.join(data_path, repo))
-else:
-    os.chdir(data_path)
-    !git clone http://datasets.datalad.org/openfmri/ds000117/.git/
-os.chdir(op.join(data_path, repo))
-
+###############################################################################
+# Let us loop over the subjects and create BIDS-compatible folder
 
 for subject_id in subject_ids:
     subject = 'sub%03d' % subject_id
     for run in runs:
-        # retrieve the file from git-annex
         raw_fname = op.join(data_path, repo, subject, 'MEG',
                             'run_%02d_raw.fif' % run)
-        !git annex get {raw_fname}
 
         # Make it BIDS compatible
         raw_to_bids(subject_id='%02d' % subject_id, run=run,
