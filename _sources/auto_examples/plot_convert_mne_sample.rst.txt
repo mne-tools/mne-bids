@@ -1,6 +1,6 @@
 
 
-.. _sphx_glr_auto_examples_convert_mne_sample.py:
+.. _sphx_glr_auto_examples_plot_convert_mne_sample.py:
 
 
 ===================================
@@ -196,7 +196,7 @@ Finally, we specify the raw_fname and events_fname
     Closing /home/mainak/Desktop/projects/github_repos/mne-python/examples/MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_task-audiovisual_run-01_meg.fif [done]
 
 
-**Total running time of the script:** ( 0 minutes  7.525 seconds)
+**Total running time of the script:** ( 0 minutes  3.771 seconds)
 
 
 
@@ -205,13 +205,13 @@ Finally, we specify the raw_fname and events_fname
 
   .. container:: sphx-glr-download
 
-     :download:`Download Python source code: convert_mne_sample.py <convert_mne_sample.py>`
+     :download:`Download Python source code: plot_convert_mne_sample.py <plot_convert_mne_sample.py>`
 
 
 
   .. container:: sphx-glr-download
 
-     :download:`Download Jupyter notebook: convert_mne_sample.ipynb <convert_mne_sample.ipynb>`
+     :download:`Download Jupyter notebook: plot_convert_mne_sample.ipynb <plot_convert_mne_sample.ipynb>`
 
 .. rst-class:: sphx-glr-signature
 

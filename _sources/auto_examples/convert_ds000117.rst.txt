@@ -1,0 +1,850 @@
+
+
+.. _sphx_glr_auto_examples_convert_ds000117.py:
+
+
+===============================
+Create BIDS-compatible ds000117
+===============================
+
+Here, we show how to do BIDS conversion for group studies.
+The data is available here: https://openfmri.org/dataset/ds000117/
+
+References
+----------
+
+[1] Wakeman, Daniel G., and Richard N. Henson.
+"A multi-subject, multi-modal human neuroimaging dataset."
+Scientific data, 2 (2015): 150001.
+
+
+
+
+.. code-block:: python
+
+
+    # Authors: Mainak Jas <mainak.jas@telecom-paristech.fr>
+    #          Teon Brooks <teon.brooks@gmail.com>
+
+    # License: BSD (3-clause)
+
+
+
+
+
+
+
+Let us import ``mne_bids``
+
+
+
+.. code-block:: python
+
+
+    import os.path as op
+    from mne_bids import raw_to_bids
+    from mne_bids.datasets import fetch_faces_data
+
+
+
+
+
+
+
+And fetch the data.
+
+
+
+.. code-block:: python
+
+
+    subject_ids = [1]
+    runs = range(1, 7)
+
+    data_path = op.join(op.expanduser('~'), 'mne_data')
+    repo = 'ds000117'
+    fetch_faces_data(data_path, repo, subject_ids)
+
+    output_path = op.join(data_path, 'ds000117-bids')
+
+
+
+
+
+
+
+.. warning:: This will download 7.9 GB of data for one subject!
+Define event_ids.
+
+
+
+.. code-block:: python
+
+
+    event_id = {
+        'face/famous/first': 5,
+        'face/famous/immediate': 6,
+        'face/famous/long': 7,
+        'face/unfamiliar/first': 13,
+        'face/unfamiliar/immediate': 14,
+        'face/unfamiliar/long': 15,
+        'scrambled/first': 17,
+        'scrambled/immediate': 18,
+        'scrambled/long': 19,
+    }
+
+
+
+
+
+
+
+Let us loop over the subjects and create BIDS-compatible folder
+
+
+
+.. code-block:: python
+
+
+    for subject_id in subject_ids:
+        subject = 'sub%03d' % subject_id
+        for run in runs:
+            raw_fname = op.join(data_path, repo, subject, 'MEG',
+                                'run_%02d_raw.fif' % run)
+
+            # Make it BIDS compatible
+            raw_to_bids(subject_id='%02d' % subject_id, run=run,
+                        task='visual_faces', raw_fname=raw_fname,
+                        event_id=event_id, output_path=output_path, overwrite=True)
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out::
+
+    Opening raw data file /home/mainak/mne_data/ds000117/sub001/MEG/run_01_raw.fif...
+        Read a total of 8 projection items:
+            mag_ssp_upright.fif : PCA-mags-v1 (1 x 306)  idle
+            mag_ssp_upright.fif : PCA-mags-v2 (1 x 306)  idle
+            mag_ssp_upright.fif : PCA-mags-v3 (1 x 306)  idle
+            mag_ssp_upright.fif : PCA-mags-v4 (1 x 306)  idle
+            mag_ssp_upright.fif : PCA-mags-v5 (1 x 306)  idle
+            grad_ssp_upright.fif : PCA-grad-v1 (1 x 306)  idle
+            grad_ssp_upright.fif : PCA-grad-v2 (1 x 306)  idle
+            grad_ssp_upright.fif : PCA-grad-v3 (1 x 306)  idle
+        Range : 268400 ... 815099 =    244.000 ...   740.999 secs
+    Ready.
+    Current compensation grade : 0
+
+    Writing '/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/sub-01_ses-01_scans.tsv'...
+
+                  acq_time                                           filename
+    0  2009-04-07T16:39:35  /home/mainak/mne_data/ds000117-bids/sub-01/ses...
+
+    Writing '/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/sub-01_ses-01_fid.json'...
+
+    {
+        "CoilCoordinateSystem": "RAS", 
+        "CoilCoordinateUnits": "m", 
+        "CoilCoordinates": {
+            "LPA": [
+                -0.07355359941720963, 
+                -5.226810984026997e-09, 
+                -6.564203847148065e-09
+            ], 
+            "NAS": [
+                6.350555636913668e-10, 
+                0.10185277462005615, 
+                -1.2766878665360082e-09
+            ], 
+            "RPA": [
+                0.07877404987812042, 
+                -2.563174561487358e-08, 
+                -5.883831200037548e-09
+            ], 
+            "coil1": [
+                0.020418334752321243, 
+                0.09947940707206726, 
+                0.06992102414369583
+            ], 
+            "coil2": [
+                0.07411128282546997, 
+                0.0064362590201199055, 
+                0.09744320064783096
+            ], 
+            "coil3": [
+                0.018864190205931664, 
+                -0.020370930433273315, 
+                0.1332322508096695
+            ], 
+            "coil4": [
+                0.014254843816161156, 
+                -0.0912255346775055, 
+                0.08386014401912689
+            ], 
+            "coil5": [
+                -0.07725043594837189, 
+                -0.009882151149213314, 
+                0.07862507551908493
+            ]
+        }, 
+        "MEGCoordinateSystem": "Elekta", 
+        "MEGCoordinateUnits": "m"
+    }
+
+    Writing '/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/sub-01_ses-01_meg.json'...
+
+    {
+        "ECGChannelCount": 0, 
+        "EEGChannelCount": 74, 
+        "EMGChannelCount": 0, 
+        "EOGChannelCount": 0, 
+        "MEGChannelCount": 306, 
+        "MEGREFChannelCount": 0, 
+        "Manufacturer": "Elekta", 
+        "MiscChannelCount": 0, 
+        "SamplingFrequency": 1100.0, 
+        "TaskName": "visual_faces", 
+        "TriggerChannelCount": 3
+    }
+
+    Writing '/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_task-visual_faces_run-1_channel.tsv'...
+
+          name     type   description sampling_frequency low_cutoff high_cutoff  \
+    0  MEG0113  MEGGRAD   Gradiometer            1100.00       0.00      356.40   
+    1  MEG0112  MEGGRAD   Gradiometer            1100.00       0.00      356.40   
+    2  MEG0111   MEGMAG  Magnetometer            1100.00       0.00      356.40   
+    3  MEG0122  MEGGRAD   Gradiometer            1100.00       0.00      356.40   
+    4  MEG0123  MEGGRAD   Gradiometer            1100.00       0.00      356.40   
+
+      status  
+    0   good  
+    1   good  
+    2   good  
+    3   good  
+    4   good  
+    296 events found
+    Events id: [   5    6    7   13   14   15   17   18   19  256  261  262  263  269  270
+      271  273  274  275 4096 4101 4102 4103 4109 4110 4111 4114]
+
+    Writing '/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_task-visual_faces_run-1_events.tsv'...
+
+           Onset              Condition
+    0  22.958182        scrambled/first
+    1  23.731818                    NaN
+    2  26.049091        scrambled/first
+    3  26.928182                    NaN
+    4  29.222727  face/unfamiliar/first
+    This filename (/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_task-visual_faces_run-1_meg.fif) does not conform to MNE naming conventions. All raw files should end with raw.fif, raw_sss.fif, raw_tsss.fif, raw.fif.gz, raw_sss.fif.gz or raw_tsss.fif.gz
+    Overwriting existing file.
+    Writing /home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_task-visual_faces_run-1_meg.fif
+    Closing /home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_task-visual_faces_run-1_meg.fif [done]
+    Opening raw data file /home/mainak/mne_data/ds000117/sub001/MEG/run_02_raw.fif...
+        Read a total of 8 projection items:
+            mag_ssp_upright.fif : PCA-mags-v1 (1 x 306)  idle
+            mag_ssp_upright.fif : PCA-mags-v2 (1 x 306)  idle
+            mag_ssp_upright.fif : PCA-mags-v3 (1 x 306)  idle
+            mag_ssp_upright.fif : PCA-mags-v4 (1 x 306)  idle
+            mag_ssp_upright.fif : PCA-mags-v5 (1 x 306)  idle
+            grad_ssp_upright.fif : PCA-grad-v1 (1 x 306)  idle
+            grad_ssp_upright.fif : PCA-grad-v2 (1 x 306)  idle
+            grad_ssp_upright.fif : PCA-grad-v3 (1 x 306)  idle
+        Range : 30800 ... 580799 =     28.000 ...   527.999 secs
+    Ready.
+    Current compensation grade : 0
+
+    Writing '/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/sub-01_ses-01_scans.tsv'...
+
+                  acq_time                                           filename
+    0  2009-04-07T16:52:59  /home/mainak/mne_data/ds000117-bids/sub-01/ses...
+
+    Writing '/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/sub-01_ses-01_fid.json'...
+
+    {
+        "CoilCoordinateSystem": "RAS", 
+        "CoilCoordinateUnits": "m", 
+        "CoilCoordinates": {
+            "LPA": [
+                -0.07355359941720963, 
+                -5.226810984026997e-09, 
+                -6.564203847148065e-09
+            ], 
+            "NAS": [
+                6.350555636913668e-10, 
+                0.10185277462005615, 
+                -1.2766878665360082e-09
+            ], 
+            "RPA": [
+                0.07877404987812042, 
+                -2.563174561487358e-08, 
+                -5.883831200037548e-09
+            ], 
+            "coil1": [
+                0.020418334752321243, 
+                0.09947940707206726, 
+                0.06992102414369583
+            ], 
+            "coil2": [
+                0.07411128282546997, 
+                0.0064362590201199055, 
+                0.09744320064783096
+            ], 
+            "coil3": [
+                0.018864190205931664, 
+                -0.020370930433273315, 
+                0.1332322508096695
+            ], 
+            "coil4": [
+                0.014254843816161156, 
+                -0.0912255346775055, 
+                0.08386014401912689
+            ], 
+            "coil5": [
+                -0.07725043594837189, 
+                -0.009882151149213314, 
+                0.07862507551908493
+            ]
+        }, 
+        "MEGCoordinateSystem": "Elekta", 
+        "MEGCoordinateUnits": "m"
+    }
+
+    Writing '/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/sub-01_ses-01_meg.json'...
+
+    {
+        "ECGChannelCount": 0, 
+        "EEGChannelCount": 74, 
+        "EMGChannelCount": 0, 
+        "EOGChannelCount": 0, 
+        "MEGChannelCount": 306, 
+        "MEGREFChannelCount": 0, 
+        "Manufacturer": "Elekta", 
+        "MiscChannelCount": 0, 
+        "SamplingFrequency": 1100.0, 
+        "TaskName": "visual_faces", 
+        "TriggerChannelCount": 3
+    }
+
+    Writing '/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_task-visual_faces_run-2_channel.tsv'...
+
+          name     type   description sampling_frequency low_cutoff high_cutoff  \
+    0  MEG0113  MEGGRAD   Gradiometer            1100.00       0.00      356.40   
+    1  MEG0112  MEGGRAD   Gradiometer            1100.00       0.00      356.40   
+    2  MEG0111   MEGMAG  Magnetometer            1100.00       0.00      356.40   
+    3  MEG0122  MEGGRAD   Gradiometer            1100.00       0.00      356.40   
+    4  MEG0123  MEGGRAD   Gradiometer            1100.00       0.00      356.40   
+
+      status  
+    0   good  
+    1   good  
+    2   good  
+    3   good  
+    4   good  
+    296 events found
+    Events id: [   5    6    7   13   14   15   17   18   19  256  261  262  263  269  270
+      271  273  274  275 4096 4109 4110 4111]
+
+    Writing '/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_task-visual_faces_run-2_events.tsv'...
+
+           Onset              Condition
+    0  28.032727        scrambled/first
+    1  28.837273                    NaN
+    2  31.156364  face/unfamiliar/first
+    3  32.131818                    NaN
+    4  34.213636      face/famous/first
+    This filename (/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_task-visual_faces_run-2_meg.fif) does not conform to MNE naming conventions. All raw files should end with raw.fif, raw_sss.fif, raw_tsss.fif, raw.fif.gz, raw_sss.fif.gz or raw_tsss.fif.gz
+    Overwriting existing file.
+    Writing /home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_task-visual_faces_run-2_meg.fif
+    Closing /home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_task-visual_faces_run-2_meg.fif [done]
+    Opening raw data file /home/mainak/mne_data/ds000117/sub001/MEG/run_03_raw.fif...
+        Read a total of 8 projection items:
+            mag_ssp_upright.fif : PCA-mags-v1 (1 x 306)  idle
+            mag_ssp_upright.fif : PCA-mags-v2 (1 x 306)  idle
+            mag_ssp_upright.fif : PCA-mags-v3 (1 x 306)  idle
+            mag_ssp_upright.fif : PCA-mags-v4 (1 x 306)  idle
+            mag_ssp_upright.fif : PCA-mags-v5 (1 x 306)  idle
+            grad_ssp_upright.fif : PCA-grad-v1 (1 x 306)  idle
+            grad_ssp_upright.fif : PCA-grad-v2 (1 x 306)  idle
+            grad_ssp_upright.fif : PCA-grad-v3 (1 x 306)  idle
+        Range : 187000 ... 417999 =    170.000 ...   379.999 secs
+    Ready.
+    Current compensation grade : 0
+
+    Writing '/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/sub-01_ses-01_scans.tsv'...
+
+                  acq_time                                           filename
+    0  2009-04-07T17:02:25  /home/mainak/mne_data/ds000117-bids/sub-01/ses...
+
+    Writing '/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/sub-01_ses-01_fid.json'...
+
+    {
+        "CoilCoordinateSystem": "RAS", 
+        "CoilCoordinateUnits": "m", 
+        "CoilCoordinates": {
+            "LPA": [
+                -0.07355359941720963, 
+                -5.226810984026997e-09, 
+                -6.564203847148065e-09
+            ], 
+            "NAS": [
+                6.350555636913668e-10, 
+                0.10185277462005615, 
+                -1.2766878665360082e-09
+            ], 
+            "RPA": [
+                0.07877404987812042, 
+                -2.563174561487358e-08, 
+                -5.883831200037548e-09
+            ], 
+            "coil1": [
+                0.020418334752321243, 
+                0.09947940707206726, 
+                0.06992102414369583
+            ], 
+            "coil2": [
+                0.07411128282546997, 
+                0.0064362590201199055, 
+                0.09744320064783096
+            ], 
+            "coil3": [
+                0.018864190205931664, 
+                -0.020370930433273315, 
+                0.1332322508096695
+            ], 
+            "coil4": [
+                0.014254843816161156, 
+                -0.0912255346775055, 
+                0.08386014401912689
+            ], 
+            "coil5": [
+                -0.07725043594837189, 
+                -0.009882151149213314, 
+                0.07862507551908493
+            ]
+        }, 
+        "MEGCoordinateSystem": "Elekta", 
+        "MEGCoordinateUnits": "m"
+    }
+
+    Writing '/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/sub-01_ses-01_meg.json'...
+
+    {
+        "ECGChannelCount": 0, 
+        "EEGChannelCount": 74, 
+        "EMGChannelCount": 0, 
+        "EOGChannelCount": 0, 
+        "MEGChannelCount": 306, 
+        "MEGREFChannelCount": 0, 
+        "Manufacturer": "Elekta", 
+        "MiscChannelCount": 0, 
+        "SamplingFrequency": 1100.0, 
+        "TaskName": "visual_faces", 
+        "TriggerChannelCount": 3
+    }
+
+    Writing '/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_task-visual_faces_run-3_channel.tsv'...
+
+          name     type   description sampling_frequency low_cutoff high_cutoff  \
+    0  MEG0113  MEGGRAD   Gradiometer            1100.00       0.00      356.40   
+    1  MEG0112  MEGGRAD   Gradiometer            1100.00       0.00      356.40   
+    2  MEG0111   MEGMAG  Magnetometer            1100.00       0.00      356.40   
+    3  MEG0122  MEGGRAD   Gradiometer            1100.00       0.00      356.40   
+    4  MEG0123  MEGGRAD   Gradiometer            1100.00       0.00      356.40   
+
+      status  
+    0   good  
+    1   good  
+    2   good  
+    3   good  
+    4   good  
+    119 events found
+    Events id: [   5    6    7   13   14   15   17   18   19  256  261  262  263  269  270
+      271  273  274  275 4096 4103 4110 4352]
+
+    Writing '/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_task-visual_faces_run-3_events.tsv'...
+
+           Onset            Condition
+    0  24.560000      scrambled/first
+    1  25.270909                  NaN
+    2  27.700000  scrambled/immediate
+    3  28.550000                  NaN
+    4  30.740909      scrambled/first
+    This filename (/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_task-visual_faces_run-3_meg.fif) does not conform to MNE naming conventions. All raw files should end with raw.fif, raw_sss.fif, raw_tsss.fif, raw.fif.gz, raw_sss.fif.gz or raw_tsss.fif.gz
+    Overwriting existing file.
+    Writing /home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_task-visual_faces_run-3_meg.fif
+    Closing /home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_task-visual_faces_run-3_meg.fif [done]
+    Opening raw data file /home/mainak/mne_data/ds000117/sub001/MEG/run_04_raw.fif...
+        Read a total of 8 projection items:
+            mag_ssp_upright.fif : PCA-mags-v1 (1 x 306)  idle
+            mag_ssp_upright.fif : PCA-mags-v2 (1 x 306)  idle
+            mag_ssp_upright.fif : PCA-mags-v3 (1 x 306)  idle
+            mag_ssp_upright.fif : PCA-mags-v4 (1 x 306)  idle
+            mag_ssp_upright.fif : PCA-mags-v5 (1 x 306)  idle
+            grad_ssp_upright.fif : PCA-grad-v1 (1 x 306)  idle
+            grad_ssp_upright.fif : PCA-grad-v2 (1 x 306)  idle
+            grad_ssp_upright.fif : PCA-grad-v3 (1 x 306)  idle
+        Range : 47300 ... 590699 =     43.000 ...   536.999 secs
+    Ready.
+    Current compensation grade : 0
+
+    Writing '/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/sub-01_ses-01_scans.tsv'...
+
+                  acq_time                                           filename
+    0  2009-04-07T17:17:45  /home/mainak/mne_data/ds000117-bids/sub-01/ses...
+
+    Writing '/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/sub-01_ses-01_fid.json'...
+
+    {
+        "CoilCoordinateSystem": "RAS", 
+        "CoilCoordinateUnits": "m", 
+        "CoilCoordinates": {
+            "LPA": [
+                -0.07355359941720963, 
+                -5.226810984026997e-09, 
+                -6.564203847148065e-09
+            ], 
+            "NAS": [
+                6.350555636913668e-10, 
+                0.10185277462005615, 
+                -1.2766878665360082e-09
+            ], 
+            "RPA": [
+                0.07877404987812042, 
+                -2.563174561487358e-08, 
+                -5.883831200037548e-09
+            ], 
+            "coil1": [
+                0.020418334752321243, 
+                0.09947940707206726, 
+                0.06992102414369583
+            ], 
+            "coil2": [
+                0.07411128282546997, 
+                0.0064362590201199055, 
+                0.09744320064783096
+            ], 
+            "coil3": [
+                0.018864190205931664, 
+                -0.020370930433273315, 
+                0.1332322508096695
+            ], 
+            "coil4": [
+                0.014254843816161156, 
+                -0.0912255346775055, 
+                0.08386014401912689
+            ], 
+            "coil5": [
+                -0.07725043594837189, 
+                -0.009882151149213314, 
+                0.07862507551908493
+            ]
+        }, 
+        "MEGCoordinateSystem": "Elekta", 
+        "MEGCoordinateUnits": "m"
+    }
+
+    Writing '/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/sub-01_ses-01_meg.json'...
+
+    {
+        "ECGChannelCount": 0, 
+        "EEGChannelCount": 74, 
+        "EMGChannelCount": 0, 
+        "EOGChannelCount": 0, 
+        "MEGChannelCount": 306, 
+        "MEGREFChannelCount": 0, 
+        "Manufacturer": "Elekta", 
+        "MiscChannelCount": 0, 
+        "SamplingFrequency": 1100.0, 
+        "TaskName": "visual_faces", 
+        "TriggerChannelCount": 3
+    }
+
+    Writing '/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_task-visual_faces_run-4_channel.tsv'...
+
+          name     type   description sampling_frequency low_cutoff high_cutoff  \
+    0  MEG0113  MEGGRAD   Gradiometer            1100.00       0.00      356.40   
+    1  MEG0112  MEGGRAD   Gradiometer            1100.00       0.00      356.40   
+    2  MEG0111   MEGMAG  Magnetometer            1100.00       0.00      356.40   
+    3  MEG0122  MEGGRAD   Gradiometer            1100.00       0.00      356.40   
+    4  MEG0123  MEGGRAD   Gradiometer            1100.00       0.00      356.40   
+
+      status  
+    0   good  
+    1   good  
+    2   good  
+    3   good  
+    4   good  
+    294 events found
+    Events id: [   5    6    7   13   14   15   17   18   19  256  261  262  263  269  270
+      271  273  274  275 4096 4109 4110]
+
+    Writing '/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_task-visual_faces_run-4_events.tsv'...
+
+           Onset                  Condition
+    0  25.407273      face/unfamiliar/first
+    1  26.219091                        NaN
+    2  28.498182  face/unfamiliar/immediate
+    3  29.337273                        NaN
+    4  31.789091      face/unfamiliar/first
+    This filename (/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_task-visual_faces_run-4_meg.fif) does not conform to MNE naming conventions. All raw files should end with raw.fif, raw_sss.fif, raw_tsss.fif, raw.fif.gz, raw_sss.fif.gz or raw_tsss.fif.gz
+    Overwriting existing file.
+    Writing /home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_task-visual_faces_run-4_meg.fif
+    Closing /home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_task-visual_faces_run-4_meg.fif [done]
+    Opening raw data file /home/mainak/mne_data/ds000117/sub001/MEG/run_05_raw.fif...
+        Read a total of 8 projection items:
+            mag_ssp_upright.fif : PCA-mags-v1 (1 x 306)  idle
+            mag_ssp_upright.fif : PCA-mags-v2 (1 x 306)  idle
+            mag_ssp_upright.fif : PCA-mags-v3 (1 x 306)  idle
+            mag_ssp_upright.fif : PCA-mags-v4 (1 x 306)  idle
+            mag_ssp_upright.fif : PCA-mags-v5 (1 x 306)  idle
+            grad_ssp_upright.fif : PCA-grad-v1 (1 x 306)  idle
+            grad_ssp_upright.fif : PCA-grad-v2 (1 x 306)  idle
+            grad_ssp_upright.fif : PCA-grad-v3 (1 x 306)  idle
+        Range : 283800 ... 820599 =    258.000 ...   745.999 secs
+    Ready.
+    Current compensation grade : 0
+
+    Writing '/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/sub-01_ses-01_scans.tsv'...
+
+                  acq_time                                           filename
+    0  2009-04-07T17:27:38  /home/mainak/mne_data/ds000117-bids/sub-01/ses...
+
+    Writing '/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/sub-01_ses-01_fid.json'...
+
+    {
+        "CoilCoordinateSystem": "RAS", 
+        "CoilCoordinateUnits": "m", 
+        "CoilCoordinates": {
+            "LPA": [
+                -0.07355359941720963, 
+                -5.226810984026997e-09, 
+                -6.564203847148065e-09
+            ], 
+            "NAS": [
+                6.350555636913668e-10, 
+                0.10185277462005615, 
+                -1.2766878665360082e-09
+            ], 
+            "RPA": [
+                0.07877404987812042, 
+                -2.563174561487358e-08, 
+                -5.883831200037548e-09
+            ], 
+            "coil1": [
+                0.020418334752321243, 
+                0.09947940707206726, 
+                0.06992102414369583
+            ], 
+            "coil2": [
+                0.07411128282546997, 
+                0.0064362590201199055, 
+                0.09744320064783096
+            ], 
+            "coil3": [
+                0.018864190205931664, 
+                -0.020370930433273315, 
+                0.1332322508096695
+            ], 
+            "coil4": [
+                0.014254843816161156, 
+                -0.0912255346775055, 
+                0.08386014401912689
+            ], 
+            "coil5": [
+                -0.07725043594837189, 
+                -0.009882151149213314, 
+                0.07862507551908493
+            ]
+        }, 
+        "MEGCoordinateSystem": "Elekta", 
+        "MEGCoordinateUnits": "m"
+    }
+
+    Writing '/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/sub-01_ses-01_meg.json'...
+
+    {
+        "ECGChannelCount": 0, 
+        "EEGChannelCount": 74, 
+        "EMGChannelCount": 0, 
+        "EOGChannelCount": 0, 
+        "MEGChannelCount": 306, 
+        "MEGREFChannelCount": 0, 
+        "Manufacturer": "Elekta", 
+        "MiscChannelCount": 0, 
+        "SamplingFrequency": 1100.0, 
+        "TaskName": "visual_faces", 
+        "TriggerChannelCount": 3
+    }
+
+    Writing '/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_task-visual_faces_run-5_channel.tsv'...
+
+          name     type   description sampling_frequency low_cutoff high_cutoff  \
+    0  MEG0113  MEGGRAD   Gradiometer            1100.00       0.00      356.40   
+    1  MEG0112  MEGGRAD   Gradiometer            1100.00       0.00      356.40   
+    2  MEG0111   MEGMAG  Magnetometer            1100.00       0.00      356.40   
+    3  MEG0122  MEGGRAD   Gradiometer            1100.00       0.00      356.40   
+    4  MEG0123  MEGGRAD   Gradiometer            1100.00       0.00      356.40   
+
+      status  
+    0   good  
+    1   good  
+    2   good  
+    3   good  
+    4   good  
+    292 events found
+    Events id: [   5    6    7   13   14   15   17   18   19  256  261  262  263  269  270
+      271  273  274  275 4096 4103 4110 4111]
+
+    Writing '/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_task-visual_faces_run-5_events.tsv'...
+
+           Onset            Condition
+    0  25.717273    face/famous/first
+    1  26.469091                  NaN
+    2  29.023636      scrambled/first
+    3  29.599091                  NaN
+    4  32.130909  scrambled/immediate
+    This filename (/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_task-visual_faces_run-5_meg.fif) does not conform to MNE naming conventions. All raw files should end with raw.fif, raw_sss.fif, raw_tsss.fif, raw.fif.gz, raw_sss.fif.gz or raw_tsss.fif.gz
+    Overwriting existing file.
+    Writing /home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_task-visual_faces_run-5_meg.fif
+    Closing /home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_task-visual_faces_run-5_meg.fif [done]
+    Opening raw data file /home/mainak/mne_data/ds000117/sub001/MEG/run_06_raw.fif...
+        Read a total of 8 projection items:
+            mag_ssp_upright.fif : PCA-mags-v1 (1 x 306)  idle
+            mag_ssp_upright.fif : PCA-mags-v2 (1 x 306)  idle
+            mag_ssp_upright.fif : PCA-mags-v3 (1 x 306)  idle
+            mag_ssp_upright.fif : PCA-mags-v4 (1 x 306)  idle
+            mag_ssp_upright.fif : PCA-mags-v5 (1 x 306)  idle
+            grad_ssp_upright.fif : PCA-grad-v1 (1 x 306)  idle
+            grad_ssp_upright.fif : PCA-grad-v2 (1 x 306)  idle
+            grad_ssp_upright.fif : PCA-grad-v3 (1 x 306)  idle
+        Range : 28600 ... 573099 =     26.000 ...   520.999 secs
+    Ready.
+    Current compensation grade : 0
+
+    Writing '/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/sub-01_ses-01_scans.tsv'...
+
+                  acq_time                                           filename
+    0  2009-04-07T17:41:20  /home/mainak/mne_data/ds000117-bids/sub-01/ses...
+
+    Writing '/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/sub-01_ses-01_fid.json'...
+
+    {
+        "CoilCoordinateSystem": "RAS", 
+        "CoilCoordinateUnits": "m", 
+        "CoilCoordinates": {
+            "LPA": [
+                -0.07355359941720963, 
+                -5.226810984026997e-09, 
+                -6.564203847148065e-09
+            ], 
+            "NAS": [
+                6.350555636913668e-10, 
+                0.10185277462005615, 
+                -1.2766878665360082e-09
+            ], 
+            "RPA": [
+                0.07877404987812042, 
+                -2.563174561487358e-08, 
+                -5.883831200037548e-09
+            ], 
+            "coil1": [
+                0.020418334752321243, 
+                0.09947940707206726, 
+                0.06992102414369583
+            ], 
+            "coil2": [
+                0.07411128282546997, 
+                0.0064362590201199055, 
+                0.09744320064783096
+            ], 
+            "coil3": [
+                0.018864190205931664, 
+                -0.020370930433273315, 
+                0.1332322508096695
+            ], 
+            "coil4": [
+                0.014254843816161156, 
+                -0.0912255346775055, 
+                0.08386014401912689
+            ], 
+            "coil5": [
+                -0.07725043594837189, 
+                -0.009882151149213314, 
+                0.07862507551908493
+            ]
+        }, 
+        "MEGCoordinateSystem": "Elekta", 
+        "MEGCoordinateUnits": "m"
+    }
+
+    Writing '/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/sub-01_ses-01_meg.json'...
+
+    {
+        "ECGChannelCount": 0, 
+        "EEGChannelCount": 74, 
+        "EMGChannelCount": 0, 
+        "EOGChannelCount": 0, 
+        "MEGChannelCount": 306, 
+        "MEGREFChannelCount": 0, 
+        "Manufacturer": "Elekta", 
+        "MiscChannelCount": 0, 
+        "SamplingFrequency": 1100.0, 
+        "TaskName": "visual_faces", 
+        "TriggerChannelCount": 3
+    }
+
+    Writing '/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_task-visual_faces_run-6_channel.tsv'...
+
+          name     type   description sampling_frequency low_cutoff high_cutoff  \
+    0  MEG0113  MEGGRAD   Gradiometer            1100.00       0.00      356.40   
+    1  MEG0112  MEGGRAD   Gradiometer            1100.00       0.00      356.40   
+    2  MEG0111   MEGMAG  Magnetometer            1100.00       0.00      356.40   
+    3  MEG0122  MEGGRAD   Gradiometer            1100.00       0.00      356.40   
+    4  MEG0123  MEGGRAD   Gradiometer            1100.00       0.00      356.40   
+
+      status  
+    0   good  
+    1   good  
+    2   good  
+    3   good  
+    4   good  
+    296 events found
+    Events id: [   5    6    7   13   14   15   17   18   19  256  261  262  263  269  270
+      271  273  274  275 4096 4110]
+
+    Writing '/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_task-visual_faces_run-6_events.tsv'...
+
+           Onset          Condition
+    0  25.204545  face/famous/first
+    1  25.850000                NaN
+    2  28.345455    scrambled/first
+    3  29.024545                NaN
+    4  31.470000  face/famous/first
+    This filename (/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_task-visual_faces_run-6_meg.fif) does not conform to MNE naming conventions. All raw files should end with raw.fif, raw_sss.fif, raw_tsss.fif, raw.fif.gz, raw_sss.fif.gz or raw_tsss.fif.gz
+    Overwriting existing file.
+    Writing /home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_task-visual_faces_run-6_meg.fif
+    Closing /home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_task-visual_faces_run-6_meg.fif [done]
+
+
+**Total running time of the script:** ( 1 minutes  19.933 seconds)
+
+
+
+.. container:: sphx-glr-footer
+
+
+  .. container:: sphx-glr-download
+
+     :download:`Download Python source code: convert_ds000117.py <convert_ds000117.py>`
+
+
+
+  .. container:: sphx-glr-download
+
+     :download:`Download Jupyter notebook: convert_ds000117.ipynb <convert_ds000117.ipynb>`
+
+.. rst-class:: sphx-glr-signature
+
+    `Generated by Sphinx-Gallery <https://sphinx-gallery.readthedocs.io>`_
