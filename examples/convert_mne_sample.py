@@ -35,7 +35,7 @@ output_path = op.join(data_path, '..', 'MNE-sample-data-bids')
 ###############################################################################
 # Finally, we specify the raw_fname and events_fname
 
-raw_to_bids(subject_id='01', run='01', task='audiovisual',
+raw_to_bids(subject_id='01', run='01', session_id='01', task='audiovisual',
             raw_fname=raw_fname, events_fname=events_fname,
             output_path=output_path, event_id=event_id,
             overwrite=True)
