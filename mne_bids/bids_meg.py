@@ -214,7 +214,7 @@ def raw_to_bids(subject_id, session_id, run, task, raw_fname, output_path,
     subject_id : str
         The subject name in BIDS compatible format (01, 02, etc.)
     session_id : str
-        The session number in BIDS compatible format.
+        The session name in BIDS compatible format.
     run : str
         The run number in BIDS compatible format.
     task : str

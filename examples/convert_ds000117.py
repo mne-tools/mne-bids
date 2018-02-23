@@ -66,6 +66,6 @@ for subject_id in subject_ids:
                             'run_%02d_raw.fif' % run)
 
         # Make it BIDS compatible
-        raw_to_bids(subject_id='%02d' % subject_id, run=run,
+        raw_to_bids(subject_id='%02d' % subject_id, session_id='01', run=run,
                     task='visual_faces', raw_fname=raw_fname,
                     event_id=event_id, output_path=output_path, overwrite=True)
