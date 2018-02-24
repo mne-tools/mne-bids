@@ -204,7 +204,7 @@ def _meg_json(raw, task, manufacturer, fname, verbose):
     return fname
 
 
-def raw_to_bids(subject_id, run, task, raw_fname, output_path,
+def raw_to_bids(subject_id, session_id, run, task, raw_fname, output_path,
                 events_fname=None, event_id=None, hpi=None, electrode=None,
                 hsp=None, config=None, overwrite=True, verbose=True):
     """Walk over a folder of files and create bids compatible folder.
@@ -213,6 +213,8 @@ def raw_to_bids(subject_id, run, task, raw_fname, output_path,
     ----------
     subject_id : str
         The subject name in BIDS compatible format (01, 02, etc.)
+    session_id : str
+        The session name in BIDS compatible format.
     run : str
         The run number in BIDS compatible format.
     task : str
@@ -244,7 +246,8 @@ def raw_to_bids(subject_id, run, task, raw_fname, output_path,
     """
 
     fname, ext = os.path.splitext(raw_fname)
-    ses_path = op.join(output_path, 'sub-%s' % subject_id, 'ses-01')
+    ses_path = op.join(output_path, 'sub-%s' % subject_id,
+                       'ses-%s' % session_id)
     meg_path = op.join(ses_path, 'meg')
     if not op.exists(output_path):
         _mkdir_p(output_path)
@@ -256,9 +259,12 @@ def raw_to_bids(subject_id, run, task, raw_fname, output_path,
                              % (subject_id, task, run))
     events_tsv_fname = op.join(meg_path, 'sub-%s_task-%s_run-%s_events.tsv'
                                % (subject_id, task, run))
-    scans_fname = op.join(ses_path, 'sub-%s_ses-01_scans.tsv' % subject_id)
-    fid_fname = op.join(ses_path, 'sub-%s_ses-01_fid.json' % subject_id)
-    meg_fname = op.join(ses_path, 'sub-%s_ses-01_meg.json' % subject_id)
+    scans_fname = op.join(ses_path,
+                          'sub-%s_ses-%s_scans.tsv' % (subject_id, session_id))
+    fid_fname = op.join(ses_path,
+                        'sub-%s_ses-%s_fid.json' % (subject_id, session_id))
+    meg_fname = op.join(ses_path,
+                        'sub-%s_ses-%s_meg.json' % (subject_id, session_id))
     raw_fname_bids = op.join(meg_path, 'sub-%s_task-%s_run-%s_meg%s'
                              % (subject_id, task, run, ext))
 
