@@ -102,11 +102,14 @@ def _scans_tsv(raw, raw_fname, fname, verbose):
     """Create tsv file for scans."""
 
     meas_date = raw.info['meas_date']
-    if isinstance(meas_date, np.ndarray):
+    if isinstance(meas_date, (np.ndarray, list)):
         meas_date = meas_date[0]
 
-    acq_time = datetime.fromtimestamp(meas_date
-                                      ).strftime('%Y-%m-%dT%H:%M:%S')
+    if meas_date is None:
+        acq_time = 'n/a'
+    else:
+        acq_time = datetime.fromtimestamp(
+            meas_date).strftime('%Y-%m-%dT%H:%M:%S')
 
     df = pd.DataFrame({'filename': ['%s' % raw_fname],
                        'acq_time': [acq_time]})
