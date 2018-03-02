@@ -1,2 +1,2 @@
-from .bids_meg import raw_to_bids
-from .bids_meg import _mkdir_p
+from .meg_bids import raw_to_bids
+from .meg_bids import _mkdir_p
