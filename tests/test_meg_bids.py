@@ -10,11 +10,10 @@ We should test their functionality with their sample data.
 import os.path as op
 
 import mne
-from mne.datasets import sample
+from mne.datasets import sample, testing
 from mne.utils import _TempDir
 
 from mne_bids import raw_to_bids
-
 
 base_path = op.join(op.dirname(mne.__file__), 'io')
 subject_id = '01'
@@ -24,7 +23,11 @@ task = 'testing'
 
 
 def test_fif():
-    """Smoke test BIDS converter."""
+    """
+    Testing the functionality of the raw_to_bids conversion for
+    Neuromag data.
+    """
+
     output_path = _TempDir()
     data_path = sample.data_path()
     raw_fname = op.join(data_path, 'MEG', 'sample', 'sample_audvis_raw.fif')
@@ -53,6 +56,9 @@ def test_fif():
 
 
 def test_kit():
+    """
+    Testing the functionality of the raw_to_bids conversion for KIT data.
+    """
     output_path = _TempDir()
     data_path = op.join(base_path, 'kit', 'tests', 'data')
     raw_fname = op.join(data_path, 'test.sqd')
@@ -69,8 +75,29 @@ def test_kit():
 
 
 def test_ctf():
-    continue
+    """
+    Testing the functionality of the raw_to_bids conversion for CTF data.
+    """
+    output_path = _TempDir()
+    data_path = op.join(testing.data_path(download=False), 'CTF')
+    raw_fname = op.join(data_path, 'testdata_ctf.ds')
+
+    raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
+                task=task, raw_fname=raw_fname, output_path=output_path,
+                overwrite=True)
 
 
 def test_bti():
-    continue
+    """
+    Testing the functionality of the raw_to_bids conversion for BTi data.
+    """
+    output_path = _TempDir()
+    data_path = op.join(base_path, 'bti', 'tests', 'data')
+    raw_fname = op.join(data_path, 'test_pdf_linux')
+    config_fname = op.join(data_path, 'test_config_linux')
+    headshape_fname = op.join(data_path, 'test_hs_linux')
+
+    raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
+                task=task, raw_fname=raw_fname, config=config_fname,
+                hsp=headshape_fname, output_path=output_path,
+                overwrite=True)
