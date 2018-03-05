@@ -20,6 +20,7 @@ from mne.io.pick import channel_type
 from datetime import datetime
 
 
+ALLOWED_KINDS = ['meg', 'ieeg']
 orientation = {'.sqd': 'ALS', '.con': 'ALS', '.fif': 'RAS', '.gz': 'RAS',
                '.pdf': 'ALS', '.ds': 'ALS'}
 
@@ -43,14 +44,16 @@ def _mkdir_p(path):
 
 def _channels_tsv(raw, fname, verbose):
     """Create channel tsv."""
-
     map_chs = defaultdict(lambda: 'OTHER')
-    map_chs.update(grad='MEGGRAD', mag='MEGMAG', stim='TRIG', eeg='EEG',
-                   eog='EOG', ecg='ECG', misc='MISC', ref_meg='REFMEG')
+    map_chs = dict(grad='MEGGRAD', mag='MEGMAG', stim='TRIG', eeg='EEG',
+                   ecog='ECOG', seeg='SEEG', eog='EOG', ecg='ECG', misc='MISC',
+                   ref_meg='REFMEG')
     map_desc = defaultdict(lambda: 'Other type of channel')
-    map_desc.update(grad='Gradiometer', mag='Magnetometer',
+    map_desc = dict(grad='Gradiometer', mag='Magnetometer',
                     stim='Trigger',
                     eeg='ElectroEncephaloGram',
+                    ecog='Electrocorticography',
+                    seeg='StereoEEG',
                     ecg='ElectroCardioGram',
                     eog='ElectrOculoGram', misc='Miscellaneous',
                     ref_meg='Reference channel')
@@ -168,7 +171,7 @@ def _coordsystem_json(raw, unit, orient, manufacturer, fname, verbose):
     return fname
 
 
-def _meg_json(raw, task, manufacturer, fname, verbose):
+def _channel_json(raw, task, manufacturer, fname, verbose):
 
     sfreq = raw.info['sfreq']
 
@@ -178,6 +181,10 @@ def _meg_json(raw, task, manufacturer, fname, verbose):
                         if ch['kind'] == FIFF.FIFFV_REF_MEG_CH])
     n_eegchan = len([ch for ch in raw.info['chs']
                      if ch['kind'] == FIFF.FIFFV_EEG_CH])
+    n_ecogchan = len([ch for ch in raw.info['chs']
+                     if ch['kind'] == FIFF.FIFFV_ECOG_CH])
+    n_seegchan = len([ch for ch in raw.info['chs']
+                     if ch['kind'] == FIFF.FIFFV_SEEG_CH])
     n_eogchan = len([ch for ch in raw.info['chs']
                      if ch['kind'] == FIFF.FIFFV_EOG_CH])
     n_ecgchan = len([ch for ch in raw.info['chs']
@@ -200,6 +207,8 @@ def _meg_json(raw, task, manufacturer, fname, verbose):
                 'MEGChannelCount': n_megchan,
                 'MEGREFChannelCount': n_megrefchan,
                 'EEGChannelCount': n_eegchan,
+                'ECOGChannelCount': n_ecogchan,
+                'SEEGChannelCount': n_seegchan,
                 'EOGChannelCount': n_eogchan,
                 'ECGChannelCount': n_ecgchan,
                 'EMGChannelCount': n_emgchan,
@@ -234,7 +243,7 @@ def _dataset_description_json(output_path, verbose):
 
 
 def raw_to_bids(subject_id, session_id, run, task, raw_fname, output_path,
-                events_fname=None, event_id=None, hpi=None, electrode=None,
+                kind=None, events_data=None, event_id=None, hpi=None, electrode=None,
                 hsp=None, config=None, overwrite=True, verbose=True):
     """Walk over a folder of files and create bids compatible folder.
 
@@ -252,8 +261,12 @@ def raw_to_bids(subject_id, session_id, run, task, raw_fname, output_path,
         The path to the raw MEG file.
     output_path : str
         The path of the BIDS compatible folder
-    events_fname : str
-        The path to the events file.
+    kind : str | one of ['meg', 'ieeg']
+        The kind of dataset you are processing. Defaults to 'meg'.
+    events_data : str | array | None
+        The events file. If a string, a path to the events file. If an array,
+        the MNE events array (shape n_events, 3). If None, events will be
+        inferred from the stim channel using `find_events`.
     event_id : dict
         The event id dict
     hpi : None | str | list of str
@@ -267,45 +280,52 @@ def raw_to_bids(subject_id, session_id, run, task, raw_fname, output_path,
     hsp : None | str | array, shape = (n_points, 3)
         Digitizer head shape points, or path to head shape file. If more than
         10`000 points are in the head shape, they are automatically decimated.
+    config : str | None
+        A path to the configuration file to use if the data is from a BTi
+        system.
     overwrite : bool
         If the file already exists, whether to overwrite it.
     verbose : bool
         If verbose is True, this will print a snippet of the sidecar files. If
         False, no content will be printed.
     """
-
+    kind = 'meg' if kind is None else kind
+    if kind not in ALLOWED_KINDS:
+        raise ValueError("Specified unidentified kind {}".format(kind))
     fname, ext = os.path.splitext(raw_fname)
     # BTi data is the only file format that does have a file extension
     if ext == '':
         ext = '.pdf'
     ses_path = op.join(output_path, 'sub-%s' % subject_id,
                        'ses-%s' % session_id)
-    meg_path = op.join(ses_path, 'meg')
+    data_path = op.join(ses_path, kind)
     if not op.exists(output_path):
         _mkdir_p(output_path)
-    if not op.exists(meg_path):
-        _mkdir_p(meg_path)
+    if not op.exists(data_path):
+        _mkdir_p(data_path)
 
     # create the fnames
-    channels_fname = op.join(meg_path, 'sub-%s_ses-%s_task-%s_run-%s'
-                             '_channels.tsv'
-                             % (subject_id, session_id, task, run))
-    events_tsv_fname = op.join(meg_path, 'sub-%s_ses-%s_task-%s_run-%s'
-                               '_events.tsv'
-                               % (subject_id, session_id, task, run))
+    channels_fname = op.join(data_path, 'sub-%s_task-%s_run-%s_channel.tsv'
+                             % (subject_id, task, run))
+    events_tsv_fname = op.join(data_path, 'sub-%s_task-%s_run-%s_events.tsv'
+                               % (subject_id, task, run))
     scans_fname = op.join(ses_path,
                           'sub-%s_ses-%s_scans.tsv' % (subject_id, session_id))
-    fid_fname = op.join(meg_path,
-                        'sub-%s_ses-%s_coordsystem.json'
-                        % (subject_id, session_id))
-    meg_fname = op.join(meg_path,
-                        'sub-%s_ses-%s_meg.json' % (subject_id, session_id))
-    raw_fname_bids = op.join(meg_path, 'sub-%s_ses-%s_task-%s_run-%s_meg%s'
-                             % (subject_id, session_id, task, run, ext))
+    fid_fname = op.join(ses_path,
+                        'sub-%s_ses-%s_fid.json' % (subject_id, session_id))
+    meg_fname = op.join(ses_path,
+                        'sub-%s_ses-%s_%s.json' % (subject_id, session_id, kind))
+    raw_fname_bids = op.join(data_path, 'sub-%s_task-%s_run-%s_%s%s'
+                             % (subject_id, task, run, kind, ext))
 
-    orient = orientation[ext]
-    unit = units[ext]
-    manufacturer = manufacturers[ext]
+    if kind in ['meg']:
+        orient = orientation[ext]
+        unit = units[ext]
+        manufacturer = manufacturers[ext]
+    else:
+        orient = None
+        unit = None
+        manufacturer = None
 
     # KIT systems
     if ext in ['.con', '.sqd']:
@@ -328,13 +348,21 @@ def raw_to_bids(subject_id, session_id, run, task, raw_fname, output_path,
         raw = io.read_raw_ctf(raw_fname)
 
     # save stuff
+    if kind in ['meg']:
+        _scans_tsv(raw, raw_fname_bids, scans_fname, verbose)
+        _fid_json(raw, unit, orient, manufacturer, fid_fname, verbose)
     _dataset_description_json(output_path, verbose)
-    _scans_tsv(raw, raw_fname_bids, scans_fname, verbose)
     _coordsystem_json(raw, unit, orient, manufacturer, fid_fname, verbose)
-    _meg_json(raw, task, manufacturer, meg_fname, verbose)
-    _channels_tsv(raw, channels_fname, verbose)
-    if events_fname:
-        events = read_events(events_fname).astype(int)
+    _channel_json(raw, task, manufacturer, meg_fname, verbose)
+    _channel_tsv(raw, channels_fname, verbose)
+    if isinstance(events_data, str):
+        events = read_events(events_data).astype(int)
+    elif isinstance(events_data, np.ndarray):
+        if events_data.ndim != 2:
+            raise ValueError('Events must have two dimensions, found {}'.format(events.ndim))
+        if events_data.shape[1] != 3:
+            raise ValueError('Events must have second dimension of length 3, found {}'.format(events.shape[1]))
+        events = events_data
     else:
         events = find_events(raw, min_duration=0.001)
 
