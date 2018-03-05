@@ -10,6 +10,7 @@ import os.path as op
 import shutil as sh
 import pandas as pd
 import json
+from collections import defaultdict
 
 import numpy as np
 from mne import read_events, find_events, io
@@ -20,12 +21,14 @@ from datetime import datetime
 
 
 orientation = {'.sqd': 'ALS', '.con': 'ALS', '.fif': 'RAS', '.gz': 'RAS',
-               '.pdf': 'ALS'}
+               '.pdf': 'ALS', '.ds': 'ALS'}
 
-units = {'.sqd': 'm', '.con': 'm', '.fif': 'm', '.gz': 'm', '.pdf': 'm'}
+units = {'.sqd': 'm', '.con': 'm', '.fif': 'm', '.gz': 'm', '.pdf': 'm',
+         '.ds': 'cm'}
 
 manufacturers = {'.sqd': 'KIT/Yokogawa', '.con': 'KIT/Yokogawa',
-                 '.fif': 'Elekta', '.gz': 'Elekta', '.pdf': '4D Magnes'}
+                 '.fif': 'Elekta', '.gz': 'Elekta', '.pdf': '4D Magnes',
+                 '.ds': 'CTF'}
 
 
 def _mkdir_p(path):
@@ -41,9 +44,11 @@ def _mkdir_p(path):
 def _channel_tsv(raw, fname, verbose):
     """Create channel tsv."""
 
-    map_chs = dict(grad='MEGGRAD', mag='MEGMAG', stim='TRIG', eeg='EEG',
+    map_chs = defaultdict(lambda: 'OTHER')
+    map_chs.update(grad='MEGGRAD', mag='MEGMAG', stim='TRIG', eeg='EEG',
                    eog='EOG', ecg='ECG', misc='MISC', ref_meg='REFMEG')
-    map_desc = dict(grad='Gradiometer', mag='Magnetometer',
+    map_desc = defaultdict(lambda: 'Other type of channel')
+    map_desc.update(grad='Gradiometer', mag='Magnetometer',
                     stim='Trigger',
                     eeg='ElectroEncephaloGram',
                     ecg='ElectroCardioGram',
@@ -249,6 +254,9 @@ def raw_to_bids(subject_id, session_id, run, task, raw_fname, output_path,
     """
 
     fname, ext = os.path.splitext(raw_fname)
+    # BTi data is the only file format that does have a file extension
+    if ext == '':
+        ext = '.pdf'
     ses_path = op.join(output_path, 'sub-%s' % subject_id,
                        'ses-%s' % session_id)
     meg_path = op.join(ses_path, 'meg')
@@ -288,11 +296,12 @@ def raw_to_bids(subject_id, session_id, run, task, raw_fname, output_path,
     elif ext == '.pdf':
         if os.path.isfile(raw_fname):
             raw = io.read_raw_bti(raw_fname, config_fname=config,
+                                  head_shape_fname=hsp,
                                   preload=False, verbose=verbose)
 
     # CTF systems
-    elif ext == '':
-        pass
+    elif ext == '.ds':
+        raw = io.read_raw_ctf(raw_fname)
 
     # save stuff
     _scans_tsv(raw, raw_fname_bids, scans_fname, verbose)
@@ -311,7 +320,23 @@ def raw_to_bids(subject_id, session_id, run, task, raw_fname, output_path,
     # for files with multiple parts
     if ext in ['.fif', '.gz']:
         raw.save(raw_fname_bids, overwrite=overwrite)
+    elif ext == '.ds':
+        try:
+            sh.copytree(raw_fname, raw_fname_bids)
+        except FileExistsError as err:
+            if overwrite:
+                sh.rmtree(raw_fname_bids)
+                sh.copytree(raw_fname, raw_fname_bids)
+            else:
+                raise err
     else:
-        sh.copyfile(raw_fname, raw_fname_bids)
+        try:
+            sh.copyfile(raw_fname, raw_fname_bids)
+        except FileExistsError as err:
+            if overwrite:
+                os.remove(raw_fname_bids)
+                sh.copyfile(raw_fname, raw_fname_bids)
+            else:
+                raise err
 
     return output_path
