@@ -11,7 +11,7 @@ install:
     - conda install --yes --quiet numpy=1.11
     - conda install --yes --quiet nose coverage
     - pip install pandas
-    - pip install -q flake8 mne mne_bids
+    - pip install -q flake8 mne
     - pip install coverage coveralls
     - python setup.py install
 script:
