@@ -10,7 +10,7 @@ import os.path as op
 import shutil as sh
 import pandas as pd
 import json
-from collections import defaultdict
+from collections import defaultdict, OrderedDict
 
 import numpy as np
 from mne import read_events, find_events, io
@@ -49,7 +49,7 @@ def _channels_tsv(raw, fname, verbose):
                    ecog='ECOG', seeg='SEEG', eog='EOG', ecg='ECG', misc='MISC',
                    ref_meg='REFMEG')
     map_desc = defaultdict(lambda: 'Other type of channel')
-    map_desc = dict(grad='Gradiometer', mag='Magnetometer',
+    map_desc.update(grad='Gradiometer', mag='Magnetometer',
                     stim='Trigger',
                     eeg='ElectroEncephaloGram',
                     ecog='Electrocorticography',
@@ -196,28 +196,30 @@ def _channel_json(raw, task, manufacturer, fname, verbose):
     n_stimchan = len([ch for ch in raw.info['chs']
                      if ch['kind'] == FIFF.FIFFV_STIM_CH])
 
-    meg_json = {'TaskName': task,
-                'SamplingFrequency': sfreq,
-                "PowerLineFrequency": 42,
-                "DewarPosition": "XXX",
-                "DigitizedLandmarks": False,
-                "DigitizedHeadPoints": False,
-                "SoftwareFilters": "n/a",
-                'Manufacturer': manufacturer,
-                'MEGChannelCount': n_megchan,
-                'MEGREFChannelCount': n_megrefchan,
-                'EEGChannelCount': n_eegchan,
-                'ECOGChannelCount': n_ecogchan,
-                'SEEGChannelCount': n_seegchan,
-                'EOGChannelCount': n_eogchan,
-                'ECGChannelCount': n_ecgchan,
-                'EMGChannelCount': n_emgchan,
-                'MiscChannelCount': n_miscchan,
-                'TriggerChannelCount': n_stimchan,
-                }
-    json_output = json.dumps(meg_json, indent=4, sort_keys=True)
+    chs_json = OrderedDict([
+                ('TaskName', task),
+                ('SamplingFrequency', sfreq),
+                ("PowerLineFrequency": 42),
+                ("DewarPosition": "XXX"),
+                ("DigitizedLandmarks": False),
+                ("DigitizedHeadPoints": False),
+                ("SoftwareFilters": "none"),
+                ('Manufacturer', manufacturer),
+                ('MEGChannelCount', n_megchan),
+                ('MEGREFChannelCount', n_megrefchan),
+                ('EEGChannelCount', n_eegchan),
+                ('iEEGSurfChannelCount', n_ecogchan),
+                ('iEEGDepthChannelCount', n_seegchan),
+                ('EOGChannelCount', n_eogchan),
+                ('ECGChannelCount', n_ecgchan),
+                ('EMGChannelCount', n_emgchan),
+                ('MiscChannelCount', n_miscchan),
+                ('TriggerChannelCount', n_stimchan)]
+    )
+    json_output = json.dumps(chs_json, indent=4)
     with open(fname, 'w') as fid:
         fid.write(json_output)
+        fid.write("\n")
 
     if verbose:
         print(os.linesep + "Writing '%s'..." % fname + os.linesep)
