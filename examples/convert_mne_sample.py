@@ -1,7 +1,7 @@
 """
-===================================
-Create a BIDS-compatible MEG folder
-===================================
+============================================
+Convert Raw data to a BIDS-compatible folder
+============================================
 
 Brain Imaging Data Structure (BIDS) MEG is a new standard for
 storing MEG files. This example demonstrates how to convert
