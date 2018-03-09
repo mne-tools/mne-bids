@@ -19,6 +19,6 @@ install:
     - python setup.py install
 script:
     - make
-    - flake8 --count mne-bids
+    - flake8 --count mne_bids
 after_success:
   - bash <(curl -s https://codecov.io/bash)
