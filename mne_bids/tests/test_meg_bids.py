@@ -30,7 +30,8 @@ def test_fif():
 
     output_path = _TempDir()
     data_path = testing.data_path()
-    raw_fname = op.join(data_path, 'MEG', 'sample', 'sample_audvis_trunc_raw.fif')
+    raw_fname = op.join(data_path, 'MEG', 'sample',
+                        'sample_audvis_trunc_raw.fif')
 
     event_id = {'Auditory/Left': 1, 'Auditory/Right': 2, 'Visual/Left': 3,
                 'Visual/Right': 4, 'Smiley': 5, 'Button': 32}

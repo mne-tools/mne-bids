@@ -75,7 +75,7 @@ def _channel_tsv(raw, fname, verbose):
 
     if verbose:
         print(os.linesep + "Writing '%s'..." % fname + os.linesep)
-        print (df.head())
+        print(df.head())
 
     return fname
 
@@ -98,7 +98,7 @@ def _events_tsv(events, raw, fname, event_id, verbose):
 
     if verbose:
         print(os.linesep + "Writing '%s'..." % fname + os.linesep)
-        print (df.head())
+        print(df.head())
 
     return fname
 
@@ -123,7 +123,7 @@ def _scans_tsv(raw, raw_fname, fname, verbose):
 
     if verbose:
         print(os.linesep + "Writing '%s'..." % fname + os.linesep)
-        print (df.head())
+        print(df.head())
 
     return fname
 
@@ -163,7 +163,7 @@ def _fid_json(raw, unit, orient, manufacturer, fname, verbose):
 
     if verbose:
         print(os.linesep + "Writing '%s'..." % fname + os.linesep)
-        print (json_output)
+        print(json_output)
 
     return fname
 
@@ -207,7 +207,7 @@ def _meg_json(raw, task, manufacturer, fname, verbose):
 
     if verbose:
         print(os.linesep + "Writing '%s'..." % fname + os.linesep)
-        print (json_output)
+        print(json_output)
 
     return fname
 
