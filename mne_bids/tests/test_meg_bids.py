@@ -10,7 +10,7 @@ We should test their functionality with their sample data.
 import os.path as op
 
 import mne
-from mne.datasets import sample, testing
+from mne.datasets import testing
 from mne.utils import _TempDir
 
 from mne_bids import raw_to_bids
@@ -29,13 +29,14 @@ def test_fif():
     """
 
     output_path = _TempDir()
-    data_path = sample.data_path()
-    raw_fname = op.join(data_path, 'MEG', 'sample', 'sample_audvis_raw.fif')
+    data_path = testing.data_path()
+    raw_fname = op.join(data_path, 'MEG', 'sample',
+                        'sample_audvis_trunc_raw.fif')
 
     event_id = {'Auditory/Left': 1, 'Auditory/Right': 2, 'Visual/Left': 3,
                 'Visual/Right': 4, 'Smiley': 5, 'Button': 32}
     events_fname = op.join(data_path, 'MEG', 'sample',
-                           'sample_audvis_raw-eve.fif')
+                           'sample_audvis_trunc_raw-eve.fif')
 
     raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
                 task=task, raw_fname=raw_fname, events_fname=events_fname,
@@ -66,6 +67,7 @@ def test_kit():
     hpi_fname = op.join(data_path, 'test_mrk.sqd')
     electrode_fname = op.join(data_path, 'test_elp.txt')
     headshape_fname = op.join(data_path, 'test_hsp.txt')
+    event_id = dict(cond=1)
 
     raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
                 task=task, raw_fname=raw_fname, events_fname=events_fname,

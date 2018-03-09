@@ -75,7 +75,7 @@ def _channel_tsv(raw, fname, verbose):
 
     if verbose:
         print(os.linesep + "Writing '%s'..." % fname + os.linesep)
-        print (df.head())
+        print(df.head())
 
     return fname
 
@@ -98,7 +98,7 @@ def _events_tsv(events, raw, fname, event_id, verbose):
 
     if verbose:
         print(os.linesep + "Writing '%s'..." % fname + os.linesep)
-        print (df.head())
+        print(df.head())
 
     return fname
 
@@ -123,7 +123,7 @@ def _scans_tsv(raw, raw_fname, fname, verbose):
 
     if verbose:
         print(os.linesep + "Writing '%s'..." % fname + os.linesep)
-        print (df.head())
+        print(df.head())
 
     return fname
 
@@ -163,7 +163,7 @@ def _fid_json(raw, unit, orient, manufacturer, fname, verbose):
 
     if verbose:
         print(os.linesep + "Writing '%s'..." % fname + os.linesep)
-        print (json_output)
+        print(json_output)
 
     return fname
 
@@ -207,7 +207,7 @@ def _meg_json(raw, task, manufacturer, fname, verbose):
 
     if verbose:
         print(os.linesep + "Writing '%s'..." % fname + os.linesep)
-        print (json_output)
+        print(json_output)
 
     return fname
 
@@ -321,22 +321,20 @@ def raw_to_bids(subject_id, session_id, run, task, raw_fname, output_path,
     if ext in ['.fif', '.gz']:
         raw.save(raw_fname_bids, overwrite=overwrite)
     elif ext == '.ds':
-        try:
-            sh.copytree(raw_fname, raw_fname_bids)
-        except FileExistsError as err:
+        if os.path.exists(raw_fname_bids):
             if overwrite:
                 sh.rmtree(raw_fname_bids)
                 sh.copytree(raw_fname, raw_fname_bids)
             else:
-                raise err
+                raise ValueError('"%s" already exists. Please set overwrite to'
+                                 ' True.' % raw_fname_bids)
     else:
-        try:
-            sh.copyfile(raw_fname, raw_fname_bids)
-        except FileExistsError as err:
+        if os.path.exists(raw_fname_bids):
             if overwrite:
                 os.remove(raw_fname_bids)
                 sh.copyfile(raw_fname, raw_fname_bids)
             else:
-                raise err
+                raise ValueError('"%s" already exists. Please set overwrite to'
+                                 ' True.' % raw_fname_bids)
 
     return output_path
