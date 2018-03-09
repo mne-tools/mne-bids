@@ -1,5 +1,6 @@
-from mne_bids.utils import _check_types, create_types, filename_prefix
 from collections import OrderedDict
+from mne_bids.utils import _check_types, create_folders, filename_bids
+
 PREFIX_DATA = OrderedDict(subject='one', session='two', task='three',
                           acquisition='four', run='five', processing='six',
                           recording='seven', suffix='suffix.csv')

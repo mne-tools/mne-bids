@@ -53,6 +53,11 @@ def filename_bids(subject=None, session=None, task=None,
     -------
     filename : str
         The BIDS filename you wish to create.
+
+    Examples
+    --------
+    >>> print(filename_bids(subject='test', session='two', task='mytask', suffix='data.csv'))
+    sub-test_ses-two_task-mytask_data.csv
     """
     order = OrderedDict([('sub', subject),
                          ('ses', session),
@@ -100,6 +105,12 @@ def create_folders(subject, session=None, kind=None, root=None, create=True):
     -------
     path : str
         The (relative) path to the folder that was created.
+
+    Examples
+    --------
+    >>> print(create_folders('sub_01', session='my_session',
+                             kind='meg', root='path/to/project', create=False))
+    path/to/project/sub-sub_01/ses-my_session/meg
     """
     _check_types((subject, kind, session, root))
 

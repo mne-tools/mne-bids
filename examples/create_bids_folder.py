@@ -19,7 +19,7 @@ wish to create these files/folders on your own.
 ###############################################################################
 # We'll import the relevant functions from the utils module
 
-from mne_bids.utils import create_folders, filename_bids
+from mne_bids import create_folders, filename_bids
 
 ###############################################################################
 # Creating file names for BIDS
@@ -47,7 +47,7 @@ print(my_name)
 # You can also use MNE-BIDS to create folder hierarchies.
 
 path_folder = create_folders('sub_01', session='my_session',
-                             kind='meg', root='/path/to/project')
+                             kind='meg', root='path/to/project', create=False)
 print(path_folder)
 
 # Note that passing `create=True` will create the folder hierarchy, ignoring

@@ -15,6 +15,7 @@ import numpy as np
 from mne import read_events, find_events
 from mne.io.constants import FIFF
 from mne.io.pick import channel_type
+from mne.io import BaseRaw
 
 from datetime import datetime
 
@@ -97,7 +98,7 @@ def _events_tsv(events, raw, fname, event_id, verbose):
     return fname
 
 
-def _scans_tsv(raw, raw_fname, fname, verbose):
+def _scans_tsv(raw, raw_file, fname, verbose):
     """Create tsv file for scans."""
 
     meas_date = raw.info['meas_date']
@@ -110,7 +111,7 @@ def _scans_tsv(raw, raw_fname, fname, verbose):
         acq_time = datetime.fromtimestamp(
             meas_date).strftime('%Y-%m-%dT%H:%M:%S')
 
-    df = pd.DataFrame({'filename': ['%s' % raw_fname],
+    df = pd.DataFrame({'filename': ['%s' % raw_file],
                        'acq_time': [acq_time]})
 
     df.to_csv(fname, sep='\t', index=False)
@@ -190,11 +191,11 @@ def _channel_json(raw, task, manufacturer, fname, verbose):
     chs_json = OrderedDict([
                 ('TaskName', task),
                 ('SamplingFrequency', sfreq),
-                ("PowerLineFrequency": 42),
-                ("DewarPosition": "XXX"),
-                ("DigitizedLandmarks": False),
-                ("DigitizedHeadPoints": False),
-                ("SoftwareFilters": "none"),
+                ("PowerLineFrequency", 42),
+                ("DewarPosition", "XXX"),
+                ("DigitizedLandmarks", False),
+                ("DigitizedHeadPoints", False),
+                ("SoftwareFilters", "none"),
                 ('Manufacturer', manufacturer),
                 ('MEGChannelCount', n_megchan),
                 ('MEGREFChannelCount', n_megrefchan),
@@ -233,7 +234,7 @@ def _dataset_description_json(output_path, verbose):
         print(os.linesep + "Writing '%s'..." % fname + os.linesep)
         print(json_output)
 
-def raw_to_bids(subject_id, task, raw_fname, output_path, session_id=None, run=None,
+def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None, run=None,
                 kind=None, events_data=None, event_id=None, hpi=None, electrode=None,
                 hsp=None, config=None, overwrite=True, verbose=True):
     """Walk over a folder of files and create bids compatible folder.
@@ -244,8 +245,9 @@ def raw_to_bids(subject_id, task, raw_fname, output_path, session_id=None, run=N
         The subject name in BIDS compatible format (01, 02, etc.)
     task : str
         The task name.
-    raw_fname : str
-        The path to the raw data file.
+    raw_file : str | instance of mne.Raw
+        The raw data. If a string, it is assumed to be the path to the raw data
+        file. Otherwise it must be an instance of mne.Raw
     output_path : str
         The path of the BIDS compatible folder
     session_id : str | None
@@ -280,7 +282,19 @@ def raw_to_bids(subject_id, task, raw_fname, output_path, session_id=None, run=N
         If verbose is True, this will print a snippet of the sidecar files. If
         False, no content will be printed.
     """
-    fname, ext = _parse_ext(raw_fname)
+    if isinstance(raw_file, str):
+        # We must read in the raw data
+        raw = _read_raw(raw_file, electrode=electrode, hsp=hsp, hpi=hpi,
+                        config=config, verbose=verbose)
+        _, ext = _parse_ext(raw_file)
+    elif isinstance(raw_file, BaseRaw):
+        # Only parse the filename for the extension
+        # Assume that if no filename attr exists, it's a fif file.
+        raw = raw_file
+        if hasattr(raw, 'filenames'):
+            _, ext = _parse_ext(raw.filenames[0])
+        else:
+            ext = '.fif'
     data_path = create_folders(subject=subject_id, session=session_id,
                                kind=kind, root=output_path)
     if session_id is None:
@@ -296,7 +310,7 @@ def raw_to_bids(subject_id, task, raw_fname, output_path, session_id=None, run=N
 
     channels_fname = op.join(data_path, filename_bids(subject=subject_id, task=task, run=run, suffix='channel.tsv'))
     events_tsv_fname = op.join(data_path, filename_bids(subject=subject_id, task=task, run=run, suffix='events.tsv'))
-    raw_fname_bids = op.join(data_path, filename_bids(subject=subject_id, task=task, run=run, suffix='%s%s' % (kind, ext)))
+    raw_file_bids = op.join(data_path, filename_bids(subject=subject_id, task=task, run=run, suffix='%s%s' % (kind, ext)))
 
     # Read in Raw object and extract metadata from Raw object if needed
     if kind == 'meg':
@@ -308,12 +322,9 @@ def raw_to_bids(subject_id, task, raw_fname, output_path, session_id=None, run=N
         unit = None
         manufacturer = None
 
-    raw = _read_raw(raw_fname, electrode=electrode, hsp=hsp, hpi=hpi,
-                    config=config, verbose=verbose)
-
     # save stuff
     if kind == 'meg':
-        _scans_tsv(raw, raw_fname_bids, scans_fname, verbose)
+        _scans_tsv(raw, raw_file_bids, scans_fname, verbose)
         _fid_json(raw, unit, orient, manufacturer, fid_fname, verbose)
 
     _dataset_description_json(output_path, verbose)
@@ -328,23 +339,23 @@ def raw_to_bids(subject_id, task, raw_fname, output_path, session_id=None, run=N
     # for FIF, we need to re-save the file to fix the file pointer
     # for files with multiple parts
     if ext in ['.fif', '.gz']:
-        raw.save(raw_fname_bids, overwrite=overwrite)
+        raw.save(raw_file_bids, overwrite=overwrite)
     elif ext == '.ds':
-        if os.path.exists(raw_fname_bids):
+        if os.path.exists(raw_file_bids):
             if overwrite:
-                sh.rmtree(raw_fname_bids)
-                sh.copytree(raw_fname, raw_fname_bids)
+                sh.rmtree(raw_file_bids)
+                sh.copytree(raw_file, raw_file_bids)
             else:
                 raise ValueError('"%s" already exists. Please set overwrite to'
-                                 ' True.' % raw_fname_bids)
+                                 ' True.' % raw_file_bids)
     else:
-        if os.path.exists(raw_fname_bids):
+        if os.path.exists(raw_file_bids):
             if overwrite:
-                os.remove(raw_fname_bids)
-                sh.copyfile(raw_fname, raw_fname_bids)
+                os.remove(raw_file_bids)
+                sh.copyfile(raw_file, raw_file_bids)
             else:
                 raise ValueError('"%s" already exists. Please set overwrite to'
-                                 ' True.' % raw_fname_bids)
+                                 ' True.' % raw_file_bids)
 
     return output_path
 

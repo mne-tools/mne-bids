@@ -1,6 +1,7 @@
 from mne import io
 import os
 
+ALLOWED_EXTENSIONS = ['.con', '.sqd', '.fif', '.gz', '.pdf', '.ds']
 
 def _parse_ext(raw_fname):
     fname, ext = os.path.splitext(raw_fname)
@@ -34,4 +35,6 @@ def _read_raw(raw_fname, electrode=None, hsp=None, hpi=None, config=None,
     # CTF systems
     elif ext == '.ds':
         raw = io.read_raw_ctf(raw_fname)
+    else:
+        raise ValueError("Raw file name extension must be one of {}\nGot {}".format(ALLOWED_EXTENSIONS, ext))
     return raw
