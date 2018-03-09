@@ -13,7 +13,7 @@ before_install:
 install:
     - conda create -n testenv --yes pip python=${PYTHON_VERSION}
     - source activate testenv
-    - conda install --yes --quiet numpy=1.13.1 scipy=0.19.1 matplotlib=1.5 pandas=0.20.3 pytest
+    - conda install --yes --quiet numpy=1.13.1 scipy=0.19.1 matplotlib pandas=0.20.3 pytest
     - pip install flake8
     - pip install git+https://github.com/mne-tools/mne-python.git@maint/0.15
     - pip install coverage coveralls
