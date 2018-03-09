@@ -331,7 +331,7 @@ def raw_to_bids(subject_id, session_id, run, task, raw_fname, output_path,
     else:
         if os.path.exists(raw_fname_bids):
             if overwrite:
-                sh.remove(raw_fname_bids)
+                os.remove(raw_fname_bids)
                 sh.copyfile(raw_fname, raw_fname_bids)
             else:
                 raise ValueError('"%s" already exists. Please set overwrite to'
