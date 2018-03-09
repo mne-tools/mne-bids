@@ -1,8 +1,8 @@
 language: python
 
 env:
-  - PYTHON=2.7
-  - PYTHON=3.6
+  - PYTHON_VERSION=2.7
+  - PYTHON_VERSION=3.6
 
 before_install:
   - wget -q http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
@@ -11,10 +11,10 @@ before_install:
   - export PATH=/home/travis/miniconda/bin:$PATH
   - conda update --yes --quiet conda
 install:
-    - conda create -n testenv --yes pip python=${PYTHON}
+    - conda create -n testenv --yes pip python=${PYTHON_VERSION}
     - source activate testenv
     - conda install --yes --quiet numpy=1.11 scipy=0.17 pandas pytest
-    - pip install -q flake8 mne
+    - pip install flake8 mne
     - pip install coverage coveralls
     - python setup.py install
 script:
