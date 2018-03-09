@@ -11,7 +11,7 @@ import os.path as op
 
 import mne
 from mne.datasets import testing
-from mne.utils import _TempDir
+from mne.utils import _TempDir, run_subprocess
 
 from mne_bids import raw_to_bids
 
@@ -54,6 +54,8 @@ def test_fif():
                 session_id=session_id, raw_fname=raw_fname2,
                 events_fname=events_fname, output_path=output_path,
                 event_id=event_id, overwrite=True)
+    cmd = ['bids-validator', output_path]
+    run_subprocess(cmd)
 
 
 def test_kit():
@@ -74,6 +76,8 @@ def test_kit():
                 event_id=event_id, hpi=hpi_fname, electrode=electrode_fname,
                 hsp=headshape_fname, output_path=output_path,
                 overwrite=True)
+    cmd = ['bids-validator', output_path]
+    run_subprocess(cmd)
 
 
 def test_ctf():
@@ -87,6 +91,8 @@ def test_ctf():
     raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
                 task=task, raw_fname=raw_fname, output_path=output_path,
                 overwrite=True)
+    cmd = ['bids-validator', output_path]
+    run_subprocess(cmd)
 
 
 def test_bti():
@@ -103,3 +109,5 @@ def test_bti():
                 task=task, raw_fname=raw_fname, config=config_fname,
                 hsp=headshape_fname, output_path=output_path,
                 overwrite=True)
+    cmd = ['bids-validator', output_path]
+    run_subprocess(cmd)
