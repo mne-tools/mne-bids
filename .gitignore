@@ -21,3 +21,5 @@ cover
 .idea/
 
 *.pyc
+
+.cache

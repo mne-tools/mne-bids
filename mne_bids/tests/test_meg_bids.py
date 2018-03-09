@@ -66,6 +66,7 @@ def test_kit():
     hpi_fname = op.join(data_path, 'test_mrk.sqd')
     electrode_fname = op.join(data_path, 'test_elp.txt')
     headshape_fname = op.join(data_path, 'test_hsp.txt')
+    event_id = dict(cond=1)
 
     raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
                 task=task, raw_fname=raw_fname, events_fname=events_fname,

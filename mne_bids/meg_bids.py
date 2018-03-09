@@ -321,22 +321,20 @@ def raw_to_bids(subject_id, session_id, run, task, raw_fname, output_path,
     if ext in ['.fif', '.gz']:
         raw.save(raw_fname_bids, overwrite=overwrite)
     elif ext == '.ds':
-        try:
-            sh.copytree(raw_fname, raw_fname_bids)
-        except FileExistsError as err:
+        if os.path.exists(raw_fname_bids):
             if overwrite:
                 sh.rmtree(raw_fname_bids)
                 sh.copytree(raw_fname, raw_fname_bids)
             else:
-                raise err
+                raise ValueError('"%s" already exists. Please set overwrite to'
+                                 ' True.' % raw_fname_bids)
     else:
-        try:
-            sh.copyfile(raw_fname, raw_fname_bids)
-        except FileExistsError as err:
+        if os.path.exists(raw_fname_bids):
             if overwrite:
-                os.remove(raw_fname_bids)
+                sh.remove(raw_fname_bids)
                 sh.copyfile(raw_fname, raw_fname_bids)
             else:
-                raise err
+                raise ValueError('"%s" already exists. Please set overwrite to'
+                                 ' True.' % raw_fname_bids)
 
     return output_path
