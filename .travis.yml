@@ -1,3 +1,5 @@
+node_js:
+  - "6.11.0"
 language: python
 
 env:
@@ -21,6 +23,8 @@ install:
       pip install --no-deps -e .
       cd ../
     - python setup.py install
+    - git clone https://github.com/INCF/bids-validator/
+    - npm install -g bids-validator
 script:
     - make
     - flake8 --count mne_bids
