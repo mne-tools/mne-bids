@@ -128,7 +128,7 @@ def _scans_tsv(raw, raw_fname, fname, verbose):
     return fname
 
 
-def _fid_json(raw, unit, orient, manufacturer, fname, verbose):
+def _coordsystem_json(raw, unit, orient, manufacturer, fname, verbose):
     dig = raw.info['dig']
     coords = dict()
     fids = {d['ident']: d for d in dig if d['kind'] ==
@@ -289,7 +289,8 @@ def raw_to_bids(subject_id, session_id, run, task, raw_fname, output_path,
     scans_fname = op.join(ses_path,
                           'sub-%s_ses-%s_scans.tsv' % (subject_id, session_id))
     fid_fname = op.join(meg_path,
-                        'sub-%s_ses-%s_fid.json' % (subject_id, session_id))
+                        'sub-%s_ses-%s_coordsystem.json'
+                        % (subject_id, session_id))
     meg_fname = op.join(meg_path,
                         'sub-%s_ses-%s_meg.json' % (subject_id, session_id))
     raw_fname_bids = op.join(meg_path, 'sub-%s_task-%s_run-%s_meg%s'
@@ -322,7 +323,7 @@ def raw_to_bids(subject_id, session_id, run, task, raw_fname, output_path,
     # save stuff
     _dataset_description_json(output_path, verbose)
     _scans_tsv(raw, raw_fname_bids, scans_fname, verbose)
-    _fid_json(raw, unit, orient, manufacturer, fid_fname, verbose)
+    _coordsystem_json(raw, unit, orient, manufacturer, fid_fname, verbose)
     _meg_json(raw, task, manufacturer, meg_fname, verbose)
     _channel_tsv(raw, channels_fname, verbose)
     if events_fname:
