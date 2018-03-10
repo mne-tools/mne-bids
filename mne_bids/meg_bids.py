@@ -288,9 +288,9 @@ def raw_to_bids(subject_id, session_id, run, task, raw_fname, output_path,
                                % (subject_id, task, run))
     scans_fname = op.join(ses_path,
                           'sub-%s_ses-%s_scans.tsv' % (subject_id, session_id))
-    fid_fname = op.join(ses_path,
+    fid_fname = op.join(meg_path,
                         'sub-%s_ses-%s_fid.json' % (subject_id, session_id))
-    meg_fname = op.join(ses_path,
+    meg_fname = op.join(meg_path,
                         'sub-%s_ses-%s_meg.json' % (subject_id, session_id))
     raw_fname_bids = op.join(meg_path, 'sub-%s_task-%s_run-%s_meg%s'
                              % (subject_id, task, run, ext))
