@@ -153,9 +153,9 @@ def _coordsystem_json(raw, unit, orient, manufacturer, fname, verbose):
 
     fid_json = {'MEGCoordinateSystem': manufacturer,
                 'MEGCoordinateUnits': unit,  # XXX validate this
-                'CoilCoordinates': coords,
-                'CoilCoordinateSystem': orient,
-                'CoilCoordinateUnits': unit  # XXX validate this
+                'HeadCoilCoordinates': coords,
+                'HeadCoilCoordinateSystem': orient,
+                'HeadCoilCoordinateUnits': unit  # XXX validate this
                 }
     json_output = json.dumps(fid_json, indent=4, sort_keys=True)
     with open(fname, 'w') as fid:
@@ -191,6 +191,11 @@ def _meg_json(raw, task, manufacturer, fname, verbose):
 
     meg_json = {'TaskName': task,
                 'SamplingFrequency': sfreq,
+                "PowerLineFrequency": 42,
+                "DewarPosition": "XXX",
+                "DigitizedLandmarks": "XXX",
+                "DigitizedHeadPoints": "XXX",
+                "SoftwareFilters": "XXX",
                 'Manufacturer': manufacturer,
                 'MEGChannelCount': n_megchan,
                 'MEGREFChannelCount': n_megrefchan,
