@@ -212,6 +212,22 @@ def _meg_json(raw, task, manufacturer, fname, verbose):
     return fname
 
 
+def _dataset_description_json(output_path, verbose):
+    """Create json for dataset description."""
+    fname = op.join(output_path, 'dataset_description.json')
+    dataset_description_json = {
+        "Name": " ",
+        "BIDSVersion": "1.0.2 (draft)"
+    }
+    json_output = json.dumps(dataset_description_json)
+    with open(fname, 'w') as fid:
+        fid.write(json_output)
+
+    if verbose:
+        print(os.linesep + "Writing '%s'..." % fname + os.linesep)
+        print(json_output)
+
+
 def raw_to_bids(subject_id, session_id, run, task, raw_fname, output_path,
                 events_fname=None, event_id=None, hpi=None, electrode=None,
                 hsp=None, config=None, overwrite=True, verbose=True):
@@ -304,6 +320,7 @@ def raw_to_bids(subject_id, session_id, run, task, raw_fname, output_path,
         raw = io.read_raw_ctf(raw_fname)
 
     # save stuff
+    _dataset_description_json(output_path, verbose)
     _scans_tsv(raw, raw_fname_bids, scans_fname, verbose)
     _fid_json(raw, unit, orient, manufacturer, fid_fname, verbose)
     _meg_json(raw, task, manufacturer, meg_fname, verbose)
