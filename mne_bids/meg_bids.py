@@ -87,15 +87,15 @@ def _events_tsv(events, raw, fname, event_id, verbose):
     sfreq = raw.info['sfreq']
     events[:, 0] -= first_samp
 
-    df = pd.DataFrame(np.c_[events[:, [0, 2]], np.zeros(events.shape[0])],
+    df = pd.DataFrame(np.c_[events[:, 0], np.zeros(events.shape[0]),
+                            events[:, 2]],
                       columns=['onset', 'duration', 'condition'])
     if event_id:
         event_id_map = {v: k for k, v in event_id.items()}
-        df.condition = df.Condition.map(event_id_map)
+        df.condition = df.condition.map(event_id_map)
     df.onset /= sfreq
-
+    df = df.fillna('n/a')
     df.to_csv(fname, sep='\t', index=False)
-
     if verbose:
         print(os.linesep + "Writing '%s'..." % fname + os.linesep)
         print(df.head())
@@ -193,9 +193,9 @@ def _meg_json(raw, task, manufacturer, fname, verbose):
                 'SamplingFrequency': sfreq,
                 "PowerLineFrequency": 42,
                 "DewarPosition": "XXX",
-                "DigitizedLandmarks": "XXX",
-                "DigitizedHeadPoints": "XXX",
-                "SoftwareFilters": "XXX",
+                "DigitizedLandmarks": False,
+                "DigitizedHeadPoints": False,
+                "SoftwareFilters": "none",
                 'Manufacturer': manufacturer,
                 'MEGChannelCount': n_megchan,
                 'MEGREFChannelCount': n_megrefchan,
@@ -300,8 +300,8 @@ def raw_to_bids(subject_id, session_id, run, task, raw_fname, output_path,
                         % (subject_id, session_id))
     meg_fname = op.join(meg_path,
                         'sub-%s_ses-%s_meg.json' % (subject_id, session_id))
-    raw_fname_bids = op.join(meg_path, 'sub-%s_task-%s_run-%s_meg%s'
-                             % (subject_id, task, run, ext))
+    raw_fname_bids = op.join(meg_path, 'sub-%s_ses-%s_task-%s_run-%s_meg%s'
+                             % (subject_id, session_id, task, run, ext))
 
     orient = orientation[ext]
     unit = units[ext]
