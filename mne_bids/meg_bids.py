@@ -41,7 +41,7 @@ def _mkdir_p(path):
             raise
 
 
-def _channel_tsv(raw, fname, verbose):
+def _channels_tsv(raw, fname, verbose):
     """Create channel tsv."""
 
     map_chs = defaultdict(lambda: 'OTHER')
@@ -288,7 +288,7 @@ def raw_to_bids(subject_id, session_id, run, task, raw_fname, output_path,
 
     # create the fnames
     channels_fname = op.join(meg_path, 'sub-%s_ses-%s_task-%s_run-%s'
-                             '_channel.tsv'
+                             '_channels.tsv'
                              % (subject_id, session_id, task, run))
     events_tsv_fname = op.join(meg_path, 'sub-%s_ses-%s_task-%s_run-%s'
                                '_events.tsv'
@@ -332,7 +332,7 @@ def raw_to_bids(subject_id, session_id, run, task, raw_fname, output_path,
     _scans_tsv(raw, raw_fname_bids, scans_fname, verbose)
     _coordsystem_json(raw, unit, orient, manufacturer, fid_fname, verbose)
     _meg_json(raw, task, manufacturer, meg_fname, verbose)
-    _channel_tsv(raw, channels_fname, verbose)
+    _channels_tsv(raw, channels_fname, verbose)
     if events_fname:
         events = read_events(events_fname).astype(int)
     else:
