@@ -87,12 +87,12 @@ def _events_tsv(events, raw, fname, event_id, verbose):
     sfreq = raw.info['sfreq']
     events[:, 0] -= first_samp
 
-    df = pd.DataFrame(events[:, [0, 2]],
-                      columns=['Onset', 'Condition'])
+    df = pd.DataFrame(np.c_[events[:, [0, 2]], np.zeros(events.shape[0])],
+                      columns=['onset', 'duration', 'condition'])
     if event_id:
         event_id_map = {v: k for k, v in event_id.items()}
-        df.Condition = df.Condition.map(event_id_map)
-    df.Onset /= sfreq
+        df.condition = df.Condition.map(event_id_map)
+    df.onset /= sfreq
 
     df.to_csv(fname, sep='\t', index=False)
 
