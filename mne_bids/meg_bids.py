@@ -287,10 +287,12 @@ def raw_to_bids(subject_id, session_id, run, task, raw_fname, output_path,
         _mkdir_p(meg_path)
 
     # create the fnames
-    channels_fname = op.join(meg_path, 'sub-%s_task-%s_run-%s_channel.tsv'
-                             % (subject_id, task, run))
-    events_tsv_fname = op.join(meg_path, 'sub-%s_task-%s_run-%s_events.tsv'
-                               % (subject_id, task, run))
+    channels_fname = op.join(meg_path, 'sub-%s_ses-%s_task-%s_run-%s'
+                             '_channel.tsv'
+                             % (subject_id, session_id, task, run))
+    events_tsv_fname = op.join(meg_path, 'sub-%s_ses-%s_task-%s_run-%s'
+                               '_events.tsv'
+                               % (subject_id, session_id, task, run))
     scans_fname = op.join(ses_path,
                           'sub-%s_ses-%s_scans.tsv' % (subject_id, session_id))
     fid_fname = op.join(meg_path,
