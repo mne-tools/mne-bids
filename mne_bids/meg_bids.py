@@ -195,7 +195,7 @@ def _meg_json(raw, task, manufacturer, fname, verbose):
                 "DewarPosition": "XXX",
                 "DigitizedLandmarks": False,
                 "DigitizedHeadPoints": False,
-                "SoftwareFilters": "none",
+                "SoftwareFilters": "n/a",
                 'Manufacturer': manufacturer,
                 'MEGChannelCount': n_megchan,
                 'MEGREFChannelCount': n_megrefchan,
