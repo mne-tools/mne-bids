@@ -23,8 +23,7 @@ install:
       pip install --no-deps -e .
       cd ../
     - python setup.py install
-    - git clone https://github.com/jasmainak/bids-validator.git
-    - cd bids-validator/ && git checkout meg-validator && npm install -g bids-validator && cd ../
+    - npm install -g https://github.com/jasmainak/bids-validator.git#meg-validator
 script:
     - make
     - flake8 --count mne_bids
