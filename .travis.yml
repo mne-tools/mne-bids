@@ -1,3 +1,5 @@
+node_js:
+  - "6.11.0"
 language: python
 
 env:
@@ -21,6 +23,7 @@ install:
       pip install --no-deps -e .
       cd ../
     - python setup.py install
+    - npm install -g https://github.com/jasmainak/bids-validator.git#meg-validator
 script:
     - make
     - flake8 --count mne_bids

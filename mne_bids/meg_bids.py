@@ -41,7 +41,7 @@ def _mkdir_p(path):
             raise
 
 
-def _channel_tsv(raw, fname, verbose):
+def _channels_tsv(raw, fname, verbose):
     """Create channel tsv."""
 
     map_chs = defaultdict(lambda: 'OTHER')
@@ -87,15 +87,15 @@ def _events_tsv(events, raw, fname, event_id, verbose):
     sfreq = raw.info['sfreq']
     events[:, 0] -= first_samp
 
-    df = pd.DataFrame(events[:, [0, 2]],
-                      columns=['Onset', 'Condition'])
+    df = pd.DataFrame(np.c_[events[:, 0], np.zeros(events.shape[0]),
+                            events[:, 2]],
+                      columns=['onset', 'duration', 'condition'])
     if event_id:
         event_id_map = {v: k for k, v in event_id.items()}
-        df.Condition = df.Condition.map(event_id_map)
-    df.Onset /= sfreq
-
+        df.condition = df.condition.map(event_id_map)
+    df.onset /= sfreq
+    df = df.fillna('n/a')
     df.to_csv(fname, sep='\t', index=False)
-
     if verbose:
         print(os.linesep + "Writing '%s'..." % fname + os.linesep)
         print(df.head())
@@ -128,7 +128,7 @@ def _scans_tsv(raw, raw_fname, fname, verbose):
     return fname
 
 
-def _fid_json(raw, unit, orient, manufacturer, fname, verbose):
+def _coordsystem_json(raw, unit, orient, manufacturer, fname, verbose):
     dig = raw.info['dig']
     coords = dict()
     fids = {d['ident']: d for d in dig if d['kind'] ==
@@ -153,9 +153,9 @@ def _fid_json(raw, unit, orient, manufacturer, fname, verbose):
 
     fid_json = {'MEGCoordinateSystem': manufacturer,
                 'MEGCoordinateUnits': unit,  # XXX validate this
-                'CoilCoordinates': coords,
-                'CoilCoordinateSystem': orient,
-                'CoilCoordinateUnits': unit  # XXX validate this
+                'HeadCoilCoordinates': coords,
+                'HeadCoilCoordinateSystem': orient,
+                'HeadCoilCoordinateUnits': unit  # XXX validate this
                 }
     json_output = json.dumps(fid_json, indent=4, sort_keys=True)
     with open(fname, 'w') as fid:
@@ -191,6 +191,11 @@ def _meg_json(raw, task, manufacturer, fname, verbose):
 
     meg_json = {'TaskName': task,
                 'SamplingFrequency': sfreq,
+                "PowerLineFrequency": 42,
+                "DewarPosition": "XXX",
+                "DigitizedLandmarks": False,
+                "DigitizedHeadPoints": False,
+                "SoftwareFilters": "none",
                 'Manufacturer': manufacturer,
                 'MEGChannelCount': n_megchan,
                 'MEGREFChannelCount': n_megrefchan,
@@ -210,6 +215,22 @@ def _meg_json(raw, task, manufacturer, fname, verbose):
         print(json_output)
 
     return fname
+
+
+def _dataset_description_json(output_path, verbose):
+    """Create json for dataset description."""
+    fname = op.join(output_path, 'dataset_description.json')
+    dataset_description_json = {
+        "Name": " ",
+        "BIDSVersion": "1.0.2 (draft)"
+    }
+    json_output = json.dumps(dataset_description_json)
+    with open(fname, 'w') as fid:
+        fid.write(json_output)
+
+    if verbose:
+        print(os.linesep + "Writing '%s'..." % fname + os.linesep)
+        print(json_output)
 
 
 def raw_to_bids(subject_id, session_id, run, task, raw_fname, output_path,
@@ -266,18 +287,21 @@ def raw_to_bids(subject_id, session_id, run, task, raw_fname, output_path,
         _mkdir_p(meg_path)
 
     # create the fnames
-    channels_fname = op.join(meg_path, 'sub-%s_task-%s_run-%s_channel.tsv'
-                             % (subject_id, task, run))
-    events_tsv_fname = op.join(meg_path, 'sub-%s_task-%s_run-%s_events.tsv'
-                               % (subject_id, task, run))
+    channels_fname = op.join(meg_path, 'sub-%s_ses-%s_task-%s_run-%s'
+                             '_channels.tsv'
+                             % (subject_id, session_id, task, run))
+    events_tsv_fname = op.join(meg_path, 'sub-%s_ses-%s_task-%s_run-%s'
+                               '_events.tsv'
+                               % (subject_id, session_id, task, run))
     scans_fname = op.join(ses_path,
                           'sub-%s_ses-%s_scans.tsv' % (subject_id, session_id))
-    fid_fname = op.join(ses_path,
-                        'sub-%s_ses-%s_fid.json' % (subject_id, session_id))
-    meg_fname = op.join(ses_path,
+    fid_fname = op.join(meg_path,
+                        'sub-%s_ses-%s_coordsystem.json'
+                        % (subject_id, session_id))
+    meg_fname = op.join(meg_path,
                         'sub-%s_ses-%s_meg.json' % (subject_id, session_id))
-    raw_fname_bids = op.join(meg_path, 'sub-%s_task-%s_run-%s_meg%s'
-                             % (subject_id, task, run, ext))
+    raw_fname_bids = op.join(meg_path, 'sub-%s_ses-%s_task-%s_run-%s_meg%s'
+                             % (subject_id, session_id, task, run, ext))
 
     orient = orientation[ext]
     unit = units[ext]
@@ -304,10 +328,11 @@ def raw_to_bids(subject_id, session_id, run, task, raw_fname, output_path,
         raw = io.read_raw_ctf(raw_fname)
 
     # save stuff
+    _dataset_description_json(output_path, verbose)
     _scans_tsv(raw, raw_fname_bids, scans_fname, verbose)
-    _fid_json(raw, unit, orient, manufacturer, fid_fname, verbose)
+    _coordsystem_json(raw, unit, orient, manufacturer, fid_fname, verbose)
     _meg_json(raw, task, manufacturer, meg_fname, verbose)
-    _channel_tsv(raw, channels_fname, verbose)
+    _channels_tsv(raw, channels_fname, verbose)
     if events_fname:
         events = read_events(events_fname).astype(int)
     else:
