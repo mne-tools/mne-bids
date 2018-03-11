@@ -1,15 +1,31 @@
-from collections import OrderedDict
-from mne_bids.utils import _check_types, create_folders, filename_bids
+""" Testing utilities for the MNE BIDS converter
+"""
+# Authors: Chris Holdgraf <choldgraf@berkeley.edu>
+#          Mainak Jas <mainak.jas@telecom-paristech.fr>
+# License: BSD (3-clause)
 
-PREFIX_DATA = OrderedDict(subject='one', session='two', task='three',
-                          acquisition='four', run='five', processing='six',
-                          recording='seven', suffix='suffix.csv')
+from mne.utils import _TempDir
+from mne_bids.utils import _check_types, make_bids_folders, make_bids_filename
+import os
 
-my_name = filename_bids(**PREFIX_DATA)
-assert my_name == '_'.join('%s-%s' % (key, val) for key, val in PREFIX_DATA.items())
+def test_make_filenames():
+    # All keys work
+    PREFIX_DATA = dict(subject='one', session='two', task='three',
+                       acquisition='four', run='five', processing='six',
+                       recording='seven', suffix='suffix.csv')
+    assert make_bids_filename(**PREFIX_DATA) == 'sub-one_ses-two_task-three_acq-four_run-five_proc-six_recording-seven_suffix.csv'
 
-# make sure leaving out keys works
-for key in PREFIX_DATA.keys():
-    this_data = PREFIX_DATA.copy()
-    this_data.pop(key)
-    assert my_name == '_'.join('%s-%s' % (key, val) for key, val in this_data.items())
+    # subsets of keys works
+    assert make_bids_filename(subject='one', task='three') == 'sub-one_task-three'
+    assert make_bids_filename(subject='one', task='three', suffix='hi.csv') == 'sub-one_task-three_hi.csv'
+
+
+def test_make_folders():
+    # Make sure folders are created properly
+    output_path = _TempDir()
+    make_bids_folders(subject='hi', session='foo', kind='baz', root=output_path)
+    assert os.path.isdir(os.path.join(output_path, 'sub-hi', 'ses-foo', 'baz'))
+    # If we remove a kwarg the folder shouldn't be created
+    output_path = _TempDir()
+    make_bids_folders(subject='hi', kind='baz', root=output_path)
+    assert os.path.isdir(os.path.join(output_path, 'sub-hi', 'baz'))

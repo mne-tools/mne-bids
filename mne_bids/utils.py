@@ -1,11 +1,14 @@
+"""Utility and helper functions for MNE-BIDS."""
 import os
 import errno
 from collections import OrderedDict
+import json
+
 
 def _mkdir_p(path):
     """Create a directory, making parent directories as needed.
-    Copied from
-    stackoverflow.com/questions/600268/mkdir-p-functionality-in-python
+
+    From stackoverflow.com/questions/600268/mkdir-p-functionality-in-python
     """
     try:
         os.makedirs(path)
@@ -16,9 +19,9 @@ def _mkdir_p(path):
             raise
 
 
-def filename_bids(subject=None, session=None, task=None,
-                  acquisition=None, run=None, processing=None,
-                  recording=None, suffix=None):
+def make_bids_filename(subject=None, session=None, task=None,
+                       acquisition=None, run=None, processing=None,
+                       recording=None, suffix=None, prefix=None):
     """Create a BIDS filename from its component parts.
 
     BIDS filename prefixes have one or more pieces of metadata in them. They
@@ -40,14 +43,17 @@ def filename_bids(subject=None, session=None, task=None,
         The task for a item. Corresponds to "task".
     acquisition: str | None
         The acquisition parameters for the item. Corresponds to "acq".
-    run : str | None
-        The run with a task for this item. Corresponds to "run".
+    run : int | None
+        The run number for this item. Corresponds to "run".
     processing : str | None
         The processing label for this item. Corresponds to "proc".
     recording : str | None
         The recording name for this item. Corresponds to "recording".
     suffix : str | None
         The suffix of a file that begins with this prefix. E.g., 'audio.wav'.
+    prefix : str | None
+        The prefix for the filename to be created. E.g., a path to the folder
+        in which you wish to create a file with this name.
 
     Returns
     -------
@@ -56,7 +62,7 @@ def filename_bids(subject=None, session=None, task=None,
 
     Examples
     --------
-    >>> print(filename_bids(subject='test', session='two', task='mytask', suffix='data.csv'))
+    >>> print(make_bids_filename(subject='test', session='two', task='mytask', suffix='data.csv')) # noqa
     sub-test_ses-two_task-mytask_data.csv
     """
     order = OrderedDict([('sub', subject),
@@ -66,6 +72,10 @@ def filename_bids(subject=None, session=None, task=None,
                          ('run', run),
                          ('proc', processing),
                          ('recording', recording)])
+    if order['run'] is not None and not isinstance(order['run'], str):
+        # Ensure that run is a string
+        order['run'] = '{:02}'.format(order['run'])
+
     _check_types(order.values())
 
     if not any(isinstance(ii, str) for ii in order.keys()):
@@ -77,10 +87,13 @@ def filename_bids(subject=None, session=None, task=None,
     if isinstance(suffix, str):
         filename.append(suffix)
     filename = '_'.join(filename)
+    if isinstance(prefix, str):
+        filename = os.path.join(prefix, filename)
     return filename
 
 
-def create_folders(subject, session=None, kind=None, root=None, create=True):
+def make_bids_folders(subject, session=None, kind=None, root=None,
+                      make_dir=True):
     """Create a BIDS folder hierarchy.
 
     This creates a hierarchy of folders *within* a BIDS dataset. You should
@@ -98,8 +111,9 @@ def create_folders(subject, session=None, kind=None, root=None, create=True):
     root : str | None
         The root for the folders to be created. If None, folders will be
         created in the current working directory.
-    create : bool
-        Whether to create the folders specified.
+    make_dir : bool
+        Whether to actually create the folders specified. If False, only a
+        path will be generated but no folders will be created.
 
     Returns
     -------
@@ -108,8 +122,8 @@ def create_folders(subject, session=None, kind=None, root=None, create=True):
 
     Examples
     --------
-    >>> print(create_folders('sub_01', session='my_session',
-                             kind='meg', root='path/to/project', create=False))
+    >>> print(make_bids_folders('sub_01', session='my_session',
+                                kind='meg', root='path/to/project', make_dir=False))  # noqa
     path/to/project/sub-sub_01/ses-my_session/meg
     """
     _check_types((subject, kind, session, root))
@@ -123,9 +137,58 @@ def create_folders(subject, session=None, kind=None, root=None, create=True):
     if isinstance(root, str):
         path = os.path.join(root, path)
 
-    if create is True:
+    if make_dir is True:
         _mkdir_p(path)
     return path
+
+
+def make_dataset_description(path, name=None, bids_version=None, license=None,
+                             authors=None, acknowledgements=None,
+                             how_to_acknowledge=None, funding=None,
+                             references_and_links=None, doi=None,
+                             verbose=False):
+    """Create json for a dataset description.
+
+    BIDS datasets may have one or more fields, this function allows you to
+    specify which you wish to include in the description. See the BIDS
+    documentation for information about what each field means.
+
+    Parameters
+    ----------
+    path : str
+        A path to a folder where the description will be created.
+    name : str | None
+        The name of this BIDS dataset.
+    bids_version : str | None
+        The version of the BIDS specification to which this dataset adheres.
+    license : str | None
+        The license under which this datset is published.
+    authors : str | None
+        Authors who contributed to this dataset.
+    acknowledgements : str | None
+        Acknowledgements for this dataset.
+    how_to_acknowledge : str | None
+        Instructions for how acknowledgements/credit should be given for this
+        dataset.
+    funding : str | None
+        Funding sources for this dataset.
+    references_and_links : str | None
+        References or links for this dataset.
+    doi : str | None
+        The DOI for the dataset.
+    """
+    fname = os.path.join(path, 'dataset_description.json')
+    description = OrderedDict([('Name', name),
+                               ('BIDSVersion', bids_version),
+                               ('License', license),
+                               ('Authors', authors),
+                               ('Acknowledgements', acknowledgements),
+                               ('HowToAcknowledge', how_to_acknowledge),
+                               ('Funding', funding),
+                               ('ReferencesAndLinks', references_and_links),
+                               ('DatasetDOI', doi)])
+
+    _write_json(description, fname, verbose=verbose)
 
 
 def _check_types(variables):
@@ -135,3 +198,15 @@ def _check_types(variables):
         if not isinstance(itype, type(str)) and itype is not None:
             raise ValueError("All values must be either None or strings. "
                              "Found type %s." % itype)
+
+
+def _write_json(dictionary, fname, verbose=False):
+    """Write JSON to a file."""
+    json_output = json.dumps(dictionary, indent=4)
+    with open(fname, 'w') as fid:
+        fid.write(json_output)
+        fid.write('\n')
+
+    if verbose is True:
+        print(os.linesep + "Writing '%s'..." % fname + os.linesep)
+        print(json_output)

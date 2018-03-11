@@ -19,7 +19,8 @@ from mne.io import BaseRaw
 
 from datetime import datetime
 
-from .utils import filename_bids, create_folders
+from .utils import (make_bids_filename, make_bids_folders,
+                    make_dataset_description, _write_json)
 from .io import _parse_ext, _read_raw
 
 ALLOWED_KINDS = ['meg', 'ieeg']
@@ -39,7 +40,7 @@ def _channels_tsv(raw, fname, verbose):
     map_chs = defaultdict(lambda: 'OTHER')
     map_chs = dict(grad='MEGGRAD', mag='MEGMAG', stim='TRIG', eeg='EEG',
                    ecog='ECOG', seeg='SEEG', eog='EOG', ecg='ECG', misc='MISC',
-                   ref_meg='REFMEG')
+                   resp='RESPONSE', ref_meg='REFMEG')
     map_desc = defaultdict(lambda: 'Other type of channel')
     map_desc.update(grad='Gradiometer', mag='Magnetometer',
                     stim='Trigger',
@@ -98,7 +99,7 @@ def _events_tsv(events, raw, fname, event_id, verbose):
     return fname
 
 
-def _scans_tsv(raw, raw_file, fname, verbose):
+def _scans_tsv(raw, raw_fname, fname, verbose):
     """Create tsv file for scans."""
 
     meas_date = raw.info['meas_date']
@@ -111,7 +112,7 @@ def _scans_tsv(raw, raw_file, fname, verbose):
         acq_time = datetime.fromtimestamp(
             meas_date).strftime('%Y-%m-%dT%H:%M:%S')
 
-    df = pd.DataFrame({'filename': ['%s' % raw_file],
+    df = pd.DataFrame({'filename': ['%s' % raw_fname],
                        'acq_time': [acq_time]})
 
     df.to_csv(fname, sep='\t', index=False)
@@ -152,13 +153,7 @@ def _coordsystem_json(raw, unit, orient, manufacturer, fname, verbose):
                 'HeadCoilCoordinateSystem': orient,
                 'HeadCoilCoordinateUnits': unit  # XXX validate this
                 }
-    json_output = json.dumps(fid_json, indent=4, sort_keys=True)
-    with open(fname, 'w') as fid:
-        fid.write(json_output)
-
-    if verbose:
-        print(os.linesep + "Writing '%s'..." % fname + os.linesep)
-        print(json_output)
+    _write_json(fid_json, fname)
 
     return fname
 
@@ -188,7 +183,7 @@ def _channel_json(raw, task, manufacturer, fname, verbose):
     n_stimchan = len([ch for ch in raw.info['chs']
                      if ch['kind'] == FIFF.FIFFV_STIM_CH])
 
-    chs_json = OrderedDict([
+    ch_info_json = OrderedDict([
                 ('TaskName', task),
                 ('SamplingFrequency', sfreq),
                 ("PowerLineFrequency", 42),
@@ -208,34 +203,12 @@ def _channel_json(raw, task, manufacturer, fname, verbose):
                 ('MiscChannelCount', n_miscchan),
                 ('TriggerChannelCount', n_stimchan)]
     )
-    json_output = json.dumps(chs_json, indent=4)
-    with open(fname, 'w') as fid:
-        fid.write(json_output)
-        fid.write("\n")
-
-    if verbose:
-        print(os.linesep + "Writing '%s'..." % fname + os.linesep)
-        print(json_output)
-
+    _write_json(ch_info_json, fname, verbose=verbose)
     return fname
 
-def _dataset_description_json(output_path, verbose):
-    """Create json for dataset description."""
-    fname = op.join(output_path, 'dataset_description.json')
-    dataset_description_json = {
-        "Name": " ",
-        "BIDSVersion": "1.0.2 (draft)"
-    }
-    json_output = json.dumps(dataset_description_json)
-    with open(fname, 'w') as fid:
-        fid.write(json_output)
-
-    if verbose:
-        print(os.linesep + "Writing '%s'..." % fname + os.linesep)
-        print(json_output)
 
 def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None, run=None,
-                kind=None, events_data=None, event_id=None, hpi=None, electrode=None,
+                kind='meg', events_data=None, event_id=None, hpi=None, electrode=None,
                 hsp=None, config=None, overwrite=True, verbose=True):
     """Walk over a folder of files and create bids compatible folder.
 
@@ -252,10 +225,10 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None, run=No
         The path of the BIDS compatible folder
     session_id : str | None
         The session name in BIDS compatible format.
-    run : str | None
-        The run number in BIDS compatible format.
+    run : int | None
+        The run number for this dataset.
     kind : str, one of ('meg', 'ieeg')
-        The kind of data being converted.
+        The kind of data being converted. Defaults to "meg".
     events_data : str | array | None
         The events file. If a string, a path to the events file. If an array,
         the MNE events array (shape n_events, 3). If None, events will be
@@ -295,22 +268,34 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None, run=No
             _, ext = _parse_ext(raw.filenames[0])
         else:
             ext = '.fif'
-    data_path = create_folders(subject=subject_id, session=session_id,
-                               kind=kind, root=output_path)
+    data_path = make_bids_folders(subject=subject_id, session=session_id,
+                                  kind=kind, root=output_path)
     if session_id is None:
         ses_path = data_path
     else:
-        ses_path = create_folders(subject=subject_id, session=session_id,
-                                  root=output_path)
+        ses_path = make_bids_folders(subject=subject_id, session=session_id,
+                                     root=output_path)
 
     # create filenames
-    scans_fname = op.join(ses_path, filename_bids(subject=subject_id, session=session_id, suffix='scans.tsv'))
-    fid_fname = op.join(ses_path, filename_bids(subject=subject_id, session=session_id, suffix='fid.json'))
-    data_meta_fname = op.join(ses_path, filename_bids(subject=subject_id, session=session_id, suffix='%s.json' % kind))
+    scans_fname = make_bids_filename(
+        subject=subject_id, session=session_id, suffix='scans.tsv',
+        prefix=ses_path)
 
-    channels_fname = op.join(data_path, filename_bids(subject=subject_id, task=task, run=run, suffix='channel.tsv'))
-    events_tsv_fname = op.join(data_path, filename_bids(subject=subject_id, task=task, run=run, suffix='events.tsv'))
-    raw_file_bids = op.join(data_path, filename_bids(subject=subject_id, task=task, run=run, suffix='%s%s' % (kind, ext)))
+    coordsystem_fname = make_bids_filename(
+        subject=subject_id, session=session_id,
+        suffix='coordsystem.json', prefix=data_path)
+    data_meta_fname = make_bids_filename(
+        subject=subject_id, session=session_id,
+        suffix='%s.json' % kind, prefix=data_path)
+    raw_file_bids = make_bids_filename(
+        subject=subject_id, session=session_id, task=task, run=run,
+        suffix='%s%s' % (kind, ext), prefix=data_path)
+    events_tsv_fname = make_bids_filename(
+        subject=subject_id, session=session_id, task=task,
+        run=run, suffix='events.tsv', prefix=data_path)
+    channels_fname = make_bids_filename(
+        subject=subject_id, session=session_id, task=task, run=run,
+        suffix='channels.tsv', prefix=data_path)
 
     # Read in Raw object and extract metadata from Raw object if needed
     if kind == 'meg':
@@ -325,10 +310,11 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None, run=No
     # save stuff
     if kind == 'meg':
         _scans_tsv(raw, raw_file_bids, scans_fname, verbose)
-        _fid_json(raw, unit, orient, manufacturer, fid_fname, verbose)
+        _coordsystem_json(raw, unit, orient, manufacturer, coordsystem_fname,
+                          verbose)
 
-    _dataset_description_json(output_path, verbose)
-    _coordsystem_json(raw, unit, orient, manufacturer, fid_fname, verbose)
+    make_dataset_description(output_path, name=" ",
+                             bids_version="1.0.2 (draft)", verbose=verbose)
     _channel_json(raw, task, manufacturer, data_meta_fname, verbose)
     _channels_tsv(raw, channels_fname, verbose)
 
@@ -340,14 +326,6 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None, run=No
     # for files with multiple parts
     if ext in ['.fif', '.gz']:
         raw.save(raw_file_bids, overwrite=overwrite)
-    elif ext == '.ds':
-        if os.path.exists(raw_file_bids):
-            if overwrite:
-                sh.rmtree(raw_file_bids)
-                sh.copytree(raw_file, raw_file_bids)
-            else:
-                raise ValueError('"%s" already exists. Please set overwrite to'
-                                 ' True.' % raw_file_bids)
     else:
         if os.path.exists(raw_file_bids):
             if overwrite:
@@ -366,9 +344,11 @@ def _read_events(events_data, raw):
         events = read_events(events_data).astype(int)
     elif isinstance(events_data, np.ndarray):
         if events_data.ndim != 2:
-            raise ValueError('Events must have two dimensions, found {}'.format(events.ndim))
+            raise ValueError('Events must have two dimensions, '
+                             'found %s' % events.ndim)
         if events_data.shape[1] != 3:
-            raise ValueError('Events must have second dimension of length 3, found {}'.format(events.shape[1]))
+            raise ValueError('Events must have second dimension of length 3, '
+                             'found %s' % events.shape[1])
         events = events_data
     else:
         events = find_events(raw, min_duration=0.001)

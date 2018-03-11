@@ -1,2 +1,3 @@
 from .meg_bids import raw_to_bids  # noqa
-from .utils import _mkdir_p, filename_bids, create_folders
+from .utils import (make_bids_folders, make_bids_filename,
+                    make_dataset_description)
