@@ -7,7 +7,7 @@ ALLOWED_EXTENSIONS = ['.con', '.sqd', '.fif', '.gz', '.pdf', '.ds']
 def _parse_ext(raw_fname):
     """Split a filename into its name and extension."""
     fname, ext = os.path.splitext(raw_fname)
-    # BTi data is the only file format that does have a file extension
+    # BTi data is the only file format that does not have a file extension
     if ext == '':
         ext = '.pdf'
     return fname, ext

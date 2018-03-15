@@ -3,15 +3,23 @@ import os
 import errno
 from collections import OrderedDict
 import json
+import shutil as sh
+from .config import BIDS_VERSION
 
-
-def _mkdir_p(path):
+def _mkdir_p(path, overwrite=False, verbose=False):
     """Create a directory, making parent directories as needed.
 
     From stackoverflow.com/questions/600268/mkdir-p-functionality-in-python
     """
+    if overwrite is True and os.path.isdir(path):
+        sh.rmtree(path)
+        if verbose is True:
+            print('Overwriting path: %s' % path)
+
     try:
         os.makedirs(path)
+        if verbose is True:
+            print('Creating folder: %s' % path)
     except OSError as exc:  # Python >2.5
         if exc.errno == errno.EEXIST and os.path.isdir(path):
             pass
@@ -93,7 +101,7 @@ def make_bids_filename(subject=None, session=None, task=None,
 
 
 def make_bids_folders(subject, session=None, kind=None, root=None,
-                      make_dir=True):
+                      make_dir=True, overwrite=True, verbose=False):
     """Create a BIDS folder hierarchy.
 
     This creates a hierarchy of folders *within* a BIDS dataset. You should
@@ -114,6 +122,12 @@ def make_bids_folders(subject, session=None, kind=None, root=None,
     make_dir : bool
         Whether to actually create the folders specified. If False, only a
         path will be generated but no folders will be created.
+    overwrite : bool
+        If `make_dir` is True and one or all folders already exist,
+        this will overwrite them with empty folders.
+    verbose : bool
+        If verbose is True, print status updates
+        as folders are created.
 
     Returns
     -------
@@ -138,11 +152,11 @@ def make_bids_folders(subject, session=None, kind=None, root=None,
         path = os.path.join(root, path)
 
     if make_dir is True:
-        _mkdir_p(path)
+        _mkdir_p(path, overwrite=overwrite, verbose=verbose)
     return path
 
 
-def make_dataset_description(path, name=None, bids_version=None, license=None,
+def make_dataset_description(path, name=None, data_license=None,
                              authors=None, acknowledgements=None,
                              how_to_acknowledge=None, funding=None,
                              references_and_links=None, doi=None,
@@ -159,9 +173,7 @@ def make_dataset_description(path, name=None, bids_version=None, license=None,
         A path to a folder where the description will be created.
     name : str | None
         The name of this BIDS dataset.
-    bids_version : str | None
-        The version of the BIDS specification to which this dataset adheres.
-    license : str | None
+    data_license : str | None
         The license under which this datset is published.
     authors : str | None
         Authors who contributed to this dataset.
@@ -179,15 +191,17 @@ def make_dataset_description(path, name=None, bids_version=None, license=None,
     """
     fname = os.path.join(path, 'dataset_description.json')
     description = OrderedDict([('Name', name),
-                               ('BIDSVersion', bids_version),
-                               ('License', license),
+                               ('BIDSVersion', BIDS_VERSION),
+                               ('License', data_license),
                                ('Authors', authors),
                                ('Acknowledgements', acknowledgements),
                                ('HowToAcknowledge', how_to_acknowledge),
                                ('Funding', funding),
                                ('ReferencesAndLinks', references_and_links),
                                ('DatasetDOI', doi)])
-
+    pop_keys = [key for key, val in description.items() if val is None]
+    for key in pop_keys:
+        description.pop(key)
     _write_json(description, fname, verbose=verbose)
 
 

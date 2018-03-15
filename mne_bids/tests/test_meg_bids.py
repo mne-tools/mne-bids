@@ -111,7 +111,7 @@ def test_bti():
     raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
                 task=task, raw_file=raw_fname, config=config_fname,
                 hsp=headshape_fname, output_path=output_path,
-                overwrite=True)
+                verbose=True, overwrite=True)
 
     cmd = ['bids-validator', output_path]
     run_subprocess(cmd)

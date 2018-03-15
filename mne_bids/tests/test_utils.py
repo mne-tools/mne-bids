@@ -10,10 +10,10 @@ import os
 
 def test_make_filenames():
     # All keys work
-    PREFIX_DATA = dict(subject='one', session='two', task='three',
+    prefix_data = dict(subject='one', session='two', task='three',
                        acquisition='four', run='five', processing='six',
                        recording='seven', suffix='suffix.csv')
-    assert make_bids_filename(**PREFIX_DATA) == 'sub-one_ses-two_task-three_acq-four_run-five_proc-six_recording-seven_suffix.csv'
+    assert make_bids_filename(**prefix_data) == 'sub-one_ses-two_task-three_acq-four_run-five_proc-six_recording-seven_suffix.csv'
 
     # subsets of keys works
     assert make_bids_filename(subject='one', task='three') == 'sub-one_task-three'

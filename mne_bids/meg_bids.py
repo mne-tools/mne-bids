@@ -22,6 +22,7 @@ from datetime import datetime
 from .utils import (make_bids_filename, make_bids_folders,
                     make_dataset_description, _write_json)
 from .io import _parse_ext, _read_raw
+from .config import BIDS_VERSION
 
 ALLOWED_KINDS = ['meg', 'ieeg']
 orientation = {'.sqd': 'ALS', '.con': 'ALS', '.fif': 'RAS', '.gz': 'RAS',
@@ -38,7 +39,7 @@ manufacturers = {'.sqd': 'KIT/Yokogawa', '.con': 'KIT/Yokogawa',
 def _channels_tsv(raw, fname, verbose):
     """Create channel tsv."""
     map_chs = defaultdict(lambda: 'OTHER')
-    map_chs = dict(grad='MEGGRAD', mag='MEGMAG', stim='TRIG', eeg='EEG',
+    map_chs.update(grad='MEGGRAD', mag='MEGMAG', stim='TRIG', eeg='EEG',
                    ecog='ECOG', seeg='SEEG', eog='EOG', ecg='ECG', misc='MISC',
                    resp='RESPONSE', ref_meg='REFMEG')
     map_desc = defaultdict(lambda: 'Other type of channel')
@@ -190,7 +191,7 @@ def _channel_json(raw, task, manufacturer, fname, verbose):
                 ("DewarPosition", "XXX"),
                 ("DigitizedLandmarks", False),
                 ("DigitizedHeadPoints", False),
-                ("SoftwareFilters", "none"),
+                ("SoftwareFilters", "n/a"),
                 ('Manufacturer', manufacturer),
                 ('MEGChannelCount', n_megchan),
                 ('MEGREFChannelCount', n_megrefchan),
@@ -269,12 +270,16 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None, run=No
         else:
             ext = '.fif'
     data_path = make_bids_folders(subject=subject_id, session=session_id,
-                                  kind=kind, root=output_path)
+                                  kind=kind, root=output_path,
+                                  overwrite=overwrite,
+                                  verbose=verbose)
     if session_id is None:
         ses_path = data_path
     else:
         ses_path = make_bids_folders(subject=subject_id, session=session_id,
-                                     root=output_path)
+                                     root=output_path,
+                                     overwrite=False,
+                                     verbose=verbose)
 
     # create filenames
     scans_fname = make_bids_filename(
@@ -314,7 +319,7 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None, run=No
                           verbose)
 
     make_dataset_description(output_path, name=" ",
-                             bids_version="1.0.2 (draft)", verbose=verbose)
+                             verbose=verbose)
     _channel_json(raw, task, manufacturer, data_meta_fname, verbose)
     _channels_tsv(raw, channels_fname, verbose)
 
