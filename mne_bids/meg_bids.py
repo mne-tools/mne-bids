@@ -1,6 +1,7 @@
 # Authors: Mainak Jas <mainak.jas@telecom-paristech.fr>
 #          Alexandre Gramfort <alexandre.gramfort@telecom-paristech.fr>
 #          Teon Brooks <teon.brooks@gmail.com>
+#          Chris Holdgraf <choldgraf@berkeley.edu>
 #
 # License: BSD (3-clause)
 
@@ -16,6 +17,7 @@ from mne import read_events, find_events
 from mne.io.constants import FIFF
 from mne.io.pick import channel_type
 from mne.io import BaseRaw
+from mne.channels.channels import _unit2human
 
 from datetime import datetime
 
@@ -58,15 +60,19 @@ def _channels_tsv(raw, fname, verbose):
         ch_type.append(map_chs[channel_type(raw.info, idx)])
         description.append(map_desc[channel_type(raw.info, idx)])
     low_cutoff, high_cutoff = (raw.info['highpass'], raw.info['lowpass'])
+    units = [_unit2human.get(ich['unit'], 'n/a') for ich in raw.info['chs']]
     n_channels = raw.info['nchan']
     sfreq = raw.info['sfreq']
-    df = pd.DataFrame({'name': raw.info['ch_names'], 'type': ch_type,
+    df = pd.DataFrame({'name': raw.info['ch_names'],
+                       'type': ch_type,
+                       'units': units,
                        'description': description,
                        'sampling_frequency': ['%.2f' % sfreq] * n_channels,
                        'low_cutoff': ['%.2f' % low_cutoff] * n_channels,
                        'high_cutoff': ['%.2f' % high_cutoff] * n_channels,
                        'status': status})
-    df = df[['name', 'type', 'description', 'sampling_frequency', 'low_cutoff',
+    # To ensure dictionary ordering is the same
+    df = df[['name', 'type', 'units', 'description', 'sampling_frequency', 'low_cutoff',
              'high_cutoff', 'status']]
     df.to_csv(fname, sep='\t', index=False)
 

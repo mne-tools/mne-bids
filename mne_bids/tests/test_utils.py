@@ -9,6 +9,7 @@ from mne_bids.utils import _check_types, make_bids_folders, make_bids_filename
 import os
 
 def test_make_filenames():
+    """Test that we create filenames according to the BIDS spec."""
     # All keys work
     prefix_data = dict(subject='one', session='two', task='three',
                        acquisition='four', run='five', processing='six',
@@ -21,6 +22,7 @@ def test_make_filenames():
 
 
 def test_make_folders():
+    """Test that folders are created and named properly."""
     # Make sure folders are created properly
     output_path = _TempDir()
     make_bids_folders(subject='hi', session='foo', kind='baz', root=output_path)
