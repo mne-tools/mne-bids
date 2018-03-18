@@ -62,10 +62,10 @@ event_id = {
 for subject_id in subject_ids:
     subject = 'sub%03d' % subject_id
     for run in runs:
-        raw_fname = op.join(data_path, repo, subject, 'MEG',
-                            'run_%02d_raw.fif' % run)
+        raw_file = op.join(data_path, repo, subject, 'MEG',
+                           'run_%02d_raw.fif' % run)
 
         # Make it BIDS compatible
         raw_to_bids(subject_id='%02d' % subject_id, session_id='01', run=run,
-                    task='visual_faces', raw_fname=raw_fname,
+                    task='visual_faces', raw_file=raw_file,
                     event_id=event_id, output_path=output_path, overwrite=True)

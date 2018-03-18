@@ -120,8 +120,11 @@ def test_bti():
     cmd = ['bids-validator', output_path]
     run_subprocess(cmd)
 
+
 def _strip_ieeg_from_json(path_bids):
-    path_json = op.join(path_bids, 'sub-01', 'ses-01', 'meg', 'sub-01_ses-01_meg.json')
+    """Temporary fix for ieeg incompatibility in bids-validator."""
+    path_json = op.join(path_bids, 'sub-01', 'ses-01', 'meg',
+                        'sub-01_ses-01_meg.json')
     pop_chans = ['iEEGSurfChannelCount', 'iEEGDepthChannelCount']
     with open(path_json, 'r') as ff:
         data = json.load(ff)

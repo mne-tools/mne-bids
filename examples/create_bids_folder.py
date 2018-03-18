@@ -30,7 +30,8 @@ from mne_bids import create_folders, filename_bids
 # pieces of metadata, ensuring that they are in the correct order in the
 # final file path. Omitted keys will not be included in the file path.
 
-my_name = filename_bids(subject='test', session='two', task='mytask', suffix='data.csv')
+my_name = filename_bids(subject='test', session='two', task='mytask',
+                        suffix='data.csv')
 print(my_name)
 
 ###############################################################################

@@ -4,7 +4,9 @@ import errno
 from collections import OrderedDict
 import json
 import shutil as sh
+from mne.externals.six import string_types
 from .config import BIDS_VERSION
+
 
 def _mkdir_p(path, overwrite=False, verbose=False):
     """Create a directory, making parent directories as needed.
@@ -80,22 +82,22 @@ def make_bids_filename(subject=None, session=None, task=None,
                          ('run', run),
                          ('proc', processing),
                          ('recording', recording)])
-    if order['run'] is not None and not isinstance(order['run'], str):
+    if order['run'] is not None and not isinstance(order['run'], string_types):
         # Ensure that run is a string
         order['run'] = '{:02}'.format(order['run'])
 
     _check_types(order.values())
 
-    if not any(isinstance(ii, str) for ii in order.keys()):
+    if not any(isinstance(ii, string_types) for ii in order.keys()):
         raise ValueError("At least one parameter must be given.")
     filename = []
     for key, val in order.items():
         if val is not None:
             filename.append('%s-%s' % (key, val))
-    if isinstance(suffix, str):
+    if isinstance(suffix, string_types):
         filename.append(suffix)
     filename = '_'.join(filename)
-    if isinstance(prefix, str):
+    if isinstance(prefix, string_types):
         filename = os.path.join(prefix, filename)
     return filename
 
@@ -143,12 +145,12 @@ def make_bids_folders(subject, session=None, kind=None, root=None,
     _check_types((subject, kind, session, root))
 
     path = ['sub-%s' % subject]
-    if isinstance(session, str):
+    if isinstance(session, string_types):
         path.append('ses-%s' % session)
-    if isinstance(kind, str):
+    if isinstance(kind, string_types):
         path.append(kind)
     path = os.path.join(*path)
-    if isinstance(root, str):
+    if isinstance(root, string_types):
         path = os.path.join(root, path)
 
     if make_dir is True:

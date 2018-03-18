@@ -6,10 +6,8 @@
 # License: BSD (3-clause)
 
 import os
-import os.path as op
 import shutil as sh
 import pandas as pd
-import json
 from collections import defaultdict, OrderedDict
 
 import numpy as np
@@ -18,13 +16,13 @@ from mne.io.constants import FIFF
 from mne.io.pick import channel_type
 from mne.io import BaseRaw
 from mne.channels.channels import _unit2human
+from mne.externals.six import string_types
 
 from datetime import datetime
 
 from .utils import (make_bids_filename, make_bids_folders,
                     make_dataset_description, _write_json)
 from .io import _parse_ext, _read_raw
-from .config import BIDS_VERSION
 
 ALLOWED_KINDS = ['meg', 'ieeg']
 orientation = {'.sqd': 'ALS', '.con': 'ALS', '.fif': 'RAS', '.gz': 'RAS',
@@ -63,17 +61,15 @@ def _channels_tsv(raw, fname, verbose):
     units = [_unit2human.get(ich['unit'], 'n/a') for ich in raw.info['chs']]
     n_channels = raw.info['nchan']
     sfreq = raw.info['sfreq']
-    df = pd.DataFrame({'name': raw.info['ch_names'],
-                       'type': ch_type,
-                       'units': units,
-                       'description': description,
-                       'sampling_frequency': ['%.2f' % sfreq] * n_channels,
-                       'low_cutoff': ['%.2f' % low_cutoff] * n_channels,
-                       'high_cutoff': ['%.2f' % high_cutoff] * n_channels,
-                       'status': status})
-    # To ensure dictionary ordering is the same
-    df = df[['name', 'type', 'units', 'description', 'sampling_frequency', 'low_cutoff',
-             'high_cutoff', 'status']]
+    df = pd.DataFrame(OrderedDict([
+                      ('name', raw.info['ch_names']),
+                      ('type', ch_type),
+                      ('units', units),
+                      ('description', description),
+                      ('sampling_frequency', ['%.2f' % sfreq] * n_channels),
+                      ('low_cutoff', ['%.2f' % low_cutoff] * n_channels),
+                      ('high_cutoff', ['%.2f' % high_cutoff] * n_channels),
+                      ('status', status)]))
     df.to_csv(fname, sep='\t', index=False)
 
     if verbose:
@@ -214,9 +210,10 @@ def _channel_json(raw, task, manufacturer, fname, verbose):
     return fname
 
 
-def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None, run=None,
-                kind='meg', events_data=None, event_id=None, hpi=None, electrode=None,
-                hsp=None, config=None, overwrite=True, verbose=True):
+def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
+                run=None, kind='meg', events_data=None, event_id=None,
+                hpi=None, electrode=None, hsp=None, config=None,
+                overwrite=True, verbose=True):
     """Walk over a folder of files and create bids compatible folder.
 
     Parameters
@@ -262,19 +259,22 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None, run=No
         If verbose is True, this will print a snippet of the sidecar files. If
         False, no content will be printed.
     """
-    if isinstance(raw_file, str):
+    if isinstance(raw_file, string_types):
         # We must read in the raw data
         raw = _read_raw(raw_file, electrode=electrode, hsp=hsp, hpi=hpi,
                         config=config, verbose=verbose)
-        _, ext = _parse_ext(raw_file)
+        _, ext = _parse_ext(raw_file, verbose=verbose)
     elif isinstance(raw_file, BaseRaw):
         # Only parse the filename for the extension
         # Assume that if no filename attr exists, it's a fif file.
         raw = raw_file
         if hasattr(raw, 'filenames'):
-            _, ext = _parse_ext(raw.filenames[0])
+            _, ext = _parse_ext(raw.filenames[0], verbose=verbose)
         else:
             ext = '.fif'
+    else:
+        raise ValueError('raw_file must be an instance of str or BaseRaw, '
+                         'got %s' % type(raw_file))
     data_path = make_bids_folders(subject=subject_id, session=session_id,
                                   kind=kind, root=output_path,
                                   overwrite=overwrite,
@@ -351,7 +351,7 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None, run=No
 
 def _read_events(events_data, raw):
     """Read in events data."""
-    if isinstance(events_data, str):
+    if isinstance(events_data, string_types):
         events = read_events(events_data).astype(int)
     elif isinstance(events_data, np.ndarray):
         if events_data.ndim != 2:
