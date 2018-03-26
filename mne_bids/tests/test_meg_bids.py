@@ -9,7 +9,6 @@ We should test their functionality with their sample data.
 # License: BSD (3-clause)
 
 import os.path as op
-import json
 
 import mne
 from mne.datasets import testing
@@ -58,7 +57,6 @@ def test_fif():
                 session_id=session_id, raw_file=raw_fname2,
                 events_data=events_fname, output_path=output_path,
                 event_id=event_id, overwrite=True)
-    _strip_ieeg_from_json(output_path)
     cmd = ['bids-validator', output_path]
     run_subprocess(cmd)
 
@@ -81,7 +79,6 @@ def test_kit():
                 event_id=event_id, hpi=hpi_fname, electrode=electrode_fname,
                 hsp=headshape_fname, output_path=output_path,
                 overwrite=True)
-    _strip_ieeg_from_json(output_path)
     cmd = ['bids-validator', output_path]
     run_subprocess(cmd)
 
@@ -97,7 +94,6 @@ def test_ctf():
     raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
                 task=task, raw_file=raw_fname, output_path=output_path,
                 overwrite=True)
-    _strip_ieeg_from_json(output_path)
     cmd = ['bids-validator', output_path]
     run_subprocess(cmd)
 
@@ -116,19 +112,5 @@ def test_bti():
                 task=task, raw_file=raw_fname, config=config_fname,
                 hsp=headshape_fname, output_path=output_path,
                 verbose=True, overwrite=True)
-    _strip_ieeg_from_json(output_path)
     cmd = ['bids-validator', output_path]
     run_subprocess(cmd)
-
-
-def _strip_ieeg_from_json(path_bids):
-    """Temporary fix for ieeg incompatibility in bids-validator."""
-    path_json = op.join(path_bids, 'sub-01', 'ses-01', 'meg',
-                        'sub-01_ses-01_meg.json')
-    pop_chans = ['iEEGSurfChannelCount', 'iEEGDepthChannelCount']
-    with open(path_json, 'r') as ff:
-        data = json.load(ff)
-    for ch in pop_chans:
-        data.pop(ch)
-    with open(path_json, 'w') as ff:
-        json.dump(data, ff)

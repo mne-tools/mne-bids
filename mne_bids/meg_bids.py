@@ -161,7 +161,7 @@ def _coordsystem_json(raw, unit, orient, manufacturer, fname, verbose):
     return fname
 
 
-def _channel_json(raw, task, manufacturer, fname, verbose):
+def _channel_json(raw, task, manufacturer, fname, kind, verbose):
 
     sfreq = raw.info['sfreq']
 
@@ -206,6 +206,11 @@ def _channel_json(raw, task, manufacturer, fname, verbose):
                 ('MiscChannelCount', n_miscchan),
                 ('TriggerChannelCount', n_stimchan)]
     )
+
+    if kind != 'ieeg':
+        ch_info_json.pop('iEEGSurfChannelCount')
+        ch_info_json.pop('iEEGDepthChannelCount')
+
     _write_json(ch_info_json, fname, verbose=verbose)
     return fname
 
@@ -326,7 +331,7 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
 
     make_dataset_description(output_path, name=" ",
                              verbose=verbose)
-    _channel_json(raw, task, manufacturer, data_meta_fname, verbose)
+    _channel_json(raw, task, manufacturer, data_meta_fname, kind, verbose)
     _channels_tsv(raw, channels_fname, verbose)
 
     events = _read_events(events_data, raw)
