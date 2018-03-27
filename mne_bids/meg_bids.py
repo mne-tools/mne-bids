@@ -61,6 +61,7 @@ def _channels_tsv(raw, fname, verbose):
     units = [_unit2human.get(ich['unit'], 'n/a') for ich in raw.info['chs']]
     n_channels = raw.info['nchan']
     sfreq = raw.info['sfreq']
+
     df = pd.DataFrame(OrderedDict([
                       ('name', raw.info['ch_names']),
                       ('type', ch_type),
