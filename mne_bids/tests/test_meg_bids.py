@@ -5,6 +5,7 @@ We should test their functionality with their sample data.
 """
 # Authors: Mainak Jas <mainak.jas@telecom-paristech.fr>
 #          Teon L Brooks <teon.brooks@gmail.com>
+#          Chris Holdgraf <choldgraf@berkeley.edu>
 # License: BSD (3-clause)
 
 import os.path as op
@@ -14,6 +15,8 @@ from mne.datasets import testing
 from mne.utils import _TempDir, run_subprocess
 
 from mne_bids import raw_to_bids
+from warnings import simplefilter
+simplefilter('ignore', DeprecationWarning)
 
 base_path = op.join(op.dirname(mne.__file__), 'io')
 subject_id = '01'
@@ -39,7 +42,7 @@ def test_fif():
                            'sample_audvis_trunc_raw-eve.fif')
 
     raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
-                task=task, raw_fname=raw_fname, events_fname=events_fname,
+                task=task, raw_file=raw_fname, events_data=events_fname,
                 output_path=output_path, event_id=event_id,
                 overwrite=True)
 
@@ -51,8 +54,8 @@ def test_fif():
     raw.save(raw_fname2)
 
     raw_to_bids(subject_id=subject_id, run=run, task=task,
-                session_id=session_id, raw_fname=raw_fname2,
-                events_fname=events_fname, output_path=output_path,
+                session_id=session_id, raw_file=raw_fname2,
+                events_data=events_fname, output_path=output_path,
                 event_id=event_id, overwrite=True)
     cmd = ['bids-validator', output_path]
     run_subprocess(cmd)
@@ -72,7 +75,7 @@ def test_kit():
     event_id = dict(cond=1)
 
     raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
-                task=task, raw_fname=raw_fname, events_fname=events_fname,
+                task=task, raw_file=raw_fname, events_data=events_fname,
                 event_id=event_id, hpi=hpi_fname, electrode=electrode_fname,
                 hsp=headshape_fname, output_path=output_path,
                 overwrite=True)
@@ -89,7 +92,7 @@ def test_ctf():
     raw_fname = op.join(data_path, 'testdata_ctf.ds')
 
     raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
-                task=task, raw_fname=raw_fname, output_path=output_path,
+                task=task, raw_file=raw_fname, output_path=output_path,
                 overwrite=True)
     cmd = ['bids-validator', output_path]
     run_subprocess(cmd)
@@ -106,8 +109,8 @@ def test_bti():
     headshape_fname = op.join(data_path, 'test_hs_linux')
 
     raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
-                task=task, raw_fname=raw_fname, config=config_fname,
+                task=task, raw_file=raw_fname, config=config_fname,
                 hsp=headshape_fname, output_path=output_path,
-                overwrite=True)
+                verbose=True, overwrite=True)
     cmd = ['bids-validator', output_path]
     run_subprocess(cmd)
