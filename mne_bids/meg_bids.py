@@ -165,6 +165,10 @@ def _coordsystem_json(raw, unit, orient, manufacturer, fname, verbose):
 def _channel_json(raw, task, manufacturer, fname, kind, verbose):
 
     sfreq = raw.info['sfreq']
+    powerlinefrequency = raw.info.get('line_freq', None)
+    if powerlinefrequency is None:
+        print('No line frequency found, defaulting to 40 Hz')
+        powerlinefrequency = 40
 
     n_megchan = len([ch for ch in raw.info['chs']
                      if ch['kind'] == FIFF.FIFFV_MEG_CH])
@@ -191,7 +195,7 @@ def _channel_json(raw, task, manufacturer, fname, kind, verbose):
     ch_info_json_common = [
         ('TaskName', task),
         ('Manufacturer', manufacturer),
-        ('PowerLineFrequency', 'n/a')]
+        ('PowerLineFrequency', powerlinefrequency)]
     ch_info_json_meg = [
         ('SamplingFrequency', sfreq),
         ("DewarPosition", "XXX"),
