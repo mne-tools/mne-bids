@@ -96,9 +96,9 @@ def make_bids_filename(subject=None, session=None, task=None,
     filename = []
     for key, val in order.items():
         if val is not None:
-            if '-' in val:
-                raise ValueError("Unallowed character found in key/value pair "
-                                 "%s: %s" % (key, val))
+            if any(ii in val for ii in ['-', '_']):
+                raise ValueError("Unallowed `-` or `_` found in key/value pair"
+                                 " %s: %s" % (key, val))
             filename.append('%s-%s' % (key, val))
     if isinstance(suffix, string_types):
         filename.append(suffix)
