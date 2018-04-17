@@ -200,8 +200,8 @@ def _channel_json(raw, task, manufacturer, fname, kind, verbose):
         ('MEGChannelCount', n_megchan),
         ('MEGREFChannelCount', n_megrefchan)]
     ch_info_json_ieeg = [
-        ('iEEGSurfChannelCount', n_ecogchan),
-        ('iEEGDepthChannelCount', n_seegchan)]
+        ('ECOGChannelCount', n_ecogchan),
+        ('SEEGChannelCount', n_seegchan)]
     ch_info_ch_counts = [
         ('EEGChannelCount', n_eegchan),
         ('EOGChannelCount', n_eogchan),
@@ -325,9 +325,9 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
         unit = units[ext]
         manufacturer = manufacturers[ext]
     else:
-        orient = None
-        unit = None
-        manufacturer = None
+        orient = 'n/a'
+        unit = 'n/a'
+        manufacturer = 'n/a'
 
     # save stuff
     if kind == 'meg':
