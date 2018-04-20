@@ -93,13 +93,13 @@ def make_bids_filename(subject=None, session=None, task=None,
 
     if not any(isinstance(ii, string_types) for ii in order.keys()):
         raise ValueError("At least one parameter must be given.")
+
     filename = []
     for key, val in order.items():
         if val is not None:
-            if any(ii in val for ii in ['-', '_']):
-                raise ValueError("Unallowed `-` or `_` found in key/value pair"
-                                 " %s: %s" % (key, val))
+            _check_key_val(key, val)
             filename.append('%s-%s' % (key, val))
+
     if isinstance(suffix, string_types):
         filename.append(suffix)
 
@@ -150,6 +150,8 @@ def make_bids_folders(subject, session=None, kind=None, root=None,
     path/to/project/sub-sub_01/ses-my_session/meg
     """
     _check_types((subject, kind, session, root))
+    if session is not None:
+        _check_key_val('ses', session)
 
     path = ['sub-%s' % subject]
     if isinstance(session, string_types):
@@ -233,3 +235,11 @@ def _write_json(dictionary, fname, verbose=False):
     if verbose is True:
         print(os.linesep + "Writing '%s'..." % fname + os.linesep)
         print(json_output)
+
+
+def _check_key_val(key, val):
+    """Perform checks on a value to make sure it adheres to the spec."""
+    if any(ii in val for ii in ['-', '_', '/']):
+        raise ValueError("Unallowed `-` or `_` found in key/value pair"
+                         " %s: %s" % (key, val))
+    return key, val
