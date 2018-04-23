@@ -19,6 +19,7 @@ from mne.channels.channels import _unit2human
 from mne.externals.six import string_types
 
 from datetime import datetime
+from warnings import warn
 
 from .utils import (make_bids_filename, make_bids_folders,
                     make_dataset_description, _write_json)
@@ -167,8 +168,8 @@ def _channel_json(raw, task, manufacturer, fname, kind, verbose):
     sfreq = raw.info['sfreq']
     powerlinefrequency = raw.info.get('line_freq', None)
     if powerlinefrequency is None:
-        print('No line frequency found, defaulting to 40 Hz')
-        powerlinefrequency = 40
+        warn('No line frequency found, defaulting to 50 Hz')
+        powerlinefrequency = 50
 
     n_megchan = len([ch for ch in raw.info['chs']
                      if ch['kind'] == FIFF.FIFFV_MEG_CH])

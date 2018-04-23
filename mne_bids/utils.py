@@ -240,6 +240,6 @@ def _write_json(dictionary, fname, verbose=False):
 def _check_key_val(key, val):
     """Perform checks on a value to make sure it adheres to the spec."""
     if any(ii in val for ii in ['-', '_', '/']):
-        raise ValueError("Unallowed `-` or `_` found in key/value pair"
+        raise ValueError("Unallowed `-`, `_`, or `/` found in key/value pair"
                          " %s: %s" % (key, val))
     return key, val
