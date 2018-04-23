@@ -31,7 +31,7 @@ def _mkdir_p(path, overwrite=False, verbose=False):
 
 def make_bids_filename(subject=None, session=None, task=None,
                        acquisition=None, run=None, processing=None,
-                       recording=None, suffix=None, prefix=None):
+                       recording=None, space=None, suffix=None, prefix=None):
     """Create a BIDS filename from its component parts.
 
     BIDS filename prefixes have one or more pieces of metadata in them. They
@@ -59,6 +59,8 @@ def make_bids_filename(subject=None, session=None, task=None,
         The processing label for this item. Corresponds to "proc".
     recording : str | None
         The recording name for this item. Corresponds to "recording".
+    space : str | None
+        The coordinate space for an anatomical file. Corresponds to "space".
     suffix : str | None
         The suffix of a file that begins with this prefix. E.g., 'audio.wav'.
     prefix : str | None
@@ -81,6 +83,7 @@ def make_bids_filename(subject=None, session=None, task=None,
                          ('acq', acquisition),
                          ('run', run),
                          ('proc', processing),
+                         ('space', space),
                          ('recording', recording)])
     if order['run'] is not None and not isinstance(order['run'], string_types):
         # Ensure that run is a string
@@ -90,12 +93,16 @@ def make_bids_filename(subject=None, session=None, task=None,
 
     if not any(isinstance(ii, string_types) for ii in order.keys()):
         raise ValueError("At least one parameter must be given.")
+
     filename = []
     for key, val in order.items():
         if val is not None:
+            _check_key_val(key, val)
             filename.append('%s-%s' % (key, val))
+
     if isinstance(suffix, string_types):
         filename.append(suffix)
+
     filename = '_'.join(filename)
     if isinstance(prefix, string_types):
         filename = os.path.join(prefix, filename)
@@ -143,6 +150,8 @@ def make_bids_folders(subject, session=None, kind=None, root=None,
     path/to/project/sub-sub_01/ses-my_session/meg
     """
     _check_types((subject, kind, session, root))
+    if session is not None:
+        _check_key_val('ses', session)
 
     path = ['sub-%s' % subject]
     if isinstance(session, string_types):
@@ -226,3 +235,11 @@ def _write_json(dictionary, fname, verbose=False):
     if verbose is True:
         print(os.linesep + "Writing '%s'..." % fname + os.linesep)
         print(json_output)
+
+
+def _check_key_val(key, val):
+    """Perform checks on a value to make sure it adheres to the spec."""
+    if any(ii in val for ii in ['-', '_', '/']):
+        raise ValueError("Unallowed `-`, `_`, or `/` found in key/value pair"
+                         " %s: %s" % (key, val))
+    return key, val

@@ -19,6 +19,7 @@ from mne.channels.channels import _unit2human
 from mne.externals.six import string_types
 
 from datetime import datetime
+from warnings import warn
 
 from .utils import (make_bids_filename, make_bids_folders,
                     make_dataset_description, _write_json)
@@ -165,6 +166,10 @@ def _coordsystem_json(raw, unit, orient, manufacturer, fname, verbose):
 def _channel_json(raw, task, manufacturer, fname, kind, verbose):
 
     sfreq = raw.info['sfreq']
+    powerlinefrequency = raw.info.get('line_freq', None)
+    if powerlinefrequency is None:
+        warn('No line frequency found, defaulting to 50 Hz')
+        powerlinefrequency = 50
 
     n_megchan = len([ch for ch in raw.info['chs']
                      if ch['kind'] == FIFF.FIFFV_MEG_CH])
@@ -187,30 +192,36 @@ def _channel_json(raw, task, manufacturer, fname, kind, verbose):
     n_stimchan = len([ch for ch in raw.info['chs']
                      if ch['kind'] == FIFF.FIFFV_STIM_CH])
 
-    ch_info_json = OrderedDict([
-                ('TaskName', task),
-                ('SamplingFrequency', sfreq),
-                ("PowerLineFrequency", 42),
-                ("DewarPosition", "XXX"),
-                ("DigitizedLandmarks", False),
-                ("DigitizedHeadPoints", False),
-                ("SoftwareFilters", "n/a"),
-                ('Manufacturer', manufacturer),
-                ('MEGChannelCount', n_megchan),
-                ('MEGREFChannelCount', n_megrefchan),
-                ('EEGChannelCount', n_eegchan),
-                ('iEEGSurfChannelCount', n_ecogchan),
-                ('iEEGDepthChannelCount', n_seegchan),
-                ('EOGChannelCount', n_eogchan),
-                ('ECGChannelCount', n_ecgchan),
-                ('EMGChannelCount', n_emgchan),
-                ('MiscChannelCount', n_miscchan),
-                ('TriggerChannelCount', n_stimchan)]
-    )
+    # Define modality-specific JSON dictionaries
+    ch_info_json_common = [
+        ('TaskName', task),
+        ('Manufacturer', manufacturer),
+        ('PowerLineFrequency', powerlinefrequency)]
+    ch_info_json_meg = [
+        ('SamplingFrequency', sfreq),
+        ("DewarPosition", "XXX"),
+        ("DigitizedLandmarks", False),
+        ("DigitizedHeadPoints", False),
+        ("SoftwareFilters", "n/a"),
+        ('MEGChannelCount', n_megchan),
+        ('MEGREFChannelCount', n_megrefchan)]
+    ch_info_json_ieeg = [
+        ('ECOGChannelCount', n_ecogchan),
+        ('SEEGChannelCount', n_seegchan)]
+    ch_info_ch_counts = [
+        ('EEGChannelCount', n_eegchan),
+        ('EOGChannelCount', n_eogchan),
+        ('ECGChannelCount', n_ecgchan),
+        ('EMGChannelCount', n_emgchan),
+        ('MiscChannelCount', n_miscchan),
+        ('TriggerChannelCount', n_stimchan)]
 
-    if kind != 'ieeg':
-        ch_info_json.pop('iEEGSurfChannelCount')
-        ch_info_json.pop('iEEGDepthChannelCount')
+    # Stitch together the complete JSON dictionary
+    ch_info_json = ch_info_json_common
+    append_kind_json = ch_info_json_meg if kind == 'meg' else ch_info_json_ieeg
+    ch_info_json += append_kind_json
+    ch_info_json += ch_info_ch_counts
+    ch_info_json = OrderedDict(ch_info_json)
 
     _write_json(ch_info_json, fname, verbose=verbose)
     return fname
@@ -320,9 +331,9 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
         unit = units[ext]
         manufacturer = manufacturers[ext]
     else:
-        orient = None
-        unit = None
-        manufacturer = None
+        orient = 'n/a'
+        unit = 'n/a'
+        manufacturer = 'n/a'
 
     # save stuff
     if kind == 'meg':

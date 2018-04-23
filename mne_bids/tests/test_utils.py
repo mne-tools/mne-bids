@@ -6,6 +6,7 @@
 
 from mne.utils import _TempDir
 from mne_bids.utils import make_bids_folders, make_bids_filename
+import pytest
 import os
 
 
@@ -20,6 +21,9 @@ def test_make_filenames():
     # subsets of keys works
     assert make_bids_filename(subject='one', task='three') == 'sub-one_task-three' # noqa
     assert make_bids_filename(subject='one', task='three', suffix='hi.csv') == 'sub-one_task-three_hi.csv' # noqa
+
+    with pytest.raises(ValueError):
+        make_bids_filename(subject='one-two', suffix='there.csv')
 
 
 def test_make_folders():
