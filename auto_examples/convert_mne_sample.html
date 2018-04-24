@@ -5,7 +5,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Create a BIDS-compatible MEG folder &#8212; mne_bids 0.1dev0 documentation</title>
+    <title>Convert Raw data to a BIDS-compatible folder &#8212; mne_bids 0.1dev0 documentation</title>
     
     <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -82,7 +82,7 @@
   <ul class="dropdown-menu localtoc"
       role="menu"
       aria-labelledby="dLabelLocalToc"><ul>
-<li><a class="reference internal" href="#">Create a BIDS-compatible MEG folder</a></li>
+<li><a class="reference internal" href="#">Convert Raw data to a BIDS-compatible folder</a></li>
 </ul>
 </ul>
 </li>
@@ -118,8 +118,8 @@
   <div class="row">
     <div class="col-md-12 content">
       
-  <div class="section" id="create-a-bids-compatible-meg-folder">
-<span id="sphx-glr-auto-examples-convert-mne-sample-py"></span><h1>Create a BIDS-compatible MEG folder<a class="headerlink" href="#create-a-bids-compatible-meg-folder" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="convert-raw-data-to-a-bids-compatible-folder">
+<span id="sphx-glr-auto-examples-convert-mne-sample-py"></span><h1>Convert Raw data to a BIDS-compatible folder<a class="headerlink" href="#convert-raw-data-to-a-bids-compatible-folder" title="Permalink to this headline">¶</a></h1>
 <p>Brain Imaging Data Structure (BIDS) MEG is a new standard for
 storing MEG files. This example demonstrates how to convert
 your existing files into a BIDS-compatible folder.</p>
@@ -141,18 +141,14 @@ your existing files into a BIDS-compatible folder.</p>
 <span class="n">event_id</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Auditory/Left&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;Auditory/Right&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;Visual/Left&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
             <span class="s1">&#39;Visual/Right&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="s1">&#39;Smiley&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s1">&#39;Button&#39;</span><span class="p">:</span> <span class="mi">32</span><span class="p">}</span>
 
-<span class="n">raw_fname</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="s1">&#39;MEG&#39;</span><span class="p">,</span> <span class="s1">&#39;sample&#39;</span><span class="p">,</span> <span class="s1">&#39;sample_audvis_raw.fif&#39;</span><span class="p">)</span>
-<span class="n">events_fname</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="s1">&#39;MEG&#39;</span><span class="p">,</span> <span class="s1">&#39;sample&#39;</span><span class="p">,</span> <span class="s1">&#39;sample_audvis_raw-eve.fif&#39;</span><span class="p">)</span>
+<span class="n">raw_file</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="s1">&#39;MEG&#39;</span><span class="p">,</span> <span class="s1">&#39;sample&#39;</span><span class="p">,</span> <span class="s1">&#39;sample_audvis_raw.fif&#39;</span><span class="p">)</span>
+<span class="n">events_data</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="s1">&#39;MEG&#39;</span><span class="p">,</span> <span class="s1">&#39;sample&#39;</span><span class="p">,</span> <span class="s1">&#39;sample_audvis_raw-eve.fif&#39;</span><span class="p">)</span>
 <span class="n">output_path</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="s1">&#39;..&#39;</span><span class="p">,</span> <span class="s1">&#39;MNE-sample-data-bids&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-default"><div class="highlight"><pre><span></span><span class="n">Successfully</span> <span class="n">extracted</span> <span class="n">to</span><span class="p">:</span> <span class="p">[</span><span class="sa">u</span><span class="s1">&#39;/home/mainak/Desktop/projects/github_repos/mne-python/examples/MNE-sample-data&#39;</span><span class="p">]</span>
-</pre></div>
-</div>
-<p>Finally, we specify the raw_fname and events_fname</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">raw_to_bids</span><span class="p">(</span><span class="n">subject_id</span><span class="o">=</span><span class="s1">&#39;01&#39;</span><span class="p">,</span> <span class="n">run</span><span class="o">=</span><span class="s1">&#39;01&#39;</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="s1">&#39;audiovisual&#39;</span><span class="p">,</span>
-            <span class="n">raw_fname</span><span class="o">=</span><span class="n">raw_fname</span><span class="p">,</span> <span class="n">events_fname</span><span class="o">=</span><span class="n">events_fname</span><span class="p">,</span>
+<p>Finally, we specify the raw_file and events_data</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">raw_to_bids</span><span class="p">(</span><span class="n">subject_id</span><span class="o">=</span><span class="s1">&#39;01&#39;</span><span class="p">,</span> <span class="n">run</span><span class="o">=</span><span class="s1">&#39;01&#39;</span><span class="p">,</span> <span class="n">session_id</span><span class="o">=</span><span class="s1">&#39;01&#39;</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="s1">&#39;audiovisual&#39;</span><span class="p">,</span>
+            <span class="n">raw_file</span><span class="o">=</span><span class="n">raw_file</span><span class="p">,</span> <span class="n">events_data</span><span class="o">=</span><span class="n">events_data</span><span class="p">,</span>
             <span class="n">output_path</span><span class="o">=</span><span class="n">output_path</span><span class="p">,</span> <span class="n">event_id</span><span class="o">=</span><span class="n">event_id</span><span class="p">,</span>
             <span class="n">overwrite</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 </pre></div>
@@ -166,105 +162,73 @@ your existing files into a BIDS-compatible folder.</p>
     <span class="n">Range</span> <span class="p">:</span> <span class="mi">25800</span> <span class="o">...</span> <span class="mi">192599</span> <span class="o">=</span>     <span class="mf">42.956</span> <span class="o">...</span>   <span class="mf">320.670</span> <span class="n">secs</span>
 <span class="n">Ready</span><span class="o">.</span>
 <span class="n">Current</span> <span class="n">compensation</span> <span class="n">grade</span> <span class="p">:</span> <span class="mi">0</span>
+<span class="n">Overwriting</span> <span class="n">path</span><span class="p">:</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">mainak</span><span class="o">/</span><span class="n">Desktop</span><span class="o">/</span><span class="n">projects</span><span class="o">/</span><span class="n">github_repos</span><span class="o">/</span><span class="n">mne</span><span class="o">-</span><span class="n">python</span><span class="o">/</span><span class="n">examples</span><span class="o">/</span><span class="n">MNE</span><span class="o">-</span><span class="n">sample</span><span class="o">-</span><span class="n">data</span><span class="o">/../</span><span class="n">MNE</span><span class="o">-</span><span class="n">sample</span><span class="o">-</span><span class="n">data</span><span class="o">-</span><span class="n">bids</span><span class="o">/</span><span class="n">sub</span><span class="o">-</span><span class="mi">01</span><span class="o">/</span><span class="n">ses</span><span class="o">-</span><span class="mi">01</span><span class="o">/</span><span class="n">meg</span>
+<span class="n">Creating</span> <span class="n">folder</span><span class="p">:</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">mainak</span><span class="o">/</span><span class="n">Desktop</span><span class="o">/</span><span class="n">projects</span><span class="o">/</span><span class="n">github_repos</span><span class="o">/</span><span class="n">mne</span><span class="o">-</span><span class="n">python</span><span class="o">/</span><span class="n">examples</span><span class="o">/</span><span class="n">MNE</span><span class="o">-</span><span class="n">sample</span><span class="o">-</span><span class="n">data</span><span class="o">/../</span><span class="n">MNE</span><span class="o">-</span><span class="n">sample</span><span class="o">-</span><span class="n">data</span><span class="o">-</span><span class="n">bids</span><span class="o">/</span><span class="n">sub</span><span class="o">-</span><span class="mi">01</span><span class="o">/</span><span class="n">ses</span><span class="o">-</span><span class="mi">01</span><span class="o">/</span><span class="n">meg</span>
 
 <span class="n">Writing</span> <span class="s1">&#39;/home/mainak/Desktop/projects/github_repos/mne-python/examples/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/sub-01_ses-01_scans.tsv&#39;</span><span class="o">...</span>
 
               <span class="n">acq_time</span>                                           <span class="n">filename</span>
 <span class="mi">0</span>  <span class="mi">2002</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">03</span><span class="n">T20</span><span class="p">:</span><span class="mi">01</span><span class="p">:</span><span class="mi">10</span>  <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">mainak</span><span class="o">/</span><span class="n">Desktop</span><span class="o">/</span><span class="n">projects</span><span class="o">/</span><span class="n">github_repos</span><span class="o">/</span><span class="n">mne</span><span class="o">...</span>
 
-<span class="n">Writing</span> <span class="s1">&#39;/home/mainak/Desktop/projects/github_repos/mne-python/examples/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/sub-01_ses-01_fid.json&#39;</span><span class="o">...</span>
+<span class="n">Writing</span> <span class="s1">&#39;/home/mainak/Desktop/projects/github_repos/mne-python/examples/MNE-sample-data/../MNE-sample-data-bids/dataset_description.json&#39;</span><span class="o">...</span>
 
 <span class="p">{</span>
-    <span class="s2">&quot;CoilCoordinateSystem&quot;</span><span class="p">:</span> <span class="s2">&quot;RAS&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;CoilCoordinateUnits&quot;</span><span class="p">:</span> <span class="s2">&quot;m&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;CoilCoordinates&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s2">&quot;LPA&quot;</span><span class="p">:</span> <span class="p">[</span>
-            <span class="o">-</span><span class="mf">0.07137660682201385</span><span class="p">,</span>
-            <span class="mf">0.0</span><span class="p">,</span>
-            <span class="mf">5.122274160385132e-09</span>
-        <span class="p">],</span>
-        <span class="s2">&quot;NAS&quot;</span><span class="p">:</span> <span class="p">[</span>
-            <span class="mf">3.725290298461914e-09</span><span class="p">,</span>
-            <span class="mf">0.10260561108589172</span><span class="p">,</span>
-            <span class="mf">4.190951585769653e-09</span>
-        <span class="p">],</span>
-        <span class="s2">&quot;RPA&quot;</span><span class="p">:</span> <span class="p">[</span>
-            <span class="mf">0.07526767998933792</span><span class="p">,</span>
-            <span class="mf">0.0</span><span class="p">,</span>
-            <span class="mf">5.587935447692871e-09</span>
-        <span class="p">],</span>
-        <span class="s2">&quot;coil1&quot;</span><span class="p">:</span> <span class="p">[</span>
-            <span class="mf">0.032922741025686264</span><span class="p">,</span>
-            <span class="mf">0.09897983074188232</span><span class="p">,</span>
-            <span class="mf">0.07984329760074615</span>
-        <span class="p">],</span>
-        <span class="s2">&quot;coil2&quot;</span><span class="p">:</span> <span class="p">[</span>
-            <span class="o">-</span><span class="mf">0.06998106092214584</span><span class="p">,</span>
-            <span class="mf">0.06771647930145264</span><span class="p">,</span>
-            <span class="mf">0.06888450682163239</span>
-        <span class="p">],</span>
-        <span class="s2">&quot;coil3&quot;</span><span class="p">:</span> <span class="p">[</span>
-            <span class="o">-</span><span class="mf">0.07260829955339432</span><span class="p">,</span>
-            <span class="o">-</span><span class="mf">0.02086828649044037</span><span class="p">,</span>
-            <span class="mf">0.0971473976969719</span>
-        <span class="p">],</span>
-        <span class="s2">&quot;coil4&quot;</span><span class="p">:</span> <span class="p">[</span>
-            <span class="mf">0.04996863007545471</span><span class="p">,</span>
-            <span class="o">-</span><span class="mf">0.007233052980154753</span><span class="p">,</span>
-            <span class="mf">0.1228904277086258</span>
-        <span class="p">]</span>
-    <span class="p">},</span>
-    <span class="s2">&quot;MEGCoordinateSystem&quot;</span><span class="p">:</span> <span class="s2">&quot;Elekta&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;MEGCoordinateUnits&quot;</span><span class="p">:</span> <span class="s2">&quot;m&quot;</span>
+    <span class="s2">&quot;Name&quot;</span><span class="p">:</span> <span class="s2">&quot; &quot;</span><span class="p">,</span>
+    <span class="s2">&quot;BIDSVersion&quot;</span><span class="p">:</span> <span class="s2">&quot;1.0.2 (draft)&quot;</span>
 <span class="p">}</span>
+<span class="n">No</span> <span class="n">line</span> <span class="n">frequency</span> <span class="n">found</span><span class="p">,</span> <span class="n">defaulting</span> <span class="n">to</span> <span class="mi">40</span> <span class="n">Hz</span>
 
-<span class="n">Writing</span> <span class="s1">&#39;/home/mainak/Desktop/projects/github_repos/mne-python/examples/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/sub-01_ses-01_meg.json&#39;</span><span class="o">...</span>
+<span class="n">Writing</span> <span class="s1">&#39;/home/mainak/Desktop/projects/github_repos/mne-python/examples/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_meg.json&#39;</span><span class="o">...</span>
 
 <span class="p">{</span>
-    <span class="s2">&quot;ECGChannelCount&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-    <span class="s2">&quot;EEGChannelCount&quot;</span><span class="p">:</span> <span class="mi">60</span><span class="p">,</span>
-    <span class="s2">&quot;EMGChannelCount&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-    <span class="s2">&quot;EOGChannelCount&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s2">&quot;TaskName&quot;</span><span class="p">:</span> <span class="s2">&quot;audiovisual&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Manufacturer&quot;</span><span class="p">:</span> <span class="s2">&quot;Elekta&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;PowerLineFrequency&quot;</span><span class="p">:</span> <span class="mi">40</span><span class="p">,</span>
+    <span class="s2">&quot;SamplingFrequency&quot;</span><span class="p">:</span> <span class="mf">600.614990234375</span><span class="p">,</span>
+    <span class="s2">&quot;DewarPosition&quot;</span><span class="p">:</span> <span class="s2">&quot;XXX&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;DigitizedLandmarks&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+    <span class="s2">&quot;DigitizedHeadPoints&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
+    <span class="s2">&quot;SoftwareFilters&quot;</span><span class="p">:</span> <span class="s2">&quot;n/a&quot;</span><span class="p">,</span>
     <span class="s2">&quot;MEGChannelCount&quot;</span><span class="p">:</span> <span class="mi">306</span><span class="p">,</span>
     <span class="s2">&quot;MEGREFChannelCount&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-    <span class="s2">&quot;Manufacturer&quot;</span><span class="p">:</span> <span class="s2">&quot;Elekta&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;EEGChannelCount&quot;</span><span class="p">:</span> <span class="mi">60</span><span class="p">,</span>
+    <span class="s2">&quot;EOGChannelCount&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s2">&quot;ECGChannelCount&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s2">&quot;EMGChannelCount&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
     <span class="s2">&quot;MiscChannelCount&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
-    <span class="s2">&quot;SamplingFrequency&quot;</span><span class="p">:</span> <span class="mf">600.614990234375</span><span class="p">,</span>
-    <span class="s2">&quot;TaskName&quot;</span><span class="p">:</span> <span class="s2">&quot;audiovisual&quot;</span><span class="p">,</span>
     <span class="s2">&quot;TriggerChannelCount&quot;</span><span class="p">:</span> <span class="mi">9</span>
 <span class="p">}</span>
 
-<span class="n">Writing</span> <span class="s1">&#39;/home/mainak/Desktop/projects/github_repos/mne-python/examples/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_task-audiovisual_run-01_channel.tsv&#39;</span><span class="o">...</span>
+<span class="n">Writing</span> <span class="s1">&#39;/home/mainak/Desktop/projects/github_repos/mne-python/examples/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_channels.tsv&#39;</span><span class="o">...</span>
 
-       <span class="n">name</span>     <span class="nb">type</span>   <span class="n">description</span> <span class="n">sampling_frequency</span> <span class="n">low_cutoff</span> <span class="n">high_cutoff</span>  \
-<span class="mi">0</span>  <span class="n">MEG</span> <span class="mi">0113</span>  <span class="n">MEGGRAD</span>   <span class="n">Gradiometer</span>             <span class="mf">600.61</span>       <span class="mf">0.10</span>      <span class="mf">172.18</span>
-<span class="mi">1</span>  <span class="n">MEG</span> <span class="mi">0112</span>  <span class="n">MEGGRAD</span>   <span class="n">Gradiometer</span>             <span class="mf">600.61</span>       <span class="mf">0.10</span>      <span class="mf">172.18</span>
-<span class="mi">2</span>  <span class="n">MEG</span> <span class="mi">0111</span>   <span class="n">MEGMAG</span>  <span class="n">Magnetometer</span>             <span class="mf">600.61</span>       <span class="mf">0.10</span>      <span class="mf">172.18</span>
-<span class="mi">3</span>  <span class="n">MEG</span> <span class="mi">0122</span>  <span class="n">MEGGRAD</span>   <span class="n">Gradiometer</span>             <span class="mf">600.61</span>       <span class="mf">0.10</span>      <span class="mf">172.18</span>
-<span class="mi">4</span>  <span class="n">MEG</span> <span class="mi">0123</span>  <span class="n">MEGGRAD</span>   <span class="n">Gradiometer</span>             <span class="mf">600.61</span>       <span class="mf">0.10</span>      <span class="mf">172.18</span>
+       <span class="n">name</span>     <span class="nb">type</span> <span class="n">units</span>   <span class="n">description</span> <span class="n">sampling_frequency</span> <span class="n">low_cutoff</span>  \
+<span class="mi">0</span>  <span class="n">MEG</span> <span class="mi">0113</span>  <span class="n">MEGGRAD</span>   <span class="n">T</span><span class="o">/</span><span class="n">m</span>   <span class="n">Gradiometer</span>             <span class="mf">600.61</span>       <span class="mf">0.10</span>
+<span class="mi">1</span>  <span class="n">MEG</span> <span class="mi">0112</span>  <span class="n">MEGGRAD</span>   <span class="n">T</span><span class="o">/</span><span class="n">m</span>   <span class="n">Gradiometer</span>             <span class="mf">600.61</span>       <span class="mf">0.10</span>
+<span class="mi">2</span>  <span class="n">MEG</span> <span class="mi">0111</span>   <span class="n">MEGMAG</span>     <span class="n">T</span>  <span class="n">Magnetometer</span>             <span class="mf">600.61</span>       <span class="mf">0.10</span>
+<span class="mi">3</span>  <span class="n">MEG</span> <span class="mi">0122</span>  <span class="n">MEGGRAD</span>   <span class="n">T</span><span class="o">/</span><span class="n">m</span>   <span class="n">Gradiometer</span>             <span class="mf">600.61</span>       <span class="mf">0.10</span>
+<span class="mi">4</span>  <span class="n">MEG</span> <span class="mi">0123</span>  <span class="n">MEGGRAD</span>   <span class="n">T</span><span class="o">/</span><span class="n">m</span>   <span class="n">Gradiometer</span>             <span class="mf">600.61</span>       <span class="mf">0.10</span>
 
-  <span class="n">status</span>
-<span class="mi">0</span>   <span class="n">good</span>
-<span class="mi">1</span>   <span class="n">good</span>
-<span class="mi">2</span>   <span class="n">good</span>
-<span class="mi">3</span>   <span class="n">good</span>
-<span class="mi">4</span>   <span class="n">good</span>
+  <span class="n">high_cutoff</span> <span class="n">status</span>
+<span class="mi">0</span>      <span class="mf">172.18</span>   <span class="n">good</span>
+<span class="mi">1</span>      <span class="mf">172.18</span>   <span class="n">good</span>
+<span class="mi">2</span>      <span class="mf">172.18</span>   <span class="n">good</span>
+<span class="mi">3</span>      <span class="mf">172.18</span>   <span class="n">good</span>
+<span class="mi">4</span>      <span class="mf">172.18</span>   <span class="n">good</span>
 
-<span class="n">Writing</span> <span class="s1">&#39;/home/mainak/Desktop/projects/github_repos/mne-python/examples/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_task-audiovisual_run-01_events.tsv&#39;</span><span class="o">...</span>
+<span class="n">Writing</span> <span class="s1">&#39;/home/mainak/Desktop/projects/github_repos/mne-python/examples/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_events.tsv&#39;</span><span class="o">...</span>
 
-      <span class="n">Onset</span>       <span class="n">Condition</span>
-<span class="mi">0</span>  <span class="mf">3.624618</span>  <span class="n">Auditory</span><span class="o">/</span><span class="n">Right</span>
-<span class="mi">1</span>  <span class="mf">4.237323</span>     <span class="n">Visual</span><span class="o">/</span><span class="n">Left</span>
-<span class="mi">2</span>  <span class="mf">4.946596</span>   <span class="n">Auditory</span><span class="o">/</span><span class="n">Left</span>
-<span class="mi">3</span>  <span class="mf">5.692499</span>    <span class="n">Visual</span><span class="o">/</span><span class="n">Right</span>
-<span class="mi">4</span>  <span class="mf">6.413426</span>  <span class="n">Auditory</span><span class="o">/</span><span class="n">Right</span>
-<span class="n">This</span> <span class="n">filename</span> <span class="p">(</span><span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">mainak</span><span class="o">/</span><span class="n">Desktop</span><span class="o">/</span><span class="n">projects</span><span class="o">/</span><span class="n">github_repos</span><span class="o">/</span><span class="n">mne</span><span class="o">-</span><span class="n">python</span><span class="o">/</span><span class="n">examples</span><span class="o">/</span><span class="n">MNE</span><span class="o">-</span><span class="n">sample</span><span class="o">-</span><span class="n">data</span><span class="o">/../</span><span class="n">MNE</span><span class="o">-</span><span class="n">sample</span><span class="o">-</span><span class="n">data</span><span class="o">-</span><span class="n">bids</span><span class="o">/</span><span class="n">sub</span><span class="o">-</span><span class="mi">01</span><span class="o">/</span><span class="n">ses</span><span class="o">-</span><span class="mi">01</span><span class="o">/</span><span class="n">meg</span><span class="o">/</span><span class="n">sub</span><span class="o">-</span><span class="mi">01</span><span class="n">_task</span><span class="o">-</span><span class="n">audiovisual_run</span><span class="o">-</span><span class="mi">01</span><span class="n">_meg</span><span class="o">.</span><span class="n">fif</span><span class="p">)</span> <span class="n">does</span> <span class="ow">not</span> <span class="n">conform</span> <span class="n">to</span> <span class="n">MNE</span> <span class="n">naming</span> <span class="n">conventions</span><span class="o">.</span> <span class="n">All</span> <span class="n">raw</span> <span class="n">files</span> <span class="n">should</span> <span class="n">end</span> <span class="k">with</span> <span class="n">raw</span><span class="o">.</span><span class="n">fif</span><span class="p">,</span> <span class="n">raw_sss</span><span class="o">.</span><span class="n">fif</span><span class="p">,</span> <span class="n">raw_tsss</span><span class="o">.</span><span class="n">fif</span><span class="p">,</span> <span class="n">raw</span><span class="o">.</span><span class="n">fif</span><span class="o">.</span><span class="n">gz</span><span class="p">,</span> <span class="n">raw_sss</span><span class="o">.</span><span class="n">fif</span><span class="o">.</span><span class="n">gz</span> <span class="ow">or</span> <span class="n">raw_tsss</span><span class="o">.</span><span class="n">fif</span><span class="o">.</span><span class="n">gz</span>
-<span class="n">Overwriting</span> <span class="n">existing</span> <span class="n">file</span><span class="o">.</span>
-<span class="n">Writing</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">mainak</span><span class="o">/</span><span class="n">Desktop</span><span class="o">/</span><span class="n">projects</span><span class="o">/</span><span class="n">github_repos</span><span class="o">/</span><span class="n">mne</span><span class="o">-</span><span class="n">python</span><span class="o">/</span><span class="n">examples</span><span class="o">/</span><span class="n">MNE</span><span class="o">-</span><span class="n">sample</span><span class="o">-</span><span class="n">data</span><span class="o">-</span><span class="n">bids</span><span class="o">/</span><span class="n">sub</span><span class="o">-</span><span class="mi">01</span><span class="o">/</span><span class="n">ses</span><span class="o">-</span><span class="mi">01</span><span class="o">/</span><span class="n">meg</span><span class="o">/</span><span class="n">sub</span><span class="o">-</span><span class="mi">01</span><span class="n">_task</span><span class="o">-</span><span class="n">audiovisual_run</span><span class="o">-</span><span class="mi">01</span><span class="n">_meg</span><span class="o">.</span><span class="n">fif</span>
-<span class="n">Closing</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">mainak</span><span class="o">/</span><span class="n">Desktop</span><span class="o">/</span><span class="n">projects</span><span class="o">/</span><span class="n">github_repos</span><span class="o">/</span><span class="n">mne</span><span class="o">-</span><span class="n">python</span><span class="o">/</span><span class="n">examples</span><span class="o">/</span><span class="n">MNE</span><span class="o">-</span><span class="n">sample</span><span class="o">-</span><span class="n">data</span><span class="o">-</span><span class="n">bids</span><span class="o">/</span><span class="n">sub</span><span class="o">-</span><span class="mi">01</span><span class="o">/</span><span class="n">ses</span><span class="o">-</span><span class="mi">01</span><span class="o">/</span><span class="n">meg</span><span class="o">/</span><span class="n">sub</span><span class="o">-</span><span class="mi">01</span><span class="n">_task</span><span class="o">-</span><span class="n">audiovisual_run</span><span class="o">-</span><span class="mi">01</span><span class="n">_meg</span><span class="o">.</span><span class="n">fif</span> <span class="p">[</span><span class="n">done</span><span class="p">]</span>
+      <span class="n">onset</span>  <span class="n">duration</span>       <span class="n">condition</span>
+<span class="mi">0</span>  <span class="mf">3.624618</span>       <span class="mf">0.0</span>  <span class="n">Auditory</span><span class="o">/</span><span class="n">Right</span>
+<span class="mi">1</span>  <span class="mf">4.237323</span>       <span class="mf">0.0</span>     <span class="n">Visual</span><span class="o">/</span><span class="n">Left</span>
+<span class="mi">2</span>  <span class="mf">4.946596</span>       <span class="mf">0.0</span>   <span class="n">Auditory</span><span class="o">/</span><span class="n">Left</span>
+<span class="mi">3</span>  <span class="mf">5.692499</span>       <span class="mf">0.0</span>    <span class="n">Visual</span><span class="o">/</span><span class="n">Right</span>
+<span class="mi">4</span>  <span class="mf">6.413426</span>       <span class="mf">0.0</span>  <span class="n">Auditory</span><span class="o">/</span><span class="n">Right</span>
+<span class="n">This</span> <span class="n">filename</span> <span class="p">(</span><span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">mainak</span><span class="o">/</span><span class="n">Desktop</span><span class="o">/</span><span class="n">projects</span><span class="o">/</span><span class="n">github_repos</span><span class="o">/</span><span class="n">mne</span><span class="o">-</span><span class="n">python</span><span class="o">/</span><span class="n">examples</span><span class="o">/</span><span class="n">MNE</span><span class="o">-</span><span class="n">sample</span><span class="o">-</span><span class="n">data</span><span class="o">/../</span><span class="n">MNE</span><span class="o">-</span><span class="n">sample</span><span class="o">-</span><span class="n">data</span><span class="o">-</span><span class="n">bids</span><span class="o">/</span><span class="n">sub</span><span class="o">-</span><span class="mi">01</span><span class="o">/</span><span class="n">ses</span><span class="o">-</span><span class="mi">01</span><span class="o">/</span><span class="n">meg</span><span class="o">/</span><span class="n">sub</span><span class="o">-</span><span class="mi">01</span><span class="n">_ses</span><span class="o">-</span><span class="mi">01</span><span class="n">_task</span><span class="o">-</span><span class="n">audiovisual_run</span><span class="o">-</span><span class="mi">01</span><span class="n">_meg</span><span class="o">.</span><span class="n">fif</span><span class="p">)</span> <span class="n">does</span> <span class="ow">not</span> <span class="n">conform</span> <span class="n">to</span> <span class="n">MNE</span> <span class="n">naming</span> <span class="n">conventions</span><span class="o">.</span> <span class="n">All</span> <span class="n">raw</span> <span class="n">files</span> <span class="n">should</span> <span class="n">end</span> <span class="k">with</span> <span class="n">raw</span><span class="o">.</span><span class="n">fif</span><span class="p">,</span> <span class="n">raw_sss</span><span class="o">.</span><span class="n">fif</span><span class="p">,</span> <span class="n">raw_tsss</span><span class="o">.</span><span class="n">fif</span><span class="p">,</span> <span class="n">raw</span><span class="o">.</span><span class="n">fif</span><span class="o">.</span><span class="n">gz</span><span class="p">,</span> <span class="n">raw_sss</span><span class="o">.</span><span class="n">fif</span><span class="o">.</span><span class="n">gz</span> <span class="ow">or</span> <span class="n">raw_tsss</span><span class="o">.</span><span class="n">fif</span><span class="o">.</span><span class="n">gz</span>
+<span class="n">Writing</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">mainak</span><span class="o">/</span><span class="n">Desktop</span><span class="o">/</span><span class="n">projects</span><span class="o">/</span><span class="n">github_repos</span><span class="o">/</span><span class="n">mne</span><span class="o">-</span><span class="n">python</span><span class="o">/</span><span class="n">examples</span><span class="o">/</span><span class="n">MNE</span><span class="o">-</span><span class="n">sample</span><span class="o">-</span><span class="n">data</span><span class="o">-</span><span class="n">bids</span><span class="o">/</span><span class="n">sub</span><span class="o">-</span><span class="mi">01</span><span class="o">/</span><span class="n">ses</span><span class="o">-</span><span class="mi">01</span><span class="o">/</span><span class="n">meg</span><span class="o">/</span><span class="n">sub</span><span class="o">-</span><span class="mi">01</span><span class="n">_ses</span><span class="o">-</span><span class="mi">01</span><span class="n">_task</span><span class="o">-</span><span class="n">audiovisual_run</span><span class="o">-</span><span class="mi">01</span><span class="n">_meg</span><span class="o">.</span><span class="n">fif</span>
+<span class="n">Closing</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">mainak</span><span class="o">/</span><span class="n">Desktop</span><span class="o">/</span><span class="n">projects</span><span class="o">/</span><span class="n">github_repos</span><span class="o">/</span><span class="n">mne</span><span class="o">-</span><span class="n">python</span><span class="o">/</span><span class="n">examples</span><span class="o">/</span><span class="n">MNE</span><span class="o">-</span><span class="n">sample</span><span class="o">-</span><span class="n">data</span><span class="o">-</span><span class="n">bids</span><span class="o">/</span><span class="n">sub</span><span class="o">-</span><span class="mi">01</span><span class="o">/</span><span class="n">ses</span><span class="o">-</span><span class="mi">01</span><span class="o">/</span><span class="n">meg</span><span class="o">/</span><span class="n">sub</span><span class="o">-</span><span class="mi">01</span><span class="n">_ses</span><span class="o">-</span><span class="mi">01</span><span class="n">_task</span><span class="o">-</span><span class="n">audiovisual_run</span><span class="o">-</span><span class="mi">01</span><span class="n">_meg</span><span class="o">.</span><span class="n">fif</span> <span class="p">[</span><span class="n">done</span><span class="p">]</span>
 </pre></div>
 </div>
-<p><strong>Total running time of the script:</strong> ( 0 minutes  7.525 seconds)</p>
+<p><strong>Total running time of the script:</strong> ( 0 minutes  3.209 seconds)</p>
 <div class="sphx-glr-footer docutils container">
 <div class="sphx-glr-download docutils container">
 <a class="reference download internal" href="../_downloads/convert_mne_sample.py" download=""><code class="xref download docutils literal"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">convert_mne_sample.py</span></code></a></div>
@@ -286,7 +250,7 @@ your existing files into a BIDS-compatible folder.</p>
       
     </p>
     <p>
-        &copy; Copyright 2018, MNE Developers. Last updated on 2018-01-27.<br/>
+        &copy; Copyright 2018, MNE Developers. Last updated on 2018-04-24.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.3.<br/>
     </p>
   </div>

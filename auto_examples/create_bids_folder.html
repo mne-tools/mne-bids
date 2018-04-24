@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Creating BIDS-compatible folders and files &#8212; mne_bids 0.1dev0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/bootswatch-3.3.4/flatly/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1dev0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-3.3.4/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head>
+  <body role="document">
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          MNE-BIDS</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.1dev0</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="index.html">Gallery</a></li>
+                <li><a href="https://github.com/mne-tools/mne-bids">Github</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"></ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">Creating BIDS-compatible folders and files</a><ul>
+<li><a class="reference internal" href="#creating-file-names-for-bids">Creating file names for BIDS</a></li>
+<li><a class="reference internal" href="#creating-folders">Creating folders</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+              <li class="hidden-sm">
+<div id="sourcelink">
+  <a href="../_sources/auto_examples/create_bids_folder.rst.txt"
+     rel="nofollow">Source</a>
+</div></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12 content">
+      
+  <div class="section" id="creating-bids-compatible-folders-and-files">
+<span id="sphx-glr-auto-examples-create-bids-folder-py"></span><h1>Creating BIDS-compatible folders and files<a class="headerlink" href="#creating-bids-compatible-folders-and-files" title="Permalink to this headline">¶</a></h1>
+<p>The Brain Imaging Data Structure (BIDS) has standard conventions for file
+names and folder hierarchy. MNE-BIDS comes with convenience functions if you
+wish to create these files/folders on your own.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">You may automatically convert Raw files to a BIDS-compatible folder with
+<cite>raw_to_bids</cite>. This example is for manually creating files/folders.</p>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="c1"># Authors: Chris Holdgraf &lt;choldgraf@berkeley.edu&gt;</span>
+<span class="c1"># License: BSD (3-clause)</span>
+</pre></div>
+</div>
+<p>We&#8217;ll import the relevant functions from the utils module</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mne_bids</span> <span class="kn">import</span> <span class="n">make_bids_folders</span><span class="p">,</span> <span class="n">make_bids_filename</span>
+</pre></div>
+</div>
+<div class="section" id="creating-file-names-for-bids">
+<h2>Creating file names for BIDS<a class="headerlink" href="#creating-file-names-for-bids" title="Permalink to this headline">¶</a></h2>
+<p>BIDS requires a specific ordering and structure for metadata fields in
+file paths, the function <cite>filename_bids</cite> allows you to specify many such
+pieces of metadata, ensuring that they are in the correct order in the
+final file path. Omitted keys will not be included in the file path.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">my_name</span> <span class="o">=</span> <span class="n">make_bids_filename</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="s1">&#39;two&#39;</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="s1">&#39;mytask&#39;</span><span class="p">,</span>
+                             <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;data.csv&#39;</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">my_name</span><span class="p">)</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-default"><div class="highlight"><pre><span></span><span class="n">sub</span><span class="o">-</span><span class="n">test_ses</span><span class="o">-</span><span class="n">two_task</span><span class="o">-</span><span class="n">mytask_data</span><span class="o">.</span><span class="n">csv</span>
+</pre></div>
+</div>
+<p>You may also omit the suffix, which will result in <em>only</em> a prefix for a
+file name. This could then prepended to many more files.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">my_name</span> <span class="o">=</span> <span class="n">make_bids_filename</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="s1">&#39;mytask&#39;</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">my_name</span><span class="p">)</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-default"><div class="highlight"><pre><span></span><span class="n">sub</span><span class="o">-</span><span class="n">test_task</span><span class="o">-</span><span class="n">mytask</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="creating-folders">
+<h2>Creating folders<a class="headerlink" href="#creating-folders" title="Permalink to this headline">¶</a></h2>
+<p>You can also use MNE-BIDS to create folder hierarchies.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">path_folder</span> <span class="o">=</span> <span class="n">make_bids_folders</span><span class="p">(</span><span class="s1">&#39;sub_01&#39;</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="s1">&#39;mysession&#39;</span><span class="p">,</span>
+                                <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;meg&#39;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="s1">&#39;path/to/project&#39;</span><span class="p">,</span> <span class="n">make_dir</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">path_folder</span><span class="p">)</span>
+
+<span class="c1"># Note that passing `make_dir=True` will create the folder hierarchy, ignoring</span>
+<span class="c1"># errors if the folder already exists.</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-default"><div class="highlight"><pre><span></span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">project</span><span class="o">/</span><span class="n">sub</span><span class="o">-</span><span class="n">sub_01</span><span class="o">/</span><span class="n">ses</span><span class="o">-</span><span class="n">mysession</span><span class="o">/</span><span class="n">meg</span>
+</pre></div>
+</div>
+<p><strong>Total running time of the script:</strong> ( 0 minutes  0.000 seconds)</p>
+<div class="sphx-glr-footer docutils container">
+<div class="sphx-glr-download docutils container">
+<a class="reference download internal" href="../_downloads/create_bids_folder.py" download=""><code class="xref download docutils literal"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">create_bids_folder.py</span></code></a></div>
+<div class="sphx-glr-download docutils container">
+<a class="reference download internal" href="../_downloads/create_bids_folder.ipynb" download=""><code class="xref download docutils literal"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">create_bids_folder.ipynb</span></code></a></div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.readthedocs.io">Generated by Sphinx-Gallery</a></p>
+</div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2018, MNE Developers. Last updated on 2018-04-24.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.3.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>
