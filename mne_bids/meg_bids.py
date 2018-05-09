@@ -202,7 +202,7 @@ def _channel_json(raw, task, manufacturer, fname, kind, verbose):
         ("DewarPosition", "XXX"),
         ("DigitizedLandmarks", False),
         ("DigitizedHeadPoints", False),
-        ("SoftwareFilters", "none"),
+        ("SoftwareFilters", "n/a"),
         ('MEGChannelCount', n_megchan),
         ('MEGREFChannelCount', n_megrefchan)]
     ch_info_json_ieeg = [
