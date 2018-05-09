@@ -152,7 +152,7 @@ def _coordsystem_json(raw, unit, orient, manufacturer, fname, verbose):
         err = 'All HPI and Fiducials must be in the same coordinate frame.'
         raise ValueError(err)
 
-    fid_json = {'MEGCoordinateSystem': manufacturer,
+    fid_json = {'MEGCoordinateSystem': orient,
                 'MEGCoordinateUnits': unit,  # XXX validate this
                 'HeadCoilCoordinates': coords,
                 'HeadCoilCoordinateSystem': orient,
@@ -202,7 +202,7 @@ def _channel_json(raw, task, manufacturer, fname, kind, verbose):
         ("DewarPosition", "XXX"),
         ("DigitizedLandmarks", False),
         ("DigitizedHeadPoints", False),
-        ("SoftwareFilters", "n/a"),
+        ("SoftwareFilters", "none"),
         ('MEGChannelCount', n_megchan),
         ('MEGREFChannelCount', n_megrefchan)]
     ch_info_json_ieeg = [
@@ -314,7 +314,7 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
         suffix='coordsystem.json', prefix=data_path)
     data_meta_fname = make_bids_filename(
         subject=subject_id, session=session_id,
-        suffix='%s.json' % kind, prefix=data_path)
+        task=task, run=run, suffix='%s.json' % kind, prefix=data_path)
     raw_file_bids = make_bids_filename(
         subject=subject_id, session=session_id, task=task, run=run,
         suffix='%s%s' % (kind, ext), prefix=data_path)
