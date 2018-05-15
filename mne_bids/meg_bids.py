@@ -24,6 +24,7 @@ from warnings import warn
 from .utils import (make_bids_filename, make_bids_folders,
                     make_dataset_description, _write_json)
 from .io import _parse_ext, _read_raw
+from .file_namer import BIDSName
 
 ALLOWED_KINDS = ['meg', 'ieeg']
 orientation = {'.sqd': 'ALS', '.con': 'ALS', '.fif': 'RAS', '.gz': 'RAS',
@@ -166,6 +167,7 @@ def _coordsystem_json(raw, unit, orient, manufacturer, fname, verbose):
 def _channel_json(raw, task, manufacturer, fname, kind, verbose):
 
     sfreq = raw.info['sfreq']
+    rectime = int(round(raw.times[-1]))      # for continuous data I think...
     powerlinefrequency = raw.info.get('line_freq', None)
     if powerlinefrequency is None:
         warn('No line frequency found, defaulting to 50 Hz')
@@ -215,12 +217,15 @@ def _channel_json(raw, task, manufacturer, fname, kind, verbose):
         ('EMGChannelCount', n_emgchan),
         ('MiscChannelCount', n_miscchan),
         ('TriggerChannelCount', n_stimchan)]
+    ch_info_misc = [
+        ('RecordingDuration', rectime)]
 
     # Stitch together the complete JSON dictionary
     ch_info_json = ch_info_json_common
     append_kind_json = ch_info_json_meg if kind == 'meg' else ch_info_json_ieeg
     ch_info_json += append_kind_json
     ch_info_json += ch_info_ch_counts
+    ch_info_json += ch_info_misc
     ch_info_json = OrderedDict(ch_info_json)
 
     _write_json(ch_info_json, fname, verbose=verbose)
@@ -281,6 +286,7 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
         raw = _read_raw(raw_file, electrode=electrode, hsp=hsp, hpi=hpi,
                         config=config, verbose=verbose)
         _, ext = _parse_ext(raw_file, verbose=verbose)
+        raw_fname = raw_file
     elif isinstance(raw_file, BaseRaw):
         # Only parse the filename for the extension
         # Assume that if no filename attr exists, it's a fif file.
@@ -289,9 +295,16 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
             _, ext = _parse_ext(raw.filenames[0], verbose=verbose)
         else:
             ext = '.fif'
+        raw_fname = raw.filenames[0]
     else:
         raise ValueError('raw_file must be an instance of str or BaseRaw, '
                          'got %s' % type(raw_file))
+
+    #create a BIDSName object for the files
+    namer = BIDSName(subject=subject_id, session=session_id,
+                     task=task, run=run, kind=kind)
+
+    # the pathing can be improved too with this new namer object
     data_path = make_bids_folders(subject=subject_id, session=session_id,
                                   kind=kind, root=output_path,
                                   overwrite=overwrite,
@@ -305,25 +318,14 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
                                      verbose=verbose)
 
     # create filenames
-    scans_fname = make_bids_filename(
-        subject=subject_id, session=session_id, suffix='scans.tsv',
-        prefix=ses_path)
-
-    coordsystem_fname = make_bids_filename(
-        subject=subject_id, session=session_id,
-        suffix='coordsystem.json', prefix=data_path)
-    data_meta_fname = make_bids_filename(
-        subject=subject_id, session=session_id,
-        task=task, run=run, suffix='%s.json' % kind, prefix=data_path)
-    raw_file_bids = make_bids_filename(
-        subject=subject_id, session=session_id, task=task, run=run,
-        suffix='%s%s' % (kind, ext), prefix=data_path)
-    events_tsv_fname = make_bids_filename(
-        subject=subject_id, session=session_id, task=task,
-        run=run, suffix='events.tsv', prefix=data_path)
-    channels_fname = make_bids_filename(
-        subject=subject_id, session=session_id, task=task, run=run,
-        suffix='channels.tsv', prefix=data_path)
+    # it would be better to get these as absolute paths then pass
+    # the output path and relative path to the functions maybe?
+    scans_fname = namer.get_filename('scans.tsv', output_path)
+    coordsystem_fname = namer.get_filename('coordsystem.json', output_path)
+    data_meta_fname = namer.get_filename('{0}.json'.format(kind), output_path)
+    raw_file_bids = namer.get_filename(raw_fname)
+    events_tsv_fname = namer.get_filename('events.tsv', output_path)
+    channels_fname = namer.get_filename('channels.tsv', output_path)
 
     # Read in Raw object and extract metadata from Raw object if needed
     if kind == 'meg':
@@ -355,13 +357,22 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
     if ext in ['.fif', '.gz']:
         raw.save(raw_file_bids, overwrite=overwrite)
     else:
-        if os.path.exists(raw_file_bids):
+        # "absolute" file path. Will be actually absolute if the output path
+        # is absolute. Otherwise will be the full relative path to the raw file
+        raw_file_bids_abs = namer.get_filename(raw_fname, output_path)
+        # check to make sure that the folder exists that we want to put the file in
+        if os.path.exists(raw_file_bids_abs):
             if overwrite:
-                os.remove(raw_file_bids)
-                sh.copyfile(raw_file, raw_file_bids)
+                # do we really want to remove it?
+                # if so, it would be better to do sh.move(~)
+                #os.remove(raw_file_bids)
+                sh.copyfile(raw_fname, raw_file_bids_abs)
             else:
                 raise ValueError('"%s" already exists. Please set overwrite to'
                                  ' True.' % raw_file_bids)
+        else:
+            # copy the file
+            sh.copyfile(raw_fname, raw_file_bids_abs)
 
     return output_path
 
