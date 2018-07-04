@@ -19,6 +19,9 @@ install:
   - "SET MNE_FORCE_SERIAL=true"  # otherwise joblib will bomb
   - ps: Install-Product node $env:nodejs_version
   - npm install -g https://github.com/INCF/bids-validator.git#0.26.0
+  - node --version
+  - npm --version
+  - bids-validator --version
 
 build: false  # Not a C# project, build stuff at the test step instead.
 
