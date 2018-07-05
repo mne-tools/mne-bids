@@ -3,17 +3,21 @@ environment:
       nodejs_version: "6.11.0"
       PYTHON: "C:\\conda"
       # NODE_PATH: "C:\\Users\\appveyor\\AppData\\Roaming\\npm; C:\\Program Files\\nodejs"
-      NODE_PATH: "/c/Users/appveyor/AppData/Roaming/npm"
+      NODE_PATH: "C:\\Users\\appveyor\\AppData\\Roaming\\npm\\node_modules\\bids-validator\\bin"
       CONDA_ENVIRONMENT: "environment.yml"
       PIP_DEPENDENCIES: "codecov pytest-faulthandler"
   matrix:
       - PYTHON_VERSION: "2.7"
         PYTHON_ARCH: "64"
 
+init:
+  - ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
+
+
 install:
   - "git clone --depth 1 git://github.com/astropy/ci-helpers.git"
   - "powershell ci-helpers/appveyor/install-miniconda.ps1"
-  - "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%NODE_PATH%;%PATH%"
+  - "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
   - "activate test"
   - "pip uninstall -yq mne"
   - |-
@@ -27,6 +31,7 @@ install:
   - "SET MNE_FORCE_SERIAL=true"  # otherwise joblib will bomb
   - ps: Install-Product node $env:nodejs_version
   - npm install -g https://github.com/INCF/bids-validator.git#0.26.0
+  - "SET PATH=%NODE_PATH%;%PATH%"
   - node --version
   - npm --version
   - bids-validator --version
