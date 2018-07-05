@@ -2,7 +2,8 @@ environment:
   global:
       nodejs_version: "6.11.0"
       PYTHON: "C:\\conda"
-      NODE_PATH: "C:\\Users\\appveyor\\AppData\\Roaming\\npm; C:\\Program Files\\nodejs"
+      # NODE_PATH: "C:\\Users\\appveyor\\AppData\\Roaming\\npm; C:\\Program Files\\nodejs"
+      NODE_PATH: "/c/Users/appveyor/AppData/Roaming/npm"
       CONDA_ENVIRONMENT: "environment.yml"
       PIP_DEPENDENCIES: "codecov pytest-faulthandler"
   matrix:
@@ -16,10 +17,12 @@ install:
   - "activate test"
   - "pip uninstall -yq mne"
   - |-
+    cd ..
     git clone https://github.com/mne-tools/mne-python.git
     cd mne-python
     python setup.py develop
     cd ..
+    cd mne-bids
   - "python setup.py develop"
   - "SET MNE_FORCE_SERIAL=true"  # otherwise joblib will bomb
   - ps: Install-Product node $env:nodejs_version
@@ -27,13 +30,14 @@ install:
   - node --version
   - npm --version
   - bids-validator --version
+  - which bids-validator
   - "python -c \"import mne; mne.datasets.testing.data_path()\""
 
 build: false  # Not a C# project, build stuff at the test step instead.
 
 test_script:
   # Run the project tests, but (sadly) exclude ones that take a long time
-  - "pytest --cov=mne-bids"
+  - "py.test mne_bids --cov=mne_bids"
 
 on_success:
 - "codecov"
