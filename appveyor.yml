@@ -14,6 +14,12 @@ install:
   - "powershell ci-helpers/appveyor/install-miniconda.ps1"
   - "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%NODE_PATH%;%PATH%"
   - "activate test"
+  - "pip uninstall -yq mne"
+  - |-
+    git clone https://github.com/mne-tools/mne-python.git
+    cd mne-python
+    python setup.py develop
+    cd ..
   - "python setup.py develop"
   - "SET MNE_FORCE_SERIAL=true"  # otherwise joblib will bomb
   - ps: Install-Product node $env:nodejs_version
