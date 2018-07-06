@@ -8,6 +8,7 @@ We should test their functionality with their sample data.
 #          Chris Holdgraf <choldgraf@berkeley.edu>
 # License: BSD (3-clause)
 
+import os
 import os.path as op
 
 import mne
@@ -23,6 +24,14 @@ subject_id = '01'
 session_id = '01'
 run = '01'
 task = 'testing'
+
+# for windows, shell = True is needed
+# to call npm, bids-validator etc.
+#     see: https://stackoverflow.com/questions/
+#          28891053/run-npm-commands-using-python-subprocess
+shell = False
+if os.name == 'nt':
+    shell = True
 
 
 def test_fif():
@@ -58,7 +67,7 @@ def test_fif():
                 events_data=events_fname, output_path=output_path,
                 event_id=event_id, overwrite=True)
     cmd = ['bids-validator', output_path]
-    run_subprocess(cmd)
+    run_subprocess(cmd, shell=shell)
 
 
 def test_kit():
@@ -80,7 +89,7 @@ def test_kit():
                 hsp=headshape_fname, output_path=output_path,
                 overwrite=True)
     cmd = ['bids-validator', output_path]
-    run_subprocess(cmd)
+    run_subprocess(cmd, shell=shell)
 
 
 def test_ctf():
@@ -95,7 +104,7 @@ def test_ctf():
                 task=task, raw_file=raw_fname, output_path=output_path,
                 overwrite=True)
     cmd = ['bids-validator', output_path]
-    run_subprocess(cmd)
+    run_subprocess(cmd, shell=shell)
 
 
 def test_bti():
@@ -113,4 +122,4 @@ def test_bti():
                 hsp=headshape_fname, output_path=output_path,
                 verbose=True, overwrite=True)
     cmd = ['bids-validator', output_path]
-    run_subprocess(cmd)
+    run_subprocess(cmd, shell=shell)
