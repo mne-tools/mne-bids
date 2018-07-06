@@ -10,10 +10,6 @@ environment:
       - PYTHON_VERSION: "2.7"
         PYTHON_ARCH: "64"
 
-init:
-  - ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
-
-
 install:
   - "git clone --depth 1 git://github.com/astropy/ci-helpers.git"
   - "powershell ci-helpers/appveyor/install-miniconda.ps1"
@@ -44,5 +40,8 @@ test_script:
   # Run the project tests, but (sadly) exclude ones that take a long time
   - "py.test mne_bids --cov=mne_bids"
 
+on_finish:
+  - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
+#
 on_success:
 - "codecov"
