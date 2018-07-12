@@ -188,7 +188,7 @@ def _channel_json(raw, task, manufacturer, fname, kind, verbose):
     n_emgchan = len([ch for ch in raw.info['chs']
                      if ch['kind'] == FIFF.FIFFV_EMG_CH])
     n_miscchan = len([ch for ch in raw.info['chs']
-                     if ch['kind'] == FIFF.FIFFV_EOG_CH])
+                     if ch['kind'] == FIFF.FIFFV_MISC_CH])
     n_stimchan = len([ch for ch in raw.info['chs']
                      if ch['kind'] == FIFF.FIFFV_STIM_CH])
 
