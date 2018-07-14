@@ -182,6 +182,29 @@ def _scans_tsv(raw, raw_fname, fname, verbose):
 
 
 def _coordsystem_json(raw, unit, orient, manufacturer, fname, verbose):
+    """Create a coordsystem.json file and save it.
+
+    Parameters
+    ----------
+    raw : instance of Raw
+        The data as MNE-Python Raw object.
+
+    unit : str
+        Units to be used in the coordsystem specification.
+
+    orient : str
+        Used to define the coordinate system for the head coils.
+
+    manufacturer : str
+        Used to define the coordinate system for the MEG sensors.
+
+    fname : str
+        Filename to save the channels.tsv to.
+
+    verbose : bool
+        Set verbose output to true or false.
+
+    """
     dig = raw.info['dig']
     coords = dict()
     fids = {d['ident']: d for d in dig if d['kind'] ==
