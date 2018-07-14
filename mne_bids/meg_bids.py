@@ -238,8 +238,32 @@ def _coordsystem_json(raw, unit, orient, manufacturer, fname, verbose):
     return fname
 
 
-def _channel_json(raw, task, manufacturer, fname, kind, verbose):
+def _sidecar_json(raw, task, manufacturer, fname, kind, verbose):
+    """Create a sidecar json file depending on the kind and save it.
 
+    The sidecar json file provides meta data about the data of a certain kind.
+
+    Parameters
+    ----------
+    raw : instance of Raw
+        The data as MNE-Python Raw object.
+
+    task : str
+        Name of the task the data is based on.
+
+    manufacturer : str
+        Used to define the coordinate system for the MEG sensors.
+
+    fname : str
+        Filename to save the channels.tsv to.
+
+    kind : str
+        Type of the data as in ALLOWED_KINDS.
+
+    verbose : bool
+        Set verbose output to true or false.
+
+    """
     sfreq = raw.info['sfreq']
     powerlinefrequency = raw.info.get('line_freq', None)
     if powerlinefrequency is None:
@@ -418,7 +442,7 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
 
     make_dataset_description(output_path, name=" ",
                              verbose=verbose)
-    _channel_json(raw, task, manufacturer, data_meta_fname, kind, verbose)
+    _sidecar_json(raw, task, manufacturer, data_meta_fname, kind, verbose)
     _channels_tsv(raw, channels_fname, verbose)
 
     events = _read_events(events_data, raw)
