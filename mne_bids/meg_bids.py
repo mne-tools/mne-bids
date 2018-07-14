@@ -335,9 +335,9 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
     Parameters
     ----------
     subject_id : str
-        The subject name in BIDS compatible format (01, 02, etc.)
+        The subject name in BIDS compatible format ('01', '02', etc.)
     task : str
-        The task name.
+        Name of the task the data is based on.
     raw_file : str | instance of mne.Raw
         The raw data. If a string, it is assumed to be the path to the raw data
         file. Otherwise it must be an instance of mne.Raw
@@ -374,6 +374,7 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
     verbose : bool
         If verbose is True, this will print a snippet of the sidecar files. If
         False, no content will be printed.
+
     """
     if isinstance(raw_file, string_types):
         # We must read in the raw data
