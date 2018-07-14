@@ -2,6 +2,7 @@
 #          Alexandre Gramfort <alexandre.gramfort@telecom-paristech.fr>
 #          Teon Brooks <teon.brooks@gmail.com>
 #          Chris Holdgraf <choldgraf@berkeley.edu>
+#          Stefan Appelhoff <stefan.appelhoff@mailbox.org>
 #
 # License: BSD (3-clause)
 
@@ -95,8 +96,30 @@ def _channels_tsv(raw, fname, verbose):
 
 
 def _events_tsv(events, raw, fname, event_id, verbose):
-    """Create tsv file for events."""
+    """Create an events.tsv file and save it.
 
+    Parameters
+    ----------
+    events : array, shape = (n_events, 3)
+        The first column contains the event time in samples and the third
+        column contains the event id. The second column is ignored for now but
+        typically contains the value of the trigger channel either immediately
+        before the event or immediately after.
+
+    raw : instance of Raw
+        The data as MNE-Python Raw object.
+
+    fname : str
+        Filename to save the channels.tsv to.
+
+    event_id : dict | None
+        Dictionary mapping a brief description key to an event id (value). For
+        example {'Go': 1, 'No Go': 2}.
+
+    verbose : bool
+        Set verbose output to true or false.
+
+    """
     first_samp = raw.first_samp
     sfreq = raw.info['sfreq']
     events[:, 0] -= first_samp
