@@ -45,10 +45,8 @@ def _channels_tsv(raw, fname, verbose):
     ----------
     raw : instance of Raw
         The data as MNE-Python Raw object.
-
     fname : str
         Filename to save the channels.tsv to.
-
     verbose : bool
         Set verbose output to true or false.
 
@@ -105,17 +103,13 @@ def _events_tsv(events, raw, fname, event_id, verbose):
         column contains the event id. The second column is ignored for now but
         typically contains the value of the trigger channel either immediately
         before the event or immediately after.
-
     raw : instance of Raw
         The data as MNE-Python Raw object.
-
     fname : str
         Filename to save the channels.tsv to.
-
     event_id : dict | None
         Dictionary mapping a brief description key to an event id (value). For
         example {'Go': 1, 'No Go': 2}.
-
     verbose : bool
         Set verbose output to true or false.
 
@@ -147,13 +141,10 @@ def _scans_tsv(raw, raw_fname, fname, verbose):
     ----------
     raw : instance of Raw
         The data as MNE-Python Raw object.
-
     raw_fname : str
         Relative path to the raw data file.
-
     fname : str
         Filename to save the channels.tsv to.
-
     verbose : bool
         Set verbose output to true or false.
 
@@ -188,19 +179,14 @@ def _coordsystem_json(raw, unit, orient, manufacturer, fname, verbose):
     ----------
     raw : instance of Raw
         The data as MNE-Python Raw object.
-
     unit : str
         Units to be used in the coordsystem specification.
-
     orient : str
         Used to define the coordinate system for the head coils.
-
     manufacturer : str
         Used to define the coordinate system for the MEG sensors.
-
     fname : str
         Filename to save the channels.tsv to.
-
     verbose : bool
         Set verbose output to true or false.
 
@@ -247,19 +233,14 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, verbose):
     ----------
     raw : instance of Raw
         The data as MNE-Python Raw object.
-
     task : str
         Name of the task the data is based on.
-
     manufacturer : str
         Used to define the coordinate system for the MEG sensors.
-
     fname : str
         Filename to save the channels.tsv to.
-
     kind : str
         Type of the data as in ALLOWED_KINDS.
-
     verbose : bool
         Set verbose output to true or false.
 
@@ -475,9 +456,16 @@ def _read_events(events_data, raw):
         The events file. If a string, a path to the events file. If an array,
         the MNE events array (shape n_events, 3). If None, events will be
         inferred from the stim channel using `find_events`.
-
     raw : instance of Raw
         The data as MNE-Python Raw object.
+
+    Returns
+    -------
+    events : array, shape = (n_events, 3)
+        The first column contains the event time in samples and the third
+        column contains the event id. The second column is ignored for now but
+        typically contains the value of the trigger channel either immediately
+        before the event or immediately after.
 
     """
     if isinstance(events_data, string_types):
