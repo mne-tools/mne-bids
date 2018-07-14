@@ -141,8 +141,24 @@ def _events_tsv(events, raw, fname, event_id, verbose):
 
 
 def _scans_tsv(raw, raw_fname, fname, verbose):
-    """Create tsv file for scans."""
+    """Create a scans.tsv file and save it.
 
+    Parameters
+    ----------
+    raw : instance of Raw
+        The data as MNE-Python Raw object.
+
+    raw_fname : str
+        Relative path to the raw data file.
+
+    fname : str
+        Filename to save the channels.tsv to.
+
+    verbose : bool
+        Set verbose output to true or false.
+
+    """
+    # get MEASurement date from the data info
     meas_date = raw.info['meas_date']
     if isinstance(meas_date, (np.ndarray, list)):
         meas_date = meas_date[0]
