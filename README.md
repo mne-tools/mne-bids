@@ -4,8 +4,7 @@
 MNE-BIDS
 ========
 
-This is a repository for experimental code for creating BIDS-compatible folders with MNE. 
-All of this is considered as work-in-progress.
+This is a repository for creating BIDS-compatible datasets with MNE. 
 
 Installation
 ------------
@@ -28,13 +27,15 @@ To check if everything worked fine, you can do:
 
 and it should not give any error messages.
 
-Examples
---------
-https://mne-tools.github.io/mne-bids/auto_examples/index.html
-
 Contributions
 -------------
+
 Contributions are welcome in the form of pull requests.
+
 Once the implementation of a piece of functionality is considered to be bug
 free and properly documented (both API docs and an example script),
 it can be incorporated into the master branch.
+
+Note that, for testing purposes, it is necessary to install the
+[BIDS validator](https://github.com/INCF/bids-validator). The outputs of
+MNE-BIDS are run through the BIDS validator to check if the conversion worked.
