@@ -467,7 +467,19 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
 
 
 def _read_events(events_data, raw):
-    """Read in events data."""
+    """Read in events data.
+
+    Parameters
+    ----------
+    events_data : str | array | None
+        The events file. If a string, a path to the events file. If an array,
+        the MNE events array (shape n_events, 3). If None, events will be
+        inferred from the stim channel using `find_events`.
+
+    raw : instance of Raw
+        The data as MNE-Python Raw object.
+
+    """
     if isinstance(events_data, string_types):
         events = read_events(events_data).astype(int)
     elif isinstance(events_data, np.ndarray):
