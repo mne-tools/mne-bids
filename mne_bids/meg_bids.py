@@ -231,7 +231,7 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
                 run=None, kind='meg', events_data=None, event_id=None,
                 hpi=None, electrode=None, hsp=None, config=None,
                 overwrite=True, verbose=True):
-    """Walk over a folder of files and create bids compatible folder.
+    """Walk over a folder of files and create BIDS compatible folder.
 
     Parameters
     ----------

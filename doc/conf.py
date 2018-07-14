@@ -43,6 +43,9 @@ extensions = [
     'sphinx_gallery.gen_gallery'
 ]
 
+# generate autosummary even if no references
+autosummary_generate = True
+
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
@@ -110,6 +113,7 @@ html_theme_options = {
     'bootstrap_version': "3",
     'navbar_links': [
         ("Gallery", "auto_examples/index"),
+        ("API", "api"),
         ("Github", "https://github.com/mne-tools/mne-bids", True),
     ]}
 
@@ -180,6 +184,7 @@ sphinx_gallery_conf = {
     'examples_dirs': '../examples',
     'gallery_dirs': 'auto_examples',
     'filename_pattern': '^((?!sgskip).)*$',
+    'backreferences_dir': 'generated',
     'reference_url': {
         'mne': 'http://mne-tools.github.io/stable/',
         'numpy': 'http://docs.scipy.org/doc/numpy-1.9.1',
