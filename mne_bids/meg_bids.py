@@ -38,7 +38,20 @@ manufacturers = {'.sqd': 'KIT/Yokogawa', '.con': 'KIT/Yokogawa',
 
 
 def _channels_tsv(raw, fname, verbose):
-    """Create channel tsv."""
+    """Create a channels.tsv file and save it.
+
+    Parameters
+    ----------
+    raw : instance of Raw
+        The data as MNE-Python Raw object.
+
+    fname : str
+        Filename to save the channels.tsv to.
+
+    verbose : bool
+        Set verbose output to true or false.
+
+    """
     map_chs = defaultdict(lambda: 'OTHER')
     map_chs.update(grad='MEGGRAD', mag='MEGMAG', stim='TRIG', eeg='EEG',
                    ecog='ECOG', seeg='SEEG', eog='EOG', ecg='ECG', misc='MISC',
@@ -59,7 +72,7 @@ def _channels_tsv(raw, fname, verbose):
         ch_type.append(map_chs[channel_type(raw.info, idx)])
         description.append(map_desc[channel_type(raw.info, idx)])
     low_cutoff, high_cutoff = (raw.info['highpass'], raw.info['lowpass'])
-    units = [_unit2human.get(ich['unit'], 'n/a') for ich in raw.info['chs']]
+    units = [_unit2human.get(ch_i['unit'], 'n/a') for ch_i in raw.info['chs']]
     n_channels = raw.info['nchan']
     sfreq = raw.info['sfreq']
 
