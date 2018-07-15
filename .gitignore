@@ -23,4 +23,5 @@ cover
 *.pyc
 
 .cache
+.pytest_cache
 .ipynb_checkpoints
