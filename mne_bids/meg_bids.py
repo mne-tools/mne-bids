@@ -2,6 +2,7 @@
 #          Alexandre Gramfort <alexandre.gramfort@telecom-paristech.fr>
 #          Teon Brooks <teon.brooks@gmail.com>
 #          Chris Holdgraf <choldgraf@berkeley.edu>
+#          Stefan Appelhoff <stefan.appelhoff@mailbox.org>
 #
 # License: BSD (3-clause)
 
@@ -38,7 +39,18 @@ manufacturers = {'.sqd': 'KIT/Yokogawa', '.con': 'KIT/Yokogawa',
 
 
 def _channels_tsv(raw, fname, verbose):
-    """Create channel tsv."""
+    """Create a channels.tsv file and save it.
+
+    Parameters
+    ----------
+    raw : instance of Raw
+        The data as MNE-Python Raw object.
+    fname : str
+        Filename to save the channels.tsv to.
+    verbose : bool
+        Set verbose output to true or false.
+
+    """
     map_chs = defaultdict(lambda: 'OTHER')
     map_chs.update(grad='MEGGRAD', mag='MEGMAG', stim='TRIG', eeg='EEG',
                    ecog='ECOG', seeg='SEEG', eog='EOG', ecg='ECG', misc='MISC',
@@ -59,7 +71,7 @@ def _channels_tsv(raw, fname, verbose):
         ch_type.append(map_chs[channel_type(raw.info, idx)])
         description.append(map_desc[channel_type(raw.info, idx)])
     low_cutoff, high_cutoff = (raw.info['highpass'], raw.info['lowpass'])
-    units = [_unit2human.get(ich['unit'], 'n/a') for ich in raw.info['chs']]
+    units = [_unit2human.get(ch_i['unit'], 'n/a') for ch_i in raw.info['chs']]
     n_channels = raw.info['nchan']
     sfreq = raw.info['sfreq']
 
@@ -82,8 +94,26 @@ def _channels_tsv(raw, fname, verbose):
 
 
 def _events_tsv(events, raw, fname, event_id, verbose):
-    """Create tsv file for events."""
+    """Create an events.tsv file and save it.
 
+    Parameters
+    ----------
+    events : array, shape = (n_events, 3)
+        The first column contains the event time in samples and the third
+        column contains the event id. The second column is ignored for now but
+        typically contains the value of the trigger channel either immediately
+        before the event or immediately after.
+    raw : instance of Raw
+        The data as MNE-Python Raw object.
+    fname : str
+        Filename to save the channels.tsv to.
+    event_id : dict | None
+        Dictionary mapping a brief description key to an event id (value). For
+        example {'Go': 1, 'No Go': 2}.
+    verbose : bool
+        Set verbose output to true or false.
+
+    """
     first_samp = raw.first_samp
     sfreq = raw.info['sfreq']
     events[:, 0] -= first_samp
@@ -105,8 +135,21 @@ def _events_tsv(events, raw, fname, event_id, verbose):
 
 
 def _scans_tsv(raw, raw_fname, fname, verbose):
-    """Create tsv file for scans."""
+    """Create a scans.tsv file and save it.
 
+    Parameters
+    ----------
+    raw : instance of Raw
+        The data as MNE-Python Raw object.
+    raw_fname : str
+        Relative path to the raw data file.
+    fname : str
+        Filename to save the channels.tsv to.
+    verbose : bool
+        Set verbose output to true or false.
+
+    """
+    # get MEASurement date from the data info
     meas_date = raw.info['meas_date']
     if isinstance(meas_date, (np.ndarray, list)):
         meas_date = meas_date[0]
@@ -130,6 +173,24 @@ def _scans_tsv(raw, raw_fname, fname, verbose):
 
 
 def _coordsystem_json(raw, unit, orient, manufacturer, fname, verbose):
+    """Create a coordsystem.json file and save it.
+
+    Parameters
+    ----------
+    raw : instance of Raw
+        The data as MNE-Python Raw object.
+    unit : str
+        Units to be used in the coordsystem specification.
+    orient : str
+        Used to define the coordinate system for the head coils.
+    manufacturer : str
+        Used to define the coordinate system for the MEG sensors.
+    fname : str
+        Filename to save the channels.tsv to.
+    verbose : bool
+        Set verbose output to true or false.
+
+    """
     dig = raw.info['dig']
     coords = dict()
     fids = {d['ident']: d for d in dig if d['kind'] ==
@@ -163,8 +224,27 @@ def _coordsystem_json(raw, unit, orient, manufacturer, fname, verbose):
     return fname
 
 
-def _channel_json(raw, task, manufacturer, fname, kind, verbose):
+def _sidecar_json(raw, task, manufacturer, fname, kind, verbose):
+    """Create a sidecar json file depending on the kind and save it.
 
+    The sidecar json file provides meta data about the data of a certain kind.
+
+    Parameters
+    ----------
+    raw : instance of Raw
+        The data as MNE-Python Raw object.
+    task : str
+        Name of the task the data is based on.
+    manufacturer : str
+        Used to define the coordinate system for the MEG sensors.
+    fname : str
+        Filename to save the channels.tsv to.
+    kind : str
+        Type of the data as in ALLOWED_KINDS.
+    verbose : bool
+        Set verbose output to true or false.
+
+    """
     sfreq = raw.info['sfreq']
     powerlinefrequency = raw.info.get('line_freq', None)
     if powerlinefrequency is None:
@@ -236,9 +316,9 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
     Parameters
     ----------
     subject_id : str
-        The subject name in BIDS compatible format (01, 02, etc.)
+        The subject name in BIDS compatible format ('01', '02', etc.)
     task : str
-        The task name.
+        Name of the task the data is based on.
     raw_file : str | instance of mne.Raw
         The raw data. If a string, it is assumed to be the path to the raw data
         file. Otherwise it must be an instance of mne.Raw
@@ -275,6 +355,7 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
     verbose : bool
         If verbose is True, this will print a snippet of the sidecar files. If
         False, no content will be printed.
+
     """
     if isinstance(raw_file, string_types):
         # We must read in the raw data
@@ -343,7 +424,7 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
 
     make_dataset_description(output_path, name=" ",
                              verbose=verbose)
-    _channel_json(raw, task, manufacturer, data_meta_fname, kind, verbose)
+    _sidecar_json(raw, task, manufacturer, data_meta_fname, kind, verbose)
     _channels_tsv(raw, channels_fname, verbose)
 
     events = _read_events(events_data, raw)
@@ -367,7 +448,26 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
 
 
 def _read_events(events_data, raw):
-    """Read in events data."""
+    """Read in events data.
+
+    Parameters
+    ----------
+    events_data : str | array | None
+        The events file. If a string, a path to the events file. If an array,
+        the MNE events array (shape n_events, 3). If None, events will be
+        inferred from the stim channel using `find_events`.
+    raw : instance of Raw
+        The data as MNE-Python Raw object.
+
+    Returns
+    -------
+    events : array, shape = (n_events, 3)
+        The first column contains the event time in samples and the third
+        column contains the event id. The second column is ignored for now but
+        typically contains the value of the trigger channel either immediately
+        before the event or immediately after.
+
+    """
     if isinstance(events_data, string_types):
         events = read_events(events_data).astype(int)
     elif isinstance(events_data, np.ndarray):
