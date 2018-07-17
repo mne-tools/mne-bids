@@ -24,6 +24,8 @@ subject_id = '01'
 session_id = '01'
 run = '01'
 task = 'testing'
+acq_a = 'acq1'
+acq_b = 'acq2'
 
 # for windows, shell = True is needed
 # to call npm, bids-validator etc.
@@ -52,7 +54,7 @@ def test_fif():
 
     raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
                 task=task, raw_file=raw_fname, events_data=events_fname,
-                output_path=output_path, event_id=event_id,
+                output_path=output_path, event_id=event_id, acquisition=acq_a,
                 overwrite=True)
 
     # let's do some modifications to meas_date
@@ -65,7 +67,7 @@ def test_fif():
     raw_to_bids(subject_id=subject_id, run=run, task=task,
                 session_id=session_id, raw_file=raw_fname2,
                 events_data=events_fname, output_path=output_path,
-                event_id=event_id, overwrite=True)
+                event_id=event_id, acquisition=acq_b, overwrite=True)
     cmd = ['bids-validator', output_path]
     run_subprocess(cmd, shell=shell)
 
@@ -87,7 +89,13 @@ def test_kit():
                 task=task, raw_file=raw_fname, events_data=events_fname,
                 event_id=event_id, hpi=hpi_fname, electrode=electrode_fname,
                 hsp=headshape_fname, output_path=output_path,
-                overwrite=True)
+                acquisition=acq_a, overwrite=True)
+    # run again with a different acquisiton parameter
+    raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
+                task=task, raw_file=raw_fname, events_data=events_fname,
+                event_id=event_id, hpi=hpi_fname, electrode=electrode_fname,
+                hsp=headshape_fname, output_path=output_path,
+                acquisition=acq_b, overwrite=True)
     cmd = ['bids-validator', output_path]
     run_subprocess(cmd, shell=shell)
 
@@ -102,7 +110,11 @@ def test_ctf():
 
     raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
                 task=task, raw_file=raw_fname, output_path=output_path,
-                overwrite=True)
+                acquisition=acq_a, overwrite=True)
+    # run again with a different acquisiton parameter
+    raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
+                task=task, raw_file=raw_fname, output_path=output_path,
+                acquisition=acq_b, overwrite=True)
     cmd = ['bids-validator', output_path]
     run_subprocess(cmd, shell=shell)
 
@@ -120,6 +132,11 @@ def test_bti():
     raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
                 task=task, raw_file=raw_fname, config=config_fname,
                 hsp=headshape_fname, output_path=output_path,
-                verbose=True, overwrite=True)
+                acquisition=acq_a, verbose=True, overwrite=True)
+    # run again with a different acquisiton parameter
+    raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
+                task=task, raw_file=raw_fname, config=config_fname,
+                hsp=headshape_fname, output_path=output_path,
+                acquisition=acq_b, verbose=True, overwrite=True)
     cmd = ['bids-validator', output_path]
     run_subprocess(cmd, shell=shell)

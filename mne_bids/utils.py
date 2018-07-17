@@ -110,7 +110,7 @@ def make_bids_filename(subject=None, session=None, task=None,
 
 
 def make_bids_folders(subject, session=None, kind=None, root=None,
-                      make_dir=True, overwrite=True, verbose=False):
+                      make_dir=True, overwrite=False, verbose=False):
     """Create a BIDS folder hierarchy.
 
     This creates a hierarchy of folders *within* a BIDS dataset. You should
