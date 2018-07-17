@@ -256,7 +256,7 @@ def _coordsystem_json(raw, unit, orient, manufacturer, fname, verbose,
     return fname
 
 
-def _sidecar_json(raw, task, manufacturer, fname, kind, verbose):
+def _sidecar_json(raw, task, manufacturer, fname, kind, verbose, overwrite):
     """Create a sidecar json file depending on the kind and save it.
 
     The sidecar json file provides meta data about the data of a certain kind.
