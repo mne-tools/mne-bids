@@ -471,7 +471,8 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
 
     events = _read_events(events_data, raw)
     if len(events) > 0:
-        _events_tsv(events, raw, events_tsv_fname, event_id, verbose, overwrite)
+        _events_tsv(events, raw, events_tsv_fname, event_id, verbose,
+                    overwrite)
 
     # for FIF, we need to re-save the file to fix the file pointer
     # for files with multiple parts
