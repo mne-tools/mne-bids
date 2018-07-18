@@ -1,11 +1,20 @@
 """Utility and helper functions for MNE-BIDS."""
+# Authors: Mainak Jas <mainak.jas@telecom-paristech.fr>
+#          Alexandre Gramfort <alexandre.gramfort@telecom-paristech.fr>
+#          Teon Brooks <teon.brooks@gmail.com>
+#          Chris Holdgraf <choldgraf@berkeley.edu>
+#          Stefan Appelhoff <stefan.appelhoff@mailbox.org>
+#
+# License: BSD (3-clause)
 import os
 import errno
 from collections import OrderedDict
 import json
 import shutil as sh
 from mne.externals.six import string_types
+from mne import read_events, find_events
 from .config import BIDS_VERSION
+import numpy as np
 
 
 def _mkdir_p(path, overwrite=False, verbose=False):
@@ -76,6 +85,7 @@ def make_bids_filename(subject=None, session=None, task=None,
     --------
     >>> print(make_bids_filename(subject='test', session='two', task='mytask', suffix='data.csv')) # noqa
     sub-test_ses-two_task-mytask_data.csv
+
     """
     order = OrderedDict([('sub', subject),
                          ('ses', session),
@@ -148,6 +158,7 @@ def make_bids_folders(subject, session=None, kind=None, root=None,
     >>> print(make_bids_folders('sub_01', session='my_session',
                                 kind='meg', root='path/to/project', make_dir=False))  # noqa
     path/to/project/sub-sub_01/ses-my_session/meg
+
     """
     _check_types((subject, kind, session, root))
     if session is not None:
@@ -199,6 +210,7 @@ def make_dataset_description(path, name=None, data_license=None,
         References or links for this dataset.
     doi : str | None
         The DOI for the dataset.
+
     """
     fname = os.path.join(path, 'dataset_description.json')
     description = OrderedDict([('Name', name),
@@ -243,3 +255,39 @@ def _check_key_val(key, val):
         raise ValueError("Unallowed `-`, `_`, or `/` found in key/value pair"
                          " %s: %s" % (key, val))
     return key, val
+
+
+def _read_events(events_data, raw):
+    """Read in events data.
+
+    Parameters
+    ----------
+    events_data : str | array | None
+        The events file. If a string, a path to the events file. If an array,
+        the MNE events array (shape n_events, 3). If None, events will be
+        inferred from the stim channel using `find_events`.
+    raw : instance of Raw
+        The data as MNE-Python Raw object.
+
+    Returns
+    -------
+    events : array, shape = (n_events, 3)
+        The first column contains the event time in samples and the third
+        column contains the event id. The second column is ignored for now but
+        typically contains the value of the trigger channel either immediately
+        before the event or immediately after.
+
+    """
+    if isinstance(events_data, string_types):
+        events = read_events(events_data).astype(int)
+    elif isinstance(events_data, np.ndarray):
+        if events_data.ndim != 2:
+            raise ValueError('Events must have two dimensions, '
+                             'found %s' % events.ndim)
+        if events_data.shape[1] != 3:
+            raise ValueError('Events must have second dimension of length 3, '
+                             'found %s' % events.shape[1])
+        events = events_data
+    else:
+        events = find_events(raw)
+    return events

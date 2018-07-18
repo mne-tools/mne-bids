@@ -1,3 +1,4 @@
+"""Make BIDS compatible directory structures and infer meta data from MNE."""
 # Authors: Mainak Jas <mainak.jas@telecom-paristech.fr>
 #          Alexandre Gramfort <alexandre.gramfort@telecom-paristech.fr>
 #          Teon Brooks <teon.brooks@gmail.com>
@@ -12,7 +13,6 @@ import pandas as pd
 from collections import defaultdict, OrderedDict
 
 import numpy as np
-from mne import read_events, find_events
 from mne.io.constants import FIFF
 from mne.io.pick import channel_type
 from mne.io import BaseRaw
@@ -24,7 +24,8 @@ from datetime import datetime
 from warnings import warn
 
 from .utils import (make_bids_filename, make_bids_folders,
-                    make_dataset_description, _write_json)
+                    make_dataset_description, _write_json,
+                    _read_events)
 from .io import _parse_ext, _read_raw
 
 ALLOWED_KINDS = ['meg', 'eeg', 'ieeg']
@@ -395,7 +396,7 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
     events_data : str | array | None
         The events file. If a string, a path to the events file. If an array,
         the MNE events array (shape n_events, 3). If None, events will be
-        inferred from the stim channel using `find_events`.
+        inferred from the stim channel using `mne.find_events`.
     event_id : dict | None
         The event id dict used to create a 'trial_type' column in events.tsv
     event_type : dict | None
@@ -499,6 +500,7 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
     _channels_tsv(raw, channels_fname, verbose)
 
     events = _read_events(events_data, raw)
+    print(events)
     if len(events) > 0:
         _events_tsv(events, raw, events_tsv_fname, event_id, event_type,
                     verbose)
@@ -517,39 +519,3 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
                                  ' True.' % raw_file_bids)
 
     return output_path
-
-
-def _read_events(events_data, raw):
-    """Read in events data.
-
-    Parameters
-    ----------
-    events_data : str | array | None
-        The events file. If a string, a path to the events file. If an array,
-        the MNE events array (shape n_events, 3). If None, events will be
-        inferred from the stim channel using `find_events`.
-    raw : instance of Raw
-        The data as MNE-Python Raw object.
-
-    Returns
-    -------
-    events : array, shape = (n_events, 3)
-        The first column contains the event time in samples and the third
-        column contains the event id. The second column is ignored for now but
-        typically contains the value of the trigger channel either immediately
-        before the event or immediately after.
-
-    """
-    if isinstance(events_data, string_types):
-        events = read_events(events_data).astype(int)
-    elif isinstance(events_data, np.ndarray):
-        if events_data.ndim != 2:
-            raise ValueError('Events must have two dimensions, '
-                             'found %s' % events.ndim)
-        if events_data.shape[1] != 3:
-            raise ValueError('Events must have second dimension of length 3, '
-                             'found %s' % events.shape[1])
-        events = events_data
-    else:
-        events = find_events(raw, min_duration=0.001)
-    return events
