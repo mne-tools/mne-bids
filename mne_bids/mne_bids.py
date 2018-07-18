@@ -129,12 +129,12 @@ def _events_tsv(events, raw, fname, trial_type, event_type, verbose):
     sfreq = raw.info['sfreq']
     events[:, 0] -= first_samp
 
-    data = OrderedDict({'onset': np.c_[events[:, 0]].squeeze(),
-                        'duration': np.zeros(events.shape[0]),
-                        'trial_type': events[:, 2],
-                        'event_value': events[:, 2],
-                        'event_sample': np.c_[events[:, 0]].squeeze(),
-                        'event_type': events[:, 2]})
+    data = OrderedDict([['onset', np.c_[events[:, 0]].squeeze()],
+                        ['duration', np.zeros(events.shape[0])],
+                        ['trial_type', events[:, 2]],
+                        ['event_value', events[:, 2]],
+                        ['event_sample', np.c_[events[:, 0]].squeeze()],
+                        ['event_type', events[:, 2]]])
 
     df = pd.DataFrame.from_dict(data)
 
