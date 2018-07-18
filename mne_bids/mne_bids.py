@@ -26,7 +26,7 @@ from .utils import (make_bids_filename, make_bids_folders,
                     make_dataset_description, _write_json)
 from .io import _parse_ext, _read_raw
 
-ALLOWED_KINDS = ['meg', 'ieeg']
+ALLOWED_KINDS = ['meg', 'eeg', 'ieeg']
 orientation = {'.sqd': 'ALS', '.con': 'ALS', '.fif': 'RAS', '.gz': 'RAS',
                '.pdf': 'ALS', '.ds': 'ALS'}
 
