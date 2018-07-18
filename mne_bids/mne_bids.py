@@ -268,7 +268,8 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, eeg_reference=None,
     task : str
         Name of the task the data is based on.
     manufacturer : str
-        Used to define the coordinate system for the MEG sensors.
+        Manufacturer of the acquisition system. For MEG also used to define the
+        coordinate system for the MEG sensors.
     fname : str
         Filename to save the sidecar json to.
     kind : str
@@ -389,7 +390,7 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
         The session name in BIDS compatible format.
     run : int | None
         The run number for this dataset.
-    kind : str, one of ('meg', 'ieeg')
+    kind : str, one of ('meg', 'eeg', 'ieeg')
         The kind of data being converted. Defaults to "meg".
     events_data : str | array | None
         The events file. If a string, a path to the events file. If an array,
