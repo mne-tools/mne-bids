@@ -84,7 +84,7 @@ def _channels_tsv(raw, fname, verbose):
                       ('low_cutoff', ['%.2f' % low_cutoff] * n_channels),
                       ('high_cutoff', ['%.2f' % high_cutoff] * n_channels),
                       ('status', status)]))
-    df.to_csv(fname, sep='\t', index=False)
+    df.to_csv(fname, sep='\t', index=False, na_rep='n/a')
 
     if verbose:
         print(os.linesep + "Writing '%s'..." % fname + os.linesep)
@@ -129,12 +129,12 @@ def _events_tsv(events, raw, fname, trial_type, event_type, verbose):
     sfreq = raw.info['sfreq']
     events[:, 0] -= first_samp
 
-    data = {'onset': np.c_[events[:, 0]].squeeze(),
-            'duration': np.zeros(events.shape[0]),
-            'trial_type': events[:, 2],
-            'event_value': events[:, 2],
-            'event_sample': np.c_[events[:, 0]].squeeze(),
-            'event_type': events[:, 2]}
+    data = OrderedDict{'onset': np.c_[events[:, 0]].squeeze(),
+                       'duration': np.zeros(events.shape[0]),
+                       'trial_type': events[:, 2],
+                       'event_value': events[:, 2],
+                       'event_sample': np.c_[events[:, 0]].squeeze(),
+                       'event_type': events[:, 2]}
 
     df = pd.DataFrame.from_dict(data)
 
@@ -156,8 +156,7 @@ def _events_tsv(events, raw, fname, trial_type, event_type, verbose):
     df.onset /= sfreq
 
     # Save to file
-    df = df.fillna('n/a')
-    df.to_csv(fname, sep='\t', index=False)
+    df.to_csv(fname, sep='\t', index=False, na_rep='n/a')
     if verbose:
         print(os.linesep + "Writing '%s'..." % fname + os.linesep)
         print(df.head())
@@ -194,7 +193,7 @@ def _scans_tsv(raw, raw_fname, fname, verbose):
     df = pd.DataFrame({'filename': ['%s' % raw_fname],
                        'acq_time': [acq_time]})
 
-    df.to_csv(fname, sep='\t', index=False)
+    df.to_csv(fname, sep='\t', index=False, na_rep='n/a')
 
     if verbose:
         print(os.linesep + "Writing '%s'..." % fname + os.linesep)
