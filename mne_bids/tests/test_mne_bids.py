@@ -6,6 +6,7 @@ We should test their functionality with their sample data.
 # Authors: Mainak Jas <mainak.jas@telecom-paristech.fr>
 #          Teon L Brooks <teon.brooks@gmail.com>
 #          Chris Holdgraf <choldgraf@berkeley.edu>
+#          Stefan Appelhoff <stefan.appelhoff@mailbox.org>
 # License: BSD (3-clause)
 
 import os
@@ -52,7 +53,7 @@ def test_fif():
 
     raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
                 task=task, raw_file=raw_fname, events_data=events_fname,
-                output_path=output_path, event_id=event_id,
+                output_path=output_path, event_id=event_id, event_type=None,
                 overwrite=True)
 
     # let's do some modifications to meas_date
@@ -65,7 +66,7 @@ def test_fif():
     raw_to_bids(subject_id=subject_id, run=run, task=task,
                 session_id=session_id, raw_file=raw_fname2,
                 events_data=events_fname, output_path=output_path,
-                event_id=event_id, overwrite=True)
+                event_id=event_id, event_type=None, overwrite=True)
     cmd = ['bids-validator', output_path]
     run_subprocess(cmd, shell=shell)
 
@@ -85,9 +86,9 @@ def test_kit():
 
     raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
                 task=task, raw_file=raw_fname, events_data=events_fname,
-                event_id=event_id, hpi=hpi_fname, electrode=electrode_fname,
-                hsp=headshape_fname, output_path=output_path,
-                overwrite=True)
+                event_id=event_id,  event_type=None, hpi=hpi_fname,
+                electrode=electrode_fname, hsp=headshape_fname,
+                output_path=output_path, overwrite=True)
     cmd = ['bids-validator', output_path]
     run_subprocess(cmd, shell=shell)
 

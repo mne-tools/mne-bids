@@ -340,8 +340,8 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, verbose):
 
 def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
                 run=None, kind='meg', events_data=None, event_id=None,
-                hpi=None, electrode=None, hsp=None, config=None,
-                overwrite=True, verbose=True):
+                event_type=None, hpi=None, electrode=None, hsp=None,
+                config=None, overwrite=True, verbose=True):
     """Walk over a folder of files and create BIDS compatible folder.
 
     Parameters
@@ -365,8 +365,12 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
         The events file. If a string, a path to the events file. If an array,
         the MNE events array (shape n_events, 3). If None, events will be
         inferred from the stim channel using `find_events`.
-    event_id : dict
-        The event id dict
+    event_id : dict | None
+        The event id dict used to create a 'trial_type' column in events.tsv
+    event_type : dict | None
+        Specify this dict to create a 'event_type' column in events.tsv ... use
+        only if event_type offers additional or different information than
+        already specified in event_id.
     hpi : None | str | list of str
         Marker points representing the location of the marker coils with
         respect to the MEG Sensors, or path to a marker file.
@@ -460,7 +464,8 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
 
     events = _read_events(events_data, raw)
     if len(events) > 0:
-        _events_tsv(events, raw, events_tsv_fname, event_id, verbose)
+        _events_tsv(events, raw, events_tsv_fname, event_id, event_type,
+                    verbose)
 
     # for FIF, we need to re-save the file to fix the file pointer
     # for files with multiple parts
