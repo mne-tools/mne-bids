@@ -106,7 +106,7 @@ def _events_tsv(events, raw, fname, event_id, verbose):
     raw : instance of Raw
         The data as MNE-Python Raw object.
     fname : str
-        Filename to save the channels.tsv to.
+        Filename to save the events.tsv to.
     event_id : dict | None
         Dictionary mapping a brief description key to an event id (value). For
         example {'Go': 1, 'No Go': 2}.
@@ -144,7 +144,7 @@ def _scans_tsv(raw, raw_fname, fname, verbose):
     raw_fname : str
         Relative path to the raw data file.
     fname : str
-        Filename to save the channels.tsv to.
+        Filename to save the scans.tsv to.
     verbose : bool
         Set verbose output to true or false.
 
@@ -186,7 +186,7 @@ def _coordsystem_json(raw, unit, orient, manufacturer, fname, verbose):
     manufacturer : str
         Used to define the coordinate system for the MEG sensors.
     fname : str
-        Filename to save the channels.tsv to.
+        Filename to save the coordsystem.json to.
     verbose : bool
         Set verbose output to true or false.
 
@@ -238,7 +238,7 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, verbose):
     manufacturer : str
         Used to define the coordinate system for the MEG sensors.
     fname : str
-        Filename to save the channels.tsv to.
+        Filename to save the sidecar json to.
     kind : str
         Type of the data as in ALLOWED_KINDS.
     verbose : bool
