@@ -16,6 +16,7 @@ from mne import read_events, find_events
 from mne.io.constants import FIFF
 from mne.io.pick import channel_type
 from mne.io import BaseRaw
+from mne import BaseEpochs
 from mne.channels.channels import _unit2human
 from mne.externals.six import string_types
 
@@ -254,7 +255,8 @@ def _coordsystem_json(raw, unit, orient, manufacturer, fname, verbose):
     return fname
 
 
-def _sidecar_json(raw, task, manufacturer, fname, kind, verbose):
+def _sidecar_json(raw, task, manufacturer, fname, kind, eeg_reference=None,
+                  verbose=True):
     """Create a sidecar json file depending on the kind and save it.
 
     The sidecar json file provides meta data about the data of a certain kind.
@@ -271,8 +273,12 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, verbose):
         Filename to save the sidecar json to.
     kind : str
         Type of the data as in ALLOWED_KINDS.
+    eeg_reference : str | None
+        Only if kind='eeg': Freeform description of the reference used for
+        recording the EEG data. If different channels had different references,
+        you have to specify these in the channels.tsv file.
     verbose : bool
-        Set verbose output to true or false.
+        Set verbose output to true or false. Defaults to true.
 
     """
     sfreq = raw.info['sfreq']
@@ -280,6 +286,18 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, verbose):
     if powerlinefrequency is None:
         warn('No line frequency found, defaulting to 50 Hz')
         powerlinefrequency = 50
+
+    # Test type of data continuous / epoched
+    if isinstance(raw, BaseRaw):
+        recording_type = 'continuous'
+    elif isinstance(raw, BaseEpochs):
+        recording_type = 'epoched'
+    else:
+        recording_type = 'n/a'
+
+    if kind == 'eeg' and eeg_reference is None:
+        warn('No EEGReference found, defaulting to n/a')
+        eeg_reference = 'n/a'
 
     n_megchan = len([ch for ch in raw.info['chs']
                      if ch['kind'] == FIFF.FIFFV_MEG_CH])
@@ -315,6 +333,10 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, verbose):
         ("SoftwareFilters", "n/a"),
         ('MEGChannelCount', n_megchan),
         ('MEGREFChannelCount', n_megrefchan)]
+    ch_info_json_eeg = [
+        ('SamplingFrequency', sfreq),
+        ('EEGReference', eeg_reference),
+        ('RecordingType', recording_type)]
     ch_info_json_ieeg = [
         ('ECOGChannelCount', n_ecogchan),
         ('SEEGChannelCount', n_seegchan)]
@@ -328,7 +350,16 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, verbose):
 
     # Stitch together the complete JSON dictionary
     ch_info_json = ch_info_json_common
-    append_kind_json = ch_info_json_meg if kind == 'meg' else ch_info_json_ieeg
+    if kind == 'meg':
+        append_kind_json = ch_info_json_meg
+    elif kind == 'eeg':
+        append_kind_json = ch_info_json_eeg
+    elif kind == 'ieeg':
+        append_kind_json = ch_info_json_ieeg
+    else:
+        raise ValueError('Unexpected "kind": {}'
+                         ' Use one of: {}'.format(kind, ALLOWED_KINDS))
+
     ch_info_json += append_kind_json
     ch_info_json += ch_info_ch_counts
     ch_info_json = OrderedDict(ch_info_json)
@@ -339,8 +370,8 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, verbose):
 
 def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
                 run=None, kind='meg', events_data=None, event_id=None,
-                event_type=None, hpi=None, electrode=None, hsp=None,
-                config=None, overwrite=True, verbose=True):
+                event_type=None, hpi=None, electrode=None, eeg_reference=None,
+                hsp=None, config=None, overwrite=True, verbose=True):
     """Walk over a folder of files and create BIDS compatible folder.
 
     Parameters
@@ -378,6 +409,10 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
         Digitizer points representing the location of the fiducials and the
         marker coils with respect to the digitized head shape, or path to a
         file containing these points.
+    eeg_reference : str | None
+        Only if kind='eeg': Freeform description of the reference used for
+        recording the EEG data. If different channels had different references,
+        you have to specify these in the channels.tsv file.
     hsp : None | str | array, shape = (n_points, 3)
         Digitizer head shape points, or path to head shape file. If more than
         10`000 points are in the head shape, they are automatically decimated.
@@ -458,7 +493,8 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
 
     make_dataset_description(output_path, name=" ",
                              verbose=verbose)
-    _sidecar_json(raw, task, manufacturer, data_meta_fname, kind, verbose)
+    _sidecar_json(raw, task, manufacturer, data_meta_fname, kind,
+                  eeg_reference, verbose)
     _channels_tsv(raw, channels_fname, verbose)
 
     events = _read_events(events_data, raw)
