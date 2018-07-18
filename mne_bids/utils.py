@@ -11,10 +11,13 @@ import errno
 from collections import OrderedDict
 import json
 import shutil as sh
-from mne.externals.six import string_types
-from mne import read_events, find_events
+import six
+
 from .config import BIDS_VERSION
+
 import numpy as np
+from mne import read_events, find_events
+from mne.externals.six import string_types
 
 
 def _mkdir_p(path, overwrite=False, verbose=False):
@@ -229,12 +232,11 @@ def make_dataset_description(path, name=None, data_license=None,
 
 
 def _check_types(variables):
-    """Make sure all variables are strings or None."""
-    types = set(type(ii) for ii in variables)
-    for itype in types:
-        if not isinstance(itype, type(str)) and itype is not None:
+    """Make sure all vars are str or None."""
+    for var in variables:
+        if not isinstance(var, (six.string_types, type(None))):
             raise ValueError("All values must be either None or strings. "
-                             "Found type %s." % itype)
+                             "Found type %s." % type(var))
 
 
 def _write_json(dictionary, fname, verbose=False):
