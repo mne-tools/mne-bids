@@ -500,7 +500,6 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
     _channels_tsv(raw, channels_fname, verbose)
 
     events = _read_events(events_data, raw)
-    print(events)
     if len(events) > 0:
         _events_tsv(events, raw, events_tsv_fname, event_id, event_type,
                     verbose)
