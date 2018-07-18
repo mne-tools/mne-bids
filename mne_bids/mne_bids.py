@@ -93,8 +93,14 @@ def _channels_tsv(raw, fname, verbose):
     return fname
 
 
-def _events_tsv(events, raw, fname, event_id, verbose):
+def _events_tsv(events, raw, fname, trial_type, event_type, verbose):
     """Create an events.tsv file and save it.
+
+    This function will write the mandatory 'onset', and 'duration' columns as
+    well as the optional 'event_value' and 'event_sample'. The 'event_value'
+    corresponds to the marker value as found in the TRIG channel of the
+    recording. In addition, the 'trial_type' and 'event_type' fields can be
+    written if their respective arguments are passed.
 
     Parameters
     ----------
@@ -113,18 +119,43 @@ def _events_tsv(events, raw, fname, event_id, verbose):
     verbose : bool
         Set verbose output to true or false.
 
+    Notes
+    -----
+    The function writes durations of zero for each event.
+
     """
+    # Start by filling all data that we know into a df
     first_samp = raw.first_samp
     sfreq = raw.info['sfreq']
     events[:, 0] -= first_samp
 
-    df = pd.DataFrame(np.c_[events[:, 0], np.zeros(events.shape[0]),
-                            events[:, 2]],
-                      columns=['onset', 'duration', 'condition'])
-    if event_id:
-        event_id_map = {v: k for k, v in event_id.items()}
-        df.condition = df.condition.map(event_id_map)
+    data = {'onset': np.c_[events[:, 0]].squeeze(),
+            'duration': np.zeros(events.shape[0]),
+            'trial_type': events[:, 2],
+            'event_value': events[:, 2],
+            'event_sample': np.c_[events[:, 0]].squeeze(),
+            'event_type': events[:, 2]}
+
+    df = pd.DataFrame.from_dict(data)
+
+    # Now check if trial_type and event_type are specified or
+    # should be removed
+    if trial_type:
+        trial_type_map = {v: k for k, v in trial_type.items()}
+        df.trial_type = df.trial_type.map(trial_type_map)
+    else:
+        df.drop(labels=['trial_type'], axis=1, inplace=True)
+
+    if event_type:
+        event_type_map = {v: k for k, v in event_type.items()}
+        df.event_type = df.event_type.map(event_type_map)
+    else:
+        df.drop(labels=['event_type'], axis=1, inplace=True)
+
+    # Onset column needs to be specified in seconds
     df.onset /= sfreq
+
+    # Save to file
     df = df.fillna('n/a')
     df.to_csv(fname, sep='\t', index=False)
     if verbose:
