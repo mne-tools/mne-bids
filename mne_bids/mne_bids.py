@@ -96,14 +96,13 @@ def _channels_tsv(raw, fname, verbose):
     return fname
 
 
-def _events_tsv(events, raw, fname, trial_type, event_type, verbose):
+def _events_tsv(events, raw, fname, trial_type, verbose):
     """Create an events.tsv file and save it.
 
     This function will write the mandatory 'onset', and 'duration' columns as
     well as the optional 'event_value' and 'event_sample'. The 'event_value'
     corresponds to the marker value as found in the TRIG channel of the
-    recording. In addition, the 'trial_type' and 'event_type' fields can be
-    written if their respective arguments are passed.
+    recording. In addition, the 'trial_type' field can be written.
 
     Parameters
     ----------
@@ -136,24 +135,16 @@ def _events_tsv(events, raw, fname, trial_type, event_type, verbose):
                         ('duration', np.zeros(events.shape[0])),
                         ('trial_type', events[:, 2]),
                         ('event_value', events[:, 2]),
-                        ('event_sample', events[:, 0]),
-                        ('event_type', events[:, 2])])
+                        ('event_sample', events[:, 0])])
 
     df = pd.DataFrame.from_dict(data)
 
-    # Now check if trial_type and event_type are specified or
-    # should be removed
+    # Now check if trial_type is specified or should be removed
     if trial_type:
         trial_type_map = {v: k for k, v in trial_type.items()}
         df.trial_type = df.trial_type.map(trial_type_map)
     else:
         df.drop(labels=['trial_type'], axis=1, inplace=True)
-
-    if event_type:
-        event_type_map = {v: k for k, v in event_type.items()}
-        df.event_type = df.event_type.map(event_type_map)
-    else:
-        df.drop(labels=['event_type'], axis=1, inplace=True)
 
     # Onset column needs to be specified in seconds
     df.onset /= sfreq
@@ -375,7 +366,7 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, eeg_reference=None,
 
 def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
                 run=None, kind='meg', events_data=None, event_id=None,
-                event_type=None, hpi=None, electrode=None, eeg_reference=None,
+                hpi=None, electrode=None, eeg_reference=None,
                 hsp=None, config=None, overwrite=True, verbose=True):
     """Walk over a folder of files and create BIDS compatible folder.
 
@@ -402,10 +393,6 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
         inferred from the stim channel using `mne.find_events`.
     event_id : dict | None
         The event id dict used to create a 'trial_type' column in events.tsv
-    event_type : dict | None
-        Specify this dict to create a 'event_type' column in events.tsv ... use
-        only if event_type offers additional or different information than
-        already specified in event_id.
     hpi : None | str | list of str
         Marker points representing the location of the marker coils with
         respect to the MEG Sensors, or path to a marker file.
@@ -509,8 +496,7 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
 
     events = _read_events(events_data, raw)
     if len(events) > 0:
-        _events_tsv(events, raw, events_tsv_fname, event_id, event_type,
-                    verbose)
+        _events_tsv(events, raw, events_tsv_fname, event_id, verbose)
 
     # Before writing the neural data, cover some special cases:
     # for FIF, we need to re-save the file to fix the file pointer

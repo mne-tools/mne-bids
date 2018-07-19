@@ -53,8 +53,7 @@ def test_fif():
 
     raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
                 task=task, raw_file=raw_fname, events_data=events_fname,
-                output_path=output_path, event_id=event_id, event_type=None,
-                overwrite=True)
+                output_path=output_path, event_id=event_id, overwrite=True)
 
     # let's do some modifications to meas_date
     raw = mne.io.read_raw_fif(raw_fname)
@@ -66,7 +65,7 @@ def test_fif():
     raw_to_bids(subject_id=subject_id, run=run, task=task,
                 session_id=session_id, raw_file=raw_fname2,
                 events_data=events_fname, output_path=output_path,
-                event_id=event_id, event_type=None, overwrite=True)
+                event_id=event_id, overwrite=True)
     cmd = ['bids-validator', output_path]
     run_subprocess(cmd, shell=shell)
 
@@ -84,9 +83,8 @@ def test_kit():
 
     raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
                 task=task, raw_file=raw_fname, events_data=events_fname,
-                event_id=event_id,  event_type=None, hpi=hpi_fname,
-                electrode=electrode_fname, hsp=headshape_fname,
-                output_path=output_path, overwrite=True)
+                event_id=event_id, hpi=hpi_fname, electrode=electrode_fname,
+                hsp=headshape_fname, output_path=output_path, overwrite=True)
     cmd = ['bids-validator', output_path]
     run_subprocess(cmd, shell=shell)
 
@@ -129,7 +127,7 @@ def test_brainvision():
     vhdr = make_test_brainvision_data(data_generation_output_path)
     raw_to_bids(subject_id=subject_id, task=task, raw_file=vhdr,
                 output_path=output_path, kind='eeg', eeg_reference='Cz',
-                event_id={'test': 1}, event_type={'just a test': 1})
+                event_id={'test': 1})
 
     cmd = ['bids-validator', output_path]
     run_subprocess(cmd, shell=shell)
