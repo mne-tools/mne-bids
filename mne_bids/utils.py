@@ -21,9 +21,12 @@ from mne.externals.six import string_types
 
 
 def _mkdir_p(path, overwrite=False, verbose=False):
-    """Create a directory, making parent directories as needed.
+    """Create a directory, making parent directories as needed [1].
 
-    From stackoverflow.com/questions/600268/mkdir-p-functionality-in-python
+    References
+    ----------
+    .. [1] stackoverflow.com/questions/600268/mkdir-p-functionality-in-python
+
     """
     if overwrite is True and os.path.isdir(path):
         sh.rmtree(path)
@@ -200,21 +203,40 @@ def make_dataset_description(path, name=None, data_license=None,
         The name of this BIDS dataset.
     data_license : str | None
         The license under which this datset is published.
-    authors : str | None
-        Authors who contributed to this dataset.
-    acknowledgements : str | None
-        Acknowledgements for this dataset.
-    how_to_acknowledge : str | None
-        Instructions for how acknowledgements/credit should be given for this
-        dataset.
-    funding : str | None
-        Funding sources for this dataset.
-    references_and_links : str | None
-        References or links for this dataset.
+    authors : list | str | None
+        List of individuals who contributed to the creation/curation of the
+        dataset. Must be a list of strings or a single comma separated string
+        like ['a', 'b', 'c'].
+    acknowledgements : list | str | None
+        Either a str acknowledging individuals who contributed to the
+        creation/curation of this dataset OR a list of the individuals'
+        names as str.
+    how_to_acknowledge : list | str | None
+        Either a str describing how to acknowledge this dataset OR a list of
+        publications that should be cited.
+    funding : list | str | None
+        List of sources of funding (e.g., grant numbers). Must be a list of
+        strings or a single comma separated string like ['a', 'b', 'c'].
+    references_and_links : list | str | None
+        List of references to publication that contain information on the
+        dataset, or links.  Must be a list of strings or a single comma
+        separated string like ['a', 'b', 'c'].
     doi : str | None
         The DOI for the dataset.
 
+    Notes
+    -----
+    The required field BIDSVersion will be automatically field by mne_bids.
+
     """
+    # Put potential string input into list of strings
+    if isinstance(authors, six.string_types):
+        authors = authors.split(', ')
+    if isinstance(funding, six.string_types):
+        funding = funding.split(', ')
+    if isinstance(references_and_links, six.string_types):
+        references_and_links = references_and_links.split(', ')
+
     fname = os.path.join(path, 'dataset_description.json')
     description = OrderedDict([('Name', name),
                                ('BIDSVersion', BIDS_VERSION),
