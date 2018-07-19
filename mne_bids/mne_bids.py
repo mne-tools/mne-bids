@@ -11,7 +11,6 @@ import os
 import shutil as sh
 import pandas as pd
 from collections import defaultdict, OrderedDict
-import errno
 
 import numpy as np
 from mne.io.constants import FIFF
