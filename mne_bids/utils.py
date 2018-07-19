@@ -315,3 +315,71 @@ def _read_events(events_data, raw):
     else:
         events = find_events(raw)
     return events
+
+
+def make_test_brainvision_data(output_dir='.', fname_base='test',
+                               n_channels=2, fs=1000, rec_dur=10):
+    """Make some test BrainVision data and save it to its multifile format.
+
+    Parameters
+    ----------
+    output_dir : str
+        Directory to which the .eeg, .vhdr, and .vmrk files will be written
+
+    fname_base : str
+        The basename of the files, to which only the extensions .eeg, .vhdr,
+        and .vmrk will be appended
+
+    n_channels : int
+        Number of channels to put into the data. Will be labeled chani
+        where i is a consecutive index
+
+    fs : int
+        Sampling frequency in Hz
+
+    rec_dur : int
+        Recording duration in seconds
+
+    Returns
+    -------
+    vhdr : str
+        Path to the header file
+
+    """
+    # Header data
+    vhdr = os.path.join(output_dir, fname_base + '.vhdr')
+    with open(vhdr, 'w') as f:
+        f.write('Brain Vision Data Exchange Header File Version 1.0\n')
+        f.write('\n[Common Infos]\n')
+        f.write('DataFile=' + fname_base + '.eeg\n')
+        f.write('MarkerFile=' + fname_base + '.vmrk\n')
+        f.write('DataFormat=BINARY\n')
+        f.write('Data orientation: MULTIPLEXED=ch1,pt1, ch2,pt1 ...\n')
+        f.write('DataOrientation=MULTIPLEXED\n')
+        f.write('NumberOfChannels=' + str(n_channels) + '\n')
+        f.write('SamplingInterval=' + str(1/fs*1000*1000) + '\n')
+        f.write('\n[Binary Infos]\n')
+        f.write('BinaryFormat=IEEE_FLOAT_32\n')
+        f.write('\n[Channel Infos]\n')
+        for channel in range(n_channels):
+            f.write('Ch{0}=chan{0},,0.1\n'.format(channel+1))
+
+    # Binary data
+    eeg = os.path.join(output_dir, fname_base + '.eeg')
+    data = 100 * np.random.randn(n_channels, int(rec_dur*fs))
+    data = data.flatten(order='F')  # multiplexed
+    data.astype('float32').tofile(eeg)
+
+    # Marker data
+    vmrk = os.path.join(output_dir, fname_base + '.vmrk')
+    with open(vmrk, 'w') as f:
+        f.write('Brain Vision Data Exchange Marker File, Version 1.0\n')
+        f.write('\n[Common Infos]\n')
+        f.write('DataFile=' + fname_base + '.eeg\n')
+        f.write('\n[Marker Infos]\n')
+        # Write one arbitrary event per second recording
+        for event in range(rec_dur):
+            f.write('Mk{}=Stimulus,S1,{},1,0\n'.format(event+1,
+                                                       int(event*fs+0.5*fs)))
+
+    return vhdr

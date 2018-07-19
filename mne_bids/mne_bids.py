@@ -519,18 +519,14 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
     # If NOT fif, check if we got a multifile format
     else:
         # Cover BrainVision multifile format of .vhdr, .eeg, .vmrk
-        if ext in ['.eeg']:
+        if ext in ['.eeg', '.vhdr']:
             # Get future file names
             fname, ext = _parse_ext(raw_file_bids)
-            assert ext == '.eeg'
-            assert fname + ext == raw_file_bids
             raw_file_bids_list = [fname + '.eeg',
                                   fname + '.vhdr',
                                   fname + '.vmrk']
             # Get locations of current files
             fname, ext = _parse_ext(raw_file)
-            assert ext == '.eeg'
-            assert fname + ext == raw_file
             raw_file_list = [fname + '.eeg',
                              fname + '.vhdr',
                              fname + '.vmrk']

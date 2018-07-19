@@ -18,6 +18,7 @@ from mne.datasets import testing
 from mne.utils import _TempDir, run_subprocess
 
 from mne_bids import raw_to_bids
+from mne_bids.utils import make_test_brainvision_data
 
 simplefilter('ignore', DeprecationWarning)
 
@@ -123,5 +124,12 @@ def test_bti():
 # ---------
 def test_brainvision():
     """Test functionality for raw_to_bids conversion for BrainVision data."""
+    data_generation_output_path = _TempDir()
     output_path = _TempDir()
-    assert True
+    vhdr = make_test_brainvision_data(data_generation_output_path)
+    raw_to_bids(subject_id=subject_id, task=task, raw_file=vhdr,
+                output_path=output_path, kind='eeg', eeg_reference='Cz',
+                event_id={'test': 1}, event_type={'just a test': 1})
+
+    cmd = ['bids-validator', output_path]
+    run_subprocess(cmd, shell=shell)
