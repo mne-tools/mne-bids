@@ -36,7 +36,7 @@ units = {'.sqd': 'm', '.con': 'm', '.fif': 'm', '.gz': 'm', '.pdf': 'm',
          '.ds': 'cm'}
 
 manufacturers = {'.sqd': 'KIT/Yokogawa', '.con': 'KIT/Yokogawa',
-                 '.fif': 'Elekta', '.gz': 'Elekta', '.pdf': '4D Magnes',
+                 '.fif': 'Elekta', 'gz': 'Elekta', '.pdf': '4D Magnes',
                  '.ds': 'CTF'}
 
 
@@ -515,7 +515,7 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
     # Before writing the neural data, cover some special cases:
     # for FIF, we need to re-save the file to fix the file pointer
     # for files with multiple parts
-    if ext in ['.fif', '.fif.gz']:
+    if ext in ['.fif', '.gz']:
         raw.save(raw_file_bids, overwrite=overwrite)
 
     # If NOT fif, check if we got a multifile format
@@ -550,13 +550,8 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
                 if verbose:
                     print('Writing data files to %s' % raw_file_bids)
                 # First assume we have single files
-                try:
+                if ext == '.ds':
+                    sh.copytree(raw_file, raw_file_bids)
+                else:
                     sh.copyfile(raw_file, raw_file_bids)
-                except IOError as e:
-                    # CTF data is written in directories ending on '.ds'
-                    if e.errno == 21 and ext == '.ds':
-                        sh.copytree(raw_file, raw_file_bids)
-                    else:
-                        raise
-
     return output_path
