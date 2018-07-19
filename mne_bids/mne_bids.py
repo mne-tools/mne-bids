@@ -277,9 +277,11 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, eeg_reference=None,
     kind : str
         Type of the data as in ALLOWED_KINDS.
     eeg_reference : str | None
-        Only if kind='eeg': Freeform description of the reference used for
-        recording the EEG data. If different channels had different references,
-        you have to specify these in the channels.tsv file.
+        Freeform description of the reference used for recording the EEG data.
+        If different channels had different references, you have to specify
+        these in the channels.tsv file. If None and kind='eeg', we set the
+        field to 'n/a' and give a warning that this should be revised. If None
+        and kind is anything else (not 'eeg'), nothing happens.
     verbose : bool
         Set verbose output to true or false. Defaults to true.
 
