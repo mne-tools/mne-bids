@@ -82,9 +82,9 @@ def _channels_tsv(raw, fname, verbose):
                       ('type', ch_type),
                       ('units', units),
                       ('description', description),
-                      ('sampling_frequency', ['%.2f' % sfreq] * n_channels),
-                      ('low_cutoff', ['%.2f' % low_cutoff] * n_channels),
-                      ('high_cutoff', ['%.2f' % high_cutoff] * n_channels),
+                      ('sampling_frequency', np.full((n_channels), sfreq)),
+                      ('low_cutoff', np.full((n_channels), low_cutoff)),
+                      ('high_cutoff', np.full((n_channels), high_cutoff)),
                       ('status', status)]))
     df.to_csv(fname, sep='\t', index=False, na_rep='n/a')
 
