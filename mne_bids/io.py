@@ -1,7 +1,18 @@
+"""Check whether a file format is supported by BIDS and then load it."""
+# Authors: Mainak Jas <mainak.jas@telecom-paristech.fr>
+#          Alexandre Gramfort <alexandre.gramfort@telecom-paristech.fr>
+#          Teon Brooks <teon.brooks@gmail.com>
+#          Chris Holdgraf <choldgraf@berkeley.edu>
+#          Stefan Appelhoff <stefan.appelhoff@mailbox.org>
+#
+# License: BSD (3-clause)
 from mne import io
 import os
 
-ALLOWED_EXTENSIONS = ['.con', '.sqd', '.fif', '.gz', '.pdf', '.ds']
+allowed_extensions_meg = ['.con', '.sqd', '.fif', '.gz', '.pdf', '.ds']
+allowed_extensions_eeg = ['.vhdr', '.edf', '.bdf', '.set', '.cnt']
+
+ALLOWED_EXTENSIONS = allowed_extensions_meg + allowed_extensions_eeg
 
 
 def _parse_ext(raw_fname, verbose=False):
@@ -21,6 +32,8 @@ def _read_raw(raw_fname, electrode=None, hsp=None, hpi=None, config=None,
     """Read a raw file into MNE, making inferences based on extension."""
     fname, ext = _parse_ext(raw_fname)
 
+    # MEG File Types
+    # --------------
     # KIT systems
     if ext in ['.con', '.sqd']:
         raw = io.read_raw_kit(raw_fname, elp=electrode, hsp=hsp,
@@ -40,6 +53,28 @@ def _read_raw(raw_fname, electrode=None, hsp=None, hpi=None, config=None,
     # CTF systems
     elif ext == '.ds':
         raw = io.read_raw_ctf(raw_fname)
+
+    # EEG File Types
+    # --------------
+    # BrainVision format by Brain Products, expects also a .eeg and .vmrk file
+    elif ext == '.vhdr':
+        raw = io.read_raw_brainvision(raw_fname)
+
+    # EDF (european data format) or BDF (biosemi) format
+    elif ext == '.edf' or ext == '.bdf':
+        raw = io.read_raw_edf(raw_fname)
+
+    # EEGLAB .set format, if there is a separate .fdt file, it should be in the
+    # same folder as the .set file
+    elif ext == '.set':
+        raw = io.read_raw_eeglab(raw_fname)
+
+    # Neuroscan .cnt format
+    elif ext == '.cnt':
+        raw = io.read_raw_cnt(raw_fname)
+
+    # No supported data found ...
+    # ---------------------------
     else:
         raise ValueError("Raw file name extension must be one of %\n"
                          "Got %" % (ALLOWED_EXTENSIONS, ext))
