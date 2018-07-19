@@ -11,6 +11,7 @@ import os
 import shutil as sh
 import pandas as pd
 from collections import defaultdict, OrderedDict
+import errno
 
 import numpy as np
 from mne.io.constants import FIFF
@@ -434,12 +435,17 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
                         config=config, verbose=verbose)
         _, ext = _parse_ext(raw_file, verbose=verbose)
     elif isinstance(raw_file, BaseRaw):
+        # We got a raw mne object, get back the filename if possible
+        # NOTE: raw_file will be used as a string filename from here on!
         # Only parse the filename for the extension
         # Assume that if no filename attr exists, it's a fif file.
-        raw = raw_file
+        raw = raw_file.copy()
         if hasattr(raw, 'filenames'):
+            raw_file = raw.filenames[0]
             _, ext = _parse_ext(raw.filenames[0], verbose=verbose)
         else:
+            # FIXME: How to get the filename if no filenames attribute?
+            raw_file = 'unknown_file_name'
             ext = '.fif'
     else:
         raise ValueError('raw_file must be an instance of str or BaseRaw, '
@@ -465,7 +471,7 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
         subject=subject_id, session=session_id,
         suffix='coordsystem.json', prefix=data_path)
     data_meta_fname = make_bids_filename(
-        subject=subject_id, session=session_id,
+        subject=subject_id, session=session_id, task=task, run=run,
         suffix='%s.json' % kind, prefix=data_path)
     raw_file_bids = make_bids_filename(
         subject=subject_id, session=session_id, task=task, run=run,
@@ -504,17 +510,55 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
         _events_tsv(events, raw, events_tsv_fname, event_id, event_type,
                     verbose)
 
+    # Before writing the neural data, cover some special cases:
     # for FIF, we need to re-save the file to fix the file pointer
     # for files with multiple parts
     if ext in ['.fif', '.fif.gz']:
         raw.save(raw_file_bids, overwrite=overwrite)
+
+    # If NOT fif, check if we got a multifile format
     else:
-        if os.path.exists(raw_file_bids):
-            if overwrite:
-                os.remove(raw_file_bids)
-                sh.copyfile(raw_file, raw_file_bids)
+        # Cover BrainVision multifile format of .vhdr, .eeg, .vmrk
+        if ext in ['.eeg']:
+            # Get future file names
+            fname, ext = _parse_ext(raw_file_bids)
+            assert ext == '.eeg'
+            assert fname + ext == raw_file_bids
+            raw_file_bids_list = [fname + '.eeg',
+                                  fname + '.vhdr',
+                                  fname + '.vmrk']
+            # Get locations of current files
+            fname, ext = _parse_ext(raw_file)
+            assert ext == '.eeg'
+            assert fname + ext == raw_file
+            raw_file_list = [fname + '.eeg',
+                             fname + '.vhdr',
+                             fname + '.vmrk']
+        else:
+            # All other data are single file formats
+            raw_file_bids_list = [raw_file_bids]
+            raw_file_list = [raw_file]
+
+        # Now copy&move or overwrite the files for the new BIDS directory
+        for raw_file, raw_file_bids in zip(raw_file_list, raw_file_bids_list):
+            if os.path.exists(raw_file_bids):
+                if overwrite:
+                    os.remove(raw_file_bids)
+                    sh.copyfile(raw_file, raw_file_bids)
+                else:
+                    raise ValueError('"%s" already exists. Please set'
+                                     ' overwrite to True.' % raw_file_bids)
             else:
-                raise ValueError('"%s" already exists. Please set overwrite to'
-                                 ' True.' % raw_file_bids)
+                if verbose:
+                    print('Writing data files to %s' % raw_file_bids)
+                # First assume we have single files
+                try:
+                    sh.copyfile(raw_file, raw_file_bids)
+                except IOError as e:
+                    # CTF data is written in directories ending on '.ds'
+                    if e.errno == 21 and ext == '.ds':
+                        sh.copytree(raw_file, raw_file_bids)
+                    else:
+                        raise
 
     return output_path
