@@ -325,21 +325,16 @@ def make_test_brainvision_data(output_dir='.', fname_base='test',
     ----------
     output_dir : str
         Directory to which the .eeg, .vhdr, and .vmrk files will be written
-
     fname_base : str
         The basename of the files, to which only the extensions .eeg, .vhdr,
         and .vmrk will be appended
-
     n_channels : int
         Number of channels to put into the data. Will be labeled chani
         where i is a consecutive index
-
     fs : int
         Sampling frequency in Hz
-
     rec_dur : int
         Recording duration in seconds
-
     Returns
     -------
     vhdr : str
