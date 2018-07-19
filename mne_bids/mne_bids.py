@@ -506,7 +506,7 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
 
     # for FIF, we need to re-save the file to fix the file pointer
     # for files with multiple parts
-    if ext in ['.fif', '.gz']:
+    if ext in ['.fif', '.fif.gz']:
         raw.save(raw_file_bids, overwrite=overwrite)
     else:
         if os.path.exists(raw_file_bids):
