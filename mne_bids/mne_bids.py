@@ -74,6 +74,7 @@ def _channels_tsv(raw, fname, verbose):
         description.append(map_desc[channel_type(raw.info, idx)])
     low_cutoff, high_cutoff = (raw.info['highpass'], raw.info['lowpass'])
     units = [_unit2human.get(ch_i['unit'], 'n/a') for ch_i in raw.info['chs']]
+    units = [u if u not in ['NA'] else 'n/a' for u in units]
     n_channels = raw.info['nchan']
     sfreq = raw.info['sfreq']
 
