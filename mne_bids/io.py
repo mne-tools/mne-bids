@@ -10,7 +10,12 @@ from mne import io
 import os
 
 allowed_extensions_meg = ['.con', '.sqd', '.fif', '.gz', '.pdf', '.ds']
-allowed_extensions_eeg = ['.vhdr', '.edf', '.bdf', '.set', '.cnt']
+allowed_extensions_eeg = ['.eeg', '.vhdr', '.vmrk',  # BrainVision
+                          '.edf',  # European Data Format
+                          '.bdf',  # Biosemi
+                          '.set', '.fdt',  # EEGLAB
+                          '.cnt',  # Neuroscan
+                          ]
 
 ALLOWED_EXTENSIONS = allowed_extensions_meg + allowed_extensions_eeg
 
