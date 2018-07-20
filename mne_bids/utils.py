@@ -320,7 +320,7 @@ def _read_events(events_data, raw):
 
 
 def make_test_brainvision_data(output_dir='.', basename='test',
-                               n_channels=2, fs=1000, rec_dur=10):
+                               n_channels=2, fs=1000., rec_dur=10):
     """Make some test BrainVision data and save it to its multifile format.
 
     Parameters
@@ -354,7 +354,7 @@ def make_test_brainvision_data(output_dir='.', basename='test',
         f.write('Data orientation: MULTIPLEXED=ch1,pt1, ch2,pt1 ...\n')
         f.write('DataOrientation=MULTIPLEXED\n')
         f.write('NumberOfChannels=' + str(n_channels) + '\n')
-        f.write('SamplingInterval=' + str(1/fs*1000*1000) + '\n')
+        f.write('SamplingInterval=' + str(int(1./fs*1000.*1000.)) + '\n')
         f.write('\n[Binary Infos]\n')
         f.write('BinaryFormat=IEEE_FLOAT_32\n')
         f.write('\n[Channel Infos]\n')
