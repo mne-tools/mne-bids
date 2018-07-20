@@ -529,29 +529,21 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
 
         # Now copy&move or overwrite the files for the new BIDS directory
         for raw_file, raw_file_bids in zip(raw_file_list, raw_file_bids_list):
-            if os.path.exists(raw_file_bids):
-                if overwrite:
-                    if is_brainvision:
-                        os.remove(raw_file_bids)
-                        copyfile_brainvision(raw_file, raw_file_bids)
-                    else:
-                        os.remove(raw_file_bids)
-                        sh.copyfile(raw_file, raw_file_bids)
-                else:
-                    raise ValueError('"%s" already exists. Please set'
-                                     ' overwrite to True.' % raw_file_bids)
-            else:
-                if verbose:
-                    print('Writing data files to %s' % raw_file_bids)
+            if os.path.exists(raw_file_bids) and not overwrite:
+                raise ValueError('"%s" already exists. Please set'
+                                 ' overwrite to True.' % raw_file_bids)
 
-                # Cover CTF data
-                if ext == '.ds':
-                    sh.copytree(raw_file, raw_file_bids)
-                # Cover BrainVision data
-                elif is_brainvision:
-                    copyfile_brainvision(raw_file, raw_file_bids)
-                # Cover all else
-                else:
-                    sh.copyfile(raw_file, raw_file_bids)
+            if verbose:
+                print('Writing data files to %s' % raw_file_bids)
+
+            # Cover CTF data
+            if ext == '.ds':
+                sh.copytree(raw_file, raw_file_bids)
+            # Cover BrainVision data
+            elif is_brainvision:
+                copyfile_brainvision(raw_file, raw_file_bids)
+            # Cover all else
+            else:
+                sh.copyfile(raw_file, raw_file_bids)
 
     return output_path
