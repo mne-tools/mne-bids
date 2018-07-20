@@ -38,7 +38,7 @@ units = {'.sqd': 'm', '.con': 'm', '.fif': 'm', '.gz': 'm', '.pdf': 'm',
          '.ds': 'cm'}
 
 manufacturers = {'.sqd': 'KIT/Yokogawa', '.con': 'KIT/Yokogawa',
-                 '.fif': 'Elekta', 'gz': 'Elekta', '.pdf': '4D Magnes',
+                 '.fif': 'Elekta', '.gz': 'Elekta', '.pdf': '4D Magnes',
                  '.ds': 'CTF'}
 
 

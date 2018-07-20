@@ -11,7 +11,6 @@ import errno
 from collections import OrderedDict
 import json
 import shutil as sh
-import six
 
 from .config import BIDS_VERSION
 
@@ -232,11 +231,11 @@ def make_dataset_description(path, name=None, data_license=None,
 
     """
     # Put potential string input into list of strings
-    if isinstance(authors, six.string_types):
+    if isinstance(authors, string_types):
         authors = authors.split(', ')
-    if isinstance(funding, six.string_types):
+    if isinstance(funding, string_types):
         funding = funding.split(', ')
-    if isinstance(references_and_links, six.string_types):
+    if isinstance(references_and_links, string_types):
         references_and_links = references_and_links.split(', ')
 
     fname = os.path.join(path, 'dataset_description.json')
@@ -258,7 +257,7 @@ def make_dataset_description(path, name=None, data_license=None,
 def _check_types(variables):
     """Make sure all vars are str or None."""
     for var in variables:
-        if not isinstance(var, (six.string_types, type(None))):
+        if not isinstance(var, (string_types, type(None))):
             raise ValueError("All values must be either None or strings. "
                              "Found type %s." % type(var))
 
