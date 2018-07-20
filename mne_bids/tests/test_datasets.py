@@ -5,9 +5,9 @@
 
 import os
 
-from nose.tools import assert_raises
+import pytest
 
-from mne_bids import datasets
+from mne_bids.datasets import download_matchingpennies_subj
 
 
 def test_download_matchingpennies_subj():
@@ -23,7 +23,7 @@ def test_download_matchingpennies_subj():
     # Download a single file
     url_dict = {'subj_id': 5,
                 'channels.tsv': 'https://osf.io/wzyh2/'}
-    datasets.download_matchingpennies_subj(url_dict, tmp_dir)
+    download_matchingpennies_subj(url_dict, tmp_dir)
 
     # Assert that the file is there
     fpath = os.path.join('.', tmp_dir,
@@ -38,9 +38,9 @@ def test_download_matchingpennies_subj():
         assert 'FC5' in line.split('\t')
 
     # Assert we get an error for invalid subj_id
-    assert_raises(ValueError,
-                  datasets.download_matchingpennies_subj,
-                  {'channels.tsv': 'https://osf.io/wzyh2/'})
+    with pytest.raises(ValueError):
+        d = {'channels.tsv': 'https://osf.io/wzyh2/'}
+        download_matchingpennies_subj(d)
 
     # It worked, now delete the file and the tmp_dir again
     os.remove(fpath)

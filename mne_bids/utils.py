@@ -19,7 +19,7 @@ import numpy as np
 from mne import read_events, find_events
 from mne.externals.six import string_types
 
-from mne_bids.io import _parse_ext
+from .io import _parse_ext
 
 
 def _mkdir_p(path, overwrite=False, verbose=False):
