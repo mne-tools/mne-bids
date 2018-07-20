@@ -1,5 +1,6 @@
 [![Gitter](https://badges.gitter.im/mne-tools/mne-bids.svg)](https://gitter.im/mne-tools/mne-bids?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Travis](https://api.travis-ci.org/mne-tools/mne-bids.svg?branch=master "Travis")](https://travis-ci.org/mne-tools/mne-bids)
+[![codecov](https://codecov.io/gh/mne-tools/mne-bids/branch/master/graph/badge.svg)](https://codecov.io/gh/mne-tools/mne-bids)
 
 MNE-BIDS
 ========
@@ -9,13 +10,18 @@ This is a repository for creating BIDS-compatible datasets with MNE.
 Installation
 ------------
 
-We recommend the [Anaconda Python distribution](https://www.continuum.io/downloads).
-To install ``mne_bids``, you first need to install its dependencies:
+We recommend the [Anaconda Python distribution](https://www.continuum.io/downloads). With the `conda` package manager.
+To install ``mne_bids``, you first need to install its dependencies.
+For that, have a look at the [`environment.yml`](https://github.com/mne-tools/mne-bids/blob/master/environment.yml).
+You can use `conda` to install all requirements:
 
-	$ pip install pandas mne
+	$ git clone https://github.com/mne-tools/mne-bids
+	$ cd mne-bids
+	$ conda env create -f environment.yml
 
-Then install mne_bids::
+Then, activate your mne_bids environment and install mne_bids::
 
+	$ conda activate mne
 	$ pip install git+https://github.com/mne-tools/mne-bids.git#egg=mne-bids
 
 If you do not have admin privileges on the computer, use the ``--user`` flag
