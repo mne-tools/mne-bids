@@ -142,12 +142,16 @@ raw_to_bids(subject_id=subject_id, task=task, raw_file=raw_file,
 #
 # .. code-block:: python
 #
-#   ├── dataset_description.json
-#   └── sub-xx
-#       └── modality
-#           ├── sub-xx_task-yy_events.tsv
-#           ├── sub-xx_task-yy_modality.ext
-#           └── sub-xx_task-yy_modality.json
+#    ├── CHANGES
+#    ├── dataset_description.json
+#    ├── participants.tsv
+#    ├── README
+#    └── sub-xx
+#        └── modality
+#            ├── sub-xx_task-yy_events.tsv
+#            ├── sub-xx_task-yy_modality.ext
+#            └── sub-xx_task-yy_modality.json
+#
 #
 # Now, what does it actually look like?
 for root, dirs, files in os.walk(output_path):
@@ -160,11 +164,14 @@ for root, dirs, files in os.walk(output_path):
 # The three actual data files `.eeg`, `.vhdr`, and `.vmrk` have their new names
 # and the internal pointers within each data file have been updated
 # accordingly. In addition to that, MNE-BIDS has created a suitable directory
-# structure for us, started an `event.tsv` and `channels.tsv` and made an
+# structure for us, started an `events.tsv` and `channels.tsv` and made an
 # initial `dataset_description` on top!
 #
 # That's nice and it has saved us a lot of work. However, a few things are not
-# yet covered by MNE-BIDS for EEG data and will have to be added by hand.
+# yet covered by MNE-BIDS for EEG data and will have to be added by hand. Most
+# importantly, the `README` file at the root of the directory, but also
+# `CHANGES`, `participants.tsv`, and some more specific entries.
+#
 # Remember that there is a convenient javascript tool to validate all your BIDS
 # directories called the "BIDS-validator", available here:
 # https://github.com/incf/bids-validator
