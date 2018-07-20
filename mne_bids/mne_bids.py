@@ -25,7 +25,7 @@ from warnings import warn
 
 from .utils import (make_bids_filename, make_bids_folders,
                     make_dataset_description, _write_json,
-                    _read_events)
+                    _read_events, copyfile_brainvision)
 from .io import _parse_ext, _read_raw
 
 ALLOWED_KINDS = ['meg', 'eeg', 'ieeg']
@@ -507,7 +507,10 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
     # If NOT fif, check if we got a multifile format
     else:
         # Cover BrainVision multifile format of .vhdr, .eeg, .vmrk
+        is_brainvision = False
         if ext in ['.eeg', '.vhdr']:
+            is_brainvision = True
+
             # Get future file names
             fname, ext = _parse_ext(raw_file_bids)
             raw_file_bids_list = [fname + '.eeg',
@@ -518,6 +521,7 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
             raw_file_list = [fname + '.eeg',
                              fname + '.vhdr',
                              fname + '.vmrk']
+
         else:
             # All other data are single file formats
             raw_file_bids_list = [raw_file_bids]
@@ -527,17 +531,27 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
         for raw_file, raw_file_bids in zip(raw_file_list, raw_file_bids_list):
             if os.path.exists(raw_file_bids):
                 if overwrite:
-                    os.remove(raw_file_bids)
-                    sh.copyfile(raw_file, raw_file_bids)
+                    if is_brainvision:
+                        os.remove(raw_file_bids)
+                        copyfile_brainvision(raw_file, raw_file_bids)
+                    else:
+                        os.remove(raw_file_bids)
+                        sh.copyfile(raw_file, raw_file_bids)
                 else:
                     raise ValueError('"%s" already exists. Please set'
                                      ' overwrite to True.' % raw_file_bids)
             else:
                 if verbose:
                     print('Writing data files to %s' % raw_file_bids)
-                # First assume we have single files
+
+                # Cover CTF data
                 if ext == '.ds':
                     sh.copytree(raw_file, raw_file_bids)
+                # Cover BrainVision data
+                elif is_brainvision:
+                    copyfile_brainvision(raw_file, raw_file_bids)
+                # Cover all else
                 else:
                     sh.copyfile(raw_file, raw_file_bids)
+
     return output_path

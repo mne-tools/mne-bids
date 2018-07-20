@@ -19,6 +19,8 @@ import numpy as np
 from mne import read_events, find_events
 from mne.externals.six import string_types
 
+from mne_bids.io import _parse_ext
+
 
 def _mkdir_p(path, overwrite=False, verbose=False):
     """Create a directory, making parent directories as needed [1].
@@ -317,7 +319,7 @@ def _read_events(events_data, raw):
     return events
 
 
-def make_test_brainvision_data(output_dir='.', fname_base='test',
+def make_test_brainvision_data(output_dir='.', basename='test',
                                n_channels=2, fs=1000, rec_dur=10):
     """Make some test BrainVision data and save it to its multifile format.
 
@@ -325,7 +327,7 @@ def make_test_brainvision_data(output_dir='.', fname_base='test',
     ----------
     output_dir : str
         Directory to which the .eeg, .vhdr, and .vmrk files will be written
-    fname_base : str
+    basename : str
         The basename of the files, to which only the extensions .eeg, .vhdr,
         and .vmrk will be appended
     n_channels : int
@@ -342,12 +344,12 @@ def make_test_brainvision_data(output_dir='.', fname_base='test',
 
     """
     # Header data
-    vhdr = os.path.join(output_dir, fname_base + '.vhdr')
+    vhdr = os.path.join(output_dir, basename + '.vhdr')
     with open(vhdr, 'w') as f:
         f.write('Brain Vision Data Exchange Header File Version 1.0\n')
         f.write('\n[Common Infos]\n')
-        f.write('DataFile=' + fname_base + '.eeg\n')
-        f.write('MarkerFile=' + fname_base + '.vmrk\n')
+        f.write('DataFile=' + basename + '.eeg\n')
+        f.write('MarkerFile=' + basename + '.vmrk\n')
         f.write('DataFormat=BINARY\n')
         f.write('Data orientation: MULTIPLEXED=ch1,pt1, ch2,pt1 ...\n')
         f.write('DataOrientation=MULTIPLEXED\n')
@@ -360,17 +362,17 @@ def make_test_brainvision_data(output_dir='.', fname_base='test',
             f.write('Ch{0}=chan{0},,0.1\n'.format(channel+1))
 
     # Binary data
-    eeg = os.path.join(output_dir, fname_base + '.eeg')
+    eeg = os.path.join(output_dir, basename + '.eeg')
     data = 100 * np.random.randn(n_channels, int(rec_dur*fs))
     data = data.flatten(order='F')  # multiplexed
     data.astype('float32').tofile(eeg)
 
     # Marker data
-    vmrk = os.path.join(output_dir, fname_base + '.vmrk')
+    vmrk = os.path.join(output_dir, basename + '.vmrk')
     with open(vmrk, 'w') as f:
         f.write('Brain Vision Data Exchange Marker File, Version 1.0\n')
         f.write('\n[Common Infos]\n')
-        f.write('DataFile=' + fname_base + '.eeg\n')
+        f.write('DataFile=' + basename + '.eeg\n')
         f.write('\n[Marker Infos]\n')
         # Write one arbitrary event per second recording
         for event in range(rec_dur):
@@ -378,3 +380,52 @@ def make_test_brainvision_data(output_dir='.', fname_base='test',
                                                        int(event*fs+0.5*fs)))
 
     return vhdr
+
+
+def copyfile_brainvision(src, dest):
+    """Copy a brainvision file to a new location and adjust pointers.
+
+    The BrainVision format contains three files that have pointers
+    to each other: '.eeg' for binary data, '.vhdr' for meta data
+    as a header, and '.vmrk' for data on event markers. When renaming
+    these files, the '.vhdr' and '.vmrk' files need to be edited to
+    account for the new names and keep the pointers healthy.
+
+    """
+    # Get extenstion of the brainvision file
+    fname_src, ext_src = _parse_ext(src)
+    fname_dest, ext_dest = _parse_ext(dest)
+    if ext_src != ext_dest:
+        raise ValueError('Need to move data with same extension'
+                         ' but got {}, {}'.format(ext_src, ext_dest))
+    ext = ext_src
+    bv_ext = ['.eeg', '.vhdr', '.vmrk']
+    if ext not in bv_ext:
+        raise ValueError('Expecting file ending in one of {},'
+                         ' but got {}'.format(bv_ext, ext))
+
+    # .eeg is the binary file, we can just move it
+    if ext == '.eeg':
+        sh.copyfile(src, dest)
+        return
+
+    # .vhdr and .vmrk contain pointers. We need the basename
+    # to change the pointers
+    basename_src = fname_src.split(os.sep)[-1]
+    basename_dest = fname_dest.split(os.sep)[-1]
+
+    search_lines = ['DataFile=' + basename_src + '.eeg',
+                    'MarkerFile=' + basename_src + '.vmrk']
+    # Read the source
+    with open(src, 'r') as f:
+        lines = f.readlines()
+
+    # Write new and replace relevant parts with new name
+    with open(dest, 'w') as f:
+        for line in lines:
+            if line.strip() in search_lines:
+                new_line = line.replace(basename_src,
+                                        basename_dest)
+                f.write(new_line)
+            else:
+                f.write(line)
