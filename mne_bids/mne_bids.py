@@ -498,52 +498,43 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
     if len(events) > 0:
         _events_tsv(events, raw, events_tsv_fname, event_id, verbose)
 
-    # Before writing the neural data, cover some special cases:
-    # for FIF, we need to re-save the file to fix the file pointer
-    # for files with multiple parts
+    # Write the neural data
+    # ---------------------
+    if os.path.exists(raw_file_bids) and not overwrite:
+        raise ValueError('"%s" already exists. Please set'
+                         ' overwrite to True.' % raw_file_bids)
+
+    if verbose:
+        print('Writing data files to %s' % raw_file_bids)
+
+    # Cover FIF
     if ext in ['.fif', '.gz']:
+        # for FIF, we need to re-save the file to fix the file pointer
+        # for files with multiple parts
         raw.save(raw_file_bids, overwrite=overwrite)
+    # Cover CTF data
+    elif ext == '.ds':
+        # CTF data is saved in a directory
+        sh.copytree(raw_file, raw_file_bids)
+    # Cover BrainVision data
+    elif ext in ['.eeg', '.vhdr']:
+        # Multifile format with pointers within the single files
+        # Get future file names
+        fname, ext = _parse_ext(raw_file_bids)
+        raw_file_bids_list = [fname + '.eeg',
+                              fname + '.vhdr',
+                              fname + '.vmrk']
+        # Get locations of current files
+        fname, ext = _parse_ext(raw_file)
+        raw_file_list = [fname + '.eeg',
+                         fname + '.vhdr',
+                         fname + '.vmrk']
 
-    # If NOT fif, check if we got a multifile format
-    else:
-        # Cover BrainVision multifile format of .vhdr, .eeg, .vmrk
-        is_brainvision = False
-        if ext in ['.eeg', '.vhdr']:
-            is_brainvision = True
-
-            # Get future file names
-            fname, ext = _parse_ext(raw_file_bids)
-            raw_file_bids_list = [fname + '.eeg',
-                                  fname + '.vhdr',
-                                  fname + '.vmrk']
-            # Get locations of current files
-            fname, ext = _parse_ext(raw_file)
-            raw_file_list = [fname + '.eeg',
-                             fname + '.vhdr',
-                             fname + '.vmrk']
-
-        else:
-            # All other data are single file formats
-            raw_file_bids_list = [raw_file_bids]
-            raw_file_list = [raw_file]
-
-        # Now copy&move or overwrite the files for the new BIDS directory
+        # Rewrite each file with adjusting the pointers
         for raw_file, raw_file_bids in zip(raw_file_list, raw_file_bids_list):
-            if os.path.exists(raw_file_bids) and not overwrite:
-                raise ValueError('"%s" already exists. Please set'
-                                 ' overwrite to True.' % raw_file_bids)
-
-            if verbose:
-                print('Writing data files to %s' % raw_file_bids)
-
-            # Cover CTF data
-            if ext == '.ds':
-                sh.copytree(raw_file, raw_file_bids)
-            # Cover BrainVision data
-            elif is_brainvision:
-                copyfile_brainvision(raw_file, raw_file_bids)
-            # Cover all else
-            else:
-                sh.copyfile(raw_file, raw_file_bids)
+            copyfile_brainvision(raw_file, raw_file_bids)
+    # Cover all other data
+    else:
+        sh.copyfile(raw_file, raw_file_bids)
 
     return output_path
