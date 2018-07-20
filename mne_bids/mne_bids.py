@@ -26,7 +26,9 @@ from warnings import warn
 from .utils import (make_bids_filename, make_bids_folders,
                     make_dataset_description, _write_json,
                     _read_events, copyfile_brainvision)
-from .io import _parse_ext, _read_raw
+from .io import (_parse_ext, _read_raw, allowed_extensions_meg,
+                 allowed_extensions_eeg)
+
 
 ALLOWED_KINDS = ['meg', 'eeg', 'ieeg']
 orientation = {'.sqd': 'ALS', '.con': 'ALS', '.fif': 'RAS', '.gz': 'RAS',
@@ -498,43 +500,58 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
     if len(events) > 0:
         _events_tsv(events, raw, events_tsv_fname, event_id, verbose)
 
-    # Write the neural data
-    # ---------------------
-    if os.path.exists(raw_file_bids) and not overwrite:
-        raise ValueError('"%s" already exists. Please set'
-                         ' overwrite to True.' % raw_file_bids)
-
-    if verbose:
-        print('Writing data files to %s' % raw_file_bids)
-
-    # Cover FIF
-    if ext in ['.fif', '.gz']:
+    # Writing of neural data: Different for MEG and EEG
+    # Check if it is MEG (only writing to FIF)
+    # ----------------------------------------
+    if ext in allowed_extensions_meg:
         # for FIF, we need to re-save the file to fix the file pointer
         # for files with multiple parts
-        raw.save(raw_file_bids, overwrite=overwrite)
-    # Cover CTF data
-    elif ext == '.ds':
-        # CTF data is saved in a directory
-        sh.copytree(raw_file, raw_file_bids)
-    # Cover BrainVision data
-    elif ext in ['.eeg', '.vhdr']:
-        # Multifile format with pointers within the single files
-        # Get future file names
-        fname, ext = _parse_ext(raw_file_bids)
-        raw_file_bids_list = [fname + '.eeg',
-                              fname + '.vhdr',
-                              fname + '.vmrk']
-        # Get locations of current files
-        fname, ext = _parse_ext(raw_file)
-        raw_file_list = [fname + '.eeg',
-                         fname + '.vhdr',
-                         fname + '.vmrk']
+        if ext in ['.fif', '.gz']:
+            raw.save(raw_file_bids, overwrite=overwrite)
+        else:
+            if os.path.exists(raw_file_bids):
+                if overwrite:
+                    os.remove(raw_file_bids)
+                    sh.copyfile(raw_file, raw_file_bids)
+                else:
+                    raise ValueError('"%s" already exists. Please set'
+                                     'overwrite to True.' % raw_file_bids)
 
-        # Rewrite each file with adjusting the pointers
-        for raw_file, raw_file_bids in zip(raw_file_list, raw_file_bids_list):
-            copyfile_brainvision(raw_file, raw_file_bids)
-    # Cover all other data
+    # Check if it is EEG (preserving original file format)
+    # ----------------------------------------------------
+    elif ext in allowed_extensions_eeg:
+        if os.path.exists(raw_file_bids) and not overwrite:
+            raise ValueError('"%s" already exists. Please set'
+                             ' overwrite to True.' % raw_file_bids)
+
+        if verbose:
+            print('Writing data files to %s' % raw_file_bids)
+
+        # Cover BrainVision data
+        if ext in ['.eeg', '.vhdr']:
+            # Multifile format with pointers within the single files
+            # Get future file names
+            fname, ext = _parse_ext(raw_file_bids)
+            raw_file_bids_l = [fname + '.eeg',
+                               fname + '.vhdr',
+                               fname + '.vmrk']
+            # Get locations of current files
+            fname, ext = _parse_ext(raw_file)
+            raw_file_l = [fname + '.eeg',
+                          fname + '.vhdr',
+                          fname + '.vmrk']
+
+            # Rewrite each file with adjusting the pointers
+            for raw_file, raw_file_bids in zip(raw_file_l, raw_file_bids_l):
+                copyfile_brainvision(raw_file, raw_file_bids)
+
+        # Cover all other data
+        else:
+            sh.copyfile(raw_file, raw_file_bids)
+
+    # Potential space for iEEG
+    # ------------------------
     else:
-        sh.copyfile(raw_file, raw_file_bids)
+        pass
 
     return output_path
