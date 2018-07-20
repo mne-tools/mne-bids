@@ -122,9 +122,9 @@ def test_bti():
 # ---------
 def test_brainvision():
     """Test functionality for raw_to_bids conversion for BrainVision data."""
-    data_generation_output_path = _TempDir()
+    data_dir = _TempDir()
     output_path = _TempDir()
-    vhdr = make_test_brainvision_data(data_generation_output_path)
+    vhdr = make_test_brainvision_data(data_dir)
     raw_to_bids(subject_id=subject_id, task=task, raw_file=vhdr,
                 output_path=output_path, kind='eeg', eeg_reference='Cz',
                 event_id={'test': 1})
