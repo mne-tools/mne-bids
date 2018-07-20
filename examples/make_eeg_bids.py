@@ -18,9 +18,12 @@ data. Specifically, we will follow these steps:
 # We are importing everything we need for this example:
 import os
 
+from mne import find_events
+from mne.io import read_raw_brainvision
 from mne.utils import _TempDir
 
-from mne_bids.datasets import download_matchingpennies_subject
+from mne_bids import raw_to_bids
+from mne_bids.datasets import download_matchingpennies_subj
 
 ###############################################################################
 # Step 1: Download the data
@@ -38,13 +41,18 @@ data_dir = _TempDir()
 ###############################################################################
 # Now, we download data for participant sub-05 (about 350MB). We could also
 # download the whole dataset by specifying `url_dict` as an input to
-# `download_matchingpennies_subject`, see the function's docstring for more
+# `download_matchingpennies_subj`, see the function's docstring for more
 # information.
-download_matchingpennies_subject(directory=data_dir)
+download_matchingpennies_subj(directory=data_dir)
 
 ###############################################################################
-# Let's see whether the data has been downloaded:
-os.listdir(data_dir)
+# Let's see whether the data has been downloaded using a quick visualization
+# taken from https://stackoverflow.com/a/16974952/5201771
+for root, dirs, files in os.walk(data_dir):
+    path = root.split(os.sep)
+    print((len(path) - 1) * '-----', os.path.basename(root))
+    for file in files:
+        print(len(path) * '-----', file)
 
 ###############################################################################
 # The data are part of the example suit for the EEG specification of BIDS, so
@@ -58,9 +66,105 @@ os.listdir(data_dir)
 # Step 2: Formatting as BIDS
 # --------------------------
 #
+# We are reading the data using MNE-Python's io module and the
+# `read_raw_brainvision` function, which takes a `.vhdr` file as an input.
+vhdr_path = os.path.join(data_dir, 'sub-05_task-matchingpennies_eeg.vhdr')
+raw = read_raw_brainvision(vhdr_path)
+print(raw)
 
+###############################################################################
+# By reading the raw data, MNE-Python has also read the `.vmrk` file in which
+# the events of the EEG recording are stored. It has automatically created a
+# new "stimulus channel" containing the event pulses and appended this to our
+# data:
+print(raw.ch_names)  # Should be called something like "STI"
+
+###############################################################################
+# For BIDS, we specify all events in a dedicated `events.tsv` file. Let's read
+# the events from our stimulus channel using `find_events`
+events = find_events(raw)
+
+###############################################################################
+# Now we have everything to start a new BIDS directory using our data.
+# To do that, we can use the high level function `raw_to_bids`, which is the
+# core of MNE-BIDS. Generally, `raw_to_bids` tries to extract as much meta data
+# as possible from the raw data and then format it in a BIDS compatible way.
+# `raw_to_bids` takes a bunch of inputs, most of which are however optional.
+# The required inputs are described in the docstring:
+#
+# .. code-block:: python
+#    """
+#    Walk over a folder of files and create BIDS compatible folder.
+#
+#    Parameters
+#    ----------
+#    subject_id : str
+#        The subject name in BIDS compatible format ('01', '02', etc.)
+#    task : str
+#        Name of the task the data is based on.
+#    raw_file : str | instance of mne.Raw
+#        The raw data. If a string, it is assumed to be the path to the raw
+#        data file. Otherwise it must be an instance of mne.Raw
+#    output_path : str
+#        The path of the BIDS compatible folder
+#     """
+# Let's assume the previous file name `sub-05_task-matchingpennies_eeg`
+# contained an error and that this was actually `sub-01` and we also want to
+# have another task name `MatchingPennies`.
+subject_id = '01'
+task = 'MatchingPennies'
+raw_file = raw  # We can specify the raw file, or the path to the .vhdr file.
+output_path = _TempDir()
+
+###############################################################################
+# Now we just need to specify a few more EEG details to get something sensible:
+
+# First, tell `MNE-BIDS` that it is working with EEG data:
+kind = 'eeg'
+
+# The EEG reference used for the recording
+eeg_reference = 'Fz'
+
+# brief description of the event markers present in the data. This will become
+# the `trial_type` column in our BIDS `events.tsv`.
+event_id = {'left': 1, 'right': 2}
+
+# Now convert our data to be in a new BIDS dataset.
+raw_to_bids(subject_id=subject_id, task=task, raw_file=raw_file,
+            output_path=output_path, kind=kind,
+            eeg_reference=eeg_reference, event_id=event_id)
 
 ###############################################################################
 # Step 3: Check and compare with standard
 # ---------------------------------------
+# Now we have written our BIDS directory. Having read the BIDS specification,
+# we know that the structure should approximately look like this:
 #
+# .. code-block:: python
+#
+#   ├── dataset_description.json
+#   └── sub-xx
+#       └── modality
+#           ├── sub-xx_task-yy_events.tsv
+#           ├── sub-xx_task-yy_modality.ext
+#           └── sub-xx_task-yy_modality.json
+#
+# Now, what does it actually look like?
+for root, dirs, files in os.walk(output_path):
+    path = root.split(os.sep)
+    print((len(path) - 1) * '-----', os.path.basename(root))
+    for file in files:
+        print(len(path) * '-----', file)
+
+###############################################################################
+# The three actual data files `.eeg`, `.vhdr`, and `.vmrk` have their new names
+# and the internal pointers within each data file have been updated
+# accordingly. In addition to that, MNE-BIDS has created a suitable directory
+# structure for us, started an `event.tsv` and `channels.tsv` and made an
+# initial `dataset_description` on top!
+#
+# That's nice and it has saved us a lot of work. However, a few things are not
+# yet covered by MNE-BIDS for EEG data and will have to be added by hand.
+# Remember that there is a convenient javascript tool to validate all your BIDS
+# directories called the "BIDS-validator", available here:
+# https://github.com/incf/bids-validator
