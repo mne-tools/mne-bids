@@ -22,7 +22,7 @@ def test_download_matchingpennies_subj():
 
     # Download a single file
     url_dict = {'subj_id': 5,
-                'channels.tsv': 'https://osf.io/wzyh2/'}
+                'channels.tsv': 'https://osf.io/dq5v2/'}
     download_matchingpennies_subj(url_dict, tmp_dir)
 
     # Assert that the file is there

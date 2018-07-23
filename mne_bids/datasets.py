@@ -85,11 +85,12 @@ def download_matchingpennies_subj(url_dict=None, directory='.'):
     # Check input
     if url_dict is None:
         url_dict = {'subj_id': 5,
-                    'channels.tsv': 'https://osf.io/wzyh2/',
-                    'eeg.eeg': 'https://osf.io/mj7q8/',
-                    'eeg.vhdr': 'https://osf.io/j2dgs/',
-                    'eeg.vmrk': 'https://osf.io/w8rhu/',
-                    'events.tsv': 'https://osf.io/kzvwn/'}
+                    'channels.tsv': 'https://osf.io/dq5v2/',
+                    'eeg.json': 'https://osf.io/p7u8h/',
+                    'eeg.eeg': 'https://osf.io/3at5h/',
+                    'eeg.vhdr': 'https://osf.io/3m8et/',
+                    'eeg.vmrk': 'https://osf.io/7gq4s/',
+                    'events.tsv': 'https://osf.io/4xc86/'}
 
     # Get the present subject
     subj_id = url_dict.pop('subj_id', 'n/a')
