@@ -142,15 +142,15 @@ raw_to_bids(subject_id=subject_id, task=task, raw_file=raw_file,
 #
 # .. code-block:: python
 #
-#    ├── CHANGES
-#    ├── dataset_description.json
-#    ├── participants.tsv
-#    ├── README
-#    └── sub-xx
-#        └── modality
-#            ├── sub-xx_task-yy_events.tsv
-#            ├── sub-xx_task-yy_modality.ext
-#            └── sub-xx_task-yy_modality.json
+#    ---------- CHANGES
+#    ---------- dataset_description.json
+#    ---------- participants.tsv
+#    ---------- README
+#    ---------- sub-xx
+#        ---------- modality
+#            ---------- sub-xx_task-yy_events.tsv
+#            ---------- sub-xx_task-yy_modality.ext
+#            ---------- sub-xx_task-yy_modality.json
 #
 #
 # Now, what does it actually look like?
