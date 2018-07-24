@@ -503,29 +503,26 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
     # Writing of neural data: Different for MEG and EEG
     # Check if it is MEG (only writing to FIF)
     # ----------------------------------------
+    if os.path.exists(raw_file_bids) and not overwrite:
+        raise ValueError('"%s" already exists. Please set'
+                         ' overwrite to True.' % raw_file_bids)
+
+    if verbose:
+        print('Writing data files to %s' % raw_file_bids)
+
     if ext in allowed_extensions_meg:
         # for FIF, we need to re-save the file to fix the file pointer
         # for files with multiple parts
         if ext in ['.fif', '.gz']:
             raw.save(raw_file_bids, overwrite=overwrite)
         else:
-            if os.path.exists(raw_file_bids):
-                if overwrite:
-                    os.remove(raw_file_bids)
-                    sh.copyfile(raw_file, raw_file_bids)
-                else:
-                    raise ValueError('"%s" already exists. Please set'
-                                     'overwrite to True.' % raw_file_bids)
+            if os.path.exists(raw_file_bids):  # overwrite=True
+                os.remove(raw_file_bids)
+                sh.copyfile(raw_file, raw_file_bids)
 
     # Check if it is EEG (preserving original file format)
     # ----------------------------------------------------
     elif ext in allowed_extensions_eeg:
-        if os.path.exists(raw_file_bids) and not overwrite:
-            raise ValueError('"%s" already exists. Please set'
-                             ' overwrite to True.' % raw_file_bids)
-
-        if verbose:
-            print('Writing data files to %s' % raw_file_bids)
 
         # Cover BrainVision data
         if ext in ['.eeg', '.vhdr']:
