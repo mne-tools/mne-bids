@@ -173,5 +173,9 @@ for root, dirs, files in os.walk(output_path):
 # `CHANGES`, `participants.tsv`, and some more specific entries.
 #
 # Remember that there is a convenient javascript tool to validate all your BIDS
-# directories called the "BIDS-validator", available here:
-# https://github.com/incf/bids-validator
+# directories called the "BIDS-validator", available as a web version and a
+# command line tool:
+#
+# Web version: https://incf.github.io/bids-validator/
+#
+# Command line tool: https://www.npmjs.com/package/bids-validator
