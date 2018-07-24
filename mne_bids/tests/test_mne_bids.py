@@ -12,6 +12,9 @@ For each supported file format, implement a test.
 import os
 import os.path as op
 from warnings import simplefilter
+import subprocess
+
+import pytest
 
 import mne
 from mne.datasets import testing
@@ -129,5 +132,7 @@ def test_brainvision():
                 output_path=output_path, kind='eeg', eeg_reference='Cz',
                 event_id={'test': 1})
 
-    cmd = ['bids-validator', output_path]
-    run_subprocess(cmd, shell=shell)
+    # Until EEG validator is merged, assert that this will be wrong.
+    with pytest.raises(subprocess.CalledProcessError):
+        cmd = ['bids-validator', output_path]
+        run_subprocess(cmd, shell=shell)
