@@ -79,7 +79,7 @@ def test_brainvision_utils():
     for src, dest in zip(bv_file_paths, new_bv_file_paths):
         copyfile_brainvision(src, dest)
 
-    # Assert we can move the new file
+    # Assert we can read the new file with its new pointers
     raw = read_raw_brainvision(os.path.join(new_data_dir,
                                             new_basename + '.vhdr'))
     assert isinstance(raw, BaseRaw)
