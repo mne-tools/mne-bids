@@ -10,21 +10,16 @@ This is a repository for creating BIDS-compatible datasets with MNE.
 Installation
 ------------
 
-We recommend the [Anaconda Python distribution](https://www.continuum.io/downloads). With the `conda` package manager.
-To install ``mne_bids``, you first need to install its dependencies.
-For that, have a look at the [`environment.yml`](https://github.com/mne-tools/mne-bids/blob/master/environment.yml).
-You can use `conda` to install all requirements:
+We recommend the [Anaconda Python distribution](https://www.continuum.io/downloads).
+To install ``mne_bids``, you first need to install its dependencies:
 
-	$ git clone https://github.com/mne-tools/mne-bids
-	$ cd mne-bids
-	$ conda env create -f environment.yml
+	$ pip install pandas mne
 
-Then, activate your mne_bids environment and install mne_bids::
+Then install mne_bids::
 
-	$ conda activate mne
 	$ pip install git+https://github.com/mne-tools/mne-bids.git#egg=mne-bids
 
-If you do not have admin privileges on the computer, use the ``--user`` flag
+If you do not have administrator privileges on the computer, use the ``--user`` flag
 with `pip`. To upgrade, use the ``--upgrade`` flag provided by `pip`.
 
 To check if everything worked fine, you can do:
@@ -60,8 +55,7 @@ installation as follows:
 
 	$ git clone https://github.com/mne-tools/mne-python
 	$ cd mne-python
-	$ conda activate mne
-	$ pip uninstall mne  # uninstall pypi mne installed via the environment.yml
+	$ pip uninstall mne  # uninstall pypi mne
 	$ pip install -e .  # use the cloned repo for a local install of mne
 
 Note that, for testing purposes, it is necessary to install the
