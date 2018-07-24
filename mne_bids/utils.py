@@ -227,7 +227,7 @@ def make_dataset_description(path, name=None, data_license=None,
 
     Notes
     -----
-    The required field BIDSVersion will be automatically field by mne_bids.
+    The required field BIDSVersion will be automatically filled by mne_bids.
 
     """
     # Put potential string input into list of strings
