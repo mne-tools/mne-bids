@@ -391,6 +391,9 @@ def copyfile_brainvision(src, dest):
     account for the new names and keep the pointers healthy.
 
     """
+    if not os.path.exists(src):
+        raise IOError('File does not exist: {}\n'.format(src))
+
     # Get extenstion of the brainvision file
     fname_src, ext_src = _parse_ext(src)
     fname_dest, ext_dest = _parse_ext(dest)

@@ -80,11 +80,21 @@ def test_brainvision_utils():
         copyfile_brainvision(src, dest)
 
     # Assert we can read the new file with its new pointers
-    raw = read_raw_brainvision(os.path.join(new_data_dir,
-                                            new_basename + '.vhdr'))
+    new_vhdr = os.path.join(new_data_dir, new_basename + '.vhdr')
+    raw = read_raw_brainvision(new_vhdr)
     assert isinstance(raw, BaseRaw)
 
     # Assert that errors are raised
+    with pytest.raises(IOError):
+        # source file does not exist
+        copyfile_brainvision('I_dont_exist.vhdr', 'dest.vhdr')
+
     with pytest.raises(ValueError):
-        copyfile_brainvision('bogus.vmrk', 'bogus.vhdr')
-        copyfile_brainvision('bogus.x', 'bogus.vhdr')
+        # Unequal extensions
+        copyfile_brainvision(new_vhdr, 'dest.vmrk')
+
+    with pytest.raises(ValueError):
+        # Wrong extension
+        wrong_ext_f = os.path.join(new_data_dir, 'wrong_ext.x')
+        open(wrong_ext_f, 'w').close()
+        copyfile_brainvision(wrong_ext_f, 'dest.x')
