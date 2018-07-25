@@ -308,10 +308,10 @@ def _read_events(events_data, raw):
     elif isinstance(events_data, np.ndarray):
         if events_data.ndim != 2:
             raise ValueError('Events must have two dimensions, '
-                             'found %s' % events.ndim)
+                             'found %s' % events_data.ndim)
         if events_data.shape[1] != 3:
             raise ValueError('Events must have second dimension of length 3, '
-                             'found %s' % events.shape[1])
+                             'found %s' % events_data.shape[1])
         events = events_data
     else:
         events = find_events(raw)

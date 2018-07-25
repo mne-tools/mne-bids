@@ -8,11 +8,15 @@ import os
 
 import pytest
 
+import numpy as np
+
+from mne import find_events, write_events
 from mne.io import read_raw_brainvision, BaseRaw
+
 from mne.utils import _TempDir
 from mne_bids.utils import (make_bids_folders, make_bids_filename,
                             _check_types, make_test_brainvision_data,
-                            copyfile_brainvision)
+                            copyfile_brainvision, _read_events)
 
 
 def test_make_filenames():
@@ -48,6 +52,45 @@ def test__check_types():
     assert _check_types(['foo', 'bar', None]) is None
     with pytest.raises(ValueError):
             _check_types([None, 1, 3.14, 'eeg', [1, 2]])
+
+
+def test_read_events():
+    """Test the reading of events froms several sources."""
+    # get some test data
+    basename = 'testnow'
+    data_dir = _TempDir()
+    _vhdr = make_test_brainvision_data(output_dir=data_dir, basename=basename)
+
+    # read into MNE, get events and write events for testing
+    # with _read_events
+    raw = read_raw_brainvision(_vhdr)
+    true_events = find_events(raw)
+    events_f = os.path.join(data_dir, 'example-eve.fif')
+    write_events(events_f, true_events)
+
+    # Now test _read_events
+    # Read from events file
+    events = _read_events(None, raw)
+    np.testing.assert_almost_equal(events, true_events)
+
+    # Read events from ndarray
+    events_data = np.ones((5, 3))
+    events = _read_events(events_data, raw)
+    assert events.ndim == 2
+
+    with pytest.raises(ValueError):
+        # must have second dim
+        events_data = np.ones(5)
+        events = _read_events(events_data, raw)
+
+    with pytest.raises(ValueError):
+        # must have second dimension equal to 3
+        events_data = np.ones((5, 2))
+        events = _read_events(events_data, raw)
+
+    # Read events from raw
+    events = _read_events(None, raw)
+    np.testing.assert_almost_equal(events, true_events)
 
 
 def test_brainvision_utils():
