@@ -136,3 +136,18 @@ def test_brainvision():
     with pytest.raises(subprocess.CalledProcessError):
         cmd = ['bids-validator', output_path]
         run_subprocess(cmd, shell=shell)
+
+
+# General tests
+# -------------
+def test_wrong_kinds():
+    """Test input of unsupported kind."""
+    data_dir = _TempDir()
+    output_path = _TempDir()
+    vhdr = make_test_brainvision_data(data_dir)
+
+    with pytest.raises(ValueError):
+        wrong_kind = 'abc'
+        raw_to_bids(subject_id=subject_id, task=task, raw_file=vhdr,
+                    output_path=output_path, kind=wrong_kind,
+                    eeg_reference='Cz', event_id={'test': 1})
