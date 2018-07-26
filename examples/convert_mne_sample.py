@@ -20,6 +20,7 @@ your existing files into a BIDS-compatible folder.
 import os.path as op
 from mne.datasets import sample
 from mne_bids import raw_to_bids
+from mne_bids.utils import print_dir_tree
 
 ###############################################################################
 # And define the paths and event_id dictionary.
@@ -39,3 +40,7 @@ raw_to_bids(subject_id='01', run='01', session_id='01', task='audiovisual',
             raw_file=raw_file, events_data=events_data,
             output_path=output_path, event_id=event_id,
             overwrite=True)
+
+###############################################################################
+# Now let's see the structure of the BIDS folder we created.
+print_dir_tree(output_path)

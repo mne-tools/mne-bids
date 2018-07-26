@@ -26,6 +26,7 @@ Scientific data, 2 (2015): 150001.
 import os.path as op
 from mne_bids import raw_to_bids
 from mne_bids.datasets import fetch_faces_data
+from mne_bids.utils import print_dir_tree
 
 ###############################################################################
 # And fetch the data.
@@ -69,3 +70,7 @@ for subject_id in subject_ids:
         raw_to_bids(subject_id='%02d' % subject_id, session_id='01', run=run,
                     task='VisualFaces', raw_file=raw_file,
                     event_id=event_id, output_path=output_path, overwrite=True)
+
+###############################################################################
+# Now let's see the structure of the BIDS folder we created.
+print_dir_tree(output_path)
