@@ -24,6 +24,7 @@ from mne.utils import _TempDir
 
 from mne_bids import raw_to_bids
 from mne_bids.datasets import download_matchingpennies_subj
+from mne_bids.utils import print_dir_tree
 
 ###############################################################################
 # Step 1: Download the data
@@ -47,12 +48,7 @@ download_matchingpennies_subj(directory=data_dir)
 
 ###############################################################################
 # Let's see whether the data has been downloaded using a quick visualization
-# taken from https://stackoverflow.com/a/16974952/5201771
-for root, dirs, files in os.walk(data_dir):
-    path = root.split(os.sep)
-    print((len(path) - 1) * '-----', os.path.basename(root))
-    for file in files:
-        print(len(path) * '-----', file)
+print_dir_tree(data_dir)
 
 ###############################################################################
 # The data are part of the example suit for the EEG specification of BIDS, so
@@ -154,11 +150,7 @@ raw_to_bids(subject_id=subject_id, task=task, raw_file=raw_file,
 #
 #
 # Now, what does it actually look like?
-for root, dirs, files in os.walk(output_path):
-    path = root.split(os.sep)
-    print((len(path) - 1) * '-----', os.path.basename(root))
-    for file in files:
-        print(len(path) * '-----', file)
+print_dir_tree(output_path)
 
 ###############################################################################
 # The three actual data files `.eeg`, `.vhdr`, and `.vmrk` have their new names

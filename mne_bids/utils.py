@@ -21,6 +21,21 @@ from mne.externals.six import string_types
 from .io import _parse_ext
 
 
+def print_dir_tree(dir):
+    """Recursively print a directory tree starting from `dir` [1].
+
+    References
+    ----------
+    .. [1]
+
+    """
+    for root, dirs, files in os.walk(dir):
+        path = root.split(os.sep)
+        print((len(path) - 1) * '-----', os.path.basename(root))
+        for file in files:
+            print(len(path) * '-----', file)
+
+
 def _mkdir_p(path, overwrite=False, verbose=False):
     """Create a directory, making parent directories as needed [1].
 
