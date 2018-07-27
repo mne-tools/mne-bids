@@ -4,7 +4,7 @@ dist/
 *.egg*
 
 # Sphinx documentation
-docs/_build/
+doc/_build/
 doc/generated/
 doc/auto_examples/
 doc/auto_tutorials/
