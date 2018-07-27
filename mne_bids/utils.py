@@ -29,6 +29,9 @@ def print_dir_tree(dir):
     .. [1]
 
     """
+    if not os.path.exists(dir):
+        raise ValueError('Directory does not exist: {}'.format(dir))
+
     for root, dirs, files in os.walk(dir):
         path = root.split(os.sep)
         print((len(path) - 1) * '-----', os.path.basename(root))

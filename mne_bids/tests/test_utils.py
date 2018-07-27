@@ -16,7 +16,17 @@ from mne.io import read_raw_brainvision, BaseRaw
 from mne.utils import _TempDir
 from mne_bids.utils import (make_bids_folders, make_bids_filename,
                             _check_types, make_test_brainvision_data,
-                            copyfile_brainvision, _read_events)
+                            copyfile_brainvision, _read_events,
+                            print_dir_tree)
+
+
+def test_print_dir_tree():
+    """Test printing a dir tree."""
+    with pytest.raises(ValueError):
+        print_dir_tree('i_dont_exist')
+
+    tmp_dir = _TempDir()
+    assert print_dir_tree(tmp_dir) is None
 
 
 def test_make_filenames():
