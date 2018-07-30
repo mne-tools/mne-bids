@@ -362,6 +362,7 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
         raw = _read_raw(raw_file, electrode=electrode, hsp=hsp, hpi=hpi,
                         config=config, verbose=verbose)
         _, ext = _parse_ext(raw_file, verbose=verbose)
+        raw_fname = raw_file
     elif isinstance(raw_file, BaseRaw):
         # Only parse the filename for the extension
         # Assume that if no filename attr exists, it's a fif file.
@@ -370,6 +371,7 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
             _, ext = _parse_ext(raw.filenames[0], verbose=verbose)
         else:
             ext = '.fif'
+        raw_fname = raw.filenames[0]
     else:
         raise ValueError('raw_file must be an instance of str or BaseRaw, '
                          'got %s' % type(raw_file))
@@ -396,9 +398,17 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
     data_meta_fname = make_bids_filename(
         subject=subject_id, session=session_id,
         suffix='%s.json' % kind, prefix=data_path)
-    raw_file_bids = make_bids_filename(
-        subject=subject_id, session=session_id, task=task, run=run,
-        suffix='%s%s' % (kind, ext), prefix=data_path)
+    if ext in ['.fif', '.gz']:
+        raw_file_bids = make_bids_filename(
+            subject=subject_id, session=session_id, task=task, run=run,
+            suffix='%s%s' % (kind, ext))
+    else:
+        raw_folder = make_bids_filename(
+            subject=subject_id, session=session_id, task=task, run=run,
+            suffix='%s' % kind)
+        raw_file_bids = make_bids_filename(
+            subject=subject_id, session=session_id, task=task, run=run,
+            suffix='%s%s' % (kind, ext), prefix=raw_folder)
     events_tsv_fname = make_bids_filename(
         subject=subject_id, session=session_id, task=task,
         run=run, suffix='events.tsv', prefix=data_path)
@@ -418,7 +428,8 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
 
     # save stuff
     if kind == 'meg':
-        _scans_tsv(raw, raw_file_bids, scans_fname, verbose)
+        _scans_tsv(raw, os.path.join(kind, raw_file_bids), scans_fname,
+                   verbose)
         _coordsystem_json(raw, unit, orient, manufacturer, coordsystem_fname,
                           verbose)
 
@@ -430,6 +441,10 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
     events = _read_events(events_data, raw)
     if len(events) > 0:
         _events_tsv(events, raw, events_tsv_fname, event_id, verbose)
+
+    # set the raw file name to now be the absolute path to ensure the files
+    # are placed in the right location
+    raw_file_bids = os.path.join(data_path, raw_file_bids)
 
     # for FIF, we need to re-save the file to fix the file pointer
     # for files with multiple parts
@@ -443,6 +458,16 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
             else:
                 raise ValueError('"%s" already exists. Please set overwrite to'
                                  ' True.' % raw_file_bids)
+        else:
+            # ensure the sub-folder exists
+            if not os.path.exists(os.path.dirname(raw_file_bids)):
+                os.makedirs(os.path.dirname(raw_file_bids))
+            if ext == '.ds':
+                # it is actually a folder and we need to copy the whole thing
+                sh.copytree(raw_fname, raw_file_bids)
+            else:
+                # copy the file
+                sh.copyfile(raw_fname, raw_file_bids)
 
     return output_path
 
