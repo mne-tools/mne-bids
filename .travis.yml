@@ -23,7 +23,7 @@ install:
       pip install --no-deps -e .
       cd ../
     - python setup.py install
-    - npm install -g https://github.com/INCF/bids-validator.git#0.26.0
+    - npm install -g https://github.com/jasmainak/bids-validator.git#fix_meg_regexp
 script:
     - make
     - flake8 --count mne_bids
