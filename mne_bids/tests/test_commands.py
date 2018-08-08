@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 from os import path as op
 
-import mne
 from mne.datasets import testing
-from mne.utils import _TempDir, run_tests_if_main
+from mne.utils import _TempDir, run_tests_if_main, ArgvSetter
 from mne_bids.commands import mne_bids_raw_to_bids
 
 

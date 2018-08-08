@@ -3,7 +3,8 @@
 
 """Command line interface for meg_bids.
 
-example usage:  $ mne_bids raw_to_bids --subject_id sub01 --task rest --raw_file data.edf --output_path new_path
+example usage:  $ mne_bids raw_to_bids --subject_id sub01 --task rest
+--raw_file data.edf --output_path new_path
 
 """
 
@@ -19,7 +20,7 @@ def run():
 
     parser.add_option('--subject_id', dest='subject_id',
                       help=('The subject name in BIDS compatible format',
-                      '(01,02, etc.)'), metavar='s')
+                            '(01,02, etc.)'), metavar='s')
     parser.add_option('--task', dest='task',
                       help='Name of the task the data is based on.',
                       metavar='t')
@@ -53,13 +54,13 @@ def run():
                       help='The path to the configuration file', metavar='cfg')
     parser.add_option('--overwrite', dest='overwrite',
                       help=('Boolean. If the file already exists, whether',
-                      'to overwrite it.'),
+                            'to overwrite it.'),
                       metavar='ow')
 
     opt, args = parser.parse_args()
 
-    raw = raw_to_bids(opt.subject_id, opt.task, opt.raw_file, opt.output_path, opt.session_id,
-                      opt.run, opt.kind, opt.events_data,
+    raw = raw_to_bids(opt.subject_id, opt.task, opt.raw_file, opt.output_path,
+                      opt.session_id, opt.run, opt.kind, opt.events_data,
                       opt.event_id, opt.hpi, opt.electrode, opt.hsp,
                       opt.config, opt.overwrite, verbose=True)
 
