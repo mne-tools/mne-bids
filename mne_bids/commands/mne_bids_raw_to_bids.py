@@ -59,12 +59,13 @@ def run():
 
     opt, args = parser.parse_args()
 
-    raw = raw_to_bids(opt.subject_id, opt.task, opt.raw_file, opt.output_path,
-                      opt.session_id, opt.run, opt.kind, opt.events_data,
-                      opt.event_id, opt.hpi, opt.electrode, opt.hsp,
-                      opt.config, opt.overwrite, verbose=True)
+    raw_to_bids(opt.subject_id, opt.task, opt.raw_file, opt.output_path,
+                opt.session_id, opt.run, opt.kind, opt.events_data,
+                opt.event_id, opt.hpi, opt.electrode, opt.hsp,
+                opt.config, opt.overwrite, verbose=True)
 
     sys.exit(0)
+
 
 is_main = (__name__ == '__main__')
 if is_main:
