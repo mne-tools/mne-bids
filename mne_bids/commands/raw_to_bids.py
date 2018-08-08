@@ -30,7 +30,9 @@ def run():
     parser.add_option('--out', dest='out_path',
                       help='The path of the BIDS compatible folder.', metavar='o')
     parser.add_option('--events', dest='events_fname',
-                      help='The path to the events file.', metavar='e')
+                      help='The path to the events file.', metavar='evt')
+    parser.add_option('--event_id', dest='event_id',
+                      help='The path to the event id file.', metavar='eid')
     parser.add_option('--hpi', dest='hpi',
                       help='The path to the MEG Marker points', metavar='filename')
     parser.add_option('--electrode', dest='electrode',
