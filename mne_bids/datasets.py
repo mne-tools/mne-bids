@@ -54,9 +54,6 @@ def download_matchingpennies_subj(url_dict=None, directory='.'):
         pointing to the respective files on the Open Science
         Framework. MUST contain a key value pair
         "subj_id: int" (see Examples). If None, will download data for sub-05.
-    subj_id : int | None
-        The subject identifier the url_dict corresponds to. If None,
-        will be set to 99.
     directory : str
         Path to the directory where to save the data. Defaults
         to the working directory.
