@@ -364,11 +364,12 @@ def make_test_brainvision_data(output_dir='.', basename='test',
     vhdr = os.path.join(output_dir, basename + '.vhdr')
     with open(vhdr, 'w') as f:
         f.write('Brain Vision Data Exchange Header File Version 1.0\n')
+        f.write('; Data synthesized by MNE-BIDS\n')
         f.write('\n[Common Infos]\n')
         f.write('DataFile=' + basename + '.eeg\n')
         f.write('MarkerFile=' + basename + '.vmrk\n')
         f.write('DataFormat=BINARY\n')
-        f.write('Data orientation: MULTIPLEXED=ch1,pt1, ch2,pt1 ...\n')
+        f.write('Data orientation=MULTIPLEXED\n')
         f.write('DataOrientation=MULTIPLEXED\n')
         f.write('NumberOfChannels=' + str(n_channels) + '\n')
         f.write('SamplingInterval=' + str(int(1./fs*1000.*1000.)) + '\n')
