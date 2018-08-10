@@ -1,9 +1,9 @@
 """
 =========================
-Use MNE-Bids for EEG Data
+Use MNE-BIDS for EEG Data
 =========================
 
-In this example, we use MNE-Bids to create a BIDS-compatible directory of EEG
+In this example, we use MNE-BIDS to create a BIDS-compatible directory of EEG
 data. Specifically, we will follow these steps:
 
 1. Download some EEG data from the Open Science Framework (https://osf.io)
@@ -34,7 +34,7 @@ from mne_bids.utils import print_dir_tree
 # provided with the report on the BIDS extension for EEF data: The "Matching
 # Pennies" dataset. See here for more information: https://osf.io/cj2dr/
 #
-# For convenience, MNE-Bids has a function to download this data.
+# For convenience, MNE-BIDS has a function to download this data.
 
 # make a directory to save the data to
 home = os.path.expanduser('~')
