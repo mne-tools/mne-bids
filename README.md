@@ -4,7 +4,7 @@
 MNE-BIDS
 ========
 
-This is a repository for creating BIDS-compatible datasets with MNE. 
+This is a repository for creating BIDS-compatible datasets with MNE.
 
 Installation
 ------------
@@ -26,6 +26,18 @@ To check if everything worked fine, you can do:
 	$ python -c 'import mne_bids'
 
 and it should not give any error messages.
+
+Command Line Interface
+----------------------
+
+In addition to import mne_bids, you can use the command line interface.
+
+
+Example :
+
+```bash
+$ mne_bids raw_to_bids --subject_id sub01 --task rest --raw_file data.edf --output_path new_path
+```
 
 Contributions
 -------------

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # Authors: Teon Brooks  <teon.brooks@gmail.com>
 
-"""Command line interface for meg_bids.
+"""Command line interface for mne_bids.
 
 example usage:  $ mne_bids raw_to_bids --subject_id sub01 --task rest
 --raw_file data.edf --output_path new_path
