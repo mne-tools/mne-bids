@@ -10,8 +10,8 @@ import mne_bids
 
 mne_bin_dir = op.dirname(mne_bids.__file__)
 valid_commands = sorted(glob.glob(op.join(mne_bin_dir,
-                                          'commands', 'mne_*.py')))
-valid_commands = [c.split(op.sep)[-1][4:-3] for c in valid_commands]
+                                          'commands', 'mne_bids_*.py')))
+valid_commands = [c.split(op.sep)[-1][9:-3] for c in valid_commands]
 
 
 def print_help():
@@ -35,5 +35,5 @@ elif sys.argv[1] not in valid_commands:
     sys.exit(0)
 else:
     cmd = sys.argv[1]
-    cmd_path = op.join(mne_bin_dir, 'commands', 'mne_%s.py' % cmd)
+    cmd_path = op.join(mne_bin_dir, 'commands', 'mne_bids_%s.py' % cmd)
     sys.exit(subprocess.call([sys.executable, cmd_path] + sys.argv[2:]))
