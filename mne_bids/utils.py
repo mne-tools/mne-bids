@@ -394,8 +394,8 @@ def make_test_brainvision_data(output_dir='.', basename='test',
         f.write('\n[Marker Infos]\n')
         # Write one arbitrary event per second recording
         for event in range(rec_dur):
-            f.write('Mk{}=Stimulus,S1,{},1,0\n'.format(event+1,
-                                                       int(event*fs+0.5*fs)))
+            f.write('Mk{}=Stimulus,S  1,{},1,0\n'.format(event+1,
+                                                         int(event*fs+0.5*fs)))
 
     return vhdr
 
