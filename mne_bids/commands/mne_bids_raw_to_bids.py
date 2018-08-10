@@ -8,7 +8,6 @@ example usage:  $ mne_bids raw_to_bids --subject_id sub01 --task rest
 
 """
 
-import sys
 from mne_bids import raw_to_bids
 
 
@@ -60,11 +59,12 @@ def run():
 
     opt, args = parser.parse_args()
 
-    raw_to_bids(subject_id=opt.subject_id, task=opt.task, raw_file=opt.raw_file,
-                output_path=opt.output_path,session_id=opt.session_id,
-                run=opt.run, kind=opt.kind, events_data=opt.events_data,
-                event_id=opt.event_id, hpi=opt.hpi, electrode=opt.electrode,
-                hsp=opt.hsp,config=opt.config, overwrite=opt.overwrite,
+    raw_to_bids(subject_id=opt.subject_id, task=opt.task,
+                raw_file=opt.raw_file, output_path=opt.output_path,
+                session_id=opt.session_id, run=opt.run, kind=opt.kind,
+                events_data=opt.events_data, event_id=opt.event_id,
+                hpi=opt.hpi, electrode=opt.electrode, hsp=opt.hsp,
+                config=opt.config, overwrite=opt.overwrite,
                 verbose=True)
 
 
