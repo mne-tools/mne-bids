@@ -22,7 +22,7 @@ install:
       cd mne-python
       pip install --no-deps -e .
       cd ../
-    - python setup.py install
+    - python setup.py develop
     - npm install -g https://github.com/INCF/bids-validator.git#0.26.0
 script:
     - make

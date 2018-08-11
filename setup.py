@@ -38,4 +38,5 @@ if __name__ == "__main__":
           packages=[
               'mne_bids'
           ],
+          scripts=['bin/mne_bids']
 )
