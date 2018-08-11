@@ -3,6 +3,7 @@
 #          Teon Brooks <teon.brooks@gmail.com>
 #          Chris Holdgraf <choldgraf@berkeley.edu>
 #          Stefan Appelhoff <stefan.appelhoff@mailbox.org>
+#          Matt Sanderson <matt.sanderson@mq.edu.au>
 #
 # License: BSD (3-clause)
 
@@ -38,7 +39,7 @@ manufacturers = {'.sqd': 'KIT/Yokogawa', '.con': 'KIT/Yokogawa',
                  '.ds': 'CTF'}
 
 
-def _channels_tsv(raw, fname, verbose):
+def _channels_tsv(raw, fname, verbose, overwrite):
     """Create a channels.tsv file and save it.
 
     Parameters
@@ -49,6 +50,8 @@ def _channels_tsv(raw, fname, verbose):
         Filename to save the channels.tsv to.
     verbose : bool
         Set verbose output to true or false.
+    overwrite : bool
+        Whether to overwrite the existing file.
 
     """
     map_chs = defaultdict(lambda: 'OTHER')
@@ -84,7 +87,11 @@ def _channels_tsv(raw, fname, verbose):
                       ('low_cutoff', ['%.2f' % low_cutoff] * n_channels),
                       ('high_cutoff', ['%.2f' % high_cutoff] * n_channels),
                       ('status', status)]))
-    df.to_csv(fname, sep='\t', index=False)
+    if not os.path.exists(fname) or overwrite is True:
+        df.to_csv(fname, sep='\t', index=False)
+    else:
+        raise ValueError('"%s" already exists. Please set overwrite to'
+                         ' True.' % fname)
 
     if verbose:
         print(os.linesep + "Writing '%s'..." % fname + os.linesep)
@@ -93,7 +100,7 @@ def _channels_tsv(raw, fname, verbose):
     return fname
 
 
-def _events_tsv(events, raw, fname, event_id, verbose):
+def _events_tsv(events, raw, fname, event_id, verbose, overwrite):
     """Create an events.tsv file and save it.
 
     Parameters
@@ -112,6 +119,8 @@ def _events_tsv(events, raw, fname, event_id, verbose):
         example {'Go': 1, 'No Go': 2}.
     verbose : bool
         Set verbose output to true or false.
+    overwrite : bool
+        Whether to overwrite the existing file.
 
     """
     first_samp = raw.first_samp
@@ -126,7 +135,11 @@ def _events_tsv(events, raw, fname, event_id, verbose):
         df.condition = df.condition.map(event_id_map)
     df.onset /= sfreq
     df = df.fillna('n/a')
-    df.to_csv(fname, sep='\t', index=False)
+    if not os.path.exists(fname) or overwrite is True:
+        df.to_csv(fname, sep='\t', index=False)
+    else:
+        raise ValueError('"%s" already exists. Please set overwrite to'
+                         ' True.' % fname)
     if verbose:
         print(os.linesep + "Writing '%s'..." % fname + os.linesep)
         print(df.head())
@@ -160,8 +173,20 @@ def _scans_tsv(raw, raw_fname, fname, verbose):
         acq_time = datetime.fromtimestamp(
             meas_date).strftime('%Y-%m-%dT%H:%M:%S')
 
-    df = pd.DataFrame({'filename': ['%s' % raw_fname],
-                       'acq_time': [acq_time]})
+    # check to see if the file already exists.
+    # If it does we will want to determine whether or not the data
+    # is already there, and if not append it.
+    if os.path.exists(fname):
+        df = pd.read_csv(fname, sep='\t')
+        df = df.append(pd.DataFrame(data={'filename': ['%s' % raw_fname],
+                                          'acq_time': [acq_time]},
+                                    columns=['filename', 'acq_time']))
+        df = df.drop_duplicates()
+        df.sort_values(by='acq_time')
+    else:
+        df = pd.DataFrame(data={'filename': ['%s' % raw_fname],
+                                'acq_time': [acq_time]},
+                          columns=['filename', 'acq_time'])
 
     df.to_csv(fname, sep='\t', index=False)
 
@@ -172,7 +197,8 @@ def _scans_tsv(raw, raw_fname, fname, verbose):
     return fname
 
 
-def _coordsystem_json(raw, unit, orient, manufacturer, fname, verbose):
+def _coordsystem_json(raw, unit, orient, manufacturer, fname, verbose,
+                      overwrite):
     """Create a coordsystem.json file and save it.
 
     Parameters
@@ -189,6 +215,8 @@ def _coordsystem_json(raw, unit, orient, manufacturer, fname, verbose):
         Filename to save the coordsystem.json to.
     verbose : bool
         Set verbose output to true or false.
+    overwrite : bool
+        Whether to overwrite the existing file.
 
     """
     dig = raw.info['dig']
@@ -213,18 +241,22 @@ def _coordsystem_json(raw, unit, orient, manufacturer, fname, verbose):
         err = 'All HPI and Fiducials must be in the same coordinate frame.'
         raise ValueError(err)
 
-    fid_json = {'MEGCoordinateSystem': manufacturer,
+    fid_json = {'MEGCoordinateSystem': orient,
                 'MEGCoordinateUnits': unit,  # XXX validate this
                 'HeadCoilCoordinates': coords,
                 'HeadCoilCoordinateSystem': orient,
                 'HeadCoilCoordinateUnits': unit  # XXX validate this
                 }
-    _write_json(fid_json, fname)
+    if not os.path.exists(fname) or overwrite is True:
+        _write_json(fid_json, fname)
+    else:
+        raise ValueError('"%s" already exists. Please set overwrite to'
+                         ' True.' % fname)
 
     return fname
 
 
-def _sidecar_json(raw, task, manufacturer, fname, kind, verbose):
+def _sidecar_json(raw, task, manufacturer, fname, kind, verbose, overwrite):
     """Create a sidecar json file depending on the kind and save it.
 
     The sidecar json file provides meta data about the data of a certain kind.
@@ -243,6 +275,8 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, verbose):
         Type of the data as in ALLOWED_KINDS.
     verbose : bool
         Set verbose output to true or false.
+    overwrite : bool
+        Whether to overwrite the existing file.
 
     """
     sfreq = raw.info['sfreq']
@@ -303,13 +337,17 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, verbose):
     ch_info_json += ch_info_ch_counts
     ch_info_json = OrderedDict(ch_info_json)
 
-    _write_json(ch_info_json, fname, verbose=verbose)
+    if not os.path.exists(fname) or overwrite is True:
+        _write_json(ch_info_json, fname, verbose=verbose)
+    else:
+        raise ValueError('"%s" already exists. Please set overwrite to'
+                         ' True.' % fname)
     return fname
 
 
 def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
-                run=None, kind='meg', events_data=None, event_id=None,
-                hpi=None, electrode=None, hsp=None, config=None,
+                acquisition=None, run=None, kind='meg', events_data=None,
+                event_id=None, hpi=None, electrode=None, hsp=None, config=None,
                 overwrite=True, verbose=True):
     """Walk over a folder of files and create BIDS compatible folder.
 
@@ -326,6 +364,8 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
         The path of the BIDS compatible folder
     session_id : str | None
         The session name in BIDS compatible format.
+    acquisition : str | None
+        The acquisition data identifier
     run : int | None
         The run number for this dataset.
     kind : str, one of ('meg', 'ieeg')
@@ -351,7 +391,10 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
         A path to the configuration file to use if the data is from a BTi
         system.
     overwrite : bool
-        If the file already exists, whether to overwrite it.
+        Whether or not to overwrite the produced json, tsv files and any copied
+        raw data.
+        To avoid overwriting existing folders setting this to True will only
+        overwrite the files.
     verbose : bool
         If verbose is True, this will print a snippet of the sidecar files. If
         False, no content will be printed.
@@ -375,14 +418,12 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
                          'got %s' % type(raw_file))
     data_path = make_bids_folders(subject=subject_id, session=session_id,
                                   kind=kind, root=output_path,
-                                  overwrite=overwrite,
                                   verbose=verbose)
     if session_id is None:
         ses_path = data_path
     else:
         ses_path = make_bids_folders(subject=subject_id, session=session_id,
                                      root=output_path,
-                                     overwrite=False,
                                      verbose=verbose)
 
     # create filenames
@@ -391,20 +432,20 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
         prefix=ses_path)
 
     coordsystem_fname = make_bids_filename(
-        subject=subject_id, session=session_id,
+        subject=subject_id, session=session_id, acquisition=acquisition,
         suffix='coordsystem.json', prefix=data_path)
     data_meta_fname = make_bids_filename(
-        subject=subject_id, session=session_id,
-        suffix='%s.json' % kind, prefix=data_path)
+        subject=subject_id, session=session_id, task=task, run=run,
+        acquisition=acquisition, suffix='%s.json' % kind, prefix=data_path)
     raw_file_bids = make_bids_filename(
         subject=subject_id, session=session_id, task=task, run=run,
-        suffix='%s%s' % (kind, ext), prefix=data_path)
+        acquisition=acquisition, suffix='%s%s' % (kind, ext), prefix=data_path)
     events_tsv_fname = make_bids_filename(
         subject=subject_id, session=session_id, task=task,
         run=run, suffix='events.tsv', prefix=data_path)
     channels_fname = make_bids_filename(
         subject=subject_id, session=session_id, task=task, run=run,
-        suffix='channels.tsv', prefix=data_path)
+        acquisition=acquisition, suffix='channels.tsv', prefix=data_path)
 
     # Read in Raw object and extract metadata from Raw object if needed
     if kind == 'meg':
@@ -420,16 +461,18 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
     if kind == 'meg':
         _scans_tsv(raw, raw_file_bids, scans_fname, verbose)
         _coordsystem_json(raw, unit, orient, manufacturer, coordsystem_fname,
-                          verbose)
+                          verbose, overwrite)
 
     make_dataset_description(output_path, name=" ",
                              verbose=verbose)
-    _sidecar_json(raw, task, manufacturer, data_meta_fname, kind, verbose)
-    _channels_tsv(raw, channels_fname, verbose)
+    _sidecar_json(raw, task, manufacturer, data_meta_fname, kind, verbose,
+                  overwrite)
+    _channels_tsv(raw, channels_fname, verbose, overwrite)
 
     events = _read_events(events_data, raw)
     if len(events) > 0:
-        _events_tsv(events, raw, events_tsv_fname, event_id, verbose)
+        _events_tsv(events, raw, events_tsv_fname, event_id, verbose,
+                    overwrite)
 
     # for FIF, we need to re-save the file to fix the file pointer
     # for files with multiple parts
