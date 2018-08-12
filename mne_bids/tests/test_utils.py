@@ -8,16 +8,9 @@ import os
 
 import pytest
 
-import numpy as np
-
-from mne import find_events, write_events
-from mne.io import read_raw_brainvision, BaseRaw
-
 from mne.utils import _TempDir
 from mne_bids.utils import (make_bids_folders, make_bids_filename,
-                            _check_types, make_test_brainvision_data,
-                            copyfile_brainvision, _read_events,
-                            print_dir_tree)
+                            _check_types, print_dir_tree)
 
 
 def test_print_dir_tree():
@@ -61,93 +54,4 @@ def test__check_types():
     """Test the check whether vars are str or None."""
     assert _check_types(['foo', 'bar', None]) is None
     with pytest.raises(ValueError):
-            _check_types([None, 1, 3.14, 'eeg', [1, 2]])
-
-
-def test_read_events():
-    """Test the reading of events froms several sources."""
-    # get some test data
-    basename = 'testnow'
-    data_dir = _TempDir()
-    _vhdr = make_test_brainvision_data(output_dir=data_dir, basename=basename)
-
-    # read into MNE, get events and write events for testing
-    # with _read_events
-    raw = read_raw_brainvision(_vhdr)
-    true_events = find_events(raw)
-    events_f = os.path.join(data_dir, 'example-eve.fif')
-    write_events(events_f, true_events)
-
-    # Now test _read_events
-    # Read from events file
-    events = _read_events(None, raw)
-    np.testing.assert_almost_equal(events, true_events)
-
-    # Read events from ndarray
-    events_data = np.ones((5, 3))
-    events = _read_events(events_data, raw)
-    assert events.ndim == 2
-
-    with pytest.raises(ValueError):
-        # must have second dim
-        events_data = np.ones(5)
-        events = _read_events(events_data, raw)
-
-    with pytest.raises(ValueError):
-        # must have second dimension equal to 3
-        events_data = np.ones((5, 2))
-        events = _read_events(events_data, raw)
-
-    # Read events from raw
-    events = _read_events(None, raw)
-    np.testing.assert_almost_equal(events, true_events)
-
-
-def test_brainvision_utils():
-    """Test generation of brainvision data and moving it around."""
-    # Make some test brainvision data
-    bv_ext = ['.eeg', '.vhdr', '.vmrk']
-    basename = 'testnow'
-    data_dir = _TempDir()
-    _vhdr = make_test_brainvision_data(output_dir=data_dir, basename=basename)
-
-    # Assert that we can read it
-    raw = read_raw_brainvision(_vhdr)
-    assert isinstance(raw, BaseRaw)
-
-    bv_file_paths = []
-    for ext in bv_ext:
-        bv_file_paths.append(os.path.join(data_dir, basename + ext))
-
-    # quick check of make_test_brainvision_data's return value
-    assert _vhdr in bv_file_paths
-
-    # Now try to move it to a new place and name
-    new_data_dir = _TempDir()
-    new_basename = 'testedalready'
-    new_bv_file_paths = []
-    for ext in bv_ext:
-        new_bv_file_paths.append(os.path.join(new_data_dir,
-                                              new_basename + ext))
-    for src, dest in zip(bv_file_paths, new_bv_file_paths):
-        copyfile_brainvision(src, dest)
-
-    # Assert we can read the new file with its new pointers
-    new_vhdr = os.path.join(new_data_dir, new_basename + '.vhdr')
-    raw = read_raw_brainvision(new_vhdr)
-    assert isinstance(raw, BaseRaw)
-
-    # Assert that errors are raised
-    with pytest.raises(IOError):
-        # source file does not exist
-        copyfile_brainvision('I_dont_exist.vhdr', 'dest.vhdr')
-
-    with pytest.raises(ValueError):
-        # Unequal extensions
-        copyfile_brainvision(new_vhdr, 'dest.vmrk')
-
-    with pytest.raises(ValueError):
-        # Wrong extension
-        wrong_ext_f = os.path.join(new_data_dir, 'wrong_ext.x')
-        open(wrong_ext_f, 'w').close()
-        copyfile_brainvision(wrong_ext_f, 'dest.x')
+            _check_types([None, 1, 3.14, 'meg', [1, 2]])

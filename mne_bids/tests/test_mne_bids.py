@@ -12,16 +12,12 @@ For each supported file format, implement a test.
 import os
 import os.path as op
 from warnings import simplefilter
-import subprocess
-
-import pytest
 
 import mne
 from mne.datasets import testing
 from mne.utils import _TempDir, run_subprocess
 
 from mne_bids.mne_bids import raw_to_bids
-from mne_bids.utils import make_test_brainvision_data
 
 simplefilter('ignore', DeprecationWarning)
 
@@ -119,35 +115,3 @@ def test_bti():
                 verbose=True, overwrite=True)
     cmd = ['bids-validator', output_path]
     run_subprocess(cmd, shell=shell)
-
-
-# EEG Tests
-# ---------
-def test_brainvision():
-    """Test functionality for raw_to_bids conversion for BrainVision data."""
-    data_dir = _TempDir()
-    output_path = _TempDir()
-    vhdr = make_test_brainvision_data(data_dir)
-    raw_to_bids(subject_id=subject_id, task=task, raw_file=vhdr,
-                output_path=output_path, kind='eeg', eeg_reference='Cz',
-                event_id={'test': 1})
-
-    # Until EEG validator is merged, assert that this will be wrong.
-    with pytest.raises(subprocess.CalledProcessError):
-        cmd = ['bids-validator', output_path]
-        run_subprocess(cmd, shell=shell)
-
-
-# General tests
-# -------------
-def test_wrong_kinds():
-    """Test input of unsupported kind."""
-    data_dir = _TempDir()
-    output_path = _TempDir()
-    vhdr = make_test_brainvision_data(data_dir)
-
-    with pytest.raises(ValueError):
-        wrong_kind = 'abc'
-        raw_to_bids(subject_id=subject_id, task=task, raw_file=vhdr,
-                    output_path=output_path, kind=wrong_kind,
-                    eeg_reference='Cz', event_id={'test': 1})

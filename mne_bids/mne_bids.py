@@ -16,7 +16,6 @@ import numpy as np
 from mne.io.constants import FIFF
 from mne.io.pick import channel_type
 from mne.io import BaseRaw
-from mne import BaseEpochs
 from mne.channels.channels import _unit2human
 from mne.externals.six import string_types
 
@@ -25,12 +24,11 @@ from warnings import warn
 
 from .utils import (make_bids_filename, make_bids_folders,
                     make_dataset_description, _write_json,
-                    _read_events, copyfile_brainvision)
-from .io import (_parse_ext, _read_raw, allowed_extensions_meg,
-                 allowed_extensions_eeg)
+                    _read_events)
+from .io import (_parse_ext, _read_raw, allowed_extensions_meg)
 
 
-ALLOWED_KINDS = ['meg', 'eeg', 'ieeg']
+ALLOWED_KINDS = ['meg', 'ieeg']
 orientation = {'.sqd': 'ALS', '.con': 'ALS', '.fif': 'RAS', '.gz': 'RAS',
                '.pdf': 'ALS', '.ds': 'ALS'}
 
@@ -250,7 +248,7 @@ def _coordsystem_json(raw, unit, orient, manufacturer, fname, verbose):
     return fname
 
 
-def _sidecar_json(raw, task, manufacturer, fname, kind, eeg_reference=None,
+def _sidecar_json(raw, task, manufacturer, fname, kind,
                   verbose=True):
     """Create a sidecar json file depending on the kind and save it.
 
@@ -269,12 +267,6 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, eeg_reference=None,
         Filename to save the sidecar json to.
     kind : str
         Type of the data as in ALLOWED_KINDS.
-    eeg_reference : str | None
-        Freeform description of the reference used for recording the EEG data.
-        If different channels had different references, you have to specify
-        these in the channels.tsv file. If None and kind='eeg', we set the
-        field to 'n/a' and give a warning that this should be revised. If None
-        and kind is anything else (not 'eeg'), nothing happens.
     verbose : bool
         Set verbose output to true or false. Defaults to true.
 
@@ -284,18 +276,6 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, eeg_reference=None,
     if powerlinefrequency is None:
         warn('No line frequency found, defaulting to 50 Hz')
         powerlinefrequency = 50
-
-    # Test type of data continuous / epoched
-    if isinstance(raw, BaseRaw):
-        recording_type = 'continuous'
-    elif isinstance(raw, BaseEpochs):
-        recording_type = 'epoched'
-    else:
-        recording_type = 'n/a'
-
-    if kind == 'eeg' and eeg_reference is None:
-        warn('No EEGReference found, defaulting to n/a')
-        eeg_reference = 'n/a'
 
     n_megchan = len([ch for ch in raw.info['chs']
                      if ch['kind'] == FIFF.FIFFV_MEG_CH])
@@ -331,10 +311,6 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, eeg_reference=None,
         ("SoftwareFilters", "n/a"),
         ('MEGChannelCount', n_megchan),
         ('MEGREFChannelCount', n_megrefchan)]
-    ch_info_json_eeg = [
-        ('SamplingFrequency', sfreq),
-        ('EEGReference', eeg_reference),
-        ('RecordingType', recording_type)]
     ch_info_json_ieeg = [
         ('ECOGChannelCount', n_ecogchan),
         ('SEEGChannelCount', n_seegchan)]
@@ -350,8 +326,6 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, eeg_reference=None,
     ch_info_json = ch_info_json_common
     if kind == 'meg':
         append_kind_json = ch_info_json_meg
-    elif kind == 'eeg':
-        append_kind_json = ch_info_json_eeg
     elif kind == 'ieeg':
         append_kind_json = ch_info_json_ieeg
     else:
@@ -368,8 +342,8 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, eeg_reference=None,
 
 def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
                 run=None, kind='meg', events_data=None, event_id=None,
-                hpi=None, electrode=None, eeg_reference=None,
-                hsp=None, config=None, overwrite=True, verbose=True):
+                hpi=None, electrode=None, hsp=None, config=None,
+                overwrite=True, verbose=True):
     """Walk over a folder of files and create BIDS compatible folder.
 
     Parameters
@@ -387,7 +361,7 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
         The session name in BIDS compatible format.
     run : int | None
         The run number for this dataset.
-    kind : str, one of ('meg', 'eeg', 'ieeg')
+    kind : str, one of ('meg', 'ieeg')
         The kind of data being converted. Defaults to "meg".
     events_data : str | array | None
         The events file. If a string, a path to the events file. If an array,
@@ -403,10 +377,6 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
         Digitizer points representing the location of the fiducials and the
         marker coils with respect to the digitized head shape, or path to a
         file containing these points.
-    eeg_reference : str | None
-        Only if kind='eeg': Freeform description of the reference used for
-        recording the EEG data. If different channels had different references,
-        you have to specify these in the channels.tsv file.
     hsp : None | str | array, shape = (n_points, 3)
         Digitizer head shape points, or path to head shape file. If more than
         10`000 points are in the head shape, they are automatically decimated.
@@ -493,14 +463,14 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
     make_dataset_description(output_path, name=" ",
                              verbose=verbose)
     _sidecar_json(raw, task, manufacturer, data_meta_fname, kind,
-                  eeg_reference, verbose)
+                  verbose)
     _channels_tsv(raw, channels_fname, verbose)
 
     events = _read_events(events_data, raw)
     if len(events) > 0:
         _events_tsv(events, raw, events_tsv_fname, event_id, verbose)
 
-    # Writing of neural data: Different for MEG and EEG
+    # Writing of neural data
     # Check if it is MEG (only writing to FIF)
     # ----------------------------------------
     if os.path.exists(raw_file_bids) and not overwrite:
@@ -520,34 +490,6 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
                 os.remove(raw_file_bids)
                 sh.copyfile(raw_file, raw_file_bids)
 
-    # Check if it is EEG (preserving original file format)
-    # ----------------------------------------------------
-    elif ext in allowed_extensions_eeg:
-
-        # Cover BrainVision data
-        if ext in ['.eeg', '.vhdr']:
-            # Multifile format with pointers within the single files
-            # Get future file names
-            fname, ext = _parse_ext(raw_file_bids)
-            raw_file_bids_l = [fname + '.eeg',
-                               fname + '.vhdr',
-                               fname + '.vmrk']
-            # Get locations of current files
-            fname, ext = _parse_ext(raw_file)
-            raw_file_l = [fname + '.eeg',
-                          fname + '.vhdr',
-                          fname + '.vmrk']
-
-            # Rewrite each file with adjusting the pointers
-            for raw_file, raw_file_bids in zip(raw_file_l, raw_file_bids_l):
-                copyfile_brainvision(raw_file, raw_file_bids)
-
-        # Cover all other data
-        else:
-            sh.copyfile(raw_file, raw_file_bids)
-
-    # Potential space for iEEG
-    # ------------------------
     else:
         pass
 
