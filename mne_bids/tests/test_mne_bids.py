@@ -17,7 +17,7 @@ import mne
 from mne.datasets import testing
 from mne.utils import _TempDir, run_subprocess
 
-from mne_bids.mne_bids import raw_to_bids
+from mne_bids import raw_to_bids
 
 simplefilter('ignore', DeprecationWarning)
 
