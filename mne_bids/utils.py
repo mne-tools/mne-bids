@@ -324,5 +324,5 @@ def _read_events(events_data, raw):
                              'found %s' % events_data.shape[1])
         events = events_data
     else:
-        events = find_events(raw)
+        events = find_events(raw, shotest_event=1)
     return events
