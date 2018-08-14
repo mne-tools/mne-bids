@@ -15,10 +15,12 @@ MNE BIDS (:py:mod:`mne_bids.mne_bids`):
 
 Utils (:py:mod:`mne_bids.utils`):
 
-.. currentmodule:: mne_bids.mne_bids
+.. currentmodule:: mne_bids.utils
 
 .. autosummary::
    :toctree: generated/
 
+   print_dir_tree
    make_bids_folders
    make_bids_filename
+   make_dataset_description
