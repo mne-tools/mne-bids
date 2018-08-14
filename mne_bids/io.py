@@ -9,9 +9,7 @@
 from mne import io
 import os
 
-allowed_extensions_meg = ['.con', '.sqd', '.fif', '.gz', '.pdf', '.ds']
-
-ALLOWED_EXTENSIONS = allowed_extensions_meg
+ALLOWED_EXTENSIONS = ['.con', '.sqd', '.fif', '.gz', '.pdf', '.ds']
 
 
 def _parse_ext(raw_fname, verbose=False):

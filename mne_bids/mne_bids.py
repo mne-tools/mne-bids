@@ -25,7 +25,7 @@ from warnings import warn
 from .utils import (make_bids_filename, make_bids_folders,
                     make_dataset_description, _write_json,
                     _read_events)
-from .io import (_parse_ext, _read_raw, allowed_extensions_meg)
+from .io import (_parse_ext, _read_raw, ALLOWED_EXTENSIONS)
 
 
 ALLOWED_KINDS = ['meg', 'ieeg']
@@ -477,7 +477,7 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
     if verbose:
         print('Writing data files to %s' % raw_file_bids)
 
-    if ext in allowed_extensions_meg:
+    if ext in ALLOWED_EXTENSIONS:
         # for FIF, we need to re-save the file to fix the file pointer
         # for files with multiple parts
         if ext in ['.fif', '.gz']:
