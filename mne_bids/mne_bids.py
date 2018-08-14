@@ -394,19 +394,16 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
         # We must read in the raw data
         raw = _read_raw(raw_file, electrode=electrode, hsp=hsp, hpi=hpi,
                         config=config, verbose=verbose)
-        _, ext = _parse_ext(raw_file, verbose=verbose)
+        raw_fname, ext = _parse_ext(raw_file, verbose=verbose)
     elif isinstance(raw_file, BaseRaw):
         # We got a raw mne object, get back the filename if possible
-        # NOTE: raw_file will be used as a string filename from here on!
-        # Only parse the filename for the extension
         # Assume that if no filename attr exists, it's a fif file.
         raw = raw_file.copy()
         if hasattr(raw, 'filenames'):
-            raw_file = raw.filenames[0]
-            _, ext = _parse_ext(raw.filenames[0], verbose=verbose)
+            raw_fname, ext = _parse_ext(raw.filenames[0], verbose=verbose)
         else:
             # FIXME: How to get the filename if no filenames attribute?
-            raw_file = 'unknown_file_name'
+            raw_fname = 'unknown_file_name'
             ext = '.fif'
     else:
         raise ValueError('raw_file must be an instance of str or BaseRaw, '
@@ -488,7 +485,7 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
         else:
             if os.path.exists(raw_file_bids):  # overwrite=True
                 os.remove(raw_file_bids)
-                sh.copyfile(raw_file, raw_file_bids)
+                sh.copyfile(raw_fname, raw_file_bids)
 
     else:
         pass
