@@ -20,13 +20,7 @@ from mne.externals.six import string_types
 
 
 def print_dir_tree(dir):
-    """Recursively print a directory tree starting from `dir` [1].
-
-    References
-    ----------
-    .. [1]
-
-    """
+    """Recursively print a directory tree starting from `dir`."""
     if not os.path.exists(dir):
         raise ValueError('Directory does not exist: {}'.format(dir))
 
