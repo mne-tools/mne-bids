@@ -26,9 +26,9 @@ def print_dir_tree(dir):
 
     for root, dirs, files in os.walk(dir):
         path = root.split(os.sep)
-        print((len(path) - 1) * '-----', os.path.basename(root))
+        print('|%s %s' % ((len(path) - 1) * '-----', os.path.basename(root)))
         for file in files:
-            print(len(path) * '-----', file)
+            print('|%s %s' % (len(path) * '-----', file))
 
 
 def _mkdir_p(path, overwrite=False, verbose=False):
