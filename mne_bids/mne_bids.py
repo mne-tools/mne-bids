@@ -1,3 +1,4 @@
+"""Make BIDS compatible directory structures and infer meta data from MNE."""
 # Authors: Mainak Jas <mainak.jas@telecom-paristech.fr>
 #          Alexandre Gramfort <alexandre.gramfort@telecom-paristech.fr>
 #          Teon Brooks <teon.brooks@gmail.com>
@@ -12,7 +13,6 @@ import pandas as pd
 from collections import defaultdict, OrderedDict
 
 import numpy as np
-from mne import read_events, find_events
 from mne.io.constants import FIFF
 from mne.io.pick import channel_type
 from mne.io import BaseRaw
@@ -23,8 +23,10 @@ from datetime import datetime
 from warnings import warn
 
 from .utils import (make_bids_filename, make_bids_folders,
-                    make_dataset_description, _write_json)
-from .io import _parse_ext, _read_raw
+                    make_dataset_description, _write_json,
+                    _read_events)
+from .io import (_parse_ext, _read_raw, ALLOWED_EXTENSIONS)
+
 
 ALLOWED_KINDS = ['meg', 'ieeg']
 orientation = {'.sqd': 'ALS', '.con': 'ALS', '.fif': 'RAS', '.gz': 'RAS',
@@ -72,6 +74,7 @@ def _channels_tsv(raw, fname, verbose):
         description.append(map_desc[channel_type(raw.info, idx)])
     low_cutoff, high_cutoff = (raw.info['highpass'], raw.info['lowpass'])
     units = [_unit2human.get(ch_i['unit'], 'n/a') for ch_i in raw.info['chs']]
+    units = [u if u not in ['NA'] else 'n/a' for u in units]
     n_channels = raw.info['nchan']
     sfreq = raw.info['sfreq']
 
@@ -80,11 +83,11 @@ def _channels_tsv(raw, fname, verbose):
                       ('type', ch_type),
                       ('units', units),
                       ('description', description),
-                      ('sampling_frequency', ['%.2f' % sfreq] * n_channels),
-                      ('low_cutoff', ['%.2f' % low_cutoff] * n_channels),
-                      ('high_cutoff', ['%.2f' % high_cutoff] * n_channels),
+                      ('sampling_frequency', np.full((n_channels), sfreq)),
+                      ('low_cutoff', np.full((n_channels), low_cutoff)),
+                      ('high_cutoff', np.full((n_channels), high_cutoff)),
                       ('status', status)]))
-    df.to_csv(fname, sep='\t', index=False)
+    df.to_csv(fname, sep='\t', index=False, na_rep='n/a')
 
     if verbose:
         print(os.linesep + "Writing '%s'..." % fname + os.linesep)
@@ -93,8 +96,13 @@ def _channels_tsv(raw, fname, verbose):
     return fname
 
 
-def _events_tsv(events, raw, fname, event_id, verbose):
+def _events_tsv(events, raw, fname, trial_type, verbose):
     """Create an events.tsv file and save it.
+
+    This function will write the mandatory 'onset', and 'duration' columns as
+    well as the optional 'event_value' and 'event_sample'. The 'event_value'
+    corresponds to the marker value as found in the TRIG channel of the
+    recording. In addition, the 'trial_type' field can be written.
 
     Parameters
     ----------
@@ -113,20 +121,36 @@ def _events_tsv(events, raw, fname, event_id, verbose):
     verbose : bool
         Set verbose output to true or false.
 
+    Notes
+    -----
+    The function writes durations of zero for each event.
+
     """
+    # Start by filling all data that we know into a df
     first_samp = raw.first_samp
     sfreq = raw.info['sfreq']
     events[:, 0] -= first_samp
 
-    df = pd.DataFrame(np.c_[events[:, 0], np.zeros(events.shape[0]),
-                            events[:, 2]],
-                      columns=['onset', 'duration', 'condition'])
-    if event_id:
-        event_id_map = {v: k for k, v in event_id.items()}
-        df.condition = df.condition.map(event_id_map)
+    data = OrderedDict([('onset', events[:, 0]),
+                        ('duration', np.zeros(events.shape[0])),
+                        ('trial_type', events[:, 2]),
+                        ('event_value', events[:, 2]),
+                        ('event_sample', events[:, 0])])
+
+    df = pd.DataFrame.from_dict(data)
+
+    # Now check if trial_type is specified or should be removed
+    if trial_type:
+        trial_type_map = {v: k for k, v in trial_type.items()}
+        df.trial_type = df.trial_type.map(trial_type_map)
+    else:
+        df.drop(labels=['trial_type'], axis=1, inplace=True)
+
+    # Onset column needs to be specified in seconds
     df.onset /= sfreq
-    df = df.fillna('n/a')
-    df.to_csv(fname, sep='\t', index=False)
+
+    # Save to file
+    df.to_csv(fname, sep='\t', index=False, na_rep='n/a')
     if verbose:
         print(os.linesep + "Writing '%s'..." % fname + os.linesep)
         print(df.head())
@@ -163,7 +187,7 @@ def _scans_tsv(raw, raw_fname, fname, verbose):
     df = pd.DataFrame({'filename': ['%s' % raw_fname],
                        'acq_time': [acq_time]})
 
-    df.to_csv(fname, sep='\t', index=False)
+    df.to_csv(fname, sep='\t', index=False, na_rep='n/a')
 
     if verbose:
         print(os.linesep + "Writing '%s'..." % fname + os.linesep)
@@ -224,7 +248,8 @@ def _coordsystem_json(raw, unit, orient, manufacturer, fname, verbose):
     return fname
 
 
-def _sidecar_json(raw, task, manufacturer, fname, kind, verbose):
+def _sidecar_json(raw, task, manufacturer, fname, kind,
+                  verbose=True):
     """Create a sidecar json file depending on the kind and save it.
 
     The sidecar json file provides meta data about the data of a certain kind.
@@ -236,13 +261,14 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, verbose):
     task : str
         Name of the task the data is based on.
     manufacturer : str
-        Used to define the coordinate system for the MEG sensors.
+        Manufacturer of the acquisition system. For MEG also used to define the
+        coordinate system for the MEG sensors.
     fname : str
         Filename to save the sidecar json to.
     kind : str
         Type of the data as in ALLOWED_KINDS.
     verbose : bool
-        Set verbose output to true or false.
+        Set verbose output to true or false. Defaults to true.
 
     """
     sfreq = raw.info['sfreq']
@@ -298,7 +324,14 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, verbose):
 
     # Stitch together the complete JSON dictionary
     ch_info_json = ch_info_json_common
-    append_kind_json = ch_info_json_meg if kind == 'meg' else ch_info_json_ieeg
+    if kind == 'meg':
+        append_kind_json = ch_info_json_meg
+    elif kind == 'ieeg':
+        append_kind_json = ch_info_json_ieeg
+    else:
+        raise ValueError('Unexpected "kind": {}'
+                         ' Use one of: {}'.format(kind, ALLOWED_KINDS))
+
     ch_info_json += append_kind_json
     ch_info_json += ch_info_ch_counts
     ch_info_json = OrderedDict(ch_info_json)
@@ -333,9 +366,9 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
     events_data : str | array | None
         The events file. If a string, a path to the events file. If an array,
         the MNE events array (shape n_events, 3). If None, events will be
-        inferred from the stim channel using `find_events`.
-    event_id : dict
-        The event id dict
+        inferred from the stim channel using `mne.find_events`.
+    event_id : dict | None
+        The event id dict used to create a 'trial_type' column in events.tsv
     hpi : None | str | list of str
         Marker points representing the location of the marker coils with
         respect to the MEG Sensors, or path to a marker file.
@@ -361,14 +394,16 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
         # We must read in the raw data
         raw = _read_raw(raw_file, electrode=electrode, hsp=hsp, hpi=hpi,
                         config=config, verbose=verbose)
-        _, ext = _parse_ext(raw_file, verbose=verbose)
+        raw_fname, ext = _parse_ext(raw_file, verbose=verbose)
     elif isinstance(raw_file, BaseRaw):
-        # Only parse the filename for the extension
+        # We got a raw mne object, get back the filename if possible
         # Assume that if no filename attr exists, it's a fif file.
-        raw = raw_file
+        raw = raw_file.copy()
         if hasattr(raw, 'filenames'):
-            _, ext = _parse_ext(raw.filenames[0], verbose=verbose)
+            raw_fname, ext = _parse_ext(raw.filenames[0], verbose=verbose)
         else:
+            # FIXME: How to get the filename if no filenames attribute?
+            raw_fname = 'unknown_file_name'
             ext = '.fif'
     else:
         raise ValueError('raw_file must be an instance of str or BaseRaw, '
@@ -394,7 +429,7 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
         subject=subject_id, session=session_id,
         suffix='coordsystem.json', prefix=data_path)
     data_meta_fname = make_bids_filename(
-        subject=subject_id, session=session_id,
+        subject=subject_id, session=session_id, task=task, run=run,
         suffix='%s.json' % kind, prefix=data_path)
     raw_file_bids = make_bids_filename(
         subject=subject_id, session=session_id, task=task, run=run,
@@ -424,60 +459,35 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
 
     make_dataset_description(output_path, name=" ",
                              verbose=verbose)
-    _sidecar_json(raw, task, manufacturer, data_meta_fname, kind, verbose)
+    _sidecar_json(raw, task, manufacturer, data_meta_fname, kind,
+                  verbose)
     _channels_tsv(raw, channels_fname, verbose)
 
     events = _read_events(events_data, raw)
     if len(events) > 0:
         _events_tsv(events, raw, events_tsv_fname, event_id, verbose)
 
-    # for FIF, we need to re-save the file to fix the file pointer
-    # for files with multiple parts
-    if ext in ['.fif', '.gz']:
-        raw.save(raw_file_bids, overwrite=overwrite)
-    else:
-        if os.path.exists(raw_file_bids):
-            if overwrite:
+    # Writing of neural data
+    # Check if it is MEG (only writing to FIF)
+    # ----------------------------------------
+    if os.path.exists(raw_file_bids) and not overwrite:
+        raise ValueError('"%s" already exists. Please set'
+                         ' overwrite to True.' % raw_file_bids)
+
+    if verbose:
+        print('Writing data files to %s' % raw_file_bids)
+
+    if ext in ALLOWED_EXTENSIONS:
+        # for FIF, we need to re-save the file to fix the file pointer
+        # for files with multiple parts
+        if ext in ['.fif', '.gz']:
+            raw.save(raw_file_bids, overwrite=overwrite)
+        else:
+            if os.path.exists(raw_file_bids):  # overwrite=True
                 os.remove(raw_file_bids)
-                sh.copyfile(raw_file, raw_file_bids)
-            else:
-                raise ValueError('"%s" already exists. Please set overwrite to'
-                                 ' True.' % raw_file_bids)
+                sh.copyfile(raw_fname, raw_file_bids)
+
+    else:
+        pass
 
     return output_path
-
-
-def _read_events(events_data, raw):
-    """Read in events data.
-
-    Parameters
-    ----------
-    events_data : str | array | None
-        The events file. If a string, a path to the events file. If an array,
-        the MNE events array (shape n_events, 3). If None, events will be
-        inferred from the stim channel using `find_events`.
-    raw : instance of Raw
-        The data as MNE-Python Raw object.
-
-    Returns
-    -------
-    events : array, shape = (n_events, 3)
-        The first column contains the event time in samples and the third
-        column contains the event id. The second column is ignored for now but
-        typically contains the value of the trigger channel either immediately
-        before the event or immediately after.
-
-    """
-    if isinstance(events_data, string_types):
-        events = read_events(events_data).astype(int)
-    elif isinstance(events_data, np.ndarray):
-        if events_data.ndim != 2:
-            raise ValueError('Events must have two dimensions, '
-                             'found %s' % events.ndim)
-        if events_data.shape[1] != 3:
-            raise ValueError('Events must have second dimension of length 3, '
-                             'found %s' % events.shape[1])
-        events = events_data
-    else:
-        events = find_events(raw, min_duration=0.001)
-    return events

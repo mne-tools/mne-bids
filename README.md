@@ -1,5 +1,6 @@
 [![Gitter](https://badges.gitter.im/mne-tools/mne-bids.svg)](https://gitter.im/mne-tools/mne-bids?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Travis](https://api.travis-ci.org/mne-tools/mne-bids.svg?branch=master "Travis")](https://travis-ci.org/mne-tools/mne-bids)
+[![codecov](https://codecov.io/gh/mne-tools/mne-bids/branch/master/graph/badge.svg)](https://codecov.io/gh/mne-tools/mne-bids)
 
 MNE-BIDS
 ========
@@ -18,7 +19,7 @@ Then install mne_bids::
 
 	$ pip install git+https://github.com/mne-tools/mne-bids.git#egg=mne-bids
 
-If you do not have admin privileges on the computer, use the ``--user`` flag
+If you do not have administrator privileges on the computer, use the ``--user`` flag
 with `pip`. To upgrade, use the ``--upgrade`` flag provided by `pip`.
 
 To check if everything worked fine, you can do:
@@ -47,6 +48,15 @@ Contributions are welcome in the form of pull requests.
 Once the implementation of a piece of functionality is considered to be bug
 free and properly documented (both API docs and an example script),
 it can be incorporated into the master branch.
+
+To run the tests using `pytest`, you need to have the cloned mne-python repository
+with a local pip-install instead of the mne-python package from pypi. Update your
+installation as follows:
+
+	$ git clone https://github.com/mne-tools/mne-python
+	$ cd mne-python
+	$ pip uninstall mne  # uninstall pypi mne
+	$ pip install -e .  # use the cloned repo for a local install of mne
 
 Note that, for testing purposes, it is necessary to install the
 [BIDS validator](https://github.com/INCF/bids-validator). The outputs of

@@ -1,6 +1,8 @@
+"""Helper functions to fetch data to work with."""
 # Authors: Mainak Jas <mainak.jas@telecom-paristech.fr>
 #          Alexandre Gramfort <alexandre.gramfort@telecom-paristech.fr>
 #          Teon Brooks <teon.brooks@gmail.com>
+#          Stefan Appelhoff <stefan.appelhoff@mailbox.org>
 #
 # License: BSD (3-clause)
 
@@ -23,6 +25,7 @@ def fetch_faces_data(data_path, repo, subject_ids):
         The folder name (typically 'ds000117')
     subject_ids : list of int
         The subjects to fetch
+
     """
     for subject_id in subject_ids:
         src_url = ('http://openfmri.s3.amazonaws.com/tarballs/'

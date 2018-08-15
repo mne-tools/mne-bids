@@ -4,9 +4,9 @@
 API Documentation
 =================
 
-MEG BIDS (:py:mod:`mne_bids.meg_bids`):
+MNE BIDS (:py:mod:`mne_bids.mne_bids`):
 
-.. currentmodule:: mne_bids.meg_bids
+.. currentmodule:: mne_bids.mne_bids
 
 .. autosummary::
    :toctree: generated/
@@ -15,11 +15,12 @@ MEG BIDS (:py:mod:`mne_bids.meg_bids`):
 
 Utils (:py:mod:`mne_bids.utils`):
 
-.. currentmodule:: mne_bids.meg_bids
+.. currentmodule:: mne_bids.utils
 
 .. autosummary::
    :toctree: generated/
 
+   print_dir_tree
    make_bids_folders
    make_bids_filename
-
+   make_dataset_description

@@ -1,3 +1,11 @@
+"""Check whether a file format is supported by BIDS and then load it."""
+# Authors: Mainak Jas <mainak.jas@telecom-paristech.fr>
+#          Alexandre Gramfort <alexandre.gramfort@telecom-paristech.fr>
+#          Teon Brooks <teon.brooks@gmail.com>
+#          Chris Holdgraf <choldgraf@berkeley.edu>
+#          Stefan Appelhoff <stefan.appelhoff@mailbox.org>
+#
+# License: BSD (3-clause)
 from mne import io
 import os
 
@@ -21,6 +29,8 @@ def _read_raw(raw_fname, electrode=None, hsp=None, hpi=None, config=None,
     """Read a raw file into MNE, making inferences based on extension."""
     fname, ext = _parse_ext(raw_fname)
 
+    # MEG File Types
+    # --------------
     # KIT systems
     if ext in ['.con', '.sqd']:
         raw = io.read_raw_kit(raw_fname, elp=electrode, hsp=hsp,
@@ -40,6 +50,9 @@ def _read_raw(raw_fname, electrode=None, hsp=None, hpi=None, config=None,
     # CTF systems
     elif ext == '.ds':
         raw = io.read_raw_ctf(raw_fname)
+
+    # No supported data found ...
+    # ---------------------------
     else:
         raise ValueError("Raw file name extension must be one of %\n"
                          "Got %" % (ALLOWED_EXTENSIONS, ext))

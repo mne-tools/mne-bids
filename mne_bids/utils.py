@@ -1,17 +1,43 @@
 """Utility and helper functions for MNE-BIDS."""
+# Authors: Mainak Jas <mainak.jas@telecom-paristech.fr>
+#          Alexandre Gramfort <alexandre.gramfort@telecom-paristech.fr>
+#          Teon Brooks <teon.brooks@gmail.com>
+#          Chris Holdgraf <choldgraf@berkeley.edu>
+#          Stefan Appelhoff <stefan.appelhoff@mailbox.org>
+#
+# License: BSD (3-clause)
 import os
 import errno
 from collections import OrderedDict
 import json
 import shutil as sh
-from mne.externals.six import string_types
+
 from .config import BIDS_VERSION
+
+import numpy as np
+from mne import read_events, find_events
+from mne.externals.six import string_types
+
+
+def print_dir_tree(dir):
+    """Recursively print a directory tree starting from `dir`."""
+    if not os.path.exists(dir):
+        raise ValueError('Directory does not exist: {}'.format(dir))
+
+    for root, dirs, files in os.walk(dir):
+        path = root.split(os.sep)
+        print('|%s %s' % ((len(path) - 1) * '-----', os.path.basename(root)))
+        for file in files:
+            print('|%s %s' % (len(path) * '-----', file))
 
 
 def _mkdir_p(path, overwrite=False, verbose=False):
-    """Create a directory, making parent directories as needed.
+    """Create a directory, making parent directories as needed [1].
 
-    From stackoverflow.com/questions/600268/mkdir-p-functionality-in-python
+    References
+    ----------
+    .. [1] stackoverflow.com/questions/600268/mkdir-p-functionality-in-python
+
     """
     if overwrite is True and os.path.isdir(path):
         sh.rmtree(path)
@@ -76,6 +102,7 @@ def make_bids_filename(subject=None, session=None, task=None,
     --------
     >>> print(make_bids_filename(subject='test', session='two', task='mytask', suffix='data.csv')) # noqa
     sub-test_ses-two_task-mytask_data.csv
+
     """
     order = OrderedDict([('sub', subject),
                          ('ses', session),
@@ -148,6 +175,7 @@ def make_bids_folders(subject, session=None, kind=None, root=None,
     >>> print(make_bids_folders('sub_01', session='my_session',
                                 kind='meg', root='path/to/project', make_dir=False))  # noqa
     path/to/project/sub-sub_01/ses-my_session/meg
+
     """
     _check_types((subject, kind, session, root))
     if session is not None:
@@ -186,20 +214,40 @@ def make_dataset_description(path, name=None, data_license=None,
         The name of this BIDS dataset.
     data_license : str | None
         The license under which this datset is published.
-    authors : str | None
-        Authors who contributed to this dataset.
-    acknowledgements : str | None
-        Acknowledgements for this dataset.
-    how_to_acknowledge : str | None
-        Instructions for how acknowledgements/credit should be given for this
-        dataset.
-    funding : str | None
-        Funding sources for this dataset.
-    references_and_links : str | None
-        References or links for this dataset.
+    authors : list | str | None
+        List of individuals who contributed to the creation/curation of the
+        dataset. Must be a list of strings or a single comma separated string
+        like ['a', 'b', 'c'].
+    acknowledgements : list | str | None
+        Either a str acknowledging individuals who contributed to the
+        creation/curation of this dataset OR a list of the individuals'
+        names as str.
+    how_to_acknowledge : list | str | None
+        Either a str describing how to acknowledge this dataset OR a list of
+        publications that should be cited.
+    funding : list | str | None
+        List of sources of funding (e.g., grant numbers). Must be a list of
+        strings or a single comma separated string like ['a', 'b', 'c'].
+    references_and_links : list | str | None
+        List of references to publication that contain information on the
+        dataset, or links.  Must be a list of strings or a single comma
+        separated string like ['a', 'b', 'c'].
     doi : str | None
         The DOI for the dataset.
+
+    Notes
+    -----
+    The required field BIDSVersion will be automatically filled by mne_bids.
+
     """
+    # Put potential string input into list of strings
+    if isinstance(authors, string_types):
+        authors = authors.split(', ')
+    if isinstance(funding, string_types):
+        funding = funding.split(', ')
+    if isinstance(references_and_links, string_types):
+        references_and_links = references_and_links.split(', ')
+
     fname = os.path.join(path, 'dataset_description.json')
     description = OrderedDict([('Name', name),
                                ('BIDSVersion', BIDS_VERSION),
@@ -217,12 +265,11 @@ def make_dataset_description(path, name=None, data_license=None,
 
 
 def _check_types(variables):
-    """Make sure all variables are strings or None."""
-    types = set(type(ii) for ii in variables)
-    for itype in types:
-        if not isinstance(itype, type(str)) and itype is not None:
+    """Make sure all vars are str or None."""
+    for var in variables:
+        if not isinstance(var, (string_types, type(None))):
             raise ValueError("All values must be either None or strings. "
-                             "Found type %s." % itype)
+                             "Found type %s." % type(var))
 
 
 def _write_json(dictionary, fname, verbose=False):
@@ -243,3 +290,39 @@ def _check_key_val(key, val):
         raise ValueError("Unallowed `-`, `_`, or `/` found in key/value pair"
                          " %s: %s" % (key, val))
     return key, val
+
+
+def _read_events(events_data, raw):
+    """Read in events data.
+
+    Parameters
+    ----------
+    events_data : str | array | None
+        The events file. If a string, a path to the events file. If an array,
+        the MNE events array (shape n_events, 3). If None, events will be
+        inferred from the stim channel using `find_events`.
+    raw : instance of Raw
+        The data as MNE-Python Raw object.
+
+    Returns
+    -------
+    events : array, shape = (n_events, 3)
+        The first column contains the event time in samples and the third
+        column contains the event id. The second column is ignored for now but
+        typically contains the value of the trigger channel either immediately
+        before the event or immediately after.
+
+    """
+    if isinstance(events_data, string_types):
+        events = read_events(events_data).astype(int)
+    elif isinstance(events_data, np.ndarray):
+        if events_data.ndim != 2:
+            raise ValueError('Events must have two dimensions, '
+                             'found %s' % events_data.ndim)
+        if events_data.shape[1] != 3:
+            raise ValueError('Events must have second dimension of length 3, '
+                             'found %s' % events_data.shape[1])
+        events = events_data
+    else:
+        events = find_events(raw, min_duration=0.001)
+    return events

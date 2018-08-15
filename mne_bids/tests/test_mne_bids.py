@@ -1,22 +1,24 @@
-""" Testing MNE BIDS converter
+"""Test the MNE BIDS converter.
 
-There are four supported MEG systems in MNE.
-We should test their functionality with their sample data.
+For each supported file format, implement a test.
 """
 # Authors: Mainak Jas <mainak.jas@telecom-paristech.fr>
 #          Teon L Brooks <teon.brooks@gmail.com>
 #          Chris Holdgraf <choldgraf@berkeley.edu>
+#          Stefan Appelhoff <stefan.appelhoff@mailbox.org>
+#
 # License: BSD (3-clause)
 
 import os
 import os.path as op
+from warnings import simplefilter
 
 import mne
 from mne.datasets import testing
 from mne.utils import _TempDir, run_subprocess
 
 from mne_bids import raw_to_bids
-from warnings import simplefilter
+
 simplefilter('ignore', DeprecationWarning)
 
 base_path = op.join(op.dirname(mne.__file__), 'io')
@@ -34,12 +36,10 @@ if os.name == 'nt':
     shell = True
 
 
+# MEG Tests
+# ---------
 def test_fif():
-    """
-    Testing the functionality of the raw_to_bids conversion for
-    Neuromag data.
-    """
-
+    """Test functionality of the raw_to_bids conversion for Neuromag data."""
     output_path = _TempDir()
     data_path = testing.data_path()
     raw_fname = op.join(data_path, 'MEG', 'sample',
@@ -52,8 +52,7 @@ def test_fif():
 
     raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
                 task=task, raw_file=raw_fname, events_data=events_fname,
-                output_path=output_path, event_id=event_id,
-                overwrite=True)
+                output_path=output_path, event_id=event_id, overwrite=True)
 
     # let's do some modifications to meas_date
     raw = mne.io.read_raw_fif(raw_fname)
@@ -71,9 +70,7 @@ def test_fif():
 
 
 def test_kit():
-    """
-    Testing the functionality of the raw_to_bids conversion for KIT data.
-    """
+    """Test functionality of the raw_to_bids conversion for KIT data."""
     output_path = _TempDir()
     data_path = op.join(base_path, 'kit', 'tests', 'data')
     raw_fname = op.join(data_path, 'test.sqd')
@@ -86,16 +83,13 @@ def test_kit():
     raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
                 task=task, raw_file=raw_fname, events_data=events_fname,
                 event_id=event_id, hpi=hpi_fname, electrode=electrode_fname,
-                hsp=headshape_fname, output_path=output_path,
-                overwrite=True)
+                hsp=headshape_fname, output_path=output_path, overwrite=True)
     cmd = ['bids-validator', output_path]
     run_subprocess(cmd, shell=shell)
 
 
 def test_ctf():
-    """
-    Testing the functionality of the raw_to_bids conversion for CTF data.
-    """
+    """Test functionality of the raw_to_bids conversion for CTF data."""
     output_path = _TempDir()
     data_path = op.join(testing.data_path(download=False), 'CTF')
     raw_fname = op.join(data_path, 'testdata_ctf.ds')
@@ -108,9 +102,7 @@ def test_ctf():
 
 
 def test_bti():
-    """
-    Testing the functionality of the raw_to_bids conversion for BTi data.
-    """
+    """Test functionality of the raw_to_bids conversion for BTi data."""
     output_path = _TempDir()
     data_path = op.join(base_path, 'bti', 'tests', 'data')
     raw_fname = op.join(data_path, 'test_pdf_linux')
