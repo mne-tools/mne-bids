@@ -2,6 +2,8 @@
 .Python
 dist/
 *.egg*
+build
+coverage
 
 # Sphinx documentation
 doc/_build/
