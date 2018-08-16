@@ -26,5 +26,5 @@ jobs:
           npm install -g https://github.com/INCF/bids-validator.git#0.26.0
     run:
         command: |
-          cd doc/
-          make html
+            make
+            make build-doc
