@@ -184,8 +184,9 @@ def _scans_tsv(raw, raw_fname, fname, verbose):
         acq_time = datetime.fromtimestamp(
             meas_date).strftime('%Y-%m-%dT%H:%M:%S')
 
-    df = pd.DataFrame({'filename': ['%s' % raw_fname],
-                       'acq_time': [acq_time]})
+    df =pd.DataFrame(data={'filename': ['%s' % raw_fname],
+                           'acq_time': [acq_time]},
+                     columns=['filename', 'acq_time'])
 
     df.to_csv(fname, sep='\t', index=False, na_rep='n/a')
 
