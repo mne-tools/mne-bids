@@ -395,13 +395,15 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
         # We must read in the raw data
         raw = _read_raw(raw_file, electrode=electrode, hsp=hsp, hpi=hpi,
                         config=config, verbose=verbose)
-        raw_fname, ext = _parse_ext(raw_file, verbose=verbose)
+        _, ext = _parse_ext(raw_file, verbose=verbose)
+        raw_fname = raw_file
     elif isinstance(raw_file, BaseRaw):
         # We got a raw mne object, get back the filename if possible
         # Assume that if no filename attr exists, it's a fif file.
         raw = raw_file.copy()
         if hasattr(raw, 'filenames'):
-            raw_fname, ext = _parse_ext(raw.filenames[0], verbose=verbose)
+            _, ext = _parse_ext(raw.filenames[0], verbose=verbose)
+            raw_fname = raw.filenames[0]
         else:
             # FIXME: How to get the filename if no filenames attribute?
             raw_fname = 'unknown_file_name'
