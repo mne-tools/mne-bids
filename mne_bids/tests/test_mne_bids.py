@@ -23,10 +23,14 @@ simplefilter('ignore', DeprecationWarning)
 
 base_path = op.join(op.dirname(mne.__file__), 'io')
 subject_id = '01'
+subject_id2 = '02'
+subject_id3 = '03'
 session_id = '01'
 run = '01'
 task = 'testing'
 subj_data = {'age': 25, 'sex': 'F', 'group': 'Test'}
+subj_data2 = {'age': 42, 'sex': 'M', 'group': 'Control'}
+subj_data3 = {'age': 25}
 
 # for windows, shell = True is needed
 # to call npm, bids-validator etc.
@@ -56,6 +60,11 @@ def test_fif():
                 output_path=output_path, event_id=event_id,
                 participant_data=subj_data, overwrite=True)
 
+    raw_to_bids(subject_id=subject_id3, session_id=session_id, run=run,
+                task=task, raw_file=raw_fname, events_data=events_fname,
+                output_path=output_path, event_id=event_id,
+                participant_data=subj_data3, overwrite=True)
+
     # let's do some modifications to meas_date
     raw = mne.io.read_raw_fif(raw_fname)
     raw.anonymize()
@@ -63,10 +72,10 @@ def test_fif():
     raw_fname2 = op.join(data_path2, 'sample_audvis_raw.fif')
     raw.save(raw_fname2)
 
-    raw_to_bids(subject_id=subject_id, run=run, task=task,
+    raw_to_bids(subject_id=subject_id2, run=run, task=task,
                 session_id=session_id, raw_file=raw_fname2,
                 events_data=events_fname, output_path=output_path,
-                event_id=event_id, participant_data=subj_data, overwrite=True)
+                event_id=event_id, participant_data=subj_data2, overwrite=True)
     cmd = ['bids-validator', output_path]
     run_subprocess(cmd, shell=shell)
 

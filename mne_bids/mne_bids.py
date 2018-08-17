@@ -188,13 +188,15 @@ def _participants_tsv(fname, subject_id, age, sex, group, verbose):
                                     columns=['participant_id', 'age', 'sex',
                                              'group']))
         df = df.drop_duplicates()
-        df.sort_values(by='participant_id')
+        df = df.sort_values(by='participant_id')
     else:
         df = pd.DataFrame(data={'participant_id': [subject_id],
                                 'age': [age], 'sex': [sex],
                                 'group': [group]},
                           columns=['participant_id', 'age', 'sex', 'group'])
 
+    # the n/a's can become NAN's sometimes. Replace all just to make sure
+    df = df.fillna("n/a")
     df.to_csv(fname, sep='\t', index=False)
     if verbose:
         print(os.linesep + "Writing '%s'..." % fname + os.linesep)
@@ -473,7 +475,9 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
     sex = participant_data.get('sex', 'n/a')
     if sex.upper() not in ['M', 'F']:
         sex = 'n/a'
-    participant_data['sex'] = sex.upper()
+    else:
+        sex = sex.upper()
+    participant_data['sex'] = sex
     participant_data['group'] = participant_data.get('group', 'n/a')
 
     data_path = make_bids_folders(subject=subject_id, session=session_id,
