@@ -158,6 +158,9 @@ def _events_tsv(events, raw, fname, trial_type, verbose):
 
 def _participants_tsv(fname, subject_id, age, sex, group, verbose):
     """Create a participants.tsv file and save it.
+    
+    This will append any new participant data to the current list if it
+    exists
 
     Parameters
     ----------
