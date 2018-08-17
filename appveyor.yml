@@ -24,7 +24,7 @@ install:
   - "python setup.py develop"
   - "SET MNE_FORCE_SERIAL=true"  # otherwise joblib will bomb
   - ps: Install-Product node $env:nodejs_version
-  - npm install -g https://github.com/INCF/bids-validator.git#0.26.0
+  - npm install -g https://github.com/INCF/bids-validator.git#f8b71e47323e885168103be33d3bcbf7ea3b7da9
   - node --version
   - npm --version
   - bids-validator --version
