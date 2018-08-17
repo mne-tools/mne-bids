@@ -156,6 +156,45 @@ def _events_tsv(events, raw, fname, trial_type, verbose):
     return fname
 
 
+def _participants_tsv(fname, subject_id, age, sex, group, verbose):
+    """Create a participants.tsv file and save it.
+
+    Parameters
+    ----------
+    fname : str
+        Filename to save the participants.tsv to.
+    subject_id : str
+        Anonymous ID of the subject within the study
+    age : str
+        Age of the participant
+    sex : str
+        Sex of the participant.
+    group : str
+        Name of group participant belongs to.
+    verbose : bool
+        Set verbose output to true or false.
+
+    """
+    if not subject_id.startswith('sub-'):
+        subject_id = 'sub-' + subject_id
+    if os.path.exists(fname):
+        df = pd.read_csv(fname, sep='\t')
+        df = df.append(pd.DataFrame(data={'participant_id': [subject_id],
+                                          'age': [age], 'sex': [sex],
+                                          'group': [group]},
+                                    columns=['participant_id', 'age', 'sex',
+                                             'group']))
+        df = df.drop_duplicates()
+        df.sort_values(by='participant_id')
+    else:
+        df = pd.DataFrame(data={'participant_id': [subject_id],
+                                'age': [age], 'sex': [sex],
+                                'group': [group]},
+                          columns=['participant_id', 'age', 'sex', 'group'])
+
+    df.to_csv(fname, sep='\t', index=False)
+
+
 def _scans_tsv(raw, raw_fname, fname, verbose):
     """Create a scans.tsv file and save it.
 
@@ -341,8 +380,8 @@ def _sidecar_json(raw, task, manufacturer, fname, kind,
 
 def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
                 run=None, kind='meg', events_data=None, event_id=None,
-                hpi=None, electrode=None, hsp=None, config=None,
-                overwrite=True, verbose=True):
+                hpi=None, electrode=None, hsp=None, participant_data=dict(),
+                config=None, overwrite=True, verbose=True):
     """Walk over a folder of files and create BIDS compatible folder.
 
     Parameters
@@ -379,6 +418,14 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
     hsp : None | str | array, shape = (n_points, 3)
         Digitizer head shape points, or path to head shape file. If more than
         10`000 points are in the head shape, they are automatically decimated.
+    participant_data : dict
+        A dictionary containing the participant information.
+        This dictionary can have the following keys:
+        - age - The age of the participant in years.
+        - sex - M (Male), F (Female) or defaults to "n/a" if not provided.
+        - group - A string indicating the group within the study the
+            participant belongs to.
+        All values must be passed in as strings.
     config : str | None
         A path to the configuration file to use if the data is from a BTi
         system.
@@ -409,6 +456,19 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
     else:
         raise ValueError('raw_file must be an instance of str or BaseRaw, '
                          'got %s' % type(raw_file))
+
+    # do some sanitzation of the participant data provided:
+    try:
+        age = int(participant_data['age'])
+    except (KeyError, ValueError):
+        age = 'n/a'
+    participant_data['age'] = age
+    sex = participant_data.get('sex', 'n/a')
+    if sex.upper() not in ['M', 'F']:
+        sex = 'n/a'
+    participant_data['sex'] = sex.upper()
+    participant_data['group'] = participant_data.get('group', 'n/a')
+
     data_path = make_bids_folders(subject=subject_id, session=session_id,
                                   kind=kind, root=output_path,
                                   overwrite=overwrite,
@@ -425,7 +485,8 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
     scans_fname = make_bids_filename(
         subject=subject_id, session=session_id, suffix='scans.tsv',
         prefix=ses_path)
-
+    participants_fname = make_bids_filename(prefix=output_path,
+                                            suffix='participants.tsv')
     coordsystem_fname = make_bids_filename(
         subject=subject_id, session=session_id,
         suffix='coordsystem.json', prefix=data_path)
@@ -471,6 +532,8 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
                              verbose=verbose)
     _sidecar_json(raw, task, manufacturer, data_meta_fname, kind,
                   verbose)
+    _participants_tsv(participants_fname, subject_id, participant_data['age'],
+                      participant_data['gender'], participant_data['group'])
     _channels_tsv(raw, channels_fname, verbose)
 
     events = _read_events(events_data, raw)
