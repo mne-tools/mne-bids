@@ -26,6 +26,7 @@ subject_id = '01'
 session_id = '01'
 run = '01'
 task = 'testing'
+subj_data = {'age': 25, 'sex': 'F', 'group': 'Test'}
 
 # for windows, shell = True is needed
 # to call npm, bids-validator etc.
@@ -52,7 +53,8 @@ def test_fif():
 
     raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
                 task=task, raw_file=raw_fname, events_data=events_fname,
-                output_path=output_path, event_id=event_id, overwrite=True)
+                output_path=output_path, event_id=event_id,
+                participant_data=subj_data, overwrite=True)
 
     # let's do some modifications to meas_date
     raw = mne.io.read_raw_fif(raw_fname)
@@ -64,7 +66,7 @@ def test_fif():
     raw_to_bids(subject_id=subject_id, run=run, task=task,
                 session_id=session_id, raw_file=raw_fname2,
                 events_data=events_fname, output_path=output_path,
-                event_id=event_id, overwrite=True)
+                event_id=event_id, participant_data=subj_data, overwrite=True)
     cmd = ['bids-validator', output_path]
     run_subprocess(cmd, shell=shell)
 
@@ -83,7 +85,8 @@ def test_kit():
     raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
                 task=task, raw_file=raw_fname, events_data=events_fname,
                 event_id=event_id, hpi=hpi_fname, electrode=electrode_fname,
-                hsp=headshape_fname, output_path=output_path, overwrite=True)
+                hsp=headshape_fname, output_path=output_path,
+                participant_data=subj_data, overwrite=True)
     cmd = ['bids-validator', output_path]
     run_subprocess(cmd, shell=shell)
 
@@ -96,7 +99,7 @@ def test_ctf():
 
     raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
                 task=task, raw_file=raw_fname, output_path=output_path,
-                overwrite=True)
+                participant_data=subj_data, overwrite=True)
     cmd = ['bids-validator', output_path]
     run_subprocess(cmd, shell=shell)
 
@@ -112,6 +115,6 @@ def test_bti():
     raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
                 task=task, raw_file=raw_fname, config=config_fname,
                 hsp=headshape_fname, output_path=output_path,
-                verbose=True, overwrite=True)
+                participant_data=subj_data, verbose=True, overwrite=True)
     cmd = ['bids-validator', output_path]
     run_subprocess(cmd, shell=shell)

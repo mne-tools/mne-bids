@@ -158,7 +158,7 @@ def _events_tsv(events, raw, fname, trial_type, verbose):
 
 def _participants_tsv(fname, subject_id, age, sex, group, verbose):
     """Create a participants.tsv file and save it.
-    
+
     This will append any new participant data to the current list if it
     exists
 
@@ -196,6 +196,11 @@ def _participants_tsv(fname, subject_id, age, sex, group, verbose):
                           columns=['participant_id', 'age', 'sex', 'group'])
 
     df.to_csv(fname, sep='\t', index=False)
+    if verbose:
+        print(os.linesep + "Writing '%s'..." % fname + os.linesep)
+        print(df.head())
+
+    return fname
 
 
 def _scans_tsv(raw, raw_fname, fname, verbose):
@@ -428,7 +433,6 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
         - sex - M (Male), F (Female) or defaults to "n/a" if not provided.
         - group - A string indicating the group within the study the
             participant belongs to.
-        All values must be passed in as strings.
     config : str | None
         A path to the configuration file to use if the data is from a BTi
         system.
@@ -536,7 +540,8 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
     _sidecar_json(raw, task, manufacturer, data_meta_fname, kind,
                   verbose)
     _participants_tsv(participants_fname, subject_id, participant_data['age'],
-                      participant_data['gender'], participant_data['group'])
+                      participant_data['sex'], participant_data['group'],
+                      verbose)
     _channels_tsv(raw, channels_fname, verbose)
 
     events = _read_events(events_data, raw)
