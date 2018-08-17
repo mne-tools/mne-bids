@@ -1,0 +1,6 @@
+mne_bids.utils.make_bids_folders
+================================
+
+.. currentmodule:: mne_bids.utils
+
+.. autofunction:: make_bids_folders

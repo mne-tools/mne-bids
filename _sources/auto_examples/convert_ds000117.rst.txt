@@ -44,6 +44,7 @@ Let us import ``mne_bids``
     import os.path as op
     from mne_bids import raw_to_bids
     from mne_bids.datasets import fetch_faces_data
+    from mne_bids.utils import print_dir_tree
 
 
 
@@ -120,6 +121,7 @@ Let us loop over the subjects and create BIDS-compatible folder
 
 
 
+
 .. rst-class:: sphx-glr-script-out
 
  Out::
@@ -143,13 +145,13 @@ Let us loop over the subjects and create BIDS-compatible folder
     Writing '/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/sub-01_ses-01_scans.tsv'...
 
                   acq_time                                           filename
-    0  2009-04-07T16:39:35  /home/mainak/mne_data/ds000117-bids/sub-01/ses...
+    0  2009-04-07T10:39:35  /home/mainak/mne_data/ds000117-bids/sub-01/ses...
 
     Writing '/home/mainak/mne_data/ds000117-bids/dataset_description.json'...
 
     {
         "Name": " ", 
-        "BIDSVersion": "1.0.2 (draft)"
+        "BIDSVersion": "1.1.1 (draft)"
     }
 
     Writing '/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_meg.json'...
@@ -169,7 +171,7 @@ Let us loop over the subjects and create BIDS-compatible folder
         "EOGChannelCount": 0, 
         "ECGChannelCount": 0, 
         "EMGChannelCount": 0, 
-        "MiscChannelCount": 0, 
+        "MiscChannelCount": 12, 
         "TriggerChannelCount": 3
     }
 
@@ -222,13 +224,13 @@ Let us loop over the subjects and create BIDS-compatible folder
     Writing '/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/sub-01_ses-01_scans.tsv'...
 
                   acq_time                                           filename
-    0  2009-04-07T16:52:59  /home/mainak/mne_data/ds000117-bids/sub-01/ses...
+    0  2009-04-07T10:52:59  /home/mainak/mne_data/ds000117-bids/sub-01/ses...
 
     Writing '/home/mainak/mne_data/ds000117-bids/dataset_description.json'...
 
     {
         "Name": " ", 
-        "BIDSVersion": "1.0.2 (draft)"
+        "BIDSVersion": "1.1.1 (draft)"
     }
 
     Writing '/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_meg.json'...
@@ -248,7 +250,7 @@ Let us loop over the subjects and create BIDS-compatible folder
         "EOGChannelCount": 0, 
         "ECGChannelCount": 0, 
         "EMGChannelCount": 0, 
-        "MiscChannelCount": 0, 
+        "MiscChannelCount": 12, 
         "TriggerChannelCount": 3
     }
 
@@ -301,13 +303,13 @@ Let us loop over the subjects and create BIDS-compatible folder
     Writing '/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/sub-01_ses-01_scans.tsv'...
 
                   acq_time                                           filename
-    0  2009-04-07T17:02:25  /home/mainak/mne_data/ds000117-bids/sub-01/ses...
+    0  2009-04-07T11:02:25  /home/mainak/mne_data/ds000117-bids/sub-01/ses...
 
     Writing '/home/mainak/mne_data/ds000117-bids/dataset_description.json'...
 
     {
         "Name": " ", 
-        "BIDSVersion": "1.0.2 (draft)"
+        "BIDSVersion": "1.1.1 (draft)"
     }
 
     Writing '/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_meg.json'...
@@ -327,7 +329,7 @@ Let us loop over the subjects and create BIDS-compatible folder
         "EOGChannelCount": 0, 
         "ECGChannelCount": 0, 
         "EMGChannelCount": 0, 
-        "MiscChannelCount": 0, 
+        "MiscChannelCount": 12, 
         "TriggerChannelCount": 3
     }
 
@@ -380,13 +382,13 @@ Let us loop over the subjects and create BIDS-compatible folder
     Writing '/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/sub-01_ses-01_scans.tsv'...
 
                   acq_time                                           filename
-    0  2009-04-07T17:17:45  /home/mainak/mne_data/ds000117-bids/sub-01/ses...
+    0  2009-04-07T11:17:45  /home/mainak/mne_data/ds000117-bids/sub-01/ses...
 
     Writing '/home/mainak/mne_data/ds000117-bids/dataset_description.json'...
 
     {
         "Name": " ", 
-        "BIDSVersion": "1.0.2 (draft)"
+        "BIDSVersion": "1.1.1 (draft)"
     }
 
     Writing '/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_meg.json'...
@@ -406,7 +408,7 @@ Let us loop over the subjects and create BIDS-compatible folder
         "EOGChannelCount": 0, 
         "ECGChannelCount": 0, 
         "EMGChannelCount": 0, 
-        "MiscChannelCount": 0, 
+        "MiscChannelCount": 12, 
         "TriggerChannelCount": 3
     }
 
@@ -459,13 +461,13 @@ Let us loop over the subjects and create BIDS-compatible folder
     Writing '/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/sub-01_ses-01_scans.tsv'...
 
                   acq_time                                           filename
-    0  2009-04-07T17:27:38  /home/mainak/mne_data/ds000117-bids/sub-01/ses...
+    0  2009-04-07T11:27:38  /home/mainak/mne_data/ds000117-bids/sub-01/ses...
 
     Writing '/home/mainak/mne_data/ds000117-bids/dataset_description.json'...
 
     {
         "Name": " ", 
-        "BIDSVersion": "1.0.2 (draft)"
+        "BIDSVersion": "1.1.1 (draft)"
     }
 
     Writing '/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_meg.json'...
@@ -485,7 +487,7 @@ Let us loop over the subjects and create BIDS-compatible folder
         "EOGChannelCount": 0, 
         "ECGChannelCount": 0, 
         "EMGChannelCount": 0, 
-        "MiscChannelCount": 0, 
+        "MiscChannelCount": 12, 
         "TriggerChannelCount": 3
     }
 
@@ -538,13 +540,13 @@ Let us loop over the subjects and create BIDS-compatible folder
     Writing '/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/sub-01_ses-01_scans.tsv'...
 
                   acq_time                                           filename
-    0  2009-04-07T17:41:20  /home/mainak/mne_data/ds000117-bids/sub-01/ses...
+    0  2009-04-07T11:41:20  /home/mainak/mne_data/ds000117-bids/sub-01/ses...
 
     Writing '/home/mainak/mne_data/ds000117-bids/dataset_description.json'...
 
     {
         "Name": " ", 
-        "BIDSVersion": "1.0.2 (draft)"
+        "BIDSVersion": "1.1.1 (draft)"
     }
 
     Writing '/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_meg.json'...
@@ -564,7 +566,7 @@ Let us loop over the subjects and create BIDS-compatible folder
         "EOGChannelCount": 0, 
         "ECGChannelCount": 0, 
         "EMGChannelCount": 0, 
-        "MiscChannelCount": 0, 
+        "MiscChannelCount": 12, 
         "TriggerChannelCount": 3
     }
 
@@ -600,7 +602,35 @@ Let us loop over the subjects and create BIDS-compatible folder
     Closing /home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-06_meg.fif [done]
 
 
-**Total running time of the script:** ( 1 minutes  22.807 seconds)
+Now let's see the structure of the BIDS folder we created.
+
+
+
+.. code-block:: python
+
+    print_dir_tree(output_path)
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out::
+
+    |-------------------- ds000117-bids
+    |------------------------- dataset_description.json
+    |------------------------- sub-01
+    |------------------------------ ses-01
+    |----------------------------------- sub-01_ses-01_scans.tsv
+    |----------------------------------- meg
+    |---------------------------------------- sub-01_ses-01_task-VisualFaces_run-06_events.tsv
+    |---------------------------------------- sub-01_ses-01_task-VisualFaces_run-06_channels.tsv
+    |---------------------------------------- sub-01_ses-01_task-VisualFaces_run-06_meg.fif
+    |---------------------------------------- sub-01_ses-01_meg.json
+    |---------------------------------------- sub-01_ses-01_coordsystem.json
+
+
+**Total running time of the script:** ( 0 minutes  34.082 seconds)
 
 
 

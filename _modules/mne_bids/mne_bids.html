@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>mne_bids.mne_bids &#8212; mne_bids 0.1dev0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/gallery.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/bootswatch-3.3.4/flatly/bootstrap.min.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1dev0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../../_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../../_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="../../_static/bootstrap-3.3.4/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../../_static/bootstrap-sphinx.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head>
+  <body role="document">
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../index.html">
+          MNE-BIDS</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.1dev0</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../../auto_examples/index.html">Gallery</a></li>
+                <li><a href="../../api.html">API</a></li>
+                <li><a href="https://github.com/mne-tools/mne-bids">Github</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"></ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"></ul>
+</li>
+              
+            
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12 content">
+      
+  <h1>Source code for mne_bids.mne_bids</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Make BIDS compatible directory structures and infer meta data from MNE.&quot;&quot;&quot;</span>
+<span class="c1"># Authors: Mainak Jas &lt;mainak.jas@telecom-paristech.fr&gt;</span>
+<span class="c1">#          Alexandre Gramfort &lt;alexandre.gramfort@telecom-paristech.fr&gt;</span>
+<span class="c1">#          Teon Brooks &lt;teon.brooks@gmail.com&gt;</span>
+<span class="c1">#          Chris Holdgraf &lt;choldgraf@berkeley.edu&gt;</span>
+<span class="c1">#          Stefan Appelhoff &lt;stefan.appelhoff@mailbox.org&gt;</span>
+<span class="c1">#</span>
+<span class="c1"># License: BSD (3-clause)</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">shutil</span> <span class="k">as</span> <span class="nn">sh</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">defaultdict</span><span class="p">,</span> <span class="n">OrderedDict</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">mne.io.constants</span> <span class="k">import</span> <span class="n">FIFF</span>
+<span class="kn">from</span> <span class="nn">mne.io.pick</span> <span class="k">import</span> <span class="n">channel_type</span>
+<span class="kn">from</span> <span class="nn">mne.io</span> <span class="k">import</span> <span class="n">BaseRaw</span>
+<span class="kn">from</span> <span class="nn">mne.channels.channels</span> <span class="k">import</span> <span class="n">_unit2human</span>
+<span class="kn">from</span> <span class="nn">mne.externals.six</span> <span class="k">import</span> <span class="n">string_types</span>
+
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">warnings</span> <span class="k">import</span> <span class="n">warn</span>
+
+<span class="kn">from</span> <span class="nn">.utils</span> <span class="k">import</span> <span class="p">(</span><span class="n">make_bids_filename</span><span class="p">,</span> <span class="n">make_bids_folders</span><span class="p">,</span>
+                    <span class="n">make_dataset_description</span><span class="p">,</span> <span class="n">_write_json</span><span class="p">,</span>
+                    <span class="n">_read_events</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">.io</span> <span class="k">import</span> <span class="p">(</span><span class="n">_parse_ext</span><span class="p">,</span> <span class="n">_read_raw</span><span class="p">,</span> <span class="n">ALLOWED_EXTENSIONS</span><span class="p">)</span>
+
+
+<span class="n">ALLOWED_KINDS</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;meg&#39;</span><span class="p">,</span> <span class="s1">&#39;ieeg&#39;</span><span class="p">]</span>
+<span class="n">orientation</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;.sqd&#39;</span><span class="p">:</span> <span class="s1">&#39;ALS&#39;</span><span class="p">,</span> <span class="s1">&#39;.con&#39;</span><span class="p">:</span> <span class="s1">&#39;ALS&#39;</span><span class="p">,</span> <span class="s1">&#39;.fif&#39;</span><span class="p">:</span> <span class="s1">&#39;RAS&#39;</span><span class="p">,</span> <span class="s1">&#39;.gz&#39;</span><span class="p">:</span> <span class="s1">&#39;RAS&#39;</span><span class="p">,</span>
+               <span class="s1">&#39;.pdf&#39;</span><span class="p">:</span> <span class="s1">&#39;ALS&#39;</span><span class="p">,</span> <span class="s1">&#39;.ds&#39;</span><span class="p">:</span> <span class="s1">&#39;ALS&#39;</span><span class="p">}</span>
+
+<span class="n">units</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;.sqd&#39;</span><span class="p">:</span> <span class="s1">&#39;m&#39;</span><span class="p">,</span> <span class="s1">&#39;.con&#39;</span><span class="p">:</span> <span class="s1">&#39;m&#39;</span><span class="p">,</span> <span class="s1">&#39;.fif&#39;</span><span class="p">:</span> <span class="s1">&#39;m&#39;</span><span class="p">,</span> <span class="s1">&#39;.gz&#39;</span><span class="p">:</span> <span class="s1">&#39;m&#39;</span><span class="p">,</span> <span class="s1">&#39;.pdf&#39;</span><span class="p">:</span> <span class="s1">&#39;m&#39;</span><span class="p">,</span>
+         <span class="s1">&#39;.ds&#39;</span><span class="p">:</span> <span class="s1">&#39;cm&#39;</span><span class="p">}</span>
+
+<span class="n">manufacturers</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;.sqd&#39;</span><span class="p">:</span> <span class="s1">&#39;KIT/Yokogawa&#39;</span><span class="p">,</span> <span class="s1">&#39;.con&#39;</span><span class="p">:</span> <span class="s1">&#39;KIT/Yokogawa&#39;</span><span class="p">,</span>
+                 <span class="s1">&#39;.fif&#39;</span><span class="p">:</span> <span class="s1">&#39;Elekta&#39;</span><span class="p">,</span> <span class="s1">&#39;.gz&#39;</span><span class="p">:</span> <span class="s1">&#39;Elekta&#39;</span><span class="p">,</span> <span class="s1">&#39;.pdf&#39;</span><span class="p">:</span> <span class="s1">&#39;4D Magnes&#39;</span><span class="p">,</span>
+                 <span class="s1">&#39;.ds&#39;</span><span class="p">:</span> <span class="s1">&#39;CTF&#39;</span><span class="p">}</span>
+
+
+<span class="k">def</span> <span class="nf">_channels_tsv</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">verbose</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create a channels.tsv file and save it.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    raw : instance of Raw</span>
+<span class="sd">        The data as MNE-Python Raw object.</span>
+<span class="sd">    fname : str</span>
+<span class="sd">        Filename to save the channels.tsv to.</span>
+<span class="sd">    verbose : bool</span>
+<span class="sd">        Set verbose output to true or false.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">map_chs</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="s1">&#39;OTHER&#39;</span><span class="p">)</span>
+    <span class="n">map_chs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">grad</span><span class="o">=</span><span class="s1">&#39;MEGGRAD&#39;</span><span class="p">,</span> <span class="n">mag</span><span class="o">=</span><span class="s1">&#39;MEGMAG&#39;</span><span class="p">,</span> <span class="n">stim</span><span class="o">=</span><span class="s1">&#39;TRIG&#39;</span><span class="p">,</span> <span class="n">eeg</span><span class="o">=</span><span class="s1">&#39;EEG&#39;</span><span class="p">,</span>
+                   <span class="n">ecog</span><span class="o">=</span><span class="s1">&#39;ECOG&#39;</span><span class="p">,</span> <span class="n">seeg</span><span class="o">=</span><span class="s1">&#39;SEEG&#39;</span><span class="p">,</span> <span class="n">eog</span><span class="o">=</span><span class="s1">&#39;EOG&#39;</span><span class="p">,</span> <span class="n">ecg</span><span class="o">=</span><span class="s1">&#39;ECG&#39;</span><span class="p">,</span> <span class="n">misc</span><span class="o">=</span><span class="s1">&#39;MISC&#39;</span><span class="p">,</span>
+                   <span class="n">resp</span><span class="o">=</span><span class="s1">&#39;RESPONSE&#39;</span><span class="p">,</span> <span class="n">ref_meg</span><span class="o">=</span><span class="s1">&#39;REFMEG&#39;</span><span class="p">)</span>
+    <span class="n">map_desc</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="s1">&#39;Other type of channel&#39;</span><span class="p">)</span>
+    <span class="n">map_desc</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">grad</span><span class="o">=</span><span class="s1">&#39;Gradiometer&#39;</span><span class="p">,</span> <span class="n">mag</span><span class="o">=</span><span class="s1">&#39;Magnetometer&#39;</span><span class="p">,</span>
+                    <span class="n">stim</span><span class="o">=</span><span class="s1">&#39;Trigger&#39;</span><span class="p">,</span>
+                    <span class="n">eeg</span><span class="o">=</span><span class="s1">&#39;ElectroEncephaloGram&#39;</span><span class="p">,</span>
+                    <span class="n">ecog</span><span class="o">=</span><span class="s1">&#39;Electrocorticography&#39;</span><span class="p">,</span>
+                    <span class="n">seeg</span><span class="o">=</span><span class="s1">&#39;StereoEEG&#39;</span><span class="p">,</span>
+                    <span class="n">ecg</span><span class="o">=</span><span class="s1">&#39;ElectroCardioGram&#39;</span><span class="p">,</span>
+                    <span class="n">eog</span><span class="o">=</span><span class="s1">&#39;ElectrOculoGram&#39;</span><span class="p">,</span> <span class="n">misc</span><span class="o">=</span><span class="s1">&#39;Miscellaneous&#39;</span><span class="p">,</span>
+                    <span class="n">ref_meg</span><span class="o">=</span><span class="s1">&#39;Reference channel&#39;</span><span class="p">)</span>
+
+    <span class="n">status</span><span class="p">,</span> <span class="n">ch_type</span><span class="p">,</span> <span class="n">description</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(),</span> <span class="nb">list</span><span class="p">(),</span> <span class="nb">list</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">ch</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;ch_names&#39;</span><span class="p">]):</span>
+        <span class="n">status</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;bad&#39;</span> <span class="k">if</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;bads&#39;</span><span class="p">]</span> <span class="k">else</span> <span class="s1">&#39;good&#39;</span><span class="p">)</span>
+        <span class="n">ch_type</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">map_chs</span><span class="p">[</span><span class="n">channel_type</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">,</span> <span class="n">idx</span><span class="p">)])</span>
+        <span class="n">description</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">map_desc</span><span class="p">[</span><span class="n">channel_type</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">,</span> <span class="n">idx</span><span class="p">)])</span>
+    <span class="n">low_cutoff</span><span class="p">,</span> <span class="n">high_cutoff</span> <span class="o">=</span> <span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;highpass&#39;</span><span class="p">],</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;lowpass&#39;</span><span class="p">])</span>
+    <span class="n">units</span> <span class="o">=</span> <span class="p">[</span><span class="n">_unit2human</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ch_i</span><span class="p">[</span><span class="s1">&#39;unit&#39;</span><span class="p">],</span> <span class="s1">&#39;n/a&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">ch_i</span> <span class="ow">in</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;chs&#39;</span><span class="p">]]</span>
+    <span class="n">units</span> <span class="o">=</span> <span class="p">[</span><span class="n">u</span> <span class="k">if</span> <span class="n">u</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;NA&#39;</span><span class="p">]</span> <span class="k">else</span> <span class="s1">&#39;n/a&#39;</span> <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">units</span><span class="p">]</span>
+    <span class="n">n_channels</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;nchan&#39;</span><span class="p">]</span>
+    <span class="n">sfreq</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;sfreq&#39;</span><span class="p">]</span>
+
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">OrderedDict</span><span class="p">([</span>
+                      <span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;ch_names&#39;</span><span class="p">]),</span>
+                      <span class="p">(</span><span class="s1">&#39;type&#39;</span><span class="p">,</span> <span class="n">ch_type</span><span class="p">),</span>
+                      <span class="p">(</span><span class="s1">&#39;units&#39;</span><span class="p">,</span> <span class="n">units</span><span class="p">),</span>
+                      <span class="p">(</span><span class="s1">&#39;description&#39;</span><span class="p">,</span> <span class="n">description</span><span class="p">),</span>
+                      <span class="p">(</span><span class="s1">&#39;sampling_frequency&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="n">n_channels</span><span class="p">),</span> <span class="n">sfreq</span><span class="p">)),</span>
+                      <span class="p">(</span><span class="s1">&#39;low_cutoff&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="n">n_channels</span><span class="p">),</span> <span class="n">low_cutoff</span><span class="p">)),</span>
+                      <span class="p">(</span><span class="s1">&#39;high_cutoff&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="n">n_channels</span><span class="p">),</span> <span class="n">high_cutoff</span><span class="p">)),</span>
+                      <span class="p">(</span><span class="s1">&#39;status&#39;</span><span class="p">,</span> <span class="n">status</span><span class="p">)]))</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">na_rep</span><span class="o">=</span><span class="s1">&#39;n/a&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">linesep</span> <span class="o">+</span> <span class="s2">&quot;Writing &#39;</span><span class="si">%s</span><span class="s2">&#39;...&quot;</span> <span class="o">%</span> <span class="n">fname</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">linesep</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
+
+    <span class="k">return</span> <span class="n">fname</span>
+
+
+<span class="k">def</span> <span class="nf">_events_tsv</span><span class="p">(</span><span class="n">events</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">trial_type</span><span class="p">,</span> <span class="n">verbose</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create an events.tsv file and save it.</span>
+
+<span class="sd">    This function will write the mandatory &#39;onset&#39;, and &#39;duration&#39; columns as</span>
+<span class="sd">    well as the optional &#39;event_value&#39; and &#39;event_sample&#39;. The &#39;event_value&#39;</span>
+<span class="sd">    corresponds to the marker value as found in the TRIG channel of the</span>
+<span class="sd">    recording. In addition, the &#39;trial_type&#39; field can be written.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    events : array, shape = (n_events, 3)</span>
+<span class="sd">        The first column contains the event time in samples and the third</span>
+<span class="sd">        column contains the event id. The second column is ignored for now but</span>
+<span class="sd">        typically contains the value of the trigger channel either immediately</span>
+<span class="sd">        before the event or immediately after.</span>
+<span class="sd">    raw : instance of Raw</span>
+<span class="sd">        The data as MNE-Python Raw object.</span>
+<span class="sd">    fname : str</span>
+<span class="sd">        Filename to save the events.tsv to.</span>
+<span class="sd">    event_id : dict | None</span>
+<span class="sd">        Dictionary mapping a brief description key to an event id (value). For</span>
+<span class="sd">        example {&#39;Go&#39;: 1, &#39;No Go&#39;: 2}.</span>
+<span class="sd">    verbose : bool</span>
+<span class="sd">        Set verbose output to true or false.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The function writes durations of zero for each event.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Start by filling all data that we know into a df</span>
+    <span class="n">first_samp</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">first_samp</span>
+    <span class="n">sfreq</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;sfreq&#39;</span><span class="p">]</span>
+    <span class="n">events</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-=</span> <span class="n">first_samp</span>
+
+    <span class="n">data</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">([(</span><span class="s1">&#39;onset&#39;</span><span class="p">,</span> <span class="n">events</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]),</span>
+                        <span class="p">(</span><span class="s1">&#39;duration&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">events</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])),</span>
+                        <span class="p">(</span><span class="s1">&#39;trial_type&#39;</span><span class="p">,</span> <span class="n">events</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]),</span>
+                        <span class="p">(</span><span class="s1">&#39;event_value&#39;</span><span class="p">,</span> <span class="n">events</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]),</span>
+                        <span class="p">(</span><span class="s1">&#39;event_sample&#39;</span><span class="p">,</span> <span class="n">events</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])])</span>
+
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+    <span class="c1"># Now check if trial_type is specified or should be removed</span>
+    <span class="k">if</span> <span class="n">trial_type</span><span class="p">:</span>
+        <span class="n">trial_type_map</span> <span class="o">=</span> <span class="p">{</span><span class="n">v</span><span class="p">:</span> <span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">trial_type</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">trial_type</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">trial_type</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">trial_type_map</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;trial_type&#39;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># Onset column needs to be specified in seconds</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">onset</span> <span class="o">/=</span> <span class="n">sfreq</span>
+
+    <span class="c1"># Save to file</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">na_rep</span><span class="o">=</span><span class="s1">&#39;n/a&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">linesep</span> <span class="o">+</span> <span class="s2">&quot;Writing &#39;</span><span class="si">%s</span><span class="s2">&#39;...&quot;</span> <span class="o">%</span> <span class="n">fname</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">linesep</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
+
+    <span class="k">return</span> <span class="n">fname</span>
+
+
+<span class="k">def</span> <span class="nf">_scans_tsv</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">raw_fname</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">verbose</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create a scans.tsv file and save it.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    raw : instance of Raw</span>
+<span class="sd">        The data as MNE-Python Raw object.</span>
+<span class="sd">    raw_fname : str</span>
+<span class="sd">        Relative path to the raw data file.</span>
+<span class="sd">    fname : str</span>
+<span class="sd">        Filename to save the scans.tsv to.</span>
+<span class="sd">    verbose : bool</span>
+<span class="sd">        Set verbose output to true or false.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># get MEASurement date from the data info</span>
+    <span class="n">meas_date</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;meas_date&#39;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">meas_date</span><span class="p">,</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
+        <span class="n">meas_date</span> <span class="o">=</span> <span class="n">meas_date</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">meas_date</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">acq_time</span> <span class="o">=</span> <span class="s1">&#39;n/a&#39;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">acq_time</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span>
+            <span class="n">meas_date</span><span class="p">)</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">T%H:%M:%S&#39;</span><span class="p">)</span>
+
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;filename&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">raw_fname</span><span class="p">],</span>
+                            <span class="s1">&#39;acq_time&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">acq_time</span><span class="p">]},</span>
+                      <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;filename&#39;</span><span class="p">,</span> <span class="s1">&#39;acq_time&#39;</span><span class="p">])</span>
+
+    <span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">na_rep</span><span class="o">=</span><span class="s1">&#39;n/a&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">linesep</span> <span class="o">+</span> <span class="s2">&quot;Writing &#39;</span><span class="si">%s</span><span class="s2">&#39;...&quot;</span> <span class="o">%</span> <span class="n">fname</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">linesep</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
+
+    <span class="k">return</span> <span class="n">fname</span>
+
+
+<span class="k">def</span> <span class="nf">_coordsystem_json</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">unit</span><span class="p">,</span> <span class="n">orient</span><span class="p">,</span> <span class="n">manufacturer</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">verbose</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create a coordsystem.json file and save it.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    raw : instance of Raw</span>
+<span class="sd">        The data as MNE-Python Raw object.</span>
+<span class="sd">    unit : str</span>
+<span class="sd">        Units to be used in the coordsystem specification.</span>
+<span class="sd">    orient : str</span>
+<span class="sd">        Used to define the coordinate system for the head coils.</span>
+<span class="sd">    manufacturer : str</span>
+<span class="sd">        Used to define the coordinate system for the MEG sensors.</span>
+<span class="sd">    fname : str</span>
+<span class="sd">        Filename to save the coordsystem.json to.</span>
+<span class="sd">    verbose : bool</span>
+<span class="sd">        Set verbose output to true or false.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">dig</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;dig&#39;</span><span class="p">]</span>
+    <span class="n">coords</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="n">fids</span> <span class="o">=</span> <span class="p">{</span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;ident&#39;</span><span class="p">]:</span> <span class="n">d</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">dig</span> <span class="k">if</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;kind&#39;</span><span class="p">]</span> <span class="o">==</span>
+            <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_POINT_CARDINAL</span><span class="p">}</span>
+    <span class="k">if</span> <span class="n">fids</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_POINT_NASION</span> <span class="ow">in</span> <span class="n">fids</span><span class="p">:</span>
+            <span class="n">coords</span><span class="p">[</span><span class="s1">&#39;NAS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fids</span><span class="p">[</span><span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_POINT_NASION</span><span class="p">][</span><span class="s1">&#39;r&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_POINT_LPA</span> <span class="ow">in</span> <span class="n">fids</span><span class="p">:</span>
+            <span class="n">coords</span><span class="p">[</span><span class="s1">&#39;LPA&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fids</span><span class="p">[</span><span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_POINT_LPA</span><span class="p">][</span><span class="s1">&#39;r&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_POINT_RPA</span> <span class="ow">in</span> <span class="n">fids</span><span class="p">:</span>
+            <span class="n">coords</span><span class="p">[</span><span class="s1">&#39;RPA&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fids</span><span class="p">[</span><span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_POINT_RPA</span><span class="p">][</span><span class="s1">&#39;r&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+
+    <span class="n">hpi</span> <span class="o">=</span> <span class="p">{</span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;ident&#39;</span><span class="p">]:</span> <span class="n">d</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">dig</span> <span class="k">if</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;kind&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_POINT_HPI</span><span class="p">}</span>
+    <span class="k">if</span> <span class="n">hpi</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">ident</span> <span class="ow">in</span> <span class="n">hpi</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">coords</span><span class="p">[</span><span class="s1">&#39;coil</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">ident</span><span class="p">]</span> <span class="o">=</span> <span class="n">hpi</span><span class="p">[</span><span class="n">ident</span><span class="p">][</span><span class="s1">&#39;r&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+
+    <span class="n">coord_frame</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="n">dig</span><span class="p">[</span><span class="n">ii</span><span class="p">][</span><span class="s1">&#39;coord_frame&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dig</span><span class="p">))])</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">coord_frame</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">err</span> <span class="o">=</span> <span class="s1">&#39;All HPI and Fiducials must be in the same coordinate frame.&#39;</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+
+    <span class="n">fid_json</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;MEGCoordinateSystem&#39;</span><span class="p">:</span> <span class="n">manufacturer</span><span class="p">,</span>
+                <span class="s1">&#39;MEGCoordinateUnits&#39;</span><span class="p">:</span> <span class="n">unit</span><span class="p">,</span>  <span class="c1"># XXX validate this</span>
+                <span class="s1">&#39;HeadCoilCoordinates&#39;</span><span class="p">:</span> <span class="n">coords</span><span class="p">,</span>
+                <span class="s1">&#39;HeadCoilCoordinateSystem&#39;</span><span class="p">:</span> <span class="n">orient</span><span class="p">,</span>
+                <span class="s1">&#39;HeadCoilCoordinateUnits&#39;</span><span class="p">:</span> <span class="n">unit</span>  <span class="c1"># XXX validate this</span>
+                <span class="p">}</span>
+    <span class="n">_write_json</span><span class="p">(</span><span class="n">fid_json</span><span class="p">,</span> <span class="n">fname</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">fname</span>
+
+
+<span class="k">def</span> <span class="nf">_sidecar_json</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">task</span><span class="p">,</span> <span class="n">manufacturer</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">kind</span><span class="p">,</span>
+                  <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create a sidecar json file depending on the kind and save it.</span>
+
+<span class="sd">    The sidecar json file provides meta data about the data of a certain kind.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    raw : instance of Raw</span>
+<span class="sd">        The data as MNE-Python Raw object.</span>
+<span class="sd">    task : str</span>
+<span class="sd">        Name of the task the data is based on.</span>
+<span class="sd">    manufacturer : str</span>
+<span class="sd">        Manufacturer of the acquisition system. For MEG also used to define the</span>
+<span class="sd">        coordinate system for the MEG sensors.</span>
+<span class="sd">    fname : str</span>
+<span class="sd">        Filename to save the sidecar json to.</span>
+<span class="sd">    kind : str</span>
+<span class="sd">        Type of the data as in ALLOWED_KINDS.</span>
+<span class="sd">    verbose : bool</span>
+<span class="sd">        Set verbose output to true or false. Defaults to true.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">sfreq</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;sfreq&#39;</span><span class="p">]</span>
+    <span class="n">powerlinefrequency</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;line_freq&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">powerlinefrequency</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">warn</span><span class="p">(</span><span class="s1">&#39;No line frequency found, defaulting to 50 Hz&#39;</span><span class="p">)</span>
+        <span class="n">powerlinefrequency</span> <span class="o">=</span> <span class="mi">50</span>
+
+    <span class="n">n_megchan</span> <span class="o">=</span> <span class="nb">len</span><span class="p">([</span><span class="n">ch</span> <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;chs&#39;</span><span class="p">]</span>
+                     <span class="k">if</span> <span class="n">ch</span><span class="p">[</span><span class="s1">&#39;kind&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_MEG_CH</span><span class="p">])</span>
+    <span class="n">n_megrefchan</span> <span class="o">=</span> <span class="nb">len</span><span class="p">([</span><span class="n">ch</span> <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;chs&#39;</span><span class="p">]</span>
+                        <span class="k">if</span> <span class="n">ch</span><span class="p">[</span><span class="s1">&#39;kind&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_REF_MEG_CH</span><span class="p">])</span>
+    <span class="n">n_eegchan</span> <span class="o">=</span> <span class="nb">len</span><span class="p">([</span><span class="n">ch</span> <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;chs&#39;</span><span class="p">]</span>
+                     <span class="k">if</span> <span class="n">ch</span><span class="p">[</span><span class="s1">&#39;kind&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_EEG_CH</span><span class="p">])</span>
+    <span class="n">n_ecogchan</span> <span class="o">=</span> <span class="nb">len</span><span class="p">([</span><span class="n">ch</span> <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;chs&#39;</span><span class="p">]</span>
+                     <span class="k">if</span> <span class="n">ch</span><span class="p">[</span><span class="s1">&#39;kind&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_ECOG_CH</span><span class="p">])</span>
+    <span class="n">n_seegchan</span> <span class="o">=</span> <span class="nb">len</span><span class="p">([</span><span class="n">ch</span> <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;chs&#39;</span><span class="p">]</span>
+                     <span class="k">if</span> <span class="n">ch</span><span class="p">[</span><span class="s1">&#39;kind&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_SEEG_CH</span><span class="p">])</span>
+    <span class="n">n_eogchan</span> <span class="o">=</span> <span class="nb">len</span><span class="p">([</span><span class="n">ch</span> <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;chs&#39;</span><span class="p">]</span>
+                     <span class="k">if</span> <span class="n">ch</span><span class="p">[</span><span class="s1">&#39;kind&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_EOG_CH</span><span class="p">])</span>
+    <span class="n">n_ecgchan</span> <span class="o">=</span> <span class="nb">len</span><span class="p">([</span><span class="n">ch</span> <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;chs&#39;</span><span class="p">]</span>
+                     <span class="k">if</span> <span class="n">ch</span><span class="p">[</span><span class="s1">&#39;kind&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_ECG_CH</span><span class="p">])</span>
+    <span class="n">n_emgchan</span> <span class="o">=</span> <span class="nb">len</span><span class="p">([</span><span class="n">ch</span> <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;chs&#39;</span><span class="p">]</span>
+                     <span class="k">if</span> <span class="n">ch</span><span class="p">[</span><span class="s1">&#39;kind&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_EMG_CH</span><span class="p">])</span>
+    <span class="n">n_miscchan</span> <span class="o">=</span> <span class="nb">len</span><span class="p">([</span><span class="n">ch</span> <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;chs&#39;</span><span class="p">]</span>
+                     <span class="k">if</span> <span class="n">ch</span><span class="p">[</span><span class="s1">&#39;kind&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_MISC_CH</span><span class="p">])</span>
+    <span class="n">n_stimchan</span> <span class="o">=</span> <span class="nb">len</span><span class="p">([</span><span class="n">ch</span> <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;chs&#39;</span><span class="p">]</span>
+                     <span class="k">if</span> <span class="n">ch</span><span class="p">[</span><span class="s1">&#39;kind&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_STIM_CH</span><span class="p">])</span>
+
+    <span class="c1"># Define modality-specific JSON dictionaries</span>
+    <span class="n">ch_info_json_common</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s1">&#39;TaskName&#39;</span><span class="p">,</span> <span class="n">task</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;Manufacturer&#39;</span><span class="p">,</span> <span class="n">manufacturer</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;PowerLineFrequency&#39;</span><span class="p">,</span> <span class="n">powerlinefrequency</span><span class="p">)]</span>
+    <span class="n">ch_info_json_meg</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s1">&#39;SamplingFrequency&#39;</span><span class="p">,</span> <span class="n">sfreq</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;DewarPosition&quot;</span><span class="p">,</span> <span class="s2">&quot;XXX&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;DigitizedLandmarks&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;DigitizedHeadPoints&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
+        <span class="p">(</span><span class="s2">&quot;SoftwareFilters&quot;</span><span class="p">,</span> <span class="s2">&quot;n/a&quot;</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;MEGChannelCount&#39;</span><span class="p">,</span> <span class="n">n_megchan</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;MEGREFChannelCount&#39;</span><span class="p">,</span> <span class="n">n_megrefchan</span><span class="p">)]</span>
+    <span class="n">ch_info_json_ieeg</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s1">&#39;ECOGChannelCount&#39;</span><span class="p">,</span> <span class="n">n_ecogchan</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;SEEGChannelCount&#39;</span><span class="p">,</span> <span class="n">n_seegchan</span><span class="p">)]</span>
+    <span class="n">ch_info_ch_counts</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s1">&#39;EEGChannelCount&#39;</span><span class="p">,</span> <span class="n">n_eegchan</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;EOGChannelCount&#39;</span><span class="p">,</span> <span class="n">n_eogchan</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;ECGChannelCount&#39;</span><span class="p">,</span> <span class="n">n_ecgchan</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;EMGChannelCount&#39;</span><span class="p">,</span> <span class="n">n_emgchan</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;MiscChannelCount&#39;</span><span class="p">,</span> <span class="n">n_miscchan</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;TriggerChannelCount&#39;</span><span class="p">,</span> <span class="n">n_stimchan</span><span class="p">)]</span>
+
+    <span class="c1"># Stitch together the complete JSON dictionary</span>
+    <span class="n">ch_info_json</span> <span class="o">=</span> <span class="n">ch_info_json_common</span>
+    <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s1">&#39;meg&#39;</span><span class="p">:</span>
+        <span class="n">append_kind_json</span> <span class="o">=</span> <span class="n">ch_info_json_meg</span>
+    <span class="k">elif</span> <span class="n">kind</span> <span class="o">==</span> <span class="s1">&#39;ieeg&#39;</span><span class="p">:</span>
+        <span class="n">append_kind_json</span> <span class="o">=</span> <span class="n">ch_info_json_ieeg</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Unexpected &quot;kind&quot;: </span><span class="si">{}</span><span class="s1">&#39;</span>
+                         <span class="s1">&#39; Use one of: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">kind</span><span class="p">,</span> <span class="n">ALLOWED_KINDS</span><span class="p">))</span>
+
+    <span class="n">ch_info_json</span> <span class="o">+=</span> <span class="n">append_kind_json</span>
+    <span class="n">ch_info_json</span> <span class="o">+=</span> <span class="n">ch_info_ch_counts</span>
+    <span class="n">ch_info_json</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">(</span><span class="n">ch_info_json</span><span class="p">)</span>
+
+    <span class="n">_write_json</span><span class="p">(</span><span class="n">ch_info_json</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">fname</span>
+
+
+<div class="viewcode-block" id="raw_to_bids"><a class="viewcode-back" href="../../generated/mne_bids.mne_bids.raw_to_bids.html#mne_bids.mne_bids.raw_to_bids">[docs]</a><span class="k">def</span> <span class="nf">raw_to_bids</span><span class="p">(</span><span class="n">subject_id</span><span class="p">,</span> <span class="n">task</span><span class="p">,</span> <span class="n">raw_file</span><span class="p">,</span> <span class="n">output_path</span><span class="p">,</span> <span class="n">session_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">run</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;meg&#39;</span><span class="p">,</span> <span class="n">events_data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">event_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">hpi</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">electrode</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hsp</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Walk over a folder of files and create BIDS compatible folder.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    subject_id : str</span>
+<span class="sd">        The subject name in BIDS compatible format (&#39;01&#39;, &#39;02&#39;, etc.)</span>
+<span class="sd">    task : str</span>
+<span class="sd">        Name of the task the data is based on.</span>
+<span class="sd">    raw_file : str | instance of mne.Raw</span>
+<span class="sd">        The raw data. If a string, it is assumed to be the path to the raw data</span>
+<span class="sd">        file. Otherwise it must be an instance of mne.Raw</span>
+<span class="sd">    output_path : str</span>
+<span class="sd">        The path of the BIDS compatible folder</span>
+<span class="sd">    session_id : str | None</span>
+<span class="sd">        The session name in BIDS compatible format.</span>
+<span class="sd">    run : int | None</span>
+<span class="sd">        The run number for this dataset.</span>
+<span class="sd">    kind : str, one of (&#39;meg&#39;, &#39;ieeg&#39;)</span>
+<span class="sd">        The kind of data being converted. Defaults to &quot;meg&quot;.</span>
+<span class="sd">    events_data : str | array | None</span>
+<span class="sd">        The events file. If a string, a path to the events file. If an array,</span>
+<span class="sd">        the MNE events array (shape n_events, 3). If None, events will be</span>
+<span class="sd">        inferred from the stim channel using `mne.find_events`.</span>
+<span class="sd">    event_id : dict | None</span>
+<span class="sd">        The event id dict used to create a &#39;trial_type&#39; column in events.tsv</span>
+<span class="sd">    hpi : None | str | list of str</span>
+<span class="sd">        Marker points representing the location of the marker coils with</span>
+<span class="sd">        respect to the MEG Sensors, or path to a marker file.</span>
+<span class="sd">        If list, all of the markers will be averaged together.</span>
+<span class="sd">    electrode : None | str</span>
+<span class="sd">        Digitizer points representing the location of the fiducials and the</span>
+<span class="sd">        marker coils with respect to the digitized head shape, or path to a</span>
+<span class="sd">        file containing these points.</span>
+<span class="sd">    hsp : None | str | array, shape = (n_points, 3)</span>
+<span class="sd">        Digitizer head shape points, or path to head shape file. If more than</span>
+<span class="sd">        10`000 points are in the head shape, they are automatically decimated.</span>
+<span class="sd">    config : str | None</span>
+<span class="sd">        A path to the configuration file to use if the data is from a BTi</span>
+<span class="sd">        system.</span>
+<span class="sd">    overwrite : bool</span>
+<span class="sd">        If the file already exists, whether to overwrite it.</span>
+<span class="sd">    verbose : bool</span>
+<span class="sd">        If verbose is True, this will print a snippet of the sidecar files. If</span>
+<span class="sd">        False, no content will be printed.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">raw_file</span><span class="p">,</span> <span class="n">string_types</span><span class="p">):</span>
+        <span class="c1"># We must read in the raw data</span>
+        <span class="n">raw</span> <span class="o">=</span> <span class="n">_read_raw</span><span class="p">(</span><span class="n">raw_file</span><span class="p">,</span> <span class="n">electrode</span><span class="o">=</span><span class="n">electrode</span><span class="p">,</span> <span class="n">hsp</span><span class="o">=</span><span class="n">hsp</span><span class="p">,</span> <span class="n">hpi</span><span class="o">=</span><span class="n">hpi</span><span class="p">,</span>
+                        <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+        <span class="n">raw_fname</span><span class="p">,</span> <span class="n">ext</span> <span class="o">=</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">raw_file</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">raw_file</span><span class="p">,</span> <span class="n">BaseRaw</span><span class="p">):</span>
+        <span class="c1"># We got a raw mne object, get back the filename if possible</span>
+        <span class="c1"># Assume that if no filename attr exists, it&#39;s a fif file.</span>
+        <span class="n">raw</span> <span class="o">=</span> <span class="n">raw_file</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="s1">&#39;filenames&#39;</span><span class="p">):</span>
+            <span class="n">raw_fname</span><span class="p">,</span> <span class="n">ext</span> <span class="o">=</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">filenames</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># FIXME: How to get the filename if no filenames attribute?</span>
+            <span class="n">raw_fname</span> <span class="o">=</span> <span class="s1">&#39;unknown_file_name&#39;</span>
+            <span class="n">ext</span> <span class="o">=</span> <span class="s1">&#39;.fif&#39;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;raw_file must be an instance of str or BaseRaw, &#39;</span>
+                         <span class="s1">&#39;got </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="nb">type</span><span class="p">(</span><span class="n">raw_file</span><span class="p">))</span>
+    <span class="n">data_path</span> <span class="o">=</span> <span class="n">make_bids_folders</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="n">subject_id</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session_id</span><span class="p">,</span>
+                                  <span class="n">kind</span><span class="o">=</span><span class="n">kind</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">output_path</span><span class="p">,</span>
+                                  <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">,</span>
+                                  <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">session_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">ses_path</span> <span class="o">=</span> <span class="n">data_path</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">ses_path</span> <span class="o">=</span> <span class="n">make_bids_folders</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="n">subject_id</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session_id</span><span class="p">,</span>
+                                     <span class="n">root</span><span class="o">=</span><span class="n">output_path</span><span class="p">,</span>
+                                     <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                     <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+
+    <span class="c1"># create filenames</span>
+    <span class="n">scans_fname</span> <span class="o">=</span> <span class="n">make_bids_filename</span><span class="p">(</span>
+        <span class="n">subject</span><span class="o">=</span><span class="n">subject_id</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session_id</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;scans.tsv&#39;</span><span class="p">,</span>
+        <span class="n">prefix</span><span class="o">=</span><span class="n">ses_path</span><span class="p">)</span>
+
+    <span class="n">coordsystem_fname</span> <span class="o">=</span> <span class="n">make_bids_filename</span><span class="p">(</span>
+        <span class="n">subject</span><span class="o">=</span><span class="n">subject_id</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session_id</span><span class="p">,</span>
+        <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;coordsystem.json&#39;</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="n">data_path</span><span class="p">)</span>
+    <span class="n">data_meta_fname</span> <span class="o">=</span> <span class="n">make_bids_filename</span><span class="p">(</span>
+        <span class="n">subject</span><span class="o">=</span><span class="n">subject_id</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session_id</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="n">task</span><span class="p">,</span> <span class="n">run</span><span class="o">=</span><span class="n">run</span><span class="p">,</span>
+        <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">.json&#39;</span> <span class="o">%</span> <span class="n">kind</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="n">data_path</span><span class="p">)</span>
+    <span class="n">raw_file_bids</span> <span class="o">=</span> <span class="n">make_bids_filename</span><span class="p">(</span>
+        <span class="n">subject</span><span class="o">=</span><span class="n">subject_id</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session_id</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="n">task</span><span class="p">,</span> <span class="n">run</span><span class="o">=</span><span class="n">run</span><span class="p">,</span>
+        <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%s%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">kind</span><span class="p">,</span> <span class="n">ext</span><span class="p">),</span> <span class="n">prefix</span><span class="o">=</span><span class="n">data_path</span><span class="p">)</span>
+    <span class="n">events_tsv_fname</span> <span class="o">=</span> <span class="n">make_bids_filename</span><span class="p">(</span>
+        <span class="n">subject</span><span class="o">=</span><span class="n">subject_id</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session_id</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="n">task</span><span class="p">,</span>
+        <span class="n">run</span><span class="o">=</span><span class="n">run</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;events.tsv&#39;</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="n">data_path</span><span class="p">)</span>
+    <span class="n">channels_fname</span> <span class="o">=</span> <span class="n">make_bids_filename</span><span class="p">(</span>
+        <span class="n">subject</span><span class="o">=</span><span class="n">subject_id</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session_id</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="n">task</span><span class="p">,</span> <span class="n">run</span><span class="o">=</span><span class="n">run</span><span class="p">,</span>
+        <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;channels.tsv&#39;</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="n">data_path</span><span class="p">)</span>
+
+    <span class="c1"># Read in Raw object and extract metadata from Raw object if needed</span>
+    <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s1">&#39;meg&#39;</span><span class="p">:</span>
+        <span class="n">orient</span> <span class="o">=</span> <span class="n">orientation</span><span class="p">[</span><span class="n">ext</span><span class="p">]</span>
+        <span class="n">unit</span> <span class="o">=</span> <span class="n">units</span><span class="p">[</span><span class="n">ext</span><span class="p">]</span>
+        <span class="n">manufacturer</span> <span class="o">=</span> <span class="n">manufacturers</span><span class="p">[</span><span class="n">ext</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">orient</span> <span class="o">=</span> <span class="s1">&#39;n/a&#39;</span>
+        <span class="n">unit</span> <span class="o">=</span> <span class="s1">&#39;n/a&#39;</span>
+        <span class="n">manufacturer</span> <span class="o">=</span> <span class="s1">&#39;n/a&#39;</span>
+
+    <span class="c1"># save stuff</span>
+    <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s1">&#39;meg&#39;</span><span class="p">:</span>
+        <span class="n">_scans_tsv</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">raw_file_bids</span><span class="p">,</span> <span class="n">scans_fname</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
+        <span class="n">_coordsystem_json</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">unit</span><span class="p">,</span> <span class="n">orient</span><span class="p">,</span> <span class="n">manufacturer</span><span class="p">,</span> <span class="n">coordsystem_fname</span><span class="p">,</span>
+                          <span class="n">verbose</span><span class="p">)</span>
+
+    <span class="n">make_dataset_description</span><span class="p">(</span><span class="n">output_path</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot; &quot;</span><span class="p">,</span>
+                             <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+    <span class="n">_sidecar_json</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">task</span><span class="p">,</span> <span class="n">manufacturer</span><span class="p">,</span> <span class="n">data_meta_fname</span><span class="p">,</span> <span class="n">kind</span><span class="p">,</span>
+                  <span class="n">verbose</span><span class="p">)</span>
+    <span class="n">_channels_tsv</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">channels_fname</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
+
+    <span class="n">events</span> <span class="o">=</span> <span class="n">_read_events</span><span class="p">(</span><span class="n">events_data</span><span class="p">,</span> <span class="n">raw</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">events</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">_events_tsv</span><span class="p">(</span><span class="n">events</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">events_tsv_fname</span><span class="p">,</span> <span class="n">event_id</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
+
+    <span class="c1"># Writing of neural data</span>
+    <span class="c1"># Check if it is MEG (only writing to FIF)</span>
+    <span class="c1"># ----------------------------------------</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">raw_file_bids</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">overwrite</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;&quot;</span><span class="si">%s</span><span class="s1">&quot; already exists. Please set&#39;</span>
+                         <span class="s1">&#39; overwrite to True.&#39;</span> <span class="o">%</span> <span class="n">raw_file_bids</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Writing data files to </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">raw_file_bids</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">ext</span> <span class="ow">in</span> <span class="n">ALLOWED_EXTENSIONS</span><span class="p">:</span>
+        <span class="c1"># for FIF, we need to re-save the file to fix the file pointer</span>
+        <span class="c1"># for files with multiple parts</span>
+        <span class="k">if</span> <span class="n">ext</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;.fif&#39;</span><span class="p">,</span> <span class="s1">&#39;.gz&#39;</span><span class="p">]:</span>
+            <span class="n">raw</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">raw_file_bids</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">raw_file_bids</span><span class="p">):</span>  <span class="c1"># overwrite=True</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">raw_file_bids</span><span class="p">)</span>
+                <span class="n">sh</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">raw_fname</span><span class="p">,</span> <span class="n">raw_file_bids</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">pass</span>
+
+    <span class="k">return</span> <span class="n">output_path</span></div>
+</pre></div>
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2018, MNE Developers. Last updated on 2018-08-17.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.3.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

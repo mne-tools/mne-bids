@@ -38,6 +38,7 @@ Let us import mne_bids
     import os.path as op
     from mne.datasets import sample
     from mne_bids import raw_to_bids
+    from mne_bids.utils import print_dir_tree
 
 
 
@@ -81,6 +82,7 @@ Finally, we specify the raw_file and events_data
 
 
 
+
 .. rst-class:: sphx-glr-script-out
 
  Out::
@@ -99,22 +101,21 @@ Finally, we specify the raw_file and events_data
     Writing '/home/mainak/Desktop/projects/github_repos/mne-python/examples/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/sub-01_ses-01_scans.tsv'...
 
                   acq_time                                           filename
-    0  2002-12-03T20:01:10  /home/mainak/Desktop/projects/github_repos/mne...
+    0  2002-12-03T14:01:10  /home/mainak/Desktop/projects/github_repos/mne...
 
     Writing '/home/mainak/Desktop/projects/github_repos/mne-python/examples/MNE-sample-data/../MNE-sample-data-bids/dataset_description.json'...
 
     {
         "Name": " ", 
-        "BIDSVersion": "1.0.2 (draft)"
+        "BIDSVersion": "1.1.1 (draft)"
     }
-    No line frequency found, defaulting to 40 Hz
 
     Writing '/home/mainak/Desktop/projects/github_repos/mne-python/examples/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_meg.json'...
 
     {
         "TaskName": "audiovisual", 
         "Manufacturer": "Elekta", 
-        "PowerLineFrequency": 40, 
+        "PowerLineFrequency": 50, 
         "SamplingFrequency": 600.614990234375, 
         "DewarPosition": "XXX", 
         "DigitizedLandmarks": false, 
@@ -126,7 +127,7 @@ Finally, we specify the raw_file and events_data
         "EOGChannelCount": 1, 
         "ECGChannelCount": 0, 
         "EMGChannelCount": 0, 
-        "MiscChannelCount": 1, 
+        "MiscChannelCount": 0, 
         "TriggerChannelCount": 9
     }
 
@@ -159,7 +160,35 @@ Finally, we specify the raw_file and events_data
     Closing /home/mainak/Desktop/projects/github_repos/mne-python/examples/MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif [done]
 
 
-**Total running time of the script:** ( 0 minutes  3.209 seconds)
+Now let's see the structure of the BIDS folder we created.
+
+
+
+.. code-block:: python
+
+    print_dir_tree(output_path)
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out::
+
+    |-------------------------------------------------- MNE-sample-data-bids
+    |------------------------------------------------------- dataset_description.json
+    |------------------------------------------------------- sub-01
+    |------------------------------------------------------------ ses-01
+    |----------------------------------------------------------------- sub-01_ses-01_scans.tsv
+    |----------------------------------------------------------------- meg
+    |---------------------------------------------------------------------- sub-01_ses-01_task-audiovisual_run-01_meg.fif
+    |---------------------------------------------------------------------- sub-01_ses-01_task-audiovisual_run-01_channels.tsv
+    |---------------------------------------------------------------------- sub-01_ses-01_task-audiovisual_run-01_events.tsv
+    |---------------------------------------------------------------------- sub-01_ses-01_meg.json
+    |---------------------------------------------------------------------- sub-01_ses-01_coordsystem.json
+
+
+**Total running time of the script:** ( 0 minutes  1.407 seconds)
 
 
 

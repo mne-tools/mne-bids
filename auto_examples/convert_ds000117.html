@@ -59,6 +59,7 @@
           <ul class="nav navbar-nav">
             
                 <li><a href="index.html">Gallery</a></li>
+                <li><a href="../api.html">API</a></li>
                 <li><a href="https://github.com/mne-tools/mne-bids">Github</a></li>
             
             
@@ -140,6 +141,7 @@ Scientific data, 2 (2015): 150001.</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os.path</span> <span class="kn">as</span> <span class="nn">op</span>
 <span class="kn">from</span> <span class="nn">mne_bids</span> <span class="kn">import</span> <span class="n">raw_to_bids</span>
 <span class="kn">from</span> <span class="nn">mne_bids.datasets</span> <span class="kn">import</span> <span class="n">fetch_faces_data</span>
+<span class="kn">from</span> <span class="nn">mne_bids.utils</span> <span class="kn">import</span> <span class="n">print_dir_tree</span>
 </pre></div>
 </div>
 <p>And fetch the data.</p>
@@ -204,13 +206,13 @@ Scientific data, 2 (2015): 150001.</p>
 <span class="n">Writing</span> <span class="s1">&#39;/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/sub-01_ses-01_scans.tsv&#39;</span><span class="o">...</span>
 
               <span class="n">acq_time</span>                                           <span class="n">filename</span>
-<span class="mi">0</span>  <span class="mi">2009</span><span class="o">-</span><span class="mi">04</span><span class="o">-</span><span class="mi">07</span><span class="n">T16</span><span class="p">:</span><span class="mi">39</span><span class="p">:</span><span class="mi">35</span>  <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">mainak</span><span class="o">/</span><span class="n">mne_data</span><span class="o">/</span><span class="n">ds000117</span><span class="o">-</span><span class="n">bids</span><span class="o">/</span><span class="n">sub</span><span class="o">-</span><span class="mi">01</span><span class="o">/</span><span class="n">ses</span><span class="o">...</span>
+<span class="mi">0</span>  <span class="mi">2009</span><span class="o">-</span><span class="mi">04</span><span class="o">-</span><span class="mi">07</span><span class="n">T10</span><span class="p">:</span><span class="mi">39</span><span class="p">:</span><span class="mi">35</span>  <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">mainak</span><span class="o">/</span><span class="n">mne_data</span><span class="o">/</span><span class="n">ds000117</span><span class="o">-</span><span class="n">bids</span><span class="o">/</span><span class="n">sub</span><span class="o">-</span><span class="mi">01</span><span class="o">/</span><span class="n">ses</span><span class="o">...</span>
 
 <span class="n">Writing</span> <span class="s1">&#39;/home/mainak/mne_data/ds000117-bids/dataset_description.json&#39;</span><span class="o">...</span>
 
 <span class="p">{</span>
     <span class="s2">&quot;Name&quot;</span><span class="p">:</span> <span class="s2">&quot; &quot;</span><span class="p">,</span>
-    <span class="s2">&quot;BIDSVersion&quot;</span><span class="p">:</span> <span class="s2">&quot;1.0.2 (draft)&quot;</span>
+    <span class="s2">&quot;BIDSVersion&quot;</span><span class="p">:</span> <span class="s2">&quot;1.1.1 (draft)&quot;</span>
 <span class="p">}</span>
 
 <span class="n">Writing</span> <span class="s1">&#39;/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_meg.json&#39;</span><span class="o">...</span>
@@ -230,7 +232,7 @@ Scientific data, 2 (2015): 150001.</p>
     <span class="s2">&quot;EOGChannelCount&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
     <span class="s2">&quot;ECGChannelCount&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
     <span class="s2">&quot;EMGChannelCount&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-    <span class="s2">&quot;MiscChannelCount&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s2">&quot;MiscChannelCount&quot;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
     <span class="s2">&quot;TriggerChannelCount&quot;</span><span class="p">:</span> <span class="mi">3</span>
 <span class="p">}</span>
 
@@ -283,13 +285,13 @@ Scientific data, 2 (2015): 150001.</p>
 <span class="n">Writing</span> <span class="s1">&#39;/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/sub-01_ses-01_scans.tsv&#39;</span><span class="o">...</span>
 
               <span class="n">acq_time</span>                                           <span class="n">filename</span>
-<span class="mi">0</span>  <span class="mi">2009</span><span class="o">-</span><span class="mi">04</span><span class="o">-</span><span class="mi">07</span><span class="n">T16</span><span class="p">:</span><span class="mi">52</span><span class="p">:</span><span class="mi">59</span>  <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">mainak</span><span class="o">/</span><span class="n">mne_data</span><span class="o">/</span><span class="n">ds000117</span><span class="o">-</span><span class="n">bids</span><span class="o">/</span><span class="n">sub</span><span class="o">-</span><span class="mi">01</span><span class="o">/</span><span class="n">ses</span><span class="o">...</span>
+<span class="mi">0</span>  <span class="mi">2009</span><span class="o">-</span><span class="mi">04</span><span class="o">-</span><span class="mi">07</span><span class="n">T10</span><span class="p">:</span><span class="mi">52</span><span class="p">:</span><span class="mi">59</span>  <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">mainak</span><span class="o">/</span><span class="n">mne_data</span><span class="o">/</span><span class="n">ds000117</span><span class="o">-</span><span class="n">bids</span><span class="o">/</span><span class="n">sub</span><span class="o">-</span><span class="mi">01</span><span class="o">/</span><span class="n">ses</span><span class="o">...</span>
 
 <span class="n">Writing</span> <span class="s1">&#39;/home/mainak/mne_data/ds000117-bids/dataset_description.json&#39;</span><span class="o">...</span>
 
 <span class="p">{</span>
     <span class="s2">&quot;Name&quot;</span><span class="p">:</span> <span class="s2">&quot; &quot;</span><span class="p">,</span>
-    <span class="s2">&quot;BIDSVersion&quot;</span><span class="p">:</span> <span class="s2">&quot;1.0.2 (draft)&quot;</span>
+    <span class="s2">&quot;BIDSVersion&quot;</span><span class="p">:</span> <span class="s2">&quot;1.1.1 (draft)&quot;</span>
 <span class="p">}</span>
 
 <span class="n">Writing</span> <span class="s1">&#39;/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_meg.json&#39;</span><span class="o">...</span>
@@ -309,7 +311,7 @@ Scientific data, 2 (2015): 150001.</p>
     <span class="s2">&quot;EOGChannelCount&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
     <span class="s2">&quot;ECGChannelCount&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
     <span class="s2">&quot;EMGChannelCount&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-    <span class="s2">&quot;MiscChannelCount&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s2">&quot;MiscChannelCount&quot;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
     <span class="s2">&quot;TriggerChannelCount&quot;</span><span class="p">:</span> <span class="mi">3</span>
 <span class="p">}</span>
 
@@ -362,13 +364,13 @@ Scientific data, 2 (2015): 150001.</p>
 <span class="n">Writing</span> <span class="s1">&#39;/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/sub-01_ses-01_scans.tsv&#39;</span><span class="o">...</span>
 
               <span class="n">acq_time</span>                                           <span class="n">filename</span>
-<span class="mi">0</span>  <span class="mi">2009</span><span class="o">-</span><span class="mi">04</span><span class="o">-</span><span class="mi">07</span><span class="n">T17</span><span class="p">:</span><span class="mi">02</span><span class="p">:</span><span class="mi">25</span>  <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">mainak</span><span class="o">/</span><span class="n">mne_data</span><span class="o">/</span><span class="n">ds000117</span><span class="o">-</span><span class="n">bids</span><span class="o">/</span><span class="n">sub</span><span class="o">-</span><span class="mi">01</span><span class="o">/</span><span class="n">ses</span><span class="o">...</span>
+<span class="mi">0</span>  <span class="mi">2009</span><span class="o">-</span><span class="mi">04</span><span class="o">-</span><span class="mi">07</span><span class="n">T11</span><span class="p">:</span><span class="mi">02</span><span class="p">:</span><span class="mi">25</span>  <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">mainak</span><span class="o">/</span><span class="n">mne_data</span><span class="o">/</span><span class="n">ds000117</span><span class="o">-</span><span class="n">bids</span><span class="o">/</span><span class="n">sub</span><span class="o">-</span><span class="mi">01</span><span class="o">/</span><span class="n">ses</span><span class="o">...</span>
 
 <span class="n">Writing</span> <span class="s1">&#39;/home/mainak/mne_data/ds000117-bids/dataset_description.json&#39;</span><span class="o">...</span>
 
 <span class="p">{</span>
     <span class="s2">&quot;Name&quot;</span><span class="p">:</span> <span class="s2">&quot; &quot;</span><span class="p">,</span>
-    <span class="s2">&quot;BIDSVersion&quot;</span><span class="p">:</span> <span class="s2">&quot;1.0.2 (draft)&quot;</span>
+    <span class="s2">&quot;BIDSVersion&quot;</span><span class="p">:</span> <span class="s2">&quot;1.1.1 (draft)&quot;</span>
 <span class="p">}</span>
 
 <span class="n">Writing</span> <span class="s1">&#39;/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_meg.json&#39;</span><span class="o">...</span>
@@ -388,7 +390,7 @@ Scientific data, 2 (2015): 150001.</p>
     <span class="s2">&quot;EOGChannelCount&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
     <span class="s2">&quot;ECGChannelCount&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
     <span class="s2">&quot;EMGChannelCount&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-    <span class="s2">&quot;MiscChannelCount&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s2">&quot;MiscChannelCount&quot;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
     <span class="s2">&quot;TriggerChannelCount&quot;</span><span class="p">:</span> <span class="mi">3</span>
 <span class="p">}</span>
 
@@ -441,13 +443,13 @@ Scientific data, 2 (2015): 150001.</p>
 <span class="n">Writing</span> <span class="s1">&#39;/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/sub-01_ses-01_scans.tsv&#39;</span><span class="o">...</span>
 
               <span class="n">acq_time</span>                                           <span class="n">filename</span>
-<span class="mi">0</span>  <span class="mi">2009</span><span class="o">-</span><span class="mi">04</span><span class="o">-</span><span class="mi">07</span><span class="n">T17</span><span class="p">:</span><span class="mi">17</span><span class="p">:</span><span class="mi">45</span>  <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">mainak</span><span class="o">/</span><span class="n">mne_data</span><span class="o">/</span><span class="n">ds000117</span><span class="o">-</span><span class="n">bids</span><span class="o">/</span><span class="n">sub</span><span class="o">-</span><span class="mi">01</span><span class="o">/</span><span class="n">ses</span><span class="o">...</span>
+<span class="mi">0</span>  <span class="mi">2009</span><span class="o">-</span><span class="mi">04</span><span class="o">-</span><span class="mi">07</span><span class="n">T11</span><span class="p">:</span><span class="mi">17</span><span class="p">:</span><span class="mi">45</span>  <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">mainak</span><span class="o">/</span><span class="n">mne_data</span><span class="o">/</span><span class="n">ds000117</span><span class="o">-</span><span class="n">bids</span><span class="o">/</span><span class="n">sub</span><span class="o">-</span><span class="mi">01</span><span class="o">/</span><span class="n">ses</span><span class="o">...</span>
 
 <span class="n">Writing</span> <span class="s1">&#39;/home/mainak/mne_data/ds000117-bids/dataset_description.json&#39;</span><span class="o">...</span>
 
 <span class="p">{</span>
     <span class="s2">&quot;Name&quot;</span><span class="p">:</span> <span class="s2">&quot; &quot;</span><span class="p">,</span>
-    <span class="s2">&quot;BIDSVersion&quot;</span><span class="p">:</span> <span class="s2">&quot;1.0.2 (draft)&quot;</span>
+    <span class="s2">&quot;BIDSVersion&quot;</span><span class="p">:</span> <span class="s2">&quot;1.1.1 (draft)&quot;</span>
 <span class="p">}</span>
 
 <span class="n">Writing</span> <span class="s1">&#39;/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_meg.json&#39;</span><span class="o">...</span>
@@ -467,7 +469,7 @@ Scientific data, 2 (2015): 150001.</p>
     <span class="s2">&quot;EOGChannelCount&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
     <span class="s2">&quot;ECGChannelCount&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
     <span class="s2">&quot;EMGChannelCount&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-    <span class="s2">&quot;MiscChannelCount&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s2">&quot;MiscChannelCount&quot;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
     <span class="s2">&quot;TriggerChannelCount&quot;</span><span class="p">:</span> <span class="mi">3</span>
 <span class="p">}</span>
 
@@ -520,13 +522,13 @@ Scientific data, 2 (2015): 150001.</p>
 <span class="n">Writing</span> <span class="s1">&#39;/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/sub-01_ses-01_scans.tsv&#39;</span><span class="o">...</span>
 
               <span class="n">acq_time</span>                                           <span class="n">filename</span>
-<span class="mi">0</span>  <span class="mi">2009</span><span class="o">-</span><span class="mi">04</span><span class="o">-</span><span class="mi">07</span><span class="n">T17</span><span class="p">:</span><span class="mi">27</span><span class="p">:</span><span class="mi">38</span>  <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">mainak</span><span class="o">/</span><span class="n">mne_data</span><span class="o">/</span><span class="n">ds000117</span><span class="o">-</span><span class="n">bids</span><span class="o">/</span><span class="n">sub</span><span class="o">-</span><span class="mi">01</span><span class="o">/</span><span class="n">ses</span><span class="o">...</span>
+<span class="mi">0</span>  <span class="mi">2009</span><span class="o">-</span><span class="mi">04</span><span class="o">-</span><span class="mi">07</span><span class="n">T11</span><span class="p">:</span><span class="mi">27</span><span class="p">:</span><span class="mi">38</span>  <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">mainak</span><span class="o">/</span><span class="n">mne_data</span><span class="o">/</span><span class="n">ds000117</span><span class="o">-</span><span class="n">bids</span><span class="o">/</span><span class="n">sub</span><span class="o">-</span><span class="mi">01</span><span class="o">/</span><span class="n">ses</span><span class="o">...</span>
 
 <span class="n">Writing</span> <span class="s1">&#39;/home/mainak/mne_data/ds000117-bids/dataset_description.json&#39;</span><span class="o">...</span>
 
 <span class="p">{</span>
     <span class="s2">&quot;Name&quot;</span><span class="p">:</span> <span class="s2">&quot; &quot;</span><span class="p">,</span>
-    <span class="s2">&quot;BIDSVersion&quot;</span><span class="p">:</span> <span class="s2">&quot;1.0.2 (draft)&quot;</span>
+    <span class="s2">&quot;BIDSVersion&quot;</span><span class="p">:</span> <span class="s2">&quot;1.1.1 (draft)&quot;</span>
 <span class="p">}</span>
 
 <span class="n">Writing</span> <span class="s1">&#39;/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_meg.json&#39;</span><span class="o">...</span>
@@ -546,7 +548,7 @@ Scientific data, 2 (2015): 150001.</p>
     <span class="s2">&quot;EOGChannelCount&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
     <span class="s2">&quot;ECGChannelCount&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
     <span class="s2">&quot;EMGChannelCount&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-    <span class="s2">&quot;MiscChannelCount&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s2">&quot;MiscChannelCount&quot;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
     <span class="s2">&quot;TriggerChannelCount&quot;</span><span class="p">:</span> <span class="mi">3</span>
 <span class="p">}</span>
 
@@ -599,13 +601,13 @@ Scientific data, 2 (2015): 150001.</p>
 <span class="n">Writing</span> <span class="s1">&#39;/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/sub-01_ses-01_scans.tsv&#39;</span><span class="o">...</span>
 
               <span class="n">acq_time</span>                                           <span class="n">filename</span>
-<span class="mi">0</span>  <span class="mi">2009</span><span class="o">-</span><span class="mi">04</span><span class="o">-</span><span class="mi">07</span><span class="n">T17</span><span class="p">:</span><span class="mi">41</span><span class="p">:</span><span class="mi">20</span>  <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">mainak</span><span class="o">/</span><span class="n">mne_data</span><span class="o">/</span><span class="n">ds000117</span><span class="o">-</span><span class="n">bids</span><span class="o">/</span><span class="n">sub</span><span class="o">-</span><span class="mi">01</span><span class="o">/</span><span class="n">ses</span><span class="o">...</span>
+<span class="mi">0</span>  <span class="mi">2009</span><span class="o">-</span><span class="mi">04</span><span class="o">-</span><span class="mi">07</span><span class="n">T11</span><span class="p">:</span><span class="mi">41</span><span class="p">:</span><span class="mi">20</span>  <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">mainak</span><span class="o">/</span><span class="n">mne_data</span><span class="o">/</span><span class="n">ds000117</span><span class="o">-</span><span class="n">bids</span><span class="o">/</span><span class="n">sub</span><span class="o">-</span><span class="mi">01</span><span class="o">/</span><span class="n">ses</span><span class="o">...</span>
 
 <span class="n">Writing</span> <span class="s1">&#39;/home/mainak/mne_data/ds000117-bids/dataset_description.json&#39;</span><span class="o">...</span>
 
 <span class="p">{</span>
     <span class="s2">&quot;Name&quot;</span><span class="p">:</span> <span class="s2">&quot; &quot;</span><span class="p">,</span>
-    <span class="s2">&quot;BIDSVersion&quot;</span><span class="p">:</span> <span class="s2">&quot;1.0.2 (draft)&quot;</span>
+    <span class="s2">&quot;BIDSVersion&quot;</span><span class="p">:</span> <span class="s2">&quot;1.1.1 (draft)&quot;</span>
 <span class="p">}</span>
 
 <span class="n">Writing</span> <span class="s1">&#39;/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_meg.json&#39;</span><span class="o">...</span>
@@ -625,7 +627,7 @@ Scientific data, 2 (2015): 150001.</p>
     <span class="s2">&quot;EOGChannelCount&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
     <span class="s2">&quot;ECGChannelCount&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
     <span class="s2">&quot;EMGChannelCount&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-    <span class="s2">&quot;MiscChannelCount&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="s2">&quot;MiscChannelCount&quot;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
     <span class="s2">&quot;TriggerChannelCount&quot;</span><span class="p">:</span> <span class="mi">3</span>
 <span class="p">}</span>
 
@@ -661,7 +663,25 @@ Scientific data, 2 (2015): 150001.</p>
 <span class="n">Closing</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">mainak</span><span class="o">/</span><span class="n">mne_data</span><span class="o">/</span><span class="n">ds000117</span><span class="o">-</span><span class="n">bids</span><span class="o">/</span><span class="n">sub</span><span class="o">-</span><span class="mi">01</span><span class="o">/</span><span class="n">ses</span><span class="o">-</span><span class="mi">01</span><span class="o">/</span><span class="n">meg</span><span class="o">/</span><span class="n">sub</span><span class="o">-</span><span class="mi">01</span><span class="n">_ses</span><span class="o">-</span><span class="mi">01</span><span class="n">_task</span><span class="o">-</span><span class="n">VisualFaces_run</span><span class="o">-</span><span class="mi">06</span><span class="n">_meg</span><span class="o">.</span><span class="n">fif</span> <span class="p">[</span><span class="n">done</span><span class="p">]</span>
 </pre></div>
 </div>
-<p><strong>Total running time of the script:</strong> ( 1 minutes  22.807 seconds)</p>
+<p>Now let&#8217;s see the structure of the BIDS folder we created.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">print_dir_tree</span><span class="p">(</span><span class="n">output_path</span><span class="p">)</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-default"><div class="highlight"><pre><span></span><span class="o">|--------------------</span> <span class="n">ds000117</span><span class="o">-</span><span class="n">bids</span>
+<span class="o">|-------------------------</span> <span class="n">dataset_description</span><span class="o">.</span><span class="n">json</span>
+<span class="o">|-------------------------</span> <span class="n">sub</span><span class="o">-</span><span class="mi">01</span>
+<span class="o">|------------------------------</span> <span class="n">ses</span><span class="o">-</span><span class="mi">01</span>
+<span class="o">|-----------------------------------</span> <span class="n">sub</span><span class="o">-</span><span class="mi">01</span><span class="n">_ses</span><span class="o">-</span><span class="mi">01</span><span class="n">_scans</span><span class="o">.</span><span class="n">tsv</span>
+<span class="o">|-----------------------------------</span> <span class="n">meg</span>
+<span class="o">|----------------------------------------</span> <span class="n">sub</span><span class="o">-</span><span class="mi">01</span><span class="n">_ses</span><span class="o">-</span><span class="mi">01</span><span class="n">_task</span><span class="o">-</span><span class="n">VisualFaces_run</span><span class="o">-</span><span class="mi">06</span><span class="n">_events</span><span class="o">.</span><span class="n">tsv</span>
+<span class="o">|----------------------------------------</span> <span class="n">sub</span><span class="o">-</span><span class="mi">01</span><span class="n">_ses</span><span class="o">-</span><span class="mi">01</span><span class="n">_task</span><span class="o">-</span><span class="n">VisualFaces_run</span><span class="o">-</span><span class="mi">06</span><span class="n">_channels</span><span class="o">.</span><span class="n">tsv</span>
+<span class="o">|----------------------------------------</span> <span class="n">sub</span><span class="o">-</span><span class="mi">01</span><span class="n">_ses</span><span class="o">-</span><span class="mi">01</span><span class="n">_task</span><span class="o">-</span><span class="n">VisualFaces_run</span><span class="o">-</span><span class="mi">06</span><span class="n">_meg</span><span class="o">.</span><span class="n">fif</span>
+<span class="o">|----------------------------------------</span> <span class="n">sub</span><span class="o">-</span><span class="mi">01</span><span class="n">_ses</span><span class="o">-</span><span class="mi">01</span><span class="n">_meg</span><span class="o">.</span><span class="n">json</span>
+<span class="o">|----------------------------------------</span> <span class="n">sub</span><span class="o">-</span><span class="mi">01</span><span class="n">_ses</span><span class="o">-</span><span class="mi">01</span><span class="n">_coordsystem</span><span class="o">.</span><span class="n">json</span>
+</pre></div>
+</div>
+<p><strong>Total running time of the script:</strong> ( 0 minutes  34.082 seconds)</p>
 <div class="sphx-glr-footer docutils container">
 <div class="sphx-glr-download docutils container">
 <a class="reference download internal" href="../_downloads/convert_ds000117.py" download=""><code class="xref download docutils literal"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">convert_ds000117.py</span></code></a></div>
@@ -684,7 +704,7 @@ Scientific data, 2 (2015): 150001.</p>
       
     </p>
     <p>
-        &copy; Copyright 2018, MNE Developers. Last updated on 2018-04-24.<br/>
+        &copy; Copyright 2018, MNE Developers. Last updated on 2018-08-17.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.3.<br/>
     </p>
   </div>

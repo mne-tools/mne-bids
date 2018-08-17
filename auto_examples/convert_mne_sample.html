@@ -59,6 +59,7 @@
           <ul class="nav navbar-nav">
             
                 <li><a href="index.html">Gallery</a></li>
+                <li><a href="../api.html">API</a></li>
                 <li><a href="https://github.com/mne-tools/mne-bids">Github</a></li>
             
             
@@ -134,6 +135,7 @@ your existing files into a BIDS-compatible folder.</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os.path</span> <span class="kn">as</span> <span class="nn">op</span>
 <span class="kn">from</span> <span class="nn">mne.datasets</span> <span class="kn">import</span> <span class="n">sample</span>
 <span class="kn">from</span> <span class="nn">mne_bids</span> <span class="kn">import</span> <span class="n">raw_to_bids</span>
+<span class="kn">from</span> <span class="nn">mne_bids.utils</span> <span class="kn">import</span> <span class="n">print_dir_tree</span>
 </pre></div>
 </div>
 <p>And define the paths and event_id dictionary.</p>
@@ -168,22 +170,21 @@ your existing files into a BIDS-compatible folder.</p>
 <span class="n">Writing</span> <span class="s1">&#39;/home/mainak/Desktop/projects/github_repos/mne-python/examples/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/sub-01_ses-01_scans.tsv&#39;</span><span class="o">...</span>
 
               <span class="n">acq_time</span>                                           <span class="n">filename</span>
-<span class="mi">0</span>  <span class="mi">2002</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">03</span><span class="n">T20</span><span class="p">:</span><span class="mi">01</span><span class="p">:</span><span class="mi">10</span>  <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">mainak</span><span class="o">/</span><span class="n">Desktop</span><span class="o">/</span><span class="n">projects</span><span class="o">/</span><span class="n">github_repos</span><span class="o">/</span><span class="n">mne</span><span class="o">...</span>
+<span class="mi">0</span>  <span class="mi">2002</span><span class="o">-</span><span class="mi">12</span><span class="o">-</span><span class="mi">03</span><span class="n">T14</span><span class="p">:</span><span class="mi">01</span><span class="p">:</span><span class="mi">10</span>  <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">mainak</span><span class="o">/</span><span class="n">Desktop</span><span class="o">/</span><span class="n">projects</span><span class="o">/</span><span class="n">github_repos</span><span class="o">/</span><span class="n">mne</span><span class="o">...</span>
 
 <span class="n">Writing</span> <span class="s1">&#39;/home/mainak/Desktop/projects/github_repos/mne-python/examples/MNE-sample-data/../MNE-sample-data-bids/dataset_description.json&#39;</span><span class="o">...</span>
 
 <span class="p">{</span>
     <span class="s2">&quot;Name&quot;</span><span class="p">:</span> <span class="s2">&quot; &quot;</span><span class="p">,</span>
-    <span class="s2">&quot;BIDSVersion&quot;</span><span class="p">:</span> <span class="s2">&quot;1.0.2 (draft)&quot;</span>
+    <span class="s2">&quot;BIDSVersion&quot;</span><span class="p">:</span> <span class="s2">&quot;1.1.1 (draft)&quot;</span>
 <span class="p">}</span>
-<span class="n">No</span> <span class="n">line</span> <span class="n">frequency</span> <span class="n">found</span><span class="p">,</span> <span class="n">defaulting</span> <span class="n">to</span> <span class="mi">40</span> <span class="n">Hz</span>
 
 <span class="n">Writing</span> <span class="s1">&#39;/home/mainak/Desktop/projects/github_repos/mne-python/examples/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_meg.json&#39;</span><span class="o">...</span>
 
 <span class="p">{</span>
     <span class="s2">&quot;TaskName&quot;</span><span class="p">:</span> <span class="s2">&quot;audiovisual&quot;</span><span class="p">,</span>
     <span class="s2">&quot;Manufacturer&quot;</span><span class="p">:</span> <span class="s2">&quot;Elekta&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;PowerLineFrequency&quot;</span><span class="p">:</span> <span class="mi">40</span><span class="p">,</span>
+    <span class="s2">&quot;PowerLineFrequency&quot;</span><span class="p">:</span> <span class="mi">50</span><span class="p">,</span>
     <span class="s2">&quot;SamplingFrequency&quot;</span><span class="p">:</span> <span class="mf">600.614990234375</span><span class="p">,</span>
     <span class="s2">&quot;DewarPosition&quot;</span><span class="p">:</span> <span class="s2">&quot;XXX&quot;</span><span class="p">,</span>
     <span class="s2">&quot;DigitizedLandmarks&quot;</span><span class="p">:</span> <span class="n">false</span><span class="p">,</span>
@@ -195,7 +196,7 @@ your existing files into a BIDS-compatible folder.</p>
     <span class="s2">&quot;EOGChannelCount&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
     <span class="s2">&quot;ECGChannelCount&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
     <span class="s2">&quot;EMGChannelCount&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
-    <span class="s2">&quot;MiscChannelCount&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s2">&quot;MiscChannelCount&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
     <span class="s2">&quot;TriggerChannelCount&quot;</span><span class="p">:</span> <span class="mi">9</span>
 <span class="p">}</span>
 
@@ -228,7 +229,25 @@ your existing files into a BIDS-compatible folder.</p>
 <span class="n">Closing</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">mainak</span><span class="o">/</span><span class="n">Desktop</span><span class="o">/</span><span class="n">projects</span><span class="o">/</span><span class="n">github_repos</span><span class="o">/</span><span class="n">mne</span><span class="o">-</span><span class="n">python</span><span class="o">/</span><span class="n">examples</span><span class="o">/</span><span class="n">MNE</span><span class="o">-</span><span class="n">sample</span><span class="o">-</span><span class="n">data</span><span class="o">-</span><span class="n">bids</span><span class="o">/</span><span class="n">sub</span><span class="o">-</span><span class="mi">01</span><span class="o">/</span><span class="n">ses</span><span class="o">-</span><span class="mi">01</span><span class="o">/</span><span class="n">meg</span><span class="o">/</span><span class="n">sub</span><span class="o">-</span><span class="mi">01</span><span class="n">_ses</span><span class="o">-</span><span class="mi">01</span><span class="n">_task</span><span class="o">-</span><span class="n">audiovisual_run</span><span class="o">-</span><span class="mi">01</span><span class="n">_meg</span><span class="o">.</span><span class="n">fif</span> <span class="p">[</span><span class="n">done</span><span class="p">]</span>
 </pre></div>
 </div>
-<p><strong>Total running time of the script:</strong> ( 0 minutes  3.209 seconds)</p>
+<p>Now let&#8217;s see the structure of the BIDS folder we created.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">print_dir_tree</span><span class="p">(</span><span class="n">output_path</span><span class="p">)</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-default"><div class="highlight"><pre><span></span><span class="o">|--------------------------------------------------</span> <span class="n">MNE</span><span class="o">-</span><span class="n">sample</span><span class="o">-</span><span class="n">data</span><span class="o">-</span><span class="n">bids</span>
+<span class="o">|-------------------------------------------------------</span> <span class="n">dataset_description</span><span class="o">.</span><span class="n">json</span>
+<span class="o">|-------------------------------------------------------</span> <span class="n">sub</span><span class="o">-</span><span class="mi">01</span>
+<span class="o">|------------------------------------------------------------</span> <span class="n">ses</span><span class="o">-</span><span class="mi">01</span>
+<span class="o">|-----------------------------------------------------------------</span> <span class="n">sub</span><span class="o">-</span><span class="mi">01</span><span class="n">_ses</span><span class="o">-</span><span class="mi">01</span><span class="n">_scans</span><span class="o">.</span><span class="n">tsv</span>
+<span class="o">|-----------------------------------------------------------------</span> <span class="n">meg</span>
+<span class="o">|----------------------------------------------------------------------</span> <span class="n">sub</span><span class="o">-</span><span class="mi">01</span><span class="n">_ses</span><span class="o">-</span><span class="mi">01</span><span class="n">_task</span><span class="o">-</span><span class="n">audiovisual_run</span><span class="o">-</span><span class="mi">01</span><span class="n">_meg</span><span class="o">.</span><span class="n">fif</span>
+<span class="o">|----------------------------------------------------------------------</span> <span class="n">sub</span><span class="o">-</span><span class="mi">01</span><span class="n">_ses</span><span class="o">-</span><span class="mi">01</span><span class="n">_task</span><span class="o">-</span><span class="n">audiovisual_run</span><span class="o">-</span><span class="mi">01</span><span class="n">_channels</span><span class="o">.</span><span class="n">tsv</span>
+<span class="o">|----------------------------------------------------------------------</span> <span class="n">sub</span><span class="o">-</span><span class="mi">01</span><span class="n">_ses</span><span class="o">-</span><span class="mi">01</span><span class="n">_task</span><span class="o">-</span><span class="n">audiovisual_run</span><span class="o">-</span><span class="mi">01</span><span class="n">_events</span><span class="o">.</span><span class="n">tsv</span>
+<span class="o">|----------------------------------------------------------------------</span> <span class="n">sub</span><span class="o">-</span><span class="mi">01</span><span class="n">_ses</span><span class="o">-</span><span class="mi">01</span><span class="n">_meg</span><span class="o">.</span><span class="n">json</span>
+<span class="o">|----------------------------------------------------------------------</span> <span class="n">sub</span><span class="o">-</span><span class="mi">01</span><span class="n">_ses</span><span class="o">-</span><span class="mi">01</span><span class="n">_coordsystem</span><span class="o">.</span><span class="n">json</span>
+</pre></div>
+</div>
+<p><strong>Total running time of the script:</strong> ( 0 minutes  1.407 seconds)</p>
 <div class="sphx-glr-footer docutils container">
 <div class="sphx-glr-download docutils container">
 <a class="reference download internal" href="../_downloads/convert_mne_sample.py" download=""><code class="xref download docutils literal"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">convert_mne_sample.py</span></code></a></div>
@@ -250,7 +269,7 @@ your existing files into a BIDS-compatible folder.</p>
       
     </p>
     <p>
-        &copy; Copyright 2018, MNE Developers. Last updated on 2018-04-24.<br/>
+        &copy; Copyright 2018, MNE Developers. Last updated on 2018-08-17.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.3.<br/>
     </p>
   </div>
