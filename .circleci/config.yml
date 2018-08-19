@@ -23,11 +23,6 @@ jobs:
                   pip install -U https://api.github.com/repos/mne-tools/mne-python/zipball/maint/0.16
                   python setup.py develop
             - run:
-                name: Setup nodejs and npm
-                command: |
-                  sudo apt-get install nodejs
-                  sudo apt-get install npm
-            - run:
                 name: Install bids-validator
                 command: |
                   npm install -g https://github.com/INCF/bids-validator.git
