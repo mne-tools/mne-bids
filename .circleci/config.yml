@@ -2,29 +2,33 @@ version: 2
 jobs:
     build:
         docker:
-            - image: circleci/python:3.6.1
+            - image: circleci/python:3.7.0-stretch-node-browsers
         steps:
             - checkout
             - run:
+                name: Install miniconda
                 command: |
                   wget -q http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O ~/miniconda.sh;
                   chmod +x ~/miniconda.sh;
                   ~/miniconda.sh -b -p ~/miniconda;
                   echo "export PATH=~/miniconda/bin:$PATH" >> $BASH_ENV;
-            - run:
-                command: |
                   conda update --yes --quiet conda;
+            - run:
+                name: Make Python env and get packages
+                command: |
                   conda create --yes --name testenv python=3
                   source activate testenv;
                   conda install --yes --quiet numpy scipy matplotlib pandas
                   pip install flake8 pytest nose coverage coveralls
-                  git clone --depth 1 https://github.com/mne-tools/mne-python.git -b maint/0.15
-                  cd mne-python
-                  pip install --no-deps -e .
-                  cd ../
+                  pip install -U https://api.github.com/repos/mne-tools/mne-python/zipball/maint/0.16
                   python setup.py develop
+            - run:
+                name: Setup npm and node
+                command: |
+                  sudo apt-get install npm
                   npm install -g https://github.com/INCF/bids-validator.git#0.26.0
             - run:
+                name: Perform tests and build docs
                 command: |
                     make
                     make build-doc
