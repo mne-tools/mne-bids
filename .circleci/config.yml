@@ -32,3 +32,6 @@ jobs:
                 command: |
                     make
                     make build-doc
+            - store_artifacts:
+                path: doc/_build/html/
+                destination: html
