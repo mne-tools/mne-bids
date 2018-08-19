@@ -12,10 +12,10 @@ jobs:
                   chmod +x ~/miniconda.sh;
                   ~/miniconda.sh -b -p ~/miniconda;
                   echo "export PATH=~/miniconda/bin:$PATH" >> $BASH_ENV;
-                  conda update --yes --quiet conda;
             - run:
                 name: Make Python env and get packages
                 command: |
+                  conda update --yes --quiet conda;
                   conda create --yes --name testenv python=3
                   source activate testenv;
                   conda install --yes --quiet numpy scipy matplotlib pandas
