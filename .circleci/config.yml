@@ -13,7 +13,7 @@ jobs:
                   ~/miniconda.sh -b -p ~/miniconda;
                   echo "export PATH=~/miniconda/bin:$PATH" >> $BASH_ENV;
             - run:
-                name: Make Python env and get packages
+                name: Setup Python environment
                 command: |
                   conda update --yes --quiet conda;
                   conda create --yes --name testenv python=3
@@ -23,11 +23,14 @@ jobs:
                   pip install -U https://api.github.com/repos/mne-tools/mne-python/zipball/maint/0.16
                   python setup.py develop
             - run:
-                name: Setup nodejs and npm for bids-validator
+                name: Setup nodejs and npm
                 command: |
                   sudo apt-get install nodejs
                   sudo apt-get install npm
-                  npm install -g https://github.com/INCF/bids-validator.git#0.26.0
+            - run:
+                name: Install bids-validator
+                command: |
+                  npm install -g https://github.com/INCF/bids-validator.git
             - run:
                 name: Perform tests and build docs
                 command: |
