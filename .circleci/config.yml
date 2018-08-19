@@ -18,8 +18,8 @@ jobs:
                   conda update --yes --quiet conda;
                   conda create --yes --name testenv python=3
                   source activate testenv;
-                  conda install --yes --quiet numpy scipy matplotlib pandas
-                  pip install flake8 pytest nose coverage coveralls
+                  conda install --yes --quiet numpy scipy matplotlib pandas sphinx
+                  pip install flake8 pytest nose coverage coveralls sphinx_bootstrap_theme sphinx_fontawesome
                   pip install -U https://api.github.com/repos/mne-tools/mne-python/zipball/maint/0.16
                   python setup.py develop
             - run:
