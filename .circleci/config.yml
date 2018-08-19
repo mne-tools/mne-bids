@@ -25,7 +25,7 @@ jobs:
             - run:
                 name: Install bids-validator
                 command: |
-                  npm install -g https://github.com/INCF/bids-validator.git
+                  sudo npm install -g https://github.com/INCF/bids-validator.git
             - run:
                 name: Perform tests and build docs
                 command: |
