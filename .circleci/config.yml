@@ -23,13 +23,8 @@ jobs:
                   pip install -U https://api.github.com/repos/mne-tools/mne-python/zipball/maint/0.16
                   python setup.py develop
             - run:
-                name: Install bids-validator
+                name: Build the documentation
                 command: |
-                  sudo npm install -g https://github.com/INCF/bids-validator.git
-            - run:
-                name: Perform tests and build docs
-                command: |
-                    make
                     make build-doc
             - store_artifacts:
                 path: doc/_build/html/
