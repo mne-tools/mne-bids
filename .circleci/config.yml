@@ -18,7 +18,7 @@ jobs:
                   conda update --yes --quiet conda;
                   conda env create -f environment.yml
                   source activate mne_bids;
-                  python setup.py
+                  python setup.py develop
             - run:
                 name: Build the documentation
                 command: |
