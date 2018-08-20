@@ -24,7 +24,7 @@ from warnings import warn
 
 from .utils import (make_bids_filename, make_bids_folders,
                     make_dataset_description, _write_json,
-                    _read_events)
+                    _read_events, _mkdir_p)
 from .io import (_parse_ext, _read_raw, ALLOWED_EXTENSIONS)
 
 
@@ -482,39 +482,25 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
     # set the raw file name to now be the absolute path to ensure the files
     # are placed in the right location
     raw_file_bids = os.path.join(data_path, raw_file_bids)
-
-    # Writing of neural data
-    # Check if it is MEG (only writing to FIF)
-    # ----------------------------------------
     if os.path.exists(raw_file_bids) and not overwrite:
         raise ValueError('"%s" already exists. Please set'
                          ' overwrite to True.' % raw_file_bids)
+    _mkdir_p(os.path.dirname(raw_file_bids))
 
     if verbose:
         print('Writing data files to %s' % raw_file_bids)
 
-    if ext in ALLOWED_EXTENSIONS:
-        # for FIF, we need to re-save the file to fix the file pointer
-        # for files with multiple parts
-        if ext in ['.fif', '.gz']:
-            raw.save(raw_file_bids, overwrite=overwrite)
-        else:
-            if os.path.exists(raw_file_bids):  # overwrite=True
-                os.remove(raw_file_bids)
-                sh.copyfile(raw_fname, raw_file_bids)
-            else:
-                # ensure the sub-folder exists
-                if not os.path.exists(os.path.dirname(raw_file_bids)):
-                    os.makedirs(os.path.dirname(raw_file_bids))
-                if ext == '.ds':
-                    # it is actually a folder and we need to copy the
-                    # entire folder
-                    sh.copytree(raw_fname, raw_file_bids)
-                else:
-                    # copy the file
-                    sh.copyfile(raw_fname, raw_file_bids)
+    if ext not in ALLOWED_EXTENSIONS:
+        raise ValueError('ext must be in %s, got %s'
+                         % (''.join(ALLOWED_EXTENSIONS), ext))
 
+    # for FIF, we need to re-save the file to fix the file pointer
+    # for files with multiple parts
+    if ext in ['.fif', '.gz']:
+        raw.save(raw_file_bids, overwrite=overwrite)
+    elif ext == '.ds':
+        sh.copytree(raw_fname, raw_file_bids)
     else:
-        pass
+        sh.copyfile(raw_fname, raw_file_bids)
 
     return output_path
