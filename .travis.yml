@@ -23,7 +23,7 @@ install:
       pip install --no-deps -e .
       cd ../
     - python setup.py develop
-    - npm install -g https://github.com/INCF/bids-validator.git#0.26.0
+    - npm install -g https://github.com/INCF/bids-validator.git#f8b71e47323e885168103be33d3bcbf7ea3b7da9
 script:
     - make
     - flake8 --count mne_bids

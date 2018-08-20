@@ -24,7 +24,7 @@ from warnings import warn
 
 from .utils import (make_bids_filename, make_bids_folders,
                     make_dataset_description, _write_json,
-                    _read_events)
+                    _read_events, _mkdir_p)
 from .io import (_parse_ext, _read_raw, ALLOWED_EXTENSIONS)
 
 
@@ -395,13 +395,15 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
         # We must read in the raw data
         raw = _read_raw(raw_file, electrode=electrode, hsp=hsp, hpi=hpi,
                         config=config, verbose=verbose)
-        raw_fname, ext = _parse_ext(raw_file, verbose=verbose)
+        _, ext = _parse_ext(raw_file, verbose=verbose)
+        raw_fname = raw_file
     elif isinstance(raw_file, BaseRaw):
         # We got a raw mne object, get back the filename if possible
         # Assume that if no filename attr exists, it's a fif file.
         raw = raw_file.copy()
         if hasattr(raw, 'filenames'):
-            raw_fname, ext = _parse_ext(raw.filenames[0], verbose=verbose)
+            _, ext = _parse_ext(raw.filenames[0], verbose=verbose)
+            raw_fname = raw.filenames[0]
         else:
             # FIXME: How to get the filename if no filenames attribute?
             raw_fname = 'unknown_file_name'
@@ -432,9 +434,17 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
     data_meta_fname = make_bids_filename(
         subject=subject_id, session=session_id, task=task, run=run,
         suffix='%s.json' % kind, prefix=data_path)
-    raw_file_bids = make_bids_filename(
-        subject=subject_id, session=session_id, task=task, run=run,
-        suffix='%s%s' % (kind, ext), prefix=data_path)
+    if ext in ['.fif', '.gz', '.ds']:
+        raw_file_bids = make_bids_filename(
+            subject=subject_id, session=session_id, task=task, run=run,
+            suffix='%s%s' % (kind, ext))
+    else:
+        raw_folder = make_bids_filename(
+            subject=subject_id, session=session_id, task=task, run=run,
+            suffix='%s' % kind)
+        raw_file_bids = make_bids_filename(
+            subject=subject_id, session=session_id, task=task, run=run,
+            suffix='%s%s' % (kind, ext), prefix=raw_folder)
     events_tsv_fname = make_bids_filename(
         subject=subject_id, session=session_id, task=task,
         run=run, suffix='events.tsv', prefix=data_path)
@@ -454,7 +464,8 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
 
     # save stuff
     if kind == 'meg':
-        _scans_tsv(raw, raw_file_bids, scans_fname, verbose)
+        _scans_tsv(raw, os.path.join(kind, raw_file_bids), scans_fname,
+                   verbose)
         _coordsystem_json(raw, unit, orient, manufacturer, coordsystem_fname,
                           verbose)
 
@@ -468,27 +479,28 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
     if len(events) > 0:
         _events_tsv(events, raw, events_tsv_fname, event_id, verbose)
 
-    # Writing of neural data
-    # Check if it is MEG (only writing to FIF)
-    # ----------------------------------------
+    # set the raw file name to now be the absolute path to ensure the files
+    # are placed in the right location
+    raw_file_bids = os.path.join(data_path, raw_file_bids)
     if os.path.exists(raw_file_bids) and not overwrite:
         raise ValueError('"%s" already exists. Please set'
                          ' overwrite to True.' % raw_file_bids)
+    _mkdir_p(os.path.dirname(raw_file_bids))
 
     if verbose:
         print('Writing data files to %s' % raw_file_bids)
 
-    if ext in ALLOWED_EXTENSIONS:
-        # for FIF, we need to re-save the file to fix the file pointer
-        # for files with multiple parts
-        if ext in ['.fif', '.gz']:
-            raw.save(raw_file_bids, overwrite=overwrite)
-        else:
-            if os.path.exists(raw_file_bids):  # overwrite=True
-                os.remove(raw_file_bids)
-                sh.copyfile(raw_fname, raw_file_bids)
+    if ext not in ALLOWED_EXTENSIONS:
+        raise ValueError('ext must be in %s, got %s'
+                         % (''.join(ALLOWED_EXTENSIONS), ext))
 
+    # for FIF, we need to re-save the file to fix the file pointer
+    # for files with multiple parts
+    if ext in ['.fif', '.gz']:
+        raw.save(raw_file_bids, overwrite=overwrite)
+    elif ext == '.ds':
+        sh.copytree(raw_fname, raw_file_bids)
     else:
-        pass
+        sh.copyfile(raw_fname, raw_file_bids)
 
     return output_path
