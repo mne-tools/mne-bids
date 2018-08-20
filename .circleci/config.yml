@@ -17,11 +17,12 @@ jobs:
                 command: |
                   conda update --yes --quiet conda;
                   conda env create -f environment.yml
-                  source activate mne_bids;
+                  source activate mne_bids
                   python setup.py develop
             - run:
                 name: Build the documentation
                 command: |
+                    source activate mne_bids
                     make build-doc
             - store_artifacts:
                 path: doc/_build/html/
