@@ -1,5 +1,5 @@
 #! /usr/bin/env python
-from setuptools import setup
+from setuptools import setup, find_packages
 
 descr = """Experimental code for BIDS using MNE."""
 
@@ -35,8 +35,6 @@ if __name__ == "__main__":
               'Operating System :: MacOS',
           ],
           platforms='any',
-          packages=[
-              'mne_bids'
-          ],
+          packages=find_packages(),
           scripts=['bin/mne_bids']
-)
+          )

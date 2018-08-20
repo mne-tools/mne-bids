@@ -3,11 +3,9 @@
 # caution: testing won't work on windows, see README
 
 PYTHON ?= python
-PYTESTS ?= py.test
-CTAGS ?= ctags
-CODESPELL_SKIPS ?= "*.fif,*.eve,*.gz,*.tgz,*.zip,*.mat,*.stc,*.label,*.w,*.bz2,*.annot,*.sulc,*.log,*.local-copy,*.orig_avg,*.inflated_avg,*.gii,*.pyc,*.doctree,*.pickle,*.inv,*.png,*.edf,*.touch,*.thickness,*.nofix,*.volume,*.defect_borders,*.mgh,lh.*,rh.*,COR-*,FreeSurferColorLUT.txt,*.examples,.xdebug_mris_calc,bad.segments,BadChannels,*.hist,empty_file,*.orig,*.js,*.map,*.ipynb,searchindex.dat"
-CODESPELL_DIRS ?= mne_bids/ doc/ examples/
-all: clean inplace test # test-doc
+PYTESTS ?= pytest
+
+all: clean inplace test
 
 clean-pyc:
 	find . -name "*.pyc" | xargs rm -f
@@ -27,29 +25,22 @@ clean-cache:
 
 clean: clean-build clean-pyc clean-so clean-ctags clean-cache
 
-in: inplace # just a shortcut
 inplace:
-	$(PYTHON) setup.py build_ext -i
+	$(PYTHON) setup.py install
 
-test: in
+test: inplace
 	rm -f .coverage
 	$(PYTESTS) mne_bids
 
 test-doc:
-	$(PYTESTS) --doctest-modules --doctest-ignore-import-errors --doctest-glob='*.rst' ./doc/
+	$(PYTESTS) --doctest-modules --doctest-ignore-import-errors
 
-test-coverage: testing_data
+test-coverage:
 	rm -rf coverage .coverage
 	$(PYTESTS) --cov=mne_bids --cov-report html:coverage
-# whats the difference with test-no-sample-with-coverage?
 
 trailing-spaces:
 	find . -name "*.py" | xargs perl -pi -e 's/[ \t]*$$//'
-
-ctags:
-	# make tags for symbol based navigation in emacs and vim
-	# Install with: sudo apt-get install exuberant-ctags
-	$(CTAGS) -R *
 
 upload-pipy:
 	python setup.py sdist bdist_egg register upload
@@ -64,26 +55,13 @@ flake:
 	fi;
 	@echo "flake8 passed"
 
-codespell:  # running manually
-	@codespell -w -i 3 -q 3 -S $(CODESPELL_SKIPS) -D ./dictionary.txt $(CODESPELL_DIRS)
-
-codespell-error:  # running on travis
-	@codespell -i 0 -q 7 -S $(CODESPELL_SKIPS) -D ./dictionary.txt $(CODESPELL_DIRS)
-
 pydocstyle:
 	@echo "Running pydocstyle"
 	@pydocstyle
 
 pep:
-	@$(MAKE) -k flake pydocstyle docstring codespell-error
+	@$(MAKE) -k flake pydocstyle
 
-build-doc-dev:
+build-doc:
 	cd doc; make clean
-	cd doc; DISPLAY=:1.0 xvfb-run -n 1 -s "-screen 0 1280x1024x24 -noreset -ac +extension GLX +render" make html_dev
-
-build-doc-stable:
-	cd doc; make clean
-	cd doc; DISPLAY=:1.0 xvfb-run -n 1 -s "-screen 0 1280x1024x24 -noreset -ac +extension GLX +render" make html_stable
-
-docstyle:
-	@pydocstyle
+	cd doc; make html

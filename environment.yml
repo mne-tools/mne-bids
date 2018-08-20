@@ -1,4 +1,4 @@
-name: mne
+name: mne_bids
 channels:
 - defaults
 dependencies:

@@ -1,0 +1,29 @@
+version: 2
+jobs:
+    build:
+        docker:
+            - image: circleci/python:3.7.0-stretch-node-browsers
+        steps:
+            - checkout
+            - run:
+                name: Install miniconda
+                command: |
+                  wget -q http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O ~/miniconda.sh;
+                  chmod +x ~/miniconda.sh;
+                  ~/miniconda.sh -b -p ~/miniconda;
+                  echo "export PATH=~/miniconda/bin:$PATH" >> $BASH_ENV;
+            - run:
+                name: Setup Python environment
+                command: |
+                  conda update --yes --quiet conda;
+                  conda env create -f environment.yml
+                  source activate mne_bids
+                  python setup.py develop
+            - run:
+                name: Build the documentation
+                command: |
+                    source activate mne_bids
+                    make build-doc
+            - store_artifacts:
+                path: doc/_build/html/
+                destination: html
