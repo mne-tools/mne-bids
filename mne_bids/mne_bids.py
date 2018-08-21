@@ -37,6 +37,7 @@ units = {'.sqd': 'm', '.con': 'm', '.fif': 'm', '.pdf': 'm', '.ds': 'cm'}
 manufacturers = {'.sqd': 'KIT/Yokogawa', '.con': 'KIT/Yokogawa',
                  '.fif': 'Elekta', '.pdf': '4D Magnes', '.ds': 'CTF'}
 
+IGNORED_CHANNELS = ['STI 014']
 
 def _channels_tsv(raw, fname, verbose):
     """Create a channels.tsv file and save it.
@@ -65,6 +66,11 @@ def _channels_tsv(raw, fname, verbose):
                     eog='ElectrOculoGram', misc='Miscellaneous',
                     ref_meg='Reference channel')
 
+    ignored_indexes = []
+    for ch_name in IGNORED_CHANNELS:
+        if ch_name in raw.ch_names:
+            ignored_indexes.append(raw.ch_names.index(ch_name))
+
     status, ch_type, description = list(), list(), list()
     for idx, ch in enumerate(raw.info['ch_names']):
         status.append('bad' if ch in raw.info['bads'] else 'good')
@@ -85,6 +91,7 @@ def _channels_tsv(raw, fname, verbose):
                       ('low_cutoff', np.full((n_channels), low_cutoff)),
                       ('high_cutoff', np.full((n_channels), high_cutoff)),
                       ('status', status)]))
+    df.drop(ignored_indexes, inplace=True)
     df.to_csv(fname, sep='\t', index=False, na_rep='n/a')
 
     if verbose:
@@ -340,6 +347,13 @@ def _sidecar_json(raw, task, manufacturer, fname, kind,
         warn('No line frequency found, defaulting to 50 Hz')
         powerlinefrequency = 50
 
+    # determine whether any channels have to be ignored:
+    num_ignored = 0
+    for ch_name in IGNORED_CHANNELS:
+        if ch_name in raw.ch_names:
+            num_ignored += 1
+    # all ignored channels are trigger channels at the moment...
+
     n_megchan = len([ch for ch in raw.info['chs']
                      if ch['kind'] == FIFF.FIFFV_MEG_CH])
     n_megrefchan = len([ch for ch in raw.info['chs']
@@ -359,7 +373,7 @@ def _sidecar_json(raw, task, manufacturer, fname, kind,
     n_miscchan = len([ch for ch in raw.info['chs']
                      if ch['kind'] == FIFF.FIFFV_MISC_CH])
     n_stimchan = len([ch for ch in raw.info['chs']
-                     if ch['kind'] == FIFF.FIFFV_STIM_CH])
+                     if ch['kind'] == FIFF.FIFFV_STIM_CH]) - num_ignored
 
     # Define modality-specific JSON dictionaries
     ch_info_json_common = [
