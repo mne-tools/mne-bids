@@ -39,6 +39,7 @@ manufacturers = {'.sqd': 'KIT/Yokogawa', '.con': 'KIT/Yokogawa',
 
 IGNORED_CHANNELS = ['STI 014']
 
+
 def _channels_tsv(raw, fname, verbose):
     """Create a channels.tsv file and save it.
 
