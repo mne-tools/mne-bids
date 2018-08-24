@@ -4,7 +4,7 @@
 """Command line interface for mne_bids.
 
 example usage:  $ mne_bids raw_to_bids --subject_id sub01 --task rest
---raw_file data.edf --output_path new_path
+--raw_file data.edf --kind eeg --output_path new_path
 
 """
 
@@ -17,7 +17,6 @@ def run():
 
     parser = get_optparser(__file__)
 
-    parser.set_defaults(kind='meg')
     parser.add_option('--subject_id', dest='subject_id',
                       help=('The subject name in BIDS compatible format',
                             '(01,02, etc.)'), metavar='s')
@@ -60,11 +59,11 @@ def run():
     opt, args = parser.parse_args()
 
     raw_to_bids(subject_id=opt.subject_id, task=opt.task,
-                raw_file=opt.raw_file, output_path=opt.output_path,
-                session_id=opt.session_id, run=opt.run, kind=opt.kind,
-                events_data=opt.events_data, event_id=opt.event_id,
-                hpi=opt.hpi, electrode=opt.electrode, hsp=opt.hsp,
-                config=opt.config, overwrite=opt.overwrite,
+                raw_file=opt.raw_file, kind=opt.kind,
+                output_path=opt.output_path, session_id=opt.session_id,
+                run=opt.run, events_data=opt.events_data,
+                event_id=opt.event_id, hpi=opt.hpi, electrode=opt.electrode,
+                hsp=opt.hsp, config=opt.config, overwrite=opt.overwrite,
                 verbose=True)
 
 
