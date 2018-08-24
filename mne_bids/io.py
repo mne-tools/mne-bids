@@ -34,7 +34,7 @@ def _read_raw(raw_fname, electrode=None, hsp=None, hpi=None, config=None,
     # KIT systems
     if ext in ['.con', '.sqd']:
         raw = io.read_raw_kit(raw_fname, elp=electrode, hsp=hsp,
-                              mrk=hpi, stim=None, preload=False)
+                              mrk=hpi, preload=False)
 
     # Neuromag or converted-to-fif systems
     elif ext in ['.fif']:
