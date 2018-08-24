@@ -33,6 +33,7 @@ from mne_bids.utils import print_dir_tree
 
 subject_ids = [1]
 runs = range(1, 7)
+kind = 'meg'
 
 data_path = op.join(op.expanduser('~'), 'mne_data')
 repo = 'ds000117'
@@ -67,9 +68,10 @@ for subject_id in subject_ids:
                            'run_%02d_raw.fif' % run)
 
         # Make it BIDS compatible
-        raw_to_bids(subject_id='%02d' % subject_id, session_id='01', run=run,
-                    task='VisualFaces', raw_file=raw_file,
-                    event_id=event_id, output_path=output_path, overwrite=True)
+        raw_to_bids(subject_id='%02d' % subject_id, task='VisualFaces',
+                    raw_file=raw_file, kind=kind, output_path=output_path,
+                    session_id='01', run=run, event_id=event_id,
+                    overwrite=True)
 
 ###############################################################################
 # Now let's see the structure of the BIDS folder we created.
