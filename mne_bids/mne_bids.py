@@ -425,7 +425,7 @@ def _sidecar_json(raw, task, manufacturer, fname, kind,
     return fname
 
 
-def raw_to_bids(subject_id, task, raw_file, kind, output_path, 
+def raw_to_bids(subject_id, task, raw_file, kind, output_path,
                 session_id=None, run=None, events_data=None, event_id=None,
                 hpi=None, electrode=None, hsp=None, config=None,
                 overwrite=True, verbose=True):

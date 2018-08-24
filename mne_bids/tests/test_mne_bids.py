@@ -25,6 +25,7 @@ subject_id2 = '02'
 session_id = '01'
 run = '01'
 task = 'testing'
+kind = 'meg'
 
 # for windows, shell = True is needed
 # to call npm, bids-validator etc.
@@ -49,9 +50,10 @@ def test_fif():
     events_fname = op.join(data_path, 'MEG', 'sample',
                            'sample_audvis_trunc_raw-eve.fif')
 
-    raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
-                task=task, raw_file=raw_fname, events_data=events_fname,
-                output_path=output_path, event_id=event_id, overwrite=True)
+    raw_to_bids(subject_id=subject_id, task=task, raw_file=raw_fname,
+                kind=kind, output_path=output_path, session_id=session_id,
+                run=run, events_data=events_fname,  event_id=event_id,
+                overwrite=True)
 
     # give the raw object some fake participant data
     raw = mne.io.read_raw_fif(raw_fname)
@@ -61,10 +63,10 @@ def test_fif():
     data_path2 = _TempDir()
     raw_fname2 = op.join(data_path2, 'sample_audvis_raw.fif')
     raw.save(raw_fname2)
-    raw_to_bids(subject_id=subject_id2, run=run, task=task,
-                session_id=session_id, raw_file=raw_fname2,
-                events_data=events_fname, output_path=output_path,
-                event_id=event_id, overwrite=True)
+    raw_to_bids(subject_id=subject_id2, task=task, raw_file=raw_fname2,
+                kind=kind, output_path=output_path, session_id=session_id,
+                run=run, events_data=events_fname, event_id=event_id,
+                overwrite=True)
     cmd = ['bids-validator', output_path]
     run_subprocess(cmd, shell=shell)
 
@@ -82,11 +84,11 @@ def test_kit():
     headshape_fname = op.join(data_path, 'test_hsp.txt')
     event_id = dict(cond=1)
 
-    raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
-                task=task, raw_file=raw_fname, events_data=events_fname,
-                event_id=event_id, hpi=hpi_fname,
-                electrode=electrode_fname, hsp=headshape_fname,
-                output_path=output_path, overwrite=True)
+    raw_to_bids(subject_id=subject_id, task=task, raw_file=raw_fname,
+                kind=kind, output_path=output_path, session_id=session_id,
+                run=run, events_data=events_fname, event_id=event_id,
+                hpi=hpi_fname, electrode=electrode_fname, hsp=headshape_fname,
+                overwrite=True)
     cmd = ['bids-validator', output_path]
     run_subprocess(cmd, shell=shell)
     assert op.exists(op.join(output_path, 'participants.tsv'))
@@ -107,9 +109,9 @@ def test_ctf():
     data_path = op.join(testing.data_path(download=False), 'CTF')
     raw_fname = op.join(data_path, 'testdata_ctf.ds')
 
-    raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
-                task=task, raw_file=raw_fname, output_path=output_path,
-                overwrite=True)
+    raw_to_bids(subject_id=subject_id, task=task, raw_file=raw_fname,
+                kind=kind, output_path=output_path, session_id=session_id,
+                run=run, overwrite=True)
     cmd = ['bids-validator', output_path]
     run_subprocess(cmd, shell=shell)
     assert op.exists(op.join(output_path, 'participants.tsv'))
@@ -123,10 +125,10 @@ def test_bti():
     config_fname = op.join(data_path, 'test_config_linux')
     headshape_fname = op.join(data_path, 'test_hs_linux')
 
-    raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
-                task=task, raw_file=raw_fname, config=config_fname,
-                hsp=headshape_fname, output_path=output_path,
-                verbose=True, overwrite=True)
+    raw_to_bids(subject_id=subject_id, task=task, raw_file=raw_fname,
+                kind=kind, output_path=output_path, run=run,
+                session_id=session_id, config=config_fname,
+                hsp=headshape_fname, verbose=True, overwrite=True)
     cmd = ['bids-validator', output_path]
     run_subprocess(cmd, shell=shell)
     assert op.exists(op.join(output_path, 'participants.tsv'))

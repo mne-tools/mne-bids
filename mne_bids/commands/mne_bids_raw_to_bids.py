@@ -25,6 +25,9 @@ def run():
                       metavar='t')
     parser.add_option('--raw_file', dest='raw_file',
                       help='The path to the raw MEG file.', metavar='r')
+    parser.add_option('--kind', dest='kind',
+                      help='The kind of data being converted.',
+                      metavar='k')
     parser.add_option('--output_path', dest='output_path',
                       help='The path of the BIDS compatible folder.',
                       metavar='o')
@@ -34,9 +37,6 @@ def run():
     parser.add_option('--run', dest='run',
                       help='The run number for this dataset.',
                       metavar='run')
-    parser.add_option('--kind', dest='kind',
-                      help='The kind of data being converted.',
-                      metavar='k')
     parser.add_option('--events_data', dest='events_data',
                       help='The events file.', metavar='evt')
     parser.add_option('--event_id', dest='event_id',
