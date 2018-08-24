@@ -28,7 +28,7 @@ from .utils import (make_bids_filename, make_bids_folders,
 from .io import (_parse_ext, _read_raw, ALLOWED_EXTENSIONS)
 
 
-ALLOWED_KINDS = ['meg', 'ieeg']
+ALLOWED_KINDS = ['meg']
 ORIENTATION = {'.sqd': 'ALS', '.con': 'ALS', '.fif': 'RAS', '.pdf': 'ALS',
                '.ds': 'ALS'}
 
