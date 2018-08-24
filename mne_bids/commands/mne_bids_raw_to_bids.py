@@ -4,7 +4,7 @@
 """Command line interface for mne_bids.
 
 example usage:  $ mne_bids raw_to_bids --subject_id sub01 --task rest
---raw_file data.edf --kind eeg --output_path new_path
+--raw_file data.fif --kind meg --output_path new_path
 
 """
 
