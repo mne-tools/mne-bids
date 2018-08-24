@@ -26,7 +26,8 @@ def run():
     parser.add_option('--raw_file', dest='raw_file',
                       help='The path to the raw MEG file.', metavar='r')
     parser.add_option('--kind', dest='kind',
-                      help='The kind of data being converted.',
+                      help=('The kind of data being converted.
+                            'One of ("meg", "ieeg")',
                       metavar='k')
     parser.add_option('--output_path', dest='output_path',
                       help='The path of the BIDS compatible folder.',
