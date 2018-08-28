@@ -29,15 +29,13 @@ from .io import (_parse_ext, _read_raw, ALLOWED_EXTENSIONS)
 
 
 ALLOWED_KINDS = ['meg', 'ieeg']
-orientation = {'.sqd': 'ALS', '.con': 'ALS', '.fif': 'RAS', '.gz': 'RAS',
-               '.pdf': 'ALS', '.ds': 'ALS'}
+orientation = {'.sqd': 'ALS', '.con': 'ALS', '.fif': 'RAS', '.pdf': 'ALS',
+               '.ds': 'ALS'}
 
-units = {'.sqd': 'm', '.con': 'm', '.fif': 'm', '.gz': 'm', '.pdf': 'm',
-         '.ds': 'cm'}
+units = {'.sqd': 'm', '.con': 'm', '.fif': 'm', '.pdf': 'm', '.ds': 'cm'}
 
 manufacturers = {'.sqd': 'KIT/Yokogawa', '.con': 'KIT/Yokogawa',
-                 '.fif': 'Elekta', '.gz': 'Elekta', '.pdf': '4D Magnes',
-                 '.ds': 'CTF'}
+                 '.fif': 'Elekta', '.pdf': '4D Magnes', '.ds': 'CTF'}
 
 
 def _channels_tsv(raw, fname, verbose):
@@ -434,7 +432,7 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
     data_meta_fname = make_bids_filename(
         subject=subject_id, session=session_id, task=task, run=run,
         suffix='%s.json' % kind, prefix=data_path)
-    if ext in ['.fif', '.gz', '.ds']:
+    if ext in ['.fif', '.ds']:
         raw_file_bids = make_bids_filename(
             subject=subject_id, session=session_id, task=task, run=run,
             suffix='%s%s' % (kind, ext))
@@ -496,7 +494,7 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
 
     # for FIF, we need to re-save the file to fix the file pointer
     # for files with multiple parts
-    if ext in ['.fif', '.gz']:
+    if ext in ['.fif']:
         raw.save(raw_file_bids, overwrite=overwrite)
     elif ext == '.ds':
         sh.copytree(raw_fname, raw_file_bids)
