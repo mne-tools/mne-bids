@@ -9,7 +9,7 @@
 from mne import io
 import os
 
-ALLOWED_EXTENSIONS = ['.con', '.sqd', '.fif', '.gz', '.pdf', '.ds']
+ALLOWED_EXTENSIONS = ['.con', '.sqd', '.fif', '.pdf', '.ds']
 
 
 def _parse_ext(raw_fname, verbose=False):
@@ -37,7 +37,7 @@ def _read_raw(raw_fname, electrode=None, hsp=None, hpi=None, config=None,
                               mrk=hpi, preload=False)
 
     # Neuromag or converted-to-fif systems
-    elif ext in ['.fif', '.gz']:
+    elif ext in ['.fif']:
         raw = io.read_raw_fif(raw_fname, preload=False)
 
     # BTi systems
