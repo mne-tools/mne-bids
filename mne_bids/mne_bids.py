@@ -24,7 +24,7 @@ from warnings import warn
 
 from .utils import (make_bids_filename, make_bids_folders,
                     make_dataset_description, _write_json,
-                    _read_events, _mkdir_p)
+                    _read_events, _mkdir_p, age_on_date)
 from .io import (_parse_ext, _read_raw, ALLOWED_EXTENSIONS)
 
 
@@ -156,7 +156,7 @@ def _events_tsv(events, raw, fname, trial_type, verbose):
     return fname
 
 
-def _participants_tsv(fname, subject_id, age, sex, group, verbose):
+def _participants_tsv(raw, group, fname, verbose):
     """Create a participants.tsv file and save it.
 
     This will append any new participant data to the current list if it
@@ -164,45 +164,58 @@ def _participants_tsv(fname, subject_id, age, sex, group, verbose):
 
     Parameters
     ----------
-    fname : str
-        Filename to save the participants.tsv to.
-    subject_id : str
-        Anonymous ID of the subject within the study
-    age : str
-        Age of the participant
-    sex : str
-        Sex of the participant.
+    raw : instance of Raw
+        The data as MNE-Python Raw object.
     group : str
         Name of group participant belongs to.
+    fname : str
+        Filename to save the participants.tsv to.
     verbose : bool
         Set verbose output to true or false.
 
     """
-    if not subject_id.startswith('sub-'):
-        subject_id = 'sub-' + subject_id
-    if os.path.exists(fname):
-        df = pd.read_csv(fname, sep='\t')
-        df = df.append(pd.DataFrame(data={'participant_id': [subject_id],
-                                          'age': [age], 'sex': [sex],
-                                          'group': [group]},
-                                    columns=['participant_id', 'age', 'sex',
-                                             'group']))
-        df = df.drop_duplicates()
-        df = df.sort_values(by='participant_id')
-    else:
-        df = pd.DataFrame(data={'participant_id': [subject_id],
-                                'age': [age], 'sex': [sex],
-                                'group': [group]},
-                          columns=['participant_id', 'age', 'sex', 'group'])
+    subject_info = raw.info['subject_info']
+    if subject_info is not None:
+        genders = {0: 'U', 1: 'M', 2:'F'}
+        sex = genders[subject_info.get('sex', 0)]
+        # this will have issues if the his_id doesn't actually match the
+        # subject id provided...
+        subject_id = 'sub-' + subject_info['his_id']
+        try:
+            age = subject_info['birthday']
+            bday = datetime(age[0], age[1], age[2])
+            meas_date = raw.info['meas_date']
+            if isinstance(meas_date, (np.ndarray, list)):
+                meas_date = meas_date[0]
+            meas_date = datetime.fromtimestamp(meas_date)
+            subject_age = age_on_date(bday, meas_date)
+        except KeyError:
+            subject_age = "n/a"
+        if os.path.exists(fname):
+            df = pd.read_csv(fname, sep='\t')
+            df = df.append(pd.DataFrame(data={'participant_id': [subject_id],
+                                              'age': [subject_age],
+                                              'sex': [sex],
+                                              'group': [group]},
+                                        columns=['participant_id', 'age',
+                                                 'sex', 'group']))
+            df = df.drop_duplicates()
+            df = df.sort_values(by='participant_id')
+        else:
+            df = pd.DataFrame(data={'participant_id': [subject_id],
+                                    'age': [subject_age], 'sex': [sex],
+                                    'group': [group]},
+                              columns=['participant_id', 'age', 'sex',
+                                       'group'])
 
-    # the n/a's can become NAN's sometimes. Replace all just to make sure
-    df = df.fillna("n/a")
-    df.to_csv(fname, sep='\t', index=False)
-    if verbose:
-        print(os.linesep + "Writing '%s'..." % fname + os.linesep)
-        print(df.head())
+        # the n/a's can become NAN's sometimes. Replace all just to make sure
+        df = df.fillna("n/a")
+        df.to_csv(fname, sep='\t', index=False)
+        if verbose:
+            print(os.linesep + "Writing '%s'..." % fname + os.linesep)
+            print(df.head())
 
-    return fname
+        return fname
 
 
 def _scans_tsv(raw, raw_fname, fname, verbose):
@@ -390,8 +403,8 @@ def _sidecar_json(raw, task, manufacturer, fname, kind,
 
 def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
                 run=None, kind='meg', events_data=None, event_id=None,
-                hpi=None, electrode=None, hsp=None, participant_data=dict(),
-                config=None, overwrite=True, verbose=True):
+                hpi=None, electrode=None, hsp=None, config=None,
+                overwrite=True, verbose=True):
     """Walk over a folder of files and create BIDS compatible folder.
 
     Parameters
@@ -428,13 +441,6 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
     hsp : None | str | array, shape = (n_points, 3)
         Digitizer head shape points, or path to head shape file. If more than
         10`000 points are in the head shape, they are automatically decimated.
-    participant_data : dict
-        A dictionary containing the participant information.
-        This dictionary can have the following keys:
-        - age - The age of the participant in years.
-        - sex - M (Male), F (Female) or defaults to "n/a" if not provided.
-        - group - A string indicating the group within the study the
-            participant belongs to.
     config : str | None
         A path to the configuration file to use if the data is from a BTi
         system.
@@ -466,19 +472,10 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
         raise ValueError('raw_file must be an instance of str or BaseRaw, '
                          'got %s' % type(raw_file))
 
-    # do some sanitzation of the participant data provided:
-    try:
-        age = int(participant_data['age'])
-    except (KeyError, ValueError):
-        age = 'n/a'
-    participant_data['age'] = age
-    sex = participant_data.get('sex', 'n/a')
-    if sex.upper() not in ['M', 'F']:
-        sex = 'n/a'
-    else:
-        sex = sex.upper()
-    participant_data['sex'] = sex
-    participant_data['group'] = participant_data.get('group', 'n/a')
+    # If the raw object has participant data, force the his_id to be the same
+    # as the subject_id provided here
+    if raw.info['subject_info'] is not None:
+        raw.info['subject_info']['his_id'] = subject_id
 
     data_path = make_bids_folders(subject=subject_id, session=session_id,
                                   kind=kind, root=output_path,
@@ -543,9 +540,7 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
                              verbose=verbose)
     _sidecar_json(raw, task, manufacturer, data_meta_fname, kind,
                   verbose)
-    _participants_tsv(participants_fname, subject_id, participant_data['age'],
-                      participant_data['sex'], participant_data['group'],
-                      verbose)
+    _participants_tsv(raw, "n/a", participants_fname, verbose)
     _channels_tsv(raw, channels_fname, verbose)
 
     events = _read_events(events_data, raw)

@@ -8,9 +8,11 @@ import os
 
 import pytest
 
+from datetime import datetime
+
 from mne.utils import _TempDir
 from mne_bids.utils import (make_bids_folders, make_bids_filename,
-                            _check_types, print_dir_tree)
+                            _check_types, print_dir_tree, age_on_date)
 
 
 def test_print_dir_tree():
@@ -55,3 +57,17 @@ def test__check_types():
     assert _check_types(['foo', 'bar', None]) is None
     with pytest.raises(ValueError):
             _check_types([None, 1, 3.14, 'meg', [1, 2]])
+
+
+def test_age_on_date():
+    """Test whether the age is determined correctly."""
+    bday = datetime(1994, 1, 26)
+    exp1 = datetime(2018, 1, 25)
+    exp2 = datetime(2018, 1, 26)
+    exp3 = datetime(2018, 1, 27)
+    exp4 = datetime(1990, 1, 1)
+    assert age_on_date(bday, exp1) == 23
+    assert age_on_date(bday, exp2) == 24
+    assert age_on_date(bday, exp3) == 24
+    with pytest.raises(ValueError):
+        age_on_date(bday, exp4)
