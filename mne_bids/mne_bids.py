@@ -160,7 +160,7 @@ def _participants_tsv(raw, group, fname, verbose):
     """Create a participants.tsv file and save it.
 
     This will append any new participant data to the current list if it
-    exists
+    exists. Otherwise a new file will be created with the provided information.
 
     Parameters
     ----------
@@ -176,11 +176,12 @@ def _participants_tsv(raw, group, fname, verbose):
     """
     subject_info = raw.info['subject_info']
     if subject_info is not None:
-        genders = {0: 'U', 1: 'M', 2:'F'}
+        genders = {0: 'U', 1: 'M', 2: 'F'}
         sex = genders[subject_info.get('sex', 0)]
         # this will have issues if the his_id doesn't actually match the
         # subject id provided...
         subject_id = 'sub-' + subject_info['his_id']
+
         try:
             age = subject_info['birthday']
             bday = datetime(age[0], age[1], age[2])
@@ -189,22 +190,20 @@ def _participants_tsv(raw, group, fname, verbose):
                 meas_date = meas_date[0]
             meas_date = datetime.fromtimestamp(meas_date)
             subject_age = age_on_date(bday, meas_date)
-        except KeyError:
+        except (KeyError, ValueError):
             subject_age = "n/a"
+        data = {'participant_id': [subject_id], 'age': [subject_age],
+                'sex': [sex], 'group': [group]}
         if os.path.exists(fname):
             df = pd.read_csv(fname, sep='\t')
-            df = df.append(pd.DataFrame(data={'participant_id': [subject_id],
-                                              'age': [subject_age],
-                                              'sex': [sex],
-                                              'group': [group]},
+            df = df.append(pd.DataFrame(data=data,
                                         columns=['participant_id', 'age',
                                                  'sex', 'group']))
-            df = df.drop_duplicates()
+            df.drop_duplicates(subset='participant_id', keep='last',
+                               inplace=True)
             df = df.sort_values(by='participant_id')
         else:
-            df = pd.DataFrame(data={'participant_id': [subject_id],
-                                    'age': [subject_age], 'sex': [sex],
-                                    'group': [group]},
+            df = pd.DataFrame(data=data,
                               columns=['participant_id', 'age', 'sex',
                                        'group'])
 
@@ -216,6 +215,8 @@ def _participants_tsv(raw, group, fname, verbose):
             print(df.head())
 
         return fname
+    else:
+        warn('No participant data provided.')
 
 
 def _scans_tsv(raw, raw_fname, fname, verbose):
