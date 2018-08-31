@@ -156,7 +156,7 @@ def _events_tsv(events, raw, fname, trial_type, verbose):
     return fname
 
 
-def _participants_tsv(raw, group, fname, verbose):
+def _participants_tsv(raw, subject_id, group, fname, verbose):
     """Create a participants.tsv file and save it.
 
     This will append any new participant data to the current list if it
@@ -166,6 +166,8 @@ def _participants_tsv(raw, group, fname, verbose):
     ----------
     raw : instance of Raw
         The data as MNE-Python Raw object.
+    subject_id : str
+        The subject name in BIDS compatible format ('01', '02', etc.)
     group : str
         Name of group participant belongs to.
     fname : str
@@ -178,22 +180,27 @@ def _participants_tsv(raw, group, fname, verbose):
     if subject_info is not None:
         genders = {0: 'U', 1: 'M', 2: 'F'}
         sex = genders[subject_info.get('sex', 0)]
-        # this will have issues if the his_id doesn't actually match the
-        # subject id provided...
-        subject_id = 'sub-' + subject_info['his_id']
+        subject_id = 'sub-' + subject_id
 
-        try:
-            age = subject_info['birthday']
+        # determine the age of the participant
+        age = subject_info.get('birthday', None)
+        meas_date = raw.info.get('meas_date', None)
+        if meas_date is not None and age is not None:
             bday = datetime(age[0], age[1], age[2])
-            meas_date = raw.info['meas_date']
             if isinstance(meas_date, (np.ndarray, list)):
                 meas_date = meas_date[0]
             meas_date = datetime.fromtimestamp(meas_date)
-            subject_age = age_on_date(bday, meas_date)
-        except (KeyError, ValueError):
+            try:
+                subject_age = age_on_date(bday, meas_date)
+            except ValueError:
+                subject_age = "n/a"
+        else:
             subject_age = "n/a"
+
         data = {'participant_id': [subject_id], 'age': [subject_age],
                 'sex': [sex], 'group': [group]}
+
+        # append the participant data to the existing file if it exists
         if os.path.exists(fname):
             df = pd.read_csv(fname, sep='\t')
             df = df.append(pd.DataFrame(data=data,
@@ -207,9 +214,7 @@ def _participants_tsv(raw, group, fname, verbose):
                               columns=['participant_id', 'age', 'sex',
                                        'group'])
 
-        # the n/a's can become NAN's sometimes. Replace all just to make sure
-        df = df.fillna("n/a")
-        df.to_csv(fname, sep='\t', index=False)
+        df.to_csv(fname, sep='\t', index=False, na_rep='n/a')
         if verbose:
             print(os.linesep + "Writing '%s'..." % fname + os.linesep)
             print(df.head())
@@ -473,11 +478,6 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
         raise ValueError('raw_file must be an instance of str or BaseRaw, '
                          'got %s' % type(raw_file))
 
-    # If the raw object has participant data, force the his_id to be the same
-    # as the subject_id provided here
-    if raw.info['subject_info'] is not None:
-        raw.info['subject_info']['his_id'] = subject_id
-
     data_path = make_bids_folders(subject=subject_id, session=session_id,
                                   kind=kind, root=output_path,
                                   overwrite=overwrite,
@@ -541,7 +541,7 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
                              verbose=verbose)
     _sidecar_json(raw, task, manufacturer, data_meta_fname, kind,
                   verbose)
-    _participants_tsv(raw, "n/a", participants_fname, verbose)
+    _participants_tsv(raw, subject_id, "n/a", participants_fname, verbose)
     _channels_tsv(raw, channels_fname, verbose)
 
     events = _read_events(events_data, raw)
