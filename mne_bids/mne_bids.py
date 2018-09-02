@@ -75,10 +75,9 @@ def _channels_tsv(raw, fname, verbose):
     else:
         manufacturer = None
 
-    ignored_indexes = list()
-    for ch_name in IGNORED_CHANNELS.get(manufacturer, list()):
-        if ch_name in raw.ch_names:
-            ignored_indexes.append(raw.ch_names.index(ch_name))
+    ignored_indexes = [raw.ch_names.index(ch_name) for ch_name in raw.ch_names
+                       if ch_name in
+                       IGNORED_CHANNELS.get(manufacturer, list())]
 
     status, ch_type, description = list(), list(), list()
     for idx, ch in enumerate(raw.info['ch_names']):
@@ -357,10 +356,9 @@ def _sidecar_json(raw, task, manufacturer, fname, kind,
         powerlinefrequency = 50
 
     # determine whether any channels have to be ignored:
-    num_ignored = 0
-    for ch_name in IGNORED_CHANNELS.get(manufacturer, list()):
-        if ch_name in raw.ch_names:
-            num_ignored += 1
+    num_ignored = len([ch_name for ch_name in
+                       IGNORED_CHANNELS.get(manufacturer, list()) if
+                       ch_name in raw.ch_names])
     # all ignored channels are trigger channels at the moment...
 
     n_megchan = len([ch for ch in raw.info['chs']
