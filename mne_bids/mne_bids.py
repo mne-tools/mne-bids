@@ -35,7 +35,8 @@ ORIENTATION = {'.sqd': 'ALS', '.con': 'ALS', '.fif': 'RAS', '.pdf': 'ALS',
 UNTIS = {'.sqd': 'm', '.con': 'm', '.fif': 'm', '.pdf': 'm', '.ds': 'cm'}
 
 MANUFACTURERS = {'.sqd': 'KIT/Yokogawa', '.con': 'KIT/Yokogawa',
-                 '.fif': 'Elekta', '.pdf': '4D Magnes', '.ds': 'CTF'}
+                 '.fif': 'Elekta', '.pdf': '4D Magnes', '.ds': 'CTF',
+                 '.meg4': 'CTF'}
 
 IGNORED_CHANNELS = {'KIT/Yokogawa': ['STI 014']}
 
@@ -357,7 +358,7 @@ def _sidecar_json(raw, task, manufacturer, fname, kind,
 
     # determine whether any channels have to be ignored:
     num_ignored = 0
-    for ch_name in IGNORED_CHANNELS[manufacturer]:
+    for ch_name in IGNORED_CHANNELS.get(manufacturer, list()):
         if ch_name in raw.ch_names:
             num_ignored += 1
     # all ignored channels are trigger channels at the moment...
