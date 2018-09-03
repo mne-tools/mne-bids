@@ -275,7 +275,7 @@ def age_on_date(bday, exp_date):
         The date the experiment was performed on.
     """
     if exp_date < bday:
-        raise ValueError("The experimentation data must be after the birth "
+        raise ValueError("The experimentation date must be after the birth "
                          "date")
     if exp_date.month > bday.month:
         return exp_date.year - bday.year

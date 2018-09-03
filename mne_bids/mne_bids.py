@@ -190,10 +190,7 @@ def _participants_tsv(raw, subject_id, group, fname, verbose):
             if isinstance(meas_date, (np.ndarray, list)):
                 meas_date = meas_date[0]
             meas_date = datetime.fromtimestamp(meas_date)
-            try:
-                subject_age = age_on_date(bday, meas_date)
-            except ValueError:
-                subject_age = "n/a"
+            subject_age = age_on_date(bday, meas_date)
         else:
             subject_age = "n/a"
 
