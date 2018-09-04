@@ -176,11 +176,13 @@ def _participants_tsv(raw, subject_id, group, fname, verbose):
         Set verbose output to true or false.
 
     """
+    subject_id = 'sub-' + subject_id
+    data = {'participant_id': [subject_id]}
+
     subject_info = raw.info['subject_info']
     if subject_info is not None:
         genders = {0: 'U', 1: 'M', 2: 'F'}
         sex = genders[subject_info.get('sex', 0)]
-        subject_id = 'sub-' + subject_id
 
         # determine the age of the participant
         age = subject_info.get('birthday', None)
@@ -194,31 +196,28 @@ def _participants_tsv(raw, subject_id, group, fname, verbose):
         else:
             subject_age = "n/a"
 
-        data = {'participant_id': [subject_id], 'age': [subject_age],
-                'sex': [sex], 'group': [group]}
+        data.update({'age': [subject_age], 'sex': [sex], 'group': [group]})
 
-        # append the participant data to the existing file if it exists
-        if os.path.exists(fname):
-            df = pd.read_csv(fname, sep='\t')
-            df = df.append(pd.DataFrame(data=data,
-                                        columns=['participant_id', 'age',
-                                                 'sex', 'group']))
-            df.drop_duplicates(subset='participant_id', keep='last',
-                               inplace=True)
-            df = df.sort_values(by='participant_id')
-        else:
-            df = pd.DataFrame(data=data,
-                              columns=['participant_id', 'age', 'sex',
-                                       'group'])
-
-        df.to_csv(fname, sep='\t', index=False, na_rep='n/a')
-        if verbose:
-            print(os.linesep + "Writing '%s'..." % fname + os.linesep)
-            print(df.head())
-
-        return fname
+    # append the participant data to the existing file if it exists
+    if os.path.exists(fname):
+        df = pd.read_csv(fname, sep='\t')
+        df = df.append(pd.DataFrame(data=data,
+                                    columns=['participant_id', 'age',
+                                             'sex', 'group']))
+        df.drop_duplicates(subset='participant_id', keep='last',
+                           inplace=True)
+        df = df.sort_values(by='participant_id')
     else:
-        warn('No participant data provided.')
+        df = pd.DataFrame(data=data,
+                          columns=['participant_id', 'age', 'sex',
+                                   'group'])
+
+    df.to_csv(fname, sep='\t', index=False, na_rep='n/a')
+    if verbose:
+        print(os.linesep + "Writing '%s'..." % fname + os.linesep)
+        print(df.head())
+
+    return fname
 
 
 def _scans_tsv(raw, raw_fname, fname, verbose):
@@ -453,6 +452,11 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
         If verbose is True, this will print a snippet of the sidecar files. If
         False, no content will be printed.
 
+    Note
+    ----
+    For the participants.tsv file, the raw.info['subjects_info'] should be
+    updated and raw.info['meas_date'] should not be None to compute the age
+    of the participant correctly.
     """
     if isinstance(raw_file, string_types):
         # We must read in the raw data

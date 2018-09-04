@@ -11,15 +11,12 @@ For each supported file format, implement a test.
 
 import os
 import os.path as op
-from warnings import simplefilter, catch_warnings
 
 import mne
 from mne.datasets import testing
 from mne.utils import _TempDir, run_subprocess
 
 from mne_bids import raw_to_bids
-
-simplefilter('ignore', DeprecationWarning)
 
 base_path = op.join(op.dirname(mne.__file__), 'io')
 subject_id = '01'
@@ -57,25 +54,20 @@ def test_fif():
 
     # give the raw object some fake participant data
     raw = mne.io.read_raw_fif(raw_fname)
-    #raw.anonymize()
-    raw.info['subject_info'] = {'his_id': subject_id,
+    raw.anonymize()
+    raw.info['subject_info'] = {'his_id': subject_id2,
                                 'birthday': (1994, 1, 26), 'sex': 1}
     data_path2 = _TempDir()
     raw_fname2 = op.join(data_path2, 'sample_audvis_raw.fif')
     raw.save(raw_fname2)
+    raw_to_bids(subject_id=subject_id2, run=run, task=task,
+                session_id=session_id, raw_file=raw_fname2,
+                events_data=events_fname, output_path=output_path,
+                event_id=event_id, overwrite=True)
+    cmd = ['bids-validator', output_path]
+    run_subprocess(cmd, shell=shell)
 
-    with catch_warnings(record=True) as w:
-        raw_to_bids(subject_id=subject_id2, run=run, task=task,
-                    session_id=session_id, raw_file=raw_fname2,
-                    events_data=events_fname, output_path=output_path,
-                    event_id=event_id, overwrite=True)
-        cmd = ['bids-validator', output_path]
-        run_subprocess(cmd, shell=shell)
-
-        participant_warning = [pw for pw in w
-                               if 'participant' in str(pw.message)]
-        if len(participant_warning) == 0:
-            assert op.exists(op.join(output_path, 'participants.tsv'))
+    assert op.exists(op.join(output_path, 'participants.tsv'))
 
 
 def test_kit():
@@ -89,19 +81,14 @@ def test_kit():
     headshape_fname = op.join(data_path, 'test_hsp.txt')
     event_id = dict(cond=1)
 
-    with catch_warnings(record=True) as w:
-        raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
-                    task=task, raw_file=raw_fname, events_data=events_fname,
-                    event_id=event_id, hpi=hpi_fname,
-                    electrode=electrode_fname, hsp=headshape_fname,
-                    output_path=output_path, overwrite=True)
-        cmd = ['bids-validator', output_path]
-        run_subprocess(cmd, shell=shell)
-
-        participant_warning = [pw for pw in w
-                               if 'participant' in str(pw.message)]
-        if len(participant_warning) == 0:
-            assert op.exists(op.join(output_path, 'participants.tsv'))
+    raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
+                task=task, raw_file=raw_fname, events_data=events_fname,
+                event_id=event_id, hpi=hpi_fname,
+                electrode=electrode_fname, hsp=headshape_fname,
+                output_path=output_path, overwrite=True)
+    cmd = ['bids-validator', output_path]
+    run_subprocess(cmd, shell=shell)
+    assert op.exists(op.join(output_path, 'participants.tsv'))
 
 
 def test_ctf():
@@ -110,17 +97,12 @@ def test_ctf():
     data_path = op.join(testing.data_path(download=False), 'CTF')
     raw_fname = op.join(data_path, 'testdata_ctf.ds')
 
-    with catch_warnings(record=True) as w:
-        raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
-                    task=task, raw_file=raw_fname, output_path=output_path,
-                    overwrite=True)
-        cmd = ['bids-validator', output_path]
-        run_subprocess(cmd, shell=shell)
-
-        participant_warning = [pw for pw in w
-                               if 'participant' in str(pw.message)]
-        if len(participant_warning) == 0:
-            assert op.exists(op.join(output_path, 'participants.tsv'))
+    raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
+                task=task, raw_file=raw_fname, output_path=output_path,
+                overwrite=True)
+    cmd = ['bids-validator', output_path]
+    run_subprocess(cmd, shell=shell)
+    assert op.exists(op.join(output_path, 'participants.tsv'))
 
 
 def test_bti():
@@ -131,15 +113,10 @@ def test_bti():
     config_fname = op.join(data_path, 'test_config_linux')
     headshape_fname = op.join(data_path, 'test_hs_linux')
 
-    with catch_warnings(record=True) as w:
-        raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
-                    task=task, raw_file=raw_fname, config=config_fname,
-                    hsp=headshape_fname, output_path=output_path,
-                    verbose=True, overwrite=True)
-        cmd = ['bids-validator', output_path]
-        run_subprocess(cmd, shell=shell)
-
-        participant_warning = [pw for pw in w
-                               if 'participant' in str(pw.message)]
-        if len(participant_warning) == 0:
-            assert op.exists(op.join(output_path, 'participants.tsv'))
+    raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
+                task=task, raw_file=raw_fname, config=config_fname,
+                hsp=headshape_fname, output_path=output_path,
+                verbose=True, overwrite=True)
+    cmd = ['bids-validator', output_path]
+    run_subprocess(cmd, shell=shell)
+    assert op.exists(op.join(output_path, 'participants.tsv'))
