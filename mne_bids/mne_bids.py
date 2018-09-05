@@ -29,19 +29,18 @@ from .io import (_parse_ext, _read_raw, ALLOWED_EXTENSIONS)
 
 
 ALLOWED_KINDS = ['meg', 'ieeg']
-orientation = {'.sqd': 'ALS', '.con': 'ALS', '.fif': 'RAS', '.pdf': 'ALS',
+ORIENTATION = {'.sqd': 'ALS', '.con': 'ALS', '.fif': 'RAS', '.pdf': 'ALS',
                '.ds': 'ALS'}
 
-units = {'.sqd': 'm', '.con': 'm', '.fif': 'm', '.pdf': 'm', '.ds': 'cm'}
+UNTIS = {'.sqd': 'm', '.con': 'm', '.fif': 'm', '.pdf': 'm', '.ds': 'cm'}
 
-manufacturers = {'.sqd': 'KIT/Yokogawa', '.con': 'KIT/Yokogawa',
+MANUFACTURERS = {'.sqd': 'KIT/Yokogawa', '.con': 'KIT/Yokogawa',
                  '.fif': 'Elekta', '.pdf': '4D Magnes', '.ds': 'CTF'}
 
-IGNORED_CHANNELS = defaultdict(lambda: [])
-IGNORED_CHANNELS['KIT/Yokogawa'] = ['STI 014']
+IGNORED_CHANNELS = {'KIT/Yokogawa': ['STI 014']}
 
 
-def _channels_tsv(raw, fname, manufacturer, verbose):
+def _channels_tsv(raw, fname, verbose):
     """Create a channels.tsv file and save it.
 
     Parameters
@@ -50,8 +49,6 @@ def _channels_tsv(raw, fname, manufacturer, verbose):
         The data as MNE-Python Raw object.
     fname : str
         Filename to save the channels.tsv to.
-    manufacturer : str
-        Used to determine if any channels should be dropped from the list.
     verbose : bool
         Set verbose output to true or false.
 
@@ -70,8 +67,15 @@ def _channels_tsv(raw, fname, manufacturer, verbose):
                     eog='ElectrOculoGram', misc='Miscellaneous',
                     ref_meg='Reference channel')
 
-    ignored_indexes = []
-    for ch_name in IGNORED_CHANNELS[manufacturer]:
+    # get the manufacturer from the file in the Raw object
+    if hasattr(raw, 'filenames'):
+        _, ext = _parse_ext(raw.filenames[0], verbose=verbose)
+        manufacturer = MANUFACTURERS[ext]
+    else:
+        manufacturer = None
+
+    ignored_indexes = list()
+    for ch_name in IGNORED_CHANNELS.get(manufacturer, list()):
         if ch_name in raw.ch_names:
             ignored_indexes.append(raw.ch_names.index(ch_name))
 
@@ -541,9 +545,9 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
 
     # Read in Raw object and extract metadata from Raw object if needed
     if kind == 'meg':
-        orient = orientation[ext]
-        unit = units[ext]
-        manufacturer = manufacturers[ext]
+        orient = ORIENTATION[ext]
+        unit = UNITS[ext]
+        manufacturer = MANUFACTURERS[ext]
     else:
         orient = 'n/a'
         unit = 'n/a'
@@ -561,7 +565,7 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
     _sidecar_json(raw, task, manufacturer, data_meta_fname, kind,
                   verbose)
     _participants_tsv(raw, subject_id, "n/a", participants_fname, verbose)
-    _channels_tsv(raw, channels_fname, manufacturer, verbose)
+    _channels_tsv(raw, channels_fname, verbose)
 
     events = _read_events(events_data, raw)
     if len(events) > 0:
