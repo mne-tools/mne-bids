@@ -32,7 +32,7 @@ ALLOWED_KINDS = ['meg', 'ieeg']
 ORIENTATION = {'.sqd': 'ALS', '.con': 'ALS', '.fif': 'RAS', '.pdf': 'ALS',
                '.ds': 'ALS'}
 
-UNTIS = {'.sqd': 'm', '.con': 'm', '.fif': 'm', '.pdf': 'm', '.ds': 'cm'}
+UNITS = {'.sqd': 'm', '.con': 'm', '.fif': 'm', '.pdf': 'm', '.ds': 'cm'}
 
 MANUFACTURERS = {'.sqd': 'KIT/Yokogawa', '.con': 'KIT/Yokogawa',
                  '.fif': 'Elekta', '.pdf': '4D Magnes', '.ds': 'CTF',
