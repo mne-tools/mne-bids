@@ -37,10 +37,11 @@ units = {'.sqd': 'm', '.con': 'm', '.fif': 'm', '.pdf': 'm', '.ds': 'cm'}
 manufacturers = {'.sqd': 'KIT/Yokogawa', '.con': 'KIT/Yokogawa',
                  '.fif': 'Elekta', '.pdf': '4D Magnes', '.ds': 'CTF'}
 
-IGNORED_CHANNELS = ['STI 014']
+IGNORED_CHANNELS = defaultdict(lambda: [])
+IGNORED_CHANNELS['KIT/Yokogawa'] = ['STI 014']
 
 
-def _channels_tsv(raw, fname, verbose):
+def _channels_tsv(raw, fname, manufacturer, verbose):
     """Create a channels.tsv file and save it.
 
     Parameters
@@ -49,6 +50,8 @@ def _channels_tsv(raw, fname, verbose):
         The data as MNE-Python Raw object.
     fname : str
         Filename to save the channels.tsv to.
+    manufacturer : str
+        Used to determine if any channels should be dropped from the list.
     verbose : bool
         Set verbose output to true or false.
 
@@ -68,7 +71,7 @@ def _channels_tsv(raw, fname, verbose):
                     ref_meg='Reference channel')
 
     ignored_indexes = []
-    for ch_name in IGNORED_CHANNELS:
+    for ch_name in IGNORED_CHANNELS[manufacturer]:
         if ch_name in raw.ch_names:
             ignored_indexes.append(raw.ch_names.index(ch_name))
 
@@ -350,7 +353,7 @@ def _sidecar_json(raw, task, manufacturer, fname, kind,
 
     # determine whether any channels have to be ignored:
     num_ignored = 0
-    for ch_name in IGNORED_CHANNELS:
+    for ch_name in IGNORED_CHANNELS[manufacturer]:
         if ch_name in raw.ch_names:
             num_ignored += 1
     # all ignored channels are trigger channels at the moment...
@@ -558,7 +561,7 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
     _sidecar_json(raw, task, manufacturer, data_meta_fname, kind,
                   verbose)
     _participants_tsv(raw, subject_id, "n/a", participants_fname, verbose)
-    _channels_tsv(raw, channels_fname, verbose)
+    _channels_tsv(raw, channels_fname, manufacturer, verbose)
 
     events = _read_events(events_data, raw)
     if len(events) > 0:
