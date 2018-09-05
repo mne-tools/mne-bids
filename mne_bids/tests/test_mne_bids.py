@@ -11,7 +11,6 @@ For each supported file format, implement a test.
 
 import os
 import os.path as op
-from warnings import simplefilter
 
 import mne
 from mne.datasets import testing
@@ -19,10 +18,9 @@ from mne.utils import _TempDir, run_subprocess
 
 from mne_bids import raw_to_bids
 
-simplefilter('ignore', DeprecationWarning)
-
 base_path = op.join(op.dirname(mne.__file__), 'io')
 subject_id = '01'
+subject_id2 = '02'
 session_id = '01'
 run = '01'
 task = 'testing'
@@ -54,19 +52,22 @@ def test_fif():
                 task=task, raw_file=raw_fname, events_data=events_fname,
                 output_path=output_path, event_id=event_id, overwrite=True)
 
-    # let's do some modifications to meas_date
+    # give the raw object some fake participant data
     raw = mne.io.read_raw_fif(raw_fname)
     raw.anonymize()
+    raw.info['subject_info'] = {'his_id': subject_id2,
+                                'birthday': (1994, 1, 26), 'sex': 1}
     data_path2 = _TempDir()
     raw_fname2 = op.join(data_path2, 'sample_audvis_raw.fif')
     raw.save(raw_fname2)
-
-    raw_to_bids(subject_id=subject_id, run=run, task=task,
+    raw_to_bids(subject_id=subject_id2, run=run, task=task,
                 session_id=session_id, raw_file=raw_fname2,
                 events_data=events_fname, output_path=output_path,
                 event_id=event_id, overwrite=True)
     cmd = ['bids-validator', output_path]
     run_subprocess(cmd, shell=shell)
+
+    assert op.exists(op.join(output_path, 'participants.tsv'))
 
 
 def test_kit():
@@ -82,10 +83,12 @@ def test_kit():
 
     raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
                 task=task, raw_file=raw_fname, events_data=events_fname,
-                event_id=event_id, hpi=hpi_fname, electrode=electrode_fname,
-                hsp=headshape_fname, output_path=output_path, overwrite=True)
+                event_id=event_id, hpi=hpi_fname,
+                electrode=electrode_fname, hsp=headshape_fname,
+                output_path=output_path, overwrite=True)
     cmd = ['bids-validator', output_path]
     run_subprocess(cmd, shell=shell)
+    assert op.exists(op.join(output_path, 'participants.tsv'))
 
 
 def test_ctf():
@@ -99,6 +102,7 @@ def test_ctf():
                 overwrite=True)
     cmd = ['bids-validator', output_path]
     run_subprocess(cmd, shell=shell)
+    assert op.exists(op.join(output_path, 'participants.tsv'))
 
 
 def test_bti():
@@ -115,3 +119,4 @@ def test_bti():
                 verbose=True, overwrite=True)
     cmd = ['bids-validator', output_path]
     run_subprocess(cmd, shell=shell)
+    assert op.exists(op.join(output_path, 'participants.tsv'))

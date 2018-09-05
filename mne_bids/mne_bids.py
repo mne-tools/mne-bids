@@ -24,7 +24,7 @@ from warnings import warn
 
 from .utils import (make_bids_filename, make_bids_folders,
                     make_dataset_description, _write_json,
-                    _read_events, _mkdir_p)
+                    _read_events, _mkdir_p, age_on_date)
 from .io import (_parse_ext, _read_raw, ALLOWED_EXTENSIONS)
 
 
@@ -148,6 +148,70 @@ def _events_tsv(events, raw, fname, trial_type, verbose):
     df.onset /= sfreq
 
     # Save to file
+    df.to_csv(fname, sep='\t', index=False, na_rep='n/a')
+    if verbose:
+        print(os.linesep + "Writing '%s'..." % fname + os.linesep)
+        print(df.head())
+
+    return fname
+
+
+def _participants_tsv(raw, subject_id, group, fname, verbose):
+    """Create a participants.tsv file and save it.
+
+    This will append any new participant data to the current list if it
+    exists. Otherwise a new file will be created with the provided information.
+
+    Parameters
+    ----------
+    raw : instance of Raw
+        The data as MNE-Python Raw object.
+    subject_id : str
+        The subject name in BIDS compatible format ('01', '02', etc.)
+    group : str
+        Name of group participant belongs to.
+    fname : str
+        Filename to save the participants.tsv to.
+    verbose : bool
+        Set verbose output to true or false.
+
+    """
+    subject_id = 'sub-' + subject_id
+    data = {'participant_id': [subject_id]}
+
+    subject_info = raw.info['subject_info']
+    if subject_info is not None:
+        genders = {0: 'U', 1: 'M', 2: 'F'}
+        sex = genders[subject_info.get('sex', 0)]
+
+        # determine the age of the participant
+        age = subject_info.get('birthday', None)
+        meas_date = raw.info.get('meas_date', None)
+        if meas_date is not None and age is not None:
+            bday = datetime(age[0], age[1], age[2])
+            if isinstance(meas_date, (np.ndarray, list)):
+                meas_date = meas_date[0]
+            meas_date = datetime.fromtimestamp(meas_date)
+            subject_age = age_on_date(bday, meas_date)
+        else:
+            subject_age = "n/a"
+
+        data.update({'age': [subject_age], 'sex': [sex], 'group': [group]})
+
+    # append the participant data to the existing file if it exists
+    if os.path.exists(fname):
+        df = pd.read_csv(fname, sep='\t')
+        df = df.append(pd.DataFrame(data=data,
+                                    columns=['participant_id', 'age',
+                                             'sex', 'group']))
+        df.drop_duplicates(subset='participant_id', keep='last',
+                           inplace=True)
+        df = df.sort_values(by='participant_id')
+    else:
+        df = pd.DataFrame(data=data,
+                          columns=['participant_id', 'age', 'sex',
+                                   'group'])
+
     df.to_csv(fname, sep='\t', index=False, na_rep='n/a')
     if verbose:
         print(os.linesep + "Writing '%s'..." % fname + os.linesep)
@@ -388,6 +452,11 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
         If verbose is True, this will print a snippet of the sidecar files. If
         False, no content will be printed.
 
+    Note
+    ----
+    For the participants.tsv file, the raw.info['subjects_info'] should be
+    updated and raw.info['meas_date'] should not be None to compute the age
+    of the participant correctly.
     """
     if isinstance(raw_file, string_types):
         # We must read in the raw data
@@ -409,6 +478,7 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
     else:
         raise ValueError('raw_file must be an instance of str or BaseRaw, '
                          'got %s' % type(raw_file))
+
     data_path = make_bids_folders(subject=subject_id, session=session_id,
                                   kind=kind, root=output_path,
                                   overwrite=overwrite,
@@ -425,7 +495,8 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
     scans_fname = make_bids_filename(
         subject=subject_id, session=session_id, suffix='scans.tsv',
         prefix=ses_path)
-
+    participants_fname = make_bids_filename(prefix=output_path,
+                                            suffix='participants.tsv')
     coordsystem_fname = make_bids_filename(
         subject=subject_id, session=session_id,
         suffix='coordsystem.json', prefix=data_path)
@@ -471,6 +542,7 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
                              verbose=verbose)
     _sidecar_json(raw, task, manufacturer, data_meta_fname, kind,
                   verbose)
+    _participants_tsv(raw, subject_id, "n/a", participants_fname, verbose)
     _channels_tsv(raw, channels_fname, verbose)
 
     events = _read_events(events_data, raw)

@@ -264,6 +264,27 @@ def make_dataset_description(path, name=None, data_license=None,
     _write_json(description, fname, verbose=verbose)
 
 
+def age_on_date(bday, exp_date):
+    """Calculate age from birthday and experiment date.
+
+    Parameters
+    ----------
+    bday : instance of datetime.datetime
+        The birthday of the participant.
+    exp_date : instance of datetime.datetime
+        The date the experiment was performed on.
+    """
+    if exp_date < bday:
+        raise ValueError("The experimentation date must be after the birth "
+                         "date")
+    if exp_date.month > bday.month:
+        return exp_date.year - bday.year
+    elif exp_date.month == bday.month:
+        if exp_date.day >= bday.day:
+            return exp_date.year - bday.year
+    return exp_date.year - bday.year - 1
+
+
 def _check_types(variables):
     """Make sure all vars are str or None."""
     for var in variables:
