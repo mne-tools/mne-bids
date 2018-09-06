@@ -11,12 +11,13 @@ For each supported file format, implement a test.
 
 import os
 import os.path as op
+import pandas as pd
 
 import mne
 from mne.datasets import testing
 from mne.utils import _TempDir, run_subprocess
 
-from mne_bids import raw_to_bids
+from mne_bids import raw_to_bids, make_bids_filename
 
 base_path = op.join(op.dirname(mne.__file__), 'io')
 subject_id = '01'
@@ -89,6 +90,15 @@ def test_kit():
     cmd = ['bids-validator', output_path]
     run_subprocess(cmd, shell=shell)
     assert op.exists(op.join(output_path, 'participants.tsv'))
+
+    # ensure the channels file has no STI 014 channel:
+    channels_tsv = make_bids_filename(
+        subject=subject_id, session=session_id, task=task, run=run,
+        suffix='channels.tsv',
+        prefix=op.join(output_path, 'sub-01/ses-01/meg'))
+    if op.exists(channels_tsv):
+        df = pd.read_csv(channels_tsv, sep='\t')
+        assert not ('STI 014' in df['name'].values)
 
 
 def test_ctf():

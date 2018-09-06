@@ -29,13 +29,18 @@ from .io import (_parse_ext, _read_raw, ALLOWED_EXTENSIONS)
 
 
 ALLOWED_KINDS = ['meg', 'ieeg']
-orientation = {'.sqd': 'ALS', '.con': 'ALS', '.fif': 'RAS', '.pdf': 'ALS',
+ORIENTATION = {'.sqd': 'ALS', '.con': 'ALS', '.fif': 'RAS', '.pdf': 'ALS',
                '.ds': 'ALS'}
 
-units = {'.sqd': 'm', '.con': 'm', '.fif': 'm', '.pdf': 'm', '.ds': 'cm'}
+UNITS = {'.sqd': 'm', '.con': 'm', '.fif': 'm', '.pdf': 'm', '.ds': 'cm'}
 
-manufacturers = {'.sqd': 'KIT/Yokogawa', '.con': 'KIT/Yokogawa',
-                 '.fif': 'Elekta', '.pdf': '4D Magnes', '.ds': 'CTF'}
+MANUFACTURERS = {'.sqd': 'KIT/Yokogawa', '.con': 'KIT/Yokogawa',
+                 '.fif': 'Elekta', '.pdf': '4D Magnes', '.ds': 'CTF',
+                 '.meg4': 'CTF'}
+
+# List of synthetic channels by manufacturer that are to be excluded from the
+# channel list. Currently this is only for stimulus channels.
+IGNORED_CHANNELS = {'KIT/Yokogawa': ['STI 014']}
 
 
 def _channels_tsv(raw, fname, verbose):
@@ -65,6 +70,16 @@ def _channels_tsv(raw, fname, verbose):
                     eog='ElectrOculoGram', misc='Miscellaneous',
                     ref_meg='Reference channel')
 
+    # get the manufacturer from the file in the Raw object
+    manufacturer = None
+    if hasattr(raw, 'filenames'):
+        _, ext = _parse_ext(raw.filenames[0], verbose=verbose)
+        manufacturer = MANUFACTURERS[ext]
+
+    ignored_indexes = [raw.ch_names.index(ch_name) for ch_name in raw.ch_names
+                       if ch_name in
+                       IGNORED_CHANNELS.get(manufacturer, list())]
+
     status, ch_type, description = list(), list(), list()
     for idx, ch in enumerate(raw.info['ch_names']):
         status.append('bad' if ch in raw.info['bads'] else 'good')
@@ -85,6 +100,7 @@ def _channels_tsv(raw, fname, verbose):
                       ('low_cutoff', np.full((n_channels), low_cutoff)),
                       ('high_cutoff', np.full((n_channels), high_cutoff)),
                       ('status', status)]))
+    df.drop(ignored_indexes, inplace=True)
     df.to_csv(fname, sep='\t', index=False, na_rep='n/a')
 
     if verbose:
@@ -340,6 +356,12 @@ def _sidecar_json(raw, task, manufacturer, fname, kind,
         warn('No line frequency found, defaulting to 50 Hz')
         powerlinefrequency = 50
 
+    # determine whether any channels have to be ignored:
+    n_ignored = len([ch_name for ch_name in
+                     IGNORED_CHANNELS.get(manufacturer, list()) if
+                     ch_name in raw.ch_names])
+    # all ignored channels are trigger channels at the moment...
+
     n_megchan = len([ch for ch in raw.info['chs']
                      if ch['kind'] == FIFF.FIFFV_MEG_CH])
     n_megrefchan = len([ch for ch in raw.info['chs']
@@ -359,7 +381,7 @@ def _sidecar_json(raw, task, manufacturer, fname, kind,
     n_miscchan = len([ch for ch in raw.info['chs']
                      if ch['kind'] == FIFF.FIFFV_MISC_CH])
     n_stimchan = len([ch for ch in raw.info['chs']
-                     if ch['kind'] == FIFF.FIFFV_STIM_CH])
+                     if ch['kind'] == FIFF.FIFFV_STIM_CH]) - n_ignored
 
     # Define modality-specific JSON dictionaries
     ch_info_json_common = [
@@ -523,9 +545,9 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
 
     # Read in Raw object and extract metadata from Raw object if needed
     if kind == 'meg':
-        orient = orientation[ext]
-        unit = units[ext]
-        manufacturer = manufacturers[ext]
+        orient = ORIENTATION[ext]
+        unit = UNITS[ext]
+        manufacturer = MANUFACTURERS[ext]
     else:
         orient = 'n/a'
         unit = 'n/a'
