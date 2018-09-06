@@ -71,11 +71,10 @@ def _channels_tsv(raw, fname, verbose):
                     ref_meg='Reference channel')
 
     # get the manufacturer from the file in the Raw object
+    manufacturer = None
     if hasattr(raw, 'filenames'):
         _, ext = _parse_ext(raw.filenames[0], verbose=verbose)
         manufacturer = MANUFACTURERS[ext]
-    else:
-        manufacturer = None
 
     ignored_indexes = [raw.ch_names.index(ch_name) for ch_name in raw.ch_names
                        if ch_name in
