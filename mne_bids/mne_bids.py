@@ -4,6 +4,7 @@
 #          Teon Brooks <teon.brooks@gmail.com>
 #          Chris Holdgraf <choldgraf@berkeley.edu>
 #          Stefan Appelhoff <stefan.appelhoff@mailbox.org>
+#          Matt Sanderson <matt.sanderson@mq.edu.au>
 #
 # License: BSD (3-clause)
 
@@ -22,6 +23,7 @@ from mne.externals.six import string_types
 from datetime import datetime
 from warnings import warn
 
+from .pick import coil_type
 from .utils import (make_bids_filename, make_bids_folders,
                     make_dataset_description, _write_json,
                     _read_events, _mkdir_p, age_on_date)
@@ -57,18 +59,25 @@ def _channels_tsv(raw, fname, verbose):
 
     """
     map_chs = defaultdict(lambda: 'OTHER')
-    map_chs.update(grad='MEGGRAD', mag='MEGMAG', stim='TRIG', eeg='EEG',
-                   ecog='ECOG', seeg='SEEG', eog='EOG', ecg='ECG', misc='MISC',
-                   resp='RESPONSE', ref_meg='REFMEG')
+    map_chs.update(meggradaxial='MEGGRADAXIAL',
+                   megrefgradaxial='MEGREFGRADAXIAL',
+                   meggradplanar='MEGGRADPLANAR',
+                   megmag='MEGMAG', megrefmag='MEGREFMAG',
+                   eeg='EEG', misc='MISC', stim='TRIG',
+                   ecog='ECOG', seeg='SEEG', eog='EOG', ecg='ECG')
     map_desc = defaultdict(lambda: 'Other type of channel')
-    map_desc.update(grad='Gradiometer', mag='Magnetometer',
-                    stim='Trigger',
-                    eeg='ElectroEncephaloGram',
+    map_desc.update(meggradaxial='Axial Gradiometer',
+                    megrefgradaxial='Axial Gradiometer Reference',
+                    meggradplanar='Planar Gradiometer',
+                    megmag='Magnetometer',
+                    megrefmag='Magnetometer Reference',
+                    stim='Trigger', eeg='ElectroEncephaloGram',
                     ecog='Electrocorticography',
                     seeg='StereoEEG',
                     ecg='ElectroCardioGram',
-                    eog='ElectrOculoGram', misc='Miscellaneous',
-                    ref_meg='Reference channel')
+                    eog='ElectrOculoGram',
+                    misc='Miscellaneous')
+    get_specific = ('mag', 'ref_meg', 'grad')
 
     # get the manufacturer from the file in the Raw object
     manufacturer = None
@@ -83,8 +92,11 @@ def _channels_tsv(raw, fname, verbose):
     status, ch_type, description = list(), list(), list()
     for idx, ch in enumerate(raw.info['ch_names']):
         status.append('bad' if ch in raw.info['bads'] else 'good')
-        ch_type.append(map_chs[channel_type(raw.info, idx)])
-        description.append(map_desc[channel_type(raw.info, idx)])
+        _channel_type = channel_type(raw.info, idx)
+        if _channel_type in get_specific:
+            _channel_type = coil_type(raw.info, idx)
+        ch_type.append(map_chs[_channel_type])
+        description.append(map_desc[_channel_type])
     low_cutoff, high_cutoff = (raw.info['highpass'], raw.info['lowpass'])
     units = [_unit2human.get(ch_i['unit'], 'n/a') for ch_i in raw.info['chs']]
     units = [u if u not in ['NA'] else 'n/a' for u in units]
