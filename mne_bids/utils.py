@@ -13,6 +13,7 @@ import json
 import shutil as sh
 
 from .config import BIDS_VERSION
+from .io import _parse_ext
 
 import numpy as np
 from mne import read_events, find_events
@@ -273,6 +274,7 @@ def age_on_date(bday, exp_date):
         The birthday of the participant.
     exp_date : instance of datetime.datetime
         The date the experiment was performed on.
+
     """
     if exp_date < bday:
         raise ValueError("The experimentation date must be after the birth "
@@ -347,3 +349,73 @@ def _read_events(events_data, raw):
     else:
         events = find_events(raw, min_duration=0.001)
     return events
+
+
+def copyfile_brainvision(src, dest):
+    """Copy a brainvision file to a new location and adjust pointers.
+
+    The BrainVision format contains three files that have pointers
+    to each other: '.eeg' for binary data, '.vhdr' for meta data
+    as a header, and '.vmrk' for data on event markers. When renaming
+    these files, the '.vhdr' and '.vmrk' files need to be edited to
+    account for the new names and keep the pointers functional.
+
+    """
+    if not os.path.exists(src):
+        raise IOError('File does not exist: {}\n'.format(src))
+
+    # Get extenstion of the brainvision file
+    fname_src, ext_src = _parse_ext(src)
+    fname_dest, ext_dest = _parse_ext(dest)
+    if ext_src != ext_dest:
+        raise ValueError('Need to move data with same extension'
+                         ' but got {}, {}'.format(ext_src, ext_dest))
+    ext = ext_src
+    bv_ext = ['.eeg', '.vhdr', '.vmrk']
+    if ext not in bv_ext:
+        raise ValueError('Expecting file ending in one of {},'
+                         ' but got {}'.format(bv_ext, ext))
+
+    # .eeg is the binary file, we can just move it
+    if ext == '.eeg':
+        sh.copyfile(src, dest)
+        return
+
+    # .vhdr and .vmrk contain pointers. We need the basename
+    # to change the pointers
+    basename_src = fname_src.split(os.sep)[-1]
+    basename_dest = fname_dest.split(os.sep)[-1]
+
+    search_lines = ['DataFile=' + basename_src + '.eeg',
+                    'MarkerFile=' + basename_src + '.vmrk']
+
+    # Read the source
+    with open(src, 'r') as f:
+        lines = f.readlines()
+
+    # Write new and replace relevant parts with new name
+    with open(dest, 'w') as f:
+        for line in lines:
+            if line.strip() in search_lines:
+                new_line = line.replace(basename_src,
+                                        basename_dest)
+                f.write(new_line)
+            else:
+                f.write(line)
+
+
+def wip_copyfile_eeglab():
+    """Some EEGLAB files come with a .fdt binary file that
+    contains the data. We need to detect if that is the case
+    and move both, the .set and the .fdt with appropriate names ...
+    lastly, the .set file contains a pointer to the .fdt file. We
+    would need to update that pointer as well."""
+    # Use mne.io.eeglab functions:
+    # _check_load_mat ... to load the .set file
+    # then check if eeg.data is a string (means, there is a .fdt)
+    # if yes, first move fdt and give it a new name X
+    # then, move set and then update the new set's  eeg.data string to X
+    # for that, possibly use mne.externals.pymatreader to read the mat as
+    # a dict ... then use scipy.io.savemat to save that dict again
+    # --> probably not a clean round trip and needs testing.
+    pass
