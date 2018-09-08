@@ -16,8 +16,11 @@ from .config import BIDS_VERSION
 from .io import _parse_ext
 
 import numpy as np
+from scipy.io import savemat
 from mne import read_events, find_events
 from mne.externals.six import string_types
+from mne.channels import read_montage
+from mne.io.eeglab.eeglab import _check_load_mat
 
 
 def print_dir_tree(dir):
@@ -352,7 +355,7 @@ def _read_events(events_data, raw):
 
 
 def copyfile_brainvision(src, dest):
-    """Copy a brainvision file to a new location and adjust pointers.
+    """Copy a BrainVision file to a new location and adjust pointers.
 
     The BrainVision format contains three files that have pointers
     to each other: '.eeg' for binary data, '.vhdr' for meta data
@@ -404,18 +407,74 @@ def copyfile_brainvision(src, dest):
                 f.write(line)
 
 
-def wip_copyfile_eeglab():
-    """Some EEGLAB files come with a .fdt binary file that
-    contains the data. We need to detect if that is the case
-    and move both, the .set and the .fdt with appropriate names ...
-    lastly, the .set file contains a pointer to the .fdt file. We
-    would need to update that pointer as well."""
-    # Use mne.io.eeglab functions:
-    # _check_load_mat ... to load the .set file
-    # then check if eeg.data is a string (means, there is a .fdt)
-    # if yes, first move fdt and give it a new name X
-    # then, move set and then update the new set's  eeg.data string to X
-    # for that, possibly use mne.externals.pymatreader to read the mat as
-    # a dict ... then use scipy.io.savemat to save that dict again
-    # --> probably not a clean round trip and needs testing.
-    pass
+def copyfile_eeglab(src, dest):
+    """Copy a EEGLAB files to a new location and adjust pointer to '.fdt' file.
+
+    Some EEGLAB .set files come with a .fdt binary file that contains the data.
+    When moving a .set file, we need to check for an associated .fdt file and
+    move it to an appropriate location as well as update an internal pointer
+    within the .set file.
+
+    """
+    if not os.path.exists(src):
+        raise IOError('File does not exist: {}\n'.format(src))
+
+    # Get extenstion of the EEGLAB file
+    fname_src, ext_src = _parse_ext(src)
+    fname_dest, ext_dest = _parse_ext(dest)
+    if ext_src != ext_dest:
+        raise ValueError('Need to move data with same extension'
+                         ' but got {}, {}'.format(ext_src, ext_dest))
+
+    # Extract matlab struct "EEG" from EEGLAB file
+    # if the data field is a string, it points to a .fdt file in src dir
+    eeg = _check_load_mat(src)
+    if isinstance(eeg['data'], str):
+        # Move the .fdt
+        head, tail = os.path.split(src)
+        fdt_path = os.path.join(head, eeg['data'])
+        fdt_name, fdt_ext = _parse_ext(fdt_path)
+        if fdt_ext != '.fdt':
+            raise IOError('Expected extension {} for linked data but found'
+                          ' {}'.format('.fdt', fdt_ext))
+        sh.copyfile(fdt_path, fname_dest+'.fdt')
+
+        # Write a new .set file with an updated pointer
+        head, tail = os.path.split(fname_dest+'.fdt')
+        eeg['data'] = tail
+        savemat(dest, eeg)
+    # If no .fdt file, simply copy the .set file
+    else:
+        sh.copyfile(src, dest)
+
+
+def _infer_eeg_placement_scheme(raw):
+    """Based on the channel names, try to infer an EEG placement scheme.
+
+    Parameters
+    ----------
+    raw : instance of Raw
+        The data as MNE-Python Raw object.
+
+    Returns
+    -------
+    placement_scheme : str
+        Description of the EEG placement scheme. Will be "n/a" for unsuccessful
+        extraction.
+
+    """
+    # How many of the channels in raw are based on the extended 10/20 system
+    montage1005 = read_montage(kind='standard_1005')
+    counter1005 = 0
+    for ch in raw.ch_names:
+        if ch in montage1005.ch_names:
+            counter1005 += 1
+
+    if counter1005 == len(raw.ch_names):
+        placement_scheme = 'based on the extended 10/20 system'
+    elif counter1005 > int(0.5*len(raw.ch_names)):
+        placement_scheme = 'mostly based on 10/20 system'
+    else:
+        placement_scheme = 'n/a'
+
+    return placement_scheme
