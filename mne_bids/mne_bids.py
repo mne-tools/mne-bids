@@ -14,6 +14,7 @@ import pandas as pd
 from collections import defaultdict, OrderedDict
 
 import numpy as np
+from mne import Epochs
 from mne.io.constants import FIFF
 from mne.io.pick import channel_type
 from mne.io import BaseRaw
@@ -26,23 +27,39 @@ from warnings import warn
 from .pick import coil_type
 from .utils import (make_bids_filename, make_bids_folders,
                     make_dataset_description, _write_json,
-                    _read_events, _mkdir_p, age_on_date)
+                    _read_events, _mkdir_p, age_on_date,
+                    copyfile_brainvision, copyfile_eeglab,
+                    _infer_eeg_placement_scheme)
 from .io import (_parse_ext, _read_raw, ALLOWED_EXTENSIONS)
 
 
-ALLOWED_KINDS = ['meg', 'ieeg']
+ALLOWED_KINDS = ['meg', 'eeg', 'ieeg']
+
+# Orientation of the coordinate system dependent on manufacturer
 ORIENTATION = {'.sqd': 'ALS', '.con': 'ALS', '.fif': 'RAS', '.pdf': 'ALS',
                '.ds': 'ALS'}
 
 UNITS = {'.sqd': 'm', '.con': 'm', '.fif': 'm', '.pdf': 'm', '.ds': 'cm'}
 
-MANUFACTURERS = {'.sqd': 'KIT/Yokogawa', '.con': 'KIT/Yokogawa',
-                 '.fif': 'Elekta', '.pdf': '4D Magnes', '.ds': 'CTF',
-                 '.meg4': 'CTF'}
+meg_manufacturers = {'.sqd': 'KIT/Yokogawa', '.con': 'KIT/Yokogawa',
+                     '.fif': 'Elekta', '.pdf': '4D Magnes', '.ds': 'CTF',
+                     '.meg4': 'CTF'}
+
+eeg_manufacturers = {'.vhdr': 'BrainProducts', '.edf': 'Mixed',
+                     '.bdf': 'Biosemi', '.set': 'Mixed', '.cnt': 'Neuroscan'}
+
+# Merge the manufacturer dictionaries in a python2 / python3 compatible way
+MANUFACTURERS = dict()
+MANUFACTURERS.update(meg_manufacturers)
+MANUFACTURERS.update(eeg_manufacturers)
 
 # List of synthetic channels by manufacturer that are to be excluded from the
 # channel list. Currently this is only for stimulus channels.
-IGNORED_CHANNELS = {'KIT/Yokogawa': ['STI 014']}
+IGNORED_CHANNELS = {'KIT/Yokogawa': ['STI 014'],
+                    'BrainProducts': ['STI 014'],
+                    'Mixed': ['STI 014'],
+                    'Biosemi': ['STI 014'],
+                    'Neuroscan': ['STI 014']}
 
 
 def _channels_tsv(raw, fname, verbose):
@@ -141,7 +158,7 @@ def _events_tsv(events, raw, fname, trial_type, verbose):
         The data as MNE-Python Raw object.
     fname : str
         Filename to save the events.tsv to.
-    event_id : dict | None
+    trial_type : dict | None
         Dictionary mapping a brief description key to an event id (value). For
         example {'Go': 1, 'No Go': 2}.
     verbose : bool
@@ -338,8 +355,8 @@ def _coordsystem_json(raw, unit, orient, manufacturer, fname, verbose):
     return fname
 
 
-def _sidecar_json(raw, task, manufacturer, fname, kind,
-                  verbose=True):
+def _sidecar_json(raw, task, manufacturer, fname, kind, eeg_ref=None,
+                  eeg_gnd=None, verbose=True):
     """Create a sidecar json file depending on the kind and save it.
 
     The sidecar json file provides meta data about the data of a certain kind.
@@ -357,6 +374,11 @@ def _sidecar_json(raw, task, manufacturer, fname, kind,
         Filename to save the sidecar json to.
     kind : str
         Type of the data as in ALLOWED_KINDS.
+    eeg_ref : str
+        Description of the type of reference used and (when applicable) of
+        location of the reference electrode.  Defaults to None.
+    eeg_gnd : str
+        Description  of the location of the ground electrode. Defaults to None.
     verbose : bool
         Set verbose output to true or false. Defaults to true.
 
@@ -366,6 +388,18 @@ def _sidecar_json(raw, task, manufacturer, fname, kind,
     if powerlinefrequency is None:
         warn('No line frequency found, defaulting to 50 Hz')
         powerlinefrequency = 50
+
+    if not eeg_ref:
+        eeg_ref = 'n/a'
+    if not eeg_gnd:
+        eeg_gnd = 'n/a'
+
+    if isinstance(raw, BaseRaw):
+        rec_type = 'continuous'
+    elif isinstance(raw, Epochs):
+        rec_type = 'epoched'
+    else:
+        rec_type = 'n/a'
 
     # determine whether any channels have to be ignored:
     n_ignored = len([ch_name for ch_name in
@@ -398,15 +432,22 @@ def _sidecar_json(raw, task, manufacturer, fname, kind,
     ch_info_json_common = [
         ('TaskName', task),
         ('Manufacturer', manufacturer),
-        ('PowerLineFrequency', powerlinefrequency)]
-    ch_info_json_meg = [
+        ('PowerLineFrequency', powerlinefrequency),
         ('SamplingFrequency', sfreq),
-        ("DewarPosition", "XXX"),
-        ("DigitizedLandmarks", False),
-        ("DigitizedHeadPoints", False),
-        ("SoftwareFilters", "n/a"),
+        ('SoftwareFilters', 'n/a'),
+        ('RecordingDuration', raw.times[-1]),
+        ('RecordingType', rec_type)]
+    ch_info_json_meg = [
+        ('DewarPosition', 'XXX'),
+        ('DigitizedLandmarks', False),
+        ('DigitizedHeadPoints', False),
         ('MEGChannelCount', n_megchan),
         ('MEGREFChannelCount', n_megrefchan)]
+    ch_info_json_eeg = [
+        ('EEGReference', eeg_ref),
+        ('EEGGround', eeg_gnd),
+        ('EEGPlacementScheme', _infer_eeg_placement_scheme(raw)),
+        ('Manufacturer', manufacturer)]
     ch_info_json_ieeg = [
         ('ECOGChannelCount', n_ecogchan),
         ('SEEGChannelCount', n_seegchan)]
@@ -422,6 +463,8 @@ def _sidecar_json(raw, task, manufacturer, fname, kind,
     ch_info_json = ch_info_json_common
     if kind == 'meg':
         append_kind_json = ch_info_json_meg
+    elif kind == 'eeg':
+        append_kind_json = ch_info_json_eeg
     elif kind == 'ieeg':
         append_kind_json = ch_info_json_ieeg
     else:
@@ -438,8 +481,8 @@ def _sidecar_json(raw, task, manufacturer, fname, kind,
 
 def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
                 run=None, kind='meg', events_data=None, event_id=None,
-                hpi=None, electrode=None, hsp=None, config=None,
-                overwrite=True, verbose=True):
+                hpi=None, electrode=None, hsp=None, eeg_ref=None,
+                eeg_gnd=None, config=None, overwrite=True, verbose=True):
     """Walk over a folder of files and create BIDS compatible folder.
 
     Parameters
@@ -457,7 +500,7 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
         The session name in BIDS compatible format.
     run : int | None
         The run number for this dataset.
-    kind : str, one of ('meg', 'ieeg')
+    kind : str, one of ('meg', 'eeg', 'ieeg')
         The kind of data being converted. Defaults to "meg".
     events_data : str | array | None
         The events file. If a string, a path to the events file. If an array,
@@ -476,6 +519,11 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
     hsp : None | str | array, shape = (n_points, 3)
         Digitizer head shape points, or path to head shape file. If more than
         10`000 points are in the head shape, they are automatically decimated.
+    eeg_ref : str
+        Description of the type of reference used and (when applicable) of
+        location of the reference electrode. Defaults to None.
+    eeg_gnd : str
+        Description  of the location of the ground electrode. Defaults to None.
     config : str | None
         A path to the configuration file to use if the data is from a BTi
         system.
@@ -485,11 +533,12 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
         If verbose is True, this will print a snippet of the sidecar files. If
         False, no content will be printed.
 
-    Note
-    ----
+    Notes
+    -----
     For the participants.tsv file, the raw.info['subjects_info'] should be
     updated and raw.info['meas_date'] should not be None to compute the age
     of the participant correctly.
+
     """
     if isinstance(raw_file, string_types):
         # We must read in the raw data
@@ -555,28 +604,24 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
         suffix='channels.tsv', prefix=data_path)
 
     # Read in Raw object and extract metadata from Raw object if needed
-    if kind == 'meg':
-        orient = ORIENTATION[ext]
-        unit = UNITS[ext]
-        manufacturer = MANUFACTURERS[ext]
-    else:
-        orient = 'n/a'
-        unit = 'n/a'
+    orient = ORIENTATION[ext]
+    unit = UNITS[ext]
+    manufacturer = MANUFACTURERS[ext]
+    if manufacturer == 'Mixed':
         manufacturer = 'n/a'
 
-    # save stuff
+    # save all meta data
+    # TODO: Implement coordystem.json and electrodes.tsv for EEG and  iEEG
     if kind == 'meg':
-        _scans_tsv(raw, os.path.join(kind, raw_file_bids), scans_fname,
-                   verbose)
         _coordsystem_json(raw, unit, orient, manufacturer, coordsystem_fname,
                           verbose)
 
-    make_dataset_description(output_path, name=" ",
-                             verbose=verbose)
-    _sidecar_json(raw, task, manufacturer, data_meta_fname, kind,
-                  verbose)
+    make_dataset_description(output_path, name=" ", verbose=verbose)
+    _sidecar_json(raw, task, manufacturer, data_meta_fname, kind, eeg_ref,
+                  eeg_gnd, verbose)
     _participants_tsv(raw, subject_id, "n/a", participants_fname, verbose)
     _channels_tsv(raw, channels_fname, verbose)
+    _scans_tsv(raw, os.path.join(kind, raw_file_bids), scans_fname, verbose)
 
     events = _read_events(events_data, raw)
     if len(events) > 0:
@@ -597,12 +642,19 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
         raise ValueError('ext must be in %s, got %s'
                          % (''.join(ALLOWED_EXTENSIONS), ext))
 
-    # for FIF, we need to re-save the file to fix the file pointer
-    # for files with multiple parts
+    # Copy the imaging data files
+    # Re-save FIF files to fix the file pointer for files with multiple parts
     if ext in ['.fif']:
         raw.save(raw_file_bids, overwrite=overwrite)
+    # CTF data is saved in a directory
     elif ext == '.ds':
         sh.copytree(raw_fname, raw_file_bids)
+    # BrainVision is multifile, copy over all of them and fix pointers
+    elif ext == '.vhdr':
+        copyfile_brainvision(raw_fname, raw_file_bids)
+    # EEGLAB .set might be accompanied by a .fdt - find out and copy it too
+    elif ext == '.set':
+        copyfile_eeglab(raw_fname, raw_file_bids)
     else:
         sh.copyfile(raw_fname, raw_file_bids)
 
