@@ -10,10 +10,10 @@ from mne import io
 import os
 
 allowed_extensions_meg = ['.con', '.sqd', '.fif', '.pdf', '.ds']
-allowed_extensions_eeg = ['.eeg', '.vhdr', '.vmrk',  # BrainVision
+allowed_extensions_eeg = ['.vhdr',  # BrainVision, accompanied by .vmrk, .eeg
                           '.edf',  # European Data Format
                           '.bdf',  # Biosemi
-                          '.set', '.fdt',  # EEGLAB
+                          '.set',  # EEGLAB, potentially accompanied by .fdt
                           '.cnt',  # Neuroscan
                           ]
 
@@ -61,7 +61,7 @@ def _read_raw(raw_fname, electrode=None, hsp=None, hpi=None, config=None,
 
     # EEG File Types
     # --------------
-    # BrainVision format by Brain Products, expects also a .eeg and .vmrk file
+    # BrainVision format by Brain Products, links to  a .eeg and a .vmrk file
     elif ext == '.vhdr':
         raw = io.read_raw_brainvision(raw_fname)
 
@@ -69,8 +69,7 @@ def _read_raw(raw_fname, electrode=None, hsp=None, hpi=None, config=None,
     elif ext == '.edf' or ext == '.bdf':
         raw = io.read_raw_edf(raw_fname)
 
-    # EEGLAB .set format, if there is a separate .fdt file, it should be in the
-    # same folder as the .set file
+    # EEGLAB .set format, a .fdt file is potentially linked from the .set
     elif ext == '.set':
         raw = io.read_raw_eeglab(raw_fname)
 
