@@ -158,7 +158,7 @@ def test_vhdr():
 
 def test_edf():
     """Test raw_to_bids conversion for European Data Format data."""
-    output_path = _TempDir()
+    output_path = '/home/stefanappelhoff/Desktop/bogus'  # _TempDir()
     cmd = ['bids-validator', '--bep006', output_path]
     run_subprocess(cmd, shell=shell)
 
