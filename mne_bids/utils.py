@@ -7,13 +7,12 @@
 #
 # License: BSD (3-clause)
 import os
+import os.path as op
+import re
 import errno
 from collections import OrderedDict
 import json
 import shutil as sh
-
-from .config import BIDS_VERSION
-from .io import _parse_ext
 
 import numpy as np
 from scipy.io import savemat
@@ -22,15 +21,18 @@ from mne.externals.six import string_types
 from mne.channels import read_montage
 from mne.io.eeglab.eeglab import _check_load_mat
 
+from .config import BIDS_VERSION
+from .io import _parse_ext
+
 
 def print_dir_tree(dir):
     """Recursively print a directory tree starting from `dir`."""
-    if not os.path.exists(dir):
+    if not op.exists(dir):
         raise ValueError('Directory does not exist: {}'.format(dir))
 
     for root, dirs, files in os.walk(dir):
         path = root.split(os.sep)
-        print('|%s %s' % ((len(path) - 1) * '-----', os.path.basename(root)))
+        print('|%s %s' % ((len(path) - 1) * '-----', op.basename(root)))
         for file in files:
             print('|%s %s' % (len(path) * '-----', file))
 
@@ -43,7 +45,7 @@ def _mkdir_p(path, overwrite=False, verbose=False):
     .. [1] stackoverflow.com/questions/600268/mkdir-p-functionality-in-python
 
     """
-    if overwrite is True and os.path.isdir(path):
+    if overwrite is True and op.isdir(path):
         sh.rmtree(path)
         if verbose is True:
             print('Overwriting path: %s' % path)
@@ -53,7 +55,7 @@ def _mkdir_p(path, overwrite=False, verbose=False):
         if verbose is True:
             print('Creating folder: %s' % path)
     except OSError as exc:  # Python >2.5
-        if exc.errno == errno.EEXIST and os.path.isdir(path):
+        if exc.errno == errno.EEXIST and op.isdir(path):
             pass
         else:
             raise
@@ -136,7 +138,7 @@ def make_bids_filename(subject=None, session=None, task=None,
 
     filename = '_'.join(filename)
     if isinstance(prefix, string_types):
-        filename = os.path.join(prefix, filename)
+        filename = op.join(prefix, filename)
     return filename
 
 
@@ -190,9 +192,9 @@ def make_bids_folders(subject, session=None, kind=None, root=None,
         path.append('ses-%s' % session)
     if isinstance(kind, string_types):
         path.append(kind)
-    path = os.path.join(*path)
+    path = op.join(*path)
     if isinstance(root, string_types):
-        path = os.path.join(root, path)
+        path = op.join(root, path)
 
     if make_dir is True:
         _mkdir_p(path, overwrite=overwrite, verbose=verbose)
@@ -252,7 +254,7 @@ def make_dataset_description(path, name=None, data_license=None,
     if isinstance(references_and_links, string_types):
         references_and_links = references_and_links.split(', ')
 
-    fname = os.path.join(path, 'dataset_description.json')
+    fname = op.join(path, 'dataset_description.json')
     description = OrderedDict([('Name', name),
                                ('BIDSVersion', BIDS_VERSION),
                                ('License', data_license),
@@ -354,57 +356,110 @@ def _read_events(events_data, raw):
     return events
 
 
-def copyfile_brainvision(src, dest):
-    """Copy a BrainVision file to a new location and adjust pointers.
+def _get_brainvision_paths(vhdr_path):
+    """Get the .eeg and .vmrk file paths from a BrainVision header file.
 
-    The BrainVision format contains three files that have pointers
-    to each other: '.eeg' for binary data, '.vhdr' for meta data
-    as a header, and '.vmrk' for data on event markers. When renaming
-    these files, the '.vhdr' and '.vmrk' files need to be edited to
-    account for the new names and keep the pointers functional.
+    Parameters
+    ----------
+    vhdr_path : str
+        path to the header file
+
+    Returns
+    -------
+    paths : tuple
+        paths to the .eeg file at index 0 and the .vmrk file
+        at index 1 of the returned tuple
 
     """
-    if not os.path.exists(src):
-        raise IOError('File does not exist: {}\n'.format(src))
+    fname, ext = _parse_ext(vhdr_path)
+    if ext != '.vhdr':
+        raise ValueError('Expecting file ending in ".vhdr",'
+                         ' but got {}'.format(ext))
 
+    # Header file seems fine, read it
+    with open(vhdr_path, 'r') as f:
+        lines = f.readlines()
+
+    # Try to find data file .eeg
+    eeg_file_match = re.search(r'DataFile=(.*\.eeg)', ' '.join(lines))
+    if not eeg_file_match:
+        raise ValueError('Could not find a .eeg file link in'
+                         ' {}'.format(vhdr_path))
+    else:
+        eeg_file = eeg_file_match.groups()[0]
+
+    # Try to find marker file .vmrk
+    vmrk_file_match = re.search(r'MarkerFile=(.*\.vmrk)', ' '.join(lines))
+    if not vmrk_file_match:
+        raise ValueError('Could not find a .vmrk file link in'
+                         ' {}'.format(vhdr_path))
+    else:
+        vmrk_file = vmrk_file_match.groups()[0]
+
+    # Make sure we are dealing with file names as is customary, not paths
+    # Paths are problematic when copying the files to another system. Instead,
+    # always use the file name and keep the file triplet in the same directory
+    assert os.sep not in eeg_file
+    assert os.sep not in vmrk_file
+
+    # Assert the paths exist
+    head, tail = op.split(vhdr_path)
+    eeg_file_path = op.join(head, eeg_file)
+    vmrk_file_path = op.join(head, vmrk_file)
+    assert op.exists(eeg_file_path)
+    assert op.exists(vmrk_file_path)
+
+    # Return the paths
+    return (eeg_file_path, vmrk_file_path)
+
+
+def copyfile_brainvision(vhdr_src, vhdr_dest):
+    """Copy a BrainVision file triplet to a new location and repair links.
+
+    Parameters
+    ----------
+    vhdr_src, vhdr_dest: str
+        The src path of the .vhdr file to be copied and the destination
+        path. The .eeg and .vmrk files associated with the .vhdr file
+        will be given names as in vhdr_dest with adjusted extensions.
+        Internal file pointers will be fixed.
+
+    """
     # Get extenstion of the brainvision file
-    fname_src, ext_src = _parse_ext(src)
-    fname_dest, ext_dest = _parse_ext(dest)
+    fname_src, ext_src = _parse_ext(vhdr_src)
+    fname_dest, ext_dest = _parse_ext(vhdr_dest)
     if ext_src != ext_dest:
         raise ValueError('Need to move data with same extension'
                          ' but got {}, {}'.format(ext_src, ext_dest))
-    ext = ext_src
-    bv_ext = ['.eeg', '.vhdr', '.vmrk']
-    if ext not in bv_ext:
-        raise ValueError('Expecting file ending in one of {},'
-                         ' but got {}'.format(bv_ext, ext))
 
-    # .eeg is the binary file, we can just move it
-    if ext == '.eeg':
-        sh.copyfile(src, dest)
-        return
+    eeg_file_path, vmrk_file_path = _get_brainvision_paths(vhdr_src)
 
-    # .vhdr and .vmrk contain pointers. We need the basename
-    # to change the pointers
-    basename_src = fname_src.split(os.sep)[-1]
-    basename_dest = fname_dest.split(os.sep)[-1]
+    # Copy data .eeg ... no links to repair
+    sh.copyfile(eeg_file_path, fname_dest + '.eeg')
 
+    # Write new header and marker files, fixing the file pointer links
+    # For that, we need to replace an old "basename" with a new one
+    # assuming that all .eeg, .vhdr, .vmrk share one basename
+    __, basename_src = op.split(fname_src)
+    assert basename_src + '.eeg' == op.split(eeg_file_path)[-1]
+    assert basename_src + '.vmrk' == op.split(vmrk_file_path)[-1]
+    __, basename_dest = op.split(fname_dest)
     search_lines = ['DataFile=' + basename_src + '.eeg',
                     'MarkerFile=' + basename_src + '.vmrk']
 
-    # Read the source
-    with open(src, 'r') as f:
-        lines = f.readlines()
+    with open(vhdr_src, 'r') as fin:
+        with open(vhdr_dest, 'w') as fout:
+            for line in fin.readlines():
+                if line.strip() in search_lines:
+                    line = line.replace(basename_src, basename_dest)
+                fout.write(line)
 
-    # Write new and replace relevant parts with new name
-    with open(dest, 'w') as f:
-        for line in lines:
-            if line.strip() in search_lines:
-                new_line = line.replace(basename_src,
-                                        basename_dest)
-                f.write(new_line)
-            else:
-                f.write(line)
+    with open(vmrk_file_path, 'r') as fin:
+        with open(fname_dest + '.vmrk', 'w') as fout:
+            for line in fin.readlines():
+                if line.strip() in search_lines:
+                    line = line.replace(basename_src, basename_dest)
+                fout.write(line)
 
 
 def copyfile_eeglab(src, dest):
@@ -415,10 +470,12 @@ def copyfile_eeglab(src, dest):
     move it to an appropriate location as well as update an internal pointer
     within the .set file.
 
-    """
-    if not os.path.exists(src):
-        raise IOError('File does not exist: {}\n'.format(src))
+    Notes
+    -----
+    NOT IMPLEMENTED YET. This function will abort upon the encounter of a .fdt
+    file. There are s
 
+    """
     # Get extenstion of the EEGLAB file
     fname_src, ext_src = _parse_ext(src)
     fname_dest, ext_dest = _parse_ext(dest)
@@ -428,11 +485,25 @@ def copyfile_eeglab(src, dest):
 
     # Extract matlab struct "EEG" from EEGLAB file
     # if the data field is a string, it points to a .fdt file in src dir
-    eeg = _check_load_mat(src)
+    eeg = _check_load_mat(src, None)
     if isinstance(eeg['data'], str):
-        # Move the .fdt
-        head, tail = os.path.split(src)
-        fdt_path = os.path.join(head, eeg['data'])
+        raise ValueError('Found associated .fdt file containing the binary '
+                         'EEG data: {}.\nMNE-BIDS does currently not support '
+                         ' .fdt files. Please re-load your .set file using '
+                         ' EEGLAB and save the data as a single .set file '
+                         'without accompanying .fdt file.'.format(eeg['data']))
+
+        # FIXME: We should move the .fdt file together with the .set file and
+        # give meaningful names to both. Then the .set file (which is a matlab
+        # .mat file) needs to be read. The EEG matlab structure of the .set
+        # file contains a field "data", which is a string pointing to the .fdt
+        # file. This string needs to be updated to the new BIDS name that the
+        # .set file received while copying.
+        #
+        # Unfortunately, there are issues with performing a round-trip of
+        # reading the .set, modifying it, and saving it again.
+        head, tail = op.split(src)
+        fdt_path = op.join(head, eeg['data'])
         fdt_name, fdt_ext = _parse_ext(fdt_path)
         if fdt_ext != '.fdt':
             raise IOError('Expected extension {} for linked data but found'
@@ -440,9 +511,10 @@ def copyfile_eeglab(src, dest):
         sh.copyfile(fdt_path, fname_dest+'.fdt')
 
         # Write a new .set file with an updated pointer
-        head, tail = os.path.split(fname_dest+'.fdt')
+        head, tail = op.split(fname_dest+'.fdt')
         eeg['data'] = tail
-        savemat(dest, eeg)
+        savemat(dest, eeg, appendmat=False)
+
     # If no .fdt file, simply copy the .set file
     else:
         sh.copyfile(src, dest)
@@ -464,16 +536,15 @@ def _infer_eeg_placement_scheme(raw):
 
     """
     # How many of the channels in raw are based on the extended 10/20 system
+    # If more than 80 percent, assume it is 10/20
     montage1005 = read_montage(kind='standard_1005')
     counter1005 = 0
     for ch in raw.ch_names:
         if ch in montage1005.ch_names:
             counter1005 += 1
 
-    if counter1005 == len(raw.ch_names):
+    if counter1005 >= int(0.8*len(raw.ch_names)):
         placement_scheme = 'based on the extended 10/20 system'
-    elif counter1005 > int(0.5*len(raw.ch_names)):
-        placement_scheme = 'mostly based on 10/20 system'
     else:
         placement_scheme = 'n/a'
 
