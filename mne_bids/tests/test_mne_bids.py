@@ -201,5 +201,12 @@ def test_set():
 def test_cnt():
     """Test raw_to_bids conversion for Neuroscan data."""
     output_path = _TempDir()
+    data_path = op.join(testing.data_path(), 'CNT')
+    raw_fname = op.join(data_path, 'scan41_short.cnt')
+
+    raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
+                task=task, raw_file=raw_fname, output_path=output_path,
+                overwrite=True, kind='eeg')
+
     cmd = ['bids-validator', '--bep006', output_path]
     run_subprocess(cmd, shell=shell)

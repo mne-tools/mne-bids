@@ -586,7 +586,7 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
     data_meta_fname = make_bids_filename(
         subject=subject_id, session=session_id, task=task, run=run,
         suffix='%s.json' % kind, prefix=data_path)
-    if ext in ['.fif', '.ds', '.vhdr', '.edf', '.bdf']:
+    if ext in ['.fif', '.ds', '.vhdr', '.edf', '.bdf', '.set', '.cnt']:
         raw_file_bids = make_bids_filename(
             subject=subject_id, session=session_id, task=task, run=run,
             suffix='%s%s' % (kind, ext))

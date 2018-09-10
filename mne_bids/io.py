@@ -33,7 +33,7 @@ def _parse_ext(raw_fname, verbose=False):
 
 
 def _read_raw(raw_fname, electrode=None, hsp=None, hpi=None, config=None,
-              verbose=None):
+              montage=None, verbose=None):
     """Read a raw file into MNE, making inferences based on extension."""
     fname, ext = _parse_ext(raw_fname)
 
@@ -75,7 +75,7 @@ def _read_raw(raw_fname, electrode=None, hsp=None, hpi=None, config=None,
 
     # Neuroscan .cnt format
     elif ext == '.cnt':
-        raw = io.read_raw_cnt(raw_fname)
+        raw = io.read_raw_cnt(raw_fname, montage=montage)
 
     # No supported data found ...
     # ---------------------------
