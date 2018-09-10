@@ -45,8 +45,9 @@ meg_manufacturers = {'.sqd': 'KIT/Yokogawa', '.con': 'KIT/Yokogawa',
                      '.fif': 'Elekta', '.pdf': '4D Magnes', '.ds': 'CTF',
                      '.meg4': 'CTF'}
 
-eeg_manufacturers = {'.vhdr': 'BrainProducts', '.edf': 'Mixed',
-                     '.bdf': 'Biosemi', '.set': 'Mixed', '.cnt': 'Neuroscan'}
+eeg_manufacturers = {'.vhdr': 'BrainProducts', '.eeg': 'BrainProducts',
+                     '.edf': 'Mixed', '.bdf': 'Biosemi', '.set': 'Mixed',
+                     '.cnt': 'Neuroscan'}
 
 # Merge the manufacturer dictionaries in a python2 / python3 compatible way
 MANUFACTURERS = dict()
@@ -604,9 +605,9 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
         suffix='channels.tsv', prefix=data_path)
 
     # Read in Raw object and extract metadata from Raw object if needed
-    orient = ORIENTATION[ext]
-    unit = UNITS[ext]
-    manufacturer = MANUFACTURERS[ext]
+    orient = ORIENTATION.get(ext, 'n/a')
+    unit = UNITS.get(ext, 'n/a')
+    manufacturer = MANUFACTURERS.get(ext, 'n/a')
     if manufacturer == 'Mixed':
         manufacturer = 'n/a'
 

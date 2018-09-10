@@ -4,15 +4,19 @@
 #          Stefan Appelhoff <stefan.appelhoff@mailbox.org>
 #
 # License: BSD (3-clause)
-import os
+import os.path as op
 
 import pytest
 
 from datetime import datetime
 
+import mne
 from mne.utils import _TempDir
 from mne_bids.utils import (make_bids_folders, make_bids_filename,
-                            _check_types, print_dir_tree, age_on_date)
+                            _check_types, print_dir_tree, age_on_date,
+                            copyfile_brainvision, copyfile_eeglab)
+
+base_path = op.join(op.dirname(mne.__file__), 'io')
 
 
 def test_print_dir_tree():
@@ -45,11 +49,11 @@ def test_make_folders():
     # Make sure folders are created properly
     output_path = _TempDir()
     make_bids_folders(subject='hi', session='foo', kind='ba', root=output_path)
-    assert os.path.isdir(os.path.join(output_path, 'sub-hi', 'ses-foo', 'ba'))
+    assert op.isdir(op.join(output_path, 'sub-hi', 'ses-foo', 'ba'))
     # If we remove a kwarg the folder shouldn't be created
     output_path = _TempDir()
     make_bids_folders(subject='hi', kind='ba', root=output_path)
-    assert os.path.isdir(os.path.join(output_path, 'sub-hi', 'ba'))
+    assert op.isdir(op.join(output_path, 'sub-hi', 'ba'))
 
 
 def test__check_types():
@@ -71,3 +75,27 @@ def test_age_on_date():
     assert age_on_date(bday, exp3) == 24
     with pytest.raises(ValueError):
         age_on_date(bday, exp4)
+
+
+def test_copyfile_brainvision():
+    """Test the copying of BrainVision vhdr, vmrk and eeg files."""
+    output_path = '/home/stefanappelhoff/Desktop/bogus'  # TempDir()
+    data_path = op.join(base_path, 'brainvision', 'tests', 'data')
+    raw_fname = op.join(data_path, 'test.vhdr')
+    new_name = op.join(output_path, 'tested_conversion.vhdr')
+
+    with pytest.raises(IOError):
+        copyfile_brainvision('i.dont.exist', new_name)
+
+    with pytest.raises(ValueError):
+        copyfile_brainvision(raw_fname, new_name+'.eeg')
+
+    with pytest.raises(ValueError):
+        copyfile_brainvision(op.join(data_path, 'test_bin_raw.fif'), new_name)
+
+    copyfile_brainvision(raw_fname, new_name)
+
+
+def test_copyfile_eeglab():
+    """Test the copying of EEGlab set and fdt files."""
+    copyfile_eeglab()

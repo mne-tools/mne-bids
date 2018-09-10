@@ -138,3 +138,47 @@ def test_bti():
     with pytest.raises(subprocess.CalledProcessError):
         cmd = ['bids-validator', output_path]
         run_subprocess(cmd, shell=shell)
+
+
+# EEG Tests
+# ---------
+def test_vhdr():
+    """Test raw_to_bids conversion for BrainVision data."""
+    output_path = _TempDir()
+    data_path = op.join(base_path, 'brainvision', 'tests', 'data')
+    raw_fname = op.join(data_path, 'test.vhdr')
+
+    raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
+                task=task, raw_file=raw_fname, output_path=output_path,
+                overwrite=True, kind='eeg')
+
+    cmd = ['bids-validator', '--bep006', output_path]
+    run_subprocess(cmd, shell=shell)
+
+
+def test_edf():
+    """Test raw_to_bids conversion for European Data Format data."""
+    output_path = _TempDir()
+    cmd = ['bids-validator', '--bep006', output_path]
+    run_subprocess(cmd, shell=shell)
+
+
+def test_bdf():
+    """Test raw_to_bids conversion for Biosemi data."""
+    output_path = _TempDir()
+    cmd = ['bids-validator', '--bep006', output_path]
+    run_subprocess(cmd, shell=shell)
+
+
+def test_set():
+    """Test raw_to_bids conversion for EEGLAB data."""
+    output_path = _TempDir()
+    cmd = ['bids-validator', '--bep006', output_path]
+    run_subprocess(cmd, shell=shell)
+
+
+def test_cnt():
+    """Test raw_to_bids conversion for Neuroscan data."""
+    output_path = _TempDir()
+    cmd = ['bids-validator', '--bep006', output_path]
+    run_subprocess(cmd, shell=shell)
