@@ -67,7 +67,7 @@ def _read_raw(raw_fname, electrode=None, hsp=None, hpi=None, config=None,
 
     # EDF (european data format) or BDF (biosemi) format
     elif ext == '.edf' or ext == '.bdf':
-        raw = io.read_raw_edf(raw_fname)
+        raw = io.read_raw_edf(raw_fname, preload=True)
 
     # EEGLAB .set format, a .fdt file is potentially linked from the .set
     elif ext == '.set':
