@@ -8,6 +8,9 @@ environment:
       - PYTHON_VERSION: "2.7"
         PYTHON_ARCH: "64"
 
+      - PYTHON_VERSION: "3.6"
+        PYTHON_ARCH: "64"
+
 install:
   - "git clone --depth 1 git://github.com/astropy/ci-helpers.git"
   - "powershell ci-helpers/appveyor/install-miniconda.ps1"
@@ -24,7 +27,7 @@ install:
   - "python setup.py develop"
   - "SET MNE_FORCE_SERIAL=true"  # otherwise joblib will bomb
   - ps: Install-Product node $env:nodejs_version
-  - npm install -g https://github.com/INCF/bids-validator.git#f8b71e47323e885168103be33d3bcbf7ea3b7da9
+  - npm install -g https://github.com/INCF/bids-validator.git
   - node --version
   - npm --version
   - bids-validator --version
