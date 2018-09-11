@@ -567,7 +567,7 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
                                   overwrite=overwrite,
                                   verbose=verbose)
     if session_id is None:
-        ses_path = data_path
+        ses_path = os.sep.join(data_path.split(os.sep)[:-1])
     else:
         ses_path = make_bids_folders(subject=subject_id, session=session_id,
                                      root=output_path,
