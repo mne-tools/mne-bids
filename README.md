@@ -1,5 +1,6 @@
 [![Gitter](https://badges.gitter.im/mne-tools/mne-bids.svg)](https://gitter.im/mne-tools/mne-bids?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Travis](https://api.travis-ci.org/mne-tools/mne-bids.svg?branch=master "Travis")](https://travis-ci.org/mne-tools/mne-bids)
+[![Appveyor](https://ci.appveyor.com/api/projects/status/g6jqpv31sp7q103s/branch/master?svg=true "Appveyor")](https://ci.appveyor.com/project/mne-tools/mne-bids/branch/master)
 [![codecov](https://codecov.io/gh/mne-tools/mne-bids/branch/master/graph/badge.svg)](https://codecov.io/gh/mne-tools/mne-bids)
 [![CircleCi](https://circleci.com/gh/mne-tools/mne-bids.svg?style=svg)](https://circleci.com/gh/mne-tools/mne-bids)
 
