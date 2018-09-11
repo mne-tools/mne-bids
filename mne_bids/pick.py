@@ -6,7 +6,7 @@ from mne.io.constants import FIFF
 
 
 def get_coil_types():
-    """Return all known coul types.
+    """Return all known coil types.
 
     Returns
     -------
