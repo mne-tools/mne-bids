@@ -205,7 +205,7 @@ def _participants_tsv(raw, subject_id, group, fname, verbose):
         meas_date = raw.info.get('meas_date', None)
         if meas_date is not None and age is not None:
             bday = datetime(age[0], age[1], age[2])
-            if isinstance(meas_date, (np.ndarray, list)):
+            if isinstance(meas_date, (tuple):
                 meas_date = meas_date[0]
             meas_date = datetime.fromtimestamp(meas_date)
             subject_age = age_on_date(bday, meas_date)
@@ -253,7 +253,7 @@ def _scans_tsv(raw, raw_fname, fname, verbose):
     """
     # get MEASurement date from the data info
     meas_date = raw.info['meas_date']
-    if isinstance(meas_date, (np.ndarray, list)):
+    if isinstance(meas_date, (tuple):
         meas_date = meas_date[0]
 
     if meas_date is None:
