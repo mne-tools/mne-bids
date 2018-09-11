@@ -28,7 +28,7 @@ from .utils import (make_bids_filename, make_bids_folders,
 from .io import (_parse_ext, _read_raw, ALLOWED_EXTENSIONS)
 
 
-ALLOWED_KINDS = ['meg', 'ieeg']
+ALLOWED_KINDS = ['meg']
 ORIENTATION = {'.sqd': 'ALS', '.con': 'ALS', '.fif': 'RAS', '.pdf': 'ALS',
                '.ds': 'ALS'}
 
@@ -425,8 +425,8 @@ def _sidecar_json(raw, task, manufacturer, fname, kind,
     return fname
 
 
-def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
-                run=None, kind='meg', events_data=None, event_id=None,
+def raw_to_bids(subject_id, task, raw_file, kind, output_path,
+                session_id=None, run=None, events_data=None, event_id=None,
                 hpi=None, electrode=None, hsp=None, config=None,
                 overwrite=True, verbose=True):
     """Walk over a folder of files and create BIDS compatible folder.
@@ -440,14 +440,14 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
     raw_file : str | instance of mne.Raw
         The raw data. If a string, it is assumed to be the path to the raw data
         file. Otherwise it must be an instance of mne.Raw
+    kind : str, one of ('meg', 'ieeg')
+        The kind of data being converted.
     output_path : str
         The path of the BIDS compatible folder
     session_id : str | None
         The session name in BIDS compatible format.
     run : int | None
         The run number for this dataset.
-    kind : str, one of ('meg', 'ieeg')
-        The kind of data being converted. Defaults to "meg".
     events_data : str | array | None
         The events file. If a string, a path to the events file. If an array,
         the MNE events array (shape n_events, 3). If None, events will be
