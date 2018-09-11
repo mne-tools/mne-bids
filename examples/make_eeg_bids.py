@@ -6,9 +6,12 @@ Use MNE-Bids for EEG Data
 In this example, we use MNE-Bids to create a BIDS-compatible directory of EEG
 data. Specifically, we will follow these steps:
 
-1. Download some EEG data from the Open Science Framework (https://osf.io)
-2. Load the data, extract information, and save in a new BIDS directory
-3. Check the result and compare it with the standard
+#. Download some EEG data from the
+`PhysioBank database <https://physionet.org/physiobank/database>`_.
+
+#. Load the data, extract information, and save in a new BIDS directory
+
+#. Check the result and compare it with the standard
 
 """
 
@@ -18,99 +21,102 @@ data. Specifically, we will follow these steps:
 ###############################################################################
 # We are importing everything we need for this example:
 import os
+import shutil as sh
 
-from mne import find_events
-from mne.io import read_raw_brainvision
+from mne.datasets import eegbci
+from mne.io import read_raw_edf
 
 from mne_bids import raw_to_bids
-from mne_bids.datasets import download_matchingpennies_subj
 from mne_bids.utils import print_dir_tree
 
 ###############################################################################
 # Step 1: Download the data
 # -------------------------
 #
-# First, we need some data to work with. We will use the example data that is
-# provided with the report on the BIDS extension for EEF data: The "Matching
-# Pennies" dataset. See here for more information: https://osf.io/cj2dr/
+# First, we need some data to work with. We will use the
+# `EEG Motor Movement/Imagery Dataset <https://doi.org/10.13026/C28G6P>`_
+# available on the PhysioBank database.
 #
-# For convenience, MNE-Bids has a function to download this data.
+# The data consists of 109 volunteers performing 14 experimental runs each. For
+# each subject, there were two baseline tasks (1. eyes open, 2. eyes closed) as
+# well as four different motor imagery tasks. For the present example, we will
+# show how to format the data for two subjects and selected tasks to comply
+# with the Brain Imaging Data Structure
+# (`BIDS <http://bids.neuroimaging.io/>`).
+#
+# Conveniently, there is already a data loading function available with
+# MNE-Python:
 
-# make a directory to save the data to
+# Make a directory to save the data to
 home = os.path.expanduser('~')
-data_dir = os.path.join(home, 'mne_data', 'eeg_matchingpennies')
-if not os.path.exists(data_dir):
-    os.makedirs(data_dir)
+mne_dir = os.path.join(home, 'mne_data')
+if not os.path.exists(mne_dir):
+    os.makedirs(mne_dir)
 
-###############################################################################
-# Now, we download data for participant sub-05 (about 350MB). We could also
-# download the whole dataset by specifying `url_dict` as an input to
-# `download_matchingpennies_subj`, see the function's docstring for more
-# information.
-download_matchingpennies_subj(directory=data_dir)
+# Define which tasks we want to download.
+tasks = [2,  # This is 2 minutes of eyes closed rest
+         4,  # This is run #1 of imagining to close left or right fist
+         12]  # This is run #2 of imagining to close left or right fist
+
+# Download the data for subjects 1 and 2
+for subj_idx in [1, 2]:
+    eegbci.load_data(subject=subj_idx,
+                     runs=tasks,
+                     path=mne_dir,
+                     update_path=True)
 
 ###############################################################################
 # Let's see whether the data has been downloaded using a quick visualization
 # of the directory tree.
+
+data_dir = os.path.join(mne_dir, 'MNE-eegbci-data')
 print_dir_tree(data_dir)
 
 ###############################################################################
-# The data are part of the example suite for the EEG specification of BIDS, so
-# they are already in BIDS format as we can see from the file names (also, see
-# the `channels.tsv` and `events.tsv` files). However, we want to start from
-# scratch and will only use the "pure" EEG data in its BrainVision format with
-# the following files:
-#
-# * '.eeg' for binary data
-# * '.vhdr' for header information
-# * '.vmrk' for specifying the event markers within the data.
+# The data are in the `European Data Format <https://www.edfplus.info/>`_
+# '.edf', which is good for us because next to the BrainVision format, EDF is
+# one of the recommended file formats for EEG BIDS. However, apart from the
+# data format, we need to build a directory structure and supply meta data
+# files to properly *bidsify* this data.
 
 ###############################################################################
 # Step 2: Formatting as BIDS
 # --------------------------
 #
-# We are reading the data using MNE-Python's io module and the
-# `read_raw_brainvision` function, which takes a `.vhdr` file as an input.
-vhdr_path = os.path.join(data_dir, 'sub-05_task-matchingpennies_eeg.vhdr')
-raw = read_raw_brainvision(vhdr_path)
+# Let's start by formatting a single subject. We are reading the data using
+# MNE-Python's io module and the `read_raw_edf` function.
+data_dir = os.path.join(data_dir, 'physiobank', 'database', 'eegmmidb')
+edf_path = os.path.join(data_dir, 'S001', 'S001R02.edf')
+raw = read_raw_edf(edf_path, preload=True)
 print(raw)
 
 ###############################################################################
-# By reading the raw data, MNE-Python has also read the `.vmrk` file in which
-# the events of the EEG recording are stored. It has automatically created a
-# new "stimulus channel" containing the event pulses and appended this to our
-# data:
-print(raw.ch_names)  # There should be a channel called 'STI 014'
-
-###############################################################################
-# For BIDS, we specify all events in a dedicated `events.tsv` file. Let's read
-# the events from our stimulus channel using `find_events`
-events = find_events(raw)
-
-###############################################################################
-# Now we have everything to start a new BIDS directory using our data.
-# To do that, we can use the high level function `raw_to_bids`, which is the
-# core of MNE-BIDS. Generally, `raw_to_bids` tries to extract as much meta data
-# as possible from the raw data and then format it in a BIDS compatible way.
-# `raw_to_bids` takes a bunch of inputs, most of which are however optional.
-# The required inputs are:
+# With this simple step we have everything to start a new BIDS directory using
+# our data. To do that, we can use the high level function `raw_to_bids`, which
+# is the core of MNE-BIDS. Generally, `raw_to_bids` tries to extract as much
+# meta data as possible from the raw data and then format it in a BIDS
+# compatible way. `raw_to_bids` takes a bunch of inputs, most of which are
+# however optional. The required inputs are:
 #
 # * subject_id
 # * task
 # * raw_file
 # * output_path
 #
-# as you can see in the docstring:
+# ... as you can see in the docstring:
 help(raw_to_bids)
 
 ###############################################################################
-# Let's assume the previous file name `sub-05_task-matchingpennies_eeg`
-# contained an error and that this was actually `sub-01` and we also want to
-# have another task name `MatchingPennies`.
-subject_id = '01'
-task = 'MatchingPennies'
-raw_file = raw  # We can specify the raw file, or the path to the .vhdr file.
-output_path = os.path.join(home, 'mne_data', 'eeg_matchingpennies_bids_tmp')
+# We loaded 'S001R02.edf', which corresponds to subject 1 in the second task.
+# The second task was to rest with closed eyes.
+subject_id = '001'  # zero padding to account for >100 subjects in this dataset
+task = 'resteyesclosed'
+raw_file = raw
+output_path = os.path.join(home, 'mne_data', 'eegmmidb_bids')
+
+# Clean up existing directories for the sake of the example
+if os.path.exists(output_path):
+    sh.rmtree(output_path)
 
 ###############################################################################
 # Now we just need to specify a few more EEG details to get something sensible:
@@ -118,51 +124,71 @@ output_path = os.path.join(home, 'mne_data', 'eeg_matchingpennies_bids_tmp')
 # First, tell `MNE-BIDS` that it is working with EEG data:
 kind = 'eeg'
 
-# The EEG reference used for the recording
-eeg_reference = 'Fz'
-
-# brief description of the event markers present in the data. This will become
-# the `trial_type` column in our BIDS `events.tsv`.
-event_id = {'left': 1, 'right': 2}
+# Brief description of the event markers present in the data. This will become
+# the `trial_type` column in our BIDS `events.tsv`. We know about the event
+# meaning from the documentation on PhysioBank
+trial_type = {'rest': 0, 'imagine left fist': 1, 'imagine right fist': 2}
 
 # Now convert our data to be in a new BIDS dataset.
 raw_to_bids(subject_id=subject_id, task=task, raw_file=raw_file,
-            output_path=output_path, kind=kind,
-            eeg_reference=eeg_reference, event_id=event_id)
+            output_path=output_path, kind=kind, event_id=trial_type)
+
+###############################################################################
+# What does our fresh BIDS directory look like?
+print_dir_tree(output_path)
+
+###############################################################################
+# Looks good so far, let's convert the data for all tasks and subjects.
+
+# Start with a clean directory
+sh.rmtree(output_path)
+
+# Some initial information that we found in the PhysioBank documentation
+task_names = {2: 'resteyesclosed',
+              4: 'imaginefists',  # run 1
+              12: 'imaginefists'  # run 2
+              }
+
+run_mapping = {2: None,  # for resting eyes closed task, there was only one run
+               4: '1',
+               12: '2'
+               }
+
+# Now go over subjects and *bidsify*
+for subj_idx in [1, 2]:
+    for task_idx in [2, 4, 12]:
+        # Load the data
+        edf_path = os.path.join(data_dir,
+                                'S{:03}'.format(subj_idx),
+                                'S{:03}R{:02}.edf'.format(subj_idx, task_idx))
+        raw = read_raw_edf(edf_path, preload=True)
+
+        # `kind` and `trial_type` were already defined above
+        raw_to_bids(subject_id='{:03}'.format(subj_idx),
+                    task=task_names[task_idx],
+                    run=run_mapping[task_idx],
+                    raw_file=raw,
+                    output_path=output_path,
+                    kind=kind,
+                    event_id=trial_type,
+                    overwrite=False
+                    )
 
 ###############################################################################
 # Step 3: Check and compare with standard
 # ---------------------------------------
-# Now we have written our BIDS directory. Having read the BIDS specification,
-# we know that the structure should approximately look like this:
-#
-# .. code-block:: python
-#
-#    ---------- CHANGES
-#    ---------- dataset_description.json
-#    ---------- participants.tsv
-#    ---------- README
-#    ---------- sub-xx
-#        ---------- modality
-#            ---------- sub-xx_task-yy_modality.ext
-#            ---------- sub-xx_task-yy_modality.json
-#            ---------- sub-xx_task-yy_events.tsv
-#
-#
-# Now, what does it actually look like?
+# Now we have written our BIDS directory.
 print_dir_tree(output_path)
 
 ###############################################################################
-# The three actual data files `.eeg`, `.vhdr`, and `.vmrk` have their new names
-# and the internal pointers within each data file have been updated
-# accordingly. In addition to that, MNE-BIDS has created a suitable directory
-# structure for us, started an `events.tsv` and `channels.tsv` and made an
+# MNE-BIDS has created a suitable directory structure for us, and among other
+# meta data files, it started an `events.tsv` and `channels.tsv` and made an
 # initial `dataset_description` on top!
 #
 # That's nice and it has saved us a lot of work. However, a few things are not
-# yet covered by MNE-BIDS for EEG data and will have to be added by hand. Most
-# importantly, the `README` file at the root of the directory, but also
-# `CHANGES`, `participants.tsv`, and some more specific entries.
+# yet covered by MNE-BIDS for EEG data and will require some manual tweaking.
+# Make sure to pay a lot of attention to the automatic output and make
+# adjustments where necessary.
 #
 # Remember that there is a convenient javascript tool to validate all your BIDS
 # directories called the "BIDS-validator", available as a web version and a
