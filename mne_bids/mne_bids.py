@@ -255,12 +255,10 @@ def _scans_tsv(raw, raw_fname, fname, verbose):
     meas_date = raw.info['meas_date']
     if isinstance(meas_date, tuple):
         meas_date = meas_date[0]
-
-    if meas_date is None:
-        acq_time = 'n/a'
-    else:
         acq_time = datetime.fromtimestamp(
             meas_date).strftime('%Y-%m-%dT%H:%M:%S')
+    else:
+        acq_time = 'n/a'
 
     df = pd.DataFrame(data={'filename': ['%s' % raw_fname],
                             'acq_time': [acq_time]},
