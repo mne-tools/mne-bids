@@ -1,6 +1,6 @@
 environment:
   global:
-      nodejs_version: "8.12.0"
+      nodejs_version: "10.0.0"
       PYTHON: "C:\\conda"
       CONDA_ENVIRONMENT: "environment.yml"
       PIP_DEPENDENCIES: "codecov pytest-faulthandler"
