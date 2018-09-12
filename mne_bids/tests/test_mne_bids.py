@@ -11,8 +11,10 @@ For each supported file format, implement a test.
 
 import os
 import os.path as op
-import pandas as pd
+import pytest
+import subprocess
 
+import pandas as pd
 import mne
 from mne.datasets import testing
 from mne.utils import _TempDir, run_subprocess
@@ -127,6 +129,12 @@ def test_bti():
                 task=task, raw_file=raw_fname, config=config_fname,
                 hsp=headshape_fname, output_path=output_path,
                 verbose=True, overwrite=True)
-    cmd = ['bids-validator', output_path]
-    run_subprocess(cmd, shell=shell)
+
     assert op.exists(op.join(output_path, 'participants.tsv'))
+
+    # FIXME: see these issues for reference:
+    # https://github.com/mne-tools/mne-bids/pull/84
+    # https://github.com/INCF/bids-validator/issues/553
+    with pytest.raises(subprocess.CalledProcessError):
+        cmd = ['bids-validator', output_path]
+        run_subprocess(cmd, shell=shell)
