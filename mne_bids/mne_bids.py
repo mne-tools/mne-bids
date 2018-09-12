@@ -205,6 +205,9 @@ def _participants_tsv(raw, subject_id, group, fname, verbose):
         meas_date = raw.info.get('meas_date', None)
         if isinstance(meas_date, tuple):
             meas_date = meas_date[0]
+        elif not isinstance(meas_date, tuple) and meas_date is not None:
+            raise ValueError('\n\nUnexpected meas_date: "{}" of type "{}"\n\n'
+                             ''.format(meas_date, type(meas_date)))
         if meas_date is not None and age is not None:
             bday = datetime(age[0], age[1], age[2])
             meas_datetime = datetime.fromtimestamp(meas_date)
