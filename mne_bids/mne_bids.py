@@ -645,6 +645,7 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
 
     # Copy the imaging data files
     # Re-save FIF files to fix the file pointer for files with multiple parts
+    # This is WIP, see: https://github.com/mne-tools/mne-python/pull/5470
     if ext in ['.fif']:
         raw.save(raw_file_bids, overwrite=overwrite)
     # CTF data is saved in a directory

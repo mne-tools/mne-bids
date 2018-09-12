@@ -57,7 +57,7 @@ def test_make_folders():
     assert op.isdir(op.join(output_path, 'sub-hi', 'ba'))
 
 
-def test__check_types():
+def test_check_types():
     """Test the check whether vars are str or None."""
     assert _check_types(['foo', 'bar', None]) is None
     with pytest.raises(ValueError):
@@ -117,7 +117,7 @@ def test_copyfile_brainvision():
 
     # IO error testing
     with pytest.raises(ValueError):
-        copyfile_brainvision(raw_fname, new_name+'.eeg')
+        copyfile_brainvision(raw_fname, new_name + '.eeg')
 
     # Try to copy the file
     copyfile_brainvision(raw_fname, new_name)
@@ -142,7 +142,7 @@ def test_copyfile_eeglab():
 
     # IO error testing
     with pytest.raises(ValueError):
-        copyfile_eeglab(raw_fname, new_name+'.wrong')
+        copyfile_eeglab(raw_fname, new_name + '.wrong')
 
     # .fdt not implemented error
     with pytest.raises(ValueError):

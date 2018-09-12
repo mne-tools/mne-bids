@@ -186,7 +186,7 @@ def test_bdf():
 
 def test_set():
     """Test raw_to_bids conversion for EEGLAB data."""
-    output_path = '/home/stefanappelhoff/Desktop/bogus'  # _TempDir()
+    output_path = _TempDir()
     data_path = op.join(testing.data_path(), 'EEGLAB')
     raw_fname = op.join(data_path, 'test_raw_onefile.set')
 

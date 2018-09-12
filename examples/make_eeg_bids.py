@@ -1,9 +1,9 @@
 """
 =========================
-Use MNE-Bids for EEG Data
+Use MNE-BIDS for EEG Data
 =========================
 
-In this example, we use MNE-Bids to create a BIDS-compatible directory of EEG
+In this example, we use MNE-BIDS to create a BIDS-compatible directory of EEG
 data. Specifically, we will follow these steps:
 
 #. Download some EEG data from the
@@ -94,7 +94,7 @@ print(raw)
 # With this simple step we have everything to start a new BIDS directory using
 # our data. To do that, we can use the high level function `raw_to_bids`, which
 # is the core of MNE-BIDS. Generally, `raw_to_bids` tries to extract as much
-# meta data as possible from the raw data and then format it in a BIDS
+# meta data as possible from the raw data and then formats it in a BIDS
 # compatible way. `raw_to_bids` takes a bunch of inputs, most of which are
 # however optional. The required inputs are:
 #
