@@ -18,12 +18,12 @@ install:
     - conda install --yes --quiet numpy=1.13.1 scipy=0.19.1 matplotlib pandas=0.20.3
     - pip install flake8 pytest nose coverage coveralls
     - |
-      git clone --depth 1 https://github.com/mne-tools/mne-python.git -b maint/0.16
+      git clone --depth 1 https://github.com/mne-tools/mne-python.git
       cd mne-python
       pip install --no-deps -e .
       cd ../
     - python setup.py develop
-    - npm install -g https://github.com/INCF/bids-validator.git#f8b71e47323e885168103be33d3bcbf7ea3b7da9
+    - npm install -g https://github.com/INCF/bids-validator.git
 script:
     - make
     - flake8 --count mne_bids
