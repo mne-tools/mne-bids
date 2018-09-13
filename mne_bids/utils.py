@@ -486,7 +486,7 @@ def copyfile_eeglab(src, dest):
     # Extract matlab struct "EEG" from EEGLAB file
     # if the data field is a string, it points to a .fdt file in src dir
     eeg = _check_load_mat(src, None)
-    if isinstance(eeg['data'], str):
+    if isinstance(eeg['data'], string_types):
         raise ValueError('Found associated .fdt file containing the binary '
                          'EEG data: {}.\nMNE-BIDS does currently not support '
                          ' .fdt files. Please re-load your .set file using '
