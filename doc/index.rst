@@ -32,3 +32,6 @@ Bug reports
 ===========
 
 Use the `github issue tracker <https://github.com/mne-tools/mne-bids/issues>`_ to report bugs.
+
+:ref:`whats_new`
+================
