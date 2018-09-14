@@ -6,8 +6,7 @@ Use MNE-BIDS for EEG Data
 In this example, we use MNE-BIDS to create a BIDS-compatible directory of EEG
 data. Specifically, we will follow these steps:
 
-#. Download some EEG data from the
-`PhysioBank database <https://physionet.org/physiobank/database>`_.
+#. Download some EEG data from the `PhysioBank database <https://physionet.org/physiobank/database>`_.
 
 #. Load the data, extract information, and save in a new BIDS directory
 
