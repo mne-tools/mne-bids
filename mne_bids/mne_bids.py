@@ -439,7 +439,7 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, eeg_ref=None,
         ('RecordingDuration', raw.times[-1]),
         ('RecordingType', rec_type)]
     ch_info_json_meg = [
-        ('DewarPosition', 'XXX'),
+        ('DewarPosition', 'n/a'),
         ('DigitizedLandmarks', False),
         ('DigitizedHeadPoints', False),
         ('MEGChannelCount', n_megchan),
