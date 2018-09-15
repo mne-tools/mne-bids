@@ -536,14 +536,11 @@ def _infer_eeg_placement_scheme(raw):
 
     """
     # How many of the channels in raw are based on the extended 10/20 system
-    # If more than 80 percent, assume it is 10/20
+    raw.pick_types(meg=False, eeg=True)
+    channel_names = raw.ch_names
     montage1005 = read_montage(kind='standard_1005')
-    counter1005 = 0
-    for ch in raw.ch_names:
-        if ch in montage1005.ch_names:
-            counter1005 += 1
 
-    if counter1005 >= int(0.8*len(raw.ch_names)):
+    if set(channel_names).issubset(set(montage1005.ch_names)):
         placement_scheme = 'based on the extended 10/20 system'
     else:
         placement_scheme = 'n/a'
