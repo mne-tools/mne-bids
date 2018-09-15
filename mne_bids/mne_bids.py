@@ -93,7 +93,7 @@ def _channels_tsv(raw, fname, verbose):
                     ecog='Electrocorticography',
                     seeg='StereoEEG',
                     ecg='ElectroCardioGram',
-                    eog='ElectrOculoGram',
+                    eog='ElectroOculoGram',
                     misc='Miscellaneous')
     get_specific = ('mag', 'ref_meg', 'grad')
 
