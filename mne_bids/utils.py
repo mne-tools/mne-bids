@@ -23,6 +23,7 @@ from mne.io.eeglab.eeglab import _check_load_mat
 
 from .config import BIDS_VERSION
 from .io import _parse_ext
+from .pick import coil_type
 
 
 def print_dir_tree(dir):
@@ -535,14 +536,22 @@ def _infer_eeg_placement_scheme(raw):
         extraction.
 
     """
-    # How many of the channels in raw are based on the extended 10/20 system
-    raw.pick_types(meg=False, eeg=True)
-    channel_names = raw.ch_names
-    montage1005 = read_montage(kind='standard_1005')
-
-    if set(channel_names).issubset(set(montage1005.ch_names)):
-        placement_scheme = 'based on the extended 10/20 system'
+    placement_scheme = 'n/a'
+    # Check if the raw data contains eeg data at all
+    for ch_idx in range(len(raw.ch_names)):
+        if coil_type(raw.info, ch_idx) == 'eeg':
+            break
     else:
-        placement_scheme = 'n/a'
+        return placement_scheme
+
+    # How many of the channels in raw are based on the extended 10/20 system
+    raw.load_data()
+    raw.pick_types(meg=False, eeg=True)
+    channel_names = [ch.lower() for ch in raw.ch_names]
+    montage1005 = read_montage(kind='standard_1005')
+    montage1005_names = [ch.lower() for ch in montage1005.ch_names]
+
+    if set(channel_names).issubset(set(montage1005_names)):
+        placement_scheme = 'based on the extended 10/20 system'
 
     return placement_scheme
