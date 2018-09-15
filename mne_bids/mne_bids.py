@@ -617,16 +617,16 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
         _coordsystem_json(raw, unit, orient, manufacturer, coordsystem_fname,
                           verbose)
 
+    events = _read_events(events_data, raw)
+    if len(events) > 0:
+        _events_tsv(events, raw, events_tsv_fname, event_id, verbose)
+
     make_dataset_description(output_path, name=" ", verbose=verbose)
     _sidecar_json(raw, task, manufacturer, data_meta_fname, kind, eeg_ref,
                   eeg_gnd, verbose)
     _participants_tsv(raw, subject_id, "n/a", participants_fname, verbose)
     _channels_tsv(raw, channels_fname, verbose)
     _scans_tsv(raw, os.path.join(kind, raw_file_bids), scans_fname, verbose)
-
-    events = _read_events(events_data, raw)
-    if len(events) > 0:
-        _events_tsv(events, raw, events_tsv_fname, event_id, verbose)
 
     # set the raw file name to now be the absolute path to ensure the files
     # are placed in the right location
