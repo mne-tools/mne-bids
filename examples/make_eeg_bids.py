@@ -184,10 +184,9 @@ print_dir_tree(output_path)
 # meta data files, it started an `events.tsv` and `channels.tsv` and made an
 # initial `dataset_description` on top!
 #
-# That's nice and it has saved us a lot of work. However, a few things are not
-# yet covered by MNE-BIDS for EEG data and will require some manual tweaking.
-# Make sure to pay a lot of attention to the automatic output and make
-# adjustments where necessary.
+# Now it's time to manually check the BIDS directory and the meta files to add
+# all the information that MNE-BIDS could not infer. these places are marked
+# with "n/a".
 #
 # Remember that there is a convenient javascript tool to validate all your BIDS
 # directories called the "BIDS-validator", available as a web version and a
