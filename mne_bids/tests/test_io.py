@@ -7,7 +7,7 @@ import pytest
 from mne_bids.io import _parse_ext, _read_raw
 
 
-def test__parse_ext():
+def test_parse_ext():
     """Test the file extension extraction."""
     f = 'sub-05_task-matchingpennies.vhdr'
     fname, ext = _parse_ext(f)
@@ -21,7 +21,7 @@ def test__parse_ext():
     assert ext == '.pdf'
 
 
-def test__read_raw():
+def test_read_raw():
     """Test the raw reading."""
     # Use a file ending that does not exist
     f = 'file.bogus'

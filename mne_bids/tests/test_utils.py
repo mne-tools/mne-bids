@@ -4,15 +4,20 @@
 #          Stefan Appelhoff <stefan.appelhoff@mailbox.org>
 #
 # License: BSD (3-clause)
-import os
-
+import os.path as op
 import pytest
-
 from datetime import datetime
 
+import mne
+from mne.datasets import testing
 from mne.utils import _TempDir
+
 from mne_bids.utils import (make_bids_folders, make_bids_filename,
-                            _check_types, print_dir_tree, age_on_date)
+                            _check_types, print_dir_tree, age_on_date,
+                            _get_brainvision_paths, copyfile_brainvision,
+                            copyfile_eeglab, _infer_eeg_placement_scheme,)
+
+base_path = op.join(op.dirname(mne.__file__), 'io')
 
 
 def test_print_dir_tree():
@@ -45,14 +50,14 @@ def test_make_folders():
     # Make sure folders are created properly
     output_path = _TempDir()
     make_bids_folders(subject='hi', session='foo', kind='ba', root=output_path)
-    assert os.path.isdir(os.path.join(output_path, 'sub-hi', 'ses-foo', 'ba'))
+    assert op.isdir(op.join(output_path, 'sub-hi', 'ses-foo', 'ba'))
     # If we remove a kwarg the folder shouldn't be created
     output_path = _TempDir()
     make_bids_folders(subject='hi', kind='ba', root=output_path)
-    assert os.path.isdir(os.path.join(output_path, 'sub-hi', 'ba'))
+    assert op.isdir(op.join(output_path, 'sub-hi', 'ba'))
 
 
-def test__check_types():
+def test_check_types():
     """Test the check whether vars are str or None."""
     assert _check_types(['foo', 'bar', None]) is None
     with pytest.raises(ValueError):
@@ -71,3 +76,99 @@ def test_age_on_date():
     assert age_on_date(bday, exp3) == 24
     with pytest.raises(ValueError):
         age_on_date(bday, exp4)
+
+
+def test_get_brainvision_paths():
+    """Test getting the file links from a BrainVision header."""
+    test_dir = _TempDir()
+    data_path = op.join(base_path, 'brainvision', 'tests', 'data')
+    raw_fname = op.join(data_path, 'test.vhdr')
+
+    with pytest.raises(ValueError):
+        _get_brainvision_paths(op.join(data_path, 'test.eeg'))
+
+    # Write some temporary test files
+    with open(op.join(test_dir, 'test1.vhdr'), 'w') as f:
+        f.write('DataFile=testing.eeg')
+
+    with open(op.join(test_dir, 'test2.vhdr'), 'w') as f:
+        f.write('MarkerFile=testing.vmrk')
+
+    with pytest.raises(ValueError):
+        _get_brainvision_paths(op.join(test_dir, 'test1.vhdr'))
+
+    with pytest.raises(ValueError):
+        _get_brainvision_paths(op.join(test_dir, 'test2.vhdr'))
+
+    # This should work
+    eeg_file_path, vmrk_file_path = _get_brainvision_paths(raw_fname)
+    head, tail = op.split(eeg_file_path)
+    assert tail == 'test.eeg'
+    head, tail = op.split(vmrk_file_path)
+    assert tail == 'test.vmrk'
+
+
+def test_copyfile_brainvision():
+    """Test the copying of BrainVision vhdr, vmrk and eeg files."""
+    output_path = _TempDir()
+    data_path = op.join(base_path, 'brainvision', 'tests', 'data')
+    raw_fname = op.join(data_path, 'test.vhdr')
+    new_name = op.join(output_path, 'tested_conversion.vhdr')
+
+    # IO error testing
+    with pytest.raises(ValueError):
+        copyfile_brainvision(raw_fname, new_name + '.eeg')
+
+    # Try to copy the file
+    copyfile_brainvision(raw_fname, new_name)
+
+    # Have all been copied?
+    head, tail = op.split(new_name)
+    assert op.exists(op.join(head, 'tested_conversion.vhdr'))
+    assert op.exists(op.join(head, 'tested_conversion.vmrk'))
+    assert op.exists(op.join(head, 'tested_conversion.eeg'))
+
+    # Try to read with MNE - if this works, the links are correct
+    raw = mne.io.read_raw_brainvision(new_name)
+    assert raw.filenames[0] == (op.join(head, 'tested_conversion.eeg'))
+
+
+def test_copyfile_eeglab():
+    """Test the copying of EEGlab set and fdt files."""
+    output_path = _TempDir()
+    data_path = op.join(testing.data_path(), 'EEGLAB')
+    raw_fname = op.join(data_path, 'test_raw.set')
+    new_name = op.join(output_path, 'tested_conversion.set')
+
+    # IO error testing
+    with pytest.raises(ValueError):
+        copyfile_eeglab(raw_fname, new_name + '.wrong')
+
+    # .fdt not implemented error
+    with pytest.raises(ValueError):
+        copyfile_eeglab(raw_fname, new_name)
+
+
+def test_infer_eeg_placement_scheme():
+    """Test inferring a correct EEG placement scheme."""
+    # no eeg channels case (e.g., MEG data)
+    data_path = op.join(base_path, 'bti', 'tests', 'data')
+    raw_fname = op.join(data_path, 'test_pdf_linux')
+    config_fname = op.join(data_path, 'test_config_linux')
+    headshape_fname = op.join(data_path, 'test_hs_linux')
+    raw = mne.io.read_raw_bti(raw_fname, config_fname, headshape_fname)
+    placement_scheme = _infer_eeg_placement_scheme(raw)
+    assert placement_scheme == 'n/a'
+
+    # 1020 case
+    data_path = op.join(base_path, 'brainvision', 'tests', 'data')
+    raw_fname = op.join(data_path, 'test.vhdr')
+    raw = mne.io.read_raw_brainvision(raw_fname)
+    placement_scheme = _infer_eeg_placement_scheme(raw)
+    assert placement_scheme == 'based on the extended 10/20 system'
+
+    # Unknown case
+    raw_fname = op.join(testing.data_path(), 'Brainvision', 'test_NO.vhdr')
+    raw = mne.io.read_raw_brainvision(raw_fname)
+    placement_scheme = _infer_eeg_placement_scheme(raw)
+    assert placement_scheme == 'n/a'
