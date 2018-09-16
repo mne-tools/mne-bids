@@ -144,8 +144,8 @@ Let us loop over the subjects and create BIDS-compatible folder
 
     Writing '/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/sub-01_ses-01_scans.tsv'...
 
-                  acq_time                                           filename
-    0  2009-04-07T10:39:35  /home/mainak/mne_data/ds000117-bids/sub-01/ses...
+                                                filename             acq_time
+    0  meg/sub-01_ses-01_task-VisualFaces_run-01_meg.fif  2009-04-07T10:39:35
 
     Writing '/home/mainak/mne_data/ds000117-bids/dataset_description.json'...
 
@@ -154,7 +154,7 @@ Let us loop over the subjects and create BIDS-compatible folder
         "BIDSVersion": "1.1.1 (draft)"
     }
 
-    Writing '/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_meg.json'...
+    Writing '/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-01_meg.json'...
 
     {
         "TaskName": "VisualFaces", 
@@ -175,33 +175,39 @@ Let us loop over the subjects and create BIDS-compatible folder
         "TriggerChannelCount": 3
     }
 
+    Writing '/home/mainak/mne_data/ds000117-bids/participants.tsv'...
+
+      participant_id  age sex group
+    0         sub-01   10   M   n/a
+
     Writing '/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-01_channels.tsv'...
 
-          name     type units   description sampling_frequency low_cutoff  \
-    0  MEG0113  MEGGRAD   T/m   Gradiometer            1100.00       0.00   
-    1  MEG0112  MEGGRAD   T/m   Gradiometer            1100.00       0.00   
-    2  MEG0111   MEGMAG     T  Magnetometer            1100.00       0.00   
-    3  MEG0122  MEGGRAD   T/m   Gradiometer            1100.00       0.00   
-    4  MEG0123  MEGGRAD   T/m   Gradiometer            1100.00       0.00   
+          name     type units   description  sampling_frequency  low_cutoff  \
+    0  MEG0113  MEGGRAD   T/m   Gradiometer              1100.0         0.0   
+    1  MEG0112  MEGGRAD   T/m   Gradiometer              1100.0         0.0   
+    2  MEG0111   MEGMAG     T  Magnetometer              1100.0         0.0   
+    3  MEG0122  MEGGRAD   T/m   Gradiometer              1100.0         0.0   
+    4  MEG0123  MEGGRAD   T/m   Gradiometer              1100.0         0.0   
 
-      high_cutoff status  
-    0      356.40   good  
-    1      356.40   good  
-    2      356.40   good  
-    3      356.40   good  
-    4      356.40   good  
+       high_cutoff status  
+    0   356.399994   good  
+    1   356.399994   good  
+    2   356.399994   good  
+    3   356.399994   good  
+    4   356.399994   good  
     296 events found
     Event IDs: [   5    6    7   13   14   15   17   18   19  256  261  262  263  269  270
       271  273  274  275 4096 4101 4102 4103 4109 4110 4111 4114]
 
     Writing '/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-01_events.tsv'...
 
-           onset  duration              condition
-    0  22.958182       0.0        scrambled/first
-    1  23.731818       0.0                    n/a
-    2  26.049091       0.0        scrambled/first
-    3  26.928182       0.0                    n/a
-    4  29.222727       0.0  face/unfamiliar/first
+           onset  duration             trial_type  event_value  event_sample
+    0  22.958182       0.0        scrambled/first           17         25254
+    1  23.731818       0.0                    NaN          273         26105
+    2  26.049091       0.0        scrambled/first           17         28654
+    3  26.928182       0.0                    NaN          273         29621
+    4  29.222727       0.0  face/unfamiliar/first           13         32145
+    Writing data files to /home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-01_meg.fif
     This filename (/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-01_meg.fif) does not conform to MNE naming conventions. All raw files should end with raw.fif, raw_sss.fif, raw_tsss.fif, raw.fif.gz, raw_sss.fif.gz or raw_tsss.fif.gz
     Writing /home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-01_meg.fif
     Closing /home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-01_meg.fif [done]
@@ -223,8 +229,8 @@ Let us loop over the subjects and create BIDS-compatible folder
 
     Writing '/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/sub-01_ses-01_scans.tsv'...
 
-                  acq_time                                           filename
-    0  2009-04-07T10:52:59  /home/mainak/mne_data/ds000117-bids/sub-01/ses...
+                                                filename             acq_time
+    0  meg/sub-01_ses-01_task-VisualFaces_run-02_meg.fif  2009-04-07T10:52:59
 
     Writing '/home/mainak/mne_data/ds000117-bids/dataset_description.json'...
 
@@ -233,7 +239,7 @@ Let us loop over the subjects and create BIDS-compatible folder
         "BIDSVersion": "1.1.1 (draft)"
     }
 
-    Writing '/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_meg.json'...
+    Writing '/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-02_meg.json'...
 
     {
         "TaskName": "VisualFaces", 
@@ -254,33 +260,39 @@ Let us loop over the subjects and create BIDS-compatible folder
         "TriggerChannelCount": 3
     }
 
+    Writing '/home/mainak/mne_data/ds000117-bids/participants.tsv'...
+
+      participant_id  age sex group
+    0         sub-01   10   M   n/a
+
     Writing '/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-02_channels.tsv'...
 
-          name     type units   description sampling_frequency low_cutoff  \
-    0  MEG0113  MEGGRAD   T/m   Gradiometer            1100.00       0.00   
-    1  MEG0112  MEGGRAD   T/m   Gradiometer            1100.00       0.00   
-    2  MEG0111   MEGMAG     T  Magnetometer            1100.00       0.00   
-    3  MEG0122  MEGGRAD   T/m   Gradiometer            1100.00       0.00   
-    4  MEG0123  MEGGRAD   T/m   Gradiometer            1100.00       0.00   
+          name     type units   description  sampling_frequency  low_cutoff  \
+    0  MEG0113  MEGGRAD   T/m   Gradiometer              1100.0         0.0   
+    1  MEG0112  MEGGRAD   T/m   Gradiometer              1100.0         0.0   
+    2  MEG0111   MEGMAG     T  Magnetometer              1100.0         0.0   
+    3  MEG0122  MEGGRAD   T/m   Gradiometer              1100.0         0.0   
+    4  MEG0123  MEGGRAD   T/m   Gradiometer              1100.0         0.0   
 
-      high_cutoff status  
-    0      356.40   good  
-    1      356.40   good  
-    2      356.40   good  
-    3      356.40   good  
-    4      356.40   good  
+       high_cutoff status  
+    0   356.399994   good  
+    1   356.399994   good  
+    2   356.399994   good  
+    3   356.399994   good  
+    4   356.399994   good  
     296 events found
     Event IDs: [   5    6    7   13   14   15   17   18   19  256  261  262  263  269  270
       271  273  274  275 4096 4109 4110 4111]
 
     Writing '/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-02_events.tsv'...
 
-           onset  duration              condition
-    0  28.032727       0.0        scrambled/first
-    1  28.837273       0.0                    n/a
-    2  31.156364       0.0  face/unfamiliar/first
-    3  32.131818       0.0                    n/a
-    4  34.213636       0.0      face/famous/first
+           onset  duration             trial_type  event_value  event_sample
+    0  28.032727       0.0        scrambled/first           17         30836
+    1  28.837273       0.0                    NaN          273         31721
+    2  31.156364       0.0  face/unfamiliar/first           13         34272
+    3  32.131818       0.0                    NaN          256         35345
+    4  34.213636       0.0      face/famous/first            5         37635
+    Writing data files to /home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-02_meg.fif
     This filename (/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-02_meg.fif) does not conform to MNE naming conventions. All raw files should end with raw.fif, raw_sss.fif, raw_tsss.fif, raw.fif.gz, raw_sss.fif.gz or raw_tsss.fif.gz
     Writing /home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-02_meg.fif
     Closing /home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-02_meg.fif [done]
@@ -302,8 +314,8 @@ Let us loop over the subjects and create BIDS-compatible folder
 
     Writing '/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/sub-01_ses-01_scans.tsv'...
 
-                  acq_time                                           filename
-    0  2009-04-07T11:02:25  /home/mainak/mne_data/ds000117-bids/sub-01/ses...
+                                                filename             acq_time
+    0  meg/sub-01_ses-01_task-VisualFaces_run-03_meg.fif  2009-04-07T11:02:25
 
     Writing '/home/mainak/mne_data/ds000117-bids/dataset_description.json'...
 
@@ -312,7 +324,7 @@ Let us loop over the subjects and create BIDS-compatible folder
         "BIDSVersion": "1.1.1 (draft)"
     }
 
-    Writing '/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_meg.json'...
+    Writing '/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-03_meg.json'...
 
     {
         "TaskName": "VisualFaces", 
@@ -333,33 +345,39 @@ Let us loop over the subjects and create BIDS-compatible folder
         "TriggerChannelCount": 3
     }
 
+    Writing '/home/mainak/mne_data/ds000117-bids/participants.tsv'...
+
+      participant_id  age sex group
+    0         sub-01   10   M   n/a
+
     Writing '/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-03_channels.tsv'...
 
-          name     type units   description sampling_frequency low_cutoff  \
-    0  MEG0113  MEGGRAD   T/m   Gradiometer            1100.00       0.00   
-    1  MEG0112  MEGGRAD   T/m   Gradiometer            1100.00       0.00   
-    2  MEG0111   MEGMAG     T  Magnetometer            1100.00       0.00   
-    3  MEG0122  MEGGRAD   T/m   Gradiometer            1100.00       0.00   
-    4  MEG0123  MEGGRAD   T/m   Gradiometer            1100.00       0.00   
+          name     type units   description  sampling_frequency  low_cutoff  \
+    0  MEG0113  MEGGRAD   T/m   Gradiometer              1100.0         0.0   
+    1  MEG0112  MEGGRAD   T/m   Gradiometer              1100.0         0.0   
+    2  MEG0111   MEGMAG     T  Magnetometer              1100.0         0.0   
+    3  MEG0122  MEGGRAD   T/m   Gradiometer              1100.0         0.0   
+    4  MEG0123  MEGGRAD   T/m   Gradiometer              1100.0         0.0   
 
-      high_cutoff status  
-    0      356.40   good  
-    1      356.40   good  
-    2      356.40   good  
-    3      356.40   good  
-    4      356.40   good  
+       high_cutoff status  
+    0   356.399994   good  
+    1   356.399994   good  
+    2   356.399994   good  
+    3   356.399994   good  
+    4   356.399994   good  
     119 events found
     Event IDs: [   5    6    7   13   14   15   17   18   19  256  261  262  263  269  270
       271  273  274  275 4096 4103 4110 4352]
 
     Writing '/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-03_events.tsv'...
 
-           onset  duration            condition
-    0  24.560000       0.0      scrambled/first
-    1  25.270909       0.0                  n/a
-    2  27.700000       0.0  scrambled/immediate
-    3  28.550000       0.0                  n/a
-    4  30.740909       0.0      scrambled/first
+           onset  duration           trial_type  event_value  event_sample
+    0  24.560000       0.0      scrambled/first           17         27016
+    1  25.270909       0.0                  NaN          273         27798
+    2  27.700000       0.0  scrambled/immediate           18         30470
+    3  28.550000       0.0                  NaN          256         31405
+    4  30.740909       0.0      scrambled/first           17         33815
+    Writing data files to /home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-03_meg.fif
     This filename (/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-03_meg.fif) does not conform to MNE naming conventions. All raw files should end with raw.fif, raw_sss.fif, raw_tsss.fif, raw.fif.gz, raw_sss.fif.gz or raw_tsss.fif.gz
     Writing /home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-03_meg.fif
     Closing /home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-03_meg.fif [done]
@@ -381,8 +399,8 @@ Let us loop over the subjects and create BIDS-compatible folder
 
     Writing '/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/sub-01_ses-01_scans.tsv'...
 
-                  acq_time                                           filename
-    0  2009-04-07T11:17:45  /home/mainak/mne_data/ds000117-bids/sub-01/ses...
+                                                filename             acq_time
+    0  meg/sub-01_ses-01_task-VisualFaces_run-04_meg.fif  2009-04-07T11:17:45
 
     Writing '/home/mainak/mne_data/ds000117-bids/dataset_description.json'...
 
@@ -391,7 +409,7 @@ Let us loop over the subjects and create BIDS-compatible folder
         "BIDSVersion": "1.1.1 (draft)"
     }
 
-    Writing '/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_meg.json'...
+    Writing '/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-04_meg.json'...
 
     {
         "TaskName": "VisualFaces", 
@@ -412,33 +430,39 @@ Let us loop over the subjects and create BIDS-compatible folder
         "TriggerChannelCount": 3
     }
 
+    Writing '/home/mainak/mne_data/ds000117-bids/participants.tsv'...
+
+      participant_id  age sex group
+    0         sub-01   10   M   n/a
+
     Writing '/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-04_channels.tsv'...
 
-          name     type units   description sampling_frequency low_cutoff  \
-    0  MEG0113  MEGGRAD   T/m   Gradiometer            1100.00       0.00   
-    1  MEG0112  MEGGRAD   T/m   Gradiometer            1100.00       0.00   
-    2  MEG0111   MEGMAG     T  Magnetometer            1100.00       0.00   
-    3  MEG0122  MEGGRAD   T/m   Gradiometer            1100.00       0.00   
-    4  MEG0123  MEGGRAD   T/m   Gradiometer            1100.00       0.00   
+          name     type units   description  sampling_frequency  low_cutoff  \
+    0  MEG0113  MEGGRAD   T/m   Gradiometer              1100.0         0.0   
+    1  MEG0112  MEGGRAD   T/m   Gradiometer              1100.0         0.0   
+    2  MEG0111   MEGMAG     T  Magnetometer              1100.0         0.0   
+    3  MEG0122  MEGGRAD   T/m   Gradiometer              1100.0         0.0   
+    4  MEG0123  MEGGRAD   T/m   Gradiometer              1100.0         0.0   
 
-      high_cutoff status  
-    0      356.40   good  
-    1      356.40   good  
-    2      356.40   good  
-    3      356.40   good  
-    4      356.40   good  
+       high_cutoff status  
+    0   356.399994   good  
+    1   356.399994   good  
+    2   356.399994   good  
+    3   356.399994   good  
+    4   356.399994   good  
     294 events found
     Event IDs: [   5    6    7   13   14   15   17   18   19  256  261  262  263  269  270
       271  273  274  275 4096 4109 4110]
 
     Writing '/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-04_events.tsv'...
 
-           onset  duration                  condition
-    0  25.407273       0.0      face/unfamiliar/first
-    1  26.219091       0.0                        n/a
-    2  28.498182       0.0  face/unfamiliar/immediate
-    3  29.337273       0.0                        n/a
-    4  31.789091       0.0      face/unfamiliar/first
+           onset  duration                 trial_type  event_value  event_sample
+    0  25.407273       0.0      face/unfamiliar/first           13         27948
+    1  26.219091       0.0                        NaN          269         28841
+    2  28.498182       0.0  face/unfamiliar/immediate           14         31348
+    3  29.337273       0.0                        NaN          270         32271
+    4  31.789091       0.0      face/unfamiliar/first           13         34968
+    Writing data files to /home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-04_meg.fif
     This filename (/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-04_meg.fif) does not conform to MNE naming conventions. All raw files should end with raw.fif, raw_sss.fif, raw_tsss.fif, raw.fif.gz, raw_sss.fif.gz or raw_tsss.fif.gz
     Writing /home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-04_meg.fif
     Closing /home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-04_meg.fif [done]
@@ -460,8 +484,8 @@ Let us loop over the subjects and create BIDS-compatible folder
 
     Writing '/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/sub-01_ses-01_scans.tsv'...
 
-                  acq_time                                           filename
-    0  2009-04-07T11:27:38  /home/mainak/mne_data/ds000117-bids/sub-01/ses...
+                                                filename             acq_time
+    0  meg/sub-01_ses-01_task-VisualFaces_run-05_meg.fif  2009-04-07T11:27:38
 
     Writing '/home/mainak/mne_data/ds000117-bids/dataset_description.json'...
 
@@ -470,7 +494,7 @@ Let us loop over the subjects and create BIDS-compatible folder
         "BIDSVersion": "1.1.1 (draft)"
     }
 
-    Writing '/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_meg.json'...
+    Writing '/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-05_meg.json'...
 
     {
         "TaskName": "VisualFaces", 
@@ -491,33 +515,39 @@ Let us loop over the subjects and create BIDS-compatible folder
         "TriggerChannelCount": 3
     }
 
+    Writing '/home/mainak/mne_data/ds000117-bids/participants.tsv'...
+
+      participant_id  age sex group
+    0         sub-01   10   M   n/a
+
     Writing '/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-05_channels.tsv'...
 
-          name     type units   description sampling_frequency low_cutoff  \
-    0  MEG0113  MEGGRAD   T/m   Gradiometer            1100.00       0.00   
-    1  MEG0112  MEGGRAD   T/m   Gradiometer            1100.00       0.00   
-    2  MEG0111   MEGMAG     T  Magnetometer            1100.00       0.00   
-    3  MEG0122  MEGGRAD   T/m   Gradiometer            1100.00       0.00   
-    4  MEG0123  MEGGRAD   T/m   Gradiometer            1100.00       0.00   
+          name     type units   description  sampling_frequency  low_cutoff  \
+    0  MEG0113  MEGGRAD   T/m   Gradiometer              1100.0         0.0   
+    1  MEG0112  MEGGRAD   T/m   Gradiometer              1100.0         0.0   
+    2  MEG0111   MEGMAG     T  Magnetometer              1100.0         0.0   
+    3  MEG0122  MEGGRAD   T/m   Gradiometer              1100.0         0.0   
+    4  MEG0123  MEGGRAD   T/m   Gradiometer              1100.0         0.0   
 
-      high_cutoff status  
-    0      356.40   good  
-    1      356.40   good  
-    2      356.40   good  
-    3      356.40   good  
-    4      356.40   good  
+       high_cutoff status  
+    0   356.399994   good  
+    1   356.399994   good  
+    2   356.399994   good  
+    3   356.399994   good  
+    4   356.399994   good  
     292 events found
     Event IDs: [   5    6    7   13   14   15   17   18   19  256  261  262  263  269  270
       271  273  274  275 4096 4103 4110 4111]
 
     Writing '/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-05_events.tsv'...
 
-           onset  duration            condition
-    0  25.717273       0.0    face/famous/first
-    1  26.469091       0.0                  n/a
-    2  29.023636       0.0      scrambled/first
-    3  29.599091       0.0                  n/a
-    4  32.130909       0.0  scrambled/immediate
+           onset  duration           trial_type  event_value  event_sample
+    0  25.717273       0.0    face/famous/first            5         28289
+    1  26.469091       0.0                  NaN          261         29116
+    2  29.023636       0.0      scrambled/first           17         31926
+    3  29.599091       0.0                  NaN          273         32559
+    4  32.130909       0.0  scrambled/immediate           18         35344
+    Writing data files to /home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-05_meg.fif
     This filename (/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-05_meg.fif) does not conform to MNE naming conventions. All raw files should end with raw.fif, raw_sss.fif, raw_tsss.fif, raw.fif.gz, raw_sss.fif.gz or raw_tsss.fif.gz
     Writing /home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-05_meg.fif
     Closing /home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-05_meg.fif [done]
@@ -539,8 +569,8 @@ Let us loop over the subjects and create BIDS-compatible folder
 
     Writing '/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/sub-01_ses-01_scans.tsv'...
 
-                  acq_time                                           filename
-    0  2009-04-07T11:41:20  /home/mainak/mne_data/ds000117-bids/sub-01/ses...
+                                                filename             acq_time
+    0  meg/sub-01_ses-01_task-VisualFaces_run-06_meg.fif  2009-04-07T11:41:20
 
     Writing '/home/mainak/mne_data/ds000117-bids/dataset_description.json'...
 
@@ -549,7 +579,7 @@ Let us loop over the subjects and create BIDS-compatible folder
         "BIDSVersion": "1.1.1 (draft)"
     }
 
-    Writing '/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_meg.json'...
+    Writing '/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-06_meg.json'...
 
     {
         "TaskName": "VisualFaces", 
@@ -570,33 +600,39 @@ Let us loop over the subjects and create BIDS-compatible folder
         "TriggerChannelCount": 3
     }
 
+    Writing '/home/mainak/mne_data/ds000117-bids/participants.tsv'...
+
+      participant_id  age sex group
+    0         sub-01   10   M   n/a
+
     Writing '/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-06_channels.tsv'...
 
-          name     type units   description sampling_frequency low_cutoff  \
-    0  MEG0113  MEGGRAD   T/m   Gradiometer            1100.00       0.00   
-    1  MEG0112  MEGGRAD   T/m   Gradiometer            1100.00       0.00   
-    2  MEG0111   MEGMAG     T  Magnetometer            1100.00       0.00   
-    3  MEG0122  MEGGRAD   T/m   Gradiometer            1100.00       0.00   
-    4  MEG0123  MEGGRAD   T/m   Gradiometer            1100.00       0.00   
+          name     type units   description  sampling_frequency  low_cutoff  \
+    0  MEG0113  MEGGRAD   T/m   Gradiometer              1100.0         0.0   
+    1  MEG0112  MEGGRAD   T/m   Gradiometer              1100.0         0.0   
+    2  MEG0111   MEGMAG     T  Magnetometer              1100.0         0.0   
+    3  MEG0122  MEGGRAD   T/m   Gradiometer              1100.0         0.0   
+    4  MEG0123  MEGGRAD   T/m   Gradiometer              1100.0         0.0   
 
-      high_cutoff status  
-    0      356.40   good  
-    1      356.40   good  
-    2      356.40   good  
-    3      356.40   good  
-    4      356.40   good  
+       high_cutoff status  
+    0   356.399994   good  
+    1   356.399994   good  
+    2   356.399994   good  
+    3   356.399994   good  
+    4   356.399994   good  
     296 events found
     Event IDs: [   5    6    7   13   14   15   17   18   19  256  261  262  263  269  270
       271  273  274  275 4096 4110]
 
     Writing '/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-06_events.tsv'...
 
-           onset  duration          condition
-    0  25.204545       0.0  face/famous/first
-    1  25.850000       0.0                n/a
-    2  28.345455       0.0    scrambled/first
-    3  29.024545       0.0                n/a
-    4  31.470000       0.0  face/famous/first
+           onset  duration         trial_type  event_value  event_sample
+    0  25.204545       0.0  face/famous/first            5         27725
+    1  25.850000       0.0                NaN          261         28435
+    2  28.345455       0.0    scrambled/first           17         31180
+    3  29.024545       0.0                NaN          273         31927
+    4  31.470000       0.0  face/famous/first            5         34617
+    Writing data files to /home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-06_meg.fif
     This filename (/home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-06_meg.fif) does not conform to MNE naming conventions. All raw files should end with raw.fif, raw_sss.fif, raw_tsss.fif, raw.fif.gz, raw_sss.fif.gz or raw_tsss.fif.gz
     Writing /home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-06_meg.fif
     Closing /home/mainak/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-06_meg.fif [done]
@@ -619,6 +655,7 @@ Now let's see the structure of the BIDS folder we created.
 
     |-------------------- ds000117-bids
     |------------------------- dataset_description.json
+    |------------------------- participants.tsv
     |------------------------- sub-01
     |------------------------------ ses-01
     |----------------------------------- sub-01_ses-01_scans.tsv
@@ -626,11 +663,11 @@ Now let's see the structure of the BIDS folder we created.
     |---------------------------------------- sub-01_ses-01_task-VisualFaces_run-06_events.tsv
     |---------------------------------------- sub-01_ses-01_task-VisualFaces_run-06_channels.tsv
     |---------------------------------------- sub-01_ses-01_task-VisualFaces_run-06_meg.fif
-    |---------------------------------------- sub-01_ses-01_meg.json
+    |---------------------------------------- sub-01_ses-01_task-VisualFaces_run-06_meg.json
     |---------------------------------------- sub-01_ses-01_coordsystem.json
 
 
-**Total running time of the script:** ( 0 minutes  34.082 seconds)
+**Total running time of the script:** ( 1 minutes  16.708 seconds)
 
 
 

@@ -123,7 +123,7 @@
 <h1>mne_bids.mne_bids.raw_to_bids<a class="headerlink" href="#mne-bids-mne-bids-raw-to-bids" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
 <dt id="mne_bids.mne_bids.raw_to_bids">
-<code class="descclassname">mne_bids.mne_bids.</code><code class="descname">raw_to_bids</code><span class="sig-paren">(</span><em>subject_id</em>, <em>task</em>, <em>raw_file</em>, <em>output_path</em>, <em>session_id=None</em>, <em>run=None</em>, <em>kind='meg'</em>, <em>events_data=None</em>, <em>event_id=None</em>, <em>hpi=None</em>, <em>electrode=None</em>, <em>hsp=None</em>, <em>config=None</em>, <em>overwrite=True</em>, <em>verbose=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/mne_bids.html#raw_to_bids"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.mne_bids.raw_to_bids" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">mne_bids.mne_bids.</code><code class="descname">raw_to_bids</code><span class="sig-paren">(</span><em>subject_id</em>, <em>task</em>, <em>raw_file</em>, <em>output_path</em>, <em>session_id=None</em>, <em>run=None</em>, <em>kind='meg'</em>, <em>events_data=None</em>, <em>event_id=None</em>, <em>hpi=None</em>, <em>electrode=None</em>, <em>hsp=None</em>, <em>eeg_ref=None</em>, <em>eeg_gnd=None</em>, <em>config=None</em>, <em>overwrite=True</em>, <em>verbose=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/mne_bids.html#raw_to_bids"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.mne_bids.raw_to_bids" title="Permalink to this definition">¶</a></dt>
 <dd><p>Walk over a folder of files and create BIDS compatible folder.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -149,7 +149,7 @@ file. Otherwise it must be an instance of mne.Raw</p>
 <dt><strong>run</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int | None</span></dt>
 <dd><p class="first last">The run number for this dataset.</p>
 </dd>
-<dt><strong>kind</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, one of (&#8216;meg&#8217;, &#8216;ieeg&#8217;)</span></dt>
+<dt><strong>kind</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, one of (&#8216;meg&#8217;, &#8216;eeg&#8217;, &#8216;ieeg&#8217;)</span></dt>
 <dd><p class="first last">The kind of data being converted. Defaults to &#8220;meg&#8221;.</p>
 </dd>
 <dt><strong>events_data</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str | array | None</span></dt>
@@ -174,6 +174,13 @@ file containing these points.</p>
 <dd><p class="first last">Digitizer head shape points, or path to head shape file. If more than
 10`000 points are in the head shape, they are automatically decimated.</p>
 </dd>
+<dt><strong>eeg_ref</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">Description of the type of reference used and (when applicable) of
+location of the reference electrode. Defaults to None.</p>
+</dd>
+<dt><strong>eeg_gnd</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first last">Description  of the location of the ground electrode. Defaults to None.</p>
+</dd>
 <dt><strong>config</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str | None</span></dt>
 <dd><p class="first last">A path to the configuration file to use if the data is from a BTi
 system.</p>
@@ -190,6 +197,10 @@ False, no content will be printed.</p>
 </tr>
 </tbody>
 </table>
+<p class="rubric">Notes</p>
+<p>For the participants.tsv file, the raw.info[&#8216;subjects_info&#8217;] should be
+updated and raw.info[&#8216;meas_date&#8217;] should not be None to compute the age
+of the participant correctly.</p>
 </dd></dl>
 
 </div>
@@ -206,7 +217,7 @@ False, no content will be printed.</p>
       
     </p>
     <p>
-        &copy; Copyright 2018, MNE Developers. Last updated on 2018-08-17.<br/>
+        &copy; Copyright 2018, MNE Developers. Last updated on 2018-09-16.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.3.<br/>
     </p>
   </div>
