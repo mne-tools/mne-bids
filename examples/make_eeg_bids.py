@@ -103,7 +103,7 @@ print(raw)
 # * output_path
 #
 # ... as you can see in the docstring:
-help(raw_to_bids)
+print(raw_to_bids.__doc__)
 
 ###############################################################################
 # We loaded 'S001R02.edf', which corresponds to subject 1 in the second task.
