@@ -509,10 +509,10 @@ def copyfile_eeglab(src, dest):
         if fdt_ext != '.fdt':
             raise IOError('Expected extension {} for linked data but found'
                           ' {}'.format('.fdt', fdt_ext))
-        sh.copyfile(fdt_path, fname_dest+'.fdt')
+        sh.copyfile(fdt_path, fname_dest + '.fdt')
 
         # Write a new .set file with an updated pointer
-        head, tail = op.split(fname_dest+'.fdt')
+        head, tail = op.split(fname_dest + '.fdt')
         eeg['data'] = tail
         savemat(dest, eeg, appendmat=False)
 
@@ -538,10 +538,7 @@ def _infer_eeg_placement_scheme(raw):
     """
     placement_scheme = 'n/a'
     # Check if the raw data contains eeg data at all
-    for ch_idx in range(len(raw.ch_names)):
-        if coil_type(raw.info, ch_idx) == 'eeg':
-            break
-    else:
+    if 'eeg' not in raw:
         return placement_scheme
 
     # How many of the channels in raw are based on the extended 10/20 system
