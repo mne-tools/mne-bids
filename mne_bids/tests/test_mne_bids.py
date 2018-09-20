@@ -99,7 +99,7 @@ def test_kit():
     # ensure the channels file has no STI 014 channel:
     channels_tsv = make_bids_filename(
         subject=subject_id, session=session_id, task=task, run=run,
-        suffix='channels.tsv',
+        suffix='channels.tsv', acquisition=acq,
         prefix=op.join(output_path, 'sub-01/ses-01/meg'))
     if op.exists(channels_tsv):
         df = pd.read_csv(channels_tsv, sep='\t')
