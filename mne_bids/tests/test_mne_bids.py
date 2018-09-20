@@ -18,6 +18,7 @@ import pandas as pd
 import mne
 from mne.datasets import testing
 from mne.utils import _TempDir, run_subprocess
+from mne.io.constants import FIFF
 
 from mne_bids import raw_to_bids, make_bids_filename
 
@@ -162,10 +163,13 @@ def test_edf():
     data_path = op.join(testing.data_path(), 'EDF')
     raw_fname = op.join(data_path, 'test_reduced.edf')
 
-    raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
-                task=task, raw_file=raw_fname, output_path=output_path,
-                overwrite=True, kind='eeg')
+    raw = mne.io.read_raw_edf(raw_fname, preload=True)
+    raw.rename_channels({raw.info['ch_names'][0]: 'EOG'})
+    raw.info['chs'][0]['coil_type'] = FIFF.FIFFV_COIL_EEG_BIPOLAR
 
+    raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
+                task=task, raw_file=raw, output_path=output_path,
+                overwrite=True, kind='eeg')
     cmd = ['bids-validator', '--bep006', output_path]
     run_subprocess(cmd, shell=shell)
 
