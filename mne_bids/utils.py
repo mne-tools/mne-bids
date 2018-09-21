@@ -23,7 +23,6 @@ from mne.io.eeglab.eeglab import _check_load_mat
 
 from .config import BIDS_VERSION
 from .io import _parse_ext
-from .pick import coil_type
 
 
 def print_dir_tree(dir):
