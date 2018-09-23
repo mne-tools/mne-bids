@@ -8,6 +8,7 @@ import os.path as op
 import pytest
 from datetime import datetime
 
+from scipy.io import savemat
 import mne
 from mne.datasets import testing
 from mne.utils import _TempDir
@@ -143,6 +144,13 @@ def test_copyfile_eeglab():
     # IO error testing
     with pytest.raises(ValueError):
         copyfile_eeglab(raw_fname, new_name + '.wrong')
+
+    # Bad .set file testing
+    with pytest.raises(ValueError):
+        tmp = _TempDir()
+        fake_set = op.join(tmp, 'fake.set')
+        savemat(fake_set, {'arr': [1, 2, 3]}, appendmat=False)
+        copyfile_eeglab(fake_set, new_name)
 
     # .fdt not implemented error
     with pytest.raises(ValueError):

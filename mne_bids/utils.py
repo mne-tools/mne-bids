@@ -15,11 +15,10 @@ import json
 import shutil as sh
 
 import numpy as np
-from scipy.io import savemat
+from scipy.io import loadmat, savemat
 from mne import read_events, find_events
 from mne.externals.six import string_types
 from mne.channels import read_montage
-from mne.io.eeglab.eeglab import _check_load_mat
 
 from .config import BIDS_VERSION
 from .io import _parse_ext
@@ -485,8 +484,12 @@ def copyfile_eeglab(src, dest):
 
     # Extract matlab struct "EEG" from EEGLAB file
     # if the data field is a string, it points to a .fdt file in src dir
-    eeg = _check_load_mat(src, None)
-    if isinstance(eeg['data'], string_types):
+    mat = loadmat(src, matlab_compatible=True)
+    if 'EEG' not in mat:
+        raise ValueError('Could not find "EEG" field in {}'.format(src))
+    eeg = mat['EEG']
+    data = eeg[0][0]['data']
+    if all([item in data[0, -4:] for item in '.fdt']):
         raise ValueError('Found associated .fdt file containing the binary '
                          'EEG data: {}.\nMNE-BIDS does currently not support '
                          ' .fdt files. Please re-load your .set file using '
