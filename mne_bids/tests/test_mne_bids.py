@@ -177,8 +177,8 @@ def test_edf():
 def test_bdf():
     """Test raw_to_bids conversion for Biosemi data."""
     output_path = _TempDir()
-    data_path = op.join(testing.data_path(), 'BDF')
-    raw_fname = op.join(data_path, 'test_bdf_stim_channel.bdf')
+    data_path = op.join(base_path, 'edf', 'tests', 'data')
+    raw_fname = op.join(data_path, 'test.bdf')
 
     raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
                 task=task, raw_file=raw_fname, output_path=output_path,

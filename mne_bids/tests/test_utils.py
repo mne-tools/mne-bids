@@ -8,6 +8,7 @@ import os.path as op
 import pytest
 from datetime import datetime
 
+from scipy.io import savemat
 import mne
 from mne.datasets import testing
 from mne.utils import _TempDir
@@ -144,6 +145,13 @@ def test_copyfile_eeglab():
     with pytest.raises(ValueError):
         copyfile_eeglab(raw_fname, new_name + '.wrong')
 
+    # Bad .set file testing
+    with pytest.raises(ValueError):
+        tmp = _TempDir()
+        fake_set = op.join(tmp, 'fake.set')
+        savemat(fake_set, {'arr': [1, 2, 3]}, appendmat=False)
+        copyfile_eeglab(fake_set, new_name)
+
     # .fdt not implemented error
     with pytest.raises(ValueError):
         copyfile_eeglab(raw_fname, new_name)
@@ -167,8 +175,7 @@ def test_infer_eeg_placement_scheme():
     placement_scheme = _infer_eeg_placement_scheme(raw)
     assert placement_scheme == 'based on the extended 10/20 system'
 
-    # Unknown case
-    raw_fname = op.join(testing.data_path(), 'Brainvision', 'test_NO.vhdr')
-    raw = mne.io.read_raw_brainvision(raw_fname)
+    # Unknown case, use raw from 1020 case but rename a channel
+    raw.rename_channels({'P3': 'XXX'})
     placement_scheme = _infer_eeg_placement_scheme(raw)
     assert placement_scheme == 'n/a'
