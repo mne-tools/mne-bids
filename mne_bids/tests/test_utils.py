@@ -175,8 +175,7 @@ def test_infer_eeg_placement_scheme():
     placement_scheme = _infer_eeg_placement_scheme(raw)
     assert placement_scheme == 'based on the extended 10/20 system'
 
-    # Unknown case
-    raw_fname = op.join(testing.data_path(), 'Brainvision', 'test_NO.vhdr')
-    raw = mne.io.read_raw_brainvision(raw_fname)
+    # Unknown case, use raw from 1020 case but rename a channel
+    raw.rename_channels({'P3': 'XXX'})
     placement_scheme = _infer_eeg_placement_scheme(raw)
     assert placement_scheme == 'n/a'
