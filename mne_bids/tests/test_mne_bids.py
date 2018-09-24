@@ -190,9 +190,22 @@ def test_bdf():
 
 def test_set():
     """Test raw_to_bids conversion for EEGLAB data."""
+    # standalone .set file
     output_path = _TempDir()
     data_path = op.join(testing.data_path(), 'EEGLAB')
     raw_fname = op.join(data_path, 'test_raw_onefile.set')
+
+    raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
+                task=task, raw_file=raw_fname, output_path=output_path,
+                overwrite=True, kind='eeg')
+
+    cmd = ['bids-validator', '--bep006', output_path]
+    run_subprocess(cmd, shell=shell)
+
+    # .set with associated .fdt
+    output_path = _TempDir()
+    data_path = op.join(testing.data_path(), 'EEGLAB')
+    raw_fname = op.join(data_path, 'test_raw.set')
 
     raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
                 task=task, raw_file=raw_fname, output_path=output_path,
