@@ -483,7 +483,8 @@ def copyfile_eeglab(src, dest):
                          ' but got {}, {}'.format(ext_src, ext_dest))
 
     # Extract matlab struct "EEG" from EEGLAB file
-    mat = loadmat(src, matlab_compatible=True)
+    mat = loadmat(src, squeeze_me=False, chars_as_strings=False,
+                  mat_dtype=False, struct_as_record=True)
     if 'EEG' not in mat:
         raise ValueError('Could not find "EEG" field in {}'.format(src))
     eeg = mat['EEG']
