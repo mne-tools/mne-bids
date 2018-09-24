@@ -139,7 +139,7 @@ def test_ctf():
     run_subprocess(cmd, shell=shell)
 
     # test to check that the 'error' overwrite parameter works correctly
-    with pytest.raises(OSError) as exc:
+    with pytest.raises(OSError):
         # FIXME: is there a way in py2 to get this to detect the correct
         # sub-type of OSError?
         raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
