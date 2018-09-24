@@ -483,42 +483,31 @@ def copyfile_eeglab(src, dest):
                          ' but got {}, {}'.format(ext_src, ext_dest))
 
     # Extract matlab struct "EEG" from EEGLAB file
-    # if the data field is a string, it points to a .fdt file in src dir
     mat = loadmat(src, matlab_compatible=True)
     if 'EEG' not in mat:
         raise ValueError('Could not find "EEG" field in {}'.format(src))
     eeg = mat['EEG']
+
+    # If the data field is a string, it points to a .fdt file in src dir
     data = eeg[0][0]['data']
     if all([item in data[0, -4:] for item in '.fdt']):
-        raise ValueError('Found associated .fdt file containing the binary '
-                         'EEG data: {}.\nMNE-BIDS does currently not support '
-                         ' .fdt files. Please re-load your .set file using '
-                         ' EEGLAB and save the data as a single .set file '
-                         'without accompanying .fdt file.'.format(eeg['data']))
-
-        # FIXME: We should move the .fdt file together with the .set file and
-        # give meaningful names to both. Then the .set file (which is a matlab
-        # .mat file) needs to be read. The EEG matlab structure of the .set
-        # file contains a field "data", which is a string pointing to the .fdt
-        # file. This string needs to be updated to the new BIDS name that the
-        # .set file received while copying.
-        #
-        # Unfortunately, there are issues with performing a round-trip of
-        # reading the .set, modifying it, and saving it again.
         head, tail = op.split(src)
-        fdt_path = op.join(head, eeg['data'])
+        fdt_pointer = ''.join(data.tolist()[0])
+        fdt_path = op.join(head, fdt_pointer)
         fdt_name, fdt_ext = _parse_ext(fdt_path)
         if fdt_ext != '.fdt':
             raise IOError('Expected extension {} for linked data but found'
                           ' {}'.format('.fdt', fdt_ext))
+
+        # Copy the fdt file and give it a new name
         sh.copyfile(fdt_path, fname_dest + '.fdt')
 
-        # Write a new .set file with an updated pointer
+        # Now adjust the pointer in the set file
         head, tail = op.split(fname_dest + '.fdt')
-        eeg['data'] = tail
-        savemat(dest, eeg, appendmat=False)
+        mat['EEG'][0][0]['data'] = tail
+        savemat(dest, mat, appendmat=False)
 
-    # If no .fdt file, simply copy the .set file
+    # If no .fdt file, simply copy the .set file, no modifications necessary
     else:
         sh.copyfile(src, dest)
 
