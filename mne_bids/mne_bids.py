@@ -47,7 +47,7 @@ meg_manufacturers = {'.sqd': 'KIT/Yokogawa', '.con': 'KIT/Yokogawa',
 
 eeg_manufacturers = {'.vhdr': 'BrainProducts', '.eeg': 'BrainProducts',
                      '.edf': 'Mixed', '.bdf': 'Biosemi', '.set': 'Mixed',
-                     '.cnt': 'Neuroscan'}
+                     '.fdt': 'Mixed', '.cnt': 'Neuroscan'}
 
 # Merge the manufacturer dictionaries in a python2 / python3 compatible way
 MANUFACTURERS = dict()
@@ -100,7 +100,7 @@ def _channels_tsv(raw, fname, verbose):
     # get the manufacturer from the file in the Raw object
     manufacturer = None
     if hasattr(raw, 'filenames'):
-        # NOTE: Hack for EEGLAB bug in MNE-Python 0.16; fixed in MNE-Python
+        # XXX: Hack for EEGLAB bug in MNE-Python 0.16; fixed in MNE-Python
         # 0.17, ... remove the hack after upgrading dependencies in MNE-BIDS
         if raw.filenames[0] is None:  # hack
             ext = '.set'  # hack

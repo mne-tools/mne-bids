@@ -152,9 +152,10 @@ def test_copyfile_eeglab():
         savemat(fake_set, {'arr': [1, 2, 3]}, appendmat=False)
         copyfile_eeglab(fake_set, new_name)
 
-    # .fdt not implemented error
-    with pytest.raises(ValueError):
-        copyfile_eeglab(raw_fname, new_name)
+    # Test copying and reading a combined set+fdt
+    copyfile_eeglab(raw_fname, new_name)
+    raw = mne.io.read_raw_eeglab(new_name)
+    assert isinstance(raw, mne.io.BaseRaw)
 
 
 def test_infer_eeg_placement_scheme():
