@@ -659,11 +659,10 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
     if session_id is None:
         ses_path = os.sep.join(data_path.split(os.sep)[:-1])
     else:
-        # overwrite here is dropped to ensure the lower-level folder isn't
+        # write_mode here is dropped to ensure the lower-level folder isn't
         # incorrectly overwritten.
-        # FIXME: this should probably take `make_dir=False`
         ses_path = make_bids_folders(subject=subject_id, session=session_id,
-                                     root=output_path,
+                                     root=output_path, make_dir=False,
                                      verbose=verbose)
 
     # create filenames
