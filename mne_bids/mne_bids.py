@@ -486,9 +486,10 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, eeg_ref=None,
 
 
 def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
-                run=None, kind='meg', events_data=None, event_id=None,
-                hpi=None, electrode=None, hsp=None, eeg_ref=None,
-                eeg_gnd=None, config=None, overwrite=True, verbose=True):
+                acquisition=None, run=None, kind='meg', events_data=None,
+                event_id=None, hpi=None, electrode=None, hsp=None,
+                eeg_ref=None, eeg_gnd=None, config=None, overwrite=True,
+                verbose=True):
     """Walk over a folder of files and create BIDS compatible folder.
 
     Parameters
@@ -504,6 +505,8 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
         The path of the BIDS compatible folder
     session_id : str | None
         The session name in BIDS compatible format.
+    acquisition : str | None
+        Acquisition parameter for the dataset.
     run : int | None
         The run number for this dataset.
     kind : str, one of ('meg', 'eeg', 'ieeg')
@@ -586,28 +589,30 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
     participants_fname = make_bids_filename(prefix=output_path,
                                             suffix='participants.tsv')
     coordsystem_fname = make_bids_filename(
-        subject=subject_id, session=session_id,
+        subject=subject_id, session=session_id, acquisition=acquisition,
         suffix='coordsystem.json', prefix=data_path)
     data_meta_fname = make_bids_filename(
         subject=subject_id, session=session_id, task=task, run=run,
-        suffix='%s.json' % kind, prefix=data_path)
+        acquisition=acquisition, suffix='%s.json' % kind, prefix=data_path)
     if ext in ['.fif', '.ds', '.vhdr', '.edf', '.bdf', '.set', '.cnt']:
         raw_file_bids = make_bids_filename(
             subject=subject_id, session=session_id, task=task, run=run,
-            suffix='%s%s' % (kind, ext))
+            acquisition=acquisition, suffix='%s%s' % (kind, ext))
     else:
         raw_folder = make_bids_filename(
             subject=subject_id, session=session_id, task=task, run=run,
-            suffix='%s' % kind)
+            acquisition=acquisition, suffix='%s' % kind)
         raw_file_bids = make_bids_filename(
             subject=subject_id, session=session_id, task=task, run=run,
-            suffix='%s%s' % (kind, ext), prefix=raw_folder)
+            acquisition=acquisition, suffix='%s%s' % (kind, ext),
+            prefix=raw_folder)
     events_tsv_fname = make_bids_filename(
         subject=subject_id, session=session_id, task=task,
-        run=run, suffix='events.tsv', prefix=data_path)
+        acquisition=acquisition, run=run, suffix='events.tsv',
+        prefix=data_path)
     channels_fname = make_bids_filename(
         subject=subject_id, session=session_id, task=task, run=run,
-        suffix='channels.tsv', prefix=data_path)
+        acquisition=acquisition, suffix='channels.tsv', prefix=data_path)
 
     # Read in Raw object and extract metadata from Raw object if needed
     orient = ORIENTATION.get(ext, 'n/a')
