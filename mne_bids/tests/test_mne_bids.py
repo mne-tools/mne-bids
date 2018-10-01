@@ -288,7 +288,7 @@ def test_cnt():
 
     raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
                 task=task, acquisition=acq, raw_file=raw_fname,
-                output_path=output_path, overwrite=True, kind='eeg')
+                output_path=output_path, write_mode=True, kind='eeg')
 
     cmd = ['bids-validator', '--bep006', output_path]
     run_subprocess(cmd, shell=shell)
