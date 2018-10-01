@@ -73,6 +73,14 @@ def test_fif():
 
     assert op.exists(op.join(output_path, 'participants.tsv'))
 
+    # test split naming
+    split_fname = op.join(tempdir, 'split_raw.fif')
+    raw.save(split_fname, buffer_size_sec=1.0, split_size='10MB')
+    split_fname_elekta_part2 = op.join(tempdir, 'split_raw-1.fif')
+    assert op.exists(split_fname_elekta_part2)
+
+    split_naming = _infer_fif_split_naming(split_fname)
+    assert split_naming == 'bids'
 
 def test_kit():
     """Test functionality of the raw_to_bids conversion for KIT data."""

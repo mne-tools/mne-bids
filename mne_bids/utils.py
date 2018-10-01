@@ -548,7 +548,7 @@ def _infer_eeg_placement_scheme(raw):
     return placement_scheme
 
 
-    def _infer_fif_split_naming(raw_fname):
+def _infer_fif_split_naming(raw_fname):
     """Based on the first raw filename, infer whether it should include
        BIDS part parameter in the filename construction.
 
