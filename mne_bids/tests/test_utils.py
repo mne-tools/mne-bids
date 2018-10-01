@@ -16,7 +16,8 @@ from mne.utils import _TempDir
 from mne_bids.utils import (make_bids_folders, make_bids_filename,
                             _check_types, print_dir_tree, age_on_date,
                             _get_brainvision_paths, copyfile_brainvision,
-                            copyfile_eeglab, _infer_eeg_placement_scheme,)
+                            copyfile_eeglab, _infer_eeg_placement_scheme,
+                            _infer_fif_split_naming)
 
 base_path = op.join(op.dirname(mne.__file__), 'io')
 
@@ -180,3 +181,19 @@ def test_infer_eeg_placement_scheme():
     raw.rename_channels({'P3': 'XXX'})
     placement_scheme = _infer_eeg_placement_scheme(raw)
     assert placement_scheme == 'n/a'
+
+def test_infer_fif_split_naming():
+    """Test that multi-part FIF files are properly named."""
+    output_path = _TempDir()
+    data_path = testing.data_path()
+    raw_fname = op.join(data_path, 'MEG', 'sample',
+                        'sample_audvis_trunc_raw.fif')
+
+    split_fname = op.join(output_path, 'split_raw.fif')
+    raw = mne.io.read_raw_fif(raw_fname)
+    raw.save(split_fname, buffer_size_sec=1.0, split_size='10MB')
+    split_fname_elekta_part2 = op.join(output_path, 'split_raw-1.fif')
+    assert op.exists(split_fname_elekta_part2)
+
+    split_naming = _infer_fif_split_naming(split_fname)
+    assert split_naming == 'bids'
