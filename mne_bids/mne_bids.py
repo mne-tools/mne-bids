@@ -658,7 +658,8 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
     # Re-save FIF files to fix the file pointer for files with multiple parts
     # This is WIP, see: https://github.com/mne-tools/mne-python/pull/5470
     if ext in ['.fif']:
-        raw.save(raw_file_bids, overwrite=overwrite)
+        split_naming = _infer_fif_split_naming(raw_fname)
+        raw.save(raw_file_bids, split_naming=split_naming, overwrite=overwrite)
     # CTF data is saved in a directory
     elif ext == '.ds':
         sh.copytree(raw_fname, raw_file_bids)
