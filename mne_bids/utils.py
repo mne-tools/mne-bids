@@ -546,33 +546,3 @@ def _infer_eeg_placement_scheme(raw):
         placement_scheme = 'based on the extended 10/20 system'
 
     return placement_scheme
-
-
-def _infer_fif_split_naming(raw_fname):
-    """Based on the first raw filename, infer whether it should include
-       BIDS part parameter in the filename construction.
-
-    Parameters
-    ----------
-    raw_fname : str
-        The filename of the first and maybe only raw file.
-
-    Returns
-    -------
-    split_naming : 'neuromag' | 'bids'
-        A str that represents whether the part parameter should be included
-        in the raw file name construction.
-        extraction. If 'neuromag', this implies that there is only one raw file
-        with no linking parts. If 'bids', this implies that there are linking
-        raw files and the BIDS part parameter is included in the filename
-        construction.
-
-    """
-    from mne.io import read_raw_fif
-    n_rawfiles = len(read_raw_fif(raw_fname).filenames)
-    if n_rawfiles > 1:
-        split_naming = 'bids'
-    else:
-        split_naming = 'neuromag'
-
-    return split_naming
