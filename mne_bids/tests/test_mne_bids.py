@@ -143,8 +143,8 @@ def test_ctf():
     # test to check that the 'error' overwrite parameter works correctly
     with pytest.raises(OSError, match="already exists"):
         raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
-                    task=task, raw_file=raw_fname, output_path=output_path,
-                    write_mode='error')
+                    task=task, acquisition=acq, raw_file=raw_fname,
+                    output_path=output_path, write_mode='error')
 
     assert op.exists(op.join(output_path, 'participants.tsv'))
 
@@ -185,8 +185,8 @@ def test_vhdr():
 
     # check the 'clear' overwrite command works correctly
     raw_to_bids(subject_id=subject_id, session_id=session_id, run=run2,
-                task=task, raw_file=raw_fname, output_path=output_path,
-                write_mode='clear', kind='eeg')
+                task=task, acquisition=acq, raw_file=raw_fname,
+                output_path=output_path, write_mode='clear', kind='eeg')
     # we will need to go over the tree to ensure there are no files with
     # `run-01` in their file names:
     for _, _, files in os.walk(output_path):
@@ -223,6 +223,9 @@ def test_edf():
     raw.set_channel_types({'EMG': 'emg'})
 
     raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
+                task=task, acquisition=acq, raw_file=raw,
+                output_path=output_path, write_mode='overwrite', kind='eeg')
+    raw_to_bids(subject_id=subject_id, session_id=session_id, run=run2,
                 task=task, acquisition=acq, raw_file=raw,
                 output_path=output_path, write_mode='overwrite', kind='eeg')
 
@@ -280,8 +283,8 @@ def test_set():
     raw_fname = op.join(data_path, 'test_raw.set')
 
     raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
-                task=task, raw_file=raw_fname, output_path=output_path,
-                write_mode='overwrite', kind='eeg')
+                task=task, acquisition=acq, raw_file=raw_fname,
+                output_path=output_path, write_mode='overwrite', kind='eeg')
 
     cmd = ['bids-validator', '--bep006', output_path]
     run_subprocess(cmd, shell=shell)
@@ -295,7 +298,7 @@ def test_cnt():
 
     raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
                 task=task, acquisition=acq, raw_file=raw_fname,
-                output_path=output_path, write_mode=True, kind='eeg')
+                output_path=output_path, write_mode='overwrite', kind='eeg')
 
     cmd = ['bids-validator', '--bep006', output_path]
     run_subprocess(cmd, shell=shell)
@@ -316,9 +319,9 @@ def test_privates():
     raw = mne.io.read_raw_fif(raw_fname)
 
     raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
-                task=task, raw_file=raw, events_data=events_fname,
-                output_path=output_path, event_id=event_id,
-                write_mode='overwrite')
+                task=task, acquisition=acq, raw_file=raw,
+                events_data=events_fname, output_path=output_path,
+                event_id=event_id, write_mode='overwrite')
 
     ses_path = make_bids_folders(subject=subject_id, session=session_id,
                                  root=output_path, make_dir=False)
@@ -328,17 +331,17 @@ def test_privates():
     participants_fname = make_bids_filename(prefix=output_path,
                                             suffix='participants.tsv')
     coordsystem_fname = make_bids_filename(
-        subject=subject_id, session=session_id,
+        subject=subject_id, session=session_id, acquisition=acq,
         suffix='coordsystem.json', prefix=data_path)
     data_meta_fname = make_bids_filename(
         subject=subject_id, session=session_id, task=task, run=run,
-        suffix='%s.json' % 'meg', prefix=data_path)
+        acquisition=acq, suffix='%s.json' % 'meg', prefix=data_path)
     events_tsv_fname = make_bids_filename(
-        subject=subject_id, session=session_id, task=task,
-        run=run, suffix='events.tsv', prefix=data_path)
+        subject=subject_id, session=session_id, task=task, run=run,
+        acquisition=acq, suffix='events.tsv', prefix=data_path)
     channels_fname = make_bids_filename(
         subject=subject_id, session=session_id, task=task, run=run,
-        suffix='channels.tsv', prefix=data_path)
+        acquisition=acq, suffix='channels.tsv', prefix=data_path)
     scans_fname = make_bids_filename(
         subject=subject_id, session=session_id, suffix='scans.tsv',
         prefix=ses_path)
