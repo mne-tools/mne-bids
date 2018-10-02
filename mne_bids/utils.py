@@ -568,9 +568,8 @@ def _infer_fif_split_naming(raw_fname):
         construction.
 
     """
-    from glob import glob
-    base, ext = _parse_ext(raw_fname)
-    n_rawfiles = len(glob(base + '*'))
+    from mne.io import read_raw_fif
+    n_rawfiles = len(read_raw_fif(raw_fname).filenames)
     if n_rawfiles > 1:
         split_naming = 'bids'
     else:
