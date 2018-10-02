@@ -1,0 +1,98 @@
+"""
+=================================
+Rename BrainVision EEG data files
+=================================
+
+The BrainVision file format is one of the recommended formats to store EEG data
+within a BIDS directory. To organize EEG data in BIDS format, it is often
+necessary to rename the files. In the case of BrainVision files, we would have
+to rename multiple files for each dataset instance (i.e., once per recording):
+
+1. A text header file (``.vhdr``) containing meta data
+2. A text marker file (``.vmrk``) containing information about events in the
+data
+3. A binary data file (``.eeg``) containing the voltage values of the EEG
+
+The problem is that the three files contain internal links that guide a
+potential data reading software. If we just rename the three files without also
+adjusting the internal links, we corrupt the file format.
+
+In this example, we use MNE-BIDS to rename BrainVision data files including a
+repair of the internal file pointers.
+"""
+
+# Authors: Stefan Appelhoff <stefan.appelhoff@mailbox.org>
+# License: BSD (3-clause)
+
+###############################################################################
+# We are importing everything we need for this example:
+import os
+import requests
+
+from mne_bids.utils import copyfile_brainvision
+from mne.io import read_raw_brainvision
+
+###############################################################################
+# Step 1: Download some example data
+# ----------------------------------
+# To demonstrate the MNE-BIDS functions, we need some testing data. Here, we
+# will use data that is shipped with MNE-Python.
+
+# Make a directory to save the data to
+home = os.path.expanduser('~')
+examples_dir = os.path.join(home, 'mne_data', 'mne_bids_examples')
+if not os.path.exists(examples_dir):
+    os.makedirs(examples_dir)
+
+# Use the requests library to get content from github and save it
+base_url = 'https://github.com/mne-tools/mne-python/'
+base_url += 'raw/master/mne/io/brainvision/tests/data/test'
+file_endings = ['.vhdr', '.vmrk', '.eeg', ]
+
+for f_ending in file_endings:
+    url = base_url + f_ending
+    response = requests.get(url)
+
+    fname = os.path.join(examples_dir, 'test' + f_ending)
+    with open(fname, 'wb') as fout:
+        fout.write(response.content)
+
+###############################################################################
+# Step 2: Rename the recording
+# ----------------------------------
+# Above, at the top of the example, we imported ``copyfile_brainvision`` from
+# the MNE-BIDS ``utils.py`` module. This function takes two arguments as
+# input: First, the path to the existing .vhdr file. And second, the path to
+# the future .vhdr file.
+#
+# ``copyfile_brainvision`` will then create three new files (.vhdr, .vmrk, and
+# .eeg) with the new names as provided with the second argument.
+#
+# Here, we rename test.vhdr to test_renamed.vhdr:
+
+vhdr_file = os.path.join(examples_dir, 'test.vhdr')
+vhdr_file_renamed = os.path.join(examples_dir, 'test_renamed.vhdr')
+copyfile_brainvision(vhdr_file, vhdr_file_renamed)
+
+###############################################################################
+# Step 3: Assert that the renamed data can be read by a software
+# --------------------------------------------------------------
+# Finally, let's use MNE-Python to read in both, the original BrainVision data
+# as well as the renamed data. They should be the same.
+
+raw = read_raw_brainvision(vhdr_file)
+raw_renamed = read_raw_brainvision(vhdr_file_renamed)
+
+assert raw == raw_renamed
+
+###############################################################################
+# Further information
+# -------------------
+# There are alternative options to rename your BrainVision files. You could
+# check out the `BVARENAMER <>`_ by Stefan Schinkel. Or you could contact the
+# Brain Products customer support and ask for a renaming tool, which they
+# potentially share. It's called "Rename tool.exe" and only runs on Windows.
+#
+# Lastly, there is a tool to check the integrity of your BrainVision files.
+# For that, see the
+# `BrainVision Validator <https://github.com/sappelhoff/brainvision-validator>`
