@@ -29,9 +29,10 @@ repair of the internal file pointers.
 import os
 import requests
 
-from mne_bids.utils import copyfile_brainvision
+from numpy.testing import assert_array_equal
 from mne.io import read_raw_brainvision
 
+from mne_bids.utils import copyfile_brainvision
 ###############################################################################
 # Step 1: Download some example data
 # ----------------------------------
@@ -83,15 +84,15 @@ copyfile_brainvision(vhdr_file, vhdr_file_renamed)
 raw = read_raw_brainvision(vhdr_file)
 raw_renamed = read_raw_brainvision(vhdr_file_renamed)
 
-assert raw == raw_renamed
+assert_array_equal(raw.get_data(), raw_renamed.get_data())
 
 ###############################################################################
 # Further information
 # -------------------
 # There are alternative options to rename your BrainVision files. You could
-# check out the `BVARENAMER <>`_ by Stefan Schinkel. Or you could contact the
-# Brain Products customer support and ask for a renaming tool, which they
-# potentially share. It's called "Rename tool.exe" and only runs on Windows.
+# for example check out the
+# `BVARENAMER <https://github.com/stefanSchinkel/bvarenamer>`_ by Stefan
+# Schinkel.
 #
 # Lastly, there is a tool to check the integrity of your BrainVision files.
 # For that, see the
