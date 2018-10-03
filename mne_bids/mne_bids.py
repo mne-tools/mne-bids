@@ -488,7 +488,7 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, eeg_ref=None,
 
 
 def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
-                acquisition=None, run=None, kind='meg', events_data=None,
+                acquisition=None, run=None, kind='auto', events_data=None,
                 event_id=None, hpi=None, electrode=None, hsp=None,
                 eeg_ref=None, eeg_gnd=None, config=None, overwrite=True,
                 verbose=True):
@@ -511,8 +511,8 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
         Acquisition parameter for the dataset.
     run : int | None
         The run number for this dataset.
-    kind : str, one of ('meg', 'eeg', 'ieeg')
-        The kind of data being converted. Defaults to "meg".
+    kind : str, one of ('auto', 'meg', 'eeg', 'ieeg')
+        The kind of data being converted. Defaults to "auto".
     events_data : str | array | None
         The events file. If a string, a path to the events file. If an array,
         the MNE events array (shape n_events, 3). If None, events will be
@@ -571,6 +571,16 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
     else:
         raise ValueError('raw_file must be an instance of str or BaseRaw, '
                          'got %s' % type(raw_file))
+
+    if 'eeg' in raw and 'meg' in raw:
+        kind = 'meg'
+    elif 'eeg' in raw:
+        kind = 'eeg'
+    elif 'ecog' in raw:
+        kind = 'ecog'
+    else:
+        raise ValueError('Neither MEG/EEG/iEEG channels found in data.'
+                         'Please set "kind" explicitly.')
 
     data_path = make_bids_folders(subject=subject_id, session=session_id,
                                   kind=kind, root=output_path,
