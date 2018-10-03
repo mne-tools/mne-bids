@@ -17,7 +17,7 @@ import numpy as np
 from mne import Epochs
 from mne.io.constants import FIFF
 from mne.io.pick import channel_type
-from mne.io import BaseRaw
+from mne.io import BaseRaw, read_raw_fif
 from mne.channels.channels import _unit2human
 from mne.externals.six import string_types
 
