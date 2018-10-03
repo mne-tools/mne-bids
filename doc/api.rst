@@ -26,3 +26,4 @@ Utils (:py:mod:`mne_bids.utils`):
    make_bids_folders
    make_bids_filename
    make_dataset_description
+   copyfile_brainvision
