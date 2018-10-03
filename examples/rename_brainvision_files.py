@@ -10,7 +10,7 @@ to rename multiple files for each dataset instance (i.e., once per recording):
 
 1. A text header file (``.vhdr``) containing meta data
 2. A text marker file (``.vmrk``) containing information about events in the
-data
+   data
 3. A binary data file (``.eeg``) containing the voltage values of the EEG
 
 The problem is that the three files contain internal links that guide a
@@ -96,4 +96,4 @@ assert_array_equal(raw.get_data(), raw_renamed.get_data())
 #
 # Lastly, there is a tool to check the integrity of your BrainVision files.
 # For that, see the
-# `BrainVision Validator <https://github.com/sappelhoff/brainvision-validator>`
+# `BrainVision Validator <https://github.com/sappelhoff/brainvision-validator>`_
