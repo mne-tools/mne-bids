@@ -16,8 +16,7 @@ from mne.utils import _TempDir
 from mne_bids.utils import (make_bids_folders, make_bids_filename,
                             _check_types, print_dir_tree, age_on_date,
                             _get_brainvision_paths, copyfile_brainvision,
-                            copyfile_eeglab, _infer_eeg_placement_scheme,
-                            _infer_fif_split_naming)
+                            copyfile_eeglab, _infer_eeg_placement_scheme)
 
 base_path = op.join(op.dirname(mne.__file__), 'io')
 

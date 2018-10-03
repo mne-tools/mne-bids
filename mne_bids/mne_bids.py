@@ -29,8 +29,7 @@ from .utils import (make_bids_filename, make_bids_folders,
                     make_dataset_description, _write_json,
                     _read_events, _mkdir_p, age_on_date,
                     copyfile_brainvision, copyfile_eeglab,
-                    _infer_eeg_placement_scheme,
-                    _infer_fif_split_naming)
+                    _infer_eeg_placement_scheme)
 from .io import (_parse_ext, _read_raw, ALLOWED_EXTENSIONS)
 
 
