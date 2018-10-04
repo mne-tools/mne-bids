@@ -11,8 +11,6 @@ For each supported file format, implement a test.
 
 import os
 import os.path as op
-import pytest
-import subprocess
 
 import pandas as pd
 import mne
