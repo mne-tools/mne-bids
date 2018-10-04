@@ -24,7 +24,8 @@ Scientific data, 2 (2015): 150001.
 # Let us import ``mne_bids``
 
 import os.path as op
-from mne_bids import raw_to_bids
+from mne_bids import write_raw_bids, make_bids_filename
+from mne_bids.io import read_raw
 from mne_bids.datasets import fetch_faces_data
 from mne_bids.utils import print_dir_tree
 
@@ -63,13 +64,16 @@ event_id = {
 for subject_id in subject_ids:
     subject = 'sub%03d' % subject_id
     for run in runs:
-        raw_file = op.join(data_path, repo, subject, 'MEG',
-                           'run_%02d_raw.fif' % run)
+        fname = op.join(data_path, repo, subject, 'MEG',
+                        'run_%02d_raw.fif' % run)
+
+        raw = read_raw(fname)
+        bids_fname = make_bids_filename(
+            subject_id='%02d' % subject_id, session='01', run=run,
+            task='VisualFaces', suffix='meg.fif')
 
         # Make it BIDS compatible
-        raw_to_bids(subject_id='%02d' % subject_id, session_id='01', run=run,
-                    task='VisualFaces', raw_file=raw_file, event_id=event_id,
-                    output_path=output_path, overwrite=True)
+        write_raw_bids(raw, bids_fname, output_path, event_id=event_id)
 
 ###############################################################################
 # Now let's see the structure of the BIDS folder we created.

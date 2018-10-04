@@ -26,7 +26,7 @@ import shutil as sh
 from mne.datasets import eegbci
 from mne.io import read_raw_edf
 
-from mne_bids import raw_to_bids
+from mne_bids import write_raw_bids, make_bids_filename
 from mne_bids.utils import print_dir_tree
 
 ###############################################################################
@@ -104,7 +104,7 @@ print(raw)
 # * output_path
 #
 # ... as you can see in the docstring:
-print(raw_to_bids.__doc__)
+print(write_raw_bids.__doc__)
 
 ###############################################################################
 # We loaded 'S001R02.edf', which corresponds to subject 1 in the second task.
@@ -126,9 +126,10 @@ kind = 'eeg'
 trial_type = {'rest': 0, 'imagine left fist': 1, 'imagine right fist': 2}
 
 # Now convert our data to be in a new BIDS dataset.
-raw_to_bids(subject_id=subject_id, task=task, raw_file=raw_file,
-            output_path=output_path, kind=kind, event_id=trial_type,
-            overwrite=False)
+bids_fname = make_bids_filename(subject=subject_id, task=task,
+                                suffix='eeg.edf')
+write_raw_bids(raw_file, bids_fname, output_path, kind=kind,
+               event_id=trial_type)
 
 ###############################################################################
 # What does our fresh BIDS directory look like?
@@ -159,17 +160,11 @@ for subj_idx in [1, 2]:
                                 'S{:03}'.format(subj_idx),
                                 'S{:03}R{:02}.edf'.format(subj_idx, task_idx))
         raw = read_raw_edf(edf_path, preload=True)
-
-        # `kind` and `trial_type` were already defined above
-        raw_to_bids(subject_id='{:03}'.format(subj_idx),
-                    task=task_names[task_idx],
-                    run=run_mapping[task_idx],
-                    raw_file=raw,
-                    output_path=output_path,
-                    kind=kind,
-                    event_id=trial_type,
-                    overwrite=True
-                    )
+        bids_fname = make_bids_filename(
+            subject='{:03}'.format(subj_idx), task=task_names[task_idx],
+            run=run_mapping[task_idx], suffix='eeg.edf')
+        write_raw_bids(raw, bids_fname, output_path, kind=kind,
+                       event_id=trial_type, overwrite=True)
 
 ###############################################################################
 # Step 3: Check and compare with standard

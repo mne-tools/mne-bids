@@ -32,8 +32,8 @@ def _parse_ext(raw_fname, verbose=False):
     return fname, ext
 
 
-def _read_raw(raw_fname, electrode=None, hsp=None, hpi=None, config=None,
-              montage=None, verbose=None):
+def read_raw(raw_fname, electrode=None, hsp=None, hpi=None, config=None,
+             montage=None, verbose=None):
     """Read a raw file into MNE, making inferences based on extension."""
     fname, ext = _parse_ext(raw_fname)
 

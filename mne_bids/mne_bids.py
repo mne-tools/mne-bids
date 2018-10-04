@@ -31,8 +31,8 @@ from .utils import (make_bids_filename, make_bids_folders,
                     make_dataset_description, _write_json, _write_tsv,
                     _read_events, _mkdir_p, age_on_date,
                     copyfile_brainvision, copyfile_eeglab,
-                    _infer_eeg_placement_scheme)
-from .io import (_parse_ext, _read_raw, ALLOWED_EXTENSIONS)
+                    _infer_eeg_placement_scheme, _parse_bids_filename)
+from .io import (_parse_ext, ALLOWED_EXTENSIONS)
 
 
 ALLOWED_KINDS = ['meg', 'eeg', 'ieeg']
@@ -528,30 +528,20 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, eeg_ref=None,
     return fname
 
 
-def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
-                acquisition=None, run=None, kind='meg', events_data=None,
-                event_id=None, hpi=None, electrode=None, hsp=None,
-                eeg_ref=None, eeg_gnd=None, config=None,
-                overwrite=False, verbose=True):
+def write_raw_bids(raw, bids_fname, output_path, kind='meg', events_data=None,
+                   event_id=None, eeg_ref=None, eeg_gnd=None, overwrite=False,
+                   verbose=True):
     """Walk over a folder of files and create BIDS compatible folder.
 
     Parameters
     ----------
-    subject_id : str
-        The subject name in BIDS compatible format ('01', '02', etc.)
-    task : str
-        Name of the task the data is based on.
-    raw_file : str | instance of mne.Raw
+    raw : instance of mne.Raw
         The raw data. If a string, it is assumed to be the path to the raw data
         file. Otherwise it must be an instance of mne.Raw
-    output_path : str
-        The path of the BIDS compatible folder
-    session_id : str | None
-        The session name in BIDS compatible format.
-    acquisition : str | None
-        Acquisition parameter for the dataset.
-    run : int | None
-        The run number for this dataset.
+    bids_fname : str
+        The file path of the BIDS compatible raw file. In the case of multifile
+        systems (e.g., vhdr, .ds etc.), this is the path to a folder containing
+        all the files.
     kind : str, one of ('meg', 'eeg', 'ieeg')
         The kind of data being converted. Defaults to "meg".
     events_data : str | array | None
@@ -560,24 +550,11 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
         inferred from the stim channel using `mne.find_events`.
     event_id : dict | None
         The event id dict used to create a 'trial_type' column in events.tsv
-    hpi : None | str
-        Marker points representing the location of the marker coils with
-        respect to the MEG Sensors, or path to a marker file.
-    electrode : None | str
-        Digitizer points representing the location of the fiducials and the
-        marker coils with respect to the digitized head shape, or path to a
-        file containing these points.
-    hsp : None | str | array, shape = (n_points, 3)
-        Digitizer head shape points, or path to head shape file. If more than
-        10`000 points are in the head shape, they are automatically decimated.
     eeg_ref : str
         Description of the type of reference used and (when applicable) of
         location of the reference electrode. Defaults to None.
     eeg_gnd : str
         Description  of the location of the ground electrode. Defaults to None.
-    config : str | None
-        A path to the configuration file to use if the data is from a BTi
-        system.
     overwrite : bool
         Whether to overwrite existing files or data in files.
         Defaults to False.
@@ -598,26 +575,22 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
     of the participant correctly.
 
     """
-    if isinstance(raw_file, string_types):
-        # We must read in the raw data
-        raw = _read_raw(raw_file, electrode=electrode, hsp=hsp, hpi=hpi,
-                        config=config, verbose=verbose)
-        _, ext = _parse_ext(raw_file, verbose=verbose)
-        raw_fname = raw_file
-    elif isinstance(raw_file, BaseRaw):
-        # We got a raw mne object, get back the filename if possible
-        # Assume that if no filename attr exists, it's a fif file.
-        raw = raw_file.copy()
-        if hasattr(raw, 'filenames'):
-            _, ext = _parse_ext(raw.filenames[0], verbose=verbose)
-            raw_fname = raw.filenames[0]
-        else:
-            # FIXME: How to get the filename if no filenames attribute?
-            raw_fname = 'unknown_file_name'
-            ext = '.fif'
-    else:
-        raise ValueError('raw_file must be an instance of str or BaseRaw, '
-                         'got %s' % type(raw_file))
+    if not isinstance(raw, BaseRaw):
+        raise ValueError('raw_file must be an instance of BaseRaw, '
+                         'got %s' % type(raw))
+
+    # We got a raw mne object, get back the filename if possible
+    # Assume that if no filename attr exists, it's a fif file.
+    if not hasattr(raw, 'filenames'):
+        raise ValueError('raw.filenames is missing.')
+
+    _, ext = _parse_ext(raw.filenames[0], verbose=verbose)
+    raw_fname = raw.filenames[0]
+
+    params = _parse_bids_filename(bids_fname)
+    subject_id, session_id = params['sub'], params['ses']
+    acquisition, task, run = params['acq'], params['task'], params['run']
+    fname = os.path.join(output_path, bids_fname)
 
     data_path = make_bids_folders(subject=subject_id, session=session_id,
                                   kind=kind, root=output_path,
@@ -641,18 +614,6 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
     data_meta_fname = make_bids_filename(
         subject=subject_id, session=session_id, task=task, run=run,
         acquisition=acquisition, suffix='%s.json' % kind, prefix=data_path)
-    if ext in ['.fif', '.ds', '.vhdr', '.edf', '.bdf', '.set', '.cnt']:
-        raw_file_bids = make_bids_filename(
-            subject=subject_id, session=session_id, task=task, run=run,
-            acquisition=acquisition, suffix='%s%s' % (kind, ext))
-    else:
-        raw_folder = make_bids_filename(
-            subject=subject_id, session=session_id, task=task, run=run,
-            acquisition=acquisition, suffix='%s' % kind)
-        raw_file_bids = make_bids_filename(
-            subject=subject_id, session=session_id, task=task, run=run,
-            acquisition=acquisition, suffix='%s%s' % (kind, ext),
-            prefix=raw_folder)
     events_tsv_fname = make_bids_filename(
         subject=subject_id, session=session_id, task=task,
         acquisition=acquisition, run=run, suffix='events.tsv',
@@ -671,7 +632,7 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
     # save all meta data
     _participants_tsv(raw, subject_id, "n/a", participants_fname, overwrite,
                       verbose)
-    _scans_tsv(raw, os.path.join(kind, raw_file_bids), scans_fname,
+    _scans_tsv(raw, os.path.join(kind, bids_fname), scans_fname,
                overwrite, verbose)
 
     # TODO: Implement coordystem.json and electrodes.tsv for EEG and  iEEG
@@ -691,14 +652,14 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
 
     # set the raw file name to now be the absolute path to ensure the files
     # are placed in the right location
-    raw_file_bids = os.path.join(data_path, raw_file_bids)
-    if os.path.exists(raw_file_bids) and not overwrite:
+    bids_fname = os.path.join(data_path, bids_fname)
+    if os.path.exists(bids_fname) and not overwrite:
         raise OSError(errno.EEXIST, '"%s" already exists. Please set '
-                      'overwrite to True.' % raw_file_bids)
-    _mkdir_p(os.path.dirname(raw_file_bids))
+                      'overwrite to True.' % bids_fname)
+    _mkdir_p(os.path.dirname(bids_fname))
 
     if verbose:
-        print('Writing data files to %s' % raw_file_bids)
+        print('Writing data files to %s' % fname)
 
     if ext not in ALLOWED_EXTENSIONS:
         raise ValueError('ext must be in %s, got %s'
@@ -711,7 +672,7 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
             # TODO Update MNE requirement to version 0.17 when it's released
             if check_version('mne', '0.17.dev'):
                 split_naming = 'bids'
-                raw.save(raw_file_bids, split_naming=split_naming,
+                raw.save(bids_fname, split_naming=split_naming,
                          overwrite=True)
             else:
                 raise NotImplementedError(
@@ -722,18 +683,19 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
         else:
             # TODO insert arg `split_naming=split_naming`
             #      when MNE releases 0.17
-            raw.save(raw_file_bids, overwrite=True)
+            raw.save(bids_fname, overwrite=True)
+
     # CTF data is saved in a directory
     elif ext == '.ds':
-        sh.copytree(raw_fname, raw_file_bids)
+        sh.copytree(raw_fname, bids_fname)
     # BrainVision is multifile, copy over all of them and fix pointers
     elif ext == '.vhdr':
-        copyfile_brainvision(raw_fname, raw_file_bids)
+        copyfile_brainvision(raw_fname, bids_fname)
     # EEGLAB .set might be accompanied by a .fdt - find out and copy it too
     elif ext == '.set':
-        copyfile_eeglab(raw_fname, raw_file_bids)
+        copyfile_eeglab(raw_fname, bids_fname)
     else:
-        sh.copyfile(raw_fname, raw_file_bids)
+        sh.copyfile(raw_fname, bids_fname)
     # KIT data requires the marker file to be copied over too
     if hpi is not None:
         if isinstance(hpi, list):

@@ -62,6 +62,20 @@ def _mkdir_p(path, overwrite=False, verbose=False):
             raise
 
 
+def _parse_bids_filename(fname):
+    """Get dict from BIDS fname."""
+    params = dict(sub=None, ses=None, task=None, acq=None,
+                  run=None, proc=None, recording=None, space=None)
+    entities = fname.split('_')
+    for entity in entities[:-1]:
+        key, value = entity.split('-')
+        if key not in params:
+            raise KeyError('Unexpected entity found in filename %s' % entity)
+        params[key] = value
+    params['suffix'] = entities[-1]
+    return params
+
+
 def make_bids_filename(subject=None, session=None, task=None,
                        acquisition=None, run=None, processing=None,
                        recording=None, space=None, suffix=None, prefix=None):

@@ -13,7 +13,17 @@ MNE BIDS (:py:mod:`mne_bids.mne_bids`):
 .. autosummary::
    :toctree: generated/
 
-   raw_to_bids
+   write_raw_bids
+   make_bids_filename
+
+IO (:py:mod:`mne_bids.io`):
+
+.. current_module:: mne_bids.io
+
+.. autosummary::
+   :toctree: generated/
+
+   read_raw
 
 Utils (:py:mod:`mne_bids.utils`):
 
@@ -24,7 +34,6 @@ Utils (:py:mod:`mne_bids.utils`):
 
    print_dir_tree
    make_bids_folders
-   make_bids_filename
    make_dataset_description
    copyfile_brainvision
 
