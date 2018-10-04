@@ -121,9 +121,6 @@ if os.path.exists(output_path):
 ###############################################################################
 # Now we just need to specify a few more EEG details to get something sensible:
 
-# First, tell `MNE-BIDS` that it is working with EEG data:
-kind = 'eeg'
-
 # Brief description of the event markers present in the data. This will become
 # the `trial_type` column in our BIDS `events.tsv`. We know about the event
 # meaning from the documentation on PhysioBank
@@ -131,7 +128,7 @@ trial_type = {'rest': 0, 'imagine left fist': 1, 'imagine right fist': 2}
 
 # Now convert our data to be in a new BIDS dataset.
 raw_to_bids(subject_id=subject_id, task=task, raw_file=raw_file,
-            output_path=output_path, kind=kind, event_id=trial_type)
+            output_path=output_path, event_id=trial_type)
 
 ###############################################################################
 # What does our fresh BIDS directory look like?
@@ -163,13 +160,12 @@ for subj_idx in [1, 2]:
                                 'S{:03}R{:02}.edf'.format(subj_idx, task_idx))
         raw = read_raw_edf(edf_path, preload=True)
 
-        # `kind` and `trial_type` were already defined above
+        # `trial_type` was already defined above
         raw_to_bids(subject_id='{:03}'.format(subj_idx),
                     task=task_names[task_idx],
                     run=run_mapping[task_idx],
                     raw_file=raw,
                     output_path=output_path,
-                    kind=kind,
                     event_id=trial_type,
                     overwrite=False
                     )
