@@ -572,7 +572,7 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
         raise ValueError('raw_file must be an instance of str or BaseRaw, '
                          'got %s' % type(raw_file))
 
-    if 'eeg' in raw and 'meg' in raw:
+    if 'meg' in raw:
         kind = 'meg'
     elif 'eeg' in raw:
         kind = 'eeg'
