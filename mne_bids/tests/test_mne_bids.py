@@ -101,9 +101,8 @@ def test_kit():
         subject=subject_id, session=session_id, task=task, run=run,
         suffix='channels.tsv', acquisition=acq,
         prefix=op.join(output_path, 'sub-01/ses-01/meg'))
-    if op.exists(channels_tsv):
-        df = pd.read_csv(channels_tsv, sep='\t')
-        assert not ('STI 014' in df['name'].values)
+    df = pd.read_csv(channels_tsv, sep='\t')
+    assert not ('STI 014' in df['name'].values)
 
 
 def test_ctf():
@@ -183,9 +182,8 @@ def test_edf():
         subject=subject_id, session=session_id, task=task, run=run,
         suffix='channels.tsv', acquisition=acq,
         prefix=op.join(output_path, 'sub-01/ses-01/eeg'))
-    if op.exists(channels_tsv):
-        df = pd.read_csv(channels_tsv, sep='\t')
-        assert 'ElectroMyoGram' in df['description'].values
+    df = pd.read_csv(channels_tsv, sep='\t')
+    assert 'ElectroMyoGram' in df['description'].values
 
 
 def test_bdf():
