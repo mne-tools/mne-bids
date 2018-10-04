@@ -19,6 +19,7 @@ from scipy.io import loadmat, savemat
 from mne import read_events, find_events
 from mne.externals.six import string_types
 from mne.channels import read_montage
+from mne.io.pick import pick_types
 
 from .config import BIDS_VERSION
 from .io import _parse_ext
@@ -535,8 +536,9 @@ def _infer_eeg_placement_scheme(raw):
 
     # How many of the channels in raw are based on the extended 10/20 system
     raw.load_data()
-    raw.pick_types(meg=False, eeg=True)
-    channel_names = [ch.lower() for ch in raw.ch_names]
+    sel = pick_types(raw.info, meg=False, eeg=True)
+    ch_names = [raw.ch_names[i] for i in sel]
+    channel_names = [ch.lower() for ch in ch_names]
     montage1005 = read_montage(kind='standard_1005')
     montage1005_names = [ch.lower() for ch in montage1005.ch_names]
 

@@ -168,6 +168,8 @@ def test_edf():
     raw = mne.io.read_raw_edf(raw_fname, preload=True)
     raw.rename_channels({raw.info['ch_names'][0]: 'EOG'})
     raw.info['chs'][0]['coil_type'] = FIFF.FIFFV_COIL_EEG_BIPOLAR
+    raw.rename_channels({raw.info['ch_names'][1]: 'EMG'})
+    raw.set_channel_types({'EMG': 'emg'})
 
     raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
                 task=task, acquisition=acq, raw_file=raw,
@@ -175,6 +177,15 @@ def test_edf():
 
     cmd = ['bids-validator', '--bep006', output_path]
     run_subprocess(cmd, shell=shell)
+
+    # ensure there is an EMG channel in the channels.tsv:
+    channels_tsv = make_bids_filename(
+        subject=subject_id, session=session_id, task=task, run=run,
+        suffix='channels.tsv', acquisition=acq,
+        prefix=op.join(output_path, 'sub-01/ses-01/eeg'))
+    if op.exists(channels_tsv):
+        df = pd.read_csv(channels_tsv, sep='\t')
+        assert 'ElectroMyoGram' in df['description'].values
 
 
 def test_bdf():

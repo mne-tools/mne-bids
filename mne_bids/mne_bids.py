@@ -81,7 +81,7 @@ def _channels_tsv(raw, fname, verbose):
                    megrefgradaxial='MEGREFGRADAXIAL',
                    meggradplanar='MEGGRADPLANAR',
                    megmag='MEGMAG', megrefmag='MEGREFMAG',
-                   eeg='EEG', misc='MISC', stim='TRIG',
+                   eeg='EEG', misc='MISC', stim='TRIG', emg='EMG',
                    ecog='ECOG', seeg='SEEG', eog='EOG', ecg='ECG')
     map_desc = defaultdict(lambda: 'Other type of channel')
     map_desc.update(meggradaxial='Axial Gradiometer',
@@ -94,6 +94,7 @@ def _channels_tsv(raw, fname, verbose):
                     seeg='StereoEEG',
                     ecg='ElectroCardioGram',
                     eog='ElectroOculoGram',
+                    emg='ElectroMyoGram',
                     misc='Miscellaneous')
     get_specific = ('mag', 'ref_meg', 'grad')
 
