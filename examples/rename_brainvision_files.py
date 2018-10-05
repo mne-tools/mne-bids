@@ -27,36 +27,20 @@ repair of the internal file pointers.
 ###############################################################################
 # We are importing everything we need for this example:
 import os
-import requests
 
 from numpy.testing import assert_array_equal
 from mne.io import read_raw_brainvision
 
+from mne_bids.datasets import fetch_brainvision_testing_data
 from mne_bids.utils import copyfile_brainvision
+
 ###############################################################################
 # Step 1: Download some example data
 # ----------------------------------
 # To demonstrate the MNE-BIDS functions, we need some testing data. Here, we
-# will use data that is shipped with MNE-Python.
-
-# Make a directory to save the data to
-home = os.path.expanduser('~')
-examples_dir = os.path.join(home, 'mne_data', 'mne_bids_examples')
-if not os.path.exists(examples_dir):
-    os.makedirs(examples_dir)
-
-# Use the requests library to get content from github and save it
-base_url = 'https://github.com/mne-tools/mne-python/'
-base_url += 'raw/master/mne/io/brainvision/tests/data/test'
-file_endings = ['.vhdr', '.vmrk', '.eeg', ]
-
-for f_ending in file_endings:
-    url = base_url + f_ending
-    response = requests.get(url)
-
-    fname = os.path.join(examples_dir, 'test' + f_ending)
-    with open(fname, 'wb') as fout:
-        fout.write(response.content)
+# will use data that is shipped with MNE-Python. Feel free to use your own
+# BrainVision data.
+examples_dir = fetch_brainvision_testing_data()
 
 ###############################################################################
 # Step 2: Rename the recording
@@ -70,7 +54,6 @@ for f_ending in file_endings:
 # .eeg) with the new names as provided with the second argument.
 #
 # Here, we rename test.vhdr to test_renamed.vhdr:
-
 vhdr_file = os.path.join(examples_dir, 'test.vhdr')
 vhdr_file_renamed = os.path.join(examples_dir, 'test_renamed.vhdr')
 copyfile_brainvision(vhdr_file, vhdr_file_renamed)
@@ -80,7 +63,6 @@ copyfile_brainvision(vhdr_file, vhdr_file_renamed)
 # --------------------------------------------------------------
 # Finally, let's use MNE-Python to read in both, the original BrainVision data
 # as well as the renamed data. They should be the same.
-
 raw = read_raw_brainvision(vhdr_file)
 raw_renamed = read_raw_brainvision(vhdr_file_renamed)
 
