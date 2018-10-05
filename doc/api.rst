@@ -27,3 +27,13 @@ Utils (:py:mod:`mne_bids.utils`):
    make_bids_filename
    make_dataset_description
    copyfile_brainvision
+
+Datasets (:py:mod:`mne_bids.datasets`):
+
+.. currentmodule:: mne.datasets
+
+.. autosummary::
+    :toctree: generated/
+
+    fetch_faces_data
+    fetch_brainvision_testing_data
