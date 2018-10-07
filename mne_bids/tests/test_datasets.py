@@ -11,7 +11,7 @@ from mne_bids.datasets import fetch_faces_data, fetch_brainvision_testing_data
 
 def test_fetch_faces_data():
     """Dry test fetch_faces_data (Will not download anything)."""
-    data_path = fetch_faces_data()
+    data_path = fetch_faces_data(subject_ids=[])
     assert op.exists(data_path)
 
 

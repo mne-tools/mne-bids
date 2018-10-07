@@ -15,7 +15,7 @@ import requests
 from mne.utils import _fetch_file
 
 
-def fetch_faces_data(data_path=None, repo='ds000117', subject_ids=[]):
+def fetch_faces_data(data_path=None, repo='ds000117', subject_ids=[1]):
     """Dataset fetcher for OpenfMRI dataset ds000117.
 
     Parameters
@@ -26,8 +26,7 @@ def fetch_faces_data(data_path=None, repo='ds000117', subject_ids=[]):
     repo : str
         The folder name. Defaults to 'ds000117'.
     subject_ids : list of int
-        The subjects to fetch. Defaults to an empty list, which will
-        not download anything.
+        The subjects to fetch. Defaults to [1], downloading subject 1.
 
     Returns
     -------
