@@ -37,7 +37,7 @@ def print_dir_tree(folder):
             print('|%s %s' % (len(path) * '---', file))
 
 
-def _mkdir_p(path, overwrite=False, verbose=False):
+def _mkdir_p(path, overwrite='overwrite', verbose=False):
     """Create a directory, making parent directories as needed [1].
 
     References
@@ -45,10 +45,10 @@ def _mkdir_p(path, overwrite=False, verbose=False):
     .. [1] stackoverflow.com/questions/600268/mkdir-p-functionality-in-python
 
     """
-    if overwrite is True and op.isdir(path):
+    if overwrite == 'clear' and op.isdir(path):
         sh.rmtree(path)
         if verbose is True:
-            print('Overwriting path: %s' % path)
+            print('Clearing path: %s' % path)
 
     try:
         os.makedirs(path)
@@ -143,7 +143,7 @@ def make_bids_filename(subject=None, session=None, task=None,
 
 
 def make_bids_folders(subject, session=None, kind=None, root=None,
-                      make_dir=True, overwrite=True, verbose=False):
+                      make_dir=True, overwrite='overwrite', verbose=False):
     """Create a BIDS folder hierarchy.
 
     This creates a hierarchy of folders *within* a BIDS dataset. You should
@@ -164,9 +164,12 @@ def make_bids_folders(subject, session=None, kind=None, root=None,
     make_dir : bool
         Whether to actually create the folders specified. If False, only a
         path will be generated but no folders will be created.
-    overwrite : bool
-        If `make_dir` is True and one or all folders already exist,
-        this will overwrite them with empty folders.
+    overwrite : str, one of ('overwrite', 'error', 'clear')
+        How to handle overwriting previously generated data.
+        If overwrite = `overwrite` or `error` the previously created folder
+        will be left intact.
+        If overwrite = `clear` any existing folders at the session level or
+        lower will be removed, including any contained data.
     verbose : bool
         If verbose is True, print status updates
         as folders are created.

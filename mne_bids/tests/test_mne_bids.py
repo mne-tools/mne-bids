@@ -27,6 +27,7 @@ subject_id2 = '02'
 session_id = '01'
 run = '01'
 acq = '01'
+run2 = '02'
 task = 'testing'
 
 # for windows, shell = True is needed
@@ -55,7 +56,7 @@ def test_fif():
     raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
                 acquisition=acq, task=task, raw_file=raw_fname,
                 events_data=events_fname, output_path=output_path,
-                event_id=event_id, overwrite=True)
+                event_id=event_id, overwrite='overwrite')
 
     # give the raw object some fake participant data
     raw = mne.io.read_raw_fif(raw_fname)
@@ -68,7 +69,7 @@ def test_fif():
     raw_to_bids(subject_id=subject_id2, run=run, task=task, acquisition=acq,
                 session_id=session_id, raw_file=raw_fname2,
                 events_data=events_fname, output_path=output_path,
-                event_id=event_id, overwrite=True)
+                event_id=event_id, overwrite='overwrite')
     cmd = ['bids-validator', output_path]
     run_subprocess(cmd, shell=shell)
 
@@ -90,7 +91,7 @@ def test_kit():
                 task=task, acquisition=acq, raw_file=raw_fname,
                 events_data=events_fname, event_id=event_id, hpi=hpi_fname,
                 electrode=electrode_fname, hsp=headshape_fname,
-                output_path=output_path, overwrite=True)
+                output_path=output_path, overwrite='overwrite')
     cmd = ['bids-validator', output_path]
     run_subprocess(cmd, shell=shell)
     assert op.exists(op.join(output_path, 'participants.tsv'))
@@ -131,9 +132,16 @@ def test_ctf():
 
     raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
                 task=task, acquisition=acq, raw_file=raw_fname,
-                output_path=output_path, overwrite=True)
+                output_path=output_path, overwrite='overwrite')
     cmd = ['bids-validator', output_path]
     run_subprocess(cmd, shell=shell)
+
+    # test to check that the 'error' overwrite parameter works correctly
+    with pytest.raises(FileExistsError):
+        raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
+                    task=task, raw_file=raw_fname, output_path=output_path,
+                    overwrite='error')
+
     assert op.exists(op.join(output_path, 'participants.tsv'))
 
 
@@ -148,7 +156,7 @@ def test_bti():
     raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
                 task=task, acquisition=acq, raw_file=raw_fname,
                 config=config_fname, hsp=headshape_fname,
-                output_path=output_path, verbose=True, overwrite=True)
+                output_path=output_path, verbose=True, overwrite='overwrite')
 
     assert op.exists(op.join(output_path, 'participants.tsv'))
 
@@ -166,10 +174,30 @@ def test_vhdr():
 
     raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
                 task=task, acquisition=acq, raw_file=raw_fname,
-                output_path=output_path, overwrite=True, kind='eeg')
+                output_path=output_path, overwrite='overwrite', kind='eeg')
 
     cmd = ['bids-validator', '--bep006', output_path]
     run_subprocess(cmd, shell=shell)
+
+    # check the 'clear' overwrite command works correctly
+    raw_to_bids(subject_id=subject_id, session_id=session_id, run=run2,
+                task=task, raw_file=raw_fname, output_path=output_path,
+                overwrite='clear', kind='eeg')
+    # we will need to go over the tree to ensure there are no files with
+    # `run-01` in their file names:
+    for _, _, files in os.walk(output_path):
+        for f in files:
+            if 'run-%s' % run in f:
+                raise FileExistsError
+
+    # check that the scans list contains one scans
+    scans_tsv = make_bids_filename(
+        subject=subject_id, session=session_id, suffix='scans.tsv',
+        prefix=op.join(output_path, 'sub-01/ses-01'))
+    assert op.exists(scans_tsv)
+    if op.exists(scans_tsv):
+        df = pd.read_csv(scans_tsv, sep='\t')
+        assert df.shape[0] == 1
 
 
 def test_edf():
@@ -186,7 +214,7 @@ def test_edf():
 
     raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
                 task=task, acquisition=acq, raw_file=raw,
-                output_path=output_path, overwrite=True, kind='eeg')
+                output_path=output_path, overwrite='overwrite', kind='eeg')
 
     cmd = ['bids-validator', '--bep006', output_path]
     run_subprocess(cmd, shell=shell)
@@ -198,6 +226,15 @@ def test_edf():
         prefix=op.join(output_path, 'sub-01/ses-01/eeg'))
     df = pd.read_csv(channels_tsv, sep='\t')
     assert 'ElectroMyoGram' in df['description'].values
+    
+    # check that the scans list contains two scans
+    scans_tsv = make_bids_filename(
+        subject=subject_id, session=session_id, suffix='scans.tsv',
+        prefix=op.join(output_path, 'sub-01/ses-01'))
+    assert op.exists(scans_tsv)
+    if op.exists(scans_tsv):
+        df = pd.read_csv(scans_tsv, sep='\t')
+        assert df.shape[0] == 2
 
 
 def test_bdf():
@@ -208,7 +245,7 @@ def test_bdf():
 
     raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
                 task=task, acquisition=acq, raw_file=raw_fname,
-                output_path=output_path, overwrite=True, kind='eeg')
+                output_path=output_path, overwrite='overwrite', kind='eeg')
 
     cmd = ['bids-validator', '--bep006', output_path]
     run_subprocess(cmd, shell=shell)
@@ -223,7 +260,7 @@ def test_set():
 
     raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
                 task=task, acquisition=acq, raw_file=raw_fname,
-                output_path=output_path, overwrite=True, kind='eeg')
+                output_path=output_path, overwrite='overwrite', kind='eeg')
 
     cmd = ['bids-validator', '--bep006', output_path]
     run_subprocess(cmd, shell=shell)
@@ -235,7 +272,7 @@ def test_set():
 
     raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
                 task=task, raw_file=raw_fname, output_path=output_path,
-                overwrite=True, kind='eeg')
+                overwrite='overwrite', kind='eeg')
 
     cmd = ['bids-validator', '--bep006', output_path]
     run_subprocess(cmd, shell=shell)
