@@ -13,7 +13,6 @@ import os
 import os.path as op
 from errno import EEXIST
 import pytest
-import subprocess
 
 import pandas as pd
 import mne
