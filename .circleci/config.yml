@@ -16,13 +16,15 @@ jobs:
                 name: Setup Python environment
                 command: |
                   conda update --yes --quiet conda;
-                  conda env create -f environment.yml
-                  source activate mne_bids
+                  conda create -n testenv --yes pip python=3.6
+                  source activate testenv
+                  conda install --yes --quiet numpy=1.13.1 scipy=0.19.1 matplotlib pandas=0.20.3
+                  pip install mne
                   python setup.py develop
             - run:
                 name: Build the documentation
                 command: |
-                    source activate mne_bids
+                    source activate testenv
                     make build-doc
             - store_artifacts:
                 path: doc/_build/html/

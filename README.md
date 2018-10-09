@@ -55,14 +55,16 @@ To run the tests using `pytest`, you need to have the cloned mne-python reposito
 with a local pip-install instead of the mne-python package from pypi. Update your
 installation as follows:
 
-    $ git clone https://github.com/mne-tools/mne-python
+    $ git clone https://github.com/mne-tools/mne-python --depth 1
     $ cd mne-python
     $ pip uninstall mne  # uninstall pypi mne
     $ pip install -e .  # use the cloned repo for a local install of mne
+    $ pip install flake8 pytest nose coverage coveralls
 
 Note that, for testing purposes, it is necessary to install the
-[BIDS validator](https://github.com/INCF/bids-validator). The outputs of
-MNE-BIDS are run through the BIDS validator to check if the conversion worked.
+[BIDS validator](https://github.com/bids-standard/bids-validator). The outputs
+of MNE-BIDS are run through the BIDS validator to check if the conversion
+worked.
 
 Cite
 ----
@@ -70,8 +72,7 @@ Cite
 If you use `mne-bids` in your work, please cite:
 
     Niso, G., Gorgolewski, K.J., Bock, E., Brooks, T.L., Flandin, G., Gramfort, A.,
-    Henson, R.N., Jas, M., Litvak, V., Moreau, J., Oostenveld, R., Schoffelen, J., 
-    Tadel, F., Wexler, J., Baillet, S. (2018). MEG-BIDS, the brain imaging data 
-    structure extended to magnetoencephalography. Scientific Data, 5, 180110. 
+    Henson, R.N., Jas, M., Litvak, V., Moreau, J., Oostenveld, R., Schoffelen, J.,
+    Tadel, F., Wexler, J., Baillet, S. (2018). MEG-BIDS, the brain imaging data
+    structure extended to magnetoencephalography. Scientific Data, 5, 180110.
     http://doi.org/10.1038/sdata.2018.110
-
