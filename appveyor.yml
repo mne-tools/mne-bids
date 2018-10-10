@@ -15,12 +15,12 @@ install:
   - "powershell ci-helpers/appveyor/install-miniconda.ps1"
   - "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
   - "activate test"
-  - "pip install numpy==1.13.1 scipy==0.19.1 matplotlib pandas==0.20.3"
-  - "pip install flake8 pytest nose coverage coveralls"
+  - "conda install numpy=1.13.1 scipy=0.19.1 matplotlib pandas=0.20.3"
+  - "pip install flake8 pytest pytest-cov"
   - "pip uninstall -yq mne"
   - |-
     cd ..
-    git clone https://github.com/mne-tools/mne-python.git --branch maint/0.16
+    git clone --depth 1 https://github.com/mne-tools/mne-python.git --branch maint/0.16
     cd mne-python
     python setup.py develop
     cd ..
@@ -38,7 +38,7 @@ install:
 build: false  # Not a C# project, build stuff at the test step instead.
 
 test_script:
-  # Run the project tests, but (sadly) exclude ones that take a long time
+  # Run the project tests, but (sadly) exclude the ones that take a long time
   - "py.test mne_bids --cov=mne_bids"
 
 on_success:
