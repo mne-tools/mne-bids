@@ -15,9 +15,9 @@ Installation
 We recommend the [Anaconda Python distribution](https://www.continuum.io/downloads).
 To install ``mne_bids``, you first need to install its dependencies:
 
-    $ pip install numpy scipy pandas mne
+    $ pip install numpy scipy matplotlib pandas mne
 
-Then install mne_bids::
+Then install mne_bids:
 
     $ pip install git+https://github.com/mne-tools/mne-bids.git#egg=mne-bids
 
@@ -64,7 +64,7 @@ pypi. Update your installation as follows.
     $ cd mne-python
     $ pip uninstall mne  # uninstall pypi mne
     $ pip install -e .  # use the cloned repo for a local install of mne
-    $ pip install flake8 pytest pytest-cov
+    $ pip install flake8 pytest pytest-cov pytest-sugar pytest-faulthandler
 
 For testing purposes it is furthermore necessary to install the
 [BIDS validator](https://github.com/bids-standard/bids-validator). The outputs
@@ -76,7 +76,7 @@ worked.
 The documentation can be built using sphinx. For that, please additionally
 install the following:
 
-    $ pip install sphinx numpydoc sphinx-gallery sphinx_bootstrap_theme
+    $ pip install sphinx numpydoc sphinx-gallery sphinx_bootstrap_theme pillow
 
 
 Cite

@@ -16,7 +16,7 @@ install:
   - "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
   - "activate test"
   - "conda install numpy=1.13.1 scipy=0.19.1 matplotlib pandas=0.20.3"
-  - "pip install flake8 pytest pytest-cov"
+  - "pip install flake8 pytest pytest-cov pytest-sugar pytest-faulthandler"
   - "pip uninstall -yq mne"
   - |-
     cd ..

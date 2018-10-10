@@ -30,7 +30,7 @@ Utils (:py:mod:`mne_bids.utils`):
 
 Datasets (:py:mod:`mne_bids.datasets`):
 
-.. currentmodule:: mne.datasets
+.. currentmodule:: mne_bids.datasets
 
 .. autosummary::
     :toctree: generated/

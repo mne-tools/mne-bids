@@ -19,7 +19,7 @@ jobs:
                   conda create -n testenv --yes python=3.6
                   source activate testenv
                   conda install --yes --quiet numpy=1.13.1 scipy=0.19.1 matplotlib pandas=0.20.3
-                  pip install sphinx numpydoc sphinx-gallery sphinx_bootstrap_theme
+                  pip install sphinx numpydoc sphinx-gallery sphinx_bootstrap_theme pillow
                   pip install mne
                   python setup.py develop
             - run:
