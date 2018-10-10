@@ -13,6 +13,26 @@ Examples Gallery
 
 .. raw:: html
 
+    <div class="sphx-glr-thumbcontainer" tooltip="The BrainVision file format is one of the recommended formats to store EEG data within a BIDS d...">
+
+.. only:: html
+
+    .. figure:: /auto_examples/images/thumb/sphx_glr_rename_brainvision_files_thumb.png
+
+        :ref:`sphx_glr_auto_examples_rename_brainvision_files.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/rename_brainvision_files
+
+.. raw:: html
+
     <div class="sphx-glr-thumbcontainer" tooltip="The Brain Imaging Data Structure (BIDS) has standard conventions for file names and folder hier...">
 
 .. only:: html

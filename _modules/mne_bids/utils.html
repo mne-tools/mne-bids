@@ -130,15 +130,14 @@
 <span class="kn">import</span> <span class="nn">shutil</span> <span class="k">as</span> <span class="nn">sh</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">scipy.io</span> <span class="k">import</span> <span class="n">savemat</span>
+<span class="kn">from</span> <span class="nn">scipy.io</span> <span class="k">import</span> <span class="n">loadmat</span><span class="p">,</span> <span class="n">savemat</span>
 <span class="kn">from</span> <span class="nn">mne</span> <span class="k">import</span> <span class="n">read_events</span><span class="p">,</span> <span class="n">find_events</span>
 <span class="kn">from</span> <span class="nn">mne.externals.six</span> <span class="k">import</span> <span class="n">string_types</span>
 <span class="kn">from</span> <span class="nn">mne.channels</span> <span class="k">import</span> <span class="n">read_montage</span>
-<span class="kn">from</span> <span class="nn">mne.io.eeglab.eeglab</span> <span class="k">import</span> <span class="n">_check_load_mat</span>
+<span class="kn">from</span> <span class="nn">mne.io.pick</span> <span class="k">import</span> <span class="n">pick_types</span>
 
 <span class="kn">from</span> <span class="nn">.config</span> <span class="k">import</span> <span class="n">BIDS_VERSION</span>
 <span class="kn">from</span> <span class="nn">.io</span> <span class="k">import</span> <span class="n">_parse_ext</span>
-<span class="kn">from</span> <span class="nn">.pick</span> <span class="k">import</span> <span class="n">coil_type</span>
 
 
 <div class="viewcode-block" id="print_dir_tree"><a class="viewcode-back" href="../../generated/mne_bids.utils.print_dir_tree.html#mne_bids.utils.print_dir_tree">[docs]</a><span class="k">def</span> <span class="nf">print_dir_tree</span><span class="p">(</span><span class="nb">dir</span><span class="p">):</span>
@@ -529,7 +528,7 @@
     <span class="k">return</span> <span class="p">(</span><span class="n">eeg_file_path</span><span class="p">,</span> <span class="n">vmrk_file_path</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">copyfile_brainvision</span><span class="p">(</span><span class="n">vhdr_src</span><span class="p">,</span> <span class="n">vhdr_dest</span><span class="p">):</span>
+<div class="viewcode-block" id="copyfile_brainvision"><a class="viewcode-back" href="../../generated/mne_bids.utils.copyfile_brainvision.html#mne_bids.utils.copyfile_brainvision">[docs]</a><span class="k">def</span> <span class="nf">copyfile_brainvision</span><span class="p">(</span><span class="n">vhdr_src</span><span class="p">,</span> <span class="n">vhdr_dest</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Copy a BrainVision file triplet to a new location and repair links.</span>
 
 <span class="sd">    Parameters</span>
@@ -575,7 +574,7 @@
             <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">fin</span><span class="o">.</span><span class="n">readlines</span><span class="p">():</span>
                 <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="ow">in</span> <span class="n">search_lines</span><span class="p">:</span>
                     <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">basename_src</span><span class="p">,</span> <span class="n">basename_dest</span><span class="p">)</span>
-                <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+                <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="p">)</span></div>
 
 
 <span class="k">def</span> <span class="nf">copyfile_eeglab</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dest</span><span class="p">):</span>
@@ -600,38 +599,32 @@
                          <span class="s1">&#39; but got </span><span class="si">{}</span><span class="s1">, </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ext_src</span><span class="p">,</span> <span class="n">ext_dest</span><span class="p">))</span>
 
     <span class="c1"># Extract matlab struct &quot;EEG&quot; from EEGLAB file</span>
-    <span class="c1"># if the data field is a string, it points to a .fdt file in src dir</span>
-    <span class="n">eeg</span> <span class="o">=</span> <span class="n">_check_load_mat</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">eeg</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">],</span> <span class="n">string_types</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Found associated .fdt file containing the binary &#39;</span>
-                         <span class="s1">&#39;EEG data: </span><span class="si">{}</span><span class="s1">.</span><span class="se">\n</span><span class="s1">MNE-BIDS does currently not support &#39;</span>
-                         <span class="s1">&#39; .fdt files. Please re-load your .set file using &#39;</span>
-                         <span class="s1">&#39; EEGLAB and save the data as a single .set file &#39;</span>
-                         <span class="s1">&#39;without accompanying .fdt file.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">eeg</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]))</span>
+    <span class="n">mat</span> <span class="o">=</span> <span class="n">loadmat</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">squeeze_me</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">chars_as_strings</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                  <span class="n">mat_dtype</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">struct_as_record</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s1">&#39;EEG&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">mat</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Could not find &quot;EEG&quot; field in </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">src</span><span class="p">))</span>
+    <span class="n">eeg</span> <span class="o">=</span> <span class="n">mat</span><span class="p">[</span><span class="s1">&#39;EEG&#39;</span><span class="p">]</span>
 
-        <span class="c1"># FIXME: We should move the .fdt file together with the .set file and</span>
-        <span class="c1"># give meaningful names to both. Then the .set file (which is a matlab</span>
-        <span class="c1"># .mat file) needs to be read. The EEG matlab structure of the .set</span>
-        <span class="c1"># file contains a field &quot;data&quot;, which is a string pointing to the .fdt</span>
-        <span class="c1"># file. This string needs to be updated to the new BIDS name that the</span>
-        <span class="c1"># .set file received while copying.</span>
-        <span class="c1">#</span>
-        <span class="c1"># Unfortunately, there are issues with performing a round-trip of</span>
-        <span class="c1"># reading the .set, modifying it, and saving it again.</span>
+    <span class="c1"># If the data field is a string, it points to a .fdt file in src dir</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">eeg</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;data&#39;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">all</span><span class="p">([</span><span class="n">item</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">4</span><span class="p">:]</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="s1">&#39;.fdt&#39;</span><span class="p">]):</span>
         <span class="n">head</span><span class="p">,</span> <span class="n">tail</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
-        <span class="n">fdt_path</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">head</span><span class="p">,</span> <span class="n">eeg</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">])</span>
+        <span class="n">fdt_pointer</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">tolist</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">fdt_path</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">head</span><span class="p">,</span> <span class="n">fdt_pointer</span><span class="p">)</span>
         <span class="n">fdt_name</span><span class="p">,</span> <span class="n">fdt_ext</span> <span class="o">=</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">fdt_path</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">fdt_ext</span> <span class="o">!=</span> <span class="s1">&#39;.fdt&#39;</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="s1">&#39;Expected extension </span><span class="si">{}</span><span class="s1"> for linked data but found&#39;</span>
                           <span class="s1">&#39; </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;.fdt&#39;</span><span class="p">,</span> <span class="n">fdt_ext</span><span class="p">))</span>
-        <span class="n">sh</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">fdt_path</span><span class="p">,</span> <span class="n">fname_dest</span><span class="o">+</span><span class="s1">&#39;.fdt&#39;</span><span class="p">)</span>
 
-        <span class="c1"># Write a new .set file with an updated pointer</span>
-        <span class="n">head</span><span class="p">,</span> <span class="n">tail</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">fname_dest</span><span class="o">+</span><span class="s1">&#39;.fdt&#39;</span><span class="p">)</span>
-        <span class="n">eeg</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tail</span>
-        <span class="n">savemat</span><span class="p">(</span><span class="n">dest</span><span class="p">,</span> <span class="n">eeg</span><span class="p">,</span> <span class="n">appendmat</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="c1"># Copy the fdt file and give it a new name</span>
+        <span class="n">sh</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">fdt_path</span><span class="p">,</span> <span class="n">fname_dest</span> <span class="o">+</span> <span class="s1">&#39;.fdt&#39;</span><span class="p">)</span>
 
-    <span class="c1"># If no .fdt file, simply copy the .set file</span>
+        <span class="c1"># Now adjust the pointer in the set file</span>
+        <span class="n">head</span><span class="p">,</span> <span class="n">tail</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">fname_dest</span> <span class="o">+</span> <span class="s1">&#39;.fdt&#39;</span><span class="p">)</span>
+        <span class="n">mat</span><span class="p">[</span><span class="s1">&#39;EEG&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;data&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tail</span>
+        <span class="n">savemat</span><span class="p">(</span><span class="n">dest</span><span class="p">,</span> <span class="n">mat</span><span class="p">,</span> <span class="n">appendmat</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="c1"># If no .fdt file, simply copy the .set file, no modifications necessary</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">sh</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dest</span><span class="p">)</span>
 
@@ -653,16 +646,14 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">placement_scheme</span> <span class="o">=</span> <span class="s1">&#39;n/a&#39;</span>
     <span class="c1"># Check if the raw data contains eeg data at all</span>
-    <span class="k">for</span> <span class="n">ch_idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">ch_names</span><span class="p">)):</span>
-        <span class="k">if</span> <span class="n">coil_type</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">,</span> <span class="n">ch_idx</span><span class="p">)</span> <span class="o">==</span> <span class="s1">&#39;eeg&#39;</span><span class="p">:</span>
-            <span class="k">break</span>
-    <span class="k">else</span><span class="p">:</span>
+    <span class="k">if</span> <span class="s1">&#39;eeg&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">raw</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">placement_scheme</span>
 
     <span class="c1"># How many of the channels in raw are based on the extended 10/20 system</span>
     <span class="n">raw</span><span class="o">.</span><span class="n">load_data</span><span class="p">()</span>
-    <span class="n">raw</span><span class="o">.</span><span class="n">pick_types</span><span class="p">(</span><span class="n">meg</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">eeg</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">channel_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">ch</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">raw</span><span class="o">.</span><span class="n">ch_names</span><span class="p">]</span>
+    <span class="n">sel</span> <span class="o">=</span> <span class="n">pick_types</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">,</span> <span class="n">meg</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">eeg</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">ch_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">raw</span><span class="o">.</span><span class="n">ch_names</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">sel</span><span class="p">]</span>
+    <span class="n">channel_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">ch</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">ch_names</span><span class="p">]</span>
     <span class="n">montage1005</span> <span class="o">=</span> <span class="n">read_montage</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="s1">&#39;standard_1005&#39;</span><span class="p">)</span>
     <span class="n">montage1005_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">ch</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">montage1005</span><span class="o">.</span><span class="n">ch_names</span><span class="p">]</span>
 
@@ -683,7 +674,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2018, MNE Developers. Last updated on 2018-09-16.<br/>
+        &copy; Copyright 2018, MNE Developers. Last updated on 2018-10-10.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.3.<br/>
     </p>
   </div>

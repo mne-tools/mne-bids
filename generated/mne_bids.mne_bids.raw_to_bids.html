@@ -123,7 +123,7 @@
 <h1>mne_bids.mne_bids.raw_to_bids<a class="headerlink" href="#mne-bids-mne-bids-raw-to-bids" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
 <dt id="mne_bids.mne_bids.raw_to_bids">
-<code class="descclassname">mne_bids.mne_bids.</code><code class="descname">raw_to_bids</code><span class="sig-paren">(</span><em>subject_id</em>, <em>task</em>, <em>raw_file</em>, <em>output_path</em>, <em>session_id=None</em>, <em>run=None</em>, <em>kind='meg'</em>, <em>events_data=None</em>, <em>event_id=None</em>, <em>hpi=None</em>, <em>electrode=None</em>, <em>hsp=None</em>, <em>eeg_ref=None</em>, <em>eeg_gnd=None</em>, <em>config=None</em>, <em>overwrite=True</em>, <em>verbose=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/mne_bids.html#raw_to_bids"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.mne_bids.raw_to_bids" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">mne_bids.mne_bids.</code><code class="descname">raw_to_bids</code><span class="sig-paren">(</span><em>subject_id</em>, <em>task</em>, <em>raw_file</em>, <em>output_path</em>, <em>session_id=None</em>, <em>acquisition=None</em>, <em>run=None</em>, <em>kind='meg'</em>, <em>events_data=None</em>, <em>event_id=None</em>, <em>hpi=None</em>, <em>electrode=None</em>, <em>hsp=None</em>, <em>eeg_ref=None</em>, <em>eeg_gnd=None</em>, <em>config=None</em>, <em>overwrite=True</em>, <em>verbose=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/mne_bids.html#raw_to_bids"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.mne_bids.raw_to_bids" title="Permalink to this definition">¶</a></dt>
 <dd><p>Walk over a folder of files and create BIDS compatible folder.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -145,6 +145,9 @@ file. Otherwise it must be an instance of mne.Raw</p>
 </dd>
 <dt><strong>session_id</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str | None</span></dt>
 <dd><p class="first last">The session name in BIDS compatible format.</p>
+</dd>
+<dt><strong>acquisition</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str | None</span></dt>
+<dd><p class="first last">Acquisition parameter for the dataset.</p>
 </dd>
 <dt><strong>run</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int | None</span></dt>
 <dd><p class="first last">The run number for this dataset.</p>
@@ -217,7 +220,7 @@ of the participant correctly.</p>
       
     </p>
     <p>
-        &copy; Copyright 2018, MNE Developers. Last updated on 2018-09-16.<br/>
+        &copy; Copyright 2018, MNE Developers. Last updated on 2018-10-10.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.3.<br/>
     </p>
   </div>

@@ -5,7 +5,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>mne_bids.utils.print_dir_tree &#8212; mne_bids 0.1dev0 documentation</title>
+    <title>mne_bids.utils.copyfile_brainvision &#8212; mne_bids 0.1dev0 documentation</title>
     
     <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -83,7 +83,7 @@
   <ul class="dropdown-menu localtoc"
       role="menu"
       aria-labelledby="dLabelLocalToc"><ul>
-<li><a class="reference internal" href="#">mne_bids.utils.print_dir_tree</a></li>
+<li><a class="reference internal" href="#">mne_bids.utils.copyfile_brainvision</a></li>
 </ul>
 </ul>
 </li>
@@ -95,7 +95,7 @@
             
               <li class="hidden-sm">
 <div id="sourcelink">
-  <a href="../_sources/generated/mne_bids.utils.print_dir_tree.rst.txt"
+  <a href="../_sources/generated/mne_bids.utils.copyfile_brainvision.rst.txt"
      rel="nofollow">Source</a>
 </div></li>
             
@@ -119,12 +119,28 @@
   <div class="row">
     <div class="col-md-12 content">
       
-  <div class="section" id="mne-bids-utils-print-dir-tree">
-<h1>mne_bids.utils.print_dir_tree<a class="headerlink" href="#mne-bids-utils-print-dir-tree" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="mne-bids-utils-copyfile-brainvision">
+<h1>mne_bids.utils.copyfile_brainvision<a class="headerlink" href="#mne-bids-utils-copyfile-brainvision" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
-<dt id="mne_bids.utils.print_dir_tree">
-<code class="descclassname">mne_bids.utils.</code><code class="descname">print_dir_tree</code><span class="sig-paren">(</span><em>dir</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/utils.html#print_dir_tree"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.utils.print_dir_tree" title="Permalink to this definition">¶</a></dt>
-<dd><p>Recursively print a directory tree starting from <cite>dir</cite>.</p>
+<dt id="mne_bids.utils.copyfile_brainvision">
+<code class="descclassname">mne_bids.utils.</code><code class="descname">copyfile_brainvision</code><span class="sig-paren">(</span><em>vhdr_src</em>, <em>vhdr_dest</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/utils.html#copyfile_brainvision"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.utils.copyfile_brainvision" title="Permalink to this definition">¶</a></dt>
+<dd><p>Copy a BrainVision file triplet to a new location and repair links.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>vhdr_src, vhdr_dest: str</strong></dt>
+<dd><p class="first last">The src path of the .vhdr file to be copied and the destination
+path. The .eeg and .vmrk files associated with the .vhdr file
+will be given names as in vhdr_dest with adjusted extensions.
+Internal file pointers will be fixed.</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </div>
