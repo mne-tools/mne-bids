@@ -564,4 +564,3 @@ def _check_file_exists(fname):
     if op.exists(fname):
         raise OSError(errno.EEXIST, '"%s" already exists. Please set '
                       'write_mode to "overwrite" or "append".' % fname)
-    return False
