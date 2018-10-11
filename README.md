@@ -12,17 +12,20 @@ This is a repository for creating BIDS-compatible datasets with MNE.
 Installation
 ------------
 
-We recommend the [Anaconda Python distribution](https://www.continuum.io/downloads).
-To install ``mne_bids``, you first need to install its dependencies:
+We recommend the
+[Anaconda Python distribution](https://www.continuum.io/downloads).
+Next to `numpy`, `scipy`, and `matplotlib` that are included in the standard
+anaconda distribution, you will need to install the following dependencies
+to be able to use `mne_bids`:
 
     $ pip install pandas mne
 
-Then install mne_bids::
+Then install `mne_bids`:
 
     $ pip install git+https://github.com/mne-tools/mne-bids.git#egg=mne-bids
 
-If you do not have administrator privileges on the computer, use the ``--user`` flag
-with `pip`. To upgrade, use the ``--upgrade`` flag provided by `pip`.
+If you do not have administrator privileges on the computer, use the `--user`
+flag with `pip`. To upgrade, use the `--upgrade` flag provided by `pip`.
 
 To check if everything worked fine, you can do:
 
@@ -33,7 +36,7 @@ and it should not give any error messages.
 Command Line Interface
 ----------------------
 
-In addition to import mne_bids, you can use the command line interface.
+In addition to `import mne_bids`, you can use the command line interface.
 
 
 Example :
@@ -51,18 +54,36 @@ Once the implementation of a piece of functionality is considered to be bug
 free and properly documented (both API docs and an example script),
 it can be incorporated into the master branch.
 
-To run the tests using `pytest`, you need to have the cloned mne-python repository
-with a local pip-install instead of the mne-python package from pypi. Update your
-installation as follows:
+To help developing `mne-bids`, you will need a few adjustments to your
+installation as shown below.
 
-    $ git clone https://github.com/mne-tools/mne-python
+##### Running tests
+
+To run the tests using `pytest`, you need to have the git cloned mne-python
+repository with a local pip-install instead of the mne-python package from
+pypi. Update your installation as follows.
+
+    $ git clone https://github.com/mne-tools/mne-python --depth 1
     $ cd mne-python
     $ pip uninstall mne  # uninstall pypi mne
     $ pip install -e .  # use the cloned repo for a local install of mne
 
-Note that, for testing purposes, it is necessary to install the
-[BIDS validator](https://github.com/INCF/bids-validator). The outputs of
-MNE-BIDS are run through the BIDS validator to check if the conversion worked.
+Then, install the following python packages:
+
+    $ pip install flake8 pytest pytest-cov
+
+Finally, it is necessary to install the
+[BIDS validator](https://github.com/bids-standard/bids-validator). The outputs
+of MNE-BIDS are run through the BIDS validator to check if the conversion
+worked.
+
+##### Building the documentation
+
+The documentation can be built using sphinx. For that, please additionally
+install the following:
+
+    $ pip install sphinx numpydoc sphinx-gallery sphinx_bootstrap_theme pillow
+
 
 Cite
 ----
@@ -70,8 +91,7 @@ Cite
 If you use `mne-bids` in your work, please cite:
 
     Niso, G., Gorgolewski, K.J., Bock, E., Brooks, T.L., Flandin, G., Gramfort, A.,
-    Henson, R.N., Jas, M., Litvak, V., Moreau, J., Oostenveld, R., Schoffelen, J., 
-    Tadel, F., Wexler, J., Baillet, S. (2018). MEG-BIDS, the brain imaging data 
-    structure extended to magnetoencephalography. Scientific Data, 5, 180110. 
+    Henson, R.N., Jas, M., Litvak, V., Moreau, J., Oostenveld, R., Schoffelen, J.,
+    Tadel, F., Wexler, J., Baillet, S. (2018). MEG-BIDS, the brain imaging data
+    structure extended to magnetoencephalography. Scientific Data, 5, 180110.
     http://doi.org/10.1038/sdata.2018.110
-

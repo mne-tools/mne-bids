@@ -1,5 +1,5 @@
 node_js:
-  - "6.11.0"
+  - "10.0.0"
 language: python
 
 env:
@@ -13,17 +13,17 @@ before_install:
   - export PATH=/home/travis/miniconda/bin:$PATH
   - conda update --yes --quiet conda
 install:
-    - conda create -n testenv --yes pip python=${PYTHON_VERSION}
+    - conda create -n testenv --yes python=${PYTHON_VERSION}
     - source activate testenv
     - conda install --yes --quiet numpy=1.13.1 scipy=0.19.1 matplotlib pandas=0.20.3
-    - pip install flake8 pytest nose coverage coveralls
+    - pip install flake8 pytest pytest-sugar pytest-faulthandler
     - |
       git clone --depth 1 https://github.com/mne-tools/mne-python.git --branch maint/0.16
       cd mne-python
       pip install --no-deps -e .
       cd ../
     - python setup.py develop
-    - npm install -g https://github.com/INCF/bids-validator.git
+    - npm install -g https://github.com/bids-standard/bids-validator.git
 script:
     - make
     - flake8 --count mne_bids

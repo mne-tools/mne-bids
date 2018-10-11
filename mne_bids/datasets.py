@@ -10,7 +10,7 @@ import os
 import os.path as op
 import shutil
 import tarfile
-import requests
+from six.moves import urllib
 
 from mne.utils import _fetch_file
 
@@ -85,10 +85,10 @@ def fetch_brainvision_testing_data(data_path=None):
 
     for f_ending in file_endings:
         url = base_url + f_ending
-        response = requests.get(url)
+        response = urllib.request.urlopen(url)
 
         fname = os.path.join(data_path, 'test' + f_ending)
         with open(fname, 'wb') as fout:
-            fout.write(response.content)
+            fout.write(response.read())
 
     return data_path
