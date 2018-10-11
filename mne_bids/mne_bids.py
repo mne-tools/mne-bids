@@ -669,7 +669,8 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
                 'Please contact MNE developers if you have any questions.')
         else:
             split_naming = 'neuromag'
-        raw.save(raw_file_bids, split_naming=split_naming, overwrite=overwrite)
+        # TODO insert arg `split_naming=split_naming` when MNE releases 0.17
+        raw.save(raw_file_bids, overwrite=overwrite)
     # CTF data is saved in a directory
     elif ext == '.ds':
         sh.copytree(raw_fname, raw_file_bids)
