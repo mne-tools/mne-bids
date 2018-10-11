@@ -662,15 +662,17 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
             # TODO Update MNE requirement to version 0.17 when it's released
             if check_version('mne', '0.17.dev'):
                 split_naming = 'bids'
+                raw.save(raw_file_bids, split_naming=split_naming,
+                         overwrite=overwrite)
             else:
                 raise NotImplementedError(
                 'Renaming split fif files is not supported on your version '
                 'of MNE. Please upgrade to at least "0.17.dev". '
                 'Please contact MNE developers if you have any questions.')
         else:
-            split_naming = 'neuromag'
-        # TODO insert arg `split_naming=split_naming` when MNE releases 0.17
-        raw.save(raw_file_bids, overwrite=overwrite)
+            # TODO insert arg `split_naming=split_naming`
+            #      when MNE releases 0.17
+            raw.save(raw_file_bids, overwrite=overwrite)
     # CTF data is saved in a directory
     elif ext == '.ds':
         sh.copytree(raw_fname, raw_file_bids)
