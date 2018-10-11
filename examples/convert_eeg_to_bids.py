@@ -1,16 +1,17 @@
 """
-=========================
-Use MNE-BIDS for EEG Data
-=========================
+===============================
+Convert EEG data to BIDS format
+===============================
 
 In this example, we use MNE-BIDS to create a BIDS-compatible directory of EEG
 data. Specifically, we will follow these steps:
 
-#. Download some EEG data from the `PhysioBank database <https://physionet.org/physiobank/database>`_.
+1. Download some EEG data from the
+   `PhysioBank database <https://physionet.org/physiobank/database>`_.
 
-#. Load the data, extract information, and save in a new BIDS directory
+2. Load the data, extract information, and save in a new BIDS directory
 
-#. Check the result and compare it with the standard
+3. Check the result and compare it with the standard
 
 """
 
@@ -192,6 +193,6 @@ print_dir_tree(output_path)
 # directories called the "BIDS-validator", available as a web version and a
 # command line tool:
 #
-# Web version: https://incf.github.io/bids-validator/
+# Web version: https://bids-standard.github.io/bids-validator/
 #
 # Command line tool: https://www.npmjs.com/package/bids-validator
