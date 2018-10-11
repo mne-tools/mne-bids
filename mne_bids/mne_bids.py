@@ -666,9 +666,10 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
                          overwrite=overwrite)
             else:
                 raise NotImplementedError(
-                'Renaming split fif files is not supported on your version '
-                'of MNE. Please upgrade to at least "0.17.dev". '
-                'Please contact MNE developers if you have any questions.')
+                    'Renaming split fif files is not supported on your '
+                    'version of MNE. Please upgrade to at least "0.17.dev". '
+                    'Please contact MNE developers if you have '
+                    'any questions.')
         else:
             # TODO insert arg `split_naming=split_naming`
             #      when MNE releases 0.17
