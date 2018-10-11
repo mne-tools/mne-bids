@@ -12,12 +12,15 @@ This is a repository for creating BIDS-compatible datasets with MNE.
 Installation
 ------------
 
-We recommend the [Anaconda Python distribution](https://www.continuum.io/downloads).
-To install ``mne_bids``, you first need to install its dependencies:
+We recommend the
+[Anaconda Python distribution](https://www.continuum.io/downloads).
+Next to `numpy`, `scipy`, and `matplotlib` that are included in the standard
+anaconda distribution, you will need to install the following dependencies
+to be able to use `mne_bids`:
 
-    $ pip install numpy scipy matplotlib pandas mne
+    $ pip install pandas mne
 
-Then install mne_bids:
+Then install `mne_bids`:
 
     $ pip install git+https://github.com/mne-tools/mne-bids.git#egg=mne-bids
 
@@ -51,7 +54,7 @@ Once the implementation of a piece of functionality is considered to be bug
 free and properly documented (both API docs and an example script),
 it can be incorporated into the master branch.
 
-To help developing mne-bids, you will need a few adjustments to your
+To help developing `mne-bids`, you will need a few adjustments to your
 installation as shown below.
 
 ##### Running tests
@@ -64,9 +67,12 @@ pypi. Update your installation as follows.
     $ cd mne-python
     $ pip uninstall mne  # uninstall pypi mne
     $ pip install -e .  # use the cloned repo for a local install of mne
-    $ pip install flake8 pytest pytest-cov pytest-sugar pytest-faulthandler
 
-For testing purposes it is furthermore necessary to install the
+Then, install the following python packages:
+
+    $ pip install flake8 pytest pytest-cov
+
+Finally, it is necessary to install the
 [BIDS validator](https://github.com/bids-standard/bids-validator). The outputs
 of MNE-BIDS are run through the BIDS validator to check if the conversion
 worked.

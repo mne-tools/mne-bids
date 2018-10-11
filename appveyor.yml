@@ -2,7 +2,6 @@ environment:
   global:
       nodejs_version: "10.0.0"
       PYTHON: "C:\\conda"
-      PIP_DEPENDENCIES: "codecov pytest-faulthandler"
   matrix:
       - PYTHON_VERSION: "2.7"
         PYTHON_ARCH: "64"
@@ -16,7 +15,7 @@ install:
   - "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
   - "activate test"
   - "conda install numpy=1.13.1 scipy=0.19.1 matplotlib pandas=0.20.3"
-  - "pip install flake8 pytest pytest-cov pytest-sugar pytest-faulthandler"
+  - "pip install flake8 pytest pytest-cov pytest-sugar pytest-faulthandler codecov"
   - "pip uninstall -yq mne"
   - |-
     cd ..
@@ -26,7 +25,6 @@ install:
     cd ..
     cd mne-bids
   - "python setup.py develop"
-  - "SET MNE_FORCE_SERIAL=true"  # otherwise joblib will bomb
   - ps: Install-Product node $env:nodejs_version
   - npm install -g https://github.com/bids-standard/bids-validator.git
   - node --version
@@ -35,10 +33,9 @@ install:
   - which bids-validator
   - "python -c \"import mne; mne.datasets.testing.data_path()\""
 
-build: false  # Not a C# project, build stuff at the test step instead.
+build: false
 
 test_script:
-  # Run the project tests, but (sadly) exclude the ones that take a long time
   - "py.test mne_bids --cov=mne_bids"
 
 on_success:
