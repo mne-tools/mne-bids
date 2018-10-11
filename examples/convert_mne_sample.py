@@ -1,11 +1,10 @@
 """
-============================================
-Convert Raw data to a BIDS-compatible folder
-============================================
+======================================
+Convert MNE sample data to BIDS format
+======================================
 
-Brain Imaging Data Structure (BIDS) MEG is a new standard for
-storing MEG files. This example demonstrates how to convert
-your existing files into a BIDS-compatible folder.
+This example demonstrates how to convert your existing files into a
+BIDS-compatible folder.
 """
 
 # Authors: Mainak Jas <mainak.jas@telecom-paristech.fr>
