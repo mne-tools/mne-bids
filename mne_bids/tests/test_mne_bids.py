@@ -12,7 +12,9 @@ For each supported file format, implement a test.
 import os
 import os.path as op
 
+import pytest
 import pandas as pd
+
 import mne
 from mne.datasets import testing
 from mne.utils import _TempDir, run_subprocess
@@ -51,10 +53,14 @@ def test_fif():
     events_fname = op.join(data_path, 'MEG', 'sample',
                            'sample_audvis_trunc_raw-eve.fif')
 
-    raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
-                acquisition=acq, task=task, raw_file=raw_fname,
-                events_data=events_fname, output_path=output_path,
-                event_id=event_id, overwrite=True)
+    kwargs = dict(session_id=session_id, run=run,
+                  acquisition=acq, task=task, output_path=output_path,
+                  events_data=events_fname, event_id=event_id, overwrite=True)
+
+    raw_to_bids(subject_id=subject_id, raw_file=raw_fname, **kwargs)
+    with pytest.raises(ValueError):
+        raw_to_bids(subject_id=subject_id, raw_file=raw_fname,
+                    kind='blah', **kwargs)
 
     # give the raw object some fake participant data
     raw = mne.io.read_raw_fif(raw_fname)
@@ -64,10 +70,7 @@ def test_fif():
     data_path2 = _TempDir()
     raw_fname2 = op.join(data_path2, 'sample_audvis_raw.fif')
     raw.save(raw_fname2)
-    raw_to_bids(subject_id=subject_id2, run=run, task=task, acquisition=acq,
-                session_id=session_id, raw_file=raw_fname2,
-                events_data=events_fname, output_path=output_path,
-                event_id=event_id, overwrite=True)
+    raw_to_bids(subject_id=subject_id2, raw_file=raw_fname2, **kwargs)
     cmd = ['bids-validator', output_path]
     run_subprocess(cmd, shell=shell)
 

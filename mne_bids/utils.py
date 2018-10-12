@@ -68,7 +68,6 @@ def _handle_kind(raw, kind):
     """Get kind."""
     if kind in ('meg', 'eeg', 'ieeg'):
         return kind
-
     if kind != 'auto':
         raise ValueError('Unexpected "kind": {}'
                          ' Use one of: {}'.format(kind, ALLOWED_KINDS))
