@@ -53,7 +53,7 @@ Examples Gallery
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="Brain Imaging Data Structure (BIDS) MEG is a new standard for storing MEG files. This example d...">
+    <div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates how to convert your existing files into a BIDS-compatible folder. ">
 
 .. only:: html
 
@@ -77,9 +77,9 @@ Examples Gallery
 
 .. only:: html
 
-    .. figure:: /auto_examples/images/thumb/sphx_glr_convert_ds000117_thumb.png
+    .. figure:: /auto_examples/images/thumb/sphx_glr_convert_group_studies_thumb.png
 
-        :ref:`sphx_glr_auto_examples_convert_ds000117.py`
+        :ref:`sphx_glr_auto_examples_convert_group_studies.py`
 
 .. raw:: html
 
@@ -89,7 +89,7 @@ Examples Gallery
 .. toctree::
    :hidden:
 
-   /auto_examples/convert_ds000117
+   /auto_examples/convert_group_studies
 
 .. raw:: html
 
@@ -97,9 +97,9 @@ Examples Gallery
 
 .. only:: html
 
-    .. figure:: /auto_examples/images/thumb/sphx_glr_make_eeg_bids_thumb.png
+    .. figure:: /auto_examples/images/thumb/sphx_glr_convert_eeg_to_bids_thumb.png
 
-        :ref:`sphx_glr_auto_examples_make_eeg_bids.py`
+        :ref:`sphx_glr_auto_examples_convert_eeg_to_bids.py`
 
 .. raw:: html
 
@@ -109,7 +109,7 @@ Examples Gallery
 .. toctree::
    :hidden:
 
-   /auto_examples/make_eeg_bids
+   /auto_examples/convert_eeg_to_bids
 .. raw:: html
 
     <div style='clear:both'></div>
@@ -124,13 +124,13 @@ Examples Gallery
 
   .. container:: sphx-glr-download
 
-    :download:`Download all examples in Python source code: auto_examples_python.zip <//home/mainak/Desktop/projects/github_repos/mne-bids/doc/auto_examples/auto_examples_python.zip>`
+    :download:`Download all examples in Python source code: auto_examples_python.zip <//home/stefanappelhoff/Desktop/bids/mne-bids/doc/auto_examples/auto_examples_python.zip>`
 
 
 
   .. container:: sphx-glr-download
 
-    :download:`Download all examples in Jupyter notebooks: auto_examples_jupyter.zip <//home/mainak/Desktop/projects/github_repos/mne-bids/doc/auto_examples/auto_examples_jupyter.zip>`
+    :download:`Download all examples in Jupyter notebooks: auto_examples_jupyter.zip <//home/stefanappelhoff/Desktop/bids/mne-bids/doc/auto_examples/auto_examples_jupyter.zip>`
 
 
 .. only:: html

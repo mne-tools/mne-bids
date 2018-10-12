@@ -1,5 +1,5 @@
-mne_bids.utils.make_bids_folders
-================================
+mne\_bids.utils.make\_bids\_folders
+===================================
 
 .. currentmodule:: mne_bids.utils
 

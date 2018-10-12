@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>BIDS conversion for group studies &#8212; mne_bids 0.1dev0 documentation</title>
+    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          MNE-BIDS</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.1dev0</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="index.html">Gallery</a></li>
+                <li><a href="../api.html">API</a></li>
+                <li><a href="https://github.com/mne-tools/mne-bids">Github</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"></ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">BIDS conversion for group studies</a><ul>
+<li><a class="reference internal" href="#references">References</a></li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+              <li class="hidden-sm">
+<div id="sourcelink">
+  <a href="../_sources/auto_examples/convert_group_studies.rst.txt"
+     rel="nofollow">Source</a>
+</div></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-12 content">
+      
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Click <a class="reference internal" href="#sphx-glr-download-auto-examples-convert-group-studies-py"><span class="std std-ref">here</span></a> to download the full example code</p>
+</div>
+<div class="sphx-glr-example-title section" id="bids-conversion-for-group-studies">
+<span id="sphx-glr-auto-examples-convert-group-studies-py"></span><h1>BIDS conversion for group studies<a class="headerlink" href="#bids-conversion-for-group-studies" title="Permalink to this headline">¶</a></h1>
+<p>Here, we show how to do BIDS conversion for group studies.
+The data is available here: <a class="reference external" href="https://openfmri.org/dataset/ds000117/">https://openfmri.org/dataset/ds000117/</a></p>
+<div class="section" id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<p>[1] Wakeman, Daniel G., and Richard N. Henson.
+“A multi-subject, multi-modal human neuroimaging dataset.”
+Scientific data, 2 (2015): 150001.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Authors: Mainak Jas &lt;mainak.jas@telecom-paristech.fr&gt;</span>
+<span class="c1">#          Teon Brooks &lt;teon.brooks@gmail.com&gt;</span>
+
+<span class="c1"># License: BSD (3-clause)</span>
+</pre></div>
+</div>
+<p>Let us import <code class="docutils literal notranslate"><span class="pre">mne_bids</span></code></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os.path</span> <span class="kn">as</span> <span class="nn">op</span>
+<span class="kn">from</span> <span class="nn">mne_bids</span> <span class="kn">import</span> <span class="n">raw_to_bids</span>
+<span class="kn">from</span> <span class="nn">mne_bids.datasets</span> <span class="kn">import</span> <span class="n">fetch_faces_data</span>
+<span class="kn">from</span> <span class="nn">mne_bids.utils</span> <span class="kn">import</span> <span class="n">print_dir_tree</span>
+</pre></div>
+</div>
+<p>And fetch the data.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">subject_ids</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">runs</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">7</span><span class="p">)</span>
+
+<span class="n">data_path</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s1">&#39;~&#39;</span><span class="p">),</span> <span class="s1">&#39;mne_data&#39;</span><span class="p">)</span>
+<span class="n">repo</span> <span class="o">=</span> <span class="s1">&#39;ds000117&#39;</span>
+<span class="n">fetch_faces_data</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="n">repo</span><span class="p">,</span> <span class="n">subject_ids</span><span class="p">)</span>
+
+<span class="n">output_path</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="s1">&#39;ds000117-bids&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">This will download 7.9 GB of data for one subject!</p>
+</div>
+<p>Define event_ids.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">event_id</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;face/famous/first&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+    <span class="s1">&#39;face/famous/immediate&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span>
+    <span class="s1">&#39;face/famous/long&#39;</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span>
+    <span class="s1">&#39;face/unfamiliar/first&#39;</span><span class="p">:</span> <span class="mi">13</span><span class="p">,</span>
+    <span class="s1">&#39;face/unfamiliar/immediate&#39;</span><span class="p">:</span> <span class="mi">14</span><span class="p">,</span>
+    <span class="s1">&#39;face/unfamiliar/long&#39;</span><span class="p">:</span> <span class="mi">15</span><span class="p">,</span>
+    <span class="s1">&#39;scrambled/first&#39;</span><span class="p">:</span> <span class="mi">17</span><span class="p">,</span>
+    <span class="s1">&#39;scrambled/immediate&#39;</span><span class="p">:</span> <span class="mi">18</span><span class="p">,</span>
+    <span class="s1">&#39;scrambled/long&#39;</span><span class="p">:</span> <span class="mi">19</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Let us loop over the subjects and create BIDS-compatible folder</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">subject_id</span> <span class="ow">in</span> <span class="n">subject_ids</span><span class="p">:</span>
+    <span class="n">subject</span> <span class="o">=</span> <span class="s1">&#39;sub</span><span class="si">%03d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">subject_id</span>
+    <span class="k">for</span> <span class="n">run</span> <span class="ow">in</span> <span class="n">runs</span><span class="p">:</span>
+        <span class="n">raw_file</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="n">repo</span><span class="p">,</span> <span class="n">subject</span><span class="p">,</span> <span class="s1">&#39;MEG&#39;</span><span class="p">,</span>
+                           <span class="s1">&#39;run_</span><span class="si">%02d</span><span class="s1">_raw.fif&#39;</span> <span class="o">%</span> <span class="n">run</span><span class="p">)</span>
+
+        <span class="c1"># Make it BIDS compatible</span>
+        <span class="n">raw_to_bids</span><span class="p">(</span><span class="n">subject_id</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%02d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">subject_id</span><span class="p">,</span> <span class="n">session_id</span><span class="o">=</span><span class="s1">&#39;01&#39;</span><span class="p">,</span> <span class="n">run</span><span class="o">=</span><span class="n">run</span><span class="p">,</span>
+                    <span class="n">task</span><span class="o">=</span><span class="s1">&#39;VisualFaces&#39;</span><span class="p">,</span> <span class="n">raw_file</span><span class="o">=</span><span class="n">raw_file</span><span class="p">,</span>
+                    <span class="n">event_id</span><span class="o">=</span><span class="n">event_id</span><span class="p">,</span> <span class="n">output_path</span><span class="o">=</span><span class="n">output_path</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Opening raw data file /home/stefanappelhoff/mne_data/ds000117/sub001/MEG/run_01_raw.fif...
+    Read a total of 8 projection items:
+        mag_ssp_upright.fif : PCA-mags-v1 (1 x 306)  idle
+        mag_ssp_upright.fif : PCA-mags-v2 (1 x 306)  idle
+        mag_ssp_upright.fif : PCA-mags-v3 (1 x 306)  idle
+        mag_ssp_upright.fif : PCA-mags-v4 (1 x 306)  idle
+        mag_ssp_upright.fif : PCA-mags-v5 (1 x 306)  idle
+        grad_ssp_upright.fif : PCA-grad-v1 (1 x 306)  idle
+        grad_ssp_upright.fif : PCA-grad-v2 (1 x 306)  idle
+        grad_ssp_upright.fif : PCA-grad-v3 (1 x 306)  idle
+    Range : 268400 ... 815099 =    244.000 ...   740.999 secs
+Ready.
+Current compensation grade : 0
+Overwriting path: /home/stefanappelhoff/mne_data/ds000117-bids/sub-01/ses-01/meg
+Creating folder: /home/stefanappelhoff/mne_data/ds000117-bids/sub-01/ses-01/meg
+296 events found
+Event IDs: [   5    6    7   13   14   15   17   18   19  256  261  262  263  269
+  270  271  273  274  275 4096 4101 4102 4103 4109 4110 4111 4114]
+
+Writing &#39;/home/stefanappelhoff/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-01_events.tsv&#39;...
+
+       onset  duration      ...      event_value  event_sample
+0  22.958182       0.0      ...               17         25254
+1  23.731818       0.0      ...              273         26105
+2  26.049091       0.0      ...               17         28654
+3  26.928182       0.0      ...              273         29621
+4  29.222727       0.0      ...               13         32145
+
+[5 rows x 5 columns]
+
+Writing &#39;/home/stefanappelhoff/mne_data/ds000117-bids/dataset_description.json&#39;...
+
+{
+    &quot;Name&quot;: &quot; &quot;,
+    &quot;BIDSVersion&quot;: &quot;1.1.1 (draft)&quot;
+}
+Reading 0 ... 546699  =      0.000 ...   496.999 secs...
+
+Writing &#39;/home/stefanappelhoff/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-01_meg.json&#39;...
+
+{
+    &quot;TaskName&quot;: &quot;VisualFaces&quot;,
+    &quot;Manufacturer&quot;: &quot;Elekta&quot;,
+    &quot;PowerLineFrequency&quot;: 50.0,
+    &quot;SamplingFrequency&quot;: 1100.0,
+    &quot;SoftwareFilters&quot;: &quot;n/a&quot;,
+    &quot;RecordingDuration&quot;: 496.9990909090909,
+    &quot;RecordingType&quot;: &quot;continuous&quot;,
+    &quot;DewarPosition&quot;: &quot;n/a&quot;,
+    &quot;DigitizedLandmarks&quot;: false,
+    &quot;DigitizedHeadPoints&quot;: false,
+    &quot;MEGChannelCount&quot;: 306,
+    &quot;MEGREFChannelCount&quot;: 0,
+    &quot;EEGChannelCount&quot;: 74,
+    &quot;EOGChannelCount&quot;: 0,
+    &quot;ECGChannelCount&quot;: 0,
+    &quot;EMGChannelCount&quot;: 0,
+    &quot;MiscChannelCount&quot;: 12,
+    &quot;TriggerChannelCount&quot;: 3
+}
+
+Writing &#39;/home/stefanappelhoff/mne_data/ds000117-bids/participants.tsv&#39;...
+
+  participant_id  age sex group
+0         sub-01   10   M   n/a
+
+Writing &#39;/home/stefanappelhoff/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-01_channels.tsv&#39;...
+
+     name type units   ...   low_cutoff  high_cutoff  status
+0  EEG001  EEG     V   ...          0.0   356.399994    good
+1  EEG002  EEG     V   ...          0.0   356.399994    good
+2  EEG003  EEG     V   ...          0.0   356.399994    good
+3  EEG004  EEG     V   ...          0.0   356.399994    good
+4  EEG005  EEG     V   ...          0.0   356.399994    good
+
+[5 rows x 8 columns]
+
+Writing &#39;/home/stefanappelhoff/mne_data/ds000117-bids/sub-01/ses-01/sub-01_ses-01_scans.tsv&#39;...
+
+                                            filename             acq_time
+0  meg/sub-01_ses-01_task-VisualFaces_run-01_meg.fif  2009-04-07T16:39:35
+Writing data files to /home/stefanappelhoff/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-01_meg.fif
+This filename (/home/stefanappelhoff/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-01_meg.fif) does not conform to MNE naming conventions. All raw files should end with raw.fif, raw_sss.fif, raw_tsss.fif, raw.fif.gz, raw_sss.fif.gz or raw_tsss.fif.gz
+Writing /home/stefanappelhoff/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-01_meg.fif
+Closing /home/stefanappelhoff/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-01_meg.fif [done]
+Opening raw data file /home/stefanappelhoff/mne_data/ds000117/sub001/MEG/run_02_raw.fif...
+    Read a total of 8 projection items:
+        mag_ssp_upright.fif : PCA-mags-v1 (1 x 306)  idle
+        mag_ssp_upright.fif : PCA-mags-v2 (1 x 306)  idle
+        mag_ssp_upright.fif : PCA-mags-v3 (1 x 306)  idle
+        mag_ssp_upright.fif : PCA-mags-v4 (1 x 306)  idle
+        mag_ssp_upright.fif : PCA-mags-v5 (1 x 306)  idle
+        grad_ssp_upright.fif : PCA-grad-v1 (1 x 306)  idle
+        grad_ssp_upright.fif : PCA-grad-v2 (1 x 306)  idle
+        grad_ssp_upright.fif : PCA-grad-v3 (1 x 306)  idle
+    Range : 30800 ... 580799 =     28.000 ...   527.999 secs
+Ready.
+Current compensation grade : 0
+Overwriting path: /home/stefanappelhoff/mne_data/ds000117-bids/sub-01/ses-01/meg
+Creating folder: /home/stefanappelhoff/mne_data/ds000117-bids/sub-01/ses-01/meg
+296 events found
+Event IDs: [   5    6    7   13   14   15   17   18   19  256  261  262  263  269
+  270  271  273  274  275 4096 4109 4110 4111]
+
+Writing &#39;/home/stefanappelhoff/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-02_events.tsv&#39;...
+
+       onset  duration      ...      event_value  event_sample
+0  28.032727       0.0      ...               17         30836
+1  28.837273       0.0      ...              273         31721
+2  31.156364       0.0      ...               13         34272
+3  32.131818       0.0      ...              256         35345
+4  34.213636       0.0      ...                5         37635
+
+[5 rows x 5 columns]
+
+Writing &#39;/home/stefanappelhoff/mne_data/ds000117-bids/dataset_description.json&#39;...
+
+{
+    &quot;Name&quot;: &quot; &quot;,
+    &quot;BIDSVersion&quot;: &quot;1.1.1 (draft)&quot;
+}
+Reading 0 ... 549999  =      0.000 ...   499.999 secs...
+
+Writing &#39;/home/stefanappelhoff/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-02_meg.json&#39;...
+
+{
+    &quot;TaskName&quot;: &quot;VisualFaces&quot;,
+    &quot;Manufacturer&quot;: &quot;Elekta&quot;,
+    &quot;PowerLineFrequency&quot;: 50.0,
+    &quot;SamplingFrequency&quot;: 1100.0,
+    &quot;SoftwareFilters&quot;: &quot;n/a&quot;,
+    &quot;RecordingDuration&quot;: 499.9990909090909,
+    &quot;RecordingType&quot;: &quot;continuous&quot;,
+    &quot;DewarPosition&quot;: &quot;n/a&quot;,
+    &quot;DigitizedLandmarks&quot;: false,
+    &quot;DigitizedHeadPoints&quot;: false,
+    &quot;MEGChannelCount&quot;: 306,
+    &quot;MEGREFChannelCount&quot;: 0,
+    &quot;EEGChannelCount&quot;: 74,
+    &quot;EOGChannelCount&quot;: 0,
+    &quot;ECGChannelCount&quot;: 0,
+    &quot;EMGChannelCount&quot;: 0,
+    &quot;MiscChannelCount&quot;: 12,
+    &quot;TriggerChannelCount&quot;: 3
+}
+
+Writing &#39;/home/stefanappelhoff/mne_data/ds000117-bids/participants.tsv&#39;...
+
+  participant_id  age sex group
+0         sub-01   10   M   n/a
+
+Writing &#39;/home/stefanappelhoff/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-02_channels.tsv&#39;...
+
+     name type units   ...   low_cutoff  high_cutoff  status
+0  EEG001  EEG     V   ...          0.0   356.399994    good
+1  EEG002  EEG     V   ...          0.0   356.399994    good
+2  EEG003  EEG     V   ...          0.0   356.399994    good
+3  EEG004  EEG     V   ...          0.0   356.399994    good
+4  EEG005  EEG     V   ...          0.0   356.399994    good
+
+[5 rows x 8 columns]
+
+Writing &#39;/home/stefanappelhoff/mne_data/ds000117-bids/sub-01/ses-01/sub-01_ses-01_scans.tsv&#39;...
+
+                                            filename             acq_time
+0  meg/sub-01_ses-01_task-VisualFaces_run-02_meg.fif  2009-04-07T16:52:59
+Writing data files to /home/stefanappelhoff/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-02_meg.fif
+This filename (/home/stefanappelhoff/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-02_meg.fif) does not conform to MNE naming conventions. All raw files should end with raw.fif, raw_sss.fif, raw_tsss.fif, raw.fif.gz, raw_sss.fif.gz or raw_tsss.fif.gz
+Writing /home/stefanappelhoff/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-02_meg.fif
+Closing /home/stefanappelhoff/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-02_meg.fif [done]
+Opening raw data file /home/stefanappelhoff/mne_data/ds000117/sub001/MEG/run_03_raw.fif...
+    Read a total of 8 projection items:
+        mag_ssp_upright.fif : PCA-mags-v1 (1 x 306)  idle
+        mag_ssp_upright.fif : PCA-mags-v2 (1 x 306)  idle
+        mag_ssp_upright.fif : PCA-mags-v3 (1 x 306)  idle
+        mag_ssp_upright.fif : PCA-mags-v4 (1 x 306)  idle
+        mag_ssp_upright.fif : PCA-mags-v5 (1 x 306)  idle
+        grad_ssp_upright.fif : PCA-grad-v1 (1 x 306)  idle
+        grad_ssp_upright.fif : PCA-grad-v2 (1 x 306)  idle
+        grad_ssp_upright.fif : PCA-grad-v3 (1 x 306)  idle
+    Range : 187000 ... 417999 =    170.000 ...   379.999 secs
+Ready.
+Current compensation grade : 0
+Overwriting path: /home/stefanappelhoff/mne_data/ds000117-bids/sub-01/ses-01/meg
+Creating folder: /home/stefanappelhoff/mne_data/ds000117-bids/sub-01/ses-01/meg
+119 events found
+Event IDs: [   5    6    7   13   14   15   17   18   19  256  261  262  263  269
+  270  271  273  274  275 4096 4103 4110 4352]
+
+Writing &#39;/home/stefanappelhoff/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-03_events.tsv&#39;...
+
+       onset  duration      ...      event_value  event_sample
+0  24.560000       0.0      ...               17         27016
+1  25.270909       0.0      ...              273         27798
+2  27.700000       0.0      ...               18         30470
+3  28.550000       0.0      ...              256         31405
+4  30.740909       0.0      ...               17         33815
+
+[5 rows x 5 columns]
+
+Writing &#39;/home/stefanappelhoff/mne_data/ds000117-bids/dataset_description.json&#39;...
+
+{
+    &quot;Name&quot;: &quot; &quot;,
+    &quot;BIDSVersion&quot;: &quot;1.1.1 (draft)&quot;
+}
+Reading 0 ... 230999  =      0.000 ...   209.999 secs...
+
+Writing &#39;/home/stefanappelhoff/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-03_meg.json&#39;...
+
+{
+    &quot;TaskName&quot;: &quot;VisualFaces&quot;,
+    &quot;Manufacturer&quot;: &quot;Elekta&quot;,
+    &quot;PowerLineFrequency&quot;: 50.0,
+    &quot;SamplingFrequency&quot;: 1100.0,
+    &quot;SoftwareFilters&quot;: &quot;n/a&quot;,
+    &quot;RecordingDuration&quot;: 209.9990909090909,
+    &quot;RecordingType&quot;: &quot;continuous&quot;,
+    &quot;DewarPosition&quot;: &quot;n/a&quot;,
+    &quot;DigitizedLandmarks&quot;: false,
+    &quot;DigitizedHeadPoints&quot;: false,
+    &quot;MEGChannelCount&quot;: 306,
+    &quot;MEGREFChannelCount&quot;: 0,
+    &quot;EEGChannelCount&quot;: 74,
+    &quot;EOGChannelCount&quot;: 0,
+    &quot;ECGChannelCount&quot;: 0,
+    &quot;EMGChannelCount&quot;: 0,
+    &quot;MiscChannelCount&quot;: 12,
+    &quot;TriggerChannelCount&quot;: 3
+}
+
+Writing &#39;/home/stefanappelhoff/mne_data/ds000117-bids/participants.tsv&#39;...
+
+  participant_id  age sex group
+0         sub-01   10   M   n/a
+
+Writing &#39;/home/stefanappelhoff/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-03_channels.tsv&#39;...
+
+     name type units   ...   low_cutoff  high_cutoff  status
+0  EEG001  EEG     V   ...          0.0   356.399994    good
+1  EEG002  EEG     V   ...          0.0   356.399994    good
+2  EEG003  EEG     V   ...          0.0   356.399994    good
+3  EEG004  EEG     V   ...          0.0   356.399994    good
+4  EEG005  EEG     V   ...          0.0   356.399994    good
+
+[5 rows x 8 columns]
+
+Writing &#39;/home/stefanappelhoff/mne_data/ds000117-bids/sub-01/ses-01/sub-01_ses-01_scans.tsv&#39;...
+
+                                            filename             acq_time
+0  meg/sub-01_ses-01_task-VisualFaces_run-03_meg.fif  2009-04-07T17:02:25
+Writing data files to /home/stefanappelhoff/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-03_meg.fif
+This filename (/home/stefanappelhoff/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-03_meg.fif) does not conform to MNE naming conventions. All raw files should end with raw.fif, raw_sss.fif, raw_tsss.fif, raw.fif.gz, raw_sss.fif.gz or raw_tsss.fif.gz
+Writing /home/stefanappelhoff/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-03_meg.fif
+Closing /home/stefanappelhoff/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-03_meg.fif [done]
+Opening raw data file /home/stefanappelhoff/mne_data/ds000117/sub001/MEG/run_04_raw.fif...
+    Read a total of 8 projection items:
+        mag_ssp_upright.fif : PCA-mags-v1 (1 x 306)  idle
+        mag_ssp_upright.fif : PCA-mags-v2 (1 x 306)  idle
+        mag_ssp_upright.fif : PCA-mags-v3 (1 x 306)  idle
+        mag_ssp_upright.fif : PCA-mags-v4 (1 x 306)  idle
+        mag_ssp_upright.fif : PCA-mags-v5 (1 x 306)  idle
+        grad_ssp_upright.fif : PCA-grad-v1 (1 x 306)  idle
+        grad_ssp_upright.fif : PCA-grad-v2 (1 x 306)  idle
+        grad_ssp_upright.fif : PCA-grad-v3 (1 x 306)  idle
+    Range : 47300 ... 590699 =     43.000 ...   536.999 secs
+Ready.
+Current compensation grade : 0
+Overwriting path: /home/stefanappelhoff/mne_data/ds000117-bids/sub-01/ses-01/meg
+Creating folder: /home/stefanappelhoff/mne_data/ds000117-bids/sub-01/ses-01/meg
+294 events found
+Event IDs: [   5    6    7   13   14   15   17   18   19  256  261  262  263  269
+  270  271  273  274  275 4096 4109 4110]
+
+Writing &#39;/home/stefanappelhoff/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-04_events.tsv&#39;...
+
+       onset  duration      ...      event_value  event_sample
+0  25.407273       0.0      ...               13         27948
+1  26.219091       0.0      ...              269         28841
+2  28.498182       0.0      ...               14         31348
+3  29.337273       0.0      ...              270         32271
+4  31.789091       0.0      ...               13         34968
+
+[5 rows x 5 columns]
+
+Writing &#39;/home/stefanappelhoff/mne_data/ds000117-bids/dataset_description.json&#39;...
+
+{
+    &quot;Name&quot;: &quot; &quot;,
+    &quot;BIDSVersion&quot;: &quot;1.1.1 (draft)&quot;
+}
+Reading 0 ... 543399  =      0.000 ...   493.999 secs...
+
+Writing &#39;/home/stefanappelhoff/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-04_meg.json&#39;...
+
+{
+    &quot;TaskName&quot;: &quot;VisualFaces&quot;,
+    &quot;Manufacturer&quot;: &quot;Elekta&quot;,
+    &quot;PowerLineFrequency&quot;: 50.0,
+    &quot;SamplingFrequency&quot;: 1100.0,
+    &quot;SoftwareFilters&quot;: &quot;n/a&quot;,
+    &quot;RecordingDuration&quot;: 493.9990909090909,
+    &quot;RecordingType&quot;: &quot;continuous&quot;,
+    &quot;DewarPosition&quot;: &quot;n/a&quot;,
+    &quot;DigitizedLandmarks&quot;: false,
+    &quot;DigitizedHeadPoints&quot;: false,
+    &quot;MEGChannelCount&quot;: 306,
+    &quot;MEGREFChannelCount&quot;: 0,
+    &quot;EEGChannelCount&quot;: 74,
+    &quot;EOGChannelCount&quot;: 0,
+    &quot;ECGChannelCount&quot;: 0,
+    &quot;EMGChannelCount&quot;: 0,
+    &quot;MiscChannelCount&quot;: 12,
+    &quot;TriggerChannelCount&quot;: 3
+}
+
+Writing &#39;/home/stefanappelhoff/mne_data/ds000117-bids/participants.tsv&#39;...
+
+  participant_id  age sex group
+0         sub-01   10   M   n/a
+
+Writing &#39;/home/stefanappelhoff/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-04_channels.tsv&#39;...
+
+     name type units   ...   low_cutoff  high_cutoff  status
+0  EEG001  EEG     V   ...          0.0   356.399994    good
+1  EEG002  EEG     V   ...          0.0   356.399994    good
+2  EEG003  EEG     V   ...          0.0   356.399994    good
+3  EEG004  EEG     V   ...          0.0   356.399994    good
+4  EEG005  EEG     V   ...          0.0   356.399994    good
+
+[5 rows x 8 columns]
+
+Writing &#39;/home/stefanappelhoff/mne_data/ds000117-bids/sub-01/ses-01/sub-01_ses-01_scans.tsv&#39;...
+
+                                            filename             acq_time
+0  meg/sub-01_ses-01_task-VisualFaces_run-04_meg.fif  2009-04-07T17:17:45
+Writing data files to /home/stefanappelhoff/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-04_meg.fif
+This filename (/home/stefanappelhoff/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-04_meg.fif) does not conform to MNE naming conventions. All raw files should end with raw.fif, raw_sss.fif, raw_tsss.fif, raw.fif.gz, raw_sss.fif.gz or raw_tsss.fif.gz
+Writing /home/stefanappelhoff/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-04_meg.fif
+Closing /home/stefanappelhoff/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-04_meg.fif [done]
+Opening raw data file /home/stefanappelhoff/mne_data/ds000117/sub001/MEG/run_05_raw.fif...
+    Read a total of 8 projection items:
+        mag_ssp_upright.fif : PCA-mags-v1 (1 x 306)  idle
+        mag_ssp_upright.fif : PCA-mags-v2 (1 x 306)  idle
+        mag_ssp_upright.fif : PCA-mags-v3 (1 x 306)  idle
+        mag_ssp_upright.fif : PCA-mags-v4 (1 x 306)  idle
+        mag_ssp_upright.fif : PCA-mags-v5 (1 x 306)  idle
+        grad_ssp_upright.fif : PCA-grad-v1 (1 x 306)  idle
+        grad_ssp_upright.fif : PCA-grad-v2 (1 x 306)  idle
+        grad_ssp_upright.fif : PCA-grad-v3 (1 x 306)  idle
+    Range : 283800 ... 820599 =    258.000 ...   745.999 secs
+Ready.
+Current compensation grade : 0
+Overwriting path: /home/stefanappelhoff/mne_data/ds000117-bids/sub-01/ses-01/meg
+Creating folder: /home/stefanappelhoff/mne_data/ds000117-bids/sub-01/ses-01/meg
+292 events found
+Event IDs: [   5    6    7   13   14   15   17   18   19  256  261  262  263  269
+  270  271  273  274  275 4096 4103 4110 4111]
+
+Writing &#39;/home/stefanappelhoff/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-05_events.tsv&#39;...
+
+       onset  duration      ...      event_value  event_sample
+0  25.717273       0.0      ...                5         28289
+1  26.469091       0.0      ...              261         29116
+2  29.023636       0.0      ...               17         31926
+3  29.599091       0.0      ...              273         32559
+4  32.130909       0.0      ...               18         35344
+
+[5 rows x 5 columns]
+
+Writing &#39;/home/stefanappelhoff/mne_data/ds000117-bids/dataset_description.json&#39;...
+
+{
+    &quot;Name&quot;: &quot; &quot;,
+    &quot;BIDSVersion&quot;: &quot;1.1.1 (draft)&quot;
+}
+Reading 0 ... 536799  =      0.000 ...   487.999 secs...
+
+Writing &#39;/home/stefanappelhoff/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-05_meg.json&#39;...
+
+{
+    &quot;TaskName&quot;: &quot;VisualFaces&quot;,
+    &quot;Manufacturer&quot;: &quot;Elekta&quot;,
+    &quot;PowerLineFrequency&quot;: 50.0,
+    &quot;SamplingFrequency&quot;: 1100.0,
+    &quot;SoftwareFilters&quot;: &quot;n/a&quot;,
+    &quot;RecordingDuration&quot;: 487.9990909090909,
+    &quot;RecordingType&quot;: &quot;continuous&quot;,
+    &quot;DewarPosition&quot;: &quot;n/a&quot;,
+    &quot;DigitizedLandmarks&quot;: false,
+    &quot;DigitizedHeadPoints&quot;: false,
+    &quot;MEGChannelCount&quot;: 306,
+    &quot;MEGREFChannelCount&quot;: 0,
+    &quot;EEGChannelCount&quot;: 74,
+    &quot;EOGChannelCount&quot;: 0,
+    &quot;ECGChannelCount&quot;: 0,
+    &quot;EMGChannelCount&quot;: 0,
+    &quot;MiscChannelCount&quot;: 12,
+    &quot;TriggerChannelCount&quot;: 3
+}
+
+Writing &#39;/home/stefanappelhoff/mne_data/ds000117-bids/participants.tsv&#39;...
+
+  participant_id  age sex group
+0         sub-01   10   M   n/a
+
+Writing &#39;/home/stefanappelhoff/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-05_channels.tsv&#39;...
+
+     name type units   ...   low_cutoff  high_cutoff  status
+0  EEG001  EEG     V   ...          0.0   356.399994    good
+1  EEG002  EEG     V   ...          0.0   356.399994    good
+2  EEG003  EEG     V   ...          0.0   356.399994    good
+3  EEG004  EEG     V   ...          0.0   356.399994    good
+4  EEG005  EEG     V   ...          0.0   356.399994    good
+
+[5 rows x 8 columns]
+
+Writing &#39;/home/stefanappelhoff/mne_data/ds000117-bids/sub-01/ses-01/sub-01_ses-01_scans.tsv&#39;...
+
+                                            filename             acq_time
+0  meg/sub-01_ses-01_task-VisualFaces_run-05_meg.fif  2009-04-07T17:27:38
+Writing data files to /home/stefanappelhoff/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-05_meg.fif
+This filename (/home/stefanappelhoff/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-05_meg.fif) does not conform to MNE naming conventions. All raw files should end with raw.fif, raw_sss.fif, raw_tsss.fif, raw.fif.gz, raw_sss.fif.gz or raw_tsss.fif.gz
+Writing /home/stefanappelhoff/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-05_meg.fif
+Closing /home/stefanappelhoff/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-05_meg.fif [done]
+Opening raw data file /home/stefanappelhoff/mne_data/ds000117/sub001/MEG/run_06_raw.fif...
+    Read a total of 8 projection items:
+        mag_ssp_upright.fif : PCA-mags-v1 (1 x 306)  idle
+        mag_ssp_upright.fif : PCA-mags-v2 (1 x 306)  idle
+        mag_ssp_upright.fif : PCA-mags-v3 (1 x 306)  idle
+        mag_ssp_upright.fif : PCA-mags-v4 (1 x 306)  idle
+        mag_ssp_upright.fif : PCA-mags-v5 (1 x 306)  idle
+        grad_ssp_upright.fif : PCA-grad-v1 (1 x 306)  idle
+        grad_ssp_upright.fif : PCA-grad-v2 (1 x 306)  idle
+        grad_ssp_upright.fif : PCA-grad-v3 (1 x 306)  idle
+    Range : 28600 ... 573099 =     26.000 ...   520.999 secs
+Ready.
+Current compensation grade : 0
+Overwriting path: /home/stefanappelhoff/mne_data/ds000117-bids/sub-01/ses-01/meg
+Creating folder: /home/stefanappelhoff/mne_data/ds000117-bids/sub-01/ses-01/meg
+296 events found
+Event IDs: [   5    6    7   13   14   15   17   18   19  256  261  262  263  269
+  270  271  273  274  275 4096 4110]
+
+Writing &#39;/home/stefanappelhoff/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-06_events.tsv&#39;...
+
+       onset  duration      ...      event_value  event_sample
+0  25.204545       0.0      ...                5         27725
+1  25.850000       0.0      ...              261         28435
+2  28.345455       0.0      ...               17         31180
+3  29.024545       0.0      ...              273         31927
+4  31.470000       0.0      ...                5         34617
+
+[5 rows x 5 columns]
+
+Writing &#39;/home/stefanappelhoff/mne_data/ds000117-bids/dataset_description.json&#39;...
+
+{
+    &quot;Name&quot;: &quot; &quot;,
+    &quot;BIDSVersion&quot;: &quot;1.1.1 (draft)&quot;
+}
+Reading 0 ... 544499  =      0.000 ...   494.999 secs...
+
+Writing &#39;/home/stefanappelhoff/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-06_meg.json&#39;...
+
+{
+    &quot;TaskName&quot;: &quot;VisualFaces&quot;,
+    &quot;Manufacturer&quot;: &quot;Elekta&quot;,
+    &quot;PowerLineFrequency&quot;: 50.0,
+    &quot;SamplingFrequency&quot;: 1100.0,
+    &quot;SoftwareFilters&quot;: &quot;n/a&quot;,
+    &quot;RecordingDuration&quot;: 494.9990909090909,
+    &quot;RecordingType&quot;: &quot;continuous&quot;,
+    &quot;DewarPosition&quot;: &quot;n/a&quot;,
+    &quot;DigitizedLandmarks&quot;: false,
+    &quot;DigitizedHeadPoints&quot;: false,
+    &quot;MEGChannelCount&quot;: 306,
+    &quot;MEGREFChannelCount&quot;: 0,
+    &quot;EEGChannelCount&quot;: 74,
+    &quot;EOGChannelCount&quot;: 0,
+    &quot;ECGChannelCount&quot;: 0,
+    &quot;EMGChannelCount&quot;: 0,
+    &quot;MiscChannelCount&quot;: 12,
+    &quot;TriggerChannelCount&quot;: 3
+}
+
+Writing &#39;/home/stefanappelhoff/mne_data/ds000117-bids/participants.tsv&#39;...
+
+  participant_id  age sex group
+0         sub-01   10   M   n/a
+
+Writing &#39;/home/stefanappelhoff/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-06_channels.tsv&#39;...
+
+     name type units   ...   low_cutoff  high_cutoff  status
+0  EEG001  EEG     V   ...          0.0   356.399994    good
+1  EEG002  EEG     V   ...          0.0   356.399994    good
+2  EEG003  EEG     V   ...          0.0   356.399994    good
+3  EEG004  EEG     V   ...          0.0   356.399994    good
+4  EEG005  EEG     V   ...          0.0   356.399994    good
+
+[5 rows x 8 columns]
+
+Writing &#39;/home/stefanappelhoff/mne_data/ds000117-bids/sub-01/ses-01/sub-01_ses-01_scans.tsv&#39;...
+
+                                            filename             acq_time
+0  meg/sub-01_ses-01_task-VisualFaces_run-06_meg.fif  2009-04-07T17:41:20
+Writing data files to /home/stefanappelhoff/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-06_meg.fif
+This filename (/home/stefanappelhoff/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-06_meg.fif) does not conform to MNE naming conventions. All raw files should end with raw.fif, raw_sss.fif, raw_tsss.fif, raw.fif.gz, raw_sss.fif.gz or raw_tsss.fif.gz
+Writing /home/stefanappelhoff/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-06_meg.fif
+Closing /home/stefanappelhoff/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-06_meg.fif [done]
+</pre></div>
+</div>
+<p>Now let’s see the structure of the BIDS folder we created.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">print_dir_tree</span><span class="p">(</span><span class="n">output_path</span><span class="p">)</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>|------------ ds000117-bids
+|--------------- participants.tsv
+|--------------- dataset_description.json
+|--------------- sub-01
+|------------------ ses-01
+|--------------------- sub-01_ses-01_scans.tsv
+|--------------------- meg
+|------------------------ sub-01_ses-01_task-VisualFaces_run-06_meg.fif
+|------------------------ sub-01_ses-01_task-VisualFaces_run-06_channels.tsv
+|------------------------ sub-01_ses-01_task-VisualFaces_run-06_events.tsv
+|------------------------ sub-01_ses-01_task-VisualFaces_run-06_meg.json
+|------------------------ sub-01_ses-01_coordsystem.json
+</pre></div>
+</div>
+<p><strong>Total running time of the script:</strong> ( 0 minutes  23.386 seconds)</p>
+<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-group-studies-py">
+<div class="sphx-glr-download docutils container">
+<a class="reference download internal" href="../_downloads/convert_group_studies.py" download=""><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">convert_group_studies.py</span></code></a></div>
+<div class="sphx-glr-download docutils container">
+<a class="reference download internal" href="../_downloads/convert_group_studies.ipynb" download=""><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">convert_group_studies.ipynb</span></code></a></div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.readthedocs.io">Gallery generated by Sphinx-Gallery</a></p>
+</div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2018, MNE Developers. Last updated on 2018-10-12.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.5.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

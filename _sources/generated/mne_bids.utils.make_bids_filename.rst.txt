@@ -1,5 +1,5 @@
-mne_bids.utils.make_bids_filename
-=================================
+mne\_bids.utils.make\_bids\_filename
+====================================
 
 .. currentmodule:: mne_bids.utils
 

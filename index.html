@@ -1,35 +1,21 @@
 <!DOCTYPE html>
 
-
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
     <title>MNE-BIDS &#8212; mne_bids 0.1dev0 documentation</title>
-    
-    <link rel="stylesheet" href="_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="_static/gallery.css" type="text/css" />
-    <link rel="stylesheet" href="_static/bootswatch-3.3.4/flatly/bootstrap.min.css" type="text/css" />
-    <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    './',
-        VERSION:     '0.1dev0',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/javascript" src="_static/js/jquery-1.11.0.min.js"></script>
     <script type="text/javascript" src="_static/js/jquery-fix.js"></script>
-    <script type="text/javascript" src="_static/bootstrap-3.3.4/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="_static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="_static/bootstrap-sphinx.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -38,8 +24,7 @@
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
 <meta name="apple-mobile-web-app-capable" content="yes">
 
-  </head>
-  <body role="document">
+  </head><body>
 
   <div id="navbar" class="navbar navbar-default navbar-fixed-top">
     <div class="container">
@@ -86,7 +71,7 @@
 <li><a class="reference internal" href="#">MNE-BIDS</a></li>
 <li><a class="reference internal" href="#installation">Installation</a></li>
 <li><a class="reference internal" href="#bug-reports">Bug reports</a></li>
-<li><a class="reference internal" href="#whats-new"><code class="docutils literal"><span class="pre">whats_new</span></code></a></li>
+<li><a class="reference internal" href="#whats-new"><code class="docutils literal notranslate"><span class="pre">whats_new</span></code></a></li>
 </ul>
 </ul>
 </li>
@@ -128,18 +113,18 @@
 </div>
 <div class="section" id="installation">
 <h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
-<p>We recommend the <a class="reference external" href="https://www.continuum.io/downloads">Anaconda Python distribution</a>. To install <code class="docutils literal"><span class="pre">mne_bids</span></code>, you first need to install its dependencies:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>$ pip install pandas mne
+<p>We recommend the <a class="reference external" href="https://www.continuum.io/downloads">Anaconda Python distribution</a>. To install <code class="docutils literal notranslate"><span class="pre">mne_bids</span></code>, you first need to install its dependencies:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pip install pandas mne
 </pre></div>
 </div>
 <p>Then install mne_bids:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>$ pip install git+https://github.com/mne-tools/mne-bids.git#egg=mne-bids
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pip install git+https://github.com/mne-tools/mne-bids.git#egg=mne-bids
 </pre></div>
 </div>
-<p>If you do not have admin privileges on the computer, use the <code class="docutils literal"><span class="pre">--user</span></code> flag
-with <cite>pip</cite>. To upgrade, use the <code class="docutils literal"><span class="pre">--upgrade</span></code> flag provided by <cite>pip</cite>.</p>
+<p>If you do not have admin privileges on the computer, use the <code class="docutils literal notranslate"><span class="pre">--user</span></code> flag
+with <cite>pip</cite>. To upgrade, use the <code class="docutils literal notranslate"><span class="pre">--upgrade</span></code> flag provided by <cite>pip</cite>.</p>
 <p>To check if everything worked fine, you can do:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span>$ python -c &#39;import mne_bids&#39;
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python -c &#39;import mne_bids&#39;
 </pre></div>
 </div>
 <p>and it should not give any error messages.</p>
@@ -149,7 +134,7 @@ with <cite>pip</cite>. To upgrade, use the <code class="docutils literal"><span 
 <p>Use the <a class="reference external" href="https://github.com/mne-tools/mne-bids/issues">github issue tracker</a> to report bugs.</p>
 </div>
 <div class="section" id="whats-new">
-<h1><a class="reference internal" href="whats_new.html#whats-new"><span class="std std-ref">What&#8217;s new?</span></a><a class="headerlink" href="#whats-new" title="Permalink to this headline">¶</a></h1>
+<h1><a class="reference internal" href="whats_new.html#whats-new"><span class="std std-ref">What’s new?</span></a><a class="headerlink" href="#whats-new" title="Permalink to this headline">¶</a></h1>
 </div>
 
 
@@ -164,8 +149,8 @@ with <cite>pip</cite>. To upgrade, use the <code class="docutils literal"><span 
       
     </p>
     <p>
-        &copy; Copyright 2018, MNE Developers. Last updated on 2018-10-10.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.3.<br/>
+        &copy; Copyright 2018, MNE Developers. Last updated on 2018-10-12.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.5.<br/>
     </p>
   </div>
 </footer>

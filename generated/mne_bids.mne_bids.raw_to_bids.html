@@ -1,35 +1,21 @@
 <!DOCTYPE html>
 
-
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    
     <title>mne_bids.mne_bids.raw_to_bids &#8212; mne_bids 0.1dev0 documentation</title>
-    
-    <link rel="stylesheet" href="../_static/basic.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/bootswatch-3.3.4/flatly/bootstrap.min.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
-    
-    <script type="text/javascript">
-      var DOCUMENTATION_OPTIONS = {
-        URL_ROOT:    '../',
-        VERSION:     '0.1dev0',
-        COLLAPSE_INDEX: false,
-        FILE_SUFFIX: '.html',
-        HAS_SOURCE:  true,
-        SOURCELINK_SUFFIX: '.txt'
-      };
-    </script>
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js"></script>
     <script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
-    <script type="text/javascript" src="../_static/bootstrap-3.3.4/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -38,8 +24,7 @@
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
 <meta name="apple-mobile-web-app-capable" content="yes">
 
-  </head>
-  <body role="document">
+  </head><body>
 
   <div id="navbar" class="navbar navbar-default navbar-fixed-top">
     <div class="container">
@@ -131,7 +116,7 @@
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
 <dt><strong>subject_id</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
-<dd><p class="first last">The subject name in BIDS compatible format (&#8216;01&#8217;, &#8216;02&#8217;, etc.)</p>
+<dd><p class="first last">The subject name in BIDS compatible format (‘01’, ‘02’, etc.)</p>
 </dd>
 <dt><strong>task</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
 <dd><p class="first last">Name of the task the data is based on.</p>
@@ -152,8 +137,8 @@ file. Otherwise it must be an instance of mne.Raw</p>
 <dt><strong>run</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int | None</span></dt>
 <dd><p class="first last">The run number for this dataset.</p>
 </dd>
-<dt><strong>kind</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, one of (&#8216;meg&#8217;, &#8216;eeg&#8217;, &#8216;ieeg&#8217;)</span></dt>
-<dd><p class="first last">The kind of data being converted. Defaults to &#8220;meg&#8221;.</p>
+<dt><strong>kind</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, one of (‘meg’, ‘eeg’, ‘ieeg’)</span></dt>
+<dd><p class="first last">The kind of data being converted. Defaults to “meg”.</p>
 </dd>
 <dt><strong>events_data</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str | array | None</span></dt>
 <dd><p class="first last">The events file. If a string, a path to the events file. If an array,
@@ -161,7 +146,7 @@ the MNE events array (shape n_events, 3). If None, events will be
 inferred from the stim channel using <cite>mne.find_events</cite>.</p>
 </dd>
 <dt><strong>event_id</strong> <span class="classifier-delimiter">:</span> <span class="classifier">dict | None</span></dt>
-<dd><p class="first last">The event id dict used to create a &#8216;trial_type&#8217; column in events.tsv</p>
+<dd><p class="first last">The event id dict used to create a ‘trial_type’ column in events.tsv</p>
 </dd>
 <dt><strong>hpi</strong> <span class="classifier-delimiter">:</span> <span class="classifier">None | str | list of str</span></dt>
 <dd><p class="first last">Marker points representing the location of the marker coils with
@@ -201,8 +186,8 @@ False, no content will be printed.</p>
 </tbody>
 </table>
 <p class="rubric">Notes</p>
-<p>For the participants.tsv file, the raw.info[&#8216;subjects_info&#8217;] should be
-updated and raw.info[&#8216;meas_date&#8217;] should not be None to compute the age
+<p>For the participants.tsv file, the raw.info[‘subjects_info’] should be
+updated and raw.info[‘meas_date’] should not be None to compute the age
 of the participant correctly.</p>
 </dd></dl>
 
@@ -220,8 +205,8 @@ of the participant correctly.</p>
       
     </p>
     <p>
-        &copy; Copyright 2018, MNE Developers. Last updated on 2018-10-10.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.5.3.<br/>
+        &copy; Copyright 2018, MNE Developers. Last updated on 2018-10-12.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.5.<br/>
     </p>
   </div>
 </footer>

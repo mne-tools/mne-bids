@@ -128,12 +128,12 @@ of the directory tree.
     |------------------ database
     |--------------------- eegmmidb
     |------------------------ S002
+    |--------------------------- S002R04.edf
     |--------------------------- S002R02.edf
     |--------------------------- S002R12.edf
-    |--------------------------- S002R04.edf
     |------------------------ S001
-    |--------------------------- S001R02.edf
     |--------------------------- S001R04.edf
+    |--------------------------- S001R02.edf
     |--------------------------- S001R12.edf
 
 
@@ -169,7 +169,7 @@ MNE-Python's io module and the `read_raw_edf` function.
 
  .. code-block:: none
 
-    Extracting EDF parameters from /home/mainak/mne_data/MNE-eegbci-data/physiobank/database/eegmmidb/S001/S001R02.edf...
+    Extracting EDF parameters from /home/stefanappelhoff/mne_data/MNE-eegbci-data/physiobank/database/eegmmidb/S001/S001R02.edf...
     EDF file detected
     EDF annotations detected (consider using raw.find_edf_events() to extract them)
     Setting channel info structure...
@@ -223,8 +223,6 @@ however optional. The required inputs are:
             The path of the BIDS compatible folder
         session_id : str | None
             The session name in BIDS compatible format.
-        acquisition : str | None
-            Acquisition parameter for the dataset.
         run : int | None
             The run number for this dataset.
         kind : str, one of ('meg', 'eeg', 'ieeg')
@@ -318,69 +316,64 @@ Now we just need to specify a few more EEG details to get something sensible:
 
  .. code-block:: none
 
-    Creating folder: /home/mainak/mne_data/eegmmidb_bids/sub-001/eeg
+    Creating folder: /home/stefanappelhoff/mne_data/eegmmidb_bids/sub-001/eeg
     1 events found
     Event IDs: [1]
 
-    Writing '/home/mainak/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_events.tsv'...
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_events.tsv'...
 
        onset  duration         trial_type  event_value  event_sample
     0    0.0       0.0  imagine left fist            1             0
 
-    Writing '/home/mainak/mne_data/eegmmidb_bids/dataset_description.json'...
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/dataset_description.json'...
 
     {
-        "Name": " ", 
+        "Name": " ",
         "BIDSVersion": "1.1.1 (draft)"
     }
 
-    Writing '/home/mainak/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_eeg.json'...
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_eeg.json'...
 
     {
-        "TaskName": "resteyesclosed", 
-        "Manufacturer": "n/a", 
-        "PowerLineFrequency": 50, 
-        "SamplingFrequency": 160.0, 
-        "SoftwareFilters": "n/a", 
-        "RecordingDuration": 60.993749999999999, 
-        "RecordingType": "continuous", 
-        "EEGReference": "n/a", 
-        "EEGGround": "n/a", 
-        "EEGPlacementScheme": "n/a", 
-        "EEGChannelCount": 64, 
-        "EOGChannelCount": 0, 
-        "ECGChannelCount": 0, 
-        "EMGChannelCount": 0, 
-        "MiscChannelCount": 0, 
+        "TaskName": "resteyesclosed",
+        "Manufacturer": "n/a",
+        "PowerLineFrequency": 50,
+        "SamplingFrequency": 160.0,
+        "SoftwareFilters": "n/a",
+        "RecordingDuration": 60.99375,
+        "RecordingType": "continuous",
+        "EEGReference": "n/a",
+        "EEGGround": "n/a",
+        "EEGPlacementScheme": "n/a",
+        "EEGChannelCount": 64,
+        "EOGChannelCount": 0,
+        "ECGChannelCount": 0,
+        "EMGChannelCount": 0,
+        "MiscChannelCount": 0,
         "TriggerChannelCount": 1
     }
 
-    Writing '/home/mainak/mne_data/eegmmidb_bids/participants.tsv'...
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/participants.tsv'...
 
       participant_id  age  sex group
     0        sub-001  NaN  NaN   NaN
 
-    Writing '/home/mainak/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_channels.tsv'...
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_channels.tsv'...
 
-       name type units           description  sampling_frequency  low_cutoff  \
-    0  Fc5.  EEG     V  ElectroEncephaloGram               160.0         0.0   
-    1  Fc3.  EEG     V  ElectroEncephaloGram               160.0         0.0   
-    2  Fc1.  EEG     V  ElectroEncephaloGram               160.0         0.0   
-    3  Fcz.  EEG     V  ElectroEncephaloGram               160.0         0.0   
-    4  Fc2.  EEG     V  ElectroEncephaloGram               160.0         0.0   
+       name type units   ...   low_cutoff  high_cutoff  status
+    0  Fc5.  EEG     V   ...          0.0         80.0    good
+    1  Fc3.  EEG     V   ...          0.0         80.0    good
+    2  Fc1.  EEG     V   ...          0.0         80.0    good
+    3  Fcz.  EEG     V   ...          0.0         80.0    good
+    4  Fc2.  EEG     V   ...          0.0         80.0    good
 
-       high_cutoff status  
-    0         80.0   good  
-    1         80.0   good  
-    2         80.0   good  
-    3         80.0   good  
-    4         80.0   good  
+    [5 rows x 8 columns]
 
-    Writing '/home/mainak/mne_data/eegmmidb_bids/sub-001/sub-001_scans.tsv'...
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-001/sub-001_scans.tsv'...
 
                                       filename             acq_time
-    0  eeg/sub-001_task-resteyesclosed_eeg.edf  2009-08-12T12:15:00
-    Writing data files to /home/mainak/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_eeg.edf
+    0  eeg/sub-001_task-resteyesclosed_eeg.edf  2009-08-12T18:15:00
+    Writing data files to /home/stefanappelhoff/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_eeg.edf
 
 
 What does our fresh BIDS directory look like?
@@ -402,15 +395,15 @@ What does our fresh BIDS directory look like?
  .. code-block:: none
 
     |------------ eegmmidb_bids
-    |--------------- dataset_description.json
     |--------------- participants.tsv
+    |--------------- dataset_description.json
     |--------------- sub-001
     |------------------ sub-001_scans.tsv
     |------------------ eeg
-    |--------------------- sub-001_task-resteyesclosed_eeg.edf
+    |--------------------- sub-001_task-resteyesclosed_eeg.json
     |--------------------- sub-001_task-resteyesclosed_channels.tsv
     |--------------------- sub-001_task-resteyesclosed_events.tsv
-    |--------------------- sub-001_task-resteyesclosed_eeg.json
+    |--------------------- sub-001_task-resteyesclosed_eeg.edf
 
 
 Looks good so far, let's convert the data for all tasks and subjects.
@@ -464,76 +457,71 @@ Looks good so far, let's convert the data for all tasks and subjects.
 
  .. code-block:: none
 
-    Extracting EDF parameters from /home/mainak/mne_data/MNE-eegbci-data/physiobank/database/eegmmidb/S001/S001R02.edf...
+    Extracting EDF parameters from /home/stefanappelhoff/mne_data/MNE-eegbci-data/physiobank/database/eegmmidb/S001/S001R02.edf...
     EDF file detected
     EDF annotations detected (consider using raw.find_edf_events() to extract them)
     Setting channel info structure...
     Creating raw.info structure...
     Reading 0 ... 9759  =      0.000 ...    60.994 secs...
-    Creating folder: /home/mainak/mne_data/eegmmidb_bids/sub-001/eeg
+    Creating folder: /home/stefanappelhoff/mne_data/eegmmidb_bids/sub-001/eeg
     1 events found
     Event IDs: [1]
 
-    Writing '/home/mainak/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_events.tsv'...
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_events.tsv'...
 
        onset  duration         trial_type  event_value  event_sample
     0    0.0       0.0  imagine left fist            1             0
 
-    Writing '/home/mainak/mne_data/eegmmidb_bids/dataset_description.json'...
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/dataset_description.json'...
 
     {
-        "Name": " ", 
+        "Name": " ",
         "BIDSVersion": "1.1.1 (draft)"
     }
 
-    Writing '/home/mainak/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_eeg.json'...
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_eeg.json'...
 
     {
-        "TaskName": "resteyesclosed", 
-        "Manufacturer": "n/a", 
-        "PowerLineFrequency": 50, 
-        "SamplingFrequency": 160.0, 
-        "SoftwareFilters": "n/a", 
-        "RecordingDuration": 60.993749999999999, 
-        "RecordingType": "continuous", 
-        "EEGReference": "n/a", 
-        "EEGGround": "n/a", 
-        "EEGPlacementScheme": "n/a", 
-        "EEGChannelCount": 64, 
-        "EOGChannelCount": 0, 
-        "ECGChannelCount": 0, 
-        "EMGChannelCount": 0, 
-        "MiscChannelCount": 0, 
+        "TaskName": "resteyesclosed",
+        "Manufacturer": "n/a",
+        "PowerLineFrequency": 50,
+        "SamplingFrequency": 160.0,
+        "SoftwareFilters": "n/a",
+        "RecordingDuration": 60.99375,
+        "RecordingType": "continuous",
+        "EEGReference": "n/a",
+        "EEGGround": "n/a",
+        "EEGPlacementScheme": "n/a",
+        "EEGChannelCount": 64,
+        "EOGChannelCount": 0,
+        "ECGChannelCount": 0,
+        "EMGChannelCount": 0,
+        "MiscChannelCount": 0,
         "TriggerChannelCount": 1
     }
 
-    Writing '/home/mainak/mne_data/eegmmidb_bids/participants.tsv'...
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/participants.tsv'...
 
       participant_id  age  sex group
     0        sub-001  NaN  NaN   NaN
 
-    Writing '/home/mainak/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_channels.tsv'...
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_channels.tsv'...
 
-       name type units           description  sampling_frequency  low_cutoff  \
-    0  Fc5.  EEG     V  ElectroEncephaloGram               160.0         0.0   
-    1  Fc3.  EEG     V  ElectroEncephaloGram               160.0         0.0   
-    2  Fc1.  EEG     V  ElectroEncephaloGram               160.0         0.0   
-    3  Fcz.  EEG     V  ElectroEncephaloGram               160.0         0.0   
-    4  Fc2.  EEG     V  ElectroEncephaloGram               160.0         0.0   
+       name type units   ...   low_cutoff  high_cutoff  status
+    0  Fc5.  EEG     V   ...          0.0         80.0    good
+    1  Fc3.  EEG     V   ...          0.0         80.0    good
+    2  Fc1.  EEG     V   ...          0.0         80.0    good
+    3  Fcz.  EEG     V   ...          0.0         80.0    good
+    4  Fc2.  EEG     V   ...          0.0         80.0    good
 
-       high_cutoff status  
-    0         80.0   good  
-    1         80.0   good  
-    2         80.0   good  
-    3         80.0   good  
-    4         80.0   good  
+    [5 rows x 8 columns]
 
-    Writing '/home/mainak/mne_data/eegmmidb_bids/sub-001/sub-001_scans.tsv'...
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-001/sub-001_scans.tsv'...
 
                                       filename             acq_time
-    0  eeg/sub-001_task-resteyesclosed_eeg.edf  2009-08-12T12:15:00
-    Writing data files to /home/mainak/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_eeg.edf
-    Extracting EDF parameters from /home/mainak/mne_data/MNE-eegbci-data/physiobank/database/eegmmidb/S001/S001R04.edf...
+    0  eeg/sub-001_task-resteyesclosed_eeg.edf  2009-08-12T18:15:00
+    Writing data files to /home/stefanappelhoff/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_eeg.edf
+    Extracting EDF parameters from /home/stefanappelhoff/mne_data/MNE-eegbci-data/physiobank/database/eegmmidb/S001/S001R04.edf...
     EDF file detected
     EDF annotations detected (consider using raw.find_edf_events() to extract them)
     Setting channel info structure...
@@ -542,7 +530,7 @@ Looks good so far, let's convert the data for all tasks and subjects.
     30 events found
     Event IDs: [1 2 3]
 
-    Writing '/home/mainak/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-imaginefists_run-1_events.tsv'...
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-imaginefists_run-1_events.tsv'...
 
        onset  duration          trial_type  event_value  event_sample
     0    0.0       0.0   imagine left fist            1             0
@@ -551,61 +539,56 @@ Looks good so far, let's convert the data for all tasks and subjects.
     3   12.5       0.0  imagine right fist            2          2000
     4   16.6       0.0   imagine left fist            1          2656
 
-    Writing '/home/mainak/mne_data/eegmmidb_bids/dataset_description.json'...
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/dataset_description.json'...
 
     {
-        "Name": " ", 
+        "Name": " ",
         "BIDSVersion": "1.1.1 (draft)"
     }
 
-    Writing '/home/mainak/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-imaginefists_run-1_eeg.json'...
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-imaginefists_run-1_eeg.json'...
 
     {
-        "TaskName": "imaginefists", 
-        "Manufacturer": "n/a", 
-        "PowerLineFrequency": 50, 
-        "SamplingFrequency": 160.0, 
-        "SoftwareFilters": "n/a", 
-        "RecordingDuration": 124.99375000000001, 
-        "RecordingType": "continuous", 
-        "EEGReference": "n/a", 
-        "EEGGround": "n/a", 
-        "EEGPlacementScheme": "n/a", 
-        "EEGChannelCount": 64, 
-        "EOGChannelCount": 0, 
-        "ECGChannelCount": 0, 
-        "EMGChannelCount": 0, 
-        "MiscChannelCount": 0, 
+        "TaskName": "imaginefists",
+        "Manufacturer": "n/a",
+        "PowerLineFrequency": 50,
+        "SamplingFrequency": 160.0,
+        "SoftwareFilters": "n/a",
+        "RecordingDuration": 124.99375,
+        "RecordingType": "continuous",
+        "EEGReference": "n/a",
+        "EEGGround": "n/a",
+        "EEGPlacementScheme": "n/a",
+        "EEGChannelCount": 64,
+        "EOGChannelCount": 0,
+        "ECGChannelCount": 0,
+        "EMGChannelCount": 0,
+        "MiscChannelCount": 0,
         "TriggerChannelCount": 1
     }
 
-    Writing '/home/mainak/mne_data/eegmmidb_bids/participants.tsv'...
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/participants.tsv'...
 
       participant_id  age  sex group
     0        sub-001  NaN  NaN   NaN
 
-    Writing '/home/mainak/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-imaginefists_run-1_channels.tsv'...
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-imaginefists_run-1_channels.tsv'...
 
-       name type units           description  sampling_frequency  low_cutoff  \
-    0  Fc5.  EEG     V  ElectroEncephaloGram               160.0         0.0   
-    1  Fc3.  EEG     V  ElectroEncephaloGram               160.0         0.0   
-    2  Fc1.  EEG     V  ElectroEncephaloGram               160.0         0.0   
-    3  Fcz.  EEG     V  ElectroEncephaloGram               160.0         0.0   
-    4  Fc2.  EEG     V  ElectroEncephaloGram               160.0         0.0   
+       name type units   ...   low_cutoff  high_cutoff  status
+    0  Fc5.  EEG     V   ...          0.0         80.0    good
+    1  Fc3.  EEG     V   ...          0.0         80.0    good
+    2  Fc1.  EEG     V   ...          0.0         80.0    good
+    3  Fcz.  EEG     V   ...          0.0         80.0    good
+    4  Fc2.  EEG     V   ...          0.0         80.0    good
 
-       high_cutoff status  
-    0         80.0   good  
-    1         80.0   good  
-    2         80.0   good  
-    3         80.0   good  
-    4         80.0   good  
+    [5 rows x 8 columns]
 
-    Writing '/home/mainak/mne_data/eegmmidb_bids/sub-001/sub-001_scans.tsv'...
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-001/sub-001_scans.tsv'...
 
                                           filename             acq_time
-    0  eeg/sub-001_task-imaginefists_run-1_eeg.edf  2009-08-12T12:15:00
-    Writing data files to /home/mainak/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-imaginefists_run-1_eeg.edf
-    Extracting EDF parameters from /home/mainak/mne_data/MNE-eegbci-data/physiobank/database/eegmmidb/S001/S001R12.edf...
+    0  eeg/sub-001_task-imaginefists_run-1_eeg.edf  2009-08-12T18:15:00
+    Writing data files to /home/stefanappelhoff/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-imaginefists_run-1_eeg.edf
+    Extracting EDF parameters from /home/stefanappelhoff/mne_data/MNE-eegbci-data/physiobank/database/eegmmidb/S001/S001R12.edf...
     EDF file detected
     EDF annotations detected (consider using raw.find_edf_events() to extract them)
     Setting channel info structure...
@@ -614,7 +597,7 @@ Looks good so far, let's convert the data for all tasks and subjects.
     30 events found
     Event IDs: [1 2 3]
 
-    Writing '/home/mainak/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-imaginefists_run-2_events.tsv'...
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-imaginefists_run-2_events.tsv'...
 
        onset  duration          trial_type  event_value  event_sample
     0    0.0       0.0   imagine left fist            1             0
@@ -623,131 +606,121 @@ Looks good so far, let's convert the data for all tasks and subjects.
     3   12.5       0.0  imagine right fist            2          2000
     4   16.6       0.0   imagine left fist            1          2656
 
-    Writing '/home/mainak/mne_data/eegmmidb_bids/dataset_description.json'...
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/dataset_description.json'...
 
     {
-        "Name": " ", 
+        "Name": " ",
         "BIDSVersion": "1.1.1 (draft)"
     }
 
-    Writing '/home/mainak/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-imaginefists_run-2_eeg.json'...
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-imaginefists_run-2_eeg.json'...
 
     {
-        "TaskName": "imaginefists", 
-        "Manufacturer": "n/a", 
-        "PowerLineFrequency": 50, 
-        "SamplingFrequency": 160.0, 
-        "SoftwareFilters": "n/a", 
-        "RecordingDuration": 124.99375000000001, 
-        "RecordingType": "continuous", 
-        "EEGReference": "n/a", 
-        "EEGGround": "n/a", 
-        "EEGPlacementScheme": "n/a", 
-        "EEGChannelCount": 64, 
-        "EOGChannelCount": 0, 
-        "ECGChannelCount": 0, 
-        "EMGChannelCount": 0, 
-        "MiscChannelCount": 0, 
+        "TaskName": "imaginefists",
+        "Manufacturer": "n/a",
+        "PowerLineFrequency": 50,
+        "SamplingFrequency": 160.0,
+        "SoftwareFilters": "n/a",
+        "RecordingDuration": 124.99375,
+        "RecordingType": "continuous",
+        "EEGReference": "n/a",
+        "EEGGround": "n/a",
+        "EEGPlacementScheme": "n/a",
+        "EEGChannelCount": 64,
+        "EOGChannelCount": 0,
+        "ECGChannelCount": 0,
+        "EMGChannelCount": 0,
+        "MiscChannelCount": 0,
         "TriggerChannelCount": 1
     }
 
-    Writing '/home/mainak/mne_data/eegmmidb_bids/participants.tsv'...
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/participants.tsv'...
 
       participant_id  age  sex group
     0        sub-001  NaN  NaN   NaN
 
-    Writing '/home/mainak/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-imaginefists_run-2_channels.tsv'...
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-imaginefists_run-2_channels.tsv'...
 
-       name type units           description  sampling_frequency  low_cutoff  \
-    0  Fc5.  EEG     V  ElectroEncephaloGram               160.0         0.0   
-    1  Fc3.  EEG     V  ElectroEncephaloGram               160.0         0.0   
-    2  Fc1.  EEG     V  ElectroEncephaloGram               160.0         0.0   
-    3  Fcz.  EEG     V  ElectroEncephaloGram               160.0         0.0   
-    4  Fc2.  EEG     V  ElectroEncephaloGram               160.0         0.0   
+       name type units   ...   low_cutoff  high_cutoff  status
+    0  Fc5.  EEG     V   ...          0.0         80.0    good
+    1  Fc3.  EEG     V   ...          0.0         80.0    good
+    2  Fc1.  EEG     V   ...          0.0         80.0    good
+    3  Fcz.  EEG     V   ...          0.0         80.0    good
+    4  Fc2.  EEG     V   ...          0.0         80.0    good
 
-       high_cutoff status  
-    0         80.0   good  
-    1         80.0   good  
-    2         80.0   good  
-    3         80.0   good  
-    4         80.0   good  
+    [5 rows x 8 columns]
 
-    Writing '/home/mainak/mne_data/eegmmidb_bids/sub-001/sub-001_scans.tsv'...
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-001/sub-001_scans.tsv'...
 
                                           filename             acq_time
-    0  eeg/sub-001_task-imaginefists_run-2_eeg.edf  2009-08-12T12:15:00
-    Writing data files to /home/mainak/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-imaginefists_run-2_eeg.edf
-    Extracting EDF parameters from /home/mainak/mne_data/MNE-eegbci-data/physiobank/database/eegmmidb/S002/S002R02.edf...
+    0  eeg/sub-001_task-imaginefists_run-2_eeg.edf  2009-08-12T18:15:00
+    Writing data files to /home/stefanappelhoff/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-imaginefists_run-2_eeg.edf
+    Extracting EDF parameters from /home/stefanappelhoff/mne_data/MNE-eegbci-data/physiobank/database/eegmmidb/S002/S002R02.edf...
     EDF file detected
     EDF annotations detected (consider using raw.find_edf_events() to extract them)
     Setting channel info structure...
     Creating raw.info structure...
     Reading 0 ... 9759  =      0.000 ...    60.994 secs...
-    Creating folder: /home/mainak/mne_data/eegmmidb_bids/sub-002/eeg
+    Creating folder: /home/stefanappelhoff/mne_data/eegmmidb_bids/sub-002/eeg
     1 events found
     Event IDs: [1]
 
-    Writing '/home/mainak/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-resteyesclosed_events.tsv'...
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-resteyesclosed_events.tsv'...
 
        onset  duration         trial_type  event_value  event_sample
     0    0.0       0.0  imagine left fist            1             0
 
-    Writing '/home/mainak/mne_data/eegmmidb_bids/dataset_description.json'...
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/dataset_description.json'...
 
     {
-        "Name": " ", 
+        "Name": " ",
         "BIDSVersion": "1.1.1 (draft)"
     }
 
-    Writing '/home/mainak/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-resteyesclosed_eeg.json'...
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-resteyesclosed_eeg.json'...
 
     {
-        "TaskName": "resteyesclosed", 
-        "Manufacturer": "n/a", 
-        "PowerLineFrequency": 50, 
-        "SamplingFrequency": 160.0, 
-        "SoftwareFilters": "n/a", 
-        "RecordingDuration": 60.993749999999999, 
-        "RecordingType": "continuous", 
-        "EEGReference": "n/a", 
-        "EEGGround": "n/a", 
-        "EEGPlacementScheme": "n/a", 
-        "EEGChannelCount": 64, 
-        "EOGChannelCount": 0, 
-        "ECGChannelCount": 0, 
-        "EMGChannelCount": 0, 
-        "MiscChannelCount": 0, 
+        "TaskName": "resteyesclosed",
+        "Manufacturer": "n/a",
+        "PowerLineFrequency": 50,
+        "SamplingFrequency": 160.0,
+        "SoftwareFilters": "n/a",
+        "RecordingDuration": 60.99375,
+        "RecordingType": "continuous",
+        "EEGReference": "n/a",
+        "EEGGround": "n/a",
+        "EEGPlacementScheme": "n/a",
+        "EEGChannelCount": 64,
+        "EOGChannelCount": 0,
+        "ECGChannelCount": 0,
+        "EMGChannelCount": 0,
+        "MiscChannelCount": 0,
         "TriggerChannelCount": 1
     }
 
-    Writing '/home/mainak/mne_data/eegmmidb_bids/participants.tsv'...
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/participants.tsv'...
 
       participant_id  age  sex group
     0        sub-001  NaN  NaN   NaN
     0        sub-002  NaN  NaN   NaN
 
-    Writing '/home/mainak/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-resteyesclosed_channels.tsv'...
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-resteyesclosed_channels.tsv'...
 
-       name type units           description  sampling_frequency  low_cutoff  \
-    0  Fc5.  EEG     V  ElectroEncephaloGram               160.0         0.0   
-    1  Fc3.  EEG     V  ElectroEncephaloGram               160.0         0.0   
-    2  Fc1.  EEG     V  ElectroEncephaloGram               160.0         0.0   
-    3  Fcz.  EEG     V  ElectroEncephaloGram               160.0         0.0   
-    4  Fc2.  EEG     V  ElectroEncephaloGram               160.0         0.0   
+       name type units   ...   low_cutoff  high_cutoff  status
+    0  Fc5.  EEG     V   ...          0.0         80.0    good
+    1  Fc3.  EEG     V   ...          0.0         80.0    good
+    2  Fc1.  EEG     V   ...          0.0         80.0    good
+    3  Fcz.  EEG     V   ...          0.0         80.0    good
+    4  Fc2.  EEG     V   ...          0.0         80.0    good
 
-       high_cutoff status  
-    0         80.0   good  
-    1         80.0   good  
-    2         80.0   good  
-    3         80.0   good  
-    4         80.0   good  
+    [5 rows x 8 columns]
 
-    Writing '/home/mainak/mne_data/eegmmidb_bids/sub-002/sub-002_scans.tsv'...
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-002/sub-002_scans.tsv'...
 
                                       filename             acq_time
-    0  eeg/sub-002_task-resteyesclosed_eeg.edf  2009-08-12T12:15:00
-    Writing data files to /home/mainak/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-resteyesclosed_eeg.edf
-    Extracting EDF parameters from /home/mainak/mne_data/MNE-eegbci-data/physiobank/database/eegmmidb/S002/S002R04.edf...
+    0  eeg/sub-002_task-resteyesclosed_eeg.edf  2009-08-12T18:15:00
+    Writing data files to /home/stefanappelhoff/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-resteyesclosed_eeg.edf
+    Extracting EDF parameters from /home/stefanappelhoff/mne_data/MNE-eegbci-data/physiobank/database/eegmmidb/S002/S002R04.edf...
     EDF file detected
     EDF annotations detected (consider using raw.find_edf_events() to extract them)
     Setting channel info structure...
@@ -756,7 +729,7 @@ Looks good so far, let's convert the data for all tasks and subjects.
     30 events found
     Event IDs: [1 2 3]
 
-    Writing '/home/mainak/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-imaginefists_run-1_events.tsv'...
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-imaginefists_run-1_events.tsv'...
 
        onset  duration          trial_type  event_value  event_sample
     0    0.0       0.0   imagine left fist            1             0
@@ -765,62 +738,57 @@ Looks good so far, let's convert the data for all tasks and subjects.
     3   12.3       0.0                 NaN            3          1968
     4   16.4       0.0   imagine left fist            1          2624
 
-    Writing '/home/mainak/mne_data/eegmmidb_bids/dataset_description.json'...
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/dataset_description.json'...
 
     {
-        "Name": " ", 
+        "Name": " ",
         "BIDSVersion": "1.1.1 (draft)"
     }
 
-    Writing '/home/mainak/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-imaginefists_run-1_eeg.json'...
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-imaginefists_run-1_eeg.json'...
 
     {
-        "TaskName": "imaginefists", 
-        "Manufacturer": "n/a", 
-        "PowerLineFrequency": 50, 
-        "SamplingFrequency": 160.0, 
-        "SoftwareFilters": "n/a", 
-        "RecordingDuration": 122.99375000000001, 
-        "RecordingType": "continuous", 
-        "EEGReference": "n/a", 
-        "EEGGround": "n/a", 
-        "EEGPlacementScheme": "n/a", 
-        "EEGChannelCount": 64, 
-        "EOGChannelCount": 0, 
-        "ECGChannelCount": 0, 
-        "EMGChannelCount": 0, 
-        "MiscChannelCount": 0, 
+        "TaskName": "imaginefists",
+        "Manufacturer": "n/a",
+        "PowerLineFrequency": 50,
+        "SamplingFrequency": 160.0,
+        "SoftwareFilters": "n/a",
+        "RecordingDuration": 122.99375,
+        "RecordingType": "continuous",
+        "EEGReference": "n/a",
+        "EEGGround": "n/a",
+        "EEGPlacementScheme": "n/a",
+        "EEGChannelCount": 64,
+        "EOGChannelCount": 0,
+        "ECGChannelCount": 0,
+        "EMGChannelCount": 0,
+        "MiscChannelCount": 0,
         "TriggerChannelCount": 1
     }
 
-    Writing '/home/mainak/mne_data/eegmmidb_bids/participants.tsv'...
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/participants.tsv'...
 
       participant_id  age  sex group
     0        sub-001  NaN  NaN   NaN
     0        sub-002  NaN  NaN   NaN
 
-    Writing '/home/mainak/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-imaginefists_run-1_channels.tsv'...
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-imaginefists_run-1_channels.tsv'...
 
-       name type units           description  sampling_frequency  low_cutoff  \
-    0  Fc5.  EEG     V  ElectroEncephaloGram               160.0         0.0   
-    1  Fc3.  EEG     V  ElectroEncephaloGram               160.0         0.0   
-    2  Fc1.  EEG     V  ElectroEncephaloGram               160.0         0.0   
-    3  Fcz.  EEG     V  ElectroEncephaloGram               160.0         0.0   
-    4  Fc2.  EEG     V  ElectroEncephaloGram               160.0         0.0   
+       name type units   ...   low_cutoff  high_cutoff  status
+    0  Fc5.  EEG     V   ...          0.0         80.0    good
+    1  Fc3.  EEG     V   ...          0.0         80.0    good
+    2  Fc1.  EEG     V   ...          0.0         80.0    good
+    3  Fcz.  EEG     V   ...          0.0         80.0    good
+    4  Fc2.  EEG     V   ...          0.0         80.0    good
 
-       high_cutoff status  
-    0         80.0   good  
-    1         80.0   good  
-    2         80.0   good  
-    3         80.0   good  
-    4         80.0   good  
+    [5 rows x 8 columns]
 
-    Writing '/home/mainak/mne_data/eegmmidb_bids/sub-002/sub-002_scans.tsv'...
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-002/sub-002_scans.tsv'...
 
                                           filename             acq_time
-    0  eeg/sub-002_task-imaginefists_run-1_eeg.edf  2009-08-12T12:15:00
-    Writing data files to /home/mainak/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-imaginefists_run-1_eeg.edf
-    Extracting EDF parameters from /home/mainak/mne_data/MNE-eegbci-data/physiobank/database/eegmmidb/S002/S002R12.edf...
+    0  eeg/sub-002_task-imaginefists_run-1_eeg.edf  2009-08-12T18:15:00
+    Writing data files to /home/stefanappelhoff/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-imaginefists_run-1_eeg.edf
+    Extracting EDF parameters from /home/stefanappelhoff/mne_data/MNE-eegbci-data/physiobank/database/eegmmidb/S002/S002R12.edf...
     EDF file detected
     EDF annotations detected (consider using raw.find_edf_events() to extract them)
     Setting channel info structure...
@@ -829,7 +797,7 @@ Looks good so far, let's convert the data for all tasks and subjects.
     30 events found
     Event IDs: [1 2 3]
 
-    Writing '/home/mainak/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-imaginefists_run-2_events.tsv'...
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-imaginefists_run-2_events.tsv'...
 
        onset  duration          trial_type  event_value  event_sample
     0    0.0       0.0   imagine left fist            1             0
@@ -838,61 +806,56 @@ Looks good so far, let's convert the data for all tasks and subjects.
     3   12.3       0.0                 NaN            3          1968
     4   16.4       0.0   imagine left fist            1          2624
 
-    Writing '/home/mainak/mne_data/eegmmidb_bids/dataset_description.json'...
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/dataset_description.json'...
 
     {
-        "Name": " ", 
+        "Name": " ",
         "BIDSVersion": "1.1.1 (draft)"
     }
 
-    Writing '/home/mainak/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-imaginefists_run-2_eeg.json'...
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-imaginefists_run-2_eeg.json'...
 
     {
-        "TaskName": "imaginefists", 
-        "Manufacturer": "n/a", 
-        "PowerLineFrequency": 50, 
-        "SamplingFrequency": 160.0, 
-        "SoftwareFilters": "n/a", 
-        "RecordingDuration": 122.99375000000001, 
-        "RecordingType": "continuous", 
-        "EEGReference": "n/a", 
-        "EEGGround": "n/a", 
-        "EEGPlacementScheme": "n/a", 
-        "EEGChannelCount": 64, 
-        "EOGChannelCount": 0, 
-        "ECGChannelCount": 0, 
-        "EMGChannelCount": 0, 
-        "MiscChannelCount": 0, 
+        "TaskName": "imaginefists",
+        "Manufacturer": "n/a",
+        "PowerLineFrequency": 50,
+        "SamplingFrequency": 160.0,
+        "SoftwareFilters": "n/a",
+        "RecordingDuration": 122.99375,
+        "RecordingType": "continuous",
+        "EEGReference": "n/a",
+        "EEGGround": "n/a",
+        "EEGPlacementScheme": "n/a",
+        "EEGChannelCount": 64,
+        "EOGChannelCount": 0,
+        "ECGChannelCount": 0,
+        "EMGChannelCount": 0,
+        "MiscChannelCount": 0,
         "TriggerChannelCount": 1
     }
 
-    Writing '/home/mainak/mne_data/eegmmidb_bids/participants.tsv'...
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/participants.tsv'...
 
       participant_id  age  sex group
     0        sub-001  NaN  NaN   NaN
     0        sub-002  NaN  NaN   NaN
 
-    Writing '/home/mainak/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-imaginefists_run-2_channels.tsv'...
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-imaginefists_run-2_channels.tsv'...
 
-       name type units           description  sampling_frequency  low_cutoff  \
-    0  Fc5.  EEG     V  ElectroEncephaloGram               160.0         0.0   
-    1  Fc3.  EEG     V  ElectroEncephaloGram               160.0         0.0   
-    2  Fc1.  EEG     V  ElectroEncephaloGram               160.0         0.0   
-    3  Fcz.  EEG     V  ElectroEncephaloGram               160.0         0.0   
-    4  Fc2.  EEG     V  ElectroEncephaloGram               160.0         0.0   
+       name type units   ...   low_cutoff  high_cutoff  status
+    0  Fc5.  EEG     V   ...          0.0         80.0    good
+    1  Fc3.  EEG     V   ...          0.0         80.0    good
+    2  Fc1.  EEG     V   ...          0.0         80.0    good
+    3  Fcz.  EEG     V   ...          0.0         80.0    good
+    4  Fc2.  EEG     V   ...          0.0         80.0    good
 
-       high_cutoff status  
-    0         80.0   good  
-    1         80.0   good  
-    2         80.0   good  
-    3         80.0   good  
-    4         80.0   good  
+    [5 rows x 8 columns]
 
-    Writing '/home/mainak/mne_data/eegmmidb_bids/sub-002/sub-002_scans.tsv'...
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-002/sub-002_scans.tsv'...
 
                                           filename             acq_time
-    0  eeg/sub-002_task-imaginefists_run-2_eeg.edf  2009-08-12T12:15:00
-    Writing data files to /home/mainak/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-imaginefists_run-2_eeg.edf
+    0  eeg/sub-002_task-imaginefists_run-2_eeg.edf  2009-08-12T18:15:00
+    Writing data files to /home/stefanappelhoff/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-imaginefists_run-2_eeg.edf
 
 
 Step 3: Check and compare with standard
@@ -916,38 +879,38 @@ Now we have written our BIDS directory.
  .. code-block:: none
 
     |------------ eegmmidb_bids
-    |--------------- dataset_description.json
     |--------------- participants.tsv
-    |--------------- sub-002
-    |------------------ sub-002_scans.tsv
-    |------------------ eeg
-    |--------------------- sub-002_task-imaginefists_run-2_eeg.edf
-    |--------------------- sub-002_task-imaginefists_run-1_events.tsv
-    |--------------------- sub-002_task-resteyesclosed_channels.tsv
-    |--------------------- sub-002_task-imaginefists_run-2_events.tsv
-    |--------------------- sub-002_task-resteyesclosed_events.tsv
-    |--------------------- sub-002_task-imaginefists_run-2_channels.tsv
-    |--------------------- sub-002_task-resteyesclosed_eeg.json
-    |--------------------- sub-002_task-imaginefists_run-1_eeg.json
-    |--------------------- sub-002_task-imaginefists_run-1_eeg.edf
-    |--------------------- sub-002_task-imaginefists_run-1_channels.tsv
-    |--------------------- sub-002_task-resteyesclosed_eeg.edf
-    |--------------------- sub-002_task-imaginefists_run-2_eeg.json
+    |--------------- dataset_description.json
     |--------------- sub-001
     |------------------ sub-001_scans.tsv
     |------------------ eeg
-    |--------------------- sub-001_task-resteyesclosed_eeg.edf
-    |--------------------- sub-001_task-imaginefists_run-2_eeg.json
-    |--------------------- sub-001_task-imaginefists_run-1_eeg.edf
-    |--------------------- sub-001_task-imaginefists_run-2_eeg.edf
-    |--------------------- sub-001_task-resteyesclosed_channels.tsv
+    |--------------------- sub-001_task-imaginefists_run-2_channels.tsv
+    |--------------------- sub-001_task-imaginefists_run-1_eeg.json
     |--------------------- sub-001_task-imaginefists_run-1_channels.tsv
-    |--------------------- sub-001_task-resteyesclosed_events.tsv
+    |--------------------- sub-001_task-resteyesclosed_eeg.json
+    |--------------------- sub-001_task-imaginefists_run-2_eeg.json
+    |--------------------- sub-001_task-resteyesclosed_channels.tsv
     |--------------------- sub-001_task-imaginefists_run-2_events.tsv
     |--------------------- sub-001_task-imaginefists_run-1_events.tsv
-    |--------------------- sub-001_task-imaginefists_run-2_channels.tsv
-    |--------------------- sub-001_task-resteyesclosed_eeg.json
-    |--------------------- sub-001_task-imaginefists_run-1_eeg.json
+    |--------------------- sub-001_task-imaginefists_run-1_eeg.edf
+    |--------------------- sub-001_task-resteyesclosed_events.tsv
+    |--------------------- sub-001_task-resteyesclosed_eeg.edf
+    |--------------------- sub-001_task-imaginefists_run-2_eeg.edf
+    |--------------- sub-002
+    |------------------ sub-002_scans.tsv
+    |------------------ eeg
+    |--------------------- sub-002_task-imaginefists_run-1_eeg.json
+    |--------------------- sub-002_task-imaginefists_run-1_channels.tsv
+    |--------------------- sub-002_task-imaginefists_run-1_events.tsv
+    |--------------------- sub-002_task-imaginefists_run-2_eeg.json
+    |--------------------- sub-002_task-imaginefists_run-2_eeg.edf
+    |--------------------- sub-002_task-imaginefists_run-1_eeg.edf
+    |--------------------- sub-002_task-resteyesclosed_channels.tsv
+    |--------------------- sub-002_task-resteyesclosed_events.tsv
+    |--------------------- sub-002_task-resteyesclosed_eeg.edf
+    |--------------------- sub-002_task-resteyesclosed_eeg.json
+    |--------------------- sub-002_task-imaginefists_run-2_channels.tsv
+    |--------------------- sub-002_task-imaginefists_run-2_events.tsv
 
 
 MNE-BIDS has created a suitable directory structure for us, and among other
@@ -967,7 +930,7 @@ Web version: https://incf.github.io/bids-validator/
 Command line tool: https://www.npmjs.com/package/bids-validator
 
 
-**Total running time of the script:** ( 0 minutes  1.089 seconds)
+**Total running time of the script:** ( 0 minutes  0.645 seconds)
 
 
 .. _sphx_glr_download_auto_examples_make_eeg_bids.py:

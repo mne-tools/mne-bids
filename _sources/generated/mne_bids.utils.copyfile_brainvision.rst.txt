@@ -1,5 +1,5 @@
-mne_bids.utils.copyfile_brainvision
-===================================
+mne\_bids.utils.copyfile\_brainvision
+=====================================
 
 .. currentmodule:: mne_bids.utils
 

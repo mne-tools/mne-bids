@@ -1,5 +1,5 @@
-mne_bids.mne_bids.raw_to_bids
-=============================
+mne\_bids.mne\_bids.raw\_to\_bids
+=================================
 
 .. currentmodule:: mne_bids.mne_bids
 

@@ -1,5 +1,5 @@
-mne_bids.utils.print_dir_tree
-=============================
+mne\_bids.utils.print\_dir\_tree
+================================
 
 .. currentmodule:: mne_bids.utils
 
