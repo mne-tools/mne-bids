@@ -30,3 +30,10 @@ jobs:
             - store_artifacts:
                 path: doc/_build/html/
                 destination: html
+            - deploy:
+                name: github pages deployment
+                command: |
+                  git config --global user.email "circle@mne.com";
+                  git config --global user.name "Circle Ci";
+                  cd doc
+                  make install
