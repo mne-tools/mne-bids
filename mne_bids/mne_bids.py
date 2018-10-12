@@ -27,7 +27,7 @@ from warnings import warn
 
 from .pick import coil_type
 from .utils import (make_bids_filename, make_bids_folders,
-                    make_dataset_description, _write_json,
+                    make_dataset_description, _write_json, _write_tsv,
                     _read_events, _mkdir_p, age_on_date,
                     copyfile_brainvision, copyfile_eeglab,
                     _infer_eeg_placement_scheme, _check_file_exists)
@@ -83,9 +83,6 @@ def _channels_tsv(raw, fname, write_mode='overwrite', verbose=True):
         Set verbose output to true or false.
 
     """
-    if write_mode == 'error':
-        _check_file_exists(fname)
-
     map_chs = defaultdict(lambda: 'OTHER')
     map_chs.update(meggradaxial='MEGGRADAXIAL',
                    megrefgradaxial='MEGREFGRADAXIAL',
@@ -147,11 +144,8 @@ def _channels_tsv(raw, fname, write_mode='overwrite', verbose=True):
                       ('high_cutoff', np.full((n_channels), high_cutoff)),
                       ('status', status)]))
     df.drop(ignored_indexes, inplace=True)
-    df.to_csv(fname, sep='\t', index=False, na_rep='n/a')
 
-    if verbose:
-        print(os.linesep + "Writing '%s'..." % fname + os.linesep)
-        print(df.head())
+    _write_tsv(fname, df, write_mode == 'error', verbose)
 
     return fname
 
@@ -193,9 +187,6 @@ def _events_tsv(events, raw, fname, trial_type, write_mode='overwrite',
     The function writes durations of zero for each event.
 
     """
-    if write_mode == 'error':
-        _check_file_exists(fname)
-
     # Start by filling all data that we know into a df
     first_samp = raw.first_samp
     sfreq = raw.info['sfreq']
@@ -219,11 +210,7 @@ def _events_tsv(events, raw, fname, trial_type, write_mode='overwrite',
     # Onset column needs to be specified in seconds
     df.onset /= sfreq
 
-    # Save to file
-    df.to_csv(fname, sep='\t', index=False, na_rep='n/a')
-    if verbose:
-        print(os.linesep + "Writing '%s'..." % fname + os.linesep)
-        print(df.head())
+    _write_tsv(fname, df, write_mode == 'error', verbose)
 
     return fname
 
@@ -257,9 +244,6 @@ def _participants_tsv(raw, subject_id, group, fname, write_mode='append',
         Set verbose output to true or false.
 
     """
-    if write_mode == 'error':
-        _check_file_exists(fname)
-
     subject_id = 'sub-' + subject_id
     data = {'participant_id': [subject_id]}
 
@@ -298,11 +282,7 @@ def _participants_tsv(raw, subject_id, group, fname, write_mode='append',
                           columns=['participant_id', 'age', 'sex',
                                    'group'])
 
-    df.to_csv(fname, sep='\t', index=False, na_rep='n/a')
-
-    if verbose:
-        print(os.linesep + "Writing '%s'..." % fname + os.linesep)
-        print(df.head())
+    _write_tsv(fname, df, write_mode == 'error', verbose)
 
     return fname
 
@@ -330,9 +310,6 @@ def _scans_tsv(raw, raw_fname, fname, write_mode='append', verbose=True):
         Set verbose output to true or false.
 
     """
-    if write_mode == 'error':
-        _check_file_exists(fname)
-
     # get measurement date from the data info
     meas_date = raw.info['meas_date']
     if isinstance(meas_date, (tuple, list, np.ndarray)):
@@ -356,11 +333,7 @@ def _scans_tsv(raw, raw_fname, fname, write_mode='append', verbose=True):
                                 'acq_time': [acq_time]},
                           columns=['filename', 'acq_time'])
 
-    df.to_csv(fname, sep='\t', index=False, na_rep='n/a')
-
-    if verbose:
-        print(os.linesep + "Writing '%s'..." % fname + os.linesep)
-        print(df.head())
+    _write_tsv(fname, df, write_mode == 'error', verbose)
 
     return fname
 
@@ -391,9 +364,6 @@ def _coordsystem_json(raw, unit, orient, manufacturer, fname,
         Set verbose output to true or false.
 
     """
-    if write_mode == 'error':
-        _check_file_exists(fname)
-
     dig = raw.info['dig']
     coords = dict()
     fids = {d['ident']: d for d in dig if d['kind'] ==
@@ -422,7 +392,8 @@ def _coordsystem_json(raw, unit, orient, manufacturer, fname,
                 'HeadCoilCoordinateSystem': orient,
                 'HeadCoilCoordinateUnits': unit  # XXX validate this
                 }
-    _write_json(fid_json, fname)
+
+    _write_json(fid_json, fname, write_mode == 'error')
 
     return fname
 
@@ -461,9 +432,6 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, eeg_ref=None,
         Set verbose output to true or false. Defaults to true.
 
     """
-    if write_mode == 'error':
-        _check_file_exists(fname)
-
     sfreq = raw.info['sfreq']
     powerlinefrequency = raw.info.get('line_freq', None)
     if powerlinefrequency is None:
@@ -556,7 +524,8 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, eeg_ref=None,
     ch_info_json += ch_info_ch_counts
     ch_info_json = OrderedDict(ch_info_json)
 
-    _write_json(ch_info_json, fname, verbose=verbose)
+    _write_json(ch_info_json, fname, write_mode == 'error', verbose)
+
     return fname
 
 
@@ -654,7 +623,7 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
 
     data_path = make_bids_folders(subject=subject_id, session=session_id,
                                   kind=kind, root=output_path,
-                                  write_mode=write_mode,
+                                  overwrite=(write_mode == 'overwrite'),
                                   verbose=verbose)
     if session_id is None:
         ses_path = os.sep.join(data_path.split(os.sep)[:-1])

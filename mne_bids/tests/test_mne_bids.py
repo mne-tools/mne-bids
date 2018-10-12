@@ -24,6 +24,7 @@ from mne.io.constants import FIFF
 from mne_bids import raw_to_bids, make_bids_filename, make_bids_folders
 from mne_bids.mne_bids import (_channels_tsv, _coordsystem_json, _events_tsv,
                                _participants_tsv, _sidecar_json, _scans_tsv)
+from mne_bids.utils import _read_events
 
 base_path = op.join(op.dirname(mne.__file__), 'io')
 subject_id = '01'
@@ -206,7 +207,7 @@ def test_vhdr():
     # no files are in the folder
     data_path = make_bids_folders(subject=subject_id, session=session_id,
                                   kind='eeg', root=output_path,
-                                  write_mode='overwrite')
+                                  overwrite=True)
     assert len([f for f in os.listdir(data_path) if op.isfile(f)]) == 0
 
 
@@ -358,6 +359,7 @@ def test_json_tsv():
         _coordsystem_json(raw, "n/a", "n/a", 'Elekta', coordsystem_fname,
                           'error', False)
     with pytest.raises(OSError, match="already exists"):
-        _events_tsv(None, raw, events_tsv_fname, None, 'error', False)
+        events = _read_events(events_fname, raw)
+        _events_tsv(events, raw, events_tsv_fname, event_id, 'error', False)
     with pytest.raises(OSError, match="already exists"):
         _scans_tsv(raw, 'dummy', scans_fname, 'error', False)
