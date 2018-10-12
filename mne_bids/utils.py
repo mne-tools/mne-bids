@@ -25,6 +25,9 @@ from .config import BIDS_VERSION
 from .io import _parse_ext
 
 
+ALLOWED_KINDS = ['meg', 'eeg', 'ieeg', 'auto']
+
+
 def print_dir_tree(dir):
     """Recursively print a directory tree starting from `dir`."""
     if not op.exists(dir):
@@ -59,6 +62,27 @@ def _mkdir_p(path, overwrite=False, verbose=False):
             pass
         else:
             raise
+
+
+def _handle_kind(raw, kind):
+    """Get kind."""
+    if kind in ('meg', 'eeg', 'ieeg'):
+        return kind
+
+    if kind != 'auto':
+        raise ValueError('Unexpected "kind": {}'
+                         ' Use one of: {}'.format(kind, ALLOWED_KINDS))
+
+    if 'meg' in raw:
+        kind = 'meg'
+    elif 'eeg' in raw:
+        kind = 'eeg'
+    elif 'ecog' in raw:
+        kind = 'ieeg'
+    else:
+        raise ValueError('Neither MEG/EEG/iEEG channels found in data.'
+                         'Please set "kind" explicitly.')
+    return kind
 
 
 def make_bids_filename(subject=None, session=None, task=None,

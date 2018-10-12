@@ -30,11 +30,9 @@ from .utils import (make_bids_filename, make_bids_folders,
                     make_dataset_description, _write_json,
                     _read_events, _mkdir_p, age_on_date,
                     copyfile_brainvision, copyfile_eeglab,
-                    _infer_eeg_placement_scheme)
+                    _infer_eeg_placement_scheme, _handle_kind)
 from .io import (_parse_ext, _read_raw, ALLOWED_EXTENSIONS)
 
-
-ALLOWED_KINDS = ['meg', 'eeg', 'ieeg']
 
 # Orientation of the coordinate system dependent on manufacturer
 ORIENTATION = {'.sqd': 'ALS', '.con': 'ALS', '.fif': 'RAS', '.pdf': 'ALS',
@@ -381,7 +379,7 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, eeg_ref=None,
     fname : str
         Filename to save the sidecar json to.
     kind : str
-        Type of the data as in ALLOWED_KINDS.
+        Type of the data. One of 'meg', 'eeg', 'ieeg', 'auto'
     eeg_ref : str
         Description of the type of reference used and (when applicable) of
         location of the reference electrode.  Defaults to None.
@@ -475,9 +473,6 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, eeg_ref=None,
         append_kind_json = ch_info_json_eeg
     elif kind == 'ieeg':
         append_kind_json = ch_info_json_ieeg
-    else:
-        raise ValueError('Unexpected "kind": {}'
-                         ' Use one of: {}'.format(kind, ALLOWED_KINDS))
 
     ch_info_json += append_kind_json
     ch_info_json += ch_info_ch_counts
@@ -571,16 +566,7 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
     else:
         raise ValueError('raw_file must be an instance of str or BaseRaw, '
                          'got %s' % type(raw_file))
-
-    if 'meg' in raw:
-        kind = 'meg'
-    elif 'eeg' in raw:
-        kind = 'eeg'
-    elif 'ecog' in raw:
-        kind = 'ecog'
-    else:
-        raise ValueError('Neither MEG/EEG/iEEG channels found in data.'
-                         'Please set "kind" explicitly.')
+    kind = _handle_kind(raw, kind)
 
     data_path = make_bids_folders(subject=subject_id, session=session_id,
                                   kind=kind, root=output_path,
