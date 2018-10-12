@@ -144,7 +144,7 @@ def make_bids_filename(subject=None, session=None, task=None,
 
 
 def make_bids_folders(subject, session=None, kind=None, root=None,
-                      make_dir=True, write_mode='append', verbose=False):
+                      make_dir=True, overwrite=False, verbose=False):
     """Create a BIDS folder hierarchy.
 
     This creates a hierarchy of folders *within* a BIDS dataset. You should
@@ -165,11 +165,10 @@ def make_bids_folders(subject, session=None, kind=None, root=None,
     make_dir : bool
         Whether to actually create the folders specified. If False, only a
         path will be generated but no folders will be created.
-    write_mode : str, one of ('append', 'overwrite', 'error')
+    overwrite : bool
         How to handle overwriting previously generated data.
-        If write_mode == 'append' or 'error' the previously created folder
-        will be left intact.
-        If write_mode == 'overwrite' any existing folders at the session level
+        If overwrite == False then no existing folders will be removed, however
+        if overwrite == True then any existing folders at the session level
         or lower will be removed, including any contained data.
     verbose : bool
         If verbose is True, print status updates
@@ -201,7 +200,7 @@ def make_bids_folders(subject, session=None, kind=None, root=None,
         path = op.join(root, path)
 
     if make_dir is True:
-        _mkdir_p(path, overwrite=(write_mode == 'overwrite'), verbose=verbose)
+        _mkdir_p(path, overwrite=overwrite, verbose=verbose)
     return path
 
 
@@ -304,8 +303,12 @@ def _check_types(variables):
                              "Found type %s." % type(var))
 
 
-def _write_json(dictionary, fname, verbose=False):
+def _write_json(dictionary, fname, error_on_exist=False, verbose=False):
     """Write JSON to a file."""
+    if op.exists(fname) and error_on_exist:
+        raise OSError(errno.EEXIST, '"%s" already exists. Please set '
+                      'write_mode to "overwrite" or "append".' % fname)
+
     json_output = json.dumps(dictionary, indent=4)
     with open(fname, 'w') as fid:
         fid.write(json_output)
@@ -314,6 +317,18 @@ def _write_json(dictionary, fname, verbose=False):
     if verbose is True:
         print(os.linesep + "Writing '%s'..." % fname + os.linesep)
         print(json_output)
+
+
+def _write_tsv(fname, df, error_on_exist=False, verbose=False):
+    """Write dataframe to a .tsv file"""
+    if op.exists(fname) and error_on_exist:
+        raise OSError(errno.EEXIST, '"%s" already exists. Please set '
+                      'write_mode to "overwrite" or "append".' % fname)
+    df.to_csv(fname, sep='\t', index=False, na_rep='n/a')
+
+    if verbose:
+        print(os.linesep + "Writing '%s'..." % fname + os.linesep)
+        print(df.head())
 
 
 def _check_key_val(key, val):
