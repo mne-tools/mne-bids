@@ -670,5 +670,13 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
         copyfile_eeglab(raw_fname, raw_file_bids)
     else:
         sh.copyfile(raw_fname, raw_file_bids)
+    # KIT data requires the marker file to be copied over too
+    if manufacturer == 'KIT/Yokogawa' and hpi is not None:
+        _, marker_ext = _parse_ext(hpi)
+        marker_fname = make_bids_filename(
+            subject=subject_id, session=session_id, task=task, run=run,
+            acquisition=acquisition, suffix='markers%s' % marker_ext,
+            prefix=os.path.join(data_path, raw_folder))
+        sh.copyfile(hpi, marker_fname)
 
     return output_path

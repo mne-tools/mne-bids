@@ -102,6 +102,16 @@ def test_kit():
     df = pd.read_csv(channels_tsv, sep='\t')
     assert not ('STI 014' in df['name'].values)
 
+    # ensure the marker file is produced in the right place
+    raw_folder = make_bids_filename(
+        subject=subject_id, session=session_id, task=task, run=run,
+        acquisition=acq, suffix='%s' % 'meg')
+    marker_fname = make_bids_filename(
+        subject=subject_id, session=session_id, task=task, run=run,
+        acquisition=acq, suffix='markers.sqd',
+        prefix=os.path.join(output_path, 'sub-01/ses-01/meg', raw_folder))
+    assert op.exists(marker_fname)
+
 
 def test_ctf():
     """Test functionality of the raw_to_bids conversion for CTF data."""
