@@ -33,6 +33,7 @@ jobs:
             - deploy:
                 name: github pages deployment
                 command: |
+                  source activate testenv
                   git config --global user.email "circle@mne.com";
                   git config --global user.name "Circle Ci";
                   cd doc
