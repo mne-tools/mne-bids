@@ -114,10 +114,6 @@ task = 'resteyesclosed'
 raw_file = raw
 output_path = os.path.join(home, 'mne_data', 'eegmmidb_bids')
 
-# Clean up existing directories for the sake of the example
-if os.path.exists(output_path):
-    sh.rmtree(output_path)
-
 ###############################################################################
 # Now we just need to specify a few more EEG details to get something sensible:
 
@@ -131,7 +127,8 @@ trial_type = {'rest': 0, 'imagine left fist': 1, 'imagine right fist': 2}
 
 # Now convert our data to be in a new BIDS dataset.
 raw_to_bids(subject_id=subject_id, task=task, raw_file=raw_file,
-            output_path=output_path, kind=kind, event_id=trial_type)
+            output_path=output_path, kind=kind, event_id=trial_type,
+            write_mode='clear')
 
 ###############################################################################
 # What does our fresh BIDS directory look like?

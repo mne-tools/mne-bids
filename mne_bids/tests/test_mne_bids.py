@@ -21,7 +21,7 @@ from mne.datasets import testing
 from mne.utils import _TempDir, run_subprocess
 from mne.io.constants import FIFF
 
-from mne_bids import raw_to_bids, make_bids_filename
+from mne_bids import raw_to_bids, make_bids_filename, make_bids_folders
 
 base_path = op.join(op.dirname(mne.__file__), 'io')
 subject_id = '01'
@@ -139,9 +139,7 @@ def test_ctf():
     run_subprocess(cmd, shell=shell)
 
     # test to check that the 'error' overwrite parameter works correctly
-    with pytest.raises(OSError):
-        # FIXME: is there a way in py2 to get this to detect the correct
-        # sub-type of OSError?
+    with pytest.raises(OSError, match="already exists"):
         raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
                     task=task, raw_file=raw_fname, output_path=output_path,
                     write_mode='error')
@@ -201,6 +199,13 @@ def test_vhdr():
     if op.exists(scans_tsv):
         df = pd.read_csv(scans_tsv, sep='\t')
         assert df.shape[0] == 1
+
+    # finally, create another bids folder with the clear command and check
+    # no files are in the folder
+    data_path = make_bids_folders(subject=subject_id, session=session_id,
+                                  kind='eeg', root=output_path,
+                                  write_mode='clear')
+    assert len([f for f in os.listdir(data_path) if op.isfile(f)]) == 0
 
 
 def test_edf():
