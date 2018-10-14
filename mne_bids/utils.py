@@ -4,6 +4,7 @@
 #          Teon Brooks <teon.brooks@gmail.com>
 #          Chris Holdgraf <choldgraf@berkeley.edu>
 #          Stefan Appelhoff <stefan.appelhoff@mailbox.org>
+#          Matt Sanderson <matt.sanderson@mq.edu.au>
 #
 # License: BSD (3-clause)
 import os
@@ -37,7 +38,7 @@ def print_dir_tree(folder):
             print('|%s %s' % (len(path) * '---', file))
 
 
-def _mkdir_p(path, write_mode='append', verbose=False):
+def _mkdir_p(path, overwrite=False, verbose=False):
     """Create a directory, making parent directories as needed [1].
 
     References
@@ -45,7 +46,7 @@ def _mkdir_p(path, write_mode='append', verbose=False):
     .. [1] stackoverflow.com/questions/600268/mkdir-p-functionality-in-python
 
     """
-    if write_mode == 'overwrite' and op.isdir(path):
+    if overwrite and op.isdir(path):
         sh.rmtree(path)
         if verbose is True:
             print('Clearing path: %s' % path)
@@ -166,9 +167,9 @@ def make_bids_folders(subject, session=None, kind=None, root=None,
         path will be generated but no folders will be created.
     write_mode : str, one of ('append', 'overwrite', 'error')
         How to handle overwriting previously generated data.
-        If write_mode = `append` or `error` the previously created folder
+        If write_mode == 'append' or 'error' the previously created folder
         will be left intact.
-        If write_mode = `overwrite` any existing folders at the session level
+        If write_mode == 'overwrite' any existing folders at the session level
         or lower will be removed, including any contained data.
     verbose : bool
         If verbose is True, print status updates
@@ -200,7 +201,7 @@ def make_bids_folders(subject, session=None, kind=None, root=None,
         path = op.join(root, path)
 
     if make_dir is True:
-        _mkdir_p(path, write_mode=write_mode, verbose=verbose)
+        _mkdir_p(path, overwrite=(write_mode == 'overwrite'), verbose=verbose)
     return path
 
 
@@ -549,3 +550,18 @@ def _infer_eeg_placement_scheme(raw):
         placement_scheme = 'based on the extended 10/20 system'
 
     return placement_scheme
+
+
+def _check_file_exists(fname):
+    """Checks whether the specified file exists. If so, raises an OSError.
+
+    Parameters
+    ----------
+    fname : str
+        Path to the file we are checking the existance of.
+
+    """
+    if op.exists(fname):
+        raise OSError(errno.EEXIST, '"%s" already exists. Please set '
+                      'write_mode to "overwrite" or "append".' % fname)
+    return False

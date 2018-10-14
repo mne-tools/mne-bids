@@ -53,8 +53,8 @@ def run():
     parser.add_option('--config', dest='config',
                       help='The path to the configuration file', metavar='cfg')
     parser.add_option('--write_mode', dest='write_mode',
-                      help=('String. How to handle overwriting of existing'
-                            'data. One of (`append`, `overwrite`, `error`)'),
+                      help=("String. How to handle overwriting of existing "
+                            "data. One of ('append', 'overwrite', 'error')"),
                       metavar='wm')
 
     opt, args = parser.parse_args()

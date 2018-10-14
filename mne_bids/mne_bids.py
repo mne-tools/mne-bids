@@ -9,8 +9,6 @@
 # License: BSD (3-clause)
 
 import os
-import os.path as op
-from errno import EEXIST
 import shutil as sh
 import pandas as pd
 from collections import defaultdict, OrderedDict
@@ -32,7 +30,7 @@ from .utils import (make_bids_filename, make_bids_folders,
                     make_dataset_description, _write_json,
                     _read_events, _mkdir_p, age_on_date,
                     copyfile_brainvision, copyfile_eeglab,
-                    _infer_eeg_placement_scheme)
+                    _infer_eeg_placement_scheme, _check_file_exists)
 from .io import (_parse_ext, _read_raw, ALLOWED_EXTENSIONS)
 
 
@@ -78,16 +76,15 @@ def _channels_tsv(raw, fname, write_mode='overwrite', verbose=True):
     write_mode : str, one of ('overwrite', 'error')
         How the file should be handled if is exists already.
         Defaults to 'overwrite'.
-        If overwrite = `overwrite` the old file will be removed and replaced
+        If write_mode == 'overwrite' the old file will be removed and replaced
         with a new one.
-        If overwrite = `error` an `OSError` will be raised.
+        If write_mode == 'error' an `OSError` will be raised.
     verbose : bool
         Set verbose output to true or false.
 
     """
-    if op.exists(fname) and write_mode == 'error':
-        raise OSError(EEXIST, '"%s" already exists. Please set'
-                      ' write_mode to "overwrite" or "append".' % fname)
+    if write_mode == 'error':
+        _check_file_exists(fname)
 
     map_chs = defaultdict(lambda: 'OTHER')
     map_chs.update(meggradaxial='MEGGRADAXIAL',
@@ -185,9 +182,9 @@ def _events_tsv(events, raw, fname, trial_type, write_mode='overwrite',
     write_mode : str, one of ('overwrite', 'error')
         How the file should be handled if is exists already.
         Defaults to 'overwrite'.
-        If overwrite = `overwrite` the old file will be removed and replaced
+        If write_mode == 'overwrite' the old file will be removed and replaced
         with a new one.
-        If overwrite = `error` an `OSError` will be raised.
+        If write_mode == 'error' an `OSError` will be raised.
     verbose : bool
         Set verbose output to true or false.
 
@@ -196,9 +193,8 @@ def _events_tsv(events, raw, fname, trial_type, write_mode='overwrite',
     The function writes durations of zero for each event.
 
     """
-    if op.exists(fname) and write_mode == 'error':
-        raise OSError(EEXIST, '"%s" already exists. Please set'
-                      ' write_mode to "overwrite" or "append".' % fname)
+    if write_mode == 'error':
+        _check_file_exists(fname)
 
     # Start by filling all data that we know into a df
     first_samp = raw.first_samp
@@ -252,18 +248,17 @@ def _participants_tsv(raw, subject_id, group, fname, write_mode='append',
     write_mode : str, one of ('append', 'overwrite', 'error')
         How the file should be handled if is exists already.
         Defaults to 'append'.
-        If write_mode = `append` the previously existing file will have the
+        If write_mode == 'append' the previously existing file will have the
         new data added to it, overwriting any duplicate entries found.
-        If write_mode == `overwrite` the previously existing file will be
+        If write_mode == 'overwrite' the previously existing file will be
         removed and replaced with the new data.
-        If write_mode == `error` an `OSError` will be raised.
+        If write_mode == 'error' an `OSError` will be raised.
     verbose : bool
         Set verbose output to true or false.
 
     """
-    if op.exists(fname) and write_mode == 'error':
-        raise OSError(EEXIST, '"%s" already exists. Please set'
-                      ' write_mode to "overwrite" or "append".' % fname)
+    if write_mode == 'error':
+        _check_file_exists(fname)
 
     subject_id = 'sub-' + subject_id
     data = {'participant_id': [subject_id]}
@@ -289,7 +284,7 @@ def _participants_tsv(raw, subject_id, group, fname, write_mode='append',
         data.update({'age': [subject_age], 'sex': [sex], 'group': [group]})
 
     # append the participant data to the existing file if it exists, otherwise
-    # if `write_mode == 'overwrite'` write the data to a new file.
+    # if write_mode == 'overwrite' write the data to a new file.
     if os.path.exists(fname) and write_mode == 'append':
         df = pd.read_csv(fname, sep='\t')
         df = df.append(pd.DataFrame(data=data,
@@ -323,21 +318,20 @@ def _scans_tsv(raw, raw_fname, fname, write_mode='append', verbose=True):
         Relative path to the raw data file.
     fname : str
         Filename to save the scans.tsv to.
-    write_mode : str, one of ('append', 'append', 'error')
+    write_mode : str, one of ('append', 'overwrite', 'error')
         How the file should be handled if is exists already.
         Defaults to 'append'.
-        If write_mode = `append` the previously existing file will have the
+        If write_mode == 'append' the previously existing file will have the
         new data added to it, overwriting any duplicate entries found.
-        If write_mode == `overwrite` the previously existing file will be
+        If write_mode == 'overwrite' the previously existing file will be
         removed and replaced with the new data.
-        If write_mode == `error` an `OSError` will be raised.
+        If write_mode == 'error' an `OSError` will be raised.
     verbose : bool
         Set verbose output to true or false.
 
     """
-    if op.exists(fname) and write_mode == 'error':
-        raise OSError(EEXIST, '"%s" already exists. Please set'
-                      ' write_mode to "overwrite" or "append".' % fname)
+    if write_mode == 'error':
+        _check_file_exists(fname)
 
     # get measurement date from the data info
     meas_date = raw.info['meas_date']
@@ -349,7 +343,7 @@ def _scans_tsv(raw, raw_fname, fname, write_mode='append', verbose=True):
         acq_time = 'n/a'
 
     # append the scan data to the existing file if it exists, otherwise if
-    # `write_mode == 'overwrite'` write the data to a new file.
+    # write_mode == 'overwrite' write the data to a new file.
     if os.path.exists(fname) and write_mode == 'append':
         df = pd.read_csv(fname, sep='\t')
         df = df.append(pd.DataFrame(data={'filename': ['%s' % raw_fname],
@@ -390,16 +384,15 @@ def _coordsystem_json(raw, unit, orient, manufacturer, fname,
     write_mode : str, one of ('overwrite', 'error')
         How the file should be handled if is exists already.
         Defaults to 'overwrite'.
-        If overwrite = `overwrite` the old file will be removed and replaced
+        If write_mode == 'overwrite' the old file will be removed and replaced
         with a new one.
-        If overwrite = `error` an `OSError` will be raised.
+        If write_mode == 'error' an `OSError` will be raised.
     verbose : bool
         Set verbose output to true or false.
 
     """
-    if op.exists(fname) and write_mode == 'error':
-        raise OSError(EEXIST, '"%s" already exists. Please set'
-                      ' write_mode to "overwrite" or "append".' % fname)
+    if write_mode == 'error':
+        _check_file_exists(fname)
 
     dig = raw.info['dig']
     coords = dict()
@@ -461,16 +454,15 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, eeg_ref=None,
     write_mode : str, one of ('overwrite', 'error')
         How the file should be handled if is exists already.
         Defaults to 'overwrite'.
-        If overwrite = `overwrite` the old file will be removed and replaced
+        If write_mode == 'overwrite' the old file will be removed and replaced
         with a new one.
-        If overwrite = `error` an `OSError` will be raised.
+        If write_mode == 'error' an `OSError` will be raised.
     verbose : bool
         Set verbose output to true or false. Defaults to true.
 
     """
-    if op.exists(fname) and write_mode == 'error':
-        raise OSError(EEXIST, '"%s" already exists. Please set'
-                      ' write_mode to "overwrite" or "append".' % fname)
+    if write_mode == 'error':
+        _check_file_exists(fname)
 
     sfreq = raw.info['sfreq']
     powerlinefrequency = raw.info.get('line_freq', None)
@@ -740,10 +732,8 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
     # set the raw file name to now be the absolute path to ensure the files
     # are placed in the right location
     raw_file_bids = os.path.join(data_path, raw_file_bids)
-    if op.exists(raw_file_bids) and write_mode == 'error':
-        raise OSError(EEXIST, '"%s" already exists. Please set'
-                      ' write_mode to "overwrite" or "append".'
-                      % raw_file_bids)
+    if write_mode == 'error':
+        _check_file_exists(raw_file_bids)
     _mkdir_p(os.path.dirname(raw_file_bids))
 
     if verbose:
