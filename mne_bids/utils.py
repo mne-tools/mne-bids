@@ -37,7 +37,7 @@ def print_dir_tree(folder):
             print('|%s %s' % (len(path) * '---', file))
 
 
-def _mkdir_p(path, write_mode='overwrite', verbose=False):
+def _mkdir_p(path, write_mode='append', verbose=False):
     """Create a directory, making parent directories as needed [1].
 
     References
@@ -45,7 +45,7 @@ def _mkdir_p(path, write_mode='overwrite', verbose=False):
     .. [1] stackoverflow.com/questions/600268/mkdir-p-functionality-in-python
 
     """
-    if write_mode == 'clear' and op.isdir(path):
+    if write_mode == 'overwrite' and op.isdir(path):
         sh.rmtree(path)
         if verbose is True:
             print('Clearing path: %s' % path)
@@ -143,7 +143,7 @@ def make_bids_filename(subject=None, session=None, task=None,
 
 
 def make_bids_folders(subject, session=None, kind=None, root=None,
-                      make_dir=True, write_mode='overwrite', verbose=False):
+                      make_dir=True, write_mode='append', verbose=False):
     """Create a BIDS folder hierarchy.
 
     This creates a hierarchy of folders *within* a BIDS dataset. You should
@@ -164,12 +164,12 @@ def make_bids_folders(subject, session=None, kind=None, root=None,
     make_dir : bool
         Whether to actually create the folders specified. If False, only a
         path will be generated but no folders will be created.
-    write_mode : str, one of ('overwrite', 'error', 'clear')
+    write_mode : str, one of ('append', 'overwrite', 'error')
         How to handle overwriting previously generated data.
-        If write_mode = `overwrite` or `error` the previously created folder
+        If write_mode = `append` or `error` the previously created folder
         will be left intact.
-        If write_mode = `clear` any existing folders at the session level or
-        lower will be removed, including any contained data.
+        If write_mode = `overwrite` any existing folders at the session level
+        or lower will be removed, including any contained data.
     verbose : bool
         If verbose is True, print status updates
         as folders are created.
