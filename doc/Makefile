@@ -147,5 +147,6 @@ install:
 	cp -r html/* mne_bids.github.io && \
 	cd mne_bids.github.io && \
 	git add * && \
+	git add .nojekyll && \
 	git commit -a -m 'Make install' && \
 	git push
