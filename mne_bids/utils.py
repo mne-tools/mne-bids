@@ -565,17 +565,3 @@ def _infer_eeg_placement_scheme(raw):
         placement_scheme = 'based on the extended 10/20 system'
 
     return placement_scheme
-
-
-def _check_file_exists(fname):
-    """Checks whether the specified file exists. If so, raises an OSError.
-
-    Parameters
-    ----------
-    fname : str
-        Path to the file we are checking the existance of.
-
-    """
-    if op.exists(fname):
-        raise OSError(errno.EEXIST, '"%s" already exists. Please set '
-                      'write_mode to "overwrite" or "append".' % fname)
