@@ -6,6 +6,7 @@ For each supported file format, implement a test.
 #          Teon L Brooks <teon.brooks@gmail.com>
 #          Chris Holdgraf <choldgraf@berkeley.edu>
 #          Stefan Appelhoff <stefan.appelhoff@mailbox.org>
+#          Matt Sanderson <matt.sanderson@mq.edu.au>
 #
 # License: BSD (3-clause)
 
@@ -303,8 +304,8 @@ def test_cnt():
     run_subprocess(cmd, shell=shell)
 
 
-def test_privates():
-    """ Test each of the private functions in error mode."""
+def test_json_tsv():
+    """ Test each of the .tsv and .json generating functions in error mode."""
     output_path = _TempDir()
     data_path = testing.data_path()
     raw_fname = op.join(data_path, 'MEG', 'sample',
