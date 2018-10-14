@@ -52,10 +52,10 @@ def run():
                       help='The path to headshape points.', metavar='hsp')
     parser.add_option('--config', dest='config',
                       help='The path to the configuration file', metavar='cfg')
-    parser.add_option('--overwrite', dest='overwrite',
-                      help=('Boolean. If the file already exists, whether',
-                            'to overwrite it.'),
-                      metavar='ow')
+    parser.add_option('--write_mode', dest='write_mode',
+                      help=('String. How to handle overwriting of existing'
+                            'data. One of (`overwrite`, `error`, `clear`)'),
+                      metavar='wm')
 
     opt, args = parser.parse_args()
 
@@ -64,7 +64,7 @@ def run():
                 session_id=opt.session_id, run=opt.run, kind=opt.kind,
                 events_data=opt.events_data, event_id=opt.event_id,
                 hpi=opt.hpi, electrode=opt.electrode, hsp=opt.hsp,
-                config=opt.config, overwrite=opt.overwrite,
+                config=opt.config, write_mode=opt.write_mode,
                 verbose=True)
 
 
