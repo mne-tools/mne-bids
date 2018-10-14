@@ -10,6 +10,8 @@
 
 import os
 import errno
+import os.path as op
+
 import shutil as sh
 import pandas as pd
 from collections import defaultdict, OrderedDict
@@ -584,13 +586,16 @@ def write_raw_bids(raw, bids_fname, output_path, kind='meg', events_data=None,
     if not hasattr(raw, 'filenames'):
         raise ValueError('raw.filenames is missing.')
 
-    _, ext = _parse_ext(raw.filenames[0], verbose=verbose)
     raw_fname = raw.filenames[0]
+    if '.ds' in op.dirname(raw.filenames[0]):
+        raw_fname = op.dirname(raw.filenames[0])
+    if '.eeg' in raw.filenames[0]:
+        raw_fname = raw_fname[:-4] + '.vhdr'
+    _, ext = _parse_ext(raw_fname, verbose=verbose)
 
     params = _parse_bids_filename(bids_fname)
     subject_id, session_id = params['sub'], params['ses']
     acquisition, task, run = params['acq'], params['task'], params['run']
-    fname = os.path.join(output_path, bids_fname)
 
     data_path = make_bids_folders(subject=subject_id, session=session_id,
                                   kind=kind, root=output_path,
@@ -621,6 +626,10 @@ def write_raw_bids(raw, bids_fname, output_path, kind='meg', events_data=None,
     channels_fname = make_bids_filename(
         subject=subject_id, session=session_id, task=task, run=run,
         acquisition=acquisition, suffix='channels.tsv', prefix=data_path)
+    if ext not in ['.fif', '.ds', '.vhdr', '.edf', '.bdf', '.set', '.fdt',
+                   '.cnt']:
+        bids_raw_folder = bids_fname.split('.')[0]
+        bids_fname = op.join(bids_raw_folder, bids_fname)
 
     # Read in Raw object and extract metadata from Raw object if needed
     orient = ORIENTATION.get(ext, 'n/a')
@@ -659,7 +668,7 @@ def write_raw_bids(raw, bids_fname, output_path, kind='meg', events_data=None,
     _mkdir_p(os.path.dirname(bids_fname))
 
     if verbose:
-        print('Writing data files to %s' % fname)
+        print('Writing data files to %s' % bids_fname)
 
     if ext not in ALLOWED_EXTENSIONS:
         raise ValueError('ext must be in %s, got %s'

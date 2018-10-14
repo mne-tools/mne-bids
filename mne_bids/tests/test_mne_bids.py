@@ -20,7 +20,8 @@ from mne.datasets import testing
 from mne.utils import _TempDir, run_subprocess
 from mne.io.constants import FIFF
 
-from mne_bids import raw_to_bids, make_bids_filename, make_bids_folders
+from mne_bids import make_bids_filename, make_bids_folders, write_raw_bids
+from mne_bids.io import read_raw
 
 base_path = op.join(op.dirname(mne.__file__), 'io')
 subject_id = '01'
@@ -30,6 +31,10 @@ run = '01'
 acq = '01'
 run2 = '02'
 task = 'testing'
+
+partial_bids_fname = make_bids_filename(
+    subject=subject_id, session=session_id, run=run, acquisition=acq,
+    task=task)
 
 # for windows, shell = True is needed
 # to call npm, bids-validator etc.
@@ -54,10 +59,10 @@ def test_fif():
     events_fname = op.join(data_path, 'MEG', 'sample',
                            'sample_audvis_trunc_raw-eve.fif')
 
-    raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
-                acquisition=acq, task=task, raw_file=raw_fname,
-                events_data=events_fname, output_path=output_path,
-                event_id=event_id, overwrite=False)
+    raw = mne.io.read_raw_fif(raw_fname)
+    bids_fname = partial_bids_fname + '_meg.fif'
+    write_raw_bids(raw, bids_fname, output_path, events_data=events_fname,
+                   event_id=event_id, overwrite=False)
 
     # give the raw object some fake participant data
     raw = mne.io.read_raw_fif(raw_fname)
@@ -67,25 +72,21 @@ def test_fif():
     data_path2 = _TempDir()
     raw_fname2 = op.join(data_path2, 'sample_audvis_raw.fif')
     raw.save(raw_fname2)
-    raw_to_bids(subject_id=subject_id2, run=run, task=task, acquisition=acq,
-                session_id=session_id, raw_file=raw_fname2,
-                events_data=events_fname, output_path=output_path,
-                event_id=event_id, overwrite=False)
+
+    bids_fname = bids_fname.replace(subject_id, subject_id2)
+    write_raw_bids(raw, bids_fname, output_path, events_data=events_fname,
+                   event_id=event_id, overwrite=False)
     # check that the overwrite parameters work correctly for the participant
     # data
     # change the gender but don't force overwrite.
     raw.info['subject_info'] = {'his_id': subject_id2,
                                 'birthday': (1994, 1, 26), 'sex': 2}
     with pytest.raises(OSError, match="already exists"):
-        raw_to_bids(subject_id=subject_id2, run=run, task=task,
-                    acquisition=acq, session_id=session_id, raw_file=raw,
-                    events_data=events_fname, output_path=output_path,
-                    event_id=event_id, overwrite=False)
+        write_raw_bids(raw, bids_fname, output_path, events_data=events_fname,
+                       event_id=event_id, overwrite=False)
     # now force the overwrite
-    raw_to_bids(subject_id=subject_id2, run=run, task=task,
-                acquisition=acq, session_id=session_id, raw_file=raw,
-                events_data=events_fname, output_path=output_path,
-                event_id=event_id, overwrite=True)
+    write_raw_bids(raw, bids_fname, output_path, events_data=events_fname,
+                   event_id=event_id, overwrite=True)
     cmd = ['bids-validator', output_path]
     run_subprocess(cmd, shell=shell)
 
@@ -103,11 +104,11 @@ def test_kit():
     headshape_fname = op.join(data_path, 'test_hsp.txt')
     event_id = dict(cond=1)
 
-    raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
-                task=task, acquisition=acq, raw_file=raw_fname,
-                events_data=events_fname, event_id=event_id, hpi=hpi_fname,
-                electrode=electrode_fname, hsp=headshape_fname,
-                output_path=output_path, overwrite=False)
+    bids_fname = partial_bids_fname + '_meg.sqd'
+    raw = read_raw(raw_fname, hpi=hpi_fname, electrode=electrode_fname,
+                   hsp=headshape_fname)
+    write_raw_bids(raw, bids_fname, output_path, events_data=events_fname,
+                   event_id=event_id, overwrite=False)
     cmd = ['bids-validator', output_path]
     run_subprocess(cmd, shell=shell)
     assert op.exists(op.join(output_path, 'participants.tsv'))
@@ -146,9 +147,9 @@ def test_ctf():
     data_path = op.join(testing.data_path(download=False), 'CTF')
     raw_fname = op.join(data_path, 'testdata_ctf.ds')
 
-    raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
-                task=task, acquisition=acq, raw_file=raw_fname,
-                output_path=output_path, overwrite=False)
+    bids_fname = partial_bids_fname + '_meg.ds'
+    raw = mne.io.read_raw_ctf(raw_fname)
+    write_raw_bids(raw, bids_fname, output_path=output_path)
     cmd = ['bids-validator', output_path]
     run_subprocess(cmd, shell=shell)
 
@@ -169,10 +170,9 @@ def test_bti():
     config_fname = op.join(data_path, 'test_config_linux')
     headshape_fname = op.join(data_path, 'test_hs_linux')
 
-    raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
-                task=task, acquisition=acq, raw_file=raw_fname,
-                config=config_fname, hsp=headshape_fname,
-                output_path=output_path, verbose=True, overwrite=False)
+    bids_fname = partial_bids_fname + '_meg.pdf'
+    raw = read_raw(raw_fname, config=config_fname, hsp=headshape_fname)
+    write_raw_bids(raw, bids_fname, output_path, verbose=True)
 
     assert op.exists(op.join(output_path, 'participants.tsv'))
 
@@ -188,9 +188,9 @@ def test_vhdr():
     data_path = op.join(base_path, 'brainvision', 'tests', 'data')
     raw_fname = op.join(data_path, 'test.vhdr')
 
-    raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
-                task=task, acquisition=acq, raw_file=raw_fname,
-                output_path=output_path, overwrite=False, kind='eeg')
+    bids_fname = partial_bids_fname + '_eeg.vhdr'
+    raw = read_raw(raw_fname)
+    write_raw_bids(raw, bids_fname, output_path, overwrite=False, kind='eeg')
 
     cmd = ['bids-validator', '--bep006', output_path]
     run_subprocess(cmd, shell=shell)
@@ -215,12 +215,10 @@ def test_edf():
     raw.rename_channels({raw.info['ch_names'][1]: 'EMG'})
     raw.set_channel_types({'EMG': 'emg'})
 
-    raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
-                task=task, acquisition=acq, raw_file=raw,
-                output_path=output_path, overwrite=False, kind='eeg')
-    raw_to_bids(subject_id=subject_id, session_id=session_id, run=run2,
-                task=task, acquisition=acq, raw_file=raw,
-                output_path=output_path, overwrite=True, kind='eeg')
+    bids_fname = partial_bids_fname + '_eeg.edf'
+    write_raw_bids(raw, bids_fname, output_path, overwrite=False, kind='eeg')
+    bids_fname.replace('run-01', 'run-%02d' % run2)
+    write_raw_bids(raw, bids_fname, output_path, overwrite=True, kind='eeg')
 
     cmd = ['bids-validator', '--bep006', output_path]
     run_subprocess(cmd, shell=shell)
@@ -247,9 +245,10 @@ def test_bdf():
     data_path = op.join(base_path, 'edf', 'tests', 'data')
     raw_fname = op.join(data_path, 'test.bdf')
 
-    raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
-                task=task, acquisition=acq, raw_file=raw_fname,
-                output_path=output_path, overwrite=False, kind='eeg')
+    bids_fname = partial_bids_fname + '_eeg.bdf'
+    raw = read_raw(raw_fname)
+    write_raw_bids(raw, bids_fname, output_path, overwrite=False,
+                   kind='eeg')
 
     cmd = ['bids-validator', '--bep006', output_path]
     run_subprocess(cmd, shell=shell)
@@ -262,9 +261,9 @@ def test_set():
     data_path = op.join(testing.data_path(), 'EEGLAB')
     raw_fname = op.join(data_path, 'test_raw_onefile.set')
 
-    raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
-                task=task, acquisition=acq, raw_file=raw_fname,
-                output_path=output_path, overwrite=False, kind='eeg')
+    bids_fname = partial_bids_fname + '_eeg.set'
+    raw = read_raw(raw_fname)
+    write_raw_bids(raw, bids_fname, output_path, overwrite=False, kind='eeg')
 
     cmd = ['bids-validator', '--bep006', output_path]
     run_subprocess(cmd, shell=shell)
@@ -279,9 +278,8 @@ def test_set():
     data_path = op.join(testing.data_path(), 'EEGLAB')
     raw_fname = op.join(data_path, 'test_raw.set')
 
-    raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
-                task=task, acquisition=acq, raw_file=raw_fname,
-                output_path=output_path, overwrite=False, kind='eeg')
+    raw = read_raw(raw_fname)
+    write_raw_bids(raw, bids_fname, output_path, overwrite=False, kind='eeg')
 
     cmd = ['bids-validator', '--bep006', output_path]
     run_subprocess(cmd, shell=shell)
@@ -293,9 +291,9 @@ def test_cnt():
     data_path = op.join(testing.data_path(), 'CNT')
     raw_fname = op.join(data_path, 'scan41_short.cnt')
 
-    raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
-                task=task, acquisition=acq, raw_file=raw_fname,
-                output_path=output_path, overwrite=False, kind='eeg')
+    bids_fname = partial_bids_fname + '_eeg.cnt'
+    raw = read_raw(raw_fname)
+    write_raw_bids(raw, bids_fname, output_path, kind='eeg')
 
     cmd = ['bids-validator', '--bep006', output_path]
     run_subprocess(cmd, shell=shell)
