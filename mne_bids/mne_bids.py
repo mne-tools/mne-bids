@@ -9,6 +9,7 @@
 # License: BSD (3-clause)
 
 import os
+import errno
 import shutil as sh
 import pandas as pd
 from collections import defaultdict, OrderedDict
@@ -30,7 +31,7 @@ from .utils import (make_bids_filename, make_bids_folders,
                     make_dataset_description, _write_json, _write_tsv,
                     _read_events, _mkdir_p, age_on_date,
                     copyfile_brainvision, copyfile_eeglab,
-                    _infer_eeg_placement_scheme, _check_file_exists)
+                    _infer_eeg_placement_scheme)
 from .io import (_parse_ext, _read_raw, ALLOWED_EXTENSIONS)
 
 
@@ -64,7 +65,7 @@ IGNORED_CHANNELS = {'KIT/Yokogawa': ['STI 014'],
                     'Neuroscan': ['STI 014']}
 
 
-def _channels_tsv(raw, fname, write_mode='overwrite', verbose=True):
+def _channels_tsv(raw, fname, write_mode='error', verbose=True):
     """Create a channels.tsv file and save it.
 
     Parameters
@@ -75,7 +76,7 @@ def _channels_tsv(raw, fname, write_mode='overwrite', verbose=True):
         Filename to save the channels.tsv to.
     write_mode : str, one of ('overwrite', 'error')
         How the file should be handled if is exists already.
-        Defaults to 'overwrite'.
+        Defaults to 'error'.
         If write_mode == 'overwrite' the old file will be removed and replaced
         with a new one.
         If write_mode == 'error' an `OSError` will be raised.
@@ -150,7 +151,7 @@ def _channels_tsv(raw, fname, write_mode='overwrite', verbose=True):
     return fname
 
 
-def _events_tsv(events, raw, fname, trial_type, write_mode='overwrite',
+def _events_tsv(events, raw, fname, trial_type, write_mode='error',
                 verbose=True):
     """Create an events.tsv file and save it.
 
@@ -175,7 +176,7 @@ def _events_tsv(events, raw, fname, trial_type, write_mode='overwrite',
         example {'Go': 1, 'No Go': 2}.
     write_mode : str, one of ('overwrite', 'error')
         How the file should be handled if is exists already.
-        Defaults to 'overwrite'.
+        Defaults to 'error'.
         If write_mode == 'overwrite' the old file will be removed and replaced
         with a new one.
         If write_mode == 'error' an `OSError` will be raised.
@@ -339,7 +340,7 @@ def _scans_tsv(raw, raw_fname, fname, write_mode='append', verbose=True):
 
 
 def _coordsystem_json(raw, unit, orient, manufacturer, fname,
-                      write_mode='overwrite', verbose=True):
+                      write_mode='error', verbose=True):
     """Create a coordsystem.json file and save it.
 
     Parameters
@@ -356,7 +357,7 @@ def _coordsystem_json(raw, unit, orient, manufacturer, fname,
         Filename to save the coordsystem.json to.
     write_mode : str, one of ('overwrite', 'error')
         How the file should be handled if is exists already.
-        Defaults to 'overwrite'.
+        Defaults to 'error'.
         If write_mode == 'overwrite' the old file will be removed and replaced
         with a new one.
         If write_mode == 'error' an `OSError` will be raised.
@@ -399,7 +400,7 @@ def _coordsystem_json(raw, unit, orient, manufacturer, fname,
 
 
 def _sidecar_json(raw, task, manufacturer, fname, kind, eeg_ref=None,
-                  eeg_gnd=None, write_mode='overwrite', verbose=True):
+                  eeg_gnd=None, write_mode='error', verbose=True):
     """Create a sidecar json file depending on the kind and save it.
 
     The sidecar json file provides meta data about the data of a certain kind.
@@ -424,7 +425,7 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, eeg_ref=None,
         Description  of the location of the ground electrode. Defaults to None.
     write_mode : str, one of ('overwrite', 'error')
         How the file should be handled if is exists already.
-        Defaults to 'overwrite'.
+        Defaults to 'error'.
         If write_mode == 'overwrite' the old file will be removed and replaced
         with a new one.
         If write_mode == 'error' an `OSError` will be raised.
@@ -533,7 +534,7 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
                 acquisition=None, run=None, kind='meg', events_data=None,
                 event_id=None, hpi=None, electrode=None, hsp=None,
                 eeg_ref=None, eeg_gnd=None, config=None,
-                write_mode='append', verbose=True):
+                write_mode='error', verbose=True):
     """Walk over a folder of files and create BIDS compatible folder.
 
     Parameters
@@ -581,7 +582,7 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
         system.
     write_mode : str, one of ('append', 'overwrite', 'error')
         How any existing files should be handled when new data is produced.
-        Defaults to 'append'.
+        Defaults to 'error'.
         - 'append': Any file that already exists will be overridden with new
             data, except `participants.tsv` and `scans.tsv` which will have the
             new data appended.
@@ -701,8 +702,9 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
     # set the raw file name to now be the absolute path to ensure the files
     # are placed in the right location
     raw_file_bids = os.path.join(data_path, raw_file_bids)
-    if write_mode == 'error':
-        _check_file_exists(raw_file_bids)
+    if write_mode == 'error' and os.path.exists(raw_file_bids):
+        raise OSError(errno.EEXIST, '"%s" already exists. Please set '
+                      'write_mode to "overwrite" or "append".' % raw_file_bids)
     _mkdir_p(os.path.dirname(raw_file_bids))
 
     if verbose:
