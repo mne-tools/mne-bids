@@ -713,7 +713,7 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
     _scans_tsv(raw, os.path.join(kind, raw_file_bids), scans_fname,
                _write_mode, verbose)
 
-    # we no longer need the 'clear' write_mode so re-assign
+    # condense the clear and overwrite write_mode's
     if write_mode == 'clear':
         write_mode = 'overwrite'
 
@@ -735,7 +735,7 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
     # set the raw file name to now be the absolute path to ensure the files
     # are placed in the right location
     raw_file_bids = os.path.join(data_path, raw_file_bids)
-    if os.path.exists(raw_file_bids) and write_mode == 'error':
+    if op.exists(raw_file_bids) and write_mode == 'error':
         raise OSError(EEXIST, '"%s" already exists. Please set'
                       ' overwrite to "overwrite" or "clear".'
                       % raw_file_bids)
@@ -756,7 +756,7 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
             if check_version('mne', '0.17.dev'):
                 split_naming = 'bids'
                 raw.save(raw_file_bids, split_naming=split_naming,
-                         overwrite=(write_mode == 'overwrite'))
+                         overwrite=True)
             else:
                 raise NotImplementedError(
                     'Renaming split fif files is not supported on your '
@@ -766,7 +766,7 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
         else:
             # TODO insert arg `split_naming=split_naming`
             #      when MNE releases 0.17
-            raw.save(raw_file_bids, overwrite=(write_mode == 'overwrite'))
+            raw.save(raw_file_bids, overwrite=True)
     # CTF data is saved in a directory
     elif ext == '.ds':
         sh.copytree(raw_fname, raw_file_bids)
