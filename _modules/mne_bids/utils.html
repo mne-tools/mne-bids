@@ -7,12 +7,12 @@
     <title>mne_bids.utils &#8212; mne_bids 0.1dev0 documentation</title>
     <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/gallery.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/gallery.css" />
     <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/javascript" src="../../_static/js/jquery-1.11.0.min.js"></script>
     <script type="text/javascript" src="../../_static/js/jquery-fix.js"></script>
     <script type="text/javascript" src="../../_static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
@@ -119,6 +119,7 @@
 <span class="kn">from</span> <span class="nn">mne</span> <span class="k">import</span> <span class="n">read_events</span><span class="p">,</span> <span class="n">find_events</span>
 <span class="kn">from</span> <span class="nn">mne.externals.six</span> <span class="k">import</span> <span class="n">string_types</span>
 <span class="kn">from</span> <span class="nn">mne.channels</span> <span class="k">import</span> <span class="n">read_montage</span>
+<span class="kn">from</span> <span class="nn">mne.io.pick</span> <span class="k">import</span> <span class="n">pick_types</span>
 
 <span class="kn">from</span> <span class="nn">.config</span> <span class="k">import</span> <span class="n">BIDS_VERSION</span>
 <span class="kn">from</span> <span class="nn">.io</span> <span class="k">import</span> <span class="n">_parse_ext</span>
@@ -635,8 +636,9 @@
 
     <span class="c1"># How many of the channels in raw are based on the extended 10/20 system</span>
     <span class="n">raw</span><span class="o">.</span><span class="n">load_data</span><span class="p">()</span>
-    <span class="n">raw</span><span class="o">.</span><span class="n">pick_types</span><span class="p">(</span><span class="n">meg</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">eeg</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">channel_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">ch</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">raw</span><span class="o">.</span><span class="n">ch_names</span><span class="p">]</span>
+    <span class="n">sel</span> <span class="o">=</span> <span class="n">pick_types</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">,</span> <span class="n">meg</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">eeg</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">ch_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">raw</span><span class="o">.</span><span class="n">ch_names</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">sel</span><span class="p">]</span>
+    <span class="n">channel_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">ch</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">ch_names</span><span class="p">]</span>
     <span class="n">montage1005</span> <span class="o">=</span> <span class="n">read_montage</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="s1">&#39;standard_1005&#39;</span><span class="p">)</span>
     <span class="n">montage1005_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">ch</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">montage1005</span><span class="o">.</span><span class="n">ch_names</span><span class="p">]</span>
 
@@ -657,8 +659,8 @@
       
     </p>
     <p>
-        &copy; Copyright 2018, MNE Developers. Last updated on 2018-10-12.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.5.<br/>
+        &copy; Copyright 2018, MNE Developers. Last updated on 2018-10-14.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.1.<br/>
     </p>
   </div>
 </footer>

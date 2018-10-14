@@ -7,12 +7,12 @@
     <title>Convert EEG data to BIDS format &#8212; mne_bids 0.1dev0 documentation</title>
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
     <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js"></script>
     <script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
     <script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
@@ -170,6 +170,20 @@ MNE-Python:</p>
                      <span class="n">update_path</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 </pre></div>
 </div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Downloading http://www.physionet.org/physiobank/database/eegmmidb/S001/S001R02.edf (1.2 MB)
+
+Downloading http://www.physionet.org/physiobank/database/eegmmidb/S001/S001R04.edf (2.5 MB)
+
+Downloading http://www.physionet.org/physiobank/database/eegmmidb/S001/S001R12.edf (2.5 MB)
+
+Downloading http://www.physionet.org/physiobank/database/eegmmidb/S002/S002R02.edf (1.2 MB)
+
+Downloading http://www.physionet.org/physiobank/database/eegmmidb/S002/S002R04.edf (2.4 MB)
+
+Downloading http://www.physionet.org/physiobank/database/eegmmidb/S002/S002R12.edf (2.4 MB)
+</pre></div>
+</div>
 <p>Let’s see whether the data has been downloaded using a quick visualization
 of the directory tree.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">data_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">mne_dir</span><span class="p">,</span> <span class="s1">&#39;MNE-eegbci-data&#39;</span><span class="p">)</span>
@@ -182,12 +196,12 @@ of the directory tree.</p>
 |------------------ database
 |--------------------- eegmmidb
 |------------------------ S002
-|--------------------------- S002R04.edf
 |--------------------------- S002R02.edf
+|--------------------------- S002R04.edf
 |--------------------------- S002R12.edf
 |------------------------ S001
-|--------------------------- S001R04.edf
 |--------------------------- S001R02.edf
+|--------------------------- S001R04.edf
 |--------------------------- S001R12.edf
 </pre></div>
 </div>
@@ -208,7 +222,7 @@ MNE-Python’s io module and the <cite>read_raw_edf</cite> function.</p>
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Extracting EDF parameters from /home/stefanappelhoff/mne_data/MNE-eegbci-data/physiobank/database/eegmmidb/S001/S001R02.edf...
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Extracting EDF parameters from /home/circleci/mne_data/MNE-eegbci-data/physiobank/database/eegmmidb/S001/S001R02.edf...
 EDF file detected
 EDF annotations detected (consider using raw.find_edf_events() to extract them)
 Setting channel info structure...
@@ -320,23 +334,23 @@ The second task was to rest with closed eyes.</p>
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Creating folder: /home/stefanappelhoff/mne_data/eegmmidb_bids/sub-001/eeg
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Creating folder: /home/circleci/mne_data/eegmmidb_bids/sub-001/eeg
 1 events found
 Event IDs: [1]
 
-Writing &#39;/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_events.tsv&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_events.tsv&#39;...
 
    onset  duration         trial_type  event_value  event_sample
 0    0.0       0.0  imagine left fist            1             0
 
-Writing &#39;/home/stefanappelhoff/mne_data/eegmmidb_bids/dataset_description.json&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids/dataset_description.json&#39;...
 
 {
     &quot;Name&quot;: &quot; &quot;,
     &quot;BIDSVersion&quot;: &quot;1.1.1 (draft)&quot;
 }
 
-Writing &#39;/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_eeg.json&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_eeg.json&#39;...
 
 {
     &quot;TaskName&quot;: &quot;resteyesclosed&quot;,
@@ -357,27 +371,32 @@ Writing &#39;/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_ta
     &quot;TriggerChannelCount&quot;: 1
 }
 
-Writing &#39;/home/stefanappelhoff/mne_data/eegmmidb_bids/participants.tsv&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids/participants.tsv&#39;...
 
   participant_id  age  sex group
 0        sub-001  NaN  NaN   NaN
 
-Writing &#39;/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_channels.tsv&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_channels.tsv&#39;...
 
-   name type units   ...   low_cutoff  high_cutoff  status
-0  Fc5.  EEG     V   ...          0.0         80.0    good
-1  Fc3.  EEG     V   ...          0.0         80.0    good
-2  Fc1.  EEG     V   ...          0.0         80.0    good
-3  Fcz.  EEG     V   ...          0.0         80.0    good
-4  Fc2.  EEG     V   ...          0.0         80.0    good
+   name type units           description  sampling_frequency  low_cutoff  \
+0  Fc5.  EEG     V  ElectroEncephaloGram               160.0         0.0
+1  Fc3.  EEG     V  ElectroEncephaloGram               160.0         0.0
+2  Fc1.  EEG     V  ElectroEncephaloGram               160.0         0.0
+3  Fcz.  EEG     V  ElectroEncephaloGram               160.0         0.0
+4  Fc2.  EEG     V  ElectroEncephaloGram               160.0         0.0
 
-[5 rows x 8 columns]
+   high_cutoff status
+0         80.0   good
+1         80.0   good
+2         80.0   good
+3         80.0   good
+4         80.0   good
 
-Writing &#39;/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-001/sub-001_scans.tsv&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-001/sub-001_scans.tsv&#39;...
 
-                                  filename             acq_time
-0  eeg/sub-001_task-resteyesclosed_eeg.edf  2009-08-12T18:15:00
-Writing data files to /home/stefanappelhoff/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_eeg.edf
+                                  filename acq_time
+0  eeg/sub-001_task-resteyesclosed_eeg.edf      n/a
+Writing data files to /home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_eeg.edf
 </pre></div>
 </div>
 <p>What does our fresh BIDS directory look like?</p>
@@ -386,15 +405,15 @@ Writing data files to /home/stefanappelhoff/mne_data/eegmmidb_bids/sub-001/eeg/s
 </div>
 <p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>|------------ eegmmidb_bids
-|--------------- participants.tsv
 |--------------- dataset_description.json
+|--------------- participants.tsv
 |--------------- sub-001
 |------------------ sub-001_scans.tsv
 |------------------ eeg
-|--------------------- sub-001_task-resteyesclosed_eeg.json
-|--------------------- sub-001_task-resteyesclosed_channels.tsv
 |--------------------- sub-001_task-resteyesclosed_events.tsv
+|--------------------- sub-001_task-resteyesclosed_eeg.json
 |--------------------- sub-001_task-resteyesclosed_eeg.edf
+|--------------------- sub-001_task-resteyesclosed_channels.tsv
 </pre></div>
 </div>
 <p>Looks good so far, let’s convert the data for all tasks and subjects.</p>
@@ -434,29 +453,29 @@ Writing data files to /home/stefanappelhoff/mne_data/eegmmidb_bids/sub-001/eeg/s
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Extracting EDF parameters from /home/stefanappelhoff/mne_data/MNE-eegbci-data/physiobank/database/eegmmidb/S001/S001R02.edf...
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Extracting EDF parameters from /home/circleci/mne_data/MNE-eegbci-data/physiobank/database/eegmmidb/S001/S001R02.edf...
 EDF file detected
 EDF annotations detected (consider using raw.find_edf_events() to extract them)
 Setting channel info structure...
 Creating raw.info structure...
 Reading 0 ... 9759  =      0.000 ...    60.994 secs...
-Creating folder: /home/stefanappelhoff/mne_data/eegmmidb_bids/sub-001/eeg
+Creating folder: /home/circleci/mne_data/eegmmidb_bids/sub-001/eeg
 1 events found
 Event IDs: [1]
 
-Writing &#39;/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_events.tsv&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_events.tsv&#39;...
 
    onset  duration         trial_type  event_value  event_sample
 0    0.0       0.0  imagine left fist            1             0
 
-Writing &#39;/home/stefanappelhoff/mne_data/eegmmidb_bids/dataset_description.json&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids/dataset_description.json&#39;...
 
 {
     &quot;Name&quot;: &quot; &quot;,
     &quot;BIDSVersion&quot;: &quot;1.1.1 (draft)&quot;
 }
 
-Writing &#39;/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_eeg.json&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_eeg.json&#39;...
 
 {
     &quot;TaskName&quot;: &quot;resteyesclosed&quot;,
@@ -477,28 +496,33 @@ Writing &#39;/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_ta
     &quot;TriggerChannelCount&quot;: 1
 }
 
-Writing &#39;/home/stefanappelhoff/mne_data/eegmmidb_bids/participants.tsv&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids/participants.tsv&#39;...
 
   participant_id  age  sex group
 0        sub-001  NaN  NaN   NaN
 
-Writing &#39;/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_channels.tsv&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_channels.tsv&#39;...
 
-   name type units   ...   low_cutoff  high_cutoff  status
-0  Fc5.  EEG     V   ...          0.0         80.0    good
-1  Fc3.  EEG     V   ...          0.0         80.0    good
-2  Fc1.  EEG     V   ...          0.0         80.0    good
-3  Fcz.  EEG     V   ...          0.0         80.0    good
-4  Fc2.  EEG     V   ...          0.0         80.0    good
+   name type units           description  sampling_frequency  low_cutoff  \
+0  Fc5.  EEG     V  ElectroEncephaloGram               160.0         0.0
+1  Fc3.  EEG     V  ElectroEncephaloGram               160.0         0.0
+2  Fc1.  EEG     V  ElectroEncephaloGram               160.0         0.0
+3  Fcz.  EEG     V  ElectroEncephaloGram               160.0         0.0
+4  Fc2.  EEG     V  ElectroEncephaloGram               160.0         0.0
 
-[5 rows x 8 columns]
+   high_cutoff status
+0         80.0   good
+1         80.0   good
+2         80.0   good
+3         80.0   good
+4         80.0   good
 
-Writing &#39;/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-001/sub-001_scans.tsv&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-001/sub-001_scans.tsv&#39;...
 
-                                  filename             acq_time
-0  eeg/sub-001_task-resteyesclosed_eeg.edf  2009-08-12T18:15:00
-Writing data files to /home/stefanappelhoff/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_eeg.edf
-Extracting EDF parameters from /home/stefanappelhoff/mne_data/MNE-eegbci-data/physiobank/database/eegmmidb/S001/S001R04.edf...
+                                  filename acq_time
+0  eeg/sub-001_task-resteyesclosed_eeg.edf      n/a
+Writing data files to /home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_eeg.edf
+Extracting EDF parameters from /home/circleci/mne_data/MNE-eegbci-data/physiobank/database/eegmmidb/S001/S001R04.edf...
 EDF file detected
 EDF annotations detected (consider using raw.find_edf_events() to extract them)
 Setting channel info structure...
@@ -507,7 +531,7 @@ Reading 0 ... 19999  =      0.000 ...   124.994 secs...
 30 events found
 Event IDs: [1 2 3]
 
-Writing &#39;/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-imaginefists_run-1_events.tsv&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-imaginefists_run-1_events.tsv&#39;...
 
    onset  duration          trial_type  event_value  event_sample
 0    0.0       0.0   imagine left fist            1             0
@@ -516,14 +540,14 @@ Writing &#39;/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_ta
 3   12.5       0.0  imagine right fist            2          2000
 4   16.6       0.0   imagine left fist            1          2656
 
-Writing &#39;/home/stefanappelhoff/mne_data/eegmmidb_bids/dataset_description.json&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids/dataset_description.json&#39;...
 
 {
     &quot;Name&quot;: &quot; &quot;,
     &quot;BIDSVersion&quot;: &quot;1.1.1 (draft)&quot;
 }
 
-Writing &#39;/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-imaginefists_run-1_eeg.json&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-imaginefists_run-1_eeg.json&#39;...
 
 {
     &quot;TaskName&quot;: &quot;imaginefists&quot;,
@@ -544,28 +568,33 @@ Writing &#39;/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_ta
     &quot;TriggerChannelCount&quot;: 1
 }
 
-Writing &#39;/home/stefanappelhoff/mne_data/eegmmidb_bids/participants.tsv&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids/participants.tsv&#39;...
 
   participant_id  age  sex group
 0        sub-001  NaN  NaN   NaN
 
-Writing &#39;/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-imaginefists_run-1_channels.tsv&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-imaginefists_run-1_channels.tsv&#39;...
 
-   name type units   ...   low_cutoff  high_cutoff  status
-0  Fc5.  EEG     V   ...          0.0         80.0    good
-1  Fc3.  EEG     V   ...          0.0         80.0    good
-2  Fc1.  EEG     V   ...          0.0         80.0    good
-3  Fcz.  EEG     V   ...          0.0         80.0    good
-4  Fc2.  EEG     V   ...          0.0         80.0    good
+   name type units           description  sampling_frequency  low_cutoff  \
+0  Fc5.  EEG     V  ElectroEncephaloGram               160.0         0.0
+1  Fc3.  EEG     V  ElectroEncephaloGram               160.0         0.0
+2  Fc1.  EEG     V  ElectroEncephaloGram               160.0         0.0
+3  Fcz.  EEG     V  ElectroEncephaloGram               160.0         0.0
+4  Fc2.  EEG     V  ElectroEncephaloGram               160.0         0.0
 
-[5 rows x 8 columns]
+   high_cutoff status
+0         80.0   good
+1         80.0   good
+2         80.0   good
+3         80.0   good
+4         80.0   good
 
-Writing &#39;/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-001/sub-001_scans.tsv&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-001/sub-001_scans.tsv&#39;...
 
-                                      filename             acq_time
-0  eeg/sub-001_task-imaginefists_run-1_eeg.edf  2009-08-12T18:15:00
-Writing data files to /home/stefanappelhoff/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-imaginefists_run-1_eeg.edf
-Extracting EDF parameters from /home/stefanappelhoff/mne_data/MNE-eegbci-data/physiobank/database/eegmmidb/S001/S001R12.edf...
+                                      filename acq_time
+0  eeg/sub-001_task-imaginefists_run-1_eeg.edf      n/a
+Writing data files to /home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-imaginefists_run-1_eeg.edf
+Extracting EDF parameters from /home/circleci/mne_data/MNE-eegbci-data/physiobank/database/eegmmidb/S001/S001R12.edf...
 EDF file detected
 EDF annotations detected (consider using raw.find_edf_events() to extract them)
 Setting channel info structure...
@@ -574,7 +603,7 @@ Reading 0 ... 19999  =      0.000 ...   124.994 secs...
 30 events found
 Event IDs: [1 2 3]
 
-Writing &#39;/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-imaginefists_run-2_events.tsv&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-imaginefists_run-2_events.tsv&#39;...
 
    onset  duration          trial_type  event_value  event_sample
 0    0.0       0.0   imagine left fist            1             0
@@ -583,14 +612,14 @@ Writing &#39;/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_ta
 3   12.5       0.0  imagine right fist            2          2000
 4   16.6       0.0   imagine left fist            1          2656
 
-Writing &#39;/home/stefanappelhoff/mne_data/eegmmidb_bids/dataset_description.json&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids/dataset_description.json&#39;...
 
 {
     &quot;Name&quot;: &quot; &quot;,
     &quot;BIDSVersion&quot;: &quot;1.1.1 (draft)&quot;
 }
 
-Writing &#39;/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-imaginefists_run-2_eeg.json&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-imaginefists_run-2_eeg.json&#39;...
 
 {
     &quot;TaskName&quot;: &quot;imaginefists&quot;,
@@ -611,50 +640,55 @@ Writing &#39;/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_ta
     &quot;TriggerChannelCount&quot;: 1
 }
 
-Writing &#39;/home/stefanappelhoff/mne_data/eegmmidb_bids/participants.tsv&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids/participants.tsv&#39;...
 
   participant_id  age  sex group
 0        sub-001  NaN  NaN   NaN
 
-Writing &#39;/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-imaginefists_run-2_channels.tsv&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-imaginefists_run-2_channels.tsv&#39;...
 
-   name type units   ...   low_cutoff  high_cutoff  status
-0  Fc5.  EEG     V   ...          0.0         80.0    good
-1  Fc3.  EEG     V   ...          0.0         80.0    good
-2  Fc1.  EEG     V   ...          0.0         80.0    good
-3  Fcz.  EEG     V   ...          0.0         80.0    good
-4  Fc2.  EEG     V   ...          0.0         80.0    good
+   name type units           description  sampling_frequency  low_cutoff  \
+0  Fc5.  EEG     V  ElectroEncephaloGram               160.0         0.0
+1  Fc3.  EEG     V  ElectroEncephaloGram               160.0         0.0
+2  Fc1.  EEG     V  ElectroEncephaloGram               160.0         0.0
+3  Fcz.  EEG     V  ElectroEncephaloGram               160.0         0.0
+4  Fc2.  EEG     V  ElectroEncephaloGram               160.0         0.0
 
-[5 rows x 8 columns]
+   high_cutoff status
+0         80.0   good
+1         80.0   good
+2         80.0   good
+3         80.0   good
+4         80.0   good
 
-Writing &#39;/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-001/sub-001_scans.tsv&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-001/sub-001_scans.tsv&#39;...
 
-                                      filename             acq_time
-0  eeg/sub-001_task-imaginefists_run-2_eeg.edf  2009-08-12T18:15:00
-Writing data files to /home/stefanappelhoff/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-imaginefists_run-2_eeg.edf
-Extracting EDF parameters from /home/stefanappelhoff/mne_data/MNE-eegbci-data/physiobank/database/eegmmidb/S002/S002R02.edf...
+                                      filename acq_time
+0  eeg/sub-001_task-imaginefists_run-2_eeg.edf      n/a
+Writing data files to /home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-imaginefists_run-2_eeg.edf
+Extracting EDF parameters from /home/circleci/mne_data/MNE-eegbci-data/physiobank/database/eegmmidb/S002/S002R02.edf...
 EDF file detected
 EDF annotations detected (consider using raw.find_edf_events() to extract them)
 Setting channel info structure...
 Creating raw.info structure...
 Reading 0 ... 9759  =      0.000 ...    60.994 secs...
-Creating folder: /home/stefanappelhoff/mne_data/eegmmidb_bids/sub-002/eeg
+Creating folder: /home/circleci/mne_data/eegmmidb_bids/sub-002/eeg
 1 events found
 Event IDs: [1]
 
-Writing &#39;/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-resteyesclosed_events.tsv&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-resteyesclosed_events.tsv&#39;...
 
    onset  duration         trial_type  event_value  event_sample
 0    0.0       0.0  imagine left fist            1             0
 
-Writing &#39;/home/stefanappelhoff/mne_data/eegmmidb_bids/dataset_description.json&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids/dataset_description.json&#39;...
 
 {
     &quot;Name&quot;: &quot; &quot;,
     &quot;BIDSVersion&quot;: &quot;1.1.1 (draft)&quot;
 }
 
-Writing &#39;/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-resteyesclosed_eeg.json&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-resteyesclosed_eeg.json&#39;...
 
 {
     &quot;TaskName&quot;: &quot;resteyesclosed&quot;,
@@ -675,29 +709,34 @@ Writing &#39;/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_ta
     &quot;TriggerChannelCount&quot;: 1
 }
 
-Writing &#39;/home/stefanappelhoff/mne_data/eegmmidb_bids/participants.tsv&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids/participants.tsv&#39;...
 
   participant_id  age  sex group
-0        sub-001  NaN  NaN   NaN
+0        sub-001  n/a  n/a   n/a
 0        sub-002  NaN  NaN   NaN
 
-Writing &#39;/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-resteyesclosed_channels.tsv&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-resteyesclosed_channels.tsv&#39;...
 
-   name type units   ...   low_cutoff  high_cutoff  status
-0  Fc5.  EEG     V   ...          0.0         80.0    good
-1  Fc3.  EEG     V   ...          0.0         80.0    good
-2  Fc1.  EEG     V   ...          0.0         80.0    good
-3  Fcz.  EEG     V   ...          0.0         80.0    good
-4  Fc2.  EEG     V   ...          0.0         80.0    good
+   name type units           description  sampling_frequency  low_cutoff  \
+0  Fc5.  EEG     V  ElectroEncephaloGram               160.0         0.0
+1  Fc3.  EEG     V  ElectroEncephaloGram               160.0         0.0
+2  Fc1.  EEG     V  ElectroEncephaloGram               160.0         0.0
+3  Fcz.  EEG     V  ElectroEncephaloGram               160.0         0.0
+4  Fc2.  EEG     V  ElectroEncephaloGram               160.0         0.0
 
-[5 rows x 8 columns]
+   high_cutoff status
+0         80.0   good
+1         80.0   good
+2         80.0   good
+3         80.0   good
+4         80.0   good
 
-Writing &#39;/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-002/sub-002_scans.tsv&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-002/sub-002_scans.tsv&#39;...
 
-                                  filename             acq_time
-0  eeg/sub-002_task-resteyesclosed_eeg.edf  2009-08-12T18:15:00
-Writing data files to /home/stefanappelhoff/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-resteyesclosed_eeg.edf
-Extracting EDF parameters from /home/stefanappelhoff/mne_data/MNE-eegbci-data/physiobank/database/eegmmidb/S002/S002R04.edf...
+                                  filename acq_time
+0  eeg/sub-002_task-resteyesclosed_eeg.edf      n/a
+Writing data files to /home/circleci/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-resteyesclosed_eeg.edf
+Extracting EDF parameters from /home/circleci/mne_data/MNE-eegbci-data/physiobank/database/eegmmidb/S002/S002R04.edf...
 EDF file detected
 EDF annotations detected (consider using raw.find_edf_events() to extract them)
 Setting channel info structure...
@@ -706,7 +745,7 @@ Reading 0 ... 19679  =      0.000 ...   122.994 secs...
 30 events found
 Event IDs: [1 2 3]
 
-Writing &#39;/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-imaginefists_run-1_events.tsv&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-imaginefists_run-1_events.tsv&#39;...
 
    onset  duration          trial_type  event_value  event_sample
 0    0.0       0.0   imagine left fist            1             0
@@ -715,14 +754,14 @@ Writing &#39;/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_ta
 3   12.3       0.0                 NaN            3          1968
 4   16.4       0.0   imagine left fist            1          2624
 
-Writing &#39;/home/stefanappelhoff/mne_data/eegmmidb_bids/dataset_description.json&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids/dataset_description.json&#39;...
 
 {
     &quot;Name&quot;: &quot; &quot;,
     &quot;BIDSVersion&quot;: &quot;1.1.1 (draft)&quot;
 }
 
-Writing &#39;/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-imaginefists_run-1_eeg.json&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-imaginefists_run-1_eeg.json&#39;...
 
 {
     &quot;TaskName&quot;: &quot;imaginefists&quot;,
@@ -743,29 +782,34 @@ Writing &#39;/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_ta
     &quot;TriggerChannelCount&quot;: 1
 }
 
-Writing &#39;/home/stefanappelhoff/mne_data/eegmmidb_bids/participants.tsv&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids/participants.tsv&#39;...
 
   participant_id  age  sex group
-0        sub-001  NaN  NaN   NaN
+0        sub-001  n/a  n/a   n/a
 0        sub-002  NaN  NaN   NaN
 
-Writing &#39;/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-imaginefists_run-1_channels.tsv&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-imaginefists_run-1_channels.tsv&#39;...
 
-   name type units   ...   low_cutoff  high_cutoff  status
-0  Fc5.  EEG     V   ...          0.0         80.0    good
-1  Fc3.  EEG     V   ...          0.0         80.0    good
-2  Fc1.  EEG     V   ...          0.0         80.0    good
-3  Fcz.  EEG     V   ...          0.0         80.0    good
-4  Fc2.  EEG     V   ...          0.0         80.0    good
+   name type units           description  sampling_frequency  low_cutoff  \
+0  Fc5.  EEG     V  ElectroEncephaloGram               160.0         0.0
+1  Fc3.  EEG     V  ElectroEncephaloGram               160.0         0.0
+2  Fc1.  EEG     V  ElectroEncephaloGram               160.0         0.0
+3  Fcz.  EEG     V  ElectroEncephaloGram               160.0         0.0
+4  Fc2.  EEG     V  ElectroEncephaloGram               160.0         0.0
 
-[5 rows x 8 columns]
+   high_cutoff status
+0         80.0   good
+1         80.0   good
+2         80.0   good
+3         80.0   good
+4         80.0   good
 
-Writing &#39;/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-002/sub-002_scans.tsv&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-002/sub-002_scans.tsv&#39;...
 
-                                      filename             acq_time
-0  eeg/sub-002_task-imaginefists_run-1_eeg.edf  2009-08-12T18:15:00
-Writing data files to /home/stefanappelhoff/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-imaginefists_run-1_eeg.edf
-Extracting EDF parameters from /home/stefanappelhoff/mne_data/MNE-eegbci-data/physiobank/database/eegmmidb/S002/S002R12.edf...
+                                      filename acq_time
+0  eeg/sub-002_task-imaginefists_run-1_eeg.edf      n/a
+Writing data files to /home/circleci/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-imaginefists_run-1_eeg.edf
+Extracting EDF parameters from /home/circleci/mne_data/MNE-eegbci-data/physiobank/database/eegmmidb/S002/S002R12.edf...
 EDF file detected
 EDF annotations detected (consider using raw.find_edf_events() to extract them)
 Setting channel info structure...
@@ -774,7 +818,7 @@ Reading 0 ... 19679  =      0.000 ...   122.994 secs...
 30 events found
 Event IDs: [1 2 3]
 
-Writing &#39;/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-imaginefists_run-2_events.tsv&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-imaginefists_run-2_events.tsv&#39;...
 
    onset  duration          trial_type  event_value  event_sample
 0    0.0       0.0   imagine left fist            1             0
@@ -783,14 +827,14 @@ Writing &#39;/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_ta
 3   12.3       0.0                 NaN            3          1968
 4   16.4       0.0   imagine left fist            1          2624
 
-Writing &#39;/home/stefanappelhoff/mne_data/eegmmidb_bids/dataset_description.json&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids/dataset_description.json&#39;...
 
 {
     &quot;Name&quot;: &quot; &quot;,
     &quot;BIDSVersion&quot;: &quot;1.1.1 (draft)&quot;
 }
 
-Writing &#39;/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-imaginefists_run-2_eeg.json&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-imaginefists_run-2_eeg.json&#39;...
 
 {
     &quot;TaskName&quot;: &quot;imaginefists&quot;,
@@ -811,28 +855,33 @@ Writing &#39;/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_ta
     &quot;TriggerChannelCount&quot;: 1
 }
 
-Writing &#39;/home/stefanappelhoff/mne_data/eegmmidb_bids/participants.tsv&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids/participants.tsv&#39;...
 
   participant_id  age  sex group
-0        sub-001  NaN  NaN   NaN
+0        sub-001  n/a  n/a   n/a
 0        sub-002  NaN  NaN   NaN
 
-Writing &#39;/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-imaginefists_run-2_channels.tsv&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-imaginefists_run-2_channels.tsv&#39;...
 
-   name type units   ...   low_cutoff  high_cutoff  status
-0  Fc5.  EEG     V   ...          0.0         80.0    good
-1  Fc3.  EEG     V   ...          0.0         80.0    good
-2  Fc1.  EEG     V   ...          0.0         80.0    good
-3  Fcz.  EEG     V   ...          0.0         80.0    good
-4  Fc2.  EEG     V   ...          0.0         80.0    good
+   name type units           description  sampling_frequency  low_cutoff  \
+0  Fc5.  EEG     V  ElectroEncephaloGram               160.0         0.0
+1  Fc3.  EEG     V  ElectroEncephaloGram               160.0         0.0
+2  Fc1.  EEG     V  ElectroEncephaloGram               160.0         0.0
+3  Fcz.  EEG     V  ElectroEncephaloGram               160.0         0.0
+4  Fc2.  EEG     V  ElectroEncephaloGram               160.0         0.0
 
-[5 rows x 8 columns]
+   high_cutoff status
+0         80.0   good
+1         80.0   good
+2         80.0   good
+3         80.0   good
+4         80.0   good
 
-Writing &#39;/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-002/sub-002_scans.tsv&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-002/sub-002_scans.tsv&#39;...
 
-                                      filename             acq_time
-0  eeg/sub-002_task-imaginefists_run-2_eeg.edf  2009-08-12T18:15:00
-Writing data files to /home/stefanappelhoff/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-imaginefists_run-2_eeg.edf
+                                      filename acq_time
+0  eeg/sub-002_task-imaginefists_run-2_eeg.edf      n/a
+Writing data files to /home/circleci/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-imaginefists_run-2_eeg.edf
 </pre></div>
 </div>
 </div>
@@ -844,38 +893,38 @@ Writing data files to /home/stefanappelhoff/mne_data/eegmmidb_bids/sub-002/eeg/s
 </div>
 <p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>|------------ eegmmidb_bids
-|--------------- participants.tsv
 |--------------- dataset_description.json
+|--------------- participants.tsv
 |--------------- sub-001
 |------------------ sub-001_scans.tsv
 |------------------ eeg
-|--------------------- sub-001_task-imaginefists_run-2_channels.tsv
-|--------------------- sub-001_task-imaginefists_run-1_eeg.json
-|--------------------- sub-001_task-imaginefists_run-1_channels.tsv
-|--------------------- sub-001_task-resteyesclosed_eeg.json
 |--------------------- sub-001_task-imaginefists_run-2_eeg.json
-|--------------------- sub-001_task-resteyesclosed_channels.tsv
-|--------------------- sub-001_task-imaginefists_run-2_events.tsv
-|--------------------- sub-001_task-imaginefists_run-1_events.tsv
+|--------------------- sub-001_task-imaginefists_run-1_channels.tsv
+|--------------------- sub-001_task-imaginefists_run-1_eeg.json
+|--------------------- sub-001_task-imaginefists_run-2_eeg.edf
 |--------------------- sub-001_task-imaginefists_run-1_eeg.edf
 |--------------------- sub-001_task-resteyesclosed_events.tsv
+|--------------------- sub-001_task-imaginefists_run-2_channels.tsv
+|--------------------- sub-001_task-resteyesclosed_eeg.json
 |--------------------- sub-001_task-resteyesclosed_eeg.edf
-|--------------------- sub-001_task-imaginefists_run-2_eeg.edf
+|--------------------- sub-001_task-imaginefists_run-2_events.tsv
+|--------------------- sub-001_task-imaginefists_run-1_events.tsv
+|--------------------- sub-001_task-resteyesclosed_channels.tsv
 |--------------- sub-002
 |------------------ sub-002_scans.tsv
 |------------------ eeg
-|--------------------- sub-002_task-imaginefists_run-1_eeg.json
 |--------------------- sub-002_task-imaginefists_run-1_channels.tsv
 |--------------------- sub-002_task-imaginefists_run-1_events.tsv
-|--------------------- sub-002_task-imaginefists_run-2_eeg.json
-|--------------------- sub-002_task-imaginefists_run-2_eeg.edf
 |--------------------- sub-002_task-imaginefists_run-1_eeg.edf
-|--------------------- sub-002_task-resteyesclosed_channels.tsv
-|--------------------- sub-002_task-resteyesclosed_events.tsv
-|--------------------- sub-002_task-resteyesclosed_eeg.edf
 |--------------------- sub-002_task-resteyesclosed_eeg.json
-|--------------------- sub-002_task-imaginefists_run-2_channels.tsv
+|--------------------- sub-002_task-resteyesclosed_events.tsv
+|--------------------- sub-002_task-imaginefists_run-1_eeg.json
 |--------------------- sub-002_task-imaginefists_run-2_events.tsv
+|--------------------- sub-002_task-imaginefists_run-2_eeg.json
+|--------------------- sub-002_task-resteyesclosed_eeg.edf
+|--------------------- sub-002_task-imaginefists_run-2_channels.tsv
+|--------------------- sub-002_task-imaginefists_run-2_eeg.edf
+|--------------------- sub-002_task-resteyesclosed_channels.tsv
 </pre></div>
 </div>
 <p>MNE-BIDS has created a suitable directory structure for us, and among other
@@ -889,12 +938,12 @@ directories called the “BIDS-validator”, available as a web version and a
 command line tool:</p>
 <p>Web version: <a class="reference external" href="https://bids-standard.github.io/bids-validator/">https://bids-standard.github.io/bids-validator/</a></p>
 <p>Command line tool: <a class="reference external" href="https://www.npmjs.com/package/bids-validator">https://www.npmjs.com/package/bids-validator</a></p>
-<p><strong>Total running time of the script:</strong> ( 0 minutes  0.594 seconds)</p>
+<p><strong>Total running time of the script:</strong> ( 0 minutes  3.807 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-eeg-to-bids-py">
 <div class="sphx-glr-download docutils container">
-<a class="reference download internal" href="../_downloads/convert_eeg_to_bids.py" download=""><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">convert_eeg_to_bids.py</span></code></a></div>
+<a class="reference download internal" download="" href="../_downloads/e44373716acd059d2bf5b3168e4f0f98/convert_eeg_to_bids.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">convert_eeg_to_bids.py</span></code></a></div>
 <div class="sphx-glr-download docutils container">
-<a class="reference download internal" href="../_downloads/convert_eeg_to_bids.ipynb" download=""><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">convert_eeg_to_bids.ipynb</span></code></a></div>
+<a class="reference download internal" download="" href="../_downloads/8d9cc83d1b8665c32c4ed9caf6e1be97/convert_eeg_to_bids.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">convert_eeg_to_bids.ipynb</span></code></a></div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.readthedocs.io">Gallery generated by Sphinx-Gallery</a></p>
 </div>
@@ -912,8 +961,8 @@ command line tool:</p>
       
     </p>
     <p>
-        &copy; Copyright 2018, MNE Developers. Last updated on 2018-10-12.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.5.<br/>
+        &copy; Copyright 2018, MNE Developers. Last updated on 2018-10-14.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.1.<br/>
     </p>
   </div>
 </footer>

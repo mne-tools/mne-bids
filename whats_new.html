@@ -7,12 +7,12 @@
     <title>What’s new? &#8212; mne_bids 0.1dev0 documentation</title>
     <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="_static/gallery.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/gallery.css" />
     <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/javascript" src="_static/js/jquery-1.11.0.min.js"></script>
     <script type="text/javascript" src="_static/js/jquery-fix.js"></script>
     <script type="text/javascript" src="_static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
@@ -121,23 +121,24 @@
 <li>Add example for how to rename BrainVision file triplets: <cite>rename_brainvision_files.py</cite> by <a class="reference external" href="http://stefanappelhoff.com/">Stefan Appelhoff</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/pull/104">#104</a>)</li>
 <li>Add function to fetch BrainVision testing data <a class="reference internal" href="generated/mne_bids.datasets.fetch_brainvision_testing_data.html#mne_bids.datasets.fetch_brainvision_testing_data" title="mne_bids.datasets.fetch_brainvision_testing_data"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.datasets.fetch_brainvision_testing_data()</span></code></a> <a class="reference external" href="http://stefanappelhoff.com/">Stefan Appelhoff</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/pull/104">#104</a>)</li>
 <li>Add support for EEG and a corresponding example: <cite>make_eeg_bids.py</cite> by <a class="reference external" href="http://stefanappelhoff.com/">Stefan Appelhoff</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/pull/78">#78</a>)</li>
-<li>Update <a class="reference internal" href="generated/mne_bids.mne_bids.raw_to_bids.html#mne_bids.mne_bids.raw_to_bids" title="mne_bids.mne_bids.raw_to_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.raw_to_bids()</span></code></a> to work for KIT and BTi systems, by <a class="reference external" href="http://teonbrooks.github.io/">Teon Brooks</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/pull/16/files">#16</a>)</li>
+<li>Update <a class="reference internal" href="generated/mne_bids.mne_bids.raw_to_bids.html#mne_bids.mne_bids.raw_to_bids" title="mne_bids.mne_bids.raw_to_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.raw_to_bids()</span></code></a> to work for KIT and BTi systems, by <a class="reference external" href="https://teonbrooks.github.io/">Teon Brooks</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/pull/16/files">#16</a>)</li>
 <li>Add support for iEEG and add <code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.make_bids_folders()</span></code> and <code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.make_bids_folders()</span></code>, by <a class="reference external" href="https://bids.berkeley.edu/people/chris-holdgraf">Chris Holdgraf</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/pull/28">#28</a> and <a class="reference external" href="https://github.com/mne-tools/mne-bids/pull/37">#37</a>)</li>
-<li>Add command line interface by <a class="reference external" href="http://teonbrooks.github.io/">Teon Brooks</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/pull/31">#31</a>)</li>
+<li>Add command line interface by <a class="reference external" href="https://teonbrooks.github.io/">Teon Brooks</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/pull/31">#31</a>)</li>
 <li>Add <a class="reference internal" href="generated/mne_bids.utils.print_dir_tree.html#mne_bids.utils.print_dir_tree" title="mne_bids.utils.print_dir_tree"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.utils.print_dir_tree()</span></code></a> for visualizing directory structures and restructuring package to be more
 open towards integration of other modalities (iEEG, EEG), by <a class="reference external" href="http://stefanappelhoff.com/">Stefan Appelhoff</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/pull/55">#55</a>)</li>
-<li>Automatically generate participants.tsv, by <a class="reference external" href="http://github.com/monkeyman192">Matt Sanderson</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/pull/70">#70</a>)</li>
+<li>Automatically generate participants.tsv, by <a class="reference external" href="https://github.com/monkeyman192">Matt Sanderson</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/pull/70">#70</a>)</li>
 </ul>
 </div>
 <div class="section" id="bug">
 <h3>Bug<a class="headerlink" href="#bug" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Correctly handle the case when measurement date is not available, by <a class="reference external" href="https://perso.telecom-paristech.fr/mjas/">Mainak Jas</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/pull/23">#23</a>)</li>
-<li>Fix counting of miscellaneous channels, by <a class="reference external" href="http://github.com/monkeyman192">Matt Sanderson</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/pull/49">#49</a>)</li>
+<li>Fix counting of miscellaneous channels, by <a class="reference external" href="https://github.com/monkeyman192">Matt Sanderson</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/pull/49">#49</a>)</li>
 <li>The source data is now copied over to the new BIDS directory. Previously this was only true for FIF data, by <a class="reference external" href="http://stefanappelhoff.com/">Stefan Appelhoff</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/pull/55">#55</a>)</li>
-<li>Fix ordering of columns in scans.tsv, by <a class="reference external" href="http://github.com/monkeyman192">Matt Sanderson</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/pull/68">#68</a>)</li>
-<li>Fix bug in how artificial trigger channel STI014 is handled in channels.tsv for KIT systems, by <a class="reference external" href="http://github.com/monkeyman192">Matt Sanderson</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/pull/72">#72</a>)</li>
-<li>Fix channel types for KIT system in channels.tsv, by <a class="reference external" href="http://github.com/monkeyman192">Matt Sanderson</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/pull/76">#76</a>)</li>
+<li>Fix ordering of columns in scans.tsv, by <a class="reference external" href="https://github.com/monkeyman192">Matt Sanderson</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/pull/68">#68</a>)</li>
+<li>Fix bug in how artificial trigger channel STI014 is handled in channels.tsv for KIT systems, by <a class="reference external" href="https://github.com/monkeyman192">Matt Sanderson</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/pull/72">#72</a>)</li>
+<li>Fix channel types for KIT system in channels.tsv, by <a class="reference external" href="https://github.com/monkeyman192">Matt Sanderson</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/pull/76">#76</a>)</li>
+<li>Fix the way FIF files are named to satisfy the BIDS part parameters of the filename construction, <a class="reference external" href="https://teonbrooks.github.io/">Teon Brooks</a> (<cite>#102 &lt;https://github.com/mne-tools/mne-bids/pull/102&gt;</cite>)</li>
 </ul>
 </div>
 </div>
@@ -155,8 +156,8 @@ open towards integration of other modalities (iEEG, EEG), by <a class="reference
       
     </p>
     <p>
-        &copy; Copyright 2018, MNE Developers. Last updated on 2018-10-12.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.5.<br/>
+        &copy; Copyright 2018, MNE Developers. Last updated on 2018-10-14.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.1.<br/>
     </p>
   </div>
 </footer>

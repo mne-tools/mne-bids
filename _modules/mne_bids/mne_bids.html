@@ -7,12 +7,12 @@
     <title>mne_bids.mne_bids &#8212; mne_bids 0.1dev0 documentation</title>
     <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/gallery.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/gallery.css" />
     <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/javascript" src="../../_static/js/jquery-1.11.0.min.js"></script>
     <script type="text/javascript" src="../../_static/js/jquery-fix.js"></script>
     <script type="text/javascript" src="../../_static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
@@ -117,9 +117,10 @@
 <span class="kn">from</span> <span class="nn">mne</span> <span class="k">import</span> <span class="n">Epochs</span>
 <span class="kn">from</span> <span class="nn">mne.io.constants</span> <span class="k">import</span> <span class="n">FIFF</span>
 <span class="kn">from</span> <span class="nn">mne.io.pick</span> <span class="k">import</span> <span class="n">channel_type</span>
-<span class="kn">from</span> <span class="nn">mne.io</span> <span class="k">import</span> <span class="n">BaseRaw</span>
+<span class="kn">from</span> <span class="nn">mne.io</span> <span class="k">import</span> <span class="n">BaseRaw</span><span class="p">,</span> <span class="n">read_raw_fif</span>
 <span class="kn">from</span> <span class="nn">mne.channels.channels</span> <span class="k">import</span> <span class="n">_unit2human</span>
 <span class="kn">from</span> <span class="nn">mne.externals.six</span> <span class="k">import</span> <span class="n">string_types</span>
+<span class="kn">from</span> <span class="nn">mne.utils</span> <span class="k">import</span> <span class="n">check_version</span>
 
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span>
 <span class="kn">from</span> <span class="nn">warnings</span> <span class="k">import</span> <span class="n">warn</span>
@@ -181,7 +182,7 @@
                    <span class="n">megrefgradaxial</span><span class="o">=</span><span class="s1">&#39;MEGREFGRADAXIAL&#39;</span><span class="p">,</span>
                    <span class="n">meggradplanar</span><span class="o">=</span><span class="s1">&#39;MEGGRADPLANAR&#39;</span><span class="p">,</span>
                    <span class="n">megmag</span><span class="o">=</span><span class="s1">&#39;MEGMAG&#39;</span><span class="p">,</span> <span class="n">megrefmag</span><span class="o">=</span><span class="s1">&#39;MEGREFMAG&#39;</span><span class="p">,</span>
-                   <span class="n">eeg</span><span class="o">=</span><span class="s1">&#39;EEG&#39;</span><span class="p">,</span> <span class="n">misc</span><span class="o">=</span><span class="s1">&#39;MISC&#39;</span><span class="p">,</span> <span class="n">stim</span><span class="o">=</span><span class="s1">&#39;TRIG&#39;</span><span class="p">,</span>
+                   <span class="n">eeg</span><span class="o">=</span><span class="s1">&#39;EEG&#39;</span><span class="p">,</span> <span class="n">misc</span><span class="o">=</span><span class="s1">&#39;MISC&#39;</span><span class="p">,</span> <span class="n">stim</span><span class="o">=</span><span class="s1">&#39;TRIG&#39;</span><span class="p">,</span> <span class="n">emg</span><span class="o">=</span><span class="s1">&#39;EMG&#39;</span><span class="p">,</span>
                    <span class="n">ecog</span><span class="o">=</span><span class="s1">&#39;ECOG&#39;</span><span class="p">,</span> <span class="n">seeg</span><span class="o">=</span><span class="s1">&#39;SEEG&#39;</span><span class="p">,</span> <span class="n">eog</span><span class="o">=</span><span class="s1">&#39;EOG&#39;</span><span class="p">,</span> <span class="n">ecg</span><span class="o">=</span><span class="s1">&#39;ECG&#39;</span><span class="p">)</span>
     <span class="n">map_desc</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="s1">&#39;Other type of channel&#39;</span><span class="p">)</span>
     <span class="n">map_desc</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">meggradaxial</span><span class="o">=</span><span class="s1">&#39;Axial Gradiometer&#39;</span><span class="p">,</span>
@@ -194,6 +195,7 @@
                     <span class="n">seeg</span><span class="o">=</span><span class="s1">&#39;StereoEEG&#39;</span><span class="p">,</span>
                     <span class="n">ecg</span><span class="o">=</span><span class="s1">&#39;ElectroCardioGram&#39;</span><span class="p">,</span>
                     <span class="n">eog</span><span class="o">=</span><span class="s1">&#39;ElectroOculoGram&#39;</span><span class="p">,</span>
+                    <span class="n">emg</span><span class="o">=</span><span class="s1">&#39;ElectroMyoGram&#39;</span><span class="p">,</span>
                     <span class="n">misc</span><span class="o">=</span><span class="s1">&#39;Miscellaneous&#39;</span><span class="p">)</span>
     <span class="n">get_specific</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;mag&#39;</span><span class="p">,</span> <span class="s1">&#39;ref_meg&#39;</span><span class="p">,</span> <span class="s1">&#39;grad&#39;</span><span class="p">)</span>
 
@@ -754,10 +756,24 @@
                          <span class="o">%</span> <span class="p">(</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ALLOWED_EXTENSIONS</span><span class="p">),</span> <span class="n">ext</span><span class="p">))</span>
 
     <span class="c1"># Copy the imaging data files</span>
-    <span class="c1"># Re-save FIF files to fix the file pointer for files with multiple parts</span>
-    <span class="c1"># This is WIP, see: https://github.com/mne-tools/mne-python/pull/5470</span>
     <span class="k">if</span> <span class="n">ext</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;.fif&#39;</span><span class="p">]:</span>
-        <span class="n">raw</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">raw_file_bids</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">)</span>
+        <span class="n">n_rawfiles</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">read_raw_fif</span><span class="p">(</span><span class="n">raw_fname</span><span class="p">)</span><span class="o">.</span><span class="n">filenames</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">n_rawfiles</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c1"># TODO Update MNE requirement to version 0.17 when it&#39;s released</span>
+            <span class="k">if</span> <span class="n">check_version</span><span class="p">(</span><span class="s1">&#39;mne&#39;</span><span class="p">,</span> <span class="s1">&#39;0.17.dev&#39;</span><span class="p">):</span>
+                <span class="n">split_naming</span> <span class="o">=</span> <span class="s1">&#39;bids&#39;</span>
+                <span class="n">raw</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">raw_file_bids</span><span class="p">,</span> <span class="n">split_naming</span><span class="o">=</span><span class="n">split_naming</span><span class="p">,</span>
+                         <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+                    <span class="s1">&#39;Renaming split fif files is not supported on your &#39;</span>
+                    <span class="s1">&#39;version of MNE. Please upgrade to at least &quot;0.17.dev&quot;. &#39;</span>
+                    <span class="s1">&#39;Please contact MNE developers if you have &#39;</span>
+                    <span class="s1">&#39;any questions.&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># TODO insert arg `split_naming=split_naming`</span>
+            <span class="c1">#      when MNE releases 0.17</span>
+            <span class="n">raw</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">raw_file_bids</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">)</span>
     <span class="c1"># CTF data is saved in a directory</span>
     <span class="k">elif</span> <span class="n">ext</span> <span class="o">==</span> <span class="s1">&#39;.ds&#39;</span><span class="p">:</span>
         <span class="n">sh</span><span class="o">.</span><span class="n">copytree</span><span class="p">(</span><span class="n">raw_fname</span><span class="p">,</span> <span class="n">raw_file_bids</span><span class="p">)</span>
@@ -784,8 +800,8 @@
       
     </p>
     <p>
-        &copy; Copyright 2018, MNE Developers. Last updated on 2018-10-12.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.5.<br/>
+        &copy; Copyright 2018, MNE Developers. Last updated on 2018-10-14.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.1.<br/>
     </p>
   </div>
 </footer>

@@ -130,12 +130,12 @@ as well as the renamed data. They should be the same.
 
  .. code-block:: none
 
-    Extracting parameters from /home/stefanappelhoff/mne_data/mne_bids_examples/BrainVision/test.vhdr...
+    Extracting parameters from /home/circleci/mne_data/mne_bids_examples/test.vhdr...
     Setting channel info structure...
-    Currently, 1 trigger(s) will be dropped, such as ['Sync On']. Consider using ``event_id`` to parse triggers that do not follow the '###' pattern with an optional single character prefix.
-    Extracting parameters from /home/stefanappelhoff/mne_data/mne_bids_examples/BrainVision/test_renamed.vhdr...
+    Currently, 1 trigger(s) will be dropped, such as [Sync On]. Consider using ``event_id`` to parse triggers that do not follow the 'S###' pattern.
+    Extracting parameters from /home/circleci/mne_data/mne_bids_examples/test_renamed.vhdr...
     Setting channel info structure...
-    Currently, 1 trigger(s) will be dropped, such as ['Sync On']. Consider using ``event_id`` to parse triggers that do not follow the '###' pattern with an optional single character prefix.
+    Currently, 1 trigger(s) will be dropped, such as [Sync On]. Consider using ``event_id`` to parse triggers that do not follow the 'S###' pattern.
 
 
 Further information
@@ -150,7 +150,7 @@ For that, see the
 `BrainVision Validator <https://github.com/sappelhoff/brainvision-validator>`_
 
 
-**Total running time of the script:** ( 0 minutes  3.010 seconds)
+**Total running time of the script:** ( 0 minutes  0.456 seconds)
 
 
 .. _sphx_glr_download_auto_examples_rename_brainvision_files.py:

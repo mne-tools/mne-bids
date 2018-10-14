@@ -7,12 +7,12 @@
     <title>mne_bids.datasets.fetch_faces_data &#8212; mne_bids 0.1dev0 documentation</title>
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/gallery.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
     <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js"></script>
     <script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
     <script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
@@ -108,7 +108,7 @@
 <h1>mne_bids.datasets.fetch_faces_data<a class="headerlink" href="#mne-bids-datasets-fetch-faces-data" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
 <dt id="mne_bids.datasets.fetch_faces_data">
-<code class="descclassname">mne_bids.datasets.</code><code class="descname">fetch_faces_data</code><span class="sig-paren">(</span><em>data_path=None</em>, <em>repo='ds000117'</em>, <em>subject_ids=[]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/datasets.html#fetch_faces_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.datasets.fetch_faces_data" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">mne_bids.datasets.</code><code class="descname">fetch_faces_data</code><span class="sig-paren">(</span><em>data_path=None, repo='ds000117', subject_ids=[1]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/datasets.html#fetch_faces_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.datasets.fetch_faces_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Dataset fetcher for OpenfMRI dataset ds000117.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -123,8 +123,7 @@
 <dd><p class="first last">The folder name. Defaults to ‘ds000117’.</p>
 </dd>
 <dt><strong>subject_ids</strong> <span class="classifier-delimiter">:</span> <span class="classifier">list of int</span></dt>
-<dd><p class="first last">The subjects to fetch. Defaults to an empty list, which will
-not download anything.</p>
+<dd><p class="first last">The subjects to fetch. Defaults to [1], downloading subject 1.</p>
 </dd>
 </dl>
 </td>
@@ -154,8 +153,8 @@ not download anything.</p>
       
     </p>
     <p>
-        &copy; Copyright 2018, MNE Developers. Last updated on 2018-10-12.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.5.<br/>
+        &copy; Copyright 2018, MNE Developers. Last updated on 2018-10-14.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.1.<br/>
     </p>
   </div>
 </footer>

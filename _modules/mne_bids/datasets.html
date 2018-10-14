@@ -7,12 +7,12 @@
     <title>mne_bids.datasets &#8212; mne_bids 0.1dev0 documentation</title>
     <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../../_static/gallery.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/gallery.css" />
     <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <script type="text/javascript" src="../../_static/js/jquery-1.11.0.min.js"></script>
     <script type="text/javascript" src="../../_static/js/jquery-fix.js"></script>
     <script type="text/javascript" src="../../_static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
@@ -110,12 +110,12 @@
 <span class="kn">import</span> <span class="nn">os.path</span> <span class="k">as</span> <span class="nn">op</span>
 <span class="kn">import</span> <span class="nn">shutil</span>
 <span class="kn">import</span> <span class="nn">tarfile</span>
-<span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">from</span> <span class="nn">six.moves</span> <span class="k">import</span> <span class="n">urllib</span>
 
 <span class="kn">from</span> <span class="nn">mne.utils</span> <span class="k">import</span> <span class="n">_fetch_file</span>
 
 
-<div class="viewcode-block" id="fetch_faces_data"><a class="viewcode-back" href="../../generated/mne_bids.datasets.fetch_faces_data.html#mne_bids.datasets.fetch_faces_data">[docs]</a><span class="k">def</span> <span class="nf">fetch_faces_data</span><span class="p">(</span><span class="n">data_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">repo</span><span class="o">=</span><span class="s1">&#39;ds000117&#39;</span><span class="p">,</span> <span class="n">subject_ids</span><span class="o">=</span><span class="p">[]):</span>
+<div class="viewcode-block" id="fetch_faces_data"><a class="viewcode-back" href="../../generated/mne_bids.datasets.fetch_faces_data.html#mne_bids.datasets.fetch_faces_data">[docs]</a><span class="k">def</span> <span class="nf">fetch_faces_data</span><span class="p">(</span><span class="n">data_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">repo</span><span class="o">=</span><span class="s1">&#39;ds000117&#39;</span><span class="p">,</span> <span class="n">subject_ids</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
     <span class="sd">&quot;&quot;&quot;Dataset fetcher for OpenfMRI dataset ds000117.</span>
 
 <span class="sd">    Parameters</span>
@@ -126,8 +126,7 @@
 <span class="sd">    repo : str</span>
 <span class="sd">        The folder name. Defaults to &#39;ds000117&#39;.</span>
 <span class="sd">    subject_ids : list of int</span>
-<span class="sd">        The subjects to fetch. Defaults to an empty list, which will</span>
-<span class="sd">        not download anything.</span>
+<span class="sd">        The subjects to fetch. Defaults to [1], downloading subject 1.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -176,8 +175,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">data_path</span><span class="p">:</span>
         <span class="n">home</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s1">&#39;~&#39;</span><span class="p">)</span>
-        <span class="n">data_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">home</span><span class="p">,</span> <span class="s1">&#39;mne_data&#39;</span><span class="p">,</span> <span class="s1">&#39;mne_bids_examples&#39;</span><span class="p">,</span>
-                                 <span class="s1">&#39;BrainVision&#39;</span><span class="p">)</span>
+        <span class="n">data_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">home</span><span class="p">,</span> <span class="s1">&#39;mne_data&#39;</span><span class="p">,</span> <span class="s1">&#39;mne_bids_examples&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">data_path</span><span class="p">):</span>
             <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">data_path</span><span class="p">)</span>
 
@@ -187,11 +185,11 @@
 
     <span class="k">for</span> <span class="n">f_ending</span> <span class="ow">in</span> <span class="n">file_endings</span><span class="p">:</span>
         <span class="n">url</span> <span class="o">=</span> <span class="n">base_url</span> <span class="o">+</span> <span class="n">f_ending</span>
-        <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
 
         <span class="n">fname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="s1">&#39;test&#39;</span> <span class="o">+</span> <span class="n">f_ending</span><span class="p">)</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fout</span><span class="p">:</span>
-            <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
+            <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
 
     <span class="k">return</span> <span class="n">data_path</span></div>
 </pre></div>
@@ -207,8 +205,8 @@
       
     </p>
     <p>
-        &copy; Copyright 2018, MNE Developers. Last updated on 2018-10-12.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.5.<br/>
+        &copy; Copyright 2018, MNE Developers. Last updated on 2018-10-14.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.1.<br/>
     </p>
   </div>
 </footer>
