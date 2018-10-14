@@ -59,7 +59,7 @@ def test_fif():
     raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
                 acquisition=acq, task=task, raw_file=raw_fname,
                 events_data=events_fname, output_path=output_path,
-                event_id=event_id, write_mode='overwrite')
+                event_id=event_id, write_mode='append')
 
     # give the raw object some fake participant data
     raw = mne.io.read_raw_fif(raw_fname)
@@ -72,7 +72,7 @@ def test_fif():
     raw_to_bids(subject_id=subject_id2, run=run, task=task, acquisition=acq,
                 session_id=session_id, raw_file=raw_fname2,
                 events_data=events_fname, output_path=output_path,
-                event_id=event_id, write_mode='overwrite')
+                event_id=event_id, write_mode='append')
     cmd = ['bids-validator', output_path]
     run_subprocess(cmd, shell=shell)
 
@@ -94,7 +94,7 @@ def test_kit():
                 task=task, acquisition=acq, raw_file=raw_fname,
                 events_data=events_fname, event_id=event_id, hpi=hpi_fname,
                 electrode=electrode_fname, hsp=headshape_fname,
-                output_path=output_path, write_mode='overwrite')
+                output_path=output_path, write_mode='append')
     cmd = ['bids-validator', output_path]
     run_subprocess(cmd, shell=shell)
     assert op.exists(op.join(output_path, 'participants.tsv'))
@@ -135,11 +135,11 @@ def test_ctf():
 
     raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
                 task=task, acquisition=acq, raw_file=raw_fname,
-                output_path=output_path, write_mode='overwrite')
+                output_path=output_path, write_mode='append')
     cmd = ['bids-validator', output_path]
     run_subprocess(cmd, shell=shell)
 
-    # test to check that the 'error' overwrite parameter works correctly
+    # test to check that the 'error' write_mode parameter works correctly
     with pytest.raises(OSError, match="already exists"):
         raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
                     task=task, acquisition=acq, raw_file=raw_fname,
@@ -159,7 +159,7 @@ def test_bti():
     raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
                 task=task, acquisition=acq, raw_file=raw_fname,
                 config=config_fname, hsp=headshape_fname,
-                output_path=output_path, verbose=True, write_mode='overwrite')
+                output_path=output_path, verbose=True, write_mode='append')
 
     assert op.exists(op.join(output_path, 'participants.tsv'))
 
@@ -177,15 +177,15 @@ def test_vhdr():
 
     raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
                 task=task, acquisition=acq, raw_file=raw_fname,
-                output_path=output_path, write_mode='overwrite', kind='eeg')
+                output_path=output_path, write_mode='append', kind='eeg')
 
     cmd = ['bids-validator', '--bep006', output_path]
     run_subprocess(cmd, shell=shell)
 
-    # check the 'clear' overwrite command works correctly
+    # check the 'overwrite' write_mode command works correctly
     raw_to_bids(subject_id=subject_id, session_id=session_id, run=run2,
                 task=task, acquisition=acq, raw_file=raw_fname,
-                output_path=output_path, write_mode='clear', kind='eeg')
+                output_path=output_path, write_mode='overwrite', kind='eeg')
     # we will need to go over the tree to ensure there are no files with
     # `run-01` in their file names:
     for _, _, files in os.walk(output_path):
@@ -201,11 +201,11 @@ def test_vhdr():
         df = pd.read_csv(scans_tsv, sep='\t')
         assert df.shape[0] == 1
 
-    # finally, create another bids folder with the clear command and check
+    # finally, create another bids folder with the overwrite command and check
     # no files are in the folder
     data_path = make_bids_folders(subject=subject_id, session=session_id,
                                   kind='eeg', root=output_path,
-                                  write_mode='clear')
+                                  write_mode='overwrite')
     assert len([f for f in os.listdir(data_path) if op.isfile(f)]) == 0
 
 
@@ -223,10 +223,10 @@ def test_edf():
 
     raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
                 task=task, acquisition=acq, raw_file=raw,
-                output_path=output_path, write_mode='overwrite', kind='eeg')
+                output_path=output_path, write_mode='append', kind='eeg')
     raw_to_bids(subject_id=subject_id, session_id=session_id, run=run2,
                 task=task, acquisition=acq, raw_file=raw,
-                output_path=output_path, write_mode='overwrite', kind='eeg')
+                output_path=output_path, write_mode='append', kind='eeg')
 
     cmd = ['bids-validator', '--bep006', output_path]
     run_subprocess(cmd, shell=shell)
@@ -256,7 +256,7 @@ def test_bdf():
 
     raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
                 task=task, acquisition=acq, raw_file=raw_fname,
-                output_path=output_path, write_mode='overwrite', kind='eeg')
+                output_path=output_path, write_mode='append', kind='eeg')
 
     cmd = ['bids-validator', '--bep006', output_path]
     run_subprocess(cmd, shell=shell)
@@ -271,7 +271,7 @@ def test_set():
 
     raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
                 task=task, acquisition=acq, raw_file=raw_fname,
-                output_path=output_path, write_mode='overwrite', kind='eeg')
+                output_path=output_path, write_mode='append', kind='eeg')
 
     cmd = ['bids-validator', '--bep006', output_path]
     run_subprocess(cmd, shell=shell)
@@ -283,7 +283,7 @@ def test_set():
 
     raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
                 task=task, acquisition=acq, raw_file=raw_fname,
-                output_path=output_path, write_mode='overwrite', kind='eeg')
+                output_path=output_path, write_mode='append', kind='eeg')
 
     cmd = ['bids-validator', '--bep006', output_path]
     run_subprocess(cmd, shell=shell)
@@ -297,7 +297,7 @@ def test_cnt():
 
     raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
                 task=task, acquisition=acq, raw_file=raw_fname,
-                output_path=output_path, write_mode='overwrite', kind='eeg')
+                output_path=output_path, write_mode='append', kind='eeg')
 
     cmd = ['bids-validator', '--bep006', output_path]
     run_subprocess(cmd, shell=shell)
@@ -320,7 +320,7 @@ def test_privates():
     raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
                 task=task, acquisition=acq, raw_file=raw,
                 events_data=events_fname, output_path=output_path,
-                event_id=event_id, write_mode='overwrite')
+                event_id=event_id, write_mode='append')
 
     ses_path = make_bids_folders(subject=subject_id, session=session_id,
                                  root=output_path, make_dir=False)
