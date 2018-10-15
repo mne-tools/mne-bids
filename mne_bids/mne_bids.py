@@ -620,10 +620,10 @@ def write_raw_bids(raw, bids_fname, output_path, events_data=None,
     coordsystem_fname = make_bids_filename(
         subject=subject_id, session=session_id, acquisition=acquisition,
         suffix='coordsystem.json', prefix=data_path)
-    data_meta_fname = make_bids_filename(
+    sidecar_fname = make_bids_filename(
         subject=subject_id, session=session_id, task=task, run=run,
         acquisition=acquisition, suffix='%s.json' % kind, prefix=data_path)
-    events_tsv_fname = make_bids_filename(
+    events_fname = make_bids_filename(
         subject=subject_id, session=session_id, task=task,
         acquisition=acquisition, run=run, suffix='events.tsv',
         prefix=data_path)
@@ -655,11 +655,10 @@ def write_raw_bids(raw, bids_fname, output_path, events_data=None,
 
     events = _read_events(events_data, raw)
     if len(events) > 0:
-        _events_tsv(events, raw, events_tsv_fname, event_id, overwrite,
-                    verbose)
+        _events_tsv(events, raw, events_fname, event_id, overwrite, verbose)
 
     make_dataset_description(output_path, name=" ", verbose=verbose)
-    _sidecar_json(raw, task, manufacturer, data_meta_fname, kind, eeg_ref,
+    _sidecar_json(raw, task, manufacturer, sidecar_fname, kind, eeg_ref,
                   eeg_gnd, overwrite, verbose)
     _channels_tsv(raw, channels_fname, overwrite, verbose)
 
