@@ -62,7 +62,7 @@ def _mkdir_p(path, overwrite=False, verbose=False):
             raise
 
 
-def _parse_bids_filename(fname):
+def _parse_bids_filename(fname, verbose):
     """Get dict from BIDS fname."""
     params = dict(sub=None, ses=None, task=None, acq=None,
                   run=None, proc=None, recording=None, space=None)
@@ -73,6 +73,12 @@ def _parse_bids_filename(fname):
             raise KeyError('Unexpected entity found in filename %s' % entity)
         params[key] = value
     params['suffix'] = entities[-1]
+    kind, ext = _parse_ext(entities[-1], verbose=verbose)
+    params['kind'], params['ext'] = kind, ext
+    if kind not in ('eeg', 'meg', 'ieeg'):
+        raise ValueError('Please check the filename of your BIDS file.'
+                         'It should have _eeg, _meg, or _ieeg as suffix.'
+                         'Got %s' % kind)
     return params
 
 

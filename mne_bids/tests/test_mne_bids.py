@@ -190,7 +190,7 @@ def test_vhdr():
 
     bids_fname = partial_bids_fname + '_eeg.vhdr'
     raw = read_raw(raw_fname)
-    write_raw_bids(raw, bids_fname, output_path, overwrite=False, kind='eeg')
+    write_raw_bids(raw, bids_fname, output_path, overwrite=False)
 
     cmd = ['bids-validator', '--bep006', output_path]
     run_subprocess(cmd, shell=shell)
@@ -216,9 +216,9 @@ def test_edf():
     raw.set_channel_types({'EMG': 'emg'})
 
     bids_fname = partial_bids_fname + '_eeg.edf'
-    write_raw_bids(raw, bids_fname, output_path, overwrite=False, kind='eeg')
+    write_raw_bids(raw, bids_fname, output_path, overwrite=False)
     bids_fname.replace('run-01', 'run-%02d' % run2)
-    write_raw_bids(raw, bids_fname, output_path, overwrite=True, kind='eeg')
+    write_raw_bids(raw, bids_fname, output_path, overwrite=True)
 
     cmd = ['bids-validator', '--bep006', output_path]
     run_subprocess(cmd, shell=shell)
@@ -247,8 +247,7 @@ def test_bdf():
 
     bids_fname = partial_bids_fname + '_eeg.bdf'
     raw = read_raw(raw_fname)
-    write_raw_bids(raw, bids_fname, output_path, overwrite=False,
-                   kind='eeg')
+    write_raw_bids(raw, bids_fname, output_path, overwrite=False)
 
     cmd = ['bids-validator', '--bep006', output_path]
     run_subprocess(cmd, shell=shell)
@@ -264,7 +263,7 @@ def test_set():
 
     bids_fname = partial_bids_fname + '_eeg.set'
     raw = read_raw(raw_fname)
-    write_raw_bids(raw, bids_fname, output_path, overwrite=False, kind='eeg')
+    write_raw_bids(raw, bids_fname, output_path, overwrite=False)
 
     cmd = ['bids-validator', '--bep006', output_path]
     run_subprocess(cmd, shell=shell)
@@ -280,7 +279,7 @@ def test_set():
     raw_fname = op.join(data_path, 'test_raw.set')
 
     raw = read_raw(raw_fname)
-    write_raw_bids(raw, bids_fname, output_path, overwrite=False, kind='eeg')
+    write_raw_bids(raw, bids_fname, output_path, overwrite=False)
 
     cmd = ['bids-validator', '--bep006', output_path]
     run_subprocess(cmd, shell=shell)
@@ -294,7 +293,7 @@ def test_cnt():
 
     bids_fname = partial_bids_fname + '_eeg.cnt'
     raw = read_raw(raw_fname)
-    write_raw_bids(raw, bids_fname, output_path, kind='eeg')
+    write_raw_bids(raw, bids_fname, output_path)
 
     cmd = ['bids-validator', '--bep006', output_path]
     run_subprocess(cmd, shell=shell)

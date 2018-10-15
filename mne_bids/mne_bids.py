@@ -529,7 +529,7 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, eeg_ref=None,
     return fname
 
 
-def write_raw_bids(raw, bids_fname, output_path, kind='meg', events_data=None,
+def write_raw_bids(raw, bids_fname, output_path, events_data=None,
                    event_id=None, eeg_ref=None, eeg_gnd=None, overwrite=False,
                    verbose=True):
     """Walk over a folder of files and create BIDS compatible folder.
@@ -547,8 +547,6 @@ def write_raw_bids(raw, bids_fname, output_path, kind='meg', events_data=None,
         The path of the root of the BIDS compatible folder. The session and
         subject specific folders will be populated automatically by parsing
         bids_fname.
-    kind : str, one of ('meg', 'eeg', 'ieeg')
-        The kind of data being converted. Defaults to "meg".
     events_data : str | array | None
         The events file. If a string, a path to the events file. If an array,
         the MNE events array (shape n_events, 3). If None, events will be
@@ -599,8 +597,8 @@ def write_raw_bids(raw, bids_fname, output_path, kind='meg', events_data=None,
         raise ValueError('MNE version > 0.17dev0 is required for converting'
                          ' set files. Please update your installation of mne')
 
-    params = _parse_bids_filename(bids_fname)
-    subject_id, session_id = params['sub'], params['ses']
+    params = _parse_bids_filename(bids_fname, verbose)
+    subject_id, session_id, kind = params['sub'], params['ses'], params['kind']
     acquisition, task, run = params['acq'], params['task'], params['run']
 
     data_path = make_bids_folders(subject=subject_id, session=session_id,

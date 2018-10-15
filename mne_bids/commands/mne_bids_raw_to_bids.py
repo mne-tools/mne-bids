@@ -69,8 +69,8 @@ def run():
     raw = read_raw(opt.raw_fname, hpi=opt.hpi, electrode=opt.electrode,
                    hsp=opt.hsp, config=opt.config)
     write_raw_bids(raw, bids_fname, opt.output_path, event_id=opt.event_id,
-                   kind=opt.kind, events_data=opt.events_data,
-                   overwrite=opt.overwrite, verbose=True)
+                   events_data=opt.events_data, overwrite=opt.overwrite,
+                   verbose=True)
 
 
 is_main = (__name__ == '__main__')
