@@ -22,7 +22,6 @@ from mne.io.constants import FIFF
 from mne.io.pick import channel_type
 from mne.io import BaseRaw
 from mne.channels.channels import _unit2human
-from mne.externals.six import string_types
 from mne.utils import check_version
 
 from datetime import datetime
@@ -595,6 +594,10 @@ def write_raw_bids(raw, bids_fname, output_path, kind='meg', events_data=None,
     if '.eeg' in raw.filenames[0]:
         raw_fname = raw_fname[:-4] + '.vhdr'
     _, ext = _parse_ext(raw_fname, verbose=verbose)
+
+    if ext in ('.set', '.fdt') and not check_version('mne', '0.17.dev'):
+        raise ValueError('MNE version > 0.17dev0 is required for converting'
+                         ' set files. Please update your installation of mne')
 
     params = _parse_bids_filename(bids_fname)
     subject_id, session_id = params['sub'], params['ses']

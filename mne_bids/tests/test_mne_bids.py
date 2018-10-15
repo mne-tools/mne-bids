@@ -17,7 +17,7 @@ import pytest
 import pandas as pd
 import mne
 from mne.datasets import testing
-from mne.utils import _TempDir, run_subprocess
+from mne.utils import _TempDir, run_subprocess, requires_version
 from mne.io.constants import FIFF
 
 from mne_bids import make_bids_filename, make_bids_folders, write_raw_bids
@@ -254,6 +254,7 @@ def test_bdf():
     run_subprocess(cmd, shell=shell)
 
 
+@requires_version('mne', '0.17dev0')
 def test_set():
     """Test raw_to_bids conversion for EEGLAB data."""
     # standalone .set file
