@@ -581,10 +581,9 @@ def write_raw_bids(raw, bids_fname, output_path, kind='meg', events_data=None,
         raise ValueError('raw_file must be an instance of BaseRaw, '
                          'got %s' % type(raw))
 
-    # We got a raw mne object, get back the filename if possible
-    # Assume that if no filename attr exists, it's a fif file.
     if not hasattr(raw, 'filenames'):
-        raise ValueError('raw.filenames is missing.')
+        raise ValueError('raw.filenames is missing. Please set raw.filenames'
+                         'as a list with the full path of original raw file.')
 
     raw_fname = raw.filenames[0]
     if '.ds' in op.dirname(raw.filenames[0]):
