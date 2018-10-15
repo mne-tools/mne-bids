@@ -236,9 +236,11 @@ def _participants_tsv(raw, subject_id, group, fname, write_mode='append',
     write_mode : str, one of ('append', 'overwrite', 'error')
         How the file should be handled if is exists already.
         Defaults to 'append'.
-        If write_mode == 'append' the previously existing file will have the
-        new data added to it, overwriting any duplicate entries found.
-        If write_mode == 'overwrite' the previously existing file will be
+        If write_mode == 'append' the existing file will have the
+        new data added to it.
+        If a duplicate entry is found it will be replaced with the new values
+        provided.
+        If write_mode == 'overwrite' the existing file will be
         removed and replaced with the new data.
         If write_mode == 'error' an `OSError` will be raised.
     verbose : bool
@@ -302,9 +304,11 @@ def _scans_tsv(raw, raw_fname, fname, write_mode='append', verbose=True):
     write_mode : str, one of ('append', 'overwrite', 'error')
         How the file should be handled if is exists already.
         Defaults to 'append'.
-        If write_mode == 'append' the previously existing file will have the
-        new data added to it, overwriting any duplicate entries found.
-        If write_mode == 'overwrite' the previously existing file will be
+        If write_mode == 'append' the existing file will have the
+        new data added to it.
+        If a duplicate entry is found it will be replaced with the new values
+        provided.
+        If write_mode == 'overwrite' the existing file will be
         removed and replaced with the new data.
         If write_mode == 'error' an `OSError` will be raised.
     verbose : bool
@@ -587,7 +591,7 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
             data, except `participants.tsv` and `scans.tsv` which will have the
             new data appended.
         - 'overwrite': Completely clear the session level BIDS directory,
-            removing any previously existing data and placing the new data in
+            removing any existing data and placing the new data in
             this folder.
         - 'error': If a file already exists, raise an OSError.
     verbose : bool
