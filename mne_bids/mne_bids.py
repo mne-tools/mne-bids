@@ -672,6 +672,8 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
         sh.copyfile(raw_fname, raw_file_bids)
     # KIT data requires the marker file to be copied over too
     if manufacturer == 'KIT/Yokogawa' and hpi is not None:
+        if isinstance(hpi, list):
+            raise ValueError('Only single marker coils supported currently')
         _, marker_ext = _parse_ext(hpi)
         marker_fname = make_bids_filename(
             subject=subject_id, session=session_id, task=task, run=run,
