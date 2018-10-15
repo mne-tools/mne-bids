@@ -544,6 +544,10 @@ def write_raw_bids(raw, bids_fname, output_path, kind='meg', events_data=None,
         The file path of the BIDS compatible raw file. In the case of multifile
         systems (e.g., vhdr, .ds etc.), this is the path to a folder containing
         all the files.
+    output_path : str
+        The path of the root of the BIDS compatible folder. The session and
+        subject specific folders will be populated automatically by parsing
+        bids_fname.
     kind : str, one of ('meg', 'eeg', 'ieeg')
         The kind of data being converted. Defaults to "meg".
     events_data : str | array | None
