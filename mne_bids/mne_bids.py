@@ -17,7 +17,7 @@ import numpy as np
 from mne import Epochs
 from mne.io.constants import FIFF
 from mne.io.pick import channel_type
-from mne.io import BaseRaw, read_raw_fif
+from mne.io import BaseRaw
 from mne.channels.channels import _unit2human
 from mne.externals.six import string_types
 from mne.utils import check_version
@@ -657,7 +657,7 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
 
     # Copy the imaging data files
     if ext in ['.fif']:
-        n_rawfiles = len(read_raw_fif(raw_fname).filenames)
+        n_rawfiles = len(raw.filenames)
         if n_rawfiles > 1:
             # TODO Update MNE requirement to version 0.17 when it's released
             if check_version('mne', '0.17.dev'):
