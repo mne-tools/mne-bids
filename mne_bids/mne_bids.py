@@ -401,8 +401,8 @@ def _coordsystem_json(raw, unit, orient, manufacturer, fname,
     return fname
 
 
-def _sidecar_json(raw, task, manufacturer, fname, kind, eeg_ref=None,
-                  eeg_gnd=None, overwrite=False, verbose=True):
+def _sidecar_json(raw, task, manufacturer, fname, kind, overwrite=False,
+                  verbose=True):
     """Create a sidecar json file depending on the kind and save it.
 
     The sidecar json file provides meta data about the data of a certain kind.
@@ -420,11 +420,6 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, eeg_ref=None,
         Filename to save the sidecar json to.
     kind : str
         Type of the data as in ALLOWED_KINDS.
-    eeg_ref : str
-        Description of the type of reference used and (when applicable) of
-        location of the reference electrode.  Defaults to None.
-    eeg_gnd : str
-        Description  of the location of the ground electrode. Defaults to None.
     overwrite : bool
         Whether to overwrite the existing file.
         Defaults to False.
@@ -437,11 +432,6 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, eeg_ref=None,
     if powerlinefrequency is None:
         warn('No line frequency found, defaulting to 50 Hz')
         powerlinefrequency = 50
-
-    if not eeg_ref:
-        eeg_ref = 'n/a'
-    if not eeg_gnd:
-        eeg_gnd = 'n/a'
 
     if isinstance(raw, BaseRaw):
         rec_type = 'continuous'
@@ -493,8 +483,8 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, eeg_ref=None,
         ('MEGChannelCount', n_megchan),
         ('MEGREFChannelCount', n_megrefchan)]
     ch_info_json_eeg = [
-        ('EEGReference', eeg_ref),
-        ('EEGGround', eeg_gnd),
+        ('EEGReference', 'n/a'),
+        ('EEGGround', 'n/a'),
         ('EEGPlacementScheme', _infer_eeg_placement_scheme(raw)),
         ('Manufacturer', manufacturer)]
     ch_info_json_ieeg = [
@@ -530,8 +520,7 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, eeg_ref=None,
 
 
 def write_raw_bids(raw, bids_fname, output_path, events_data=None,
-                   event_id=None, eeg_ref=None, eeg_gnd=None, overwrite=False,
-                   verbose=True):
+                   event_id=None, overwrite=False, verbose=True):
     """Walk over a folder of files and create BIDS compatible folder.
 
     Parameters
@@ -541,8 +530,10 @@ def write_raw_bids(raw, bids_fname, output_path, events_data=None,
         file. Otherwise it must be an instance of mne.Raw
     bids_fname : str
         The file path of the BIDS compatible raw file. In the case of multifile
-        systems (e.g., vhdr, .ds etc.), this is the path to a folder containing
-        all the files.
+        systems (e.g., .ds), this is the path to a folder containing
+        the files or (e.g., .vhdr or .set), the path to the principal file.
+        E.g.: sub-01_ses-01_task-testing_acq-01_run-01_meg.fif
+        Typically, this can be generated using make_bids_filename.
     output_path : str
         The path of the root of the BIDS compatible folder. The session and
         subject specific folders will be populated automatically by parsing
@@ -553,11 +544,6 @@ def write_raw_bids(raw, bids_fname, output_path, events_data=None,
         inferred from the stim channel using `mne.find_events`.
     event_id : dict | None
         The event id dict used to create a 'trial_type' column in events.tsv
-    eeg_ref : str
-        Description of the type of reference used and (when applicable) of
-        location of the reference electrode. Defaults to None.
-    eeg_gnd : str
-        Description  of the location of the ground electrode. Defaults to None.
     overwrite : bool
         Whether to overwrite existing files or data in files.
         Defaults to False.
@@ -658,8 +644,8 @@ def write_raw_bids(raw, bids_fname, output_path, events_data=None,
         _events_tsv(events, raw, events_fname, event_id, overwrite, verbose)
 
     make_dataset_description(output_path, name=" ", verbose=verbose)
-    _sidecar_json(raw, task, manufacturer, sidecar_fname, kind, eeg_ref,
-                  eeg_gnd, overwrite, verbose)
+    _sidecar_json(raw, task, manufacturer, sidecar_fname, kind, overwrite,
+                  verbose)
     _channels_tsv(raw, channels_fname, overwrite, verbose)
 
     # set the raw file name to now be the absolute path to ensure the files
@@ -709,16 +695,13 @@ def write_raw_bids(raw, bids_fname, output_path, events_data=None,
     else:
         sh.copyfile(raw_fname, bids_fname)
     # KIT data requires the marker file to be copied over too
-    if hpi is not None:
-        if isinstance(hpi, list):
-            # No currently accepted way to name multiple marker files. See:
-            # https://github.com/bids-standard/bids-specification/issues/45
-            raise ValueError('Only single marker coils supported currently')
+    if manufacturer == 'KIT/Yokogawa' and len(raw.filenames) > 1:
+        hpi = raw.filenames[-1]
         _, marker_ext = _parse_ext(hpi)
         marker_fname = make_bids_filename(
             subject=subject_id, session=session_id, task=task, run=run,
             acquisition=acquisition, suffix='markers%s' % marker_ext,
-            prefix=os.path.join(data_path, raw_folder))
+            prefix=os.path.join(data_path, bids_raw_folder))
         sh.copyfile(hpi, marker_fname)
 
     return output_path

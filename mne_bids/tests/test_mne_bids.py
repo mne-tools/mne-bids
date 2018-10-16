@@ -48,7 +48,7 @@ if os.name == 'nt':
 # MEG Tests
 # ---------
 def test_fif():
-    """Test functionality of the raw_to_bids conversion for Neuromag data."""
+    """Test functionality of the write_raw_bids conversion for fif."""
     output_path = _TempDir()
     data_path = testing.data_path()
     raw_fname = op.join(data_path, 'MEG', 'sample',
@@ -94,7 +94,7 @@ def test_fif():
 
 
 def test_kit():
-    """Test functionality of the raw_to_bids conversion for KIT data."""
+    """Test functionality of the write_raw_bids conversion for KIT data."""
     output_path = _TempDir()
     data_path = op.join(base_path, 'kit', 'tests', 'data')
     raw_fname = op.join(data_path, 'test.sqd')
@@ -133,16 +133,12 @@ def test_kit():
 
     # check for error if there are multiple marker coils specified
     with pytest.raises(ValueError):
-        raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
-                    task=task, acquisition=acq, raw_file=raw_fname,
-                    events_data=events_fname, event_id=event_id,
-                    hpi=[hpi_fname, hpi_fname], electrode=electrode_fname,
-                    hsp=headshape_fname, output_path=output_path,
-                    overwrite=True)
+        raw = read_raw(raw_fname, hpi=[hpi_fname, hpi_fname],
+                       electrode=electrode_fname, hsp=headshape_fname)
 
 
 def test_ctf():
-    """Test functionality of the raw_to_bids conversion for CTF data."""
+    """Test functionality of the write_raw_bids conversion for CTF data."""
     output_path = _TempDir()
     data_path = op.join(testing.data_path(download=False), 'CTF')
     raw_fname = op.join(data_path, 'testdata_ctf.ds')
@@ -163,7 +159,7 @@ def test_ctf():
 
 
 def test_bti():
-    """Test functionality of the raw_to_bids conversion for BTi data."""
+    """Test functionality of the write_raw_bids conversion for BTi data."""
     output_path = _TempDir()
     data_path = op.join(base_path, 'bti', 'tests', 'data')
     raw_fname = op.join(data_path, 'test_pdf_linux')
@@ -183,7 +179,7 @@ def test_bti():
 # EEG Tests
 # ---------
 def test_vhdr():
-    """Test raw_to_bids conversion for BrainVision data."""
+    """Test write_raw_bids conversion for BrainVision data."""
     output_path = _TempDir()
     data_path = op.join(base_path, 'brainvision', 'tests', 'data')
     raw_fname = op.join(data_path, 'test.vhdr')
@@ -204,7 +200,7 @@ def test_vhdr():
 
 
 def test_edf():
-    """Test raw_to_bids conversion for European Data Format data."""
+    """Test write_raw_bids conversion for European Data Format data."""
     output_path = _TempDir()
     data_path = op.join(testing.data_path(), 'EDF')
     raw_fname = op.join(data_path, 'test_reduced.edf')
@@ -240,7 +236,7 @@ def test_edf():
 
 
 def test_bdf():
-    """Test raw_to_bids conversion for Biosemi data."""
+    """Test write_raw_bids conversion for Biosemi data."""
     output_path = _TempDir()
     data_path = op.join(base_path, 'edf', 'tests', 'data')
     raw_fname = op.join(data_path, 'test.bdf')
@@ -255,7 +251,7 @@ def test_bdf():
 
 @requires_version('mne', '0.17dev0')
 def test_set():
-    """Test raw_to_bids conversion for EEGLAB data."""
+    """Test write_raw_bids conversion for EEGLAB data."""
     # standalone .set file
     output_path = _TempDir()
     data_path = op.join(testing.data_path(), 'EEGLAB')
@@ -286,7 +282,7 @@ def test_set():
 
 
 def test_cnt():
-    """Test raw_to_bids conversion for Neuroscan data."""
+    """Test write_raw_bids conversion for Neuroscan data."""
     output_path = _TempDir()
     data_path = op.join(testing.data_path(), 'CNT')
     raw_fname = op.join(data_path, 'scan41_short.cnt')

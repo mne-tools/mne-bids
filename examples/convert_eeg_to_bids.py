@@ -174,8 +174,9 @@ print_dir_tree(output_path)
 # initial `dataset_description` on top!
 #
 # Now it's time to manually check the BIDS directory and the meta files to add
-# all the information that MNE-BIDS could not infer. These places are marked
-# with "n/a".
+# all the information that MNE-BIDS could not infer. For instance, you must
+# describe EEGReference and EEGGround yourself. It's easy to find these by
+# searching for "n/a" in the sidecar files.
 #
 # Remember that there is a convenient javascript tool to validate all your BIDS
 # directories called the "BIDS-validator", available as a web version and a
