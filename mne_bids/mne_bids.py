@@ -519,10 +519,9 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
         inferred from the stim channel using `mne.find_events`.
     event_id : dict | None
         The event id dict used to create a 'trial_type' column in events.tsv
-    hpi : None | str | list of str
+    hpi : None | str
         Marker points representing the location of the marker coils with
         respect to the MEG Sensors, or path to a marker file.
-        If list, all of the markers will be averaged together.
     electrode : None | str
         Digitizer points representing the location of the fiducials and the
         marker coils with respect to the digitized head shape, or path to a
@@ -685,5 +684,17 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
         copyfile_eeglab(raw_fname, raw_file_bids)
     else:
         sh.copyfile(raw_fname, raw_file_bids)
+    # KIT data requires the marker file to be copied over too
+    if hpi is not None:
+        if isinstance(hpi, list):
+            # No currently accepted way to name multiple marker files. See:
+            # https://github.com/bids-standard/bids-specification/issues/45
+            raise ValueError('Only single marker coils supported currently')
+        _, marker_ext = _parse_ext(hpi)
+        marker_fname = make_bids_filename(
+            subject=subject_id, session=session_id, task=task, run=run,
+            acquisition=acquisition, suffix='markers%s' % marker_ext,
+            prefix=os.path.join(data_path, raw_folder))
+        sh.copyfile(hpi, marker_fname)
 
     return output_path
