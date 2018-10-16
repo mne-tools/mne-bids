@@ -117,7 +117,7 @@
 <span class="kn">from</span> <span class="nn">mne</span> <span class="k">import</span> <span class="n">Epochs</span>
 <span class="kn">from</span> <span class="nn">mne.io.constants</span> <span class="k">import</span> <span class="n">FIFF</span>
 <span class="kn">from</span> <span class="nn">mne.io.pick</span> <span class="k">import</span> <span class="n">channel_type</span>
-<span class="kn">from</span> <span class="nn">mne.io</span> <span class="k">import</span> <span class="n">BaseRaw</span><span class="p">,</span> <span class="n">read_raw_fif</span>
+<span class="kn">from</span> <span class="nn">mne.io</span> <span class="k">import</span> <span class="n">BaseRaw</span>
 <span class="kn">from</span> <span class="nn">mne.channels.channels</span> <span class="k">import</span> <span class="n">_unit2human</span>
 <span class="kn">from</span> <span class="nn">mne.externals.six</span> <span class="k">import</span> <span class="n">string_types</span>
 <span class="kn">from</span> <span class="nn">mne.utils</span> <span class="k">import</span> <span class="n">check_version</span>
@@ -756,7 +756,7 @@
 
     <span class="c1"># Copy the imaging data files</span>
     <span class="k">if</span> <span class="n">ext</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;.fif&#39;</span><span class="p">]:</span>
-        <span class="n">n_rawfiles</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">read_raw_fif</span><span class="p">(</span><span class="n">raw_fname</span><span class="p">)</span><span class="o">.</span><span class="n">filenames</span><span class="p">)</span>
+        <span class="n">n_rawfiles</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">filenames</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">n_rawfiles</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="c1"># TODO Update MNE requirement to version 0.17 when it&#39;s released</span>
             <span class="k">if</span> <span class="n">check_version</span><span class="p">(</span><span class="s1">&#39;mne&#39;</span><span class="p">,</span> <span class="s1">&#39;0.17.dev&#39;</span><span class="p">):</span>

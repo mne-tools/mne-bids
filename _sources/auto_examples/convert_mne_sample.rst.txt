@@ -184,14 +184,6 @@ Finally, we specify the raw_file and events_data
                                                 filename             acq_time
     0  meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif  2002-12-03T19:01:10
     Writing data files to /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif
-    Opening raw data file /home/circleci/mne_data/MNE-sample-data/MEG/sample/sample_audvis_raw.fif...
-        Read a total of 3 projection items:
-            PCA-v1 (1 x 102)  idle
-            PCA-v2 (1 x 102)  idle
-            PCA-v3 (1 x 102)  idle
-        Range : 25800 ... 192599 =     42.956 ...   320.670 secs
-    Ready.
-    Current compensation grade : 0
     This filename (/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif) does not conform to MNE naming conventions. All raw files should end with raw.fif, raw_sss.fif, raw_tsss.fif, raw.fif.gz, raw_sss.fif.gz or raw_tsss.fif.gz
     Writing /home/circleci/mne_data/MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif
     Closing /home/circleci/mne_data/MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif [done]
@@ -215,20 +207,20 @@ Now let's see the structure of the BIDS folder we created.
  .. code-block:: none
 
     |------------------ MNE-sample-data-bids
-    |--------------------- participants.tsv
     |--------------------- dataset_description.json
+    |--------------------- participants.tsv
     |--------------------- sub-01
     |------------------------ ses-01
     |--------------------------- sub-01_ses-01_scans.tsv
     |--------------------------- meg
-    |------------------------------ sub-01_ses-01_coordsystem.json
     |------------------------------ sub-01_ses-01_task-audiovisual_run-01_channels.tsv
-    |------------------------------ sub-01_ses-01_task-audiovisual_run-01_events.tsv
+    |------------------------------ sub-01_ses-01_coordsystem.json
     |------------------------------ sub-01_ses-01_task-audiovisual_run-01_meg.json
     |------------------------------ sub-01_ses-01_task-audiovisual_run-01_meg.fif
+    |------------------------------ sub-01_ses-01_task-audiovisual_run-01_events.tsv
 
 
-**Total running time of the script:** ( 4 minutes  36.776 seconds)
+**Total running time of the script:** ( 2 minutes  4.444 seconds)
 
 
 .. _sphx_glr_download_auto_examples_convert_mne_sample.py:
