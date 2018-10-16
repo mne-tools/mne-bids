@@ -619,10 +619,9 @@
 <span class="sd">        inferred from the stim channel using `mne.find_events`.</span>
 <span class="sd">    event_id : dict | None</span>
 <span class="sd">        The event id dict used to create a &#39;trial_type&#39; column in events.tsv</span>
-<span class="sd">    hpi : None | str | list of str</span>
+<span class="sd">    hpi : None | str</span>
 <span class="sd">        Marker points representing the location of the marker coils with</span>
 <span class="sd">        respect to the MEG Sensors, or path to a marker file.</span>
-<span class="sd">        If list, all of the markers will be averaged together.</span>
 <span class="sd">    electrode : None | str</span>
 <span class="sd">        Digitizer points representing the location of the fiducials and the</span>
 <span class="sd">        marker coils with respect to the digitized head shape, or path to a</span>
@@ -785,6 +784,18 @@
         <span class="n">copyfile_eeglab</span><span class="p">(</span><span class="n">raw_fname</span><span class="p">,</span> <span class="n">raw_file_bids</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">sh</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">raw_fname</span><span class="p">,</span> <span class="n">raw_file_bids</span><span class="p">)</span>
+    <span class="c1"># KIT data requires the marker file to be copied over too</span>
+    <span class="k">if</span> <span class="n">hpi</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">hpi</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="c1"># No currently accepted way to name multiple marker files. See:</span>
+            <span class="c1"># https://github.com/bids-standard/bids-specification/issues/45</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Only single marker coils supported currently&#39;</span><span class="p">)</span>
+        <span class="n">_</span><span class="p">,</span> <span class="n">marker_ext</span> <span class="o">=</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">hpi</span><span class="p">)</span>
+        <span class="n">marker_fname</span> <span class="o">=</span> <span class="n">make_bids_filename</span><span class="p">(</span>
+            <span class="n">subject</span><span class="o">=</span><span class="n">subject_id</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session_id</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="n">task</span><span class="p">,</span> <span class="n">run</span><span class="o">=</span><span class="n">run</span><span class="p">,</span>
+            <span class="n">acquisition</span><span class="o">=</span><span class="n">acquisition</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;markers</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">marker_ext</span><span class="p">,</span>
+            <span class="n">prefix</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="n">raw_folder</span><span class="p">))</span>
+        <span class="n">sh</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">hpi</span><span class="p">,</span> <span class="n">marker_fname</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">output_path</span></div>
 </pre></div>
@@ -800,7 +811,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2018, MNE Developers. Last updated on 2018-10-14.<br/>
+        &copy; Copyright 2018, MNE Developers. Last updated on 2018-10-16.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.1.<br/>
     </p>
   </div>
