@@ -278,6 +278,11 @@ def test_set():
     cmd = ['bids-validator', '--bep006', output_path]
     run_subprocess(cmd, shell=shell)
 
+    with pytest.raises(OSError, match="already exists"):
+        raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
+                    task=task, acquisition=acq, raw_file=raw_fname,
+                    output_path=output_path, write_mode='error', kind='eeg')
+
     # .set with associated .fdt
     output_path = _TempDir()
     data_path = op.join(testing.data_path(), 'EEGLAB')
@@ -346,6 +351,9 @@ def test_json_tsv():
     scans_fname = make_bids_filename(
         subject=subject_id, session=session_id, suffix='scans.tsv',
         prefix=ses_path)
+    raw_file_bids = make_bids_filename(
+        subject=subject_id, session=session_id, task=task, run=run,
+        acquisition=acq, suffix='%s%s' % ('meg', '.fif'))
 
     with pytest.raises(OSError, match="already exists"):
         _channels_tsv(raw, channels_fname, write_mode='error', verbose=False)
@@ -362,4 +370,5 @@ def test_json_tsv():
         events = _read_events(events_fname, raw)
         _events_tsv(events, raw, events_tsv_fname, event_id, 'error', False)
     with pytest.raises(OSError, match="already exists"):
-        _scans_tsv(raw, 'dummy', scans_fname, 'error', False)
+        _scans_tsv(raw, op.join('meg', raw_file_bids), scans_fname,
+                   'error', False)

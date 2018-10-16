@@ -79,7 +79,8 @@ def _channels_tsv(raw, fname, write_mode='error', verbose=True):
         Defaults to 'error'.
         If write_mode == 'overwrite' the old file will be removed and replaced
         with a new one.
-        If write_mode == 'error' an `OSError` will be raised.
+        If write_mode == 'error' an `OSError` will be raised if the file
+        already exists.
     verbose : bool
         Set verbose output to true or false.
 
@@ -179,7 +180,8 @@ def _events_tsv(events, raw, fname, trial_type, write_mode='error',
         Defaults to 'error'.
         If write_mode == 'overwrite' the old file will be removed and replaced
         with a new one.
-        If write_mode == 'error' an `OSError` will be raised.
+        If write_mode == 'error' an `OSError` will be raised if the file
+        already exists.
     verbose : bool
         Set verbose output to true or false.
 
@@ -216,7 +218,7 @@ def _events_tsv(events, raw, fname, trial_type, write_mode='error',
     return fname
 
 
-def _participants_tsv(raw, subject_id, group, fname, write_mode='append',
+def _participants_tsv(raw, subject_id, group, fname, write_mode='error',
                       verbose=True):
     """Create a participants.tsv file and save it.
 
@@ -235,14 +237,15 @@ def _participants_tsv(raw, subject_id, group, fname, write_mode='append',
         Filename to save the participants.tsv to.
     write_mode : str, one of ('append', 'overwrite', 'error')
         How the file should be handled if is exists already.
-        Defaults to 'append'.
+        Defaults to 'error'.
         If write_mode == 'append' the existing file will have the
         new data added to it.
         If a duplicate entry is found it will be replaced with the new values
         provided.
         If write_mode == 'overwrite' the existing file will be
         removed and replaced with the new data.
-        If write_mode == 'error' an `OSError` will be raised.
+        If write_mode == 'error' an `OSError` will be raised if the data
+        already exists in the file.
     verbose : bool
         Set verbose output to true or false.
 
@@ -270,27 +273,29 @@ def _participants_tsv(raw, subject_id, group, fname, write_mode='append',
 
         data.update({'age': [subject_age], 'sex': [sex], 'group': [group]})
 
-    # append the participant data to the existing file if it exists, otherwise
-    # if write_mode == 'overwrite' write the data to a new file.
-    if os.path.exists(fname) and write_mode == 'append':
-        df = pd.read_csv(fname, sep='\t')
-        df = df.append(pd.DataFrame(data=data,
-                                    columns=['participant_id', 'age',
-                                             'sex', 'group']))
+    df = pd.DataFrame(data=data,
+                      columns=['participant_id', 'age', 'sex', 'group'])
+
+    if os.path.exists(fname) and write_mode != 'overwrite':
+        orig_df = pd.read_csv(fname, sep='\t')
+        # if the participant id is already in the file raise an error if needed
+        if write_mode == 'error':
+            if subject_id in orig_df['participant_id'].values:
+                raise OSError(errno.EEXIST, '"%s" already exists in the'
+                              'participant list. Please set write_mode to '
+                              '"overwrite" or "append".' % subject_id)
+        # otherwise add the new data, dropping any duplicates.
+        df = orig_df.append(df)
         df.drop_duplicates(subset='participant_id', keep='last',
                            inplace=True)
         df = df.sort_values(by='participant_id')
-    else:
-        df = pd.DataFrame(data=data,
-                          columns=['participant_id', 'age', 'sex',
-                                   'group'])
 
-    _write_tsv(fname, df, write_mode == 'error', verbose)
+    _write_tsv(fname, df, False, verbose)
 
     return fname
 
 
-def _scans_tsv(raw, raw_fname, fname, write_mode='append', verbose=True):
+def _scans_tsv(raw, raw_fname, fname, write_mode='error', verbose=True):
     """Create a scans.tsv file and save it.
 
     Parameters
@@ -303,14 +308,15 @@ def _scans_tsv(raw, raw_fname, fname, write_mode='append', verbose=True):
         Filename to save the scans.tsv to.
     write_mode : str, one of ('append', 'overwrite', 'error')
         How the file should be handled if is exists already.
-        Defaults to 'append'.
+        Defaults to 'error'.
         If write_mode == 'append' the existing file will have the
         new data added to it.
         If a duplicate entry is found it will be replaced with the new values
         provided.
         If write_mode == 'overwrite' the existing file will be
         removed and replaced with the new data.
-        If write_mode == 'error' an `OSError` will be raised.
+        If write_mode == 'error' an `OSError` will be raised if the data
+        already exists in the file.
     verbose : bool
         Set verbose output to true or false.
 
@@ -324,21 +330,24 @@ def _scans_tsv(raw, raw_fname, fname, write_mode='append', verbose=True):
     else:
         acq_time = 'n/a'
 
-    # append the scan data to the existing file if it exists, otherwise if
-    # write_mode == 'overwrite' write the data to a new file.
-    if os.path.exists(fname) and write_mode == 'append':
-        df = pd.read_csv(fname, sep='\t')
-        df = df.append(pd.DataFrame(data={'filename': ['%s' % raw_fname],
-                                          'acq_time': [acq_time]},
-                                    columns=['filename', 'acq_time']))
+    df = pd.DataFrame(data={'filename': ['%s' % raw_fname],
+                            'acq_time': [acq_time]},
+                      columns=['filename', 'acq_time'])
+
+    if os.path.exists(fname) and write_mode != 'overwrite':
+        orig_df = pd.read_csv(fname, sep='\t')
+        # if the file name is already in the file raise an error if needed
+        if write_mode == 'error':
+            if raw_fname in orig_df['filename'].values:
+                raise OSError(errno.EEXIST, '"%s" already exists in the'
+                              'scans list. Please set write_mode to '
+                              '"overwrite" or "append".' % raw_fname)
+        # otherwise add the new data, dropping any duplicates.
+        df = orig_df.append(df)
         df.drop_duplicates(subset='filename', keep='last', inplace=True)
         df = df.sort_values(by='acq_time')
-    else:
-        df = pd.DataFrame(data={'filename': ['%s' % raw_fname],
-                                'acq_time': [acq_time]},
-                          columns=['filename', 'acq_time'])
 
-    _write_tsv(fname, df, write_mode == 'error', verbose)
+    _write_tsv(fname, df, False, verbose)
 
     return fname
 
@@ -364,7 +373,8 @@ def _coordsystem_json(raw, unit, orient, manufacturer, fname,
         Defaults to 'error'.
         If write_mode == 'overwrite' the old file will be removed and replaced
         with a new one.
-        If write_mode == 'error' an `OSError` will be raised.
+        If write_mode == 'error' an `OSError` will be raised if the file
+        already exists.
     verbose : bool
         Set verbose output to true or false.
 
@@ -432,7 +442,8 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, eeg_ref=None,
         Defaults to 'error'.
         If write_mode == 'overwrite' the old file will be removed and replaced
         with a new one.
-        If write_mode == 'error' an `OSError` will be raised.
+        If write_mode == 'error' an `OSError` will be raised if the file
+        already exists.
     verbose : bool
         Set verbose output to true or false. Defaults to true.
 
@@ -590,6 +601,8 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
         - 'append': Any file that already exists will be overridden with new
             data, except `participants.tsv` and `scans.tsv` which will have the
             new data appended.
+            If a duplicate entry is found it will be replaced with the new
+            values provided.
         - 'overwrite': Completely clear the session level BIDS directory,
             removing any existing data and placing the new data in
             this folder.
