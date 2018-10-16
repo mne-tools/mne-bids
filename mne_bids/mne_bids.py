@@ -518,7 +518,7 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
         inferred from the stim channel using `mne.find_events`.
     event_id : dict | None
         The event id dict used to create a 'trial_type' column in events.tsv
-    hpi : None | str 
+    hpi : None | str
         Marker points representing the location of the marker coils with
         respect to the MEG Sensors, or path to a marker file.
     electrode : None | str
