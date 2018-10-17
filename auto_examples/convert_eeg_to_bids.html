@@ -195,14 +195,14 @@ of the directory tree.</p>
 |--------------- physiobank
 |------------------ database
 |--------------------- eegmmidb
-|------------------------ S001
-|--------------------------- S001R04.edf
-|--------------------------- S001R02.edf
-|--------------------------- S001R12.edf
 |------------------------ S002
 |--------------------------- S002R04.edf
-|--------------------------- S002R12.edf
 |--------------------------- S002R02.edf
+|--------------------------- S002R12.edf
+|------------------------ S001
+|--------------------------- S001R02.edf
+|--------------------------- S001R12.edf
+|--------------------------- S001R04.edf
 </pre></div>
 </div>
 <p>The data are in the <a class="reference external" href="https://www.edfplus.info/">European Data Format</a>
@@ -404,15 +404,15 @@ Writing data files to /home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_
 </div>
 <p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>|------------ eegmmidb_bids
-|--------------- dataset_description.json
 |--------------- participants.tsv
+|--------------- dataset_description.json
 |--------------- sub-001
 |------------------ sub-001_scans.tsv
 |------------------ eeg
+|--------------------- sub-001_task-resteyesclosed_events.tsv
+|--------------------- sub-001_task-resteyesclosed_eeg.json
 |--------------------- sub-001_task-resteyesclosed_eeg.edf
 |--------------------- sub-001_task-resteyesclosed_channels.tsv
-|--------------------- sub-001_task-resteyesclosed_eeg.json
-|--------------------- sub-001_task-resteyesclosed_events.tsv
 </pre></div>
 </div>
 <p>Looks good so far, let’s convert the data for all tasks and subjects.</p>
@@ -892,38 +892,38 @@ Writing data files to /home/circleci/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_
 </div>
 <p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>|------------ eegmmidb_bids
-|--------------- dataset_description.json
 |--------------- participants.tsv
+|--------------- dataset_description.json
 |--------------- sub-002
 |------------------ sub-002_scans.tsv
 |------------------ eeg
-|--------------------- sub-002_task-imaginefists_run-1_eeg.edf
-|--------------------- sub-002_task-imaginefists_run-2_eeg.edf
-|--------------------- sub-002_task-resteyesclosed_events.tsv
-|--------------------- sub-002_task-imaginefists_run-2_eeg.json
-|--------------------- sub-002_task-imaginefists_run-1_eeg.json
-|--------------------- sub-002_task-imaginefists_run-2_events.tsv
 |--------------------- sub-002_task-resteyesclosed_eeg.json
-|--------------------- sub-002_task-imaginefists_run-1_events.tsv
-|--------------------- sub-002_task-imaginefists_run-2_channels.tsv
-|--------------------- sub-002_task-resteyesclosed_eeg.edf
-|--------------------- sub-002_task-imaginefists_run-1_channels.tsv
+|--------------------- sub-002_task-imaginefists_run-1_eeg.edf
 |--------------------- sub-002_task-resteyesclosed_channels.tsv
+|--------------------- sub-002_task-imaginefists_run-2_events.tsv
+|--------------------- sub-002_task-imaginefists_run-1_channels.tsv
+|--------------------- sub-002_task-imaginefists_run-2_eeg.edf
+|--------------------- sub-002_task-imaginefists_run-1_events.tsv
+|--------------------- sub-002_task-resteyesclosed_eeg.edf
+|--------------------- sub-002_task-imaginefists_run-1_eeg.json
+|--------------------- sub-002_task-imaginefists_run-2_eeg.json
+|--------------------- sub-002_task-resteyesclosed_events.tsv
+|--------------------- sub-002_task-imaginefists_run-2_channels.tsv
 |--------------- sub-001
 |------------------ sub-001_scans.tsv
 |------------------ eeg
+|--------------------- sub-001_task-imaginefists_run-2_eeg.edf
+|--------------------- sub-001_task-imaginefists_run-1_channels.tsv
+|--------------------- sub-001_task-imaginefists_run-1_events.tsv
+|--------------------- sub-001_task-resteyesclosed_events.tsv
+|--------------------- sub-001_task-imaginefists_run-1_eeg.json
+|--------------------- sub-001_task-imaginefists_run-2_events.tsv
+|--------------------- sub-001_task-resteyesclosed_eeg.json
+|--------------------- sub-001_task-imaginefists_run-2_eeg.json
 |--------------------- sub-001_task-imaginefists_run-1_eeg.edf
 |--------------------- sub-001_task-resteyesclosed_eeg.edf
-|--------------------- sub-001_task-imaginefists_run-1_eeg.json
 |--------------------- sub-001_task-resteyesclosed_channels.tsv
-|--------------------- sub-001_task-imaginefists_run-1_channels.tsv
-|--------------------- sub-001_task-imaginefists_run-2_eeg.json
-|--------------------- sub-001_task-imaginefists_run-2_eeg.edf
-|--------------------- sub-001_task-resteyesclosed_eeg.json
-|--------------------- sub-001_task-resteyesclosed_events.tsv
-|--------------------- sub-001_task-imaginefists_run-2_events.tsv
 |--------------------- sub-001_task-imaginefists_run-2_channels.tsv
-|--------------------- sub-001_task-imaginefists_run-1_events.tsv
 </pre></div>
 </div>
 <p>MNE-BIDS has created a suitable directory structure for us, and among other
@@ -937,7 +937,7 @@ directories called the “BIDS-validator”, available as a web version and a
 command line tool:</p>
 <p>Web version: <a class="reference external" href="https://bids-standard.github.io/bids-validator/">https://bids-standard.github.io/bids-validator/</a></p>
 <p>Command line tool: <a class="reference external" href="https://www.npmjs.com/package/bids-validator">https://www.npmjs.com/package/bids-validator</a></p>
-<p><strong>Total running time of the script:</strong> ( 0 minutes  3.605 seconds)</p>
+<p><strong>Total running time of the script:</strong> ( 0 minutes  12.956 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-eeg-to-bids-py">
 <div class="sphx-glr-download docutils container">
 <a class="reference download internal" download="" href="../_downloads/e44373716acd059d2bf5b3168e4f0f98/convert_eeg_to_bids.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">convert_eeg_to_bids.py</span></code></a></div>
@@ -960,7 +960,7 @@ command line tool:</p>
       
     </p>
     <p>
-        &copy; Copyright 2018, MNE Developers. Last updated on 2018-10-16.<br/>
+        &copy; Copyright 2018, MNE Developers. Last updated on 2018-10-17.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.1.<br/>
     </p>
   </div>
