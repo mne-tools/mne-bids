@@ -25,12 +25,12 @@ from .config import BIDS_VERSION
 from .io import _parse_ext
 
 
-def print_dir_tree(dir):
-    """Recursively print a directory tree starting from `dir`."""
-    if not op.exists(dir):
-        raise ValueError('Directory does not exist: {}'.format(dir))
+def print_dir_tree(folder):
+    """Recursively print a directory tree starting from `folder`."""
+    if not op.exists(folder):
+        raise ValueError('Directory does not exist: {}'.format(folder))
 
-    for root, dirs, files in os.walk(dir):
+    for root, dirs, files in os.walk(folder):
         path = root.split(os.sep)
         print('|%s %s' % ((len(path) - 1) * '---', op.basename(root)))
         for file in files:
