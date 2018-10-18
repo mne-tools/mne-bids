@@ -69,7 +69,7 @@ for subject_id in subject_ids:
         # Make it BIDS compatible
         raw_to_bids(subject_id='%02d' % subject_id, session_id='01', run=run,
                     task='VisualFaces', raw_file=raw_file, event_id=event_id,
-                    output_path=output_path, overwrite=False)
+                    output_path=output_path, overwrite=True)
 
 ###############################################################################
 # Now let's see the structure of the BIDS folder we created.
