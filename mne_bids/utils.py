@@ -270,7 +270,7 @@ def make_dataset_description(path, name=None, data_license=None,
     pop_keys = [key for key, val in description.items() if val is None]
     for key in pop_keys:
         description.pop(key)
-    _write_json(description, fname, verbose=verbose)
+    _write_json(description, fname, overwrite=True, verbose=verbose)
 
 
 def age_on_date(bday, exp_date):
@@ -303,11 +303,11 @@ def _check_types(variables):
                              "Found type %s." % type(var))
 
 
-def _write_json(dictionary, fname, error_on_exist=False, verbose=False):
+def _write_json(dictionary, fname, overwrite=False, verbose=False):
     """Write JSON to a file."""
-    if op.exists(fname) and error_on_exist:
+    if op.exists(fname) and not overwrite:
         raise OSError(errno.EEXIST, '"%s" already exists. Please set '
-                      'write_mode to "overwrite" or "append".' % fname)
+                      'overwrite to True.' % fname)
 
     json_output = json.dumps(dictionary, indent=4)
     with open(fname, 'w') as fid:
@@ -319,11 +319,11 @@ def _write_json(dictionary, fname, error_on_exist=False, verbose=False):
         print(json_output)
 
 
-def _write_tsv(fname, df, error_on_exist=False, verbose=False):
+def _write_tsv(fname, df, overwrite=False, verbose=False):
     """Write dataframe to a .tsv file"""
-    if op.exists(fname) and error_on_exist:
+    if op.exists(fname) and not overwrite:
         raise OSError(errno.EEXIST, '"%s" already exists. Please set '
-                      'write_mode to "overwrite" or "append".' % fname)
+                      'overwrite to True.' % fname)
     df.to_csv(fname, sep='\t', index=False, na_rep='n/a')
 
     if verbose:
