@@ -12,7 +12,6 @@ For each supported file format, implement a test.
 
 import os
 import os.path as op
-from errno import EEXIST
 import pytest
 
 import pandas as pd
@@ -61,7 +60,7 @@ def test_fif():
     raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
                 acquisition=acq, task=task, raw_file=raw_fname,
                 events_data=events_fname, output_path=output_path,
-                event_id=event_id, write_mode='append')
+                event_id=event_id, overwrite=False)
 
     # give the raw object some fake participant data
     raw = mne.io.read_raw_fif(raw_fname)
@@ -74,7 +73,7 @@ def test_fif():
     raw_to_bids(subject_id=subject_id2, run=run, task=task, acquisition=acq,
                 session_id=session_id, raw_file=raw_fname2,
                 events_data=events_fname, output_path=output_path,
-                event_id=event_id, write_mode='append')
+                event_id=event_id, overwrite=False)
     cmd = ['bids-validator', output_path]
     run_subprocess(cmd, shell=shell)
 
@@ -96,7 +95,7 @@ def test_kit():
                 task=task, acquisition=acq, raw_file=raw_fname,
                 events_data=events_fname, event_id=event_id, hpi=hpi_fname,
                 electrode=electrode_fname, hsp=headshape_fname,
-                output_path=output_path, write_mode='append')
+                output_path=output_path, overwrite=False)
     cmd = ['bids-validator', output_path]
     run_subprocess(cmd, shell=shell)
     assert op.exists(op.join(output_path, 'participants.tsv'))
@@ -137,15 +136,15 @@ def test_ctf():
 
     raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
                 task=task, acquisition=acq, raw_file=raw_fname,
-                output_path=output_path, write_mode='append')
+                output_path=output_path, overwrite=False)
     cmd = ['bids-validator', output_path]
     run_subprocess(cmd, shell=shell)
 
-    # test to check that the 'error' write_mode parameter works correctly
+    # test to check that running again with overwrite == False raises an error
     with pytest.raises(OSError, match="already exists"):
         raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
                     task=task, acquisition=acq, raw_file=raw_fname,
-                    output_path=output_path, write_mode='error')
+                    output_path=output_path, overwrite=False)
 
     assert op.exists(op.join(output_path, 'participants.tsv'))
 
@@ -161,7 +160,7 @@ def test_bti():
     raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
                 task=task, acquisition=acq, raw_file=raw_fname,
                 config=config_fname, hsp=headshape_fname,
-                output_path=output_path, verbose=True, write_mode='append')
+                output_path=output_path, verbose=True, overwrite=False)
 
     assert op.exists(op.join(output_path, 'participants.tsv'))
 
@@ -179,31 +178,12 @@ def test_vhdr():
 
     raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
                 task=task, acquisition=acq, raw_file=raw_fname,
-                output_path=output_path, write_mode='append', kind='eeg')
+                output_path=output_path, overwrite=False, kind='eeg')
 
     cmd = ['bids-validator', '--bep006', output_path]
     run_subprocess(cmd, shell=shell)
 
-    # check the 'overwrite' write_mode command works correctly
-    raw_to_bids(subject_id=subject_id, session_id=session_id, run=run2,
-                task=task, acquisition=acq, raw_file=raw_fname,
-                output_path=output_path, write_mode='overwrite', kind='eeg')
-    # we will need to go over the tree to ensure there are no files with
-    # `run-01` in their file names:
-    for _, _, files in os.walk(output_path):
-        for f in files:
-            if 'run-%s' % run in f:
-                raise OSError(EEXIST)
-
-    # check that the scans list contains one scans
-    scans_tsv = make_bids_filename(
-        subject=subject_id, session=session_id, suffix='scans.tsv',
-        prefix=op.join(output_path, 'sub-01/ses-01'))
-    if op.exists(scans_tsv):
-        df = pd.read_csv(scans_tsv, sep='\t')
-        assert df.shape[0] == 1
-
-    # finally, create another bids folder with the overwrite command and check
+    # create another bids folder with the overwrite command and check
     # no files are in the folder
     data_path = make_bids_folders(subject=subject_id, session=session_id,
                                   kind='eeg', root=output_path,
@@ -225,10 +205,10 @@ def test_edf():
 
     raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
                 task=task, acquisition=acq, raw_file=raw,
-                output_path=output_path, write_mode='append', kind='eeg')
+                output_path=output_path, overwrite=False, kind='eeg')
     raw_to_bids(subject_id=subject_id, session_id=session_id, run=run2,
                 task=task, acquisition=acq, raw_file=raw,
-                output_path=output_path, write_mode='append', kind='eeg')
+                output_path=output_path, overwrite=True, kind='eeg')
 
     cmd = ['bids-validator', '--bep006', output_path]
     run_subprocess(cmd, shell=shell)
@@ -258,7 +238,7 @@ def test_bdf():
 
     raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
                 task=task, acquisition=acq, raw_file=raw_fname,
-                output_path=output_path, write_mode='append', kind='eeg')
+                output_path=output_path, overwrite=False, kind='eeg')
 
     cmd = ['bids-validator', '--bep006', output_path]
     run_subprocess(cmd, shell=shell)
@@ -273,7 +253,7 @@ def test_set():
 
     raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
                 task=task, acquisition=acq, raw_file=raw_fname,
-                output_path=output_path, write_mode='append', kind='eeg')
+                output_path=output_path, overwrite=False, kind='eeg')
 
     cmd = ['bids-validator', '--bep006', output_path]
     run_subprocess(cmd, shell=shell)
@@ -281,7 +261,7 @@ def test_set():
     with pytest.raises(OSError, match="already exists"):
         raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
                     task=task, acquisition=acq, raw_file=raw_fname,
-                    output_path=output_path, write_mode='error', kind='eeg')
+                    output_path=output_path, overwrite=False, kind='eeg')
 
     # .set with associated .fdt
     output_path = _TempDir()
@@ -290,7 +270,7 @@ def test_set():
 
     raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
                 task=task, acquisition=acq, raw_file=raw_fname,
-                output_path=output_path, write_mode='append', kind='eeg')
+                output_path=output_path, overwrite=False, kind='eeg')
 
     cmd = ['bids-validator', '--bep006', output_path]
     run_subprocess(cmd, shell=shell)
@@ -304,7 +284,7 @@ def test_cnt():
 
     raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
                 task=task, acquisition=acq, raw_file=raw_fname,
-                output_path=output_path, write_mode='append', kind='eeg')
+                output_path=output_path, overwrite=False, kind='eeg')
 
     cmd = ['bids-validator', '--bep006', output_path]
     run_subprocess(cmd, shell=shell)
@@ -327,7 +307,7 @@ def test_json_tsv():
     raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
                 task=task, acquisition=acq, raw_file=raw,
                 events_data=events_fname, output_path=output_path,
-                event_id=event_id, write_mode='append')
+                event_id=event_id, overwrite=False)
 
     ses_path = make_bids_folders(subject=subject_id, session=session_id,
                                  root=output_path, make_dir=False)
@@ -356,19 +336,20 @@ def test_json_tsv():
         acquisition=acq, suffix='%s%s' % ('meg', '.fif'))
 
     with pytest.raises(OSError, match="already exists"):
-        _channels_tsv(raw, channels_fname, write_mode='error', verbose=False)
+        _channels_tsv(raw, channels_fname, overwrite=False, verbose=False)
     with pytest.raises(OSError, match="already exists"):
         _sidecar_json(raw, task, 'Elekta', data_meta_fname, 'meg',
-                      write_mode='error', verbose=False)
+                      overwrite=False, verbose=False)
     with pytest.raises(OSError, match="already exists"):
-        _participants_tsv(raw, subject_id, "n/a", participants_fname, 'error',
-                          False)
+        _participants_tsv(raw, subject_id, "n/a", participants_fname,
+                          overwrite=False, verbose=False)
     with pytest.raises(OSError, match="already exists"):
         _coordsystem_json(raw, "n/a", "n/a", 'Elekta', coordsystem_fname,
-                          'error', False)
+                          overwrite=False, verbose=False)
     with pytest.raises(OSError, match="already exists"):
         events = _read_events(events_fname, raw)
-        _events_tsv(events, raw, events_tsv_fname, event_id, 'error', False)
+        _events_tsv(events, raw, events_tsv_fname, event_id, overwrite=False,
+                    verbose=False)
     with pytest.raises(OSError, match="already exists"):
         _scans_tsv(raw, op.join('meg', raw_file_bids), scans_fname,
-                   'error', False)
+                   overwrite=False, verbose=False)
