@@ -21,9 +21,6 @@ from mne.utils import _TempDir, run_subprocess
 from mne.io.constants import FIFF
 
 from mne_bids import raw_to_bids, make_bids_filename, make_bids_folders
-from mne_bids.mne_bids import (_channels_tsv, _coordsystem_json, _events_tsv,
-                               _participants_tsv, _sidecar_json, _scans_tsv)
-from mne_bids.utils import _read_events
 
 base_path = op.join(op.dirname(mne.__file__), 'io')
 subject_id = '01'
@@ -74,6 +71,21 @@ def test_fif():
                 session_id=session_id, raw_file=raw_fname2,
                 events_data=events_fname, output_path=output_path,
                 event_id=event_id, overwrite=False)
+    # check that the overwrite parameters work correctly for the participant
+    # data
+    # change the gender but don't force overwrite.
+    raw.info['subject_info'] = {'his_id': subject_id2,
+                                'birthday': (1994, 1, 26), 'sex': 2}
+    with pytest.raises(OSError, match="already exists"):
+        raw_to_bids(subject_id=subject_id2, run=run, task=task,
+                    acquisition=acq, session_id=session_id, raw_file=raw,
+                    events_data=events_fname, output_path=output_path,
+                    event_id=event_id, overwrite=False)
+    # now force the overwrite
+    raw_to_bids(subject_id=subject_id2, run=run, task=task,
+                acquisition=acq, session_id=session_id, raw_file=raw,
+                events_data=events_fname, output_path=output_path,
+                event_id=event_id, overwrite=True)
     cmd = ['bids-validator', output_path]
     run_subprocess(cmd, shell=shell)
 
@@ -288,68 +300,3 @@ def test_cnt():
 
     cmd = ['bids-validator', '--bep006', output_path]
     run_subprocess(cmd, shell=shell)
-
-
-def test_json_tsv():
-    """ Test each of the .tsv and .json generating functions in error mode."""
-    output_path = _TempDir()
-    data_path = testing.data_path()
-    raw_fname = op.join(data_path, 'MEG', 'sample',
-                        'sample_audvis_trunc_raw.fif')
-
-    event_id = {'Auditory/Left': 1, 'Auditory/Right': 2, 'Visual/Left': 3,
-                'Visual/Right': 4, 'Smiley': 5, 'Button': 32}
-    events_fname = op.join(data_path, 'MEG', 'sample',
-                           'sample_audvis_trunc_raw-eve.fif')
-
-    raw = mne.io.read_raw_fif(raw_fname)
-
-    raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
-                task=task, acquisition=acq, raw_file=raw,
-                events_data=events_fname, output_path=output_path,
-                event_id=event_id, overwrite=False)
-
-    ses_path = make_bids_folders(subject=subject_id, session=session_id,
-                                 root=output_path, make_dir=False)
-
-    data_path = op.join(ses_path, 'meg')
-
-    participants_fname = make_bids_filename(prefix=output_path,
-                                            suffix='participants.tsv')
-    coordsystem_fname = make_bids_filename(
-        subject=subject_id, session=session_id, acquisition=acq,
-        suffix='coordsystem.json', prefix=data_path)
-    data_meta_fname = make_bids_filename(
-        subject=subject_id, session=session_id, task=task, run=run,
-        acquisition=acq, suffix='%s.json' % 'meg', prefix=data_path)
-    events_tsv_fname = make_bids_filename(
-        subject=subject_id, session=session_id, task=task, run=run,
-        acquisition=acq, suffix='events.tsv', prefix=data_path)
-    channels_fname = make_bids_filename(
-        subject=subject_id, session=session_id, task=task, run=run,
-        acquisition=acq, suffix='channels.tsv', prefix=data_path)
-    scans_fname = make_bids_filename(
-        subject=subject_id, session=session_id, suffix='scans.tsv',
-        prefix=ses_path)
-    raw_file_bids = make_bids_filename(
-        subject=subject_id, session=session_id, task=task, run=run,
-        acquisition=acq, suffix='%s%s' % ('meg', '.fif'))
-
-    with pytest.raises(OSError, match="already exists"):
-        _channels_tsv(raw, channels_fname, overwrite=False, verbose=False)
-    with pytest.raises(OSError, match="already exists"):
-        _sidecar_json(raw, task, 'Elekta', data_meta_fname, 'meg',
-                      overwrite=False, verbose=False)
-    with pytest.raises(OSError, match="already exists"):
-        _participants_tsv(raw, subject_id, "n/a", participants_fname,
-                          overwrite=False, verbose=False)
-    with pytest.raises(OSError, match="already exists"):
-        _coordsystem_json(raw, "n/a", "n/a", 'Elekta', coordsystem_fname,
-                          overwrite=False, verbose=False)
-    with pytest.raises(OSError, match="already exists"):
-        events = _read_events(events_fname, raw)
-        _events_tsv(events, raw, events_tsv_fname, event_id, overwrite=False,
-                    verbose=False)
-    with pytest.raises(OSError, match="already exists"):
-        _scans_tsv(raw, op.join('meg', raw_file_bids), scans_fname,
-                   overwrite=False, verbose=False)
