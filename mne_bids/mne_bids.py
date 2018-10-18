@@ -10,6 +10,7 @@
 
 import os
 import os.path as op
+from errno import EEXIST
 import shutil as sh
 import pandas as pd
 from collections import defaultdict, OrderedDict
@@ -85,7 +86,7 @@ def _channels_tsv(raw, fname, overwrite='overwrite', verbose=True):
 
     """
     if op.exists(fname) and overwrite == 'error':
-        raise FileExistsError
+        raise OSError(EEXIST)
 
     map_chs = defaultdict(lambda: 'OTHER')
     map_chs.update(meggradaxial='MEGGRADAXIAL',
@@ -195,7 +196,7 @@ def _events_tsv(events, raw, fname, trial_type, overwrite='overwrite',
 
     """
     if op.exists(fname) and overwrite == 'error':
-        raise FileExistsError
+        raise OSError(EEXIST)
 
     # Start by filling all data that we know into a df
     first_samp = raw.first_samp
@@ -259,7 +260,7 @@ def _participants_tsv(raw, subject_id, group, fname, overwrite='overwrite',
 
     """
     if op.exists(fname) and overwrite == 'error':
-        raise FileExistsError
+        raise OSError(EEXIST)
 
     subject_id = 'sub-' + subject_id
     data = {'participant_id': [subject_id]}
@@ -331,7 +332,7 @@ def _scans_tsv(raw, raw_fname, fname, overwrite='overwrite', verbose=True):
 
     """
     if op.exists(fname) and overwrite == 'error':
-        raise FileExistsError
+        raise OSError(EEXIST)
 
     # get measurement date from the data info
     meas_date = raw.info['meas_date']
@@ -391,7 +392,7 @@ def _coordsystem_json(raw, unit, orient, manufacturer, fname,
 
     """
     if op.exists(fname) and overwrite == 'error':
-        raise FileExistsError
+        raise OSError(EEXIST)
 
     dig = raw.info['dig']
     coords = dict()
@@ -461,7 +462,7 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, eeg_ref=None,
 
     """
     if op.exists(fname) and overwrite == 'error':
-        raise FileExistsError
+        raise OSError(EEXIST)
 
     sfreq = raw.info['sfreq']
     powerlinefrequency = raw.info.get('line_freq', None)
@@ -728,9 +729,9 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
     # are placed in the right location
     raw_file_bids = os.path.join(data_path, raw_file_bids)
     if os.path.exists(raw_file_bids) and overwrite == 'error':
-        raise FileExistsError('"%s" already exists. Please set'
-                              ' overwrite to "overwrite" or "clear".'
-                              % raw_file_bids)
+        raise OSError(EEXIST, '"%s" already exists. Please set'
+                      ' overwrite to "overwrite" or "clear".'
+                      % raw_file_bids)
     _mkdir_p(os.path.dirname(raw_file_bids))
 
     if verbose:
