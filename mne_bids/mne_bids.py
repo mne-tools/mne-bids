@@ -75,10 +75,8 @@ def _channels_tsv(raw, fname, overwrite=False, verbose=True):
     fname : str
         Filename to save the channels.tsv to.
     overwrite : bool
-        Defaults to False.
         Whether to overwrite the existing file.
-        If the file exists already but overwrite == False an `OSError` will be
-        raised.
+        Defaults to False.
     verbose : bool
         Set verbose output to true or false.
 
@@ -174,10 +172,8 @@ def _events_tsv(events, raw, fname, trial_type, overwrite=False,
         Dictionary mapping a brief description key to an event id (value). For
         example {'Go': 1, 'No Go': 2}.
     overwrite : bool
-        Defaults to False.
         Whether to overwrite the existing file.
-        If the file exists already but overwrite == False an `OSError` will be
-        raised.
+        Defaults to False.
     verbose : bool
         Set verbose output to true or false.
 
@@ -232,10 +228,10 @@ def _participants_tsv(raw, subject_id, group, fname, overwrite=False,
     fname : str
         Filename to save the participants.tsv to.
     overwrite : bool
+        Whether to overwrite the existing file.
         Defaults to False.
-        Whether to overwrite the existing data in the file.
-        If there is already data for the given `subject_id` and overwrite ==
-        False, an `OSError` will be raised.
+        If there is already data for the given `subject_id` and overwrite is
+        False, an error will be raised.
     verbose : bool
         Set verbose output to true or false.
 
@@ -268,8 +264,13 @@ def _participants_tsv(raw, subject_id, group, fname, overwrite=False,
 
     if os.path.exists(fname):
         orig_df = pd.read_csv(fname, sep='\t')
-        # if the participant id is already in the file raise an error
-        if subject_id in orig_df['participant_id'].values and not overwrite:
+        # whether the data exists in the existing DataFrame exactly
+        exact_included = df.values.tolist()[0] in orig_df.values.tolist()
+        # whether the subject id is in the existing DataFrame
+        sid_included = subject_id in orig_df['participant_id'].values
+        # if the subject data provided is different to the currently existing
+        # data and overwrite is not True raise an error
+        if (sid_included and not exact_included) and not overwrite:
             raise OSError(errno.EEXIST, '"%s" already exists in the '
                           'participant list. Please set overwrite to '
                           'True.' % subject_id)
@@ -300,8 +301,8 @@ def _scans_tsv(raw, raw_fname, fname, overwrite=False, verbose=True):
     overwrite : bool
         Defaults to False.
         Whether to overwrite the existing data in the file.
-        If there is already data for the given `fname` and overwrite ==
-        False, an `OSError` will be raised.
+        If there is already data for the given `fname` and overwrite is False,
+        an error will be raised.
     verbose : bool
         Set verbose output to true or false.
 
@@ -355,10 +356,8 @@ def _coordsystem_json(raw, unit, orient, manufacturer, fname,
     fname : str
         Filename to save the coordsystem.json to.
     overwrite : bool
-        Defaults to False.
         Whether to overwrite the existing file.
-        If the file exists already but overwrite == False an `OSError` will be
-        raised.
+        Defaults to False.
     verbose : bool
         Set verbose output to true or false.
 
@@ -422,10 +421,8 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, eeg_ref=None,
     eeg_gnd : str
         Description  of the location of the ground electrode. Defaults to None.
     overwrite : bool
-        Defaults to False.
         Whether to overwrite the existing file.
-        If the file exists already but overwrite == False an `OSError` will be
-        raised.
+        Defaults to False.
     verbose : bool
         Set verbose output to true or false. Defaults to true.
 
@@ -578,12 +575,13 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
         A path to the configuration file to use if the data is from a BTi
         system.
     overwrite : bool
-        Defaults to False.
         Whether to overwrite existing files or data in files.
-        If overwrite == True, any existing files will be overwritten with the
-        exception of the `participants.tsv` and `scans.tsv` files. These will
-        have only matching pre-existing data replaced.
-        If overwrite == False, an `OSError` will be raised if the file exists
+        Defaults to False.
+        If overwrite is True, any existing files with the same BIDS parameters
+        will be overwritten with the exception of the `participants.tsv` and
+        `scans.tsv` files. These will have only matching pre-existing data
+        replaced.
+        If overwrite is False, an `OSError` will be raised if the file exists
         already or if there is matching data already in the `participants.tsv`
         or `scans.tsv` files.
     verbose : bool
@@ -620,13 +618,13 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
 
     data_path = make_bids_folders(subject=subject_id, session=session_id,
                                   kind=kind, root=output_path,
-                                  verbose=verbose)
+                                  overwrite=False, verbose=verbose)
     if session_id is None:
         ses_path = os.sep.join(data_path.split(os.sep)[:-1])
     else:
         ses_path = make_bids_folders(subject=subject_id, session=session_id,
                                      root=output_path, make_dir=False,
-                                     verbose=verbose)
+                                     overwrite=False, verbose=verbose)
 
     # create filenames
     scans_fname = make_bids_filename(
