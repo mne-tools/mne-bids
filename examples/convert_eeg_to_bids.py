@@ -168,7 +168,7 @@ for subj_idx in [1, 2]:
                     output_path=output_path,
                     kind=kind,
                     event_id=trial_type,
-                    overwrite=False
+                    overwrite=True
                     )
 
 ###############################################################################
