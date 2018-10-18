@@ -264,7 +264,7 @@ def _participants_tsv(raw, subject_id, group, fname, overwrite=False,
 
     if os.path.exists(fname):
         orig_df = pd.read_csv(fname, sep='\t')
-        # whether the data exists in the existing DataFrame exactly
+        # whether the data exists identically in the current DataFrame
         exact_included = df.values.tolist()[0] in orig_df.values.tolist()
         # whether the subject id is in the existing DataFrame
         sid_included = subject_id in orig_df['participant_id'].values
@@ -274,8 +274,10 @@ def _participants_tsv(raw, subject_id, group, fname, overwrite=False,
             raise OSError(errno.EEXIST, '"%s" already exists in the '
                           'participant list. Please set overwrite to '
                           'True.' % subject_id)
-        # otherwise add the new data, dropping any duplicates.
+        # otherwise add the new data
         df = orig_df.append(df)
+        # and drop any duplicates as we want overwrite = True to force the old
+        # data to be overwritten
         df.drop_duplicates(subset='participant_id', keep='last',
                            inplace=True)
         df = df.sort_values(by='participant_id')
@@ -327,8 +329,10 @@ def _scans_tsv(raw, raw_fname, fname, overwrite=False, verbose=True):
             raise OSError(errno.EEXIST, '"%s" already exists in the '
                           'scans list. Please set overwrite to '
                           'True.' % raw_fname)
-        # otherwise add the new data, dropping any duplicates.
+        # otherwise add the new data
         df = orig_df.append(df)
+        # and drop any duplicates as we want overwrite = True to force the old
+        # data to be overwritten
         df.drop_duplicates(subset='filename', keep='last', inplace=True)
         df = df.sort_values(by='acq_time')
 
@@ -579,11 +583,10 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
         Defaults to False.
         If overwrite is True, any existing files with the same BIDS parameters
         will be overwritten with the exception of the `participants.tsv` and
-        `scans.tsv` files. These will have only matching pre-existing data
+        `scans.tsv` files. For these files, parts of pre-existing data that
+        match the current data will be replaced.
+        If overwrite is False, no existing data will be overwritten or
         replaced.
-        If overwrite is False, an `OSError` will be raised if the file exists
-        already or if there is matching data already in the `participants.tsv`
-        or `scans.tsv` files.
     verbose : bool
         If verbose is True, this will print a snippet of the sidecar files. If
         False, no content will be printed.
