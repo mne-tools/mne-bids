@@ -11,7 +11,9 @@ For each supported file format, implement a test.
 
 import os
 import os.path as op
+from errno import EEXIST
 import pytest
+import subprocess
 
 import pandas as pd
 import mne
@@ -137,7 +139,9 @@ def test_ctf():
     run_subprocess(cmd, shell=shell)
 
     # test to check that the 'error' overwrite parameter works correctly
-    with pytest.raises(FileExistsError):
+    with pytest.raises(OSError) as exc:
+        # FIXME: is there a way in py2 to get this to detect the correct
+        # sub-type of OSError?
         raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
                     task=task, raw_file=raw_fname, output_path=output_path,
                     overwrite='error')
@@ -188,7 +192,7 @@ def test_vhdr():
     for _, _, files in os.walk(output_path):
         for f in files:
             if 'run-%s' % run in f:
-                raise FileExistsError
+                raise OSError(EEXIST)
 
     # check that the scans list contains one scans
     scans_tsv = make_bids_filename(
@@ -226,7 +230,7 @@ def test_edf():
         prefix=op.join(output_path, 'sub-01/ses-01/eeg'))
     df = pd.read_csv(channels_tsv, sep='\t')
     assert 'ElectroMyoGram' in df['description'].values
-    
+
     # check that the scans list contains two scans
     scans_tsv = make_bids_filename(
         subject=subject_id, session=session_id, suffix='scans.tsv',
