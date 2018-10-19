@@ -87,6 +87,22 @@ def test_fif():
     # now force the overwrite
     write_raw_bids(raw, bids_fname, output_path, events_data=events_fname,
                    event_id=event_id, overwrite=True)
+
+    with pytest.raises(ValueError, match='raw_file must be'):
+        write_raw_bids('blah', bids_fname, output_path)
+
+    bids_fname = partial_bids_fname + '_xyz.fif'
+    with pytest.raises(ValueError, match='as suffix'):
+        write_raw_bids(raw, bids_fname, output_path)
+
+    bids_fname = 'sub-01_ses-01_xyz-01_run-01_meg.fif'
+    with pytest.raises(KeyError, match='Unexpected entity'):
+        write_raw_bids(raw, bids_fname, output_path)
+
+    del raw._filenames
+    with pytest.raises(ValueError, match='raw.filenames is missing'):
+        write_raw_bids(raw, bids_fname, output_path)
+
     cmd = ['bids-validator', output_path]
     run_subprocess(cmd, shell=shell)
 
