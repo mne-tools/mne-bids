@@ -106,14 +106,9 @@ def _channels_tsv(raw, fname, overwrite=False, verbose=True):
 
     # get the manufacturer from the file in the Raw object
     manufacturer = None
-    if hasattr(raw, 'filenames'):
-        # XXX: Hack for EEGLAB bug in MNE-Python 0.16; fixed in MNE-Python
-        # 0.17, ... remove the hack after upgrading dependencies in MNE-BIDS
-        if raw.filenames[0] is None:  # hack
-            ext = '.set'  # hack
-        else:
-            _, ext = _parse_ext(raw.filenames[0], verbose=verbose)
-            manufacturer = MANUFACTURERS[ext]
+
+    _, ext = _parse_ext(raw.filenames[0], verbose=verbose)
+    manufacturer = MANUFACTURERS[ext]
 
     ignored_indexes = [raw.ch_names.index(ch_name) for ch_name in raw.ch_names
                        if ch_name in
@@ -568,20 +563,16 @@ def write_raw_bids(raw, bids_fname, output_path, events_data=None,
         raise ValueError('raw_file must be an instance of BaseRaw, '
                          'got %s' % type(raw))
 
-    if not hasattr(raw, 'filenames'):
+    if not hasattr(raw, 'filenames') or raw.filenames[0] is None:
         raise ValueError('raw.filenames is missing. Please set raw.filenames'
                          'as a list with the full path of original raw file.')
 
+    _, ext = _parse_ext(bids_fname, verbose=verbose)
     raw_fname = raw.filenames[0]
     if '.ds' in op.dirname(raw.filenames[0]):
         raw_fname = op.dirname(raw.filenames[0])
-    if '.eeg' in raw.filenames[0]:
-        raw_fname = raw_fname[:-4] + '.vhdr'
-    _, ext = _parse_ext(raw_fname, verbose=verbose)
-
-    if ext in ('.set', '.fdt') and not check_version('mne', '0.17.dev'):
-        raise ValueError('MNE version > 0.17dev0 is required for converting'
-                         ' set files. Please update your installation of mne')
+    raw_fname = raw_fname.replace('.eeg', '.vhdr')
+    raw_fname = raw_fname.replace('.fdt', '.set')
 
     params = _parse_bids_filename(bids_fname, verbose)
     subject_id, session_id, kind = params['sub'], params['ses'], params['kind']
@@ -616,8 +607,7 @@ def write_raw_bids(raw, bids_fname, output_path, events_data=None,
     channels_fname = make_bids_filename(
         subject=subject_id, session=session_id, task=task, run=run,
         acquisition=acquisition, suffix='channels.tsv', prefix=data_path)
-    if ext not in ['.fif', '.ds', '.vhdr', '.edf', '.bdf', '.set', '.fdt',
-                   '.cnt']:
+    if ext not in ['.fif', '.ds', '.vhdr', '.edf', '.bdf', '.set', '.cnt']:
         bids_raw_folder = bids_fname.split('.')[0]
         bids_fname = op.join(bids_raw_folder, bids_fname)
 
