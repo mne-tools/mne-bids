@@ -108,7 +108,7 @@
 <h1>mne_bids.utils.make_bids_folders<a class="headerlink" href="#mne-bids-utils-make-bids-folders" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
 <dt id="mne_bids.utils.make_bids_folders">
-<code class="descclassname">mne_bids.utils.</code><code class="descname">make_bids_folders</code><span class="sig-paren">(</span><em>subject</em>, <em>session=None</em>, <em>kind=None</em>, <em>root=None</em>, <em>make_dir=True</em>, <em>overwrite=True</em>, <em>verbose=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/utils.html#make_bids_folders"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.utils.make_bids_folders" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">mne_bids.utils.</code><code class="descname">make_bids_folders</code><span class="sig-paren">(</span><em>subject</em>, <em>session=None</em>, <em>kind=None</em>, <em>root=None</em>, <em>make_dir=True</em>, <em>overwrite=False</em>, <em>verbose=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/utils.html#make_bids_folders"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.utils.make_bids_folders" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a BIDS folder hierarchy.</p>
 <p>This creates a hierarchy of folders <em>within</em> a BIDS dataset. You should
 plan to create these folders <em>inside</em> the root folder of the dataset.</p>
@@ -136,8 +136,10 @@ created in the current working directory.</p>
 path will be generated but no folders will be created.</p>
 </dd>
 <dt><strong>overwrite</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
-<dd><p class="first last">If <cite>make_dir</cite> is True and one or all folders already exist,
-this will overwrite them with empty folders.</p>
+<dd><p class="first last">How to handle overwriting previously generated data.
+If overwrite == False then no existing folders will be removed, however
+if overwrite == True then any existing folders at the session level
+or lower will be removed, including any contained data.</p>
 </dd>
 <dt><strong>verbose</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
 <dd><p class="first last">If verbose is True, print status updates
@@ -177,7 +179,7 @@ as folders are created.</p>
       
     </p>
     <p>
-        &copy; Copyright 2018, MNE Developers. Last updated on 2018-10-17.<br/>
+        &copy; Copyright 2018, MNE Developers. Last updated on 2018-10-19.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.1.<br/>
     </p>
   </div>

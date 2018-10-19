@@ -146,9 +146,9 @@ of the directory tree.
     |------------------ database
     |--------------------- eegmmidb
     |------------------------ S002
-    |--------------------------- S002R04.edf
-    |--------------------------- S002R02.edf
     |--------------------------- S002R12.edf
+    |--------------------------- S002R02.edf
+    |--------------------------- S002R04.edf
     |------------------------ S001
     |--------------------------- S001R02.edf
     |--------------------------- S001R12.edf
@@ -272,7 +272,14 @@ however optional. The required inputs are:
             A path to the configuration file to use if the data is from a BTi
             system.
         overwrite : bool
-            If the file already exists, whether to overwrite it.
+            Whether to overwrite existing files or data in files.
+            Defaults to False.
+            If overwrite is True, any existing files with the same BIDS parameters
+            will be overwritten with the exception of the `participants.tsv` and
+            `scans.tsv` files. For these files, parts of pre-existing data that
+            match the current data will be replaced.
+            If overwrite is False, no existing data will be overwritten or
+            replaced.
         verbose : bool
             If verbose is True, this will print a snippet of the sidecar files. If
             False, no content will be printed.
@@ -295,10 +302,6 @@ The second task was to rest with closed eyes.
     task = 'resteyesclosed'
     raw_file = raw
     output_path = os.path.join(home, 'mne_data', 'eegmmidb_bids')
-
-    # Clean up existing directories for the sake of the example
-    if os.path.exists(output_path):
-        sh.rmtree(output_path)
 
 
 
@@ -323,7 +326,8 @@ Now we just need to specify a few more EEG details to get something sensible:
 
     # Now convert our data to be in a new BIDS dataset.
     raw_to_bids(subject_id=subject_id, task=task, raw_file=raw_file,
-                output_path=output_path, kind=kind, event_id=trial_type)
+                output_path=output_path, kind=kind, event_id=trial_type,
+                overwrite=False)
 
 
 
@@ -336,6 +340,16 @@ Now we just need to specify a few more EEG details to get something sensible:
  .. code-block:: none
 
     Creating folder: /home/circleci/mne_data/eegmmidb_bids/sub-001/eeg
+
+    Writing '/home/circleci/mne_data/eegmmidb_bids/participants.tsv'...
+
+      participant_id  age  sex group
+    0        sub-001  NaN  NaN   NaN
+
+    Writing '/home/circleci/mne_data/eegmmidb_bids/sub-001/sub-001_scans.tsv'...
+
+                                      filename acq_time
+    0  eeg/sub-001_task-resteyesclosed_eeg.edf      n/a
     1 events found
     Event IDs: [1]
 
@@ -372,11 +386,6 @@ Now we just need to specify a few more EEG details to get something sensible:
         "TriggerChannelCount": 1
     }
 
-    Writing '/home/circleci/mne_data/eegmmidb_bids/participants.tsv'...
-
-      participant_id  age  sex group
-    0        sub-001  NaN  NaN   NaN
-
     Writing '/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_channels.tsv'...
 
        name type units           description  sampling_frequency  low_cutoff  \
@@ -392,11 +401,6 @@ Now we just need to specify a few more EEG details to get something sensible:
     2         80.0   good  
     3         80.0   good  
     4         80.0   good  
-
-    Writing '/home/circleci/mne_data/eegmmidb_bids/sub-001/sub-001_scans.tsv'...
-
-                                      filename acq_time
-    0  eeg/sub-001_task-resteyesclosed_eeg.edf      n/a
     Writing data files to /home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_eeg.edf
 
 
@@ -424,10 +428,10 @@ What does our fresh BIDS directory look like?
     |--------------- sub-001
     |------------------ sub-001_scans.tsv
     |------------------ eeg
-    |--------------------- sub-001_task-resteyesclosed_events.tsv
-    |--------------------- sub-001_task-resteyesclosed_eeg.json
     |--------------------- sub-001_task-resteyesclosed_eeg.edf
+    |--------------------- sub-001_task-resteyesclosed_events.tsv
     |--------------------- sub-001_task-resteyesclosed_channels.tsv
+    |--------------------- sub-001_task-resteyesclosed_eeg.json
 
 
 Looks good so far, let's convert the data for all tasks and subjects.
@@ -468,7 +472,7 @@ Looks good so far, let's convert the data for all tasks and subjects.
                         output_path=output_path,
                         kind=kind,
                         event_id=trial_type,
-                        overwrite=False
+                        overwrite=True
                         )
 
 
@@ -488,6 +492,16 @@ Looks good so far, let's convert the data for all tasks and subjects.
     Creating raw.info structure...
     Reading 0 ... 9759  =      0.000 ...    60.994 secs...
     Creating folder: /home/circleci/mne_data/eegmmidb_bids/sub-001/eeg
+
+    Writing '/home/circleci/mne_data/eegmmidb_bids/participants.tsv'...
+
+      participant_id  age  sex group
+    0        sub-001  NaN  NaN   NaN
+
+    Writing '/home/circleci/mne_data/eegmmidb_bids/sub-001/sub-001_scans.tsv'...
+
+                                      filename acq_time
+    0  eeg/sub-001_task-resteyesclosed_eeg.edf      n/a
     1 events found
     Event IDs: [1]
 
@@ -524,11 +538,6 @@ Looks good so far, let's convert the data for all tasks and subjects.
         "TriggerChannelCount": 1
     }
 
-    Writing '/home/circleci/mne_data/eegmmidb_bids/participants.tsv'...
-
-      participant_id  age  sex group
-    0        sub-001  NaN  NaN   NaN
-
     Writing '/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_channels.tsv'...
 
        name type units           description  sampling_frequency  low_cutoff  \
@@ -544,11 +553,6 @@ Looks good so far, let's convert the data for all tasks and subjects.
     2         80.0   good  
     3         80.0   good  
     4         80.0   good  
-
-    Writing '/home/circleci/mne_data/eegmmidb_bids/sub-001/sub-001_scans.tsv'...
-
-                                      filename acq_time
-    0  eeg/sub-001_task-resteyesclosed_eeg.edf      n/a
     Writing data files to /home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_eeg.edf
     Extracting EDF parameters from /home/circleci/mne_data/MNE-eegbci-data/physiobank/database/eegmmidb/S001/S001R04.edf...
     EDF file detected
@@ -556,6 +560,17 @@ Looks good so far, let's convert the data for all tasks and subjects.
     Setting channel info structure...
     Creating raw.info structure...
     Reading 0 ... 19999  =      0.000 ...   124.994 secs...
+
+    Writing '/home/circleci/mne_data/eegmmidb_bids/participants.tsv'...
+
+      participant_id  age  sex group
+    0        sub-001  NaN  NaN   NaN
+
+    Writing '/home/circleci/mne_data/eegmmidb_bids/sub-001/sub-001_scans.tsv'...
+
+                                          filename acq_time
+    0      eeg/sub-001_task-resteyesclosed_eeg.edf      n/a
+    0  eeg/sub-001_task-imaginefists_run-1_eeg.edf      n/a
     30 events found
     Event IDs: [1 2 3]
 
@@ -596,11 +611,6 @@ Looks good so far, let's convert the data for all tasks and subjects.
         "TriggerChannelCount": 1
     }
 
-    Writing '/home/circleci/mne_data/eegmmidb_bids/participants.tsv'...
-
-      participant_id  age  sex group
-    0        sub-001  NaN  NaN   NaN
-
     Writing '/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-imaginefists_run-1_channels.tsv'...
 
        name type units           description  sampling_frequency  low_cutoff  \
@@ -616,11 +626,6 @@ Looks good so far, let's convert the data for all tasks and subjects.
     2         80.0   good  
     3         80.0   good  
     4         80.0   good  
-
-    Writing '/home/circleci/mne_data/eegmmidb_bids/sub-001/sub-001_scans.tsv'...
-
-                                          filename acq_time
-    0  eeg/sub-001_task-imaginefists_run-1_eeg.edf      n/a
     Writing data files to /home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-imaginefists_run-1_eeg.edf
     Extracting EDF parameters from /home/circleci/mne_data/MNE-eegbci-data/physiobank/database/eegmmidb/S001/S001R12.edf...
     EDF file detected
@@ -628,6 +633,18 @@ Looks good so far, let's convert the data for all tasks and subjects.
     Setting channel info structure...
     Creating raw.info structure...
     Reading 0 ... 19999  =      0.000 ...   124.994 secs...
+
+    Writing '/home/circleci/mne_data/eegmmidb_bids/participants.tsv'...
+
+      participant_id  age  sex group
+    0        sub-001  NaN  NaN   NaN
+
+    Writing '/home/circleci/mne_data/eegmmidb_bids/sub-001/sub-001_scans.tsv'...
+
+                                          filename acq_time
+    0      eeg/sub-001_task-resteyesclosed_eeg.edf      n/a
+    1  eeg/sub-001_task-imaginefists_run-1_eeg.edf      n/a
+    0  eeg/sub-001_task-imaginefists_run-2_eeg.edf      n/a
     30 events found
     Event IDs: [1 2 3]
 
@@ -668,11 +685,6 @@ Looks good so far, let's convert the data for all tasks and subjects.
         "TriggerChannelCount": 1
     }
 
-    Writing '/home/circleci/mne_data/eegmmidb_bids/participants.tsv'...
-
-      participant_id  age  sex group
-    0        sub-001  NaN  NaN   NaN
-
     Writing '/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-imaginefists_run-2_channels.tsv'...
 
        name type units           description  sampling_frequency  low_cutoff  \
@@ -688,11 +700,6 @@ Looks good so far, let's convert the data for all tasks and subjects.
     2         80.0   good  
     3         80.0   good  
     4         80.0   good  
-
-    Writing '/home/circleci/mne_data/eegmmidb_bids/sub-001/sub-001_scans.tsv'...
-
-                                          filename acq_time
-    0  eeg/sub-001_task-imaginefists_run-2_eeg.edf      n/a
     Writing data files to /home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-imaginefists_run-2_eeg.edf
     Extracting EDF parameters from /home/circleci/mne_data/MNE-eegbci-data/physiobank/database/eegmmidb/S002/S002R02.edf...
     EDF file detected
@@ -701,6 +708,17 @@ Looks good so far, let's convert the data for all tasks and subjects.
     Creating raw.info structure...
     Reading 0 ... 9759  =      0.000 ...    60.994 secs...
     Creating folder: /home/circleci/mne_data/eegmmidb_bids/sub-002/eeg
+
+    Writing '/home/circleci/mne_data/eegmmidb_bids/participants.tsv'...
+
+      participant_id  age  sex group
+    0        sub-001  n/a  n/a   n/a
+    0        sub-002  NaN  NaN   NaN
+
+    Writing '/home/circleci/mne_data/eegmmidb_bids/sub-002/sub-002_scans.tsv'...
+
+                                      filename acq_time
+    0  eeg/sub-002_task-resteyesclosed_eeg.edf      n/a
     1 events found
     Event IDs: [1]
 
@@ -737,12 +755,6 @@ Looks good so far, let's convert the data for all tasks and subjects.
         "TriggerChannelCount": 1
     }
 
-    Writing '/home/circleci/mne_data/eegmmidb_bids/participants.tsv'...
-
-      participant_id  age  sex group
-    0        sub-001  n/a  n/a   n/a
-    0        sub-002  NaN  NaN   NaN
-
     Writing '/home/circleci/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-resteyesclosed_channels.tsv'...
 
        name type units           description  sampling_frequency  low_cutoff  \
@@ -758,11 +770,6 @@ Looks good so far, let's convert the data for all tasks and subjects.
     2         80.0   good  
     3         80.0   good  
     4         80.0   good  
-
-    Writing '/home/circleci/mne_data/eegmmidb_bids/sub-002/sub-002_scans.tsv'...
-
-                                      filename acq_time
-    0  eeg/sub-002_task-resteyesclosed_eeg.edf      n/a
     Writing data files to /home/circleci/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-resteyesclosed_eeg.edf
     Extracting EDF parameters from /home/circleci/mne_data/MNE-eegbci-data/physiobank/database/eegmmidb/S002/S002R04.edf...
     EDF file detected
@@ -770,6 +777,18 @@ Looks good so far, let's convert the data for all tasks and subjects.
     Setting channel info structure...
     Creating raw.info structure...
     Reading 0 ... 19679  =      0.000 ...   122.994 secs...
+
+    Writing '/home/circleci/mne_data/eegmmidb_bids/participants.tsv'...
+
+      participant_id  age  sex group
+    0        sub-001  n/a  n/a   n/a
+    0        sub-002  NaN  NaN   NaN
+
+    Writing '/home/circleci/mne_data/eegmmidb_bids/sub-002/sub-002_scans.tsv'...
+
+                                          filename acq_time
+    0      eeg/sub-002_task-resteyesclosed_eeg.edf      n/a
+    0  eeg/sub-002_task-imaginefists_run-1_eeg.edf      n/a
     30 events found
     Event IDs: [1 2 3]
 
@@ -810,12 +829,6 @@ Looks good so far, let's convert the data for all tasks and subjects.
         "TriggerChannelCount": 1
     }
 
-    Writing '/home/circleci/mne_data/eegmmidb_bids/participants.tsv'...
-
-      participant_id  age  sex group
-    0        sub-001  n/a  n/a   n/a
-    0        sub-002  NaN  NaN   NaN
-
     Writing '/home/circleci/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-imaginefists_run-1_channels.tsv'...
 
        name type units           description  sampling_frequency  low_cutoff  \
@@ -831,11 +844,6 @@ Looks good so far, let's convert the data for all tasks and subjects.
     2         80.0   good  
     3         80.0   good  
     4         80.0   good  
-
-    Writing '/home/circleci/mne_data/eegmmidb_bids/sub-002/sub-002_scans.tsv'...
-
-                                          filename acq_time
-    0  eeg/sub-002_task-imaginefists_run-1_eeg.edf      n/a
     Writing data files to /home/circleci/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-imaginefists_run-1_eeg.edf
     Extracting EDF parameters from /home/circleci/mne_data/MNE-eegbci-data/physiobank/database/eegmmidb/S002/S002R12.edf...
     EDF file detected
@@ -843,6 +851,19 @@ Looks good so far, let's convert the data for all tasks and subjects.
     Setting channel info structure...
     Creating raw.info structure...
     Reading 0 ... 19679  =      0.000 ...   122.994 secs...
+
+    Writing '/home/circleci/mne_data/eegmmidb_bids/participants.tsv'...
+
+      participant_id  age  sex group
+    0        sub-001  n/a  n/a   n/a
+    0        sub-002  NaN  NaN   NaN
+
+    Writing '/home/circleci/mne_data/eegmmidb_bids/sub-002/sub-002_scans.tsv'...
+
+                                          filename acq_time
+    0      eeg/sub-002_task-resteyesclosed_eeg.edf      n/a
+    1  eeg/sub-002_task-imaginefists_run-1_eeg.edf      n/a
+    0  eeg/sub-002_task-imaginefists_run-2_eeg.edf      n/a
     30 events found
     Event IDs: [1 2 3]
 
@@ -883,12 +904,6 @@ Looks good so far, let's convert the data for all tasks and subjects.
         "TriggerChannelCount": 1
     }
 
-    Writing '/home/circleci/mne_data/eegmmidb_bids/participants.tsv'...
-
-      participant_id  age  sex group
-    0        sub-001  n/a  n/a   n/a
-    0        sub-002  NaN  NaN   NaN
-
     Writing '/home/circleci/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-imaginefists_run-2_channels.tsv'...
 
        name type units           description  sampling_frequency  low_cutoff  \
@@ -904,11 +919,6 @@ Looks good so far, let's convert the data for all tasks and subjects.
     2         80.0   good  
     3         80.0   good  
     4         80.0   good  
-
-    Writing '/home/circleci/mne_data/eegmmidb_bids/sub-002/sub-002_scans.tsv'...
-
-                                          filename acq_time
-    0  eeg/sub-002_task-imaginefists_run-2_eeg.edf      n/a
     Writing data files to /home/circleci/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-imaginefists_run-2_eeg.edf
 
 
@@ -938,33 +948,33 @@ Now we have written our BIDS directory.
     |--------------- sub-002
     |------------------ sub-002_scans.tsv
     |------------------ eeg
-    |--------------------- sub-002_task-resteyesclosed_eeg.json
+    |--------------------- sub-002_task-imaginefists_run-2_eeg.json
+    |--------------------- sub-002_task-imaginefists_run-2_eeg.edf
     |--------------------- sub-002_task-imaginefists_run-1_eeg.edf
     |--------------------- sub-002_task-resteyesclosed_channels.tsv
-    |--------------------- sub-002_task-imaginefists_run-2_events.tsv
-    |--------------------- sub-002_task-imaginefists_run-1_channels.tsv
-    |--------------------- sub-002_task-imaginefists_run-2_eeg.edf
-    |--------------------- sub-002_task-imaginefists_run-1_events.tsv
-    |--------------------- sub-002_task-resteyesclosed_eeg.edf
-    |--------------------- sub-002_task-imaginefists_run-1_eeg.json
-    |--------------------- sub-002_task-imaginefists_run-2_eeg.json
     |--------------------- sub-002_task-resteyesclosed_events.tsv
+    |--------------------- sub-002_task-imaginefists_run-2_events.tsv
+    |--------------------- sub-002_task-imaginefists_run-1_eeg.json
+    |--------------------- sub-002_task-imaginefists_run-1_events.tsv
+    |--------------------- sub-002_task-imaginefists_run-1_channels.tsv
     |--------------------- sub-002_task-imaginefists_run-2_channels.tsv
+    |--------------------- sub-002_task-resteyesclosed_eeg.json
+    |--------------------- sub-002_task-resteyesclosed_eeg.edf
     |--------------- sub-001
     |------------------ sub-001_scans.tsv
     |------------------ eeg
+    |--------------------- sub-001_task-resteyesclosed_eeg.edf
+    |--------------------- sub-001_task-resteyesclosed_events.tsv
+    |--------------------- sub-001_task-imaginefists_run-1_events.tsv
+    |--------------------- sub-001_task-resteyesclosed_channels.tsv
+    |--------------------- sub-001_task-imaginefists_run-1_eeg.edf
+    |--------------------- sub-001_task-imaginefists_run-2_events.tsv
     |--------------------- sub-001_task-imaginefists_run-2_eeg.edf
     |--------------------- sub-001_task-imaginefists_run-1_channels.tsv
-    |--------------------- sub-001_task-imaginefists_run-1_events.tsv
-    |--------------------- sub-001_task-resteyesclosed_events.tsv
     |--------------------- sub-001_task-imaginefists_run-1_eeg.json
-    |--------------------- sub-001_task-imaginefists_run-2_events.tsv
-    |--------------------- sub-001_task-resteyesclosed_eeg.json
     |--------------------- sub-001_task-imaginefists_run-2_eeg.json
-    |--------------------- sub-001_task-imaginefists_run-1_eeg.edf
-    |--------------------- sub-001_task-resteyesclosed_eeg.edf
-    |--------------------- sub-001_task-resteyesclosed_channels.tsv
     |--------------------- sub-001_task-imaginefists_run-2_channels.tsv
+    |--------------------- sub-001_task-resteyesclosed_eeg.json
 
 
 MNE-BIDS has created a suitable directory structure for us, and among other
@@ -984,7 +994,7 @@ Web version: https://bids-standard.github.io/bids-validator/
 Command line tool: https://www.npmjs.com/package/bids-validator
 
 
-**Total running time of the script:** ( 0 minutes  12.956 seconds)
+**Total running time of the script:** ( 0 minutes  3.605 seconds)
 
 
 .. _sphx_glr_download_auto_examples_convert_eeg_to_bids.py:

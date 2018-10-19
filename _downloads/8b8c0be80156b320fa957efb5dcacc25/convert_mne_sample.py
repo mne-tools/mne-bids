@@ -38,7 +38,7 @@ output_path = op.join(data_path, '..', 'MNE-sample-data-bids')
 raw_to_bids(subject_id='01', run='01', session_id='01', task='audiovisual',
             raw_file=raw_file, events_data=events_data,
             output_path=output_path, event_id=event_id,
-            overwrite=True)
+            overwrite=False)
 
 ###############################################################################
 # Now let's see the structure of the BIDS folder we created.

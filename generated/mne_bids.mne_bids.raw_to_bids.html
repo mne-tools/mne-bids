@@ -108,7 +108,7 @@
 <h1>mne_bids.mne_bids.raw_to_bids<a class="headerlink" href="#mne-bids-mne-bids-raw-to-bids" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
 <dt id="mne_bids.mne_bids.raw_to_bids">
-<code class="descclassname">mne_bids.mne_bids.</code><code class="descname">raw_to_bids</code><span class="sig-paren">(</span><em>subject_id</em>, <em>task</em>, <em>raw_file</em>, <em>output_path</em>, <em>session_id=None</em>, <em>acquisition=None</em>, <em>run=None</em>, <em>kind='meg'</em>, <em>events_data=None</em>, <em>event_id=None</em>, <em>hpi=None</em>, <em>electrode=None</em>, <em>hsp=None</em>, <em>eeg_ref=None</em>, <em>eeg_gnd=None</em>, <em>config=None</em>, <em>overwrite=True</em>, <em>verbose=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/mne_bids.html#raw_to_bids"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.mne_bids.raw_to_bids" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">mne_bids.mne_bids.</code><code class="descname">raw_to_bids</code><span class="sig-paren">(</span><em>subject_id</em>, <em>task</em>, <em>raw_file</em>, <em>output_path</em>, <em>session_id=None</em>, <em>acquisition=None</em>, <em>run=None</em>, <em>kind='meg'</em>, <em>events_data=None</em>, <em>event_id=None</em>, <em>hpi=None</em>, <em>electrode=None</em>, <em>hsp=None</em>, <em>eeg_ref=None</em>, <em>eeg_gnd=None</em>, <em>config=None</em>, <em>overwrite=False</em>, <em>verbose=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/mne_bids.html#raw_to_bids"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.mne_bids.raw_to_bids" title="Permalink to this definition">¶</a></dt>
 <dd><p>Walk over a folder of files and create BIDS compatible folder.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -173,7 +173,14 @@ location of the reference electrode. Defaults to None.</p>
 system.</p>
 </dd>
 <dt><strong>overwrite</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
-<dd><p class="first last">If the file already exists, whether to overwrite it.</p>
+<dd><p class="first last">Whether to overwrite existing files or data in files.
+Defaults to False.
+If overwrite is True, any existing files with the same BIDS parameters
+will be overwritten with the exception of the <cite>participants.tsv</cite> and
+<cite>scans.tsv</cite> files. For these files, parts of pre-existing data that
+match the current data will be replaced.
+If overwrite is False, no existing data will be overwritten or
+replaced.</p>
 </dd>
 <dt><strong>verbose</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
 <dd><p class="first last">If verbose is True, this will print a snippet of the sidecar files. If
@@ -204,7 +211,7 @@ of the participant correctly.</p>
       
     </p>
     <p>
-        &copy; Copyright 2018, MNE Developers. Last updated on 2018-10-17.<br/>
+        &copy; Copyright 2018, MNE Developers. Last updated on 2018-10-19.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.1.<br/>
     </p>
   </div>

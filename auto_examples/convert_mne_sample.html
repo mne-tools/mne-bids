@@ -153,7 +153,7 @@ Attempting to create new mne-python configuration file:
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">raw_to_bids</span><span class="p">(</span><span class="n">subject_id</span><span class="o">=</span><span class="s1">&#39;01&#39;</span><span class="p">,</span> <span class="n">run</span><span class="o">=</span><span class="s1">&#39;01&#39;</span><span class="p">,</span> <span class="n">session_id</span><span class="o">=</span><span class="s1">&#39;01&#39;</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="s1">&#39;audiovisual&#39;</span><span class="p">,</span>
             <span class="n">raw_file</span><span class="o">=</span><span class="n">raw_file</span><span class="p">,</span> <span class="n">events_data</span><span class="o">=</span><span class="n">events_data</span><span class="p">,</span>
             <span class="n">output_path</span><span class="o">=</span><span class="n">output_path</span><span class="p">,</span> <span class="n">event_id</span><span class="o">=</span><span class="n">event_id</span><span class="p">,</span>
-            <span class="n">overwrite</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+            <span class="n">overwrite</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
@@ -166,6 +166,16 @@ Attempting to create new mne-python configuration file:
 Ready.
 Current compensation grade : 0
 Creating folder: /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg
+
+Writing &#39;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/participants.tsv&#39;...
+
+  participant_id  age  sex group
+0         sub-01  NaN  NaN   NaN
+
+Writing &#39;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/sub-01_ses-01_scans.tsv&#39;...
+
+                                            filename             acq_time
+0  meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif  2002-12-03T19:01:10
 
 Writing &#39;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_events.tsv&#39;...
 
@@ -207,11 +217,6 @@ Writing &#39;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub
     &quot;TriggerChannelCount&quot;: 9
 }
 
-Writing &#39;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/participants.tsv&#39;...
-
-  participant_id  age  sex group
-0         sub-01  NaN  NaN   NaN
-
 Writing &#39;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_channels.tsv&#39;...
 
        name           type units         description  sampling_frequency  \
@@ -227,11 +232,6 @@ Writing &#39;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub
 2         0.1     172.1763   good
 3         0.1     172.1763   good
 4         0.1     172.1763   good
-
-Writing &#39;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/sub-01_ses-01_scans.tsv&#39;...
-
-                                            filename             acq_time
-0  meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif  2002-12-03T19:01:10
 Writing data files to /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif
 This filename (/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif) does not conform to MNE naming conventions. All raw files should end with raw.fif, raw_sss.fif, raw_tsss.fif, raw.fif.gz, raw_sss.fif.gz or raw_tsss.fif.gz
 Writing /home/circleci/mne_data/MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif
@@ -250,14 +250,14 @@ Closing /home/circleci/mne_data/MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_se
 |------------------------ ses-01
 |--------------------------- sub-01_ses-01_scans.tsv
 |--------------------------- meg
-|------------------------------ sub-01_ses-01_task-audiovisual_run-01_meg.json
-|------------------------------ sub-01_ses-01_task-audiovisual_run-01_channels.tsv
 |------------------------------ sub-01_ses-01_coordsystem.json
+|------------------------------ sub-01_ses-01_task-audiovisual_run-01_channels.tsv
+|------------------------------ sub-01_ses-01_task-audiovisual_run-01_meg.json
 |------------------------------ sub-01_ses-01_task-audiovisual_run-01_events.tsv
 |------------------------------ sub-01_ses-01_task-audiovisual_run-01_meg.fif
 </pre></div>
 </div>
-<p><strong>Total running time of the script:</strong> ( 0 minutes  51.158 seconds)</p>
+<p><strong>Total running time of the script:</strong> ( 0 minutes  52.492 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-mne-sample-py">
 <div class="sphx-glr-download docutils container">
 <a class="reference download internal" download="" href="../_downloads/8b8c0be80156b320fa957efb5dcacc25/convert_mne_sample.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">convert_mne_sample.py</span></code></a></div>
@@ -279,7 +279,7 @@ Closing /home/circleci/mne_data/MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_se
       
     </p>
     <p>
-        &copy; Copyright 2018, MNE Developers. Last updated on 2018-10-17.<br/>
+        &copy; Copyright 2018, MNE Developers. Last updated on 2018-10-19.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.1.<br/>
     </p>
   </div>

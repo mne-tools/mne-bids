@@ -109,6 +109,7 @@
 <span class="c1"># License: BSD (3-clause)</span>
 
 <span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">errno</span>
 <span class="kn">import</span> <span class="nn">shutil</span> <span class="k">as</span> <span class="nn">sh</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">defaultdict</span><span class="p">,</span> <span class="n">OrderedDict</span>
@@ -127,7 +128,7 @@
 
 <span class="kn">from</span> <span class="nn">.pick</span> <span class="k">import</span> <span class="n">coil_type</span>
 <span class="kn">from</span> <span class="nn">.utils</span> <span class="k">import</span> <span class="p">(</span><span class="n">make_bids_filename</span><span class="p">,</span> <span class="n">make_bids_folders</span><span class="p">,</span>
-                    <span class="n">make_dataset_description</span><span class="p">,</span> <span class="n">_write_json</span><span class="p">,</span>
+                    <span class="n">make_dataset_description</span><span class="p">,</span> <span class="n">_write_json</span><span class="p">,</span> <span class="n">_write_tsv</span><span class="p">,</span>
                     <span class="n">_read_events</span><span class="p">,</span> <span class="n">_mkdir_p</span><span class="p">,</span> <span class="n">age_on_date</span><span class="p">,</span>
                     <span class="n">copyfile_brainvision</span><span class="p">,</span> <span class="n">copyfile_eeglab</span><span class="p">,</span>
                     <span class="n">_infer_eeg_placement_scheme</span><span class="p">)</span>
@@ -164,7 +165,7 @@
                     <span class="s1">&#39;Neuroscan&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;STI 014&#39;</span><span class="p">]}</span>
 
 
-<span class="k">def</span> <span class="nf">_channels_tsv</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">verbose</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_channels_tsv</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Create a channels.tsv file and save it.</span>
 
 <span class="sd">    Parameters</span>
@@ -173,6 +174,9 @@
 <span class="sd">        The data as MNE-Python Raw object.</span>
 <span class="sd">    fname : str</span>
 <span class="sd">        Filename to save the channels.tsv to.</span>
+<span class="sd">    overwrite : bool</span>
+<span class="sd">        Whether to overwrite the existing file.</span>
+<span class="sd">        Defaults to False.</span>
 <span class="sd">    verbose : bool</span>
 <span class="sd">        Set verbose output to true or false.</span>
 
@@ -238,16 +242,14 @@
                       <span class="p">(</span><span class="s1">&#39;high_cutoff&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="n">n_channels</span><span class="p">),</span> <span class="n">high_cutoff</span><span class="p">)),</span>
                       <span class="p">(</span><span class="s1">&#39;status&#39;</span><span class="p">,</span> <span class="n">status</span><span class="p">)]))</span>
     <span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">ignored_indexes</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">na_rep</span><span class="o">=</span><span class="s1">&#39;n/a&#39;</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">linesep</span> <span class="o">+</span> <span class="s2">&quot;Writing &#39;</span><span class="si">%s</span><span class="s2">&#39;...&quot;</span> <span class="o">%</span> <span class="n">fname</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">linesep</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
+    <span class="n">_write_tsv</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">fname</span>
 
 
-<span class="k">def</span> <span class="nf">_events_tsv</span><span class="p">(</span><span class="n">events</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">trial_type</span><span class="p">,</span> <span class="n">verbose</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_events_tsv</span><span class="p">(</span><span class="n">events</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">trial_type</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Create an events.tsv file and save it.</span>
 
 <span class="sd">    This function will write the mandatory &#39;onset&#39;, and &#39;duration&#39; columns as</span>
@@ -269,6 +271,9 @@
 <span class="sd">    trial_type : dict | None</span>
 <span class="sd">        Dictionary mapping a brief description key to an event id (value). For</span>
 <span class="sd">        example {&#39;Go&#39;: 1, &#39;No Go&#39;: 2}.</span>
+<span class="sd">    overwrite : bool</span>
+<span class="sd">        Whether to overwrite the existing file.</span>
+<span class="sd">        Defaults to False.</span>
 <span class="sd">    verbose : bool</span>
 <span class="sd">        Set verbose output to true or false.</span>
 
@@ -300,16 +305,13 @@
     <span class="c1"># Onset column needs to be specified in seconds</span>
     <span class="n">df</span><span class="o">.</span><span class="n">onset</span> <span class="o">/=</span> <span class="n">sfreq</span>
 
-    <span class="c1"># Save to file</span>
-    <span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">na_rep</span><span class="o">=</span><span class="s1">&#39;n/a&#39;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">linesep</span> <span class="o">+</span> <span class="s2">&quot;Writing &#39;</span><span class="si">%s</span><span class="s2">&#39;...&quot;</span> <span class="o">%</span> <span class="n">fname</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">linesep</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
+    <span class="n">_write_tsv</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">fname</span>
 
 
-<span class="k">def</span> <span class="nf">_participants_tsv</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">subject_id</span><span class="p">,</span> <span class="n">group</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">verbose</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_participants_tsv</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">subject_id</span><span class="p">,</span> <span class="n">group</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                      <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Create a participants.tsv file and save it.</span>
 
 <span class="sd">    This will append any new participant data to the current list if it</span>
@@ -325,6 +327,11 @@
 <span class="sd">        Name of group participant belongs to.</span>
 <span class="sd">    fname : str</span>
 <span class="sd">        Filename to save the participants.tsv to.</span>
+<span class="sd">    overwrite : bool</span>
+<span class="sd">        Whether to overwrite the existing file.</span>
+<span class="sd">        Defaults to False.</span>
+<span class="sd">        If there is already data for the given `subject_id` and overwrite is</span>
+<span class="sd">        False, an error will be raised.</span>
 <span class="sd">    verbose : bool</span>
 <span class="sd">        Set verbose output to true or false.</span>
 
@@ -352,29 +359,37 @@
 
         <span class="n">data</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="s1">&#39;age&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">subject_age</span><span class="p">],</span> <span class="s1">&#39;sex&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">sex</span><span class="p">],</span> <span class="s1">&#39;group&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">group</span><span class="p">]})</span>
 
-    <span class="c1"># append the participant data to the existing file if it exists</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+                      <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;participant_id&#39;</span><span class="p">,</span> <span class="s1">&#39;age&#39;</span><span class="p">,</span> <span class="s1">&#39;sex&#39;</span><span class="p">,</span> <span class="s1">&#39;group&#39;</span><span class="p">])</span>
+
     <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">fname</span><span class="p">):</span>
-        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">)</span>
-        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
-                                    <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;participant_id&#39;</span><span class="p">,</span> <span class="s1">&#39;age&#39;</span><span class="p">,</span>
-                                             <span class="s1">&#39;sex&#39;</span><span class="p">,</span> <span class="s1">&#39;group&#39;</span><span class="p">]))</span>
+        <span class="n">orig_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="c1"># whether the data exists identically in the current DataFrame</span>
+        <span class="n">exact_included</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">tolist</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">orig_df</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="c1"># whether the subject id is in the existing DataFrame</span>
+        <span class="n">sid_included</span> <span class="o">=</span> <span class="n">subject_id</span> <span class="ow">in</span> <span class="n">orig_df</span><span class="p">[</span><span class="s1">&#39;participant_id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+        <span class="c1"># if the subject data provided is different to the currently existing</span>
+        <span class="c1"># data and overwrite is not True raise an error</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">sid_included</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">exact_included</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">overwrite</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span><span class="n">errno</span><span class="o">.</span><span class="n">EEXIST</span><span class="p">,</span> <span class="s1">&#39;&quot;</span><span class="si">%s</span><span class="s1">&quot; already exists in the &#39;</span>
+                          <span class="s1">&#39;participant list. Please set overwrite to &#39;</span>
+                          <span class="s1">&#39;True.&#39;</span> <span class="o">%</span> <span class="n">subject_id</span><span class="p">)</span>
+        <span class="c1"># otherwise add the new data</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">orig_df</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+        <span class="c1"># and drop any duplicates as we want overwrite = True to force the old</span>
+        <span class="c1"># data to be overwritten</span>
         <span class="n">df</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="s1">&#39;participant_id&#39;</span><span class="p">,</span> <span class="n">keep</span><span class="o">=</span><span class="s1">&#39;last&#39;</span><span class="p">,</span>
                            <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s1">&#39;participant_id&#39;</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
-                          <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;participant_id&#39;</span><span class="p">,</span> <span class="s1">&#39;age&#39;</span><span class="p">,</span> <span class="s1">&#39;sex&#39;</span><span class="p">,</span>
-                                   <span class="s1">&#39;group&#39;</span><span class="p">])</span>
 
-    <span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">na_rep</span><span class="o">=</span><span class="s1">&#39;n/a&#39;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">linesep</span> <span class="o">+</span> <span class="s2">&quot;Writing &#39;</span><span class="si">%s</span><span class="s2">&#39;...&quot;</span> <span class="o">%</span> <span class="n">fname</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">linesep</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
+    <span class="c1"># overwrite is forced to True as all issues with overwrite == False have</span>
+    <span class="c1"># been handled by this point</span>
+    <span class="n">_write_tsv</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">fname</span>
 
 
-<span class="k">def</span> <span class="nf">_scans_tsv</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">raw_fname</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">verbose</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_scans_tsv</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">raw_fname</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Create a scans.tsv file and save it.</span>
 
 <span class="sd">    Parameters</span>
@@ -385,11 +400,16 @@
 <span class="sd">        Relative path to the raw data file.</span>
 <span class="sd">    fname : str</span>
 <span class="sd">        Filename to save the scans.tsv to.</span>
+<span class="sd">    overwrite : bool</span>
+<span class="sd">        Defaults to False.</span>
+<span class="sd">        Whether to overwrite the existing data in the file.</span>
+<span class="sd">        If there is already data for the given `fname` and overwrite is False,</span>
+<span class="sd">        an error will be raised.</span>
 <span class="sd">    verbose : bool</span>
 <span class="sd">        Set verbose output to true or false.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># get MEASurement date from the data info</span>
+    <span class="c1"># get measurement date from the data info</span>
     <span class="n">meas_date</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;meas_date&#39;</span><span class="p">]</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">meas_date</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)):</span>
         <span class="n">meas_date</span> <span class="o">=</span> <span class="n">meas_date</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -402,16 +422,29 @@
                             <span class="s1">&#39;acq_time&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">acq_time</span><span class="p">]},</span>
                       <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;filename&#39;</span><span class="p">,</span> <span class="s1">&#39;acq_time&#39;</span><span class="p">])</span>
 
-    <span class="n">df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">na_rep</span><span class="o">=</span><span class="s1">&#39;n/a&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">fname</span><span class="p">):</span>
+        <span class="n">orig_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="c1"># if the file name is already in the file raise an error</span>
+        <span class="k">if</span> <span class="n">raw_fname</span> <span class="ow">in</span> <span class="n">orig_df</span><span class="p">[</span><span class="s1">&#39;filename&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">overwrite</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span><span class="n">errno</span><span class="o">.</span><span class="n">EEXIST</span><span class="p">,</span> <span class="s1">&#39;&quot;</span><span class="si">%s</span><span class="s1">&quot; already exists in the &#39;</span>
+                          <span class="s1">&#39;scans list. Please set overwrite to &#39;</span>
+                          <span class="s1">&#39;True.&#39;</span> <span class="o">%</span> <span class="n">raw_fname</span><span class="p">)</span>
+        <span class="c1"># otherwise add the new data</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">orig_df</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+        <span class="c1"># and drop any duplicates as we want overwrite = True to force the old</span>
+        <span class="c1"># data to be overwritten</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="s1">&#39;filename&#39;</span><span class="p">,</span> <span class="n">keep</span><span class="o">=</span><span class="s1">&#39;last&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s1">&#39;acq_time&#39;</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">linesep</span> <span class="o">+</span> <span class="s2">&quot;Writing &#39;</span><span class="si">%s</span><span class="s2">&#39;...&quot;</span> <span class="o">%</span> <span class="n">fname</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">linesep</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
+    <span class="c1"># overwrite is forced to True as all issues with overwrite == False have</span>
+    <span class="c1"># been handled by this point</span>
+    <span class="n">_write_tsv</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">df</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">fname</span>
 
 
-<span class="k">def</span> <span class="nf">_coordsystem_json</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">unit</span><span class="p">,</span> <span class="n">orient</span><span class="p">,</span> <span class="n">manufacturer</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">verbose</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_coordsystem_json</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">unit</span><span class="p">,</span> <span class="n">orient</span><span class="p">,</span> <span class="n">manufacturer</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span>
+                      <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Create a coordsystem.json file and save it.</span>
 
 <span class="sd">    Parameters</span>
@@ -426,6 +459,9 @@
 <span class="sd">        Used to define the coordinate system for the MEG sensors.</span>
 <span class="sd">    fname : str</span>
 <span class="sd">        Filename to save the coordsystem.json to.</span>
+<span class="sd">    overwrite : bool</span>
+<span class="sd">        Whether to overwrite the existing file.</span>
+<span class="sd">        Defaults to False.</span>
 <span class="sd">    verbose : bool</span>
 <span class="sd">        Set verbose output to true or false.</span>
 
@@ -458,13 +494,14 @@
                 <span class="s1">&#39;HeadCoilCoordinateSystem&#39;</span><span class="p">:</span> <span class="n">orient</span><span class="p">,</span>
                 <span class="s1">&#39;HeadCoilCoordinateUnits&#39;</span><span class="p">:</span> <span class="n">unit</span>  <span class="c1"># XXX validate this</span>
                 <span class="p">}</span>
-    <span class="n">_write_json</span><span class="p">(</span><span class="n">fid_json</span><span class="p">,</span> <span class="n">fname</span><span class="p">)</span>
+
+    <span class="n">_write_json</span><span class="p">(</span><span class="n">fid_json</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">fname</span>
 
 
 <span class="k">def</span> <span class="nf">_sidecar_json</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">task</span><span class="p">,</span> <span class="n">manufacturer</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">kind</span><span class="p">,</span> <span class="n">eeg_ref</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                  <span class="n">eeg_gnd</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+                  <span class="n">eeg_gnd</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Create a sidecar json file depending on the kind and save it.</span>
 
 <span class="sd">    The sidecar json file provides meta data about the data of a certain kind.</span>
@@ -487,6 +524,9 @@
 <span class="sd">        location of the reference electrode.  Defaults to None.</span>
 <span class="sd">    eeg_gnd : str</span>
 <span class="sd">        Description  of the location of the ground electrode. Defaults to None.</span>
+<span class="sd">    overwrite : bool</span>
+<span class="sd">        Whether to overwrite the existing file.</span>
+<span class="sd">        Defaults to False.</span>
 <span class="sd">    verbose : bool</span>
 <span class="sd">        Set verbose output to true or false. Defaults to true.</span>
 
@@ -583,15 +623,16 @@
     <span class="n">ch_info_json</span> <span class="o">+=</span> <span class="n">ch_info_ch_counts</span>
     <span class="n">ch_info_json</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">(</span><span class="n">ch_info_json</span><span class="p">)</span>
 
-    <span class="n">_write_json</span><span class="p">(</span><span class="n">ch_info_json</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+    <span class="n">_write_json</span><span class="p">(</span><span class="n">ch_info_json</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
+
     <span class="k">return</span> <span class="n">fname</span>
 
 
 <div class="viewcode-block" id="raw_to_bids"><a class="viewcode-back" href="../../generated/mne_bids.mne_bids.raw_to_bids.html#mne_bids.mne_bids.raw_to_bids">[docs]</a><span class="k">def</span> <span class="nf">raw_to_bids</span><span class="p">(</span><span class="n">subject_id</span><span class="p">,</span> <span class="n">task</span><span class="p">,</span> <span class="n">raw_file</span><span class="p">,</span> <span class="n">output_path</span><span class="p">,</span> <span class="n">session_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                 <span class="n">acquisition</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">run</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;meg&#39;</span><span class="p">,</span> <span class="n">events_data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                 <span class="n">event_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hpi</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">electrode</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hsp</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                <span class="n">eeg_ref</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">eeg_gnd</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+                <span class="n">eeg_ref</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">eeg_gnd</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Walk over a folder of files and create BIDS compatible folder.</span>
 
 <span class="sd">    Parameters</span>
@@ -638,7 +679,14 @@
 <span class="sd">        A path to the configuration file to use if the data is from a BTi</span>
 <span class="sd">        system.</span>
 <span class="sd">    overwrite : bool</span>
-<span class="sd">        If the file already exists, whether to overwrite it.</span>
+<span class="sd">        Whether to overwrite existing files or data in files.</span>
+<span class="sd">        Defaults to False.</span>
+<span class="sd">        If overwrite is True, any existing files with the same BIDS parameters</span>
+<span class="sd">        will be overwritten with the exception of the `participants.tsv` and</span>
+<span class="sd">        `scans.tsv` files. For these files, parts of pre-existing data that</span>
+<span class="sd">        match the current data will be replaced.</span>
+<span class="sd">        If overwrite is False, no existing data will be overwritten or</span>
+<span class="sd">        replaced.</span>
 <span class="sd">    verbose : bool</span>
 <span class="sd">        If verbose is True, this will print a snippet of the sidecar files. If</span>
 <span class="sd">        False, no content will be printed.</span>
@@ -673,15 +721,13 @@
 
     <span class="n">data_path</span> <span class="o">=</span> <span class="n">make_bids_folders</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="n">subject_id</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session_id</span><span class="p">,</span>
                                   <span class="n">kind</span><span class="o">=</span><span class="n">kind</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">output_path</span><span class="p">,</span>
-                                  <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">,</span>
-                                  <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+                                  <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">session_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">ses_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">ses_path</span> <span class="o">=</span> <span class="n">make_bids_folders</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="n">subject_id</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session_id</span><span class="p">,</span>
-                                     <span class="n">root</span><span class="o">=</span><span class="n">output_path</span><span class="p">,</span>
-                                     <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                                     <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+                                     <span class="n">root</span><span class="o">=</span><span class="n">output_path</span><span class="p">,</span> <span class="n">make_dir</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                     <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
 
     <span class="c1"># create filenames</span>
     <span class="n">scans_fname</span> <span class="o">=</span> <span class="n">make_bids_filename</span><span class="p">(</span>
@@ -723,28 +769,32 @@
         <span class="n">manufacturer</span> <span class="o">=</span> <span class="s1">&#39;n/a&#39;</span>
 
     <span class="c1"># save all meta data</span>
+    <span class="n">_participants_tsv</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">subject_id</span><span class="p">,</span> <span class="s2">&quot;n/a&quot;</span><span class="p">,</span> <span class="n">participants_fname</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">,</span>
+                      <span class="n">verbose</span><span class="p">)</span>
+    <span class="n">_scans_tsv</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">kind</span><span class="p">,</span> <span class="n">raw_file_bids</span><span class="p">),</span> <span class="n">scans_fname</span><span class="p">,</span>
+               <span class="n">overwrite</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
+
     <span class="c1"># TODO: Implement coordystem.json and electrodes.tsv for EEG and  iEEG</span>
     <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s1">&#39;meg&#39;</span><span class="p">:</span>
         <span class="n">_coordsystem_json</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">unit</span><span class="p">,</span> <span class="n">orient</span><span class="p">,</span> <span class="n">manufacturer</span><span class="p">,</span> <span class="n">coordsystem_fname</span><span class="p">,</span>
-                          <span class="n">verbose</span><span class="p">)</span>
+                          <span class="n">overwrite</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
 
     <span class="n">events</span> <span class="o">=</span> <span class="n">_read_events</span><span class="p">(</span><span class="n">events_data</span><span class="p">,</span> <span class="n">raw</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">events</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="n">_events_tsv</span><span class="p">(</span><span class="n">events</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">events_tsv_fname</span><span class="p">,</span> <span class="n">event_id</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
+        <span class="n">_events_tsv</span><span class="p">(</span><span class="n">events</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">events_tsv_fname</span><span class="p">,</span> <span class="n">event_id</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">,</span>
+                    <span class="n">verbose</span><span class="p">)</span>
 
     <span class="n">make_dataset_description</span><span class="p">(</span><span class="n">output_path</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
     <span class="n">_sidecar_json</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">task</span><span class="p">,</span> <span class="n">manufacturer</span><span class="p">,</span> <span class="n">data_meta_fname</span><span class="p">,</span> <span class="n">kind</span><span class="p">,</span> <span class="n">eeg_ref</span><span class="p">,</span>
-                  <span class="n">eeg_gnd</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
-    <span class="n">_participants_tsv</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">subject_id</span><span class="p">,</span> <span class="s2">&quot;n/a&quot;</span><span class="p">,</span> <span class="n">participants_fname</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
-    <span class="n">_channels_tsv</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">channels_fname</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
-    <span class="n">_scans_tsv</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">kind</span><span class="p">,</span> <span class="n">raw_file_bids</span><span class="p">),</span> <span class="n">scans_fname</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
+                  <span class="n">eeg_gnd</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
+    <span class="n">_channels_tsv</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">channels_fname</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
 
     <span class="c1"># set the raw file name to now be the absolute path to ensure the files</span>
     <span class="c1"># are placed in the right location</span>
     <span class="n">raw_file_bids</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="n">raw_file_bids</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">raw_file_bids</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">overwrite</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;&quot;</span><span class="si">%s</span><span class="s1">&quot; already exists. Please set&#39;</span>
-                         <span class="s1">&#39; overwrite to True.&#39;</span> <span class="o">%</span> <span class="n">raw_file_bids</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span><span class="n">errno</span><span class="o">.</span><span class="n">EEXIST</span><span class="p">,</span> <span class="s1">&#39;&quot;</span><span class="si">%s</span><span class="s1">&quot; already exists. Please set &#39;</span>
+                      <span class="s1">&#39;overwrite to True.&#39;</span> <span class="o">%</span> <span class="n">raw_file_bids</span><span class="p">)</span>
     <span class="n">_mkdir_p</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">raw_file_bids</span><span class="p">))</span>
 
     <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
@@ -762,7 +812,7 @@
             <span class="k">if</span> <span class="n">check_version</span><span class="p">(</span><span class="s1">&#39;mne&#39;</span><span class="p">,</span> <span class="s1">&#39;0.17.dev&#39;</span><span class="p">):</span>
                 <span class="n">split_naming</span> <span class="o">=</span> <span class="s1">&#39;bids&#39;</span>
                 <span class="n">raw</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">raw_file_bids</span><span class="p">,</span> <span class="n">split_naming</span><span class="o">=</span><span class="n">split_naming</span><span class="p">,</span>
-                         <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">)</span>
+                         <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
                     <span class="s1">&#39;Renaming split fif files is not supported on your &#39;</span>
@@ -772,7 +822,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># TODO insert arg `split_naming=split_naming`</span>
             <span class="c1">#      when MNE releases 0.17</span>
-            <span class="n">raw</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">raw_file_bids</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">)</span>
+            <span class="n">raw</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">raw_file_bids</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="c1"># CTF data is saved in a directory</span>
     <span class="k">elif</span> <span class="n">ext</span> <span class="o">==</span> <span class="s1">&#39;.ds&#39;</span><span class="p">:</span>
         <span class="n">sh</span><span class="o">.</span><span class="n">copytree</span><span class="p">(</span><span class="n">raw_fname</span><span class="p">,</span> <span class="n">raw_file_bids</span><span class="p">)</span>
@@ -811,7 +861,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2018, MNE Developers. Last updated on 2018-10-17.<br/>
+        &copy; Copyright 2018, MNE Developers. Last updated on 2018-10-19.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.1.<br/>
     </p>
   </div>

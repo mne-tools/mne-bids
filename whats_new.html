@@ -127,6 +127,7 @@
 <li>Add <a class="reference internal" href="generated/mne_bids.utils.print_dir_tree.html#mne_bids.utils.print_dir_tree" title="mne_bids.utils.print_dir_tree"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.utils.print_dir_tree()</span></code></a> for visualizing directory structures and restructuring package to be more
 open towards integration of other modalities (iEEG, EEG), by <a class="reference external" href="http://stefanappelhoff.com/">Stefan Appelhoff</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/pull/55">#55</a>)</li>
 <li>Automatically generate participants.tsv, by <a class="reference external" href="https://github.com/monkeyman192">Matt Sanderson</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/pull/70">#70</a>)</li>
+<li>Add support for KIT marker files to be exported with raw data, by <a class="reference external" href="https://github.com/monkeyman192">Matt Sanderson</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/pull/114">#114</a>)</li>
 </ul>
 </div>
 <div class="section" id="bug">
@@ -138,7 +139,8 @@ open towards integration of other modalities (iEEG, EEG), by <a class="reference
 <li>Fix ordering of columns in scans.tsv, by <a class="reference external" href="https://github.com/monkeyman192">Matt Sanderson</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/pull/68">#68</a>)</li>
 <li>Fix bug in how artificial trigger channel STI014 is handled in channels.tsv for KIT systems, by <a class="reference external" href="https://github.com/monkeyman192">Matt Sanderson</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/pull/72">#72</a>)</li>
 <li>Fix channel types for KIT system in channels.tsv, by <a class="reference external" href="https://github.com/monkeyman192">Matt Sanderson</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/pull/76">#76</a>)</li>
-<li>Fix the way FIF files are named to satisfy the BIDS part parameters of the filename construction, <a class="reference external" href="https://teonbrooks.github.io/">Teon Brooks</a> (<cite>#102 &lt;https://github.com/mne-tools/mne-bids/pull/102&gt;</cite>)</li>
+<li>Fix the way FIF files are named to satisfy the BIDS part parameters of the filename construction, <a class="reference external" href="https://teonbrooks.github.io/">Teon Brooks</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/pull/102">#102</a>)</li>
+<li>Fix how overwriting of data is handled, by <a class="reference external" href="https://github.com/monkeyman192">Matt Sanderson</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/pull/99">#99</a>)</li>
 </ul>
 </div>
 </div>
@@ -156,7 +158,7 @@ open towards integration of other modalities (iEEG, EEG), by <a class="reference
       
     </p>
     <p>
-        &copy; Copyright 2018, MNE Developers. Last updated on 2018-10-17.<br/>
+        &copy; Copyright 2018, MNE Developers. Last updated on 2018-10-19.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.1.<br/>
     </p>
   </div>
