@@ -56,6 +56,9 @@ def test_make_folders():
     output_path = _TempDir()
     make_bids_folders(subject='hi', kind='ba', root=output_path)
     assert op.isdir(op.join(output_path, 'sub-hi', 'ba'))
+    # check overwriting of folders
+    make_bids_folders(subject='hi', kind='ba', root=output_path,
+                      overwrite=True, verbose=True)
 
 
 def test_check_types():

@@ -237,9 +237,8 @@ def test_edf():
     scans_tsv = make_bids_filename(
         subject=subject_id, session=session_id, suffix='scans.tsv',
         prefix=op.join(output_path, 'sub-01/ses-01'))
-    if op.exists(scans_tsv):
-        df = pd.read_csv(scans_tsv, sep='\t')
-        assert df.shape[0] == 2
+    df = pd.read_csv(scans_tsv, sep='\t')
+    assert df.shape[0] == 2
 
 
 def test_bdf():
