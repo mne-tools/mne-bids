@@ -151,9 +151,7 @@ def test_ctf():
 
     # test to check that running again with overwrite == False raises an error
     with pytest.raises(OSError, match="already exists"):
-        raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
-                    task=task, acquisition=acq, raw_file=raw_fname,
-                    output_path=output_path, overwrite=False)
+        write_raw_bids(raw, bids_fname, output_path=output_path)
 
     assert op.exists(op.join(output_path, 'participants.tsv'))
 
@@ -212,8 +210,8 @@ def test_edf():
     raw.set_channel_types({'EMG': 'emg'})
 
     bids_fname = partial_bids_fname + '_eeg.edf'
-    write_raw_bids(raw, bids_fname, output_path, overwrite=False)
-    bids_fname.replace('run-01', 'run-%02d' % run2)
+    write_raw_bids(raw, bids_fname, output_path)
+    bids_fname = bids_fname.replace('run-01', 'run-%s' % run2)
     write_raw_bids(raw, bids_fname, output_path, overwrite=True)
 
     cmd = ['bids-validator', '--bep006', output_path]
@@ -265,9 +263,8 @@ def test_set():
     run_subprocess(cmd, shell=shell)
 
     with pytest.raises(OSError, match="already exists"):
-        raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
-                    task=task, acquisition=acq, raw_file=raw_fname,
-                    output_path=output_path, overwrite=False, kind='eeg')
+        write_raw_bids(raw, bids_fname, output_path=output_path,
+                       overwrite=False)
 
     # .set with associated .fdt
     output_path = _TempDir()
