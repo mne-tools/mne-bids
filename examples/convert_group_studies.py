@@ -25,8 +25,8 @@ Scientific data, 2 (2015): 150001.
 
 import os.path as op
 
-import mne
 from mne_bids import write_raw_bids, make_bids_filename
+from mne_bids.io import read_raw
 from mne_bids.datasets import fetch_faces_data
 from mne_bids.utils import print_dir_tree
 
@@ -67,8 +67,8 @@ for subject_id in subject_ids:
     for run in runs:
         raw_fname = op.join(data_path, repo, subject, 'MEG',
                             'run_%02d_raw.fif' % run)
-        raw = mne.io.read_raw_fif(raw_fname)
 
+        raw = read_raw(raw_fname)
         bids_fname = make_bids_filename(subject='%02d' % subject_id, run=run,
                                         session='01', task='VisualFaces',
                                         suffix='meg.fif')
