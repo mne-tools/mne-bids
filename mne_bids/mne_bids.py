@@ -524,11 +524,12 @@ def write_raw_bids(raw, bids_fname, output_path, events_data=None,
         The raw data. If a string, it is assumed to be the path to the raw data
         file. Otherwise it must be an instance of mne.Raw
     bids_fname : str
-        The file path of the BIDS compatible raw file. In the case of multifile
-        systems (e.g., .ds), this is the path to a folder containing
-        the files or (e.g., .vhdr or .set), the path to the principal file.
-        E.g.: sub-01_ses-01_task-testing_acq-01_run-01_meg.fif
-        Typically, this can be generated using make_bids_filename.
+        The file path of the BIDS compatible raw file. Typically, this can be
+        generated using make_bids_filename. In the case of multifile
+        systems, this either points to a folder containing
+        the files (e.g., .ds) or the path to the file containing the header
+        information (e.g., .vhdr or .set).
+        Example: sub-01_ses-01_task-testing_acq-01_run-01_meg.fif
     output_path : str
         The path of the root of the BIDS compatible folder. The session and
         subject specific folders will be populated automatically by parsing
@@ -571,6 +572,7 @@ def write_raw_bids(raw, bids_fname, output_path, events_data=None,
     raw_fname = raw.filenames[0]
     if '.ds' in op.dirname(raw.filenames[0]):
         raw_fname = op.dirname(raw.filenames[0])
+    # point to file containing header info for multifile systems
     raw_fname = raw_fname.replace('.eeg', '.vhdr')
     raw_fname = raw_fname.replace('.fdt', '.set')
 

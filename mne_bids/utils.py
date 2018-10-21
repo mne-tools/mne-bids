@@ -64,6 +64,8 @@ def _mkdir_p(path, overwrite=False, verbose=False):
 
 def _parse_bids_filename(fname, verbose):
     """Get dict from BIDS fname."""
+    from .mne_bids import ALLOWED_KINDS
+
     params = dict(sub=None, ses=None, task=None, acq=None,
                   run=None, proc=None, recording=None, space=None)
     entities = fname.split('_')
@@ -75,10 +77,10 @@ def _parse_bids_filename(fname, verbose):
     params['suffix'] = entities[-1]
     kind, ext = _parse_ext(entities[-1], verbose=verbose)
     params['kind'], params['ext'] = kind, ext
-    if kind not in ('eeg', 'meg', 'ieeg'):
+    if kind not in ALLOWED_KINDS:
         raise ValueError('Please check the filename of your BIDS file.'
-                         'It should have _eeg, _meg, or _ieeg as suffix.'
-                         'Got %s' % kind)
+                         'It should have one of %s as suffix.'
+                         'Got %s' % (kind, ', '.join(ALLOWED_KINDS)))
     return params
 
 
