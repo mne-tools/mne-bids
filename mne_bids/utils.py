@@ -66,13 +66,21 @@ def _parse_bids_filename(fname, verbose):
     """Get dict from BIDS fname."""
     from .mne_bids import ALLOWED_KINDS
 
-    params = dict(sub=None, ses=None, task=None, acq=None,
-                  run=None, proc=None, recording=None, space=None)
+    keys = ['sub', 'ses', 'task', 'acq', 'run', 'proc', 'run', 'space',
+            'recording']
+    params = {key: None for key in keys}
     entities = fname.split('_')
+    idx_key = 0
     for entity in entities[:-1]:
         key, value = entity.split('-')
-        if key not in params:
-            raise KeyError('Unexpected entity found in filename %s' % entity)
+        if key not in keys:
+            raise KeyError('Unexpected entity ''%s'' found in filename ''%s'''
+                           % (entity, fname))
+        if keys.index(key) < idx_key:
+            raise ValueError('Entities in filename not ordered correctly.'
+                             ' "%s" should have occured earlier in the '
+                             'filename "%s"' % (key, fname))
+        idx_key = keys.index(key)
         params[key] = value
     params['suffix'] = entities[-1]
     kind, ext = _parse_ext(entities[-1], verbose=verbose)

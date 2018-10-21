@@ -99,6 +99,10 @@ def test_fif():
     with pytest.raises(KeyError, match='Unexpected entity'):
         write_raw_bids(raw, bids_fname, output_path)
 
+    bids_fname = 'sub-01_run-01_task-auditory_meg.fif'
+    with pytest.raises(ValueError, match='ordered correctly'):
+        write_raw_bids(raw, bids_fname, output_path)
+
     del raw._filenames
     with pytest.raises(ValueError, match='raw.filenames is missing'):
         write_raw_bids(raw, bids_fname, output_path)
