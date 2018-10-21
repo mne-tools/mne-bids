@@ -272,6 +272,7 @@ def test_set():
 
     bids_fname = partial_bids_fname + '_eeg.set'
     raw = read_raw(raw_fname)
+    # XXX: remove hack below once mne v0.17 is released
     raw._filenames = [raw_fname]
     write_raw_bids(raw, bids_fname, output_path, overwrite=False)
 

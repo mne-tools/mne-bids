@@ -27,8 +27,6 @@ def get_coil_types():
                                FIFF.FIFFV_COIL_VV_PLANAR_T2,
                                FIFF.FIFFV_COIL_VV_PLANAR_T3),
                 megmag=(FIFF.FIFFV_COIL_POINT_MAGNETOMETER,
-                        FIFF.FIFFV_COIL_POINT_MAGNETOMETER_X,
-                        FIFF.FIFFV_COIL_POINT_MAGNETOMETER_Y,
                         FIFF.FIFFV_COIL_VV_MAG_W,
                         FIFF.FIFFV_COIL_VV_MAG_T1,
                         FIFF.FIFFV_COIL_VV_MAG_T2,
