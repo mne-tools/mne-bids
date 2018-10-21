@@ -29,14 +29,14 @@ data_path = sample.data_path()
 event_id = {'Auditory/Left': 1, 'Auditory/Right': 2, 'Visual/Left': 3,
             'Visual/Right': 4, 'Smiley': 5, 'Button': 32}
 
-fname = op.join(data_path, 'MEG', 'sample', 'sample_audvis_raw.fif')
+raw_fname = op.join(data_path, 'MEG', 'sample', 'sample_audvis_raw.fif')
 events_data = op.join(data_path, 'MEG', 'sample', 'sample_audvis_raw-eve.fif')
 output_path = op.join(data_path, '..', 'MNE-sample-data-bids')
 
 ###############################################################################
 # Finally, we specify the raw_file and events_data
 
-raw = read_raw(fname)
+raw = read_raw(raw_fname)
 bids_fname = make_bids_filename(subject='01', run='01', session='01',
                                 task='audiovisual', suffix='meg.fif')
 write_raw_bids(raw, bids_fname, output_path, events_data=events_data,
