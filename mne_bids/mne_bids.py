@@ -583,6 +583,11 @@ def write_raw_bids(raw, bids_fname, output_path, events_data=None,
     subject_id, session_id, kind = params['sub'], params['ses'], params['kind']
     acquisition, task, run = params['acq'], params['task'], params['run']
 
+    ch_type = 'ecog' if kind == 'ieeg' else kind
+    if ch_type not in raw:
+        raise ValueError('Expected %s channel types in the data for '
+                         'writing the file %s.' % (ch_type, bids_fname))
+
     data_path = make_bids_folders(subject=subject_id, session=session_id,
                                   kind=kind, root=output_path,
                                   overwrite=False, verbose=verbose)
