@@ -128,7 +128,7 @@ def test_kit():
     raw = read_raw(raw_fname, hpi=hpi_fname, electrode=electrode_fname,
                    hsp=headshape_fname)
     write_raw_bids(raw, bids_fname, output_path, events_data=events_fname,
-                   event_id=event_id, overwrite=False)
+                   event_id=event_id, hpi=hpi_fname, overwrite=False)
     cmd = ['bids-validator', output_path]
     run_subprocess(cmd, shell=shell)
     assert op.exists(op.join(output_path, 'participants.tsv'))

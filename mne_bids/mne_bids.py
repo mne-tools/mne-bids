@@ -515,14 +515,13 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, overwrite=False,
 
 
 def write_raw_bids(raw, bids_fname, output_path, events_data=None,
-                   event_id=None, overwrite=False, verbose=True):
+                   event_id=None, hpi=None, overwrite=False, verbose=True):
     """Walk over a folder of files and create BIDS compatible folder.
 
     Parameters
     ----------
     raw : instance of mne.Raw
-        The raw data. If a string, it is assumed to be the path to the raw data
-        file. Otherwise it must be an instance of mne.Raw
+        The raw data. It must be an instance of mne.Raw.
     bids_fname : str
         The file path of the BIDS compatible raw file. Typically, this can be
         generated using make_bids_filename. In the case of multifile
@@ -540,6 +539,10 @@ def write_raw_bids(raw, bids_fname, output_path, events_data=None,
         inferred from the stim channel using `mne.find_events`.
     event_id : dict | None
         The event id dict used to create a 'trial_type' column in events.tsv
+    hpi : None | str
+        Marker points representing the location of the marker coils with
+        respect to the MEG Sensors, or path to a marker file. Usually required
+        for KIT systems.
     overwrite : bool
         Whether to overwrite existing files or data in files.
         Defaults to False.
@@ -687,8 +690,7 @@ def write_raw_bids(raw, bids_fname, output_path, events_data=None,
     else:
         sh.copyfile(raw_fname, bids_fname)
     # KIT data requires the marker file to be copied over too
-    if manufacturer == 'KIT/Yokogawa' and len(raw.filenames) > 1:
-        hpi = raw.filenames[-1]
+    if hpi is not None:
         _, marker_ext = _parse_ext(hpi)
         marker_fname = make_bids_filename(
             subject=subject_id, session=session_id, task=task, run=run,

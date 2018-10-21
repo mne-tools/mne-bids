@@ -47,7 +47,6 @@ def read_raw(raw_fname, electrode=None, hsp=None, hpi=None, config=None,
             raise ValueError('Only single marker coils supported currently')
         raw = io.read_raw_kit(raw_fname, elp=electrode, hsp=hsp,
                               mrk=hpi, preload=False)
-        raw._filenames.append(hpi)
 
     # Neuromag or converted-to-fif systems
     elif ext in ['.fif']:
