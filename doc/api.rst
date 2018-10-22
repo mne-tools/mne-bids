@@ -15,6 +15,7 @@ MNE BIDS (:py:mod:`mne_bids.mne_bids`):
 
    write_raw_bids
    make_bids_filename
+   make_bids_folders
 
 IO (:py:mod:`mne_bids.io`):
 
@@ -33,9 +34,9 @@ Utils (:py:mod:`mne_bids.utils`):
    :toctree: generated/
 
    print_dir_tree
-   make_bids_folders
    make_dataset_description
    copyfile_brainvision
+   copyfile_eeglab
 
 Datasets (:py:mod:`mne_bids.datasets`):
 
