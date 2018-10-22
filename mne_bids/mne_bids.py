@@ -518,12 +518,15 @@ def write_raw_bids(raw, bids_fname, output_path, events_data=None,
                    event_id=None, hpi=None, overwrite=False, verbose=True):
     """Walk over a folder of files and create BIDS compatible folder.
 
+    .. warning:: The original files are simply copied over. This function
+                 cannot convert data files from one format to another.
+
     Parameters
     ----------
     raw : instance of mne.Raw
         The raw data. It must be an instance of mne.Raw.
     bids_fname : str
-        The file path of the BIDS compatible raw file. Typically, this can be
+        The filename of the BIDS compatible raw file. Typically, this can be
         generated using make_bids_filename. In the case of multifile
         systems, this either points to a folder containing
         the files (e.g., .ds) or the path to the file containing the header
@@ -578,6 +581,11 @@ def write_raw_bids(raw, bids_fname, output_path, events_data=None,
     # point to file containing header info for multifile systems
     raw_fname = raw_fname.replace('.eeg', '.vhdr')
     raw_fname = raw_fname.replace('.fdt', '.set')
+    _, ext_orig = _parse_ext(raw_fname, verbose=verbose)
+    if ext_orig != ext:
+        raise ValueError('write_raw_bids cannot convert filetype.'
+                         'Extension %s in bids_fname does not match'
+                         'extension %s of original file' % (ext, ext_orig))
 
     params = _parse_bids_filename(bids_fname, verbose)
     subject_id, session_id, kind = params['sub'], params['ses'], params['kind']

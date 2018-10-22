@@ -103,6 +103,10 @@ def test_fif():
     with pytest.raises(ValueError, match='ordered correctly'):
         write_raw_bids(raw, bids_fname, output_path)
 
+    bids_fname = 'sub-01_task-auditory_run-01_meg.edf'
+    with pytest.raises(ValueError, match='convert filetype'):
+        write_raw_bids(raw, bids_fname, output_path)
+
     bids_fname = 'sub-01_task-auditory_run-01_ieeg.fif'
     with pytest.raises(ValueError, match='Expected ecog'):
         write_raw_bids(raw, bids_fname, output_path)
