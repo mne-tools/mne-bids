@@ -64,8 +64,6 @@ def _mkdir_p(path, overwrite=False, verbose=False):
 
 def _parse_bids_filename(fname, verbose):
     """Get dict from BIDS fname."""
-    from .mne_bids import ALLOWED_KINDS
-
     keys = ['sub', 'ses', 'task', 'acq', 'run', 'proc', 'run', 'space',
             'recording']
     params = {key: None for key in keys}
@@ -82,24 +80,32 @@ def _parse_bids_filename(fname, verbose):
                              'filename "%s"' % (key, fname))
         idx_key = keys.index(key)
         params[key] = value
-    params['suffix'] = entities[-1]
-    kind, ext = _parse_ext(entities[-1], verbose=verbose)
-    params['kind'], params['ext'] = kind, ext
-    if kind not in ALLOWED_KINDS:
-        raise ValueError('Please check the filename of your BIDS file.'
-                         'It should have one of %s as suffix.'
-                         'Got %s' % (kind, ', '.join(ALLOWED_KINDS)))
     return params
 
 
-def make_bids_filename(subject=None, session=None, task=None,
+def _handle_kind(raw):
+    """Get kind."""
+    if 'meg' in raw:
+        kind = 'meg'
+    elif 'eeg' in raw:
+        kind = 'eeg'
+    elif 'ecog' in raw:
+        kind = 'ieeg'
+    else:
+        raise ValueError('Neither MEG/EEG/iEEG channels found in data.'
+                         'Please use raw.set_channel_types to set the '
+                         'channel types in the data.')
+    return kind
+
+
+def make_bids_basename(subject=None, session=None, task=None,
                        acquisition=None, run=None, processing=None,
                        recording=None, space=None, suffix=None, prefix=None):
-    """Create a BIDS filename from its component parts.
+    """Create a partial/full BIDS filename from its component parts.
 
     BIDS filename prefixes have one or more pieces of metadata in them. They
     must follow a particular order, which is followed by this function. This
-    will generate the *prefix* for a BIDS file name that can be used with many
+    will generate the *prefix* for a BIDS filename that can be used with many
     subsequent files, or you may also give a suffix that will then complete
     the file name.
 
@@ -137,7 +143,7 @@ def make_bids_filename(subject=None, session=None, task=None,
 
     Examples
     --------
-    >>> print(make_bids_filename(subject='test', session='two', task='mytask', suffix='data.csv')) # noqa
+    >>> print(make_bids_basename(subject='test', session='two', task='mytask', suffix='data.csv')) # noqa
     sub-test_ses-two_task-mytask_data.csv
 
     """

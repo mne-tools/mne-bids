@@ -28,11 +28,12 @@ from datetime import datetime
 from warnings import warn
 
 from .pick import coil_type
-from .utils import (make_bids_filename, make_bids_folders,
+from .utils import (make_bids_basename, make_bids_folders,
                     make_dataset_description, _write_json, _write_tsv,
                     _read_events, _mkdir_p, age_on_date,
                     copyfile_brainvision, copyfile_eeglab,
-                    _infer_eeg_placement_scheme, _parse_bids_filename)
+                    _infer_eeg_placement_scheme, _parse_bids_filename,
+                    _handle_kind)
 from .io import (_parse_ext, ALLOWED_EXTENSIONS)
 
 
@@ -526,12 +527,22 @@ def write_raw_bids(raw, bids_fname, output_path, events_data=None,
     raw : instance of mne.Raw
         The raw data. It must be an instance of mne.Raw.
     bids_fname : str
-        The filename of the BIDS compatible raw file. Typically, this can be
-        generated using make_bids_filename. In the case of multifile
-        systems, this either points to a folder containing
-        the files (e.g., .ds) or the path to the file containing the header
-        information (e.g., .vhdr or .set).
-        Example: sub-01_ses-01_task-testing_acq-01_run-01_meg.fif
+        The base filename of the BIDS compatible files. Typically, this can be
+        generated using make_bids_basename.
+        Example: sub-01_ses-01_task-testing_acq-01_run-01
+        This will write the following files in the correct subfolder
+        of output_path:
+            sub-01_ses-01_task-testing_acq-01_run-01_meg.fif
+            sub-01_ses-01_task-testing_acq-01_run-01_meg.json
+            sub-01_ses-01_task-testing_acq-01_run-01_channels.tsv
+            sub-01_ses-01_task-testing_acq-01_run-01_coordsystem.json
+        and the following one if events_data is not None
+            sub-01_ses-01_task-testing_acq-01_run-01_events.tsv
+        and add a line to the following files:
+            participants.tsv
+            scans.tsv
+        Note that the modality 'meg' is automatically inferred from the raw
+        object and extension '.fif' is copied from raw.filenames.
     output_path : str
         The path of the root of the BIDS compatible folder. The session and
         subject specific folders will be populated automatically by parsing
@@ -574,27 +585,18 @@ def write_raw_bids(raw, bids_fname, output_path, events_data=None,
         raise ValueError('raw.filenames is missing. Please set raw.filenames'
                          'as a list with the full path of original raw file.')
 
-    _, ext = _parse_ext(bids_fname, verbose=verbose)
     raw_fname = raw.filenames[0]
     if '.ds' in op.dirname(raw.filenames[0]):
         raw_fname = op.dirname(raw.filenames[0])
     # point to file containing header info for multifile systems
     raw_fname = raw_fname.replace('.eeg', '.vhdr')
     raw_fname = raw_fname.replace('.fdt', '.set')
-    _, ext_orig = _parse_ext(raw_fname, verbose=verbose)
-    if ext_orig != ext:
-        raise ValueError('write_raw_bids cannot convert filetype.'
-                         'Extension %s in bids_fname does not match'
-                         'extension %s of original file' % (ext, ext_orig))
+    _, ext = _parse_ext(raw.filenames[0], verbose=verbose)
 
     params = _parse_bids_filename(bids_fname, verbose)
-    subject_id, session_id, kind = params['sub'], params['ses'], params['kind']
+    subject_id, session_id = params['sub'], params['ses']
     acquisition, task, run = params['acq'], params['task'], params['run']
-
-    ch_type = 'ecog' if kind == 'ieeg' else kind
-    if ch_type not in raw:
-        raise ValueError('Expected %s channel types in the data for '
-                         'writing the file %s.' % (ch_type, bids_fname))
+    kind = _handle_kind(raw)
 
     data_path = make_bids_folders(subject=subject_id, session=session_id,
                                   kind=kind, root=output_path,
@@ -607,22 +609,22 @@ def write_raw_bids(raw, bids_fname, output_path, events_data=None,
                                      overwrite=False, verbose=verbose)
 
     # create filenames
-    scans_fname = make_bids_filename(
+    scans_fname = make_bids_basename(
         subject=subject_id, session=session_id, suffix='scans.tsv',
         prefix=ses_path)
-    participants_fname = make_bids_filename(prefix=output_path,
+    participants_fname = make_bids_basename(prefix=output_path,
                                             suffix='participants.tsv')
-    coordsystem_fname = make_bids_filename(
+    coordsystem_fname = make_bids_basename(
         subject=subject_id, session=session_id, acquisition=acquisition,
         suffix='coordsystem.json', prefix=data_path)
-    sidecar_fname = make_bids_filename(
+    sidecar_fname = make_bids_basename(
         subject=subject_id, session=session_id, task=task, run=run,
         acquisition=acquisition, suffix='%s.json' % kind, prefix=data_path)
-    events_fname = make_bids_filename(
+    events_fname = make_bids_basename(
         subject=subject_id, session=session_id, task=task,
         acquisition=acquisition, run=run, suffix='events.tsv',
         prefix=data_path)
-    channels_fname = make_bids_filename(
+    channels_fname = make_bids_basename(
         subject=subject_id, session=session_id, task=task, run=run,
         acquisition=acquisition, suffix='channels.tsv', prefix=data_path)
     if ext not in ['.fif', '.ds', '.vhdr', '.edf', '.bdf', '.set', '.cnt']:
@@ -705,7 +707,7 @@ def write_raw_bids(raw, bids_fname, output_path, events_data=None,
     # KIT data requires the marker file to be copied over too
     if hpi is not None:
         _, marker_ext = _parse_ext(hpi)
-        marker_fname = make_bids_filename(
+        marker_fname = make_bids_basename(
             subject=subject_id, session=session_id, task=task, run=run,
             acquisition=acquisition, suffix='markers%s' % marker_ext,
             prefix=os.path.join(data_path, bids_raw_folder))
