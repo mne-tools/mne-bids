@@ -6,6 +6,8 @@
 import os.path as op
 from collections import OrderedDict as odict
 from mne_bids.dataframe import DataFrame
+import numpy as np
+import pytest
 
 from mne.utils import _TempDir
 
@@ -36,4 +38,7 @@ def test_dataframe():
     df.drop([2, 5], 'a')
     assert '2' not in df['a']
     assert ['5', '10'] not in df
+    assert np.array(['3', '7']) in df
     df.drop([], 'a')
+    with pytest.raises(ValueError):
+        df.drop(['5'], 'a')
