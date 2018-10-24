@@ -92,6 +92,8 @@ class DataFrame():
         """
         if isinstance(item, np.ndarray):
             return item.tolist() in self.arr.tolist()
+        elif isinstance(item, list):
+            return item in self.arr.tolist()
         elif isinstance(item, type(self)):
             return item.arr.flatten().tolist() in self.arr.tolist()
 
