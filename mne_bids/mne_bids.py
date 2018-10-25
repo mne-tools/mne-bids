@@ -528,22 +528,21 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, eeg_ref=None,
     return fname
 
 
-def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
-                acquisition=None, run=None, kind='meg', events_data=None,
-                event_id=None, hpi=None, electrode=None, hsp=None,
-                eeg_ref=None, eeg_gnd=None, config=None,
-                overwrite=False, verbose=True):
+def convert_to_bids(raw_fname, output_path, subject_id, task, session_id=None,
+                    acquisition=None, run=None, processing=None, kind='auto',
+                    events_data=None, event_id=None, overwrite=False,
+                    verbose=True, **kwargs):
     """Walk over a folder of files and create BIDS compatible folder.
 
     Parameters
     ----------
+    raw_fname : str
+        The path to the raw data file. Otherwise it must be an
+        instance of mne.Raw
     subject_id : str
         The subject name in BIDS compatible format ('01', '02', etc.)
     task : str
         Name of the task the data is based on.
-    raw_file : str | instance of mne.Raw
-        The raw data. If a string, it is assumed to be the path to the raw data
-        file. Otherwise it must be an instance of mne.Raw
     output_path : str
         The path of the BIDS compatible folder
     session_id : str | None
@@ -552,6 +551,8 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
         Acquisition parameter for the dataset.
     run : int | None
         The run number for this dataset.
+    processing : str | None
+        Processing applied to the data already (e.g., SSS)
     kind : str, one of ('meg', 'eeg', 'ieeg')
         The kind of data being converted. Defaults to "meg".
     events_data : str | array | None
@@ -560,24 +561,6 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
         inferred from the stim channel using `mne.find_events`.
     event_id : dict | None
         The event id dict used to create a 'trial_type' column in events.tsv
-    hpi : None | str
-        Marker points representing the location of the marker coils with
-        respect to the MEG Sensors, or path to a marker file.
-    electrode : None | str
-        Digitizer points representing the location of the fiducials and the
-        marker coils with respect to the digitized head shape, or path to a
-        file containing these points.
-    hsp : None | str | array, shape = (n_points, 3)
-        Digitizer head shape points, or path to head shape file. If more than
-        10`000 points are in the head shape, they are automatically decimated.
-    eeg_ref : str
-        Description of the type of reference used and (when applicable) of
-        location of the reference electrode. Defaults to None.
-    eeg_gnd : str
-        Description  of the location of the ground electrode. Defaults to None.
-    config : str | None
-        A path to the configuration file to use if the data is from a BTi
-        system.
     overwrite : bool
         Whether to overwrite existing files or data in files.
         Defaults to False.
@@ -590,6 +573,9 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
     verbose : bool
         If verbose is True, this will print a snippet of the sidecar files. If
         False, no content will be printed.
+    **kwargs:
+        Additional arguments for the reader in MNE, usually
+        mne.io.read_raw_xxx.
 
     Notes
     -----
@@ -598,26 +584,13 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
     of the participant correctly.
 
     """
-    if isinstance(raw_file, string_types):
+    if isinstance(raw_fname, string_types):
         # We must read in the raw data
-        raw = _read_raw(raw_file, electrode=electrode, hsp=hsp, hpi=hpi,
-                        config=config, verbose=verbose)
-        _, ext = _parse_ext(raw_file, verbose=verbose)
-        raw_fname = raw_file
-    elif isinstance(raw_file, BaseRaw):
-        # We got a raw mne object, get back the filename if possible
-        # Assume that if no filename attr exists, it's a fif file.
-        raw = raw_file.copy()
-        if hasattr(raw, 'filenames'):
-            _, ext = _parse_ext(raw.filenames[0], verbose=verbose)
-            raw_fname = raw.filenames[0]
-        else:
-            # FIXME: How to get the filename if no filenames attribute?
-            raw_fname = 'unknown_file_name'
-            ext = '.fif'
+        raw = _read_raw(raw_fname, verbose=verbose, **kwargs)
+        _, ext = _parse_ext(raw_fname, verbose=verbose)
     else:
         raise ValueError('raw_file must be an instance of str or BaseRaw, '
-                         'got %s' % type(raw_file))
+                         'got %s' % type(raw_fname))
 
     data_path = make_bids_folders(subject=subject_id, session=session_id,
                                   kind=kind, root=output_path,
@@ -685,8 +658,8 @@ def raw_to_bids(subject_id, task, raw_file, output_path, session_id=None,
                     verbose)
 
     make_dataset_description(output_path, name=" ", verbose=verbose)
-    _sidecar_json(raw, task, manufacturer, data_meta_fname, kind, eeg_ref,
-                  eeg_gnd, overwrite, verbose)
+    _sidecar_json(raw, task, manufacturer, data_meta_fname, kind, 'n/a',
+                  'n/a', overwrite, verbose)
     _channels_tsv(raw, channels_fname, overwrite, verbose)
 
     # set the raw file name to now be the absolute path to ensure the files
