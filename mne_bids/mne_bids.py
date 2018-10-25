@@ -525,7 +525,8 @@ def write_raw_bids(raw, bids_fname, output_path, events_data=None,
     Parameters
     ----------
     raw : instance of mne.Raw
-        The raw data. It must be an instance of mne.Raw.
+        The raw data. It must be an instance of mne.Raw. The data should not be
+        loaded on disk, i.e., raw.preload must be False.
     bids_fname : str
         The base filename of the BIDS compatible files. Typically, this can be
         generated using make_bids_basename.
@@ -585,19 +586,25 @@ def write_raw_bids(raw, bids_fname, output_path, events_data=None,
         raise ValueError('raw.filenames is missing. Please set raw.filenames'
                          'as a list with the full path of original raw file.')
 
+    if raw.preload is not False:
+        raise ValueError('The data should not be preloaded')
+
+    raw = raw.copy()
+
     raw_fname = raw.filenames[0]
     if '.ds' in op.dirname(raw.filenames[0]):
         raw_fname = op.dirname(raw.filenames[0])
     # point to file containing header info for multifile systems
     raw_fname = raw_fname.replace('.eeg', '.vhdr')
     raw_fname = raw_fname.replace('.fdt', '.set')
-    _, ext = _parse_ext(raw.filenames[0], verbose=verbose)
+    _, ext = _parse_ext(raw_fname, verbose=verbose)
 
     params = _parse_bids_filename(bids_fname, verbose)
     subject_id, session_id = params['sub'], params['ses']
     acquisition, task, run = params['acq'], params['task'], params['run']
     kind = _handle_kind(raw)
 
+    bids_fname = bids_fname + '_%s%s' % (kind, ext)
     data_path = make_bids_folders(subject=subject_id, session=session_id,
                                   kind=kind, root=output_path,
                                   overwrite=False, verbose=verbose)

@@ -124,11 +124,10 @@ def test_kit():
     headshape_fname = op.join(data_path, 'test_hsp.txt')
     event_id = dict(cond=1)
 
-    bids_fname = bids_basename + '_meg.sqd'
     raw = mne.io.read_raw_kit(
-        raw_fname, hpi=hpi_fname, electrode=electrode_fname,
+        raw_fname, mrk=hpi_fname, elp=electrode_fname,
         hsp=headshape_fname)
-    write_raw_bids(raw, bids_fname, output_path, events_data=events_fname,
+    write_raw_bids(raw, bids_basename, output_path, events_data=events_fname,
                    event_id=event_id, hpi=hpi_fname, overwrite=False)
     cmd = ['bids-validator', output_path]
     run_subprocess(cmd, shell=shell)
@@ -159,15 +158,14 @@ def test_ctf():
     data_path = op.join(testing.data_path(download=False), 'CTF')
     raw_fname = op.join(data_path, 'testdata_ctf.ds')
 
-    bids_fname = bids_basename + '_meg.ds'
     raw = mne.io.read_raw_ctf(raw_fname)
-    write_raw_bids(raw, bids_fname, output_path=output_path)
+    write_raw_bids(raw, bids_basename, output_path=output_path)
     cmd = ['bids-validator', output_path]
     run_subprocess(cmd, shell=shell)
 
     # test to check that running again with overwrite == False raises an error
     with pytest.raises(OSError, match="already exists"):
-        write_raw_bids(raw, bids_fname, output_path=output_path)
+        write_raw_bids(raw, bids_basename, output_path=output_path)
 
     assert op.exists(op.join(output_path, 'participants.tsv'))
 
@@ -180,10 +178,9 @@ def test_bti():
     config_fname = op.join(data_path, 'test_config_linux')
     headshape_fname = op.join(data_path, 'test_hs_linux')
 
-    bids_fname = bids_basename + '_meg.pdf'
-    raw = mne.io.read_raw_bti(raw_fname, config=config_fname,
-                              hsp=headshape_fname)
-    write_raw_bids(raw, bids_fname, output_path, verbose=True)
+    raw = mne.io.read_raw_bti(raw_fname, config_fname=config_fname,
+                              head_shape_fname=headshape_fname)
+    write_raw_bids(raw, bids_basename, output_path, verbose=True)
 
     assert op.exists(op.join(output_path, 'participants.tsv'))
 
@@ -199,9 +196,8 @@ def test_vhdr():
     data_path = op.join(base_path, 'brainvision', 'tests', 'data')
     raw_fname = op.join(data_path, 'test.vhdr')
 
-    bids_fname = bids_basename + '_eeg.vhdr'
     raw = mne.io.read_raw_brainvision(raw_fname)
-    write_raw_bids(raw, bids_fname, output_path, overwrite=False)
+    write_raw_bids(raw, bids_basename, output_path, overwrite=False)
 
     cmd = ['bids-validator', '--bep006', output_path]
     run_subprocess(cmd, shell=shell)
@@ -220,15 +216,15 @@ def test_edf():
     data_path = op.join(testing.data_path(), 'EDF')
     raw_fname = op.join(data_path, 'test_reduced.edf')
 
-    raw = mne.io.read_raw_edf(raw_fname, preload=True)
+    raw = mne.io.read_raw_edf(raw_fname, stim_channel=None,
+                              preload=False)
     raw.rename_channels({raw.info['ch_names'][0]: 'EOG'})
     raw.info['chs'][0]['coil_type'] = FIFF.FIFFV_COIL_EEG_BIPOLAR
     raw.rename_channels({raw.info['ch_names'][1]: 'EMG'})
     raw.set_channel_types({'EMG': 'emg'})
 
-    bids_fname = bids_basename + '_eeg.edf'
-    write_raw_bids(raw, bids_fname, output_path)
-    bids_fname = bids_fname.replace('run-01', 'run-%s' % run2)
+    write_raw_bids(raw, bids_basename, output_path)
+    bids_fname = bids_basename.replace('run-01', 'run-%s' % run2)
     write_raw_bids(raw, bids_fname, output_path, overwrite=True)
 
     cmd = ['bids-validator', '--bep006', output_path]
@@ -256,9 +252,8 @@ def test_bdf():
     data_path = op.join(base_path, 'edf', 'tests', 'data')
     raw_fname = op.join(data_path, 'test.bdf')
 
-    bids_fname = bids_basename + '_eeg.bdf'
     raw = mne.io.read_raw_edf(raw_fname)
-    write_raw_bids(raw, bids_fname, output_path, overwrite=False)
+    write_raw_bids(raw, bids_basename, output_path, overwrite=False)
 
     cmd = ['bids-validator', '--bep006', output_path]
     run_subprocess(cmd, shell=shell)
@@ -271,17 +266,16 @@ def test_set():
     data_path = op.join(testing.data_path(), 'EEGLAB')
     raw_fname = op.join(data_path, 'test_raw_onefile.set')
 
-    bids_fname = bids_basename + '_eeg.set'
     raw = mne.io.read_raw_eeglab(raw_fname)
     # XXX: remove hack below once mne v0.17 is released
     raw._filenames = [raw_fname]
-    write_raw_bids(raw, bids_fname, output_path, overwrite=False)
+    write_raw_bids(raw, bids_basename, output_path, overwrite=False)
 
     cmd = ['bids-validator', '--bep006', output_path]
     run_subprocess(cmd, shell=shell)
 
     with pytest.raises(OSError, match="already exists"):
-        write_raw_bids(raw, bids_fname, output_path=output_path,
+        write_raw_bids(raw, bids_basename, output_path=output_path,
                        overwrite=False)
 
     # .set with associated .fdt
@@ -290,7 +284,7 @@ def test_set():
     raw_fname = op.join(data_path, 'test_raw.set')
 
     raw = mne.io.read_raw_eeglab(raw_fname)
-    write_raw_bids(raw, bids_fname, output_path, overwrite=False)
+    write_raw_bids(raw, bids_basename, output_path, overwrite=False)
 
     cmd = ['bids-validator', '--bep006', output_path]
     run_subprocess(cmd, shell=shell)
@@ -302,9 +296,8 @@ def test_cnt():
     data_path = op.join(testing.data_path(), 'CNT')
     raw_fname = op.join(data_path, 'scan41_short.cnt')
 
-    bids_fname = bids_basename + '_eeg.cnt'
-    raw = mne.io.read_raw_cnt(raw_fname)
-    write_raw_bids(raw, bids_fname, output_path)
+    raw = mne.io.read_raw_cnt(raw_fname, montage=None)
+    write_raw_bids(raw, bids_basename, output_path)
 
     cmd = ['bids-validator', '--bep006', output_path]
     run_subprocess(cmd, shell=shell)
