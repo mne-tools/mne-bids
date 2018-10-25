@@ -17,15 +17,6 @@ MNE BIDS (:py:mod:`mne_bids.mne_bids`):
    make_bids_basename
    make_bids_folders
 
-IO (:py:mod:`mne_bids.io`):
-
-.. current_module:: mne_bids.io
-
-.. autosummary::
-   :toctree: generated/
-
-   read_raw
-
 Utils (:py:mod:`mne_bids.utils`):
 
 .. currentmodule:: mne_bids.utils

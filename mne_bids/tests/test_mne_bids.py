@@ -15,13 +15,13 @@ import os.path as op
 import pytest
 
 import pandas as pd
+
 import mne
 from mne.datasets import testing
 from mne.utils import _TempDir, run_subprocess
 from mne.io.constants import FIFF
 
 from mne_bids import make_bids_basename, make_bids_folders, write_raw_bids
-from mne_bids.io import read_raw
 
 base_path = op.join(op.dirname(mne.__file__), 'io')
 subject_id = '01'
@@ -125,8 +125,9 @@ def test_kit():
     event_id = dict(cond=1)
 
     bids_fname = bids_basename + '_meg.sqd'
-    raw = read_raw(raw_fname, hpi=hpi_fname, electrode=electrode_fname,
-                   hsp=headshape_fname)
+    raw = mne.io.read_raw_kit(
+        raw_fname, hpi=hpi_fname, electrode=electrode_fname,
+        hsp=headshape_fname)
     write_raw_bids(raw, bids_fname, output_path, events_data=events_fname,
                    event_id=event_id, hpi=hpi_fname, overwrite=False)
     cmd = ['bids-validator', output_path]
@@ -150,11 +151,6 @@ def test_kit():
         acquisition=acq, suffix='markers.sqd',
         prefix=os.path.join(output_path, 'sub-01/ses-01/meg', raw_folder))
     assert op.exists(marker_fname)
-
-    # check for error if there are multiple marker coils specified
-    with pytest.raises(ValueError):
-        raw = read_raw(raw_fname, hpi=[hpi_fname, hpi_fname],
-                       electrode=electrode_fname, hsp=headshape_fname)
 
 
 def test_ctf():
@@ -185,7 +181,8 @@ def test_bti():
     headshape_fname = op.join(data_path, 'test_hs_linux')
 
     bids_fname = bids_basename + '_meg.pdf'
-    raw = read_raw(raw_fname, config=config_fname, hsp=headshape_fname)
+    raw = mne.io.read_raw_bti(raw_fname, config=config_fname,
+                              hsp=headshape_fname)
     write_raw_bids(raw, bids_fname, output_path, verbose=True)
 
     assert op.exists(op.join(output_path, 'participants.tsv'))
@@ -203,7 +200,7 @@ def test_vhdr():
     raw_fname = op.join(data_path, 'test.vhdr')
 
     bids_fname = bids_basename + '_eeg.vhdr'
-    raw = read_raw(raw_fname)
+    raw = mne.io.read_raw_brainvision(raw_fname)
     write_raw_bids(raw, bids_fname, output_path, overwrite=False)
 
     cmd = ['bids-validator', '--bep006', output_path]
@@ -260,7 +257,7 @@ def test_bdf():
     raw_fname = op.join(data_path, 'test.bdf')
 
     bids_fname = bids_basename + '_eeg.bdf'
-    raw = read_raw(raw_fname)
+    raw = mne.io.read_raw_edf(raw_fname)
     write_raw_bids(raw, bids_fname, output_path, overwrite=False)
 
     cmd = ['bids-validator', '--bep006', output_path]
@@ -275,7 +272,7 @@ def test_set():
     raw_fname = op.join(data_path, 'test_raw_onefile.set')
 
     bids_fname = bids_basename + '_eeg.set'
-    raw = read_raw(raw_fname)
+    raw = mne.io.read_raw_eeglab(raw_fname)
     # XXX: remove hack below once mne v0.17 is released
     raw._filenames = [raw_fname]
     write_raw_bids(raw, bids_fname, output_path, overwrite=False)
@@ -292,7 +289,7 @@ def test_set():
     data_path = op.join(testing.data_path(), 'EEGLAB')
     raw_fname = op.join(data_path, 'test_raw.set')
 
-    raw = read_raw(raw_fname)
+    raw = mne.io.read_raw_eeglab(raw_fname)
     write_raw_bids(raw, bids_fname, output_path, overwrite=False)
 
     cmd = ['bids-validator', '--bep006', output_path]
@@ -306,7 +303,7 @@ def test_cnt():
     raw_fname = op.join(data_path, 'scan41_short.cnt')
 
     bids_fname = bids_basename + '_eeg.cnt'
-    raw = read_raw(raw_fname)
+    raw = mne.io.read_raw_cnt(raw_fname)
     write_raw_bids(raw, bids_fname, output_path)
 
     cmd = ['bids-validator', '--bep006', output_path]
