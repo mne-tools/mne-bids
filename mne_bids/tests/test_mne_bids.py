@@ -212,8 +212,11 @@ def test_edf():
     data_path = op.join(testing.data_path(), 'EDF')
     raw_fname = op.join(data_path, 'test_reduced.edf')
 
-    raw = mne.io.read_raw_edf(raw_fname, stim_channel=None,
-                              preload=False)
+    raw = mne.io.read_raw_edf(raw_fname, preload=True)
+    # XXX: hack that should be fixed later. Annotation reading is
+    # broken for this file with preload=False and read_annotations_edf
+    raw.preload = False
+
     raw.rename_channels({raw.info['ch_names'][0]: 'EOG'})
     raw.info['chs'][0]['coil_type'] = FIFF.FIFFV_COIL_EEG_BIPOLAR
     raw.rename_channels({raw.info['ch_names'][1]: 'EMG'})
