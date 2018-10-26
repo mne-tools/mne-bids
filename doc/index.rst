@@ -36,10 +36,10 @@ iEEG is experimental at the moment.
 
 .. code:: python
 
-    >>> from mne_bids import read_raw, write_raw_bids
-    >>> raw = read_raw('my_old_file.fif')
-    >>> write_raw_bids(raw, 'sub-01_ses-01_run-05',
-                       output_path='./bids_dataset')
+    >>> from mne import io
+    >>> from mne_bids import write_raw_bids
+    >>> raw = io.read_raw_fif('my_old_file.fif')
+    >>> write_raw_bids(raw, 'sub-01_ses-01_run-05', output_path='./bids_dataset')
 
 Reading of BIDS data will also be supported in the next version.
 
