@@ -470,6 +470,7 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, overwrite=False,
         ('PowerLineFrequency', powerlinefrequency),
         ('SamplingFrequency', sfreq),
         ('SoftwareFilters', 'n/a'),
+        # XXX: If user calls raw.crop, this will be screwed up
         ('RecordingDuration', raw.times[-1]),
         ('RecordingType', rec_type)]
     ch_info_json_meg = [
@@ -587,7 +588,7 @@ def write_raw_bids(raw, bids_fname, output_path, events_data=None,
                          'as a list with the full path of original raw file.')
 
     if raw.preload is not False:
-        raise ValueError('The data should not be preloaded')
+        raise ValueError('The data should not be preloaded.')
 
     raw = raw.copy()
 
