@@ -4,7 +4,7 @@
 # License: BSD (3-clause)
 import pytest
 
-from mne_bids.io import _parse_ext, read_raw
+from mne_bids.io import _parse_ext, _read_raw
 
 
 def test_parse_ext():
@@ -26,4 +26,4 @@ def test_read_raw():
     # Use a file ending that does not exist
     f = 'file.bogus'
     with pytest.raises(ValueError):
-        read_raw(f)
+        _read_raw(f)

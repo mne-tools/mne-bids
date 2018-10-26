@@ -8,8 +8,8 @@ example usage:  $ mne_bids raw_to_bids --subject_id sub01 --task rest
 
 """
 import os
-from mne_bids import write_raw_bids, make_bids_filename
-from mne_bids.io import read_raw
+from mne_bids import write_raw_bids, make_bids_basename
+from mne_bids.io import _read_raw
 
 
 def run():
@@ -62,12 +62,11 @@ def run():
 
     opt, args = parser.parse_args()
 
-    suffix = '%s%s' % (opt.kind, os.path.splitext(opt.raw_fname)[1])
-    bids_fname = make_bids_filename(
+    bids_fname = make_bids_basename(
         subject=opt.subject_id, session=opt.session_id, run=opt.run,
-        acquisition=opt.acq, task=opt.task, suffix=suffix)
-    raw = read_raw(opt.raw_fname, hpi=opt.hpi, electrode=opt.electrode,
-                   hsp=opt.hsp, config=opt.config)
+        acquisition=opt.acq, task=opt.task)
+    raw = _read_raw(opt.raw_fname, hpi=opt.hpi, electrode=opt.electrode,
+                    hsp=opt.hsp, config=opt.config)
     write_raw_bids(raw, bids_fname, opt.output_path, event_id=opt.event_id,
                    events_data=opt.events_data, overwrite=opt.overwrite,
                    verbose=True)

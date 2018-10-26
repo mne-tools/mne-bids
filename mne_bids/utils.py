@@ -69,7 +69,8 @@ def _parse_bids_filename(fname, verbose):
     params = {key: None for key in keys}
     entities = fname.split('_')
     idx_key = 0
-    for entity in entities[:-1]:
+    for entity in entities:
+        assert '-' in entity
         key, value = entity.split('-')
         if key not in keys:
             raise KeyError('Unexpected entity ''%s'' found in filename ''%s'''

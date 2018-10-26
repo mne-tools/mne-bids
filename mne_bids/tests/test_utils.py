@@ -13,7 +13,7 @@ import mne
 from mne.datasets import testing
 from mne.utils import _TempDir
 
-from mne_bids.utils import (make_bids_folders, make_bids_filename,
+from mne_bids.utils import (make_bids_folders, make_bids_basename,
                             _check_types, print_dir_tree, age_on_date,
                             _get_brainvision_paths, copyfile_brainvision,
                             copyfile_eeglab, _infer_eeg_placement_scheme)
@@ -36,14 +36,14 @@ def test_make_filenames():
     prefix_data = dict(subject='one', session='two', task='three',
                        acquisition='four', run='five', processing='six',
                        recording='seven', suffix='suffix.csv')
-    assert make_bids_filename(**prefix_data) == 'sub-one_ses-two_task-three_acq-four_run-five_proc-six_recording-seven_suffix.csv' # noqa
+    assert make_bids_basename(**prefix_data) == 'sub-one_ses-two_task-three_acq-four_run-five_proc-six_recording-seven_suffix.csv' # noqa
 
     # subsets of keys works
-    assert make_bids_filename(subject='one', task='three') == 'sub-one_task-three' # noqa
-    assert make_bids_filename(subject='one', task='three', suffix='hi.csv') == 'sub-one_task-three_hi.csv' # noqa
+    assert make_bids_basename(subject='one', task='three') == 'sub-one_task-three' # noqa
+    assert make_bids_basename(subject='one', task='three', suffix='hi.csv') == 'sub-one_task-three_hi.csv' # noqa
 
     with pytest.raises(ValueError):
-        make_bids_filename(subject='one-two', suffix='there.csv')
+        make_bids_basename(subject='one-two', suffix='there.csv')
 
 
 def test_make_folders():

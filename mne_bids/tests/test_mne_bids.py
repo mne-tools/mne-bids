@@ -99,10 +99,6 @@ def test_fif():
     with pytest.raises(ValueError, match='ordered correctly'):
         write_raw_bids(raw, bids_fname, output_path, overwrite=True)
 
-    bids_fname = 'sub-01_task-auditory_run-01'
-    with pytest.raises(ValueError, match='convert filetype'):
-        write_raw_bids(raw, bids_fname, output_path, overwrite=True)
-
     del raw._filenames
     with pytest.raises(ValueError, match='raw.filenames is missing'):
         write_raw_bids(raw, bids_fname, output_path)
