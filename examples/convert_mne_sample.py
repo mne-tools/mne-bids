@@ -17,9 +17,11 @@ BIDS-compatible folder.
 # Let us import mne_bids
 
 import os.path as op
+
+import mne
 from mne.datasets import sample
-from mne_bids import write_raw_bids, make_bids_filename
-from mne_bids.io import read_raw
+
+from mne_bids import write_raw_bids
 from mne_bids.utils import print_dir_tree
 
 ###############################################################################
@@ -36,9 +38,8 @@ output_path = op.join(data_path, '..', 'MNE-sample-data-bids')
 ###############################################################################
 # Finally, we specify the raw_file and events_data
 
-raw = read_raw(raw_fname)
-bids_fname = make_bids_filename(subject='01', run='01', session='01',
-                                task='audiovisual', suffix='meg.fif')
+raw = mne.io.read_raw_fif(raw_fname)
+bids_fname = 'sub-01_ses-01_run-01_task-audiovisual'
 write_raw_bids(raw, bids_fname, output_path, events_data=events_data,
                event_id=event_id, overwrite=True)
 
