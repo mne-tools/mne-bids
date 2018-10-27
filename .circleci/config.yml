@@ -20,7 +20,7 @@ jobs:
                   source activate testenv
                   conda install --yes --quiet numpy=1.13.1 scipy=0.19.1 matplotlib pandas=0.20.3
                   pip install sphinx numpydoc sphinx-gallery sphinx_bootstrap_theme pillow
-                  pip install mne
+                  pip install -U https://api.github.com/repos/mne-tools/mne-python/zipball/master
                   python setup.py develop
             - run:
                 name: Build the documentation

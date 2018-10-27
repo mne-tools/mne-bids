@@ -19,18 +19,18 @@ wish to create these files/folders on your own.
 ###############################################################################
 # We'll import the relevant functions from the utils module
 
-from mne_bids import make_bids_folders, make_bids_filename
+from mne_bids import make_bids_folders, make_bids_basename
 
 ###############################################################################
 # Creating file names for BIDS
 # ----------------------------
 #
 # BIDS requires a specific ordering and structure for metadata fields in
-# file paths, the function `filename_bids` allows you to specify many such
+# file paths, the function `make_bids_basename` allows you to specify many such
 # pieces of metadata, ensuring that they are in the correct order in the
 # final file path. Omitted keys will not be included in the file path.
 
-my_name = make_bids_filename(subject='test', session='two', task='mytask',
+my_name = make_bids_basename(subject='test', session='two', task='mytask',
                              suffix='data.csv')
 print(my_name)
 
@@ -38,7 +38,7 @@ print(my_name)
 # You may also omit the suffix, which will result in *only* a prefix for a
 # file name. This could then prepended to many more files.
 
-my_name = make_bids_filename(subject='test', task='mytask')
+my_name = make_bids_basename(subject='test', task='mytask')
 print(my_name)
 
 ###############################################################################

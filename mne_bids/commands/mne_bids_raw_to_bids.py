@@ -7,7 +7,6 @@ example usage:  $ mne_bids raw_to_bids --subject_id sub01 --task rest
 --raw_fname data.edf --output_path new_path
 
 """
-import os
 from mne_bids import write_raw_bids, make_bids_basename
 from mne_bids.io import _read_raw
 

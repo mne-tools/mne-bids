@@ -39,7 +39,7 @@ output_path = op.join(data_path, '..', 'MNE-sample-data-bids')
 # Finally, we specify the raw_file and events_data
 
 raw = mne.io.read_raw_fif(raw_fname)
-bids_fname = 'sub-01_ses-01_run-01_task-audiovisual'
+bids_fname = 'sub-01_ses-01_task-audiovisual_run-01'
 write_raw_bids(raw, bids_fname, output_path, events_data=events_data,
                event_id=event_id, overwrite=True)
 
