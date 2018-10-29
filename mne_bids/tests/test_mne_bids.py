@@ -257,25 +257,16 @@ def test_bdf():
     cmd = ['bids-validator', '--bep006', output_path]
     run_subprocess(cmd, shell=shell)
 
+    raw.crop(0, raw.times[-2])
+    with pytest.raises(AssertionError, match='cropped'):
+        write_raw_bids(raw, bids_basename, output_path)
+
 
 def test_set():
     """Test write_raw_bids conversion for EEGLAB data."""
     # standalone .set file
     output_path = _TempDir()
     data_path = op.join(testing.data_path(), 'EEGLAB')
-    raw_fname = op.join(data_path, 'test_raw_onefile.set')
-
-    raw = mne.io.read_raw_eeglab(raw_fname)
-    # XXX: remove hack below once mne v0.17 is released
-    raw._filenames = [raw_fname]
-    write_raw_bids(raw, bids_basename, output_path, overwrite=False)
-
-    cmd = ['bids-validator', '--bep006', output_path]
-    run_subprocess(cmd, shell=shell)
-
-    with pytest.raises(OSError, match="already exists"):
-        write_raw_bids(raw, bids_basename, output_path=output_path,
-                       overwrite=False)
 
     # .set with associated .fdt
     output_path = _TempDir()
@@ -284,6 +275,10 @@ def test_set():
 
     raw = mne.io.read_raw_eeglab(raw_fname)
     write_raw_bids(raw, bids_basename, output_path, overwrite=False)
+
+    with pytest.raises(OSError, match="already exists"):
+        write_raw_bids(raw, bids_basename, output_path=output_path,
+                       overwrite=False)
 
     cmd = ['bids-validator', '--bep006', output_path]
     run_subprocess(cmd, shell=shell)
@@ -300,3 +295,7 @@ def test_cnt():
 
     cmd = ['bids-validator', '--bep006', output_path]
     run_subprocess(cmd, shell=shell)
+
+    raw = mne.io.read_raw_cnt(raw_fname, montage=None, preload=True)
+    with pytest.raises(ValueError, match='preload'):
+        write_raw_bids(raw, bids_basename, output_path)

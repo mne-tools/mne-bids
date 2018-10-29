@@ -17,6 +17,8 @@ import pandas as pd
 from collections import defaultdict, OrderedDict
 
 import numpy as np
+from numpy.testing import assert_array_equal
+
 from mne import Epochs
 from mne.io.constants import FIFF
 from mne.io.pick import channel_type
@@ -34,7 +36,7 @@ from .utils import (make_bids_basename, make_bids_folders,
                     copyfile_brainvision, copyfile_eeglab,
                     _infer_eeg_placement_scheme, _parse_bids_filename,
                     _handle_kind)
-from .io import (_parse_ext, ALLOWED_EXTENSIONS)
+from .io import _parse_ext, ALLOWED_EXTENSIONS, _read_raw
 
 
 ALLOWED_KINDS = ['meg', 'eeg', 'ieeg']
@@ -470,7 +472,6 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, overwrite=False,
         ('PowerLineFrequency', powerlinefrequency),
         ('SamplingFrequency', sfreq),
         ('SoftwareFilters', 'n/a'),
-        # XXX: If user calls raw.crop, this will be screwed up
         ('RecordingDuration', raw.times[-1]),
         ('RecordingType', rec_type)]
     ch_info_json_meg = [
@@ -599,6 +600,13 @@ def write_raw_bids(raw, bids_fname, output_path, events_data=None,
     raw_fname = raw_fname.replace('.eeg', '.vhdr')
     raw_fname = raw_fname.replace('.fdt', '.set')
     _, ext = _parse_ext(raw_fname, verbose=verbose)
+
+    # XXX: don't have config_fname for BTi files
+    if ext != '.pdf':
+        raw_unmodified = _read_raw(raw_fname)
+        assert_array_equal(raw.times, raw_unmodified.times,
+                           "raw.times should not have changed since reading"
+                           " in from the file. It may have been cropped.")
 
     params = _parse_bids_filename(bids_fname, verbose)
     subject_id, session_id = params['sub'], params['ses']
