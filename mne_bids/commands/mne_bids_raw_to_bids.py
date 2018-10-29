@@ -4,7 +4,7 @@
 """Command line interface for mne_bids.
 
 example usage:  $ mne_bids raw_to_bids --subject_id sub01 --task rest
---raw_fname data.edf --output_path new_path
+--raw data.edf --output_path new_path
 
 """
 from mne_bids import write_raw_bids, make_bids_basename
@@ -24,7 +24,7 @@ def run():
     parser.add_option('--task', dest='task',
                       help='Name of the task the data is based on.',
                       metavar='t')
-    parser.add_option('--raw_fname', dest='raw_fname',
+    parser.add_option('--raw', dest='raw_fname',
                       help='The path to the raw MEG file.', metavar='r')
     parser.add_option('--output_path', dest='output_path',
                       help='The path of the BIDS compatible folder.',
