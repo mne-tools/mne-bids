@@ -19,6 +19,12 @@ allowed_extensions_eeg = ['.vhdr',  # BrainVision, accompanied by .vmrk, .eeg
 
 ALLOWED_EXTENSIONS = allowed_extensions_meg + allowed_extensions_eeg
 
+reader = {'.con': io.read_raw_kit, '.sqd': io.read_raw_kit,
+          '.fif': io.read_raw_fif, '.pdf': io.read_raw_bti,
+          '.ds': io.read_raw_ctf, '.vhdr': io.read_raw_brainvision,
+          '.edf': io.read_raw_edf, '.bdf': io.read_raw_edf,
+          '.set': io.read_raw_eeglab, '.cnt': io.read_raw_cnt}
+
 
 def _parse_ext(raw_fname, verbose=False):
     """Split a filename into its name and extension."""
@@ -44,38 +50,18 @@ def _read_raw(raw_fname, electrode=None, hsp=None, hpi=None, config=None,
         raw = io.read_raw_kit(raw_fname, elp=electrode, hsp=hsp,
                               mrk=hpi, preload=False)
 
-    # Neuromag or converted-to-fif systems
-    elif ext in ['.fif']:
-        raw = io.read_raw_fif(raw_fname, preload=False)
-
     # BTi systems
-    elif ext == '.pdf':
-        if os.path.isfile(raw_fname):
+    elif ext == '.pdf' and os.path.isfile(raw_fname):
             raw = io.read_raw_bti(raw_fname, config_fname=config,
                                   head_shape_fname=hsp,
                                   preload=False, verbose=verbose)
 
-    # CTF systems
-    elif ext == '.ds':
-        raw = io.read_raw_ctf(raw_fname)
-
-    # EEG File Types
-    # --------------
-    # BrainVision format by Brain Products, links to  a .eeg and a .vmrk file
-    elif ext == '.vhdr':
-        raw = io.read_raw_brainvision(raw_fname)
+    elif ext in ['.fif', '.ds', '.vhdr', '.set']:
+        raw = reader[ext](raw_fname)
 
     # EDF (european data format) or BDF (biosemi) format
-    elif ext == '.edf' or ext == '.bdf':
-        raw = io.read_raw_edf(raw_fname, preload=True)
-
-    # EEGLAB .set format, a .fdt file is potentially linked from the .set
-    elif ext == '.set':
-        raw = io.read_raw_eeglab(raw_fname)
-
-    # Neuroscan .cnt format
-    elif ext == '.cnt':
-        raw = io.read_raw_cnt(raw_fname, montage=montage)
+    elif ext in ['.edf', '.bdf']:
+        raw = reader[ext](raw_fname, preload=True)
 
     # No supported data found ...
     # ---------------------------

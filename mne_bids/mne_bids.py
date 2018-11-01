@@ -36,7 +36,7 @@ from .utils import (make_bids_basename, make_bids_folders,
                     copyfile_brainvision, copyfile_eeglab,
                     _infer_eeg_placement_scheme, _parse_bids_filename,
                     _handle_kind)
-from .io import _parse_ext, ALLOWED_EXTENSIONS, _read_raw
+from .io import _parse_ext, ALLOWED_EXTENSIONS, reader
 
 
 ALLOWED_KINDS = ['meg', 'eeg', 'ieeg']
@@ -601,12 +601,10 @@ def write_raw_bids(raw, bids_fname, output_path, events_data=None,
     raw_fname = raw_fname.replace('.fdt', '.set')
     _, ext = _parse_ext(raw_fname, verbose=verbose)
 
-    # XXX: don't have config_fname for BTi files
-    if ext != '.pdf':
-        raw_unmodified = _read_raw(raw_fname)
-        assert_array_equal(raw.times, raw_unmodified.times,
-                           "raw.times should not have changed since reading"
-                           " in from the file. It may have been cropped.")
+    raw_orig = reader[ext](**raw._init_kwargs)
+    assert_array_equal(raw.times, raw_orig.times,
+                       "raw.times should not have changed since reading"
+                       " in from the file. It may have been cropped.")
 
     params = _parse_bids_filename(bids_fname, verbose)
     subject_id, session_id = params['sub'], params['ses']
