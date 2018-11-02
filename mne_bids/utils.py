@@ -101,7 +101,7 @@ def _handle_kind(raw):
 
 def make_bids_basename(subject=None, session=None, task=None,
                        acquisition=None, run=None, processing=None,
-                       recording=None, space=None, suffix=None, prefix=None):
+                       recording=None, space=None, prefix=None, suffix=None):
     """Create a partial/full BIDS filename from its component parts.
 
     BIDS filename prefixes have one or more pieces of metadata in them. They
@@ -131,11 +131,11 @@ def make_bids_basename(subject=None, session=None, task=None,
         The recording name for this item. Corresponds to "recording".
     space : str | None
         The coordinate space for an anatomical file. Corresponds to "space".
-    suffix : str | None
-        The suffix of a file that begins with this prefix. E.g., 'audio.wav'.
     prefix : str | None
         The prefix for the filename to be created. E.g., a path to the folder
         in which you wish to create a file with this name.
+    suffix : str | None
+        The suffix of a file that begins with this prefix. E.g., 'audio.wav'.
 
     Returns
     -------

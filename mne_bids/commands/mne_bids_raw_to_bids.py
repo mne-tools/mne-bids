@@ -17,7 +17,6 @@ def run():
 
     parser = get_optparser(__file__)
 
-    parser.set_defaults(kind='meg')
     parser.add_option('--subject_id', dest='subject_id',
                       help=('The subject name in BIDS compatible format',
                             '(01,02, etc.)'), metavar='s')
@@ -38,9 +37,6 @@ def run():
     parser.add_option('--acq', dest='acq',
                       help='The acquisition parameter.',
                       metavar='acq')
-    parser.add_option('--kind', dest='kind',
-                      help='The kind of data being converted.',
-                      metavar='k')
     parser.add_option('--events_data', dest='events_data',
                       help='The events file.', metavar='evt')
     parser.add_option('--event_id', dest='event_id',

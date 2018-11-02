@@ -60,6 +60,8 @@ def _read_raw(raw_fname, electrode=None, hsp=None, hpi=None, config=None,
         raw = reader[ext](raw_fname)
 
     # EDF (european data format) or BDF (biosemi) format
+    # TODO: integrate with lines above once MNE can read
+    # annotations with preload=False
     elif ext in ['.edf', '.bdf']:
         raw = reader[ext](raw_fname, preload=True)
 
