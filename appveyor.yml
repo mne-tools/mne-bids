@@ -19,7 +19,7 @@ install:
   - "pip uninstall -yq mne"
   - |-
     cd ..
-    git clone --depth 1 https://github.com/mne-tools/mne-python.git --branch maint/0.16
+    git clone --depth 1 https://github.com/mne-tools/mne-python.git
     cd mne-python
     python setup.py develop
     cd ..
