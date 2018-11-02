@@ -38,8 +38,8 @@ def test_dataframe():
     # remove any rows with 2 or 5 in them
     df = drop(df, [2, 5], 'a')
     assert '2' not in column_data(df, 'a')
-    #assert not is_contained(df, ['5', '10'])
-    #assert np.array(['3', '7']) in df
+    # assert not is_contained(df, ['5', '10'])
+    # assert np.array(['3', '7']) in df
     df = drop(df, [], 'a')
     with pytest.raises(ValueError):
         df = drop(df, ['5'], 'a')
