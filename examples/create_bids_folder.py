@@ -9,8 +9,8 @@ wish to create these files/folders on your own.
 
 .. note::
 
-   You may automatically convert Raw files to a BIDS-compatible folder with
-   `raw_to_bids`. This example is for manually creating files/folders.
+   You may automatically convert Raw objects to BIDS-compatible files with
+   `write_raw_bids`. This example is for manually creating files/folders.
 """
 
 # Authors: Chris Holdgraf <choldgraf@berkeley.edu>
@@ -30,16 +30,16 @@ from mne_bids import make_bids_folders, make_bids_basename
 # pieces of metadata, ensuring that they are in the correct order in the
 # final file path. Omitted keys will not be included in the file path.
 
-my_name = make_bids_basename(subject='test', session='two', task='mytask',
-                             suffix='data.csv')
-print(my_name)
+bids_basename = make_bids_basename(subject='test', session='two',
+                                   task='mytask', suffix='data.csv')
+print(bids_basename)
 
 ###############################################################################
 # You may also omit the suffix, which will result in *only* a prefix for a
 # file name. This could then prepended to many more files.
 
-my_name = make_bids_basename(subject='test', task='mytask')
-print(my_name)
+bids_basename = make_bids_basename(subject='test', task='mytask')
+print(bids_basename)
 
 ###############################################################################
 # Creating folders

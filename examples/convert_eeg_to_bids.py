@@ -109,7 +109,7 @@ print(raw)
 # however optional. The required inputs are:
 #
 # * raw
-# * bids_fname
+# * bids_basename
 # * output_path
 #
 # ... as you can see in the docstring:
@@ -132,8 +132,8 @@ output_path = os.path.join(home, 'mne_data', 'eegmmidb_bids')
 trial_type = {'rest': 0, 'imagine left fist': 1, 'imagine right fist': 2}
 
 # Now convert our data to be in a new BIDS dataset.
-bids_fname = make_bids_basename(subject=subject_id, task=task)
-write_raw_bids(raw_file, bids_fname, output_path, event_id=trial_type,
+bids_basename = make_bids_basename(subject=subject_id, task=task)
+write_raw_bids(raw_file, bids_basename, output_path, event_id=trial_type,
                events_data=events, overwrite=True)
 ###############################################################################
 # What does our fresh BIDS directory look like?
@@ -170,7 +170,7 @@ for subj_idx in [1, 2]:
         make_bids_basename(
             subject='{:03}'.format(subj_idx), task=task_names[task_idx],
             run=run_mapping[task_idx])
-        write_raw_bids(raw, bids_fname, output_path, event_id=trial_type,
+        write_raw_bids(raw, bids_basename, output_path, event_id=trial_type,
                        events_data=events, overwrite=True)
 
 ###############################################################################

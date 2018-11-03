@@ -72,8 +72,8 @@ def test_fif():
     raw_fname2 = op.join(data_path2, 'sample_audvis_raw.fif')
     raw.save(raw_fname2)
 
-    bids_fname = bids_basename.replace(subject_id, subject_id2)
-    write_raw_bids(raw, bids_fname, output_path, events_data=events_fname,
+    bids_basename2 = bids_basename.replace(subject_id, subject_id2)
+    write_raw_bids(raw, bids_basename2, output_path, events_data=events_fname,
                    event_id=event_id, overwrite=False)
     # check that the overwrite parameters work correctly for the participant
     # data
@@ -81,27 +81,27 @@ def test_fif():
     raw.info['subject_info'] = {'his_id': subject_id2,
                                 'birthday': (1994, 1, 26), 'sex': 2}
     with pytest.raises(OSError, match="already exists"):
-        write_raw_bids(raw, bids_fname, output_path,
+        write_raw_bids(raw, bids_basename2, output_path,
                        events_data=events_fname, event_id=event_id,
                        overwrite=False)
     # now force the overwrite
-    write_raw_bids(raw, bids_fname, output_path, events_data=events_fname,
+    write_raw_bids(raw, bids_basename2, output_path, events_data=events_fname,
                    event_id=event_id, overwrite=True)
 
     with pytest.raises(ValueError, match='raw_file must be'):
         write_raw_bids('blah', bids_basename, output_path)
 
-    bids_fname = 'sub-01_ses-01_xyz-01_run-01'
+    bids_basename2 = 'sub-01_ses-01_xyz-01_run-01'
     with pytest.raises(KeyError, match='Unexpected entity'):
-        write_raw_bids(raw, bids_fname, output_path)
+        write_raw_bids(raw, bids_basename2, output_path)
 
-    bids_fname = 'sub-01_run-01_task-auditory'
+    bids_basename2 = 'sub-01_run-01_task-auditory'
     with pytest.raises(ValueError, match='ordered correctly'):
-        write_raw_bids(raw, bids_fname, output_path, overwrite=True)
+        write_raw_bids(raw, bids_basename2, output_path, overwrite=True)
 
     del raw._filenames
     with pytest.raises(ValueError, match='raw.filenames is missing'):
-        write_raw_bids(raw, bids_fname, output_path)
+        write_raw_bids(raw, bids_basename2, output_path)
 
     cmd = ['bids-validator', output_path]
     run_subprocess(cmd, shell=shell)

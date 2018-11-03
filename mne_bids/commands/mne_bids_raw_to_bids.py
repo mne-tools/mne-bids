@@ -57,12 +57,12 @@ def run():
 
     opt, args = parser.parse_args()
 
-    bids_fname = make_bids_basename(
+    bids_basename = make_bids_basename(
         subject=opt.subject_id, session=opt.session_id, run=opt.run,
         acquisition=opt.acq, task=opt.task)
     raw = _read_raw(opt.raw_fname, hpi=opt.hpi, electrode=opt.electrode,
                     hsp=opt.hsp, config=opt.config)
-    write_raw_bids(raw, bids_fname, opt.output_path, event_id=opt.event_id,
+    write_raw_bids(raw, bids_basename, opt.output_path, event_id=opt.event_id,
                    events_data=opt.events_data, overwrite=opt.overwrite,
                    verbose=True)
 

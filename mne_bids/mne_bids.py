@@ -517,19 +517,20 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, overwrite=False,
     return fname
 
 
-def write_raw_bids(raw, bids_fname, output_path, events_data=None,
+def write_raw_bids(raw, bids_basename, output_path, events_data=None,
                    event_id=None, overwrite=False, verbose=True):
     """Walk over a folder of files and create BIDS compatible folder.
 
     .. warning:: The original files are simply copied over. This function
-                 cannot convert data files from one format to another.
+                 cannot convert modify data files from one format to another.
+                 Modification of the original data files is not allowed.
 
     Parameters
     ----------
     raw : instance of mne.Raw
         The raw data. It must be an instance of mne.Raw. The data should not be
         loaded on disk, i.e., raw.preload must be False.
-    bids_fname : str
+    bids_basename : str
         The base filename of the BIDS compatible files. Typically, this can be
         generated using make_bids_basename.
         Example: sub-01_ses-01_task-testing_acq-01_run-01
@@ -549,7 +550,7 @@ def write_raw_bids(raw, bids_fname, output_path, events_data=None,
     output_path : str
         The path of the root of the BIDS compatible folder. The session and
         subject specific folders will be populated automatically by parsing
-        bids_fname.
+        bids_basename.
     events_data : str | array | None
         The events file. If a string, a path to the events file. If an array,
         the MNE events array (shape n_events, 3). If None, events will be
@@ -602,12 +603,12 @@ def write_raw_bids(raw, bids_fname, output_path, events_data=None,
                        "raw.times should not have changed since reading"
                        " in from the file. It may have been cropped.")
 
-    params = _parse_bids_filename(bids_fname, verbose)
+    params = _parse_bids_filename(bids_basename, verbose)
     subject_id, session_id = params['sub'], params['ses']
     acquisition, task, run = params['acq'], params['task'], params['run']
     kind = _handle_kind(raw)
 
-    bids_fname = bids_fname + '_%s%s' % (kind, ext)
+    bids_fname = bids_basename + '_%s%s' % (kind, ext)
     data_path = make_bids_folders(subject=subject_id, session=session_id,
                                   kind=kind, root=output_path,
                                   overwrite=False, verbose=verbose)
@@ -677,7 +678,7 @@ def write_raw_bids(raw, bids_fname, output_path, events_data=None,
     _mkdir_p(os.path.dirname(bids_fname))
 
     if verbose:
-        print('Writing data files to %s' % bids_fname)
+        print('Copying data files to %s' % bids_fname)
 
     if ext not in ALLOWED_EXTENSIONS:
         raise ValueError('ext must be in %s, got %s'

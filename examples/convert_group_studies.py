@@ -69,9 +69,9 @@ for subject_id in subject_ids:
                             'run_%02d_raw.fif' % run)
 
         raw = mne.io.read_raw_fif(raw_fname)
-        bids_fname = ('sub-%02d_ses-01_task-VisualFaces_run-%d'
-                      % (subject_id, run))
-        write_raw_bids(raw, bids_fname, output_path, event_id=event_id,
+        bids_basename = ('sub-%02d_ses-01_task-VisualFaces_run-%d'
+                         % (subject_id, run))
+        write_raw_bids(raw, bids_basename, output_path, event_id=event_id,
                        overwrite=True)
 
 ###############################################################################
