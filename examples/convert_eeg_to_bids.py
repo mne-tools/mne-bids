@@ -92,7 +92,7 @@ edf_path = eegbci.load_data(subject=1, runs=2)[0]
 raw = mne.io.read_raw_edf(edf_path, preload=False, stim_channel=None)
 
 ###############################################################################
-# The annotations stored in the file mut be read in separately and converted
+# The annotations stored in the file must be read in separately and converted
 # into a 2D numpy array of events that is compatible with MNE.
 annot = read_annotations_edf(edf_path)
 raw.set_annotations(annot)

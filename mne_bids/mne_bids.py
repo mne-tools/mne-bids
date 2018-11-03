@@ -527,7 +527,7 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
 
     Parameters
     ----------
-    raw : instance of mne.Raw
+    raw : instance of mne.io.Raw
         The raw data. It must be an instance of mne.Raw. The data should not be
         loaded on disk, i.e., raw.preload must be False.
     bids_basename : str
