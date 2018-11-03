@@ -180,12 +180,12 @@ def make_bids_basename(subject=None, session=None, task=None,
     return filename
 
 
-def make_bids_folders(subject, session=None, kind=None, root=None,
+def make_bids_folders(subject, session=None, kind=None, output_path=None,
                       make_dir=True, overwrite=False, verbose=False):
     """Create a BIDS folder hierarchy.
 
     This creates a hierarchy of folders *within* a BIDS dataset. You should
-    plan to create these folders *inside* the root folder of the dataset.
+    plan to create these folders *inside* the output_path folder of the dataset.
 
     Parameters
     ----------
@@ -196,8 +196,8 @@ def make_bids_folders(subject, session=None, kind=None, root=None,
         "anat", "func", etc.
     session : str | None
         The session for a item. Corresponds to "ses".
-    root : str | None
-        The root for the folders to be created. If None, folders will be
+    output_path : str | None
+        The output_path for the folders to be created. If None, folders will be
         created in the current working directory.
     make_dir : bool
         Whether to actually create the folders specified. If False, only a
@@ -219,11 +219,12 @@ def make_bids_folders(subject, session=None, kind=None, root=None,
     Examples
     --------
     >>> print(make_bids_folders('sub_01', session='my_session',
-                                kind='meg', root='path/to/project', make_dir=False))  # noqa
+                                kind='meg', output_path='path/to/project',
+                                make_dir=False))  # noqa
     path/to/project/sub-sub_01/ses-my_session/meg
 
     """
-    _check_types((subject, kind, session, root))
+    _check_types((subject, kind, session, output_path))
     if session is not None:
         _check_key_val('ses', session)
 
@@ -233,8 +234,8 @@ def make_bids_folders(subject, session=None, kind=None, root=None,
     if isinstance(kind, string_types):
         path.append(kind)
     path = op.join(*path)
-    if isinstance(root, string_types):
-        path = op.join(root, path)
+    if isinstance(output_path, string_types):
+        path = op.join(output_path, path)
 
     if make_dir is True:
         _mkdir_p(path, overwrite=overwrite, verbose=verbose)
@@ -310,7 +311,7 @@ def make_dataset_description(path, name=None, data_license=None,
     _write_json(description, fname, overwrite=True, verbose=verbose)
 
 
-def age_on_date(bday, exp_date):
+def _age_on_date(bday, exp_date):
     """Calculate age from birthday and experiment date.
 
     Parameters

@@ -14,7 +14,7 @@ from mne.datasets import testing
 from mne.utils import _TempDir
 
 from mne_bids.utils import (make_bids_folders, make_bids_basename,
-                            _check_types, print_dir_tree, age_on_date,
+                            _check_types, print_dir_tree, _age_on_date,
                             _get_brainvision_paths, copyfile_brainvision,
                             copyfile_eeglab, _infer_eeg_placement_scheme)
 
@@ -50,14 +50,15 @@ def test_make_folders():
     """Test that folders are created and named properly."""
     # Make sure folders are created properly
     output_path = _TempDir()
-    make_bids_folders(subject='hi', session='foo', kind='ba', root=output_path)
+    make_bids_folders(subject='hi', session='foo', kind='ba',
+                      output_path=output_path)
     assert op.isdir(op.join(output_path, 'sub-hi', 'ses-foo', 'ba'))
     # If we remove a kwarg the folder shouldn't be created
     output_path = _TempDir()
-    make_bids_folders(subject='hi', kind='ba', root=output_path)
+    make_bids_folders(subject='hi', kind='ba', output_path=output_path)
     assert op.isdir(op.join(output_path, 'sub-hi', 'ba'))
     # check overwriting of folders
-    make_bids_folders(subject='hi', kind='ba', root=output_path,
+    make_bids_folders(subject='hi', kind='ba', output_path=output_path,
                       overwrite=True, verbose=True)
 
 
@@ -75,11 +76,11 @@ def test_age_on_date():
     exp2 = datetime(2018, 1, 26)
     exp3 = datetime(2018, 1, 27)
     exp4 = datetime(1990, 1, 1)
-    assert age_on_date(bday, exp1) == 23
-    assert age_on_date(bday, exp2) == 24
-    assert age_on_date(bday, exp3) == 24
+    assert _age_on_date(bday, exp1) == 23
+    assert _age_on_date(bday, exp2) == 24
+    assert _age_on_date(bday, exp3) == 24
     with pytest.raises(ValueError):
-        age_on_date(bday, exp4)
+        _age_on_date(bday, exp4)
 
 
 def test_get_brainvision_paths():

@@ -48,7 +48,7 @@ print(bids_basename)
 # You can also use MNE-BIDS to create folder hierarchies.
 
 path_folder = make_bids_folders('sub_01', session='mysession',
-                                kind='meg', root='path/to/project',
+                                kind='meg', output_path='path/to/project',
                                 make_dir=False)
 print(path_folder)
 

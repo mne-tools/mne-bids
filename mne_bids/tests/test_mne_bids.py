@@ -201,7 +201,7 @@ def test_vhdr():
     # create another bids folder with the overwrite command and check
     # no files are in the folder
     data_path = make_bids_folders(subject=subject_id, session=session_id,
-                                  kind='eeg', root=output_path,
+                                  kind='eeg', output_path=output_path,
                                   overwrite=True)
     assert len([f for f in os.listdir(data_path) if op.isfile(f)]) == 0
 

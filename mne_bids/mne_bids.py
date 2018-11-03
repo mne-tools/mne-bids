@@ -32,7 +32,7 @@ from warnings import warn
 from .pick import coil_type
 from .utils import (make_bids_basename, make_bids_folders,
                     make_dataset_description, _write_json, _write_tsv,
-                    _read_events, _mkdir_p, age_on_date,
+                    _read_events, _mkdir_p, _age_on_date,
                     copyfile_brainvision, copyfile_eeglab,
                     _infer_eeg_placement_scheme, _parse_bids_filename,
                     _handle_kind)
@@ -252,7 +252,7 @@ def _participants_tsv(raw, subject_id, group, fname, overwrite=False,
         if meas_date is not None and age is not None:
             bday = datetime(age[0], age[1], age[2])
             meas_datetime = datetime.fromtimestamp(meas_date)
-            subject_age = age_on_date(bday, meas_datetime)
+            subject_age = _age_on_date(bday, meas_datetime)
         else:
             subject_age = "n/a"
 
@@ -610,13 +610,13 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
 
     bids_fname = bids_basename + '_%s%s' % (kind, ext)
     data_path = make_bids_folders(subject=subject_id, session=session_id,
-                                  kind=kind, root=output_path,
+                                  kind=kind, output_path=output_path,
                                   overwrite=False, verbose=verbose)
     if session_id is None:
         ses_path = os.sep.join(data_path.split(os.sep)[:-1])
     else:
         ses_path = make_bids_folders(subject=subject_id, session=session_id,
-                                     root=output_path, make_dir=False,
+                                     output_path=output_path, make_dir=False,
                                      overwrite=False, verbose=verbose)
 
     # create filenames
