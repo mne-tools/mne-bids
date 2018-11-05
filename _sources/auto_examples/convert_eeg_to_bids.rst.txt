@@ -146,14 +146,14 @@ of the directory tree.
     |--------------- physiobank
     |------------------ database
     |--------------------- eegmmidb
-    |------------------------ S002
-    |--------------------------- S002R02.edf
-    |--------------------------- S002R12.edf
-    |--------------------------- S002R04.edf
     |------------------------ S001
+    |--------------------------- S001R12.edf
     |--------------------------- S001R02.edf
     |--------------------------- S001R04.edf
-    |--------------------------- S001R12.edf
+    |------------------------ S002
+    |--------------------------- S002R04.edf
+    |--------------------------- S002R02.edf
+    |--------------------------- S002R12.edf
 
 
 The data are in the `European Data Format <https://www.edfplus.info/>`_
@@ -441,15 +441,15 @@ What does our fresh BIDS directory look like?
  .. code-block:: none
 
     |------------ eegmmidb_bids
-    |--------------- dataset_description.json
     |--------------- participants.tsv
+    |--------------- dataset_description.json
     |--------------- sub-001
     |------------------ sub-001_scans.tsv
     |------------------ eeg
-    |--------------------- sub-001_task-resteyesclosed_eeg.edf
-    |--------------------- sub-001_task-resteyesclosed_channels.tsv
     |--------------------- sub-001_task-resteyesclosed_events.tsv
     |--------------------- sub-001_task-resteyesclosed_eeg.json
+    |--------------------- sub-001_task-resteyesclosed_eeg.edf
+    |--------------------- sub-001_task-resteyesclosed_channels.tsv
 
 
 Looks good so far, let's convert the data for all tasks and subjects.
@@ -972,15 +972,15 @@ Now we have written our BIDS directory.
  .. code-block:: none
 
     |------------ eegmmidb_bids
-    |--------------- dataset_description.json
     |--------------- participants.tsv
+    |--------------- dataset_description.json
     |--------------- sub-001
     |------------------ sub-001_scans.tsv
     |------------------ eeg
-    |--------------------- sub-001_task-resteyesclosed_eeg.edf
-    |--------------------- sub-001_task-resteyesclosed_channels.tsv
     |--------------------- sub-001_task-resteyesclosed_events.tsv
     |--------------------- sub-001_task-resteyesclosed_eeg.json
+    |--------------------- sub-001_task-resteyesclosed_eeg.edf
+    |--------------------- sub-001_task-resteyesclosed_channels.tsv
 
 
 MNE-BIDS has created a suitable directory structure for us, and among other
@@ -1001,7 +1001,7 @@ Web version: https://bids-standard.github.io/bids-validator/
 Command line tool: https://www.npmjs.com/package/bids-validator
 
 
-**Total running time of the script:** ( 0 minutes  3.592 seconds)
+**Total running time of the script:** ( 0 minutes  3.100 seconds)
 
 
 .. _sphx_glr_download_auto_examples_convert_eeg_to_bids.py:
