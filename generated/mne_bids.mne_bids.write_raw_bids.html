@@ -4,7 +4,7 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>mne_bids.mne_bids.raw_to_bids &#8212; mne_bids 0.1dev0 documentation</title>
+    <title>mne_bids.mne_bids.write_raw_bids &#8212; mne_bids 0.1dev0 documentation</title>
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
@@ -68,7 +68,7 @@
   <ul class="dropdown-menu localtoc"
       role="menu"
       aria-labelledby="dLabelLocalToc"><ul>
-<li><a class="reference internal" href="#">mne_bids.mne_bids.raw_to_bids</a></li>
+<li><a class="reference internal" href="#">mne_bids.mne_bids.write_raw_bids</a></li>
 </ul>
 </ul>
 </li>
@@ -80,7 +80,7 @@
             
               <li class="hidden-sm">
 <div id="sourcelink">
-  <a href="../_sources/generated/mne_bids.mne_bids.raw_to_bids.rst.txt"
+  <a href="../_sources/generated/mne_bids.mne_bids.write_raw_bids.rst.txt"
      rel="nofollow">Source</a>
 </div></li>
             
@@ -104,41 +104,55 @@
   <div class="row">
     <div class="col-md-12 content">
       
-  <div class="section" id="mne-bids-mne-bids-raw-to-bids">
-<h1>mne_bids.mne_bids.raw_to_bids<a class="headerlink" href="#mne-bids-mne-bids-raw-to-bids" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="mne-bids-mne-bids-write-raw-bids">
+<h1>mne_bids.mne_bids.write_raw_bids<a class="headerlink" href="#mne-bids-mne-bids-write-raw-bids" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
-<dt id="mne_bids.mne_bids.raw_to_bids">
-<code class="descclassname">mne_bids.mne_bids.</code><code class="descname">raw_to_bids</code><span class="sig-paren">(</span><em>subject_id</em>, <em>task</em>, <em>raw_file</em>, <em>output_path</em>, <em>session_id=None</em>, <em>acquisition=None</em>, <em>run=None</em>, <em>kind='meg'</em>, <em>events_data=None</em>, <em>event_id=None</em>, <em>hpi=None</em>, <em>electrode=None</em>, <em>hsp=None</em>, <em>eeg_ref=None</em>, <em>eeg_gnd=None</em>, <em>config=None</em>, <em>overwrite=False</em>, <em>verbose=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/mne_bids.html#raw_to_bids"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.mne_bids.raw_to_bids" title="Permalink to this definition">¶</a></dt>
+<dt id="mne_bids.mne_bids.write_raw_bids">
+<code class="descclassname">mne_bids.mne_bids.</code><code class="descname">write_raw_bids</code><span class="sig-paren">(</span><em>raw</em>, <em>bids_basename</em>, <em>output_path</em>, <em>events_data=None</em>, <em>event_id=None</em>, <em>overwrite=False</em>, <em>verbose=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/mne_bids.html#write_raw_bids"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.mne_bids.write_raw_bids" title="Permalink to this definition">¶</a></dt>
 <dd><p>Walk over a folder of files and create BIDS compatible folder.</p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">The original files are simply copied over. This function
+cannot convert modify data files from one format to another.
+Modification of the original data files is not allowed.</p>
+</div>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>subject_id</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
-<dd><p class="first last">The subject name in BIDS compatible format (‘01’, ‘02’, etc.)</p>
+<dt><strong>raw</strong> <span class="classifier-delimiter">:</span> <span class="classifier">instance of mne.io.Raw</span></dt>
+<dd><p class="first last">The raw data. It must be an instance of mne.Raw. The data should not be
+loaded on disk, i.e., raw.preload must be False.</p>
 </dd>
-<dt><strong>task</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
-<dd><p class="first last">Name of the task the data is based on.</p>
+<dt><strong>bids_basename</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd><p class="first">The base filename of the BIDS compatible files. Typically, this can be
+generated using make_bids_basename.
+Example: sub-01_ses-01_task-testing_acq-01_run-01
+This will write the following files in the correct subfolder
+of output_path:</p>
+<blockquote>
+<div><p>sub-01_ses-01_task-testing_acq-01_run-01_meg.fif
+sub-01_ses-01_task-testing_acq-01_run-01_meg.json
+sub-01_ses-01_task-testing_acq-01_run-01_channels.tsv
+sub-01_ses-01_task-testing_acq-01_run-01_coordsystem.json</p>
+</div></blockquote>
+<dl class="docutils">
+<dt>and the following one if events_data is not None</dt>
+<dd><p class="first last">sub-01_ses-01_task-testing_acq-01_run-01_events.tsv</p>
 </dd>
-<dt><strong>raw_file</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str | instance of mne.Raw</span></dt>
-<dd><p class="first last">The raw data. If a string, it is assumed to be the path to the raw data
-file. Otherwise it must be an instance of mne.Raw</p>
+<dt>and add a line to the following files:</dt>
+<dd><p class="first last">participants.tsv
+scans.tsv</p>
+</dd>
+</dl>
+<p class="last">Note that the modality ‘meg’ is automatically inferred from the raw
+object and extension ‘.fif’ is copied from raw.filenames.</p>
 </dd>
 <dt><strong>output_path</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
-<dd><p class="first last">The path of the BIDS compatible folder</p>
-</dd>
-<dt><strong>session_id</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str | None</span></dt>
-<dd><p class="first last">The session name in BIDS compatible format.</p>
-</dd>
-<dt><strong>acquisition</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str | None</span></dt>
-<dd><p class="first last">Acquisition parameter for the dataset.</p>
-</dd>
-<dt><strong>run</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int | None</span></dt>
-<dd><p class="first last">The run number for this dataset.</p>
-</dd>
-<dt><strong>kind</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, one of (‘meg’, ‘eeg’, ‘ieeg’)</span></dt>
-<dd><p class="first last">The kind of data being converted. Defaults to “meg”.</p>
+<dd><p class="first last">The path of the root of the BIDS compatible folder. The session and
+subject specific folders will be populated automatically by parsing
+bids_basename.</p>
 </dd>
 <dt><strong>events_data</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str | array | None</span></dt>
 <dd><p class="first last">The events file. If a string, a path to the events file. If an array,
@@ -147,30 +161,6 @@ inferred from the stim channel using <cite>mne.find_events</cite>.</p>
 </dd>
 <dt><strong>event_id</strong> <span class="classifier-delimiter">:</span> <span class="classifier">dict | None</span></dt>
 <dd><p class="first last">The event id dict used to create a ‘trial_type’ column in events.tsv</p>
-</dd>
-<dt><strong>hpi</strong> <span class="classifier-delimiter">:</span> <span class="classifier">None | str</span></dt>
-<dd><p class="first last">Marker points representing the location of the marker coils with
-respect to the MEG Sensors, or path to a marker file.</p>
-</dd>
-<dt><strong>electrode</strong> <span class="classifier-delimiter">:</span> <span class="classifier">None | str</span></dt>
-<dd><p class="first last">Digitizer points representing the location of the fiducials and the
-marker coils with respect to the digitized head shape, or path to a
-file containing these points.</p>
-</dd>
-<dt><strong>hsp</strong> <span class="classifier-delimiter">:</span> <span class="classifier">None | str | array, shape = (n_points, 3)</span></dt>
-<dd><p class="first last">Digitizer head shape points, or path to head shape file. If more than
-10`000 points are in the head shape, they are automatically decimated.</p>
-</dd>
-<dt><strong>eeg_ref</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
-<dd><p class="first last">Description of the type of reference used and (when applicable) of
-location of the reference electrode. Defaults to None.</p>
-</dd>
-<dt><strong>eeg_gnd</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
-<dd><p class="first last">Description  of the location of the ground electrode. Defaults to None.</p>
-</dd>
-<dt><strong>config</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str | None</span></dt>
-<dd><p class="first last">A path to the configuration file to use if the data is from a BTi
-system.</p>
 </dd>
 <dt><strong>overwrite</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
 <dd><p class="first last">Whether to overwrite existing files or data in files.
@@ -211,7 +201,7 @@ of the participant correctly.</p>
       
     </p>
     <p>
-        &copy; Copyright 2018, MNE Developers. Last updated on 2018-10-19.<br/>
+        &copy; Copyright 2018, MNE Developers. Last updated on 2018-11-05.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.1.<br/>
     </p>
   </div>

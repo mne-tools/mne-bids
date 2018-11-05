@@ -70,6 +70,7 @@
       aria-labelledby="dLabelLocalToc"><ul>
 <li><a class="reference internal" href="#">MNE-BIDS</a></li>
 <li><a class="reference internal" href="#installation">Installation</a></li>
+<li><a class="reference internal" href="#quickstart">Quickstart</a></li>
 <li><a class="reference internal" href="#bug-reports">Bug reports</a></li>
 <li><a class="reference internal" href="#whats-new"><code class="docutils literal notranslate"><span class="pre">whats_new</span></code></a></li>
 </ul>
@@ -114,7 +115,8 @@
 <div class="section" id="installation">
 <h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
 <p>We recommend the <a class="reference external" href="https://www.continuum.io/downloads">Anaconda Python distribution</a>. To install <code class="docutils literal notranslate"><span class="pre">mne_bids</span></code>, you first need to install its dependencies:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pip install pandas mne
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ pip install pandas
+$ pip install -U https://api.github.com/repos/mne-tools/mne-python/zipball/master
 </pre></div>
 </div>
 <p>Then install mne_bids:</p>
@@ -128,6 +130,18 @@ with <cite>pip</cite>. To upgrade, use the <code class="docutils literal notrans
 </pre></div>
 </div>
 <p>and it should not give any error messages.</p>
+</div>
+<div class="section" id="quickstart">
+<h1>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this headline">¶</a></h1>
+<p>Currently, we support writing of BIDS datasets for MEG and EEG. Support for
+iEEG is experimental at the moment.</p>
+<div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">mne</span> <span class="k">import</span> <span class="n">io</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">mne_bids</span> <span class="k">import</span> <span class="n">write_raw_bids</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">raw</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">read_raw_fif</span><span class="p">(</span><span class="s1">&#39;my_old_file.fif&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">write_raw_bids</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="s1">&#39;sub-01_ses-01_run-05&#39;</span><span class="p">,</span> <span class="n">output_path</span><span class="o">=</span><span class="s1">&#39;./bids_dataset&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Reading of BIDS data will also be supported in the next version.</p>
 </div>
 <div class="section" id="bug-reports">
 <h1>Bug reports<a class="headerlink" href="#bug-reports" title="Permalink to this headline">¶</a></h1>
@@ -149,7 +163,7 @@ with <cite>pip</cite>. To upgrade, use the <code class="docutils literal notrans
       
     </p>
     <p>
-        &copy; Copyright 2018, MNE Developers. Last updated on 2018-10-19.<br/>
+        &copy; Copyright 2018, MNE Developers. Last updated on 2018-11-05.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.1.<br/>
     </p>
   </div>

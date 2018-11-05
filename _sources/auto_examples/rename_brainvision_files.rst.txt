@@ -132,10 +132,10 @@ as well as the renamed data. They should be the same.
 
     Extracting parameters from /home/circleci/mne_data/mne_bids_examples/test.vhdr...
     Setting channel info structure...
-    Currently, 1 trigger(s) will be dropped, such as [Sync On]. Consider using ``event_id`` to parse triggers that do not follow the 'S###' pattern.
+    Used Annotations descriptions: ['Stimulus/S253', 'Stimulus/S255', 'Stimulus/S254', 'Response/R255', 'Optic/O  1']
     Extracting parameters from /home/circleci/mne_data/mne_bids_examples/test_renamed.vhdr...
     Setting channel info structure...
-    Currently, 1 trigger(s) will be dropped, such as [Sync On]. Consider using ``event_id`` to parse triggers that do not follow the 'S###' pattern.
+    Used Annotations descriptions: ['Stimulus/S253', 'Stimulus/S255', 'Stimulus/S254', 'Response/R255', 'Optic/O  1']
 
 
 Further information
@@ -150,7 +150,7 @@ For that, see the
 `BrainVision Validator <https://github.com/sappelhoff/brainvision-validator>`_
 
 
-**Total running time of the script:** ( 0 minutes  0.482 seconds)
+**Total running time of the script:** ( 0 minutes  0.834 seconds)
 
 
 .. _sphx_glr_download_auto_examples_rename_brainvision_files.py:

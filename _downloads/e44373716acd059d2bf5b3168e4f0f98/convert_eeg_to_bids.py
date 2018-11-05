@@ -23,10 +23,11 @@ data. Specifically, we will follow these steps:
 import os
 import shutil as sh
 
+import mne
 from mne.datasets import eegbci
-from mne.io import read_raw_edf
+from mne.io.edf.edf import read_annotations_edf
 
-from mne_bids import raw_to_bids
+from mne_bids import write_raw_bids, make_bids_basename
 from mne_bids.utils import print_dir_tree
 
 ###############################################################################
@@ -84,27 +85,35 @@ print_dir_tree(data_dir)
 # --------------------------
 #
 # Let's start by formatting a single subject. We are reading the data using
-# MNE-Python's io module and the `read_raw_edf` function.
-data_dir = os.path.join(data_dir, 'physiobank', 'database', 'eegmmidb')
-edf_path = os.path.join(data_dir, 'S001', 'S001R02.edf')
-raw = read_raw_edf(edf_path, preload=True)
+# MNE-Python's io module and the `read_raw_edf` function. Note that we must
+# use `preload=False`, the default in MNE-Python. It prevents the data from
+# being loaded and modified when converting to BIDS.
+edf_path = eegbci.load_data(subject=1, runs=2)[0]
+raw = mne.io.read_raw_edf(edf_path, preload=False, stim_channel=None)
+
+###############################################################################
+# The annotations stored in the file must be read in separately and converted
+# into a 2D numpy array of events that is compatible with MNE.
+annot = read_annotations_edf(edf_path)
+raw.set_annotations(annot)
+events, event_id = mne.events_from_annotations(raw)
+
 print(raw)
 
 ###############################################################################
-# With this simple step we have everything to start a new BIDS directory using
-# our data. To do that, we can use the high level function `raw_to_bids`, which
-# is the core of MNE-BIDS. Generally, `raw_to_bids` tries to extract as much
+# With this step, we have everything to start a new BIDS directory using
+# our data. To do that, we can use the function `write_raw_bids`
+# Generally, `write_raw_bids` tries to extract as much
 # meta data as possible from the raw data and then formats it in a BIDS
-# compatible way. `raw_to_bids` takes a bunch of inputs, most of which are
+# compatible way. `write_raw_bids` takes a bunch of inputs, most of which are
 # however optional. The required inputs are:
 #
-# * subject_id
-# * task
-# * raw_file
+# * raw
+# * bids_basename
 # * output_path
 #
 # ... as you can see in the docstring:
-print(raw_to_bids.__doc__)
+print(write_raw_bids.__doc__)
 
 ###############################################################################
 # We loaded 'S001R02.edf', which corresponds to subject 1 in the second task.
@@ -117,19 +126,15 @@ output_path = os.path.join(home, 'mne_data', 'eegmmidb_bids')
 ###############################################################################
 # Now we just need to specify a few more EEG details to get something sensible:
 
-# First, tell `MNE-BIDS` that it is working with EEG data:
-kind = 'eeg'
-
 # Brief description of the event markers present in the data. This will become
 # the `trial_type` column in our BIDS `events.tsv`. We know about the event
 # meaning from the documentation on PhysioBank
 trial_type = {'rest': 0, 'imagine left fist': 1, 'imagine right fist': 2}
 
 # Now convert our data to be in a new BIDS dataset.
-raw_to_bids(subject_id=subject_id, task=task, raw_file=raw_file,
-            output_path=output_path, kind=kind, event_id=trial_type,
-            overwrite=False)
-
+bids_basename = make_bids_basename(subject=subject_id, task=task)
+write_raw_bids(raw_file, bids_basename, output_path, event_id=trial_type,
+               events_data=events, overwrite=True)
 ###############################################################################
 # What does our fresh BIDS directory look like?
 print_dir_tree(output_path)
@@ -155,21 +160,18 @@ run_mapping = {2: None,  # for resting eyes closed task, there was only one run
 for subj_idx in [1, 2]:
     for task_idx in [2, 4, 12]:
         # Load the data
-        edf_path = os.path.join(data_dir,
-                                'S{:03}'.format(subj_idx),
-                                'S{:03}R{:02}.edf'.format(subj_idx, task_idx))
-        raw = read_raw_edf(edf_path, preload=True)
+        edf_path = eegbci.load_data(subject=subj_idx, runs=task_idx)[0]
 
-        # `kind` and `trial_type` were already defined above
-        raw_to_bids(subject_id='{:03}'.format(subj_idx),
-                    task=task_names[task_idx],
-                    run=run_mapping[task_idx],
-                    raw_file=raw,
-                    output_path=output_path,
-                    kind=kind,
-                    event_id=trial_type,
-                    overwrite=True
-                    )
+        raw = mne.io.read_raw_edf(edf_path, preload=False, stim_channel=None)
+        annot = read_annotations_edf(edf_path)
+        raw.set_annotations(annot)
+        events, event_id = mne.events_from_annotations(raw)
+
+        make_bids_basename(
+            subject='{:03}'.format(subj_idx), task=task_names[task_idx],
+            run=run_mapping[task_idx])
+        write_raw_bids(raw, bids_basename, output_path, event_id=trial_type,
+                       events_data=events, overwrite=True)
 
 ###############################################################################
 # Step 3: Check and compare with standard
@@ -183,8 +185,9 @@ print_dir_tree(output_path)
 # initial `dataset_description` on top!
 #
 # Now it's time to manually check the BIDS directory and the meta files to add
-# all the information that MNE-BIDS could not infer. These places are marked
-# with "n/a".
+# all the information that MNE-BIDS could not infer. For instance, you must
+# describe EEGReference and EEGGround yourself. It's easy to find these by
+# searching for "n/a" in the sidecar files.
 #
 # Remember that there is a convenient javascript tool to validate all your BIDS
 # directories called the "BIDS-validator", available as a web version and a

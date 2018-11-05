@@ -4,7 +4,7 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>mne_bids.utils.make_bids_filename &#8212; mne_bids 0.1dev0 documentation</title>
+    <title>mne_bids.mne_bids.make_bids_basename &#8212; mne_bids 0.1dev0 documentation</title>
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
@@ -68,7 +68,7 @@
   <ul class="dropdown-menu localtoc"
       role="menu"
       aria-labelledby="dLabelLocalToc"><ul>
-<li><a class="reference internal" href="#">mne_bids.utils.make_bids_filename</a></li>
+<li><a class="reference internal" href="#">mne_bids.mne_bids.make_bids_basename</a></li>
 </ul>
 </ul>
 </li>
@@ -80,7 +80,7 @@
             
               <li class="hidden-sm">
 <div id="sourcelink">
-  <a href="../_sources/generated/mne_bids.utils.make_bids_filename.rst.txt"
+  <a href="../_sources/generated/mne_bids.mne_bids.make_bids_basename.rst.txt"
      rel="nofollow">Source</a>
 </div></li>
             
@@ -104,15 +104,15 @@
   <div class="row">
     <div class="col-md-12 content">
       
-  <div class="section" id="mne-bids-utils-make-bids-filename">
-<h1>mne_bids.utils.make_bids_filename<a class="headerlink" href="#mne-bids-utils-make-bids-filename" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="mne-bids-mne-bids-make-bids-basename">
+<h1>mne_bids.mne_bids.make_bids_basename<a class="headerlink" href="#mne-bids-mne-bids-make-bids-basename" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
-<dt id="mne_bids.utils.make_bids_filename">
-<code class="descclassname">mne_bids.utils.</code><code class="descname">make_bids_filename</code><span class="sig-paren">(</span><em>subject=None</em>, <em>session=None</em>, <em>task=None</em>, <em>acquisition=None</em>, <em>run=None</em>, <em>processing=None</em>, <em>recording=None</em>, <em>space=None</em>, <em>suffix=None</em>, <em>prefix=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/utils.html#make_bids_filename"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.utils.make_bids_filename" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a BIDS filename from its component parts.</p>
+<dt id="mne_bids.mne_bids.make_bids_basename">
+<code class="descclassname">mne_bids.mne_bids.</code><code class="descname">make_bids_basename</code><span class="sig-paren">(</span><em>subject=None</em>, <em>session=None</em>, <em>task=None</em>, <em>acquisition=None</em>, <em>run=None</em>, <em>processing=None</em>, <em>recording=None</em>, <em>space=None</em>, <em>prefix=None</em>, <em>suffix=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/utils.html#make_bids_basename"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.mne_bids.make_bids_basename" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a partial/full BIDS filename from its component parts.</p>
 <p>BIDS filename prefixes have one or more pieces of metadata in them. They
 must follow a particular order, which is followed by this function. This
-will generate the <em>prefix</em> for a BIDS file name that can be used with many
+will generate the <em>prefix</em> for a BIDS filename that can be used with many
 subsequent files, or you may also give a suffix that will then complete
 the file name.</p>
 <p>Note that all parameters are not applicable to each kind of data. For
@@ -146,12 +146,12 @@ example, electrode location TSV files do not need a task field.</p>
 <dt><strong>space</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str | None</span></dt>
 <dd><p class="first last">The coordinate space for an anatomical file. Corresponds to “space”.</p>
 </dd>
-<dt><strong>suffix</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str | None</span></dt>
-<dd><p class="first last">The suffix of a file that begins with this prefix. E.g., ‘audio.wav’.</p>
-</dd>
 <dt><strong>prefix</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str | None</span></dt>
 <dd><p class="first last">The prefix for the filename to be created. E.g., a path to the folder
 in which you wish to create a file with this name.</p>
+</dd>
+<dt><strong>suffix</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str | None</span></dt>
+<dd><p class="first last">The suffix of a file that begins with this prefix. E.g., ‘audio.wav’.</p>
 </dd>
 </dl>
 </td>
@@ -166,7 +166,7 @@ in which you wish to create a file with this name.</p>
 </tbody>
 </table>
 <p class="rubric">Examples</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">make_bids_filename</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="s1">&#39;two&#39;</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="s1">&#39;mytask&#39;</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;data.csv&#39;</span><span class="p">))</span> <span class="c1"># noqa</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">make_bids_basename</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="s1">&#39;two&#39;</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="s1">&#39;mytask&#39;</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;data.csv&#39;</span><span class="p">))</span> <span class="c1"># noqa</span>
 <span class="go">sub-test_ses-two_task-mytask_data.csv</span>
 </pre></div>
 </div>
@@ -186,7 +186,7 @@ in which you wish to create a file with this name.</p>
       
     </p>
     <p>
-        &copy; Copyright 2018, MNE Developers. Last updated on 2018-10-19.<br/>
+        &copy; Copyright 2018, MNE Developers. Last updated on 2018-11-05.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.1.<br/>
     </p>
   </div>

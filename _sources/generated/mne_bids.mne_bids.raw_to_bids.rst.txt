@@ -1,6 +1,0 @@
-mne\_bids.mne\_bids.raw\_to\_bids
-=================================
-
-.. currentmodule:: mne_bids.mne_bids
-
-.. autofunction:: raw_to_bids

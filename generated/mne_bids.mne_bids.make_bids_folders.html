@@ -4,7 +4,7 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>mne_bids.utils.make_bids_folders &#8212; mne_bids 0.1dev0 documentation</title>
+    <title>mne_bids.mne_bids.make_bids_folders &#8212; mne_bids 0.1dev0 documentation</title>
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
@@ -68,7 +68,7 @@
   <ul class="dropdown-menu localtoc"
       role="menu"
       aria-labelledby="dLabelLocalToc"><ul>
-<li><a class="reference internal" href="#">mne_bids.utils.make_bids_folders</a></li>
+<li><a class="reference internal" href="#">mne_bids.mne_bids.make_bids_folders</a></li>
 </ul>
 </ul>
 </li>
@@ -80,7 +80,7 @@
             
               <li class="hidden-sm">
 <div id="sourcelink">
-  <a href="../_sources/generated/mne_bids.utils.make_bids_folders.rst.txt"
+  <a href="../_sources/generated/mne_bids.mne_bids.make_bids_folders.rst.txt"
      rel="nofollow">Source</a>
 </div></li>
             
@@ -104,14 +104,14 @@
   <div class="row">
     <div class="col-md-12 content">
       
-  <div class="section" id="mne-bids-utils-make-bids-folders">
-<h1>mne_bids.utils.make_bids_folders<a class="headerlink" href="#mne-bids-utils-make-bids-folders" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="mne-bids-mne-bids-make-bids-folders">
+<h1>mne_bids.mne_bids.make_bids_folders<a class="headerlink" href="#mne-bids-mne-bids-make-bids-folders" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
-<dt id="mne_bids.utils.make_bids_folders">
-<code class="descclassname">mne_bids.utils.</code><code class="descname">make_bids_folders</code><span class="sig-paren">(</span><em>subject</em>, <em>session=None</em>, <em>kind=None</em>, <em>root=None</em>, <em>make_dir=True</em>, <em>overwrite=False</em>, <em>verbose=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/utils.html#make_bids_folders"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.utils.make_bids_folders" title="Permalink to this definition">¶</a></dt>
+<dt id="mne_bids.mne_bids.make_bids_folders">
+<code class="descclassname">mne_bids.mne_bids.</code><code class="descname">make_bids_folders</code><span class="sig-paren">(</span><em>subject</em>, <em>session=None</em>, <em>kind=None</em>, <em>output_path=None</em>, <em>make_dir=True</em>, <em>overwrite=False</em>, <em>verbose=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/utils.html#make_bids_folders"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.mne_bids.make_bids_folders" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a BIDS folder hierarchy.</p>
 <p>This creates a hierarchy of folders <em>within</em> a BIDS dataset. You should
-plan to create these folders <em>inside</em> the root folder of the dataset.</p>
+plan to create these folders <em>inside</em> the output_path folder of the dataset.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -127,8 +127,8 @@ plan to create these folders <em>inside</em> the root folder of the dataset.</p>
 <dt><strong>session</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str | None</span></dt>
 <dd><p class="first last">The session for a item. Corresponds to “ses”.</p>
 </dd>
-<dt><strong>root</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str | None</span></dt>
-<dd><p class="first last">The root for the folders to be created. If None, folders will be
+<dt><strong>output_path</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str | None</span></dt>
+<dd><p class="first last">The output_path for the folders to be created. If None, folders will be
 created in the current working directory.</p>
 </dd>
 <dt><strong>make_dir</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bool</span></dt>
@@ -159,7 +159,8 @@ as folders are created.</p>
 </table>
 <p class="rubric">Examples</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">make_bids_folders</span><span class="p">(</span><span class="s1">&#39;sub_01&#39;</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="s1">&#39;my_session&#39;</span><span class="p">,</span>
-<span class="go">                            kind=&#39;meg&#39;, root=&#39;path/to/project&#39;, make_dir=False))  # noqa</span>
+<span class="go">                            kind=&#39;meg&#39;, output_path=&#39;path/to/project&#39;,</span>
+<span class="go">                            make_dir=False))  # noqa</span>
 <span class="go">path/to/project/sub-sub_01/ses-my_session/meg</span>
 </pre></div>
 </div>
@@ -179,7 +180,7 @@ as folders are created.</p>
       
     </p>
     <p>
-        &copy; Copyright 2018, MNE Developers. Last updated on 2018-10-19.<br/>
+        &copy; Copyright 2018, MNE Developers. Last updated on 2018-11-05.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.1.<br/>
     </p>
   </div>

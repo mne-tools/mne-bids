@@ -119,26 +119,26 @@ names and folder hierarchy. MNE-BIDS comes with convenience functions if you
 wish to create these files/folders on your own.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">You may automatically convert Raw files to a BIDS-compatible folder with
-<cite>raw_to_bids</cite>. This example is for manually creating files/folders.</p>
+<p class="last">You may automatically convert Raw objects to BIDS-compatible files with
+<cite>write_raw_bids</cite>. This example is for manually creating files/folders.</p>
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Authors: Chris Holdgraf &lt;choldgraf@berkeley.edu&gt;</span>
 <span class="c1"># License: BSD (3-clause)</span>
 </pre></div>
 </div>
 <p>We’ll import the relevant functions from the utils module</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mne_bids</span> <span class="kn">import</span> <span class="n">make_bids_folders</span><span class="p">,</span> <span class="n">make_bids_filename</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mne_bids</span> <span class="kn">import</span> <span class="n">make_bids_folders</span><span class="p">,</span> <span class="n">make_bids_basename</span>
 </pre></div>
 </div>
 <div class="section" id="creating-file-names-for-bids">
 <h2>Creating file names for BIDS<a class="headerlink" href="#creating-file-names-for-bids" title="Permalink to this headline">¶</a></h2>
 <p>BIDS requires a specific ordering and structure for metadata fields in
-file paths, the function <cite>filename_bids</cite> allows you to specify many such
+file paths, the function <cite>make_bids_basename</cite> allows you to specify many such
 pieces of metadata, ensuring that they are in the correct order in the
 final file path. Omitted keys will not be included in the file path.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">my_name</span> <span class="o">=</span> <span class="n">make_bids_filename</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="s1">&#39;two&#39;</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="s1">&#39;mytask&#39;</span><span class="p">,</span>
-                             <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;data.csv&#39;</span><span class="p">)</span>
-<span class="k">print</span><span class="p">(</span><span class="n">my_name</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bids_basename</span> <span class="o">=</span> <span class="n">make_bids_basename</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="s1">&#39;two&#39;</span><span class="p">,</span>
+                                   <span class="n">task</span><span class="o">=</span><span class="s1">&#39;mytask&#39;</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;data.csv&#39;</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">bids_basename</span><span class="p">)</span>
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
@@ -147,8 +147,8 @@ final file path. Omitted keys will not be included in the file path.</p>
 </div>
 <p>You may also omit the suffix, which will result in <em>only</em> a prefix for a
 file name. This could then prepended to many more files.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">my_name</span> <span class="o">=</span> <span class="n">make_bids_filename</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="s1">&#39;mytask&#39;</span><span class="p">)</span>
-<span class="k">print</span><span class="p">(</span><span class="n">my_name</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">bids_basename</span> <span class="o">=</span> <span class="n">make_bids_basename</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="s1">&#39;mytask&#39;</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">bids_basename</span><span class="p">)</span>
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
@@ -160,7 +160,7 @@ file name. This could then prepended to many more files.</p>
 <h2>Creating folders<a class="headerlink" href="#creating-folders" title="Permalink to this headline">¶</a></h2>
 <p>You can also use MNE-BIDS to create folder hierarchies.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">path_folder</span> <span class="o">=</span> <span class="n">make_bids_folders</span><span class="p">(</span><span class="s1">&#39;sub_01&#39;</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="s1">&#39;mysession&#39;</span><span class="p">,</span>
-                                <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;meg&#39;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="s1">&#39;path/to/project&#39;</span><span class="p">,</span>
+                                <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;meg&#39;</span><span class="p">,</span> <span class="n">output_path</span><span class="o">=</span><span class="s1">&#39;path/to/project&#39;</span><span class="p">,</span>
                                 <span class="n">make_dir</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
 <span class="k">print</span><span class="p">(</span><span class="n">path_folder</span><span class="p">)</span>
 
@@ -195,7 +195,7 @@ file name. This could then prepended to many more files.</p>
       
     </p>
     <p>
-        &copy; Copyright 2018, MNE Developers. Last updated on 2018-10-19.<br/>
+        &copy; Copyright 2018, MNE Developers. Last updated on 2018-11-05.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.1.<br/>
     </p>
   </div>

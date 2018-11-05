@@ -1,0 +1,6 @@
+mne\_bids.utils.copyfile\_eeglab
+================================
+
+.. currentmodule:: mne_bids.utils
+
+.. autofunction:: copyfile_eeglab
