@@ -5,9 +5,9 @@ descr = """Experimental code for BIDS using MNE."""
 
 DISTNAME = 'mne-bids'
 DESCRIPTION = descr
-MAINTAINER = 'Alexandre Gramfort'
-MAINTAINER_EMAIL = 'alexandre.gramfort@telecom-paristech.fr'
-URL = 'http://martinos.org/mne'
+MAINTAINER = 'Mainak Jas'
+MAINTAINER_EMAIL = 'mainakjas@gmail.com'
+URL = 'https://mne-tools.github.io/mne-bids/'
 LICENSE = 'BSD (3-clause)'
 DOWNLOAD_URL = 'http://github.com/mne-tools/mne-bids'
 VERSION = '0.1.dev0'

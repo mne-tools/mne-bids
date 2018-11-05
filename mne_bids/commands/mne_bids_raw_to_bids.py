@@ -4,11 +4,11 @@
 """Command line interface for mne_bids.
 
 example usage:  $ mne_bids raw_to_bids --subject_id sub01 --task rest
---raw_file data.edf --output_path new_path
+--raw data.edf --output_path new_path
 
 """
-
-from mne_bids import raw_to_bids
+from mne_bids import write_raw_bids, make_bids_basename
+from mne_bids.io import _read_raw
 
 
 def run():
@@ -17,14 +17,13 @@ def run():
 
     parser = get_optparser(__file__)
 
-    parser.set_defaults(kind='meg')
     parser.add_option('--subject_id', dest='subject_id',
                       help=('The subject name in BIDS compatible format',
                             '(01,02, etc.)'), metavar='s')
     parser.add_option('--task', dest='task',
                       help='Name of the task the data is based on.',
                       metavar='t')
-    parser.add_option('--raw_file', dest='raw_file',
+    parser.add_option('--raw', dest='raw_fname',
                       help='The path to the raw MEG file.', metavar='r')
     parser.add_option('--output_path', dest='output_path',
                       help='The path of the BIDS compatible folder.',
@@ -35,9 +34,9 @@ def run():
     parser.add_option('--run', dest='run',
                       help='The run number for this dataset.',
                       metavar='run')
-    parser.add_option('--kind', dest='kind',
-                      help='The kind of data being converted.',
-                      metavar='k')
+    parser.add_option('--acq', dest='acq',
+                      help='The acquisition parameter.',
+                      metavar='acq')
     parser.add_option('--events_data', dest='events_data',
                       help='The events file.', metavar='evt')
     parser.add_option('--event_id', dest='event_id',
@@ -58,13 +57,14 @@ def run():
 
     opt, args = parser.parse_args()
 
-    raw_to_bids(subject_id=opt.subject_id, task=opt.task,
-                raw_file=opt.raw_file, output_path=opt.output_path,
-                session_id=opt.session_id, run=opt.run, kind=opt.kind,
-                events_data=opt.events_data, event_id=opt.event_id,
-                hpi=opt.hpi, electrode=opt.electrode, hsp=opt.hsp,
-                config=opt.config, overwrite=opt.overwrite,
-                verbose=True)
+    bids_basename = make_bids_basename(
+        subject=opt.subject_id, session=opt.session_id, run=opt.run,
+        acquisition=opt.acq, task=opt.task)
+    raw = _read_raw(opt.raw_fname, hpi=opt.hpi, electrode=opt.electrode,
+                    hsp=opt.hsp, config=opt.config)
+    write_raw_bids(raw, bids_basename, opt.output_path, event_id=opt.event_id,
+                   events_data=opt.events_data, overwrite=opt.overwrite,
+                   verbose=True)
 
 
 is_main = (__name__ == '__main__')

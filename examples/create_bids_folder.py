@@ -9,8 +9,8 @@ wish to create these files/folders on your own.
 
 .. note::
 
-   You may automatically convert Raw files to a BIDS-compatible folder with
-   `raw_to_bids`. This example is for manually creating files/folders.
+   You may automatically convert Raw objects to BIDS-compatible files with
+   `write_raw_bids`. This example is for manually creating files/folders.
 """
 
 # Authors: Chris Holdgraf <choldgraf@berkeley.edu>
@@ -19,27 +19,27 @@ wish to create these files/folders on your own.
 ###############################################################################
 # We'll import the relevant functions from the utils module
 
-from mne_bids import make_bids_folders, make_bids_filename
+from mne_bids import make_bids_folders, make_bids_basename
 
 ###############################################################################
 # Creating file names for BIDS
 # ----------------------------
 #
 # BIDS requires a specific ordering and structure for metadata fields in
-# file paths, the function `filename_bids` allows you to specify many such
+# file paths, the function `make_bids_basename` allows you to specify many such
 # pieces of metadata, ensuring that they are in the correct order in the
 # final file path. Omitted keys will not be included in the file path.
 
-my_name = make_bids_filename(subject='test', session='two', task='mytask',
-                             suffix='data.csv')
-print(my_name)
+bids_basename = make_bids_basename(subject='test', session='two',
+                                   task='mytask', suffix='data.csv')
+print(bids_basename)
 
 ###############################################################################
 # You may also omit the suffix, which will result in *only* a prefix for a
 # file name. This could then prepended to many more files.
 
-my_name = make_bids_filename(subject='test', task='mytask')
-print(my_name)
+bids_basename = make_bids_basename(subject='test', task='mytask')
+print(bids_basename)
 
 ###############################################################################
 # Creating folders
@@ -48,7 +48,7 @@ print(my_name)
 # You can also use MNE-BIDS to create folder hierarchies.
 
 path_folder = make_bids_folders('sub_01', session='mysession',
-                                kind='meg', root='path/to/project',
+                                kind='meg', output_path='path/to/project',
                                 make_dir=False)
 print(path_folder)
 

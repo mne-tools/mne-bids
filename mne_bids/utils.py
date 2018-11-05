@@ -62,14 +62,51 @@ def _mkdir_p(path, overwrite=False, verbose=False):
             raise
 
 
-def make_bids_filename(subject=None, session=None, task=None,
+def _parse_bids_filename(fname, verbose):
+    """Get dict from BIDS fname."""
+    keys = ['sub', 'ses', 'task', 'acq', 'run', 'proc', 'run', 'space',
+            'recording']
+    params = {key: None for key in keys}
+    entities = fname.split('_')
+    idx_key = 0
+    for entity in entities:
+        assert '-' in entity
+        key, value = entity.split('-')
+        if key not in keys:
+            raise KeyError('Unexpected entity ''%s'' found in filename ''%s'''
+                           % (entity, fname))
+        if keys.index(key) < idx_key:
+            raise ValueError('Entities in filename not ordered correctly.'
+                             ' "%s" should have occured earlier in the '
+                             'filename "%s"' % (key, fname))
+        idx_key = keys.index(key)
+        params[key] = value
+    return params
+
+
+def _handle_kind(raw):
+    """Get kind."""
+    if 'meg' in raw:
+        kind = 'meg'
+    elif 'eeg' in raw:
+        kind = 'eeg'
+    elif 'ecog' in raw:
+        kind = 'ieeg'
+    else:
+        raise ValueError('Neither MEG/EEG/iEEG channels found in data.'
+                         'Please use raw.set_channel_types to set the '
+                         'channel types in the data.')
+    return kind
+
+
+def make_bids_basename(subject=None, session=None, task=None,
                        acquisition=None, run=None, processing=None,
-                       recording=None, space=None, suffix=None, prefix=None):
-    """Create a BIDS filename from its component parts.
+                       recording=None, space=None, prefix=None, suffix=None):
+    """Create a partial/full BIDS filename from its component parts.
 
     BIDS filename prefixes have one or more pieces of metadata in them. They
     must follow a particular order, which is followed by this function. This
-    will generate the *prefix* for a BIDS file name that can be used with many
+    will generate the *prefix* for a BIDS filename that can be used with many
     subsequent files, or you may also give a suffix that will then complete
     the file name.
 
@@ -94,11 +131,11 @@ def make_bids_filename(subject=None, session=None, task=None,
         The recording name for this item. Corresponds to "recording".
     space : str | None
         The coordinate space for an anatomical file. Corresponds to "space".
-    suffix : str | None
-        The suffix of a file that begins with this prefix. E.g., 'audio.wav'.
     prefix : str | None
         The prefix for the filename to be created. E.g., a path to the folder
         in which you wish to create a file with this name.
+    suffix : str | None
+        The suffix of a file that begins with this prefix. E.g., 'audio.wav'.
 
     Returns
     -------
@@ -107,7 +144,7 @@ def make_bids_filename(subject=None, session=None, task=None,
 
     Examples
     --------
-    >>> print(make_bids_filename(subject='test', session='two', task='mytask', suffix='data.csv')) # noqa
+    >>> print(make_bids_basename(subject='test', session='two', task='mytask', suffix='data.csv')) # noqa
     sub-test_ses-two_task-mytask_data.csv
 
     """
@@ -143,12 +180,12 @@ def make_bids_filename(subject=None, session=None, task=None,
     return filename
 
 
-def make_bids_folders(subject, session=None, kind=None, root=None,
+def make_bids_folders(subject, session=None, kind=None, output_path=None,
                       make_dir=True, overwrite=False, verbose=False):
     """Create a BIDS folder hierarchy.
 
     This creates a hierarchy of folders *within* a BIDS dataset. You should
-    plan to create these folders *inside* the root folder of the dataset.
+    plan to create these folders *inside* the output_path folder of the dataset.
 
     Parameters
     ----------
@@ -159,8 +196,8 @@ def make_bids_folders(subject, session=None, kind=None, root=None,
         "anat", "func", etc.
     session : str | None
         The session for a item. Corresponds to "ses".
-    root : str | None
-        The root for the folders to be created. If None, folders will be
+    output_path : str | None
+        The output_path for the folders to be created. If None, folders will be
         created in the current working directory.
     make_dir : bool
         Whether to actually create the folders specified. If False, only a
@@ -182,11 +219,12 @@ def make_bids_folders(subject, session=None, kind=None, root=None,
     Examples
     --------
     >>> print(make_bids_folders('sub_01', session='my_session',
-                                kind='meg', root='path/to/project', make_dir=False))  # noqa
+                                kind='meg', output_path='path/to/project',
+                                make_dir=False))  # noqa
     path/to/project/sub-sub_01/ses-my_session/meg
 
     """
-    _check_types((subject, kind, session, root))
+    _check_types((subject, kind, session, output_path))
     if session is not None:
         _check_key_val('ses', session)
 
@@ -196,8 +234,8 @@ def make_bids_folders(subject, session=None, kind=None, root=None,
     if isinstance(kind, string_types):
         path.append(kind)
     path = op.join(*path)
-    if isinstance(root, string_types):
-        path = op.join(root, path)
+    if isinstance(output_path, string_types):
+        path = op.join(output_path, path)
 
     if make_dir is True:
         _mkdir_p(path, overwrite=overwrite, verbose=verbose)
@@ -273,7 +311,7 @@ def make_dataset_description(path, name=None, data_license=None,
     _write_json(description, fname, overwrite=True, verbose=verbose)
 
 
-def age_on_date(bday, exp_date):
+def _age_on_date(bday, exp_date):
     """Calculate age from birthday and experiment date.
 
     Parameters

@@ -15,12 +15,13 @@ import os.path as op
 import pytest
 
 import pandas as pd
+
 import mne
 from mne.datasets import testing
 from mne.utils import _TempDir, run_subprocess
 from mne.io.constants import FIFF
 
-from mne_bids import raw_to_bids, make_bids_filename, make_bids_folders
+from mne_bids import make_bids_basename, make_bids_folders, write_raw_bids
 
 base_path = op.join(op.dirname(mne.__file__), 'io')
 subject_id = '01'
@@ -30,6 +31,10 @@ run = '01'
 acq = '01'
 run2 = '02'
 task = 'testing'
+
+bids_basename = make_bids_basename(
+    subject=subject_id, session=session_id, run=run, acquisition=acq,
+    task=task)
 
 # for windows, shell = True is needed
 # to call npm, bids-validator etc.
@@ -43,7 +48,7 @@ if os.name == 'nt':
 # MEG Tests
 # ---------
 def test_fif():
-    """Test functionality of the raw_to_bids conversion for Neuromag data."""
+    """Test functionality of the write_raw_bids conversion for fif."""
     output_path = _TempDir()
     data_path = testing.data_path()
     raw_fname = op.join(data_path, 'MEG', 'sample',
@@ -54,10 +59,9 @@ def test_fif():
     events_fname = op.join(data_path, 'MEG', 'sample',
                            'sample_audvis_trunc_raw-eve.fif')
 
-    raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
-                acquisition=acq, task=task, raw_file=raw_fname,
-                events_data=events_fname, output_path=output_path,
-                event_id=event_id, overwrite=False)
+    raw = mne.io.read_raw_fif(raw_fname)
+    write_raw_bids(raw, bids_basename, output_path, events_data=events_fname,
+                   event_id=event_id, overwrite=False)
 
     # give the raw object some fake participant data
     raw = mne.io.read_raw_fif(raw_fname)
@@ -67,25 +71,38 @@ def test_fif():
     data_path2 = _TempDir()
     raw_fname2 = op.join(data_path2, 'sample_audvis_raw.fif')
     raw.save(raw_fname2)
-    raw_to_bids(subject_id=subject_id2, run=run, task=task, acquisition=acq,
-                session_id=session_id, raw_file=raw_fname2,
-                events_data=events_fname, output_path=output_path,
-                event_id=event_id, overwrite=False)
+
+    bids_basename2 = bids_basename.replace(subject_id, subject_id2)
+    write_raw_bids(raw, bids_basename2, output_path, events_data=events_fname,
+                   event_id=event_id, overwrite=False)
     # check that the overwrite parameters work correctly for the participant
     # data
     # change the gender but don't force overwrite.
     raw.info['subject_info'] = {'his_id': subject_id2,
                                 'birthday': (1994, 1, 26), 'sex': 2}
     with pytest.raises(OSError, match="already exists"):
-        raw_to_bids(subject_id=subject_id2, run=run, task=task,
-                    acquisition=acq, session_id=session_id, raw_file=raw,
-                    events_data=events_fname, output_path=output_path,
-                    event_id=event_id, overwrite=False)
+        write_raw_bids(raw, bids_basename2, output_path,
+                       events_data=events_fname, event_id=event_id,
+                       overwrite=False)
     # now force the overwrite
-    raw_to_bids(subject_id=subject_id2, run=run, task=task,
-                acquisition=acq, session_id=session_id, raw_file=raw,
-                events_data=events_fname, output_path=output_path,
-                event_id=event_id, overwrite=True)
+    write_raw_bids(raw, bids_basename2, output_path, events_data=events_fname,
+                   event_id=event_id, overwrite=True)
+
+    with pytest.raises(ValueError, match='raw_file must be'):
+        write_raw_bids('blah', bids_basename, output_path)
+
+    bids_basename2 = 'sub-01_ses-01_xyz-01_run-01'
+    with pytest.raises(KeyError, match='Unexpected entity'):
+        write_raw_bids(raw, bids_basename2, output_path)
+
+    bids_basename2 = 'sub-01_run-01_task-auditory'
+    with pytest.raises(ValueError, match='ordered correctly'):
+        write_raw_bids(raw, bids_basename2, output_path, overwrite=True)
+
+    del raw._filenames
+    with pytest.raises(ValueError, match='raw.filenames is missing'):
+        write_raw_bids(raw, bids_basename2, output_path)
+
     cmd = ['bids-validator', output_path]
     run_subprocess(cmd, shell=shell)
 
@@ -93,7 +110,7 @@ def test_fif():
 
 
 def test_kit():
-    """Test functionality of the raw_to_bids conversion for KIT data."""
+    """Test functionality of the write_raw_bids conversion for KIT data."""
     output_path = _TempDir()
     data_path = op.join(base_path, 'kit', 'tests', 'data')
     raw_fname = op.join(data_path, 'test.sqd')
@@ -103,17 +120,17 @@ def test_kit():
     headshape_fname = op.join(data_path, 'test_hsp.txt')
     event_id = dict(cond=1)
 
-    raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
-                task=task, acquisition=acq, raw_file=raw_fname,
-                events_data=events_fname, event_id=event_id, hpi=hpi_fname,
-                electrode=electrode_fname, hsp=headshape_fname,
-                output_path=output_path, overwrite=False)
+    raw = mne.io.read_raw_kit(
+        raw_fname, mrk=hpi_fname, elp=electrode_fname,
+        hsp=headshape_fname)
+    write_raw_bids(raw, bids_basename, output_path, events_data=events_fname,
+                   event_id=event_id, overwrite=False)
     cmd = ['bids-validator', output_path]
     run_subprocess(cmd, shell=shell)
     assert op.exists(op.join(output_path, 'participants.tsv'))
 
     # ensure the channels file has no STI 014 channel:
-    channels_tsv = make_bids_filename(
+    channels_tsv = make_bids_basename(
         subject=subject_id, session=session_id, task=task, run=run,
         suffix='channels.tsv', acquisition=acq,
         prefix=op.join(output_path, 'sub-01/ses-01/meg'))
@@ -121,58 +138,45 @@ def test_kit():
     assert not ('STI 014' in df['name'].values)
 
     # ensure the marker file is produced in the right place
-    raw_folder = make_bids_filename(
+    raw_folder = make_bids_basename(
         subject=subject_id, session=session_id, task=task, run=run,
         acquisition=acq, suffix='%s' % 'meg')
-    marker_fname = make_bids_filename(
+    marker_fname = make_bids_basename(
         subject=subject_id, session=session_id, task=task, run=run,
         acquisition=acq, suffix='markers.sqd',
         prefix=os.path.join(output_path, 'sub-01/ses-01/meg', raw_folder))
     assert op.exists(marker_fname)
 
-    # check for error if there are multiple marker coils specified
-    with pytest.raises(ValueError):
-        raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
-                    task=task, acquisition=acq, raw_file=raw_fname,
-                    events_data=events_fname, event_id=event_id,
-                    hpi=[hpi_fname, hpi_fname], electrode=electrode_fname,
-                    hsp=headshape_fname, output_path=output_path,
-                    overwrite=True)
-
 
 def test_ctf():
-    """Test functionality of the raw_to_bids conversion for CTF data."""
+    """Test functionality of the write_raw_bids conversion for CTF data."""
     output_path = _TempDir()
     data_path = op.join(testing.data_path(download=False), 'CTF')
     raw_fname = op.join(data_path, 'testdata_ctf.ds')
 
-    raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
-                task=task, acquisition=acq, raw_file=raw_fname,
-                output_path=output_path, overwrite=False)
+    raw = mne.io.read_raw_ctf(raw_fname)
+    write_raw_bids(raw, bids_basename, output_path=output_path)
     cmd = ['bids-validator', output_path]
     run_subprocess(cmd, shell=shell)
 
     # test to check that running again with overwrite == False raises an error
     with pytest.raises(OSError, match="already exists"):
-        raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
-                    task=task, acquisition=acq, raw_file=raw_fname,
-                    output_path=output_path, overwrite=False)
+        write_raw_bids(raw, bids_basename, output_path=output_path)
 
     assert op.exists(op.join(output_path, 'participants.tsv'))
 
 
 def test_bti():
-    """Test functionality of the raw_to_bids conversion for BTi data."""
+    """Test functionality of the write_raw_bids conversion for BTi data."""
     output_path = _TempDir()
     data_path = op.join(base_path, 'bti', 'tests', 'data')
     raw_fname = op.join(data_path, 'test_pdf_linux')
     config_fname = op.join(data_path, 'test_config_linux')
     headshape_fname = op.join(data_path, 'test_hs_linux')
 
-    raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
-                task=task, acquisition=acq, raw_file=raw_fname,
-                config=config_fname, hsp=headshape_fname,
-                output_path=output_path, verbose=True, overwrite=False)
+    raw = mne.io.read_raw_bti(raw_fname, config_fname=config_fname,
+                              head_shape_fname=headshape_fname)
+    write_raw_bids(raw, bids_basename, output_path, verbose=True)
 
     assert op.exists(op.join(output_path, 'participants.tsv'))
 
@@ -183,14 +187,13 @@ def test_bti():
 # EEG Tests
 # ---------
 def test_vhdr():
-    """Test raw_to_bids conversion for BrainVision data."""
+    """Test write_raw_bids conversion for BrainVision data."""
     output_path = _TempDir()
     data_path = op.join(base_path, 'brainvision', 'tests', 'data')
     raw_fname = op.join(data_path, 'test.vhdr')
 
-    raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
-                task=task, acquisition=acq, raw_file=raw_fname,
-                output_path=output_path, overwrite=False, kind='eeg')
+    raw = mne.io.read_raw_brainvision(raw_fname)
+    write_raw_bids(raw, bids_basename, output_path, overwrite=False)
 
     cmd = ['bids-validator', '--bep006', output_path]
     run_subprocess(cmd, shell=shell)
@@ -198,35 +201,36 @@ def test_vhdr():
     # create another bids folder with the overwrite command and check
     # no files are in the folder
     data_path = make_bids_folders(subject=subject_id, session=session_id,
-                                  kind='eeg', root=output_path,
+                                  kind='eeg', output_path=output_path,
                                   overwrite=True)
     assert len([f for f in os.listdir(data_path) if op.isfile(f)]) == 0
 
 
 def test_edf():
-    """Test raw_to_bids conversion for European Data Format data."""
+    """Test write_raw_bids conversion for European Data Format data."""
     output_path = _TempDir()
     data_path = op.join(testing.data_path(), 'EDF')
     raw_fname = op.join(data_path, 'test_reduced.edf')
 
     raw = mne.io.read_raw_edf(raw_fname, preload=True)
+    # XXX: hack that should be fixed later. Annotation reading is
+    # broken for this file with preload=False and read_annotations_edf
+    raw.preload = False
+
     raw.rename_channels({raw.info['ch_names'][0]: 'EOG'})
     raw.info['chs'][0]['coil_type'] = FIFF.FIFFV_COIL_EEG_BIPOLAR
     raw.rename_channels({raw.info['ch_names'][1]: 'EMG'})
     raw.set_channel_types({'EMG': 'emg'})
 
-    raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
-                task=task, acquisition=acq, raw_file=raw,
-                output_path=output_path, overwrite=False, kind='eeg')
-    raw_to_bids(subject_id=subject_id, session_id=session_id, run=run2,
-                task=task, acquisition=acq, raw_file=raw,
-                output_path=output_path, overwrite=True, kind='eeg')
+    write_raw_bids(raw, bids_basename, output_path)
+    bids_fname = bids_basename.replace('run-01', 'run-%s' % run2)
+    write_raw_bids(raw, bids_fname, output_path, overwrite=True)
 
     cmd = ['bids-validator', '--bep006', output_path]
     run_subprocess(cmd, shell=shell)
 
     # ensure there is an EMG channel in the channels.tsv:
-    channels_tsv = make_bids_filename(
+    channels_tsv = make_bids_basename(
         subject=subject_id, session=session_id, task=task, run=run,
         suffix='channels.tsv', acquisition=acq,
         prefix=op.join(output_path, 'sub-01/ses-01/eeg'))
@@ -234,7 +238,7 @@ def test_edf():
     assert 'ElectroMyoGram' in df['description'].values
 
     # check that the scans list contains two scans
-    scans_tsv = make_bids_filename(
+    scans_tsv = make_bids_basename(
         subject=subject_id, session=session_id, suffix='scans.tsv',
         prefix=op.join(output_path, 'sub-01/ses-01'))
     df = pd.read_csv(scans_tsv, sep='\t')
@@ -242,60 +246,56 @@ def test_edf():
 
 
 def test_bdf():
-    """Test raw_to_bids conversion for Biosemi data."""
+    """Test write_raw_bids conversion for Biosemi data."""
     output_path = _TempDir()
     data_path = op.join(base_path, 'edf', 'tests', 'data')
     raw_fname = op.join(data_path, 'test.bdf')
 
-    raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
-                task=task, acquisition=acq, raw_file=raw_fname,
-                output_path=output_path, overwrite=False, kind='eeg')
+    raw = mne.io.read_raw_edf(raw_fname)
+    write_raw_bids(raw, bids_basename, output_path, overwrite=False)
 
     cmd = ['bids-validator', '--bep006', output_path]
     run_subprocess(cmd, shell=shell)
+
+    raw.crop(0, raw.times[-2])
+    with pytest.raises(AssertionError, match='cropped'):
+        write_raw_bids(raw, bids_basename, output_path)
 
 
 def test_set():
-    """Test raw_to_bids conversion for EEGLAB data."""
+    """Test write_raw_bids conversion for EEGLAB data."""
     # standalone .set file
     output_path = _TempDir()
     data_path = op.join(testing.data_path(), 'EEGLAB')
-    raw_fname = op.join(data_path, 'test_raw_onefile.set')
-
-    raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
-                task=task, acquisition=acq, raw_file=raw_fname,
-                output_path=output_path, overwrite=False, kind='eeg')
-
-    cmd = ['bids-validator', '--bep006', output_path]
-    run_subprocess(cmd, shell=shell)
-
-    with pytest.raises(OSError, match="already exists"):
-        raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
-                    task=task, acquisition=acq, raw_file=raw_fname,
-                    output_path=output_path, overwrite=False, kind='eeg')
 
     # .set with associated .fdt
     output_path = _TempDir()
     data_path = op.join(testing.data_path(), 'EEGLAB')
     raw_fname = op.join(data_path, 'test_raw.set')
 
-    raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
-                task=task, acquisition=acq, raw_file=raw_fname,
-                output_path=output_path, overwrite=False, kind='eeg')
+    raw = mne.io.read_raw_eeglab(raw_fname)
+    write_raw_bids(raw, bids_basename, output_path, overwrite=False)
+
+    with pytest.raises(OSError, match="already exists"):
+        write_raw_bids(raw, bids_basename, output_path=output_path,
+                       overwrite=False)
 
     cmd = ['bids-validator', '--bep006', output_path]
     run_subprocess(cmd, shell=shell)
 
 
 def test_cnt():
-    """Test raw_to_bids conversion for Neuroscan data."""
+    """Test write_raw_bids conversion for Neuroscan data."""
     output_path = _TempDir()
     data_path = op.join(testing.data_path(), 'CNT')
     raw_fname = op.join(data_path, 'scan41_short.cnt')
 
-    raw_to_bids(subject_id=subject_id, session_id=session_id, run=run,
-                task=task, acquisition=acq, raw_file=raw_fname,
-                output_path=output_path, overwrite=False, kind='eeg')
+    raw = mne.io.read_raw_cnt(raw_fname, montage=None)
+    write_raw_bids(raw, bids_basename, output_path)
 
     cmd = ['bids-validator', '--bep006', output_path]
     run_subprocess(cmd, shell=shell)
+
+    raw = mne.io.read_raw_cnt(raw_fname, montage=None, preload=True)
+    with pytest.raises(ValueError, match='preload'):
+        write_raw_bids(raw, bids_basename, output_path)

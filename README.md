@@ -18,7 +18,8 @@ Next to `numpy`, `scipy`, and `matplotlib` that are included in the standard
 anaconda distribution, you will need to install the following dependencies
 to be able to use `mne_bids`:
 
-    $ pip install pandas mne
+    $ pip install pandas
+    $ pip install -U https://api.github.com/repos/mne-tools/mne-python/zipball/master
 
 Then install `mne_bids`:
 

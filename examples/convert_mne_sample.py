@@ -17,8 +17,11 @@ BIDS-compatible folder.
 # Let us import mne_bids
 
 import os.path as op
+
+import mne
 from mne.datasets import sample
-from mne_bids import raw_to_bids
+
+from mne_bids import write_raw_bids
 from mne_bids.utils import print_dir_tree
 
 ###############################################################################
@@ -28,17 +31,17 @@ data_path = sample.data_path()
 event_id = {'Auditory/Left': 1, 'Auditory/Right': 2, 'Visual/Left': 3,
             'Visual/Right': 4, 'Smiley': 5, 'Button': 32}
 
-raw_file = op.join(data_path, 'MEG', 'sample', 'sample_audvis_raw.fif')
+raw_fname = op.join(data_path, 'MEG', 'sample', 'sample_audvis_raw.fif')
 events_data = op.join(data_path, 'MEG', 'sample', 'sample_audvis_raw-eve.fif')
 output_path = op.join(data_path, '..', 'MNE-sample-data-bids')
 
 ###############################################################################
 # Finally, we specify the raw_file and events_data
 
-raw_to_bids(subject_id='01', run='01', session_id='01', task='audiovisual',
-            raw_file=raw_file, events_data=events_data,
-            output_path=output_path, event_id=event_id,
-            overwrite=False)
+raw = mne.io.read_raw_fif(raw_fname)
+bids_basename = 'sub-01_ses-01_task-audiovisual_run-01'
+write_raw_bids(raw, bids_basename, output_path, events_data=events_data,
+               event_id=event_id, overwrite=True)
 
 ###############################################################################
 # Now let's see the structure of the BIDS folder we created.

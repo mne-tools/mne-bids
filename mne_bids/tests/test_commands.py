@@ -28,7 +28,7 @@ def test_raw_to_bids():
     raw_fname = op.join(data_path, 'MEG', 'sample',
                         'sample_audvis_trunc_raw.fif')
     # check_usage(mne_bids_raw_to_bids)
-    with ArgvSetter(('--subject_id', subject_id, '--task', task, '--raw_file',
+    with ArgvSetter(('--subject_id', subject_id, '--task', task, '--raw',
                      raw_fname, '--output_path', output_path)):
         mne_bids_raw_to_bids.run()
 
