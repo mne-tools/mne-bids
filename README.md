@@ -14,9 +14,10 @@ Installation
 
 We recommend the [Anaconda](https://www.anaconda.com/download/) Python distribution.
 Besides `numpy`, `scipy`, `matplotlib`, and `pandas` (which are included in the standard
-Anaconda installation), you will need to install MNE using the `pip` tool:
+Anaconda installation), you will need to install MNE using the `pip` tool (currently, it is
+necessary to install the development version):
 
-    $ pip install -U mne
+    $ pip install -U https://api.github.com/repos/mne-tools/mne-python/zipball/master
 
 Then install `mne-bids`:
 
