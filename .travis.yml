@@ -16,7 +16,7 @@ install:
     - conda create -n testenv --yes python=${PYTHON_VERSION}
     - source activate testenv
     - conda install --yes --quiet numpy=1.13.1 scipy=0.19.1 matplotlib pandas=0.20.3
-    - pip install flake8 pytest pytest-sugar pytest-faulthandler
+    - pip install flake8 pytest==3.3.2 pytest-sugar pytest-faulthandler
     - |
       git clone --depth 1 https://github.com/mne-tools/mne-python.git
       cd mne-python
