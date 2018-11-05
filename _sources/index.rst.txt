@@ -18,7 +18,7 @@ We recommend the `Anaconda Python distribution <https://www.continuum.io/downloa
 
 Then install mne_bids::
 
-    $ pip install git+https://github.com/mne-tools/mne-bids.git#egg=mne-bids
+    $ pip install -U mne-bids
 
 If you do not have admin privileges on the computer, use the ``--user`` flag
 with `pip`. To upgrade, use the ``--upgrade`` flag provided by `pip`.
