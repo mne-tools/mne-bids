@@ -147,9 +147,9 @@ of the directory tree.
     |------------------ database
     |--------------------- eegmmidb
     |------------------------ S001
-    |--------------------------- S001R02.edf
-    |--------------------------- S001R12.edf
     |--------------------------- S001R04.edf
+    |--------------------------- S001R12.edf
+    |--------------------------- S001R02.edf
     |------------------------ S002
     |--------------------------- S002R04.edf
     |--------------------------- S002R12.edf
@@ -446,10 +446,10 @@ What does our fresh BIDS directory look like?
     |--------------- sub-001
     |------------------ sub-001_scans.tsv
     |------------------ eeg
-    |--------------------- sub-001_task-resteyesclosed_events.tsv
-    |--------------------- sub-001_task-resteyesclosed_eeg.json
-    |--------------------- sub-001_task-resteyesclosed_eeg.edf
     |--------------------- sub-001_task-resteyesclosed_channels.tsv
+    |--------------------- sub-001_task-resteyesclosed_eeg.json
+    |--------------------- sub-001_task-resteyesclosed_events.tsv
+    |--------------------- sub-001_task-resteyesclosed_eeg.edf
 
 
 Looks good so far, let's convert the data for all tasks and subjects.
@@ -977,10 +977,10 @@ Now we have written our BIDS directory.
     |--------------- sub-001
     |------------------ sub-001_scans.tsv
     |------------------ eeg
-    |--------------------- sub-001_task-resteyesclosed_events.tsv
-    |--------------------- sub-001_task-resteyesclosed_eeg.json
-    |--------------------- sub-001_task-resteyesclosed_eeg.edf
     |--------------------- sub-001_task-resteyesclosed_channels.tsv
+    |--------------------- sub-001_task-resteyesclosed_eeg.json
+    |--------------------- sub-001_task-resteyesclosed_events.tsv
+    |--------------------- sub-001_task-resteyesclosed_eeg.edf
 
 
 MNE-BIDS has created a suitable directory structure for us, and among other
@@ -1001,7 +1001,7 @@ Web version: https://bids-standard.github.io/bids-validator/
 Command line tool: https://www.npmjs.com/package/bids-validator
 
 
-**Total running time of the script:** ( 0 minutes  4.039 seconds)
+**Total running time of the script:** ( 0 minutes  2.738 seconds)
 
 
 .. _sphx_glr_download_auto_examples_convert_eeg_to_bids.py:
