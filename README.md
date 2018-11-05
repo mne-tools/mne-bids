@@ -7,40 +7,33 @@
 MNE-BIDS
 ========
 
-This is a repository for creating BIDS-compatible datasets with MNE.
+This is a repository for creating [BIDS](http://bids.neuroimaging.io/)-compatible datasets with [MNE](https://mne-tools.github.io/stable/index.html).
 
 Installation
 ------------
 
-We recommend the
-[Anaconda Python distribution](https://www.continuum.io/downloads).
-Next to `numpy`, `scipy`, and `matplotlib` that are included in the standard
-anaconda distribution, you will need to install the following dependencies
-to be able to use `mne_bids`:
+We recommend the [Anaconda](https://www.anaconda.com/download/) Python distribution.
+Besides `numpy`, `scipy`, `matplotlib`, and `pandas` (which are included in the standard
+Anaconda installation), you will need to install MNE using the `pip` tool:
 
-    $ pip install pandas
-    $ pip install -U https://api.github.com/repos/mne-tools/mne-python/zipball/master
+    $ pip install -U mne
 
-Then install `mne_bids`:
+Then install `mne-bids`:
 
     $ pip install -U mne-bids
 
-If you do not have administrator privileges on the computer, use the `--user`
-flag with `pip`. To upgrade, use the `--upgrade` flag provided by `pip`.
+These `pip` commands also work if you want to upgrade if a newer version of `mne-bids` is available. If you do not have administrator privileges on the computer, use the `--user` flag with `pip`.
 
-To check if everything worked fine, you can do:
+To check if everything worked fine, the following command should not give any error messages:
 
     $ python -c 'import mne_bids'
-
-and it should not give any error messages.
 
 Command Line Interface
 ----------------------
 
 In addition to `import mne_bids`, you can use the command line interface.
 
-
-Example :
+Example:
 
 ```bash
 $ mne_bids raw_to_bids --subject_id sub01 --task rest --raw_file data.edf --output_path new_path
@@ -51,8 +44,8 @@ Cite
 
 If you use `mne-bids` in your work, please cite:
 
-    Niso, G., Gorgolewski, K.J., Bock, E., Brooks, T.L., Flandin, G., Gramfort, A.,
-    Henson, R.N., Jas, M., Litvak, V., Moreau, J., Oostenveld, R., Schoffelen, J.,
+    Niso, G., Gorgolewski, K. J., Bock, E., Brooks, T. L., Flandin, G., Gramfort, A.,
+    Henson, R. N., Jas, M., Litvak, V., Moreau, J., Oostenveld, R., Schoffelen, J.,
     Tadel, F., Wexler, J., Baillet, S. (2018). MEG-BIDS, the brain imaging data
     structure extended to magnetoencephalography. Scientific Data, 5, 180110.
     http://doi.org/10.1038/sdata.2018.110
