@@ -10,7 +10,7 @@ MAINTAINER_EMAIL = 'mainakjas@gmail.com'
 URL = 'https://mne-tools.github.io/mne-bids/'
 LICENSE = 'BSD (3-clause)'
 DOWNLOAD_URL = 'http://github.com/mne-tools/mne-bids'
-VERSION = '0.1'
+VERSION = '0.2.dev0'
 
 if __name__ == "__main__":
     setup(name=DISTNAME,

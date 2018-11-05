@@ -15,6 +15,20 @@ Version 0.1
 Changelog
 ~~~~~~~~~
 
+Bug
+~~~
+
+API
+~~~
+
+.. _changes_0_1:
+
+Version 0.1
+-----------
+
+Changelog
+~~~~~~~~~
+
 - Add example for how to rename BrainVision file triplets: `rename_brainvision_files.py` by `Stefan Appelhoff`_ (`#104 <https://github.com/mne-tools/mne-bids/pull/104>`_)
 - Add function to fetch BrainVision testing data :func:`mne_bids.datasets.fetch_brainvision_testing_data` `Stefan Appelhoff`_ (`#104 <https://github.com/mne-tools/mne-bids/pull/104>`_)
 - Add support for EEG and a corresponding example: `make_eeg_bids.py` by `Stefan Appelhoff`_ (`#78 <https://github.com/mne-tools/mne-bids/pull/78>`_)
@@ -49,7 +63,7 @@ People who contributed to this release  (in alphabetical order):
 * Mainak Jas
 * Matt Sanderson
 * Romain Quentin
-* Stefan Appel
+* Stefan Appelhoff
 * Teon Brooks
 
 .. _Mainak Jas: https://perso.telecom-paristech.fr/mjas/

@@ -37,7 +37,7 @@ jobs:
                 name: github pages deployment
                 command: |
                   source activate testenv
-                  if [ "${CIRCLE_BRANCH}" == "master" ]; then
+                  if [ "${CIRCLE_BRANCH}" == "maint/0.1" ]; then
                     echo "Deploying dev docs.";
                     git config --global user.email "circle@mne.com";
                     git config --global user.name "Circle Ci";

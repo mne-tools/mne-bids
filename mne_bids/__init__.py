@@ -1,6 +1,6 @@
 """MNE software for making MEG BIDS compatible datasets easily."""
 
-__version__ = '0.1'
+__version__ = '0.2.dev0'
 
 
 from .mne_bids import write_raw_bids  # noqa
