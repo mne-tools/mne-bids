@@ -9,8 +9,8 @@ What's new?
 
 .. _current:
 
-Current
--------
+Version 0.1
+-----------
 
 Changelog
 ~~~~~~~~~
@@ -37,6 +37,20 @@ Bug
 - Fix channel types for KIT system in channels.tsv, by `Matt Sanderson`_ (`#76 <https://github.com/mne-tools/mne-bids/pull/76>`_)
 - Fix the way FIF files are named to satisfy the BIDS part parameters of the filename construction, `Teon Brooks`_ (`#102 <https://github.com/mne-tools/mne-bids/pull/102>`_)
 - Fix how overwriting of data is handled, by `Matt Sanderson`_ (`#99 <https://github.com/mne-tools/mne-bids/pull/99>`_)
+
+Authors
+~~~~~~~
+
+People who contributed to this release  (in alphabetical order):
+
+* Alexandre Gramfort
+* Chris Holdgraf
+* Kambiz Tavabi
+* Mainak Jas
+* Matt Sanderson
+* Romain Quentin
+* Stefan Appel
+* Teon Brooks
 
 .. _Mainak Jas: https://perso.telecom-paristech.fr/mjas/
 .. _Teon Brooks: https://teonbrooks.github.io/

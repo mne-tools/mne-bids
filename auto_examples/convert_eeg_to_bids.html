@@ -4,7 +4,7 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Convert EEG data to BIDS format &#8212; mne_bids 0.1.dev0 documentation</title>
+    <title>Convert EEG data to BIDS format &#8212; mne_bids 0.1 documentation</title>
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
@@ -37,7 +37,7 @@
         </button>
         <a class="navbar-brand" href="../index.html">
           MNE-BIDS</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.1.dev0</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.1</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -196,14 +196,14 @@ of the directory tree.</p>
 |--------------- physiobank
 |------------------ database
 |--------------------- eegmmidb
-|------------------------ S001
-|--------------------------- S001R12.edf
-|--------------------------- S001R02.edf
-|--------------------------- S001R04.edf
 |------------------------ S002
 |--------------------------- S002R04.edf
-|--------------------------- S002R02.edf
 |--------------------------- S002R12.edf
+|--------------------------- S002R02.edf
+|------------------------ S001
+|--------------------------- S001R02.edf
+|--------------------------- S001R12.edf
+|--------------------------- S001R04.edf
 </pre></div>
 </div>
 <p>The data are in the <a class="reference external" href="https://www.edfplus.info/">European Data Format</a>
@@ -419,10 +419,10 @@ Copying data files to /home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_
 |--------------- sub-001
 |------------------ sub-001_scans.tsv
 |------------------ eeg
-|--------------------- sub-001_task-resteyesclosed_events.tsv
-|--------------------- sub-001_task-resteyesclosed_eeg.json
-|--------------------- sub-001_task-resteyesclosed_eeg.edf
 |--------------------- sub-001_task-resteyesclosed_channels.tsv
+|--------------------- sub-001_task-resteyesclosed_eeg.edf
+|--------------------- sub-001_task-resteyesclosed_eeg.json
+|--------------------- sub-001_task-resteyesclosed_events.tsv
 </pre></div>
 </div>
 <p>Looks good so far, let’s convert the data for all tasks and subjects.</p>
@@ -924,10 +924,10 @@ Copying data files to /home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_
 |--------------- sub-001
 |------------------ sub-001_scans.tsv
 |------------------ eeg
-|--------------------- sub-001_task-resteyesclosed_events.tsv
-|--------------------- sub-001_task-resteyesclosed_eeg.json
-|--------------------- sub-001_task-resteyesclosed_eeg.edf
 |--------------------- sub-001_task-resteyesclosed_channels.tsv
+|--------------------- sub-001_task-resteyesclosed_eeg.edf
+|--------------------- sub-001_task-resteyesclosed_eeg.json
+|--------------------- sub-001_task-resteyesclosed_events.tsv
 </pre></div>
 </div>
 <p>MNE-BIDS has created a suitable directory structure for us, and among other
@@ -942,7 +942,7 @@ directories called the “BIDS-validator”, available as a web version and a
 command line tool:</p>
 <p>Web version: <a class="reference external" href="https://bids-standard.github.io/bids-validator/">https://bids-standard.github.io/bids-validator/</a></p>
 <p>Command line tool: <a class="reference external" href="https://www.npmjs.com/package/bids-validator">https://www.npmjs.com/package/bids-validator</a></p>
-<p><strong>Total running time of the script:</strong> ( 0 minutes  3.100 seconds)</p>
+<p><strong>Total running time of the script:</strong> ( 0 minutes  3.284 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-eeg-to-bids-py">
 <div class="sphx-glr-download docutils container">
 <a class="reference download internal" download="" href="../_downloads/e44373716acd059d2bf5b3168e4f0f98/convert_eeg_to_bids.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">convert_eeg_to_bids.py</span></code></a></div>
