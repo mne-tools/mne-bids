@@ -25,7 +25,6 @@ import shutil as sh
 
 import mne
 from mne.datasets import eegbci
-from mne.io.edf.edf import read_annotations_edf
 
 from mne_bids import write_raw_bids, make_bids_basename
 from mne_bids.utils import print_dir_tree
@@ -94,7 +93,7 @@ raw = mne.io.read_raw_edf(edf_path, preload=False, stim_channel=None)
 ###############################################################################
 # The annotations stored in the file must be read in separately and converted
 # into a 2D numpy array of events that is compatible with MNE.
-annot = read_annotations_edf(edf_path)
+annot = mne.read_annotations(edf_path)
 raw.set_annotations(annot)
 events, event_id = mne.events_from_annotations(raw)
 
@@ -163,7 +162,7 @@ for subj_idx in [1, 2]:
         edf_path = eegbci.load_data(subject=subj_idx, runs=task_idx)[0]
 
         raw = mne.io.read_raw_edf(edf_path, preload=False, stim_channel=None)
-        annot = read_annotations_edf(edf_path)
+        annot = mne.read_annotations(edf_path)
         raw.set_annotations(annot)
         events, event_id = mne.events_from_annotations(raw)
 
