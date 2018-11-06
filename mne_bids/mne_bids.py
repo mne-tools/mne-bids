@@ -122,7 +122,7 @@ def _channels_tsv(raw, fname, overwrite=False, verbose=True):
         status.append('bad' if ch in raw.info['bads'] else 'good')
         _channel_type = channel_type(raw.info, idx)
         if _channel_type in get_specific:
-            _channel_type = coil_type(raw.info, idx)
+            _channel_type = coil_type(raw.info, idx, channel_type)
         ch_type.append(map_chs[_channel_type])
         description.append(map_desc[_channel_type])
     low_cutoff, high_cutoff = (raw.info['highpass'], raw.info['lowpass'])
