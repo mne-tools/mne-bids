@@ -45,8 +45,6 @@ if os.name == 'nt':
     shell = True
 
 
-# MEG Tests
-# ---------
 def test_fif():
     """Test functionality of the write_raw_bids conversion for fif."""
     output_path = _TempDir()
@@ -184,8 +182,6 @@ def test_bti():
     run_subprocess(cmd, shell=shell)
 
 
-# EEG Tests
-# ---------
 def test_vhdr():
     """Test write_raw_bids conversion for BrainVision data."""
     output_path = _TempDir()
@@ -204,6 +200,15 @@ def test_vhdr():
                                   kind='eeg', output_path=output_path,
                                   overwrite=True)
     assert len([f for f in os.listdir(data_path) if op.isfile(f)]) == 0
+
+    # Also cover iEEG
+    # We use the same data and pretend that eeg channels are ecog
+    raw.set_channel_types({'FP1': 'ecog'})
+    output_path = _TempDir()
+    write_raw_bids(raw, bids_basename, output_path, overwrite=False)
+
+    cmd = ['bids-validator', '--bep010', output_path]
+    run_subprocess(cmd, shell=shell)
 
 
 def test_edf():
@@ -244,6 +249,15 @@ def test_edf():
     df = pd.read_csv(scans_tsv, sep='\t')
     assert df.shape[0] == 2
 
+    # Also cover iEEG
+    # We use the same data and pretend that eeg channels are ecog
+    raw.set_channel_types({'EMG': 'ecog'})
+    output_path = _TempDir()
+    write_raw_bids(raw, bids_basename, output_path)
+
+    cmd = ['bids-validator', '--bep010', output_path]
+    run_subprocess(cmd, shell=shell)
+
 
 def test_bdf():
     """Test write_raw_bids conversion for Biosemi data."""
@@ -281,6 +295,15 @@ def test_set():
                        overwrite=False)
 
     cmd = ['bids-validator', '--bep006', output_path]
+    run_subprocess(cmd, shell=shell)
+
+    # Also cover iEEG
+    # We use the same data and pretend that eeg channels are ecog
+    raw.set_channel_types({'EEG 000': 'ecog'})
+    output_path = _TempDir()
+    write_raw_bids(raw, bids_basename, output_path)
+
+    cmd = ['bids-validator', '--bep010', output_path]
     run_subprocess(cmd, shell=shell)
 
 
