@@ -17,7 +17,16 @@ allowed_extensions_eeg = ['.vhdr',  # BrainVision, accompanied by .vmrk, .eeg
                           '.cnt',  # Neuroscan
                           ]
 
-ALLOWED_EXTENSIONS = allowed_extensions_meg + allowed_extensions_eeg
+allowed_extensions_ieeg = ['.vhdr',  # BrainVision, accompanied by .vmrk, .eeg
+                           '.edf',  # European Data Format
+                           '.set',  # EEGLAB, potentially accompanied by .fdt
+                           '.mef',  # MEF: Multiscale Electrophysiology File
+                           '.nwb',  # Neurodata without borders
+                           ]
+
+ALLOWED_EXTENSIONS = (allowed_extensions_meg +
+                      allowed_extensions_eeg +
+                      allowed_extensions_ieeg)
 
 reader = {'.con': io.read_raw_kit, '.sqd': io.read_raw_kit,
           '.fif': io.read_raw_fif, '.pdf': io.read_raw_bti,
@@ -43,8 +52,6 @@ def _read_raw(raw_fname, electrode=None, hsp=None, hpi=None, config=None,
     """Read a raw file into MNE, making inferences based on extension."""
     fname, ext = _parse_ext(raw_fname)
 
-    # MEG File Types
-    # --------------
     # KIT systems
     if ext in ['.con', '.sqd']:
         raw = io.read_raw_kit(raw_fname, elp=electrode, hsp=hsp,
@@ -64,6 +71,11 @@ def _read_raw(raw_fname, electrode=None, hsp=None, hpi=None, config=None,
     # annotations with preload=False
     elif ext in ['.edf', '.bdf']:
         raw = reader[ext](raw_fname, preload=True)
+
+    # MEF and NWB are allowed, but not yet implemented
+    elif ext in ['.mef', '.nwb']:
+        raise ValueError("Got % as extension. This is an allowed extension but"
+                         " there is no IO support for this file format yet.")
 
     # No supported data found ...
     # ---------------------------
