@@ -52,19 +52,24 @@ meg_manufacturers = {'.sqd': 'KIT/Yokogawa', '.con': 'KIT/Yokogawa',
                      '.meg4': 'CTF'}
 
 eeg_manufacturers = {'.vhdr': 'BrainProducts', '.eeg': 'BrainProducts',
-                     '.edf': 'Mixed', '.bdf': 'Biosemi', '.set': 'Mixed',
-                     '.fdt': 'Mixed', '.cnt': 'Neuroscan'}
+                     '.edf': 'n/a', '.bdf': 'Biosemi', '.set': 'n/a',
+                     '.fdt': 'n/a', '.cnt': 'Neuroscan'}
+
+ieeg_manufacturers = {'.vhdr': 'BrainProducts', '.eeg': 'BrainProducts',
+                      '.edf': 'n/a', '.set': 'n/a', '.fdt': 'n/a',
+                      '.mef': 'n/a', '.nwb': 'n/a'}
 
 # Merge the manufacturer dictionaries in a python2 / python3 compatible way
 MANUFACTURERS = dict()
 MANUFACTURERS.update(meg_manufacturers)
 MANUFACTURERS.update(eeg_manufacturers)
+MANUFACTURERS.update(ieeg_manufacturers)
 
 # List of synthetic channels by manufacturer that are to be excluded from the
 # channel list. Currently this is only for stimulus channels.
 IGNORED_CHANNELS = {'KIT/Yokogawa': ['STI 014'],
                     'BrainProducts': ['STI 014'],
-                    'Mixed': ['STI 014'],
+                    'n/a': ['STI 014'],  # for unknown manufacturers, ignore it
                     'Biosemi': ['STI 014'],
                     'Neuroscan': ['STI 014']}
 
@@ -135,10 +140,10 @@ def _channels_tsv(raw, fname, overwrite=False, verbose=True):
                       ('name', raw.info['ch_names']),
                       ('type', ch_type),
                       ('units', units),
-                      ('description', description),
-                      ('sampling_frequency', np.full((n_channels), sfreq)),
                       ('low_cutoff', np.full((n_channels), low_cutoff)),
                       ('high_cutoff', np.full((n_channels), high_cutoff)),
+                      ('description', description),
+                      ('sampling_frequency', np.full((n_channels), sfreq)),
                       ('status', status)]))
     df.drop(ignored_indexes, inplace=True)
 
@@ -486,6 +491,7 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, overwrite=False,
         ('EEGPlacementScheme', _infer_eeg_placement_scheme(raw)),
         ('Manufacturer', manufacturer)]
     ch_info_json_ieeg = [
+        ('iEEGReference', 'n/a'),
         ('ECOGChannelCount', n_ecogchan),
         ('SEEGChannelCount', n_seegchan)]
     ch_info_ch_counts = [
@@ -646,8 +652,6 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
     orient = ORIENTATION.get(ext, 'n/a')
     unit = UNITS.get(ext, 'n/a')
     manufacturer = MANUFACTURERS.get(ext, 'n/a')
-    if manufacturer == 'Mixed':
-        manufacturer = 'n/a'
 
     # save all meta data
     _participants_tsv(raw, subject_id, "n/a", participants_fname, overwrite,
@@ -700,9 +704,7 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
                     'Please contact MNE developers if you have '
                     'any questions.')
         else:
-            # TODO insert arg `split_naming=split_naming`
-            #      when MNE releases 0.17
-            raw.save(bids_fname, overwrite=True)
+            raw.save(bids_fname, overwrite=True, split_naming='bids')
 
     # CTF data is saved in a directory
     elif ext == '.ds':
