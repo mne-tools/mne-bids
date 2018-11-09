@@ -74,12 +74,13 @@ def _read_raw(raw_fname, electrode=None, hsp=None, hpi=None, config=None,
 
     # MEF and NWB are allowed, but not yet implemented
     elif ext in ['.mef', '.nwb']:
-        raise ValueError("Got % as extension. This is an allowed extension but"
-                         " there is no IO support for this file format yet.")
+        raise ValueError('Got "{}" as extension. This is an allowed extension '
+                         'but there is no IO support for this file format yet.'
+                         .format(ext))
 
     # No supported data found ...
     # ---------------------------
     else:
-        raise ValueError("Raw file name extension must be one of %\n"
-                         "Got %" % (ALLOWED_EXTENSIONS, ext))
+        raise ValueError('Raw file name extension must be one of {}\n'
+                         'Got {}'.format(ALLOWED_EXTENSIONS, ext))
     return raw
