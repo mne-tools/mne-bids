@@ -88,10 +88,10 @@ def _handle_kind(raw):
     """Get kind."""
     if 'meg' in raw:
         kind = 'meg'
-    elif 'eeg' in raw:
-        kind = 'eeg'
     elif 'ecog' in raw:
         kind = 'ieeg'
+    elif 'eeg' in raw:
+        kind = 'eeg'
     else:
         raise ValueError('Neither MEG/EEG/iEEG channels found in data.'
                          'Please use raw.set_channel_types to set the '

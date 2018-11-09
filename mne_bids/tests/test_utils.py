@@ -9,6 +9,7 @@ import pytest
 from datetime import datetime
 
 from scipy.io import savemat
+from numpy.random import random
 import mne
 from mne.datasets import testing
 from mne.utils import _TempDir
@@ -16,9 +17,31 @@ from mne.utils import _TempDir
 from mne_bids.utils import (make_bids_folders, make_bids_basename,
                             _check_types, print_dir_tree, _age_on_date,
                             _get_brainvision_paths, copyfile_brainvision,
-                            copyfile_eeglab, _infer_eeg_placement_scheme)
+                            copyfile_eeglab, _infer_eeg_placement_scheme,
+                            _handle_kind)
 
 base_path = op.join(op.dirname(mne.__file__), 'io')
+
+
+def test_handle_kind():
+    """Test the automatic extraction of kind from the data."""
+    # Create a dummy raw
+    n_channels = 1
+    sampling_rate = 100
+    data = random((n_channels, sampling_rate))
+    channel_types = ['grad', 'eeg', 'ecog', 'misc']
+    expected_kinds = ['meg', 'eeg', 'ieeg', 'error']
+    # do it once for each type ... and once for "no type"
+    for chtype, kind in zip(channel_types, expected_kinds):
+        info = mne.create_info(n_channels, sampling_rate, ch_types=[chtype])
+        raw = mne.io.RawArray(data, info)
+        if kind != 'error':
+            assert _handle_kind(raw) == kind
+            continue
+
+        # if we cannot find a proper channel type, we raise an error
+        with pytest.raises(ValueError, match='Neither MEG/EEG/iEEG channels'):
+            _handle_kind(raw)
 
 
 def test_print_dir_tree():
