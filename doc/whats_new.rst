@@ -18,6 +18,8 @@ Changelog
 Bug
 ~~~
 
+- Fix logic with inferring unknown channel types for CTF data, by `Mainak Jas`_ (`#129 <https://github.com/mne-tools/mne-bids/pull/16/files>`_)
+
 API
 ~~~
 

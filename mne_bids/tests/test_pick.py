@@ -1,7 +1,6 @@
 """Test for the coil type picking function"""
 
 import os.path as op
-import pytest
 
 from mne.datasets import testing
 from mne.io import read_raw_fif
@@ -19,5 +18,4 @@ def test_coil_type():
     assert coil_type(raw.info, 306) == 'misc'
     assert coil_type(raw.info, 315) == 'eeg'
     raw.info['chs'][0]['coil_type'] = 1234
-    with pytest.raises(ValueError):
-        coil_type(raw.info, 0)
+    assert coil_type(raw.info, 0) == 'n/a'

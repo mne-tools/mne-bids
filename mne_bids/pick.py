@@ -44,7 +44,7 @@ def get_coil_types():
                 misc=(FIFF.FIFFV_COIL_NONE,))
 
 
-def coil_type(info, idx):
+def coil_type(info, idx, ch_type='n/a'):
     """Get coil type.
 
     Parameters
@@ -53,6 +53,9 @@ def coil_type(info, idx):
         Measurement info
     idx : int
         Index of channel
+    ch_type : str
+        Channel type to fall back upon if a more specific
+        type is not found
 
     Returns
     -------
@@ -64,5 +67,4 @@ def coil_type(info, idx):
     for key, values in get_coil_types().items():
         if ch['coil_type'] in values:
             return key
-    raise ValueError('Unknown coil of type {0} '
-                     'for channel {1}'.format(ch['coil_type'], ch["ch_name"]))
+    return ch_type
