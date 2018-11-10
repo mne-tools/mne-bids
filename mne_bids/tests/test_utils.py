@@ -29,19 +29,19 @@ def test_handle_kind():
     n_channels = 1
     sampling_rate = 100
     data = random((n_channels, sampling_rate))
-    channel_types = ['grad', 'eeg', 'ecog', 'misc']
-    expected_kinds = ['meg', 'eeg', 'ieeg', 'error']
+    channel_types = ['grad', 'eeg', 'ecog']
+    expected_kinds = ['meg', 'eeg', 'ieeg']
     # do it once for each type ... and once for "no type"
     for chtype, kind in zip(channel_types, expected_kinds):
         info = mne.create_info(n_channels, sampling_rate, ch_types=[chtype])
         raw = mne.io.RawArray(data, info)
-        if kind != 'error':
-            assert _handle_kind(raw) == kind
-            continue
+        assert _handle_kind(raw) == kind
 
-        # if we cannot find a proper channel type, we raise an error
-        with pytest.raises(ValueError, match='Neither MEG/EEG/iEEG channels'):
-            _handle_kind(raw)
+    # if we cannot find a proper channel type, we raise an error
+    with pytest.raises(ValueError, match='Neither MEG/EEG/iEEG channels'):
+        info = mne.create_info(n_channels, sampling_rate, ch_types=['misc'])
+        raw = mne.io.RawArray(data, info)
+        _handle_kind(raw)
 
 
 def test_print_dir_tree():
