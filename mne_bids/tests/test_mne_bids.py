@@ -13,6 +13,7 @@ For each supported file format, implement a test.
 import os
 import os.path as op
 import pytest
+import json
 
 import pandas as pd
 
@@ -107,6 +108,27 @@ def test_fif():
     run_subprocess(cmd, shell=shell)
 
     assert op.exists(op.join(output_path, 'participants.tsv'))
+
+
+def test_fif_processed():
+    """Test raw_to_bids conversion for processed Neuromag data."""
+    output_path = _TempDir()
+    data_path = testing.data_path()
+    raw_fname = op.join(data_path, 'SSS', 'sample_audvis_trunc_raw_sss.fif')
+    raw = mne.io.read_raw_fif(raw_fname)
+    write_raw_bids(raw, bids_basename, output_path, overwrite=False)
+    # ensure the sidecar json file has processing info that is not "n/a"
+    data_meta_fname = make_bids_basename(
+        subject=subject_id, session=session_id, task=task, run=run,
+        acquisition=acq, processing='sss', suffix='%s.json' % 'meg',
+        prefix=op.join(output_path, 'sub-01/ses-01/meg'))
+    if op.exists(data_meta_fname):
+        with open(data_meta_fname) as sidecar_json:
+            sidecar = json.load(sidecar_json)
+            assert sidecar['SoftwareFilters'] != "n/a"
+
+    cmd = ['bids-validator', output_path]
+    run_subprocess(cmd, shell=shell)
 
 
 def test_kit():

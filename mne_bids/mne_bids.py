@@ -68,6 +68,17 @@ IGNORED_CHANNELS = {'KIT/Yokogawa': ['STI 014'],
                     'Biosemi': ['STI 014'],
                     'Neuroscan': ['STI 014']}
 
+COORDINATE_FRAMES = {FIFF.FIFFV_COORD_UNKNOWN: 'Unknown',
+                     FIFF.FIFFV_COORD_DEVICE: 'Device',
+                     FIFF.FIFFV_COORD_ISOTRAK: 'Isotrak',
+                     FIFF.FIFFV_COORD_HPI: 'HPI',
+                     FIFF.FIFFV_COORD_HEAD: 'Head',
+                     FIFF.FIFFV_COORD_MRI: 'MRI',
+                     FIFF.FIFFV_COORD_MRI_SLICE: 'MRI Slice',
+                     FIFF.FIFFV_COORD_MRI_DISPLAY: 'MRI Display',
+                     FIFF.FIFFV_COORD_DICOM_DEVICE: 'DICOM Device',
+                     FIFF.FIFFV_COORD_IMAGING_DEVICE: 'Imaging Device'}
+
 
 def _channels_tsv(raw, fname, overwrite=False, verbose=True):
     """Create a channels.tsv file and save it.
@@ -438,6 +449,21 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, overwrite=False,
     else:
         rec_type = 'n/a'
 
+    # determine if there are any software filters
+    software_filters = dict()
+    for p_history in raw.info['proc_history']:
+        max_info = p_history.get('max_info')
+        if max_info:
+            if max_info.get('max_st') != dict():
+                software_filters['TSSS'] = {'Correlation':
+                                            max_info['max_st']['subspcorr']}
+            if max_info.get('sss_info') != dict():
+                sss_info = {'frame':
+                            COORDINATE_FRAMES[max_info['sss_info']['frame']]}
+                software_filters['SSS'] = sss_info
+    if software_filters == dict():
+        software_filters = 'n/a'
+
     # determine whether any channels have to be ignored:
     n_ignored = len([ch_name for ch_name in
                      IGNORED_CHANNELS.get(manufacturer, list()) if
@@ -471,7 +497,7 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, overwrite=False,
         ('Manufacturer', manufacturer),
         ('PowerLineFrequency', powerlinefrequency),
         ('SamplingFrequency', sfreq),
-        ('SoftwareFilters', 'n/a'),
+        ('SoftwareFilters', software_filters),
         ('RecordingDuration', raw.times[-1]),
         ('RecordingType', rec_type)]
     ch_info_json_meg = [
@@ -619,6 +645,25 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
                                      output_path=output_path, make_dir=False,
                                      overwrite=False, verbose=verbose)
 
+    processing = None
+    proc_history = raw.info['proc_history']
+    if proc_history != []:
+        sss = False
+        tsss = False
+        for ph in proc_history:
+            max_info = ph.get('max_info')
+            if max_info:
+                if (max_info['sss_info'] != dict() or
+                        max_info['sss_ctc'] != dict() or
+                        max_info['sss_cal'] != dict()):
+                    sss = True
+                if max_info['max_st'] != dict():
+                    tsss = True
+        if tsss:
+            processing = 'tsss'
+        elif sss:
+            processing = 'sss'
+
     # create filenames
     scans_fname = make_bids_basename(
         subject=subject_id, session=session_id, suffix='scans.tsv',
@@ -630,7 +675,8 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
         suffix='coordsystem.json', prefix=data_path)
     sidecar_fname = make_bids_basename(
         subject=subject_id, session=session_id, task=task, run=run,
-        acquisition=acquisition, suffix='%s.json' % kind, prefix=data_path)
+        acquisition=acquisition, processing=processing,
+        suffix='%s.json' % kind, prefix=data_path)
     events_fname = make_bids_basename(
         subject=subject_id, session=session_id, task=task,
         acquisition=acquisition, run=run, suffix='events.tsv',
