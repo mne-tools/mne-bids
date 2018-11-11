@@ -203,7 +203,8 @@ def test_vhdr():
 
     # Also cover iEEG
     # We use the same data and pretend that eeg channels are ecog
-    raw.set_channel_types({'FP1': 'ecog'})
+    raw.set_channel_types({raw.ch_names[i]: 'ecog'
+                           for i in mne.pick_types(raw.info, eeg=True)})
     output_path = _TempDir()
     write_raw_bids(raw, bids_basename, output_path, overwrite=False)
 
@@ -251,7 +252,8 @@ def test_edf():
 
     # Also cover iEEG
     # We use the same data and pretend that eeg channels are ecog
-    raw.set_channel_types({'EMG': 'ecog'})
+    raw.set_channel_types({raw.ch_names[i]: 'ecog'
+                           for i in mne.pick_types(raw.info, eeg=True)})
     output_path = _TempDir()
     write_raw_bids(raw, bids_basename, output_path)
 
@@ -299,7 +301,8 @@ def test_set():
 
     # Also cover iEEG
     # We use the same data and pretend that eeg channels are ecog
-    raw.set_channel_types({'EEG 000': 'ecog'})
+    raw.set_channel_types({raw.ch_names[i]: 'ecog'
+                           for i in mne.pick_types(raw.info, eeg=True)})
     output_path = _TempDir()
     write_raw_bids(raw, bids_basename, output_path)
 

@@ -37,6 +37,13 @@ def test_handle_kind():
         raw = mne.io.RawArray(data, info)
         assert _handle_kind(raw) == kind
 
+    # if the situation is ambiguous (EEG and iEEG channels both), raise error
+    with pytest.raises(ValueError, match='Both EEG and iEEG channels found'):
+        info = mne.create_info(2, sampling_rate,
+                               ch_types=['eeg', 'ecog'])
+        raw = mne.io.RawArray(random((2, sampling_rate)), info)
+        _handle_kind(raw)
+
     # if we cannot find a proper channel type, we raise an error
     with pytest.raises(ValueError, match='Neither MEG/EEG/iEEG channels'):
         info = mne.create_info(n_channels, sampling_rate, ch_types=['misc'])
