@@ -634,7 +634,6 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
     acquisition, task, run = params['acq'], params['task'], params['run']
     kind = _handle_kind(raw)
 
-    bids_fname = bids_basename + '_%s%s' % (kind, ext)
     data_path = make_bids_folders(subject=subject_id, session=session_id,
                                   kind=kind, output_path=output_path,
                                   overwrite=False, verbose=verbose)
@@ -663,6 +662,14 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
             processing = 'tsss'
         elif sss:
             processing = 'sss'
+    
+    # regenerate the bids_basename with the processing info if it is required
+    if processing is not None:
+        bids_basename = make_bids_basename(
+            subject=subject_id, session=session_id, task=task,
+            acquisition=acquisition, run=run, processing=processing,
+            space=params['space'], recording=params['recording'])
+    bids_fname = bids_basename + '_%s%s' % (kind, ext)
 
     # create filenames
     scans_fname = make_bids_basename(

@@ -129,7 +129,8 @@ def test_fif_processed():
 
     # tsss processed file:
     raw_fname = op.join(data_path, 'SSS', 'test_move_anon_st10s_raw_sss.fif')
-    bids_basename2 = bids_basename.replace(subject_id, subject_id2)
+    raw = mne.io.read_raw_fif(raw_fname)
+    bids_basename2 = bids_basename.replace('sub-01', 'sub-%s' % subject_id2)
     write_raw_bids(raw, bids_basename2, output_path, overwrite=False)
     # ensure the sidecar json file has processing info
     data_meta_fname2 = make_bids_basename(
