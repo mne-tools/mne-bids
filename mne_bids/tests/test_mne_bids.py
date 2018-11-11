@@ -22,6 +22,7 @@ from mne.utils import _TempDir, run_subprocess
 from mne.io.constants import FIFF
 
 from mne_bids import make_bids_basename, make_bids_folders, write_raw_bids
+from mne_bids.mne_bids import _channels_tsv
 
 base_path = op.join(op.dirname(mne.__file__), 'io')
 subject_id = '01'
