@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Test the MNE BIDS converter.
 
 For each supported file format, implement a test.
@@ -22,7 +23,6 @@ from mne.utils import _TempDir, run_subprocess
 from mne.io.constants import FIFF
 
 from mne_bids import make_bids_basename, make_bids_folders, write_raw_bids
-from mne_bids.mne_bids import _channels_tsv
 
 base_path = op.join(op.dirname(mne.__file__), 'io')
 subject_id = '01'
@@ -194,6 +194,14 @@ def test_vhdr():
 
     cmd = ['bids-validator', '--bep006', output_path]
     run_subprocess(cmd, shell=shell)
+
+    # Test that correct channel units are written
+    channels_tsv_name = op.join(output_path, 'sub-' + subject_id,
+                                'ses-' + session_id, 'eeg',
+                                bids_basename + '_channels.tsv')
+    df = pd.read_csv(channels_tsv_name, sep='\t', keep_default_na=False)
+    assert df.loc[df['name'] == 'FP1', 'units'].all() == u'µV'
+    assert df.loc[df['name'] == 'CP5', 'units'].all() == 'n/a'
 
     # create another bids folder with the overwrite command and check
     # no files are in the folder
