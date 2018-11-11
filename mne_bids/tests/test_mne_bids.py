@@ -114,18 +114,32 @@ def test_fif_processed():
     """Test raw_to_bids conversion for processed Neuromag data."""
     output_path = _TempDir()
     data_path = testing.data_path()
+    # sss processed file
     raw_fname = op.join(data_path, 'SSS', 'sample_audvis_trunc_raw_sss.fif')
     raw = mne.io.read_raw_fif(raw_fname)
     write_raw_bids(raw, bids_basename, output_path, overwrite=False)
-    # ensure the sidecar json file has processing info that is not "n/a"
+    # ensure the sidecar json file has processing info
     data_meta_fname = make_bids_basename(
         subject=subject_id, session=session_id, task=task, run=run,
         acquisition=acq, processing='sss', suffix='%s.json' % 'meg',
         prefix=op.join(output_path, 'sub-01/ses-01/meg'))
-    if op.exists(data_meta_fname):
-        with open(data_meta_fname) as sidecar_json:
-            sidecar = json.load(sidecar_json)
-            assert sidecar['SoftwareFilters'] != "n/a"
+    with open(data_meta_fname) as sidecar_json:
+        sidecar = json.load(sidecar_json)
+        assert 'SSS' in sidecar['SoftwareFilters']
+
+    # tsss processed file:
+    raw_fname = op.join(data_path, 'SSS', 'test_move_anon_st10s_raw_sss.fif')
+    bids_basename2 = bids_basename.replace(subject_id, subject_id2)
+    write_raw_bids(raw, bids_basename2, output_path, overwrite=False)
+    # ensure the sidecar json file has processing info
+    data_meta_fname2 = make_bids_basename(
+        subject=subject_id2, session=session_id, task=task, run=run,
+        acquisition=acq, processing='tsss', suffix='%s.json' % 'meg',
+        prefix=op.join(output_path, 'sub-02/ses-01/meg'))
+    with open(data_meta_fname2) as sidecar_json:
+        sidecar = json.load(sidecar_json)
+        assert 'SSS' in sidecar['SoftwareFilters']
+        assert 'TSSS' in sidecar['SoftwareFilters']
 
     cmd = ['bids-validator', output_path]
     run_subprocess(cmd, shell=shell)
