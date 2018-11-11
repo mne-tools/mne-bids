@@ -662,7 +662,7 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
             processing = 'tsss'
         elif sss:
             processing = 'sss'
-    
+
     # regenerate the bids_basename with the processing info if it is required
     if processing is not None:
         bids_basename = make_bids_basename(
