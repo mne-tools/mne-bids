@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Make BIDS compatible directory structures and infer meta data from MNE."""
 # Authors: Mainak Jas <mainak.jas@telecom-paristech.fr>
 #          Alexandre Gramfort <alexandre.gramfort@telecom-paristech.fr>
