@@ -23,7 +23,7 @@ pypi. Update your installation as follows.
 
 Then, install the following python packages:
 
-    $ pip install flake8 pytest pytest-cov
+    $ pip install flake8 pytest pytest-cov coverage
 
 Finally, it is necessary to install the
 [BIDS validator](https://github.com/bids-standard/bids-validator). The outputs
