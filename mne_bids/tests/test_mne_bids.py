@@ -200,7 +200,7 @@ def test_vhdr():
                                 'ses-' + session_id, 'eeg',
                                 bids_basename + '_channels.tsv')
     df = pd.read_csv(channels_tsv_name, sep='\t', keep_default_na=False)
-    assert df.loc[df['name'] == 'FP1', 'units'].all() == u'µV'
+    assert df.loc[df['name'] == 'FP1', 'units'].all() == 'µV'
     assert df.loc[df['name'] == 'CP5', 'units'].all() == 'n/a'
 
     # create another bids folder with the overwrite command and check

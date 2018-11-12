@@ -362,11 +362,11 @@ def _write_json(dictionary, fname, overwrite=False, verbose=False):
 
 
 def _write_tsv(fname, df, overwrite=False, verbose=False):
-    """Write dataframe to a .tsv file"""
+    """Write dataframe to a .tsv file."""
     if op.exists(fname) and not overwrite:
         raise OSError(errno.EEXIST, '"%s" already exists. Please set '
                       'overwrite to True.' % fname)
-    df.to_csv(fname, sep='\t', index=False, na_rep='n/a')
+    df.to_csv(fname, sep='\t', index=False, na_rep='n/a', encoding='utf-8')
 
     if verbose:
         print(os.linesep + "Writing '%s'..." % fname + os.linesep)
