@@ -114,29 +114,30 @@ def test_fif_processed():
     """Test raw_to_bids conversion for processed Neuromag data."""
     output_path = _TempDir()
     data_path = testing.data_path()
+    proc_bids_basename = make_bids_basename(
+        subject=subject_id, session=session_id, run=run, acquisition=acq,
+        task=task, processing='sss')
     # sss processed file
     raw_fname = op.join(data_path, 'SSS', 'sample_audvis_trunc_raw_sss.fif')
     raw = mne.io.read_raw_fif(raw_fname)
-    write_raw_bids(raw, bids_basename, output_path, overwrite=False)
+    write_raw_bids(raw, proc_bids_basename, output_path, overwrite=False)
     # ensure the sidecar json file has processing info
-    data_meta_fname = make_bids_basename(
-        subject=subject_id, session=session_id, task=task, run=run,
-        acquisition=acq, processing='sss', suffix='%s.json' % 'meg',
-        prefix=op.join(output_path, 'sub-01/ses-01/meg'))
+    data_meta_fname = op.join(output_path, 'sub-01', 'ses-01', 'meg',
+                              proc_bids_basename + '_meg.json')
     with open(data_meta_fname) as sidecar_json:
         sidecar = json.load(sidecar_json)
         assert 'SSS' in sidecar['SoftwareFilters']
 
     # tsss processed file:
-    raw_fname = op.join(data_path, 'SSS', 'test_move_anon_st10s_raw_sss.fif')
-    raw = mne.io.read_raw_fif(raw_fname)
-    bids_basename2 = bids_basename.replace('sub-01', 'sub-%s' % subject_id2)
-    write_raw_bids(raw, bids_basename2, output_path, overwrite=False)
+    raw_fname2 = op.join(data_path, 'SSS', 'test_move_anon_st10s_raw_sss.fif')
+    raw2 = mne.io.read_raw_fif(raw_fname2)
+    proc_bids_basename2 = proc_bids_basename.replace('sub-01',
+                                                     'sub-%s' % subject_id2)
+    proc_bids_basename2 = proc_bids_basename2.replace('proc-sss', 'proc-tsss')
+    write_raw_bids(raw2, proc_bids_basename2, output_path, overwrite=False)
     # ensure the sidecar json file has processing info
-    data_meta_fname2 = make_bids_basename(
-        subject=subject_id2, session=session_id, task=task, run=run,
-        acquisition=acq, processing='tsss', suffix='%s.json' % 'meg',
-        prefix=op.join(output_path, 'sub-02/ses-01/meg'))
+    data_meta_fname2 = op.join(output_path, 'sub-02', 'ses-01', 'meg',
+                               proc_bids_basename2 + '_meg.json')
     with open(data_meta_fname2) as sidecar_json:
         sidecar = json.load(sidecar_json)
         assert 'SSS' in sidecar['SoftwareFilters']
@@ -144,6 +145,10 @@ def test_fif_processed():
 
     cmd = ['bids-validator', output_path]
     run_subprocess(cmd, shell=shell)
+
+    # check an error is raised when providing the wrong type of processing
+    with pytest.raises(ValueError, match='processing'):
+        write_raw_bids(raw, bids_basename, output_path, overwrite=False)
 
 
 def test_kit():

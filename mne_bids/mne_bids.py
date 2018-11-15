@@ -459,7 +459,8 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, overwrite=False,
                                             max_info['max_st']['subspcorr']}
             if max_info.get('sss_info') != dict():
                 sss_info = {'frame':
-                            COORDINATE_FRAMES[max_info['sss_info']['frame']]}
+                            COORDINATE_FRAMES[max_info['sss_info']['frame']],
+                            'version': max_info.get('creator', 'n/a')}
                 software_filters['SSS'] = sss_info
     if software_filters == dict():
         software_filters = 'n/a'
@@ -632,8 +633,10 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
     params = _parse_bids_filename(bids_basename, verbose)
     subject_id, session_id = params['sub'], params['ses']
     acquisition, task, run = params['acq'], params['task'], params['run']
+    processing = params['proc']
     kind = _handle_kind(raw)
 
+    bids_fname = bids_basename + '_%s%s' % (kind, ext)
     data_path = make_bids_folders(subject=subject_id, session=session_id,
                                   kind=kind, output_path=output_path,
                                   overwrite=False, verbose=verbose)
@@ -644,32 +647,25 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
                                      output_path=output_path, make_dir=False,
                                      overwrite=False, verbose=verbose)
 
-    processing = None
+    # determine the processing done on the file
+    _processing = None
     proc_history = raw.info['proc_history']
     if proc_history != []:
-        sss = False
-        tsss = False
         for ph in proc_history:
             max_info = ph.get('max_info')
             if max_info:
                 if (max_info['sss_info'] != dict() or
                         max_info['sss_ctc'] != dict() or
                         max_info['sss_cal'] != dict()):
-                    sss = True
+                    _processing = 'sss'
                 if max_info['max_st'] != dict():
-                    tsss = True
-        if tsss:
-            processing = 'tsss'
-        elif sss:
-            processing = 'sss'
+                    _processing = 'tsss'
 
-    # regenerate the bids_basename with the processing info if it is required
-    if processing is not None:
-        bids_basename = make_bids_basename(
-            subject=subject_id, session=session_id, task=task,
-            acquisition=acquisition, run=run, processing=processing,
-            space=params['space'], recording=params['recording'])
-    bids_fname = bids_basename + '_%s%s' % (kind, ext)
+    # check that the processing type specified by the user matches what is
+    # found in the data
+    if processing != _processing:
+        raise ValueError("Processing type specified doesn't match processing "
+                         "information found in raw file.")
 
     # create filenames
     scans_fname = make_bids_basename(
