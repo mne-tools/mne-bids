@@ -61,7 +61,7 @@ def _mkdir_p(path, overwrite=False, verbose=False):
 def _parse_bids_filename(fname, verbose):
     """Get dict from BIDS fname."""
     keys = ['sub', 'ses', 'task', 'acq', 'run', 'proc', 'run', 'space',
-            'recording']
+            'recording', 'kind']
     params = {key: None for key in keys}
     entities = fname.split('_')
     idx_key = 0

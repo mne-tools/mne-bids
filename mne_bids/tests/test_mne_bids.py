@@ -23,7 +23,8 @@ from mne.datasets import testing
 from mne.utils import _TempDir, run_subprocess, check_version
 from mne.io.constants import FIFF
 
-from mne_bids import make_bids_basename, make_bids_folders, write_raw_bids
+from mne_bids import (make_bids_basename, make_bids_folders, write_raw_bids,
+                      read_raw_bids)
 from mne_bids.tsv_handler import _from_tsv
 
 base_path = op.join(op.dirname(mne.__file__), 'io')
@@ -114,6 +115,7 @@ def test_fif():
     # now force the overwrite
     write_raw_bids(raw, bids_basename2, output_path, events_data=events_fname,
                    event_id=event_id, overwrite=True)
+    raw = read_raw_bids(bids_basename2 + '_meg.fif', output_path)
 
     with pytest.raises(ValueError, match='raw_file must be'):
         write_raw_bids('blah', bids_basename, output_path)
