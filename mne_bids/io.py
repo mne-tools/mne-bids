@@ -83,3 +83,23 @@ def _read_raw(raw_fname, electrode=None, hsp=None, hpi=None, config=None,
         raise ValueError('Raw file name extension must be one of {}\n'
                          'Got {}'.format(ALLOWED_EXTENSIONS, ext))
     return raw
+
+
+def read_raw_bids(fname, return_events=True, verbose=True):
+    """Read BIDS compatible data."""
+
+    events_fname = fname.split('.') + '_events.tsv'
+    channels_fname = fname.split('.') + '_channels.tsv'
+    pd.read_csv(events_fname)
+    # electrode = blah
+    # hsp = blah
+    # hpi = blah
+    # config = blah
+
+    # create montage here
+    # blah
+    raw = _read_raw(fname, electrode=None, hsp=None, hpi=None,
+                    config=None, montage=None, verbose=None)
+    if return_events:
+      return raw, events, event_id
+    return raw
