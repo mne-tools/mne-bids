@@ -154,7 +154,17 @@ def test_ctf():
     raw_fname = op.join(data_path, 'testdata_ctf.ds')
 
     raw = mne.io.read_raw_ctf(raw_fname)
-    write_raw_bids(raw, bids_basename, output_path=output_path)
+    folder = write_raw_bids(raw, bids_basename, output_path=output_path)
+
+    # XXX: hack to be removed once the empty file issue is solved in validator
+    # https://github.com/bids-standard/bids-validator/issues/651
+    for root, dirs, files in os.walk(folder):
+        for file in files:
+            fpath = op.join(root, file)
+            if os.stat(fpath).st_size == 0:
+                with open(fpath, 'w') as f:
+                    f.write('***Empty-File-Filler***')
+
     cmd = ['bids-validator', output_path]
     run_subprocess(cmd, shell=shell)
 
