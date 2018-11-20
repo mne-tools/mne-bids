@@ -26,7 +26,7 @@ install:
     cd mne-bids
   - "python setup.py develop"
   - ps: Install-Product node $env:nodejs_version
-  - npm install -g https://github.com/bids-standard/bids-validator.git#1.0.5
+  - npm install -g https://github.com/bids-standard/bids-validator.git
   - node --version
   - npm --version
   - bids-validator --version

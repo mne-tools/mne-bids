@@ -23,7 +23,7 @@ install:
       pip install --no-deps -e .
       cd ../
     - python setup.py develop
-    - npm install -g https://github.com/bids-standard/bids-validator.git#1.0.5
+    - npm install -g https://github.com/bids-standard/bids-validator.git
 script:
     - make
     - flake8 --count mne_bids
