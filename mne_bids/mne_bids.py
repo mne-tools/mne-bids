@@ -688,7 +688,7 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
     # save all meta data
     _participants_tsv(raw, subject_id, participants_tsv_fname, overwrite,
                       verbose)
-    _participants_json(participants_json_fname, overwrite, verbose)
+    _participants_json(participants_json_fname, True, verbose)
     _scans_tsv(raw, os.path.join(kind, bids_fname), scans_fname,
                overwrite, verbose)
 
