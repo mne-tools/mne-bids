@@ -218,7 +218,7 @@ def _events_tsv(events, raw, fname, trial_type, overwrite=False,
     return fname
 
 
-def _participants_tsv(raw, subject_id, group, fname, overwrite=False,
+def _participants_tsv(raw, subject_id, fname, overwrite=False,
                       verbose=True):
     """Create a participants.tsv file and save it.
 
@@ -231,8 +231,6 @@ def _participants_tsv(raw, subject_id, group, fname, overwrite=False,
         The data as MNE-Python Raw object.
     subject_id : str
         The subject name in BIDS compatible format ('01', '02', etc.)
-    group : str
-        Name of group participant belongs to.
     fname : str
         Filename to save the participants.tsv to.
     overwrite : bool
@@ -249,8 +247,8 @@ def _participants_tsv(raw, subject_id, group, fname, overwrite=False,
 
     subject_info = raw.info['subject_info']
     if subject_info is not None:
-        genders = {0: 'U', 1: 'M', 2: 'F'}
-        sex = genders[subject_info.get('sex', 0)]
+        sexes = {0: 'n/a', 1: 'M', 2: 'F'}
+        sex = sexes[subject_info.get('sex', 0)]
 
         # determine the age of the participant
         age = subject_info.get('birthday', None)
@@ -265,10 +263,10 @@ def _participants_tsv(raw, subject_id, group, fname, overwrite=False,
         else:
             subject_age = "n/a"
 
-        data.update({'age': [subject_age], 'sex': [sex], 'group': [group]})
+        data.update({'age': [subject_age], 'sex': [sex]})
 
     df = pd.DataFrame(data=data,
-                      columns=['participant_id', 'age', 'sex', 'group'])
+                      columns=['participant_id', 'age', 'sex'])
 
     if os.path.exists(fname):
         orig_df = pd.read_csv(fname, sep='\t')
@@ -293,6 +291,34 @@ def _participants_tsv(raw, subject_id, group, fname, overwrite=False,
     # overwrite is forced to True as all issues with overwrite == False have
     # been handled by this point
     _write_tsv(fname, df, True, verbose)
+
+    return fname
+
+
+def _participants_json(fname, overwrite=False, verbose=True):
+    """Create participants.json for non-default columns in accompanying TSV.
+
+    Parameters
+    ----------
+    fname : str
+        Filename to save the scans.tsv to.
+    overwrite : bool
+        Defaults to False.
+        Whether to overwrite the existing data in the file.
+        If there is already data for the given `fname` and overwrite is False,
+        an error will be raised.
+    verbose : bool
+        Set verbose output to true or false.
+
+    """
+    cols = OrderedDict()
+    cols['participant_id'] = {'Description': 'Unique participant identifier'}
+    cols['age'] = {'Description': 'Unique participant identifier',
+                   'Units': 'years'}
+    cols['sex'] = {'Description': 'Biological sex of the participant',
+                   'Levels': {'F': 'female', 'M': 'male'}}
+
+    _write_json(cols, fname, overwrite, verbose)
 
     return fname
 
@@ -403,7 +429,7 @@ def _coordsystem_json(raw, unit, orient, manufacturer, fname,
                 'HeadCoilCoordinateUnits': unit  # XXX validate this
                 }
 
-    _write_json(fid_json, fname, overwrite)
+    _write_json(fid_json, fname, overwrite, verbose)
 
     return fname
 
@@ -633,8 +659,10 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
     scans_fname = make_bids_basename(
         subject=subject_id, session=session_id, suffix='scans.tsv',
         prefix=ses_path)
-    participants_fname = make_bids_basename(prefix=output_path,
-                                            suffix='participants.tsv')
+    participants_tsv_fname = make_bids_basename(prefix=output_path,
+                                                suffix='participants.tsv')
+    participants_json_fname = make_bids_basename(prefix=output_path,
+                                                 suffix='participants.json')
     coordsystem_fname = make_bids_basename(
         subject=subject_id, session=session_id, acquisition=acquisition,
         suffix='coordsystem.json', prefix=data_path)
@@ -658,8 +686,9 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
     manufacturer = MANUFACTURERS.get(ext, 'n/a')
 
     # save all meta data
-    _participants_tsv(raw, subject_id, "n/a", participants_fname, overwrite,
+    _participants_tsv(raw, subject_id, participants_tsv_fname, overwrite,
                       verbose)
+    _participants_json(participants_json_fname, True, verbose)
     _scans_tsv(raw, os.path.join(kind, bids_fname), scans_fname,
                overwrite, verbose)
 
