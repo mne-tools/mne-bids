@@ -19,14 +19,14 @@ install:
   - "pip uninstall -yq mne"
   - |-
     cd ..
-    git clone --depth 1 https://github.com/mne-tools/mne-python.git
+    git clone --depth 1 https://github.com/mne-tools/mne-python.git -b maint/0.17
     cd mne-python
     python setup.py develop
     cd ..
     cd mne-bids
   - "python setup.py develop"
   - ps: Install-Product node $env:nodejs_version
-  - npm install -g https://github.com/bids-standard/bids-validator.git
+  - npm install -g https://github.com/bids-standard/bids-validator.git#1.1.0
   - node --version
   - npm --version
   - bids-validator --version
