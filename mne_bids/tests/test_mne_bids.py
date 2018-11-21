@@ -106,9 +106,9 @@ def test_fif():
     run_subprocess(cmd, shell=shell)
     assert op.exists(op.join(output_path, 'participants.tsv'))
 
-    data_meta_fname = make_bids_filename(
+    data_meta_fname = make_bids_basename(
         subject=subject_id, session=session_id, task=task, run=run,
-        suffix='%s.json' % 'meg',
+        acquisition=acq, suffix='%s.json' % 'meg',
         prefix=op.join(output_path, 'sub-01/ses-01/meg'))
     sidecar = json.load(open(data_meta_fname, 'r'))
     assert sidecar['DigitizedLandmarks'] is True
@@ -136,9 +136,9 @@ def test_kit():
     assert op.exists(op.join(output_path, 'participants.tsv'))
 
     # we provided the hsp and elp data, so sidecar.json should reflect this
-    data_meta_fname = make_bids_filename(
+    data_meta_fname = make_bids_basename(
         subject=subject_id, session=session_id, task=task, run=run,
-        suffix='%s.json' % 'meg',
+        acquisition=acq, suffix='%s.json' % 'meg',
         prefix=op.join(output_path, 'sub-01/ses-01/meg'))
     sidecar = json.load(open(data_meta_fname, 'r'))
     assert sidecar['DigitizedLandmarks'] is True
@@ -147,7 +147,7 @@ def test_kit():
     # ensure the channels file has no STI 014 channel:
     channels_tsv = make_bids_basename(
         subject=subject_id, session=session_id, task=task, run=run,
-        suffix='channels.tsv', acquisition=acq,
+        acquisition=acq, suffix='channels.tsv',
         prefix=op.join(output_path, 'sub-01/ses-01/meg'))
     df = pd.read_csv(channels_tsv, sep='\t')
     assert not ('STI 014' in df['name'].values)
@@ -190,9 +190,9 @@ def test_ctf():
 
     assert op.exists(op.join(output_path, 'participants.tsv'))
 
-    data_meta_fname = make_bids_filename(
+    data_meta_fname = make_bids_basename(
         subject=subject_id, session=session_id, task=task, run=run,
-        suffix='%s.json' % 'meg',
+        acquisition=acq, suffix='%s.json' % 'meg',
         prefix=op.join(output_path, 'sub-01/ses-01/meg'))
     sidecar = json.load(open(data_meta_fname, 'r'))
     assert sidecar['DigitizedLandmarks'] is True
@@ -216,9 +216,9 @@ def test_bti():
     cmd = ['bids-validator', output_path]
     run_subprocess(cmd, shell=shell)
 
-    data_meta_fname = make_bids_filename(
+    data_meta_fname = make_bids_basename(
         subject=subject_id, session=session_id, task=task, run=run,
-        suffix='%s.json' % 'meg',
+        acquisition=acq, suffix='%s.json' % 'meg',
         prefix=op.join(output_path, 'sub-01/ses-01/meg'))
     sidecar = json.load(open(data_meta_fname, 'r'))
     assert sidecar['DigitizedLandmarks'] is True

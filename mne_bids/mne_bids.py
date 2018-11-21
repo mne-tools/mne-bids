@@ -23,6 +23,7 @@ from mne import Epochs
 from mne.io.constants import FIFF
 from mne.io.pick import channel_type
 from mne.io import BaseRaw
+from mne.externals.six import string_types
 from mne.channels.channels import _unit2human
 from mne.utils import check_version
 
@@ -658,15 +659,8 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
     acquisition, task, run = params['acq'], params['task'], params['run']
     kind = _handle_kind(raw)
 
-    # dictionary containing any other data potentially required information
-    extra_data = dict()
-
     electrode = raw._init_kwargs.get('electrode', None)
     hsp = raw._init_kwargs.get('hsp', None)
-
-    # Indicate the appropriate data has been provided
-    extra_data["DigitizedLandmarks"] = electrode is not None
-    extra_data["DigitizedHeadPoints"] = hsp is not None
 
     bids_fname = bids_basename + '_%s%s' % (kind, ext)
     data_path = make_bids_folders(subject=subject_id, session=session_id,
@@ -758,7 +752,7 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
     for key, f in d.items():
         if isinstance(f, string_types):
             acq = (key if exts_same else None)
-            headshape_fname = make_bids_filename(
+            headshape_fname = make_bids_basename(
                 subject=subject_id, session=session_id, acquisition=acq,
                 suffix='headshape%s' % _parse_ext(f)[1], prefix=data_path)
             sh.copyfile(f, headshape_fname)
@@ -766,7 +760,7 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
     for key, f in d.items():
         if isinstance(f, string_types):
             acq = (key if exts_same else None)
-            headshape_fname = make_bids_filename(
+            headshape_fname = make_bids_basename(
                 subject=subject_id, session=session_id, acquisition=acq,
                 suffix='headshape%s' % ".pos", prefix=data_path)
             sh.copyfile(f, headshape_fname)
