@@ -377,7 +377,7 @@ def _scans_tsv(raw, raw_fname, fname, overwrite=False, verbose=True):
     return fname
 
 
-def _coordsystem_json(raw, unit, orient, manufacturer, fname,
+def _coordsystem_json(raw, unit, orient, manufacturer, fname, extra_data,
                       overwrite=False, verbose=True):
     """Create a coordsystem.json file and save it.
 
@@ -396,6 +396,8 @@ def _coordsystem_json(raw, unit, orient, manufacturer, fname,
     overwrite : bool
         Whether to overwrite the existing file.
         Defaults to False.
+    extra_data : dict
+        A dictionary containing any extra data required in the various files.
     verbose : bool
         Set verbose output to true or false.
 
@@ -422,6 +424,9 @@ def _coordsystem_json(raw, unit, orient, manufacturer, fname,
         err = 'All HPI and Fiducials must be in the same coordinate frame.'
         raise ValueError(err)
 
+    if len(coords) != 0:
+        extra_data['DigitizedLandmarks'] = True
+
     fid_json = {'MEGCoordinateSystem': manufacturer,
                 'MEGCoordinateUnits': unit,  # XXX validate this
                 'HeadCoilCoordinates': coords,
@@ -435,7 +440,7 @@ def _coordsystem_json(raw, unit, orient, manufacturer, fname,
 
 
 def _sidecar_json(raw, task, manufacturer, fname, kind, overwrite=False,
-                  verbose=True):
+                  extra_data=dict(), verbose=True):
     """Create a sidecar json file depending on the kind and save it.
 
     The sidecar json file provides meta data about the data of a certain kind.
@@ -456,6 +461,8 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, overwrite=False,
     overwrite : bool
         Whether to overwrite the existing file.
         Defaults to False.
+    extra_data : dict
+        A dictionary containing any extra data required in the various files.
     verbose : bool
         Set verbose output to true or false. Defaults to true.
 
@@ -511,8 +518,8 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, overwrite=False,
         ('RecordingType', rec_type)]
     ch_info_json_meg = [
         ('DewarPosition', 'n/a'),
-        ('DigitizedLandmarks', False),
-        ('DigitizedHeadPoints', False),
+        ("DigitizedLandmarks", extra_data.get("DigitizedLandmarks", False)),
+        ("DigitizedHeadPoints", extra_data.get("DigitizedHeadPoints", False)),
         ('MEGChannelCount', n_megchan),
         ('MEGREFChannelCount', n_megrefchan)]
     ch_info_json_eeg = [
@@ -644,6 +651,16 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
     acquisition, task, run = params['acq'], params['task'], params['run']
     kind = _handle_kind(raw)
 
+    # dictionary containing any other data potentially required information
+    extra_data = dict()
+
+    electrode = raw._init_kwargs.get('electrode', None)
+    hsp = raw._init_kwargs.get('hsp', None)
+
+    # Indicate the appropriate data has been provided
+    extra_data["DigitizedLandmarks"] = electrode is not None
+    extra_data["DigitizedHeadPoints"] = hsp is not None
+
     bids_fname = bids_basename + '_%s%s' % (kind, ext)
     data_path = make_bids_folders(subject=subject_id, session=session_id,
                                   kind=kind, output_path=output_path,
@@ -695,7 +712,7 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
     # TODO: Implement coordystem.json and electrodes.tsv for EEG and  iEEG
     if kind == 'meg':
         _coordsystem_json(raw, unit, orient, manufacturer, coordsystem_fname,
-                          overwrite, verbose)
+                          overwrite, extra_data, verbose)
 
     events = _read_events(events_data, raw)
     if len(events) > 0:
@@ -703,7 +720,7 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
 
     make_dataset_description(output_path, name=" ", verbose=verbose)
     _sidecar_json(raw, task, manufacturer, sidecar_fname, kind, overwrite,
-                  verbose)
+                  extra_data, verbose)
     _channels_tsv(raw, channels_fname, overwrite, verbose)
 
     # set the raw file name to now be the absolute path to ensure the files
@@ -716,6 +733,24 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
 
     if verbose:
         print('Copying data files to %s' % bids_fname)
+
+    # check to see if there is a headspace (hsp) or electrode placement
+    # (electrode) provided.
+    # if so, copy it to the correct location
+    hsp_ext = (_parse_ext(hsp)[1] if hsp is not None else None)
+    electrode_ext = (_parse_ext(electrode)[1] if electrode is not None
+                     else None)
+    exts_same = hsp_ext == electrode_ext
+    # what to use as standard names?
+    d = {'HEADPOINTS': hsp, 'ELECTRODES': electrode}
+
+    for key, f in d.items():
+        if isinstance(f, string_types):
+            acq = (key if exts_same else None)
+            headshape_fname = make_bids_filename(
+                subject=subject_id, session=session_id, acquisition=acq,
+                suffix='headshape%s' % _parse_ext(f)[1], prefix=data_path)
+            sh.copyfile(f, headshape_fname)
 
     if ext not in ALLOWED_EXTENSIONS:
         raise ValueError('ext must be in %s, got %s'
