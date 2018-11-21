@@ -18,12 +18,12 @@ install:
     - conda install --yes --quiet numpy=1.13.1 scipy=0.19.1 matplotlib pandas=0.20.3
     - pip install flake8 pytest==3.3.2 pytest-sugar pytest-faulthandler
     - |
-      git clone --depth 1 https://github.com/mne-tools/mne-python.git
+      git clone --depth 1 https://github.com/mne-tools/mne-python.git -b maint/0.17
       cd mne-python
       pip install --no-deps -e .
       cd ../
     - python setup.py develop
-    - npm install -g https://github.com/bids-standard/bids-validator.git
+    - npm install -g https://github.com/bids-standard/bids-validator.git#1.1.0
 script:
     - make
     - flake8 --count mne_bids

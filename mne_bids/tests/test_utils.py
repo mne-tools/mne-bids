@@ -211,6 +211,6 @@ def test_infer_eeg_placement_scheme():
     assert placement_scheme == 'based on the extended 10/20 system'
 
     # Unknown case, use raw from 1020 case but rename a channel
-    raw.rename_channels({'P3': 'XXX'})
+    raw.rename_channels({'P3': 'foo'})
     placement_scheme = _infer_eeg_placement_scheme(raw)
     assert placement_scheme == 'n/a'
