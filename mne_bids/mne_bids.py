@@ -24,7 +24,6 @@ from mne.io.constants import FIFF
 from mne.io.pick import channel_type
 from mne.io import BaseRaw
 from mne.channels.channels import _unit2human
-from mne.utils import check_version
 
 from datetime import datetime
 from warnings import warn
@@ -725,17 +724,8 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
     if ext in ['.fif']:
         n_rawfiles = len(raw.filenames)
         if n_rawfiles > 1:
-            # TODO Update MNE requirement to version 0.17 when it's released
-            if check_version('mne', '0.17.dev'):
-                split_naming = 'bids'
-                raw.save(bids_fname, split_naming=split_naming,
-                         overwrite=True)
-            else:
-                raise NotImplementedError(
-                    'Renaming split fif files is not supported on your '
-                    'version of MNE. Please upgrade to at least "0.17.dev". '
-                    'Please contact MNE developers if you have '
-                    'any questions.')
+            split_naming = 'bids'
+            raw.save(bids_fname, split_naming=split_naming, overwrite=True)
         else:
             raw.save(bids_fname, overwrite=True, split_naming='bids')
 

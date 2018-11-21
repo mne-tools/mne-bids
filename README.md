@@ -8,25 +8,30 @@
 MNE-BIDS
 ========
 
-This is a repository for creating [BIDS](http://bids.neuroimaging.io/)-compatible datasets with [MNE](https://mne-tools.github.io/stable/index.html).
+This is a repository for creating
+[BIDS](http://bids.neuroimaging.io/)-compatible datasets with
+[MNE](https://mne-tools.github.io/stable/index.html).
 
 Installation
 ------------
 
-We recommend the [Anaconda](https://www.anaconda.com/download/) Python distribution.
-Besides `numpy`, `scipy`, `matplotlib`, and `pandas` (which are included in the standard
-Anaconda installation), you will need to install MNE using the `pip` tool (currently, it is
-necessary to install the development version):
+We recommend the [Anaconda](https://www.anaconda.com/download/) Python
+distribution. Besides `numpy`, `scipy`, `matplotlib`, and `pandas` (which are
+included in the standard Anaconda installation), you will need to install the
+most recent version of MNE using the `pip` tool:
 
-    $ pip install -U https://api.github.com/repos/mne-tools/mne-python/zipball/master
+    $ pip install -U mne
 
 Then install `mne-bids`:
 
     $ pip install -U mne-bids
 
-These `pip` commands also work if you want to upgrade if a newer version of `mne-bids` is available. If you do not have administrator privileges on the computer, use the `--user` flag with `pip`.
+These `pip` commands also work if you want to upgrade if a newer version of
+`mne-bids` is available. If you do not have administrator privileges on the
+computer, use the `--user` flag with `pip`.
 
-To check if everything worked fine, the following command should not give any error messages:
+To check if everything worked fine, the following command should not give any
+error messages:
 
     $ python -c 'import mne_bids'
 
