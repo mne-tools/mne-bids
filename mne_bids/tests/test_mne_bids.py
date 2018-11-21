@@ -16,7 +16,7 @@ import os.path as op
 import pytest
 
 import pandas as pd
-
+import json
 import mne
 from mne.datasets import testing
 from mne.utils import _TempDir, run_subprocess
@@ -104,8 +104,15 @@ def test_fif():
 
     cmd = ['bids-validator', output_path]
     run_subprocess(cmd, shell=shell)
-
     assert op.exists(op.join(output_path, 'participants.tsv'))
+
+    data_meta_fname = make_bids_filename(
+        subject=subject_id, session=session_id, task=task, run=run,
+        suffix='%s.json' % 'meg',
+        prefix=op.join(output_path, 'sub-01/ses-01/meg'))
+    sidecar = json.load(open(data_meta_fname, 'r'))
+    assert sidecar['DigitizedLandmarks'] is True
+    assert sidecar['DigitizedHeadPoints'] is True
 
 
 def test_kit():
@@ -127,6 +134,15 @@ def test_kit():
     cmd = ['bids-validator', output_path]
     run_subprocess(cmd, shell=shell)
     assert op.exists(op.join(output_path, 'participants.tsv'))
+
+    # we provided the hsp and elp data, so sidecar.json should reflect this
+    data_meta_fname = make_bids_filename(
+        subject=subject_id, session=session_id, task=task, run=run,
+        suffix='%s.json' % 'meg',
+        prefix=op.join(output_path, 'sub-01/ses-01/meg'))
+    sidecar = json.load(open(data_meta_fname, 'r'))
+    assert sidecar['DigitizedLandmarks'] is True
+    assert sidecar['DigitizedHeadPoints'] is True
 
     # ensure the channels file has no STI 014 channel:
     channels_tsv = make_bids_basename(
@@ -174,6 +190,14 @@ def test_ctf():
 
     assert op.exists(op.join(output_path, 'participants.tsv'))
 
+    data_meta_fname = make_bids_filename(
+        subject=subject_id, session=session_id, task=task, run=run,
+        suffix='%s.json' % 'meg',
+        prefix=op.join(output_path, 'sub-01/ses-01/meg'))
+    sidecar = json.load(open(data_meta_fname, 'r'))
+    assert sidecar['DigitizedLandmarks'] is True
+    assert sidecar['DigitizedHeadPoints'] is False
+
 
 def test_bti():
     """Test functionality of the write_raw_bids conversion for BTi data."""
@@ -191,6 +215,14 @@ def test_bti():
 
     cmd = ['bids-validator', output_path]
     run_subprocess(cmd, shell=shell)
+
+    data_meta_fname = make_bids_filename(
+        subject=subject_id, session=session_id, task=task, run=run,
+        suffix='%s.json' % 'meg',
+        prefix=op.join(output_path, 'sub-01/ses-01/meg'))
+    sidecar = json.load(open(data_meta_fname, 'r'))
+    assert sidecar['DigitizedLandmarks'] is True
+    assert sidecar['DigitizedHeadPoints'] is True
 
 
 def test_vhdr():
