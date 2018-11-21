@@ -2,9 +2,9 @@ import numpy as np
 from collections import OrderedDict as odict
 
 
-class DataFrame():
+class MockDataFrame():
     def __init__(self, data):
-        """ A stripped down clone of a Pandas DataFrame object
+        """ A stripped down clone of a Pandas MockDataFrame object
 
         Parameters
         -----------
@@ -20,7 +20,7 @@ class DataFrame():
         """
         # create a mapping between the column names and the column number
         self.columns = odict(zip(data.keys(), range(len(data))))
-        self.arr = np.stack(data.values(), axis=-1).astype(str)
+        self._data = np.stack(data.values(), axis=-1).astype(str)
 
     def drop(self, values, column):
         """ Drop any rows with the specified values in the given column
@@ -40,32 +40,32 @@ class DataFrame():
             # cast values to string type to be safe
             values = [str(i) for i in values]
             # create array with True values wherever the value is in values
-            loc_data = np.where(np.isin(self.arr, values))
+            loc_data = np.where(np.isin(self._data, values))
             if col_num not in loc_data[1]:
                 raise ValueError('values not found in column "%s"' % column)
             row_indexes = loc_data[0][np.where(loc_data[1] == col_num)]
-            self.arr = np.delete(self.arr, row_indexes, 0)
+            self._data = np.delete(self._data, row_indexes, 0)
 
     def append(self, other, drop_column=None):
-        """ Add one DataFrame to another
+        """ Add one MockDataFrame to another
 
         Parameters
         ----------
-        other : DataFrame
-            The other DataFrame object to be appended to the end of the current
-            one.
+        other : MockDataFrame
+            The other MockDataFrame object to be appended to the end of the
+            current one.
         drop_column : str
             The name of the column to check for multiple instances of the same
             value. If multiple values are found in the column, the rows
             containing all but the last value are removed.
 
         """
-        self.arr = np.concatenate([self.arr, other.arr])
+        self._data = np.concatenate([self._data, other._data])
         if drop_column is not None:
             col_num = self.columns[drop_column]
-            col_data = self.arr[:, col_num]
-            drop_indexes = np.where(col_data == other.arr[0][col_num])[0]
-            self.arr = np.delete(self.arr, drop_indexes[:-1], 0)
+            col_data = self._data[:, col_num]
+            drop_indexes = np.where(col_data == other._data[0][col_num])[0]
+            self._data = np.delete(self._data, drop_indexes[:-1], 0)
 
     def head(self, rows=5):
         """ Return a view of the first number of rows
@@ -78,32 +78,38 @@ class DataFrame():
         """
         output = ''
         output += '\t'.join(list(self.columns.keys())) + '\n'
-        count = min(rows, self.arr.shape[0])
+        count = min(rows, self._data.shape[0])
         for i in range(count):
-            output += '\t'.join(self.arr[i, :]) + '\n'
+            output += '\t'.join(self._data[i, :]) + '\n'
+        if rows < self._data.shape[0]:
+            output += '... (%s more rows)' % (self._data.shape[0] - rows)
         return output
 
     def __contains__(self, item):
         """ Provide functionality for the `in` operator
 
-        item may be either an numpy.ndarray or a DataFrame, however it may only
-        be 1 dimensional.
+        item may be either an numpy.ndarray or a MockDataFrame, however it may
+        only be 1 dimensional.
 
         """
         if isinstance(item, np.ndarray):
-            return item.tolist() in self.arr.tolist()
+            return item.tolist() in self._data.tolist()
         elif isinstance(item, list):
-            return item in self.arr.tolist()
+            return item in self._data.tolist()
         elif isinstance(item, type(self)):
-            return item.arr.flatten().tolist() in self.arr.tolist()
+            return item._data.flatten().tolist() in self._data.tolist()
 
     def __getitem__(self, key):
         """ Return the data in the column specified """
-        return self.arr[:, self.columns[key]]
+        return self._data[:, self.columns[key]]
+
+    def __repr__(self):
+        """ String representation of the MockDataFrame """
+        return self.head()
 
     @classmethod
     def from_tsv(cls, fname):
-        """ Generate a DataFrame object from a .tsv file
+        """ Generate a MockDataFrame object from a .tsv file
 
         Parameters
         ----------
@@ -130,5 +136,9 @@ class DataFrame():
 
         """
         header = '\t'.join(self.columns.keys())
-        np.savetxt(fname, self.arr, fmt='%s', delimiter='\t', header=header,
+        np.savetxt(fname, self._data, fmt='%s', delimiter='\t', header=header,
                    comments='')
+
+    @property
+    def data(self):
+        return self._data

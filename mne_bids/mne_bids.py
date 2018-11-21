@@ -34,7 +34,7 @@ from .utils import (make_bids_basename, make_bids_folders,
                     _infer_eeg_placement_scheme, _parse_bids_filename,
                     _handle_kind)
 from .io import _parse_ext, ALLOWED_EXTENSIONS, reader
-from .dataframe import DataFrame
+from .dataframe import MockDataFrame
 
 ALLOWED_KINDS = ['meg', 'eeg', 'ieeg']
 
@@ -134,15 +134,15 @@ def _channels_tsv(raw, fname, overwrite=False, verbose=True):
     n_channels = raw.info['nchan']
     sfreq = raw.info['sfreq']
 
-    df = pd.DataFrame(OrderedDict([
-                      ('name', raw.info['ch_names']),
-                      ('type', ch_type),
-                      ('units', units),
-                      ('low_cutoff', np.full((n_channels), low_cutoff)),
-                      ('high_cutoff', np.full((n_channels), high_cutoff)),
-                      ('description', description),
-                      ('sampling_frequency', np.full((n_channels), sfreq)),
-                      ('status', status)]))
+    df = MockDataFrame(OrderedDict([
+        ('name', raw.info['ch_names']),
+        ('type', ch_type),
+        ('units', units),
+        ('low_cutoff', np.full((n_channels), low_cutoff)),
+        ('high_cutoff', np.full((n_channels), high_cutoff)),
+        ('description', description),
+        ('sampling_frequency', np.full((n_channels), sfreq)),
+        ('status', status)]))
     df.drop(ignored_channels, 'name')
 
     _write_tsv(fname, df, overwrite, verbose)
@@ -204,7 +204,7 @@ def _events_tsv(events, raw, fname, trial_type, overwrite=False,
     else:
         del data['trial_type']
 
-    df = DataFrame(data)
+    df = MockDataFrame(data)
 
     _write_tsv(fname, df, overwrite, verbose)
 
@@ -258,13 +258,13 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False,
 
         data.update({'age': [subject_age], 'sex': [sex]})
 
-    df = DataFrame(data)
+    df = MockDataFrame(data)
 
     if os.path.exists(fname):
-        orig_df = DataFrame.from_tsv(fname)
-        # whether the data exists identically in the current DataFrame
+        orig_df = MockDataFrame.from_tsv(fname)
+        # whether the data exists identically in the current MockDataFrame
         exact_included = df in orig_df
-        # whether the subject id is in the existing DataFrame
+        # whether the subject id is in the existing MockDataFrame
         sid_included = subject_id in orig_df['participant_id']
         # if the subject data provided is different to the currently existing
         # data and overwrite is not True raise an error
@@ -340,11 +340,11 @@ def _scans_tsv(raw, raw_fname, fname, overwrite=False, verbose=True):
     else:
         acq_time = 'n/a'
 
-    df = DataFrame(OrderedDict([('filename', ['%s' % raw_fname]),
-                                ('acq_time', [acq_time])]))
+    df = MockDataFrame(OrderedDict([('filename', ['%s' % raw_fname]),
+                                    ('acq_time', [acq_time])]))
 
     if os.path.exists(fname):
-        orig_df = DataFrame.from_tsv(fname)
+        orig_df = MockDataFrame.from_tsv(fname)
         # if the file name is already in the file raise an error
         if raw_fname in orig_df['filename'].values and not overwrite:
             raise FileExistsError('"%s" already exists in the scans list. '
