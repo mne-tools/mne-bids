@@ -236,6 +236,8 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False,
     subject_id = 'sub-' + subject_id
     data = OrderedDict(participant_id=[subject_id])
 
+    subject_age = "n/a"
+    sex = "n/a"
     subject_info = raw.info['subject_info']
     if subject_info is not None:
         sexes = {0: 'n/a', 1: 'M', 2: 'F'}
@@ -254,14 +256,14 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False,
         else:
             subject_age = "n/a"
 
-        data.update({'age': [subject_age], 'sex': [sex]})
+    data.update({'age': [subject_age], 'sex': [sex]})
 
     if os.path.exists(fname):
         orig_data = from_tsv(fname)
-        # whether the data exists identically in the current MockDataFrame
+        # whether the new data exists identically in the previous data
         exact_included = contains_row(orig_data,
-                                      [subject_id, subject_age, sex, group])
-        # whether the subject id is in the existing MockDataFrame
+                                      [subject_id, subject_age, sex])
+        # whether the subject id is in the previous data
         sid_included = subject_id in orig_data['participant_id']
         # if the subject data provided is different to the currently existing
         # data and overwrite is not True raise an error
@@ -338,7 +340,7 @@ def _scans_tsv(raw, raw_fname, fname, overwrite=False, verbose=True):
         acq_time = 'n/a'
 
     data = OrderedDict([('filename', ['%s' % raw_fname]),
-                      ('acq_time', [acq_time])])
+                        ('acq_time', [acq_time])])
 
     if os.path.exists(fname):
         orig_data = from_tsv(fname)

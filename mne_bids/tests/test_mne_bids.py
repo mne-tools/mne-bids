@@ -250,9 +250,9 @@ def test_vhdr():
     channels_tsv_name = op.join(output_path, 'sub-' + subject_id,
                                 'ses-' + session_id, 'eeg',
                                 bids_basename + '_channels.tsv')
-    df = pd.read_csv(channels_tsv_name, sep='\t', keep_default_na=False)
-    assert df.loc[df['name'] == 'FP1', 'units'].all() == 'µV'
-    assert df.loc[df['name'] == 'CP5', 'units'].all() == 'n/a'
+    data = from_tsv(channels_tsv_name)
+    assert data['units'][data['name'].index('FP1')] == 'µV'
+    assert data['units'][data['name'].index('CP5')] == 'n/a'
 
     # create another bids folder with the overwrite command and check
     # no files are in the folder
