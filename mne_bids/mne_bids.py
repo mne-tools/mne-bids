@@ -426,6 +426,12 @@ def _coordsystem_json(raw, unit, orient, manufacturer, fname, extra_data,
 
     if len(coords) != 0:
         extra_data['DigitizedLandmarks'] = True
+    hsp_count = 0
+    for d in dig:
+        if d['kind'] == FIFF.FIFFV_POINT_EXTRA:
+            hsp_count += 1
+    if hsp_count != 0:
+        extra_data['DigitizedHeadPoints'] = True
 
     fid_json = {'MEGCoordinateSystem': manufacturer,
                 'MEGCoordinateUnits': unit,  # XXX validate this
@@ -440,7 +446,8 @@ def _coordsystem_json(raw, unit, orient, manufacturer, fname, extra_data,
 
 
 def _sidecar_json(raw, task, manufacturer, fname, kind, overwrite=False,
-                  extra_data=dict(), verbose=True):
+                  digitized_landmarks=False, digitized_head_points=False,
+                  verbose=True):
     """Create a sidecar json file depending on the kind and save it.
 
     The sidecar json file provides meta data about the data of a certain kind.
@@ -461,8 +468,10 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, overwrite=False,
     overwrite : bool
         Whether to overwrite the existing file.
         Defaults to False.
-    extra_data : dict
-        A dictionary containing any extra data required in the various files.
+    digitized_landmarks : bool
+        Whether the recording contains digitized landmark data
+    digitized_head_points : bool
+        Whether the recording contains digitized head point data
     verbose : bool
         Set verbose output to true or false. Defaults to true.
 
@@ -518,8 +527,8 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, overwrite=False,
         ('RecordingType', rec_type)]
     ch_info_json_meg = [
         ('DewarPosition', 'n/a'),
-        ("DigitizedLandmarks", extra_data.get("DigitizedLandmarks", False)),
-        ("DigitizedHeadPoints", extra_data.get("DigitizedHeadPoints", False)),
+        ("DigitizedLandmarks", digitized_landmarks),
+        ("DigitizedHeadPoints", digitized_head_points),
         ('MEGChannelCount', n_megchan),
         ('MEGREFChannelCount', n_megrefchan)]
     ch_info_json_eeg = [
@@ -720,7 +729,8 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
 
     make_dataset_description(output_path, name=" ", verbose=verbose)
     _sidecar_json(raw, task, manufacturer, sidecar_fname, kind, overwrite,
-                  extra_data, verbose)
+                  extra_data["DigitizedLandmarks"],
+                  extra_data["DigitizedHeadPoints"], verbose)
     _channels_tsv(raw, channels_fname, overwrite, verbose)
 
     # set the raw file name to now be the absolute path to ensure the files
