@@ -119,16 +119,16 @@ def test_fif():
     assert ii < 1
 
     # check that split files have part key
+    raw = mne.io.read_raw_fif(raw_fname)
     data_path3 = _TempDir()
     raw_fname3 = op.join(data_path3, 'sample_audvis_raw.fif')
     raw.save(raw_fname3, buffer_size_sec=1.0, split_size='10MB',
-               split_naming='neuromag', overwrite=True)
+             split_naming='neuromag', overwrite=True)
     raw = mne.io.read_raw_fif(raw_fname3)
     subject_id3 = '03'
     bids_basename3 = bids_basename.replace(subject_id, subject_id3)
-    bids_output_path = write_raw_bids(raw_fname3, bids_basename3, output_path,
-                                      events_data=events_fname,
-                                      event_id=event_id, overwrite=False)
+    bids_output_path = write_raw_bids(raw, bids_basename3, output_path,
+                                      overwrite=False)
     files = glob(op.join(bids_output_path, 'sub-' + subject_id3,
                          'ses-' + subject_id3, 'meg', '*.fif'))
     for FILE in files:
