@@ -18,7 +18,6 @@ import shutil as sh
 import numpy as np
 from scipy.io import loadmat, savemat
 from mne import read_events, find_events
-from mne.externals.six import string_types
 from mne.channels import read_montage
 from mne.io.pick import pick_types
 
@@ -160,13 +159,13 @@ def make_bids_basename(subject=None, session=None, task=None,
                          ('proc', processing),
                          ('space', space),
                          ('recording', recording)])
-    if order['run'] is not None and not isinstance(order['run'], string_types):
+    if order['run'] is not None and not isinstance(order['run'], str):
         # Ensure that run is a string
         order['run'] = '{:02}'.format(order['run'])
 
     _check_types(order.values())
 
-    if not any(isinstance(ii, string_types) for ii in order.keys()):
+    if not any(isinstance(ii, str) for ii in order.keys()):
         raise ValueError("At least one parameter must be given.")
 
     filename = []
@@ -175,11 +174,11 @@ def make_bids_basename(subject=None, session=None, task=None,
             _check_key_val(key, val)
             filename.append('%s-%s' % (key, val))
 
-    if isinstance(suffix, string_types):
+    if isinstance(suffix, str):
         filename.append(suffix)
 
     filename = '_'.join(filename)
-    if isinstance(prefix, string_types):
+    if isinstance(prefix, str):
         filename = op.join(prefix, filename)
     return filename
 
@@ -233,12 +232,12 @@ def make_bids_folders(subject, session=None, kind=None, output_path=None,
         _check_key_val('ses', session)
 
     path = ['sub-%s' % subject]
-    if isinstance(session, string_types):
+    if isinstance(session, str):
         path.append('ses-%s' % session)
-    if isinstance(kind, string_types):
+    if isinstance(kind, str):
         path.append(kind)
     path = op.join(*path)
-    if isinstance(output_path, string_types):
+    if isinstance(output_path, str):
         path = op.join(output_path, path)
 
     if make_dir is True:
@@ -292,11 +291,11 @@ def make_dataset_description(path, name=None, data_license=None,
 
     """
     # Put potential string input into list of strings
-    if isinstance(authors, string_types):
+    if isinstance(authors, str):
         authors = authors.split(', ')
-    if isinstance(funding, string_types):
+    if isinstance(funding, str):
         funding = funding.split(', ')
-    if isinstance(references_and_links, string_types):
+    if isinstance(references_and_links, str):
         references_and_links = references_and_links.split(', ')
 
     fname = op.join(path, 'dataset_description.json')
@@ -340,7 +339,7 @@ def _age_on_date(bday, exp_date):
 def _check_types(variables):
     """Make sure all vars are str or None."""
     for var in variables:
-        if not isinstance(var, (string_types, type(None))):
+        if not isinstance(var, (str, type(None))):
             raise ValueError("All values must be either None or strings. "
                              "Found type %s." % type(var))
 
@@ -402,7 +401,7 @@ def _read_events(events_data, raw):
         before the event or immediately after.
 
     """
-    if isinstance(events_data, string_types):
+    if isinstance(events_data, str):
         events = read_events(events_data).astype(int)
     elif isinstance(events_data, np.ndarray):
         if events_data.ndim != 2:
