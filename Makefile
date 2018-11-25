@@ -28,7 +28,7 @@ clean: clean-build clean-pyc clean-so clean-ctags clean-cache
 inplace:
 	$(PYTHON) setup.py install
 
-test: inplace
+test: inplace check-manifest
 	rm -f .coverage
 	$(PYTESTS) mne_bids
 
@@ -44,6 +44,9 @@ trailing-spaces:
 
 upload-pipy:
 	python setup.py sdist bdist_egg register upload
+
+check-manifest:
+	check-manifest --ignore .circleci*,doc,.DS_Store
 
 flake:
 	@if command -v flake8 > /dev/null; then \
