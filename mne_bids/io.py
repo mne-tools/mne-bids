@@ -14,7 +14,6 @@ allowed_extensions_eeg = ['.vhdr',  # BrainVision, accompanied by .vmrk, .eeg
                           '.edf',  # European Data Format
                           '.bdf',  # Biosemi
                           '.set',  # EEGLAB, potentially accompanied by .fdt
-                          '.cnt',  # Neuroscan
                           ]
 
 allowed_extensions_ieeg = ['.vhdr',  # BrainVision, accompanied by .vmrk, .eeg
@@ -32,7 +31,7 @@ reader = {'.con': io.read_raw_kit, '.sqd': io.read_raw_kit,
           '.fif': io.read_raw_fif, '.pdf': io.read_raw_bti,
           '.ds': io.read_raw_ctf, '.vhdr': io.read_raw_brainvision,
           '.edf': io.read_raw_edf, '.bdf': io.read_raw_edf,
-          '.set': io.read_raw_eeglab, '.cnt': io.read_raw_cnt}
+          '.set': io.read_raw_eeglab}
 
 
 def _parse_ext(raw_fname, verbose=False):
