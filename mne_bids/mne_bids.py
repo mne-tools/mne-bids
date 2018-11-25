@@ -710,7 +710,7 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
     bids_fname = os.path.join(data_path, bids_fname)
     if os.path.exists(bids_fname) and not overwrite:
         raise FileExistsError(errno.EEXIST, '"%s" already exists. Please set '
-                      'overwrite to True.' % bids_fname)
+                              'overwrite to True.' % bids_fname)
     _mkdir_p(os.path.dirname(bids_fname))
 
     if verbose:
