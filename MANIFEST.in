@@ -1,0 +1,19 @@
+include *.rst
+include LICENSE
+include mne_bids/__init__.py
+
+recursive-include examples *.py
+recursive-include examples *.txt
+
+recursive-include mne_bids *.py
+
+### Exclude
+
+exclude Makefile
+exclude CONTRIBUTING.md
+exclude .coveragerc
+exclude *.yml
+exclude .mailmap
+recursive-exclude mne_bids *.pyc
+
+recursive-exclude doc *
