@@ -3,7 +3,6 @@ node_js:
 language: python
 
 env:
-  - PYTHON_VERSION=2.7
   - PYTHON_VERSION=3.6
 
 before_install:

@@ -3,9 +3,6 @@ environment:
       nodejs_version: "10.0.0"
       PYTHON: "C:\\conda"
   matrix:
-      - PYTHON_VERSION: "2.7"
-        PYTHON_ARCH: "64"
-
       - PYTHON_VERSION: "3.6"
         PYTHON_ARCH: "64"
 
