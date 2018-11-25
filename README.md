@@ -16,7 +16,7 @@ Installation
 ------------
 
 We recommend the [Anaconda](https://www.anaconda.com/download/) Python
-distribution. We require that you use a minimum Python version of 3.4.
+distribution. We require that you use Python 3.
 Besides `numpy`, `scipy`, `matplotlib`, and `pandas` (which are
 included in the standard Anaconda installation), you will need to install the
 most recent version of MNE using the `pip` tool:
