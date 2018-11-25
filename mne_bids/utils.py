@@ -54,7 +54,7 @@ def _mkdir_p(path, overwrite=False, verbose=False):
         os.makedirs(path)
         if verbose is True:
             print('Creating folder: %s' % path)
-    except OSError as exc:  # Python >2.5
+    except FileExistsError as exc:
         if exc.errno == errno.EEXIST and op.isdir(path):
             pass
         else:
@@ -347,7 +347,7 @@ def _check_types(variables):
 def _write_json(dictionary, fname, overwrite=False, verbose=False):
     """Write JSON to a file."""
     if op.exists(fname) and not overwrite:
-        raise OSError(errno.EEXIST, '"%s" already exists. Please set '
+        raise FileExistsError(errno.EEXIST, '"%s" already exists. Please set '
                       'overwrite to True.' % fname)
 
     json_output = json.dumps(dictionary, indent=4)
@@ -363,7 +363,7 @@ def _write_json(dictionary, fname, overwrite=False, verbose=False):
 def _write_tsv(fname, df, overwrite=False, verbose=False):
     """Write dataframe to a .tsv file."""
     if op.exists(fname) and not overwrite:
-        raise OSError(errno.EEXIST, '"%s" already exists. Please set '
+        raise FileExistsError(errno.EEXIST, '"%s" already exists. Please set '
                       'overwrite to True.' % fname)
     df.to_csv(fname, sep='\t', index=False, na_rep='n/a', encoding='utf-8')
 

@@ -79,7 +79,7 @@ def test_fif():
     # change the gender but don't force overwrite.
     raw.info['subject_info'] = {'his_id': subject_id2,
                                 'birthday': (1994, 1, 26), 'sex': 2}
-    with pytest.raises(OSError, match="already exists"):
+    with pytest.raises(FileExistsError, match="already exists"):
         write_raw_bids(raw, bids_basename2, output_path,
                        events_data=events_fname, event_id=event_id,
                        overwrite=False)
@@ -169,7 +169,7 @@ def test_ctf():
     run_subprocess(cmd, shell=shell)
 
     # test to check that running again with overwrite == False raises an error
-    with pytest.raises(OSError, match="already exists"):
+    with pytest.raises(FileExistsError, match="already exists"):
         write_raw_bids(raw, bids_basename, output_path=output_path)
 
     assert op.exists(op.join(output_path, 'participants.tsv'))
@@ -311,7 +311,7 @@ def test_set():
     raw = mne.io.read_raw_eeglab(raw_fname)
     write_raw_bids(raw, bids_basename, output_path, overwrite=False)
 
-    with pytest.raises(OSError, match="already exists"):
+    with pytest.raises(FileExistsError, match="already exists"):
         write_raw_bids(raw, bids_basename, output_path=output_path,
                        overwrite=False)
 

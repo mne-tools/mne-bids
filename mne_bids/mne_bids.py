@@ -276,7 +276,7 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False,
         # if the subject data provided is different to the currently existing
         # data and overwrite is not True raise an error
         if (sid_included and not exact_included) and not overwrite:
-            raise OSError(errno.EEXIST, '"%s" already exists in the '
+            raise FileExistsError(errno.EEXIST, '"%s" already exists in the '
                           'participant list. Please set overwrite to '
                           'True.' % subject_id)
         # otherwise add the new data
@@ -359,7 +359,7 @@ def _scans_tsv(raw, raw_fname, fname, overwrite=False, verbose=True):
         orig_df = pd.read_csv(fname, sep='\t')
         # if the file name is already in the file raise an error
         if raw_fname in orig_df['filename'].values and not overwrite:
-            raise OSError(errno.EEXIST, '"%s" already exists in the '
+            raise FileExistsError(errno.EEXIST, '"%s" already exists in the '
                           'scans list. Please set overwrite to '
                           'True.' % raw_fname)
         # otherwise add the new data
@@ -709,7 +709,7 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
     # are placed in the right location
     bids_fname = os.path.join(data_path, bids_fname)
     if os.path.exists(bids_fname) and not overwrite:
-        raise OSError(errno.EEXIST, '"%s" already exists. Please set '
+        raise FileExistsError(errno.EEXIST, '"%s" already exists. Please set '
                       'overwrite to True.' % bids_fname)
     _mkdir_p(os.path.dirname(bids_fname))
 
