@@ -10,7 +10,6 @@
 import os
 import os.path as op
 import re
-import errno
 from collections import OrderedDict
 import json
 import shutil as sh
@@ -50,15 +49,9 @@ def _mkdir_p(path, overwrite=False, verbose=False):
         if verbose is True:
             print('Clearing path: %s' % path)
 
-    try:
-        os.makedirs(path)
-        if verbose is True:
-            print('Creating folder: %s' % path)
-    except FileExistsError as exc:
-        if exc.errno == errno.EEXIST and op.isdir(path):
-            pass
-        else:
-            raise
+    os.makedirs(path, exist_ok=True)
+    if verbose is True:
+        print('Creating folder: %s' % path)
 
 
 def _parse_bids_filename(fname, verbose):
@@ -347,7 +340,7 @@ def _check_types(variables):
 def _write_json(dictionary, fname, overwrite=False, verbose=False):
     """Write JSON to a file."""
     if op.exists(fname) and not overwrite:
-        raise FileExistsError(errno.EEXIST, '"%s" already exists. Please set '
+        raise FileExistsError('"%s" already exists. Please set '
                               'overwrite to True.' % fname)
 
     json_output = json.dumps(dictionary, indent=4)
@@ -363,7 +356,7 @@ def _write_json(dictionary, fname, overwrite=False, verbose=False):
 def _write_tsv(fname, df, overwrite=False, verbose=False):
     """Write dataframe to a .tsv file."""
     if op.exists(fname) and not overwrite:
-        raise FileExistsError(errno.EEXIST, '"%s" already exists. Please set '
+        raise FileExistsError('"%s" already exists. Please set '
                               'overwrite to True.' % fname)
     df.to_csv(fname, sep='\t', index=False, na_rep='n/a', encoding='utf-8')
 
