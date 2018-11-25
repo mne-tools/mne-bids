@@ -277,8 +277,8 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False,
         # data and overwrite is not True raise an error
         if (sid_included and not exact_included) and not overwrite:
             raise FileExistsError(errno.EEXIST, '"%s" already exists in the '
-                          'participant list. Please set overwrite to '
-                          'True.' % subject_id)
+                                  'participant list. Please set overwrite to '
+                                  'True.' % subject_id)
         # otherwise add the new data
         df = orig_df.append(df)
         # and drop any duplicates as we want overwrite = True to force the old
@@ -360,8 +360,8 @@ def _scans_tsv(raw, raw_fname, fname, overwrite=False, verbose=True):
         # if the file name is already in the file raise an error
         if raw_fname in orig_df['filename'].values and not overwrite:
             raise FileExistsError(errno.EEXIST, '"%s" already exists in the '
-                          'scans list. Please set overwrite to '
-                          'True.' % raw_fname)
+                                  'scans list. Please set overwrite to '
+                                  'True.' % raw_fname)
         # otherwise add the new data
         df = orig_df.append(df)
         # and drop any duplicates as we want overwrite = True to force the old

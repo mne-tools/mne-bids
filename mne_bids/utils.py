@@ -348,7 +348,7 @@ def _write_json(dictionary, fname, overwrite=False, verbose=False):
     """Write JSON to a file."""
     if op.exists(fname) and not overwrite:
         raise FileExistsError(errno.EEXIST, '"%s" already exists. Please set '
-                      'overwrite to True.' % fname)
+                              'overwrite to True.' % fname)
 
     json_output = json.dumps(dictionary, indent=4)
     with open(fname, 'w') as fid:
@@ -364,7 +364,7 @@ def _write_tsv(fname, df, overwrite=False, verbose=False):
     """Write dataframe to a .tsv file."""
     if op.exists(fname) and not overwrite:
         raise FileExistsError(errno.EEXIST, '"%s" already exists. Please set '
-                      'overwrite to True.' % fname)
+                              'overwrite to True.' % fname)
     df.to_csv(fname, sep='\t', index=False, na_rep='n/a', encoding='utf-8')
 
     if verbose:
