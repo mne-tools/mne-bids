@@ -52,7 +52,7 @@ meg_manufacturers = {'.sqd': 'KIT/Yokogawa', '.con': 'KIT/Yokogawa',
 
 eeg_manufacturers = {'.vhdr': 'BrainProducts', '.eeg': 'BrainProducts',
                      '.edf': 'n/a', '.bdf': 'Biosemi', '.set': 'n/a',
-                     '.fdt': 'n/a', '.cnt': 'Neuroscan'}
+                     '.fdt': 'n/a'}
 
 ieeg_manufacturers = {'.vhdr': 'BrainProducts', '.eeg': 'BrainProducts',
                       '.edf': 'n/a', '.set': 'n/a', '.fdt': 'n/a',
@@ -69,8 +69,7 @@ MANUFACTURERS.update(ieeg_manufacturers)
 IGNORED_CHANNELS = {'KIT/Yokogawa': ['STI 014'],
                     'BrainProducts': ['STI 014'],
                     'n/a': ['STI 014'],  # for unknown manufacturers, ignore it
-                    'Biosemi': ['STI 014'],
-                    'Neuroscan': ['STI 014']}
+                    'Biosemi': ['STI 014']}
 
 
 def _channels_tsv(raw, fname, overwrite=False, verbose=True):
@@ -675,7 +674,7 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
     channels_fname = make_bids_basename(
         subject=subject_id, session=session_id, task=task, run=run,
         acquisition=acquisition, suffix='channels.tsv', prefix=data_path)
-    if ext not in ['.fif', '.ds', '.vhdr', '.edf', '.bdf', '.set', '.cnt']:
+    if ext not in ['.fif', '.ds', '.vhdr', '.edf', '.bdf', '.set']:
         bids_raw_folder = bids_fname.split('.')[0]
         bids_fname = op.join(bids_raw_folder, bids_fname)
 

@@ -327,20 +327,3 @@ def test_set():
 
     cmd = ['bids-validator', '--bep010', output_path]
     run_subprocess(cmd, shell=shell)
-
-
-def test_cnt():
-    """Test write_raw_bids conversion for Neuroscan data."""
-    output_path = _TempDir()
-    data_path = op.join(testing.data_path(), 'CNT')
-    raw_fname = op.join(data_path, 'scan41_short.cnt')
-
-    raw = mne.io.read_raw_cnt(raw_fname, montage=None)
-    write_raw_bids(raw, bids_basename, output_path)
-
-    cmd = ['bids-validator', '--bep006', output_path]
-    run_subprocess(cmd, shell=shell)
-
-    raw = mne.io.read_raw_cnt(raw_fname, montage=None, preload=True)
-    with pytest.raises(ValueError, match='preload'):
-        write_raw_bids(raw, bids_basename, output_path)
