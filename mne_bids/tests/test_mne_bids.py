@@ -24,7 +24,7 @@ from mne.utils import _TempDir, run_subprocess
 from mne.io.constants import FIFF
 
 from mne_bids import make_bids_basename, make_bids_folders, write_raw_bids
-from mne_bids.tsv_handler import from_tsv
+from mne_bids.tsv_handler import _from_tsv
 
 base_path = op.join(op.dirname(mne.__file__), 'io')
 subject_id = '01'
@@ -174,7 +174,7 @@ def test_kit():
         subject=subject_id, session=session_id, task=task, run=run,
         suffix='channels.tsv', acquisition=acq,
         prefix=op.join(output_path, 'sub-01/ses-01/meg'))
-    data = from_tsv(channels_tsv)
+    data = _from_tsv(channels_tsv)
     assert 'STI 014' not in data['name']
 
     # ensure the marker file is produced in the right place
@@ -250,7 +250,7 @@ def test_vhdr():
     channels_tsv_name = op.join(output_path, 'sub-' + subject_id,
                                 'ses-' + session_id, 'eeg',
                                 bids_basename + '_channels.tsv')
-    data = from_tsv(channels_tsv_name)
+    data = _from_tsv(channels_tsv_name)
     assert data['units'][data['name'].index('FP1')] == 'µV'
     assert data['units'][data['name'].index('CP5')] == 'n/a'
 
@@ -300,14 +300,14 @@ def test_edf():
         subject=subject_id, session=session_id, task=task, run=run,
         suffix='channels.tsv', acquisition=acq,
         prefix=op.join(output_path, 'sub-01/ses-01/eeg'))
-    data = from_tsv(channels_tsv)
+    data = _from_tsv(channels_tsv)
     assert 'ElectroMyoGram' in data['description']
 
     # check that the scans list contains two scans
     scans_tsv = make_bids_basename(
         subject=subject_id, session=session_id, suffix='scans.tsv',
         prefix=op.join(output_path, 'sub-01/ses-01'))
-    data = from_tsv(scans_tsv)
+    data = _from_tsv(scans_tsv)
     assert len(list(data.values())[0]) == 2
 
     # Also cover iEEG

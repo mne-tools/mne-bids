@@ -2,7 +2,7 @@ import numpy as np
 from collections import OrderedDict, Counter
 
 
-def from_tsv(fname, dtypes=None):
+def _from_tsv(fname, dtypes=None):
     """Read a tsv file into an OrderedDict
 
     Parameters
@@ -10,9 +10,14 @@ def from_tsv(fname, dtypes=None):
     fname : str
         Path to the file being loaded.
     dtypes : list
-        List of types to case the values loaded as. This is specified column by
+        List of types to cast the values loaded as. This is specified column by
         column.
-        Defaults to None. In this case all the data is loaded as strings."""
+        Defaults to None. In this case all the data is loaded as strings.
+
+    Returns a collections.OrderedDict where the keys are the column names, and
+    values are the column data.
+
+    """
     data = np.loadtxt(fname, dtype=str, delimiter='\t')
     column_names = data[0, :]
     info = data[1:, :]
@@ -27,27 +32,27 @@ def from_tsv(fname, dtypes=None):
     return data_dict
 
 
-def to_tsv(data, fname):
+def _to_tsv(data, fname):
     """ Write an OrderedDict into a tsv file """
-    rows = len(data[list(data.keys())[0]])
+    n_rows = len(data[list(data.keys())[0]])
     with open(fname, 'w') as f:
         f.write('\t'.join(list(data.keys())))
         f.write('\n')
-        for i in range(rows):
-            row_data = list(str(data[key][i]) for key in data)
+        for idx in range(n_rows):
+            row_data = list(str(data[key][idx]) for key in data)
             f.write('\t'.join(row_data))
             f.write('\n')
 
 
-def combine(data1, data2, drop_column=None):
+def _combine(data1, data2, drop_column=None):
     """Add two OrderedDict's together with the option of dropping repeated data
 
     Parameters
     ----------
-    data : numpy.ndarray
-        Original array of data.
-    other : numpy.ndarray
-        New array of data.
+    data1 : collections.OrderedDict
+        Original OrderedDict.
+    other : collections.OrderedDict
+        New OrderedDict to be added to the original.
     drop_column : str
         Name of the column to check for duplicate values in.
         Any duplicates found will be dropped from the original data array (ie.
@@ -67,7 +72,7 @@ def combine(data1, data2, drop_column=None):
                     del column[idx]
 
 
-def drop(data, values, column):
+def _drop(data, values, column):
     """Remove specified values in a column. This occurs in-place.
 
     Parameters
@@ -86,16 +91,16 @@ def drop(data, values, column):
         data[key] = np.array(data[key])[mask].tolist()
 
 
-def contains_row(data, row_data):
+def _contains_row(data, row_data):
     """Whether the specified row data exists in the OrderedDict """
     mask = None
-    for i, column_data in enumerate(data.values()):
-        column_mask = np.in1d(np.array(column_data), row_data[i])
+    for idx, column_data in enumerate(data.values()):
+        column_mask = np.in1d(np.array(column_data), row_data[idx])
         mask = column_mask if mask is None else (mask & column_mask)
     return np.any(mask)
 
 
-def prettyprint(data, rows=5):
+def _prettyprint(data, rows=5):
     """pretty print an ordered dictionary """
     data_rows = len(data[list(data.keys())[0]])
     out_str = ''

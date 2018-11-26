@@ -34,7 +34,7 @@ from .utils import (make_bids_basename, make_bids_folders,
                     _infer_eeg_placement_scheme, _parse_bids_filename,
                     _handle_kind)
 from .io import _parse_ext, ALLOWED_EXTENSIONS, reader
-from mne_bids.tsv_handler import from_tsv, combine, drop, contains_row
+from mne_bids.tsv_handler import _from_tsv, _combine, _drop, _contains_row
 
 ALLOWED_KINDS = ['meg', 'eeg', 'ieeg']
 
@@ -143,7 +143,7 @@ def _channels_tsv(raw, fname, overwrite=False, verbose=True):
         ('description', description),
         ('sampling_frequency', np.full((n_channels), sfreq)),
         ('status', status)])
-    drop(ch_data, ignored_channels, 'name')
+    _drop(ch_data, ignored_channels, 'name')
 
     _write_tsv(ch_data, fname, overwrite, verbose)
 
@@ -259,10 +259,10 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False,
     data.update({'age': [subject_age], 'sex': [sex]})
 
     if os.path.exists(fname):
-        orig_data = from_tsv(fname)
+        orig_data = _from_tsv(fname)
         # whether the new data exists identically in the previous data
-        exact_included = contains_row(orig_data,
-                                      [subject_id, subject_age, sex])
+        exact_included = _contains_row(orig_data,
+                                       [subject_id, subject_age, sex])
         # whether the subject id is in the previous data
         sid_included = subject_id in orig_data['participant_id']
         # if the subject data provided is different to the currently existing
@@ -272,7 +272,7 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False,
                                   'list. Please set overwrite to '
                                   'True.' % subject_id)
         # otherwise add the new data
-        combine(orig_data, data, 'participant_id')
+        _combine(orig_data, data, 'participant_id')
         data = orig_data
 
     # overwrite is forced to True as all issues with overwrite == False have
@@ -343,13 +343,13 @@ def _scans_tsv(raw, raw_fname, fname, overwrite=False, verbose=True):
                         ('acq_time', [acq_time])])
 
     if os.path.exists(fname):
-        orig_data = from_tsv(fname)
+        orig_data = _from_tsv(fname)
         # if the file name is already in the file raise an error
         if raw_fname in orig_data['filename'] and not overwrite:
             raise FileExistsError('"%s" already exists in the scans list. '
                                   'Please set overwrite to True.' % raw_fname)
         # otherwise add the new data
-        combine(orig_data, data, 'filename')
+        _combine(orig_data, data, 'filename')
         data = orig_data
 
     # overwrite is forced to True as all issues with overwrite == False have
