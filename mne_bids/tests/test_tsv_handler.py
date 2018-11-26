@@ -5,7 +5,8 @@
 
 import os.path as op
 from collections import OrderedDict as odict
-from mne_bids.tsv_handler import from_tsv, to_tsv, combine, drop, contains_row
+from mne_bids.tsv_handler import (_from_tsv, _to_tsv, _combine, _drop,
+                                  _contains_row)
 import pytest
 
 from mne.utils import _TempDir
@@ -14,12 +15,12 @@ from mne.utils import _TempDir
 def test_tsv_handler():
     # create some dummy data
     d = odict([('a', [1, 2, 3, 4]), ('b', [5, 6, 7, 8])])
-    assert contains_row(d, [1, 5])
+    assert _contains_row(d, [1, 5])
     d2 = odict([('a', [5]), ('b', [9])])
-    combine(d, d2)
+    _combine(d, d2)
     assert 5 in d['a']
     d2 = odict([('a', [5]), ('b', [10])])
-    combine(d, d2, drop_column='a')
+    _combine(d, d2, drop_column='a')
     # make sure that the repeated data was dropped
     assert 9 not in d['b']
 
@@ -27,14 +28,14 @@ def test_tsv_handler():
     d_path = op.join(tempdir, 'output.tsv')
 
     # write the data to an output tsv file
-    to_tsv(d, d_path)
+    _to_tsv(d, d_path)
     # now read it back
-    d = from_tsv(d_path)
+    d = _from_tsv(d_path)
 
     # remove any rows with 2 or 5 in them
-    drop(d, [2, 5], 'a')
+    _drop(d, [2, 5], 'a')
     assert 2 not in d['a']
-    drop(d, [], 'a')
+    _drop(d, [], 'a')
     d2 = odict([('a', [5]), ('c', [10])])
     with pytest.raises(KeyError):
-        combine(d, d2)
+        _combine(d, d2)

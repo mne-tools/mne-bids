@@ -22,7 +22,7 @@ from mne.io.pick import pick_types
 
 from .config import BIDS_VERSION
 from .io import _parse_ext
-from .tsv_handler import to_tsv, prettyprint
+from .tsv_handler import _to_tsv, _prettyprint
 
 
 def print_dir_tree(folder):
@@ -359,11 +359,11 @@ def _write_tsv(dictionary, fname, overwrite=False, verbose=False):
     if op.exists(fname) and not overwrite:
         raise FileExistsError('"%s" already exists. Please set '
                               'overwrite to True.' % fname)
-    to_tsv(dictionary, fname)
+    _to_tsv(dictionary, fname)
 
     if verbose:
         print(os.linesep + "Writing '%s'..." % fname + os.linesep)
-        print(prettyprint(dictionary))
+        print(_prettyprint(dictionary))
 
 
 def _check_key_val(key, val):
