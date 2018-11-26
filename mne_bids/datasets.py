@@ -10,7 +10,7 @@ import os
 import os.path as op
 import shutil
 import tarfile
-import urllib
+import urllib.request
 
 from mne.utils import _fetch_file
 
