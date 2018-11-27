@@ -3,7 +3,7 @@ from collections import OrderedDict, Counter
 
 
 def _from_tsv(fname, dtypes=None):
-    """Read a tsv file into an OrderedDict
+    """Read a tsv file into an OrderedDict.
 
     Parameters
     ----------
@@ -14,9 +14,10 @@ def _from_tsv(fname, dtypes=None):
         column.
         Defaults to None. In this case all the data is loaded as strings.
 
-    Returns a collections.OrderedDict where the keys are the column names, and
-    values are the column data.
-
+    Returns
+    -------
+    data : collections.OrderedDict
+        Keys are the column names, and values are the column data.
     """
     data = np.loadtxt(fname, dtype=str, delimiter='\t')
     column_names = data[0, :]
@@ -33,47 +34,67 @@ def _from_tsv(fname, dtypes=None):
 
 
 def _to_tsv(data, fname):
-    """ Write an OrderedDict into a tsv file """
+    """Write an OrderedDict into a tsv file.
+
+    Parameters
+    ----------
+    data : collections.OrderedDict
+        Ordered dictionary containing data to be written to a tsv file.
+    fname : str
+        Path to the file being written.
+    """
+    output = ''
     n_rows = len(data[list(data.keys())[0]])
+    # write headings
+    output += '\t'.join(list(data.keys())) + '\n'
+
+    # write column data
+    for idx in range(n_rows):
+        row_data = list(str(data[key][idx]) for key in data)
+        output += '\t'.join(row_data)
+        if idx != n_rows - 1:
+            output += '\n'
+
     with open(fname, 'w') as f:
-        f.write('\t'.join(list(data.keys())))
-        f.write('\n')
-        for idx in range(n_rows):
-            row_data = list(str(data[key][idx]) for key in data)
-            f.write('\t'.join(row_data))
-            f.write('\n')
+        f.write(output)
 
 
 def _combine(data1, data2, drop_column=None):
-    """Add two OrderedDict's together with the option of dropping repeated data
+    """Add two OrderedDict's together with optional dropping of repeated data.
 
     Parameters
     ----------
     data1 : collections.OrderedDict
         Original OrderedDict.
-    other : collections.OrderedDict
+    data2 : collections.OrderedDict
         New OrderedDict to be added to the original.
     drop_column : str
         Name of the column to check for duplicate values in.
         Any duplicates found will be dropped from the original data array (ie.
         most recent value are kept).
 
+    Returns
+    -------
+    data : collections.OrderedDict
+        The new combined data.
     """
+    new_data = data1.copy()
     for key, value in data2.items():
-        data1[key].extend(value)
-    if drop_column in data1:
-        column_data = data1[drop_column]
+        new_data[key].extend(value)
+    if drop_column in new_data:
+        column_data = new_data[drop_column]
         values_count = Counter(column_data)
         for key, value in values_count.items():
             # find the locations of the first n-1 values and remove the rows
             for _ in range(value - 1):
-                idx = data1[drop_column].index(key)
-                for column in data1.values():
+                idx = new_data[drop_column].index(key)
+                for column in new_data.values():
                     del column[idx]
+    return new_data
 
 
 def _drop(data, values, column):
-    """Remove specified values in a column. This occurs in-place.
+    """Remove rows from the OrderedDict.
 
     Parameters
     ----------
@@ -85,14 +106,29 @@ def _drop(data, values, column):
     column : string
         Name of the column to check for the existence of `value` in.
 
+    Returns
+    -------
+    data : collections.OrderedDict
+        Copy of the original data with 0 or more rows dropped.
     """
-    mask = np.in1d(data[column], values, invert=True)
-    for key in data.keys():
-        data[key] = np.array(data[key])[mask].tolist()
+    new_data = data.copy()
+    mask = np.in1d(new_data[column], values, invert=True)
+    for key in new_data.keys():
+        new_data[key] = np.array(new_data[key])[mask].tolist()
+    return new_data
 
 
 def _contains_row(data, row_data):
-    """Whether the specified row data exists in the OrderedDict """
+    """Whether the specified row data exists in the OrderedDict.
+
+    Parameters
+    ----------
+    data : collections.OrderedDict
+        OrderedDict to check.
+    row_data : list
+        List of values to be searched for. This must match the contents of a
+        row exactly for a positive match to be returned.
+    """
     mask = None
     for idx, column_data in enumerate(data.values()):
         column_mask = np.in1d(np.array(column_data), row_data[idx])
@@ -101,7 +137,7 @@ def _contains_row(data, row_data):
 
 
 def _prettyprint(data, rows=5):
-    """pretty print an ordered dictionary """
+    """Pretty print an ordered dictionary."""
     data_rows = len(data[list(data.keys())[0]])
     out_str = ''
     out_str += '\t'.join(list(data.keys())) + '\n'
