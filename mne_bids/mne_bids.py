@@ -724,7 +724,8 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
             split_naming = 'bids'
             raw.save(bids_fname, split_naming=split_naming, overwrite=True)
         else:
-            raw.save(bids_fname, overwrite=True, split_naming='bids')
+            # This ensures that single FIF files do not have the part param
+            raw.save(bids_fname, overwrite=True, split_naming='neuromag')
 
     # CTF data is saved in a directory
     elif ext == '.ds':

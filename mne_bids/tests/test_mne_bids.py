@@ -14,6 +14,7 @@ For each supported file format, implement a test.
 import os
 import os.path as op
 import pytest
+from glob import glob
 
 import pandas as pd
 
@@ -72,8 +73,11 @@ def test_fif():
     raw.save(raw_fname2)
 
     bids_basename2 = bids_basename.replace(subject_id, subject_id2)
-    write_raw_bids(raw, bids_basename2, output_path, events_data=events_fname,
-                   event_id=event_id, overwrite=False)
+    raw = mne.io.read_raw_fif(raw_fname2)
+    bids_output_path = write_raw_bids(raw, bids_basename2, output_path,
+                                      events_data=events_fname,
+                                      event_id=event_id, overwrite=False)
+
     # check that the overwrite parameters work correctly for the participant
     # data
     # change the gender but don't force overwrite.
@@ -106,6 +110,29 @@ def test_fif():
     run_subprocess(cmd, shell=shell)
 
     assert op.exists(op.join(output_path, 'participants.tsv'))
+
+    # asserting that single fif files do not include the part key
+    files = glob(op.join(bids_output_path, 'sub-' + subject_id2,
+                         'ses-' + subject_id2, 'meg', '*.fif'))
+    for ii, FILE in enumerate(files):
+        assert 'part' not in FILE
+    assert ii < 1
+
+    # check that split files have part key
+    raw = mne.io.read_raw_fif(raw_fname)
+    data_path3 = _TempDir()
+    raw_fname3 = op.join(data_path3, 'sample_audvis_raw.fif')
+    raw.save(raw_fname3, buffer_size_sec=1.0, split_size='10MB',
+             split_naming='neuromag', overwrite=True)
+    raw = mne.io.read_raw_fif(raw_fname3)
+    subject_id3 = '03'
+    bids_basename3 = bids_basename.replace(subject_id, subject_id3)
+    bids_output_path = write_raw_bids(raw, bids_basename3, output_path,
+                                      overwrite=False)
+    files = glob(op.join(bids_output_path, 'sub-' + subject_id3,
+                         'ses-' + subject_id3, 'meg', '*.fif'))
+    for FILE in files:
+        assert 'part' in FILE
 
 
 def test_kit():
