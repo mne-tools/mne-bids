@@ -22,7 +22,7 @@ from mne.io.pick import pick_types
 
 from .config import BIDS_VERSION
 from .io import _parse_ext
-from .dataframe_odict import to_tsv, prettyprint
+from .tsv_handler import to_tsv, prettyprint
 
 
 def print_dir_tree(folder):
@@ -354,16 +354,16 @@ def _write_json(dictionary, fname, overwrite=False, verbose=False):
         print(json_output)
 
 
-def _write_tsv(fname, df, overwrite=False, verbose=False):
-    """Write dataframe to a .tsv file."""
+def _write_tsv(dictionary, fname, overwrite=False, verbose=False):
+    """Write an ordered dictionary to a .tsv file"""
     if op.exists(fname) and not overwrite:
         raise FileExistsError('"%s" already exists. Please set '
                               'overwrite to True.' % fname)
-    to_tsv(df, fname)
+    to_tsv(dictionary, fname)
 
     if verbose:
         print(os.linesep + "Writing '%s'..." % fname + os.linesep)
-        print(prettyprint(df))
+        print(prettyprint(dictionary))
 
 
 def _check_key_val(key, val):

@@ -1,19 +1,18 @@
-"""Test for the dataframe object"""
+"""Test for the tsv handling functions"""
 # Authors: Matt Sanderson <matt.sanderson@mq.edu.au>
 #
 # License: BSD (3-clause)
 
 import os.path as op
 from collections import OrderedDict as odict
-from mne_bids.dataframe_odict import (from_tsv, to_tsv, combine, drop,
-                                      contains_row)
+from mne_bids.tsv_handler import from_tsv, to_tsv, combine, drop, contains_row
 import pytest
 
 from mne.utils import _TempDir
 
 
-def test_dataframe():
-    # create df
+def test_tsv_handler():
+    # create some dummy data
     d = odict([('a', [1, 2, 3, 4]), ('b', [5, 6, 7, 8])])
     assert contains_row(d, [1, 5])
     d2 = odict([('a', [5]), ('b', [9])])
@@ -21,12 +20,13 @@ def test_dataframe():
     assert 5 in d['a']
     d2 = odict([('a', [5]), ('b', [10])])
     combine(d, d2, drop_column='a')
+    # make sure that the repeated data was dropped
     assert 9 not in d['b']
 
     tempdir = _TempDir()
     d_path = op.join(tempdir, 'output.tsv')
 
-    # write the MockDataFrame to an output tsv file
+    # write the data to an output tsv file
     to_tsv(d, d_path)
     # now read it back
     d = from_tsv(d_path)

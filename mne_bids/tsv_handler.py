@@ -60,6 +60,7 @@ def combine(data1, data2, drop_column=None):
         column_data = data1[drop_column]
         values_count = Counter(column_data)
         for key, value in values_count.items():
+            # find the locations of the first n-1 values and remove the rows
             for _ in range(value - 1):
                 idx = data1[drop_column].index(key)
                 for column in data1.values():
@@ -80,25 +81,18 @@ def drop(data, values, column):
         Name of the column to check for the existence of `value` in.
 
     """
-    for value in values:
-        if value in data[column]:
-            idx = data[column].index(value)
-            for column_data in data.values():
-                del column_data[idx]
+    mask = np.in1d(data[column], values, invert=True)
+    for key in data.keys():
+        data[key] = np.array(data[key])[mask].tolist()
 
 
 def contains_row(data, row_data):
     """Whether the specified row data exists in the OrderedDict """
-    first_column = list(data.keys())[0]
-    potential_indexes = list()
-    for i, value in enumerate(data[first_column]):
-        if value == row_data[0]:
-            potential_indexes.append(i)
-    for i in potential_indexes:
-        contained_row_data = list(data[key][i] for key in data)
-        if row_data == contained_row_data:
-            return True
-    return False
+    mask = None
+    for i, column_data in enumerate(data.values()):
+        column_mask = np.in1d(np.array(column_data), row_data[i])
+        mask = column_mask if mask is None else (mask & column_mask)
+    return np.any(mask)
 
 
 def prettyprint(data, rows=5):
