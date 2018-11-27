@@ -117,6 +117,8 @@ class MockDataFrame():
             Path to the tsv to be loaded.
 
         """
+        # TODO: This could receive a list of data types to allow the data
+        # type of the individual columns to be set correctly
         data = np.loadtxt(fname, dtype=str, delimiter='\t')
         # the first row will be the names
         column_names = data[0, :]
