@@ -34,7 +34,7 @@ from .utils import (make_bids_basename, make_bids_folders,
                     _infer_eeg_placement_scheme, _parse_bids_filename,
                     _handle_kind)
 from .io import _parse_ext, ALLOWED_EXTENSIONS, reader
-from mne_bids.dataframe_odict import (from_tsv, combine, drop, contains_row)
+from mne_bids.tsv_handler import from_tsv, combine, drop, contains_row
 
 ALLOWED_KINDS = ['meg', 'eeg', 'ieeg']
 
@@ -134,7 +134,7 @@ def _channels_tsv(raw, fname, overwrite=False, verbose=True):
     n_channels = raw.info['nchan']
     sfreq = raw.info['sfreq']
 
-    df = OrderedDict([
+    ch_data = OrderedDict([
         ('name', raw.info['ch_names']),
         ('type', ch_type),
         ('units', units),
@@ -143,9 +143,9 @@ def _channels_tsv(raw, fname, overwrite=False, verbose=True):
         ('description', description),
         ('sampling_frequency', np.full((n_channels), sfreq)),
         ('status', status)])
-    drop(df, ignored_channels, 'name')
+    drop(ch_data, ignored_channels, 'name')
 
-    _write_tsv(fname, df, overwrite, verbose)
+    _write_tsv(ch_data, fname, overwrite, verbose)
 
     return fname
 
@@ -184,7 +184,7 @@ def _events_tsv(events, raw, fname, trial_type, overwrite=False,
     The function writes durations of zero for each event.
 
     """
-    # Start by filling all data that we know into a df
+    # Start by filling all data that we know into an ordered dictionary
     first_samp = raw.first_samp
     sfreq = raw.info['sfreq']
     events[:, 0] -= first_samp
@@ -204,7 +204,7 @@ def _events_tsv(events, raw, fname, trial_type, overwrite=False,
     else:
         del data['trial_type']
 
-    _write_tsv(fname, data, overwrite, verbose)
+    _write_tsv(data, fname, overwrite, verbose)
 
     return fname
 
@@ -234,7 +234,7 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False,
 
     """
     subject_id = 'sub-' + subject_id
-    df = OrderedDict(participant_id=[subject_id])
+    data = OrderedDict(participant_id=[subject_id])
 
     subject_info = raw.info['subject_info']
     if subject_info is not None:
@@ -254,15 +254,15 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False,
         else:
             subject_age = "n/a"
 
-        df.update({'age': [subject_age], 'sex': [sex]})
+        data.update({'age': [subject_age], 'sex': [sex]})
 
     if os.path.exists(fname):
-        orig_df = from_tsv(fname)
+        orig_data = from_tsv(fname)
         # whether the data exists identically in the current MockDataFrame
-        exact_included = contains_row(orig_df,
+        exact_included = contains_row(orig_data,
                                       [subject_id, subject_age, sex, group])
         # whether the subject id is in the existing MockDataFrame
-        sid_included = subject_id in orig_df['participant_id']
+        sid_included = subject_id in orig_data['participant_id']
         # if the subject data provided is different to the currently existing
         # data and overwrite is not True raise an error
         if (sid_included and not exact_included) and not overwrite:
@@ -270,12 +270,12 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False,
                                   'list. Please set overwrite to '
                                   'True.' % subject_id)
         # otherwise add the new data
-        combine(orig_df, df, 'participant_id')
-        df = orig_df
+        combine(orig_data, data, 'participant_id')
+        data = orig_data
 
     # overwrite is forced to True as all issues with overwrite == False have
     # been handled by this point
-    _write_tsv(fname, df, True, verbose)
+    _write_tsv(data, fname, True, verbose)
 
     return fname
 
@@ -337,22 +337,22 @@ def _scans_tsv(raw, raw_fname, fname, overwrite=False, verbose=True):
     else:
         acq_time = 'n/a'
 
-    df = OrderedDict([('filename', ['%s' % raw_fname]),
+    data = OrderedDict([('filename', ['%s' % raw_fname]),
                       ('acq_time', [acq_time])])
 
     if os.path.exists(fname):
-        orig_df = from_tsv(fname)
+        orig_data = from_tsv(fname)
         # if the file name is already in the file raise an error
-        if raw_fname in orig_df['filename'] and not overwrite:
+        if raw_fname in orig_data['filename'] and not overwrite:
             raise FileExistsError('"%s" already exists in the scans list. '
                                   'Please set overwrite to True.' % raw_fname)
         # otherwise add the new data
-        combine(orig_df, df, 'filename')
-        df = orig_df
+        combine(orig_data, data, 'filename')
+        data = orig_data
 
     # overwrite is forced to True as all issues with overwrite == False have
     # been handled by this point
-    _write_tsv(fname, df, True, verbose)
+    _write_tsv(data, fname, True, verbose)
 
     return fname
 
