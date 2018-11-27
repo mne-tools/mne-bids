@@ -143,7 +143,7 @@ def _channels_tsv(raw, fname, overwrite=False, verbose=True):
         ('description', description),
         ('sampling_frequency', np.full((n_channels), sfreq)),
         ('status', status)])
-    _drop(ch_data, ignored_channels, 'name')
+    ch_data = _drop(ch_data, ignored_channels, 'name')
 
     _write_tsv(ch_data, fname, overwrite, verbose)
 
@@ -272,8 +272,7 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False,
                                   'list. Please set overwrite to '
                                   'True.' % subject_id)
         # otherwise add the new data
-        _combine(orig_data, data, 'participant_id')
-        data = orig_data
+        data = _combine(orig_data, data, 'participant_id')
 
     # overwrite is forced to True as all issues with overwrite == False have
     # been handled by this point
@@ -349,8 +348,7 @@ def _scans_tsv(raw, raw_fname, fname, overwrite=False, verbose=True):
             raise FileExistsError('"%s" already exists in the scans list. '
                                   'Please set overwrite to True.' % raw_fname)
         # otherwise add the new data
-        _combine(orig_data, data, 'filename')
-        data = orig_data
+        data = _combine(orig_data, data, 'filename')
 
     # overwrite is forced to True as all issues with overwrite == False have
     # been handled by this point
