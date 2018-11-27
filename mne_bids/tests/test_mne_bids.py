@@ -134,6 +134,7 @@ def test_fif():
     for FILE in files:
         assert 'part' in FILE
 
+
 def test_kit():
     """Test functionality of the write_raw_bids conversion for KIT data."""
     output_path = _TempDir()
