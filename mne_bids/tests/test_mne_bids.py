@@ -24,7 +24,7 @@ from mne.utils import _TempDir, run_subprocess
 from mne.io.constants import FIFF
 
 from mne_bids import make_bids_basename, make_bids_folders, write_raw_bids
-from .dataframe_func import from_tsv, column_data
+from mne_bids.dataframe_odict import from_tsv
 
 base_path = op.join(op.dirname(mne.__file__), 'io')
 subject_id = '01'
@@ -175,7 +175,7 @@ def test_kit():
         suffix='channels.tsv', acquisition=acq,
         prefix=op.join(output_path, 'sub-01/ses-01/meg'))
     df = from_tsv(channels_tsv)
-    assert 'STI 014' not in column_data(df, 'name')
+    assert 'STI 014' not in df['name']
 
     # ensure the marker file is produced in the right place
     raw_folder = make_bids_basename(
@@ -301,14 +301,14 @@ def test_edf():
         suffix='channels.tsv', acquisition=acq,
         prefix=op.join(output_path, 'sub-01/ses-01/eeg'))
     df = from_tsv(channels_tsv)
-    assert 'ElectroMyoGram' in column_data(df, 'description')
+    assert 'ElectroMyoGram' in df['description']
 
     # check that the scans list contains two scans
     scans_tsv = make_bids_basename(
         subject=subject_id, session=session_id, suffix='scans.tsv',
         prefix=op.join(output_path, 'sub-01/ses-01'))
     df = from_tsv(scans_tsv)
-    assert df.shape[0] == 3     # 2+1 for the header row
+    assert len(list(df.values())[0]) == 2
 
     # Also cover iEEG
     # We use the same data and pretend that eeg channels are ecog

@@ -22,7 +22,7 @@ from mne.io.pick import pick_types
 
 from .config import BIDS_VERSION
 from .io import _parse_ext
-from .dataframe_func import to_tsv
+from .dataframe_odict import to_tsv, prettyprint
 
 
 def print_dir_tree(folder):
@@ -363,7 +363,7 @@ def _write_tsv(fname, df, overwrite=False, verbose=False):
 
     if verbose:
         print(os.linesep + "Writing '%s'..." % fname + os.linesep)
-        print(df[:5])
+        print(prettyprint(df))
 
 
 def _check_key_val(key, val):
