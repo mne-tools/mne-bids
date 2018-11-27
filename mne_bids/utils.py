@@ -22,6 +22,7 @@ from mne.io.pick import pick_types
 
 from .config import BIDS_VERSION
 from .io import _parse_ext
+from .dataframe_func import to_tsv
 
 
 def print_dir_tree(folder):
@@ -358,11 +359,11 @@ def _write_tsv(fname, df, overwrite=False, verbose=False):
     if op.exists(fname) and not overwrite:
         raise FileExistsError('"%s" already exists. Please set '
                               'overwrite to True.' % fname)
-    df.to_tsv(fname)
+    to_tsv(df, fname)
 
     if verbose:
         print(os.linesep + "Writing '%s'..." % fname + os.linesep)
-        print(df.head())
+        print(df[:5])
 
 
 def _check_key_val(key, val):
