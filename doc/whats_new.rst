@@ -24,6 +24,8 @@ Bug
 API
 ~~~
 
+- Remove support for Neuroscan ``.cnt`` data because its support is no longer planned in BIDS, by `Stefan Appelhoff`_ (`#142 <https://github.com/mne-tools/mne-bids/pull/142>`_)
+
 .. _changes_0_1:
 
 Version 0.1
