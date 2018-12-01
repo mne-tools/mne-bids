@@ -50,8 +50,8 @@ def _to_tsv(data, fname):
         f.write(output)
 
 
-def _combine(data1, data2, drop_column=None):
-    """Add two OrderedDict's together with optional dropping of repeated data.
+def _combine(data1, data2, drop_column):
+    """Add two OrderedDict's together and drop repeated data.
 
     Parameters
     ----------
@@ -69,17 +69,18 @@ def _combine(data1, data2, drop_column=None):
     data : collections.OrderedDict
         The new combined data.
     """
-    new_data = data1.copy()
+    data = data1.copy()
     for key, value in data2.items():
-        new_data[key].extend(value)
-    if drop_column in new_data:
-        drop_col = new_data[drop_column][::-1]
-        n_rows = len(new_data[drop_column])
-        _, idxs = np.unique(drop_col, return_index=True)
-        for key in new_data:
-            new_data[key] = [new_data[key][n_rows - 1 - idx] for idx in idxs]
+        data[key].extend(value)
 
-    return new_data
+    if drop_column not in data:
+        raise ValueError('The column to drop duplicates does not exist')
+    n_rows = len(data[drop_column])
+    _, idxs = np.unique(data[drop_column][::-1], return_index=True)
+    for key in data:
+        data[key] = [data[key][n_rows - 1 - idx] for idx in idxs]
+
+    return data
 
 
 def _drop(data, values, column):
