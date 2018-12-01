@@ -14,15 +14,15 @@ from mne.utils import _TempDir
 
 def test_tsv_handler():
     # create some dummy data
-    d = odict(a=[1, 2, 3, 4], b=[5, 6, 7, 8])
-    assert _contains_row(d, [1, 5])
-    d2 = odict(a=[5], b=[9])
+    d = odict(a=[1, 2, 3, 4], b=['five', 'six', 'seven', 'eight'])
+    assert _contains_row(d, [1, 'five'])
+    d2 = odict(a=[5], b=['nine'])
     d = _combine(d, d2)
     assert 5 in d['a']
-    d2 = odict(a=[5], b=[10])
+    d2 = odict(a=[5], b=['ten'])
     d = _combine(d, d2, drop_column='a')
     # make sure that the repeated data was dropped
-    assert 9 not in d['b']
+    assert 'nine' not in d['b']
 
     tempdir = _TempDir()
     d_path = op.join(tempdir, 'output.tsv')
