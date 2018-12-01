@@ -50,8 +50,8 @@ def _to_tsv(data, fname):
         f.write(output)
 
 
-def _combine(data1, data2, drop_column):
-    """Add two OrderedDict's together and drop repeated data.
+def _combine(data1, data2, drop_column=None):
+    """Add two OrderedDict's together and optionally drop repeated data.
 
     Parameters
     ----------
@@ -73,8 +73,9 @@ def _combine(data1, data2, drop_column):
     for key, value in data2.items():
         data[key].extend(value)
 
-    if drop_column not in data:
-        raise ValueError('The column to drop duplicates does not exist')
+    if drop_column is None:
+        return data
+
     n_rows = len(data[drop_column])
     _, idxs = np.unique(data[drop_column][::-1], return_index=True)
     for key in data:
@@ -136,17 +137,16 @@ def _tsv_to_str(data, rows=5):
     rows : int
         Maximum number of rows of data to output.
     """
-    n_rows = len(data[list(data.keys())[0]])
-    output = ''
+    col_names = list(data.keys())
+    n_rows = len(data[col_names[0]])
+    output = list()
     # write headings
-    output += '\t'.join(list(data.keys())) + '\n'
+    output.append('\t'.join(col_names))
 
     # write column data
     max_rows = min(n_rows, rows)
     for idx in range(max_rows):
         row_data = list(str(data[key][idx]) for key in data)
-        output += '\t'.join(row_data)
-        if idx != max_rows - 1:
-            output += '\n'
+        output.append('\t'.join(row_data))
 
-    return output
+    return '\n'.join(output)
