@@ -6,7 +6,7 @@
 import os.path as op
 from collections import OrderedDict as odict
 from mne_bids.tsv_handler import (_from_tsv, _to_tsv, _combine, _drop,
-                                  _contains_row)
+                                  _contains_row, _tsv_to_str)
 import pytest
 
 from mne.utils import _TempDir
@@ -23,6 +23,7 @@ def test_tsv_handler():
     d = _combine(d, d2, drop_column='a')
     # make sure that the repeated data was dropped
     assert 'nine' not in d['b']
+    print(_tsv_to_str(d))
 
     tempdir = _TempDir()
     d_path = op.join(tempdir, 'output.tsv')
