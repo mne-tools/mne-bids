@@ -73,17 +73,11 @@ def _combine(data1, data2, drop_column=None):
     for key, value in data2.items():
         new_data[key].extend(value)
     if drop_column in new_data:
-        # get the id of the column to drop repeated values from
-        col_idx = list(new_data.keys()).index(drop_column)
-        # convert to a numpy array and flip vertically
-        arr = np.stack(list(col for col in new_data.values()), axis=1)
-        flipped_arr = np.flipud(arr)
-        # get indexes of repeated values then apply to flipped array
-        _, indexes = np.unique(flipped_arr[:, col_idx], return_index=True)
-        simplified_arr = flipped_arr[indexes]
-        # re-assign to the OrderedDict
-        for idx, key in enumerate(new_data.keys()):
-            new_data[key] = simplified_arr[:, idx].tolist()
+        drop_col = new_data[drop_column][::-1]
+        n_rows = len(new_data[drop_column])
+        _, idxs = np.unique(drop_col, return_index=True)
+        for key in new_data:
+            new_data[key] = [new_data[key][n_rows - 1 - idx] for idx in idxs]
 
     return new_data
 
