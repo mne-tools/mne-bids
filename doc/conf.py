@@ -182,12 +182,21 @@ texinfo_documents = [
 
 sphinx_gallery_conf = {
     'examples_dirs': '../examples',
-    'gallery_dirs': 'auto_examples',
+    'gallery_dirs': ['auto_examples'],
     'filename_pattern': '^((?!sgskip).)*$',
     'backreferences_dir': 'generated',
     'reference_url': {
         'mne': 'http://mne-tools.github.io/stable/',
         'numpy': 'http://docs.scipy.org/doc/numpy-1.9.1',
         'scipy': 'http://docs.scipy.org/doc/scipy-0.17.0/reference'
-    }
+    },
+    'binder': {
+        # Required keys
+        'org': 'choldgraf',
+        'repo': 'mne-bids',
+        'url': 'https://mybinder.org',  # Any URL of a binder server. Must be full URL (e.g. https://mybinder.org).
+        'branch': 'binder',  # Can be any branch, tag, or commit hash. Use a branch that hosts your docs.
+        'dependencies': ['../binder/requirements.txt'],  # Dependency files for examples
+        'notebooks_dir': 'notebooks' # Jupyter notebooks for Binder will be copied to this directory (relative to site root).
+     }
 }
