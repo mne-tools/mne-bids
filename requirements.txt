@@ -2,3 +2,4 @@ mne
 mne_bids
 numpy
 scipy
+pandas

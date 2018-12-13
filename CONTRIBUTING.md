@@ -32,7 +32,15 @@ worked.
 
 ##### Building the documentation
 
+The MNE-BIDS documentation is hosted with GitHub pages from the `gh-pages` branch.
+
 The documentation can be built using sphinx. For that, please additionally
 install the following:
 
     $ pip install sphinx numpydoc sphinx-gallery sphinx_bootstrap_theme pillow
+
+To build the documentation, run `make html` from inside the `doc/` directory. You
+can then preview the documentation from the `_build/html/` directory.
+
+The documentation is automatically deployed to `gh-pages` when the `master` branch is
+updated using CircleCI (`.circleci/config.yml`).

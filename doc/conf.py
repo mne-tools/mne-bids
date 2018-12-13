@@ -194,9 +194,9 @@ sphinx_gallery_conf = {
         # Required keys
         'org': 'choldgraf',
         'repo': 'mne-bids',
-        'url': 'https://mybinder.org',  # Any URL of a binder server. Must be full URL (e.g. https://mybinder.org).
-        'branch': 'binder',  # Can be any branch, tag, or commit hash. Use a branch that hosts your docs.
-        'dependencies': ['../binder/requirements.txt'],  # Dependency files for examples
-        'notebooks_dir': 'notebooks' # Jupyter notebooks for Binder will be copied to this directory (relative to site root).
-     }
+        'branch': 'gh-pages',  # Can be any branch, tag, or commit hash. Use a branch that hosts your docs.
+        'binderhub_url': 'https://mybinder.org',  # Any URL of a binder server. Must be full URL (e.g. https://mybinder.org).
+        'dependencies': ['../requirements.txt', '../binder/postBuild']  # Dependency files for examples
+     },
+     'first_notebook_cell': None
 }

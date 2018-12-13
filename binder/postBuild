@@ -1,3 +1,42 @@
-#!/bin/sh
+#!/usr/bin/env python3
+import os
+from mne.datasets import eegbci
+from mne_bids.datasets import fetch_brainvision_testing_data, fetch_faces_data
 
-python binder/run_examples.py
+# Make a directory to save the data to
+home = os.path.expanduser('~')
+mne_dir = os.path.join(home, 'mne_data')
+if not os.path.exists(mne_dir):
+    os.makedirs(mne_dir)
+
+########## Fetch data #########################################################
+print("Downloading data for examples...")
+
+# EEG BCI data
+# Define which tasks we want to download.
+tasks = [2,  # This is 2 minutes of eyes closed rest
+         4,  # This is run #1 of imagining to close left or right fist
+         12]  # This is run #2 of imagining to close left or right fist
+
+# Download the data for subjects 1 and 2
+for subj_idx in [1, 2]:
+    eegbci.load_data(subject=subj_idx,
+                     runs=tasks,
+                     path=mne_dir,
+                     update_path=True)
+
+# Faces data
+subject_ids = [1]
+runs = range(1, 7)
+
+data_path = os.path.join(os.path.expanduser('~'), 'mne_data')
+repo = 'ds000117'
+fetch_faces_data(data_path, repo, subject_ids)
+
+# Sample data
+from mne.datasets import sample
+
+data_path = sample.data_path()
+
+# Brainvision
+examples_dir = fetch_brainvision_testing_data()
