@@ -50,10 +50,18 @@ $ mne_bids raw_to_bids --subject_id sub01 --task rest --raw_file data.edf --outp
 Cite
 ----
 
-If you use `mne-bids` in your work, please cite:
+If you use `mne-bids` in your work, please cite one of the following papers,
+depending on which modality you used:
 
+###### MEG
     Niso, G., Gorgolewski, K. J., Bock, E., Brooks, T. L., Flandin, G., Gramfort, A.,
     Henson, R. N., Jas, M., Litvak, V., Moreau, J., Oostenveld, R., Schoffelen, J.,
     Tadel, F., Wexler, J., Baillet, S. (2018). MEG-BIDS, the brain imaging data
     structure extended to magnetoencephalography. Scientific Data, 5, 180110.
     http://doi.org/10.1038/sdata.2018.110
+
+###### EEG
+    Pernet, C. R., Appelhoff, S., Flandin, G., Phillips, C., Delorme, A., &
+    Oostenveld, R. (2018, December 6). BIDS-EEG: an extension to the Brain
+    Imaging Data Structure  (BIDS) Specification for electroencephalography.
+    https://doi.org/10.31234/osf.io/63a4y
