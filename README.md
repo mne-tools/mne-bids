@@ -65,3 +65,9 @@ depending on which modality you used:
     Oostenveld, R. (2018, December 6). BIDS-EEG: an extension to the Brain
     Imaging Data Structure  (BIDS) Specification for electroencephalography.
     https://doi.org/10.31234/osf.io/63a4y
+
+###### iEEG
+    Holdgraf, C., Appelhoff, S., Bickel, S., Bouchard, K., D'Ambrosio, S.,
+    David, O., … Zehl, L. (2018, December 13). BIDS-iEEG: an extension to the
+    brain imaging data structure  (BIDS) specification for human intracranial
+    electrophysiology. https://doi.org/10.31234/osf.io/r7vc2
