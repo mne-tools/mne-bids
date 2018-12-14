@@ -23,8 +23,6 @@ from mne.io.pick import pick_types
 from .config import BIDS_VERSION
 from .io import _parse_ext
 
-from chardet import detect as detect_encoding
-
 
 def print_dir_tree(folder):
     """Recursively print a directory tree starting from `folder`."""
@@ -431,9 +429,16 @@ def _get_brainvision_paths(vhdr_path):
         raise ValueError('Expecting file ending in ".vhdr",'
                          ' but got {}'.format(ext))
 
-    # Header file seems fine, check encoding
+    # Header file seems fine
+    # extract encoding from brainvision header file, or default to utf-8
     with open(vhdr_path, 'rb') as ef:
-        enc = detect_encoding(ef.read())['encoding']
+        enc = ef.read()
+        if enc.find(b'Codepage=') != -1:
+            enc = enc[enc.find(b'Codepage=')+9:]
+            enc = enc.split()[0]
+            enc = enc.decode()
+        else:
+            enc = 'utf-8'
 
     # ..and read it
     with open(vhdr_path, 'r', encoding=enc) as f:
@@ -493,9 +498,15 @@ def copyfile_brainvision(vhdr_src, vhdr_dest):
 
     eeg_file_path, vmrk_file_path = _get_brainvision_paths(vhdr_src)
 
-    # check encoding of brainvision header file
+    # extract encoding from brainvision header file, or default to utf-8
     with open(vhdr_src, 'rb') as ef:
-        enc = detect_encoding(ef.read())['encoding']
+        enc = ef.read()
+        if enc.find(b'Codepage=') != -1:
+            enc = enc[enc.find(b'Codepage=')+9:]
+            enc = enc.split()[0]
+            enc = enc.decode()
+        else:
+            enc = 'utf-8'
 
     # Copy data .eeg ... no links to repair
     sh.copyfile(eeg_file_path, fname_dest + '.eeg')
