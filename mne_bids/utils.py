@@ -23,6 +23,8 @@ from mne.io.pick import pick_types
 from .config import BIDS_VERSION
 from .io import _parse_ext
 
+from chardet import detect as detect_encoding
+
 
 def print_dir_tree(folder):
     """Recursively print a directory tree starting from `folder`."""
@@ -429,8 +431,12 @@ def _get_brainvision_paths(vhdr_path):
         raise ValueError('Expecting file ending in ".vhdr",'
                          ' but got {}'.format(ext))
 
-    # Header file seems fine, read it
-    with open(vhdr_path, 'r') as f:
+    # Header file seems fine, check encoding
+    with open(vhdr_path, 'rb') as ef:
+        enc = detect_encoding(ef.read())['encoding']
+
+    # ..and read it
+    with open(vhdr_path, 'r', encoding=enc) as f:
         lines = f.readlines()
 
     # Try to find data file .eeg
@@ -487,6 +493,10 @@ def copyfile_brainvision(vhdr_src, vhdr_dest):
 
     eeg_file_path, vmrk_file_path = _get_brainvision_paths(vhdr_src)
 
+    # check encoding of brainvision header file
+    with open(vhdr_src, 'rb') as ef:
+        enc = detect_encoding(ef.read())['encoding']
+
     # Copy data .eeg ... no links to repair
     sh.copyfile(eeg_file_path, fname_dest + '.eeg')
 
@@ -500,15 +510,15 @@ def copyfile_brainvision(vhdr_src, vhdr_dest):
     search_lines = ['DataFile=' + basename_src + '.eeg',
                     'MarkerFile=' + basename_src + '.vmrk']
 
-    with open(vhdr_src, 'r') as fin:
-        with open(vhdr_dest, 'w') as fout:
+    with open(vhdr_src, 'r', encoding=enc) as fin:
+        with open(vhdr_dest, 'w', encoding=enc) as fout:
             for line in fin.readlines():
                 if line.strip() in search_lines:
                     line = line.replace(basename_src, basename_dest)
                 fout.write(line)
 
-    with open(vmrk_file_path, 'r') as fin:
-        with open(fname_dest + '.vmrk', 'w') as fout:
+    with open(vmrk_file_path, 'r', encoding=enc) as fin:
+        with open(fname_dest + '.vmrk', 'w', encoding=enc) as fout:
             for line in fin.readlines():
                 if line.strip() in search_lines:
                     line = line.replace(basename_src, basename_dest)
