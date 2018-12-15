@@ -68,6 +68,6 @@ depending on which modality you used:
 
 ###### iEEG
     Holdgraf, C., Appelhoff, S., Bickel, S., Bouchard, K., D'Ambrosio, S.,
-    David, O., … Zehl, L. (2018, December 13). BIDS-iEEG: an extension to the
+    David, O., … Hermes, D. (2018, December 13). BIDS-iEEG: an extension to the
     brain imaging data structure  (BIDS) specification for human intracranial
     electrophysiology. https://doi.org/10.31234/osf.io/r7vc2
