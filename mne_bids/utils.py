@@ -409,14 +409,14 @@ def _read_events(events_data, raw):
     return events
 
 
-def _get_brainvision_encoding(vhdr_file, logging=False):
+def _get_brainvision_encoding(vhdr_file, verbose=False):
     """get the encoding of .vhdr and .vmrk files.
 
     Parameters
     ----------
     vhdr_path : str
         path to the header file
-    logging   : Bool
+    verbose   : Bool
         determine whether results should be logged.
         (default False)
 
@@ -438,7 +438,7 @@ def _get_brainvision_encoding(vhdr_file, logging=False):
         else:
             enc = 'UTF-8'
             src = '(default)'
-        if logging:
+        if verbose is True:
             print('file encoding: %s %s' % (enc, src))
     return enc
 
@@ -526,7 +526,7 @@ def copyfile_brainvision(vhdr_src, vhdr_dest):
     eeg_file_path, vmrk_file_path = _get_brainvision_paths(vhdr_src)
 
     # extract encoding from brainvision header file, or default to utf-8
-    enc = _get_brainvision_encoding(vhdr_src, logging=True)
+    enc = _get_brainvision_encoding(vhdr_src, verbose=True)
 
     # Copy data .eeg ... no links to repair
     sh.copyfile(eeg_file_path, fname_dest + '.eeg')

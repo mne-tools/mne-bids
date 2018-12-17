@@ -118,7 +118,7 @@ def test_get_brainvision_encoding():
     data_path = op.join(base_path, 'brainvision', 'tests', 'data')
     raw_fname = op.join(data_path, 'test.vhdr')
 
-    enc = _get_brainvision_encoding(raw_fname, logging=True)
+    enc = _get_brainvision_encoding(raw_fname, verbose=True)
     assert isinstance(enc, str)
     assert enc == 'UTF-8'
 
