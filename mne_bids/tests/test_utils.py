@@ -118,9 +118,13 @@ def test_get_brainvision_encoding():
     data_path = op.join(base_path, 'brainvision', 'tests', 'data')
     raw_fname = op.join(data_path, 'test.vhdr')
 
+    with pytest.raises(UnicodeDecodeError):
+        with open(raw_fname, 'r', encoding='ascii') as f:
+            f.readlines()
+
     enc = _get_brainvision_encoding(raw_fname, verbose=True)
-    assert isinstance(enc, str)
-    assert enc == 'UTF-8'
+    with open(raw_fname, 'r', encoding=enc) as f:
+        f.readlines()
 
 
 def test_get_brainvision_paths():
