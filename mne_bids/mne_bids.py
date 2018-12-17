@@ -482,9 +482,9 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, overwrite=False,
     n_eegchan = len([ch for ch in raw.info['chs']
                      if ch['kind'] == FIFF.FIFFV_EEG_CH])
     n_ecogchan = len([ch for ch in raw.info['chs']
-                     if ch['kind'] == FIFF.FIFFV_ECOG_CH])
+                      if ch['kind'] == FIFF.FIFFV_ECOG_CH])
     n_seegchan = len([ch for ch in raw.info['chs']
-                     if ch['kind'] == FIFF.FIFFV_SEEG_CH])
+                      if ch['kind'] == FIFF.FIFFV_SEEG_CH])
     n_eogchan = len([ch for ch in raw.info['chs']
                      if ch['kind'] == FIFF.FIFFV_EOG_CH])
     n_ecgchan = len([ch for ch in raw.info['chs']
@@ -492,9 +492,9 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, overwrite=False,
     n_emgchan = len([ch for ch in raw.info['chs']
                      if ch['kind'] == FIFF.FIFFV_EMG_CH])
     n_miscchan = len([ch for ch in raw.info['chs']
-                     if ch['kind'] == FIFF.FIFFV_MISC_CH])
+                      if ch['kind'] == FIFF.FIFFV_MISC_CH])
     n_stimchan = len([ch for ch in raw.info['chs']
-                     if ch['kind'] == FIFF.FIFFV_STIM_CH]) - n_ignored
+                      if ch['kind'] == FIFF.FIFFV_STIM_CH]) - n_ignored
 
     # Define modality-specific JSON dictionaries
     ch_info_json_common = [

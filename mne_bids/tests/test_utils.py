@@ -16,9 +16,9 @@ from mne.utils import _TempDir
 
 from mne_bids.utils import (make_bids_folders, make_bids_basename,
                             _check_types, print_dir_tree, _age_on_date,
-                            _get_brainvision_paths, copyfile_brainvision,
-                            copyfile_eeglab, _infer_eeg_placement_scheme,
-                            _handle_kind)
+                            _get_brainvision_encoding, _get_brainvision_paths,
+                            copyfile_brainvision, copyfile_eeglab,
+                            _infer_eeg_placement_scheme, _handle_kind)
 
 base_path = op.join(op.dirname(mne.__file__), 'io')
 
@@ -66,11 +66,11 @@ def test_make_filenames():
     prefix_data = dict(subject='one', session='two', task='three',
                        acquisition='four', run='five', processing='six',
                        recording='seven', suffix='suffix.csv')
-    assert make_bids_basename(**prefix_data) == 'sub-one_ses-two_task-three_acq-four_run-five_proc-six_recording-seven_suffix.csv' # noqa
+    assert make_bids_basename(**prefix_data) == 'sub-one_ses-two_task-three_acq-four_run-five_proc-six_recording-seven_suffix.csv'  # noqa
 
     # subsets of keys works
-    assert make_bids_basename(subject='one', task='three') == 'sub-one_task-three' # noqa
-    assert make_bids_basename(subject='one', task='three', suffix='hi.csv') == 'sub-one_task-three_hi.csv' # noqa
+    assert make_bids_basename(subject='one', task='three') == 'sub-one_task-three'  # noqa
+    assert make_bids_basename(subject='one', task='three', suffix='hi.csv') == 'sub-one_task-three_hi.csv'  # noqa
 
     with pytest.raises(ValueError):
         make_bids_basename(subject='one-two', suffix='there.csv')
@@ -96,7 +96,7 @@ def test_check_types():
     """Test the check whether vars are str or None."""
     assert _check_types(['foo', 'bar', None]) is None
     with pytest.raises(ValueError):
-            _check_types([None, 1, 3.14, 'meg', [1, 2]])
+        _check_types([None, 1, 3.14, 'meg', [1, 2]])
 
 
 def test_age_on_date():
@@ -111,6 +111,20 @@ def test_age_on_date():
     assert _age_on_date(bday, exp3) == 24
     with pytest.raises(ValueError):
         _age_on_date(bday, exp4)
+
+
+def test_get_brainvision_encoding():
+    """Test getting the file-encoding from a BrainVision header."""
+    data_path = op.join(base_path, 'brainvision', 'tests', 'data')
+    raw_fname = op.join(data_path, 'test.vhdr')
+
+    with pytest.raises(UnicodeDecodeError):
+        with open(raw_fname, 'r', encoding='ascii') as f:
+            f.readlines()
+
+    enc = _get_brainvision_encoding(raw_fname, verbose=True)
+    with open(raw_fname, 'r', encoding=enc) as f:
+        f.readlines()
 
 
 def test_get_brainvision_paths():

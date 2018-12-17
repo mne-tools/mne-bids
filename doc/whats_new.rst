@@ -18,6 +18,7 @@ Changelog
 Bug
 ~~~
 
+- Encoding of BrainVision .vhdr/.vmrk files is checked to prevent encoding/decoding errors when modifying, by `Dominik Welke`_ (`#155 <https://github.com/mne-tools/mne-bids/pull/155>`_)
 - The original units present in the raw data will now correctly be written to channels.tsv files for BrainVision, EEGLAB, and EDF, by `Stefan Appelhoff`_ (`#125 <https://github.com/mne-tools/mne-bids/pull/125>`_)
 - Fix logic with inferring unknown channel types for CTF data, by `Mainak Jas`_ (`#129 <https://github.com/mne-tools/mne-bids/pull/16>`_)
 - Fix the file naming for FIF files to only expose the part key-value pair when files are split, by `Teon Brooks`_ (`#137 <https://github.com/mne-tools/mne-bids/pull/137>`_)
@@ -78,3 +79,4 @@ People who contributed to this release  (in alphabetical order):
 .. _Chris Holdgraf: https://bids.berkeley.edu/people/chris-holdgraf
 .. _Matt Sanderson: https://github.com/monkeyman192
 .. _Stefan Appelhoff: http://stefanappelhoff.com/
+.. _Dominik Welke: https://github.com/dominikwelke
