@@ -66,11 +66,11 @@ def test_make_filenames():
     prefix_data = dict(subject='one', session='two', task='three',
                        acquisition='four', run='five', processing='six',
                        recording='seven', suffix='suffix.csv')
-    assert make_bids_basename(**prefix_data) == 'sub-one_ses-two_task-three_acq-four_run-five_proc-six_recording-seven_suffix.csv' # noqa
+    assert make_bids_basename(**prefix_data) == 'sub-one_ses-two_task-three_acq-four_run-five_proc-six_recording-seven_suffix.csv'  # noqa
 
     # subsets of keys works
-    assert make_bids_basename(subject='one', task='three') == 'sub-one_task-three' # noqa
-    assert make_bids_basename(subject='one', task='three', suffix='hi.csv') == 'sub-one_task-three_hi.csv' # noqa
+    assert make_bids_basename(subject='one', task='three') == 'sub-one_task-three'  # noqa
+    assert make_bids_basename(subject='one', task='three', suffix='hi.csv') == 'sub-one_task-three_hi.csv'  # noqa
 
     with pytest.raises(ValueError):
         make_bids_basename(subject='one-two', suffix='there.csv')
@@ -96,7 +96,7 @@ def test_check_types():
     """Test the check whether vars are str or None."""
     assert _check_types(['foo', 'bar', None]) is None
     with pytest.raises(ValueError):
-            _check_types([None, 1, 3.14, 'meg', [1, 2]])
+        _check_types([None, 1, 3.14, 'meg', [1, 2]])
 
 
 def test_age_on_date():
