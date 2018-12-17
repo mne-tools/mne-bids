@@ -16,9 +16,9 @@ from mne.utils import _TempDir
 
 from mne_bids.utils import (make_bids_folders, make_bids_basename,
                             _check_types, print_dir_tree, _age_on_date,
-                            _get_brainvision_paths, copyfile_brainvision,
-                            copyfile_eeglab, _infer_eeg_placement_scheme,
-                            _handle_kind)
+                            _get_brainvision_encoding, _get_brainvision_paths,
+                            copyfile_brainvision, copyfile_eeglab,
+                            _infer_eeg_placement_scheme, _handle_kind)
 
 base_path = op.join(op.dirname(mne.__file__), 'io')
 
@@ -111,6 +111,16 @@ def test_age_on_date():
     assert _age_on_date(bday, exp3) == 24
     with pytest.raises(ValueError):
         _age_on_date(bday, exp4)
+
+
+def test_get_brainvision_encoding():
+    """Test getting the file-encoding from a BrainVision header."""
+    data_path = op.join(base_path, 'brainvision', 'tests', 'data')
+    raw_fname = op.join(data_path, 'test.vhdr')
+
+    enc = _get_brainvision_encoding(raw_fname, logging=True)
+    assert isinstance(enc, str)
+    assert enc == 'UTF-8'
 
 
 def test_get_brainvision_paths():
