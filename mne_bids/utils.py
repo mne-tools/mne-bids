@@ -414,9 +414,9 @@ def _get_brainvision_encoding(vhdr_file, verbose=False):
 
     Parameters
     ----------
-    vhdr_path : str
+    vhdr_file : str
         path to the header file
-    verbose   : Bool
+    verbose : Bool
         determine whether results should be logged.
         (default False)
 
@@ -424,9 +424,8 @@ def _get_brainvision_encoding(vhdr_file, verbose=False):
     -------
     enc : str
         encoding of the .vhdr file to pass it on to open() function
-        either 'utf-8' (default) or whatever encoding scheme is specified
+        either 'UTF-8' (default) or whatever encoding scheme is specified
         in the header
-
     """
     with open(vhdr_file, 'rb') as ef:
         enc = ef.read()
