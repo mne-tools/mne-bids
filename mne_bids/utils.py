@@ -409,6 +409,40 @@ def _read_events(events_data, raw):
     return events
 
 
+def _get_brainvision_encoding(vhdr_file, logging=False):
+    """get the encoding of .vhdr and .vmrk files.
+
+    Parameters
+    ----------
+    vhdr_path : str
+        path to the header file
+    logging   : Bool
+        determine whether results should be logged.
+        (default False)
+
+    Returns
+    -------
+    enc : str
+        encoding of the .vhdr file to pass it on to open() function
+        either 'utf-8' (default) or whatever encoding scheme is specified
+        in the header
+
+    """
+    with open(vhdr_file, 'rb') as ef:
+        enc = ef.read()
+        if enc.find(b'Codepage=') != -1:
+            enc = enc[enc.find(b'Codepage=')+9:]
+            enc = enc.split()[0]
+            enc = enc.decode()
+            src = '(read from header)'
+        else:
+            enc = 'UTF-8'
+            src = '(default)'
+        if logging:
+            print('file encoding: %s %s' % (enc, src))
+    return enc
+
+
 def _get_brainvision_paths(vhdr_path):
     """Get the .eeg and .vmrk file paths from a BrainVision header file.
 
@@ -431,14 +465,7 @@ def _get_brainvision_paths(vhdr_path):
 
     # Header file seems fine
     # extract encoding from brainvision header file, or default to utf-8
-    with open(vhdr_path, 'rb') as ef:
-        enc = ef.read()
-        if enc.find(b'Codepage=') != -1:
-            enc = enc[enc.find(b'Codepage=')+9:]
-            enc = enc.split()[0]
-            enc = enc.decode()
-        else:
-            enc = 'utf-8'
+    enc = _get_brainvision_encoding(vhdr_path)
 
     # ..and read it
     with open(vhdr_path, 'r', encoding=enc) as f:
@@ -499,14 +526,7 @@ def copyfile_brainvision(vhdr_src, vhdr_dest):
     eeg_file_path, vmrk_file_path = _get_brainvision_paths(vhdr_src)
 
     # extract encoding from brainvision header file, or default to utf-8
-    with open(vhdr_src, 'rb') as ef:
-        enc = ef.read()
-        if enc.find(b'Codepage=') != -1:
-            enc = enc[enc.find(b'Codepage=')+9:]
-            enc = enc.split()[0]
-            enc = enc.decode()
-        else:
-            enc = 'utf-8'
+    enc = _get_brainvision_encoding(vhdr_src, logging=True)
 
     # Copy data .eeg ... no links to repair
     sh.copyfile(eeg_file_path, fname_dest + '.eeg')
