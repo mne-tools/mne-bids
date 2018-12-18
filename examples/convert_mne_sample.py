@@ -36,12 +36,21 @@ events_data = op.join(data_path, 'MEG', 'sample', 'sample_audvis_raw-eve.fif')
 output_path = op.join(data_path, '..', 'MNE-sample-data-bids')
 
 ###############################################################################
-# Finally, we specify the raw_file and events_data
+# Specify the raw_file and events_data and run the BIDS conversion.
 
 raw = mne.io.read_raw_fif(raw_fname)
 bids_basename = 'sub-01_ses-01_task-audiovisual_run-01'
 write_raw_bids(raw, bids_basename, output_path, events_data=events_data,
                event_id=event_id, overwrite=True)
+
+###############################################################################
+# Specify some empty room data and run BIDS conversion on it.
+er_raw_fname = op.join(data_path, 'MEG', 'sample', 'ernoise_raw.fif')
+er_raw = mne.io.read_raw_fif(er_raw_fname)
+# For empty room data we need to only specify that the subject ID is
+# 'emptyroom', and that the task is 'noise'.
+er_bids_basename = 'sub-emptyroom_task-noise'
+write_raw_bids(er_raw, er_bids_basename, output_path, overwrite=True)
 
 ###############################################################################
 # Now let's see the structure of the BIDS folder we created.
