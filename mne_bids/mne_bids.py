@@ -640,6 +640,16 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
     acquisition, task, run = params['acq'], params['task'], params['run']
     kind = _handle_kind(raw)
 
+    # check whether the info provided indicates that the data is emptyroom
+    # data
+    emptyroom = False
+    if subject_id == 'emptyroom' and task == 'noise':
+        session_id = datetime.fromtimestamp(
+            raw.info['meas_date'][0]).strftime('%Y%m%d')
+        acquisition = None
+        run = None
+        emptyroom = True
+
     bids_fname = bids_basename + '_%s%s' % (kind, ext)
     data_path = make_bids_folders(subject=subject_id, session=session_id,
                                   kind=kind, output_path=output_path,
@@ -689,18 +699,19 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
                overwrite, verbose)
 
     # TODO: Implement coordystem.json and electrodes.tsv for EEG and  iEEG
-    if kind == 'meg':
+    if kind == 'meg' and not emptyroom:
         _coordsystem_json(raw, unit, orient, manufacturer, coordsystem_fname,
                           overwrite, verbose)
 
     events = _read_events(events_data, raw)
-    if len(events) > 0:
+    if len(events) > 0 and not emptyroom:
         _events_tsv(events, raw, events_fname, event_id, overwrite, verbose)
 
     make_dataset_description(output_path, name=" ", verbose=verbose)
     _sidecar_json(raw, task, manufacturer, sidecar_fname, kind, overwrite,
                   verbose)
-    _channels_tsv(raw, channels_fname, overwrite, verbose)
+    if not emptyroom:
+        _channels_tsv(raw, channels_fname, overwrite, verbose)
 
     # set the raw file name to now be the absolute path to ensure the files
     # are placed in the right location

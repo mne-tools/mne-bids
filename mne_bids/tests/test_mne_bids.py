@@ -63,6 +63,11 @@ def test_fif():
     write_raw_bids(raw, bids_basename, output_path, events_data=events_fname,
                    event_id=event_id, overwrite=False)
 
+    # write the same data but pretend it is empty room data:
+    er_bids_basename = bids_basename.replace(subject_id, 'emptyroom')
+    er_bids_basename = er_bids_basename.replace('testing', 'noise')
+    write_raw_bids(raw, er_bids_basename, output_path, overwrite=False)
+
     # give the raw object some fake participant data
     raw = mne.io.read_raw_fif(raw_fname)
     raw.anonymize()
