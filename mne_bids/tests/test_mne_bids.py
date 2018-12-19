@@ -70,9 +70,13 @@ def test_fif():
         raw.info['meas_date'][0]).strftime('%Y%m%d')
     er_bids_basename = 'sub-emptyroom_ses-{0}_task-noise'.format(str(er_date))
     write_raw_bids(raw, er_bids_basename, output_path, overwrite=False)
-    assert op.exists(op.join(output_path, 'sub-emptyroom', 'ses-20021204',
-                             'meg',
-                             'sub-emptyroom_ses-20021204_task-noise_meg.json'))
+    assert op.exists(op.join(
+        output_path, 'sub-emptyroom', 'ses-{0}'.format(er_date), 'meg',
+        'sub-emptyroom_ses-{0}_task-noise_meg.json'.format(er_date)))
+    # test that an incorrect date raises an error.
+    er_bids_basename_bad = 'sub-emptyroom_ses-19000101_task-noise'
+    with pytest.raises(ValueError, match='Date provided'):
+        write_raw_bids(raw, er_bids_basename_bad, output_path, overwrite=False)
 
     # give the raw object some fake participant data
     raw = mne.io.read_raw_fif(raw_fname)
