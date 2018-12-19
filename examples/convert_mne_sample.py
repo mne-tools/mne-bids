@@ -18,6 +18,8 @@ BIDS-compatible folder.
 
 import os.path as op
 
+from datetime import datetime
+
 import mne
 from mne.datasets import sample
 
@@ -47,9 +49,13 @@ write_raw_bids(raw, bids_basename, output_path, events_data=events_data,
 # Specify some empty room data and run BIDS conversion on it.
 er_raw_fname = op.join(data_path, 'MEG', 'sample', 'ernoise_raw.fif')
 er_raw = mne.io.read_raw_fif(er_raw_fname)
-# For empty room data we need to only specify that the subject ID is
+# For empty room data we need to specify that the subject ID is
 # 'emptyroom', and that the task is 'noise'.
-er_bids_basename = 'sub-emptyroom_task-noise'
+# We also need to specify the recording date in the format YYYYMMDD for the
+# session id.
+er_date = datetime.fromtimestamp(
+    raw.info['meas_date'][0]).strftime('%Y%m%d')
+er_bids_basename = 'sub-emptyroom_ses-{0}_task-noise'.format(er_date)
 write_raw_bids(er_raw, er_bids_basename, output_path, overwrite=True)
 
 ###############################################################################

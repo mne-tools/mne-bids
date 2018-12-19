@@ -16,6 +16,8 @@ import os.path as op
 import pytest
 from glob import glob
 
+from datetime import datetime
+
 import pandas as pd
 
 import mne
@@ -64,8 +66,9 @@ def test_fif():
                    event_id=event_id, overwrite=False)
 
     # write the same data but pretend it is empty room data:
-    er_bids_basename = bids_basename.replace(subject_id, 'emptyroom')
-    er_bids_basename = er_bids_basename.replace('testing', 'noise')
+    er_date = datetime.fromtimestamp(
+        raw.info['meas_date'][0]).strftime('%Y%m%d')
+    er_bids_basename = 'sub-emptyroom_ses-{0}_task-noise'.format(str(er_date))
     write_raw_bids(raw, er_bids_basename, output_path, overwrite=False)
     assert op.exists(op.join(output_path, 'sub-emptyroom', 'ses-20021204',
                              'meg',

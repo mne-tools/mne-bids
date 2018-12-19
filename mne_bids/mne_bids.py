@@ -646,8 +646,6 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
     # data
     emptyroom = False
     if subject_id == 'emptyroom' and task == 'noise':
-        session_id = datetime.fromtimestamp(
-            raw.info['meas_date'][0]).strftime('%Y%m%d')
         acquisition = None
         run = None
         emptyroom = True
