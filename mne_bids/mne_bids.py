@@ -640,6 +640,8 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
     acquisition, task, run = params['acq'], params['task'], params['run']
     kind = _handle_kind(raw)
 
+    bids_fname = bids_basename + '_%s%s' % (kind, ext)
+
     # check whether the info provided indicates that the data is emptyroom
     # data
     emptyroom = False
@@ -649,8 +651,9 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
         acquisition = None
         run = None
         emptyroom = True
+        bids_fname = make_bids_basename(subject=subject_id, session=session_id,
+                                        task=task) + '_%s%s' % (kind, ext)
 
-    bids_fname = bids_basename + '_%s%s' % (kind, ext)
     data_path = make_bids_folders(subject=subject_id, session=session_id,
                                   kind=kind, output_path=output_path,
                                   overwrite=False, verbose=verbose)
