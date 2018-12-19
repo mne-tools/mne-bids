@@ -646,11 +646,12 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
     # data
     emptyroom = False
     if subject_id == 'emptyroom' and task == 'noise':
-        acquisition = None
-        run = None
         emptyroom = True
-        bids_fname = make_bids_basename(subject=subject_id, session=session_id,
-                                        task=task) + '_%s%s' % (kind, ext)
+        er_date = datetime.fromtimestamp(
+            raw.info['meas_date'][0]).strftime('%Y%m%d')
+        if er_date != session_id:
+            raise ValueError("Date provided for session doesn't match "
+                             "session date.")
 
     data_path = make_bids_folders(subject=subject_id, session=session_id,
                                   kind=kind, output_path=output_path,
@@ -711,8 +712,7 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
     make_dataset_description(output_path, name=" ", verbose=verbose)
     _sidecar_json(raw, task, manufacturer, sidecar_fname, kind, overwrite,
                   verbose)
-    if not emptyroom:
-        _channels_tsv(raw, channels_fname, overwrite, verbose)
+    _channels_tsv(raw, channels_fname, overwrite, verbose)
 
     # set the raw file name to now be the absolute path to ensure the files
     # are placed in the right location
