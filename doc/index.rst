@@ -11,9 +11,12 @@ This is a library for converting existing files into BIDS compatible structure.
 Installation
 ============
 
-We recommend the `Anaconda Python distribution <https://www.continuum.io/downloads>`_. To install ``mne_bids``, you first need to install its dependencies::
+We recommend the `Anaconda Python distribution <https://www.continuum.io/downloads>`_ and Python 3.
 
-    $ pip install -U https://api.github.com/repos/mne-tools/mne-python/zipball/master
+Besides numpy, scipy and matplotlib (which are included in the standard Anaconda installation), 
+you will need to install the most recent version of MNE using the `pip` command line tool:
+
+    $ pip install -U mne
 
 Then install mne_bids::
 
