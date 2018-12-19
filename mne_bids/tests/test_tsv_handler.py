@@ -19,8 +19,11 @@ def test_tsv_handler():
     d2 = odict(a=[5], b=['nine'])
     d = _combine(d, d2)
     assert 5 in d['a']
+    d2 = odict(a=[5])
+    d = _combine(d, d2)
+    assert 'n/a' in d['b']
     d2 = odict(a=[5], b=['ten'])
-    d = _combine(d, d2, drop_column='a')
+    d = _combine(d, d2, drop_columns='a')
     # make sure that the repeated data was dropped
     assert 'nine' not in d['b']
     print(_tsv_to_str(d))
@@ -32,6 +35,13 @@ def test_tsv_handler():
     _to_tsv(d, d_path)
     # now read it back
     d = _from_tsv(d_path)
+    # test reading the file in with the incorrect number of datatypes raises
+    # an Error
+    with pytest.raises(ValueError):
+        d = _from_tsv(d_path, dtypes=[str])
+    # we can also pass just a single data type and it will be applied to all
+    # columns
+    d = _from_tsv(d_path, str)
 
     # remove any rows with 2 or 5 in them
     d = _drop(d, [2, 5], 'a')
@@ -40,3 +50,11 @@ def test_tsv_handler():
     d2 = odict(a=[5], c=[10])
     with pytest.raises(KeyError):
         d = _combine(d, d2)
+
+    # test combining and dropping multiple columns
+    d = odict(a=[1, 2, 3], b=['four', 'five', 'six'], c=[7, 8, 9])
+    d2 = odict(a=[4, 5], b=['four', 'seven'], c=[1, 9])
+    d = _combine(d, d2, drop_columns=['b', 'c'])
+    assert d['a'] == [2, 4, 5]
+    assert d['b'] == ['five', 'four', 'seven']
+    assert d['c'] == [8, 1, 9]

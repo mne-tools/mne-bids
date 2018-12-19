@@ -23,13 +23,15 @@ def _from_tsv(fname, dtypes=None):
     column_names = data[0, :]
     info = data[1:, :]
     data_dict = OrderedDict()
-    if isinstance(dtypes, (list, tuple)):
-        if len(dtypes) == info.shape[1]:
-            for i, name in enumerate(column_names):
-                data_dict[name] = info[:, i].astype(dtypes[i]).tolist()
-    else:
-        for i, name in enumerate(column_names):
-            data_dict[name] = info[:, i].tolist()
+    if dtypes is None:
+        dtypes = [str] * info.shape[1]
+    if not isinstance(dtypes, (list, tuple)):
+        dtypes = [dtypes] * info.shape[1]
+    if not len(dtypes) == info.shape[1]:
+        raise ValueError('dtypes length mismatch. Provided: {0}, '
+                         'Expected: {1}'.format(len(dtypes), info.shape[1]))
+    for i, name in enumerate(column_names):
+        data_dict[name] = info[:, i].astype(dtypes[i]).tolist()
     return data_dict
 
 
@@ -50,7 +52,7 @@ def _to_tsv(data, fname):
         f.write(output)
 
 
-def _combine(data1, data2, drop_column=None):
+def _combine(data1, data2, drop_columns=None):
     """Add two OrderedDict's together and optionally drop repeated data.
 
     Parameters
@@ -59,10 +61,12 @@ def _combine(data1, data2, drop_column=None):
         Original OrderedDict.
     data2 : collections.OrderedDict
         New OrderedDict to be added to the original.
-    drop_column : str
-        Name of the column to check for duplicate values in.
+    drop_columns : str | list of str's
+        Name(s) of the column to check for duplicate values in.
         Any duplicates found will be dropped from the original data array (ie.
         most recent value are kept).
+        If a list is provided, the rows will be dropped by checking equality
+        between values in the column names provided in order.
 
     Returns
     -------
@@ -73,11 +77,29 @@ def _combine(data1, data2, drop_column=None):
     for key, value in data2.items():
         data[key].extend(value)
 
-    if drop_column is None:
+    # check that all the columns have the same number of values, filling any
+    # columns without the required amount with 'n/a'.
+    max_rows = max([len(column) for column in data.values()])
+    for key, value in data.items():
+        if len(value) != max_rows:
+            data[key].extend(['n/a'] * (max_rows - len(value)))
+
+    if drop_columns is None:
         return data
 
-    n_rows = len(data[drop_column])
-    _, idxs = np.unique(data[drop_column][::-1], return_index=True)
+    if isinstance(drop_columns, str):
+        drop_columns = [drop_columns]
+    idxs = []
+    for drop_column in drop_columns:
+        # for each column we wish to drop values from, find any repeated values
+        # and remove all but the most recent version of
+        n_rows = len(data[drop_column])
+        _, _idxs = np.unique(data[drop_column][::-1], return_index=True)
+        if idxs == []:
+            idxs = _idxs.tolist()
+        else:
+            for idx in set(idxs) - set(_idxs):
+                idxs.remove(idx)
     for key in data:
         data[key] = [data[key][n_rows - 1 - idx] for idx in idxs]
 
@@ -140,10 +162,10 @@ def _tsv_to_str(data, rows=5):
     col_names = list(data.keys())
     n_rows = len(data[col_names[0]])
     output = list()
-    # write headings
+    # write headings.
     output.append('\t'.join(col_names))
 
-    # write column data
+    # write column data.
     max_rows = min(n_rows, rows)
     for idx in range(max_rows):
         row_data = list(str(data[key][idx]) for key in data)
