@@ -66,7 +66,10 @@ def test_fif():
     # write the same data but pretend it is empty room data:
     er_bids_basename = bids_basename.replace(subject_id, 'emptyroom')
     er_bids_basename = er_bids_basename.replace('testing', 'noise')
-    write_raw_bids(raw, er_bids_basename, output_path, overwrite=False)
+    outpath = write_raw_bids(raw, er_bids_basename, output_path,
+                             overwrite=False)
+    assert op.exists(op.join(outpath, 'sub-emptyroom', 'ses-20021204', 'meg',
+                             'sub-emptyroom_ses-20021204_task-noise_meg.json'))
 
     # give the raw object some fake participant data
     raw = mne.io.read_raw_fif(raw_fname)
