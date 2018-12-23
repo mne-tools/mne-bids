@@ -17,6 +17,7 @@ import pytest
 from glob import glob
 
 from datetime import datetime
+from numpy.testing import assert_array_equal
 
 import mne
 from mne.datasets import testing
@@ -115,7 +116,10 @@ def test_fif():
     # now force the overwrite
     write_raw_bids(raw, bids_basename2, output_path, events_data=events_fname,
                    event_id=event_id, overwrite=True)
-    raw, _, _ = read_raw_bids(bids_basename2 + '_meg.fif', output_path)
+    raw, events, _ = read_raw_bids(bids_basename2 + '_meg.fif', output_path)
+    events2 = mne.read_events(events_fname)
+    events2 = events2[events2[:, 2] != 0]
+    assert_array_equal(events2[:, 0], events[:, 0])
 
     with pytest.raises(ValueError, match='raw_file must be'):
         write_raw_bids('blah', bids_basename, output_path)
