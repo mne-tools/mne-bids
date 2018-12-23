@@ -127,7 +127,7 @@ def read_raw_bids(bids_fname, output_path, return_events=True,
                     config=None, montage=None, verbose=None)
 
     events = np.zeros((events_df.shape[0], 3), dtype=int)
-    events[:, 0] = events_df['onset'] * raw.info['sfreq']
+    events[:, 0] = events_df['onset'] * raw.info['sfreq'] + raw.first_samp
     events[:, 2] = np.array([event_id[ev] for ev in events_df['trial_type']])
 
     if return_events:
