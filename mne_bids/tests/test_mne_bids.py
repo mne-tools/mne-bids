@@ -256,6 +256,9 @@ def test_bti():
     cmd = ['bids-validator', output_path]
     run_subprocess(cmd, shell=shell)
 
+    raw, events, _ = read_raw_bids(bids_basename + '_meg',
+                                   output_path)
+
 
 def test_vhdr():
     """Test write_raw_bids conversion for BrainVision data."""
