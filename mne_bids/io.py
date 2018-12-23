@@ -116,16 +116,6 @@ def read_raw_bids(bids_fname, output_path, return_events=True,
     meg_dir = op.join(output_path, 'sub-%s' % params['sub'],
                       'ses-%s' % params['ses'], kind)
 
-    events_fname = op.join(meg_dir, bids_basename + '_events.tsv')
-
-    # channels_fname = fname.split('.') + '_channels.tsv'
-    events_df = pd.read_csv(events_fname, delimiter='\t')
-    events_df = events_df.dropna()
-
-    event_id = dict()
-    for idx, ev in enumerate(np.unique(events_df['trial_type'])):
-        event_id[ev] = idx
-
     # electrode = blah
     # hsp = blah
     # hpi = blah
@@ -135,7 +125,7 @@ def read_raw_bids(bids_fname, output_path, return_events=True,
     # blah
 
     hpi = None
-    if ext == '.fif':
+    if ext in ('.fif', '.ds'):
         bids_fname = op.join(meg_dir,
                              bids_basename + '_%s%s' % (kind, ext))
     elif ext == '.sqd':
@@ -147,9 +137,22 @@ def read_raw_bids(bids_fname, output_path, return_events=True,
     raw = _read_raw(bids_fname, electrode=None, hsp=None, hpi=None,
                     config=None, montage=None, verbose=None)
 
-    events = np.zeros((events_df.shape[0], 3), dtype=int)
-    events[:, 0] = events_df['onset'] * raw.info['sfreq'] + raw.first_samp
-    events[:, 2] = np.array([event_id[ev] for ev in events_df['trial_type']])
+    events_fname = op.join(meg_dir, bids_basename + '_events.tsv')
+
+    # channels_fname = fname.split('.') + '_channels.tsv'
+
+    events, event_id = None, dict()
+    if op.exists(events_fname):
+        events_df = pd.read_csv(events_fname, delimiter='\t')
+        events_df = events_df.dropna()
+
+        for idx, ev in enumerate(np.unique(events_df['trial_type'])):
+            event_id[ev] = idx
+
+        events = np.zeros((events_df.shape[0], 3), dtype=int)
+        events[:, 0] = events_df['onset'] * raw.info['sfreq'] + raw.first_samp
+        events[:, 2] = np.array([event_id[ev] for ev
+                                 in events_df['trial_type']])
 
     if return_events:
         return raw, events, event_id
