@@ -124,7 +124,7 @@ def read_raw_bids(bids_fname, output_path, return_events=True,
     # create montage here
     # blah
 
-    hpi = None
+    config, hpi = None, None
     if ext in ('.fif', '.ds'):
         bids_fname = op.join(meg_dir,
                              bids_basename + '_%s%s' % (kind, ext))
@@ -134,8 +134,11 @@ def read_raw_bids(bids_fname, output_path, return_events=True,
                              bids_basename + '_%s%s' % (kind, ext))
         hpi = op.join(data_path, bids_basename + '_markers.sqd')
         hsp = op.join(meg_dir, bids_basename + '_headshape.txt')
+    elif ext == '.pdf':
+        bids_fname = op.join(meg_dir, bids_basename + '_%s' % kind)
+        config = op.join(bids_fname, 'config')
     raw = _read_raw(bids_fname, electrode=None, hsp=None, hpi=None,
-                    config=None, montage=None, verbose=None)
+                    config=config, montage=None, verbose=None)
 
     events_fname = op.join(meg_dir, bids_basename + '_events.tsv')
 
