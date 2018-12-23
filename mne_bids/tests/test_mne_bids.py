@@ -185,6 +185,9 @@ def test_kit():
     run_subprocess(cmd, shell=shell)
     assert op.exists(op.join(output_path, 'participants.tsv'))
 
+    raw, events, _ = read_raw_bids(bids_basename + '_meg.sqd',
+                                   output_path)
+
     # ensure the channels file has no STI 014 channel:
     channels_tsv = make_bids_basename(
         subject=subject_id, session=session_id, task=task, run=run,

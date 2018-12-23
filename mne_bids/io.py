@@ -89,11 +89,25 @@ def _read_raw(raw_fname, electrode=None, hsp=None, hpi=None, config=None,
 
 def read_raw_bids(bids_fname, output_path, return_events=True,
                   verbose=True):
-    """Read BIDS compatible data."""
+    """Read BIDS compatible data.
+
+    Parameters
+    ----------
+    bids_fname : str
+        Full name of the data file
+    output_path : str
+        Root of the BIDS folder
+    return_events: bool
+        Weather to return events or not. Default is True.
+    verbose : bool
+        The verbosity level
+    """
     import os.path as op
     import numpy as np
     from .utils import _parse_bids_filename
 
+    # Full path to data file is needed so that mne-bids knows
+    # what is the modality -- meg, eeg, ieeg to read
     bids_basename = '_'.join(bids_fname.split('_')[:-1])
     kind = bids_fname.split('_')[-1].split('.')[0]
     _, ext = _parse_ext(bids_fname)
@@ -120,9 +134,16 @@ def read_raw_bids(bids_fname, output_path, return_events=True,
     # create montage here
     # blah
 
+    hpi = None
     if ext == '.fif':
         bids_fname = op.join(meg_dir,
                              bids_basename + '_%s%s' % (kind, ext))
+    elif ext == '.sqd':
+        data_path = op.join(meg_dir, bids_basename + '_%s' % kind)
+        bids_fname = op.join(data_path,
+                             bids_basename + '_%s%s' % (kind, ext))
+        hpi = op.join(data_path, bids_basename + '_markers.sqd')
+        hsp = op.join(meg_dir, bids_basename + '_headshape.txt')
     raw = _read_raw(bids_fname, electrode=None, hsp=None, hpi=None,
                     config=None, montage=None, verbose=None)
 
