@@ -122,7 +122,7 @@ def read_raw_bids(bids_fname, output_path, return_events=True,
 
     if ext == '.fif':
         bids_fname = op.join(meg_dir,
-                             bids_basename + '_part-01_%s%s' % (kind, ext))
+                             bids_basename + '_%s%s' % (kind, ext))
     raw = _read_raw(bids_fname, electrode=None, hsp=None, hpi=None,
                     config=None, montage=None, verbose=None)
 
