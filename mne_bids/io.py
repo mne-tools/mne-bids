@@ -7,7 +7,8 @@
 #
 # License: BSD (3-clause)
 import os
-import glob
+
+import numpy as np
 import pandas as pd
 from mne import io
 
@@ -103,7 +104,6 @@ def read_raw_bids(bids_fname, output_path, return_events=True,
         The verbosity level
     """
     import os.path as op
-    import numpy as np
     from .utils import _parse_bids_filename
 
     # Full path to data file is needed so that mne-bids knows
@@ -116,16 +116,11 @@ def read_raw_bids(bids_fname, output_path, return_events=True,
     meg_dir = op.join(output_path, 'sub-%s' % params['sub'],
                       'ses-%s' % params['ses'], kind)
 
-    # electrode = blah
-    # hsp = blah
-    # hpi = blah
-    # config = blah
-
     # create montage here
     # blah
 
     config, hpi = None, None
-    if ext in ('.fif', '.ds', '.vhdr'):
+    if ext in ('.fif', '.ds', '.vhdr', '.edf', '.bdf', '.set'):
         bids_fname = op.join(meg_dir,
                              bids_basename + '_%s%s' % (kind, ext))
     elif ext == '.sqd':
@@ -144,12 +139,15 @@ def read_raw_bids(bids_fname, output_path, return_events=True,
 
     # channels_fname = fname.split('.') + '_channels.tsv'
 
+    if not return_events:
+        return raw
+
     events, event_id = None, dict()
-    if return_events and op.exists(events_fname):
+    if op.exists(events_fname):
         events_df = pd.read_csv(events_fname, delimiter='\t')
         events_df = events_df.dropna()
 
-        if 'trial_type' not in events_df and return_events:
+        if 'trial_type' not in events_df:
             raise ValueError('trial_type column is missing. Cannot'
                              ' return events')
 
@@ -161,6 +159,4 @@ def read_raw_bids(bids_fname, output_path, return_events=True,
         events[:, 2] = np.array([event_id[ev] for ev
                                  in events_df['trial_type']])
 
-    if return_events:
-        return raw, events, event_id
-    return raw
+    return raw, events, event_id
