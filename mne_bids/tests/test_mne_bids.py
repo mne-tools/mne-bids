@@ -272,6 +272,9 @@ def test_vhdr():
     cmd = ['bids-validator', '--bep006', output_path]
     run_subprocess(cmd, shell=shell)
 
+    read_raw_bids(bids_basename + '_eeg.vhdr',
+                  output_path, return_events=False)
+
     # Test that correct channel units are written
     channels_tsv_name = op.join(output_path, 'sub-' + subject_id,
                                 'ses-' + session_id, 'eeg',

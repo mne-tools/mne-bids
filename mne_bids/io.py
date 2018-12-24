@@ -125,7 +125,7 @@ def read_raw_bids(bids_fname, output_path, return_events=True,
     # blah
 
     config, hpi = None, None
-    if ext in ('.fif', '.ds'):
+    if ext in ('.fif', '.ds', '.vhdr'):
         bids_fname = op.join(meg_dir,
                              bids_basename + '_%s%s' % (kind, ext))
     elif ext == '.sqd':
@@ -145,9 +145,13 @@ def read_raw_bids(bids_fname, output_path, return_events=True,
     # channels_fname = fname.split('.') + '_channels.tsv'
 
     events, event_id = None, dict()
-    if op.exists(events_fname):
+    if return_events and op.exists(events_fname):
         events_df = pd.read_csv(events_fname, delimiter='\t')
         events_df = events_df.dropna()
+
+        if 'trial_type' not in events_df and return_events:
+            raise ValueError('trial_type column is missing. Cannot'
+                             ' return events')
 
         for idx, ev in enumerate(np.unique(events_df['trial_type'])):
             event_id[ev] = idx
