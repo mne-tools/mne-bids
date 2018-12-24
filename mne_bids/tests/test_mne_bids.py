@@ -322,6 +322,9 @@ def test_edf():
     raw.set_channel_types({'EMG': 'emg'})
 
     write_raw_bids(raw, bids_basename, output_path)
+    read_raw_bids(bids_basename + '_eeg.edf',
+                  output_path, return_events=False)
+
     bids_fname = bids_basename.replace('run-01', 'run-%s' % run2)
     write_raw_bids(raw, bids_fname, output_path, overwrite=True)
 
@@ -366,6 +369,9 @@ def test_bdf():
     cmd = ['bids-validator', '--bep006', output_path]
     run_subprocess(cmd, shell=shell)
 
+    read_raw_bids(bids_basename + '_eeg.bdf',
+                  output_path, return_events=False)
+
     raw.crop(0, raw.times[-2])
     with pytest.raises(AssertionError, match='cropped'):
         write_raw_bids(raw, bids_basename, output_path)
@@ -393,6 +399,8 @@ def test_set():
 
     # proceed with the actual test for EEGLAB data
     write_raw_bids(raw, bids_basename, output_path, overwrite=False)
+    read_raw_bids(bids_basename + '_eeg.set',
+                  output_path, return_events=False)
 
     with pytest.raises(FileExistsError, match="already exists"):
         write_raw_bids(raw, bids_basename, output_path=output_path,
