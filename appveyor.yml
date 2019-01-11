@@ -11,7 +11,7 @@ install:
   - "powershell ci-helpers/appveyor/install-miniconda.ps1"
   - "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
   - "activate test"
-  - "conda install numpy=1.13.1 scipy=0.19.1 matplotlib pandas=0.20.3"
+  - "conda install numpy=1.13.1 scipy=0.19.1 pandas=0.20.3"
   - "pip install flake8 pytest==3.3.2 pytest-cov pytest-sugar pytest-faulthandler codecov"
   - "pip uninstall -yq mne"
   - |-
