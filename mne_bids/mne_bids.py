@@ -31,7 +31,7 @@ from .pick import coil_type
 from .utils import (make_bids_basename, make_bids_folders,
                     make_dataset_description, _write_json, _write_tsv,
                     _read_events, _mkdir_p, _age_on_date,
-                    copyfile_brainvision, copyfile_eeglab,
+                    copyfile_brainvision, copyfile_eeglab, copyfile_ctf,
                     _infer_eeg_placement_scheme, _parse_bids_filename,
                     _handle_kind)
 from .io import _parse_ext, ALLOWED_EXTENSIONS, reader
@@ -742,9 +742,9 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
             # This ensures that single FIF files do not have the part param
             raw.save(bids_fname, overwrite=True, split_naming='neuromag')
 
-    # CTF data is saved in a directory
+    # CTF data is saved in a directory and renamed
     elif ext == '.ds':
-        sh.copytree(raw_fname, bids_fname)
+        copyfile_ctf(raw_fname, bids_fname)
     # BrainVision is multifile, copy over all of them and fix pointers
     elif ext == '.vhdr':
         copyfile_brainvision(raw_fname, bids_fname)
