@@ -742,7 +742,7 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
             # This ensures that single FIF files do not have the part param
             raw.save(bids_fname, overwrite=True, split_naming='neuromag')
 
-    # CTF data is saved in a directory and renamed
+    # CTF data is saved and renamed in a directory
     elif ext == '.ds':
         copyfile_ctf(raw_fname, bids_fname)
     # BrainVision is multifile, copy over all of them and fix pointers
