@@ -504,7 +504,7 @@ def _get_brainvision_paths(vhdr_path):
 
 
 def copyfile_ctf(src, dest):
-    """Copy a BrainVision file triplet to a new location and repair links.
+    """Copy and rename CTF files to a new location.
 
     Parameters
     ----------
@@ -512,10 +512,10 @@ def copyfile_ctf(src, dest):
         path to the source raw .ds folder and the destination path of the
         new bids folder.
     """
+    sh.copytree(src, dest)
     # list of file types to rename
     file_types = ('.acq', '.eeg', '.hc', '.hist', '.infods', '.infods.bak',
                   '.meg4', '.newds', '.res4')
-    sh.copytree(src, dest)
     # Rename files in dest with the name of the dest directory
     files_to_rename = [f for f in os.listdir(dest) if f.endswith(file_types)]
     bids_folder_name = op.splitext(op.split(dest)[-1])[0]
