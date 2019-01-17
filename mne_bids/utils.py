@@ -508,9 +508,10 @@ def copyfile_ctf(src, dest):
 
     Parameters
     ----------
-    src, dest : str
-        path to the source raw .ds folder and the destination path of the
-        new bids folder.
+    src : str
+        path to the source raw .ds folder
+    dest : str
+        path to the destination of the new bids folder.
     """
     sh.copytree(src, dest)
     # list of file types to rename
@@ -519,7 +520,7 @@ def copyfile_ctf(src, dest):
     # Rename files in dest with the name of the dest directory
     files_to_rename = [f for f in os.listdir(dest) if f.endswith(file_types)]
     bids_folder_name = op.splitext(op.split(dest)[-1])[0]
-    for file in files_to_rename:
+    for ff in files_to_rename:
         ext = op.splitext(file)[-1]
         os.rename(op.join(dest, file),
                   op.join(dest, bids_folder_name + ext))
