@@ -515,7 +515,7 @@ def copyfile_ctf(src, dest):
     """
     sh.copytree(src, dest)
     # list of file types to rename
-    file_types = ('.acq', '.eeg', '.hc', '.hist', '.infods', '.infods.bak',
+    file_types = ('.acq', '.eeg', '.hc', '.hist', '.infods', '.bak',
                   '.meg4', '.newds', '.res4')
     # Rename files in dest with the name of the dest directory
     fnames = [f for f in os.listdir(dest) if f.endswith(file_types)]
