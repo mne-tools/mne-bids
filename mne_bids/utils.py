@@ -521,8 +521,8 @@ def copyfile_ctf(src, dest):
     files_to_rename = [f for f in os.listdir(dest) if f.endswith(file_types)]
     bids_folder_name = op.splitext(op.split(dest)[-1])[0]
     for ff in files_to_rename:
-        ext = op.splitext(file)[-1]
-        os.rename(op.join(dest, file),
+        ext = op.splitext(ff)[-1]
+        os.rename(op.join(dest, ff),
                   op.join(dest, bids_folder_name + ext))
 
 
