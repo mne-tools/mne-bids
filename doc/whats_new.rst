@@ -81,3 +81,4 @@ People who contributed to this release  (in alphabetical order):
 .. _Matt Sanderson: https://github.com/monkeyman192
 .. _Stefan Appelhoff: http://stefanappelhoff.com/
 .. _Dominik Welke: https://github.com/dominikwelke
+.. _Romain Quentin: https://github.com/romquentin
