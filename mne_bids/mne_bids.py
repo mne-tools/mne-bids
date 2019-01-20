@@ -12,7 +12,6 @@ import os
 import os.path as op
 
 import shutil as sh
-import pandas as pd
 from collections import defaultdict, OrderedDict
 
 import numpy as np
@@ -35,7 +34,7 @@ from .utils import (make_bids_basename, make_bids_folders,
                     _infer_eeg_placement_scheme, _parse_bids_filename,
                     _handle_kind)
 from .io import _parse_ext, ALLOWED_EXTENSIONS, reader
-
+from .dataframe import DataFrame
 
 ALLOWED_KINDS = ['meg', 'eeg', 'ieeg']
 
@@ -115,9 +114,7 @@ def _channels_tsv(raw, fname, overwrite=False, verbose=True):
     _, ext = _parse_ext(raw.filenames[0], verbose=verbose)
     manufacturer = MANUFACTURERS[ext]
 
-    ignored_indexes = [raw.ch_names.index(ch_name) for ch_name in raw.ch_names
-                       if ch_name in
-                       IGNORED_CHANNELS.get(manufacturer, list())]
+    ignored_channels = IGNORED_CHANNELS.get(manufacturer, list())
 
     status, ch_type, description = list(), list(), list()
     for idx, ch in enumerate(raw.info['ch_names']):
@@ -146,7 +143,7 @@ def _channels_tsv(raw, fname, overwrite=False, verbose=True):
                       ('description', description),
                       ('sampling_frequency', np.full((n_channels), sfreq)),
                       ('status', status)]))
-    df.drop(ignored_indexes, inplace=True)
+    df.drop(ignored_channels, 'name')
 
     _write_tsv(fname, df, overwrite, verbose)
 
@@ -192,23 +189,22 @@ def _events_tsv(events, raw, fname, trial_type, overwrite=False,
     sfreq = raw.info['sfreq']
     events[:, 0] -= first_samp
 
-    data = OrderedDict([('onset', events[:, 0]),
+    # Onset column needs to be specified in seconds
+    data = OrderedDict([('onset', events[:, 0] / sfreq),
                         ('duration', np.zeros(events.shape[0])),
-                        ('trial_type', events[:, 2]),
+                        ('trial_type', None),
                         ('event_value', events[:, 2]),
                         ('event_sample', events[:, 0])])
-
-    df = pd.DataFrame.from_dict(data)
 
     # Now check if trial_type is specified or should be removed
     if trial_type:
         trial_type_map = {v: k for k, v in trial_type.items()}
-        df.trial_type = df.trial_type.map(trial_type_map)
+        data['trial_type'] = [trial_type_map.get(i, 'n/a') for
+                              i in events[:, 2]]
     else:
-        df.drop(labels=['trial_type'], axis=1, inplace=True)
+        del data['trial_type']
 
-    # Onset column needs to be specified in seconds
-    df.onset /= sfreq
+    df = DataFrame(data)
 
     _write_tsv(fname, df, overwrite, verbose)
 
@@ -262,15 +258,14 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False,
 
         data.update({'age': [subject_age], 'sex': [sex]})
 
-    df = pd.DataFrame(data=data,
-                      columns=['participant_id', 'age', 'sex'])
+    df = DataFrame(data)
 
     if os.path.exists(fname):
-        orig_df = pd.read_csv(fname, sep='\t')
+        orig_df = DataFrame.from_tsv(fname)
         # whether the data exists identically in the current DataFrame
-        exact_included = df.values.tolist()[0] in orig_df.values.tolist()
+        exact_included = df in orig_df
         # whether the subject id is in the existing DataFrame
-        sid_included = subject_id in orig_df['participant_id'].values
+        sid_included = subject_id in orig_df['participant_id']
         # if the subject data provided is different to the currently existing
         # data and overwrite is not True raise an error
         if (sid_included and not exact_included) and not overwrite:
@@ -278,12 +273,9 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False,
                                   'list. Please set overwrite to '
                                   'True.' % subject_id)
         # otherwise add the new data
-        df = orig_df.append(df)
-        # and drop any duplicates as we want overwrite = True to force the old
-        # data to be overwritten
-        df.drop_duplicates(subset='participant_id', keep='last',
-                           inplace=True)
-        df = df.sort_values(by='participant_id')
+        orig_df.append(df, 'participant_id')
+        #df = df.sort_values(by='participant_id')
+        df = orig_df
 
     # overwrite is forced to True as all issues with overwrite == False have
     # been handled by this point
@@ -349,22 +341,19 @@ def _scans_tsv(raw, raw_fname, fname, overwrite=False, verbose=True):
     else:
         acq_time = 'n/a'
 
-    df = pd.DataFrame(data={'filename': ['%s' % raw_fname],
-                            'acq_time': [acq_time]},
-                      columns=['filename', 'acq_time'])
+    df = DataFrame(OrderedDict([('filename', ['%s' % raw_fname]),
+                                ('acq_time', [acq_time])]))
 
     if os.path.exists(fname):
-        orig_df = pd.read_csv(fname, sep='\t')
+        orig_df = DataFrame.from_tsv(fname)
         # if the file name is already in the file raise an error
         if raw_fname in orig_df['filename'].values and not overwrite:
             raise FileExistsError('"%s" already exists in the scans list. '
                                   'Please set overwrite to True.' % raw_fname)
         # otherwise add the new data
-        df = orig_df.append(df)
-        # and drop any duplicates as we want overwrite = True to force the old
-        # data to be overwritten
-        df.drop_duplicates(subset='filename', keep='last', inplace=True)
-        df = df.sort_values(by='acq_time')
+        orig_df.append(df, 'filename')
+        #df = df.sort_values(by='acq_time')
+        df = orig_df
 
     # overwrite is forced to True as all issues with overwrite == False have
     # been handled by this point

@@ -18,14 +18,13 @@ from glob import glob
 
 from datetime import datetime
 
-import pandas as pd
-
 import mne
 from mne.datasets import testing
 from mne.utils import _TempDir, run_subprocess
 from mne.io.constants import FIFF
 
 from mne_bids import make_bids_basename, make_bids_folders, write_raw_bids
+from mne_bids.dataframe import DataFrame
 
 base_path = op.join(op.dirname(mne.__file__), 'io')
 subject_id = '01'
@@ -175,8 +174,8 @@ def test_kit():
         subject=subject_id, session=session_id, task=task, run=run,
         suffix='channels.tsv', acquisition=acq,
         prefix=op.join(output_path, 'sub-01/ses-01/meg'))
-    df = pd.read_csv(channels_tsv, sep='\t')
-    assert not ('STI 014' in df['name'].values)
+    df = DataFrame.from_tsv(channels_tsv)
+    assert 'STI 014' not in df['name']
 
     # ensure the marker file is produced in the right place
     raw_folder = make_bids_basename(
@@ -301,15 +300,15 @@ def test_edf():
         subject=subject_id, session=session_id, task=task, run=run,
         suffix='channels.tsv', acquisition=acq,
         prefix=op.join(output_path, 'sub-01/ses-01/eeg'))
-    df = pd.read_csv(channels_tsv, sep='\t')
-    assert 'ElectroMyoGram' in df['description'].values
+    df = DataFrame.from_tsv(channels_tsv)
+    assert 'ElectroMyoGram' in df['description']
 
     # check that the scans list contains two scans
     scans_tsv = make_bids_basename(
         subject=subject_id, session=session_id, suffix='scans.tsv',
         prefix=op.join(output_path, 'sub-01/ses-01'))
-    df = pd.read_csv(scans_tsv, sep='\t')
-    assert df.shape[0] == 2
+    df = DataFrame.from_tsv(scans_tsv)
+    assert df.arr.shape[0] == 2
 
     # Also cover iEEG
     # We use the same data and pretend that eeg channels are ecog
