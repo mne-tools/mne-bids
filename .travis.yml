@@ -14,7 +14,7 @@ before_install:
 install:
     - conda create -n testenv --yes python=${PYTHON_VERSION}
     - source activate testenv
-    - conda install --yes --quiet numpy=1.13.1 scipy=0.19.1 pandas=0.20.3
+    - conda install --yes --quiet numpy=1.13.1 scipy=0.19.1
     - pip install flake8 pytest pytest-sugar pytest-faulthandler check-manifest
     - |
       git clone --depth 1 https://github.com/mne-tools/mne-python.git -b maint/0.17

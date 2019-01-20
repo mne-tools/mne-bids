@@ -13,7 +13,6 @@ Installation
 
 We recommend the `Anaconda Python distribution <https://www.continuum.io/downloads>`_. To install ``mne_bids``, you first need to install its dependencies::
 
-    $ pip install pandas
     $ pip install -U https://api.github.com/repos/mne-tools/mne-python/zipball/master
 
 Then install mne_bids::
