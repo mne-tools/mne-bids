@@ -1,5 +1,5 @@
 import numpy as np
-from collections import OrderedDict, Counter
+from collections import OrderedDict
 
 
 def _from_tsv(fname, dtypes=None):
@@ -43,17 +43,8 @@ def _to_tsv(data, fname):
     fname : str
         Path to the file being written.
     """
-    output = ''
     n_rows = len(data[list(data.keys())[0]])
-    # write headings
-    output += '\t'.join(list(data.keys())) + '\n'
-
-    # write column data
-    for idx in range(n_rows):
-        row_data = list(str(data[key][idx]) for key in data)
-        output += '\t'.join(row_data)
-        if idx != n_rows - 1:
-            output += '\n'
+    output = _tsv_to_str(data, n_rows)
 
     with open(fname, 'w') as f:
         f.write(output)
@@ -82,14 +73,18 @@ def _combine(data1, data2, drop_column=None):
     for key, value in data2.items():
         new_data[key].extend(value)
     if drop_column in new_data:
-        column_data = new_data[drop_column]
-        values_count = Counter(column_data)
-        for key, value in values_count.items():
-            # find the locations of the first n-1 values and remove the rows
-            for _ in range(value - 1):
-                idx = new_data[drop_column].index(key)
-                for column in new_data.values():
-                    del column[idx]
+        # get the id of the column to drop repeated values from
+        col_idx = list(new_data.keys()).index(drop_column)
+        # convert to a numpy array and flip vertically
+        arr = np.stack(list(col for col in new_data.values()), axis=1)
+        flipped_arr = np.flipud(arr)
+        # get indexes of repeated values then apply to flipped array
+        _, indexes = np.unique(flipped_arr[:, col_idx], return_index=True)
+        simplified_arr = flipped_arr[indexes]
+        # re-assign to the OrderedDict
+        for idx, key in enumerate(new_data.keys()):
+            new_data[key] = simplified_arr[:, idx].tolist()
+
     return new_data
 
 
@@ -136,12 +131,27 @@ def _contains_row(data, row_data):
     return np.any(mask)
 
 
-def _prettyprint(data, rows=5):
-    """Pretty print an ordered dictionary."""
-    data_rows = len(data[list(data.keys())[0]])
-    out_str = ''
-    out_str += '\t'.join(list(data.keys())) + '\n'
-    for i in range(min(data_rows, rows)):
-        row_data = list(str(data[key][i]) for key in data)
-        out_str += '\t'.join(row_data) + '\n'
-    return out_str
+def _tsv_to_str(data, rows=5):
+    """Return a string representation of the OrderedDict.
+
+    Parameters
+    ----------
+    data : collections.OrderedDict
+        OrderedDict to return string representation of.
+    rows : int
+        Maximum number of rows of data to output.
+    """
+    n_rows = len(data[list(data.keys())[0]])
+    output = ''
+    # write headings
+    output += '\t'.join(list(data.keys())) + '\n'
+
+    # write column data
+    max_rows = min(n_rows, rows)
+    for idx in range(max_rows):
+        row_data = list(str(data[key][idx]) for key in data)
+        output += '\t'.join(row_data)
+        if idx != max_rows - 1:
+            output += '\n'
+
+    return output

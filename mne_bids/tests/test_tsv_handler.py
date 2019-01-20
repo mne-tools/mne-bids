@@ -14,13 +14,13 @@ from mne.utils import _TempDir
 
 def test_tsv_handler():
     # create some dummy data
-    d = odict([('a', [1, 2, 3, 4]), ('b', [5, 6, 7, 8])])
+    d = odict(a=[1, 2, 3, 4], b=[5, 6, 7, 8])
     assert _contains_row(d, [1, 5])
-    d2 = odict([('a', [5]), ('b', [9])])
-    _combine(d, d2)
+    d2 = odict(a=[5], b=[9])
+    d = _combine(d, d2)
     assert 5 in d['a']
-    d2 = odict([('a', [5]), ('b', [10])])
-    _combine(d, d2, drop_column='a')
+    d2 = odict(a=[5], b=[10])
+    d = _combine(d, d2, drop_column='a')
     # make sure that the repeated data was dropped
     assert 9 not in d['b']
 
@@ -33,9 +33,9 @@ def test_tsv_handler():
     d = _from_tsv(d_path)
 
     # remove any rows with 2 or 5 in them
-    _drop(d, [2, 5], 'a')
+    d = _drop(d, [2, 5], 'a')
     assert 2 not in d['a']
-    _drop(d, [], 'a')
-    d2 = odict([('a', [5]), ('c', [10])])
+    d = _drop(d, [], 'a')
+    d2 = odict(a=[5], c=[10])
     with pytest.raises(KeyError):
-        _combine(d, d2)
+        d = _combine(d, d2)
