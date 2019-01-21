@@ -26,12 +26,7 @@ def _combine(data1, data2, drop_columns=None):
     """
     data = deepcopy(data1)
     for key, value in data2.items():
-        if key in data:
-            data[key].extend(value)
-        else:
-            # If the new key doesn't exist in the left OrderedDict, add a new
-            # column with the appropriate number of "n/a"'s.
-            data[key] = ["n/a"] * len(next(iter(data1.values()))) + value
+        data[key].extend(value)
     # Make sure that if there are any columns in data1 that didn't get new
     # data they are populated with "n/a"'s.
     for key in set(data1.keys()) - set(data2.keys()):
