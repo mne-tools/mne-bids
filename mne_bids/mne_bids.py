@@ -145,7 +145,7 @@ def _channels_tsv(raw, fname, overwrite=False, verbose=True):
         ('status', status)])
     ch_data = _drop(ch_data, ignored_channels, 'name')
 
-    _write_tsv(ch_data, fname, overwrite, verbose)
+    _write_tsv(fname, ch_data, overwrite, verbose)
 
     return fname
 
@@ -204,7 +204,7 @@ def _events_tsv(events, raw, fname, trial_type, overwrite=False,
     else:
         del data['trial_type']
 
-    _write_tsv(data, fname, overwrite, verbose)
+    _write_tsv(fname, data, overwrite, verbose)
 
     return fname
 
@@ -276,7 +276,7 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False,
 
     # overwrite is forced to True as all issues with overwrite == False have
     # been handled by this point
-    _write_tsv(data, fname, True, verbose)
+    _write_tsv(fname, data, True, verbose)
 
     return fname
 
@@ -304,7 +304,7 @@ def _participants_json(fname, overwrite=False, verbose=True):
     cols['sex'] = {'Description': 'Biological sex of the participant',
                    'Levels': {'F': 'female', 'M': 'male'}}
 
-    _write_json(cols, fname, overwrite, verbose)
+    _write_json(fname, cols, overwrite, verbose)
 
     return fname
 
@@ -352,7 +352,7 @@ def _scans_tsv(raw, raw_fname, fname, overwrite=False, verbose=True):
 
     # overwrite is forced to True as all issues with overwrite == False have
     # been handled by this point
-    _write_tsv(data, fname, True, verbose)
+    _write_tsv(fname, data, True, verbose)
 
     return fname
 
@@ -409,7 +409,7 @@ def _coordsystem_json(raw, unit, orient, manufacturer, fname,
                 'HeadCoilCoordinateUnits': unit  # XXX validate this
                 }
 
-    _write_json(fid_json, fname, overwrite, verbose)
+    _write_json(fname, fid_json, overwrite, verbose)
 
     return fname
 
@@ -528,7 +528,7 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, overwrite=False,
     ch_info_json += ch_info_ch_counts
     ch_info_json = OrderedDict(ch_info_json)
 
-    _write_json(ch_info_json, fname, overwrite, verbose)
+    _write_json(fname, ch_info_json, overwrite, verbose)
 
     return fname
 

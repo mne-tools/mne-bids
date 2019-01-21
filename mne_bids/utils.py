@@ -305,7 +305,7 @@ def make_dataset_description(path, name=None, data_license=None,
     pop_keys = [key for key, val in description.items() if val is None]
     for key in pop_keys:
         description.pop(key)
-    _write_json(description, fname, overwrite=True, verbose=verbose)
+    _write_json(fname, description, overwrite=True, verbose=verbose)
 
 
 def _age_on_date(bday, exp_date):
@@ -338,7 +338,7 @@ def _check_types(variables):
                              "Found type %s." % type(var))
 
 
-def _write_json(dictionary, fname, overwrite=False, verbose=False):
+def _write_json(fname, dictionary, overwrite=False, verbose=False):
     """Write JSON to a file."""
     if op.exists(fname) and not overwrite:
         raise FileExistsError('"%s" already exists. Please set '
@@ -354,7 +354,7 @@ def _write_json(dictionary, fname, overwrite=False, verbose=False):
         print(json_output)
 
 
-def _write_tsv(dictionary, fname, overwrite=False, verbose=False):
+def _write_tsv(fname, dictionary, overwrite=False, verbose=False):
     """Write an ordered dictionary to a .tsv file"""
     if op.exists(fname) and not overwrite:
         raise FileExistsError('"%s" already exists. Please set '
