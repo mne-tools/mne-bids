@@ -58,8 +58,8 @@ def test_tsv_handler():
     # test combining data with differing numbers of columns
     d = odict(a=[1, 2], b=['three', 'four'])
     d2 = odict(a=[4], b=['five'], c=[3.1415])
+    with pytest.raises(KeyError):
+        d = _combine(d, d2)
+    d2 = odict(a=[5])
     d = _combine(d, d2)
-    assert d['c'] == ['n/a', 'n/a', 3.1415]
-    d2 = odict(a=[5], c=[1.4142])
-    d = _combine(d, d2)
-    assert d['b'] == ['three', 'four', 'five', 'n/a']
+    assert d['b'] == ['three', 'four', 'n/a']
