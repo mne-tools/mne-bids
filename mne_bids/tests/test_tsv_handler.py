@@ -46,10 +46,6 @@ def test_tsv_handler():
     # remove any rows with 2 or 5 in them
     d = _drop(d, [2, 5], 'a')
     assert 2 not in d['a']
-    d = _drop(d, [], 'a')
-    d2 = odict(a=[5], c=[10])
-    with pytest.raises(KeyError):
-        d = _combine(d, d2)
 
     # test combining and dropping multiple columns
     d = odict(a=[1, 2, 3], b=['four', 'five', 'six'], c=[7, 8, 9])
@@ -58,3 +54,12 @@ def test_tsv_handler():
     assert d['a'] == [2, 4, 5]
     assert d['b'] == ['five', 'four', 'seven']
     assert d['c'] == [8, 1, 9]
+
+    # test combining data with differing numbers of columns
+    d = odict(a=[1, 2], b=['three', 'four'])
+    d2 = odict(a=[4], b=['five'], c=[3.1415])
+    d = _combine(d, d2)
+    assert d['c'] == ['n/a', 'n/a', 3.1415]
+    d2 = odict(a=[5], c=[1.4142])
+    d = _combine(d, d2)
+    assert d['b'] == ['three', 'four', 'five', 'n/a']
