@@ -33,15 +33,9 @@ def _combine(data1, data2, drop_column=None):
     if drop_column is None:
         return data
 
-    idxs = []
     # Find any repeated values and remove all but the most recent value.
     n_rows = len(data[drop_column])
-    _, _idxs = np.unique(data[drop_column][::-1], return_index=True)
-    if idxs == []:
-        idxs = _idxs.tolist()
-    else:
-        for idx in set(idxs) - set(_idxs):
-            idxs.remove(idx)
+    _, idxs = np.unique(data[drop_column][::-1], return_index=True)
     for key in data:
         data[key] = [data[key][n_rows - 1 - idx] for idx in idxs]
 
