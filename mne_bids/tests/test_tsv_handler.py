@@ -23,7 +23,7 @@ def test_tsv_handler():
     d = _combine(d, d2)
     assert 'n/a' in d['b']
     d2 = odict(a=[5], b=['ten'])
-    d = _combine(d, d2, drop_columns='a')
+    d = _combine(d, d2, drop_column='a')
     # make sure that the repeated data was dropped
     assert 'nine' not in d['b']
     print(_tsv_to_str(d))
@@ -47,17 +47,10 @@ def test_tsv_handler():
     d = _drop(d, [2, 5], 'a')
     assert 2 not in d['a']
 
-    # test combining and dropping multiple columns
-    d = odict(a=[1, 2, 3], b=['four', 'five', 'six'], c=[7, 8, 9])
-    d2 = odict(a=[4, 5], b=['four', 'seven'], c=[1, 9])
-    d = _combine(d, d2, drop_columns=['b', 'c'])
-    assert d['a'] == [2, 4, 5]
-    assert d['b'] == ['five', 'four', 'seven']
-    assert d['c'] == [8, 1, 9]
-
     # test combining data with differing numbers of columns
     d = odict(a=[1, 2], b=['three', 'four'])
     d2 = odict(a=[4], b=['five'], c=[3.1415])
+    # raise error if a new column is tried to be added
     with pytest.raises(KeyError):
         d = _combine(d, d2)
     d2 = odict(a=[5])
