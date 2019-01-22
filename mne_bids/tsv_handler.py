@@ -3,7 +3,7 @@ from collections import OrderedDict
 from copy import deepcopy
 
 
-def _combine(data1, data2, drop_columns=None):
+def _combine(data1, data2, drop_column=None):
     """Add two OrderedDict's together and optionally drop repeated data.
 
     Parameters
@@ -12,12 +12,10 @@ def _combine(data1, data2, drop_columns=None):
         Original OrderedDict.
     data2 : collections.OrderedDict
         New OrderedDict to be added to the original.
-    drop_columns : str | list of str's
-        Name(s) of the column to check for duplicate values in.
+    drop_column : str, optional
+        Name of the column to check for duplicate values in.
         Any duplicates found will be dropped from the original data array (ie.
         most recent value are kept).
-        If a list is provided, the rows will be dropped by checking equality
-        between values in the column names provided in order.
 
     Returns
     -------
@@ -32,22 +30,18 @@ def _combine(data1, data2, drop_columns=None):
     for key in set(data1.keys()) - set(data2.keys()):
         data[key].extend(["n/a"] * len(next(iter(data2.values()))))
 
-    if drop_columns is None:
+    if drop_column is None:
         return data
 
-    if isinstance(drop_columns, str):
-        drop_columns = [drop_columns]
     idxs = []
-    for drop_column in drop_columns:
-        # for each column we wish to drop values from, find any repeated values
-        # and remove all but the most recent version of
-        n_rows = len(data[drop_column])
-        _, _idxs = np.unique(data[drop_column][::-1], return_index=True)
-        if idxs == []:
-            idxs = _idxs.tolist()
-        else:
-            for idx in set(idxs) - set(_idxs):
-                idxs.remove(idx)
+    # Find any repeated values and remove all but the most recent value.
+    n_rows = len(data[drop_column])
+    _, _idxs = np.unique(data[drop_column][::-1], return_index=True)
+    if idxs == []:
+        idxs = _idxs.tolist()
+    else:
+        for idx in set(idxs) - set(_idxs):
+            idxs.remove(idx)
     for key in data:
         data[key] = [data[key][n_rows - 1 - idx] for idx in idxs]
 
@@ -109,7 +103,7 @@ def _from_tsv(fname, dtypes=None):
     ----------
     fname : str
         Path to the file being loaded.
-    dtypes : list
+    dtypes : list, optional
         List of types to cast the values loaded as. This is specified column by
         column.
         Defaults to None. In this case all the data is loaded as strings.
