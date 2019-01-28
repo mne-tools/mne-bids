@@ -64,6 +64,15 @@ def test_fif():
     write_raw_bids(raw, bids_basename, output_path, events_data=events_fname,
                    event_id=event_id, overwrite=False)
 
+    # check if BIDS works without stim channel
+    raw.set_channel_types({raw.ch_names[i]: 'misc'
+                           for i in mne.pick_types(raw.info, stim=True, meg=False)})
+    output_path = _TempDir()
+    write_raw_bids(raw, bids_basename, output_path, overwrite=False)
+
+    cmd = ['bids-validator', output_path]
+    run_subprocess(cmd, shell=shell)
+
     # write the same data but pretend it is empty room data:
     er_date = datetime.fromtimestamp(
         raw.info['meas_date'][0]).strftime('%Y%m%d')
@@ -226,6 +235,7 @@ def test_bti():
 
     raw = mne.io.read_raw_bti(raw_fname, config_fname=config_fname,
                               head_shape_fname=headshape_fname)
+
     write_raw_bids(raw, bids_basename, output_path, verbose=True)
 
     assert op.exists(op.join(output_path, 'participants.tsv'))

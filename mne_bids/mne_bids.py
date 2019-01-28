@@ -698,7 +698,7 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
                           overwrite, verbose)
 
     events = _read_events(events_data, raw)
-    if len(events) > 0 and not emptyroom:
+    if events is not None and len(events) > 0 and not emptyroom:
         _events_tsv(events, raw, events_fname, event_id, overwrite, verbose)
 
     make_dataset_description(output_path, name=" ", verbose=verbose)

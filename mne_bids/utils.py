@@ -10,6 +10,7 @@
 import os
 import os.path as op
 import re
+import warnings
 from collections import OrderedDict
 import json
 import shutil as sh
@@ -405,8 +406,12 @@ def _read_events(events_data, raw):
             raise ValueError('Events must have second dimension of length 3, '
                              'found %s' % events_data.shape[1])
         events = events_data
-    else:
+    elif 'stim' in raw:
         events = find_events(raw, min_duration=0.001, initial_event=True)
+    else:
+        warnings.warn('No events found or provided. Please make sure to set channel'
+                      'type using raw.set_channel_types or provide events_data.')
+        events = None
     return events
 
 
