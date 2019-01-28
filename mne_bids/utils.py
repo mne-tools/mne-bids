@@ -17,7 +17,8 @@ import shutil as sh
 
 import numpy as np
 from scipy.io import loadmat, savemat
-from mne import read_events, find_events
+from mne import read_events, find_events, events_from_annotations
+from mne.utils import check_version
 from mne.channels import read_montage
 from mne.io.pick import pick_types
 
@@ -375,7 +376,8 @@ def _check_key_val(key, val):
     return key, val
 
 
-def _read_events(events_data, raw):
+def _read_events(events_data, event_id,
+ raw, ext):
     """Read in events data.
 
     Parameters
@@ -384,8 +386,12 @@ def _read_events(events_data, raw):
         The events file. If a string, a path to the events file. If an array,
         the MNE events array (shape n_events, 3). If None, events will be
         inferred from the stim channel using `find_events`.
+    event_id : dict
+        The event_id provided in write_raw_bids.
     raw : instance of Raw
         The data as MNE-Python Raw object.
+    ext : str
+        The extension of the original data file.
 
     Returns
     -------
@@ -408,11 +414,13 @@ def _read_events(events_data, raw):
         events = events_data
     elif 'stim' in raw:
         events = find_events(raw, min_duration=0.001, initial_event=True)
+    elif ext in ['.vhdr', '.set'] and check_version('mne', '0.18.dev0'):
+        events, event_id = events_from_annotations(raw)
     else:
         warnings.warn('No events found or provided. Please make sure to set channel'
                       'type using raw.set_channel_types or provide events_data.')
         events = None
-    return events
+    return events, event_id
 
 
 def _get_brainvision_encoding(vhdr_file, verbose=False):

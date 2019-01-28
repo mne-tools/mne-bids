@@ -692,7 +692,7 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
         _coordsystem_json(raw, unit, orient, manufacturer, coordsystem_fname,
                           overwrite, verbose)
 
-    events = _read_events(events_data, raw)
+    events, event_id = _read_events(events_data, event_id, raw, ext)
     if events is not None and len(events) > 0 and not emptyroom:
         _events_tsv(events, raw, events_fname, event_id, overwrite, verbose)
 

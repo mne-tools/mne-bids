@@ -264,6 +264,10 @@ def test_vhdr():
     assert data['units'][data['name'].index('FP1')] == 'µV'
     assert data['units'][data['name'].index('CP5')] == 'n/a'
 
+    # check events.tsv is written
+    events_tsv_fname = channels_tsv_name.replace('channels', 'events')
+    assert op.exists(events_tsv_fname)
+
     # create another bids folder with the overwrite command and check
     # no files are in the folder
     data_path = make_bids_folders(subject=subject_id, session=session_id,
@@ -368,6 +372,12 @@ def test_set():
 
     cmd = ['bids-validator', '--bep006', output_path]
     run_subprocess(cmd, shell=shell)
+
+    # check events.tsv is written
+    events_tsv_fname = op.join(output_path, 'sub-' + subject_id,
+                               'ses-' + session_id, 'eeg',
+                               bids_basename + '_events.tsv')
+    assert op.exists(events_tsv_fname)
 
     # Also cover iEEG
     # We use the same data and pretend that eeg channels are ecog
