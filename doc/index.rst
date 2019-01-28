@@ -31,6 +31,10 @@ To check if everything worked fine, you can do::
 
 and it should not give any error messages.
 
+If you want to use the latest development version, use the following command::
+
+    $ pip install https://api.github.com/repos/mne-tools/mne-bids/zipball/master
+
 Quickstart
 ==========
 

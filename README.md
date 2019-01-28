@@ -36,6 +36,10 @@ error messages:
 
     $ python -c 'import mne_bids'
 
+If you want to use the latest development version, use the following command:
+
+    $ pip install https://api.github.com/repos/mne-tools/mne-bids/zipball/master
+
 Command Line Interface
 ----------------------
 
