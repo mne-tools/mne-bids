@@ -417,8 +417,9 @@ def _read_events(events_data, event_id,
     elif ext in ['.vhdr', '.set'] and check_version('mne', '0.18.dev0'):
         events, event_id = events_from_annotations(raw)
     else:
-        warnings.warn('No events found or provided. Please make sure to set channel'
-                      'type using raw.set_channel_types or provide events_data.')
+        warnings.warn('No events found or provided. Please make sure to'
+                      ' set channel type using raw.set_channel_types'
+                      ' or provide events_data.')
         events = None
     return events, event_id
 
