@@ -20,7 +20,7 @@ from datetime import datetime
 
 import mne
 from mne.datasets import testing
-from mne.utils import _TempDir, run_subprocess
+from mne.utils import _TempDir, run_subprocess, check_version
 from mne.io.constants import FIFF
 
 from mne_bids import make_bids_basename, make_bids_folders, write_raw_bids
@@ -374,10 +374,13 @@ def test_set():
     run_subprocess(cmd, shell=shell)
 
     # check events.tsv is written
+    # XXX: only from 0.18 onwards because events_from_annotations
+    # is broken for earlier versions
     events_tsv_fname = op.join(output_path, 'sub-' + subject_id,
                                'ses-' + session_id, 'eeg',
                                bids_basename + '_events.tsv')
-    assert op.exists(events_tsv_fname)
+    if check_version('mne', '0.18dev0'):
+        assert op.exists(events_tsv_fname)
 
     # Also cover iEEG
     # We use the same data and pretend that eeg channels are ecog
