@@ -376,8 +376,7 @@ def _check_key_val(key, val):
     return key, val
 
 
-def _read_events(events_data, event_id,
- raw, ext):
+def _read_events(events_data, event_id, raw, ext):
     """Read in events data.
 
     Parameters
