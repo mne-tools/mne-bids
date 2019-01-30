@@ -64,7 +64,7 @@ def test_fif():
     write_raw_bids(raw, bids_basename, output_path, events_data=events_fname,
                    event_id=event_id, overwrite=False)
 
-    # check if BIDS works without stim channel
+    # check if write_raw_bids works when there is no stim channel
     raw.set_channel_types({raw.ch_names[i]: 'misc'
                            for i in
                            mne.pick_types(raw.info, stim=True, meg=False)})
