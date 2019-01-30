@@ -19,25 +19,10 @@ from scipy.io import loadmat, savemat
 from mne import read_events, find_events
 from mne.channels import read_montage
 from mne.io.pick import pick_types
-from mne.utils import check_version
 
 from .config import BIDS_VERSION
 from .io import _parse_ext
 from .tsv_handler import _to_tsv, _tsv_to_str
-
-
-def assert_mne_version(min_version):
-    """Asserts required minimum mne-version.
-    Parameters
-    ----------
-    min_version : str
-        The minimum version string. Anything that matches
-        ``'(\d+ | [a-z]+ | \.)'``.
-    """
-    ok = check_version('mne', min_version)
-    if not ok:
-        raise ValueError(
-            'Your version of MNE is too old. please update to %s or newer' % min_version)
 
 
 def print_dir_tree(folder):

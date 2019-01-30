@@ -22,6 +22,7 @@ from mne.io.constants import FIFF
 from mne.io.pick import channel_type
 from mne.io import BaseRaw
 from mne.channels.channels import _unit2human
+from mne.utils import check_version
 
 from datetime import datetime
 from warnings import warn
@@ -32,7 +33,7 @@ from .utils import (make_bids_basename, make_bids_folders,
                     _read_events, _mkdir_p, _age_on_date,
                     copyfile_brainvision, copyfile_eeglab, copyfile_ctf,
                     _infer_eeg_placement_scheme, _parse_bids_filename,
-                    _handle_kind, assert_mne_version)
+                    _handle_kind)
 from .io import _parse_ext, ALLOWED_EXTENSIONS, reader
 from mne_bids.tsv_handler import _from_tsv, _combine, _drop, _contains_row
 
@@ -593,6 +594,9 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
     of the participant correctly.
 
     """
+    if not check_version('mne', '0.17'):
+        raise ValueError('Your version of MNE is too old. please update to 0.17 or newer')
+
     if not isinstance(raw, BaseRaw):
         raise ValueError('raw_file must be an instance of BaseRaw, '
                          'got %s' % type(raw))
@@ -614,9 +618,7 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
     raw_fname = raw_fname.replace('.fdt', '.set')
     _, ext = _parse_ext(raw_fname, verbose=verbose)
 
-    assert_mne_version('0.17')
     raw_orig = reader[ext](**raw._init_kwargs)
-
     assert_array_equal(raw.times, raw_orig.times,
                        "raw.times should not have changed since reading"
                        " in from the file. It may have been cropped.")
@@ -739,9 +741,7 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
         copyfile_eeglab(raw_fname, bids_fname)
     else:
         sh.copyfile(raw_fname, bids_fname)
-
     # KIT data requires the marker file to be copied over too
-    assert_mne_version('0.17')
     if 'mrk' in raw._init_kwargs:
         hpi = raw._init_kwargs['mrk']
         _, marker_ext = _parse_ext(hpi)
