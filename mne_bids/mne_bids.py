@@ -22,6 +22,7 @@ from mne.io.constants import FIFF
 from mne.io.pick import channel_type
 from mne.io import BaseRaw
 from mne.channels.channels import _unit2human
+from mne.utils import check_version
 
 from datetime import datetime
 from warnings import warn
@@ -593,6 +594,10 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
     of the participant correctly.
 
     """
+    if not check_version('mne', '0.17'):
+        raise ValueError('Your version of MNE is too old. '
+                         'Please update to 0.17 or newer.')
+
     if not isinstance(raw, BaseRaw):
         raise ValueError('raw_file must be an instance of BaseRaw, '
                          'got %s' % type(raw))

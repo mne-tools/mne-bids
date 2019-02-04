@@ -58,9 +58,9 @@ def _read_raw(raw_fname, electrode=None, hsp=None, hpi=None, config=None,
 
     # BTi systems
     elif ext == '.pdf' and os.path.isfile(raw_fname):
-            raw = io.read_raw_bti(raw_fname, config_fname=config,
-                                  head_shape_fname=hsp,
-                                  preload=False, verbose=verbose)
+        raw = io.read_raw_bti(raw_fname, config_fname=config,
+                              head_shape_fname=hsp,
+                              preload=False, verbose=verbose)
 
     elif ext in ['.fif', '.ds', '.vhdr', '.set']:
         raw = reader[ext](raw_fname)
