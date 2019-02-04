@@ -595,7 +595,8 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
 
     """
     if not check_version('mne', '0.17'):
-        raise ValueError('Your version of MNE is too old. please update to 0.17 or newer')
+        raise ValueError('Your version of MNE is too old. '
+                         'Please update to 0.17 or newer.')
 
     if not isinstance(raw, BaseRaw):
         raise ValueError('raw_file must be an instance of BaseRaw, '
