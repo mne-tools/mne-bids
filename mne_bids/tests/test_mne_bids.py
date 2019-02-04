@@ -18,6 +18,8 @@ from glob import glob
 
 from datetime import datetime
 
+import numpy as np
+
 import mne
 from mne.datasets import testing
 from mne.utils import _TempDir, run_subprocess
@@ -25,6 +27,7 @@ from mne.io.constants import FIFF
 
 from mne_bids import make_bids_basename, make_bids_folders, write_raw_bids
 from mne_bids.tsv_handler import _from_tsv
+from mne_bids.io import _read_raw
 
 base_path = op.join(op.dirname(mne.__file__), 'io')
 subject_id = '01'
@@ -78,10 +81,25 @@ def test_fif():
         write_raw_bids(raw, er_bids_basename_bad, output_path, overwrite=False)
 
     # give the raw object some fake participant data
-    raw = mne.io.read_raw_fif(raw_fname)
-    raw.anonymize()
     raw.info['subject_info'] = {'his_id': subject_id2,
                                 'birthday': (1994, 1, 26), 'sex': 1}
+    write_raw_bids(raw, bids_basename, output_path, events_data=events_fname,
+                   event_id=event_id, overwrite=True)
+    # assert age of participant is correct
+    participants_tsv = op.join(output_path, 'participants.tsv')
+    data = _from_tsv(participants_tsv)
+    assert data['age'][data['participant_id'].index('sub-01')] == '8'
+
+    # try and write preloaded data
+    raw = mne.io.read_raw_fif(raw_fname, preload=True)
+    with pytest.raises(ValueError, match='preloaded'):
+        write_raw_bids(raw, bids_basename, output_path,
+                       events_data=events_fname, event_id=event_id,
+                       overwrite=False)
+
+    raw = mne.io.read_raw_fif(raw_fname)
+    raw.anonymize()
+
     data_path2 = _TempDir()
     raw_fname2 = op.join(data_path2, 'sample_audvis_raw.fif')
     raw.save(raw_fname2)
@@ -160,10 +178,10 @@ def test_kit():
     headshape_fname = op.join(data_path, 'test_hsp.txt')
     event_id = dict(cond=1)
 
-    raw = mne.io.read_raw_kit(
-        raw_fname, mrk=hpi_fname, elp=electrode_fname,
-        hsp=headshape_fname)
-    write_raw_bids(raw, bids_basename, output_path, events_data=events_fname,
+    raw = _read_raw(raw_fname, electrode=electrode_fname, hsp=headshape_fname,
+                    hpi=hpi_fname)
+    event_data = np.loadtxt(events_fname)
+    write_raw_bids(raw, bids_basename, output_path, events_data=event_data,
                    event_id=event_id, overwrite=False)
     cmd = ['bids-validator', output_path]
     run_subprocess(cmd, shell=shell)
@@ -186,6 +204,21 @@ def test_kit():
         acquisition=acq, suffix='markers.sqd',
         prefix=os.path.join(output_path, 'sub-01/ses-01/meg', raw_folder))
     assert op.exists(marker_fname)
+
+    # test attempts at writing invalid event data
+    event_data = np.loadtxt(events_fname)
+    # make the data the wrong number of dimensions
+    event_data_3d = np.atleast_3d(event_data)
+    with pytest.raises(ValueError, match='two dimensions'):
+        write_raw_bids(raw, bids_basename, output_path,
+                       events_data=event_data_3d, event_id=event_id,
+                       overwrite=True)
+    # remove 3rd column
+    event_data = event_data[:, :2]
+    with pytest.raises(ValueError, match='second dimension'):
+        write_raw_bids(raw, bids_basename, output_path,
+                       events_data=event_data, event_id=event_id,
+                       overwrite=True)
 
 
 def test_ctf():
@@ -224,8 +257,7 @@ def test_bti():
     config_fname = op.join(data_path, 'test_config_linux')
     headshape_fname = op.join(data_path, 'test_hs_linux')
 
-    raw = mne.io.read_raw_bti(raw_fname, config_fname=config_fname,
-                              head_shape_fname=headshape_fname)
+    raw = _read_raw(raw_fname, config=config_fname, hsp=headshape_fname)
     write_raw_bids(raw, bids_basename, output_path, verbose=True)
 
     assert op.exists(op.join(output_path, 'participants.tsv'))

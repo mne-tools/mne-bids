@@ -40,7 +40,7 @@ def fetch_faces_data(data_path=None, repo='ds000117', subject_ids=[1]):
         if not os.path.exists(data_path):
             os.makedirs(data_path)
 
-    for subject_id in subject_ids:
+    for subject_id in subject_ids:  # pragma: no cover
         src_url = ('http://openfmri.s3.amazonaws.com/tarballs/'
                    'ds117_R0.1.1_sub%03d_raw.tgz' % subject_id)
         tar_fname = op.join(data_path, repo + '.tgz')

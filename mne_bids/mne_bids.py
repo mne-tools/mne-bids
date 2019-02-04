@@ -520,9 +520,6 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, overwrite=False,
         append_kind_json = ch_info_json_eeg
     elif kind == 'ieeg':
         append_kind_json = ch_info_json_ieeg
-    else:
-        raise ValueError('Unexpected "kind": {}'
-                         ' Use one of: {}'.format(kind, ALLOWED_KINDS))
 
     ch_info_json += append_kind_json
     ch_info_json += ch_info_ch_counts

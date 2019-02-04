@@ -68,5 +68,5 @@ def run():
 
 
 is_main = (__name__ == '__main__')
-if is_main:
+if is_main:  # pragma: no cover
     run()

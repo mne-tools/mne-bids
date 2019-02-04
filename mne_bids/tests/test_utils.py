@@ -69,11 +69,14 @@ def test_make_filenames():
     assert make_bids_basename(**prefix_data) == 'sub-one_ses-two_task-three_acq-four_run-five_proc-six_recording-seven_suffix.csv'  # noqa
 
     # subsets of keys works
-    assert make_bids_basename(subject='one', task='three') == 'sub-one_task-three'  # noqa
+    assert make_bids_basename(subject='one', task='three', run=4) == 'sub-one_task-three_run-04'  # noqa
     assert make_bids_basename(subject='one', task='three', suffix='hi.csv') == 'sub-one_task-three_hi.csv'  # noqa
 
     with pytest.raises(ValueError):
         make_bids_basename(subject='one-two', suffix='there.csv')
+
+    with pytest.raises(ValueError, match='At least one'):
+        make_bids_basename()
 
 
 def test_make_folders():

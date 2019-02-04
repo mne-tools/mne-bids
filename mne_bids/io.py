@@ -68,7 +68,10 @@ def _read_raw(raw_fname, electrode=None, hsp=None, hpi=None, config=None,
     # EDF (european data format) or BDF (biosemi) format
     # TODO: integrate with lines above once MNE can read
     # annotations with preload=False
-    elif ext in ['.edf', '.bdf']:
+    # Once the above is complete test_mne_bids.py:test_bdf can be modified to
+    # use this function to load the .bdf file and the test will cover the
+    # following lines.
+    elif ext in ['.edf', '.bdf']:  # pragma: no cover
         raw = reader[ext](raw_fname, preload=True)
 
     # MEF and NWB are allowed, but not yet implemented

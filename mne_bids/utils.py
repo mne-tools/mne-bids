@@ -159,7 +159,8 @@ def make_bids_basename(subject=None, session=None, task=None,
 
     _check_types(order.values())
 
-    if not any(isinstance(ii, str) for ii in order.keys()):
+    if (all(ii is None for ii in order.values()) and suffix is None and
+            prefix is None):
         raise ValueError("At least one parameter must be given.")
 
     filename = []
@@ -431,7 +432,7 @@ def _get_brainvision_encoding(vhdr_file, verbose=False):
     with open(vhdr_file, 'rb') as ef:
         enc = ef.read()
         if enc.find(b'Codepage=') != -1:
-            enc = enc[enc.find(b'Codepage=')+9:]
+            enc = enc[enc.find(b'Codepage=') + 9:]
             enc = enc.split()[0]
             enc = enc.decode()
             src = '(read from header)'
