@@ -350,6 +350,15 @@ def test_set():
     raw_fname = op.join(data_path, 'test_raw.set')
 
     raw = mne.io.read_raw_eeglab(raw_fname)
+
+    # embedded - test mne-version assertion
+    tmp_version = mne.__version__
+    mne.__version__ = '0.16'
+    with pytest.raises(ValueError, match='Your version of MNE is too old.'):
+        write_raw_bids(raw, bids_basename, output_path)
+    mne.__version__ = tmp_version
+
+    # proceed with the actual test for EEGLAB data
     write_raw_bids(raw, bids_basename, output_path, overwrite=False)
 
     with pytest.raises(FileExistsError, match="already exists"):
@@ -368,13 +377,3 @@ def test_set():
 
     cmd = ['bids-validator', '--bep010', output_path]
     run_subprocess(cmd, shell=shell)
-
-
-def test_assert_mne_version():
-    """Test functionality of mne-version assertion"""
-    tmp_version = mne.__version__
-    mne.__version__ = '0.16'
-    raw, bids_basename, output_path = [], [], []
-    with pytest.raises(ValueError, match='Your version of MNE is too old.'):
-        write_raw_bids(raw, bids_basename, output_path)
-    mne.__version__ = tmp_version
