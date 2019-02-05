@@ -27,7 +27,6 @@ from mne.io.constants import FIFF
 
 from mne_bids import make_bids_basename, make_bids_folders, write_raw_bids
 from mne_bids.tsv_handler import _from_tsv
-from mne_bids.io import _read_raw
 
 base_path = op.join(op.dirname(mne.__file__), 'io')
 subject_id = '01'
@@ -178,8 +177,8 @@ def test_kit():
     headshape_fname = op.join(data_path, 'test_hsp.txt')
     event_id = dict(cond=1)
 
-    raw = _read_raw(raw_fname, electrode=electrode_fname, hsp=headshape_fname,
-                    hpi=hpi_fname)
+    raw = mne.io.read_raw_kit(raw_fname, mrk=hpi_fname, elp=electrode_fname,
+                              hsp=headshape_fname)
     event_data = np.loadtxt(events_fname)
     write_raw_bids(raw, bids_basename, output_path, events_data=event_data,
                    event_id=event_id, overwrite=False)
@@ -257,7 +256,8 @@ def test_bti():
     config_fname = op.join(data_path, 'test_config_linux')
     headshape_fname = op.join(data_path, 'test_hs_linux')
 
-    raw = _read_raw(raw_fname, config=config_fname, hsp=headshape_fname)
+    raw = mne.io.read_raw_bti(raw_fname, config_fname=config_fname,
+                              head_shape_fname=headshape_fname)
     write_raw_bids(raw, bids_basename, output_path, verbose=True)
 
     assert op.exists(op.join(output_path, 'participants.tsv'))

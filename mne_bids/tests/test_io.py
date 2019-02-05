@@ -5,6 +5,7 @@
 import os.path as op
 import pytest
 
+import mne
 from mne.utils import _TempDir
 
 from mne_bids.io import _parse_ext, _read_raw
@@ -30,6 +31,23 @@ def test_read_raw():
     f = 'file.bogus'
     with pytest.raises(ValueError, match='file name extension must be one of'):
         _read_raw(f)
+
+    # Check that KIT and BTI data is automatically read
+    # KIT
+    base_path = op.join(op.dirname(mne.__file__), 'io')
+    data_path = op.join(base_path, 'kit', 'tests', 'data')
+    raw_fname = op.join(data_path, 'test.sqd')
+    hpi_fname = op.join(data_path, 'test_mrk.sqd')
+    electrode_fname = op.join(data_path, 'test_elp.txt')
+    headshape_fname = op.join(data_path, 'test_hsp.txt')
+    _read_raw(raw_fname, electrode=electrode_fname, hsp=headshape_fname,
+              hpi=hpi_fname)
+    # BTI
+    data_path = op.join(base_path, 'bti', 'tests', 'data')
+    raw_fname = op.join(data_path, 'test_pdf_linux')
+    config_fname = op.join(data_path, 'test_config_linux')
+    headshape_fname = op.join(data_path, 'test_hs_linux')
+    _read_raw(raw_fname, config=config_fname, hsp=headshape_fname)
 
 
 def test_not_implemented():
