@@ -263,7 +263,9 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False,
         orig_data = _from_tsv(fname)
         # whether the new data exists identically in the previous data
         exact_included = _contains_row(orig_data,
-                                       [subject_id, subject_age, sex])
+                                       {'participant_id': subject_id,
+                                        'age': subject_age,
+                                        'sex': sex})
         # whether the subject id is in the previous data
         sid_included = subject_id in orig_data['participant_id']
         # if the subject data provided is different to the currently existing

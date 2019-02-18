@@ -15,7 +15,7 @@ from mne.utils import _TempDir
 def test_tsv_handler():
     # create some dummy data
     d = odict(a=[1, 2, 3, 4], b=['five', 'six', 'seven', 'eight'])
-    assert _contains_row(d, [1, 'five'])
+    assert _contains_row(d, {'a': 1, 'b': 'five'})
     d2 = odict(a=[5], b=['nine'])
     d = _combine(d, d2)
     assert 5 in d['a']
@@ -56,3 +56,4 @@ def test_tsv_handler():
     d2 = odict(a=[5])
     d = _combine(d, d2)
     assert d['b'] == ['three', 'four', 'n/a']
+    assert _contains_row(d, {'a': 5})
