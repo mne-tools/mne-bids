@@ -561,8 +561,7 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
             sub-01_ses-01_task-testing_acq-01_run-01_channels.tsv
             sub-01_ses-01_task-testing_acq-01_run-01_coordsystem.json
 
-        and the following one if events_data is not None
-        ::
+        and the following one if events_data is not None::
 
             sub-01_ses-01_task-testing_acq-01_run-01_events.tsv
 
