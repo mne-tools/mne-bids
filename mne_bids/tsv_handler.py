@@ -113,7 +113,7 @@ def _from_tsv(fname, dtypes=None):
     data_dict : collections.OrderedDict
         Keys are the column names, and values are the column data.
     """
-    data = np.loadtxt(fname, dtype=str, delimiter='\t')
+    data = np.loadtxt(fname, dtype=str, delimiter='\t', encoding='utf-8')
     column_names = data[0, :]
     info = data[1:, :]
     data_dict = OrderedDict()
@@ -142,8 +142,8 @@ def _to_tsv(data, fname):
     n_rows = len(data[list(data.keys())[0]])
     output = _tsv_to_str(data, n_rows)
 
-    with open(fname, 'w') as f:
-        f.write(output)
+    with open(fname, 'wb') as f:
+        f.write(output.encode('utf-8'))
 
 
 def _tsv_to_str(data, rows=5):
