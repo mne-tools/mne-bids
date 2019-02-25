@@ -263,7 +263,9 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False,
         orig_data = _from_tsv(fname)
         # whether the new data exists identically in the previous data
         exact_included = _contains_row(orig_data,
-                                       [subject_id, subject_age, sex])
+                                       {'participant_id': subject_id,
+                                        'age': subject_age,
+                                        'sex': sex})
         # whether the subject id is in the previous data
         sid_included = subject_id in orig_data['participant_id']
         # if the subject data provided is different to the currently existing
@@ -550,18 +552,24 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
     bids_basename : str
         The base filename of the BIDS compatible files. Typically, this can be
         generated using make_bids_basename.
-        Example: sub-01_ses-01_task-testing_acq-01_run-01
-        This will write the following files in the correct subfolder
-        of output_path:
+        Example: `sub-01_ses-01_task-testing_acq-01_run-01`.
+        This will write the following files in the correct subfolder of the
+        output_path::
+
             sub-01_ses-01_task-testing_acq-01_run-01_meg.fif
             sub-01_ses-01_task-testing_acq-01_run-01_meg.json
             sub-01_ses-01_task-testing_acq-01_run-01_channels.tsv
             sub-01_ses-01_task-testing_acq-01_run-01_coordsystem.json
-        and the following one if events_data is not None
+
+        and the following one if events_data is not None::
+
             sub-01_ses-01_task-testing_acq-01_run-01_events.tsv
-        and add a line to the following files:
+
+        and add a line to the following files::
+
             participants.tsv
             scans.tsv
+
         Note that the modality 'meg' is automatically inferred from the raw
         object and extension '.fif' is copied from raw.filenames.
     output_path : str

@@ -49,18 +49,24 @@ def _contains_row(data, row_data):
     ----------
     data : collections.OrderedDict
         OrderedDict to check.
-    row_data : list
-        List of values to be searched for. This must match the contents of a
-        row exactly for a positive match to be returned.
+    row_data : dict
+        Dictionary with column names as keys, and values being the column value
+        to match within a row.
 
     Returns
     -------
     bool
         True if `row_data` exists in `data`.
+
+    Note
+    ----
+    This function will return True if the supplied `row_data` contains less
+    columns than the number of columns in the existing data but there is still
+    a match for the partial row data.
     """
     mask = None
-    for idx, column_data in enumerate(data.values()):
-        column_mask = np.in1d(np.array(column_data), row_data[idx])
+    for key, value in row_data.items():
+        column_mask = np.in1d(np.array(data[key]), value)
         mask = column_mask if mask is None else (mask & column_mask)
     return np.any(mask)
 
