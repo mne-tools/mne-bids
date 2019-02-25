@@ -48,7 +48,7 @@ In addition to `import mne_bids`, you can use the command line interface.
 Example:
 
 ```bash
-$ mne_bids raw_to_bids --subject_id sub01 --task rest --raw_file data.edf --output_path new_path
+$ mne_bids raw_to_bids --subject_id sub01 --task rest --raw data.edf --output_path new_path
 ```
 
 Cite
