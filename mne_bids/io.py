@@ -47,7 +47,7 @@ def _parse_ext(raw_fname, verbose=False):
 
 
 def _read_raw(raw_fname, electrode=None, hsp=None, hpi=None, config=None,
-              montage=None, verbose=None):
+              montage=None, verbose=None, allow_maxshield=None):
     """Read a raw file into MNE, making inferences based on extension."""
     fname, ext = _parse_ext(raw_fname)
 
@@ -63,7 +63,7 @@ def _read_raw(raw_fname, electrode=None, hsp=None, hpi=None, config=None,
                               preload=False, verbose=verbose)
 
     elif ext in ['.fif', '.ds', '.vhdr', '.set']:
-        raw = reader[ext](raw_fname)
+        raw = reader[ext](raw_fname, allow_maxshield=allow_maxshield)
 
     # EDF (european data format) or BDF (biosemi) format
     # TODO: integrate with lines above once MNE can read
