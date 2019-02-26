@@ -183,7 +183,7 @@ def test_kit():
     channels_tsv = make_bids_basename(
         subject=subject_id, session=session_id, task=task, run=run,
         suffix='channels.tsv', acquisition=acq,
-        prefix=op.join(output_path, 'sub-01/ses-01/meg'))
+        prefix=op.join(output_path, 'sub-01', 'ses-01', 'meg'))
     data = _from_tsv(channels_tsv)
     assert 'STI 014' not in data['name']
 
@@ -194,7 +194,7 @@ def test_kit():
     marker_fname = make_bids_basename(
         subject=subject_id, session=session_id, task=task, run=run,
         acquisition=acq, suffix='markers.sqd',
-        prefix=os.path.join(output_path, 'sub-01/ses-01/meg', raw_folder))
+        prefix=op.join(output_path, 'sub-01', 'ses-01', 'meg', raw_folder))
     assert op.exists(marker_fname)
 
 
@@ -314,14 +314,14 @@ def test_edf():
     channels_tsv = make_bids_basename(
         subject=subject_id, session=session_id, task=task, run=run,
         suffix='channels.tsv', acquisition=acq,
-        prefix=op.join(output_path, 'sub-01/ses-01/eeg'))
+        prefix=op.join(output_path, 'sub-01', 'ses-01', 'eeg'))
     data = _from_tsv(channels_tsv)
     assert 'ElectroMyoGram' in data['description']
 
     # check that the scans list contains two scans
     scans_tsv = make_bids_basename(
         subject=subject_id, session=session_id, suffix='scans.tsv',
-        prefix=op.join(output_path, 'sub-01/ses-01'))
+        prefix=op.join(output_path, 'sub-01', 'ses-01'))
     data = _from_tsv(scans_tsv)
     assert len(list(data.values())[0]) == 2
 
