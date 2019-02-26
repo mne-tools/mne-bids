@@ -686,7 +686,7 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
         acquisition=acquisition, suffix='channels.tsv', prefix=data_path)
     if ext not in ['.fif', '.ds', '.vhdr', '.edf', '.bdf', '.set']:
         bids_raw_folder = bids_fname.split('.')[0]
-        bids_fname = op.join(bids_raw_folder, bids_fname)
+        bids_fname = '/'.join([bids_raw_folder, bids_fname])
 
     # Read in Raw object and extract metadata from Raw object if needed
     orient = ORIENTATION.get(ext, 'n/a')
@@ -697,7 +697,7 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
     _participants_tsv(raw, subject_id, participants_tsv_fname, overwrite,
                       verbose)
     _participants_json(participants_json_fname, True, verbose)
-    _scans_tsv(raw, os.path.join(kind, bids_fname), scans_fname,
+    _scans_tsv(raw, '/'.join([kind, bids_fname]), scans_fname,
                overwrite, verbose)
 
     # TODO: Implement coordystem.json and electrodes.tsv for EEG and  iEEG
