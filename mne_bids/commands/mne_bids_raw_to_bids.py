@@ -56,7 +56,7 @@ def run():
                       metavar='ow')
     parser.add_option('--allow_maxshield', dest='allow_maxshield',
                       help=("Boolean. Whether to allow non Maxfiltered data."),
-                      metavar='mxf')
+                      metavar='mxf', action='store_true')
 
     opt, args = parser.parse_args()
 
