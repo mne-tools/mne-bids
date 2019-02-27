@@ -34,6 +34,9 @@ def run():
     parser.add_option('--run', dest='run',
                       help='The run number for this dataset.',
                       metavar='run')
+    parser.add_option('--proc', dest='proc',
+                      help='Processing tag (e.g. tsss).',
+                      metavar='proc')
     parser.add_option('--acq', dest='acq',
                       help='The acquisition parameter.',
                       metavar='acq')
@@ -62,7 +65,7 @@ def run():
 
     bids_basename = make_bids_basename(
         subject=opt.subject_id, session=opt.session_id, run=opt.run,
-        acquisition=opt.acq, task=opt.task)
+        processing=opt.proc, acquisition=opt.acq, task=opt.task)
     raw = _read_raw(opt.raw_fname, hpi=opt.hpi, electrode=opt.electrode,
                     hsp=opt.hsp, config=opt.config,
                     allow_maxshield=opt.allow_maxshield)
