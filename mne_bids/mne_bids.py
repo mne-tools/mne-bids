@@ -341,6 +341,9 @@ def _scans_tsv(raw, raw_fname, fname, overwrite=False, verbose=True):
     else:
         acq_time = 'n/a'
 
+    # fix the separator to always be `/`
+    raw_fname = raw_fname.replace(os.sep, '/')
+
     data = OrderedDict([('filename', ['%s' % raw_fname]),
                         ('acq_time', [acq_time])])
 
@@ -697,8 +700,7 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
     _participants_tsv(raw, subject_id, participants_tsv_fname, overwrite,
                       verbose)
     _participants_json(participants_json_fname, True, verbose)
-    _scans_tsv(raw, '/'.join([kind, bids_fname.replace(os.sep, '/')]),
-               scans_fname, overwrite, verbose)
+    _scans_tsv(raw, op.join(kind, bids_fname), scans_fname, overwrite, verbose)
 
     # TODO: Implement coordystem.json and electrodes.tsv for EEG and  iEEG
     if kind == 'meg' and not emptyroom:
