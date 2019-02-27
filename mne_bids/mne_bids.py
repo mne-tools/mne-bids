@@ -341,11 +341,8 @@ def _scans_tsv(raw, raw_fname, fname, overwrite=False, verbose=True):
     else:
         acq_time = 'n/a'
 
-    # fix the separator to always be `/`
-    raw_fname = raw_fname.replace(os.sep, '/')
-
-    data = OrderedDict([('filename', ['%s' % raw_fname]),
-                        ('acq_time', [acq_time])])
+    data = OrderedDict([('filename', ['%s' % raw_fname.replace(os.sep, '/')]),
+                       ('acq_time', [acq_time])])
 
     if os.path.exists(fname):
         orig_data = _from_tsv(fname)
