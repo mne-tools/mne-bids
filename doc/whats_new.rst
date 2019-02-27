@@ -87,3 +87,4 @@ People who contributed to this release  (in alphabetical order):
 .. _Stefan Appelhoff: http://stefanappelhoff.com/
 .. _Romain Quentin: https://github.com/romquentin
 .. _Dominik Welke: https://github.com/dominikwelke
+.. _Maximilien Chaumon: https://github.com/dnacombo
