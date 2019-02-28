@@ -31,6 +31,7 @@ Bug
 API
 ~~~
 
+- Add processing tag to raw_to_bids files to allow Maxwell filtered data, by `Maximilien Chaumon`_ (`https://github.com/mne-tools/mne-bids/pull/178`_)
 - Add support for non maxfiltered .fif files, by `Maximilien Chaumon`_ (`#171 <https://github.com/mne-tools/mne-bids/pull/171>`_)
 - Remove support for Neuroscan ``.cnt`` data because its support is no longer planned in BIDS, by `Stefan Appelhoff`_ (`#142 <https://github.com/mne-tools/mne-bids/pull/142>`_)
 - Remove support for Python 2 because it is no longer supported in MNE-Python, by `Teon Brooks`_ (`#141 <https://github.com/mne-tools/mne-bids/pull/141>`_)
