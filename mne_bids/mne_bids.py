@@ -302,7 +302,7 @@ def _participants_json(fname, overwrite=False, verbose=True):
     """
     cols = OrderedDict()
     cols['participant_id'] = {'Description': 'Unique participant identifier'}
-    cols['age'] = {'Description': 'Unique participant identifier',
+    cols['age'] = {'Description': 'Age of the participant at time of testing',
                    'Units': 'years'}
     cols['sex'] = {'Description': 'Biological sex of the participant',
                    'Levels': {'F': 'female', 'M': 'male'}}
