@@ -81,13 +81,13 @@ def _parse_bids_filename(fname, verbose):
 
 def _handle_kind(raw):
     """Get kind."""
-    if 'eeg' in raw and 'ecog' in raw:
+    if 'eeg' in raw and ('ecog' in raw or 'seeg' in raw):
         raise ValueError('Both EEG and iEEG channels found in data.'
                          'There is currently no specification on how'
                          'to handle this data. Please proceed manually.')
     elif 'meg' in raw:
         kind = 'meg'
-    elif 'ecog' in raw:
+    elif 'ecog' in raw  or 'seeg' in raw:
         kind = 'ieeg'
     elif 'eeg' in raw:
         kind = 'eeg'
