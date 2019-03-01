@@ -27,6 +27,7 @@ Bug
 - Allow files with no stim channel, which could be the case for example in resting state data, by `Mainak Jas`_ (`#167 <https://github.com/mne-tools/mne-bids/pull/167/files>`_)
 - Better handling of unicode strings in TSV files, by `Mainak Jas`_ (`#172 <https://github.com/mne-tools/mne-bids/pull/172/files>`_)
 - Fix separator in scans.tsv to always be `/`, by `Matt Sanderson`_ (`#176 <https://github.com/mne-tools/mne-bids/pull/176>`_)
+- Add seeg to :func:`mne_bids.utils._handle_kind` when determining the kind of ieeg data, by `Ezequiel Mikulan`_
 
 API
 ~~~
@@ -90,3 +91,4 @@ People who contributed to this release  (in alphabetical order):
 .. _Romain Quentin: https://github.com/romquentin
 .. _Dominik Welke: https://github.com/dominikwelke
 .. _Maximilien Chaumon: https://github.com/dnacombo
+.. _Ezequiel Mikulan: https://github.com/ezemikulan
