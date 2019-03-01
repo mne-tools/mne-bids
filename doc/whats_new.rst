@@ -27,7 +27,8 @@ Bug
 - Allow files with no stim channel, which could be the case for example in resting state data, by `Mainak Jas`_ (`#167 <https://github.com/mne-tools/mne-bids/pull/167/files>`_)
 - Better handling of unicode strings in TSV files, by `Mainak Jas`_ (`#172 <https://github.com/mne-tools/mne-bids/pull/172/files>`_)
 - Fix separator in scans.tsv to always be `/`, by `Matt Sanderson`_ (`#176 <https://github.com/mne-tools/mne-bids/pull/176>`_)
-- Add seeg to :func:`mne_bids.utils._handle_kind` when determining the kind of ieeg data, by `Ezequiel Mikulan`_
+- Add seeg to :func:`mne_bids.utils._handle_kind` when determining the kind of ieeg data, by `Ezequiel Mikulan`_ (`#180 <https://github.com/mne-tools/mne-bids/pull/180/files>`_)
+- Fix problem in copying CTF files on Network File System due to a bug upstream in Python by `Mainak Jas`_ (`#174 <https://github.com/mne-tools/mne-bids/pull/174/files>`_)
 
 API
 ~~~
