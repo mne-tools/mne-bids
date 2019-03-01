@@ -35,7 +35,7 @@ def run():
                       help='The run number for this dataset.',
                       metavar='run')
     parser.add_option('--proc', dest='proc',
-                      help='Processing tag (e.g. tsss).',
+                      help='Processing tag.',
                       metavar='proc')
     parser.add_option('--acq', dest='acq',
                       help='The acquisition parameter.',
