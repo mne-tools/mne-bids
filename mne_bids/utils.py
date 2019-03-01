@@ -87,7 +87,7 @@ def _handle_kind(raw):
                          'to handle this data. Please proceed manually.')
     elif 'meg' in raw:
         kind = 'meg'
-    elif 'ecog' in raw  or 'seeg' in raw:
+    elif 'ecog' in raw or 'seeg' in raw:
         kind = 'ieeg'
     elif 'eeg' in raw:
         kind = 'eeg'
