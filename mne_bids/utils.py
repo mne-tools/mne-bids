@@ -23,6 +23,7 @@ from mne.channels import read_montage
 from mne.io.pick import pick_types
 
 from .config import BIDS_VERSION
+from .fixes import _copytree
 from .io import _parse_ext
 from .tsv_handler import _to_tsv, _tsv_to_str
 
@@ -528,7 +529,7 @@ def copyfile_ctf(src, dest):
     dest : str
         path to the destination of the new bids folder.
     """
-    sh.copytree(src, dest)
+    _copytree(src, dest)
     # list of file types to rename
     file_types = ('.acq', '.eeg', '.hc', '.hist', '.infods', '.bak',
                   '.meg4', '.newds', '.res4')

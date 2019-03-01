@@ -34,6 +34,7 @@ from .utils import (make_bids_basename, make_bids_folders,
                     copyfile_brainvision, copyfile_eeglab, copyfile_ctf,
                     _infer_eeg_placement_scheme, _parse_bids_filename,
                     _handle_kind)
+
 from .io import _parse_ext, ALLOWED_EXTENSIONS, reader
 from mne_bids.tsv_handler import _from_tsv, _combine, _drop, _contains_row
 
