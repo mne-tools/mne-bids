@@ -241,7 +241,7 @@ def test_kit():
                        overwrite=True)
     # test correct naming of marker files
     raw = mne.io.read_raw_kit(
-        raw_fname, mrk=[hpi_post_fname, hpi_pre_fname], elp=electrode_fname,
+        raw_fname, mrk=[hpi_pre_fname, hpi_post_fname], elp=electrode_fname,
         hsp=headshape_fname)
     write_raw_bids(raw,
                    kit_bids_basename.replace('sub-01', 'sub-%s' % subject_id2),
@@ -261,6 +261,17 @@ def test_kit():
     info = get_kit_info(marker_fname, False)[0]
     assert info['meas_date'] == get_kit_info(hpi_post_fname,
                                              False)[0]['meas_date']
+
+    # check that providing markers in the wrong order raises an error
+    raw = mne.io.read_raw_kit(
+        raw_fname, mrk=[hpi_post_fname, hpi_pre_fname], elp=electrode_fname,
+        hsp=headshape_fname)
+    with pytest.raises(ValueError, match='Markers'):
+        write_raw_bids(
+            raw,
+            kit_bids_basename.replace('sub-01', 'sub-%s' % subject_id2),
+            output_path, events_data=events_fname, event_id=event_id,
+            overwrite=True)
 
 
 def test_ctf():
