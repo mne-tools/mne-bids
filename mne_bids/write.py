@@ -937,8 +937,8 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
         hpi = raw._init_kwargs['mrk']
         acq_map = dict()
         if isinstance(hpi, list):
-            # order hpi list by acquisition time
-            hpi.sort(key=_get_mrk_meas_date)
+            if _get_mrk_meas_date(hpi[0]) > _get_mrk_meas_date(hpi[1]):
+                raise ValueError('Markers provided in incorrect order.')
             _, marker_ext = _parse_ext(hpi[0])
             acq_map = dict(zip(['pre', 'post'], hpi))
         else:
