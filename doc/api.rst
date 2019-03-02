@@ -29,6 +29,7 @@ Utils (:py:mod:`mne_bids.utils`):
    copyfile_brainvision
    copyfile_eeglab
    copyfile_ctf
+   copyfile_bti
 
 Datasets (:py:mod:`mne_bids.datasets`):
 
