@@ -36,7 +36,7 @@ from .utils import (make_bids_basename, make_bids_folders,
                     _handle_kind)
 
 from .io import _parse_ext, ALLOWED_EXTENSIONS, reader
-from mne_bids.tsv_handler import _from_tsv, _combine, _drop, _contains_row
+from .tsv_handler import _from_tsv, _combine, _drop, _contains_row
 
 ALLOWED_KINDS = ['meg', 'eeg', 'ieeg']
 
