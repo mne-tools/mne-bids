@@ -9,8 +9,9 @@
 import os
 
 import numpy as np
-import pandas as pd
 from mne import io
+
+from .tsv_handler import _from_tsv, _drop
 
 allowed_extensions_meg = ['.con', '.sqd', '.fif', '.pdf', '.ds']
 allowed_extensions_eeg = ['.vhdr',  # BrainVision, accompanied by .vmrk, .eeg
@@ -144,19 +145,21 @@ def read_raw_bids(bids_fname, output_path, return_events=True,
 
     events, event_id = None, dict()
     if op.exists(events_fname):
-        events_df = pd.read_csv(events_fname, delimiter='\t')
-        events_df = events_df.dropna()
+        dtypes = [float, float, str, int, int]
+        events_dict = _from_tsv(events_fname, dtypes=dtypes)
+        events_dict = _drop(events_dict, 'n/a', 'trial_type')
 
-        if 'trial_type' not in events_df:
+        if 'trial_type' not in events_dict:
             raise ValueError('trial_type column is missing. Cannot'
                              ' return events')
 
-        for idx, ev in enumerate(np.unique(events_df['trial_type'])):
+        for idx, ev in enumerate(np.unique(events_dict['trial_type'])):
             event_id[ev] = idx
 
-        events = np.zeros((events_df.shape[0], 3), dtype=int)
-        events[:, 0] = events_df['onset'] * raw.info['sfreq'] + raw.first_samp
+        events = np.zeros((len(events_dict['onset']), 3), dtype=int)
+        events[:, 0] = np.array(events_dict['onset']) * raw.info['sfreq'] + \
+            raw.first_samp
         events[:, 2] = np.array([event_id[ev] for ev
-                                 in events_df['trial_type']])
+                                 in events_dict['trial_type']])
 
     return raw, events, event_id
