@@ -23,7 +23,7 @@ from datetime import datetime
 import mne
 from mne.datasets import sample
 
-from mne_bids import write_raw_bids
+from mne_bids import write_raw_bids, read_raw_bids
 from mne_bids.utils import print_dir_tree
 
 ###############################################################################
@@ -61,3 +61,12 @@ write_raw_bids(er_raw, er_bids_basename, output_path, overwrite=True)
 ###############################################################################
 # Now let's see the structure of the BIDS folder we created.
 print_dir_tree(output_path)
+
+###############################################################################
+# Finally, we can read the BIDS data we created as well.
+raw, events, event_id = read_raw_bids(bids_basename + '_meg.fif', output_path)
+
+###############################################################################
+# The data is already in a convenient form to create epochs and evokeds.
+epochs = mne.Epochs(raw, events, event_id)
+epochs['Auditory'].average().plot()
