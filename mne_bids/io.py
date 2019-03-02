@@ -68,8 +68,11 @@ def _read_raw(raw_fname, electrode=None, hsp=None, hpi=None, config=None,
                               head_shape_fname=hsp,
                               preload=False, verbose=verbose)
 
-    elif ext in ['.fif', '.ds', '.vhdr', '.set']:
-        raw = reader[ext](raw_fname)
+    elif ext == '.fif':
+        raw = reader[ext](raw_fname, allow_maxshield=allow_maxshield)
+
+    elif ext in ['.ds', '.vhdr', '.set']:
+        raw = reader[ext]
 
     # EDF (european data format) or BDF (biosemi) format
     # TODO: integrate with lines above once MNE can read

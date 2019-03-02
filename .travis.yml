@@ -1,5 +1,5 @@
 node_js:
-  - "10.0.0"
+  - "10.15.2"
 language: python
 
 env:
