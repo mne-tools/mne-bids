@@ -72,7 +72,7 @@ def _read_raw(raw_fname, electrode=None, hsp=None, hpi=None, config=None,
         raw = reader[ext](raw_fname, allow_maxshield=allow_maxshield)
 
     elif ext in ['.ds', '.vhdr', '.set']:
-        raw = reader[ext]
+        raw = reader[ext](raw_fname)
 
     # EDF (european data format) or BDF (biosemi) format
     # TODO: integrate with lines above once MNE can read
@@ -94,7 +94,7 @@ def _read_raw(raw_fname, electrode=None, hsp=None, hpi=None, config=None,
     return raw
 
 
-def read_raw_bids(bids_fname, output_path, return_events=True,
+def read_raw_bids(bids_fname, bids_root, return_events=True,
                   verbose=True):
     """Read BIDS compatible data.
 
@@ -102,8 +102,8 @@ def read_raw_bids(bids_fname, output_path, return_events=True,
     ----------
     bids_fname : str
         Full name of the data file
-    output_path : str
-        Root of the BIDS folder
+    bids_root : str
+        Path to root of the BIDS folder
     return_events: bool
         Weather to return events or not. Default is True.
     verbose : bool
@@ -118,25 +118,25 @@ def read_raw_bids(bids_fname, output_path, return_events=True,
     _, ext = _parse_ext(bids_fname)
 
     params = _parse_bids_filename(bids_basename, verbose)
-    meg_dir = op.join(output_path, 'sub-%s' % params['sub'],
-                      'ses-%s' % params['ses'], kind)
+    kind_dir = op.join(bids_root, 'sub-%s' % params['sub'],
+                       'ses-%s' % params['ses'], kind)
 
     config = None
     if ext in ('.fif', '.ds', '.vhdr', '.edf', '.bdf', '.set'):
-        bids_fname = op.join(meg_dir,
+        bids_fname = op.join(kind_dir,
                              bids_basename + '_%s%s' % (kind, ext))
     elif ext == '.sqd':
-        data_path = op.join(meg_dir, bids_basename + '_%s' % kind)
+        data_path = op.join(kind_dir, bids_basename + '_%s' % kind)
         bids_fname = op.join(data_path,
                              bids_basename + '_%s%s' % (kind, ext))
     elif ext == '.pdf':
-        bids_raw_folder = op.join(meg_dir, bids_basename + '_%s' % kind)
+        bids_raw_folder = op.join(kind_dir, bids_basename + '_%s' % kind)
         bids_fname = glob.glob(op.join(bids_raw_folder, 'c,rf*'))[0]
         config = op.join(bids_raw_folder, 'config')
     raw = _read_raw(bids_fname, electrode=None, hsp=None, hpi=None,
                     config=config, montage=None, verbose=None)
 
-    events_fname = op.join(meg_dir, bids_basename + '_events.tsv')
+    events_fname = op.join(kind_dir, bids_basename + '_events.tsv')
 
     if not return_events:
         return raw

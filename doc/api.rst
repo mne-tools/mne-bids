@@ -14,6 +14,7 @@ MNE BIDS (:py:mod:`mne_bids.mne_bids`):
    :toctree: generated/
 
    write_raw_bids
+   read_raw_bids
    make_bids_basename
    make_bids_folders
 
