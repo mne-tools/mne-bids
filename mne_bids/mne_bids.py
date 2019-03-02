@@ -32,8 +32,8 @@ from .utils import (make_bids_basename, make_bids_folders,
                     make_dataset_description, _write_json, _write_tsv,
                     _read_events, _mkdir_p, _age_on_date,
                     copyfile_brainvision, copyfile_eeglab, copyfile_ctf,
-                    _infer_eeg_placement_scheme, _parse_bids_filename,
-                    _handle_kind)
+                    copyfile_bti, _infer_eeg_placement_scheme,
+                    _parse_bids_filename, _handle_kind)
 
 from .io import _parse_ext, ALLOWED_EXTENSIONS, reader
 from .tsv_handler import _from_tsv, _combine, _drop, _contains_row
@@ -716,7 +716,7 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
 
     # set the raw file name to now be the absolute path to ensure the files
     # are placed in the right location
-    bids_fname = os.path.join(data_path, bids_fname)
+    bids_fname = op.join(data_path, bids_fname)
     if os.path.exists(bids_fname) and not overwrite:
         raise FileExistsError('"%s" already exists. Please set '
                               'overwrite to True.' % bids_fname)
@@ -748,6 +748,8 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
     # EEGLAB .set might be accompanied by a .fdt - find out and copy it too
     elif ext == '.set':
         copyfile_eeglab(raw_fname, bids_fname)
+    elif ext == '.pdf':
+        copyfile_bti(raw_orig, op.join(data_path, bids_raw_folder))
     else:
         sh.copyfile(raw_fname, bids_fname)
     # KIT data requires the marker file to be copied over too
@@ -757,7 +759,7 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
         marker_fname = make_bids_basename(
             subject=subject_id, session=session_id, task=task, run=run,
             acquisition=acquisition, suffix='markers%s' % marker_ext,
-            prefix=os.path.join(data_path, bids_raw_folder))
+            prefix=op.join(data_path, bids_raw_folder))
         sh.copyfile(hpi, marker_fname)
 
     return output_path

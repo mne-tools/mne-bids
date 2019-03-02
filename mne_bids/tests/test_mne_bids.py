@@ -247,8 +247,8 @@ def test_bti():
     cmd = ['bids-validator', output_path]
     run_subprocess(cmd, shell=shell)
 
-    raw, events, _ = read_raw_bids(bids_basename + '_meg',
-                                   output_path)
+    raw = read_raw_bids(bids_basename + '_meg',
+                        output_path, return_events=False)
 
 
 def test_vhdr():

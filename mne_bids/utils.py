@@ -646,6 +646,19 @@ def copyfile_eeglab(src, dest):
         sh.copyfile(src, dest)
 
 
+def copyfile_bti(raw, dest):
+    """Copy BTi data."""
+    pdf_fname = 'c,rfDC'
+    if raw.info['highpass'] is not None:
+        pdf_fname = 'c,rf%0.1fHz' % raw.info['highpass']
+    sh.copyfile(raw._init_kwargs['pdf_fname'],
+                op.join(dest, pdf_fname))
+    sh.copyfile(raw._init_kwargs['config_fname'],
+                op.join(dest, 'config'))
+    sh.copyfile(raw._init_kwargs['head_shape_fname'],
+                op.join(dest, 'hs_file'))
+
+
 def _infer_eeg_placement_scheme(raw):
     """Based on the channel names, try to infer an EEG placement scheme.
 

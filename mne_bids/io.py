@@ -7,6 +7,8 @@
 #
 # License: BSD (3-clause)
 import os
+import os.path as op
+import glob
 
 import numpy as np
 from mne import io
@@ -42,7 +44,7 @@ def _parse_ext(raw_fname, verbose=False):
     """Split a filename into its name and extension."""
     fname, ext = os.path.splitext(raw_fname)
     # BTi data is the only file format that does not have a file extension
-    if ext == '':
+    if ext == '' or 'c,rf' in fname:
         if verbose is True:
             print('Found no extension for raw file, assuming "BTi" format and '
                   'appending extension .pdf')
@@ -61,13 +63,13 @@ def _read_raw(raw_fname, electrode=None, hsp=None, hpi=None, config=None,
                               mrk=hpi, preload=False)
 
     # BTi systems
-    elif ext == '.pdf' and os.path.isfile(raw_fname):
+    elif ext == '.pdf':
         raw = io.read_raw_bti(raw_fname, config_fname=config,
                               head_shape_fname=hsp,
                               preload=False, verbose=verbose)
 
     elif ext in ['.fif', '.ds', '.vhdr', '.set']:
-        raw = reader[ext](raw_fname, allow_maxshield=allow_maxshield)
+        raw = reader[ext](raw_fname)
 
     # EDF (european data format) or BDF (biosemi) format
     # TODO: integrate with lines above once MNE can read
@@ -104,7 +106,6 @@ def read_raw_bids(bids_fname, output_path, return_events=True,
     verbose : bool
         The verbosity level
     """
-    import os.path as op
     from .utils import _parse_bids_filename
 
     # Full path to data file is needed so that mne-bids knows
@@ -117,10 +118,7 @@ def read_raw_bids(bids_fname, output_path, return_events=True,
     meg_dir = op.join(output_path, 'sub-%s' % params['sub'],
                       'ses-%s' % params['ses'], kind)
 
-    # create montage here
-    # blah
-
-    config, hpi = None, None
+    config = None
     if ext in ('.fif', '.ds', '.vhdr', '.edf', '.bdf', '.set'):
         bids_fname = op.join(meg_dir,
                              bids_basename + '_%s%s' % (kind, ext))
@@ -128,17 +126,14 @@ def read_raw_bids(bids_fname, output_path, return_events=True,
         data_path = op.join(meg_dir, bids_basename + '_%s' % kind)
         bids_fname = op.join(data_path,
                              bids_basename + '_%s%s' % (kind, ext))
-        hpi = op.join(data_path, bids_basename + '_markers.sqd')
-        hsp = op.join(meg_dir, bids_basename + '_headshape.txt')
     elif ext == '.pdf':
-        bids_fname = op.join(meg_dir, bids_basename + '_%s' % kind)
-        config = op.join(bids_fname, 'config')
+        bids_raw_folder = op.join(meg_dir, bids_basename + '_%s' % kind)
+        bids_fname = glob.glob(op.join(bids_raw_folder, 'c,rf*'))[0]
+        config = op.join(bids_raw_folder, 'config')
     raw = _read_raw(bids_fname, electrode=None, hsp=None, hpi=None,
                     config=config, montage=None, verbose=None)
 
     events_fname = op.join(meg_dir, bids_basename + '_events.tsv')
-
-    # channels_fname = fname.split('.') + '_channels.tsv'
 
     if not return_events:
         return raw
