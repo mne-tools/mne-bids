@@ -12,6 +12,8 @@ What's new?
 Current
 -------
 
+- Add a reader for BIDS compatible raw files, by `Mainak Jas`_ (`#135 <https://github.com/mne-tools/mne-bids/pull/135>`_)
+
 Changelog
 ~~~~~~~~~
 
