@@ -141,23 +141,26 @@ def read_raw_bids(bids_fname, bids_root, return_events=True,
     if not return_events:
         return raw
 
+    if not op.exists(events_fname):
+        raise ValueError('return_events=True but _events.tsv file'
+                         ' not found')
+
     events, event_id = None, dict()
-    if op.exists(events_fname):
-        dtypes = [float, float, str, int, int]
-        events_dict = _from_tsv(events_fname, dtypes=dtypes)
-        events_dict = _drop(events_dict, 'n/a', 'trial_type')
+    dtypes = [float, float, str, int, int]
+    events_dict = _from_tsv(events_fname, dtypes=dtypes)
+    events_dict = _drop(events_dict, 'n/a', 'trial_type')
 
-        if 'trial_type' not in events_dict:
-            raise ValueError('trial_type column is missing. Cannot'
-                             ' return events')
+    if 'trial_type' not in events_dict:
+        raise ValueError('trial_type column is missing. Cannot'
+                         ' return events')
 
-        for idx, ev in enumerate(np.unique(events_dict['trial_type'])):
-            event_id[ev] = idx
+    for idx, ev in enumerate(np.unique(events_dict['trial_type'])):
+        event_id[ev] = idx
 
-        events = np.zeros((len(events_dict['onset']), 3), dtype=int)
-        events[:, 0] = np.array(events_dict['onset']) * raw.info['sfreq'] + \
-            raw.first_samp
-        events[:, 2] = np.array([event_id[ev] for ev
-                                 in events_dict['trial_type']])
+    events = np.zeros((len(events_dict['onset']), 3), dtype=int)
+    events[:, 0] = np.array(events_dict['onset']) * raw.info['sfreq'] + \
+        raw.first_samp
+    events[:, 2] = np.array([event_id[ev] for ev
+                             in events_dict['trial_type']])
 
     return raw, events, event_id

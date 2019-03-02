@@ -219,8 +219,11 @@ def test_ctf():
     cmd = ['bids-validator', output_path]
     run_subprocess(cmd, shell=shell)
 
-    raw, events, _ = read_raw_bids(bids_basename + '_meg.ds',
-                                   output_path)
+    with pytest.raises(ValueError, match="not found"):
+        read_raw_bids(bids_basename + '_meg.ds', output_path)
+
+    raw = read_raw_bids(bids_basename + '_meg.ds', output_path,
+                        return_events=False)
 
     # test to check that running again with overwrite == False raises an error
     with pytest.raises(FileExistsError, match="already exists"):
