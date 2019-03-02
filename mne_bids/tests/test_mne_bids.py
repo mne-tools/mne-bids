@@ -214,16 +214,7 @@ def test_ctf():
     raw_fname = op.join(data_path, 'testdata_ctf.ds')
 
     raw = mne.io.read_raw_ctf(raw_fname)
-    folder = write_raw_bids(raw, bids_basename, output_path=output_path)
-
-    # XXX: hack to be removed once the empty file issue is solved in validator
-    # https://github.com/bids-standard/bids-validator/issues/651
-    for root, dirs, files in os.walk(folder):
-        for file in files:
-            fpath = op.join(root, file)
-            if os.stat(fpath).st_size == 0:
-                with open(fpath, 'w') as f:
-                    f.write('***Empty-File-Filler***')
+    write_raw_bids(raw, bids_basename, output_path=output_path)
 
     cmd = ['bids-validator', output_path]
     run_subprocess(cmd, shell=shell)
@@ -269,7 +260,7 @@ def test_vhdr():
     raw = mne.io.read_raw_brainvision(raw_fname)
     write_raw_bids(raw, bids_basename, output_path, overwrite=False)
 
-    cmd = ['bids-validator', '--bep006', output_path]
+    cmd = ['bids-validator', output_path]
     run_subprocess(cmd, shell=shell)
 
     read_raw_bids(bids_basename + '_eeg.vhdr',
@@ -301,7 +292,7 @@ def test_vhdr():
     output_path = _TempDir()
     write_raw_bids(raw, bids_basename, output_path, overwrite=False)
 
-    cmd = ['bids-validator', '--bep010', output_path]
+    cmd = ['bids-validator', output_path]
     run_subprocess(cmd, shell=shell)
 
 
@@ -328,7 +319,7 @@ def test_edf():
     bids_fname = bids_basename.replace('run-01', 'run-%s' % run2)
     write_raw_bids(raw, bids_fname, output_path, overwrite=True)
 
-    cmd = ['bids-validator', '--bep006', output_path]
+    cmd = ['bids-validator', output_path]
     run_subprocess(cmd, shell=shell)
 
     # ensure there is an EMG channel in the channels.tsv:
@@ -353,7 +344,7 @@ def test_edf():
     output_path = _TempDir()
     write_raw_bids(raw, bids_basename, output_path)
 
-    cmd = ['bids-validator', '--bep010', output_path]
+    cmd = ['bids-validator', output_path]
     run_subprocess(cmd, shell=shell)
 
 
@@ -366,7 +357,7 @@ def test_bdf():
     raw = mne.io.read_raw_edf(raw_fname)
     write_raw_bids(raw, bids_basename, output_path, overwrite=False)
 
-    cmd = ['bids-validator', '--bep006', output_path]
+    cmd = ['bids-validator', output_path]
     run_subprocess(cmd, shell=shell)
 
     read_raw_bids(bids_basename + '_eeg.bdf',
@@ -406,7 +397,7 @@ def test_set():
         write_raw_bids(raw, bids_basename, output_path=output_path,
                        overwrite=False)
 
-    cmd = ['bids-validator', '--bep006', output_path]
+    cmd = ['bids-validator', output_path]
     run_subprocess(cmd, shell=shell)
 
     # check events.tsv is written
@@ -425,5 +416,5 @@ def test_set():
     output_path = _TempDir()
     write_raw_bids(raw, bids_basename, output_path)
 
-    cmd = ['bids-validator', '--bep010', output_path]
+    cmd = ['bids-validator', output_path]
     run_subprocess(cmd, shell=shell)
