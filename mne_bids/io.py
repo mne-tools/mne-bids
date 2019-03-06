@@ -105,9 +105,22 @@ def read_raw_bids(bids_fname, bids_root, return_events=True,
     bids_root : str
         Path to root of the BIDS folder
     return_events: bool
-        Weather to return events or not. Default is True.
+        Whether to return events (and event_id) or not.
+        Default is True.
     verbose : bool
         The verbosity level
+
+    Returns
+    -------
+    raw : instance of Raw
+        The MNE raw object containing the data.
+    events : array, (n_events, 3)
+        The events array. Returned only if return_events is True.
+    event_id : dict
+        The dictionary whose keys are the event names
+        (read from _events.tsv) and values are the event ids
+        in the 3rd column of events. Returned only if
+        return_events is True.
     """
     from .utils import _parse_bids_filename
 
