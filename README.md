@@ -3,7 +3,7 @@
 [![Appveyor](https://ci.appveyor.com/api/projects/status/g6jqpv31sp7q103s/branch/master?svg=true "Appveyor")](https://ci.appveyor.com/project/mne-tools/mne-bids/branch/master)
 [![codecov](https://codecov.io/gh/mne-tools/mne-bids/branch/master/graph/badge.svg)](https://codecov.io/gh/mne-tools/mne-bids)
 [![CircleCi](https://circleci.com/gh/mne-tools/mne-bids.svg?style=svg)](https://circleci.com/gh/mne-tools/mne-bids)
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/mne-tools/mne-bids/binder_badge)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/mne-tools/mne-bids/master)
 [![Downloads](https://pepy.tech/badge/mne-bids)](https://pepy.tech/project/mne-bids)
 
 MNE-BIDS

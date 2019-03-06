@@ -1,5 +1,6 @@
 include *.rst
 include LICENSE
+include requirements.txt
 include mne_bids/__init__.py
 
 recursive-include examples *.py
