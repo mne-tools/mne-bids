@@ -14,7 +14,7 @@ Installation
 We recommend the `Anaconda Python distribution <https://www.continuum.io/downloads>`_ and Python 3.
 
 Besides numpy, scipy and matplotlib (which are included in the standard Anaconda installation), 
-you will need to install the most recent version of MNE using the `pip` command line tool:
+you will need to install the most recent version of MNE using the `pip` command line tool::
 
     $ pip install -U mne
 
