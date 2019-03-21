@@ -157,7 +157,7 @@ def _events_tsv(events, raw, fname, trial_type, overwrite=False,
     """Create an events.tsv file and save it.
 
     This function will write the mandatory 'onset', and 'duration' columns as
-    well as the optional 'event_value' and 'event_sample'. The 'event_value'
+    well as the optional 'value' and 'sample'. The 'value'
     corresponds to the marker value as found in the TRIG channel of the
     recording. In addition, the 'trial_type' field can be written.
 
@@ -195,8 +195,8 @@ def _events_tsv(events, raw, fname, trial_type, overwrite=False,
     data = OrderedDict([('onset', events[:, 0] / sfreq),
                         ('duration', np.zeros(events.shape[0])),
                         ('trial_type', None),
-                        ('event_value', events[:, 2]),
-                        ('event_sample', events[:, 0])])
+                        ('value', events[:, 2]),
+                        ('sample', events[:, 0])])
 
     # Now check if trial_type is specified or should be removed
     if trial_type:
