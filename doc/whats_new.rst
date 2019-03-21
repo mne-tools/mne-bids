@@ -33,6 +33,7 @@ Bug
 - Fix problem in copying CTF files on Network File System due to a bug upstream in Python by `Mainak Jas`_ (`#174 <https://github.com/mne-tools/mne-bids/pull/174/files>`_)
 - Fix problem in copying BTi files. Now, a utility function ensures that all the related files
   such as config and headshape are copied correctly, by `Mainak Jas`_ (`#135 <https://github.com/mne-tools/mne-bids/pull/135>`_>)
+- Fix name of "sample" and "value" columns on events.tsv files, by `Ezequiel Mikulan`
 
 API
 ~~~
