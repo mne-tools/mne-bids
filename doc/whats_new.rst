@@ -34,6 +34,7 @@ Bug
 - Fix problem in copying BTi files. Now, a utility function ensures that all the related files
   such as config and headshape are copied correctly, by `Mainak Jas`_ (`#135 <https://github.com/mne-tools/mne-bids/pull/135>`_)
 - Fix name of "sample" and "value" columns on events.tsv files, by `Ezequiel Mikulan`_ (`#185 <https://github.com/mne-tools/mne-bids/pull/185>`_)
+- Update function to copy KIT files to the `meg` directory, by `Matt Sanderson`_ (`#187 <https://github.com/mne-tools/mne-bids/pull/187>`_)
 
 API
 ~~~

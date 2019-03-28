@@ -197,13 +197,10 @@ def test_kit():
     assert 'STI 014' not in data['name']
 
     # ensure the marker file is produced in the right place
-    raw_folder = make_bids_basename(
-        subject=subject_id, session=session_id, task=task, run=run,
-        acquisition=acq, suffix='%s' % 'meg')
     marker_fname = make_bids_basename(
         subject=subject_id, session=session_id, task=task, run=run,
         acquisition=acq, suffix='markers.sqd',
-        prefix=op.join(output_path, 'sub-01', 'ses-01', 'meg', raw_folder))
+        prefix=op.join(output_path, 'sub-01', 'ses-01', 'meg'))
     assert op.exists(marker_fname)
 
 
