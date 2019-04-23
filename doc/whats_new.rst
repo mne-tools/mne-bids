@@ -20,6 +20,7 @@ Changelog
 Bug
 ~~~
 
+- Normalize the length of the branches in :func:`print_dir_tree` by the length of the root path, leading to more adequate visual display, by `Stefan Appelhoff`_ (`#192 <https://github.com/mne-tools/mne-bids/pull/192>`_)
 - Assert a minimum required MNE-version, by `Dominik Welke`_ (`#166 <https://github.com/mne-tools/mne-bids/pull/166>`_)
 - Add function in mne_bids.utils to copy and rename CTF files :func:`mne_bids.utils.copyfile_ctf`, by `Romain Quentin`_ (`#162 <https://github.com/mne-tools/mne-bids/pull/162>`_)
 - Encoding of BrainVision .vhdr/.vmrk files is checked to prevent encoding/decoding errors when modifying, by `Dominik Welke`_ (`#155 <https://github.com/mne-tools/mne-bids/pull/155>`_)
