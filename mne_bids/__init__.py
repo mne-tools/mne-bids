@@ -1,4 +1,4 @@
-"""MNE software for making MEG BIDS compatible datasets easily."""
+"""MNE software for easily interacting with BIDS compatible datasets."""
 
 __version__ = '0.2.dev0'
 
