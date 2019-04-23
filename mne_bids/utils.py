@@ -33,11 +33,15 @@ def print_dir_tree(folder):
     if not op.exists(folder):
         raise ValueError('Directory does not exist: {}'.format(folder))
 
+    baselen = len(folder.split(os.sep)) - 1  # makes tree always start at 0 len
     for root, dirs, files in os.walk(folder):
-        path = root.split(os.sep)
-        print('|%s %s' % ((len(path) - 1) * '---', op.basename(root)))
+        branchlen = len(root.split(os.sep)) - baselen
+        if branchlen <= 1:
+            print('|%s' % (op.basename(root)))
+        else:
+            print('|%s %s' % ((branchlen - 1) * '---', op.basename(root)))  # noqa: E501
         for file in files:
-            print('|%s %s' % (len(path) * '---', file))
+            print('|%s %s' % (branchlen * '---', file))
 
 
 def _mkdir_p(path, overwrite=False, verbose=False):
