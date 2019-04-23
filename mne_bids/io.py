@@ -105,7 +105,7 @@ def read_raw_bids(bids_fname, bids_root, return_events=True,
     bids_root : str
         Path to root of the BIDS folder
     return_events: bool
-        Weather to return events or not. Default is True.
+        Whether to return events or not. Default is True.
     verbose : bool
         The verbosity level
     """
