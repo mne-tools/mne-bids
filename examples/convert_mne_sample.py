@@ -24,7 +24,7 @@ import mne
 from mne.datasets import sample
 
 from mne_bids import write_raw_bids, read_raw_bids
-from mne_bids.utils import print_dir_tree
+from mne_bids.utils import make_bids_basename, print_dir_tree
 
 ###############################################################################
 # And define the paths and event_id dictionary.
@@ -41,7 +41,8 @@ output_path = op.join(data_path, '..', 'MNE-sample-data-bids')
 # Specify the raw_file and events_data and run the BIDS conversion.
 
 raw = mne.io.read_raw_fif(raw_fname)
-bids_basename = 'sub-01_ses-01_task-audiovisual_run-01'
+bids_basename = make_bids_basename(subject='01', session='01',
+                                   task='audiovisual', run='01')
 write_raw_bids(raw, bids_basename, output_path, events_data=events_data,
                event_id=event_id, overwrite=True)
 
