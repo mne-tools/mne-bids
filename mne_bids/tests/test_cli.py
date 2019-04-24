@@ -8,7 +8,7 @@ from os import path as op
 
 from mne.datasets import testing
 from mne.utils import _TempDir, run_tests_if_main, ArgvSetter
-from mne_bids.commands import mne_bids_raw_to_bids
+from mne_bids.cli import mne_bids_raw_to_bids
 
 
 subject_id = '01'
