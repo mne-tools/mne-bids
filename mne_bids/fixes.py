@@ -1,6 +1,8 @@
 """Temporary fixes/workarounds for bugs in upstream code."""
 
 # Authors: Mainak Jas <mainakjas@gmail.com>
+#
+# License: BSD (3-clause)
 
 import shutil
 import os.path as op
