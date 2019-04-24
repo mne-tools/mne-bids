@@ -113,8 +113,14 @@ def read_raw_bids(bids_fname, bids_root, return_events=True,
     -------
     raw : instance of Raw
         The data as MNE-Python Raw object.
-    events : ndarray
+    events : ndarray, shape = (n_events, 3)
+        The first column contains the event time in samples and the third
+        column contains the event id. The second column is ignored for now but
+        typically contains the value of the trigger channel either immediately
+        before the event or immediately after.
     event_id : dict
+        Dictionary of events in the raw data mapping from the event value
+        to an index.
 
     """
     from .utils import _parse_bids_filename
