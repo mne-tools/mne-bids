@@ -108,6 +108,14 @@ def read_raw_bids(bids_fname, bids_root, return_events=True,
         Whether to return events or not. Default is True.
     verbose : bool
         The verbosity level
+
+    Returns
+    -------
+    raw : instance of Raw
+        The data as MNE-Python Raw object.
+    events : ndarray
+    event_id : dict
+
     """
     from .utils import _parse_bids_filename
 

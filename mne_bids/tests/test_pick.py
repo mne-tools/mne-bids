@@ -1,4 +1,4 @@
-"""Test for the coil type picking function"""
+"""Test for the coil type picking function."""
 # Authors: Matt Sanderson <matt.sanderson@mq.edu.au>
 #
 # License: BSD (3-clause)

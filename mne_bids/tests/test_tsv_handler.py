@@ -1,7 +1,8 @@
-"""Test for the tsv handling functions"""
+"""Test for the tsv handling functions."""
 # Authors: Matt Sanderson <matt.sanderson@mq.edu.au>
 #
 # License: BSD (3-clause)
+
 
 import os.path as op
 from collections import OrderedDict as odict
@@ -13,6 +14,7 @@ from mne.utils import _TempDir
 
 
 def test_tsv_handler():
+    """Test the TSV handling."""
     # create some dummy data
     d = odict(a=[1, 2, 3, 4], b=['five', 'six', 'seven', 'eight'])
     assert _contains_row(d, {'a': 1, 'b': 'five'})
