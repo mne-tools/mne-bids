@@ -44,7 +44,7 @@ def _combine(data1, data2, drop_column=None):
 
 
 def _contains_row(data, row_data):
-    """Determines whether the specified row data exists in the OrderedDict.
+    """Determine whether the specified row data exists in the OrderedDict.
 
     Parameters
     ----------

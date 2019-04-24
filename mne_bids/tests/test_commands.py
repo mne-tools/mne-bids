@@ -1,4 +1,9 @@
 # -*- coding: utf-8 -*-
+"""Test command line."""
+# Authors: Teon L Brooks <teon.brooks@gmail.com>
+#
+# License: BSD (3-clause)
+
 from os import path as op
 
 from mne.datasets import testing
