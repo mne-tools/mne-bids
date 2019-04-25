@@ -28,7 +28,8 @@ import os.path as op
 import mne
 from mne_bids import write_raw_bids
 from mne_bids.datasets import fetch_faces_data
-from mne_bids.utils import make_bids_basename, print_dir_tree
+from mne_bids.utils import print_dir_tree
+from mne_bids.write import make_bids_basename
 
 ###############################################################################
 # And fetch the data.

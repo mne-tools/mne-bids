@@ -6,17 +6,26 @@
 API Documentation
 =================
 
-MNE BIDS (:py:mod:`mne_bids.write`):
+MNE BIDS (:py:mod:`mne_bids`):
 
-.. currentmodule:: mne_bids.write
+.. currentmodule:: mne_bids
 
 .. autosummary::
    :toctree: generated/
 
    write_raw_bids
    read_raw_bids
+
+Write (:py:mod:`mne_bids.write`):
+
+.. currentmodule:: mne_bids.write
+
+.. autosummary::
+   :toctree: generated/
+
    make_bids_basename
    make_bids_folders
+   make_dataset_description
 
 Utils (:py:mod:`mne_bids.utils`):
 
@@ -26,7 +35,6 @@ Utils (:py:mod:`mne_bids.utils`):
    :toctree: generated/
 
    print_dir_tree
-   make_dataset_description
 
 Copyfiles (:py:mod:`mne_bids.copyfiles`):
 
