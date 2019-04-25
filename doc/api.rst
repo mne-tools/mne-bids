@@ -27,6 +27,15 @@ Utils (:py:mod:`mne_bids.utils`):
 
    print_dir_tree
    make_dataset_description
+
+Copyfiles (:py:mod:`mne_bids.copyfiles`):
+
+
+.. currentmodule:: mne_bids.copyfiles
+
+.. autosummary::
+   :toctree: generated/
+
    copyfile_brainvision
    copyfile_eeglab
    copyfile_ctf

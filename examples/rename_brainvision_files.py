@@ -32,7 +32,7 @@ from numpy.testing import assert_array_equal
 from mne.io import read_raw_brainvision
 
 from mne_bids.datasets import fetch_brainvision_testing_data
-from mne_bids.utils import copyfile_brainvision
+from mne_bids.copyfiles import copyfile_brainvision
 
 ###############################################################################
 # Step 1: Download some example data
