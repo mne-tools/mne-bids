@@ -21,8 +21,18 @@ import shutil as sh
 
 from scipy.io import loadmat, savemat
 
-from .fixes import _copytree
 from .io import _parse_ext
+
+
+def _copytree(src, dst, **kwargs):
+    """See: https://github.com/jupyterlab/jupyterlab/pull/5150."""
+    try:
+        sh.copytree(src, dst, **kwargs)
+    except sh.Error as error:
+        # `copytree` throws an error if copying to + from NFS even though
+        # the copy is successful (see https://bugs.python.org/issue24564)
+        if '[Errno 22]' not in str(error) or not op.exists(dst):
+            raise
 
 
 def _get_brainvision_encoding(vhdr_file, verbose=False):
