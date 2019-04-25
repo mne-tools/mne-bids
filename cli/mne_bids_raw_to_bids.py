@@ -8,7 +8,7 @@ example usage:  $ mne_bids raw_to_bids --subject_id sub01 --task rest
 
 """
 from mne_bids import write_raw_bids, make_bids_basename
-from mne_bids.io import _read_raw
+from mne_bids.read import _read_raw
 
 
 def run():
