@@ -6,9 +6,9 @@
 API Documentation
 =================
 
-MNE BIDS (:py:mod:`mne_bids.mne_bids`):
+MNE BIDS (:py:mod:`mne_bids.write`):
 
-.. currentmodule:: mne_bids.mne_bids
+.. currentmodule:: mne_bids.write
 
 .. autosummary::
    :toctree: generated/
