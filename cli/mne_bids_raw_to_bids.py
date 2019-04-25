@@ -7,7 +7,8 @@ example usage:  $ mne_bids raw_to_bids --subject_id sub01 --task rest
 --raw data.edf --output_path new_path
 
 """
-from mne_bids import write_raw_bids, make_bids_basename
+from mne_bids import write_raw_bids
+from mne_bids.write import make_bids_basename
 from mne_bids.read import _read_raw
 
 

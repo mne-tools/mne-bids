@@ -7,7 +7,6 @@
 #          Matt Sanderson <matt.sanderson@mq.edu.au>
 #
 # License: BSD (3-clause)
-
 import os
 import os.path as op
 
@@ -28,11 +27,9 @@ from datetime import datetime
 from warnings import warn
 
 from .pick import coil_type
-from .utils import (make_bids_basename, make_bids_folders,
-                    make_dataset_description, _write_json, _write_tsv,
-                    _read_events, _mkdir_p, _age_on_date,
-                    _infer_eeg_placement_scheme,
-                    _parse_bids_filename, _handle_kind)
+from .utils import (_write_json, _write_tsv, _read_events, _mkdir_p,
+                    _age_on_date, _infer_eeg_placement_scheme, _check_key_val,
+                    _parse_bids_filename, _handle_kind, _check_types)
 from .copyfiles import (copyfile_brainvision, copyfile_eeglab, copyfile_ctf,
                         copyfile_bti)
 
@@ -40,7 +37,7 @@ from .read import _parse_ext, reader
 from .tsv_handler import _from_tsv, _combine, _drop, _contains_row
 
 from .config import (ALLOWED_KINDS, ORIENTATION, UNITS, MANUFACTURERS,
-                     IGNORED_CHANNELS, ALLOWED_EXTENSIONS)
+                     IGNORED_CHANNELS, ALLOWED_EXTENSIONS, BIDS_VERSION)
 
 
 def _channels_tsv(raw, fname, overwrite=False, verbose=True):
@@ -506,6 +503,218 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, overwrite=False,
     _write_json(fname, ch_info_json, overwrite, verbose)
 
     return fname
+
+
+def make_bids_basename(subject=None, session=None, task=None,
+                       acquisition=None, run=None, processing=None,
+                       recording=None, space=None, prefix=None, suffix=None):
+    """Create a partial/full BIDS filename from its component parts.
+
+    BIDS filename prefixes have one or more pieces of metadata in them. They
+    must follow a particular order, which is followed by this function. This
+    will generate the *prefix* for a BIDS filename that can be used with many
+    subsequent files, or you may also give a suffix that will then complete
+    the file name.
+
+    Note that all parameters are not applicable to each kind of data. For
+    example, electrode location TSV files do not need a task field.
+
+    Parameters
+    ----------
+    subject : str | None
+        The subject ID. Corresponds to "sub".
+    session : str | None
+        The session for a item. Corresponds to "ses".
+    task : str | None
+        The task for a item. Corresponds to "task".
+    acquisition: str | None
+        The acquisition parameters for the item. Corresponds to "acq".
+    run : int | None
+        The run number for this item. Corresponds to "run".
+    processing : str | None
+        The processing label for this item. Corresponds to "proc".
+    recording : str | None
+        The recording name for this item. Corresponds to "recording".
+    space : str | None
+        The coordinate space for an anatomical file. Corresponds to "space".
+    prefix : str | None
+        The prefix for the filename to be created. E.g., a path to the folder
+        in which you wish to create a file with this name.
+    suffix : str | None
+        The suffix of a file that begins with this prefix. E.g., 'audio.wav'.
+
+    Returns
+    -------
+    filename : str
+        The BIDS filename you wish to create.
+
+    Examples
+    --------
+    >>> print(make_bids_basename(subject='test', session='two', task='mytask', suffix='data.csv')) # noqa
+    sub-test_ses-two_task-mytask_data.csv
+
+    """
+    order = OrderedDict([('sub', subject),
+                         ('ses', session),
+                         ('task', task),
+                         ('acq', acquisition),
+                         ('run', run),
+                         ('proc', processing),
+                         ('space', space),
+                         ('recording', recording)])
+    if order['run'] is not None and not isinstance(order['run'], str):
+        # Ensure that run is a string
+        order['run'] = '{:02}'.format(order['run'])
+
+    _check_types(order.values())
+
+    if not any(isinstance(ii, str) for ii in order.keys()):
+        raise ValueError("At least one parameter must be given.")
+
+    filename = []
+    for key, val in order.items():
+        if val is not None:
+            _check_key_val(key, val)
+            filename.append('%s-%s' % (key, val))
+
+    if isinstance(suffix, str):
+        filename.append(suffix)
+
+    filename = '_'.join(filename)
+    if isinstance(prefix, str):
+        filename = op.join(prefix, filename)
+    return filename
+
+
+def make_bids_folders(subject, session=None, kind=None, output_path=None,
+                      make_dir=True, overwrite=False, verbose=False):
+    """Create a BIDS folder hierarchy.
+
+    This creates a hierarchy of folders *within* a BIDS dataset. You should
+    plan to create these folders *inside* the output_path folder of the dataset.
+
+    Parameters
+    ----------
+    subject : str
+        The subject ID. Corresponds to "sub".
+    kind : str
+        The kind of folder being created at the end of the hierarchy. E.g.,
+        "anat", "func", etc.
+    session : str | None
+        The session for a item. Corresponds to "ses".
+    output_path : str | None
+        The output_path for the folders to be created. If None, folders will be
+        created in the current working directory.
+    make_dir : bool
+        Whether to actually create the folders specified. If False, only a
+        path will be generated but no folders will be created.
+    overwrite : bool
+        How to handle overwriting previously generated data.
+        If overwrite == False then no existing folders will be removed, however
+        if overwrite == True then any existing folders at the session level
+        or lower will be removed, including any contained data.
+    verbose : bool
+        If verbose is True, print status updates
+        as folders are created.
+
+    Returns
+    -------
+    path : str
+        The (relative) path to the folder that was created.
+
+    Examples
+    --------
+    >>> print(make_bids_folders('sub_01', session='my_session',
+                                kind='meg', output_path='path/to/project',
+                                make_dir=False))  # noqa
+    path/to/project/sub-sub_01/ses-my_session/meg
+
+    """
+    _check_types((subject, kind, session, output_path))
+    if session is not None:
+        _check_key_val('ses', session)
+
+    path = ['sub-%s' % subject]
+    if isinstance(session, str):
+        path.append('ses-%s' % session)
+    if isinstance(kind, str):
+        path.append(kind)
+    path = op.join(*path)
+    if isinstance(output_path, str):
+        path = op.join(output_path, path)
+
+    if make_dir is True:
+        _mkdir_p(path, overwrite=overwrite, verbose=verbose)
+    return path
+
+
+def make_dataset_description(path, name=None, data_license=None,
+                             authors=None, acknowledgements=None,
+                             how_to_acknowledge=None, funding=None,
+                             references_and_links=None, doi=None,
+                             verbose=False):
+    """Create json for a dataset description.
+
+    BIDS datasets may have one or more fields, this function allows you to
+    specify which you wish to include in the description. See the BIDS
+    documentation for information about what each field means.
+
+    Parameters
+    ----------
+    path : str
+        A path to a folder where the description will be created.
+    name : str | None
+        The name of this BIDS dataset.
+    data_license : str | None
+        The license under which this datset is published.
+    authors : list | str | None
+        List of individuals who contributed to the creation/curation of the
+        dataset. Must be a list of strings or a single comma separated string
+        like ['a', 'b', 'c'].
+    acknowledgements : list | str | None
+        Either a str acknowledging individuals who contributed to the
+        creation/curation of this dataset OR a list of the individuals'
+        names as str.
+    how_to_acknowledge : list | str | None
+        Either a str describing how to acknowledge this dataset OR a list of
+        publications that should be cited.
+    funding : list | str | None
+        List of sources of funding (e.g., grant numbers). Must be a list of
+        strings or a single comma separated string like ['a', 'b', 'c'].
+    references_and_links : list | str | None
+        List of references to publication that contain information on the
+        dataset, or links.  Must be a list of strings or a single comma
+        separated string like ['a', 'b', 'c'].
+    doi : str | None
+        The DOI for the dataset.
+
+    Notes
+    -----
+    The required field BIDSVersion will be automatically filled by mne_bids.
+
+    """
+    # Put potential string input into list of strings
+    if isinstance(authors, str):
+        authors = authors.split(', ')
+    if isinstance(funding, str):
+        funding = funding.split(', ')
+    if isinstance(references_and_links, str):
+        references_and_links = references_and_links.split(', ')
+
+    fname = op.join(path, 'dataset_description.json')
+    description = OrderedDict([('Name', name),
+                               ('BIDSVersion', BIDS_VERSION),
+                               ('License', data_license),
+                               ('Authors', authors),
+                               ('Acknowledgements', acknowledgements),
+                               ('HowToAcknowledge', how_to_acknowledge),
+                               ('Funding', funding),
+                               ('ReferencesAndLinks', references_and_links),
+                               ('DatasetDOI', doi)])
+    pop_keys = [key for key, val in description.items() if val is None]
+    for key in pop_keys:
+        description.pop(key)
+    _write_json(fname, description, overwrite=True, verbose=verbose)
 
 
 def write_raw_bids(raw, bids_basename, output_path, events_data=None,

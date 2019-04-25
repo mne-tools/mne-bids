@@ -12,9 +12,9 @@ from numpy.random import random
 import mne
 from mne.utils import _TempDir
 
-from mne_bids.utils import (make_bids_folders, make_bids_basename,
-                            _check_types, print_dir_tree, _age_on_date,
+from mne_bids.utils import (_check_types, print_dir_tree, _age_on_date,
                             _infer_eeg_placement_scheme, _handle_kind)
+from mne_bids.write import make_bids_folders, make_bids_basename
 
 base_path = op.join(op.dirname(mne.__file__), 'io')
 
