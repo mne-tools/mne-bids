@@ -22,6 +22,7 @@ def _combine(data1, data2, drop_column=None):
     -------
     data : collections.OrderedDict
         The new combined data.
+
     """
     data = deepcopy(data1)
     for key, value in data2.items():
@@ -64,6 +65,7 @@ def _contains_row(data, row_data):
     This function will return True if the supplied `row_data` contains less
     columns than the number of columns in the existing data but there is still
     a match for the partial row data.
+
     """
     mask = None
     for key, value in row_data.items():
@@ -89,6 +91,7 @@ def _drop(data, values, column):
     -------
     new_data : collections.OrderedDict
         Copy of the original data with 0 or more rows dropped.
+
     """
     new_data = deepcopy(data)
     mask = np.in1d(new_data[column], values, invert=True)
@@ -113,6 +116,7 @@ def _from_tsv(fname, dtypes=None):
     -------
     data_dict : collections.OrderedDict
         Keys are the column names, and values are the column data.
+
     """
     data = np.loadtxt(fname, dtype=str, delimiter='\t', encoding='utf-8')
     column_names = data[0, :]
@@ -139,6 +143,7 @@ def _to_tsv(data, fname):
         Ordered dictionary containing data to be written to a tsv file.
     fname : str
         Path to the file being written.
+
     """
     n_rows = len(data[list(data.keys())[0]])
     output = _tsv_to_str(data, n_rows)
@@ -161,6 +166,7 @@ def _tsv_to_str(data, rows=5):
     -------
     str
         String representation of the first `rows` lines of `data`.
+
     """
     col_names = list(data.keys())
     n_rows = len(data[col_names[0]])
