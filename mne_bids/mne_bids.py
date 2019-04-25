@@ -36,41 +36,11 @@ from .utils import (make_bids_basename, make_bids_folders,
 from .copyfiles import (copyfile_brainvision, copyfile_eeglab, copyfile_ctf,
                         copyfile_bti)
 
-from .io import _parse_ext, ALLOWED_EXTENSIONS, reader
+from .io import _parse_ext, reader
 from .tsv_handler import _from_tsv, _combine, _drop, _contains_row
 
-ALLOWED_KINDS = ['meg', 'eeg', 'ieeg']
-
-# Orientation of the coordinate system dependent on manufacturer
-ORIENTATION = {'.sqd': 'ALS', '.con': 'ALS', '.fif': 'RAS', '.pdf': 'ALS',
-               '.ds': 'ALS'}
-
-UNITS = {'.sqd': 'm', '.con': 'm', '.fif': 'm', '.pdf': 'm', '.ds': 'cm'}
-
-meg_manufacturers = {'.sqd': 'KIT/Yokogawa', '.con': 'KIT/Yokogawa',
-                     '.fif': 'Elekta', '.pdf': '4D Magnes', '.ds': 'CTF',
-                     '.meg4': 'CTF'}
-
-eeg_manufacturers = {'.vhdr': 'BrainProducts', '.eeg': 'BrainProducts',
-                     '.edf': 'n/a', '.bdf': 'Biosemi', '.set': 'n/a',
-                     '.fdt': 'n/a'}
-
-ieeg_manufacturers = {'.vhdr': 'BrainProducts', '.eeg': 'BrainProducts',
-                      '.edf': 'n/a', '.set': 'n/a', '.fdt': 'n/a',
-                      '.mef': 'n/a', '.nwb': 'n/a'}
-
-# Merge the manufacturer dictionaries in a python2 / python3 compatible way
-MANUFACTURERS = dict()
-MANUFACTURERS.update(meg_manufacturers)
-MANUFACTURERS.update(eeg_manufacturers)
-MANUFACTURERS.update(ieeg_manufacturers)
-
-# List of synthetic channels by manufacturer that are to be excluded from the
-# channel list. Currently this is only for stimulus channels.
-IGNORED_CHANNELS = {'KIT/Yokogawa': ['STI 014'],
-                    'BrainProducts': ['STI 014'],
-                    'n/a': ['STI 014'],  # for unknown manufacturers, ignore it
-                    'Biosemi': ['STI 014']}
+from .config import (ALLOWED_KINDS, ORIENTATION, UNITS, MANUFACTURERS,
+                     IGNORED_CHANNELS, ALLOWED_EXTENSIONS)
 
 
 def _channels_tsv(raw, fname, overwrite=False, verbose=True):

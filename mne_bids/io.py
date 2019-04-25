@@ -14,24 +14,7 @@ import numpy as np
 from mne import io
 
 from .tsv_handler import _from_tsv, _drop
-
-allowed_extensions_meg = ['.con', '.sqd', '.fif', '.pdf', '.ds']
-allowed_extensions_eeg = ['.vhdr',  # BrainVision, accompanied by .vmrk, .eeg
-                          '.edf',  # European Data Format
-                          '.bdf',  # Biosemi
-                          '.set',  # EEGLAB, potentially accompanied by .fdt
-                          ]
-
-allowed_extensions_ieeg = ['.vhdr',  # BrainVision, accompanied by .vmrk, .eeg
-                           '.edf',  # European Data Format
-                           '.set',  # EEGLAB, potentially accompanied by .fdt
-                           '.mef',  # MEF: Multiscale Electrophysiology File
-                           '.nwb',  # Neurodata without borders
-                           ]
-
-ALLOWED_EXTENSIONS = (allowed_extensions_meg +
-                      allowed_extensions_eeg +
-                      allowed_extensions_ieeg)
+from .config import ALLOWED_EXTENSIONS
 
 reader = {'.con': io.read_raw_kit, '.sqd': io.read_raw_kit,
           '.fif': io.read_raw_fif, '.pdf': io.read_raw_bti,
