@@ -14,6 +14,7 @@ def get_coil_types():
     coil_types : dict
         The keys contain the channel types, and the values contain the
         corresponding values in the info['chs'][idx]['kind']
+
     """
     return dict(meggradaxial=(FIFF.FIFFV_COIL_KIT_GRAD,
                               FIFF.FIFFV_COIL_CTF_GRAD,
@@ -62,6 +63,7 @@ def coil_type(info, idx, ch_type='n/a'):
     type : 'meggradaxial' | 'megrefgradaxial' | 'meggradplanar'
            'megmag' | 'megrefmag' | 'eeg' | 'misc'
         Type of coil
+
     """
     ch = info['chs'][idx]
     for key, values in get_coil_types().items():

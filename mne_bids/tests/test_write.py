@@ -109,7 +109,7 @@ def test_fif():
     # change the gender but don't force overwrite.
     raw.info['subject_info'] = {'his_id': subject_id2,
                                 'birthday': (1994, 1, 26), 'sex': 2}
-    with pytest.raises(FileExistsError, match="already exists"):
+    with pytest.raises(FileExistsError, match="already exists"):  # noqa: F821
         write_raw_bids(raw, bids_basename2, output_path,
                        events_data=events_fname, event_id=event_id,
                        overwrite=False)
@@ -226,7 +226,7 @@ def test_ctf():
                         return_events=False)
 
     # test to check that running again with overwrite == False raises an error
-    with pytest.raises(FileExistsError, match="already exists"):
+    with pytest.raises(FileExistsError, match="already exists"):  # noqa: F821
         write_raw_bids(raw, bids_basename, output_path=output_path)
 
     assert op.exists(op.join(output_path, 'participants.tsv'))
@@ -396,7 +396,7 @@ def test_set():
     read_raw_bids(bids_basename + '_eeg.set',
                   output_path, return_events=False)
 
-    with pytest.raises(FileExistsError, match="already exists"):
+    with pytest.raises(FileExistsError, match="already exists"):  # noqa: F821
         write_raw_bids(raw, bids_basename, output_path=output_path,
                        overwrite=False)
 
