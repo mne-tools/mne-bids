@@ -7,7 +7,7 @@ import pytest
 
 from mne.utils import _TempDir
 
-from mne_bids.io import _parse_ext, _read_raw
+from mne_bids.read import _parse_ext, _read_raw
 
 
 def test_parse_ext():
