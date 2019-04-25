@@ -4,7 +4,7 @@ BIDS conversion for group studies
 =================================
 
 Here, we show how to do BIDS conversion for group studies.
-The data is available here: https://openfmri.org/dataset/ds000117/
+The data is available here: https://openneuro.org/datasets/ds000117
 
 References
 ----------
