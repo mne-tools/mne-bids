@@ -24,7 +24,8 @@ import mne
 from mne.datasets import sample
 
 from mne_bids import write_raw_bids, read_raw_bids
-from mne_bids.utils import make_bids_basename, print_dir_tree
+from mne_bids.write import make_bids_basename
+from mne_bids.utils import print_dir_tree
 
 ###############################################################################
 # And define the paths and event_id dictionary.
