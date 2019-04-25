@@ -31,9 +31,10 @@ from .pick import coil_type
 from .utils import (make_bids_basename, make_bids_folders,
                     make_dataset_description, _write_json, _write_tsv,
                     _read_events, _mkdir_p, _age_on_date,
-                    copyfile_brainvision, copyfile_eeglab, copyfile_ctf,
-                    copyfile_bti, _infer_eeg_placement_scheme,
+                    _infer_eeg_placement_scheme,
                     _parse_bids_filename, _handle_kind)
+from .copyfiles import (copyfile_brainvision, copyfile_eeglab, copyfile_ctf,
+                        copyfile_bti)
 
 from .io import _parse_ext, ALLOWED_EXTENSIONS, reader
 from .tsv_handler import _from_tsv, _combine, _drop, _contains_row
