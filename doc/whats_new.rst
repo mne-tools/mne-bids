@@ -18,7 +18,6 @@ Changelog
 Bug
 ~~~
 
-
 API
 ~~~
 
