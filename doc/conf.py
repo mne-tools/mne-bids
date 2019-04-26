@@ -114,6 +114,7 @@ html_theme_options = {
     'navbar_links': [
         ("Gallery", "auto_examples/index"),
         ("API", "api"),
+        ("What's new", "whats_new"),
         ("Github", "https://github.com/mne-tools/mne-bids", True),
     ]}
 
