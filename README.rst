@@ -10,7 +10,7 @@
    :alt: Travis
 
 
-.. image:: https://ci.appveyor.com/api/projects/status/g6jqpv31sp7q103s/branch/master?svg=true "Appveyor"
+.. image:: https://ci.appveyor.com/api/projects/status/d4u70pht341cwqxb/branch/master?svg=true
    :target: https://ci.appveyor.com/project/mne-tools/mne-bids/branch/master
    :alt: Appveyor
 
