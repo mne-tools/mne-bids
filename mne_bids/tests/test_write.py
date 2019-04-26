@@ -24,8 +24,8 @@ from mne.datasets import testing
 from mne.utils import _TempDir, run_subprocess, check_version
 from mne.io.constants import FIFF
 
-from mne_bids import write_raw_bids, read_raw_bids
-from mne_bids.write import make_bids_basename, make_bids_folders
+from mne_bids import (write_raw_bids, read_raw_bids, make_bids_basename,
+                      make_bids_folders)
 from mne_bids.tsv_handler import _from_tsv
 
 base_path = op.join(op.dirname(mne.__file__), 'io')

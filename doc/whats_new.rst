@@ -39,7 +39,7 @@ Bug
 API
 ~~~
 
--  :func:`make_bids_basename`, :func:`make_bids_folders`, and :func:`make_dataset_description` are now available from `mne_bids.write`. The `mne_bids` base package now only exposes :func:`read_raw_bids` and :func:`write_raw_bids`, by `Stefan Appelhoff`_ (`#196 <https://github.com/mne-tools/mne-bids/pull/196>`_)
+- :func:`make_dataset_description` is now available from `mne_bids` main namespace, all copyfile functions are available from `mne_bids.copyfiles` namespace by `Stefan Appelhoff`_ (`#196 <https://github.com/mne-tools/mne-bids/pull/196>`_)
 - Add support for non maxfiltered .fif files, by `Maximilien Chaumon`_ (`#171 <https://github.com/mne-tools/mne-bids/pull/171>`_)
 - Remove support for Neuroscan ``.cnt`` data because its support is no longer planned in BIDS, by `Stefan Appelhoff`_ (`#142 <https://github.com/mne-tools/mne-bids/pull/142>`_)
 - Remove support for Python 2 because it is no longer supported in MNE-Python, by `Teon Brooks`_ (`#141 <https://github.com/mne-tools/mne-bids/pull/141>`_)
