@@ -1,6 +1,6 @@
 """MNE software for easily interacting with BIDS compatible datasets."""
 
-__version__ = '0.2.0'
+__version__ = '0.2'
 
 
 from .write import (write_raw_bids, make_bids_folders, make_bids_basename,  # noqa: E501 F401
