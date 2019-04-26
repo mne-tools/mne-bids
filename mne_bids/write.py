@@ -865,7 +865,8 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
     channels_fname = make_bids_basename(
         subject=subject_id, session=session_id, task=task, run=run,
         acquisition=acquisition, suffix='channels.tsv', prefix=data_path)
-    if ext not in ['.fif', '.ds', '.vhdr', '.edf', '.bdf', '.set']:
+    if ext not in ['.fif', '.ds', '.vhdr', '.edf', '.bdf', '.set', '.con',
+                   '.sqd']:
         bids_raw_folder = bids_fname.split('.')[0]
         bids_fname = op.join(bids_raw_folder, bids_fname)
 
@@ -939,7 +940,7 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
         marker_fname = make_bids_basename(
             subject=subject_id, session=session_id, task=task, run=run,
             acquisition=acquisition, suffix='markers%s' % marker_ext,
-            prefix=op.join(data_path, bids_raw_folder))
+            prefix=data_path)
         sh.copyfile(hpi, marker_fname)
 
     return output_path

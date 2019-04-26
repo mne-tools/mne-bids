@@ -119,13 +119,10 @@ def read_raw_bids(bids_fname, bids_root, return_events=True,
                        'ses-%s' % params['ses'], kind)
 
     config = None
-    if ext in ('.fif', '.ds', '.vhdr', '.edf', '.bdf', '.set'):
+    if ext in ('.fif', '.ds', '.vhdr', '.edf', '.bdf', '.set', '.sqd', '.con'):
         bids_fname = op.join(kind_dir,
                              bids_basename + '_%s%s' % (kind, ext))
-    elif ext == '.sqd':
-        data_path = op.join(kind_dir, bids_basename + '_%s' % kind)
-        bids_fname = op.join(data_path,
-                             bids_basename + '_%s%s' % (kind, ext))
+
     elif ext == '.pdf':
         bids_raw_folder = op.join(kind_dir, bids_basename + '_%s' % kind)
         bids_fname = glob.glob(op.join(bids_raw_folder, 'c,rf*'))[0]
