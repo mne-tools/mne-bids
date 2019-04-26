@@ -12,10 +12,25 @@ What's new?
 Current
 -------
 
-- Add a reader for BIDS compatible raw files, by `Mainak Jas`_ (`#135 <https://github.com/mne-tools/mne-bids/pull/135>`_)
+Changelog
+~~~~~~~~~
+
+Bug
+~~~
+
+
+API
+~~~
+
+.. _changes_0_2:
+
+Version 0.2
+-----------
 
 Changelog
 ~~~~~~~~~
+
+- Add a reader for BIDS compatible raw files, by `Mainak Jas`_ (`#135 <https://github.com/mne-tools/mne-bids/pull/135>`_)
 
 Bug
 ~~~
@@ -46,6 +61,24 @@ API
 - Remove support for Python 2 because it is no longer supported in MNE-Python, by `Teon Brooks`_ (`#141 <https://github.com/mne-tools/mne-bids/pull/141>`_)
 - Remove Pandas requirement to reduce number of dependencies, by `Matt Sanderson`_ (`#122 <https://github.com/mne-tools/mne-bids/pull/122>`_)
 - Use more modern API of event_from_annotations in MNE for extracting events in .vhdr and .set files, by `Mainak Jas`_ (`#167 <https://github.com/mne-tools/mne-bids/pull/167/files>`_)
+
+Authors
+~~~~~~~
+
+People who contributed to this release (in alphabetical order):
+
+* Alexandre Gramfort
+* Chris Holdgraf
+* Clemens Brunner
+* Dominik Welke
+* Ezequiel Mikulan
+* Kambiz Tavabi
+* Mainak Jas
+* Matt Sanderson
+* Maximilien Chaumon
+* Romain Quentin
+* Stefan Appelhoff
+* Teon Brooks
 
 .. _changes_0_1:
 
@@ -81,7 +114,7 @@ Bug
 Authors
 ~~~~~~~
 
-People who contributed to this release  (in alphabetical order):
+People who contributed to this release (in alphabetical order):
 
 * Alexandre Gramfort
 * Chris Holdgraf
