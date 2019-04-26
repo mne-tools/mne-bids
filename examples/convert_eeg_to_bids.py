@@ -26,8 +26,7 @@ import shutil as sh
 import mne
 from mne.datasets import eegbci
 
-from mne_bids import write_raw_bids
-from mne_bids.write import make_bids_basename
+from mne_bids import write_raw_bids, make_bids_basename
 from mne_bids.utils import print_dir_tree
 
 ###############################################################################

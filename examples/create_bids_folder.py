@@ -19,7 +19,7 @@ wish to create these files/folders on your own.
 ###############################################################################
 # We'll import the relevant functions from the write module
 
-from mne_bids.write import make_bids_folders, make_bids_basename
+from mne_bids import make_bids_folders, make_bids_basename
 
 ###############################################################################
 # Creating file names for BIDS

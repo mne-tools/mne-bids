@@ -15,16 +15,8 @@ MNE BIDS (:py:mod:`mne_bids`):
 
    write_raw_bids
    read_raw_bids
-
-Write (:py:mod:`mne_bids.write`):
-
-.. currentmodule:: mne_bids.write
-
-.. autosummary::
-   :toctree: generated/
-
-   make_bids_basename
    make_bids_folders
+   make_bids_basename
    make_dataset_description
 
 Utils (:py:mod:`mne_bids.utils`):
@@ -37,7 +29,6 @@ Utils (:py:mod:`mne_bids.utils`):
    print_dir_tree
 
 Copyfiles (:py:mod:`mne_bids.copyfiles`):
-
 
 .. currentmodule:: mne_bids.copyfiles
 
