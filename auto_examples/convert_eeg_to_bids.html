@@ -2,9 +2,8 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Convert EEG data to BIDS format &#8212; mne_bids 0.1 documentation</title>
+    <meta charset="utf-8" />
+    <title>Convert EEG data to BIDS format &#8212; mne_bids 0.2 documentation</title>
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
@@ -12,17 +11,17 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js"></script>
-    <script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
-    <script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
 <meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js "></script>
 
   </head><body>
 
@@ -37,7 +36,7 @@
         </button>
         <a class="navbar-brand" href="../index.html">
           MNE-BIDS</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.1</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.2</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -45,6 +44,7 @@
             
                 <li><a href="index.html">Gallery</a></li>
                 <li><a href="../api.html">API</a></li>
+                <li><a href="../whats_new.html">What's new</a></li>
                 <li><a href="https://github.com/mne-tools/mne-bids">Github</a></li>
             
             
@@ -107,36 +107,35 @@
 
 <div class="container">
   <div class="row">
-    <div class="col-md-12 content">
+    <div class="body col-md-12 content" role="main">
       
   <div class="sphx-glr-download-link-note admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">Click <a class="reference internal" href="#sphx-glr-download-auto-examples-convert-eeg-to-bids-py"><span class="std std-ref">here</span></a> to download the full example code</p>
+<p class="admonition-title">Note</p>
+<p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-convert-eeg-to-bids-py"><span class="std std-ref">here</span></a> to download the full example code</p>
 </div>
 <div class="sphx-glr-example-title section" id="convert-eeg-data-to-bids-format">
 <span id="sphx-glr-auto-examples-convert-eeg-to-bids-py"></span><h1>Convert EEG data to BIDS format<a class="headerlink" href="#convert-eeg-data-to-bids-format" title="Permalink to this headline">¶</a></h1>
 <p>In this example, we use MNE-BIDS to create a BIDS-compatible directory of EEG
 data. Specifically, we will follow these steps:</p>
 <ol class="arabic simple">
-<li>Download some EEG data from the
-<a class="reference external" href="https://physionet.org/physiobank/database">PhysioBank database</a>.</li>
-<li>Load the data, extract information, and save in a new BIDS directory</li>
-<li>Check the result and compare it with the standard</li>
+<li><p>Download some EEG data from the
+<a class="reference external" href="https://physionet.org/physiobank/database">PhysioBank database</a>.</p></li>
+<li><p>Load the data, extract information, and save in a new BIDS directory</p></li>
+<li><p>Check the result and compare it with the standard</p></li>
 </ol>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Authors: Stefan Appelhoff &lt;stefan.appelhoff@mailbox.org&gt;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Authors: Stefan Appelhoff &lt;stefan.appelhoff@mailbox.org&gt;</span>
 <span class="c1"># License: BSD (3-clause)</span>
 </pre></div>
 </div>
 <p>We are importing everything we need for this example:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">shutil</span> <span class="kn">as</span> <span class="nn">sh</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">shutil</span> <span class="k">as</span> <span class="nn">sh</span>
 
 <span class="kn">import</span> <span class="nn">mne</span>
-<span class="kn">from</span> <span class="nn">mne.datasets</span> <span class="kn">import</span> <span class="n">eegbci</span>
-<span class="kn">from</span> <span class="nn">mne.io.edf.edf</span> <span class="kn">import</span> <span class="n">read_annotations_edf</span>
+<span class="kn">from</span> <span class="nn">mne.datasets</span> <span class="k">import</span> <span class="n">eegbci</span>
 
-<span class="kn">from</span> <span class="nn">mne_bids</span> <span class="kn">import</span> <span class="n">write_raw_bids</span><span class="p">,</span> <span class="n">make_bids_basename</span>
-<span class="kn">from</span> <span class="nn">mne_bids.utils</span> <span class="kn">import</span> <span class="n">print_dir_tree</span>
+<span class="kn">from</span> <span class="nn">mne_bids</span> <span class="k">import</span> <span class="n">write_raw_bids</span><span class="p">,</span> <span class="n">make_bids_basename</span>
+<span class="kn">from</span> <span class="nn">mne_bids.utils</span> <span class="k">import</span> <span class="n">print_dir_tree</span>
 </pre></div>
 </div>
 <div class="section" id="step-1-download-the-data">
@@ -152,7 +151,7 @@ with the Brain Imaging Data Structure
 (<cite>BIDS &lt;http://bids.neuroimaging.io/&gt;</cite>).</p>
 <p>Conveniently, there is already a data loading function available with
 MNE-Python:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Make a directory to save the data to</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Make a directory to save the data to</span>
 <span class="n">home</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s1">&#39;~&#39;</span><span class="p">)</span>
 <span class="n">mne_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">home</span><span class="p">,</span> <span class="s1">&#39;mne_data&#39;</span><span class="p">)</span>
 <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">mne_dir</span><span class="p">):</span>
@@ -168,7 +167,7 @@ MNE-Python:</p>
     <a href="http://mne-tools.github.io/stable/generated/mne.datasets.eegbci.load_data.html#mne.datasets.eegbci.load_data" title="View documentation for mne.datasets.eegbci.load_data"><span class="n">eegbci</span><span class="o">.</span><span class="n">load_data</span></a><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="n">subj_idx</span><span class="p">,</span>
                      <span class="n">runs</span><span class="o">=</span><span class="n">tasks</span><span class="p">,</span>
                      <span class="n">path</span><span class="o">=</span><span class="n">mne_dir</span><span class="p">,</span>
-                     <span class="n">update_path</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+                     <span class="n">update_path</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
@@ -187,23 +186,23 @@ Downloading http://www.physionet.org/physiobank/database/eegmmidb/S002/S002R12.e
 </div>
 <p>Let’s see whether the data has been downloaded using a quick visualization
 of the directory tree.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">data_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">mne_dir</span><span class="p">,</span> <span class="s1">&#39;MNE-eegbci-data&#39;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">data_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">mne_dir</span><span class="p">,</span> <span class="s1">&#39;MNE-eegbci-data&#39;</span><span class="p">)</span>
 <span class="n">print_dir_tree</span><span class="p">(</span><span class="n">data_dir</span><span class="p">)</span>
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>|------------ MNE-eegbci-data
-|--------------- physiobank
-|------------------ database
-|--------------------- eegmmidb
-|------------------------ S001
-|--------------------------- S001R02.edf
-|--------------------------- S001R12.edf
-|--------------------------- S001R04.edf
-|------------------------ S002
-|--------------------------- S002R12.edf
-|--------------------------- S002R02.edf
-|--------------------------- S002R04.edf
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>|MNE-eegbci-data
+|--- physiobank
+|------ database
+|--------- eegmmidb
+|------------ S002
+|--------------- S002R04.edf
+|--------------- S002R12.edf
+|--------------- S002R02.edf
+|------------ S001
+|--------------- S001R12.edf
+|--------------- S001R02.edf
+|--------------- S001R04.edf
 </pre></div>
 </div>
 <p>The data are in the <a class="reference external" href="https://www.edfplus.info/">European Data Format</a>
@@ -218,8 +217,8 @@ files to properly <em>bidsify</em> this data.</p>
 MNE-Python’s io module and the <cite>read_raw_edf</cite> function. Note that we must
 use <cite>preload=False</cite>, the default in MNE-Python. It prevents the data from
 being loaded and modified when converting to BIDS.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">edf_path</span> <span class="o">=</span> <a href="http://mne-tools.github.io/stable/generated/mne.datasets.eegbci.load_data.html#mne.datasets.eegbci.load_data" title="View documentation for mne.datasets.eegbci.load_data"><span class="n">eegbci</span><span class="o">.</span><span class="n">load_data</span></a><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">runs</span><span class="o">=</span><span class="mi">2</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-<span class="n">raw</span> <span class="o">=</span> <a href="http://mne-tools.github.io/stable/generated/mne.io.read_raw_edf.html#mne.io.read_raw_edf" title="View documentation for mne.io.read_raw_edf"><span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_raw_edf</span></a><span class="p">(</span><span class="n">edf_path</span><span class="p">,</span> <span class="n">preload</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">stim_channel</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">edf_path</span> <span class="o">=</span> <a href="http://mne-tools.github.io/stable/generated/mne.datasets.eegbci.load_data.html#mne.datasets.eegbci.load_data" title="View documentation for mne.datasets.eegbci.load_data"><span class="n">eegbci</span><span class="o">.</span><span class="n">load_data</span></a><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">runs</span><span class="o">=</span><span class="mi">2</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">raw</span> <span class="o">=</span> <a href="http://mne-tools.github.io/stable/generated/mne.io.read_raw_edf.html#mne.io.read_raw_edf" title="View documentation for mne.io.read_raw_edf"><span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_raw_edf</span></a><span class="p">(</span><span class="n">edf_path</span><span class="p">,</span> <span class="n">preload</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">stim_channel</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
@@ -232,16 +231,16 @@ Creating raw.info structure...
 </div>
 <p>The annotations stored in the file must be read in separately and converted
 into a 2D numpy array of events that is compatible with MNE.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">annot</span> <span class="o">=</span> <span class="n">read_annotations_edf</span><span class="p">(</span><span class="n">edf_path</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">annot</span> <span class="o">=</span> <a href="http://mne-tools.github.io/stable/generated/mne.read_annotations.html#mne.read_annotations" title="View documentation for mne.read_annotations"><span class="n">mne</span><span class="o">.</span><span class="n">read_annotations</span></a><span class="p">(</span><span class="n">edf_path</span><span class="p">)</span>
 <span class="n">raw</span><span class="o">.</span><span class="n">set_annotations</span><span class="p">(</span><span class="n">annot</span><span class="p">)</span>
-<span class="n">events</span><span class="p">,</span> <span class="n">event_id</span> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">events_from_annotations</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span>
+<span class="n">events</span><span class="p">,</span> <span class="n">event_id</span> <span class="o">=</span> <a href="http://mne-tools.github.io/stable/generated/mne.events_from_annotations.html#mne.events_from_annotations" title="View documentation for mne.events_from_annotations"><span class="n">mne</span><span class="o">.</span><span class="n">events_from_annotations</span></a><span class="p">(</span><span class="n">raw</span><span class="p">)</span>
 
-<span class="k">print</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span>
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Used Annotations descriptions: [&#39;T0&#39;]
-&lt;RawEDF  |  S001R02.edf, n_channels x n_times : 65 x 9760 (61.0 sec), ~124 kB, data not loaded&gt;
+&lt;RawEDF  |  S001R02.edf, n_channels x n_times : 65 x 9760 (61.0 sec), ~123 kB, data not loaded&gt;
 </pre></div>
 </div>
 <p>With this step, we have everything to start a new BIDS directory using
@@ -251,12 +250,12 @@ meta data as possible from the raw data and then formats it in a BIDS
 compatible way. <cite>write_raw_bids</cite> takes a bunch of inputs, most of which are
 however optional. The required inputs are:</p>
 <ul class="simple">
-<li>raw</li>
-<li>bids_basename</li>
-<li>output_path</li>
+<li><p>raw</p></li>
+<li><p>bids_basename</p></li>
+<li><p>output_path</p></li>
 </ul>
 <p>… as you can see in the docstring:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">print</span><span class="p">(</span><span class="n">write_raw_bids</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">write_raw_bids</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">)</span>
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
@@ -274,18 +273,24 @@ however optional. The required inputs are:</p>
     bids_basename : str
         The base filename of the BIDS compatible files. Typically, this can be
         generated using make_bids_basename.
-        Example: sub-01_ses-01_task-testing_acq-01_run-01
-        This will write the following files in the correct subfolder
-        of output_path:
+        Example: `sub-01_ses-01_task-testing_acq-01_run-01`.
+        This will write the following files in the correct subfolder of the
+        output_path::
+
             sub-01_ses-01_task-testing_acq-01_run-01_meg.fif
             sub-01_ses-01_task-testing_acq-01_run-01_meg.json
             sub-01_ses-01_task-testing_acq-01_run-01_channels.tsv
             sub-01_ses-01_task-testing_acq-01_run-01_coordsystem.json
-        and the following one if events_data is not None
+
+        and the following one if events_data is not None::
+
             sub-01_ses-01_task-testing_acq-01_run-01_events.tsv
-        and add a line to the following files:
+
+        and add a line to the following files::
+
             participants.tsv
             scans.tsv
+
         Note that the modality &#39;meg&#39; is automatically inferred from the raw
         object and extension &#39;.fif&#39; is copied from raw.filenames.
     output_path : str
@@ -320,14 +325,14 @@ however optional. The required inputs are:</p>
 </div>
 <p>We loaded ‘S001R02.edf’, which corresponds to subject 1 in the second task.
 The second task was to rest with closed eyes.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">subject_id</span> <span class="o">=</span> <span class="s1">&#39;001&#39;</span>  <span class="c1"># zero padding to account for &gt;100 subjects in this dataset</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">subject_id</span> <span class="o">=</span> <span class="s1">&#39;001&#39;</span>  <span class="c1"># zero padding to account for &gt;100 subjects in this dataset</span>
 <span class="n">task</span> <span class="o">=</span> <span class="s1">&#39;resteyesclosed&#39;</span>
 <span class="n">raw_file</span> <span class="o">=</span> <span class="n">raw</span>
 <span class="n">output_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">home</span><span class="p">,</span> <span class="s1">&#39;mne_data&#39;</span><span class="p">,</span> <span class="s1">&#39;eegmmidb_bids&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Now we just need to specify a few more EEG details to get something sensible:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Brief description of the event markers present in the data. This will become</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Brief description of the event markers present in the data. This will become</span>
 <span class="c1"># the `trial_type` column in our BIDS `events.tsv`. We know about the event</span>
 <span class="c1"># meaning from the documentation on PhysioBank</span>
 <span class="n">trial_type</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;rest&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;imagine left fist&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;imagine right fist&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">}</span>
@@ -335,7 +340,7 @@ The second task was to rest with closed eyes.</p>
 <span class="c1"># Now convert our data to be in a new BIDS dataset.</span>
 <span class="n">bids_basename</span> <span class="o">=</span> <span class="n">make_bids_basename</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="n">subject_id</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="n">task</span><span class="p">)</span>
 <span class="n">write_raw_bids</span><span class="p">(</span><span class="n">raw_file</span><span class="p">,</span> <span class="n">bids_basename</span><span class="p">,</span> <span class="n">output_path</span><span class="p">,</span> <span class="n">event_id</span><span class="o">=</span><span class="n">trial_type</span><span class="p">,</span>
-               <span class="n">events_data</span><span class="o">=</span><span class="n">events</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+               <span class="n">events_data</span><span class="o">=</span><span class="n">events</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
@@ -348,24 +353,43 @@ Creating folder: /home/circleci/mne_data/eegmmidb_bids/sub-001/eeg
 
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids/participants.tsv&#39;...
 
-  participant_id  age  sex group
-0        sub-001  NaN  NaN   NaN
+participant_id  age     sex
+sub-001 n/a     n/a
+
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids/participants.json&#39;...
+
+{
+    &quot;participant_id&quot;: {
+        &quot;Description&quot;: &quot;Unique participant identifier&quot;
+    },
+    &quot;age&quot;: {
+        &quot;Description&quot;: &quot;Age of the participant at time of testing&quot;,
+        &quot;Units&quot;: &quot;years&quot;
+    },
+    &quot;sex&quot;: {
+        &quot;Description&quot;: &quot;Biological sex of the participant&quot;,
+        &quot;Levels&quot;: {
+            &quot;F&quot;: &quot;female&quot;,
+            &quot;M&quot;: &quot;male&quot;
+        }
+    }
+}
 
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-001/sub-001_scans.tsv&#39;...
 
-                                  filename             acq_time
-0  eeg/sub-001_task-resteyesclosed_eeg.edf  2009-08-12T16:15:00
+filename        acq_time
+eeg/sub-001_task-resteyesclosed_eeg.edf 2009-08-12T16:15:00
 
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_events.tsv&#39;...
 
-   onset  duration         trial_type  event_value  event_sample
-0    0.0       0.0  imagine left fist            1             0
+onset   duration        trial_type      value   sample
+0.0     0.0     imagine left fist       1       0
 
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids/dataset_description.json&#39;...
 
 {
     &quot;Name&quot;: &quot; &quot;,
-    &quot;BIDSVersion&quot;: &quot;1.1.1 (draft)&quot;
+    &quot;BIDSVersion&quot;: &quot;1.2.0&quot;
 }
 Reading 0 ... 9759  =      0.000 ...    60.994 secs...
 
@@ -392,41 +416,35 @@ Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-rest
 
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_channels.tsv&#39;...
 
-   name type units           description  sampling_frequency  low_cutoff  \
-0  Fc5.  EEG     V  ElectroEncephaloGram               160.0         0.0
-1  Fc3.  EEG     V  ElectroEncephaloGram               160.0         0.0
-2  Fc1.  EEG     V  ElectroEncephaloGram               160.0         0.0
-3  Fcz.  EEG     V  ElectroEncephaloGram               160.0         0.0
-4  Fc2.  EEG     V  ElectroEncephaloGram               160.0         0.0
-
-   high_cutoff status
-0         80.0   good
-1         80.0   good
-2         80.0   good
-3         80.0   good
-4         80.0   good
+name    type    units   low_cutoff      high_cutoff     description     sampling_frequency      status
+Fc5.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+Fc3.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+Fc1.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+Fcz.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
 Copying data files to /home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_eeg.edf
 </pre></div>
 </div>
 <p>What does our fresh BIDS directory look like?</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">print_dir_tree</span><span class="p">(</span><span class="n">output_path</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">print_dir_tree</span><span class="p">(</span><span class="n">output_path</span><span class="p">)</span>
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>|------------ eegmmidb_bids
-|--------------- dataset_description.json
-|--------------- participants.tsv
-|--------------- sub-001
-|------------------ sub-001_scans.tsv
-|------------------ eeg
-|--------------------- sub-001_task-resteyesclosed_events.tsv
-|--------------------- sub-001_task-resteyesclosed_eeg.json
-|--------------------- sub-001_task-resteyesclosed_eeg.edf
-|--------------------- sub-001_task-resteyesclosed_channels.tsv
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>|eegmmidb_bids
+|--- participants.tsv
+|--- participants.json
+|--- dataset_description.json
+|--- sub-001
+|------ sub-001_scans.tsv
+|------ eeg
+|--------- sub-001_task-resteyesclosed_eeg.edf
+|--------- sub-001_task-resteyesclosed_eeg.json
+|--------- sub-001_task-resteyesclosed_channels.tsv
+|--------- sub-001_task-resteyesclosed_events.tsv
 </pre></div>
 </div>
 <p>Looks good so far, let’s convert the data for all tasks and subjects.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Start with a clean directory</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Start with a clean directory</span>
 <span class="n">sh</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">output_path</span><span class="p">)</span>
 
 <span class="c1"># Some initial information that we found in the PhysioBank documentation</span>
@@ -435,7 +453,7 @@ Copying data files to /home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_
               <span class="mi">12</span><span class="p">:</span> <span class="s1">&#39;imaginefists&#39;</span>  <span class="c1"># run 2</span>
               <span class="p">}</span>
 
-<span class="n">run_mapping</span> <span class="o">=</span> <span class="p">{</span><span class="mi">2</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span>  <span class="c1"># for resting eyes closed task, there was only one run</span>
+<span class="n">run_mapping</span> <span class="o">=</span> <span class="p">{</span><span class="mi">2</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># for resting eyes closed task, there was only one run</span>
                <span class="mi">4</span><span class="p">:</span> <span class="s1">&#39;1&#39;</span><span class="p">,</span>
                <span class="mi">12</span><span class="p">:</span> <span class="s1">&#39;2&#39;</span>
                <span class="p">}</span>
@@ -446,16 +464,16 @@ Copying data files to /home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_
         <span class="c1"># Load the data</span>
         <span class="n">edf_path</span> <span class="o">=</span> <a href="http://mne-tools.github.io/stable/generated/mne.datasets.eegbci.load_data.html#mne.datasets.eegbci.load_data" title="View documentation for mne.datasets.eegbci.load_data"><span class="n">eegbci</span><span class="o">.</span><span class="n">load_data</span></a><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="n">subj_idx</span><span class="p">,</span> <span class="n">runs</span><span class="o">=</span><span class="n">task_idx</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 
-        <span class="n">raw</span> <span class="o">=</span> <a href="http://mne-tools.github.io/stable/generated/mne.io.read_raw_edf.html#mne.io.read_raw_edf" title="View documentation for mne.io.read_raw_edf"><span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_raw_edf</span></a><span class="p">(</span><span class="n">edf_path</span><span class="p">,</span> <span class="n">preload</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">stim_channel</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
-        <span class="n">annot</span> <span class="o">=</span> <span class="n">read_annotations_edf</span><span class="p">(</span><span class="n">edf_path</span><span class="p">)</span>
+        <span class="n">raw</span> <span class="o">=</span> <a href="http://mne-tools.github.io/stable/generated/mne.io.read_raw_edf.html#mne.io.read_raw_edf" title="View documentation for mne.io.read_raw_edf"><span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_raw_edf</span></a><span class="p">(</span><span class="n">edf_path</span><span class="p">,</span> <span class="n">preload</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">stim_channel</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        <span class="n">annot</span> <span class="o">=</span> <a href="http://mne-tools.github.io/stable/generated/mne.read_annotations.html#mne.read_annotations" title="View documentation for mne.read_annotations"><span class="n">mne</span><span class="o">.</span><span class="n">read_annotations</span></a><span class="p">(</span><span class="n">edf_path</span><span class="p">)</span>
         <span class="n">raw</span><span class="o">.</span><span class="n">set_annotations</span><span class="p">(</span><span class="n">annot</span><span class="p">)</span>
-        <span class="n">events</span><span class="p">,</span> <span class="n">event_id</span> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">events_from_annotations</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span>
+        <span class="n">events</span><span class="p">,</span> <span class="n">event_id</span> <span class="o">=</span> <a href="http://mne-tools.github.io/stable/generated/mne.events_from_annotations.html#mne.events_from_annotations" title="View documentation for mne.events_from_annotations"><span class="n">mne</span><span class="o">.</span><span class="n">events_from_annotations</span></a><span class="p">(</span><span class="n">raw</span><span class="p">)</span>
 
         <span class="n">make_bids_basename</span><span class="p">(</span>
-            <span class="n">subject</span><span class="o">=</span><span class="s1">&#39;{:03}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">subj_idx</span><span class="p">),</span> <span class="n">task</span><span class="o">=</span><span class="n">task_names</span><span class="p">[</span><span class="n">task_idx</span><span class="p">],</span>
+            <span class="n">subject</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">{:03}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">subj_idx</span><span class="p">),</span> <span class="n">task</span><span class="o">=</span><span class="n">task_names</span><span class="p">[</span><span class="n">task_idx</span><span class="p">],</span>
             <span class="n">run</span><span class="o">=</span><span class="n">run_mapping</span><span class="p">[</span><span class="n">task_idx</span><span class="p">])</span>
         <span class="n">write_raw_bids</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_basename</span><span class="p">,</span> <span class="n">output_path</span><span class="p">,</span> <span class="n">event_id</span><span class="o">=</span><span class="n">trial_type</span><span class="p">,</span>
-                       <span class="n">events_data</span><span class="o">=</span><span class="n">events</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+                       <span class="n">events_data</span><span class="o">=</span><span class="n">events</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
@@ -474,24 +492,43 @@ Creating folder: /home/circleci/mne_data/eegmmidb_bids/sub-001/eeg
 
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids/participants.tsv&#39;...
 
-  participant_id  age  sex group
-0        sub-001  NaN  NaN   NaN
+participant_id  age     sex
+sub-001 n/a     n/a
+
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids/participants.json&#39;...
+
+{
+    &quot;participant_id&quot;: {
+        &quot;Description&quot;: &quot;Unique participant identifier&quot;
+    },
+    &quot;age&quot;: {
+        &quot;Description&quot;: &quot;Age of the participant at time of testing&quot;,
+        &quot;Units&quot;: &quot;years&quot;
+    },
+    &quot;sex&quot;: {
+        &quot;Description&quot;: &quot;Biological sex of the participant&quot;,
+        &quot;Levels&quot;: {
+            &quot;F&quot;: &quot;female&quot;,
+            &quot;M&quot;: &quot;male&quot;
+        }
+    }
+}
 
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-001/sub-001_scans.tsv&#39;...
 
-                                  filename             acq_time
-0  eeg/sub-001_task-resteyesclosed_eeg.edf  2009-08-12T16:15:00
+filename        acq_time
+eeg/sub-001_task-resteyesclosed_eeg.edf 2009-08-12T16:15:00
 
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_events.tsv&#39;...
 
-   onset  duration         trial_type  event_value  event_sample
-0    0.0       0.0  imagine left fist            1             0
+onset   duration        trial_type      value   sample
+0.0     0.0     imagine left fist       1       0
 
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids/dataset_description.json&#39;...
 
 {
     &quot;Name&quot;: &quot; &quot;,
-    &quot;BIDSVersion&quot;: &quot;1.1.1 (draft)&quot;
+    &quot;BIDSVersion&quot;: &quot;1.2.0&quot;
 }
 Reading 0 ... 9759  =      0.000 ...    60.994 secs...
 
@@ -518,19 +555,12 @@ Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-rest
 
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_channels.tsv&#39;...
 
-   name type units           description  sampling_frequency  low_cutoff  \
-0  Fc5.  EEG     V  ElectroEncephaloGram               160.0         0.0
-1  Fc3.  EEG     V  ElectroEncephaloGram               160.0         0.0
-2  Fc1.  EEG     V  ElectroEncephaloGram               160.0         0.0
-3  Fcz.  EEG     V  ElectroEncephaloGram               160.0         0.0
-4  Fc2.  EEG     V  ElectroEncephaloGram               160.0         0.0
-
-   high_cutoff status
-0         80.0   good
-1         80.0   good
-2         80.0   good
-3         80.0   good
-4         80.0   good
+name    type    units   low_cutoff      high_cutoff     description     sampling_frequency      status
+Fc5.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+Fc3.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+Fc1.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+Fcz.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
 Copying data files to /home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_eeg.edf
 Extracting EDF parameters from /home/circleci/mne_data/MNE-eegbci-data/physiobank/database/eegmmidb/S001/S001R04.edf...
 EDF file detected
@@ -543,31 +573,51 @@ EDF file detected
 EDF annotations detected (consider using raw.find_edf_events() to extract them)
 Setting channel info structure...
 Creating raw.info structure...
+Creating folder: /home/circleci/mne_data/eegmmidb_bids/sub-001/eeg
 
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids/participants.tsv&#39;...
 
-  participant_id  age  sex group
-0        sub-001  NaN  NaN   NaN
+participant_id  age     sex
+sub-001 n/a     n/a
+
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids/participants.json&#39;...
+
+{
+    &quot;participant_id&quot;: {
+        &quot;Description&quot;: &quot;Unique participant identifier&quot;
+    },
+    &quot;age&quot;: {
+        &quot;Description&quot;: &quot;Age of the participant at time of testing&quot;,
+        &quot;Units&quot;: &quot;years&quot;
+    },
+    &quot;sex&quot;: {
+        &quot;Description&quot;: &quot;Biological sex of the participant&quot;,
+        &quot;Levels&quot;: {
+            &quot;F&quot;: &quot;female&quot;,
+            &quot;M&quot;: &quot;male&quot;
+        }
+    }
+}
 
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-001/sub-001_scans.tsv&#39;...
 
-                                  filename             acq_time
-0  eeg/sub-001_task-resteyesclosed_eeg.edf  2009-08-12T16:15:00
+filename        acq_time
+eeg/sub-001_task-resteyesclosed_eeg.edf 2009-08-12T16:15:00
 
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_events.tsv&#39;...
 
-   onset  duration          trial_type  event_value  event_sample
-0    0.0       0.0   imagine left fist            1             0
-1    4.2       0.0  imagine right fist            2           672
-2    8.3       0.0   imagine left fist            1          1328
-3   12.5       0.0                 NaN            3          2000
-4   16.6       0.0   imagine left fist            1          2656
+onset   duration        trial_type      value   sample
+0.0     0.0     imagine left fist       1       0
+4.2     0.0     imagine right fist      2       672
+8.3     0.0     imagine left fist       1       1328
+12.5    0.0     n/a     3       2000
+16.6    0.0     imagine left fist       1       2656
 
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids/dataset_description.json&#39;...
 
 {
     &quot;Name&quot;: &quot; &quot;,
-    &quot;BIDSVersion&quot;: &quot;1.1.1 (draft)&quot;
+    &quot;BIDSVersion&quot;: &quot;1.2.0&quot;
 }
 Reading 0 ... 19999  =      0.000 ...   124.994 secs...
 
@@ -594,19 +644,12 @@ Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-rest
 
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_channels.tsv&#39;...
 
-   name type units           description  sampling_frequency  low_cutoff  \
-0  Fc5.  EEG     V  ElectroEncephaloGram               160.0         0.0
-1  Fc3.  EEG     V  ElectroEncephaloGram               160.0         0.0
-2  Fc1.  EEG     V  ElectroEncephaloGram               160.0         0.0
-3  Fcz.  EEG     V  ElectroEncephaloGram               160.0         0.0
-4  Fc2.  EEG     V  ElectroEncephaloGram               160.0         0.0
-
-   high_cutoff status
-0         80.0   good
-1         80.0   good
-2         80.0   good
-3         80.0   good
-4         80.0   good
+name    type    units   low_cutoff      high_cutoff     description     sampling_frequency      status
+Fc5.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+Fc3.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+Fc1.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+Fcz.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
 Copying data files to /home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_eeg.edf
 Extracting EDF parameters from /home/circleci/mne_data/MNE-eegbci-data/physiobank/database/eegmmidb/S001/S001R12.edf...
 EDF file detected
@@ -619,31 +662,51 @@ EDF file detected
 EDF annotations detected (consider using raw.find_edf_events() to extract them)
 Setting channel info structure...
 Creating raw.info structure...
+Creating folder: /home/circleci/mne_data/eegmmidb_bids/sub-001/eeg
 
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids/participants.tsv&#39;...
 
-  participant_id  age  sex group
-0        sub-001  NaN  NaN   NaN
+participant_id  age     sex
+sub-001 n/a     n/a
+
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids/participants.json&#39;...
+
+{
+    &quot;participant_id&quot;: {
+        &quot;Description&quot;: &quot;Unique participant identifier&quot;
+    },
+    &quot;age&quot;: {
+        &quot;Description&quot;: &quot;Age of the participant at time of testing&quot;,
+        &quot;Units&quot;: &quot;years&quot;
+    },
+    &quot;sex&quot;: {
+        &quot;Description&quot;: &quot;Biological sex of the participant&quot;,
+        &quot;Levels&quot;: {
+            &quot;F&quot;: &quot;female&quot;,
+            &quot;M&quot;: &quot;male&quot;
+        }
+    }
+}
 
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-001/sub-001_scans.tsv&#39;...
 
-                                  filename             acq_time
-0  eeg/sub-001_task-resteyesclosed_eeg.edf  2009-08-12T16:15:00
+filename        acq_time
+eeg/sub-001_task-resteyesclosed_eeg.edf 2009-08-12T16:15:00
 
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_events.tsv&#39;...
 
-   onset  duration          trial_type  event_value  event_sample
-0    0.0       0.0   imagine left fist            1             0
-1    4.2       0.0  imagine right fist            2           672
-2    8.3       0.0   imagine left fist            1          1328
-3   12.5       0.0                 NaN            3          2000
-4   16.6       0.0   imagine left fist            1          2656
+onset   duration        trial_type      value   sample
+0.0     0.0     imagine left fist       1       0
+4.2     0.0     imagine right fist      2       672
+8.3     0.0     imagine left fist       1       1328
+12.5    0.0     n/a     3       2000
+16.6    0.0     imagine left fist       1       2656
 
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids/dataset_description.json&#39;...
 
 {
     &quot;Name&quot;: &quot; &quot;,
-    &quot;BIDSVersion&quot;: &quot;1.1.1 (draft)&quot;
+    &quot;BIDSVersion&quot;: &quot;1.2.0&quot;
 }
 Reading 0 ... 19999  =      0.000 ...   124.994 secs...
 
@@ -670,19 +733,12 @@ Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-rest
 
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_channels.tsv&#39;...
 
-   name type units           description  sampling_frequency  low_cutoff  \
-0  Fc5.  EEG     V  ElectroEncephaloGram               160.0         0.0
-1  Fc3.  EEG     V  ElectroEncephaloGram               160.0         0.0
-2  Fc1.  EEG     V  ElectroEncephaloGram               160.0         0.0
-3  Fcz.  EEG     V  ElectroEncephaloGram               160.0         0.0
-4  Fc2.  EEG     V  ElectroEncephaloGram               160.0         0.0
-
-   high_cutoff status
-0         80.0   good
-1         80.0   good
-2         80.0   good
-3         80.0   good
-4         80.0   good
+name    type    units   low_cutoff      high_cutoff     description     sampling_frequency      status
+Fc5.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+Fc3.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+Fc1.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+Fcz.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
 Copying data files to /home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_eeg.edf
 Extracting EDF parameters from /home/circleci/mne_data/MNE-eegbci-data/physiobank/database/eegmmidb/S002/S002R02.edf...
 EDF file detected
@@ -695,27 +751,47 @@ EDF file detected
 EDF annotations detected (consider using raw.find_edf_events() to extract them)
 Setting channel info structure...
 Creating raw.info structure...
+Creating folder: /home/circleci/mne_data/eegmmidb_bids/sub-001/eeg
 
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids/participants.tsv&#39;...
 
-  participant_id  age  sex group
-0        sub-001  NaN  NaN   NaN
+participant_id  age     sex
+sub-001 n/a     n/a
+
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids/participants.json&#39;...
+
+{
+    &quot;participant_id&quot;: {
+        &quot;Description&quot;: &quot;Unique participant identifier&quot;
+    },
+    &quot;age&quot;: {
+        &quot;Description&quot;: &quot;Age of the participant at time of testing&quot;,
+        &quot;Units&quot;: &quot;years&quot;
+    },
+    &quot;sex&quot;: {
+        &quot;Description&quot;: &quot;Biological sex of the participant&quot;,
+        &quot;Levels&quot;: {
+            &quot;F&quot;: &quot;female&quot;,
+            &quot;M&quot;: &quot;male&quot;
+        }
+    }
+}
 
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-001/sub-001_scans.tsv&#39;...
 
-                                  filename             acq_time
-0  eeg/sub-001_task-resteyesclosed_eeg.edf  2009-08-12T16:15:00
+filename        acq_time
+eeg/sub-001_task-resteyesclosed_eeg.edf 2009-08-12T16:15:00
 
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_events.tsv&#39;...
 
-   onset  duration         trial_type  event_value  event_sample
-0    0.0       0.0  imagine left fist            1             0
+onset   duration        trial_type      value   sample
+0.0     0.0     imagine left fist       1       0
 
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids/dataset_description.json&#39;...
 
 {
     &quot;Name&quot;: &quot; &quot;,
-    &quot;BIDSVersion&quot;: &quot;1.1.1 (draft)&quot;
+    &quot;BIDSVersion&quot;: &quot;1.2.0&quot;
 }
 Reading 0 ... 9759  =      0.000 ...    60.994 secs...
 
@@ -742,19 +818,12 @@ Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-rest
 
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_channels.tsv&#39;...
 
-   name type units           description  sampling_frequency  low_cutoff  \
-0  Fc5.  EEG     V  ElectroEncephaloGram               160.0         0.0
-1  Fc3.  EEG     V  ElectroEncephaloGram               160.0         0.0
-2  Fc1.  EEG     V  ElectroEncephaloGram               160.0         0.0
-3  Fcz.  EEG     V  ElectroEncephaloGram               160.0         0.0
-4  Fc2.  EEG     V  ElectroEncephaloGram               160.0         0.0
-
-   high_cutoff status
-0         80.0   good
-1         80.0   good
-2         80.0   good
-3         80.0   good
-4         80.0   good
+name    type    units   low_cutoff      high_cutoff     description     sampling_frequency      status
+Fc5.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+Fc3.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+Fc1.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+Fcz.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
 Copying data files to /home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_eeg.edf
 Extracting EDF parameters from /home/circleci/mne_data/MNE-eegbci-data/physiobank/database/eegmmidb/S002/S002R04.edf...
 EDF file detected
@@ -767,31 +836,51 @@ EDF file detected
 EDF annotations detected (consider using raw.find_edf_events() to extract them)
 Setting channel info structure...
 Creating raw.info structure...
+Creating folder: /home/circleci/mne_data/eegmmidb_bids/sub-001/eeg
 
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids/participants.tsv&#39;...
 
-  participant_id  age  sex group
-0        sub-001  NaN  NaN   NaN
+participant_id  age     sex
+sub-001 n/a     n/a
+
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids/participants.json&#39;...
+
+{
+    &quot;participant_id&quot;: {
+        &quot;Description&quot;: &quot;Unique participant identifier&quot;
+    },
+    &quot;age&quot;: {
+        &quot;Description&quot;: &quot;Age of the participant at time of testing&quot;,
+        &quot;Units&quot;: &quot;years&quot;
+    },
+    &quot;sex&quot;: {
+        &quot;Description&quot;: &quot;Biological sex of the participant&quot;,
+        &quot;Levels&quot;: {
+            &quot;F&quot;: &quot;female&quot;,
+            &quot;M&quot;: &quot;male&quot;
+        }
+    }
+}
 
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-001/sub-001_scans.tsv&#39;...
 
-                                  filename             acq_time
-0  eeg/sub-001_task-resteyesclosed_eeg.edf  2009-08-12T16:15:00
+filename        acq_time
+eeg/sub-001_task-resteyesclosed_eeg.edf 2009-08-12T16:15:00
 
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_events.tsv&#39;...
 
-   onset  duration          trial_type  event_value  event_sample
-0    0.0       0.0   imagine left fist            1             0
-1    4.1       0.0  imagine right fist            2           656
-2    8.2       0.0   imagine left fist            1          1312
-3   12.3       0.0                 NaN            3          1968
-4   16.4       0.0   imagine left fist            1          2624
+onset   duration        trial_type      value   sample
+0.0     0.0     imagine left fist       1       0
+4.1     0.0     imagine right fist      2       656
+8.2     0.0     imagine left fist       1       1312
+12.3    0.0     n/a     3       1968
+16.4    0.0     imagine left fist       1       2624
 
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids/dataset_description.json&#39;...
 
 {
     &quot;Name&quot;: &quot; &quot;,
-    &quot;BIDSVersion&quot;: &quot;1.1.1 (draft)&quot;
+    &quot;BIDSVersion&quot;: &quot;1.2.0&quot;
 }
 Reading 0 ... 19679  =      0.000 ...   122.994 secs...
 
@@ -818,19 +907,12 @@ Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-rest
 
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_channels.tsv&#39;...
 
-   name type units           description  sampling_frequency  low_cutoff  \
-0  Fc5.  EEG     V  ElectroEncephaloGram               160.0         0.0
-1  Fc3.  EEG     V  ElectroEncephaloGram               160.0         0.0
-2  Fc1.  EEG     V  ElectroEncephaloGram               160.0         0.0
-3  Fcz.  EEG     V  ElectroEncephaloGram               160.0         0.0
-4  Fc2.  EEG     V  ElectroEncephaloGram               160.0         0.0
-
-   high_cutoff status
-0         80.0   good
-1         80.0   good
-2         80.0   good
-3         80.0   good
-4         80.0   good
+name    type    units   low_cutoff      high_cutoff     description     sampling_frequency      status
+Fc5.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+Fc3.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+Fc1.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+Fcz.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
 Copying data files to /home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_eeg.edf
 Extracting EDF parameters from /home/circleci/mne_data/MNE-eegbci-data/physiobank/database/eegmmidb/S002/S002R12.edf...
 EDF file detected
@@ -843,31 +925,51 @@ EDF file detected
 EDF annotations detected (consider using raw.find_edf_events() to extract them)
 Setting channel info structure...
 Creating raw.info structure...
+Creating folder: /home/circleci/mne_data/eegmmidb_bids/sub-001/eeg
 
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids/participants.tsv&#39;...
 
-  participant_id  age  sex group
-0        sub-001  NaN  NaN   NaN
+participant_id  age     sex
+sub-001 n/a     n/a
+
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids/participants.json&#39;...
+
+{
+    &quot;participant_id&quot;: {
+        &quot;Description&quot;: &quot;Unique participant identifier&quot;
+    },
+    &quot;age&quot;: {
+        &quot;Description&quot;: &quot;Age of the participant at time of testing&quot;,
+        &quot;Units&quot;: &quot;years&quot;
+    },
+    &quot;sex&quot;: {
+        &quot;Description&quot;: &quot;Biological sex of the participant&quot;,
+        &quot;Levels&quot;: {
+            &quot;F&quot;: &quot;female&quot;,
+            &quot;M&quot;: &quot;male&quot;
+        }
+    }
+}
 
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-001/sub-001_scans.tsv&#39;...
 
-                                  filename             acq_time
-0  eeg/sub-001_task-resteyesclosed_eeg.edf  2009-08-12T16:15:00
+filename        acq_time
+eeg/sub-001_task-resteyesclosed_eeg.edf 2009-08-12T16:15:00
 
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_events.tsv&#39;...
 
-   onset  duration          trial_type  event_value  event_sample
-0    0.0       0.0   imagine left fist            1             0
-1    4.1       0.0  imagine right fist            2           656
-2    8.2       0.0   imagine left fist            1          1312
-3   12.3       0.0                 NaN            3          1968
-4   16.4       0.0   imagine left fist            1          2624
+onset   duration        trial_type      value   sample
+0.0     0.0     imagine left fist       1       0
+4.1     0.0     imagine right fist      2       656
+8.2     0.0     imagine left fist       1       1312
+12.3    0.0     n/a     3       1968
+16.4    0.0     imagine left fist       1       2624
 
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids/dataset_description.json&#39;...
 
 {
     &quot;Name&quot;: &quot; &quot;,
-    &quot;BIDSVersion&quot;: &quot;1.1.1 (draft)&quot;
+    &quot;BIDSVersion&quot;: &quot;1.2.0&quot;
 }
 Reading 0 ... 19679  =      0.000 ...   122.994 secs...
 
@@ -894,19 +996,12 @@ Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-rest
 
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_channels.tsv&#39;...
 
-   name type units           description  sampling_frequency  low_cutoff  \
-0  Fc5.  EEG     V  ElectroEncephaloGram               160.0         0.0
-1  Fc3.  EEG     V  ElectroEncephaloGram               160.0         0.0
-2  Fc1.  EEG     V  ElectroEncephaloGram               160.0         0.0
-3  Fcz.  EEG     V  ElectroEncephaloGram               160.0         0.0
-4  Fc2.  EEG     V  ElectroEncephaloGram               160.0         0.0
-
-   high_cutoff status
-0         80.0   good
-1         80.0   good
-2         80.0   good
-3         80.0   good
-4         80.0   good
+name    type    units   low_cutoff      high_cutoff     description     sampling_frequency      status
+Fc5.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+Fc3.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+Fc1.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+Fcz.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
 Copying data files to /home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_eeg.edf
 </pre></div>
 </div>
@@ -914,20 +1009,21 @@ Copying data files to /home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_
 <div class="section" id="step-3-check-and-compare-with-standard">
 <h2>Step 3: Check and compare with standard<a class="headerlink" href="#step-3-check-and-compare-with-standard" title="Permalink to this headline">¶</a></h2>
 <p>Now we have written our BIDS directory.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">print_dir_tree</span><span class="p">(</span><span class="n">output_path</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">print_dir_tree</span><span class="p">(</span><span class="n">output_path</span><span class="p">)</span>
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>|------------ eegmmidb_bids
-|--------------- dataset_description.json
-|--------------- participants.tsv
-|--------------- sub-001
-|------------------ sub-001_scans.tsv
-|------------------ eeg
-|--------------------- sub-001_task-resteyesclosed_events.tsv
-|--------------------- sub-001_task-resteyesclosed_eeg.json
-|--------------------- sub-001_task-resteyesclosed_eeg.edf
-|--------------------- sub-001_task-resteyesclosed_channels.tsv
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>|eegmmidb_bids
+|--- participants.tsv
+|--- participants.json
+|--- dataset_description.json
+|--- sub-001
+|------ sub-001_scans.tsv
+|------ eeg
+|--------- sub-001_task-resteyesclosed_eeg.edf
+|--------- sub-001_task-resteyesclosed_eeg.json
+|--------- sub-001_task-resteyesclosed_channels.tsv
+|--------- sub-001_task-resteyesclosed_events.tsv
 </pre></div>
 </div>
 <p>MNE-BIDS has created a suitable directory structure for us, and among other
@@ -942,12 +1038,14 @@ directories called the “BIDS-validator”, available as a web version and a
 command line tool:</p>
 <p>Web version: <a class="reference external" href="https://bids-standard.github.io/bids-validator/">https://bids-standard.github.io/bids-validator/</a></p>
 <p>Command line tool: <a class="reference external" href="https://www.npmjs.com/package/bids-validator">https://www.npmjs.com/package/bids-validator</a></p>
-<p><strong>Total running time of the script:</strong> ( 0 minutes  2.376 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  2.931 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-eeg-to-bids-py">
 <div class="sphx-glr-download docutils container">
-<a class="reference download internal" download="" href="../_downloads/e44373716acd059d2bf5b3168e4f0f98/convert_eeg_to_bids.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">convert_eeg_to_bids.py</span></code></a></div>
+<p><a class="reference download internal" download="" href="../_downloads/e44373716acd059d2bf5b3168e4f0f98/convert_eeg_to_bids.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">convert_eeg_to_bids.py</span></code></a></p>
+</div>
 <div class="sphx-glr-download docutils container">
-<a class="reference download internal" download="" href="../_downloads/8d9cc83d1b8665c32c4ed9caf6e1be97/convert_eeg_to_bids.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">convert_eeg_to_bids.ipynb</span></code></a></div>
+<p><a class="reference download internal" download="" href="../_downloads/8d9cc83d1b8665c32c4ed9caf6e1be97/convert_eeg_to_bids.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">convert_eeg_to_bids.ipynb</span></code></a></p>
+</div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.readthedocs.io">Gallery generated by Sphinx-Gallery</a></p>
 </div>
@@ -965,8 +1063,8 @@ command line tool:</p>
       
     </p>
     <p>
-        &copy; Copyright 2018, MNE Developers. Last updated on 2018-11-05.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.1.<br/>
+        &copy; Copyright 2019, MNE Developers. Last updated on 2019-04-26.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.0.1.<br/>
     </p>
   </div>
 </footer>

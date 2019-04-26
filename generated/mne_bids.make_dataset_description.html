@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>Overview: module code &#8212; mne_bids 0.2 documentation</title>
+    <title>mne_bids.make_dataset_description &#8212; mne_bids 0.2 documentation</title>
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
@@ -67,7 +67,10 @@
      href="#">Page <b class="caret"></b></a>
   <ul class="dropdown-menu localtoc"
       role="menu"
-      aria-labelledby="dLabelLocalToc"></ul>
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">mne_bids.make_dataset_description</a></li>
+</ul>
+</ul>
 </li>
               
             
@@ -75,7 +78,11 @@
             
             
             
-              <li class="hidden-sm"></li>
+              <li class="hidden-sm">
+<div id="sourcelink">
+  <a href="../_sources/generated/mne_bids.make_dataset_description.rst.txt"
+     rel="nofollow">Source</a>
+</div></li>
             
           </ul>
 
@@ -97,13 +104,53 @@
   <div class="row">
     <div class="body col-md-12 content" role="main">
       
-  <h1>All modules for which code is available</h1>
-<ul><li><a href="mne_bids/copyfiles.html">mne_bids.copyfiles</a></li>
-<li><a href="mne_bids/datasets.html">mne_bids.datasets</a></li>
-<li><a href="mne_bids/read.html">mne_bids.read</a></li>
-<li><a href="mne_bids/utils.html">mne_bids.utils</a></li>
-<li><a href="mne_bids/write.html">mne_bids.write</a></li>
-</ul>
+  <div class="section" id="mne-bids-make-dataset-description">
+<h1>mne_bids.make_dataset_description<a class="headerlink" href="#mne-bids-make-dataset-description" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="mne_bids.make_dataset_description">
+<code class="descclassname">mne_bids.</code><code class="descname">make_dataset_description</code><span class="sig-paren">(</span><em>path</em>, <em>name=None</em>, <em>data_license=None</em>, <em>authors=None</em>, <em>acknowledgements=None</em>, <em>how_to_acknowledge=None</em>, <em>funding=None</em>, <em>references_and_links=None</em>, <em>doi=None</em>, <em>verbose=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/write.html#make_dataset_description"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.make_dataset_description" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create json for a dataset description.</p>
+<p>BIDS datasets may have one or more fields, this function allows you to
+specify which you wish to include in the description. See the BIDS
+documentation for information about what each field means.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>path</strong><span class="classifier">str</span></dt><dd><p>A path to a folder where the description will be created.</p>
+</dd>
+<dt><strong>name</strong><span class="classifier">str | None</span></dt><dd><p>The name of this BIDS dataset.</p>
+</dd>
+<dt><strong>data_license</strong><span class="classifier">str | None</span></dt><dd><p>The license under which this datset is published.</p>
+</dd>
+<dt><strong>authors</strong><span class="classifier">list | str | None</span></dt><dd><p>List of individuals who contributed to the creation/curation of the
+dataset. Must be a list of strings or a single comma separated string
+like [‘a’, ‘b’, ‘c’].</p>
+</dd>
+<dt><strong>acknowledgements</strong><span class="classifier">list | str | None</span></dt><dd><p>Either a str acknowledging individuals who contributed to the
+creation/curation of this dataset OR a list of the individuals’
+names as str.</p>
+</dd>
+<dt><strong>how_to_acknowledge</strong><span class="classifier">list | str | None</span></dt><dd><p>Either a str describing how to acknowledge this dataset OR a list of
+publications that should be cited.</p>
+</dd>
+<dt><strong>funding</strong><span class="classifier">list | str | None</span></dt><dd><p>List of sources of funding (e.g., grant numbers). Must be a list of
+strings or a single comma separated string like [‘a’, ‘b’, ‘c’].</p>
+</dd>
+<dt><strong>references_and_links</strong><span class="classifier">list | str | None</span></dt><dd><p>List of references to publication that contain information on the
+dataset, or links.  Must be a list of strings or a single comma
+separated string like [‘a’, ‘b’, ‘c’].</p>
+</dd>
+<dt><strong>doi</strong><span class="classifier">str | None</span></dt><dd><p>The DOI for the dataset.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The required field BIDSVersion will be automatically filled by mne_bids.</p>
+</dd></dl>
+
+</div>
+
 
     </div>
       

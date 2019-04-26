@@ -6,16 +6,18 @@
 API Documentation
 =================
 
-MNE BIDS (:py:mod:`mne_bids.mne_bids`):
+MNE BIDS (:py:mod:`mne_bids`):
 
-.. currentmodule:: mne_bids.mne_bids
+.. currentmodule:: mne_bids
 
 .. autosummary::
    :toctree: generated/
 
    write_raw_bids
-   make_bids_basename
+   read_raw_bids
    make_bids_folders
+   make_bids_basename
+   make_dataset_description
 
 Utils (:py:mod:`mne_bids.utils`):
 
@@ -25,9 +27,18 @@ Utils (:py:mod:`mne_bids.utils`):
    :toctree: generated/
 
    print_dir_tree
-   make_dataset_description
+
+Copyfiles (:py:mod:`mne_bids.copyfiles`):
+
+.. currentmodule:: mne_bids.copyfiles
+
+.. autosummary::
+   :toctree: generated/
+
    copyfile_brainvision
    copyfile_eeglab
+   copyfile_ctf
+   copyfile_bti
 
 Datasets (:py:mod:`mne_bids.datasets`):
 

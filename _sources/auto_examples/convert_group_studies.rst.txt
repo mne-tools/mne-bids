@@ -12,7 +12,7 @@ BIDS conversion for group studies
 =================================
 
 Here, we show how to do BIDS conversion for group studies.
-The data is available here: https://openfmri.org/dataset/ds000117/
+The data is available here: https://openneuro.org/datasets/ds000117
 
 References
 ----------
@@ -23,8 +23,7 @@ Scientific data, 2 (2015): 150001.
 
 
 
-
-.. code-block:: python
+.. code-block:: default
 
 
     # Authors: Mainak Jas <mainak.jas@telecom-paristech.fr>
@@ -41,14 +40,13 @@ Scientific data, 2 (2015): 150001.
 Let us import ``mne_bids``
 
 
-
-.. code-block:: python
+.. code-block:: default
 
 
     import os.path as op
 
     import mne
-    from mne_bids import write_raw_bids
+    from mne_bids import write_raw_bids, make_bids_basename
     from mne_bids.datasets import fetch_faces_data
     from mne_bids.utils import print_dir_tree
 
@@ -61,8 +59,7 @@ Let us import ``mne_bids``
 And fetch the data.
 
 
-
-.. code-block:: python
+.. code-block:: default
 
 
     subject_ids = [1]
@@ -95,8 +92,7 @@ And fetch the data.
 Define event_ids.
 
 
-
-.. code-block:: python
+.. code-block:: default
 
 
     event_id = {
@@ -120,8 +116,7 @@ Define event_ids.
 Let us loop over the subjects and create BIDS-compatible folder
 
 
-
-.. code-block:: python
+.. code-block:: default
 
 
     for subject_id in subject_ids:
@@ -131,8 +126,9 @@ Let us loop over the subjects and create BIDS-compatible folder
                                 'run_%02d_raw.fif' % run)
 
             raw = mne.io.read_raw_fif(raw_fname)
-            bids_basename = ('sub-%02d_ses-01_task-VisualFaces_run-%d'
-                             % (subject_id, run))
+            bids_basename = make_bids_basename(subject=str(subject_id),
+                                               session='01', task='VisualFaces',
+                                               run=str(run))
             write_raw_bids(raw, bids_basename, output_path, event_id=event_id,
                            overwrite=True)
 
@@ -172,39 +168,109 @@ Let us loop over the subjects and create BIDS-compatible folder
         Range : 268400 ... 815099 =    244.000 ...   740.999 secs
     Ready.
     Current compensation grade : 0
-    Creating folder: /home/circleci/mne_data/ds000117-bids/sub-01/ses-01/meg
+    Creating folder: /home/circleci/mne_data/ds000117-bids/sub-1/ses-01/meg
 
     Writing '/home/circleci/mne_data/ds000117-bids/participants.tsv'...
 
-      participant_id  age sex group
-    0         sub-01   10   M   n/a
+    participant_id  age     sex
+    sub-1   10      M
 
-    Writing '/home/circleci/mne_data/ds000117-bids/sub-01/ses-01/sub-01_ses-01_scans.tsv'...
+    Writing '/home/circleci/mne_data/ds000117-bids/participants.json'...
 
-                                               filename             acq_time
-    0  meg/sub-01_ses-01_task-VisualFaces_run-1_meg.fif  2009-04-07T14:39:35
+    {
+        "participant_id": {
+            "Description": "Unique participant identifier"
+        },
+        "age": {
+            "Description": "Age of the participant at time of testing",
+            "Units": "years"
+        },
+        "sex": {
+            "Description": "Biological sex of the participant",
+            "Levels": {
+                "F": "female",
+                "M": "male"
+            }
+        }
+    }
+
+    Writing '/home/circleci/mne_data/ds000117-bids/sub-1/ses-01/sub-1_ses-01_scans.tsv'...
+
+    filename        acq_time
+    meg/sub-1_ses-01_task-VisualFaces_run-1_meg.fif 2009-04-07T14:39:35
+
+    Writing '/home/circleci/mne_data/ds000117-bids/sub-1/ses-01/meg/sub-1_ses-01_coordsystem.json'...
+
+    {
+        "MEGCoordinateSystem": "Elekta",
+        "MEGCoordinateUnits": "m",
+        "HeadCoilCoordinates": {
+            "NAS": [
+                6.350555636913668e-10,
+                0.10185277462005615,
+                -1.2766878665360082e-09
+            ],
+            "LPA": [
+                -0.07355359941720963,
+                -5.226810984026997e-09,
+                -6.564203847148065e-09
+            ],
+            "RPA": [
+                0.07877404987812042,
+                -2.563174561487358e-08,
+                -5.883831200037548e-09
+            ],
+            "coil1": [
+                0.020418334752321243,
+                0.09947940707206726,
+                0.06992102414369583
+            ],
+            "coil2": [
+                0.07411128282546997,
+                0.0064362590201199055,
+                0.09744320064783096
+            ],
+            "coil3": [
+                0.018864190205931664,
+                -0.020370930433273315,
+                0.1332322508096695
+            ],
+            "coil4": [
+                0.014254843816161156,
+                -0.0912255346775055,
+                0.08386014401912689
+            ],
+            "coil5": [
+                -0.07725043594837189,
+                -0.009882151149213314,
+                0.07862507551908493
+            ]
+        },
+        "HeadCoilCoordinateSystem": "RAS",
+        "HeadCoilCoordinateUnits": "m"
+    }
     296 events found
-    Event IDs: [   5    6    7   13   14   15   17   18   19  256  261  262  263  269  270
-      271  273  274  275 4096 4101 4102 4103 4109 4110 4111 4114]
+    Event IDs: [   5    6    7   13   14   15   17   18   19  256  261  262  263  269
+      270  271  273  274  275 4096 4101 4102 4103 4109 4110 4111 4114]
 
-    Writing '/home/circleci/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-1_events.tsv'...
+    Writing '/home/circleci/mne_data/ds000117-bids/sub-1/ses-01/meg/sub-1_ses-01_task-VisualFaces_run-1_events.tsv'...
 
-           onset  duration             trial_type  event_value  event_sample
-    0  22.958182       0.0        scrambled/first           17         25254
-    1  23.731818       0.0                    NaN          273         26105
-    2  26.049091       0.0        scrambled/first           17         28654
-    3  26.928182       0.0                    NaN          273         29621
-    4  29.222727       0.0  face/unfamiliar/first           13         32145
+    onset   duration        trial_type      value   sample
+    22.958181818181817      0.0     scrambled/first 17      25254
+    23.73181818181818       0.0     n/a     273     26105
+    26.04909090909091       0.0     scrambled/first 17      28654
+    26.92818181818182       0.0     n/a     273     29621
+    29.222727272727273      0.0     face/unfamiliar/first   13      32145
 
     Writing '/home/circleci/mne_data/ds000117-bids/dataset_description.json'...
 
     {
         "Name": " ",
-        "BIDSVersion": "1.1.1 (draft)"
+        "BIDSVersion": "1.2.0"
     }
     Reading 0 ... 546699  =      0.000 ...   496.999 secs...
 
-    Writing '/home/circleci/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-1_meg.json'...
+    Writing '/home/circleci/mne_data/ds000117-bids/sub-1/ses-01/meg/sub-1_ses-01_task-VisualFaces_run-1_meg.json'...
 
     {
         "TaskName": "VisualFaces",
@@ -227,24 +293,17 @@ Let us loop over the subjects and create BIDS-compatible folder
         "TriggerChannelCount": 3
     }
 
-    Writing '/home/circleci/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-1_channels.tsv'...
+    Writing '/home/circleci/mne_data/ds000117-bids/sub-1/ses-01/meg/sub-1_ses-01_task-VisualFaces_run-1_channels.tsv'...
 
-          name           type units         description  sampling_frequency  \
-    0  MEG0113  MEGGRADPLANAR   T/m  Planar Gradiometer              1100.0   
-    1  MEG0112  MEGGRADPLANAR   T/m  Planar Gradiometer              1100.0   
-    2  MEG0111         MEGMAG     T        Magnetometer              1100.0   
-    3  MEG0122  MEGGRADPLANAR   T/m  Planar Gradiometer              1100.0   
-    4  MEG0123  MEGGRADPLANAR   T/m  Planar Gradiometer              1100.0   
-
-       low_cutoff  high_cutoff status  
-    0         0.0   356.399994   good  
-    1         0.0   356.399994   good  
-    2         0.0   356.399994   good  
-    3         0.0   356.399994   good  
-    4         0.0   356.399994   good  
-    Copying data files to /home/circleci/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-1_meg.fif
-    Writing /home/circleci/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-1_meg.fif
-    Closing /home/circleci/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-1_meg.fif [done]
+    name    type    units   low_cutoff      high_cutoff     description     sampling_frequency      status
+    MEG0113 MEGGRADPLANAR   T/m     0.0     356.3999938964844       Planar Gradiometer      1100.0  good
+    MEG0112 MEGGRADPLANAR   T/m     0.0     356.3999938964844       Planar Gradiometer      1100.0  good
+    MEG0111 MEGMAG  T       0.0     356.3999938964844       Magnetometer    1100.0  good
+    MEG0122 MEGGRADPLANAR   T/m     0.0     356.3999938964844       Planar Gradiometer      1100.0  good
+    MEG0123 MEGGRADPLANAR   T/m     0.0     356.3999938964844       Planar Gradiometer      1100.0  good
+    Copying data files to /home/circleci/mne_data/ds000117-bids/sub-1/ses-01/meg/sub-1_ses-01_task-VisualFaces_run-1_meg.fif
+    Writing /home/circleci/mne_data/ds000117-bids/sub-1/ses-01/meg/sub-1_ses-01_task-VisualFaces_run-1_meg.fif
+    Closing /home/circleci/mne_data/ds000117-bids/sub-1/ses-01/meg/sub-1_ses-01_task-VisualFaces_run-1_meg.fif [done]
     Opening raw data file /home/circleci/mne_data/ds000117/sub001/MEG/run_02_raw.fif...
         Read a total of 8 projection items:
             mag_ssp_upright.fif : PCA-mags-v1 (1 x 306)  idle
@@ -271,39 +330,110 @@ Let us loop over the subjects and create BIDS-compatible folder
         Range : 30800 ... 580799 =     28.000 ...   527.999 secs
     Ready.
     Current compensation grade : 0
+    Creating folder: /home/circleci/mne_data/ds000117-bids/sub-1/ses-01/meg
 
     Writing '/home/circleci/mne_data/ds000117-bids/participants.tsv'...
 
-      participant_id  age sex group
-    0         sub-01   10   M   n/a
+    participant_id  age     sex
+    sub-1   10      M
 
-    Writing '/home/circleci/mne_data/ds000117-bids/sub-01/ses-01/sub-01_ses-01_scans.tsv'...
+    Writing '/home/circleci/mne_data/ds000117-bids/participants.json'...
 
-                                               filename             acq_time
-    0  meg/sub-01_ses-01_task-VisualFaces_run-1_meg.fif  2009-04-07T14:39:35
-    0  meg/sub-01_ses-01_task-VisualFaces_run-2_meg.fif  2009-04-07T14:52:59
+    {
+        "participant_id": {
+            "Description": "Unique participant identifier"
+        },
+        "age": {
+            "Description": "Age of the participant at time of testing",
+            "Units": "years"
+        },
+        "sex": {
+            "Description": "Biological sex of the participant",
+            "Levels": {
+                "F": "female",
+                "M": "male"
+            }
+        }
+    }
+
+    Writing '/home/circleci/mne_data/ds000117-bids/sub-1/ses-01/sub-1_ses-01_scans.tsv'...
+
+    filename        acq_time
+    meg/sub-1_ses-01_task-VisualFaces_run-1_meg.fif 2009-04-07T14:39:35
+    meg/sub-1_ses-01_task-VisualFaces_run-2_meg.fif 2009-04-07T14:52:59
+
+    Writing '/home/circleci/mne_data/ds000117-bids/sub-1/ses-01/meg/sub-1_ses-01_coordsystem.json'...
+
+    {
+        "MEGCoordinateSystem": "Elekta",
+        "MEGCoordinateUnits": "m",
+        "HeadCoilCoordinates": {
+            "NAS": [
+                6.350555636913668e-10,
+                0.10185277462005615,
+                -1.2766878665360082e-09
+            ],
+            "LPA": [
+                -0.07355359941720963,
+                -5.226810984026997e-09,
+                -6.564203847148065e-09
+            ],
+            "RPA": [
+                0.07877404987812042,
+                -2.563174561487358e-08,
+                -5.883831200037548e-09
+            ],
+            "coil1": [
+                0.020418334752321243,
+                0.09947940707206726,
+                0.06992102414369583
+            ],
+            "coil2": [
+                0.07411128282546997,
+                0.0064362590201199055,
+                0.09744320064783096
+            ],
+            "coil3": [
+                0.018864190205931664,
+                -0.020370930433273315,
+                0.1332322508096695
+            ],
+            "coil4": [
+                0.014254843816161156,
+                -0.0912255346775055,
+                0.08386014401912689
+            ],
+            "coil5": [
+                -0.07725043594837189,
+                -0.009882151149213314,
+                0.07862507551908493
+            ]
+        },
+        "HeadCoilCoordinateSystem": "RAS",
+        "HeadCoilCoordinateUnits": "m"
+    }
     296 events found
-    Event IDs: [   5    6    7   13   14   15   17   18   19  256  261  262  263  269  270
-      271  273  274  275 4096 4109 4110 4111]
+    Event IDs: [   5    6    7   13   14   15   17   18   19  256  261  262  263  269
+      270  271  273  274  275 4096 4109 4110 4111]
 
-    Writing '/home/circleci/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-2_events.tsv'...
+    Writing '/home/circleci/mne_data/ds000117-bids/sub-1/ses-01/meg/sub-1_ses-01_task-VisualFaces_run-2_events.tsv'...
 
-           onset  duration             trial_type  event_value  event_sample
-    0  28.032727       0.0        scrambled/first           17         30836
-    1  28.837273       0.0                    NaN          273         31721
-    2  31.156364       0.0  face/unfamiliar/first           13         34272
-    3  32.131818       0.0                    NaN          256         35345
-    4  34.213636       0.0      face/famous/first            5         37635
+    onset   duration        trial_type      value   sample
+    28.03272727272727       0.0     scrambled/first 17      30836
+    28.837272727272726      0.0     n/a     273     31721
+    31.156363636363636      0.0     face/unfamiliar/first   13      34272
+    32.13181818181818       0.0     n/a     256     35345
+    34.21363636363636       0.0     face/famous/first       5       37635
 
     Writing '/home/circleci/mne_data/ds000117-bids/dataset_description.json'...
 
     {
         "Name": " ",
-        "BIDSVersion": "1.1.1 (draft)"
+        "BIDSVersion": "1.2.0"
     }
     Reading 0 ... 549999  =      0.000 ...   499.999 secs...
 
-    Writing '/home/circleci/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-2_meg.json'...
+    Writing '/home/circleci/mne_data/ds000117-bids/sub-1/ses-01/meg/sub-1_ses-01_task-VisualFaces_run-2_meg.json'...
 
     {
         "TaskName": "VisualFaces",
@@ -326,24 +456,17 @@ Let us loop over the subjects and create BIDS-compatible folder
         "TriggerChannelCount": 3
     }
 
-    Writing '/home/circleci/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-2_channels.tsv'...
+    Writing '/home/circleci/mne_data/ds000117-bids/sub-1/ses-01/meg/sub-1_ses-01_task-VisualFaces_run-2_channels.tsv'...
 
-          name           type units         description  sampling_frequency  \
-    0  MEG0113  MEGGRADPLANAR   T/m  Planar Gradiometer              1100.0   
-    1  MEG0112  MEGGRADPLANAR   T/m  Planar Gradiometer              1100.0   
-    2  MEG0111         MEGMAG     T        Magnetometer              1100.0   
-    3  MEG0122  MEGGRADPLANAR   T/m  Planar Gradiometer              1100.0   
-    4  MEG0123  MEGGRADPLANAR   T/m  Planar Gradiometer              1100.0   
-
-       low_cutoff  high_cutoff status  
-    0         0.0   356.399994   good  
-    1         0.0   356.399994   good  
-    2         0.0   356.399994   good  
-    3         0.0   356.399994   good  
-    4         0.0   356.399994   good  
-    Copying data files to /home/circleci/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-2_meg.fif
-    Writing /home/circleci/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-2_meg.fif
-    Closing /home/circleci/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-2_meg.fif [done]
+    name    type    units   low_cutoff      high_cutoff     description     sampling_frequency      status
+    MEG0113 MEGGRADPLANAR   T/m     0.0     356.3999938964844       Planar Gradiometer      1100.0  good
+    MEG0112 MEGGRADPLANAR   T/m     0.0     356.3999938964844       Planar Gradiometer      1100.0  good
+    MEG0111 MEGMAG  T       0.0     356.3999938964844       Magnetometer    1100.0  good
+    MEG0122 MEGGRADPLANAR   T/m     0.0     356.3999938964844       Planar Gradiometer      1100.0  good
+    MEG0123 MEGGRADPLANAR   T/m     0.0     356.3999938964844       Planar Gradiometer      1100.0  good
+    Copying data files to /home/circleci/mne_data/ds000117-bids/sub-1/ses-01/meg/sub-1_ses-01_task-VisualFaces_run-2_meg.fif
+    Writing /home/circleci/mne_data/ds000117-bids/sub-1/ses-01/meg/sub-1_ses-01_task-VisualFaces_run-2_meg.fif
+    Closing /home/circleci/mne_data/ds000117-bids/sub-1/ses-01/meg/sub-1_ses-01_task-VisualFaces_run-2_meg.fif [done]
     Opening raw data file /home/circleci/mne_data/ds000117/sub001/MEG/run_03_raw.fif...
         Read a total of 8 projection items:
             mag_ssp_upright.fif : PCA-mags-v1 (1 x 306)  idle
@@ -370,40 +493,111 @@ Let us loop over the subjects and create BIDS-compatible folder
         Range : 187000 ... 417999 =    170.000 ...   379.999 secs
     Ready.
     Current compensation grade : 0
+    Creating folder: /home/circleci/mne_data/ds000117-bids/sub-1/ses-01/meg
 
     Writing '/home/circleci/mne_data/ds000117-bids/participants.tsv'...
 
-      participant_id  age sex group
-    0         sub-01   10   M   n/a
+    participant_id  age     sex
+    sub-1   10      M
 
-    Writing '/home/circleci/mne_data/ds000117-bids/sub-01/ses-01/sub-01_ses-01_scans.tsv'...
+    Writing '/home/circleci/mne_data/ds000117-bids/participants.json'...
 
-                                               filename             acq_time
-    0  meg/sub-01_ses-01_task-VisualFaces_run-1_meg.fif  2009-04-07T14:39:35
-    1  meg/sub-01_ses-01_task-VisualFaces_run-2_meg.fif  2009-04-07T14:52:59
-    0  meg/sub-01_ses-01_task-VisualFaces_run-3_meg.fif  2009-04-07T15:02:25
+    {
+        "participant_id": {
+            "Description": "Unique participant identifier"
+        },
+        "age": {
+            "Description": "Age of the participant at time of testing",
+            "Units": "years"
+        },
+        "sex": {
+            "Description": "Biological sex of the participant",
+            "Levels": {
+                "F": "female",
+                "M": "male"
+            }
+        }
+    }
+
+    Writing '/home/circleci/mne_data/ds000117-bids/sub-1/ses-01/sub-1_ses-01_scans.tsv'...
+
+    filename        acq_time
+    meg/sub-1_ses-01_task-VisualFaces_run-1_meg.fif 2009-04-07T14:39:35
+    meg/sub-1_ses-01_task-VisualFaces_run-2_meg.fif 2009-04-07T14:52:59
+    meg/sub-1_ses-01_task-VisualFaces_run-3_meg.fif 2009-04-07T15:02:25
+
+    Writing '/home/circleci/mne_data/ds000117-bids/sub-1/ses-01/meg/sub-1_ses-01_coordsystem.json'...
+
+    {
+        "MEGCoordinateSystem": "Elekta",
+        "MEGCoordinateUnits": "m",
+        "HeadCoilCoordinates": {
+            "NAS": [
+                6.350555636913668e-10,
+                0.10185277462005615,
+                -1.2766878665360082e-09
+            ],
+            "LPA": [
+                -0.07355359941720963,
+                -5.226810984026997e-09,
+                -6.564203847148065e-09
+            ],
+            "RPA": [
+                0.07877404987812042,
+                -2.563174561487358e-08,
+                -5.883831200037548e-09
+            ],
+            "coil1": [
+                0.020418334752321243,
+                0.09947940707206726,
+                0.06992102414369583
+            ],
+            "coil2": [
+                0.07411128282546997,
+                0.0064362590201199055,
+                0.09744320064783096
+            ],
+            "coil3": [
+                0.018864190205931664,
+                -0.020370930433273315,
+                0.1332322508096695
+            ],
+            "coil4": [
+                0.014254843816161156,
+                -0.0912255346775055,
+                0.08386014401912689
+            ],
+            "coil5": [
+                -0.07725043594837189,
+                -0.009882151149213314,
+                0.07862507551908493
+            ]
+        },
+        "HeadCoilCoordinateSystem": "RAS",
+        "HeadCoilCoordinateUnits": "m"
+    }
     119 events found
-    Event IDs: [   5    6    7   13   14   15   17   18   19  256  261  262  263  269  270
-      271  273  274  275 4096 4103 4110 4352]
+    Event IDs: [   5    6    7   13   14   15   17   18   19  256  261  262  263  269
+      270  271  273  274  275 4096 4103 4110 4352]
 
-    Writing '/home/circleci/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-3_events.tsv'...
+    Writing '/home/circleci/mne_data/ds000117-bids/sub-1/ses-01/meg/sub-1_ses-01_task-VisualFaces_run-3_events.tsv'...
 
-           onset  duration           trial_type  event_value  event_sample
-    0  24.560000       0.0      scrambled/first           17         27016
-    1  25.270909       0.0                  NaN          273         27798
-    2  27.700000       0.0  scrambled/immediate           18         30470
-    3  28.550000       0.0                  NaN          256         31405
-    4  30.740909       0.0      scrambled/first           17         33815
+    onset   duration        trial_type      value   sample
+    24.56   0.0     scrambled/first 17      27016
+    25.27090909090909       0.0     n/a     273     27798
+    27.7    0.0     scrambled/immediate     18      30470
+    28.55   0.0     n/a     256     31405
+    30.740909090909092      0.0     scrambled/first 17      33815
 
     Writing '/home/circleci/mne_data/ds000117-bids/dataset_description.json'...
 
     {
         "Name": " ",
-        "BIDSVersion": "1.1.1 (draft)"
+        "BIDSVersion": "1.2.0"
     }
     Reading 0 ... 230999  =      0.000 ...   209.999 secs...
 
-    Writing '/home/circleci/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-3_meg.json'...
+    Writing '/home/circleci/mne_data/ds000117-bids/sub-1/ses-01/meg/sub-1_ses-01_task-VisualFaces_run-3_meg.json'...
 
     {
         "TaskName": "VisualFaces",
@@ -426,24 +620,17 @@ Let us loop over the subjects and create BIDS-compatible folder
         "TriggerChannelCount": 3
     }
 
-    Writing '/home/circleci/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-3_channels.tsv'...
+    Writing '/home/circleci/mne_data/ds000117-bids/sub-1/ses-01/meg/sub-1_ses-01_task-VisualFaces_run-3_channels.tsv'...
 
-          name           type units         description  sampling_frequency  \
-    0  MEG0113  MEGGRADPLANAR   T/m  Planar Gradiometer              1100.0   
-    1  MEG0112  MEGGRADPLANAR   T/m  Planar Gradiometer              1100.0   
-    2  MEG0111         MEGMAG     T        Magnetometer              1100.0   
-    3  MEG0122  MEGGRADPLANAR   T/m  Planar Gradiometer              1100.0   
-    4  MEG0123  MEGGRADPLANAR   T/m  Planar Gradiometer              1100.0   
-
-       low_cutoff  high_cutoff status  
-    0         0.0   356.399994   good  
-    1         0.0   356.399994   good  
-    2         0.0   356.399994   good  
-    3         0.0   356.399994   good  
-    4         0.0   356.399994   good  
-    Copying data files to /home/circleci/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-3_meg.fif
-    Writing /home/circleci/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-3_meg.fif
-    Closing /home/circleci/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-3_meg.fif [done]
+    name    type    units   low_cutoff      high_cutoff     description     sampling_frequency      status
+    MEG0113 MEGGRADPLANAR   T/m     0.0     356.3999938964844       Planar Gradiometer      1100.0  good
+    MEG0112 MEGGRADPLANAR   T/m     0.0     356.3999938964844       Planar Gradiometer      1100.0  good
+    MEG0111 MEGMAG  T       0.0     356.3999938964844       Magnetometer    1100.0  good
+    MEG0122 MEGGRADPLANAR   T/m     0.0     356.3999938964844       Planar Gradiometer      1100.0  good
+    MEG0123 MEGGRADPLANAR   T/m     0.0     356.3999938964844       Planar Gradiometer      1100.0  good
+    Copying data files to /home/circleci/mne_data/ds000117-bids/sub-1/ses-01/meg/sub-1_ses-01_task-VisualFaces_run-3_meg.fif
+    Writing /home/circleci/mne_data/ds000117-bids/sub-1/ses-01/meg/sub-1_ses-01_task-VisualFaces_run-3_meg.fif
+    Closing /home/circleci/mne_data/ds000117-bids/sub-1/ses-01/meg/sub-1_ses-01_task-VisualFaces_run-3_meg.fif [done]
     Opening raw data file /home/circleci/mne_data/ds000117/sub001/MEG/run_04_raw.fif...
         Read a total of 8 projection items:
             mag_ssp_upright.fif : PCA-mags-v1 (1 x 306)  idle
@@ -470,41 +657,112 @@ Let us loop over the subjects and create BIDS-compatible folder
         Range : 47300 ... 590699 =     43.000 ...   536.999 secs
     Ready.
     Current compensation grade : 0
+    Creating folder: /home/circleci/mne_data/ds000117-bids/sub-1/ses-01/meg
 
     Writing '/home/circleci/mne_data/ds000117-bids/participants.tsv'...
 
-      participant_id  age sex group
-    0         sub-01   10   M   n/a
+    participant_id  age     sex
+    sub-1   10      M
 
-    Writing '/home/circleci/mne_data/ds000117-bids/sub-01/ses-01/sub-01_ses-01_scans.tsv'...
+    Writing '/home/circleci/mne_data/ds000117-bids/participants.json'...
 
-                                               filename             acq_time
-    0  meg/sub-01_ses-01_task-VisualFaces_run-1_meg.fif  2009-04-07T14:39:35
-    1  meg/sub-01_ses-01_task-VisualFaces_run-2_meg.fif  2009-04-07T14:52:59
-    2  meg/sub-01_ses-01_task-VisualFaces_run-3_meg.fif  2009-04-07T15:02:25
-    0  meg/sub-01_ses-01_task-VisualFaces_run-4_meg.fif  2009-04-07T15:17:45
+    {
+        "participant_id": {
+            "Description": "Unique participant identifier"
+        },
+        "age": {
+            "Description": "Age of the participant at time of testing",
+            "Units": "years"
+        },
+        "sex": {
+            "Description": "Biological sex of the participant",
+            "Levels": {
+                "F": "female",
+                "M": "male"
+            }
+        }
+    }
+
+    Writing '/home/circleci/mne_data/ds000117-bids/sub-1/ses-01/sub-1_ses-01_scans.tsv'...
+
+    filename        acq_time
+    meg/sub-1_ses-01_task-VisualFaces_run-1_meg.fif 2009-04-07T14:39:35
+    meg/sub-1_ses-01_task-VisualFaces_run-2_meg.fif 2009-04-07T14:52:59
+    meg/sub-1_ses-01_task-VisualFaces_run-3_meg.fif 2009-04-07T15:02:25
+    meg/sub-1_ses-01_task-VisualFaces_run-4_meg.fif 2009-04-07T15:17:45
+
+    Writing '/home/circleci/mne_data/ds000117-bids/sub-1/ses-01/meg/sub-1_ses-01_coordsystem.json'...
+
+    {
+        "MEGCoordinateSystem": "Elekta",
+        "MEGCoordinateUnits": "m",
+        "HeadCoilCoordinates": {
+            "NAS": [
+                6.350555636913668e-10,
+                0.10185277462005615,
+                -1.2766878665360082e-09
+            ],
+            "LPA": [
+                -0.07355359941720963,
+                -5.226810984026997e-09,
+                -6.564203847148065e-09
+            ],
+            "RPA": [
+                0.07877404987812042,
+                -2.563174561487358e-08,
+                -5.883831200037548e-09
+            ],
+            "coil1": [
+                0.020418334752321243,
+                0.09947940707206726,
+                0.06992102414369583
+            ],
+            "coil2": [
+                0.07411128282546997,
+                0.0064362590201199055,
+                0.09744320064783096
+            ],
+            "coil3": [
+                0.018864190205931664,
+                -0.020370930433273315,
+                0.1332322508096695
+            ],
+            "coil4": [
+                0.014254843816161156,
+                -0.0912255346775055,
+                0.08386014401912689
+            ],
+            "coil5": [
+                -0.07725043594837189,
+                -0.009882151149213314,
+                0.07862507551908493
+            ]
+        },
+        "HeadCoilCoordinateSystem": "RAS",
+        "HeadCoilCoordinateUnits": "m"
+    }
     294 events found
-    Event IDs: [   5    6    7   13   14   15   17   18   19  256  261  262  263  269  270
-      271  273  274  275 4096 4109 4110]
+    Event IDs: [   5    6    7   13   14   15   17   18   19  256  261  262  263  269
+      270  271  273  274  275 4096 4109 4110]
 
-    Writing '/home/circleci/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-4_events.tsv'...
+    Writing '/home/circleci/mne_data/ds000117-bids/sub-1/ses-01/meg/sub-1_ses-01_task-VisualFaces_run-4_events.tsv'...
 
-           onset  duration                 trial_type  event_value  event_sample
-    0  25.407273       0.0      face/unfamiliar/first           13         27948
-    1  26.219091       0.0                        NaN          269         28841
-    2  28.498182       0.0  face/unfamiliar/immediate           14         31348
-    3  29.337273       0.0                        NaN          270         32271
-    4  31.789091       0.0      face/unfamiliar/first           13         34968
+    onset   duration        trial_type      value   sample
+    25.407272727272726      0.0     face/unfamiliar/first   13      27948
+    26.21909090909091       0.0     n/a     269     28841
+    28.49818181818182       0.0     face/unfamiliar/immediate       14      31348
+    29.337272727272726      0.0     n/a     270     32271
+    31.78909090909091       0.0     face/unfamiliar/first   13      34968
 
     Writing '/home/circleci/mne_data/ds000117-bids/dataset_description.json'...
 
     {
         "Name": " ",
-        "BIDSVersion": "1.1.1 (draft)"
+        "BIDSVersion": "1.2.0"
     }
     Reading 0 ... 543399  =      0.000 ...   493.999 secs...
 
-    Writing '/home/circleci/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-4_meg.json'...
+    Writing '/home/circleci/mne_data/ds000117-bids/sub-1/ses-01/meg/sub-1_ses-01_task-VisualFaces_run-4_meg.json'...
 
     {
         "TaskName": "VisualFaces",
@@ -527,24 +785,17 @@ Let us loop over the subjects and create BIDS-compatible folder
         "TriggerChannelCount": 3
     }
 
-    Writing '/home/circleci/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-4_channels.tsv'...
+    Writing '/home/circleci/mne_data/ds000117-bids/sub-1/ses-01/meg/sub-1_ses-01_task-VisualFaces_run-4_channels.tsv'...
 
-          name           type units         description  sampling_frequency  \
-    0  MEG0113  MEGGRADPLANAR   T/m  Planar Gradiometer              1100.0   
-    1  MEG0112  MEGGRADPLANAR   T/m  Planar Gradiometer              1100.0   
-    2  MEG0111         MEGMAG     T        Magnetometer              1100.0   
-    3  MEG0122  MEGGRADPLANAR   T/m  Planar Gradiometer              1100.0   
-    4  MEG0123  MEGGRADPLANAR   T/m  Planar Gradiometer              1100.0   
-
-       low_cutoff  high_cutoff status  
-    0         0.0   356.399994   good  
-    1         0.0   356.399994   good  
-    2         0.0   356.399994   good  
-    3         0.0   356.399994   good  
-    4         0.0   356.399994   good  
-    Copying data files to /home/circleci/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-4_meg.fif
-    Writing /home/circleci/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-4_meg.fif
-    Closing /home/circleci/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-4_meg.fif [done]
+    name    type    units   low_cutoff      high_cutoff     description     sampling_frequency      status
+    MEG0113 MEGGRADPLANAR   T/m     0.0     356.3999938964844       Planar Gradiometer      1100.0  good
+    MEG0112 MEGGRADPLANAR   T/m     0.0     356.3999938964844       Planar Gradiometer      1100.0  good
+    MEG0111 MEGMAG  T       0.0     356.3999938964844       Magnetometer    1100.0  good
+    MEG0122 MEGGRADPLANAR   T/m     0.0     356.3999938964844       Planar Gradiometer      1100.0  good
+    MEG0123 MEGGRADPLANAR   T/m     0.0     356.3999938964844       Planar Gradiometer      1100.0  good
+    Copying data files to /home/circleci/mne_data/ds000117-bids/sub-1/ses-01/meg/sub-1_ses-01_task-VisualFaces_run-4_meg.fif
+    Writing /home/circleci/mne_data/ds000117-bids/sub-1/ses-01/meg/sub-1_ses-01_task-VisualFaces_run-4_meg.fif
+    Closing /home/circleci/mne_data/ds000117-bids/sub-1/ses-01/meg/sub-1_ses-01_task-VisualFaces_run-4_meg.fif [done]
     Opening raw data file /home/circleci/mne_data/ds000117/sub001/MEG/run_05_raw.fif...
         Read a total of 8 projection items:
             mag_ssp_upright.fif : PCA-mags-v1 (1 x 306)  idle
@@ -571,42 +822,113 @@ Let us loop over the subjects and create BIDS-compatible folder
         Range : 283800 ... 820599 =    258.000 ...   745.999 secs
     Ready.
     Current compensation grade : 0
+    Creating folder: /home/circleci/mne_data/ds000117-bids/sub-1/ses-01/meg
 
     Writing '/home/circleci/mne_data/ds000117-bids/participants.tsv'...
 
-      participant_id  age sex group
-    0         sub-01   10   M   n/a
+    participant_id  age     sex
+    sub-1   10      M
 
-    Writing '/home/circleci/mne_data/ds000117-bids/sub-01/ses-01/sub-01_ses-01_scans.tsv'...
+    Writing '/home/circleci/mne_data/ds000117-bids/participants.json'...
 
-                                               filename             acq_time
-    0  meg/sub-01_ses-01_task-VisualFaces_run-1_meg.fif  2009-04-07T14:39:35
-    1  meg/sub-01_ses-01_task-VisualFaces_run-2_meg.fif  2009-04-07T14:52:59
-    2  meg/sub-01_ses-01_task-VisualFaces_run-3_meg.fif  2009-04-07T15:02:25
-    3  meg/sub-01_ses-01_task-VisualFaces_run-4_meg.fif  2009-04-07T15:17:45
-    0  meg/sub-01_ses-01_task-VisualFaces_run-5_meg.fif  2009-04-07T15:27:38
+    {
+        "participant_id": {
+            "Description": "Unique participant identifier"
+        },
+        "age": {
+            "Description": "Age of the participant at time of testing",
+            "Units": "years"
+        },
+        "sex": {
+            "Description": "Biological sex of the participant",
+            "Levels": {
+                "F": "female",
+                "M": "male"
+            }
+        }
+    }
+
+    Writing '/home/circleci/mne_data/ds000117-bids/sub-1/ses-01/sub-1_ses-01_scans.tsv'...
+
+    filename        acq_time
+    meg/sub-1_ses-01_task-VisualFaces_run-1_meg.fif 2009-04-07T14:39:35
+    meg/sub-1_ses-01_task-VisualFaces_run-2_meg.fif 2009-04-07T14:52:59
+    meg/sub-1_ses-01_task-VisualFaces_run-3_meg.fif 2009-04-07T15:02:25
+    meg/sub-1_ses-01_task-VisualFaces_run-4_meg.fif 2009-04-07T15:17:45
+    meg/sub-1_ses-01_task-VisualFaces_run-5_meg.fif 2009-04-07T15:27:38
+
+    Writing '/home/circleci/mne_data/ds000117-bids/sub-1/ses-01/meg/sub-1_ses-01_coordsystem.json'...
+
+    {
+        "MEGCoordinateSystem": "Elekta",
+        "MEGCoordinateUnits": "m",
+        "HeadCoilCoordinates": {
+            "NAS": [
+                6.350555636913668e-10,
+                0.10185277462005615,
+                -1.2766878665360082e-09
+            ],
+            "LPA": [
+                -0.07355359941720963,
+                -5.226810984026997e-09,
+                -6.564203847148065e-09
+            ],
+            "RPA": [
+                0.07877404987812042,
+                -2.563174561487358e-08,
+                -5.883831200037548e-09
+            ],
+            "coil1": [
+                0.020418334752321243,
+                0.09947940707206726,
+                0.06992102414369583
+            ],
+            "coil2": [
+                0.07411128282546997,
+                0.0064362590201199055,
+                0.09744320064783096
+            ],
+            "coil3": [
+                0.018864190205931664,
+                -0.020370930433273315,
+                0.1332322508096695
+            ],
+            "coil4": [
+                0.014254843816161156,
+                -0.0912255346775055,
+                0.08386014401912689
+            ],
+            "coil5": [
+                -0.07725043594837189,
+                -0.009882151149213314,
+                0.07862507551908493
+            ]
+        },
+        "HeadCoilCoordinateSystem": "RAS",
+        "HeadCoilCoordinateUnits": "m"
+    }
     292 events found
-    Event IDs: [   5    6    7   13   14   15   17   18   19  256  261  262  263  269  270
-      271  273  274  275 4096 4103 4110 4111]
+    Event IDs: [   5    6    7   13   14   15   17   18   19  256  261  262  263  269
+      270  271  273  274  275 4096 4103 4110 4111]
 
-    Writing '/home/circleci/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-5_events.tsv'...
+    Writing '/home/circleci/mne_data/ds000117-bids/sub-1/ses-01/meg/sub-1_ses-01_task-VisualFaces_run-5_events.tsv'...
 
-           onset  duration           trial_type  event_value  event_sample
-    0  25.717273       0.0    face/famous/first            5         28289
-    1  26.469091       0.0                  NaN          261         29116
-    2  29.023636       0.0      scrambled/first           17         31926
-    3  29.599091       0.0                  NaN          273         32559
-    4  32.130909       0.0  scrambled/immediate           18         35344
+    onset   duration        trial_type      value   sample
+    25.71727272727273       0.0     face/famous/first       5       28289
+    26.46909090909091       0.0     n/a     261     29116
+    29.023636363636363      0.0     scrambled/first 17      31926
+    29.599090909090908      0.0     n/a     273     32559
+    32.13090909090909       0.0     scrambled/immediate     18      35344
 
     Writing '/home/circleci/mne_data/ds000117-bids/dataset_description.json'...
 
     {
         "Name": " ",
-        "BIDSVersion": "1.1.1 (draft)"
+        "BIDSVersion": "1.2.0"
     }
     Reading 0 ... 536799  =      0.000 ...   487.999 secs...
 
-    Writing '/home/circleci/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-5_meg.json'...
+    Writing '/home/circleci/mne_data/ds000117-bids/sub-1/ses-01/meg/sub-1_ses-01_task-VisualFaces_run-5_meg.json'...
 
     {
         "TaskName": "VisualFaces",
@@ -629,24 +951,17 @@ Let us loop over the subjects and create BIDS-compatible folder
         "TriggerChannelCount": 3
     }
 
-    Writing '/home/circleci/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-5_channels.tsv'...
+    Writing '/home/circleci/mne_data/ds000117-bids/sub-1/ses-01/meg/sub-1_ses-01_task-VisualFaces_run-5_channels.tsv'...
 
-          name           type units         description  sampling_frequency  \
-    0  MEG0113  MEGGRADPLANAR   T/m  Planar Gradiometer              1100.0   
-    1  MEG0112  MEGGRADPLANAR   T/m  Planar Gradiometer              1100.0   
-    2  MEG0111         MEGMAG     T        Magnetometer              1100.0   
-    3  MEG0122  MEGGRADPLANAR   T/m  Planar Gradiometer              1100.0   
-    4  MEG0123  MEGGRADPLANAR   T/m  Planar Gradiometer              1100.0   
-
-       low_cutoff  high_cutoff status  
-    0         0.0   356.399994   good  
-    1         0.0   356.399994   good  
-    2         0.0   356.399994   good  
-    3         0.0   356.399994   good  
-    4         0.0   356.399994   good  
-    Copying data files to /home/circleci/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-5_meg.fif
-    Writing /home/circleci/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-5_meg.fif
-    Closing /home/circleci/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-5_meg.fif [done]
+    name    type    units   low_cutoff      high_cutoff     description     sampling_frequency      status
+    MEG0113 MEGGRADPLANAR   T/m     0.0     356.3999938964844       Planar Gradiometer      1100.0  good
+    MEG0112 MEGGRADPLANAR   T/m     0.0     356.3999938964844       Planar Gradiometer      1100.0  good
+    MEG0111 MEGMAG  T       0.0     356.3999938964844       Magnetometer    1100.0  good
+    MEG0122 MEGGRADPLANAR   T/m     0.0     356.3999938964844       Planar Gradiometer      1100.0  good
+    MEG0123 MEGGRADPLANAR   T/m     0.0     356.3999938964844       Planar Gradiometer      1100.0  good
+    Copying data files to /home/circleci/mne_data/ds000117-bids/sub-1/ses-01/meg/sub-1_ses-01_task-VisualFaces_run-5_meg.fif
+    Writing /home/circleci/mne_data/ds000117-bids/sub-1/ses-01/meg/sub-1_ses-01_task-VisualFaces_run-5_meg.fif
+    Closing /home/circleci/mne_data/ds000117-bids/sub-1/ses-01/meg/sub-1_ses-01_task-VisualFaces_run-5_meg.fif [done]
     Opening raw data file /home/circleci/mne_data/ds000117/sub001/MEG/run_06_raw.fif...
         Read a total of 8 projection items:
             mag_ssp_upright.fif : PCA-mags-v1 (1 x 306)  idle
@@ -673,42 +988,113 @@ Let us loop over the subjects and create BIDS-compatible folder
         Range : 28600 ... 573099 =     26.000 ...   520.999 secs
     Ready.
     Current compensation grade : 0
+    Creating folder: /home/circleci/mne_data/ds000117-bids/sub-1/ses-01/meg
 
     Writing '/home/circleci/mne_data/ds000117-bids/participants.tsv'...
 
-      participant_id  age sex group
-    0         sub-01   10   M   n/a
+    participant_id  age     sex
+    sub-1   10      M
 
-    Writing '/home/circleci/mne_data/ds000117-bids/sub-01/ses-01/sub-01_ses-01_scans.tsv'...
+    Writing '/home/circleci/mne_data/ds000117-bids/participants.json'...
 
-                                               filename             acq_time
-    0  meg/sub-01_ses-01_task-VisualFaces_run-1_meg.fif  2009-04-07T14:39:35
-    1  meg/sub-01_ses-01_task-VisualFaces_run-2_meg.fif  2009-04-07T14:52:59
-    2  meg/sub-01_ses-01_task-VisualFaces_run-3_meg.fif  2009-04-07T15:02:25
-    3  meg/sub-01_ses-01_task-VisualFaces_run-4_meg.fif  2009-04-07T15:17:45
-    4  meg/sub-01_ses-01_task-VisualFaces_run-5_meg.fif  2009-04-07T15:27:38
+    {
+        "participant_id": {
+            "Description": "Unique participant identifier"
+        },
+        "age": {
+            "Description": "Age of the participant at time of testing",
+            "Units": "years"
+        },
+        "sex": {
+            "Description": "Biological sex of the participant",
+            "Levels": {
+                "F": "female",
+                "M": "male"
+            }
+        }
+    }
+
+    Writing '/home/circleci/mne_data/ds000117-bids/sub-1/ses-01/sub-1_ses-01_scans.tsv'...
+
+    filename        acq_time
+    meg/sub-1_ses-01_task-VisualFaces_run-1_meg.fif 2009-04-07T14:39:35
+    meg/sub-1_ses-01_task-VisualFaces_run-2_meg.fif 2009-04-07T14:52:59
+    meg/sub-1_ses-01_task-VisualFaces_run-3_meg.fif 2009-04-07T15:02:25
+    meg/sub-1_ses-01_task-VisualFaces_run-4_meg.fif 2009-04-07T15:17:45
+    meg/sub-1_ses-01_task-VisualFaces_run-5_meg.fif 2009-04-07T15:27:38
+
+    Writing '/home/circleci/mne_data/ds000117-bids/sub-1/ses-01/meg/sub-1_ses-01_coordsystem.json'...
+
+    {
+        "MEGCoordinateSystem": "Elekta",
+        "MEGCoordinateUnits": "m",
+        "HeadCoilCoordinates": {
+            "NAS": [
+                6.350555636913668e-10,
+                0.10185277462005615,
+                -1.2766878665360082e-09
+            ],
+            "LPA": [
+                -0.07355359941720963,
+                -5.226810984026997e-09,
+                -6.564203847148065e-09
+            ],
+            "RPA": [
+                0.07877404987812042,
+                -2.563174561487358e-08,
+                -5.883831200037548e-09
+            ],
+            "coil1": [
+                0.020418334752321243,
+                0.09947940707206726,
+                0.06992102414369583
+            ],
+            "coil2": [
+                0.07411128282546997,
+                0.0064362590201199055,
+                0.09744320064783096
+            ],
+            "coil3": [
+                0.018864190205931664,
+                -0.020370930433273315,
+                0.1332322508096695
+            ],
+            "coil4": [
+                0.014254843816161156,
+                -0.0912255346775055,
+                0.08386014401912689
+            ],
+            "coil5": [
+                -0.07725043594837189,
+                -0.009882151149213314,
+                0.07862507551908493
+            ]
+        },
+        "HeadCoilCoordinateSystem": "RAS",
+        "HeadCoilCoordinateUnits": "m"
+    }
     296 events found
-    Event IDs: [   5    6    7   13   14   15   17   18   19  256  261  262  263  269  270
-      271  273  274  275 4096 4110]
+    Event IDs: [   5    6    7   13   14   15   17   18   19  256  261  262  263  269
+      270  271  273  274  275 4096 4110]
 
-    Writing '/home/circleci/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-6_events.tsv'...
+    Writing '/home/circleci/mne_data/ds000117-bids/sub-1/ses-01/meg/sub-1_ses-01_task-VisualFaces_run-6_events.tsv'...
 
-           onset  duration         trial_type  event_value  event_sample
-    0  25.204545       0.0  face/famous/first            5         27725
-    1  25.850000       0.0                NaN          261         28435
-    2  28.345455       0.0    scrambled/first           17         31180
-    3  29.024545       0.0                NaN          273         31927
-    4  31.470000       0.0  face/famous/first            5         34617
+    onset   duration        trial_type      value   sample
+    25.204545454545453      0.0     face/famous/first       5       27725
+    25.85   0.0     n/a     261     28435
+    28.345454545454544      0.0     scrambled/first 17      31180
+    29.024545454545454      0.0     n/a     273     31927
+    31.47   0.0     face/famous/first       5       34617
 
     Writing '/home/circleci/mne_data/ds000117-bids/dataset_description.json'...
 
     {
         "Name": " ",
-        "BIDSVersion": "1.1.1 (draft)"
+        "BIDSVersion": "1.2.0"
     }
     Reading 0 ... 544499  =      0.000 ...   494.999 secs...
 
-    Writing '/home/circleci/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-6_meg.json'...
+    Writing '/home/circleci/mne_data/ds000117-bids/sub-1/ses-01/meg/sub-1_ses-01_task-VisualFaces_run-6_meg.json'...
 
     {
         "TaskName": "VisualFaces",
@@ -731,31 +1117,23 @@ Let us loop over the subjects and create BIDS-compatible folder
         "TriggerChannelCount": 3
     }
 
-    Writing '/home/circleci/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-6_channels.tsv'...
+    Writing '/home/circleci/mne_data/ds000117-bids/sub-1/ses-01/meg/sub-1_ses-01_task-VisualFaces_run-6_channels.tsv'...
 
-          name           type units         description  sampling_frequency  \
-    0  MEG0113  MEGGRADPLANAR   T/m  Planar Gradiometer              1100.0   
-    1  MEG0112  MEGGRADPLANAR   T/m  Planar Gradiometer              1100.0   
-    2  MEG0111         MEGMAG     T        Magnetometer              1100.0   
-    3  MEG0122  MEGGRADPLANAR   T/m  Planar Gradiometer              1100.0   
-    4  MEG0123  MEGGRADPLANAR   T/m  Planar Gradiometer              1100.0   
-
-       low_cutoff  high_cutoff status  
-    0         0.0   356.399994   good  
-    1         0.0   356.399994   good  
-    2         0.0   356.399994   good  
-    3         0.0   356.399994   good  
-    4         0.0   356.399994   good  
-    Copying data files to /home/circleci/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-6_meg.fif
-    Writing /home/circleci/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-6_meg.fif
-    Closing /home/circleci/mne_data/ds000117-bids/sub-01/ses-01/meg/sub-01_ses-01_task-VisualFaces_run-6_meg.fif [done]
+    name    type    units   low_cutoff      high_cutoff     description     sampling_frequency      status
+    MEG0113 MEGGRADPLANAR   T/m     0.0     356.3999938964844       Planar Gradiometer      1100.0  good
+    MEG0112 MEGGRADPLANAR   T/m     0.0     356.3999938964844       Planar Gradiometer      1100.0  good
+    MEG0111 MEGMAG  T       0.0     356.3999938964844       Magnetometer    1100.0  good
+    MEG0122 MEGGRADPLANAR   T/m     0.0     356.3999938964844       Planar Gradiometer      1100.0  good
+    MEG0123 MEGGRADPLANAR   T/m     0.0     356.3999938964844       Planar Gradiometer      1100.0  good
+    Copying data files to /home/circleci/mne_data/ds000117-bids/sub-1/ses-01/meg/sub-1_ses-01_task-VisualFaces_run-6_meg.fif
+    Writing /home/circleci/mne_data/ds000117-bids/sub-1/ses-01/meg/sub-1_ses-01_task-VisualFaces_run-6_meg.fif
+    Closing /home/circleci/mne_data/ds000117-bids/sub-1/ses-01/meg/sub-1_ses-01_task-VisualFaces_run-6_meg.fif [done]
 
 
 Now let's see the structure of the BIDS folder we created.
 
 
-
-.. code-block:: python
+.. code-block:: default
 
     print_dir_tree(output_path)
 
@@ -768,41 +1146,45 @@ Now let's see the structure of the BIDS folder we created.
 
  .. code-block:: none
 
-    |------------ ds000117-bids
-    |--------------- dataset_description.json
-    |--------------- participants.tsv
-    |--------------- sub-01
-    |------------------ ses-01
-    |--------------------- sub-01_ses-01_scans.tsv
-    |--------------------- meg
-    |------------------------ sub-01_ses-01_task-VisualFaces_run-6_channels.tsv
-    |------------------------ sub-01_ses-01_task-VisualFaces_run-3_events.tsv
-    |------------------------ sub-01_ses-01_task-VisualFaces_run-2_channels.tsv
-    |------------------------ sub-01_ses-01_task-VisualFaces_run-1_meg.json
-    |------------------------ sub-01_ses-01_task-VisualFaces_run-4_channels.tsv
-    |------------------------ sub-01_ses-01_task-VisualFaces_run-6_meg.json
-    |------------------------ sub-01_ses-01_task-VisualFaces_run-3_meg.json
-    |------------------------ sub-01_ses-01_task-VisualFaces_run-4_meg.json
-    |------------------------ sub-01_ses-01_task-VisualFaces_run-3_meg.fif
-    |------------------------ sub-01_ses-01_task-VisualFaces_run-6_meg.fif
-    |------------------------ sub-01_ses-01_task-VisualFaces_run-4_events.tsv
-    |------------------------ sub-01_ses-01_task-VisualFaces_run-4_meg.fif
-    |------------------------ sub-01_ses-01_task-VisualFaces_run-2_meg.json
-    |------------------------ sub-01_ses-01_task-VisualFaces_run-5_channels.tsv
-    |------------------------ sub-01_ses-01_coordsystem.json
-    |------------------------ sub-01_ses-01_task-VisualFaces_run-2_events.tsv
-    |------------------------ sub-01_ses-01_task-VisualFaces_run-1_channels.tsv
-    |------------------------ sub-01_ses-01_task-VisualFaces_run-2_meg.fif
-    |------------------------ sub-01_ses-01_task-VisualFaces_run-6_events.tsv
-    |------------------------ sub-01_ses-01_task-VisualFaces_run-1_meg.fif
-    |------------------------ sub-01_ses-01_task-VisualFaces_run-5_meg.json
-    |------------------------ sub-01_ses-01_task-VisualFaces_run-3_channels.tsv
-    |------------------------ sub-01_ses-01_task-VisualFaces_run-5_events.tsv
-    |------------------------ sub-01_ses-01_task-VisualFaces_run-1_events.tsv
-    |------------------------ sub-01_ses-01_task-VisualFaces_run-5_meg.fif
+    |ds000117-bids
+    |--- participants.tsv
+    |--- participants.json
+    |--- dataset_description.json
+    |--- sub-1
+    |------ ses-01
+    |--------- sub-1_ses-01_scans.tsv
+    |--------- meg
+    |------------ sub-1_ses-01_task-VisualFaces_run-2_channels.tsv
+    |------------ sub-1_ses-01_task-VisualFaces_run-5_events.tsv
+    |------------ sub-1_ses-01_task-VisualFaces_run-1_channels.tsv
+    |------------ sub-1_ses-01_task-VisualFaces_run-3_meg.json
+    |------------ sub-1_ses-01_task-VisualFaces_run-4_events.tsv
+    |------------ sub-1_ses-01_task-VisualFaces_run-6_events.tsv
+    |------------ sub-1_ses-01_task-VisualFaces_run-4_meg.json
+    |------------ sub-1_ses-01_coordsystem.json
+    |------------ sub-1_ses-01_task-VisualFaces_run-2_meg.fif
+    |------------ sub-1_ses-01_task-VisualFaces_run-3_events.tsv
+    |------------ sub-1_ses-01_task-VisualFaces_run-5_channels.tsv
+    |------------ sub-1_ses-01_task-VisualFaces_run-1_meg.fif
+    |------------ sub-1_ses-01_task-VisualFaces_run-4_channels.tsv
+    |------------ sub-1_ses-01_task-VisualFaces_run-2_events.tsv
+    |------------ sub-1_ses-01_task-VisualFaces_run-1_events.tsv
+    |------------ sub-1_ses-01_task-VisualFaces_run-5_meg.fif
+    |------------ sub-1_ses-01_task-VisualFaces_run-6_meg.json
+    |------------ sub-1_ses-01_task-VisualFaces_run-3_channels.tsv
+    |------------ sub-1_ses-01_task-VisualFaces_run-3_meg.fif
+    |------------ sub-1_ses-01_task-VisualFaces_run-6_meg.fif
+    |------------ sub-1_ses-01_task-VisualFaces_run-4_meg.fif
+    |------------ sub-1_ses-01_task-VisualFaces_run-1_meg.json
+    |------------ sub-1_ses-01_task-VisualFaces_run-6_channels.tsv
+    |------------ sub-1_ses-01_task-VisualFaces_run-2_meg.json
+    |------------ sub-1_ses-01_task-VisualFaces_run-5_meg.json
 
 
-**Total running time of the script:** ( 3 minutes  29.991 seconds)
+
+.. rst-class:: sphx-glr-timing
+
+   **Total running time of the script:** ( 4 minutes  41.369 seconds)
 
 
 .. _sphx_glr_download_auto_examples_convert_group_studies.py:

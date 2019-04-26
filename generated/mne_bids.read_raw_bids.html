@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>Overview: module code &#8212; mne_bids 0.2 documentation</title>
+    <title>mne_bids.read_raw_bids &#8212; mne_bids 0.2 documentation</title>
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
@@ -67,7 +67,10 @@
      href="#">Page <b class="caret"></b></a>
   <ul class="dropdown-menu localtoc"
       role="menu"
-      aria-labelledby="dLabelLocalToc"></ul>
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">mne_bids.read_raw_bids</a></li>
+</ul>
+</ul>
 </li>
               
             
@@ -75,7 +78,11 @@
             
             
             
-              <li class="hidden-sm"></li>
+              <li class="hidden-sm">
+<div id="sourcelink">
+  <a href="../_sources/generated/mne_bids.read_raw_bids.rst.txt"
+     rel="nofollow">Source</a>
+</div></li>
             
           </ul>
 
@@ -97,13 +104,44 @@
   <div class="row">
     <div class="body col-md-12 content" role="main">
       
-  <h1>All modules for which code is available</h1>
-<ul><li><a href="mne_bids/copyfiles.html">mne_bids.copyfiles</a></li>
-<li><a href="mne_bids/datasets.html">mne_bids.datasets</a></li>
-<li><a href="mne_bids/read.html">mne_bids.read</a></li>
-<li><a href="mne_bids/utils.html">mne_bids.utils</a></li>
-<li><a href="mne_bids/write.html">mne_bids.write</a></li>
-</ul>
+  <div class="section" id="mne-bids-read-raw-bids">
+<h1>mne_bids.read_raw_bids<a class="headerlink" href="#mne-bids-read-raw-bids" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="mne_bids.read_raw_bids">
+<code class="descclassname">mne_bids.</code><code class="descname">read_raw_bids</code><span class="sig-paren">(</span><em>bids_fname</em>, <em>bids_root</em>, <em>return_events=True</em>, <em>verbose=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/read.html#read_raw_bids"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.read_raw_bids" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read BIDS compatible data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>bids_fname</strong><span class="classifier">str</span></dt><dd><p>Full name of the data file</p>
+</dd>
+<dt><strong>bids_root</strong><span class="classifier">str</span></dt><dd><p>Path to root of the BIDS folder</p>
+</dd>
+<dt><strong>return_events: bool</strong></dt><dd><p>Whether to return events or not. Default is True.</p>
+</dd>
+<dt><strong>verbose</strong><span class="classifier">bool</span></dt><dd><p>The verbosity level</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>raw</strong><span class="classifier">instance of Raw</span></dt><dd><p>The data as MNE-Python Raw object.</p>
+</dd>
+<dt><strong>events</strong><span class="classifier">ndarray, shape = (n_events, 3)</span></dt><dd><p>The first column contains the event time in samples and the third
+column contains the event id. The second column is ignored for now but
+typically contains the value of the trigger channel either immediately
+before the event or immediately after.</p>
+</dd>
+<dt><strong>event_id</strong><span class="classifier">dict</span></dt><dd><p>Dictionary of events in the raw data mapping from the event value
+to an index.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
 
     </div>
       

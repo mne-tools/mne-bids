@@ -4,7 +4,7 @@ BIDS conversion for group studies
 =================================
 
 Here, we show how to do BIDS conversion for group studies.
-The data is available here: https://openfmri.org/dataset/ds000117/
+The data is available here: https://openneuro.org/datasets/ds000117
 
 References
 ----------
@@ -26,7 +26,7 @@ Scientific data, 2 (2015): 150001.
 import os.path as op
 
 import mne
-from mne_bids import write_raw_bids
+from mne_bids import write_raw_bids, make_bids_basename
 from mne_bids.datasets import fetch_faces_data
 from mne_bids.utils import print_dir_tree
 
@@ -69,8 +69,9 @@ for subject_id in subject_ids:
                             'run_%02d_raw.fif' % run)
 
         raw = mne.io.read_raw_fif(raw_fname)
-        bids_basename = ('sub-%02d_ses-01_task-VisualFaces_run-%d'
-                         % (subject_id, run))
+        bids_basename = make_bids_basename(subject=str(subject_id),
+                                           session='01', task='VisualFaces',
+                                           run=str(run))
         write_raw_bids(raw, bids_basename, output_path, event_id=event_id,
                        overwrite=True)
 

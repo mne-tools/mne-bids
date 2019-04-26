@@ -2,9 +2,8 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>mne_bids.mne_bids.make_bids_basename &#8212; mne_bids 0.1 documentation</title>
+    <meta charset="utf-8" />
+    <title>mne_bids.make_bids_basename &#8212; mne_bids 0.2 documentation</title>
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
@@ -12,17 +11,17 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js"></script>
-    <script type="text/javascript" src="../_static/js/jquery-fix.js"></script>
-    <script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="../_static/bootstrap-sphinx.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
 <meta charset='utf-8'>
 <meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
 <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
 <meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js "></script>
 
   </head><body>
 
@@ -37,7 +36,7 @@
         </button>
         <a class="navbar-brand" href="../index.html">
           MNE-BIDS</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.1</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.2</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -45,6 +44,7 @@
             
                 <li><a href="../auto_examples/index.html">Gallery</a></li>
                 <li><a href="../api.html">API</a></li>
+                <li><a href="../whats_new.html">What's new</a></li>
                 <li><a href="https://github.com/mne-tools/mne-bids">Github</a></li>
             
             
@@ -68,7 +68,7 @@
   <ul class="dropdown-menu localtoc"
       role="menu"
       aria-labelledby="dLabelLocalToc"><ul>
-<li><a class="reference internal" href="#">mne_bids.mne_bids.make_bids_basename</a></li>
+<li><a class="reference internal" href="#">mne_bids.make_bids_basename</a></li>
 </ul>
 </ul>
 </li>
@@ -80,7 +80,7 @@
             
               <li class="hidden-sm">
 <div id="sourcelink">
-  <a href="../_sources/generated/mne_bids.mne_bids.make_bids_basename.rst.txt"
+  <a href="../_sources/generated/mne_bids.make_bids_basename.rst.txt"
      rel="nofollow">Source</a>
 </div></li>
             
@@ -102,13 +102,13 @@
 
 <div class="container">
   <div class="row">
-    <div class="col-md-12 content">
+    <div class="body col-md-12 content" role="main">
       
-  <div class="section" id="mne-bids-mne-bids-make-bids-basename">
-<h1>mne_bids.mne_bids.make_bids_basename<a class="headerlink" href="#mne-bids-mne-bids-make-bids-basename" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="mne-bids-make-bids-basename">
+<h1>mne_bids.make_bids_basename<a class="headerlink" href="#mne-bids-make-bids-basename" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
-<dt id="mne_bids.mne_bids.make_bids_basename">
-<code class="descclassname">mne_bids.mne_bids.</code><code class="descname">make_bids_basename</code><span class="sig-paren">(</span><em>subject=None</em>, <em>session=None</em>, <em>task=None</em>, <em>acquisition=None</em>, <em>run=None</em>, <em>processing=None</em>, <em>recording=None</em>, <em>space=None</em>, <em>prefix=None</em>, <em>suffix=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/utils.html#make_bids_basename"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.mne_bids.make_bids_basename" title="Permalink to this definition">¶</a></dt>
+<dt id="mne_bids.make_bids_basename">
+<code class="descclassname">mne_bids.</code><code class="descname">make_bids_basename</code><span class="sig-paren">(</span><em>subject=None</em>, <em>session=None</em>, <em>task=None</em>, <em>acquisition=None</em>, <em>run=None</em>, <em>processing=None</em>, <em>recording=None</em>, <em>space=None</em>, <em>prefix=None</em>, <em>suffix=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/write.html#make_bids_basename"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.make_bids_basename" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a partial/full BIDS filename from its component parts.</p>
 <p>BIDS filename prefixes have one or more pieces of metadata in them. They
 must follow a particular order, which is followed by this function. This
@@ -117,54 +117,39 @@ subsequent files, or you may also give a suffix that will then complete
 the file name.</p>
 <p>Note that all parameters are not applicable to each kind of data. For
 example, electrode location TSV files do not need a task field.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
-<dt><strong>subject</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str | None</span></dt>
-<dd><p class="first last">The subject ID. Corresponds to “sub”.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>subject</strong><span class="classifier">str | None</span></dt><dd><p>The subject ID. Corresponds to “sub”.</p>
 </dd>
-<dt><strong>session</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str | None</span></dt>
-<dd><p class="first last">The session for a item. Corresponds to “ses”.</p>
+<dt><strong>session</strong><span class="classifier">str | None</span></dt><dd><p>The session for a item. Corresponds to “ses”.</p>
 </dd>
-<dt><strong>task</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str | None</span></dt>
-<dd><p class="first last">The task for a item. Corresponds to “task”.</p>
+<dt><strong>task</strong><span class="classifier">str | None</span></dt><dd><p>The task for a item. Corresponds to “task”.</p>
 </dd>
-<dt><strong>acquisition: str | None</strong></dt>
-<dd><p class="first last">The acquisition parameters for the item. Corresponds to “acq”.</p>
+<dt><strong>acquisition: str | None</strong></dt><dd><p>The acquisition parameters for the item. Corresponds to “acq”.</p>
 </dd>
-<dt><strong>run</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int | None</span></dt>
-<dd><p class="first last">The run number for this item. Corresponds to “run”.</p>
+<dt><strong>run</strong><span class="classifier">int | None</span></dt><dd><p>The run number for this item. Corresponds to “run”.</p>
 </dd>
-<dt><strong>processing</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str | None</span></dt>
-<dd><p class="first last">The processing label for this item. Corresponds to “proc”.</p>
+<dt><strong>processing</strong><span class="classifier">str | None</span></dt><dd><p>The processing label for this item. Corresponds to “proc”.</p>
 </dd>
-<dt><strong>recording</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str | None</span></dt>
-<dd><p class="first last">The recording name for this item. Corresponds to “recording”.</p>
+<dt><strong>recording</strong><span class="classifier">str | None</span></dt><dd><p>The recording name for this item. Corresponds to “recording”.</p>
 </dd>
-<dt><strong>space</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str | None</span></dt>
-<dd><p class="first last">The coordinate space for an anatomical file. Corresponds to “space”.</p>
+<dt><strong>space</strong><span class="classifier">str | None</span></dt><dd><p>The coordinate space for an anatomical file. Corresponds to “space”.</p>
 </dd>
-<dt><strong>prefix</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str | None</span></dt>
-<dd><p class="first last">The prefix for the filename to be created. E.g., a path to the folder
+<dt><strong>prefix</strong><span class="classifier">str | None</span></dt><dd><p>The prefix for the filename to be created. E.g., a path to the folder
 in which you wish to create a file with this name.</p>
 </dd>
-<dt><strong>suffix</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str | None</span></dt>
-<dd><p class="first last">The suffix of a file that begins with this prefix. E.g., ‘audio.wav’.</p>
+<dt><strong>suffix</strong><span class="classifier">str | None</span></dt><dd><p>The suffix of a file that begins with this prefix. E.g., ‘audio.wav’.</p>
 </dd>
 </dl>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>filename</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
-<dd><p class="first last">The BIDS filename you wish to create.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>filename</strong><span class="classifier">str</span></dt><dd><p>The BIDS filename you wish to create.</p>
 </dd>
 </dl>
-</td>
-</tr>
-</tbody>
-</table>
+</dd>
+</dl>
 <p class="rubric">Examples</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">make_bids_basename</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="s1">&#39;two&#39;</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="s1">&#39;mytask&#39;</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;data.csv&#39;</span><span class="p">))</span> <span class="c1"># noqa</span>
 <span class="go">sub-test_ses-two_task-mytask_data.csv</span>
@@ -186,8 +171,8 @@ in which you wish to create a file with this name.</p>
       
     </p>
     <p>
-        &copy; Copyright 2018, MNE Developers. Last updated on 2018-11-05.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.8.1.<br/>
+        &copy; Copyright 2019, MNE Developers. Last updated on 2019-04-26.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.0.1.<br/>
     </p>
   </div>
 </footer>

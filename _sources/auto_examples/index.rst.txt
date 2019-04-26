@@ -1,5 +1,9 @@
 :orphan:
 
+
+
+.. _sphx_glr_auto_examples:
+
 .. _general_examples:
 
 Examples Gallery
@@ -53,26 +57,6 @@ Examples Gallery
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates how to convert your existing files into a BIDS-compatible folder. ">
-
-.. only:: html
-
-    .. figure:: /auto_examples/images/thumb/sphx_glr_convert_mne_sample_thumb.png
-
-        :ref:`sphx_glr_auto_examples_convert_mne_sample.py`
-
-.. raw:: html
-
-    </div>
-
-
-.. toctree::
-   :hidden:
-
-   /auto_examples/convert_mne_sample
-
-.. raw:: html
-
     <div class="sphx-glr-thumbcontainer" tooltip="Here, we show how to do BIDS conversion for group studies. The data is available here: https://...">
 
 .. only:: html
@@ -90,6 +74,26 @@ Examples Gallery
    :hidden:
 
    /auto_examples/convert_group_studies
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates how to convert your existing files into a BIDS-compatible folder. ">
+
+.. only:: html
+
+    .. figure:: /auto_examples/images/thumb/sphx_glr_convert_mne_sample_thumb.png
+
+        :ref:`sphx_glr_auto_examples_convert_mne_sample.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/convert_mne_sample
 
 .. raw:: html
 

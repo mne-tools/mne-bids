@@ -29,8 +29,7 @@ In this example, we use MNE-BIDS to rename BrainVision data files including a
 repair of the internal file pointers.
 
 
-
-.. code-block:: python
+.. code-block:: default
 
 
     # Authors: Stefan Appelhoff <stefan.appelhoff@mailbox.org>
@@ -45,8 +44,7 @@ repair of the internal file pointers.
 We are importing everything we need for this example:
 
 
-
-.. code-block:: python
+.. code-block:: default
 
     import os
 
@@ -54,7 +52,7 @@ We are importing everything we need for this example:
     from mne.io import read_raw_brainvision
 
     from mne_bids.datasets import fetch_brainvision_testing_data
-    from mne_bids.utils import copyfile_brainvision
+    from mne_bids.copyfiles import copyfile_brainvision
 
 
 
@@ -69,8 +67,7 @@ will use data that is shipped with MNE-Python. Feel free to use your own
 BrainVision data.
 
 
-
-.. code-block:: python
+.. code-block:: default
 
     examples_dir = fetch_brainvision_testing_data()
 
@@ -93,8 +90,7 @@ the future .vhdr file.
 Here, we rename test.vhdr to test_renamed.vhdr:
 
 
-
-.. code-block:: python
+.. code-block:: default
 
     vhdr_file = os.path.join(examples_dir, 'test.vhdr')
     vhdr_file_renamed = os.path.join(examples_dir, 'test_renamed.vhdr')
@@ -104,6 +100,13 @@ Here, we rename test.vhdr to test_renamed.vhdr:
 
 
 
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    file encoding: UTF-8 (read from header)
 
 
 Step 3: Assert that the renamed data can be read by a software
@@ -112,8 +115,7 @@ Finally, let's use MNE-Python to read in both, the original BrainVision data
 as well as the renamed data. They should be the same.
 
 
-
-.. code-block:: python
+.. code-block:: default
 
     raw = read_raw_brainvision(vhdr_file)
     raw_renamed = read_raw_brainvision(vhdr_file_renamed)
@@ -150,7 +152,9 @@ For that, see the
 `BrainVision Validator <https://github.com/sappelhoff/brainvision-validator>`_
 
 
-**Total running time of the script:** ( 0 minutes  0.722 seconds)
+.. rst-class:: sphx-glr-timing
+
+   **Total running time of the script:** ( 0 minutes  1.236 seconds)
 
 
 .. _sphx_glr_download_auto_examples_rename_brainvision_files.py:

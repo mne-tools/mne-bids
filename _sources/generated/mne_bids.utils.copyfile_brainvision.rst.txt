@@ -1,6 +1,0 @@
-mne\_bids.utils.copyfile\_brainvision
-=====================================
-
-.. currentmodule:: mne_bids.utils
-
-.. autofunction:: copyfile_brainvision

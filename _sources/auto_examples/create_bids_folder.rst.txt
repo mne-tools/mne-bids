@@ -21,8 +21,7 @@ wish to create these files/folders on your own.
    `write_raw_bids`. This example is for manually creating files/folders.
 
 
-
-.. code-block:: python
+.. code-block:: default
 
 
     # Authors: Chris Holdgraf <choldgraf@berkeley.edu>
@@ -34,11 +33,10 @@ wish to create these files/folders on your own.
 
 
 
-We'll import the relevant functions from the utils module
+We'll import the relevant functions from the write module
 
 
-
-.. code-block:: python
+.. code-block:: default
 
 
     from mne_bids import make_bids_folders, make_bids_basename
@@ -58,8 +56,7 @@ pieces of metadata, ensuring that they are in the correct order in the
 final file path. Omitted keys will not be included in the file path.
 
 
-
-.. code-block:: python
+.. code-block:: default
 
 
     bids_basename = make_bids_basename(subject='test', session='two',
@@ -83,8 +80,7 @@ You may also omit the suffix, which will result in *only* a prefix for a
 file name. This could then prepended to many more files.
 
 
-
-.. code-block:: python
+.. code-block:: default
 
 
     bids_basename = make_bids_basename(subject='test', task='mytask')
@@ -109,8 +105,7 @@ Creating folders
 You can also use MNE-BIDS to create folder hierarchies.
 
 
-
-.. code-block:: python
+.. code-block:: default
 
 
     path_folder = make_bids_folders('sub_01', session='mysession',
@@ -133,7 +128,10 @@ You can also use MNE-BIDS to create folder hierarchies.
     path/to/project/sub-sub_01/ses-mysession/meg
 
 
-**Total running time of the script:** ( 0 minutes  0.000 seconds)
+
+.. rst-class:: sphx-glr-timing
+
+   **Total running time of the script:** ( 0 minutes  0.039 seconds)
 
 
 .. _sphx_glr_download_auto_examples_create_bids_folder.py:
