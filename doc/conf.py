@@ -66,7 +66,7 @@ td = date.today()
 copyright = u'%s, MNE Developers. Last updated on %s' % (td.year,
                                                          td.isoformat())
 
-author = u'Mainak Jas'
+author = u'MNE Developers'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
