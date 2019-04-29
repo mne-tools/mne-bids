@@ -194,8 +194,7 @@ def test_kit():
     headshape_fname = op.join(data_path, 'test_hsp.txt')
     event_id = dict(cond=1)
 
-    kit_bids_basename = make_bids_basename(
-        subject=subject_id, session=session_id, run=run, task=task)
+    kit_bids_basename = bids_basename.replace('_acq-01', '')
 
     raw = mne.io.read_raw_kit(
         raw_fname, mrk=hpi_fname, elp=electrode_fname,
