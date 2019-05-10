@@ -4,11 +4,9 @@
    :target: https://gitter.im/mne-tools/mne-bids?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
    :alt: Gitter
 
-
-.. image:: https://api.travis-ci.org/mne-tools/mne-bids.svg?branch=master "Travis"
+.. image:: https://travis-ci.org/mne-tools/mne-bids.svg?branch=master
    :target: https://travis-ci.org/mne-tools/mne-bids
    :alt: Travis
-
 
 .. image:: https://ci.appveyor.com/api/projects/status/d4u70pht341cwqxb/branch/master?svg=true
    :target: https://ci.appveyor.com/project/mne-tools/mne-bids/branch/master
