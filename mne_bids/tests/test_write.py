@@ -193,15 +193,15 @@ def test_kit():
 
     raw = mne.io.read_raw_kit(raw_fname, mrk=hpi_fname, elp=electrode_fname,
                               hsp=headshape_fname)
-    event_data = np.loadtxt(events_fname)  # we also accept nx3 ndarrays
-    write_raw_bids(raw, bids_basename, output_path, events_data=event_data,
+    write_raw_bids(raw, bids_basename, output_path, events_data=events_fname,
                    event_id=event_id, overwrite=False)
     cmd = ['bids-validator', output_path]
     run_subprocess(cmd, shell=shell)
     assert op.exists(op.join(output_path, 'participants.tsv'))
 
-    raw, events, _ = read_raw_bids(bids_basename + '_meg.sqd',
-                                   output_path)
+    # Test reading of raw data
+    raw2, events, _ = read_raw_bids(bids_basename + '_meg.sqd',
+                                    output_path)
 
     # ensure the channels file has no STI 014 channel:
     channels_tsv = make_bids_basename(
