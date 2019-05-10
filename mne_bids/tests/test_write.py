@@ -88,17 +88,16 @@ def test_fif():
     with pytest.raises(ValueError, match='Date provided'):
         write_raw_bids(raw, er_bids_basename_bad, output_path, overwrite=False)
 
-    # give the raw object some fake participant data
+    # give the raw object some fake participant data (potentially overwriting)
     raw = mne.io.read_raw_fif(raw_fname)
-    raw.anonymize()
     raw.info['subject_info'] = {'his_id': subject_id2,
-                                'birthday': (1994, 1, 26), 'sex': 1}
+                                'birthday': (1993, 1, 26), 'sex': 1}
     write_raw_bids(raw, bids_basename, output_path, events_data=events_fname,
                    event_id=event_id, overwrite=True)
     # assert age of participant is correct
     participants_tsv = op.join(output_path, 'participants.tsv')
     data = _from_tsv(participants_tsv)
-    assert data['age'][data['participant_id'].index('sub-01')] == '8'
+    assert data['age'][data['participant_id'].index('sub-01')] == '9'
 
     # try and write preloaded data
     raw = mne.io.read_raw_fif(raw_fname, preload=True)
@@ -218,6 +217,21 @@ def test_kit():
         acquisition=acq, suffix='markers.sqd',
         prefix=op.join(output_path, 'sub-01', 'ses-01', 'meg'))
     assert op.exists(marker_fname)
+
+    # test attempts at writing invalid event data
+    event_data = np.loadtxt(events_fname)
+    # make the data the wrong number of dimensions
+    event_data_3d = np.atleast_3d(event_data)
+    with pytest.raises(ValueError, match='two dimensions'):
+        write_raw_bids(raw, bids_basename, output_path,
+                       events_data=event_data_3d, event_id=event_id,
+                       overwrite=True)
+    # remove 3rd column
+    event_data = event_data[:, :2]
+    with pytest.raises(ValueError, match='second dimension'):
+        write_raw_bids(raw, bids_basename, output_path,
+                       events_data=event_data, event_id=event_id,
+                       overwrite=True)
 
 
 def test_ctf():
