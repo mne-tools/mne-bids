@@ -492,9 +492,6 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, overwrite=False,
         append_kind_json = ch_info_json_eeg
     elif kind == 'ieeg':
         append_kind_json = ch_info_json_ieeg
-    else:
-        raise ValueError('Unexpected "kind": {}'
-                         ' Use one of: {}'.format(kind, ALLOWED_KINDS))
 
     ch_info_json += append_kind_json
     ch_info_json += ch_info_ch_counts
@@ -568,7 +565,8 @@ def make_bids_basename(subject=None, session=None, task=None,
 
     _check_types(order.values())
 
-    if not any(isinstance(ii, str) for ii in order.keys()):
+    if (all(ii is None for ii in order.values()) and suffix is None and
+            prefix is None):
         raise ValueError("At least one parameter must be given.")
 
     filename = []
