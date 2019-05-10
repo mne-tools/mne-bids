@@ -10,15 +10,14 @@ For each supported file format, implement a test.
 #          Matt Sanderson <matt.sanderson@mq.edu.au>
 #
 # License: BSD (3-clause)
-
 import os
 import os.path as op
 import pytest
 from glob import glob
-
 from datetime import datetime
-from numpy.testing import assert_array_equal
 
+import numpy as np
+from numpy.testing import assert_array_equal
 import mne
 from mne.datasets import testing
 from mne.utils import _TempDir, run_subprocess, check_version
@@ -94,6 +93,23 @@ def test_fif():
     raw.anonymize()
     raw.info['subject_info'] = {'his_id': subject_id2,
                                 'birthday': (1994, 1, 26), 'sex': 1}
+    write_raw_bids(raw, bids_basename, output_path, events_data=events_fname,
+                   event_id=event_id, overwrite=True)
+    # assert age of participant is correct
+    participants_tsv = op.join(output_path, 'participants.tsv')
+    data = _from_tsv(participants_tsv)
+    assert data['age'][data['participant_id'].index('sub-01')] == '8'
+
+    # try and write preloaded data
+    raw = mne.io.read_raw_fif(raw_fname, preload=True)
+    with pytest.raises(ValueError, match='preloaded'):
+        write_raw_bids(raw, bids_basename, output_path,
+                       events_data=events_fname, event_id=event_id,
+                       overwrite=False)
+
+    raw = mne.io.read_raw_fif(raw_fname)
+    raw.anonymize()
+
     data_path2 = _TempDir()
     raw_fname2 = op.join(data_path2, 'sample_audvis_raw.fif')
     raw.save(raw_fname2)
@@ -176,10 +192,10 @@ def test_kit():
     headshape_fname = op.join(data_path, 'test_hsp.txt')
     event_id = dict(cond=1)
 
-    raw = mne.io.read_raw_kit(
-        raw_fname, mrk=hpi_fname, elp=electrode_fname,
-        hsp=headshape_fname)
-    write_raw_bids(raw, bids_basename, output_path, events_data=events_fname,
+    raw = mne.io.read_raw_kit(raw_fname, mrk=hpi_fname, elp=electrode_fname,
+                              hsp=headshape_fname)
+    event_data = np.loadtxt(events_fname)  # we also accept nx3 ndarrays
+    write_raw_bids(raw, bids_basename, output_path, events_data=event_data,
                    event_id=event_id, overwrite=False)
     cmd = ['bids-validator', output_path]
     run_subprocess(cmd, shell=shell)

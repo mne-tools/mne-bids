@@ -57,7 +57,7 @@ def _get_brainvision_encoding(vhdr_file, verbose=False):
     with open(vhdr_file, 'rb') as ef:
         enc = ef.read()
         if enc.find(b'Codepage=') != -1:
-            enc = enc[enc.find(b'Codepage=')+9:]
+            enc = enc[enc.find(b'Codepage=') + 9:]
             enc = enc.split()[0]
             enc = enc.decode()
             src = '(read from header)'
