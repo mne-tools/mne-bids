@@ -36,7 +36,7 @@ from .copyfiles import (copyfile_brainvision, copyfile_eeglab, copyfile_ctf,
 from .read import _parse_ext, reader
 from .tsv_handler import _from_tsv, _combine, _drop, _contains_row
 
-from .config import (ALLOWED_KINDS, ORIENTATION, UNITS, MANUFACTURERS,
+from .config import (ORIENTATION, UNITS, MANUFACTURERS,
                      IGNORED_CHANNELS, ALLOWED_EXTENSIONS, BIDS_VERSION)
 
 
