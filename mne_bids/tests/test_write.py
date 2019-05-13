@@ -22,6 +22,7 @@ import mne
 from mne.datasets import testing
 from mne.utils import _TempDir, run_subprocess, check_version
 from mne.io.constants import FIFF
+from mne.io.kit.kit import get_kit_info
 
 from mne_bids import (write_raw_bids, read_raw_bids, make_bids_basename,
                       make_bids_folders)
@@ -187,13 +188,20 @@ def test_kit():
     raw_fname = op.join(data_path, 'test.sqd')
     events_fname = op.join(data_path, 'test-eve.txt')
     hpi_fname = op.join(data_path, 'test_mrk.sqd')
+    hpi_pre_fname = op.join(data_path, 'test_mrk_pre.sqd')
+    hpi_post_fname = op.join(data_path, 'test_mrk_post.sqd')
     electrode_fname = op.join(data_path, 'test_elp.txt')
     headshape_fname = op.join(data_path, 'test_hsp.txt')
     event_id = dict(cond=1)
 
-    raw = mne.io.read_raw_kit(raw_fname, mrk=hpi_fname, elp=electrode_fname,
-                              hsp=headshape_fname)
-    write_raw_bids(raw, bids_basename, output_path, events_data=events_fname,
+    kit_bids_basename = make_bids_basename(
+        subject=subject_id, session=session_id, run=run, task=task)
+
+    raw = mne.io.read_raw_kit(
+        raw_fname, mrk=hpi_fname, elp=electrode_fname,
+        hsp=headshape_fname)
+    write_raw_bids(raw, kit_bids_basename, output_path,
+                   events_data=events_fname,
                    event_id=event_id, overwrite=False)
     cmd = ['bids-validator', output_path]
     run_subprocess(cmd, shell=shell)
@@ -206,7 +214,7 @@ def test_kit():
     # ensure the channels file has no STI 014 channel:
     channels_tsv = make_bids_basename(
         subject=subject_id, session=session_id, task=task, run=run,
-        suffix='channels.tsv', acquisition=acq,
+        suffix='channels.tsv',
         prefix=op.join(output_path, 'sub-01', 'ses-01', 'meg'))
     data = _from_tsv(channels_tsv)
     assert 'STI 014' not in data['name']
@@ -232,6 +240,28 @@ def test_kit():
         write_raw_bids(raw, bids_basename, output_path,
                        events_data=event_data, event_id=event_id,
                        overwrite=True)
+    # test correct naming of marker files
+    raw = mne.io.read_raw_kit(
+        raw_fname, mrk=[hpi_post_fname, hpi_pre_fname], elp=electrode_fname,
+        hsp=headshape_fname)
+    write_raw_bids(raw,
+                   kit_bids_basename.replace('sub-01', 'sub-%s' % subject_id2),
+                   output_path, events_data=events_fname, event_id=event_id,
+                   overwrite=False)
+    cmd = ['bids-validator', output_path]
+    run_subprocess(cmd, shell=shell)
+    # ensure the marker files are renamed correctly
+    marker_fname = make_bids_basename(
+        subject=subject_id2, session=session_id, task=task, run=run,
+        suffix='markers.sqd', acquisition='pre',
+        prefix=os.path.join(output_path, 'sub-02/ses-01/meg'))
+    info = get_kit_info(marker_fname, False)[0]
+    assert info['meas_date'] == get_kit_info(hpi_pre_fname,
+                                             False)[0]['meas_date']
+    marker_fname = marker_fname.replace('acq-pre', 'acq-post')
+    info = get_kit_info(marker_fname, False)[0]
+    assert info['meas_date'] == get_kit_info(hpi_post_fname,
+                                             False)[0]['meas_date']
 
 
 def test_ctf():
