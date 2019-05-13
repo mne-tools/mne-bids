@@ -206,8 +206,7 @@ def test_kit():
     run_subprocess(cmd, shell=shell)
     assert op.exists(op.join(output_path, 'participants.tsv'))
 
-    # Test reading of raw data
-    raw2, events, _ = read_raw_bids(bids_basename + '_meg.sqd',
+    raw2, events, _ = read_raw_bids(kit_bids_basename + '_meg.sqd',
                                     output_path)
 
     # ensure the channels file has no STI 014 channel:
@@ -221,7 +220,7 @@ def test_kit():
     # ensure the marker file is produced in the right place
     marker_fname = make_bids_basename(
         subject=subject_id, session=session_id, task=task, run=run,
-        acquisition=acq, suffix='markers.sqd',
+        suffix='markers.sqd',
         prefix=op.join(output_path, 'sub-01', 'ses-01', 'meg'))
     assert op.exists(marker_fname)
 
