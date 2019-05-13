@@ -948,7 +948,7 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
             marker_fname = make_bids_basename(
                 subject=subject_id, session=session_id, task=task, run=run,
                 acquisition=key, suffix='markers%s' % marker_ext,
-                prefix=os.path.join(data_path, bids_raw_folder))
+                prefix=data_path)
             sh.copyfile(value, marker_fname)
 
     return output_path
