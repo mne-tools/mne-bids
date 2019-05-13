@@ -12,12 +12,14 @@ import os.path as op
 import warnings
 import json
 import shutil as sh
+from datetime import datetime
 
 import numpy as np
 from mne import read_events, find_events, events_from_annotations
 from mne.utils import check_version
 from mne.channels import read_montage
 from mne.io.pick import pick_types
+from mne.io.kit.kit import get_kit_info
 
 from .tsv_handler import _to_tsv, _tsv_to_str
 
@@ -209,6 +211,19 @@ def _read_events(events_data, event_id, raw, ext):
                       ' or provide events_data.')
         events = None
     return events, event_id
+
+
+def _get_mrk_meas_date(mrk):
+    """Find the measurement date from a KIT marker file."""
+    info = get_kit_info(mrk, False)[0]
+    meas_date = info.get('meas_date', None)
+    if isinstance(meas_date, (tuple, list, np.ndarray)):
+        meas_date = meas_date[0]
+    if meas_date is not None:
+        meas_datetime = datetime.fromtimestamp(meas_date)
+    else:
+        meas_datetime = datetime.min
+    return meas_datetime
 
 
 def _infer_eeg_placement_scheme(raw):

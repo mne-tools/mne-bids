@@ -29,7 +29,8 @@ from warnings import warn
 from .pick import coil_type
 from .utils import (_write_json, _write_tsv, _read_events, _mkdir_p,
                     _age_on_date, _infer_eeg_placement_scheme, _check_key_val,
-                    _parse_bids_filename, _handle_kind, _check_types)
+                    _parse_bids_filename, _handle_kind, _check_types,
+                    _get_mrk_meas_date)
 from .copyfiles import (copyfile_brainvision, copyfile_eeglab, copyfile_ctf,
                         copyfile_bti)
 
@@ -934,11 +935,20 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
     # KIT data requires the marker file to be copied over too
     if 'mrk' in raw._init_kwargs:
         hpi = raw._init_kwargs['mrk']
-        _, marker_ext = _parse_ext(hpi)
-        marker_fname = make_bids_basename(
-            subject=subject_id, session=session_id, task=task, run=run,
-            acquisition=acquisition, suffix='markers%s' % marker_ext,
-            prefix=data_path)
-        sh.copyfile(hpi, marker_fname)
+        acq_map = dict()
+        if isinstance(hpi, list):
+            # order hpi list by acquisition time
+            hpi.sort(key=_get_mrk_meas_date)
+            _, marker_ext = _parse_ext(hpi[0])
+            acq_map = dict(zip(['pre', 'post'], hpi))
+        else:
+            _, marker_ext = _parse_ext(hpi)
+            acq_map[None] = hpi
+        for key, value in acq_map.items():
+            marker_fname = make_bids_basename(
+                subject=subject_id, session=session_id, task=task, run=run,
+                acquisition=key, suffix='markers%s' % marker_ext,
+                prefix=os.path.join(data_path, bids_raw_folder))
+            sh.copyfile(value, marker_fname)
 
     return output_path
