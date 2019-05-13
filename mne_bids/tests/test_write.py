@@ -252,7 +252,7 @@ def test_kit():
     marker_fname = make_bids_basename(
         subject=subject_id2, session=session_id, task=task, run=run,
         suffix='markers.sqd', acquisition='pre',
-        prefix=os.path.join(output_path, 'sub-02/ses-01/meg'))
+        prefix=os.path.join(output_path, 'sub-02', 'ses-01', meg'))
     info = get_kit_info(marker_fname, False)[0]
     assert info['meas_date'] == get_kit_info(hpi_pre_fname,
                                              False)[0]['meas_date']
