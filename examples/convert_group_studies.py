@@ -35,7 +35,8 @@ from mne_bids.utils import print_dir_tree
 subject_ids = [1]
 runs = range(1, 7)
 
-data_path = op.join(op.expanduser('~'), 'mne_data')
+home = op.expanduser('~')
+data_path = op.join(home, 'mne_data', 'mne_bids_examples')
 repo = 'ds000117'
 fetch_faces_data(data_path, repo, subject_ids)
 
