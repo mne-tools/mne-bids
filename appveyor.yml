@@ -11,12 +11,12 @@ install:
   - "powershell ci-helpers/appveyor/install-miniconda.ps1"
   - "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
   - "activate test"
-  - "conda install numpy=1.14 scipy=0.19.1"
-  - "pip install flake8 pytest pytest-cov pytest-sugar pytest-faulthandler codecov"
+  - "conda install numpy scipy"
+  - "pip install flake8 pytest pytest-sugar pytest-faulthandler"
   - "pip uninstall -yq mne"
   - |-
     cd ..
-    git clone --depth 1 https://github.com/mne-tools/mne-python.git -b maint/0.17
+    git clone --depth 1 https://github.com/mne-tools/mne-python.git -b maint/0.18
     cd mne-python
     python setup.py develop
     cd ..
@@ -30,10 +30,12 @@ install:
   - which bids-validator
   - "python -c \"import mne; mne.datasets.testing.data_path()\""
 
+# cache pip unless appveyor.yml is changed
+# https://stackoverflow.com/a/31496309/5201771
+cache:
+  - '%LOCALAPPDATA%\pip\Cache -> appveyor.yml'
+
 build: false
 
 test_script:
-  - "py.test mne_bids --cov=mne_bids"
-
-on_success:
-- "codecov"
+  - "pytest mne_bids --verbose"
