@@ -16,7 +16,7 @@ before_install:
 install:
     - conda create -n testenv --yes python=${PYTHON_VERSION}
     - source activate testenv
-    - conda install --yes --quiet numpy scipy
+    - conda install --yes --quiet numpy scipy matplotlib
     - pip install flake8 pytest pytest-cov pytest-sugar pytest-faulthandler check-manifest
     - |
       git clone --depth 1 https://github.com/mne-tools/mne-python.git -b maint/0.18
