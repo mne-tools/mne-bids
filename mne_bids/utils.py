@@ -201,7 +201,7 @@ def _read_events(events_data, event_id, raw, ext):
         events = events_data
     elif 'stim' in raw:
         events = find_events(raw, min_duration=0.001, initial_event=True)
-    elif ext in ['.vhdr', '.set'] and check_version('mne', '0.18.dev0'):
+    elif ext in ['.vhdr', '.set'] and check_version('mne', '0.18'):
         events, event_id = events_from_annotations(raw)
     else:
         warnings.warn('No events found or provided. Please make sure to'

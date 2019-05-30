@@ -406,7 +406,7 @@ def test_set():
     events_tsv_fname = op.join(output_path, 'sub-' + subject_id,
                                'ses-' + session_id, 'eeg',
                                bids_basename + '_events.tsv')
-    if check_version('mne', '0.18dev0'):
+    if check_version('mne', '0.18'):
         assert op.exists(events_tsv_fname)
 
     # Also cover iEEG
