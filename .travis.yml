@@ -31,7 +31,7 @@ install:
 cache: pip
 
 script:
-    - pytest . --cov=./mne_bids --cov-report=xml --verbose
+    - pytest . --cov=./mne_bids --cov-report=xml --verbose --ignore mne-python
     - check-manifest --ignore .circleci*,doc,coverage.xml
     - flake8 --count mne_bids
 
