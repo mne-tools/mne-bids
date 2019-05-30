@@ -47,13 +47,13 @@ jobs:
 
             # Store the data cache
             - save_cache:
-                key: - data-cache-0-{{ checksum "./mne_bids/__init__.py" }}
+                key: data-cache-0-{{ checksum "./mne_bids/__init__.py" }}
                 paths:
                   - ~/mne_data
 
             # Store pip cache
             - save_cache:
-                key: - pip-cache-0-{{ checksum "./mne_bids/__init__.py" }}
+                key: pip-cache-0-{{ checksum "./mne_bids/__init__.py" }}
                 paths:
                   - ~/.cache/pip
 
