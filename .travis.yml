@@ -17,7 +17,7 @@ install:
     - conda create -n testenv --yes python=${PYTHON_VERSION}
     - source activate testenv
     - conda install --yes --quiet numpy scipy
-    - pip install flake8 pytest pytest-sugar pytest-faulthandler check-manifest
+    - pip install flake8 pytest pytest-cov pytest-sugar pytest-faulthandler check-manifest
     - |
       git clone --depth 1 https://github.com/mne-tools/mne-python.git -b maint/0.18
       cd mne-python
@@ -32,7 +32,7 @@ cache: pip
 
 script:
     - pytest . --cov=./mne_bids --cov-report=xml --verbose
-    - check-manifest --ignore .circleci*,doc
+    - check-manifest --ignore .circleci*,doc,coverage.xml
     - flake8 --count mne_bids
 
 after_success:
