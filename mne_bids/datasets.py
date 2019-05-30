@@ -31,7 +31,8 @@ def fetch_faces_data(data_path=None, repo='ds000117', subject_ids=[1]):
     Returns
     -------
     data_path : str
-        Path to the folder where data is stored.
+        Path to the parent directory where the `repo` folder containing the
+        data is stored.
 
     """
     if not data_path:
@@ -65,24 +66,24 @@ def fetch_brainvision_testing_data(data_path=None):
     ----------
     data_path : str | None
         Path to the folder where data is stored. Defaults to
-        '~/mne_data/mne_bids_examples'
+        '~/mne_data/mne_bids_examples/testing_data_BrainVision'
 
     Returns
     -------
     data_path : str
-        Path to the folder where data is stored.
+        Path to the folder containing the data.
 
     """
     if not data_path:
         home = os.path.expanduser('~')
-        data_path = os.path.join(home, 'mne_data', 'mne_bids_examples')
+        data_path = os.path.join(home, 'mne_data', 'mne_bids_examples',
+                                 'testing_data_BrainVision')
         if not os.path.exists(data_path):
             os.makedirs(data_path)
 
     base_url = 'https://github.com/mne-tools/mne-python/'
     base_url += 'raw/master/mne/io/brainvision/tests/data/test'
     file_endings = ['.vhdr', '.vmrk', '.eeg', ]
-
     for f_ending in file_endings:
         url = base_url + f_ending
         response = urllib.request.urlopen(url)
