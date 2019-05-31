@@ -4,6 +4,7 @@ dist/
 *.egg*
 build
 coverage
+coverage.xml
 
 # Sphinx documentation
 doc/_build/
