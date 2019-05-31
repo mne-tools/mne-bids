@@ -18,7 +18,7 @@ Changelog
 Bug
 ~~~
 
-- Allow raw data from KIT systems to have two marker files specified, by `Matt Sanderson`_ (`#167 <https://github.com/mne-tools/mne-bids/pull/173>`_)
+- Allow raw data from KIT systems to have two marker files specified, by `Matt Sanderson`_ (`#173 <https://github.com/mne-tools/mne-bids/pull/173>`_)
 
 API
 ~~~

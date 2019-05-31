@@ -192,5 +192,15 @@ sphinx_gallery_conf = {
         'mne': 'http://mne-tools.github.io/stable/',
         'numpy': 'http://docs.scipy.org/doc/numpy-1.9.1',
         'scipy': 'http://docs.scipy.org/doc/scipy-0.17.0/reference'
+    },
+    'binder': {
+        # Required keys
+        'org': 'mne-tools',
+        'repo': 'mne-bids',
+        'branch': 'gh-pages',  # noqa: E501 Can be any branch, tag, or commit hash. Use a branch that hosts your docs.
+        'binderhub_url': 'https://mybinder.org',  # noqa: E501 Any URL of a binderhub deployment. Must be full URL (e.g. https://mybinder.org).
+        'dependencies': [
+            '../environment.yml'
+        ],
     }
 }

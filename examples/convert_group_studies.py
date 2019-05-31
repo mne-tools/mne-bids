@@ -31,6 +31,7 @@ from mne_bids.utils import print_dir_tree
 
 ###############################################################################
 # And fetch the data.
+# .. warning:: This will download 7.9 GB of data for one subject!
 
 subject_ids = [1]
 runs = range(1, 7)
@@ -43,8 +44,6 @@ fetch_faces_data(data_path, repo, subject_ids)
 output_path = op.join(data_path, 'ds000117-bids')
 
 ###############################################################################
-#
-# .. warning:: This will download 7.9 GB of data for one subject!
 # Define event_ids.
 
 event_id = {
@@ -77,4 +76,5 @@ for subject_id in subject_ids:
 
 ###############################################################################
 # Now let's see the structure of the BIDS folder we created.
+
 print_dir_tree(output_path)
