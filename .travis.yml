@@ -6,26 +6,34 @@ env:
   - PYTHON_VERSION=3.6
 
 before_install:
-  - wget -q http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
+  - wget -q https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
   - chmod +x miniconda.sh
   - ./miniconda.sh -b -p /home/travis/miniconda
   - export PATH=/home/travis/miniconda/bin:$PATH
   - conda update --yes --quiet conda
   - npm i -g npm
+
 install:
     - conda create -n testenv --yes python=${PYTHON_VERSION}
     - source activate testenv
-    - conda install --yes --quiet numpy=1.14 scipy=0.19.1
-    - pip install flake8 pytest pytest-sugar pytest-faulthandler check-manifest
+    - conda install --yes --quiet numpy scipy matplotlib
+    - pip install flake8 pytest pytest-cov pytest-sugar pytest-faulthandler check-manifest
     - |
-      git clone --depth 1 https://github.com/mne-tools/mne-python.git -b maint/0.17
+      git clone --depth 1 https://github.com/mne-tools/mne-python.git -b maint/0.18
       cd mne-python
       pip install --no-deps -e .
       cd ../
     - python setup.py develop
     - npm install -g bids-validator
+
+# Cache the python dependencies
+# https://blog.travis-ci.com/2016-05-03-caches-are-coming-to-everyone
+cache: pip
+
 script:
-    - make
+    - pytest . --cov=./mne_bids --cov-report=xml --verbose --ignore mne-python
+    - check-manifest --ignore .circleci*,doc,coverage.xml
     - flake8 --count mne_bids
+
 after_success:
   - bash <(curl -s https://codecov.io/bash)
