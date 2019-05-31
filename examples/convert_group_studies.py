@@ -77,4 +77,5 @@ for subject_id in subject_ids:
 
 ###############################################################################
 # Now let's see the structure of the BIDS folder we created.
+
 print_dir_tree(output_path)
