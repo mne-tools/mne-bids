@@ -15,6 +15,7 @@ from mne import io
 
 from .tsv_handler import _from_tsv, _drop
 from .config import ALLOWED_EXTENSIONS
+from .utils import _parse_bids_filename
 
 reader = {'.con': io.read_raw_kit, '.sqd': io.read_raw_kit,
           '.fif': io.read_raw_fif, '.pdf': io.read_raw_bti,
@@ -93,7 +94,6 @@ def read_raw_bids(bids_fname, bids_root, return_events=True,
         Whether to populate raw.info['bads'] by reading the 'status' column of
         the _channels.tsv file associated with the raw bids file. Default is
         True.
-
     verbose : bool
         The verbosity level
 
@@ -101,18 +101,16 @@ def read_raw_bids(bids_fname, bids_root, return_events=True,
     -------
     raw : instance of Raw
         The data as MNE-Python Raw object.
-    events : ndarray, shape = (n_events, 3)
+    events : ndarray, shape = (n_events, 3) | None
         The first column contains the event time in samples and the third
         column contains the event id. The second column is ignored for now but
         typically contains the value of the trigger channel either immediately
-        before the event or immediately after.
+        before the event or immediately after. None, if return_events==False.
     event_id : dict
         Dictionary of events in the raw data mapping from the event value
-        to an index.
+        to an index. Empty dict, if return_events==False.
 
     """
-    from .utils import _parse_bids_filename
-
     # Full path to data file is needed so that mne-bids knows
     # what is the modality -- meg, eeg, ieeg to read
     bids_basename = '_'.join(bids_fname.split('_')[:-1])
@@ -136,32 +134,31 @@ def read_raw_bids(bids_fname, bids_root, return_events=True,
     raw = _read_raw(bids_fname, electrode=None, hsp=None, hpi=None,
                     config=config, montage=None, verbose=None)
 
-    events_fname = op.join(kind_dir, bids_basename + '_events.tsv')
+    events = None
+    event_id = dict()
+    if return_events:
+        # Parse the events and make an event_id dict
+        events_fname = op.join(kind_dir, bids_basename + '_events.tsv')
+        if not op.exists(events_fname):
+            raise ValueError('return_events=True but _events.tsv file'
+                             ' not found')
 
-    if not return_events:
-        return raw
+        dtypes = [float, float, str, int, int]
+        events_dict = _from_tsv(events_fname, dtypes=dtypes)
+        events_dict = _drop(events_dict, 'n/a', 'trial_type')
 
-    if not op.exists(events_fname):
-        raise ValueError('return_events=True but _events.tsv file'
-                         ' not found')
+        if 'trial_type' not in events_dict:
+            raise ValueError('trial_type column is missing. Cannot'
+                             ' return events')
 
-    events, event_id = None, dict()
-    dtypes = [float, float, str, int, int]
-    events_dict = _from_tsv(events_fname, dtypes=dtypes)
-    events_dict = _drop(events_dict, 'n/a', 'trial_type')
+        for idx, ev in enumerate(np.unique(events_dict['trial_type'])):
+            event_id[ev] = idx
 
-    if 'trial_type' not in events_dict:
-        raise ValueError('trial_type column is missing. Cannot'
-                         ' return events')
-
-    for idx, ev in enumerate(np.unique(events_dict['trial_type'])):
-        event_id[ev] = idx
-
-    events = np.zeros((len(events_dict['onset']), 3), dtype=int)
-    events[:, 0] = np.array(events_dict['onset']) * raw.info['sfreq'] + \
-        raw.first_samp
-    events[:, 2] = np.array([event_id[ev] for ev
-                             in events_dict['trial_type']])
+        events = np.zeros((len(events_dict['onset']), 3), dtype=int)
+        events[:, 0] = np.array(events_dict['onset']) * raw.info['sfreq'] + \
+            raw.first_samp
+        events[:, 2] = np.array([event_id[ev] for ev
+                                 in events_dict['trial_type']])
 
     if populate_bads:
         # Try to find an associated channels.tsv to get information about the
