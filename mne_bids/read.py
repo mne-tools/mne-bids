@@ -78,7 +78,7 @@ def _read_raw(raw_fname, electrode=None, hsp=None, hpi=None, config=None,
 
 
 def read_raw_bids(bids_fname, bids_root, return_events=True,
-                  verbose=True):
+                  populate_bads=True, verbose=True):
     """Read BIDS compatible data.
 
     Parameters
@@ -87,8 +87,13 @@ def read_raw_bids(bids_fname, bids_root, return_events=True,
         Full name of the data file
     bids_root : str
         Path to root of the BIDS folder
-    return_events: bool
+    return_events : bool
         Whether to return events or not. Default is True.
+    populate_bads : bool
+        Whether to populate raw.info['bads'] by reading the 'status' column of
+        the _channels.tsv file associated with the raw bids file. Default is
+        True.
+
     verbose : bool
         The verbosity level
 
@@ -127,6 +132,7 @@ def read_raw_bids(bids_fname, bids_root, return_events=True,
         bids_raw_folder = op.join(kind_dir, bids_basename + '_%s' % kind)
         bids_fname = glob.glob(op.join(bids_raw_folder, 'c,rf*'))[0]
         config = op.join(bids_raw_folder, 'config')
+
     raw = _read_raw(bids_fname, electrode=None, hsp=None, hpi=None,
                     config=config, montage=None, verbose=None)
 
@@ -156,5 +162,21 @@ def read_raw_bids(bids_fname, bids_root, return_events=True,
         raw.first_samp
     events[:, 2] = np.array([event_id[ev] for ev
                              in events_dict['trial_type']])
+
+    if populate_bads:
+        # Try to find an associated channels.tsv to get information about the
+        # status of present channels
+        channels_fname = op.join(kind_dir, bids_basename + '_channels.tsv')
+        if not op.exists(channels_fname):
+            raise ValueError('populate_bads=True _channels.tsv file not found')
+
+        channels_dict = _from_tsv(channels_fname)
+
+        if 'status' not in channels_dict:
+            raise ValueError('status column is missing. Cannot populate bads')
+
+        bad_bool = [True if chn == 'bad' else False
+                    for chn in channels_dict['status']]
+        raw.info['bads'] += list(np.asarray(channels_dict['name'])[bad_bool])
 
     return raw, events, event_id
