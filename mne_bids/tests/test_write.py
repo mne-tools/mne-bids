@@ -288,8 +288,8 @@ def test_ctf():
     with pytest.raises(ValueError, match="not found"):
         read_raw_bids(bids_basename + '_meg.ds', output_path)
 
-    raw = read_raw_bids(bids_basename + '_meg.ds', output_path,
-                        return_events=False)
+    raw, __, __ = read_raw_bids(bids_basename + '_meg.ds', output_path,
+                                return_events=False)
 
     # test to check that running again with overwrite == False raises an error
     with pytest.raises(FileExistsError, match="already exists"):  # noqa: F821
@@ -316,8 +316,8 @@ def test_bti():
     cmd = ['bids-validator', output_path]
     run_subprocess(cmd, shell=shell)
 
-    raw = read_raw_bids(bids_basename + '_meg',
-                        output_path, return_events=False)
+    raw, __, __ = read_raw_bids(bids_basename + '_meg',
+                                output_path, return_events=False)
 
 
 def test_vhdr():
@@ -327,21 +327,35 @@ def test_vhdr():
     raw_fname = op.join(data_path, 'test.vhdr')
 
     raw = mne.io.read_raw_brainvision(raw_fname)
+
+    # inject a bad channel
+    assert not raw.info['bads']
+    injected_bad = ['FP1']
+    raw.info['bads'] = injected_bad
+
+    # write with injected bad channels
     write_raw_bids(raw, bids_basename, output_path, overwrite=False)
 
     cmd = ['bids-validator', output_path]
     run_subprocess(cmd, shell=shell)
 
-    read_raw_bids(bids_basename + '_eeg.vhdr',
-                  output_path, return_events=False)
+    # read and also get the bad channels
+    raw, __, __ = read_raw_bids(bids_basename + '_eeg.vhdr', output_path,
+                                return_events=False, populate_bads=True)
 
-    # Test that correct channel units are written
+    # Check that injected bad channel shows up in raw after reading
+    np.testing.assert_array_equal(np.asarray(raw.info['bads']),
+                                  np.asarray(injected_bad))
+
+    # Test that correct channel units are written ... and that bad channel
+    # is in channels.tsv
     channels_tsv_name = op.join(output_path, 'sub-' + subject_id,
                                 'ses-' + session_id, 'eeg',
                                 bids_basename + '_channels.tsv')
     data = _from_tsv(channels_tsv_name)
     assert data['units'][data['name'].index('FP1')] == 'µV'
     assert data['units'][data['name'].index('CP5')] == 'n/a'
+    assert data['status'][data['name'].index(injected_bad[0])] == 'bad'
 
     # check events.tsv is written
     events_tsv_fname = channels_tsv_name.replace('channels', 'events')
@@ -356,6 +370,7 @@ def test_vhdr():
 
     # Also cover iEEG
     # We use the same data and pretend that eeg channels are ecog
+    raw = mne.io.read_raw_brainvision(raw_fname)
     raw.set_channel_types({raw.ch_names[i]: 'ecog'
                            for i in mne.pick_types(raw.info, eeg=True)})
     output_path = _TempDir()
