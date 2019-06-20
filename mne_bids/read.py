@@ -79,7 +79,7 @@ def _read_raw(raw_fname, electrode=None, hsp=None, hpi=None, config=None,
 
 
 def read_raw_bids(bids_fname, bids_root, return_events=True,
-                  populate_bads=True, verbose=True):
+                  verbose=True):
     """Read BIDS compatible data.
 
     Parameters
@@ -90,10 +90,6 @@ def read_raw_bids(bids_fname, bids_root, return_events=True,
         Path to root of the BIDS folder
     return_events : bool
         Whether to return events or not. Default is True.
-    populate_bads : bool
-        Whether to populate raw.info['bads'] by reading the 'status' column of
-        the _channels.tsv file associated with the raw bids file. Default is
-        True.
     verbose : bool
         The verbosity level
 
@@ -160,18 +156,17 @@ def read_raw_bids(bids_fname, bids_root, return_events=True,
         events[:, 2] = np.array([event_id[ev] for ev
                                  in events_dict['trial_type']])
 
-    if populate_bads:
-        # Try to find an associated channels.tsv to get information about the
-        # status of present channels
-        channels_fname = op.join(kind_dir, bids_basename + '_channels.tsv')
-        if not op.exists(channels_fname):
-            raise ValueError('populate_bads=True _channels.tsv file not found')
-
+    # Try to find an associated channels.tsv to get information about the
+    # status of present channels
+    channels_fname = op.join(kind_dir, bids_basename + '_channels.tsv')
+    if op.exists(channels_fname):
         channels_dict = _from_tsv(channels_fname)
+    else:
+        channels_dict = dict()
 
-        if 'status' not in channels_dict:
-            raise ValueError('status column is missing. Cannot populate bads')
-
+    # If we have a channels.tsv file, make sure there is the optional "status"
+    # column from which to infer good and bad channels
+    if 'status' in channels_dict:
         # find bads from channels.tsv
         bad_bool = [True if chn == 'bad' else False
                     for chn in channels_dict['status']]
