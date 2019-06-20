@@ -132,7 +132,8 @@ def test_fif():
     # now force the overwrite
     write_raw_bids(raw, bids_basename2, output_path, events_data=events_fname,
                    event_id=event_id, overwrite=True)
-    raw, events, _ = read_raw_bids(bids_basename2 + '_meg.fif', output_path)
+    raw = read_raw_bids(bids_basename2 + '_meg.fif', output_path)
+    events, _ = mne.events_from_annotations(raw)
     events2 = mne.read_events(events_fname)
     events2 = events2[events2[:, 2] != 0]
     assert_array_equal(events2[:, 0], events[:, 0])
@@ -206,8 +207,7 @@ def test_kit():
     run_subprocess(cmd, shell=shell)
     assert op.exists(op.join(output_path, 'participants.tsv'))
 
-    raw2, events, _ = read_raw_bids(kit_bids_basename + '_meg.sqd',
-                                    output_path)
+    read_raw_bids(kit_bids_basename + '_meg.sqd', output_path)
 
     # ensure the channels file has no STI 014 channel:
     channels_tsv = make_bids_basename(
@@ -285,11 +285,7 @@ def test_ctf():
     cmd = ['bids-validator', output_path]
     run_subprocess(cmd, shell=shell)
 
-    with pytest.raises(ValueError, match="not found"):
-        read_raw_bids(bids_basename + '_meg.ds', output_path)
-
-    raw, __, __ = read_raw_bids(bids_basename + '_meg.ds', output_path,
-                                return_events=False)
+    raw = read_raw_bids(bids_basename + '_meg.ds', output_path)
 
     # test to check that running again with overwrite == False raises an error
     with pytest.raises(FileExistsError, match="already exists"):  # noqa: F821
@@ -316,8 +312,7 @@ def test_bti():
     cmd = ['bids-validator', output_path]
     run_subprocess(cmd, shell=shell)
 
-    raw, __, __ = read_raw_bids(bids_basename + '_meg',
-                                output_path, return_events=False)
+    raw = read_raw_bids(bids_basename + '_meg', output_path)
 
 
 def test_vhdr():
@@ -340,8 +335,7 @@ def test_vhdr():
     run_subprocess(cmd, shell=shell)
 
     # read and also get the bad channels
-    raw, __, __ = read_raw_bids(bids_basename + '_eeg.vhdr', output_path,
-                                return_events=False)
+    raw = read_raw_bids(bids_basename + '_eeg.vhdr', output_path)
 
     # Check that injected bad channel shows up in raw after reading
     np.testing.assert_array_equal(np.asarray(raw.info['bads']),
@@ -397,8 +391,7 @@ def test_edf():
     raw.set_channel_types({'EMG': 'emg'})
 
     write_raw_bids(raw, bids_basename, output_path)
-    read_raw_bids(bids_basename + '_eeg.edf',
-                  output_path, return_events=False)
+    read_raw_bids(bids_basename + '_eeg.edf', output_path)
 
     bids_fname = bids_basename.replace('run-01', 'run-%s' % run2)
     write_raw_bids(raw, bids_fname, output_path, overwrite=True)
@@ -444,8 +437,7 @@ def test_bdf():
     cmd = ['bids-validator', output_path]
     run_subprocess(cmd, shell=shell)
 
-    read_raw_bids(bids_basename + '_eeg.bdf',
-                  output_path, return_events=False)
+    read_raw_bids(bids_basename + '_eeg.bdf', output_path)
 
     raw.crop(0, raw.times[-2])
     with pytest.raises(AssertionError, match='cropped'):
@@ -474,8 +466,7 @@ def test_set():
 
     # proceed with the actual test for EEGLAB data
     write_raw_bids(raw, bids_basename, output_path, overwrite=False)
-    read_raw_bids(bids_basename + '_eeg.set',
-                  output_path, return_events=False)
+    read_raw_bids(bids_basename + '_eeg.set', output_path)
 
     with pytest.raises(FileExistsError, match="already exists"):  # noqa: F821
         write_raw_bids(raw, bids_basename, output_path=output_path,
