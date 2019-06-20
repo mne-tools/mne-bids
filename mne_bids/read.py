@@ -11,6 +11,7 @@ import os.path as op
 import glob
 
 import numpy as np
+import mne
 from mne import io
 
 from .tsv_handler import _from_tsv, _drop
@@ -78,9 +79,11 @@ def _read_raw(raw_fname, electrode=None, hsp=None, hpi=None, config=None,
     return raw
 
 
-def read_raw_bids(bids_fname, bids_root, return_events=True,
-                  verbose=True):
+def read_raw_bids(bids_fname, bids_root, verbose=True):
     """Read BIDS compatible data.
+
+    Will attempt to read associated events.tsv and channels.tsv files to
+    populate the returned raw object with raw.annotations and raw.info['bads'].
 
     Parameters
     ----------
@@ -88,8 +91,6 @@ def read_raw_bids(bids_fname, bids_root, return_events=True,
         Full name of the data file
     bids_root : str
         Path to root of the BIDS folder
-    return_events : bool
-        Whether to return events or not. Default is True.
     verbose : bool
         The verbosity level
 
@@ -97,14 +98,6 @@ def read_raw_bids(bids_fname, bids_root, return_events=True,
     -------
     raw : instance of Raw
         The data as MNE-Python Raw object.
-    events : ndarray, shape = (n_events, 3) | None
-        The first column contains the event time in samples and the third
-        column contains the event id. The second column is ignored for now but
-        typically contains the value of the trigger channel either immediately
-        before the event or immediately after. None, if return_events==False.
-    event_id : dict
-        Dictionary of events in the raw data mapping from the event value
-        to an index. Empty dict, if return_events==False.
 
     """
     # Full path to data file is needed so that mne-bids knows
@@ -130,31 +123,35 @@ def read_raw_bids(bids_fname, bids_root, return_events=True,
     raw = _read_raw(bids_fname, electrode=None, hsp=None, hpi=None,
                     config=config, montage=None, verbose=None)
 
-    events = None
-    event_id = dict()
-    if return_events:
-        # Parse the events and make an event_id dict
-        events_fname = op.join(kind_dir, bids_basename + '_events.tsv')
-        if not op.exists(events_fname):
-            raise ValueError('return_events=True but _events.tsv file'
-                             ' not found')
-
+    # Try to find an associated events.tsv to get information about the
+    # events in the recorded data
+    events_fname = op.join(kind_dir, bids_basename + '_events.tsv')
+    if op.exists(events_fname):
         dtypes = [float, float, str, int, int]
         events_dict = _from_tsv(events_fname, dtypes=dtypes)
         events_dict = _drop(events_dict, 'n/a', 'trial_type')
+    else:
+        events_dict = dict()
 
-        if 'trial_type' not in events_dict:
-            raise ValueError('trial_type column is missing. Cannot'
-                             ' return events')
-
+    if 'trial_type' in events_dict:
+        mapping = dict()
         for idx, ev in enumerate(np.unique(events_dict['trial_type'])):
-            event_id[ev] = idx
+            mapping[ev] = idx
 
         events = np.zeros((len(events_dict['onset']), 3), dtype=int)
-        events[:, 0] = np.array(events_dict['onset']) * raw.info['sfreq'] + \
-            raw.first_samp
-        events[:, 2] = np.array([event_id[ev] for ev
+        events[:, 0] = (np.array(events_dict['onset']) * raw.info['sfreq'] +
+                        raw.first_samp)
+        events[:, 2] = np.array([mapping[ev] for ev
                                  in events_dict['trial_type']])
+
+        # Add Events to raw as annotations
+        onsets = events[:, 0] / raw.info['sfreq']
+        durations = np.zeros_like(onsets)  # assumes instantaneous events
+        descriptions = [mapping[event_id] for event_id in events[:, 2]]
+        annot_from_events = mne.Annotations(onset=onsets, duration=durations,
+                                            description=descriptions,
+                                            orig_time=raw.info['meas_date'])
+        raw.set_annotations(annot_from_events)
 
     # Try to find an associated channels.tsv to get information about the
     # status of present channels
@@ -176,4 +173,4 @@ def read_raw_bids(bids_fname, bids_root, return_events=True,
         unique_bads = set(raw.info['bads']).union(set(bads))
         raw.info['bads'] = list(unique_bads)
 
-    return raw, events, event_id
+    return raw
