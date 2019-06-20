@@ -341,7 +341,7 @@ def test_vhdr():
 
     # read and also get the bad channels
     raw, __, __ = read_raw_bids(bids_basename + '_eeg.vhdr', output_path,
-                                return_events=False, populate_bads=True)
+                                return_events=False)
 
     # Check that injected bad channel shows up in raw after reading
     np.testing.assert_array_equal(np.asarray(raw.info['bads']),
