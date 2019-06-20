@@ -175,8 +175,13 @@ def read_raw_bids(bids_fname, bids_root, return_events=True,
         if 'status' not in channels_dict:
             raise ValueError('status column is missing. Cannot populate bads')
 
+        # find bads from channels.tsv
         bad_bool = [True if chn == 'bad' else False
                     for chn in channels_dict['status']]
-        raw.info['bads'] += list(np.asarray(channels_dict['name'])[bad_bool])
+        bads = np.asarray(channels_dict['name'])[bad_bool]
+
+        # merge with bads already present in raw data file (if there are any)
+        unique_bads = set(raw.info['bads']).union(set(bads))
+        raw.info['bads'] = list(unique_bads)
 
     return raw, events, event_id
