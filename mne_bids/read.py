@@ -127,28 +127,20 @@ def read_raw_bids(bids_fname, bids_root, verbose=True):
     # events in the recorded data
     events_fname = op.join(kind_dir, bids_basename + '_events.tsv')
     if op.exists(events_fname):
-        dtypes = [float, float, str, int, int]
-        events_dict = _from_tsv(events_fname, dtypes=dtypes)
-        events_dict = _drop(events_dict, 'n/a', 'trial_type')
+        events_dict = _from_tsv(events_fname)
     else:
         events_dict = dict()
 
     if 'trial_type' in events_dict:
-        mapping = dict()
-        for idx, ev in enumerate(np.unique(events_dict['trial_type'])):
-            mapping[ev] = idx
-
-        events = np.zeros((len(events_dict['onset']), 3), dtype=int)
-        events[:, 0] = (np.array(events_dict['onset']) * raw.info['sfreq'] +
-                        raw.first_samp)
-        events[:, 2] = np.array([mapping[ev] for ev
-                                 in events_dict['trial_type']])
+        # Drop events unrelated to a trial type
+        events_dict = _drop(events_dict, 'n/a', 'trial_type')
 
         # Add Events to raw as annotations
-        onsets = events[:, 0] / raw.info['sfreq']
-        durations = np.zeros_like(onsets)  # assumes instantaneous events
-        descriptions = [mapping[event_id] for event_id in events[:, 2]]
-        annot_from_events = mne.Annotations(onset=onsets, duration=durations,
+        onsets = np.asarray(events_dict['onset'], dtype=float)
+        durations = np.asarray(events_dict['duration'], dtype=float)
+        descriptions = np.asarray(events_dict['trial_type'], dtype=str)
+        annot_from_events = mne.Annotations(onset=onsets,
+                                            duration=durations,
                                             description=descriptions,
                                             orig_time=raw.info['meas_date'])
         raw.set_annotations(annot_from_events)
