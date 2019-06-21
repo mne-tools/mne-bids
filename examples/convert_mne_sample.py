@@ -10,7 +10,8 @@ BIDS-compatible folder.
 # Authors: Mainak Jas <mainak.jas@telecom-paristech.fr>
 #          Alexandre Gramfort <alexandre.gramfort@telecom-paristech.fr>
 #          Teon Brooks <teon.brooks@gmail.com>
-
+#          Stefan Appelhoff <stefan.appelhoff@mailbox.org>
+#
 # License: BSD (3-clause)
 
 ###############################################################################
@@ -65,9 +66,10 @@ print_dir_tree(output_path)
 
 ###############################################################################
 # Finally, we can read the BIDS data we created as well.
-raw, events, event_id = read_raw_bids(bids_basename + '_meg.fif', output_path)
+raw = read_raw_bids(bids_basename + '_meg.fif', output_path)
 
 ###############################################################################
 # The data is already in a convenient form to create epochs and evokeds.
+events, event_id = mne.events_from_annotations(raw)
 epochs = mne.Epochs(raw, events, event_id)
 epochs['Auditory'].average().plot()
