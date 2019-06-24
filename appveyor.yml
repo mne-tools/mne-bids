@@ -1,7 +1,7 @@
 environment:
 # Specify version of BIDS-validator to be used, 'master', or 'stable'
   global:
-        VALIDATOR_VERSION: 'master'
+        VALIDATOR_VERSION: "master"
         nodejs_version: "10.0.0"
         PYTHON: "C:\\conda"
   matrix:
