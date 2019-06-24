@@ -1,9 +1,12 @@
 environment:
+# Specify version of BIDS-validator to be used, 'master', or 'stable'
   global:
-      nodejs_version: "10.0.0"
-      PYTHON: "C:\\conda"
+        VALIDATOR_VERSION: 'master'
+        nodejs_version: "10.0.0"
+        PYTHON: "C:\\conda"
   matrix:
-      - PYTHON_VERSION: "3.6"
+      - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+        PYTHON_VERSION: "3.6"
         PYTHON_ARCH: "64"
 
 install:
@@ -23,10 +26,18 @@ install:
     cd mne-bids
   - "python setup.py develop"
   - ps: Install-Product node $env:nodejs_version
-  - npm install -g bids-validator
+  - cmd: if [%VALIDATOR_VERSION%]==[master] (
+      git clone --depth 1 https://github.com/bids-standard/bids-validator &&
+      cd bids_validator &&
+      yarn &&
+      cd .. &&
+      PATH=$PATH:~/bids-validator/bids-validator/bin )
+  - cmd: if [%VALIDATOR_VERSION%]==[stable] (
+      npm install -g bids-validator )
   - node --version
   - npm --version
   - bids-validator --version
+  - path
   - which bids-validator
   - "python -c \"import mne; mne.datasets.testing.data_path()\""
 
