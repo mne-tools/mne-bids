@@ -24,6 +24,7 @@ install:
       set PATH="%PATH%;C:\projects\mne-bids\bids-validator\bids-validator\bin\" )
   - cmd: if [%VALIDATOR_VERSION%]==[stable] (
       npm install -g bids-validator )
+  - dir C:\projects\mne-bids\bids-validator\bids-validator\bin\
   - path
   - bids-validator --version
   - which bids-validator
