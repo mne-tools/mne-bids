@@ -10,6 +10,23 @@ environment:
         PYTHON_ARCH: "64"
 
 install:
+  - ps: Install-Product node $env:nodejs_version
+  - node --version
+  - npm --version
+  - yarn --version
+  - path
+  - cmd: if [%VALIDATOR_VERSION%]==[master] (
+      git clone --depth 1 https://github.com/bids-standard/bids-validator &&
+      cd bids-validator &&
+      yarn &&
+      cd .. )
+  - cmd: if [%VALIDATOR_VERSION%]==[master] (
+      set PATH="%PATH%;C:\projects\mne-bids\bids-validator\bids-validator\bin\" )
+  - cmd: if [%VALIDATOR_VERSION%]==[stable] (
+      npm install -g bids-validator )
+  - path
+  - bids-validator --version
+  - which bids-validator
   - "git clone --depth 1 git://github.com/astropy/ci-helpers.git"
   - "powershell ci-helpers/appveyor/install-miniconda.ps1"
   - "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
@@ -25,20 +42,6 @@ install:
     cd ..
     cd mne-bids
   - "python setup.py develop"
-  - ps: Install-Product node $env:nodejs_version
-  - cmd: if [%VALIDATOR_VERSION%]==[master] (
-      git clone --depth 1 https://github.com/bids-standard/bids-validator &&
-      cd bids_validator &&
-      yarn &&
-      cd .. &&
-      PATH=$PATH:~/bids-validator/bids-validator/bin )
-  - cmd: if [%VALIDATOR_VERSION%]==[stable] (
-      npm install -g bids-validator )
-  - node --version
-  - npm --version
-  - bids-validator --version
-  - path
-  - which bids-validator
   - "python -c \"import mne; mne.datasets.testing.data_path()\""
 
 # cache pip unless appveyor.yml is changed
