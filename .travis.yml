@@ -2,8 +2,11 @@ node_js:
   - "10.15.2"
 language: python
 
+# Specify version of BIDS-validator to be used, 'master', or 'stable'
 env:
+  - VALIDATOR_VERSION='master'
   - PYTHON_VERSION=3.6
+
 
 before_install:
   - wget -q https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
@@ -12,6 +15,7 @@ before_install:
   - export PATH=/home/travis/miniconda/bin:$PATH
   - conda update --yes --quiet conda
   - npm i -g npm
+  - yarn self-update
 
 install:
     - conda create -n testenv --yes python=${PYTHON_VERSION}
@@ -24,11 +28,23 @@ install:
       pip install --no-deps -e .
       cd ../
     - python setup.py develop
-    - npm install -g bids-validator
+    - if [ $VALIDATOR_VERSION=='master'];then
+          git clone --depth 1 https://github.com/bids-standard/bids-validator
+          cd bids_validator
+          yarn
+          cd ..
+          PATH=$PATH:~/bids-validator/bids-validator/bin
+      elif [ $VALIDATOR_VERSION == 'stable'];then
+          npm install -g bids-validator
+      else
+          echo "VALIDATOR_VERSION should be set to master or stable"
+      fi
 
 # Cache the python dependencies
 # https://blog.travis-ci.com/2016-05-03-caches-are-coming-to-everyone
-cache: pip
+cache:
+    - pip
+    - yarn
 
 script:
     - pytest . --cov=./mne_bids --cov-report=xml --verbose --ignore mne-python
