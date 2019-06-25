@@ -1,7 +1,9 @@
 environment:
 # Specify version of BIDS-validator to be used, 'master', or 'stable'
+# NOTE: only 'stable' possible, because BIDS-validator does not support Windows
+# as of 2019-06-25, see: https://github.com/bids-standard/bids-validator/issues/790
   global:
-        VALIDATOR_VERSION: "master"
+        VALIDATOR_VERSION: "stable"
         nodejs_version: "10.0.0"
         PYTHON: "C:\\conda"
   matrix:
@@ -14,18 +16,14 @@ install:
   - node --version
   - npm --version
   - yarn --version
-  - path
   - cmd: if [%VALIDATOR_VERSION%]==[master] (
       git clone --depth 1 https://github.com/bids-standard/bids-validator &&
       cd bids-validator &&
       yarn &&
-      cd .. )
-  - cmd: if [%VALIDATOR_VERSION%]==[master] (
+      cd ..
       set PATH="%PATH%;C:\projects\mne-bids\bids-validator\bids-validator\bin\" )
   - cmd: if [%VALIDATOR_VERSION%]==[stable] (
       npm install -g bids-validator )
-  - dir C:\projects\mne-bids\bids-validator\bids-validator\bin\
-  - path
   - bids-validator --version
   - which bids-validator
   - "git clone --depth 1 git://github.com/astropy/ci-helpers.git"
