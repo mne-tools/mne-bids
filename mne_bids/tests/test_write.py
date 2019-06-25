@@ -55,7 +55,8 @@ bids_validator_exe = ['bids-validator']
 if platform.system() == 'Windows':
     shell = True
     if 'VALIDATOR_EXECUTABLE' in os.environ:
-        bids_validator_exe = ['node', os.environ['VALIDATOR_EXECUTABLE']]
+        if 'VALIDATOR_EXECUTABLE' != 'n/a':
+            bids_validator_exe = ['node', os.environ['VALIDATOR_EXECUTABLE']]
 
 
 def test_fif():

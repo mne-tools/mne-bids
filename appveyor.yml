@@ -1,7 +1,11 @@
 environment:
-# Specify version of BIDS-validator to be used, 'master', or 'stable'
+# Specify version of BIDS-validator to be used, "master", or "stable"
+# NOTE: For "master" you MUST adjust VALIDATOR_EXECUTABLE to the following value:
+# "C:\\projects\\mne-bids\\bids-validator\\bids-validator\\bin\\bids-validator"
+# ... whereas for "stable", VALIDATOR_EXECUTABLE MUST be set to "n/a"
   global:
         VALIDATOR_VERSION: "master"
+        VALIDATOR_EXECUTABLE: "C:\\projects\\mne-bids\\bids-validator\\bids-validator\\bin\\bids-validator"
         nodejs_version: "10.0.0"
         PYTHON: "C:\\conda"
   matrix:
@@ -19,9 +23,7 @@ install:
       cd bids-validator &&
       yarn &&
       cd .. &&
-      set PATH="%PATH%;C:\projects\mne-bids\bids-validator\bids-validator\bin\" &&
-      set VALIDATOR_EXECUTABLE ="C:\projects\mne-bids\bids-validator\bids-validator\bin\bids-validator"
-      echo "Using development version of bids-validator!")
+      set PATH="%PATH%;C:\projects\mne-bids\bids-validator\bids-validator\bin\" )
   - cmd: if [%VALIDATOR_VERSION%]==[stable] (
       npm install -g bids-validator
       bids-validator --version
