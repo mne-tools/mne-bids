@@ -237,14 +237,15 @@ def test_kit():
     event_data = np.loadtxt(events_fname)
     # make the data the wrong number of dimensions
     event_data_3d = np.atleast_3d(event_data)
+    other_output_path = _TempDir()
     with pytest.raises(ValueError, match='two dimensions'):
-        write_raw_bids(raw, bids_basename, output_path,
+        write_raw_bids(raw, bids_basename, other_output_path,
                        events_data=event_data_3d, event_id=event_id,
                        overwrite=True)
     # remove 3rd column
     event_data = event_data[:, :2]
     with pytest.raises(ValueError, match='second dimension'):
-        write_raw_bids(raw, bids_basename, output_path,
+        write_raw_bids(raw, bids_basename, other_output_path,
                        events_data=event_data, event_id=event_id,
                        overwrite=True)
     # test correct naming of marker files
