@@ -52,10 +52,17 @@ bids_basename = make_bids_basename(
 # see: https://stackoverflow.com/q/28891053/5201771
 shell = False
 bids_validator_exe = ['bids-validator']
+print('\n\n\n\n\n\n\n\n\n\n\n\n\n')
+print(platform.system(), platform.system() == 'Windows')
+print(os.environ)
+print('VALIDATOR_EXECUTABLE' in os.environ)
 if platform.system() == 'Windows':
     shell = True
     if 'VALIDATOR_EXECUTABLE' in os.environ:
         bids_validator_exe = ['node', os.environ['VALIDATOR_EXECUTABLE']]
+
+print(bids_validator_exe)
+print('\n\n\n\n\n\n\n\n\n\n\n\n\n')
 
 
 def test_fif():
