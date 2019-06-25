@@ -54,20 +54,13 @@ shell = False
 bids_validator_exe = ['bids-validator']
 if platform.system() == 'Windows':
     shell = True
-    if 'VALIDATOR_EXECUTABLE' in os.environ:
-        if 'VALIDATOR_EXECUTABLE' != 'n/a':
-            bids_validator_exe = ['node', os.environ['VALIDATOR_EXECUTABLE']]
+    exe = os.getenv('VALIDATOR_EXECUTABLE', 'n/a')
+    if 'VALIDATOR_EXECUTABLE' != 'n/a':
+        bids_validator_exe = ['node', exe]
 
 
 def test_fif():
     """Test functionality of the write_raw_bids conversion for fif."""
-    print('\n\n\n\n\n\n\n\n\n\n\n\n\n')
-    print(platform.system(), platform.system() == 'Windows')
-    print(os.environ)
-    print('VALIDATOR_EXECUTABLE' in os.environ)
-    print(bids_validator_exe)
-    print('\n\n\n\n\n\n\n\n\n\n\n\n\n')
-
     output_path = _TempDir()
     data_path = testing.data_path()
     raw_fname = op.join(data_path, 'MEG', 'sample',
