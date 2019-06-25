@@ -15,6 +15,7 @@ import os.path as op
 import pytest
 from glob import glob
 from datetime import datetime
+import platform
 
 import numpy as np
 from numpy.testing import assert_array_equal
@@ -41,13 +42,20 @@ bids_basename = make_bids_basename(
     subject=subject_id, session=session_id, run=run, acquisition=acq,
     task=task)
 
-# for windows, shell = True is needed
-# to call npm, bids-validator etc.
-#     see: https://stackoverflow.com/questions/
-#          28891053/run-npm-commands-using-python-subprocess
+# WINDOWS issues:
+# the bids-validator development version does not work properly on Windows as
+# of 2019-06-25 --> https://github.com/bids-standard/bids-validator/issues/790
+# As a workaround, we try to get the path to the executable from an environment
+# variable VALIDATOR_EXECUTABLE ... if this is not possible we assume to be
+# using the stable bids-validator and make a direct call of bids-validator
+# also: for windows, shell = True is needed to call npm, bids-validator etc.
+# see: https://stackoverflow.com/q/28891053/5201771
 shell = False
-if os.name == 'nt':
+bids_validator_exe = ['bids-validator']
+if platform.system() == 'Windows':
     shell = True
+    if 'VALIDATOR_EXECUTABLE' in os.environ:
+        bids_validator_exe = ['node', os.environ['VALIDATOR_EXECUTABLE']]
 
 
 def test_fif():
@@ -73,7 +81,7 @@ def test_fif():
     output_path = _TempDir()
     write_raw_bids(raw, bids_basename, output_path, overwrite=False)
 
-    cmd = ['bids-validator', output_path]
+    cmd = bids_validator_exe + [output_path]
     run_subprocess(cmd, shell=shell)
 
     # write the same data but pretend it is empty room data:
@@ -153,7 +161,7 @@ def test_fif():
     with pytest.raises(ValueError, match='raw.filenames is missing'):
         write_raw_bids(raw, bids_basename2, output_path)
 
-    cmd = ['bids-validator', output_path]
+    cmd = bids_validator_exe + [output_path]
     run_subprocess(cmd, shell=shell)
 
     assert op.exists(op.join(output_path, 'participants.tsv'))
@@ -203,7 +211,7 @@ def test_kit():
     write_raw_bids(raw, kit_bids_basename, output_path,
                    events_data=events_fname,
                    event_id=event_id, overwrite=False)
-    cmd = ['bids-validator', output_path]
+    cmd = bids_validator_exe + [output_path]
     run_subprocess(cmd, shell=shell)
     assert op.exists(op.join(output_path, 'participants.tsv'))
 
@@ -246,7 +254,7 @@ def test_kit():
                    kit_bids_basename.replace('sub-01', 'sub-%s' % subject_id2),
                    output_path, events_data=events_fname, event_id=event_id,
                    overwrite=False)
-    cmd = ['bids-validator', output_path]
+    cmd = bids_validator_exe + [output_path]
     run_subprocess(cmd, shell=shell)
     # ensure the marker files are renamed correctly
     marker_fname = make_bids_basename(
@@ -282,7 +290,7 @@ def test_ctf():
     raw = mne.io.read_raw_ctf(raw_fname)
     write_raw_bids(raw, bids_basename, output_path=output_path)
 
-    cmd = ['bids-validator', output_path]
+    cmd = bids_validator_exe + [output_path]
     run_subprocess(cmd, shell=shell)
 
     raw = read_raw_bids(bids_basename + '_meg.ds', output_path)
@@ -309,7 +317,7 @@ def test_bti():
 
     assert op.exists(op.join(output_path, 'participants.tsv'))
 
-    cmd = ['bids-validator', output_path]
+    cmd = bids_validator_exe + [output_path]
     run_subprocess(cmd, shell=shell)
 
     raw = read_raw_bids(bids_basename + '_meg', output_path)
@@ -331,7 +339,7 @@ def test_vhdr():
     # write with injected bad channels
     write_raw_bids(raw, bids_basename, output_path, overwrite=False)
 
-    cmd = ['bids-validator', output_path]
+    cmd = bids_validator_exe + [output_path]
     run_subprocess(cmd, shell=shell)
 
     # read and also get the bad channels
@@ -370,7 +378,7 @@ def test_vhdr():
     output_path = _TempDir()
     write_raw_bids(raw, bids_basename, output_path, overwrite=False)
 
-    cmd = ['bids-validator', output_path]
+    cmd = bids_validator_exe + [output_path]
     run_subprocess(cmd, shell=shell)
 
 
@@ -396,7 +404,7 @@ def test_edf():
     bids_fname = bids_basename.replace('run-01', 'run-%s' % run2)
     write_raw_bids(raw, bids_fname, output_path, overwrite=True)
 
-    cmd = ['bids-validator', output_path]
+    cmd = bids_validator_exe + [output_path]
     run_subprocess(cmd, shell=shell)
 
     # ensure there is an EMG channel in the channels.tsv:
@@ -421,7 +429,7 @@ def test_edf():
     output_path = _TempDir()
     write_raw_bids(raw, bids_basename, output_path)
 
-    cmd = ['bids-validator', output_path]
+    cmd = bids_validator_exe + [output_path]
     run_subprocess(cmd, shell=shell)
 
 
@@ -434,7 +442,7 @@ def test_bdf():
     raw = mne.io.read_raw_edf(raw_fname)
     write_raw_bids(raw, bids_basename, output_path, overwrite=False)
 
-    cmd = ['bids-validator', output_path]
+    cmd = bids_validator_exe + [output_path]
     run_subprocess(cmd, shell=shell)
 
     read_raw_bids(bids_basename + '_eeg.bdf', output_path)
@@ -472,7 +480,7 @@ def test_set():
         write_raw_bids(raw, bids_basename, output_path=output_path,
                        overwrite=False)
 
-    cmd = ['bids-validator', output_path]
+    cmd = bids_validator_exe + [output_path]
     run_subprocess(cmd, shell=shell)
 
     # check events.tsv is written
@@ -491,5 +499,5 @@ def test_set():
     output_path = _TempDir()
     write_raw_bids(raw, bids_basename, output_path)
 
-    cmd = ['bids-validator', output_path]
+    cmd = bids_validator_exe + [output_path]
     run_subprocess(cmd, shell=shell)
