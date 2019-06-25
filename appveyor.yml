@@ -18,9 +18,9 @@ install:
       git clone --depth 1 https://github.com/bids-standard/bids-validator &&
       cd bids-validator &&
       yarn &&
-      cd ..
-      set PATH="%PATH%;C:\projects\mne-bids\bids-validator\bids-validator\bin\" )
-      set VALIDATOR_EXECUTABLE ="C:\projects\mne-bids\bids-validator\bids-validator\bin\bids-validator"
+      cd .. &&
+      set PATH="%PATH%;C:\projects\mne-bids\bids-validator\bids-validator\bin\" &&
+      set VALIDATOR_EXECUTABLE ="C:\projects\mne-bids\bids-validator\bids-validator\bin\bids-validator" )
   - cmd: if [%VALIDATOR_VERSION%]==[stable] (
       npm install -g bids-validator )
   - bids-validator --version
