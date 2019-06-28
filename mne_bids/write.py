@@ -952,3 +952,38 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
             sh.copyfile(value, marker_fname)
 
     return output_path
+
+
+def write_anat(bids_dir, subject, t1w, raw=None, trans=None):
+    """Put anatomical MRI data into a BIDS format.
+
+    Given a BIDS directory and a T1 weighted MRI scan for a certain subject,
+    format the MRI scan to be in BIDS format and put it into the correct
+    location in the bids_dir. If a transformation matrix is supplied, a
+    sidecar JSON file will be written for the T1 weighted data.
+
+    Parameters
+    ----------
+    bids_dir : str
+        Path to a BIDS directory
+    subject : str
+        Subject label as in 'sub-<label>', for example: '01'
+    t1w : str
+        Path to a T1 weighted MRI scan of the subject. Must be in .nii or
+        .nii.gz format
+    raw : str | instance of Raw | None
+        The raw data of `subject` or a path to that data. If `raw` is None,
+        either `trans` has to be None as well, or it is assumed that `bids_dir`
+        already contains the data for `subject`,
+    trans : instance of mne.transforms.Transform | None
+        The transformation matrix between the MRI surface and the head
+        coordinate system as defined by anatomical landmarks LPA, RPA, NAS.
+        If None, no sidecar JSON file will be written for `t1w`.
+
+    Returns
+    -------
+    outpath : str
+        Path to the anatomical scan in the bids_dir
+
+    """
+    pass
