@@ -947,7 +947,7 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
     return output_path
 
 
-def write_anat(bids_dir, subject, t1w, session=None, acquisition=None,
+def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
                raw=None, trans=None, overwrite=False, verbose=False):
     """Put anatomical MRI data into a BIDS format.
 
@@ -958,8 +958,8 @@ def write_anat(bids_dir, subject, t1w, session=None, acquisition=None,
 
     Parameters
     ----------
-    bids_dir : str
-        Path to a BIDS directory
+    bids_root : str
+        Path to root of the BIDS folder
     subject : str
         Subject label as in 'sub-<label>', for example: '01'
     t1w : str

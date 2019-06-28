@@ -166,3 +166,29 @@ def read_raw_bids(bids_fname, bids_root, verbose=True):
         raw.info['bads'] = list(unique_bads)
 
     return raw
+
+
+def fit_trans_from_points(bids_fname, bids_root, verbose):
+    """Produce transformation matrix from MEG and MRI landmark points.
+
+    Will attempt to read the landmarks of Nasion, LPA, and RPA from the sidecar
+    files of (i) the MEG and (ii) the T1 weighted MRI data. The two sets of
+    points will then be used to calculate a transformation matrix from HEAD
+    coordinates to MRI coordinates.
+
+    Parameters
+    ----------
+    bids_fname : str
+        Full name of the data file
+    bids_root : str
+        Path to root of the BIDS folder
+    verbose : bool
+        The verbosity level
+
+    Returns
+    -------
+    raw : instance of Raw
+        The data as MNE-Python Raw object.
+
+    """
+    pass
