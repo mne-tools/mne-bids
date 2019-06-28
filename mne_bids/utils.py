@@ -20,6 +20,7 @@ from mne.utils import check_version
 from mne.channels import read_montage
 from mne.io.pick import pick_types
 from mne.io.kit.kit import get_kit_info
+from mne.io.constants import FIFF
 
 from .tsv_handler import _to_tsv, _tsv_to_str
 
@@ -258,3 +259,18 @@ def _infer_eeg_placement_scheme(raw):
         placement_scheme = 'based on the extended 10/20 system'
 
     return placement_scheme
+
+
+def _extract_landmarks(dig):
+    """Extract NAS, LPA, and RPA from raw.info['dig']."""
+    coords = dict()
+    landmarks = {d['ident']: d for d in dig
+                 if d['kind'] == FIFF.FIFFV_POINT_CARDINAL}
+    if landmarks:
+        if FIFF.FIFFV_POINT_NASION in landmarks:
+            coords['NAS'] = landmarks[FIFF.FIFFV_POINT_NASION]['r'].tolist()
+        if FIFF.FIFFV_POINT_LPA in landmarks:
+            coords['LPA'] = landmarks[FIFF.FIFFV_POINT_LPA]['r'].tolist()
+        if FIFF.FIFFV_POINT_RPA in landmarks:
+            coords['RPA'] = landmarks[FIFF.FIFFV_POINT_RPA]['r'].tolist()
+    return coords

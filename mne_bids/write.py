@@ -23,16 +23,17 @@ from mne.io.pick import channel_type
 from mne.io import BaseRaw
 from mne.channels.channels import _unit2human
 from mne.utils import check_version
+from mne.transforms import _ensure_trans, apply_trans
+
 
 from datetime import datetime
 from warnings import warn
 
-from .read import reader
 from .pick import coil_type
 from .utils import (_write_json, _write_tsv, _read_events, _mkdir_p,
                     _age_on_date, _infer_eeg_placement_scheme, _check_key_val,
                     _parse_bids_filename, _handle_kind, _check_types,
-                    _get_mrk_meas_date)
+                    _get_mrk_meas_date, _extract_landmarks)
 from .copyfiles import (copyfile_brainvision, copyfile_eeglab, copyfile_ctf,
                         copyfile_bti)
 
@@ -356,17 +357,7 @@ def _coordsystem_json(raw, unit, orient, manufacturer, fname,
 
     """
     dig = raw.info['dig']
-    coords = dict()
-    fids = {d['ident']: d for d in dig if d['kind'] ==
-            FIFF.FIFFV_POINT_CARDINAL}
-    if fids:
-        if FIFF.FIFFV_POINT_NASION in fids:
-            coords['NAS'] = fids[FIFF.FIFFV_POINT_NASION]['r'].tolist()
-        if FIFF.FIFFV_POINT_LPA in fids:
-            coords['LPA'] = fids[FIFF.FIFFV_POINT_LPA]['r'].tolist()
-        if FIFF.FIFFV_POINT_RPA in fids:
-            coords['RPA'] = fids[FIFF.FIFFV_POINT_RPA]['r'].tolist()
-
+    coords = _extract_landmarks(dig)
     hpi = {d['ident']: d for d in dig if d['kind'] == FIFF.FIFFV_POINT_HPI}
     if hpi:
         for ident in hpi.keys():
@@ -957,7 +948,7 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
 
 
 def write_anat(bids_dir, subject, t1w, session=None, acquisition=None,
-               raw=None, trans=None):
+               raw=None, trans=None, overwrite=False, verbose=False):
     """Put anatomical MRI data into a BIDS format.
 
     Given a BIDS directory and a T1 weighted MRI scan for a certain subject,
@@ -982,9 +973,20 @@ def write_anat(bids_dir, subject, t1w, session=None, acquisition=None,
         The raw data of `subject` corresponding to `t1w`. If `raw` is None,
         `trans` has to be None as well
     trans : instance of mne.transforms.Transform | None
-        The transformation matrix between the MRI surface defined in `t1w` and
-        the head coordinate system as defined by anatomical landmarks LPA, RPA,
-        NAS. If None, no sidecar JSON file will be written for `t1w`
+        The transformation matrix from HEAD coordinates to MRI coordinates.
+        If None, no sidecar JSON file will be written for `t1w`
+    overwrite : bool
+        Whether to overwrite existing files or data in files.
+        Defaults to False.
+        If overwrite is True, any existing files with the same BIDS parameters
+        will be overwritten with the exception of the `participants.tsv` and
+        `scans.tsv` files. For these files, parts of pre-existing data that
+        match the current data will be replaced.
+        If overwrite is False, no existing data will be overwritten or
+        replaced.
+    verbose : bool
+        If verbose is True, this will print a snippet of the sidecar files. If
+        False, no content will be printed.
 
     Returns
     -------
@@ -1001,9 +1003,12 @@ def write_anat(bids_dir, subject, t1w, session=None, acquisition=None,
                       .format(subject, bids_dir))
 
     # Properly name `t1w` and put it into anat
+    _, ext = op.splitext(t1w)
+    if ext not in ['.nii', '.nii.gz']:
+        raise ValueError('t1w must be a .nii or .nii.gz file.')
     t1w_basename = make_bids_basename(subject=subject, session=session,
                                       acquisition=acquisition, prefix=anat_dir,
-                                      suffix='T1w.json')
+                                      suffix='T1w.{}'.format(ext))
     sh.copyfile(t1w, t1w_basename)
 
     # Check if we have necessary conditions for writing a sidecar JSON
@@ -1019,12 +1024,22 @@ def write_anat(bids_dir, subject, t1w, session=None, acquisition=None,
 
     # Prepare to write the sidecar JSON
     # extract MEG landmarks
-    pass
+    coords_dict = _extract_landmarks(raw.info['dig'])
+    meg_landmarks = np.asarray((coords_dict['LPA'],
+                                coords_dict['NAS'],
+                                coords_dict['RPA']))
 
     # Transform MEG landmarks into MRI space
-    pass
+    trans = _ensure_trans(trans, fro='head', to='mri')
+    mri_landmarks = apply_trans(trans, meg_landmarks, move=True)
 
     # Write sidecar.json
-    pass
+    t1w_json = dict()
+    t1w_json['AnatomicalLandmarkCoordinates'] = \
+        {'LPA': list(mri_landmarks[0, :]),
+         'NAS': list(mri_landmarks[1, :]),
+         'RPA': list(mri_landmarks[2, :])}
+    fname = t1w_basename.replace('{}'.format(ext), '.json')
+    _write_json(fname, t1w_json, overwrite, verbose)
 
     return anat_dir
