@@ -995,12 +995,12 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
 
     """
     # Make directory for anatomical data
-    anat_dir = op.join(bids_dir, 'sub-{}'.format(subject), 'mri', 'anat')
+    anat_dir = op.join(bids_root, 'sub-{}'.format(subject), 'mri', 'anat')
     if not op.exists(anat_dir):
         os.makedirs(anat_dir)
     else:
         raise IOError('An mri/anat directory for sub-{} already exists in {}'
-                      .format(subject, bids_dir))
+                      .format(subject, bids_root))
 
     # Properly name `t1w` and put it into anat
     _, ext = op.splitext(t1w)

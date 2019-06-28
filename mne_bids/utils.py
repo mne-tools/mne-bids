@@ -9,6 +9,7 @@
 # License: BSD (3-clause)
 import os
 import os.path as op
+import glob
 import warnings
 import json
 import shutil as sh
