@@ -274,3 +274,44 @@ def _extract_landmarks(dig):
         if FIFF.FIFFV_POINT_RPA in landmarks:
             coords['RPA'] = landmarks[FIFF.FIFFV_POINT_RPA]['r'].tolist()
     return coords
+
+
+def _find_sidecar(bids_fname, bids_root, suffix):
+    """Try to find a sidecar file with a given suffix for a data file.
+
+    Parameters
+    ----------
+    bids_fname : str
+        Full name of the data file (not a path)
+    bids_root : str
+        Path to root of the BIDS folder
+    suffix : str
+        The suffix of the sidecar file to be found. E.g., "_coordsystem.json"
+
+    Returns
+    -------
+    sidecar : str
+        Path to the identified sidecar file
+
+    """
+    # We only use subject and session as identifier, because all other
+    # parameters are potentially not binding for metadata sidecar files
+    if 'ses' in bids_fname:
+        search_str = '_'.join(bids_fname.split('_')[:2])
+    else:
+        # only sub, no ses
+        search_str = '_'.join(bids_fname.split('_')[:1])
+
+    # find the sidecar file, doing a recursive glob from the bids_root
+    search_str = bids_root + os.sep + '**' + search_str + '**' + suffix
+    candidate_list = glob.glob(search_str, recursive=True)
+    if len(candidate_list) != 1:
+        # XXX: Potentially can extract other parameters from bids_fname to use
+        #      as a tie breaker here.
+        raise RuntimeError('Expected to find a single {} file associated with '
+                           '{}, but found {}: "{}".\n\nThe search_str was "{}"'
+                           .format(suffix, bids_fname, len(candidate_list),
+                                   candidate_list, search_str))
+    else:
+        sidecar = candidate_list[0]
+    return sidecar

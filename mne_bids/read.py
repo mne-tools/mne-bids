@@ -9,14 +9,16 @@
 import os
 import os.path as op
 import glob
+import json
 
 import numpy as np
 import mne
 from mne import io
+from mne.coreg import fit_matched_points
 
 from .tsv_handler import _from_tsv, _drop
 from .config import ALLOWED_EXTENSIONS
-from .utils import _parse_bids_filename
+from .utils import _parse_bids_filename, _extract_landmarks, _find_sidecar
 
 reader = {'.con': io.read_raw_kit, '.sqd': io.read_raw_kit,
           '.fif': io.read_raw_fif, '.pdf': io.read_raw_bti,
@@ -179,7 +181,7 @@ def fit_trans_from_points(bids_fname, bids_root, verbose):
     Parameters
     ----------
     bids_fname : str
-        Full name of the data file
+        Full name of the data file (not a path)
     bids_root : str
         Path to root of the BIDS folder
     verbose : bool
@@ -187,8 +189,30 @@ def fit_trans_from_points(bids_fname, bids_root, verbose):
 
     Returns
     -------
-    raw : instance of Raw
-        The data as MNE-Python Raw object.
+    trans : instance of mne.transforms.Transform
+        The data transformation matrix from HEAD to MRI coordinates
 
     """
-    pass
+    # Get the sidecar file for MRI landmarks
+    t1w_json_path = _find_sidecar(bids_root, bids_fname, 't1w.json')
+
+    # Get MRI landmarks from the JSON sidecar
+    with open(t1w_json_path, 'r') as f:
+        t1w_json = json.load(f)
+    mri_coords_dict = t1w_json['AnatomicalLandmarkCoordinates']
+    mri_landmarks = np.asarray((mri_coords_dict['LPA'],
+                                mri_coords_dict['NAS'],
+                                mri_coords_dict['RPA']))
+
+    # Get MEG landmarks from the raw file
+    raw = read_raw_bids(bids_fname, bids_root)
+    meg_coords_dict = _extract_landmarks(raw.info['dig'])
+    meg_landmarks = np.asarray((meg_coords_dict['LPA'],
+                                meg_coords_dict['NAS'],
+                                meg_coords_dict['RPA']))
+
+    # Given the two sets of points, fit the transform
+    trans_fitted = fit_matched_points(src_pts=meg_landmarks,
+                                      tgt_pts=mri_landmarks)
+    trans = mne.transforms.Transform(fro='head', to='mri', trans=trans_fitted)
+    return trans
