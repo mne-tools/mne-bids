@@ -32,7 +32,7 @@ jobs:
                   source activate testenv
                   conda install --yes --quiet numpy scipy matplotlib
                   pip install sphinx numpydoc sphinx-gallery sphinx_bootstrap_theme pillow
-                  pip install -U mne
+                  pip install -U mne nibabel
                   python setup.py develop
 
             - run:

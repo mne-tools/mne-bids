@@ -34,7 +34,7 @@ install:
   - "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
   - "activate test"
   - "conda install numpy scipy"
-  - "pip install flake8 pytest pytest-sugar pytest-faulthandler"
+  - "pip install nibabel flake8 pytest pytest-sugar pytest-faulthandler"
   - "pip uninstall -yq mne"
   - |-
     cd ..
