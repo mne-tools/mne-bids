@@ -11,13 +11,24 @@ from datetime import datetime
 from numpy.random import random
 import mne
 from mne.utils import _TempDir
+from mne.datasets import testing
 
-from mne_bids import make_bids_folders, make_bids_basename
+from mne_bids import make_bids_folders, make_bids_basename, write_raw_bids
 from mne_bids.utils import (_check_types, print_dir_tree, _age_on_date,
-                            _infer_eeg_placement_scheme, _handle_kind)
+                            _infer_eeg_placement_scheme, _handle_kind,
+                            _find_matching_sidecar)
 
 
 base_path = op.join(op.dirname(mne.__file__), 'io')
+subject_id = '01'
+session_id = '01'
+run = '01'
+acq = '01'
+task = 'testing'
+
+bids_basename = make_bids_basename(
+    subject=subject_id, session=session_id, run=run, acquisition=acq,
+    task=task)
 
 
 def test_handle_kind():
@@ -135,3 +146,31 @@ def test_infer_eeg_placement_scheme():
     raw.rename_channels({'P3': 'foo'})
     placement_scheme = _infer_eeg_placement_scheme(raw)
     assert placement_scheme == 'n/a'
+
+
+def test_find_matching_sidecar():
+    """Test finding a sidecar file from a BIDS dir."""
+    # First write a BIDS dir
+    output_path = _TempDir()
+    data_path = testing.data_path()
+    raw_fname = op.join(data_path, 'MEG', 'sample',
+                        'sample_audvis_trunc_raw.fif')
+
+    event_id = {'Auditory/Left': 1, 'Auditory/Right': 2, 'Visual/Left': 3,
+                'Visual/Right': 4, 'Smiley': 5, 'Button': 32}
+    events_fname = op.join(data_path, 'MEG', 'sample',
+                           'sample_audvis_trunc_raw-eve.fif')
+
+    raw = mne.io.read_raw_fif(raw_fname)
+    write_raw_bids(raw, bids_basename, output_path, events_data=events_fname,
+                   event_id=event_id, overwrite=False)
+
+    # Now find a sidecar
+    print(output_path)
+    print(bids_basename)
+    sidecar = _find_matching_sidecar(bids_basename, output_path,
+                                     'coordsystem.json')
+    expected_file = op.join('sub-01', 'ses-01', 'meg',
+                            'sub-01_ses-01_acq-01_coordsystem.json')
+
+    assert sidecar.endswith(expected_file)

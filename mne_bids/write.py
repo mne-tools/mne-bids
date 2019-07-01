@@ -768,6 +768,11 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
         If verbose is True, this will print a snippet of the sidecar files. If
         False, no content will be printed.
 
+    Returns
+    -------
+    output_path : str
+        The path of the root of the BIDS compatible folder.
+
     Notes
     -----
     For the participants.tsv file, the raw.info['subjects_info'] should be

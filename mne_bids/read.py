@@ -18,7 +18,8 @@ from mne.coreg import fit_matched_points
 
 from .tsv_handler import _from_tsv, _drop
 from .config import ALLOWED_EXTENSIONS
-from .utils import _parse_bids_filename, _extract_landmarks, _find_matching_sidecar
+from .utils import (_parse_bids_filename, _extract_landmarks,
+                    _find_matching_sidecar)
 
 reader = {'.con': io.read_raw_kit, '.sqd': io.read_raw_kit,
           '.fif': io.read_raw_fif, '.pdf': io.read_raw_bti,
