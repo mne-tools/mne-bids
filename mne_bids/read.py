@@ -10,10 +10,13 @@ import os.path as op
 import glob
 import json
 
+import nibabel as nib
 import numpy as np
 import mne
 from mne import io
 from mne.coreg import fit_matched_points
+from mne.transforms import apply_trans
+from mne.utils import _TempDir
 
 from .tsv_handler import _from_tsv, _drop
 from .config import ALLOWED_EXTENSIONS
@@ -169,7 +172,7 @@ def fit_trans_from_points(bids_fname, bids_root, verbose):
     Parameters
     ----------
     bids_fname : str
-        Full name of the data file (not a path)
+        Full name of the MEG data file (not a path)
     bids_root : str
         Path to root of the BIDS folder
     verbose : bool
@@ -182,7 +185,7 @@ def fit_trans_from_points(bids_fname, bids_root, verbose):
 
     """
     # Get the sidecar file for MRI landmarks
-    t1w_json_path = _find_matching_sidecar(bids_root, bids_fname, 't1w.json')
+    t1w_json_path = _find_matching_sidecar(bids_fname, bids_root, 'T1w.json')
 
     # Get MRI landmarks from the JSON sidecar
     with open(t1w_json_path, 'r') as f:
@@ -191,6 +194,29 @@ def fit_trans_from_points(bids_fname, bids_root, verbose):
     mri_landmarks = np.asarray((mri_coords_dict['LPA'],
                                 mri_coords_dict['NAS'],
                                 mri_coords_dict['RPA']))
+
+    # The MRI landmarks are in "voxels". We need to convert the to the
+    # neuromag RAS coordinate system in order to compare the with MEG landmarks
+    # see also: `mne_bids.write.write_anat`
+    # XXX: need to convert to .mgz to access transforms from header, see
+    # https://neurostars.org/t/get-voxel-to-ras-transformation-from-nifti-file/4549  # noqa: E501
+    t1w_path = t1w_json_path.replace('.json', '.nii')
+    if not op.exists(t1w_path):
+        t1w_path += '.gz'  # perhaps it is .nii.gz? ... else raise an error
+    if not op.exists(t1w_path):
+        raise RuntimeError('Could not find the T1 weighted MRI associated '
+                           'with "{}". Tried: "{}" but it does not exist.'
+                           .format(t1w_json_path, t1w_path))
+    t1_nifti = nib.load(t1w_path)
+    tmp_dir = _TempDir()
+    t1_mgz_path = op.join(tmp_dir, 't1_mgz.mgz')
+    nib.save(t1_nifti, t1_mgz_path)
+    t1_mgz = nib.load(t1_mgz_path)
+
+    # now extract transformation matrix and put back to RAS coordinates of MRI
+    vox2ras_tkr = t1_mgz.header.get_vox2ras_tkr()
+    mri_landmarks = apply_trans(vox2ras_tkr, mri_landmarks)
+    mri_landmarks = mri_landmarks * 1e-3
 
     # Get MEG landmarks from the raw file
     raw = read_raw_bids(bids_fname, bids_root)
