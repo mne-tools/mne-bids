@@ -968,8 +968,8 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
     subject : str
         Subject label as in 'sub-<label>', for example: '01'
     t1w : str
-        Path to a T1 weighted MRI scan of the subject. Must be in .nii or
-        .nii.gz format
+        Path to a T1 weighted MRI scan of the subject. Must be in .nii,
+        .nii.gz, or .mgz format. If in .mgz, it will be converted to .nii.gz
     session : str | None
         The session for `t1w`. Corresponds to "ses"
     acquisition: str | None
@@ -1008,11 +1008,28 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
         raise IOError('An /anat directory for sub-{} already exists in {}'
                       .format(subject, bids_root))
 
-    # Properly name `t1w` and put it into anat
+    # Check which type ot T1 MRI data we have. For now, we will need NIfTI for
+    # saving as BIDS ... and .mgz for extracting transformation matrices
+    # XXX: https://neurostars.org/t/get-voxel-to-ras-transformation-from-nifti-file/4549  # noqa: E501
     _, ext = _parse_ext(t1w)
-    if ext not in ['.nii', '.nii.gz']:
-        raise ValueError('t1w must be a .nii or .nii.gz file, but is {}'
-                         .format(ext))
+    if ext not in ['.nii', '.nii.gz', '.mgz']:
+        raise ValueError('`t1w` must be a .nii, .nii.gz, or .mgz file, but is'
+                         ' {}'.format(ext))
+    elif ext == '.mgz':
+        t1_mgz = nib.load(t1w)
+        tmp_dir = _TempDir()
+        t1_nifti_path = op.join(tmp_dir, 't1_nifti.nii.gz')
+        nib.save(t1_mgz, t1_nifti_path)
+        t1w = t1_nifti_path  # we need to use the converted file to save BIDS
+        ext = '.nii.gz'  # also update the extension
+    else:  # this is NIfTI
+        t1_nifti = nib.load(t1w)
+        tmp_dir = _TempDir()
+        t1_mgz_path = op.join(tmp_dir, 't1_mgz.mgz')
+        nib.save(t1_nifti, t1_mgz_path)
+        t1_mgz = nib.load(t1_mgz_path)
+
+    # Now give the NIfTI file a BIDS name and copy it to the BIDS location
     t1w_basename = make_bids_basename(subject=subject, session=session,
                                       acquisition=acquisition, prefix=anat_dir,
                                       suffix='T1w{}'.format(ext))
@@ -1040,14 +1057,7 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
     trans = _ensure_trans(trans, fro='head', to='mri')
     mri_landmarks = apply_trans(trans, meg_landmarks, move=True) * 1e3
 
-    # Get landmarks in voxel space
-    # do a quick conversion from NIfTI to mgz, because the nibabel nifti header
-    # does not provide access to the transforms we need
-    # https://neurostars.org/t/get-voxel-to-ras-transformation-from-nifti-file/4549  # noqa: E501
-    t1_nifti = nib.load(t1w)
-    mgz_fname = op.join(_TempDir(), 'tmp.mgz')
-    nib.save(t1_nifti, mgz_fname)
-    t1_mgz = nib.load(mgz_fname)
+    # Get landmarks in voxel space, using the mgz file, see XXX above
     vox2ras_tkr = t1_mgz.header.get_vox2ras_tkr()
     ras2vox_tkr = np.linalg.inv(vox2ras_tkr)
     mri_landmarks = apply_trans(ras2vox_tkr, mri_landmarks)  # in vox
@@ -1060,5 +1070,4 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
          'RPA': list(mri_landmarks[2, :])}
     fname = t1w_basename.replace('{}'.format(ext), '.json')
     _write_json(fname, t1w_json, overwrite, verbose)
-
     return anat_dir

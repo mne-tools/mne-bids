@@ -525,17 +525,14 @@ def test_write_anat():
     # Write some MRI data and supply a `trans`
     trans = mne.read_trans(raw_fname.replace('_raw.fif', '-trans.fif'))
 
-    # Make a bogus T1w file
-    bogus_dir = _TempDir()
-    bogus_t1w = op.join(bogus_dir, bids_basename + '_t1w.nii.gz')
-    with open(bogus_t1w, 'w') as f:
-        f.write(''.join(['bogus']*1000))
+    # Get the T1 weighted MRI data file
+    t1w = op.join(data_path, 'subjects', 'sample', 'mri', 'T1.mgz')
 
-    anat_dir = write_anat(output_path, subject_id, bogus_t1w, session_id, acq,
-                          raw=raw, trans=trans)
+    anat_dir = write_anat(output_path, subject_id, t1w, session_id, acq,
+                          raw=raw, trans=trans, verbose=True)
 
-    # Validate BIDS ... but ignore NIfTI headers
-    cmd = bids_validator_exe + [output_path] + ['--ignoreNiftiHeaders']
+    # Validate BIDS
+    cmd = bids_validator_exe + [output_path]
     run_subprocess(cmd, shell=shell)
 
     # Validate that files are as expected
