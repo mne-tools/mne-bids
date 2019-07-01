@@ -304,7 +304,7 @@ def _find_sidecar(bids_fname, bids_root, suffix):
         search_str = '_'.join(bids_fname.split('_')[:1])
 
     # find the sidecar file, doing a recursive glob from the bids_root
-    search_str = bids_root + os.sep + '**' + search_str + '**' + suffix
+    search_str = op.join(bids_root, '**', search_str + '*' + suffix)
     candidate_list = glob.glob(search_str, recursive=True)
     if len(candidate_list) != 1:
         # XXX: Potentially can extract other parameters from bids_fname to use
