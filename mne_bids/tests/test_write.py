@@ -26,7 +26,7 @@ from mne.io.constants import FIFF
 from mne.io.kit.kit import get_kit_info
 
 from mne_bids import (write_raw_bids, read_raw_bids, make_bids_basename,
-                      make_bids_folders)
+                      make_bids_folders, write_anat)
 from mne_bids.tsv_handler import _from_tsv
 
 base_path = op.join(op.dirname(mne.__file__), 'io')
@@ -503,3 +503,41 @@ def test_set():
 
     cmd = bids_validator_exe + [output_path]
     run_subprocess(cmd, shell=shell)
+
+
+def test_write_anat():
+    """Test writing anatomical data."""
+    # Get the MNE testing sample data
+    output_path = _TempDir()
+    data_path = testing.data_path()
+    raw_fname = op.join(data_path, 'MEG', 'sample',
+                        'sample_audvis_trunc_raw.fif')
+
+    event_id = {'Auditory/Left': 1, 'Auditory/Right': 2, 'Visual/Left': 3,
+                'Visual/Right': 4, 'Smiley': 5, 'Button': 32}
+    events_fname = op.join(data_path, 'MEG', 'sample',
+                           'sample_audvis_trunc_raw-eve.fif')
+
+    raw = mne.io.read_raw_fif(raw_fname)
+    write_raw_bids(raw, bids_basename, output_path, events_data=events_fname,
+                   event_id=event_id, overwrite=False)
+
+    # Write some MRI data and supply a `trans`
+    trans = mne.read_trans(raw_fname.replace('_raw.fif', '-trans.fif'))
+
+    # Make a bogus T1w file
+    bogus_dir = _TempDir()
+    bogus_t1w = op.join(bogus_dir, bids_basename + '_t1w.nii.gz')
+    with open(bogus_t1w, 'w') as f:
+        f.write(''.join(['bogus']*1000))
+
+    anat_dir = write_anat(output_path, subject_id, bogus_t1w, session_id, acq,
+                          raw=raw, trans=trans)
+
+    # Validate BIDS ... but ignore NIfTI headers
+    cmd = bids_validator_exe + [output_path] + ['--ignoreNiftiHeaders']
+    run_subprocess(cmd, shell=shell)
+
+    # Validate that files are as expected
+    assert op.exists(op.join(anat_dir, 'sub-01_ses-01_acq-01_T1w.json'))
+    assert op.exists(op.join(anat_dir, 'sub-01_ses-01_acq-01_T1w.nii.gz'))

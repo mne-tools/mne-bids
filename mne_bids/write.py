@@ -33,11 +33,11 @@ from .pick import coil_type
 from .utils import (_write_json, _write_tsv, _read_events, _mkdir_p,
                     _age_on_date, _infer_eeg_placement_scheme, _check_key_val,
                     _parse_bids_filename, _handle_kind, _check_types,
-                    _get_mrk_meas_date, _extract_landmarks)
+                    _get_mrk_meas_date, _extract_landmarks, _parse_ext)
 from .copyfiles import (copyfile_brainvision, copyfile_eeglab, copyfile_ctf,
                         copyfile_bti)
 
-from .read import _parse_ext, reader
+from .read import reader
 from .tsv_handler import _from_tsv, _combine, _drop, _contains_row
 
 from .config import (ORIENTATION, UNITS, MANUFACTURERS,
@@ -1000,20 +1000,22 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
 
     """
     # Make directory for anatomical data
-    anat_dir = op.join(bids_root, 'sub-{}'.format(subject), 'mri', 'anat')
+    anat_dir = op.join(bids_root, 'sub-{}'.format(subject),
+                       'ses-{}'.format(session), 'anat')
     if not op.exists(anat_dir):
         os.makedirs(anat_dir)
     else:
-        raise IOError('An mri/anat directory for sub-{} already exists in {}'
+        raise IOError('An /anat directory for sub-{} already exists in {}'
                       .format(subject, bids_root))
 
     # Properly name `t1w` and put it into anat
-    _, ext = op.splitext(t1w)
+    _, ext = _parse_ext(t1w)
     if ext not in ['.nii', '.nii.gz']:
-        raise ValueError('t1w must be a .nii or .nii.gz file.')
+        raise ValueError('t1w must be a .nii or .nii.gz file, but is {}'
+                         .format(ext))
     t1w_basename = make_bids_basename(subject=subject, session=session,
                                       acquisition=acquisition, prefix=anat_dir,
-                                      suffix='T1w.{}'.format(ext))
+                                      suffix='T1w{}'.format(ext))
     sh.copyfile(t1w, t1w_basename)
 
     # Check if we have necessary conditions for writing a sidecar JSON
