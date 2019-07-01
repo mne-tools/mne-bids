@@ -15,14 +15,14 @@ from collections import defaultdict, OrderedDict
 
 import numpy as np
 from numpy.testing import assert_array_equal
-
+import nibabel as nib
 import mne
 from mne import Epochs
 from mne.io.constants import FIFF
 from mne.io.pick import channel_type
 from mne.io import BaseRaw
 from mne.channels.channels import _unit2human
-from mne.utils import check_version
+from mne.utils import check_version, _TempDir
 from mne.transforms import _ensure_trans, apply_trans
 
 
@@ -1027,7 +1027,7 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
                          .format(type(trans)))
 
     if not isinstance(raw, BaseRaw):
-        raise ValueError('raw must be specified if trans is not None')
+        raise ValueError('`raw` must be specified if `trans` is not None')
 
     # Prepare to write the sidecar JSON
     # extract MEG landmarks
@@ -1036,9 +1036,21 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
                                 coords_dict['NAS'],
                                 coords_dict['RPA']))
 
-    # Transform MEG landmarks into MRI space
+    # Transform MEG landmarks into MRI space, adjust units by * 1e3
     trans = _ensure_trans(trans, fro='head', to='mri')
-    mri_landmarks = apply_trans(trans, meg_landmarks, move=True)
+    mri_landmarks = apply_trans(trans, meg_landmarks, move=True) * 1e3
+
+    # Get landmarks in voxel space
+    # do a quick conversion from NIfTI to mgz, because the nibabel nifti header
+    # does not provide access to the transforms we need
+    # https://neurostars.org/t/get-voxel-to-ras-transformation-from-nifti-file/4549  # noqa: E501
+    t1_nifti = nib.load(t1w)
+    mgz_fname = op.join(_TempDir(), 'tmp.mgz')
+    nib.save(t1_nifti, mgz_fname)
+    t1_mgz = nib.load(mgz_fname)
+    vox2ras_tkr = t1_mgz.header.get_vox2ras_tkr()
+    ras2vox_tkr = np.linalg.inv(vox2ras_tkr)
+    mri_landmarks = apply_trans(ras2vox_tkr, mri_landmarks)  # in vox
 
     # Write sidecar.json
     t1w_json = dict()
