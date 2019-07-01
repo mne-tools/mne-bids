@@ -70,8 +70,9 @@ def _parse_ext(raw_fname, verbose=False):
                   'appending extension .pdf')
         ext = '.pdf'
     # If ending on .gz, check whether it is an .nii.gz file
-    elif ext == '.gz':
-        ext = '.nii.gz' if raw_fname.endswith('.nii.gz') else ext
+    elif ext == '.gz' and raw_fname.endswith('.nii.gz'):
+        ext = '.nii.gz'
+        fname = fname[:-4]  # cut off the .nii
     return fname, ext
 
 

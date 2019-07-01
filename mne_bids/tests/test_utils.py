@@ -126,7 +126,7 @@ def test_parse_ext():
     # Get a .nii.gz file
     f = 'sub-01_task-rest.nii.gz'
     fname, ext = _parse_ext(f)
-    assert fname == f
+    assert fname == 'sub-01_task-rest'
     assert ext == '.nii.gz'
 
 
