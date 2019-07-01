@@ -19,25 +19,13 @@ from mne.coreg import fit_matched_points
 from .tsv_handler import _from_tsv, _drop
 from .config import ALLOWED_EXTENSIONS
 from .utils import (_parse_bids_filename, _extract_landmarks,
-                    _find_matching_sidecar)
+                    _find_matching_sidecar, _parse_ext)
 
 reader = {'.con': io.read_raw_kit, '.sqd': io.read_raw_kit,
           '.fif': io.read_raw_fif, '.pdf': io.read_raw_bti,
           '.ds': io.read_raw_ctf, '.vhdr': io.read_raw_brainvision,
           '.edf': io.read_raw_edf, '.bdf': io.read_raw_edf,
           '.set': io.read_raw_eeglab}
-
-
-def _parse_ext(raw_fname, verbose=False):
-    """Split a filename into its name and extension."""
-    fname, ext = os.path.splitext(raw_fname)
-    # BTi data is the only file format that does not have a file extension
-    if ext == '' or 'c,rf' in fname:
-        if verbose is True:
-            print('Found no extension for raw file, assuming "BTi" format and '
-                  'appending extension .pdf')
-        ext = '.pdf'
-    return fname, ext
 
 
 def _read_raw(raw_fname, electrode=None, hsp=None, hpi=None, config=None,

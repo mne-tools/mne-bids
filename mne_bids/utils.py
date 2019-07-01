@@ -60,6 +60,21 @@ def _mkdir_p(path, overwrite=False, verbose=False):
         print('Creating folder: %s' % path)
 
 
+def _parse_ext(raw_fname, verbose=False):
+    """Split a filename into its name and extension."""
+    fname, ext = os.path.splitext(raw_fname)
+    # BTi data is the only file format that does not have a file extension
+    if ext == '' or 'c,rf' in fname:
+        if verbose is True:
+            print('Found no extension for raw file, assuming "BTi" format and '
+                  'appending extension .pdf')
+        ext = '.pdf'
+    # If ending on .gz, check whether it is an .nii.gz file
+    elif ext == '.gz':
+        ext = '.nii.gz' if raw_fname.endswith('.nii.gz') else ext
+    return fname, ext
+
+
 def _parse_bids_filename(fname, verbose):
     """Get dict from BIDS fname."""
     keys = ['sub', 'ses', 'task', 'acq', 'run', 'proc', 'run', 'space',

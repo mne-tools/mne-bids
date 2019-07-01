@@ -16,7 +16,7 @@ from mne.datasets import testing
 from mne_bids import make_bids_folders, make_bids_basename, write_raw_bids
 from mne_bids.utils import (_check_types, print_dir_tree, _age_on_date,
                             _infer_eeg_placement_scheme, _handle_kind,
-                            _find_matching_sidecar)
+                            _find_matching_sidecar, _parse_ext)
 
 
 base_path = op.join(op.dirname(mne.__file__), 'io')
@@ -108,6 +108,26 @@ def test_check_types():
     assert _check_types(['foo', 'bar', None]) is None
     with pytest.raises(ValueError):
         _check_types([None, 1, 3.14, 'meg', [1, 2]])
+
+
+def test_parse_ext():
+    """Test the file extension extraction."""
+    f = 'sub-05_task-matchingpennies.vhdr'
+    fname, ext = _parse_ext(f)
+    assert fname == 'sub-05_task-matchingpennies'
+    assert ext == '.vhdr'
+
+    # Test for case where no extension: assume BTI format
+    f = 'sub-01_task-rest'
+    fname, ext = _parse_ext(f)
+    assert fname == f
+    assert ext == '.pdf'
+
+    # Get a .nii.gz file
+    f = 'sub-01_task-rest.nii.gz'
+    fname, ext = _parse_ext(f)
+    assert fname == f
+    assert ext == '.nii.gz'
 
 
 def test_age_on_date():
