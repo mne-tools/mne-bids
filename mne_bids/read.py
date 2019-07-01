@@ -18,7 +18,7 @@ from mne.coreg import fit_matched_points
 
 from .tsv_handler import _from_tsv, _drop
 from .config import ALLOWED_EXTENSIONS
-from .utils import _parse_bids_filename, _extract_landmarks, _find_sidecar
+from .utils import _parse_bids_filename, _extract_landmarks, _find_matching_sidecar
 
 reader = {'.con': io.read_raw_kit, '.sqd': io.read_raw_kit,
           '.fif': io.read_raw_fif, '.pdf': io.read_raw_bti,
@@ -194,7 +194,7 @@ def fit_trans_from_points(bids_fname, bids_root, verbose):
 
     """
     # Get the sidecar file for MRI landmarks
-    t1w_json_path = _find_sidecar(bids_root, bids_fname, 't1w.json')
+    t1w_json_path = _find_matching_sidecar(bids_root, bids_fname, 't1w.json')
 
     # Get MRI landmarks from the JSON sidecar
     with open(t1w_json_path, 'r') as f:

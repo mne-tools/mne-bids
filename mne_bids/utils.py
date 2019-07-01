@@ -277,7 +277,7 @@ def _extract_landmarks(dig):
     return coords
 
 
-def _find_sidecar(bids_fname, bids_root, suffix):
+def _find_matching_sidecar(bids_fname, bids_root, suffix):
     """Try to find a sidecar file with a given suffix for a data file.
 
     Parameters
