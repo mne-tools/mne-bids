@@ -17,6 +17,7 @@ from glob import glob
 from datetime import datetime
 import platform
 import shutil as sh
+import json
 
 import numpy as np
 from numpy.testing import assert_array_equal
@@ -543,8 +544,25 @@ def test_write_anat():
     run_subprocess(cmd, shell=shell)
 
     # Validate that files are as expected
-    assert op.exists(op.join(anat_dir, 'sub-01_ses-01_acq-01_T1w.json'))
+    t1w_json_path = op.join(anat_dir, 'sub-01_ses-01_acq-01_T1w.json')
+    assert op.exists(t1w_json_path)
     assert op.exists(op.join(anat_dir, 'sub-01_ses-01_acq-01_T1w.nii.gz'))
+    with open(t1w_json_path, 'r') as f:
+        t1w_json = json.load(f)
+    print(t1w_json)
+    # We only should have AnatomicalLandmarkCoordinates as key
+    np.testing.assert_array_equal(list(t1w_json.keys()),
+                                  ['AnatomicalLandmarkCoordinates'])
+    # And within AnatomicalLandmarkCoordinates only LPA, NAS, RPA in that order
+    anat_dict = t1w_json['AnatomicalLandmarkCoordinates']
+    point_list = ['LPA', 'NAS', 'RPA']
+    np.testing.assert_array_equal(list(anat_dict.keys()),
+                                  point_list)
+    # test the actual values of the voxels (no floating points)
+    for i, point in enumerate([(66, 51, 46), (41, 32, 74), (17, 53, 47)]):
+        coords = anat_dict[point_list[i]]
+        np.testing.assert_array_equal(np.asarray(coords, dtype=int),
+                                      point)
 
     # Try some anat writing that will fail
     # We already have some MRI data there
