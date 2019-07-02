@@ -998,7 +998,7 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
         Path to the anatomical scan in the `bids_dir`
 
     """
-    try:
+    try:  # pragma: no cover
         import nibabel as nib
     except ImportError:
         raise ImportError('This function requires nibabel.')

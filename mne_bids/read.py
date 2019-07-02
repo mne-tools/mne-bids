@@ -182,7 +182,7 @@ def fit_trans_from_points(bids_fname, bids_root, verbose):
         The data transformation matrix from HEAD to MRI coordinates
 
     """
-    try:
+    try:  # pragma: no cover
         import nibabel as nib
     except ImportError:
         raise ImportError('This function requires nibabel.')

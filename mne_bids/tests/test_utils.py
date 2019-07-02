@@ -194,3 +194,10 @@ def test_find_matching_sidecar():
                             'sub-01_ses-01_acq-01_coordsystem.json')
 
     assert sidecar.endswith(expected_file)
+
+    # Find multiple sidecars, triggering an error
+    with pytest.raises(RuntimeError):
+        open(sidecar.replace('coordsystem.json',
+                             '2coordsystem.json'), 'w').close()
+        sidecar = _find_matching_sidecar(bids_basename, output_path,
+                                         'coordsystem.json')

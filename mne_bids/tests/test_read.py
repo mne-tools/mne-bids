@@ -64,6 +64,12 @@ def test_fit_trans_from_points():
     write_raw_bids(raw, bids_basename, output_path, events_data=events_fname,
                    event_id=event_id, overwrite=False)
 
+    # We cannot recover trans, if no MRI has yet been written
+    with pytest.raises(RuntimeError):
+        bids_fname = bids_basename + '_meg.fif'
+        reproduced_trans = fit_trans_from_points(bids_fname, output_path,
+                                                 verbose=True)
+
     # Write some MRI data and supply a `trans` so that a sidecar gets written
     trans = mne.read_trans(raw_fname.replace('_raw.fif', '-trans.fif'))
 
@@ -78,7 +84,6 @@ def test_fit_trans_from_points():
                trans=trans, verbose=True)
 
     # Try to get trans back through fitting points
-    bids_fname = bids_basename + '_meg.fif'
     reproduced_trans = fit_trans_from_points(bids_fname, output_path,
                                              verbose=True)
 
