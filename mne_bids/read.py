@@ -10,13 +10,11 @@ import os.path as op
 import glob
 import json
 
-import nibabel as nib
 import numpy as np
 import mne
 from mne import io
 from mne.coreg import fit_matched_points
 from mne.transforms import apply_trans
-from mne.utils import _TempDir
 
 from .tsv_handler import _from_tsv, _drop
 from .config import ALLOWED_EXTENSIONS
@@ -184,6 +182,11 @@ def fit_trans_from_points(bids_fname, bids_root, verbose):
         The data transformation matrix from HEAD to MRI coordinates
 
     """
+    try:
+        import nibabel as nib
+    except ImportError:
+        raise ImportError('This function requires nibabel.')
+
     # Get the sidecar file for MRI landmarks
     t1w_json_path = _find_matching_sidecar(bids_fname, bids_root, 'T1w.json')
 

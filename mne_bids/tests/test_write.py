@@ -17,12 +17,11 @@ from glob import glob
 from datetime import datetime
 import platform
 
-import nibabel as nib
 import numpy as np
 from numpy.testing import assert_array_equal
 import mne
 from mne.datasets import testing
-from mne.utils import _TempDir, run_subprocess, check_version
+from mne.utils import _TempDir, run_subprocess, check_version, requires_nibabel
 from mne.io.constants import FIFF
 from mne.io.kit.kit import get_kit_info
 
@@ -506,8 +505,10 @@ def test_set():
     run_subprocess(cmd, shell=shell)
 
 
+@requires_nibabel()
 def test_write_anat():
     """Test writing anatomical data."""
+    import nibabel as nib
     # Get the MNE testing sample data
     output_path = _TempDir()
     data_path = testing.data_path()

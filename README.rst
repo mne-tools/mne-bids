@@ -41,8 +41,8 @@ Installation
 We recommend the `Anaconda <https://www.anaconda.com/download/>`_ Python
 distribution. We require that you use Python 3.
 Besides ``numpy`` and ``scipy`` (which are included in the standard Anaconda
-installation), you will need to install the most recent version of ``MNE `` and
-using ``nibabel`` using the ``pip`` tool:
+installation), you will need to install the most recent version of ``MNE ``
+using using the ``pip`` tool:
 
 .. code-block:: bash
 
@@ -67,6 +67,10 @@ error messages:
 
    $ python -c 'import mne_bids'
 
+For full functionality of ``mne-bids``, you will also need to install the
+following packages:
+
+- nibabel
 
 If you want to use the latest development version, use the following command:
 

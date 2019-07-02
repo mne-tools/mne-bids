@@ -5,10 +5,9 @@
 import os.path as op
 import pytest
 
-import nibabel as nib
 import numpy as np
 import mne
-from mne.utils import _TempDir
+from mne.utils import _TempDir, requires_nibabel
 from mne.datasets import testing
 
 from mne_bids.read import _read_raw, fit_trans_from_points
@@ -45,8 +44,10 @@ def test_not_implemented():
             _read_raw(raw_fname)
 
 
+@requires_nibabel()
 def test_fit_trans_from_points():
     """Test getting a trans object from BIDS data."""
+    import nibabel as nib
     # Get the MNE testing sample data
     output_path = _TempDir()
     data_path = testing.data_path()

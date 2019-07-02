@@ -15,14 +15,13 @@ from collections import defaultdict, OrderedDict
 
 import numpy as np
 from numpy.testing import assert_array_equal
-import nibabel as nib
 import mne
 from mne import Epochs
 from mne.io.constants import FIFF
 from mne.io.pick import channel_type
 from mne.io import BaseRaw
 from mne.channels.channels import _unit2human
-from mne.utils import check_version, _TempDir
+from mne.utils import check_version
 from mne.transforms import _ensure_trans, apply_trans
 
 
@@ -999,6 +998,11 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
         Path to the anatomical scan in the `bids_dir`
 
     """
+    try:
+        import nibabel as nib
+    except ImportError:
+        raise ImportError('This function requires nibabel.')
+
     # Make directory for anatomical data
     anat_dir = op.join(bids_root, 'sub-{}'.format(subject),
                        'ses-{}'.format(session), 'anat')
