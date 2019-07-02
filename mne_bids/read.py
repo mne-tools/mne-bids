@@ -159,7 +159,7 @@ def read_raw_bids(bids_fname, bids_root, verbose=True):
     return raw
 
 
-def fit_trans_from_points(bids_fname, bids_root, verbose):
+def get_head_mri_trans(bids_fname, bids_root, verbose):
     """Produce transformation matrix from MEG and MRI landmark points.
 
     Will attempt to read the landmarks of Nasion, LPA, and RPA from the sidecar

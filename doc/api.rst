@@ -19,7 +19,7 @@ MNE BIDS (:py:mod:`mne_bids`):
    make_bids_basename
    make_dataset_description
    write_anat
-   fit_trans_from_points
+   get_head_mri_trans
 
 Utils (:py:mod:`mne_bids.utils`):
 

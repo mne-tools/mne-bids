@@ -10,7 +10,7 @@ import mne
 from mne.utils import _TempDir, requires_nibabel
 from mne.datasets import testing
 
-from mne_bids.read import _read_raw, fit_trans_from_points
+from mne_bids.read import _read_raw, get_head_mri_trans
 from mne_bids.write import write_anat, write_raw_bids, make_bids_basename
 
 subject_id = '01'
@@ -45,7 +45,7 @@ def test_not_implemented():
 
 
 @requires_nibabel()
-def test_fit_trans_from_points():
+def test_get_head_mri_trans():
     """Test getting a trans object from BIDS data."""
     import nibabel as nib
     # Get the MNE testing sample data
@@ -67,7 +67,7 @@ def test_fit_trans_from_points():
     # We cannot recover trans, if no MRI has yet been written
     with pytest.raises(RuntimeError):
         bids_fname = bids_basename + '_meg.fif'
-        reproduced_trans = fit_trans_from_points(bids_fname, output_path,
+        reproduced_trans = get_head_mri_trans(bids_fname, output_path,
                                                  verbose=True)
 
     # Write some MRI data and supply a `trans` so that a sidecar gets written
@@ -84,7 +84,7 @@ def test_fit_trans_from_points():
                trans=trans, verbose=True)
 
     # Try to get trans back through fitting points
-    reproduced_trans = fit_trans_from_points(bids_fname, output_path,
+    reproduced_trans = get_head_mri_trans(bids_fname, output_path,
                                              verbose=True)
 
     assert trans['from'] == reproduced_trans['from']
