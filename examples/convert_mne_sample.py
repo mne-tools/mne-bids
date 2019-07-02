@@ -1,4 +1,6 @@
 """
+.. _ex-convert-mne-sample:
+
 ======================================
 Convert MNE sample data to BIDS format
 ======================================

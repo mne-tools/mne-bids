@@ -46,7 +46,7 @@ using using the ``pip`` tool:
 
 .. code-block:: bash
 
-   $ pip install -U mne nibabel
+   $ pip install -U mne
 
 
 Then install ``mne-bids``\ :
@@ -71,6 +71,8 @@ For full functionality of ``mne-bids``, you will also need to install the
 following packages:
 
 - nibabel
+- nilearn
+- matplotlib
 
 If you want to use the latest development version, use the following command:
 

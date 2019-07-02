@@ -159,7 +159,7 @@ def read_raw_bids(bids_fname, bids_root, verbose=True):
     return raw
 
 
-def get_head_mri_trans(bids_fname, bids_root, verbose):
+def get_head_mri_trans(bids_fname, bids_root):
     """Produce transformation matrix from MEG and MRI landmark points.
 
     Will attempt to read the landmarks of Nasion, LPA, and RPA from the sidecar
@@ -173,8 +173,6 @@ def get_head_mri_trans(bids_fname, bids_root, verbose):
         Full name of the MEG data file (not a path)
     bids_root : str
         Path to root of the BIDS folder
-    verbose : bool
-        The verbosity level
 
     Returns
     -------

@@ -12,6 +12,7 @@ dependencies:
 - pip:
   - mne
   - nibabel
+  - nilearn
   - mne-bids
   - flake8
   - pytest

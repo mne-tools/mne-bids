@@ -67,8 +67,7 @@ def test_get_head_mri_trans():
     # We cannot recover trans, if no MRI has yet been written
     with pytest.raises(RuntimeError):
         bids_fname = bids_basename + '_meg.fif'
-        reproduced_trans = get_head_mri_trans(bids_fname, output_path,
-                                                 verbose=True)
+        reproduced_trans = get_head_mri_trans(bids_fname, output_path)
 
     # Write some MRI data and supply a `trans` so that a sidecar gets written
     trans = mne.read_trans(raw_fname.replace('_raw.fif', '-trans.fif'))
@@ -84,8 +83,7 @@ def test_get_head_mri_trans():
                trans=trans, verbose=True)
 
     # Try to get trans back through fitting points
-    reproduced_trans = get_head_mri_trans(bids_fname, output_path,
-                                             verbose=True)
+    reproduced_trans = get_head_mri_trans(bids_fname, output_path)
 
     assert trans['from'] == reproduced_trans['from']
     assert trans['to'] == reproduced_trans['to']

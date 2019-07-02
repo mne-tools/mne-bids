@@ -24,19 +24,145 @@ directory.
 See the documentation pages in the MNE docs for more information on
 `source alignment and coordinate frames <mne_source_coords_>`_
 
-
-
 """
 # Authors: Stefan Appelhoff <stefan.appelhoff@mailbox.org>
 # License: BSD (3-clause)
 
 ###############################################################################
 # We are importing everything we need for this example:
-#
-#
-#
-#
+
+import os
+import os.path as op
+import shutil as sh
+
+import numpy as np
+import mne
+from mne.datasets import sample
+from mne.transforms import apply_trans
+import nibabel as nib
+import matplotlib.pyplot as plt
+from nilearn.plotting import plot_anat
+
+from mne_bids import (write_raw_bids, make_bids_basename, write_anat,
+                      get_head_mri_trans)
+from mne_bids.utils import print_dir_tree, _extract_landmarks
+
+###############################################################################
+# We will be using the `MNE sample data <mne_sample_data_>`_ and write a basic
+# BIDS dataset. For more information, you can checkout the respective
+# :ref:`example <ex-convert-mne-sample>`.
+
+data_path = sample.data_path()
+event_id = {'Auditory/Left': 1, 'Auditory/Right': 2, 'Visual/Left': 3,
+            'Visual/Right': 4, 'Smiley': 5, 'Button': 32}
+raw_fname = op.join(data_path, 'MEG', 'sample', 'sample_audvis_raw.fif')
+events_data = op.join(data_path, 'MEG', 'sample', 'sample_audvis_raw-eve.fif')
+output_path = op.abspath(op.join(data_path, '..', 'MNE-sample-data-bids'))
+if op.exists(output_path):
+    sh.rmtree(output_path)
+raw = mne.io.read_raw_fif(raw_fname)
+sub = '01'
+ses = '01'
+task = 'audiovisual'
+run = '01'
+bids_basename = make_bids_basename(subject=sub, session=ses, task=task,
+                                   run=run)
+write_raw_bids(raw, bids_basename, output_path, events_data=events_data,
+               event_id=event_id, overwrite=True)
+
+# Print the directory tree
+print_dir_tree(output_path)
+
+###############################################################################
+# Now let's assume that we have also collected some T1 weighted MRI data for
+# our subject. And furthermore, that we have already aligned our coordinate
+# frames (as described HERE) and obtained a transformation matrix
+# :code:`trans`.
+
+# Get the path to our MRI scan and covert it to NIfTI format
+# For that, we use nibabel, reading in the compressed mgh file, and saving it
+# as a compressed NIfTI file
+t1_mgh_fname = op.join(data_path, 'subjects', 'sample', 'mri', 'T1.mgz')
+t1_mgh = nib.load(t1_mgh_fname)
+t1_nii_fname = op.join(data_path, 'subjects', 'sample', 'mri', 'T1.nii.gz')
+nib.save(t1_mgh, t1_nii_fname)
+
+# Load the transformation matrix and show what it looks like
+trans_fname = op.join(data_path, 'MEG', 'sample',
+                      'sample_audvis_raw-trans.fif')
+trans = mne.read_trans(trans_fname)
+print(trans)
+
+###############################################################################
+# We can save the MRI to our existing BIDS directory and at the same time
+# create a JSON sidecar file that contains metadata, we will later use to
+# retrieve our transformation matrix :code:`trans`.
+
+# We use the write_anat function
+write_anat(bids_root=output_path,  # point to the BIDS dir we wrote earlier
+           subject=sub,
+           t1w=t1_nii_fname,  # path to the MRI scan in NIfTI format
+           session=ses,
+           raw=raw,  # the raw MEG data file connected to the MRI
+           trans=trans,  # our transformation matrix
+           verbose=True  # this will print out the sidecar file
+           )
+
+# Clean up the NIfTI file we wrote earlier to convert from mgh to NIfTI
+os.remove(t1_nii_fname)
+
+# Let's have another look at our BIDS directory
+print_dir_tree(output_path)
+
+###############################################################################
+# Our BIDS dataset is now ready to be shared. We can easily reproduce our
+# transformation matrix using ``MNE-BIDS`` and the BIDS dataset.
+
+bids_fname = bids_basename + '_meg.fif'
+
+# reproduce our trans
+_trans = get_head_mri_trans(bids_fname=bids_fname,  # name of the MEG file
+                            bids_root=output_path  # root of our BIDS directory
+                            )
+
+# Show that they are the same
+np.testing.assert_almost_equal(trans['trans'],
+                               _trans['trans'])
+
+###############################################################################
+# Finally, let's use the T1 weighted MRI image and plot the anatomical
+# landmarks Nasion, LPA, and RPA (=left and right preauricular points) onto
+# the brain image. For that, we can extract the location of Nasion, LPA, and
+# RPA from the MEG file, apply our transformation matrix :code:`trans`, and
+# plot the results.
+
+# Get Landmarks from MEG file
+coords_dict = _extract_landmarks(raw.info['dig'])
+pos = np.asarray((coords_dict['LPA'],
+                  coords_dict['NAS'],
+                  coords_dict['RPA']))
+
+# Apply transform
+mri_pos = apply_trans(trans, pos) * 1e3
+
+# Get fiducials in voxel space
+vox2ras_tkr = t1_mgh.header.get_vox2ras_tkr()
+ras2vox_tkr = np.linalg.inv(vox2ras_tkr)
+vox2ras = t1_mgh.header.get_vox2ras()
+mri_pos = apply_trans(ras2vox_tkr, mri_pos)  # in vox
+mri_pos = apply_trans(vox2ras, mri_pos)  # in RAS
+
+# Plot it
+fig, axs = plt.subplots(3, 1)
+for i in range(3):
+    plot_anat(t1_mgh_fname, axes=axs[i], cut_coords=mri_pos[i, :])
+
+
+###############################################################################
 # .. LINKS
 #
 # .. _mne_source_coords:
 #    https://www.martinos.org/mne/stable/auto_tutorials/source-modeling/plot_source_alignment.html  # noqa: E501
+# .. _mne_sample_data:
+#    https://martinos.org/mne/stable/manual/sample_dataset.html
+#
