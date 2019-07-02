@@ -5,6 +5,7 @@
 import os.path as op
 import pytest
 
+import nibabel as nib
 import numpy as np
 import mne
 from mne.utils import _TempDir
@@ -66,9 +67,13 @@ def test_fit_trans_from_points():
     trans = mne.read_trans(raw_fname.replace('_raw.fif', '-trans.fif'))
 
     # Get the T1 weighted MRI data file
-    t1w = op.join(data_path, 'subjects', 'sample', 'mri', 'T1.mgz')
+    # Needs to be converted to Nifti because we only have mgh in our test base
+    t1w_mgh = op.join(data_path, 'subjects', 'sample', 'mri', 'T1.mgz')
+    tmpdir = _TempDir()
+    t1w_nii = op.join(tmpdir, 't1_nii.nii.gz')
+    nib.save(nib.load(t1w_mgh), t1w_nii)
 
-    write_anat(output_path, subject_id, t1w, session_id, acq, raw=raw,
+    write_anat(output_path, subject_id, t1w_nii, session_id, acq, raw=raw,
                trans=trans, verbose=True)
 
     # Try to get trans back through fitting points

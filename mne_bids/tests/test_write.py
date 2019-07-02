@@ -17,6 +17,7 @@ from glob import glob
 from datetime import datetime
 import platform
 
+import nibabel as nib
 import numpy as np
 from numpy.testing import assert_array_equal
 import mne
@@ -526,9 +527,13 @@ def test_write_anat():
     trans = mne.read_trans(raw_fname.replace('_raw.fif', '-trans.fif'))
 
     # Get the T1 weighted MRI data file
-    t1w = op.join(data_path, 'subjects', 'sample', 'mri', 'T1.mgz')
+    # Needs to be converted to Nifti because we only have mgh in our test base
+    t1w_mgh = op.join(data_path, 'subjects', 'sample', 'mri', 'T1.mgz')
+    tmpdir = _TempDir()
+    t1w_nii = op.join(tmpdir, 't1_nii.nii.gz')
+    nib.save(nib.load(t1w_mgh), t1w_nii)
 
-    anat_dir = write_anat(output_path, subject_id, t1w, session_id, acq,
+    anat_dir = write_anat(output_path, subject_id, t1w_nii, session_id, acq,
                           raw=raw, trans=trans, verbose=True)
 
     # Validate BIDS

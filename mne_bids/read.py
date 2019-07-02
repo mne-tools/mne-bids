@@ -198,8 +198,6 @@ def fit_trans_from_points(bids_fname, bids_root, verbose):
     # The MRI landmarks are in "voxels". We need to convert the to the
     # neuromag RAS coordinate system in order to compare the with MEG landmarks
     # see also: `mne_bids.write.write_anat`
-    # XXX: need to convert to .mgz to access transforms from header, see
-    # https://neurostars.org/t/get-voxel-to-ras-transformation-from-nifti-file/4549  # noqa: E501
     t1w_path = t1w_json_path.replace('.json', '.nii')
     if not op.exists(t1w_path):
         t1w_path += '.gz'  # perhaps it is .nii.gz? ... else raise an error
@@ -208,13 +206,11 @@ def fit_trans_from_points(bids_fname, bids_root, verbose):
                            'with "{}". Tried: "{}" but it does not exist.'
                            .format(t1w_json_path, t1w_path))
     t1_nifti = nib.load(t1w_path)
-    tmp_dir = _TempDir()
-    t1_mgz_path = op.join(tmp_dir, 't1_mgz.mgz')
-    nib.save(t1_nifti, t1_mgz_path)
-    t1_mgz = nib.load(t1_mgz_path)
+    # Convert to MGH format to access vox2ras method
+    t1_mgh = nib.MGHImage(t1_nifti.dataobj, t1_nifti.affine)
 
     # now extract transformation matrix and put back to RAS coordinates of MRI
-    vox2ras_tkr = t1_mgz.header.get_vox2ras_tkr()
+    vox2ras_tkr = t1_mgh.header.get_vox2ras_tkr()
     mri_landmarks = apply_trans(vox2ras_tkr, mri_landmarks)
     mri_landmarks = mri_landmarks * 1e-3
 
