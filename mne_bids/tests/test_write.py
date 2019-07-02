@@ -16,6 +16,7 @@ import pytest
 from glob import glob
 from datetime import datetime
 import platform
+import shutil as sh
 
 import numpy as np
 from numpy.testing import assert_array_equal
@@ -544,3 +545,31 @@ def test_write_anat():
     # Validate that files are as expected
     assert op.exists(op.join(anat_dir, 'sub-01_ses-01_acq-01_T1w.json'))
     assert op.exists(op.join(anat_dir, 'sub-01_ses-01_acq-01_T1w.nii.gz'))
+
+    # Try some anat writing that will fail
+    # We already have some MRI data there
+    with pytest.raises(IOError, match='/anat directory for'):
+        write_anat(output_path, subject_id, t1w_nii, session_id, raw=raw,
+                   trans=trans, verbose=True)
+
+    # MRI data not NIfTI
+    with pytest.raises(ValueError, match='must be a .nii'):
+        sh.rmtree(anat_dir)
+        write_anat(output_path, subject_id, t1w_mgh, session_id, raw=raw,
+                   trans=trans, verbose=True)
+
+    # Return without writing sidecar
+    sh.rmtree(anat_dir)
+    write_anat(output_path, subject_id, t1w_nii, session_id)
+
+    # trans is not a Transform
+    with pytest.raises(ValueError, match='must be a "Transform"'):
+        sh.rmtree(anat_dir)
+        write_anat(output_path, subject_id, t1w_nii, session_id, raw=raw,
+                   trans='not a trans', verbose=True)
+
+    # specify trans but not raw
+    with pytest.raises(ValueError, match='must be specified if `trans`'):
+        sh.rmtree(anat_dir)
+        write_anat(output_path, subject_id, t1w_nii, session_id, raw=None,
+                   trans=trans, verbose=True)

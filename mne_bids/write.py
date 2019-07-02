@@ -1000,7 +1000,7 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
     """
     try:  # pragma: no cover
         import nibabel as nib
-    except ImportError:
+    except ImportError:  # pragma: no cover
         raise ImportError('This function requires nibabel.')
 
     # Make directory for anatomical data
@@ -1032,7 +1032,7 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
         return anat_dir
 
     if not isinstance(trans, mne.transforms.Transform):
-        raise ValueError('trans must be a "Transform" but is of type "{}"'
+        raise ValueError('`trans` must be a "Transform" but is of type "{}"'
                          .format(type(trans)))
 
     if not isinstance(raw, BaseRaw):

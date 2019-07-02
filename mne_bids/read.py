@@ -184,7 +184,7 @@ def fit_trans_from_points(bids_fname, bids_root, verbose):
     """
     try:  # pragma: no cover
         import nibabel as nib
-    except ImportError:
+    except ImportError:  # pragma: no cover
         raise ImportError('This function requires nibabel.')
 
     # Get the sidecar file for MRI landmarks
