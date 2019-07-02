@@ -186,8 +186,6 @@ def test_find_matching_sidecar():
                    event_id=event_id, overwrite=False)
 
     # Now find a sidecar
-    print(output_path)
-    print(bids_basename)
     sidecar = _find_matching_sidecar(bids_basename, output_path,
                                      'coordsystem.json')
     expected_file = op.join('sub-01', 'ses-01', 'meg',
