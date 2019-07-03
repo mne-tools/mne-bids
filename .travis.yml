@@ -6,8 +6,6 @@ language: python
 env:
   global:
     - VALIDATOR_VERSION="master"
-  matrix:
-    - PYTHON_VERSION=3.6
 
 
 before_install:
@@ -41,10 +39,9 @@ install:
     - echo $PATH
     - bids-validator --version
     - which bids-validator
-    - conda create -n testenv --yes python=${PYTHON_VERSION}
+    - conda env create -f environment.yml --name=testenv
     - source activate testenv
-    - conda install --yes --quiet numpy scipy matplotlib
-    - pip install nibabel flake8 pytest pytest-cov pytest-sugar pytest-faulthandler check-manifest
+    - pip uninstall mne  # uninstall the pip version of mne to install dev version below
     - |
       git clone --depth 1 https://github.com/mne-tools/mne-python.git -b maint/0.18
       cd mne-python

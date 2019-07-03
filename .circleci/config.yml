@@ -14,7 +14,7 @@ jobs:
             # Also restore pip cache to speed up installations
             - restore_cache:
                 keys:
-                  - pip-cache-0-{{ checksum "./mne_bids/__init__.py" }}
+                  - pip-cache-0-{{ checksum "./environment.yml" }}
 
             - run:
                 name: Install miniconda
@@ -28,11 +28,8 @@ jobs:
                 name: Setup Python environment
                 command: |
                   conda update --yes --quiet conda
-                  conda create -n testenv --yes python=3.6
+                  conda env create -f environment.yml --name=testenv
                   source activate testenv
-                  conda install --yes --quiet numpy scipy matplotlib
-                  pip install sphinx numpydoc sphinx-gallery sphinx_bootstrap_theme pillow
-                  pip install -U mne nibabel
                   python setup.py develop
 
             - run:
@@ -53,7 +50,7 @@ jobs:
 
             # Store pip cache
             - save_cache:
-                key: pip-cache-0-{{ checksum "./mne_bids/__init__.py" }}
+                key: pip-cache-0-{{ checksum "./environment.yml" }}
                 paths:
                   - ~/.cache/pip
 

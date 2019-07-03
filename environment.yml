@@ -11,14 +11,15 @@ dependencies:
 - matplotlib
 - pip:
   - mne
+  - mne-bids
   - nibabel
   - nilearn
-  - mne-bids
   - flake8
   - pytest
   - pytest-cov
   - pytest-sugar
   - pytest-faulthandler
+  - check-manifest
   - sphinx
   - pillow
   - numpydoc
