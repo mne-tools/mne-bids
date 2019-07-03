@@ -41,7 +41,7 @@ install:
     - which bids-validator
     - conda env create -f environment.yml --name=testenv
     - source activate testenv
-    - pip uninstall mne  # uninstall the pip version of mne to install dev version below
+    - pip uninstall-yq mne  # uninstall the pip version of mne to install dev version below
     - |
       git clone --depth 1 https://github.com/mne-tools/mne-python.git -b maint/0.18
       cd mne-python
