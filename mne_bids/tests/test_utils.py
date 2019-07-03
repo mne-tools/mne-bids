@@ -186,16 +186,16 @@ def test_find_matching_sidecar():
                    event_id=event_id, overwrite=False)
 
     # Now find a sidecar
-    sidecar = _find_matching_sidecar(bids_basename, output_path,
-                                     'coordsystem.json')
+    sidecar_fname = _find_matching_sidecar(bids_basename, output_path,
+                                           'coordsystem.json')
     expected_file = op.join('sub-01', 'ses-01', 'meg',
                             'sub-01_ses-01_acq-01_coordsystem.json')
 
-    assert sidecar.endswith(expected_file)
+    assert sidecar_fname.endswith(expected_file)
 
     # Find multiple sidecars, triggering an error
     with pytest.raises(RuntimeError):
-        open(sidecar.replace('coordsystem.json',
-                             '2coordsystem.json'), 'w').close()
-        sidecar = _find_matching_sidecar(bids_basename, output_path,
-                                         'coordsystem.json')
+        open(sidecar_fname.replace('coordsystem.json',
+                                   '2coordsystem.json'), 'w').close()
+        sidecar_fname = _find_matching_sidecar(bids_basename, output_path,
+                                               'coordsystem.json')

@@ -307,7 +307,7 @@ def _find_matching_sidecar(bids_fname, bids_root, suffix):
 
     Returns
     -------
-    sidecar : str
+    sidecar_fname : str
         Path to the identified sidecar file
 
     """
@@ -330,5 +330,5 @@ def _find_matching_sidecar(bids_fname, bids_root, suffix):
                            .format(suffix, bids_fname, len(candidate_list),
                                    candidate_list, search_str))
     else:
-        sidecar = candidate_list[0]
-    return sidecar
+        sidecar_fname = candidate_list[0]
+    return sidecar_fname

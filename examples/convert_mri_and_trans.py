@@ -1,7 +1,7 @@
 """
-=======================================================================
-Save a T1 weighted MRI scan to BIDS, and encode a transformation matrix
-=======================================================================
+==========================================================================
+Save and load T1-weighted MRI scan along with anatomical landmarks in BIDS
+==========================================================================
 
 When working with MEEG data in the domain of source localization, we usually
 have to deal with aligning several coordinate systems, such as the coordinate
@@ -12,7 +12,7 @@ systems of ...
 - the anatomical MRI scan of a study participant
 
 The process of aligning these frames is also called coregistration, and is
-performed with the help of transformation matrices, called ``trans`` in MNE.
+performed with the help of a transformation matrix, called ``trans`` in MNE.
 
 In this tutorial, we show how ``MNE-BIDS`` can be used to save a T1 weighted
 MRI scan in BIDS format, and to encode all information of the ``trans`` object
@@ -76,11 +76,11 @@ print_dir_tree(output_path)
 ###############################################################################
 # Now let's assume that we have also collected some T1 weighted MRI data for
 # our subject. And furthermore, that we have already aligned our coordinate
-# frames (as described HERE) and obtained a transformation matrix
-# :code:`trans`.
+# frames (using e.g., the `coregistration GUI`_) and obtained a transformation
+# matrix :code:`trans`.
 
-# Get the path to our MRI scan and covert it to NIfTI format
-# For that, we use nibabel, reading in the compressed mgh file, and saving it
+# Get the path to our MRI scan and convert it to NIfTI format
+# For that, we use nibabel, reading in the compressed MGH file, and saving it
 # as a compressed NIfTI file
 t1_mgh_fname = op.join(data_path, 'subjects', 'sample', 'mri', 'T1.mgz')
 t1_mgh = nib.load(t1_mgh_fname)
@@ -108,14 +108,14 @@ write_anat(bids_root=output_path,  # point to the BIDS dir we wrote earlier
            verbose=True  # this will print out the sidecar file
            )
 
-# Clean up the NIfTI file we wrote earlier to convert from mgh to NIfTI
+# Clean up the NIfTI file we wrote earlier to convert from MGH to NIfTI
 os.remove(t1_nii_fname)
 
 # Let's have another look at our BIDS directory
 print_dir_tree(output_path)
 
 ###############################################################################
-# Our BIDS dataset is now ready to be shared. We can easily reproduce our
+# Our BIDS dataset is now ready to be shared. We can easily estimate the
 # transformation matrix using ``MNE-BIDS`` and the BIDS dataset.
 
 bids_fname = bids_basename + '_meg.fif'
@@ -124,10 +124,6 @@ bids_fname = bids_basename + '_meg.fif'
 _trans = get_head_mri_trans(bids_fname=bids_fname,  # name of the MEG file
                             bids_root=output_path  # root of our BIDS directory
                             )
-
-# Show that they are the same
-np.testing.assert_almost_equal(trans['trans'],
-                               _trans['trans'])
 
 ###############################################################################
 # Finally, let's use the T1 weighted MRI image and plot the anatomical
@@ -154,13 +150,16 @@ mri_pos = apply_trans(vox2ras, mri_pos)  # in RAS
 
 # Plot it
 fig, axs = plt.subplots(3, 1)
-for i in range(3):
-    plot_anat(t1_mgh_fname, axes=axs[i], cut_coords=mri_pos[i, :])
+for point_idx in range(3):
+    plot_anat(t1_mgh_fname, axes=axs[point_idx],
+              cut_coords=mri_pos[point_idx, :])
 
 
 ###############################################################################
 # .. LINKS
 #
+# .. _coregistration GUI:
+#    https://martinos.org/mne/stable/auto_tutorials/source-modeling/plot_source_alignment.html#defining-the-headmri-trans-using-the-gui  # noqa: E501
 # .. _mne_source_coords:
 #    https://www.martinos.org/mne/stable/auto_tutorials/source-modeling/plot_source_alignment.html  # noqa: E501
 # .. _mne_sample_data:

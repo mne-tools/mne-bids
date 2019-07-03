@@ -21,7 +21,7 @@ from mne.io.constants import FIFF
 from mne.io.pick import channel_type
 from mne.io import BaseRaw
 from mne.channels.channels import _unit2human
-from mne.utils import check_version
+from mne.utils import check_version, has_nibabel
 from mne.transforms import _ensure_trans, apply_trans
 
 
@@ -977,7 +977,7 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
         The raw data of `subject` corresponding to `t1w`. If `raw` is None,
         `trans` has to be None as well
     trans : instance of mne.transforms.Transform | None
-        The transformation matrix from HEAD coordinates to MRI coordinates.
+        The transformation matrix from head coordinates to MRI coordinates.
         If None, no sidecar JSON file will be written for `t1w`
     overwrite : bool
         Whether to overwrite existing files or data in files.
@@ -998,9 +998,7 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
         Path to the anatomical scan in the `bids_dir`
 
     """
-    try:  # pragma: no cover
-        import nibabel as nib
-    except ImportError:  # pragma: no cover
+    if not has_nibabel():  # pragma: no cover
         raise ImportError('This function requires nibabel.')
 
     # Make directory for anatomical data

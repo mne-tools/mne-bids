@@ -13,6 +13,7 @@ import json
 import numpy as np
 import mne
 from mne import io
+from mne.utils import has_nibabel
 from mne.coreg import fit_matched_points
 from mne.transforms import apply_trans
 
@@ -164,7 +165,7 @@ def get_head_mri_trans(bids_fname, bids_root):
 
     Will attempt to read the landmarks of Nasion, LPA, and RPA from the sidecar
     files of (i) the MEG and (ii) the T1 weighted MRI data. The two sets of
-    points will then be used to calculate a transformation matrix from HEAD
+    points will then be used to calculate a transformation matrix from head
     coordinates to MRI coordinates.
 
     Parameters
@@ -177,12 +178,10 @@ def get_head_mri_trans(bids_fname, bids_root):
     Returns
     -------
     trans : instance of mne.transforms.Transform
-        The data transformation matrix from HEAD to MRI coordinates
+        The data transformation matrix from head to MRI coordinates
 
     """
-    try:  # pragma: no cover
-        import nibabel as nib
-    except ImportError:  # pragma: no cover
+    if not has_nibabel():  # pragma: no cover
         raise ImportError('This function requires nibabel.')
 
     # Get the sidecar file for MRI landmarks
