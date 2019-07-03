@@ -72,14 +72,12 @@ def test_get_head_mri_trans():
     # Write some MRI data and supply a `trans` so that a sidecar gets written
     trans = mne.read_trans(raw_fname.replace('_raw.fif', '-trans.fif'))
 
-    # Get the T1 weighted MRI data file
-    # Needs to be converted to Nifti because we only have mgh in our test base
+    # Get the T1 weighted MRI data file ... test write_anat with a nibabel
+    # image instead of a file path
     t1w_mgh = op.join(data_path, 'subjects', 'sample', 'mri', 'T1.mgz')
-    tmpdir = _TempDir()
-    t1w_nii = op.join(tmpdir, 't1_nii.nii.gz')
-    nib.save(nib.load(t1w_mgh), t1w_nii)
+    t1w_mgh = nib.load(t1w_mgh)
 
-    write_anat(output_path, subject_id, t1w_nii, session_id, acq, raw=raw,
+    write_anat(output_path, subject_id, t1w_mgh, session_id, acq, raw=raw,
                trans=trans, verbose=True)
 
     # Try to get trans back through fitting points

@@ -31,17 +31,14 @@ See the documentation pages in the MNE docs for more information on
 ###############################################################################
 # We are importing everything we need for this example:
 
-import os
 import os.path as op
 import shutil as sh
 
 import numpy as np
 import matplotlib.pyplot as plt
 from nilearn.plotting import plot_anat
-import nibabel as nib
 import mne
 from mne.datasets import sample
-from mne.transforms import apply_trans
 from mne.source_space import head_to_mri
 
 from mne_bids import (write_raw_bids, make_bids_basename, write_anat,
@@ -80,13 +77,8 @@ print_dir_tree(output_path)
 # frames (using e.g., the `coregistration GUI`_) and obtained a transformation
 # matrix :code:`trans`.
 
-# Get the path to our MRI scan and convert it to NIfTI format
-# For that, we use nibabel, reading in the compressed MGH file, and saving it
-# as a compressed NIfTI file
+# Get the path to our MRI scan
 t1_mgh_fname = op.join(data_path, 'subjects', 'sample', 'mri', 'T1.mgz')
-t1_mgh = nib.load(t1_mgh_fname)
-t1_nii_fname = op.join(data_path, 'subjects', 'sample', 'mri', 'T1.nii.gz')
-nib.save(t1_mgh, t1_nii_fname)
 
 # Load the transformation matrix and show what it looks like
 trans_fname = op.join(data_path, 'MEG', 'sample',
@@ -102,15 +94,12 @@ print(trans)
 # We use the write_anat function
 write_anat(bids_root=output_path,  # point to the BIDS dir we wrote earlier
            subject=sub,
-           t1w=t1_nii_fname,  # path to the MRI scan in NIfTI format
+           t1w=t1_mgh_fname,  # path to the MRI scan
            session=ses,
            raw=raw,  # the raw MEG data file connected to the MRI
            trans=trans,  # our transformation matrix
            verbose=True  # this will print out the sidecar file
            )
-
-# Clean up the NIfTI file we wrote earlier to convert from MGH to NIfTI
-os.remove(t1_nii_fname)
 
 # Let's have another look at our BIDS directory
 print_dir_tree(output_path)

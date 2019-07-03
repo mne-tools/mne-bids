@@ -532,11 +532,8 @@ def test_write_anat():
     # Get the T1 weighted MRI data file
     # Needs to be converted to Nifti because we only have mgh in our test base
     t1w_mgh = op.join(data_path, 'subjects', 'sample', 'mri', 'T1.mgz')
-    tmpdir = _TempDir()
-    t1w_nii = op.join(tmpdir, 't1_nii.nii.gz')
-    nib.save(nib.load(t1w_mgh), t1w_nii)
 
-    anat_dir = write_anat(output_path, subject_id, t1w_nii, session_id, acq,
+    anat_dir = write_anat(output_path, subject_id, t1w_mgh, session_id, acq,
                           raw=raw, trans=trans, verbose=True)
 
     # Validate BIDS
@@ -567,27 +564,27 @@ def test_write_anat():
     # Try some anat writing that will fail
     # We already have some MRI data there
     with pytest.raises(IOError, match='/anat directory for'):
-        write_anat(output_path, subject_id, t1w_nii, session_id, raw=raw,
+        write_anat(output_path, subject_id, t1w_mgh, session_id, raw=raw,
                    trans=trans, verbose=True)
 
-    # MRI data not NIfTI
-    with pytest.raises(ValueError, match='must be a .nii'):
+    # pass some invalid type as T1 MRI
+    with pytest.raises(ValueError, match='must be a path to a T1 weighted'):
         sh.rmtree(anat_dir)
-        write_anat(output_path, subject_id, t1w_mgh, session_id, raw=raw,
+        write_anat(output_path, subject_id, 9999999999999, session_id, raw=raw,
                    trans=trans, verbose=True)
 
     # Return without writing sidecar
     sh.rmtree(anat_dir)
-    write_anat(output_path, subject_id, t1w_nii, session_id)
+    write_anat(output_path, subject_id, t1w_mgh, session_id)
 
     # trans is not a Transform
     with pytest.raises(ValueError, match='must be a "Transform"'):
         sh.rmtree(anat_dir)
-        write_anat(output_path, subject_id, t1w_nii, session_id, raw=raw,
+        write_anat(output_path, subject_id, t1w_mgh, session_id, raw=raw,
                    trans='not a trans', verbose=True)
 
     # specify trans but not raw
     with pytest.raises(ValueError, match='must be specified if `trans`'):
         sh.rmtree(anat_dir)
-        write_anat(output_path, subject_id, t1w_nii, session_id, raw=None,
+        write_anat(output_path, subject_id, t1w_mgh, session_id, raw=None,
                    trans=trans, verbose=True)
