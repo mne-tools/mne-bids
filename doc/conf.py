@@ -190,8 +190,10 @@ sphinx_gallery_conf = {
     'backreferences_dir': 'generated',
     'reference_url': {
         'mne': 'http://mne-tools.github.io/stable/',
-        'numpy': 'http://docs.scipy.org/doc/numpy-1.9.1',
-        'scipy': 'http://docs.scipy.org/doc/scipy-0.17.0/reference'
+        'numpy': 'https://docs.scipy.org/doc/numpy-1.16.1/reference',
+        'scipy': 'https://docs.scipy.org/doc/scipy-1.2.1/reference/',
+        'nilearn': 'https://nilearn.github.io/modules/reference.html',
+        'matplotlib': 'https://matplotlib.org'
     },
     'binder': {
         # Required keys
