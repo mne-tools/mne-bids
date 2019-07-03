@@ -42,6 +42,7 @@ extensions = [
     'numpydoc',
     'sphinx.ext.autosummary',
     'sphinx.ext.doctest',
+    'sphinx.ext.intersphinx',
     'sphinx_gallery.gen_gallery'
 ]
 
@@ -182,19 +183,21 @@ texinfo_documents = [
      'Miscellaneous'),
 ]
 
+# Example configuration for intersphinx: refer to the Python standard library.
+intersphinx_mapping = {
+    'python': ('https://docs.python.org/3', None),
+    'mne': ('http://mne-tools.github.io/stable/', None),
+    'numpy': ('https://www.numpy.org/devdocs', None),
+    'scipy': ('https://scipy.github.io/devdocs', None),
+    'matplotlib': ('https://matplotlib.org', None),
+    'nilearn': ('http://nilearn.github.io', None),
+}
 
 sphinx_gallery_conf = {
     'examples_dirs': '../examples',
     'gallery_dirs': 'auto_examples',
     'filename_pattern': '^((?!sgskip).)*$',
     'backreferences_dir': 'generated',
-    'reference_url': {
-        'mne': 'http://mne-tools.github.io/stable/',
-        'numpy': 'https://docs.scipy.org/doc/numpy-1.16.1/reference',
-        'scipy': 'https://docs.scipy.org/doc/scipy-1.2.1/reference/',
-        'nilearn': 'https://nilearn.github.io/modules/reference.html',
-        'matplotlib': 'https://matplotlib.org'
-    },
     'binder': {
         # Required keys
         'org': 'mne-tools',
