@@ -562,15 +562,14 @@ def test_write_anat():
 
     # Try some anat writing that will fail
     # We already have some MRI data there
-    with pytest.raises(IOError, match='/anat directory for'):
-        write_anat(output_path, subject_id, t1w_mgh, session_id, raw=raw,
-                   trans=trans, verbose=True)
+    with pytest.raises(IOError, match='`overwrite` is set to False'):
+        write_anat(output_path, subject_id, t1w_mgh, session_id, acq,
+                   raw=raw, trans=trans, verbose=True, overwrite=False)
 
     # pass some invalid type as T1 MRI
     with pytest.raises(ValueError, match='must be a path to a T1 weighted'):
-        sh.rmtree(anat_dir)
         write_anat(output_path, subject_id, 9999999999999, session_id, raw=raw,
-                   trans=trans, verbose=True)
+                   trans=trans, verbose=True, overwrite=True)
 
     # Return without writing sidecar
     sh.rmtree(anat_dir)
@@ -578,12 +577,10 @@ def test_write_anat():
 
     # trans is not a Transform
     with pytest.raises(ValueError, match='must be a "Transform"'):
-        sh.rmtree(anat_dir)
         write_anat(output_path, subject_id, t1w_mgh, session_id, raw=raw,
-                   trans='not a trans', verbose=True)
+                   trans='not a trans', verbose=True, overwrite=True)
 
     # specify trans but not raw
     with pytest.raises(ValueError, match='must be specified if `trans`'):
-        sh.rmtree(anat_dir)
         write_anat(output_path, subject_id, t1w_mgh, session_id, raw=None,
-                   trans=trans, verbose=True)
+                   trans=trans, verbose=True, overwrite=True)

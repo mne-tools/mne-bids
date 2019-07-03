@@ -1008,9 +1008,6 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
                        'ses-{}'.format(session), 'anat')
     if not op.exists(anat_dir):
         os.makedirs(anat_dir)
-    else:
-        raise IOError('An /anat directory for sub-{} already exists in {}'
-                      .format(subject, bids_root))
 
     # Try to read our T1 file and convert to MGH representation
     if isinstance(t1w, str):
@@ -1025,7 +1022,15 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
     t1w_basename = make_bids_basename(subject=subject, session=session,
                                       acquisition=acquisition, prefix=anat_dir,
                                       suffix='T1w.nii.gz')
-    nib.save(t1_mgh, t1w_basename)
+    if not op.exists(t1w_basename):
+        nib.save(t1_mgh, t1w_basename)
+    elif overwrite:
+        os.remove(t1w_basename)
+        nib.save(t1_mgh, t1w_basename)
+    else:
+        raise IOError('Wanted to write a file but it already exists and '
+                      '`overwrite` is set to False. File: "{}"'
+                      .format(t1w_basename))
 
     # Check if we have necessary conditions for writing a sidecar JSON
     if trans is None:
