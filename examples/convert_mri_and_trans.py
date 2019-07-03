@@ -36,12 +36,13 @@ import os.path as op
 import shutil as sh
 
 import numpy as np
+import matplotlib.pyplot as plt
+from nilearn.plotting import plot_anat
+import nibabel as nib
 import mne
 from mne.datasets import sample
 from mne.transforms import apply_trans
-import nibabel as nib
-import matplotlib.pyplot as plt
-from nilearn.plotting import plot_anat
+from mne.source_space import head_to_mri
 
 from mne_bids import (write_raw_bids, make_bids_basename, write_anat,
                       get_head_mri_trans)
@@ -121,9 +122,9 @@ print_dir_tree(output_path)
 bids_fname = bids_basename + '_meg.fif'
 
 # reproduce our trans
-_trans = get_head_mri_trans(bids_fname=bids_fname,  # name of the MEG file
-                            bids_root=output_path  # root of our BIDS directory
-                            )
+estim_trans = get_head_mri_trans(bids_fname=bids_fname,  # name of the MEG file
+                                 bids_root=output_path  # root of our BIDS dir
+                                 )
 
 ###############################################################################
 # Finally, let's use the T1 weighted MRI image and plot the anatomical
@@ -138,15 +139,16 @@ pos = np.asarray((coords_dict['LPA'],
                   coords_dict['NAS'],
                   coords_dict['RPA']))
 
-# Apply transform
-mri_pos = apply_trans(trans, pos) * 1e3
 
-# Get fiducials in voxel space
-vox2ras_tkr = t1_mgh.header.get_vox2ras_tkr()
-ras2vox_tkr = np.linalg.inv(vox2ras_tkr)
-vox2ras = t1_mgh.header.get_vox2ras()
-mri_pos = apply_trans(ras2vox_tkr, mri_pos)  # in vox
-mri_pos = apply_trans(vox2ras, mri_pos)  # in RAS
+# We use a function from MNE-Python to convert MEG coordinates to MRI space
+# for the conversion we use our estimated transformation matrix and the
+# MEG coordinates extracted from the raw file. `subjects` and `subjects_dir`
+# are used internally, to point to the T1-weighted MRI file: `t1_mgh_fname`
+mri_pos = head_to_mri(pos=pos,
+                      subject='sample',
+                      mri_head_t=estim_trans,
+                      subjects_dir=op.join(data_path, 'subjects')
+                      )
 
 # Plot it
 fig, axs = plt.subplots(3, 1)

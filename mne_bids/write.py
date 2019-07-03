@@ -1000,6 +1000,7 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
     """
     if not has_nibabel():  # pragma: no cover
         raise ImportError('This function requires nibabel.')
+    import nibabel as nib
 
     # Make directory for anatomical data
     anat_dir = op.join(bids_root, 'sub-{}'.format(subject),

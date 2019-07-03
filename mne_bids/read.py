@@ -183,6 +183,7 @@ def get_head_mri_trans(bids_fname, bids_root):
     """
     if not has_nibabel():  # pragma: no cover
         raise ImportError('This function requires nibabel.')
+    import nibabel as nib
 
     # Get the sidecar file for MRI landmarks
     t1w_json_path = _find_matching_sidecar(bids_fname, bids_root, 'T1w.json')
