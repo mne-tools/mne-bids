@@ -510,7 +510,6 @@ def test_set():
 @requires_nibabel()
 def test_write_anat():
     """Test writing anatomical data."""
-    import nibabel as nib
     # Get the MNE testing sample data
     output_path = _TempDir()
     data_path = testing.data_path()

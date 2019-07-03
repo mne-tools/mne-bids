@@ -191,10 +191,17 @@ def get_head_mri_trans(bids_fname, bids_root):
     # Get MRI landmarks from the JSON sidecar
     with open(t1w_json_path, 'r') as f:
         t1w_json = json.load(f)
-    mri_coords_dict = t1w_json['AnatomicalLandmarkCoordinates']
-    mri_landmarks = np.asarray((mri_coords_dict['LPA'],
-                                mri_coords_dict['NAS'],
-                                mri_coords_dict['RPA']))
+    mri_coords_dict = t1w_json.get('AnatomicalLandmarkCoordinates', dict())
+    mri_landmarks = np.asarray((mri_coords_dict.get('LPA', np.nan),
+                                mri_coords_dict.get('NAS', np.nan),
+                                mri_coords_dict.get('RPA', np.nan)))
+    if np.isnan(mri_landmarks).any():
+        raise RuntimeError('Could not parse T1w sidecar file: "{}"\n\n'
+                           'The sidecar file MUST contain a key '
+                           '"AnatomicalLandmarkCoordinates" pointing to a '
+                           'dict with keys "LPA", "NAS", "RPA". '
+                           'Yet, the following structure was found:\n\n"{}"'
+                           .format(t1w_json_path, t1w_json))
 
     # The MRI landmarks are in "voxels". We need to convert the to the
     # neuromag RAS coordinate system in order to compare the with MEG landmarks

@@ -4,6 +4,7 @@
 # License: BSD (3-clause)
 import os.path as op
 import pytest
+import shutil as sh
 
 import numpy as np
 import mne
@@ -77,8 +78,8 @@ def test_get_head_mri_trans():
     t1w_mgh = op.join(data_path, 'subjects', 'sample', 'mri', 'T1.mgz')
     t1w_mgh = nib.load(t1w_mgh)
 
-    write_anat(output_path, subject_id, t1w_mgh, session_id, acq, raw=raw,
-               trans=trans, verbose=True)
+    anat_dir = write_anat(output_path, subject_id, t1w_mgh, session_id, acq,
+                          raw=raw, trans=trans, verbose=True)
 
     # Try to get trans back through fitting points
     reproduced_trans = get_head_mri_trans(bids_fname, output_path)
@@ -89,3 +90,11 @@ def test_get_head_mri_trans():
                                    reproduced_trans['trans'])
     print(trans)
     print(reproduced_trans)
+
+    # provoke an error by pointing introducing NaNs into MEG coords
+    with pytest.raises(RuntimeError, match='AnatomicalLandmarkCoordinates'):
+        raw.info['dig'][0]['r'] = np.ones(3) * np.nan
+        sh.rmtree(anat_dir)
+        write_anat(output_path, subject_id, t1w_mgh, session_id, acq, raw=raw,
+                   trans=trans, verbose=True)
+        reproduced_trans = get_head_mri_trans(bids_fname, output_path)
