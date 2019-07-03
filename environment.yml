@@ -8,6 +8,7 @@ dependencies:
 - mkl
 - numpy
 - scipy
+- scikit-learn
 - matplotlib
 - pip:
   - mne
