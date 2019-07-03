@@ -125,11 +125,11 @@ estim_trans = get_head_mri_trans(bids_fname=bids_fname,  # name of the MEG file
 # RPA from the MEG file, apply our transformation matrix :code:`trans`, and
 # plot the results.
 
-# Get Landmarks from MEG file
-coords_dict = _extract_landmarks(raw.info['dig'])
-pos = np.asarray((coords_dict['LPA'],
-                  coords_dict['NAS'],
-                  coords_dict['RPA']))
+# Get Landmarks from MEG file, 0, 1, and 2 correspond to LPA, NAS, RPA
+# and the 'r' key will provide us with the xyz coordinates
+pos = np.asarray((raw.info['dig'][0]['r'],
+                  raw.info['dig'][1]['r'],
+                  raw.info['dig'][2]['r']))
 
 
 # We use a function from MNE-Python to convert MEG coordinates to MRI space
