@@ -42,7 +42,7 @@ We recommend the `Anaconda <https://www.anaconda.com/download/>`_ Python
 distribution. We require that you use Python 3.
 Besides ``numpy`` and ``scipy`` (which are included in the standard Anaconda
 installation), you will need to install the most recent version of ``MNE ``
-using using the ``pip`` tool:
+using the ``pip`` tool:
 
 .. code-block:: bash
 
