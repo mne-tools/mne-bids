@@ -46,7 +46,7 @@ from mne.source_space import head_to_mri
 
 from mne_bids import (write_raw_bids, make_bids_basename, write_anat,
                       get_head_mri_trans)
-from mne_bids.utils import print_dir_tree, _extract_landmarks
+from mne_bids.utils import print_dir_tree
 
 ###############################################################################
 # We will be using the `MNE sample data <mne_sample_data_>`_ and write a basic
@@ -144,9 +144,10 @@ mri_pos = head_to_mri(pos=pos,
 
 # Plot it
 fig, axs = plt.subplots(3, 1)
-for point_idx in range(3):
+for point_idx, label in enumerate(('LPA', 'NAS', 'RPA')):
     plot_anat(t1_mgh_fname, axes=axs[point_idx],
-              cut_coords=mri_pos[point_idx, :])
+              cut_coords=mri_pos[point_idx, :],
+              title=label)
 
 
 ###############################################################################
