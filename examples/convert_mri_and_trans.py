@@ -24,6 +24,9 @@ directory.
 See the documentation pages in the MNE docs for more information on
 `source alignment and coordinate frames <mne_source_coords_>`_
 
+.. note:: For this example you will need to install ``matplotlib`` and
+          ``nilearn`` on top of your usual ``mne-bids`` installation.
+
 """
 # Authors: Stefan Appelhoff <stefan.appelhoff@mailbox.org>
 # License: BSD (3-clause)

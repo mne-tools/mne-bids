@@ -71,8 +71,6 @@ For full functionality of ``mne-bids``, you will also need to install the
 following packages:
 
 - nibabel
-- nilearn
-- matplotlib
 
 If you want to use the latest development version, use the following command:
 
