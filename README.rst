@@ -131,10 +131,10 @@ EEG
 
 .. code-block:: Text
 
-   Pernet, C. R., Appelhoff, S., Flandin, G., Phillips, C., Delorme, A., &
-   Oostenveld, R. (2018, December 6). BIDS-EEG: an extension to the Brain
-   Imaging Data Structure  (BIDS) Specification for electroencephalography.
-   https://doi.org/10.31234/osf.io/63a4y
+   Pernet, C. R., Appelhoff, S., Gorgolewski, K. J., Flandin, G.,
+   Phillips, C., Delorme, A., Oostenveld, R. (2019). EEG-BIDS, an extension
+   to the brain imaging data structure for electroencephalography. Scientific
+   Data, 6, 103. https://doi.org/10.1038/s41597-019-0104-8
 
 
 iEEG
@@ -143,6 +143,6 @@ iEEG
 .. code-block:: Text
 
    Holdgraf, C., Appelhoff, S., Bickel, S., Bouchard, K., D'Ambrosio, S.,
-   David, O., … Hermes, D. (2018, December 13). BIDS-iEEG: an extension to the
-   brain imaging data structure  (BIDS) specification for human intracranial
-   electrophysiology. https://doi.org/10.31234/osf.io/r7vc2
+   David, O., … Hermes, D. (2019). iEEG-BIDS, extending the Brain Imaging Data
+   Structure specification to human intracranial electrophysiology. Scientific
+   Data, 6, 102. https://doi.org/10.1038/s41597-019-0105-7
