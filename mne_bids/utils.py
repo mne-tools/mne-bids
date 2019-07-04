@@ -9,6 +9,7 @@
 # License: BSD (3-clause)
 import os
 import os.path as op
+import glob
 import warnings
 import json
 import shutil as sh
@@ -20,6 +21,7 @@ from mne.utils import check_version
 from mne.channels import read_montage
 from mne.io.pick import pick_types
 from mne.io.kit.kit import get_kit_info
+from mne.io.constants import FIFF
 
 from .tsv_handler import _to_tsv, _tsv_to_str
 
@@ -56,6 +58,22 @@ def _mkdir_p(path, overwrite=False, verbose=False):
     os.makedirs(path, exist_ok=True)
     if verbose is True:
         print('Creating folder: %s' % path)
+
+
+def _parse_ext(raw_fname, verbose=False):
+    """Split a filename into its name and extension."""
+    fname, ext = os.path.splitext(raw_fname)
+    # BTi data is the only file format that does not have a file extension
+    if ext == '' or 'c,rf' in fname:
+        if verbose is True:
+            print('Found no extension for raw file, assuming "BTi" format and '
+                  'appending extension .pdf')
+        ext = '.pdf'
+    # If ending on .gz, check whether it is an .nii.gz file
+    elif ext == '.gz' and raw_fname.endswith('.nii.gz'):
+        ext = '.nii.gz'
+        fname = fname[:-4]  # cut off the .nii
+    return fname, ext
 
 
 def _parse_bids_filename(fname, verbose):
@@ -258,3 +276,59 @@ def _infer_eeg_placement_scheme(raw):
         placement_scheme = 'based on the extended 10/20 system'
 
     return placement_scheme
+
+
+def _extract_landmarks(dig):
+    """Extract NAS, LPA, and RPA from raw.info['dig']."""
+    coords = dict()
+    landmarks = {d['ident']: d for d in dig
+                 if d['kind'] == FIFF.FIFFV_POINT_CARDINAL}
+    if landmarks:
+        if FIFF.FIFFV_POINT_NASION in landmarks:
+            coords['NAS'] = landmarks[FIFF.FIFFV_POINT_NASION]['r'].tolist()
+        if FIFF.FIFFV_POINT_LPA in landmarks:
+            coords['LPA'] = landmarks[FIFF.FIFFV_POINT_LPA]['r'].tolist()
+        if FIFF.FIFFV_POINT_RPA in landmarks:
+            coords['RPA'] = landmarks[FIFF.FIFFV_POINT_RPA]['r'].tolist()
+    return coords
+
+
+def _find_matching_sidecar(bids_fname, bids_root, suffix):
+    """Try to find a sidecar file with a given suffix for a data file.
+
+    Parameters
+    ----------
+    bids_fname : str
+        Full name of the data file (not a path)
+    bids_root : str
+        Path to root of the BIDS folder
+    suffix : str
+        The suffix of the sidecar file to be found. E.g., "_coordsystem.json"
+
+    Returns
+    -------
+    sidecar_fname : str
+        Path to the identified sidecar file
+
+    """
+    # We only use subject and session as identifier, because all other
+    # parameters are potentially not binding for metadata sidecar files
+    if 'ses' in bids_fname:
+        search_str = '_'.join(bids_fname.split('_')[:2])
+    else:
+        # only sub, no ses
+        search_str = '_'.join(bids_fname.split('_')[:1])
+
+    # find the sidecar file, doing a recursive glob from the bids_root
+    search_str = op.join(bids_root, '**', search_str + '*' + suffix)
+    candidate_list = glob.glob(search_str, recursive=True)
+    if len(candidate_list) != 1:
+        # XXX: Potentially can extract other parameters from bids_fname to use
+        #      as a tie breaker here.
+        raise RuntimeError('Expected to find a single {} file associated with '
+                           '{}, but found {}: "{}".\n\nThe search_str was "{}"'
+                           .format(suffix, bids_fname, len(candidate_list),
+                                   candidate_list, search_str))
+    else:
+        sidecar_fname = candidate_list[0]
+    return sidecar_fname

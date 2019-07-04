@@ -18,6 +18,8 @@ MNE BIDS (:py:mod:`mne_bids`):
    make_bids_folders
    make_bids_basename
    make_dataset_description
+   write_anat
+   get_head_mri_trans
 
 Utils (:py:mod:`mne_bids.utils`):
 

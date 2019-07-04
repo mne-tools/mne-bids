@@ -4,19 +4,22 @@ channels:
 - conda-forge
 dependencies:
 - python<3.7
-- pip==19
+- pip=19
 - mkl
 - numpy
 - scipy
+- scikit-learn
 - matplotlib
 - pip:
   - mne
-  - mne-bids
+  - nibabel
+  - nilearn
   - flake8
   - pytest
   - pytest-cov
   - pytest-sugar
   - pytest-faulthandler
+  - check-manifest
   - sphinx
   - pillow
   - numpydoc

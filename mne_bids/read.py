@@ -6,35 +6,27 @@
 #          Stefan Appelhoff <stefan.appelhoff@mailbox.org>
 #
 # License: BSD (3-clause)
-import os
 import os.path as op
 import glob
+import json
 
 import numpy as np
 import mne
 from mne import io
+from mne.utils import has_nibabel
+from mne.coreg import fit_matched_points
+from mne.transforms import apply_trans
 
 from .tsv_handler import _from_tsv, _drop
 from .config import ALLOWED_EXTENSIONS
-from .utils import _parse_bids_filename
+from .utils import (_parse_bids_filename, _extract_landmarks,
+                    _find_matching_sidecar, _parse_ext)
 
 reader = {'.con': io.read_raw_kit, '.sqd': io.read_raw_kit,
           '.fif': io.read_raw_fif, '.pdf': io.read_raw_bti,
           '.ds': io.read_raw_ctf, '.vhdr': io.read_raw_brainvision,
           '.edf': io.read_raw_edf, '.bdf': io.read_raw_edf,
           '.set': io.read_raw_eeglab}
-
-
-def _parse_ext(raw_fname, verbose=False):
-    """Split a filename into its name and extension."""
-    fname, ext = os.path.splitext(raw_fname)
-    # BTi data is the only file format that does not have a file extension
-    if ext == '' or 'c,rf' in fname:
-        if verbose is True:
-            print('Found no extension for raw file, assuming "BTi" format and '
-                  'appending extension .pdf')
-        ext = '.pdf'
-    return fname, ext
 
 
 def _read_raw(raw_fname, electrode=None, hsp=None, hpi=None, config=None,
@@ -166,3 +158,79 @@ def read_raw_bids(bids_fname, bids_root, verbose=True):
         raw.info['bads'] = list(unique_bads)
 
     return raw
+
+
+def get_head_mri_trans(bids_fname, bids_root):
+    """Produce transformation matrix from MEG and MRI landmark points.
+
+    Will attempt to read the landmarks of Nasion, LPA, and RPA from the sidecar
+    files of (i) the MEG and (ii) the T1 weighted MRI data. The two sets of
+    points will then be used to calculate a transformation matrix from head
+    coordinates to MRI coordinates.
+
+    Parameters
+    ----------
+    bids_fname : str
+        Full name of the MEG data file (not a path)
+    bids_root : str
+        Path to root of the BIDS folder
+
+    Returns
+    -------
+    trans : instance of mne.transforms.Transform
+        The data transformation matrix from head to MRI coordinates
+
+    """
+    if not has_nibabel():  # pragma: no cover
+        raise ImportError('This function requires nibabel.')
+    import nibabel as nib
+
+    # Get the sidecar file for MRI landmarks
+    t1w_json_path = _find_matching_sidecar(bids_fname, bids_root, 'T1w.json')
+
+    # Get MRI landmarks from the JSON sidecar
+    with open(t1w_json_path, 'r') as f:
+        t1w_json = json.load(f)
+    mri_coords_dict = t1w_json.get('AnatomicalLandmarkCoordinates', dict())
+    mri_landmarks = np.asarray((mri_coords_dict.get('LPA', np.nan),
+                                mri_coords_dict.get('NAS', np.nan),
+                                mri_coords_dict.get('RPA', np.nan)))
+    if np.isnan(mri_landmarks).any():
+        raise RuntimeError('Could not parse T1w sidecar file: "{}"\n\n'
+                           'The sidecar file MUST contain a key '
+                           '"AnatomicalLandmarkCoordinates" pointing to a '
+                           'dict with keys "LPA", "NAS", "RPA". '
+                           'Yet, the following structure was found:\n\n"{}"'
+                           .format(t1w_json_path, t1w_json))
+
+    # The MRI landmarks are in "voxels". We need to convert the to the
+    # neuromag RAS coordinate system in order to compare the with MEG landmarks
+    # see also: `mne_bids.write.write_anat`
+    t1w_path = t1w_json_path.replace('.json', '.nii')
+    if not op.exists(t1w_path):
+        t1w_path += '.gz'  # perhaps it is .nii.gz? ... else raise an error
+    if not op.exists(t1w_path):
+        raise RuntimeError('Could not find the T1 weighted MRI associated '
+                           'with "{}". Tried: "{}" but it does not exist.'
+                           .format(t1w_json_path, t1w_path))
+    t1_nifti = nib.load(t1w_path)
+    # Convert to MGH format to access vox2ras method
+    t1_mgh = nib.MGHImage(t1_nifti.dataobj, t1_nifti.affine)
+
+    # now extract transformation matrix and put back to RAS coordinates of MRI
+    vox2ras_tkr = t1_mgh.header.get_vox2ras_tkr()
+    mri_landmarks = apply_trans(vox2ras_tkr, mri_landmarks)
+    mri_landmarks = mri_landmarks * 1e-3
+
+    # Get MEG landmarks from the raw file
+    raw = read_raw_bids(bids_fname, bids_root)
+    meg_coords_dict = _extract_landmarks(raw.info['dig'])
+    meg_landmarks = np.asarray((meg_coords_dict['LPA'],
+                                meg_coords_dict['NAS'],
+                                meg_coords_dict['RPA']))
+
+    # Given the two sets of points, fit the transform
+    trans_fitted = fit_matched_points(src_pts=meg_landmarks,
+                                      tgt_pts=mri_landmarks)
+    trans = mne.transforms.Transform(fro='head', to='mri', trans=trans_fitted)
+    return trans

@@ -77,5 +77,8 @@ assert_array_equal(raw.get_data(), raw_renamed.get_data())
 # Schinkel.
 #
 # Lastly, there is a tool to check the integrity of your BrainVision files.
-# For that, see the
-# `BrainVision Validator <https://github.com/sappelhoff/brainvision-validator>`_
+# For that, see the `BrainVision Validator <bv-validator_>`_
+#
+# .. LINKS
+#
+# .. _`bv-validator`: https://github.com/sappelhoff/brainvision-validator

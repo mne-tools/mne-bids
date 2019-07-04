@@ -16,18 +16,22 @@ import pytest
 from glob import glob
 from datetime import datetime
 import platform
+import shutil as sh
+import json
 
 import numpy as np
 from numpy.testing import assert_array_equal
 import mne
 from mne.datasets import testing
-from mne.utils import _TempDir, run_subprocess, check_version
+from mne.utils import _TempDir, run_subprocess, check_version, requires_nibabel
 from mne.io.constants import FIFF
 from mne.io.kit.kit import get_kit_info
 
 from mne_bids import (write_raw_bids, read_raw_bids, make_bids_basename,
-                      make_bids_folders)
+                      make_bids_folders, write_anat)
 from mne_bids.tsv_handler import _from_tsv
+from mne_bids.utils import _find_matching_sidecar
+
 
 base_path = op.join(op.dirname(mne.__file__), 'io')
 subject_id = '01'
@@ -503,3 +507,91 @@ def test_set():
 
     cmd = bids_validator_exe + [output_path]
     run_subprocess(cmd, shell=shell)
+
+
+@requires_nibabel()
+def test_write_anat():
+    """Test writing anatomical data."""
+    # Get the MNE testing sample data
+    output_path = _TempDir()
+    data_path = testing.data_path()
+    raw_fname = op.join(data_path, 'MEG', 'sample',
+                        'sample_audvis_trunc_raw.fif')
+
+    event_id = {'Auditory/Left': 1, 'Auditory/Right': 2, 'Visual/Left': 3,
+                'Visual/Right': 4, 'Smiley': 5, 'Button': 32}
+    events_fname = op.join(data_path, 'MEG', 'sample',
+                           'sample_audvis_trunc_raw-eve.fif')
+
+    raw = mne.io.read_raw_fif(raw_fname)
+    write_raw_bids(raw, bids_basename, output_path, events_data=events_fname,
+                   event_id=event_id, overwrite=False)
+
+    # Write some MRI data and supply a `trans`
+    trans = mne.read_trans(raw_fname.replace('_raw.fif', '-trans.fif'))
+
+    # Get the T1 weighted MRI data file
+    # Needs to be converted to Nifti because we only have mgh in our test base
+    t1w_mgh = op.join(data_path, 'subjects', 'sample', 'mri', 'T1.mgz')
+
+    anat_dir = write_anat(output_path, subject_id, t1w_mgh, session_id, acq,
+                          raw=raw, trans=trans, verbose=True)
+
+    # Validate BIDS
+    cmd = bids_validator_exe + [output_path]
+    run_subprocess(cmd, shell=shell)
+
+    # Validate that files are as expected
+    t1w_json_path = op.join(anat_dir, 'sub-01_ses-01_acq-01_T1w.json')
+    assert op.exists(t1w_json_path)
+    assert op.exists(op.join(anat_dir, 'sub-01_ses-01_acq-01_T1w.nii.gz'))
+    with open(t1w_json_path, 'r') as f:
+        t1w_json = json.load(f)
+    print(t1w_json)
+    # We only should have AnatomicalLandmarkCoordinates as key
+    np.testing.assert_array_equal(list(t1w_json.keys()),
+                                  ['AnatomicalLandmarkCoordinates'])
+    # And within AnatomicalLandmarkCoordinates only LPA, NAS, RPA in that order
+    anat_dict = t1w_json['AnatomicalLandmarkCoordinates']
+    point_list = ['LPA', 'NAS', 'RPA']
+    np.testing.assert_array_equal(list(anat_dict.keys()),
+                                  point_list)
+    # test the actual values of the voxels (no floating points)
+    for i, point in enumerate([(66, 51, 46), (41, 32, 74), (17, 53, 47)]):
+        coords = anat_dict[point_list[i]]
+        np.testing.assert_array_equal(np.asarray(coords, dtype=int),
+                                      point)
+
+    # BONUS: test also that we can find the matching sidecar
+        side_fname = _find_matching_sidecar('sub-01_ses-01_acq-01_T1w.nii.gz',
+                                            output_path, 'T1w.json')
+        assert op.split(side_fname)[-1] == 'sub-01_ses-01_acq-01_T1w.json'
+
+    # Now try some anat writing that will fail
+    # We already have some MRI data there
+    with pytest.raises(IOError, match='`overwrite` is set to False'):
+        write_anat(output_path, subject_id, t1w_mgh, session_id, acq,
+                   raw=raw, trans=trans, verbose=True, overwrite=False)
+
+    # pass some invalid type as T1 MRI
+    with pytest.raises(ValueError, match='must be a path to a T1 weighted'):
+        write_anat(output_path, subject_id, 9999999999999, session_id, raw=raw,
+                   trans=trans, verbose=True, overwrite=True)
+
+    # Return without writing sidecar
+    sh.rmtree(anat_dir)
+    write_anat(output_path, subject_id, t1w_mgh, session_id)
+    # Assert that we truly cannot find a sidecar
+    with pytest.raises(RuntimeError, match='Expected to find a single'):
+        _find_matching_sidecar('sub-01_ses-01_acq-01_T1w.nii.gz',
+                               output_path, 'T1w.json')
+
+    # trans is not a Transform
+    with pytest.raises(ValueError, match='must be a "Transform"'):
+        write_anat(output_path, subject_id, t1w_mgh, session_id, raw=raw,
+                   trans='not a trans', verbose=True, overwrite=True)
+
+    # specify trans but not raw
+    with pytest.raises(ValueError, match='must be specified if `trans`'):
+        write_anat(output_path, subject_id, t1w_mgh, session_id, raw=None,
+                   trans=trans, verbose=True, overwrite=True)
