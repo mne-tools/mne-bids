@@ -68,7 +68,7 @@ def test_get_head_mri_trans():
     # We cannot recover trans, if no MRI has yet been written
     with pytest.raises(RuntimeError):
         bids_fname = bids_basename + '_meg.fif'
-        reproduced_trans = get_head_mri_trans(bids_fname, output_path)
+        estimated_trans = get_head_mri_trans(bids_fname, output_path)
 
     # Write some MRI data and supply a `trans` so that a sidecar gets written
     trans = mne.read_trans(raw_fname.replace('_raw.fif', '-trans.fif'))
@@ -82,14 +82,14 @@ def test_get_head_mri_trans():
                           raw=raw, trans=trans, verbose=True)
 
     # Try to get trans back through fitting points
-    reproduced_trans = get_head_mri_trans(bids_fname, output_path)
+    estimated_trans = get_head_mri_trans(bids_fname, output_path)
 
-    assert trans['from'] == reproduced_trans['from']
-    assert trans['to'] == reproduced_trans['to']
+    assert trans['from'] == estimated_trans['from']
+    assert trans['to'] == estimated_trans['to']
     np.testing.assert_almost_equal(trans['trans'],
-                                   reproduced_trans['trans'])
+                                   estimated_trans['trans'])
     print(trans)
-    print(reproduced_trans)
+    print(estimated_trans)
 
     # provoke an error by pointing introducing NaNs into MEG coords
     with pytest.raises(RuntimeError, match='AnatomicalLandmarkCoordinates'):
@@ -97,4 +97,4 @@ def test_get_head_mri_trans():
         sh.rmtree(anat_dir)
         write_anat(output_path, subject_id, t1w_mgh, session_id, acq, raw=raw,
                    trans=trans, verbose=True)
-        reproduced_trans = get_head_mri_trans(bids_fname, output_path)
+        estimated_trans = get_head_mri_trans(bids_fname, output_path)

@@ -30,6 +30,8 @@ from mne.io.kit.kit import get_kit_info
 from mne_bids import (write_raw_bids, read_raw_bids, make_bids_basename,
                       make_bids_folders, write_anat)
 from mne_bids.tsv_handler import _from_tsv
+from mne_bids.utils import _find_matching_sidecar
+
 
 base_path = op.join(op.dirname(mne.__file__), 'io')
 subject_id = '01'
@@ -560,7 +562,12 @@ def test_write_anat():
         np.testing.assert_array_equal(np.asarray(coords, dtype=int),
                                       point)
 
-    # Try some anat writing that will fail
+    # BONUS: test also that we can find the matching sidecar
+        side_fname = _find_matching_sidecar('sub-01_ses-01_acq-01_T1w.nii.gz',
+                                            output_path, 'T1w.json')
+        assert op.split(side_fname)[-1] == 'sub-01_ses-01_acq-01_T1w.json'
+
+    # Now try some anat writing that will fail
     # We already have some MRI data there
     with pytest.raises(IOError, match='`overwrite` is set to False'):
         write_anat(output_path, subject_id, t1w_mgh, session_id, acq,
@@ -574,6 +581,10 @@ def test_write_anat():
     # Return without writing sidecar
     sh.rmtree(anat_dir)
     write_anat(output_path, subject_id, t1w_mgh, session_id)
+    # Assert that we truly cannot find a sidecar
+    with pytest.raises(RuntimeError, match='Expected to find a single'):
+        _find_matching_sidecar('sub-01_ses-01_acq-01_T1w.nii.gz',
+                               output_path, 'T1w.json')
 
     # trans is not a Transform
     with pytest.raises(ValueError, match='must be a "Transform"'):
