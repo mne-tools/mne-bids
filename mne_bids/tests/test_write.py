@@ -45,6 +45,7 @@ task = 'testing'
 bids_basename = make_bids_basename(
     subject=subject_id, session=session_id, run=run, acquisition=acq,
     task=task)
+bids_basename_minimal = make_bids_basename(subject=subject_id, task=task)
 
 # WINDOWS issues:
 # the bids-validator development version does not work properly on Windows as
@@ -343,13 +344,13 @@ def test_vhdr():
     raw.info['bads'] = injected_bad
 
     # write with injected bad channels
-    write_raw_bids(raw, bids_basename, output_path, overwrite=False)
+    write_raw_bids(raw, bids_basename_minimal, output_path, overwrite=False)
 
     cmd = bids_validator_exe + [output_path]
     run_subprocess(cmd, shell=shell)
 
     # read and also get the bad channels
-    raw = read_raw_bids(bids_basename + '_eeg.vhdr', output_path)
+    raw = read_raw_bids(bids_basename_minimal + '_eeg.vhdr', output_path)
 
     # Check that injected bad channel shows up in raw after reading
     np.testing.assert_array_equal(np.asarray(raw.info['bads']),
@@ -357,9 +358,8 @@ def test_vhdr():
 
     # Test that correct channel units are written ... and that bad channel
     # is in channels.tsv
-    channels_tsv_name = op.join(output_path, 'sub-' + subject_id,
-                                'ses-' + session_id, 'eeg',
-                                bids_basename + '_channels.tsv')
+    channels_tsv_name = op.join(output_path, 'sub-{}'.format(subject_id),
+                                'eeg', bids_basename_minimal + '_channels.tsv')
     data = _from_tsv(channels_tsv_name)
     assert data['units'][data['name'].index('FP1')] == 'µV'
     assert data['units'][data['name'].index('CP5')] == 'n/a'
@@ -371,9 +371,8 @@ def test_vhdr():
 
     # create another bids folder with the overwrite command and check
     # no files are in the folder
-    data_path = make_bids_folders(subject=subject_id, session=session_id,
-                                  kind='eeg', output_path=output_path,
-                                  overwrite=True)
+    data_path = make_bids_folders(subject=subject_id, kind='eeg',
+                                  output_path=output_path, overwrite=True)
     assert len([f for f in os.listdir(data_path) if op.isfile(f)]) == 0
 
     # Also cover iEEG
