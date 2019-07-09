@@ -35,6 +35,11 @@ This is a repository for creating
 `BIDS <http://bids.neuroimaging.io/>`_\ -compatible datasets with
 `MNE <https://mne-tools.github.io/stable/index.html>`_.
 
+The documentation can be found under the following links:
+
+- for the `stable release <https://mne-tools.github.io/mne-bids/>`_
+- for the `latest (development) version <https://circleci.com/api/v1.1/project/github/mne-tools/mne-bids/latest/artifacts/0/html/index.html?branch=master>`_
+
 Installation
 ------------
 
