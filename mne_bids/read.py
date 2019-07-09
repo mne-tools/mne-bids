@@ -105,7 +105,7 @@ def read_raw_bids(bids_fname, bids_root, verbose=True):
     # Subject is mandatory ...
     kind_dir = op.join(bids_root, 'sub-{}'.format(params['sub']))
     # Session is optional ...
-    if params['ses']:
+    if params['ses'] is not None:
         kind_dir = op.join(kind_dir, 'ses-{}'.format(params['ses']))
     # Kind is mandatory
     kind_dir = op.join(kind_dir, kind)
