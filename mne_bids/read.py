@@ -98,9 +98,17 @@ def read_raw_bids(bids_fname, bids_root, verbose=True):
     kind = bids_fname.split('_')[-1].split('.')[0]
     _, ext = _parse_ext(bids_fname)
 
+    # Get the BIDS parameters (=entities)
     params = _parse_bids_filename(bids_basename, verbose)
-    kind_dir = op.join(bids_root, 'sub-%s' % params['sub'],
-                       'ses-%s' % params['ses'], kind)
+
+    # Construct the path to the "kind" where the data is stored
+    # Subject is mandatory ...
+    kind_dir = op.join(bids_root, 'sub-{}'.format(params['sub']))
+    # Session is optional ...
+    if params['ses']:
+        kind_dir = op.join(kind_dir, 'ses-{}'.format(params['ses']))
+    # Kind is mandatory
+    kind_dir = op.join(kind_dir, kind)
 
     config = None
     if ext in ('.fif', '.ds', '.vhdr', '.edf', '.bdf', '.set', '.sqd', '.con'):
