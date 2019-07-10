@@ -293,7 +293,7 @@ def _extract_landmarks(dig):
     return coords
 
 
-def _find_matching_sidecar(bids_fname, bids_root, suffix):
+def _find_matching_sidecar(bids_fname, bids_root, suffix, allow_fail=False):
     """Try to find a sidecar file with a given suffix for a data file.
 
     Parameters
@@ -304,15 +304,20 @@ def _find_matching_sidecar(bids_fname, bids_root, suffix):
         Path to root of the BIDS folder
     suffix : str
         The suffix of the sidecar file to be found. E.g., "_coordsystem.json"
+    allow_fail : bool
+        If False, will raise RuntimeError if not exactly one matching sidecar
+        was found. If True, will return None in that case. Defaults to False
 
     Returns
     -------
-    sidecar_fname : str
-        Path to the identified sidecar file
+    sidecar_fname : str | None
+        Path to the identified sidecar file, or None, if `allow_fail` is True
+        and no sidecar_fname was found
 
     """
     # We only use subject and session as identifier, because all other
     # parameters are potentially not binding for metadata sidecar files
+    warnings.warn(bids_fname)
     if 'ses' in bids_fname:
         search_str = '_'.join(bids_fname.split('_')[:2])
     else:
@@ -323,12 +328,17 @@ def _find_matching_sidecar(bids_fname, bids_root, suffix):
     search_str = op.join(bids_root, '**', search_str + '*' + suffix)
     candidate_list = glob.glob(search_str, recursive=True)
     if len(candidate_list) != 1:
-        # XXX: Potentially can extract other parameters from bids_fname to use
-        #      as a tie breaker here.
-        raise RuntimeError('Expected to find a single {} file associated with '
-                           '{}, but found {}: "{}".\n\nThe search_str was "{}"'
-                           .format(suffix, bids_fname, len(candidate_list),
-                                   candidate_list, search_str))
+        msg = ('Expected to find a single {} file associated with '
+               '{}, but found {}: "{}".\n\nThe search_str was "{}"'
+               .format(suffix, bids_fname, len(candidate_list),
+                       candidate_list, search_str))
+        # We failed. If this was expected, simply return None
+        if allow_fail:
+            warnings.warn(msg)
+            return None
+        else:
+            raise RuntimeError(msg)
+
     else:
         sidecar_fname = candidate_list[0]
     return sidecar_fname

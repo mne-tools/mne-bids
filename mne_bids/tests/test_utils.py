@@ -194,8 +194,11 @@ def test_find_matching_sidecar():
     assert sidecar_fname.endswith(expected_file)
 
     # Find multiple sidecars, triggering an error
-    with pytest.raises(RuntimeError):
+    with pytest.raises(RuntimeError, match='Expected to find a single'):
         open(sidecar_fname.replace('coordsystem.json',
                                    '2coordsystem.json'), 'w').close()
-        sidecar_fname = _find_matching_sidecar(bids_basename, output_path,
-                                               'coordsystem.json')
+        _find_matching_sidecar(bids_basename, output_path, 'coordsystem.json')
+
+    # Find nothing but receive None, because we set `allow_fail` to True
+    with pytest.warns(UserWarning, match='Expected to find a single'):
+        _find_matching_sidecar(bids_basename, output_path, 'foo.bogus', True)
