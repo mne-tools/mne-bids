@@ -92,6 +92,7 @@ def test_fif():
     run_subprocess(cmd, shell=shell)
 
     # write the same data but pretend it is empty room data:
+    raw = mne.io.read_raw_fif(raw_fname)
     er_date = datetime.fromtimestamp(
         raw.info['meas_date'][0]).strftime('%Y%m%d')
     er_bids_basename = 'sub-emptyroom_ses-{0}_task-noise'.format(str(er_date))
