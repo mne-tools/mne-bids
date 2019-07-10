@@ -85,7 +85,8 @@ def test_fif():
                            for i in
                            mne.pick_types(raw.info, stim=True, meg=False)})
     output_path = _TempDir()
-    write_raw_bids(raw, bids_basename, output_path, overwrite=False)
+    with pytest.warns(UserWarning, match='No events found or provided.'):
+        write_raw_bids(raw, bids_basename, output_path, overwrite=False)
 
     cmd = bids_validator_exe + [output_path]
     run_subprocess(cmd, shell=shell)
