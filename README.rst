@@ -46,7 +46,7 @@ Installation
 We recommend the `Anaconda <https://www.anaconda.com/download/>`_ Python
 distribution. We require that you use Python 3.
 Besides ``numpy`` and ``scipy`` (which are included in the standard Anaconda
-installation), you will need to install the most recent version of ``MNE ``
+installation), you will need to install the most recent version of ``MNE``
 using the ``pip`` tool:
 
 .. code-block:: bash
@@ -119,8 +119,8 @@ Cite
 If you use ``mne-bids`` in your work, please cite one of the following papers,
 depending on which modality you used:
 
-MEG
-###
+`MEG <http://doi.org/10.1038/sdata.2018.110>`_
+##############################################
 
 .. code-block:: Text
 
@@ -131,8 +131,8 @@ MEG
    http://doi.org/10.1038/sdata.2018.110
 
 
-EEG
-###
+`EEG <https://doi.org/10.1038/s41597-019-0104-8>`_
+##################################################
 
 .. code-block:: Text
 
@@ -142,8 +142,8 @@ EEG
    Data, 6, 103. https://doi.org/10.1038/s41597-019-0104-8
 
 
-iEEG
-####
+`iEEG <https://doi.org/10.1038/s41597-019-0105-7>`_
+###################################################
 
 .. code-block:: Text
 
