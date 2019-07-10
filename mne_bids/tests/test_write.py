@@ -444,7 +444,7 @@ def test_bdf():
     data_path = op.join(base_path, 'edf', 'tests', 'data')
     raw_fname = op.join(data_path, 'test.bdf')
 
-    raw = mne.io.read_raw_edf(raw_fname)
+    raw = mne.io.read_raw_bdf(raw_fname)
     write_raw_bids(raw, bids_basename, output_path, overwrite=False)
 
     cmd = bids_validator_exe + [output_path]
