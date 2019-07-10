@@ -317,7 +317,6 @@ def _find_matching_sidecar(bids_fname, bids_root, suffix, allow_fail=False):
     """
     # We only use subject and session as identifier, because all other
     # parameters are potentially not binding for metadata sidecar files
-    warnings.warn(bids_fname)
     if 'ses' in bids_fname:
         search_str = '_'.join(bids_fname.split('_')[:2])
     else:

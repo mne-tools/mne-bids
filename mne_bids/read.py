@@ -29,33 +29,33 @@ reader = {'.con': io.read_raw_kit, '.sqd': io.read_raw_kit,
           '.set': io.read_raw_eeglab}
 
 
-def _read_raw(raw_fname, electrode=None, hsp=None, hpi=None, config=None,
+def _read_raw(raw_fpath, electrode=None, hsp=None, hpi=None, config=None,
               montage=None, verbose=None, allow_maxshield=False):
     """Read a raw file into MNE, making inferences based on extension."""
-    fname, ext = _parse_ext(raw_fname)
+    _, ext = _parse_ext(raw_fpath)
 
     # KIT systems
     if ext in ['.con', '.sqd']:
-        raw = io.read_raw_kit(raw_fname, elp=electrode, hsp=hsp,
+        raw = io.read_raw_kit(raw_fpath, elp=electrode, hsp=hsp,
                               mrk=hpi, preload=False)
 
     # BTi systems
     elif ext == '.pdf':
-        raw = io.read_raw_bti(raw_fname, config_fname=config,
+        raw = io.read_raw_bti(raw_fpath, config_fname=config,
                               head_shape_fname=hsp,
                               preload=False, verbose=verbose)
 
     elif ext == '.fif':
-        raw = reader[ext](raw_fname, allow_maxshield=allow_maxshield)
+        raw = reader[ext](raw_fpath, allow_maxshield=allow_maxshield)
 
     elif ext in ['.ds', '.vhdr', '.set']:
-        raw = reader[ext](raw_fname)
+        raw = reader[ext](raw_fpath)
 
     # EDF (european data format) or BDF (biosemi) format
     # TODO: integrate with lines above once MNE can read
     # annotations with preload=False
     elif ext in ['.edf', '.bdf']:
-        raw = reader[ext](raw_fname, preload=True)
+        raw = reader[ext](raw_fpath, preload=True)
 
     # MEF and NWB are allowed, but not yet implemented
     elif ext in ['.mef', '.nwb']:
@@ -112,15 +112,15 @@ def read_raw_bids(bids_fname, bids_root, verbose=True):
 
     config = None
     if ext in ('.fif', '.ds', '.vhdr', '.edf', '.bdf', '.set', '.sqd', '.con'):
-        bids_fname = op.join(kind_dir,
-                             bids_basename + '_%s%s' % (kind, ext))
+        bids_fpath = op.join(kind_dir,
+                             bids_basename + '_{}{}'.format(kind, ext))
 
     elif ext == '.pdf':
-        bids_raw_folder = op.join(kind_dir, bids_basename + '_%s' % kind)
-        bids_fname = glob.glob(op.join(bids_raw_folder, 'c,rf*'))[0]
+        bids_raw_folder = op.join(kind_dir, bids_basename + '_{}'.format(kind))
+        bids_fpath = glob.glob(op.join(bids_raw_folder, 'c,rf*'))[0]
         config = op.join(bids_raw_folder, 'config')
 
-    raw = _read_raw(bids_fname, electrode=None, hsp=None, hpi=None,
+    raw = _read_raw(bids_fpath, electrode=None, hsp=None, hpi=None,
                     config=config, montage=None, verbose=None)
 
     # Try to find an associated events.tsv to get information about the
@@ -147,8 +147,9 @@ def read_raw_bids(bids_fname, bids_root, verbose=True):
 
     # Try to find an associated channels.tsv to get information about the
     # status of present channels
-    channels_fname = op.join(kind_dir, bids_basename + '_channels.tsv')
-    if op.exists(channels_fname):
+    channels_fname = _find_matching_sidecar(bids_fname, bids_root,
+                                            'channels.tsv', allow_fail=True)
+    if channels_fname is not None:
         channels_dict = _from_tsv(channels_fname)
     else:
         channels_dict = dict()

@@ -68,7 +68,8 @@ print_dir_tree(output_path)
 
 ###############################################################################
 # Finally, we can read the BIDS data we created as well.
-raw = read_raw_bids(bids_basename + '_meg.fif', output_path)
+bids_fname = bids_basename + '_meg.fif'
+raw = read_raw_bids(bids_fname, output_path)
 
 ###############################################################################
 # The data is already in a convenient form to create epochs and evokeds.
