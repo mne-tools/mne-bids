@@ -1,12 +1,12 @@
-#!/usr/bin/env python
-# Authors: Teon Brooks  <teon.brooks@gmail.com>
-
 """Command line interface for mne_bids.
 
 example usage:  $ mne_bids raw_to_bids --subject_id sub01 --task rest
 --raw data.edf --output_path new_path
 
 """
+# Authors: Teon Brooks <teon.brooks@gmail.com>
+#
+# License: BSD (3-clause)
 from mne_bids import write_raw_bids, make_bids_basename
 from mne_bids.read import _read_raw
 
