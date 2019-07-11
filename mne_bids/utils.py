@@ -35,8 +35,7 @@ def _get_ch_type_mapping(from_mne_to_bids=True):
     """
     # from_mne_to_bids:
     map_chs = dict(eeg='EEG', misc='MISC', stim='TRIG', emg='EMG',
-                   ecog='ECOG', seeg='SEEG', eog='EOG', ecg='ECG',
-                   resp='RESP')
+                   ecog='ECOG', seeg='SEEG', eog='EOG', ecg='ECG')
     default_value = 'OTHER'
 
     # or if not ...
@@ -45,7 +44,7 @@ def _get_ch_type_mapping(from_mne_to_bids=True):
         map_chs = {val: key for key, val in map_chs.items()}
 
         # And we need some additional key-value pairs
-        map_chs.update(VEOG='eog', HEOG='heog')
+        map_chs.update(VEOG='eog', HEOG='eog')
         default_value = 'misc'
 
     # Make it a defaultdict to prevent key errors

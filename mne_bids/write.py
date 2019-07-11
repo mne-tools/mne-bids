@@ -81,8 +81,7 @@ def _channels_tsv(raw, fname, overwrite=False, verbose=True):
                     ecg='ElectroCardioGram',
                     eog='ElectroOculoGram',
                     emg='ElectroMyoGram',
-                    misc='Miscellaneous',
-                    resp='Respiration')
+                    misc='Miscellaneous')
     get_specific = ('mag', 'ref_meg', 'grad')
 
     # get the manufacturer from the file in the Raw object
