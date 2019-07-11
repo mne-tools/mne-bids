@@ -137,14 +137,17 @@ def _handle_channels_reading(channels_fname, raw):
         # Create a mapping to channel types
         channel_type_dict = dict()
 
-        # Try mapping from BIDS nomenclature of channel types to MNE
-        bids_to_mne_ch_types = _get_ch_type_mapping()
+        # Get the best mapping we currently have from BIDS to MNE nomenclature
+        bids_to_mne_ch_types = _get_ch_type_mapping(from_mne_to_bids=False)
         for ch in ch_names_json:
             # Get channel type
             ch_type = channels_dict['type'][channels_dict['name'].index(ch)]
 
-            # Map from BIDS nomenclature to MNE
-            channel_type_dict[ch] = bids_to_mne_ch_types[ch_type.lower()]
+            # Try to map from BIDS nomenclature to MNE, leave channel type
+            # untouched if we are uncertain
+            updated_ch_type = bids_to_mne_ch_types.get(ch_type, None)
+            if updated_ch_type is not None:
+                channel_type_dict[ch] = updated_ch_type
 
         # Set the channel types in the raw data according to channels.tsv
         raw.set_channel_types(channel_type_dict)

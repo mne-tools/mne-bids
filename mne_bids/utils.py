@@ -14,6 +14,7 @@ import warnings
 import json
 import shutil as sh
 from datetime import datetime
+from collections import defaultdict
 
 import numpy as np
 from mne import read_events, find_events, events_from_annotations
@@ -26,13 +27,32 @@ from mne.io.constants import FIFF
 from .tsv_handler import _to_tsv, _tsv_to_str
 
 
-def _get_ch_type_mapping():
-    """Map from BIDS to MNE nomenclature for channel types."""
-    bids_to_mne_ch_types = {'trig': 'stim',
-                            'eeg': 'eeg',
-                            'misc': 'misc',
-                            }
-    return bids_to_mne_ch_types
+def _get_ch_type_mapping(from_mne_to_bids=True):
+    """Limited map between BIDS and MNE nomenclatures for channel types.
+
+    MEG channel types are ignored for now.
+
+    """
+    # from_mne_to_bids:
+    map_chs = dict(eeg='EEG', misc='MISC', stim='TRIG', emg='EMG',
+                   ecog='ECOG', seeg='SEEG', eog='EOG', ecg='ECG',
+                   resp='RESP')
+    default_value = 'OTHER'
+
+    # or if not ...
+    if not from_mne_to_bids:
+        # ... invert the map so that it is from_bids_to_mne
+        map_chs = {val: key for key, val in map_chs.items()}
+
+        # And we need some additional key-value pairs
+        map_chs.update(VEOG='eog', HEOG='heog')
+        default_value = 'misc'
+
+    # Make it a defaultdict to prevent key errors
+    ch_type_mapping = defaultdict(lambda: default_value)
+    ch_type_mapping.update(map_chs)
+
+    return ch_type_mapping
 
 
 def print_dir_tree(folder):
