@@ -72,19 +72,14 @@ def _read_raw(raw_fpath, electrode=None, hsp=None, hpi=None, config=None,
     return raw
 
 
-def _handle_events_reading(bids_fname, bids_root, raw):
-    """Find associated events.tsv and populate raw.
+def _handle_events_reading(events_fname, raw):
+    """Read associated events.tsv and populate raw.
 
     Handle onset, duration, and description of each event.
     """
-    events_fname = _find_matching_sidecar(bids_fname, bids_root, 'events.tsv',
-                                          allow_fail=True)
+    events_dict = _from_tsv(events_fname)
 
-    if events_fname is not None:
-        events_dict = _from_tsv(events_fname)
-    else:
-        events_dict = dict()
-
+    # XXX: We can set annotations when only onset and duration is available
     if 'trial_type' in events_dict:
         # Drop events unrelated to a trial type
         events_dict = _drop(events_dict, 'n/a', 'trial_type')
@@ -102,17 +97,12 @@ def _handle_events_reading(bids_fname, bids_root, raw):
     return raw
 
 
-def _handle_channels_reading(bids_fname, bids_root, raw):
-    """Find associated channels.tsv and populate raw.
+def _handle_channels_reading(channels_fname, raw):
+    """Read associated channels.tsv and populate raw.
 
     Updates status (bad) and types of channels.
     """
-    channels_fname = _find_matching_sidecar(bids_fname, bids_root,
-                                            'channels.tsv', allow_fail=True)
-    if channels_fname is not None:
-        channels_dict = _from_tsv(channels_fname)
-    else:
-        channels_dict = dict()
+    channels_dict = _from_tsv(channels_fname)
 
     # If we have a channels.tsv file, make sure there is the optional "status"
     # column from which to infer good and bad channels
@@ -139,7 +129,10 @@ def _handle_channels_reading(bids_fname, bids_root, raw):
 
         def get_ch_type_mapping():
             """Map from BIDS to MNE nomenclature for channel types."""
-            bids_to_mne_ch_types = {'trig': 'stim'}
+            bids_to_mne_ch_types = {'trig': 'stim',
+                                    'eeg': 'eeg',
+                                    'misc': 'misc',
+                                    }
             return bids_to_mne_ch_types
 
         bids_to_mne_ch_types = get_ch_type_mapping()
@@ -213,11 +206,17 @@ def read_raw_bids(bids_fname, bids_root, verbose=True):
 
     # Try to find an associated events.tsv to get information about the
     # events in the recorded data
-    raw = _handle_events_reading(bids_fname, bids_root, raw)
+    events_fname = _find_matching_sidecar(bids_fname, bids_root, 'events.tsv',
+                                          allow_fail=True)
+    if events_fname is not None:
+        raw = _handle_events_reading(events_fname, raw)
 
     # Try to find an associated channels.tsv to get information about the
     # status and type of present channels
-    raw = _handle_channels_reading(bids_fname, bids_root, raw)
+    channels_fname = _find_matching_sidecar(bids_fname, bids_root,
+                                            'channels.tsv', allow_fail=True)
+    if channels_fname is not None:
+        raw = _handle_channels_reading(channels_fname, raw)
 
     return raw
 
