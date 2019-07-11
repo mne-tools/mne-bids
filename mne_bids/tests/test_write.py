@@ -29,9 +29,9 @@ from mne.io.kit.kit import get_kit_info
 
 from mne_bids import (write_raw_bids, read_raw_bids, make_bids_basename,
                       make_bids_folders, write_anat)
-from mne_bids.tsv_handler import _from_tsv
+from mne_bids.tsv_handler import _from_tsv, _to_tsv
 from mne_bids.utils import _find_matching_sidecar
-
+from mne_bids.pick import coil_type
 
 base_path = op.join(op.dirname(mne.__file__), 'io')
 subject_id = '01'
@@ -448,13 +448,33 @@ def test_bdf():
     raw_fname = op.join(data_path, 'test.bdf')
 
     raw = mne.io.read_raw_bdf(raw_fname)
-    write_raw_bids(raw, bids_basename, output_path, overwrite=False)
+    with pytest.warns(UserWarning, match='No line frequency found'):
+        write_raw_bids(raw, bids_basename, output_path, overwrite=False)
 
     cmd = bids_validator_exe + [output_path]
     run_subprocess(cmd, shell=shell)
 
-    read_raw_bids(bids_basename + '_eeg.bdf', output_path)
+    # Test also the reading of channel types from channels.tsv
+    # the first channel in the raw data is not MISC right now
+    test_ch_idx = 0
+    assert coil_type(raw.info, test_ch_idx) != 'misc'
 
+    # we will change the channel type to MISC and overwrite the channels file
+    bids_fname = bids_basename + '_eeg.bdf'
+    channels_fname = _find_matching_sidecar(bids_fname, output_path,
+                                            'channels.tsv')
+    channels_dict = _from_tsv(channels_fname)
+    channels_dict['type'][test_ch_idx] = 'MISC'
+    _to_tsv(channels_dict, channels_fname)
+
+    # Now read the raw data back from BIDS, with the tampered TSV, to show
+    # that the channels.tsv truly influences how read_raw_bids sets ch_types
+    # in the raw data object
+    raw = read_raw_bids(bids_fname, output_path)
+    assert coil_type(raw.info, test_ch_idx) == 'misc'
+
+    # Test cropped assertion error
+    raw = mne.io.read_raw_bdf(raw_fname)
     raw.crop(0, raw.times[-2])
     with pytest.raises(AssertionError, match='cropped'):
         write_raw_bids(raw, bids_basename, output_path)
