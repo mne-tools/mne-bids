@@ -26,6 +26,15 @@ from mne.io.constants import FIFF
 from .tsv_handler import _to_tsv, _tsv_to_str
 
 
+def _get_ch_type_mapping():
+    """Map from BIDS to MNE nomenclature for channel types."""
+    bids_to_mne_ch_types = {'trig': 'stim',
+                            'eeg': 'eeg',
+                            'misc': 'misc',
+                            }
+    return bids_to_mne_ch_types
+
+
 def print_dir_tree(folder):
     """Recursively print a directory tree starting from `folder`."""
     if not op.exists(folder):

@@ -21,7 +21,7 @@ from mne.transforms import apply_trans
 from .tsv_handler import _from_tsv, _drop
 from .config import ALLOWED_EXTENSIONS
 from .utils import (_parse_bids_filename, _extract_landmarks,
-                    _find_matching_sidecar, _parse_ext)
+                    _find_matching_sidecar, _parse_ext, _get_ch_type_mapping)
 
 reader = {'.con': io.read_raw_kit, '.sqd': io.read_raw_kit,
           '.fif': io.read_raw_fif, '.pdf': io.read_raw_bti,
@@ -79,20 +79,31 @@ def _handle_events_reading(events_fname, raw):
     """
     events_dict = _from_tsv(events_fname)
 
-    # XXX: We can set annotations when only onset and duration is available
+    # Get the descriptions of the events
     if 'trial_type' in events_dict:
+        descriptions = np.asarray(events_dict['trial_type'], dtype=str)
         # Drop events unrelated to a trial type
         events_dict = _drop(events_dict, 'n/a', 'trial_type')
 
-        # Add Events to raw as annotations
-        onsets = np.asarray(events_dict['onset'], dtype=float)
-        durations = np.asarray(events_dict['duration'], dtype=float)
-        descriptions = np.asarray(events_dict['trial_type'], dtype=str)
-        annot_from_events = mne.Annotations(onset=onsets,
-                                            duration=durations,
-                                            description=descriptions,
-                                            orig_time=raw.info['meas_date'])
-        raw.set_annotations(annot_from_events)
+    # If we don't have a proper description of the events, perhaps we have
+    # at least an event value?
+    elif 'value' in events_dict:
+        descriptions = np.asarray(events_dict['value'], dtype=str)
+        # Drop events unrelated to value
+        events_dict = _drop(events_dict, 'n/a', 'value')
+
+    # Worst case, we go with 'n/a' for all events
+    else:
+        descriptions = 'n/a'
+
+    # Add Events to raw as annotations
+    onsets = np.asarray(events_dict['onset'], dtype=float)
+    durations = np.asarray(events_dict['duration'], dtype=float)
+    annot_from_events = mne.Annotations(onset=onsets,
+                                        duration=durations,
+                                        description=descriptions,
+                                        orig_time=raw.info['meas_date'])
+    raw.set_annotations(annot_from_events)
 
     return raw
 
@@ -125,17 +136,9 @@ def _handle_channels_reading(channels_fname, raw):
     if ch_names_raw == ch_names_json:
         # Create a mapping to channel types
         channel_type_dict = dict()
+
         # Try mapping from BIDS nomenclature of channel types to MNE
-
-        def get_ch_type_mapping():
-            """Map from BIDS to MNE nomenclature for channel types."""
-            bids_to_mne_ch_types = {'trig': 'stim',
-                                    'eeg': 'eeg',
-                                    'misc': 'misc',
-                                    }
-            return bids_to_mne_ch_types
-
-        bids_to_mne_ch_types = get_ch_type_mapping()
+        bids_to_mne_ch_types = _get_ch_type_mapping()
         for ch in ch_names_json:
             # Get channel type
             ch_type = channels_dict['type'][channels_dict['name'].index(ch)]
