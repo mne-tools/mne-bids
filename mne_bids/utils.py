@@ -28,23 +28,32 @@ from .tsv_handler import _to_tsv, _tsv_to_str
 
 
 def _get_ch_type_mapping(from_mne_to_bids=True):
-    """Limited map between BIDS and MNE nomenclatures for channel types.
+    """Map between BIDS and MNE nomenclatures for channel types.
 
-    MEG channel types are ignored for now.
+    Notes
+    -----
+    For the mapping from BIDS to MNE, MEG channel types are ignored for now.
+    Furthermore, this is not a one-to-one mapping: Incomplete and partially
+    one-to-many/many-to-one.
 
     """
-    # from_mne_to_bids:
-    map_chs = dict(eeg='EEG', misc='MISC', stim='TRIG', emg='EMG',
-                   ecog='ECOG', seeg='SEEG', eog='EOG', ecg='ECG')
-    default_value = 'OTHER'
+    if from_mne_to_bids:
+        map_chs = dict(eeg='EEG', misc='MISC', stim='TRIG', emg='EMG',
+                       ecog='ECOG', seeg='SEEG', eog='EOG', ecg='ECG',
+                       # MEG channels
+                       meggradaxial='MEGGRADAXIAL', megmag='MEGMAG',
+                       megrefgradaxial='MEGREFGRADAXIAL',
+                       meggradplanar='MEGGRADPLANAR', megrefmag='MEGREFMAG',
+                       )
+        default_value = 'OTHER'
 
-    # or if not ...
-    if not from_mne_to_bids:
-        # ... invert the map so that it is from_bids_to_mne
-        map_chs = {val: key for key, val in map_chs.items()}
-
-        # And we need some additional key-value pairs
-        map_chs.update(VEOG='eog', HEOG='eog')
+    else:  # from_bids_to_mne
+        map_chs = dict(EEG='eeg', MISC='misc', TRIG='stim', EMG='emg',
+                       ECOG='ecog', SEEG='seeg', EOG='eog', ECG='ecg',
+                       # No MEG channels for now
+                       # Many to one mapping
+                       VEOG='eog', HEOG='eog',
+                       )
         default_value = 'misc'
 
     # Make it a defaultdict to prevent key errors

@@ -60,14 +60,10 @@ def _channels_tsv(raw, fname, overwrite=False, verbose=True):
         Set verbose output to true or false.
 
     """
-    # Get channel type mappings between nomenclatures
+    # Get channel type mappings between BIDS and MNE nomenclatures
     map_chs = _get_ch_type_mapping(from_mne_to_bids=True)
-    # Add MEG channels to mapping (ignored in _get_ch_type_mapping for now)
-    map_chs.update(meggradaxial='MEGGRADAXIAL',
-                   megrefgradaxial='MEGREFGRADAXIAL',
-                   meggradplanar='MEGGRADPLANAR',
-                   megmag='MEGMAG', megrefmag='MEGREFMAG')
 
+    # Prepare the descriptions for each channel type
     map_desc = defaultdict(lambda: 'Other type of channel')
     map_desc.update(meggradaxial='Axial Gradiometer',
                     megrefgradaxial='Axial Gradiometer Reference',
