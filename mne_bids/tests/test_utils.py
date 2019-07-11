@@ -182,8 +182,10 @@ def test_find_matching_sidecar():
                            'sample_audvis_trunc_raw-eve.fif')
 
     raw = mne.io.read_raw_fif(raw_fname)
-    write_raw_bids(raw, bids_basename, output_path, events_data=events_fname,
-                   event_id=event_id, overwrite=False)
+    with pytest.warns(UserWarning, match='No line frequency'):
+        write_raw_bids(raw, bids_basename, output_path,
+                       events_data=events_fname, event_id=event_id,
+                       overwrite=False)
 
     # Now find a sidecar
     sidecar_fname = _find_matching_sidecar(bids_basename, output_path,

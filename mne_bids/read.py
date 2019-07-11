@@ -125,8 +125,10 @@ def read_raw_bids(bids_fname, bids_root, verbose=True):
 
     # Try to find an associated events.tsv to get information about the
     # events in the recorded data
-    events_fname = op.join(kind_dir, bids_basename + '_events.tsv')
-    if op.exists(events_fname):
+    events_fname = _find_matching_sidecar(bids_fname, bids_root, 'events.tsv',
+                                          allow_fail=True)
+
+    if events_fname is not None:
         events_dict = _from_tsv(events_fname)
     else:
         events_dict = dict()

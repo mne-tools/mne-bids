@@ -297,12 +297,13 @@ def test_ctf():
     raw_fname = op.join(data_path, 'testdata_ctf.ds')
 
     raw = mne.io.read_raw_ctf(raw_fname)
-    write_raw_bids(raw, bids_basename, output_path=output_path)
+    with pytest.warns(UserWarning, match='No line frequency'):
+        write_raw_bids(raw, bids_basename, output_path=output_path)
 
     cmd = bids_validator_exe + [output_path]
     run_subprocess(cmd, shell=shell)
-
-    raw = read_raw_bids(bids_basename + '_meg.ds', output_path)
+    with pytest.warns(UserWarning, match='Expected to find a single events'):
+        raw = read_raw_bids(bids_basename + '_meg.ds', output_path)
 
     # test to check that running again with overwrite == False raises an error
     with pytest.raises(FileExistsError, match="already exists"):  # noqa: F821
