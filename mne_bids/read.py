@@ -9,6 +9,7 @@
 import os.path as op
 import glob
 import json
+import warnings
 
 import numpy as np
 import mne
@@ -167,6 +168,36 @@ def read_raw_bids(bids_fname, bids_root, verbose=True):
         # merge with bads already present in raw data file (if there are any)
         unique_bads = set(raw.info['bads']).union(set(bads))
         raw.info['bads'] = list(unique_bads)
+
+    # Furthermore, try to update the channel types according to the "type"
+    # and "name" columns in channels.tsv. These are mandatory in BIDS
+    # First, make sure that ordering of names in channels.tsv matches the
+    # ordering of names in the raw data.
+    ch_names_raw = list(raw.ch_names)
+    ch_names_json = list(channels_dict['name'])
+    if ch_names_raw == ch_names_json:
+        # Create a mapping to channel types
+        channel_type_dict = dict()
+        # Try mapping from BIDS nomenclature of channel types to MNE
+
+        def get_ch_type_mapping():
+            """Map from BIDS to MNE nomenclature for channel types."""
+            bids_to_mne_ch_types = {'trig': 'stim'}
+            return bids_to_mne_ch_types
+
+        bids_to_mne_ch_types = get_ch_type_mapping()
+        for ch in ch_names_json:
+            # Get channel type
+            ch_type = channels_dict['type'][channels_dict['name'].index(ch)]
+
+            # Map from BIDS nomenclature to MNE
+            channel_type_dict[ch] = bids_to_mne_ch_types[ch_type.lower()]
+
+        # Set the channel types in the raw data according to channels.tsv
+        raw.set_channel_types(channel_type_dict)
+    else:
+        warnings.warn('Channel names do not correspond between raw data and '
+                      'the channels.tsv file: "{}"'.format(channels_fname))
 
     return raw
 
