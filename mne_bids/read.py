@@ -72,6 +72,93 @@ def _read_raw(raw_fpath, electrode=None, hsp=None, hpi=None, config=None,
     return raw
 
 
+def _handle_events_reading(bids_fname, bids_root, raw):
+    """Find associated events.tsv and populate raw.
+
+    Handle onset, duration, and description of each event.
+    """
+    events_fname = _find_matching_sidecar(bids_fname, bids_root, 'events.tsv',
+                                          allow_fail=True)
+
+    if events_fname is not None:
+        events_dict = _from_tsv(events_fname)
+    else:
+        events_dict = dict()
+
+    if 'trial_type' in events_dict:
+        # Drop events unrelated to a trial type
+        events_dict = _drop(events_dict, 'n/a', 'trial_type')
+
+        # Add Events to raw as annotations
+        onsets = np.asarray(events_dict['onset'], dtype=float)
+        durations = np.asarray(events_dict['duration'], dtype=float)
+        descriptions = np.asarray(events_dict['trial_type'], dtype=str)
+        annot_from_events = mne.Annotations(onset=onsets,
+                                            duration=durations,
+                                            description=descriptions,
+                                            orig_time=raw.info['meas_date'])
+        raw.set_annotations(annot_from_events)
+
+    return raw
+
+
+def _handle_channels_reading(bids_fname, bids_root, raw):
+    """Find associated channels.tsv and populate raw.
+
+    Updates status (bad) and types of channels.
+    """
+    channels_fname = _find_matching_sidecar(bids_fname, bids_root,
+                                            'channels.tsv', allow_fail=True)
+    if channels_fname is not None:
+        channels_dict = _from_tsv(channels_fname)
+    else:
+        channels_dict = dict()
+
+    # If we have a channels.tsv file, make sure there is the optional "status"
+    # column from which to infer good and bad channels
+    if 'status' in channels_dict:
+        # find bads from channels.tsv
+        bad_bool = [True if chn == 'bad' else False
+                    for chn in channels_dict['status']]
+        bads = np.asarray(channels_dict['name'])[bad_bool]
+
+        # merge with bads already present in raw data file (if there are any)
+        unique_bads = set(raw.info['bads']).union(set(bads))
+        raw.info['bads'] = list(unique_bads)
+
+    # Furthermore, try to update the channel types according to the "type"
+    # and "name" columns in channels.tsv. These are mandatory in BIDS
+    # First, make sure that ordering of names in channels.tsv matches the
+    # ordering of names in the raw data.
+    ch_names_raw = list(raw.ch_names)
+    ch_names_json = list(channels_dict['name'])
+    if ch_names_raw == ch_names_json:
+        # Create a mapping to channel types
+        channel_type_dict = dict()
+        # Try mapping from BIDS nomenclature of channel types to MNE
+
+        def get_ch_type_mapping():
+            """Map from BIDS to MNE nomenclature for channel types."""
+            bids_to_mne_ch_types = {'trig': 'stim'}
+            return bids_to_mne_ch_types
+
+        bids_to_mne_ch_types = get_ch_type_mapping()
+        for ch in ch_names_json:
+            # Get channel type
+            ch_type = channels_dict['type'][channels_dict['name'].index(ch)]
+
+            # Map from BIDS nomenclature to MNE
+            channel_type_dict[ch] = bids_to_mne_ch_types[ch_type.lower()]
+
+        # Set the channel types in the raw data according to channels.tsv
+        raw.set_channel_types(channel_type_dict)
+    else:
+        warnings.warn('Channel names do not correspond between raw data and '
+                      'the channels.tsv file: "{}"'.format(channels_fname))
+
+    return raw
+
+
 def read_raw_bids(bids_fname, bids_root, verbose=True):
     """Read BIDS compatible data.
 
@@ -126,78 +213,11 @@ def read_raw_bids(bids_fname, bids_root, verbose=True):
 
     # Try to find an associated events.tsv to get information about the
     # events in the recorded data
-    events_fname = _find_matching_sidecar(bids_fname, bids_root, 'events.tsv',
-                                          allow_fail=True)
-
-    if events_fname is not None:
-        events_dict = _from_tsv(events_fname)
-    else:
-        events_dict = dict()
-
-    if 'trial_type' in events_dict:
-        # Drop events unrelated to a trial type
-        events_dict = _drop(events_dict, 'n/a', 'trial_type')
-
-        # Add Events to raw as annotations
-        onsets = np.asarray(events_dict['onset'], dtype=float)
-        durations = np.asarray(events_dict['duration'], dtype=float)
-        descriptions = np.asarray(events_dict['trial_type'], dtype=str)
-        annot_from_events = mne.Annotations(onset=onsets,
-                                            duration=durations,
-                                            description=descriptions,
-                                            orig_time=raw.info['meas_date'])
-        raw.set_annotations(annot_from_events)
+    raw = _handle_events_reading(bids_fname, bids_root, raw)
 
     # Try to find an associated channels.tsv to get information about the
-    # status of present channels
-    channels_fname = _find_matching_sidecar(bids_fname, bids_root,
-                                            'channels.tsv', allow_fail=True)
-    if channels_fname is not None:
-        channels_dict = _from_tsv(channels_fname)
-    else:
-        channels_dict = dict()
-
-    # If we have a channels.tsv file, make sure there is the optional "status"
-    # column from which to infer good and bad channels
-    if 'status' in channels_dict:
-        # find bads from channels.tsv
-        bad_bool = [True if chn == 'bad' else False
-                    for chn in channels_dict['status']]
-        bads = np.asarray(channels_dict['name'])[bad_bool]
-
-        # merge with bads already present in raw data file (if there are any)
-        unique_bads = set(raw.info['bads']).union(set(bads))
-        raw.info['bads'] = list(unique_bads)
-
-    # Furthermore, try to update the channel types according to the "type"
-    # and "name" columns in channels.tsv. These are mandatory in BIDS
-    # First, make sure that ordering of names in channels.tsv matches the
-    # ordering of names in the raw data.
-    ch_names_raw = list(raw.ch_names)
-    ch_names_json = list(channels_dict['name'])
-    if ch_names_raw == ch_names_json:
-        # Create a mapping to channel types
-        channel_type_dict = dict()
-        # Try mapping from BIDS nomenclature of channel types to MNE
-
-        def get_ch_type_mapping():
-            """Map from BIDS to MNE nomenclature for channel types."""
-            bids_to_mne_ch_types = {'trig': 'stim'}
-            return bids_to_mne_ch_types
-
-        bids_to_mne_ch_types = get_ch_type_mapping()
-        for ch in ch_names_json:
-            # Get channel type
-            ch_type = channels_dict['type'][channels_dict['name'].index(ch)]
-
-            # Map from BIDS nomenclature to MNE
-            channel_type_dict[ch] = bids_to_mne_ch_types[ch_type.lower()]
-
-        # Set the channel types in the raw data according to channels.tsv
-        raw.set_channel_types(channel_type_dict)
-    else:
-        warnings.warn('Channel names do not correspond between raw data and '
-                      'the channels.tsv file: "{}"'.format(channels_fname))
+    # status and type of present channels
+    raw = _handle_channels_reading(bids_fname, bids_root, raw)
 
     return raw
 
