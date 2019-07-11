@@ -81,16 +81,16 @@ def _handle_events_reading(events_fname, raw):
 
     # Get the descriptions of the events
     if 'trial_type' in events_dict:
-        descriptions = np.asarray(events_dict['trial_type'], dtype=str)
         # Drop events unrelated to a trial type
         events_dict = _drop(events_dict, 'n/a', 'trial_type')
+        descriptions = np.asarray(events_dict['trial_type'], dtype=str)
 
     # If we don't have a proper description of the events, perhaps we have
     # at least an event value?
     elif 'value' in events_dict:
-        descriptions = np.asarray(events_dict['value'], dtype=str)
         # Drop events unrelated to value
         events_dict = _drop(events_dict, 'n/a', 'value')
+        descriptions = np.asarray(events_dict['value'], dtype=str)
 
     # Worst case, we go with 'n/a' for all events
     else:
