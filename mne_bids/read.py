@@ -9,7 +9,6 @@
 import os.path as op
 import glob
 import json
-import warnings
 
 import numpy as np
 import mne
