@@ -412,7 +412,13 @@ def test_edf():
     raw.set_channel_types({'EMG': 'emg'})
 
     write_raw_bids(raw, bids_basename, output_path)
-    read_raw_bids(bids_basename + '_eeg.edf', output_path)
+
+    # Reading the file back should raise an error, because we renamed channels
+    # in `raw` and used that information to write a channels.tsv. Yet, we
+    # saved the unchanged `raw` in the BIDS folder, so channels in the TSV and
+    # in raw clash
+    with pytest.raises(RuntimeError, match='Channels do not correspond'):
+        read_raw_bids(bids_basename + '_eeg.edf', output_path)
 
     bids_fname = bids_basename.replace('run-01', 'run-%s' % run2)
     write_raw_bids(raw, bids_fname, output_path, overwrite=True)

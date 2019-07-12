@@ -108,15 +108,56 @@ def _handle_events_reading(events_fname, raw):
     return raw
 
 
-def _handle_channels_reading(channels_fname, raw):
+def _handle_channels_reading(channels_fname, bids_fname, raw):
     """Read associated channels.tsv and populate raw.
 
     Updates status (bad) and types of channels.
     """
     channels_dict = _from_tsv(channels_fname)
 
-    # If we have a channels.tsv file, make sure there is the optional "status"
-    # column from which to infer good and bad channels
+    # First, make sure that ordering of names in channels.tsv matches the
+    # ordering of names in the raw data. The "name" column is mandatory in BIDS
+    ch_names_raw = list(raw.ch_names)
+    ch_names_tsv = channels_dict['name']
+    if ch_names_raw != ch_names_tsv:
+
+        msg = ('Channels do not correspond between raw data and the '
+               'channels.tsv file. For MNE-BIDS, the channel names in the '
+               'tsv MUST be equal and in the same order as the channels in '
+               'the raw data.\n\n'
+               '{} channels in tsv file: "{}"\n\n --> {}\n\n'
+               '{} channels in raw file: "{}"\n\n --> {}\n\n'
+               .format(len(ch_names_tsv), channels_fname, ch_names_tsv,
+                       len(ch_names_raw), bids_fname, ch_names_raw)
+               )
+
+        # this could be due to MNE inserting a 'STI 014' channel as the last
+        # channel: In that case, we can work
+        if not (ch_names_raw[-1] == 'STI 014' and
+                ch_names_raw[:-1] == ch_names_tsv):
+            raise RuntimeError(msg)
+
+    # Now we can do some work.
+    # The "type" column is mandatory in BIDS. We can use it to set channel
+    # types in the raw data using a mapping between channel types
+    channel_type_dict = dict()
+
+    # Get the best mapping we currently have from BIDS to MNE nomenclature
+    bids_to_mne_ch_types = _get_ch_type_mapping(from_mne_to_bids=False)
+    ch_types_json = channels_dict['type']
+    for ch_name, ch_type in zip(ch_names_tsv, ch_types_json):
+
+        # Try to map from BIDS nomenclature to MNE, leave channel type
+        # untouched if we are uncertain
+        updated_ch_type = bids_to_mne_ch_types.get(ch_type, None)
+        if updated_ch_type is not None:
+            channel_type_dict[ch_name] = updated_ch_type
+
+    # Set the channel types in the raw data according to channels.tsv
+    raw.set_channel_types(channel_type_dict)
+
+    # Check whether there is the optional "status" column from which to infer
+    # good and bad channels
     if 'status' in channels_dict:
         # find bads from channels.tsv
         bad_bool = [True if chn.lower() == 'bad' else False
@@ -126,34 +167,6 @@ def _handle_channels_reading(channels_fname, raw):
         # merge with bads already present in raw data file (if there are any)
         unique_bads = set(raw.info['bads']).union(set(bads))
         raw.info['bads'] = list(unique_bads)
-
-    # Furthermore, try to update the channel types according to the "type"
-    # and "name" columns in channels.tsv. These are mandatory in BIDS
-    # First, make sure that ordering of names in channels.tsv matches the
-    # ordering of names in the raw data.
-    ch_names_raw = list(raw.ch_names)
-    ch_names_json = list(channels_dict['name'])
-    if ch_names_raw == ch_names_json:
-        # Create a mapping to channel types
-        channel_type_dict = dict()
-
-        # Get the best mapping we currently have from BIDS to MNE nomenclature
-        bids_to_mne_ch_types = _get_ch_type_mapping(from_mne_to_bids=False)
-        for ch in ch_names_json:
-            # Get channel type
-            ch_type = channels_dict['type'][channels_dict['name'].index(ch)]
-
-            # Try to map from BIDS nomenclature to MNE, leave channel type
-            # untouched if we are uncertain
-            updated_ch_type = bids_to_mne_ch_types.get(ch_type, None)
-            if updated_ch_type is not None:
-                channel_type_dict[ch] = updated_ch_type
-
-        # Set the channel types in the raw data according to channels.tsv
-        raw.set_channel_types(channel_type_dict)
-    else:
-        warnings.warn('Channel names do not correspond between raw data and '
-                      'the channels.tsv file: "{}"'.format(channels_fname))
 
     return raw
 
@@ -222,7 +235,7 @@ def read_raw_bids(bids_fname, bids_root, verbose=True):
     channels_fname = _find_matching_sidecar(bids_fname, bids_root,
                                             'channels.tsv', allow_fail=True)
     if channels_fname is not None:
-        raw = _handle_channels_reading(channels_fname, raw)
+        raw = _handle_channels_reading(channels_fname, bids_fname, raw)
 
     return raw
 
