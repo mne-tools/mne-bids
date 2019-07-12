@@ -119,7 +119,7 @@ def _handle_channels_reading(channels_fname, raw):
     # column from which to infer good and bad channels
     if 'status' in channels_dict:
         # find bads from channels.tsv
-        bad_bool = [True if chn == 'bad' else False
+        bad_bool = [True if chn.lower() == 'bad' else False
                     for chn in channels_dict['status']]
         bads = np.asarray(channels_dict['name'])[bad_bool]
 
