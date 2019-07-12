@@ -18,6 +18,7 @@ from datetime import datetime
 import platform
 import shutil as sh
 import json
+from distutils.version import LooseVersion
 
 import numpy as np
 from numpy.testing import assert_array_equal
@@ -333,6 +334,10 @@ def test_bti():
     raw = read_raw_bids(bids_basename + '_meg', output_path)
 
 
+# XXX: vhdr test currently passes only on MNE master. Skip until next release.
+# see: https://github.com/mne-tools/mne-python/pull/6558
+@pytest.mark.skipif(LooseVersion(mne.__version__) < LooseVersion('0.19'),
+                    reason="requires mne 0.19.dev0 or higher")
 def test_vhdr():
     """Test write_raw_bids conversion for BrainVision data."""
     output_path = _TempDir()
