@@ -16,7 +16,8 @@ from mne.datasets import testing
 from mne_bids import make_bids_folders, make_bids_basename, write_raw_bids
 from mne_bids.utils import (_check_types, print_dir_tree, _age_on_date,
                             _infer_eeg_placement_scheme, _handle_kind,
-                            _find_matching_sidecar, _parse_ext)
+                            _find_matching_sidecar, _parse_ext,
+                            _get_ch_type_mapping)
 
 
 base_path = op.join(op.dirname(mne.__file__), 'io')
@@ -29,6 +30,12 @@ task = 'testing'
 bids_basename = make_bids_basename(
     subject=subject_id, session=session_id, run=run, acquisition=acq,
     task=task)
+
+
+def test_get_ch_type_mapping():
+    """Test getting a correct channel mapping."""
+    with pytest.raises(ValueError, match='specified from "bogus" to "mne"'):
+        _get_ch_type_mapping(fro='bogus', to='mne')
 
 
 def test_handle_kind():
@@ -182,8 +189,10 @@ def test_find_matching_sidecar():
                            'sample_audvis_trunc_raw-eve.fif')
 
     raw = mne.io.read_raw_fif(raw_fname)
-    write_raw_bids(raw, bids_basename, output_path, events_data=events_fname,
-                   event_id=event_id, overwrite=False)
+    with pytest.warns(UserWarning, match='No line frequency'):
+        write_raw_bids(raw, bids_basename, output_path,
+                       events_data=events_fname, event_id=event_id,
+                       overwrite=False)
 
     # Now find a sidecar
     sidecar_fname = _find_matching_sidecar(bids_basename, output_path,
@@ -194,8 +203,11 @@ def test_find_matching_sidecar():
     assert sidecar_fname.endswith(expected_file)
 
     # Find multiple sidecars, triggering an error
-    with pytest.raises(RuntimeError):
+    with pytest.raises(RuntimeError, match='Expected to find a single'):
         open(sidecar_fname.replace('coordsystem.json',
                                    '2coordsystem.json'), 'w').close()
-        sidecar_fname = _find_matching_sidecar(bids_basename, output_path,
-                                               'coordsystem.json')
+        _find_matching_sidecar(bids_basename, output_path, 'coordsystem.json')
+
+    # Find nothing but receive None, because we set `allow_fail` to True
+    with pytest.warns(UserWarning, match='Expected to find a single'):
+        _find_matching_sidecar(bids_basename, output_path, 'foo.bogus', True)

@@ -1,8 +1,8 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """CLI for MNE-BIDS."""
-
-
+# Authors: Teon Brooks <teon.brooks@gmail.com>
+#          Stefan Appelhoff <stefan.appelhoff@mailbox.org>
+#
+# License: BSD (3-clause)
 import sys
 import glob
 import subprocess
@@ -10,7 +10,7 @@ import os.path as op
 
 import mne_bids
 
-mne_bin_dir = op.dirname(mne_bids.__file__)
+mne_bin_dir = op.abspath(op.join(op.dirname(mne_bids.__file__), '..'))
 valid_commands = sorted(glob.glob(op.join(mne_bin_dir,
                                           'cli', 'mne_bids_*.py')))
 valid_commands = [c.split(op.sep)[-1][9:-3] for c in valid_commands]

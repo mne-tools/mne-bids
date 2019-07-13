@@ -14,6 +14,7 @@ import warnings
 import json
 import shutil as sh
 from datetime import datetime
+from collections import defaultdict
 
 import numpy as np
 from mne import read_events, find_events, events_from_annotations
@@ -24,6 +25,61 @@ from mne.io.kit.kit import get_kit_info
 from mne.io.constants import FIFF
 
 from .tsv_handler import _to_tsv, _tsv_to_str
+
+
+def _get_ch_type_mapping(fro='mne', to='bids'):
+    """Map between BIDS and MNE nomenclatures for channel types.
+
+    Parameters
+    ----------
+    fro : str
+        Mapping from nomenclature of `fro`. Can be 'mne', 'bids'
+    to : str
+        Mapping to nomenclature of `to`. Can be 'mne', 'bids'
+
+    Returns
+    -------
+    ch_type_mapping : collections.defaultdict
+        Dictionary mapping from one nomenclature of channel types to another.
+        If a key is not present, a default value will be returned that depends
+        on the `fro` and `to` parameters.
+
+    Notes
+    -----
+    For the mapping from BIDS to MNE, MEG channel types are ignored for now.
+    Furthermore, this is not a one-to-one mapping: Incomplete and partially
+    one-to-many/many-to-one.
+
+    """
+    if fro == 'mne' and to == 'bids':
+        map_chs = dict(eeg='EEG', misc='MISC', stim='TRIG', emg='EMG',
+                       ecog='ECOG', seeg='SEEG', eog='EOG', ecg='ECG',
+                       # MEG channels
+                       meggradaxial='MEGGRADAXIAL', megmag='MEGMAG',
+                       megrefgradaxial='MEGREFGRADAXIAL',
+                       meggradplanar='MEGGRADPLANAR', megrefmag='MEGREFMAG',
+                       )
+        default_value = 'OTHER'
+
+    elif fro == 'bids' and to == 'mne':
+        map_chs = dict(EEG='eeg', MISC='misc', TRIG='stim', EMG='emg',
+                       ECOG='ecog', SEEG='seeg', EOG='eog', ECG='ecg',
+                       # No MEG channels for now
+                       # Many to one mapping
+                       VEOG='eog', HEOG='eog',
+                       )
+        default_value = 'misc'
+
+    else:
+        raise ValueError('Only two types of mappings are currently supported: '
+                         'from mne to bids, or from bids to mne. However, '
+                         'you specified from "{}" to "{}"'.format(fro, to))
+
+    # Make it a defaultdict to prevent key errors
+    ch_type_mapping = defaultdict(lambda: default_value)
+    ch_type_mapping.update(map_chs)
+
+    return ch_type_mapping
 
 
 def print_dir_tree(folder):
@@ -293,7 +349,7 @@ def _extract_landmarks(dig):
     return coords
 
 
-def _find_matching_sidecar(bids_fname, bids_root, suffix):
+def _find_matching_sidecar(bids_fname, bids_root, suffix, allow_fail=False):
     """Try to find a sidecar file with a given suffix for a data file.
 
     Parameters
@@ -304,11 +360,15 @@ def _find_matching_sidecar(bids_fname, bids_root, suffix):
         Path to root of the BIDS folder
     suffix : str
         The suffix of the sidecar file to be found. E.g., "_coordsystem.json"
+    allow_fail : bool
+        If False, will raise RuntimeError if not exactly one matching sidecar
+        was found. If True, will return None in that case. Defaults to False
 
     Returns
     -------
-    sidecar_fname : str
-        Path to the identified sidecar file
+    sidecar_fname : str | None
+        Path to the identified sidecar file, or None, if `allow_fail` is True
+        and no sidecar_fname was found
 
     """
     # We only use subject and session as identifier, because all other
@@ -323,12 +383,17 @@ def _find_matching_sidecar(bids_fname, bids_root, suffix):
     search_str = op.join(bids_root, '**', search_str + '*' + suffix)
     candidate_list = glob.glob(search_str, recursive=True)
     if len(candidate_list) != 1:
-        # XXX: Potentially can extract other parameters from bids_fname to use
-        #      as a tie breaker here.
-        raise RuntimeError('Expected to find a single {} file associated with '
-                           '{}, but found {}: "{}".\n\nThe search_str was "{}"'
-                           .format(suffix, bids_fname, len(candidate_list),
-                                   candidate_list, search_str))
+        msg = ('Expected to find a single {} file associated with '
+               '{}, but found {}: "{}".\n\nThe search_str was "{}"'
+               .format(suffix, bids_fname, len(candidate_list),
+                       candidate_list, search_str))
+        # We failed. If this was expected, simply return None
+        if allow_fail:
+            warnings.warn(msg)
+            return None
+        else:
+            raise RuntimeError(msg)
+
     else:
         sidecar_fname = candidate_list[0]
     return sidecar_fname

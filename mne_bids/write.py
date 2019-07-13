@@ -32,7 +32,8 @@ from .pick import coil_type
 from .utils import (_write_json, _write_tsv, _read_events, _mkdir_p,
                     _age_on_date, _infer_eeg_placement_scheme, _check_key_val,
                     _parse_bids_filename, _handle_kind, _check_types,
-                    _get_mrk_meas_date, _extract_landmarks, _parse_ext)
+                    _get_mrk_meas_date, _extract_landmarks, _parse_ext,
+                    _get_ch_type_mapping)
 from .copyfiles import (copyfile_brainvision, copyfile_eeglab, copyfile_ctf,
                         copyfile_bti)
 
@@ -59,20 +60,18 @@ def _channels_tsv(raw, fname, overwrite=False, verbose=True):
         Set verbose output to true or false.
 
     """
-    map_chs = defaultdict(lambda: 'OTHER')
-    map_chs.update(meggradaxial='MEGGRADAXIAL',
-                   megrefgradaxial='MEGREFGRADAXIAL',
-                   meggradplanar='MEGGRADPLANAR',
-                   megmag='MEGMAG', megrefmag='MEGREFMAG',
-                   eeg='EEG', misc='MISC', stim='TRIG', emg='EMG',
-                   ecog='ECOG', seeg='SEEG', eog='EOG', ecg='ECG')
+    # Get channel type mappings between BIDS and MNE nomenclatures
+    map_chs = _get_ch_type_mapping(fro='mne', to='bids')
+
+    # Prepare the descriptions for each channel type
     map_desc = defaultdict(lambda: 'Other type of channel')
     map_desc.update(meggradaxial='Axial Gradiometer',
                     megrefgradaxial='Axial Gradiometer Reference',
                     meggradplanar='Planar Gradiometer',
                     megmag='Magnetometer',
                     megrefmag='Magnetometer Reference',
-                    stim='Trigger', eeg='ElectroEncephaloGram',
+                    stim='Trigger',
+                    eeg='ElectroEncephaloGram',
                     ecog='Electrocorticography',
                     seeg='StereoEEG',
                     ecg='ElectroCardioGram',

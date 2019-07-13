@@ -6,7 +6,8 @@
 API Documentation
 =================
 
-MNE BIDS (:py:mod:`mne_bids`):
+MNE BIDS (:py:mod:`mne_bids`)
+=============================
 
 .. currentmodule:: mne_bids
 
@@ -21,7 +22,8 @@ MNE BIDS (:py:mod:`mne_bids`):
    write_anat
    get_head_mri_trans
 
-Utils (:py:mod:`mne_bids.utils`):
+Utils (:py:mod:`mne_bids.utils`)
+================================
 
 .. currentmodule:: mne_bids.utils
 
@@ -30,7 +32,8 @@ Utils (:py:mod:`mne_bids.utils`):
 
    print_dir_tree
 
-Copyfiles (:py:mod:`mne_bids.copyfiles`):
+Copyfiles (:py:mod:`mne_bids.copyfiles`)
+========================================
 
 .. currentmodule:: mne_bids.copyfiles
 
@@ -42,7 +45,8 @@ Copyfiles (:py:mod:`mne_bids.copyfiles`):
    copyfile_ctf
    copyfile_bti
 
-Datasets (:py:mod:`mne_bids.datasets`):
+Datasets (:py:mod:`mne_bids.datasets`)
+======================================
 
 .. currentmodule:: mne_bids.datasets
 

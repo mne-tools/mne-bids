@@ -18,6 +18,7 @@ from datetime import datetime
 import platform
 import shutil as sh
 import json
+from distutils.version import LooseVersion
 
 import numpy as np
 from numpy.testing import assert_array_equal
@@ -29,9 +30,9 @@ from mne.io.kit.kit import get_kit_info
 
 from mne_bids import (write_raw_bids, read_raw_bids, make_bids_basename,
                       make_bids_folders, write_anat)
-from mne_bids.tsv_handler import _from_tsv
+from mne_bids.tsv_handler import _from_tsv, _to_tsv
 from mne_bids.utils import _find_matching_sidecar
-
+from mne_bids.pick import coil_type
 
 base_path = op.join(op.dirname(mne.__file__), 'io')
 subject_id = '01'
@@ -85,12 +86,14 @@ def test_fif():
                            for i in
                            mne.pick_types(raw.info, stim=True, meg=False)})
     output_path = _TempDir()
-    write_raw_bids(raw, bids_basename, output_path, overwrite=False)
+    with pytest.warns(UserWarning, match='No events found or provided.'):
+        write_raw_bids(raw, bids_basename, output_path, overwrite=False)
 
     cmd = bids_validator_exe + [output_path]
     run_subprocess(cmd, shell=shell)
 
     # write the same data but pretend it is empty room data:
+    raw = mne.io.read_raw_fif(raw_fname)
     er_date = datetime.fromtimestamp(
         raw.info['meas_date'][0]).strftime('%Y%m%d')
     er_bids_basename = 'sub-emptyroom_ses-{0}_task-noise'.format(str(er_date))
@@ -295,12 +298,13 @@ def test_ctf():
     raw_fname = op.join(data_path, 'testdata_ctf.ds')
 
     raw = mne.io.read_raw_ctf(raw_fname)
-    write_raw_bids(raw, bids_basename, output_path=output_path)
+    with pytest.warns(UserWarning, match='No line frequency'):
+        write_raw_bids(raw, bids_basename, output_path=output_path)
 
     cmd = bids_validator_exe + [output_path]
     run_subprocess(cmd, shell=shell)
-
-    raw = read_raw_bids(bids_basename + '_meg.ds', output_path)
+    with pytest.warns(UserWarning, match='Expected to find a single events'):
+        raw = read_raw_bids(bids_basename + '_meg.ds', output_path)
 
     # test to check that running again with overwrite == False raises an error
     with pytest.raises(FileExistsError, match="already exists"):  # noqa: F821
@@ -330,6 +334,10 @@ def test_bti():
     raw = read_raw_bids(bids_basename + '_meg', output_path)
 
 
+# XXX: vhdr test currently passes only on MNE master. Skip until next release.
+# see: https://github.com/mne-tools/mne-python/pull/6558
+@pytest.mark.skipif(LooseVersion(mne.__version__) < LooseVersion('0.19'),
+                    reason="requires mne 0.19.dev0 or higher")
 def test_vhdr():
     """Test write_raw_bids conversion for BrainVision data."""
     output_path = _TempDir()
@@ -404,7 +412,13 @@ def test_edf():
     raw.set_channel_types({'EMG': 'emg'})
 
     write_raw_bids(raw, bids_basename, output_path)
-    read_raw_bids(bids_basename + '_eeg.edf', output_path)
+
+    # Reading the file back should raise an error, because we renamed channels
+    # in `raw` and used that information to write a channels.tsv. Yet, we
+    # saved the unchanged `raw` in the BIDS folder, so channels in the TSV and
+    # in raw clash
+    with pytest.raises(RuntimeError, match='Channels do not correspond'):
+        read_raw_bids(bids_basename + '_eeg.edf', output_path)
 
     bids_fname = bids_basename.replace('run-01', 'run-%s' % run2)
     write_raw_bids(raw, bids_fname, output_path, overwrite=True)
@@ -444,14 +458,34 @@ def test_bdf():
     data_path = op.join(base_path, 'edf', 'tests', 'data')
     raw_fname = op.join(data_path, 'test.bdf')
 
-    raw = mne.io.read_raw_edf(raw_fname)
-    write_raw_bids(raw, bids_basename, output_path, overwrite=False)
+    raw = mne.io.read_raw_bdf(raw_fname)
+    with pytest.warns(UserWarning, match='No line frequency found'):
+        write_raw_bids(raw, bids_basename, output_path, overwrite=False)
 
     cmd = bids_validator_exe + [output_path]
     run_subprocess(cmd, shell=shell)
 
-    read_raw_bids(bids_basename + '_eeg.bdf', output_path)
+    # Test also the reading of channel types from channels.tsv
+    # the first channel in the raw data is not MISC right now
+    test_ch_idx = 0
+    assert coil_type(raw.info, test_ch_idx) != 'misc'
 
+    # we will change the channel type to MISC and overwrite the channels file
+    bids_fname = bids_basename + '_eeg.bdf'
+    channels_fname = _find_matching_sidecar(bids_fname, output_path,
+                                            'channels.tsv')
+    channels_dict = _from_tsv(channels_fname)
+    channels_dict['type'][test_ch_idx] = 'MISC'
+    _to_tsv(channels_dict, channels_fname)
+
+    # Now read the raw data back from BIDS, with the tampered TSV, to show
+    # that the channels.tsv truly influences how read_raw_bids sets ch_types
+    # in the raw data object
+    raw = read_raw_bids(bids_fname, output_path)
+    assert coil_type(raw.info, test_ch_idx) == 'misc'
+
+    # Test cropped assertion error
+    raw = mne.io.read_raw_bdf(raw_fname)
     raw.crop(0, raw.times[-2])
     with pytest.raises(AssertionError, match='cropped'):
         write_raw_bids(raw, bids_basename, output_path)
