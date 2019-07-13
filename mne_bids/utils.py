@@ -27,8 +27,22 @@ from mne.io.constants import FIFF
 from .tsv_handler import _to_tsv, _tsv_to_str
 
 
-def _get_ch_type_mapping(from_mne_to_bids=True):
+def _get_ch_type_mapping(fro='mne', to='bids'):
     """Map between BIDS and MNE nomenclatures for channel types.
+
+    Parameters
+    ----------
+    fro : str
+        Mapping from nomenclature of `fro`. Can be 'mne', 'bids'
+    to : str
+        Mapping to nomenclature of `to`. Can be 'mne', 'bids'
+
+    Returns
+    -------
+    ch_type_mapping : collections.defaultdict
+        Dictionary mapping from one nomenclature of channel types to another.
+        If a key is not present, a default value will be returned that depends
+        on the `fro` and `to` parameters.
 
     Notes
     -----
@@ -37,7 +51,7 @@ def _get_ch_type_mapping(from_mne_to_bids=True):
     one-to-many/many-to-one.
 
     """
-    if from_mne_to_bids:
+    if fro == 'mne' and to == 'bids':
         map_chs = dict(eeg='EEG', misc='MISC', stim='TRIG', emg='EMG',
                        ecog='ECOG', seeg='SEEG', eog='EOG', ecg='ECG',
                        # MEG channels
@@ -47,7 +61,7 @@ def _get_ch_type_mapping(from_mne_to_bids=True):
                        )
         default_value = 'OTHER'
 
-    else:  # from_bids_to_mne
+    elif fro == 'bids' and to == 'mne':
         map_chs = dict(EEG='eeg', MISC='misc', TRIG='stim', EMG='emg',
                        ECOG='ecog', SEEG='seeg', EOG='eog', ECG='ecg',
                        # No MEG channels for now
@@ -55,6 +69,11 @@ def _get_ch_type_mapping(from_mne_to_bids=True):
                        VEOG='eog', HEOG='eog',
                        )
         default_value = 'misc'
+
+    else:
+        raise ValueError('Only two types of mappings are currently supported: '
+                         'from mne to bids, or from bids to mne. However, '
+                         'you specified from "{}" to "{}"'.format(fro, to))
 
     # Make it a defaultdict to prevent key errors
     ch_type_mapping = defaultdict(lambda: default_value)

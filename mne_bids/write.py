@@ -61,7 +61,7 @@ def _channels_tsv(raw, fname, overwrite=False, verbose=True):
 
     """
     # Get channel type mappings between BIDS and MNE nomenclatures
-    map_chs = _get_ch_type_mapping(from_mne_to_bids=True)
+    map_chs = _get_ch_type_mapping(fro='mne', to='bids')
 
     # Prepare the descriptions for each channel type
     map_desc = defaultdict(lambda: 'Other type of channel')

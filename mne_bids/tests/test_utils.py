@@ -16,7 +16,8 @@ from mne.datasets import testing
 from mne_bids import make_bids_folders, make_bids_basename, write_raw_bids
 from mne_bids.utils import (_check_types, print_dir_tree, _age_on_date,
                             _infer_eeg_placement_scheme, _handle_kind,
-                            _find_matching_sidecar, _parse_ext)
+                            _find_matching_sidecar, _parse_ext,
+                            _get_ch_type_mapping)
 
 
 base_path = op.join(op.dirname(mne.__file__), 'io')
@@ -29,6 +30,12 @@ task = 'testing'
 bids_basename = make_bids_basename(
     subject=subject_id, session=session_id, run=run, acquisition=acq,
     task=task)
+
+
+def test_get_ch_type_mapping():
+    """Test getting a correct channel mapping."""
+    with pytest.raises(ValueError, match='specified from "bogus" to "mne"'):
+        _get_ch_type_mapping(fro='bogus', to='mne')
 
 
 def test_handle_kind():

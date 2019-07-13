@@ -144,7 +144,7 @@ def _handle_channels_reading(channels_fname, bids_fname, raw):
     channel_type_dict = dict()
 
     # Get the best mapping we currently have from BIDS to MNE nomenclature
-    bids_to_mne_ch_types = _get_ch_type_mapping(from_mne_to_bids=False)
+    bids_to_mne_ch_types = _get_ch_type_mapping(fro='bids', to='mne')
     ch_types_json = channels_dict['type']
     for ch_name, ch_type in zip(ch_names_tsv, ch_types_json):
 
