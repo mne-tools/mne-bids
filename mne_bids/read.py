@@ -130,8 +130,10 @@ def _handle_channels_reading(channels_fname, bids_fname, raw):
                        len(ch_names_raw), bids_fname, ch_names_raw)
                )
 
-        # this could be due to MNE inserting a 'STI 014' channel as the last
-        # channel: In that case, we can work
+        # XXX: this could be due to MNE inserting a 'STI 014' channel as the
+        # last channel: In that case, we can work. --> Can be removed soon,
+        # because MNE will stop the synthesis of stim channels in the near
+        # future
         if not (ch_names_raw[-1] == 'STI 014' and
                 ch_names_raw[:-1] == ch_names_tsv):
             raise RuntimeError(msg)
