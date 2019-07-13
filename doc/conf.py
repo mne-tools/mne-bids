@@ -16,6 +16,14 @@ sys.path.append(os.path.abspath(os.path.join(curdir, '..', 'mne_bids')))
 sys.path.append(os.path.abspath(os.path.join(curdir, 'sphinxext')))
 
 
+# If extensions (or modules to document with autodoc) are in another directory,
+# add these directories to sys.path here. If the directory is relative to the
+# documentation root, use os.path.abspath to make it absolute, like shown here.
+curdir = os.path.dirname(__file__)
+sys.path.append(os.path.abspath(os.path.join(curdir, '..', 'mne_bids')))
+sys.path.append(os.path.abspath(os.path.join(curdir, 'sphinxext')))
+
+
 # -- General configuration ------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
@@ -29,11 +37,12 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.mathjax',
     'sphinx.ext.viewcode',
-    'numpydoc',
     'sphinx.ext.autosummary',
     'sphinx.ext.doctest',
     'sphinx.ext.intersphinx',
-    'sphinx_gallery.gen_gallery'
+    'sphinx_gallery.gen_gallery',
+    'numpydoc',
+    'gen_cli'  # custom extension, see ./sphinxext/gen_cli.py
 ]
 
 # generate autosummary even if no references
