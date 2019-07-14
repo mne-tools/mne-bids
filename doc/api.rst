@@ -1,6 +1,9 @@
 :orphan:
 
 .. _api_documentation:
+.. contents::
+   :local:
+   :depth: 2
 
 =================
 API Documentation

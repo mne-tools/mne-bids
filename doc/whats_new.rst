@@ -1,6 +1,9 @@
 :orphan:
 
 .. _whats_new:
+.. contents::
+   :local:
+   :depth: 3
 
 What's new?
 ===========
