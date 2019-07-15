@@ -28,12 +28,16 @@ def run():
                       help=('Path to the output file. MUST be same format '
                             'as input file.'), metavar='OUTPUT')
 
+    parser.add_option('-v', '--verbose', dest="verbose",
+                      help='Set logging level to verbose', action="store_true")
+
     opt, args = parser.parse_args()
     opt_dict = vars(opt)
 
     # Check the usage and raise error if invalid
     if len(args) > 0:
-        parser.error('Do not specify additional arguments. Found: "{}"'
+        parser.error('Do not specify arguments without flags. Found: "{}".\n'
+                     'Did you forget to provide -i and -o?'
                      .format(args))
 
     if not opt_dict.get('input') or not opt_dict.get('output'):
@@ -43,7 +47,7 @@ def run():
     # Attempt to do the copying. Errors will be raised by the copyfile
     # functions if there are issues with the file formats
     if opt.input.endswith('.vhdr'):
-        copyfile_brainvision(opt.input, opt.output)
+        copyfile_brainvision(opt.input, opt.output, opt.verbose)
     elif opt.input.endswith('.set'):
         copyfile_eeglab(opt.input, opt.output)
     elif opt.input.endswith('.ds'):
