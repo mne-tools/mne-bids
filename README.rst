@@ -72,12 +72,13 @@ error messages:
 
    $ python -c 'import mne_bids'
 
-For full functionality of ``mne-bids``, you will also need to install the
-following packages:
+For full functionality of ``mne-bids``, you will also need to `` pip install``
+the following packages:
 
 - nibabel
 
-If you want to use the latest development version, use the following command:
+If you want to use the latest development version of ``mne-bids``, use the
+following command:
 
 .. code-block:: bash
 
@@ -99,13 +100,17 @@ iEEG is experimental at the moment.
 Command Line Interface
 ----------------------
 
-In addition to ``import mne_bids``\ , you can use the command line interface.
+In addition to ``import mne_bids``, you can use the command line interface.
+Simply type ``mne_bids`` in your command line and press enter, to see the
+accepted commands. Then type ``mne_bids <command> --help``, where ``<command>``
+is one of the accepted commands, to get more information about that
+``<command>``.
 
 Example:
 
 .. code-block:: bash
 
-   $ mne_bids raw_to_bids --subject_id sub01 --task rest --raw data.edf --output_path new_path
+   $ mne_bids raw_to_bids --help
 
 Bug reports
 -----------
