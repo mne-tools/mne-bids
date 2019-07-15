@@ -6,9 +6,11 @@
 #          Stefan Appelhoff <stefan.appelhoff@mailbox.org>
 #
 # License: BSD (3-clause)
+import os
 import os.path as op
 import glob
 import json
+from warnings import warn
 
 import numpy as np
 import mne
@@ -267,6 +269,10 @@ def get_head_mri_trans(bids_fname, bids_root):
     import nibabel as nib
 
     # Get the sidecar file for MRI landmarks
+    if os.sep in bids_fname:
+        warn('`bids_fname` seems to be a path. Attempting to take only the '
+             'the name WITHOUT the path ... ')
+        bids_fname = op.basename(bids_fname)
     t1w_json_path = _find_matching_sidecar(bids_fname, bids_root, 'T1w.json')
 
     # Get MRI landmarks from the JSON sidecar
