@@ -561,7 +561,8 @@ def test_write_anat():
                    event_id=event_id, overwrite=False)
 
     # Write some MRI data and supply a `trans`
-    trans = mne.read_trans(raw_fname.replace('_raw.fif', '-trans.fif'))
+    trans_fname = raw_fname.replace('_raw.fif', '-trans.fif')
+    trans = mne.read_trans(trans_fname)
 
     # Get the T1 weighted MRI data file
     # Needs to be converted to Nifti because we only have mgh in our test base
@@ -620,9 +621,23 @@ def test_write_anat():
                                output_path, 'T1w.json')
 
     # trans is not a Transform
-    with pytest.raises(ValueError, match='must be a "Transform"'):
+    with pytest.raises(ValueError, match='must be of type "Transform"'):
+        write_anat(output_path, subject_id, t1w_mgh, session_id, raw=raw,
+                   trans=1, verbose=True, overwrite=True)
+
+    # trans is a str, but file does not exist
+    with pytest.raises(ValueError, match='Expected `trans` to point to a '):
         write_anat(output_path, subject_id, t1w_mgh, session_id, raw=raw,
                    trans='not a trans', verbose=True, overwrite=True)
+
+    # However, reading trans if it is a string pointing to trans is fine
+    write_anat(output_path, subject_id, t1w_mgh, session_id, raw=raw,
+               trans=trans_fname, verbose=True, overwrite=True)
+
+    # Writing without a session does NOT yield "ses-None" anywhere
+    anat_dir2 = write_anat(output_path, subject_id, t1w_mgh, None)
+    assert 'ses-None' not in anat_dir2
+    assert op.exists(op.join(anat_dir2, 'sub-01_T1w.nii.gz'))
 
     # specify trans but not raw
     with pytest.raises(ValueError, match='must be specified if `trans`'):
