@@ -71,11 +71,11 @@ def test_copyfile_brainvision():
     new_name = op.join(output_path, 'tested_conversion.vhdr')
 
     # IO error testing
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match='Need to move data with same'):
         copyfile_brainvision(raw_fname, new_name + '.eeg')
 
     # Try to copy the file
-    copyfile_brainvision(raw_fname, new_name)
+    copyfile_brainvision(raw_fname, new_name, verbose=True)
 
     # Have all been copied?
     head, tail = op.split(new_name)
