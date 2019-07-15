@@ -976,9 +976,11 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
     raw : instance of Raw | None
         The raw data of `subject` corresponding to `t1w`. If `raw` is None,
         `trans` has to be None as well
-    trans : instance of mne.transforms.Transform | None
-        The transformation matrix from head coordinates to MRI coordinates.
-        If None, no sidecar JSON file will be written for `t1w`
+    trans : instance of mne.transforms.Transform | str | None
+        The transformation matrix from head coordinates to MRI coordinates. Can
+        also be a string pointing to a *.trans file containing the
+        transformation matrix. If None, no sidecar JSON file will be written
+        for `t1w`
     overwrite : bool
         Whether to overwrite existing files or data in files.
         Defaults to False.
@@ -1038,9 +1040,12 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
     if trans is None:
         return anat_dir
 
-    if not isinstance(trans, mne.transforms.Transform):
-        raise ValueError('`trans` must be a "Transform" but is of type "{}"'
-                         .format(type(trans)))
+    if not (isinstance(trans, mne.transforms.Transform) or not
+            isinstance(trans, str)):
+        raise ValueError('`trans` must be of type "Transform" or "str", '
+                         'but is of type "{}"'.format(type(trans)))
+    if isinstance(trans, str):
+        trans = mne.read_trans(trans)
 
     if not isinstance(raw, BaseRaw):
         raise ValueError('`raw` must be specified if `trans` is not None')
