@@ -29,11 +29,15 @@ def setup(app):
 # 4. -   : Command sections (Examples, Notes)
 
 header = """\
-.. _python_commands:
+:orphan:
 
-===============================
-Command line tools using Python
-===============================
+.. _python_cli:
+
+=====================================
+MNE-BIDS Command Line Interface (CLI)
+=====================================
+
+Here we list the MNE-BIDS tools that you can use from the command line.
 
 .. contents:: Contents
    :local:
@@ -63,18 +67,18 @@ def generate_cli_rst(app=None):
         os.mkdir(out_dir)
     out_fname = op.join(out_dir, 'cli.rst.new')
 
-    command_path = op.abspath(
-        op.join(os.path.dirname(__file__), '..', '..', 'mne', 'cli'))
+    cli_path = op.abspath(
+        op.join(os.path.dirname(__file__), '..', '..', 'cli'))
     fnames = sorted([
         op.basename(fname)
-        for fname in glob.glob(op.join(command_path, 'mne_*.py'))])
+        for fname in glob.glob(op.join(cli_path, 'mne_bids*.py'))])
     iterator = sphinx_compatibility.status_iterator(
-        fnames, 'generating MNE command help ... ', length=len(fnames))
+        fnames, 'generating MNE-BIDS cli help ... ', length=len(fnames))
     with open(out_fname, 'w') as f:
         f.write(header)
         for fname in iterator:
             cmd_name = fname[:-3]
-            run_name = op.join(command_path, fname)
+            run_name = op.join(cli_path, fname)
             output, _ = run_subprocess([sys.executable, run_name, '--help'],
                                        stdout=subprocess.PIPE,
                                        stderr=subprocess.PIPE, verbose=False)
@@ -89,7 +93,7 @@ def generate_cli_rst(app=None):
 
             # Add code styling for the "Usage: " line
             for li, line in enumerate(output):
-                if line.startswith('Usage: mne '):
+                if line.startswith('Usage: mne_bids '):
                     output[li] = 'Usage: ``%s``' % line[7:]
                     break
 
@@ -103,7 +107,7 @@ def generate_cli_rst(app=None):
                 output.insert(ii + 4, '')
             output = '\n'.join(output)
             f.write(command_rst % (cmd_name,
-                                   cmd_name.replace('mne_', 'mne '),
+                                   cmd_name.replace('mne_bids_', 'mne_bids '),
                                    '=' * len(cmd_name),
                                    output))
     _replace_md5(out_fname)

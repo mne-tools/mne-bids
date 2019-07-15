@@ -1,12 +1,16 @@
 :orphan:
 
 .. _whats_new:
-.. contents::
-   :local:
-   :depth: 3
+
 
 What's new?
 ===========
+
+Here we list a changelog of MNE-BIDS.
+
+.. contents:: Contents
+   :local:
+   :depth: 3
 
 .. currentmodule:: mne_bids
 
