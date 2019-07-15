@@ -1040,11 +1040,14 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
     if trans is None:
         return anat_dir
 
-    if not (isinstance(trans, mne.transforms.Transform) or not
-            isinstance(trans, str)):
+    if not(isinstance(trans, mne.transforms.Transform) or
+           isinstance(trans, str)):
         raise ValueError('`trans` must be of type "Transform" or "str", '
                          'but is of type "{}"'.format(type(trans)))
     if isinstance(trans, str):
+        if not op.exists(trans):
+            raise ValueError('Expected `trans` to point to a *.trans file, '
+                             'but it does not exist: "{}"'.format(trans))
         trans = mne.read_trans(trans)
 
     if not isinstance(raw, BaseRaw):
