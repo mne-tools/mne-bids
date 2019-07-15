@@ -26,10 +26,12 @@ jobs:
 
             - run:
                 name: Setup Python environment
+                # ... but use latest version of MNE
                 command: |
                   conda update --yes --quiet conda
                   conda env create -f environment.yml --name=testenv
                   source activate testenv
+                  pip install -U https://api.github.com/repos/mne-tools/mne-python/zipball/master
                   python setup.py develop
 
             - run:

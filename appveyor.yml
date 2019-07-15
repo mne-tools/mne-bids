@@ -5,6 +5,7 @@ environment:
 # ... whereas for "stable", VALIDATOR_EXECUTABLE MUST be set to "n/a"
   global:
         VALIDATOR_VERSION: "master"
+        MNE_VERSION: "master"  # can be "maint/0.18" ... or "master"
         VALIDATOR_EXECUTABLE: "C:\\projects\\mne-bids\\bids-validator\\bids-validator\\bin\\bids-validator"
         nodejs_version: "10.0.0"
         PYTHON: "C:\\conda"
@@ -38,7 +39,7 @@ install:
   - "pip uninstall -yq mne"
   - |-
     cd ..
-    git clone --depth 1 https://github.com/mne-tools/mne-python.git -b maint/0.18
+    git clone --depth 1 https://github.com/mne-tools/mne-python.git -b $MNE_VERSION
     cd mne-python
     python setup.py develop
     cd ..

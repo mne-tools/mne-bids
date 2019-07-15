@@ -6,6 +6,7 @@ language: python
 env:
   global:
     - VALIDATOR_VERSION="master"
+    - MNE_VERSION="master"  # can be "maint/0.18" ... or "master"
 
 
 before_install:
@@ -43,7 +44,7 @@ install:
     - source activate testenv
     - pip uninstall --yes --quiet mne  # uninstall the pip version of mne to install dev version below
     - |
-      git clone --depth 1 https://github.com/mne-tools/mne-python.git -b maint/0.18
+      git clone --depth 1 https://github.com/mne-tools/mne-python.git -b $MNE_VERSION
       cd mne-python
       pip install --no-deps -e .
       cd ../
