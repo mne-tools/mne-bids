@@ -18,7 +18,8 @@ def run():
                             'EEGLAB (.set), CTF (.ds).')
 
     parser = get_optparser(__file__, usage="usage: %prog -i INPUT -o OUTPUT",
-                           prog='mne_bids', version=mne_bids.__version__)
+                           prog_prefix='mne_bids',
+                           version=mne_bids.__version__)
 
     parser.add_option('-i', '--input', dest='input',
                       help=('Path to the input file. {}'

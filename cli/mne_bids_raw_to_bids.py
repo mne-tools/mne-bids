@@ -18,7 +18,8 @@ def run():
     from mne.commands.utils import get_optparser
 
     parser = get_optparser(__file__, usage="usage: %prog options args",
-                           prog='mne_bids', version=mne_bids.__version__)
+                           prog_prefix='mne_bids',
+                           version=mne_bids.__version__)
 
     parser.add_option('--subject_id', dest='subject_id',
                       help=('The subject name in BIDS compatible format'

@@ -1,6 +1,6 @@
-# -*- coding: utf-8 -*-
 """Test command line."""
 # Authors: Teon L Brooks <teon.brooks@gmail.com>
+#          Stefan Appelhoff <stefan.appelhoff@mailbox.org>
 #
 # License: BSD (3-clause)
 from os import path as op
@@ -8,7 +8,9 @@ from os import path as op
 from mne.datasets import testing
 from mne.utils import _TempDir, run_tests_if_main, ArgvSetter
 
-from cli import mne_bids_raw_to_bids
+from mne_bids.datasets import fetch_brainvision_testing_data
+
+from cli import mne_bids_raw_to_bids, mne_bids_cp
 
 
 subject_id = '01'
@@ -36,6 +38,17 @@ def test_raw_to_bids():
     with ArgvSetter(('--subject_id', subject_id, '--task', task, '--raw',
                      raw_fname, '--output_path', output_path)):
         mne_bids_raw_to_bids.run()
+
+
+def test_cp():
+    """Test mne_bids cp."""
+    output_path = _TempDir()
+    data_path = fetch_brainvision_testing_data()
+    raw_fname = op.join(data_path, 'test.vhdr')
+    outname = op.join(output_path, 'test2.vhdr')
+    # check_usage(mne_bids_cp)
+    with ArgvSetter(('--input', raw_fname, '--output', outname)):
+        mne_bids_cp.run()
 
 
 run_tests_if_main()
