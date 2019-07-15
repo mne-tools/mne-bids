@@ -1003,8 +1003,11 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
     import nibabel as nib
 
     # Make directory for anatomical data
-    anat_dir = op.join(bids_root, 'sub-{}'.format(subject),
-                       'ses-{}'.format(session), 'anat')
+    anat_dir = op.join(bids_root, 'sub-{}'.format(subject))
+    # Session is optional
+    if session is not None:
+        anat_dir = op.join(anat_dir, 'ses-{}'.format(session))
+    anat_dir = op.join(anat_dir, 'anat')
     if not op.exists(anat_dir):
         os.makedirs(anat_dir)
 
