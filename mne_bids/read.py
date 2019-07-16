@@ -268,8 +268,7 @@ def get_head_mri_trans(bids_fname, bids_root):
     import nibabel as nib
 
     # Get the sidecar file for MRI landmarks
-    if os.sep in bids_fname:
-        bids_fname = op.basename(bids_fname)
+    bids_fname = op.basename(bids_fname)
     t1w_json_path = _find_matching_sidecar(bids_fname, bids_root, 'T1w.json')
 
     # Get MRI landmarks from the JSON sidecar
