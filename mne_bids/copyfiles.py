@@ -65,7 +65,7 @@ def _get_brainvision_encoding(vhdr_file, verbose=False):
             enc = 'UTF-8'
             src = '(default)'
         if verbose is True:
-            print('file encoding: %s %s' % (enc, src))
+            print('Detected file encoding: %s %s.' % (enc, src))
     return enc
 
 
@@ -154,7 +154,7 @@ def copyfile_ctf(src, dest):
                   op.join(dest, bids_folder_name + ext))
 
 
-def copyfile_brainvision(vhdr_src, vhdr_dest):
+def copyfile_brainvision(vhdr_src, vhdr_dest, verbose=False):
     """Copy a BrainVision file triplet to a new location and repair links.
 
     Parameters
@@ -176,7 +176,7 @@ def copyfile_brainvision(vhdr_src, vhdr_dest):
     eeg_file_path, vmrk_file_path = _get_brainvision_paths(vhdr_src)
 
     # extract encoding from brainvision header file, or default to utf-8
-    enc = _get_brainvision_encoding(vhdr_src, verbose=True)
+    enc = _get_brainvision_encoding(vhdr_src, verbose)
 
     # Copy data .eeg ... no links to repair
     sh.copyfile(eeg_file_path, fname_dest + '.eeg')
@@ -204,6 +204,12 @@ def copyfile_brainvision(vhdr_src, vhdr_dest):
                 if line.strip() in search_lines:
                     line = line.replace(basename_src, basename_dest)
                 fout.write(line)
+
+    if verbose:
+        for ext in ['.eeg', '.vhdr', '.vmrk']:
+            print('Created "{}" in "{}"'
+                  .format(fname_dest + ext,
+                          op.dirname(op.realpath(vhdr_dest))))
 
 
 def copyfile_eeglab(src, dest):

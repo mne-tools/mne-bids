@@ -19,6 +19,10 @@ adjusting the internal links, we corrupt the file format.
 
 In this example, we use MNE-BIDS to rename BrainVision data files including a
 repair of the internal file pointers.
+
+For the command line version of this tool, see the :code:`cp` tool in the docs
+for the :ref:`Python Command Line Interface <python_cli>`.
+
 """
 
 # Authors: Stefan Appelhoff <stefan.appelhoff@mailbox.org>

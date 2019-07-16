@@ -5,8 +5,9 @@ environment:
 # ... whereas for "stable", VALIDATOR_EXECUTABLE MUST be set to "n/a"
   global:
         VALIDATOR_VERSION: "master"
+        MNE_VERSION: "master"  # can be "maint/0.18" ... or "master"
         VALIDATOR_EXECUTABLE: "C:\\projects\\mne-bids\\bids-validator\\bids-validator\\bin\\bids-validator"
-        nodejs_version: "10.0.0"
+        NODEJS_VERSION: "10.0.0"
         PYTHON: "C:\\conda"
   matrix:
       - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
@@ -14,7 +15,7 @@ environment:
         PYTHON_ARCH: "64"
 
 install:
-  - ps: Install-Product node $env:nodejs_version
+  - ps: Install-Product node $env:NODEJS_VERSION
   - node --version
   - npm --version
   - yarn --version
@@ -36,13 +37,13 @@ install:
   - "conda install numpy scipy"
   - "pip install nibabel flake8 pytest pytest-sugar pytest-faulthandler"
   - "pip uninstall -yq mne"
-  - |-
-    cd ..
-    git clone --depth 1 https://github.com/mne-tools/mne-python.git -b maint/0.18
-    cd mne-python
-    python setup.py develop
-    cd ..
-    cd mne-bids
+  - ps: |-
+        cd ..
+        git clone --depth 1 https://github.com/mne-tools/mne-python.git -b $env:MNE_VERSION
+        cd mne-python
+        python setup.py develop
+        cd ..
+        cd mne-bids
   - "python setup.py develop"
   - "python -c \"import mne; mne.datasets.testing.data_path()\""
 

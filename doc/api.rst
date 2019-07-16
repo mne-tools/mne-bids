@@ -1,13 +1,16 @@
 :orphan:
 
 .. _api_documentation:
-.. contents::
-   :local:
-   :depth: 2
 
 =================
 API Documentation
 =================
+
+Here we list the Application Programming Interface (API) for MNE-BIDS.
+
+.. contents:: Contents
+   :local:
+   :depth: 2
 
 MNE BIDS (:py:mod:`mne_bids`)
 =============================
