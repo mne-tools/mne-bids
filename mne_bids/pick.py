@@ -2,7 +2,6 @@
 # Authors: Matt Sanderson <matt.sanderson@mq.edu.au>
 #
 # License: BSD (3-clause)
-
 from mne.io.constants import FIFF
 
 
