@@ -195,12 +195,13 @@ def read_raw_bids(bids_fname, bids_root, verbose=True):
     """
     # Full path to data file is needed so that mne-bids knows
     # what is the modality -- meg, eeg, ieeg to read
+    bids_fname = op.basename(bids_fname)
     bids_basename = '_'.join(bids_fname.split('_')[:-1])
     kind = bids_fname.split('_')[-1].split('.')[0]
     _, ext = _parse_ext(bids_fname)
 
     # Get the BIDS parameters (=entities)
-    params = _parse_bids_filename(op.join(*bids_basename.split('/')[1:]), verbose)
+    params = _parse_bids_filename(bids_basename, verbose)
 
     # Construct the path to the "kind" where the data is stored
     # Subject is mandatory ...
