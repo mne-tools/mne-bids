@@ -6,7 +6,6 @@
 #          Stefan Appelhoff <stefan.appelhoff@mailbox.org>
 #
 # License: BSD (3-clause)
-import os
 import os.path as op
 import glob
 import json
