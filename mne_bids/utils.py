@@ -355,7 +355,7 @@ def _find_matching_sidecar(bids_fname, bids_root, suffix, allow_fail=False):
     Parameters
     ----------
     bids_fname : str
-        Full name of the data file (not a path)
+        Full name of the data file
     bids_root : str
         Path to root of the BIDS folder
     suffix : str
@@ -371,6 +371,9 @@ def _find_matching_sidecar(bids_fname, bids_root, suffix, allow_fail=False):
         and no sidecar_fname was found
 
     """
+    if op.sep in bids_fname:
+        bids_fname = op.basename(bids_fname)
+
     # We only use subject and session as identifier, because all other
     # parameters are potentially not binding for metadata sidecar files
     if 'ses' in bids_fname:
