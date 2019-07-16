@@ -110,7 +110,7 @@ Example:
 
 .. code-block:: bash
 
-   $ mne_bids raw_to_bids --help
+  $ mne_bids raw_to_bids --subject_id sub01 --task rest --raw data.edf --output_path new_path
 
 Bug reports
 -----------
