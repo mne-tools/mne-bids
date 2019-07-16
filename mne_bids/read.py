@@ -200,7 +200,7 @@ def read_raw_bids(bids_fname, bids_root, verbose=True):
     _, ext = _parse_ext(bids_fname)
 
     # Get the BIDS parameters (=entities)
-    params = _parse_bids_filename(bids_basename, verbose)
+    params = _parse_bids_filename(op.join(*bids_basename.split('/')[1:]), verbose)
 
     # Construct the path to the "kind" where the data is stored
     # Subject is mandatory ...

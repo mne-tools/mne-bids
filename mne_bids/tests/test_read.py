@@ -11,7 +11,7 @@ import mne
 from mne.utils import _TempDir, requires_nibabel
 from mne.datasets import testing
 
-from mne_bids.read import _read_raw, get_head_mri_trans
+from mne_bids.read import _read_raw, get_head_mri_trans, read_raw_bids
 from mne_bids.write import write_anat, write_raw_bids, make_bids_basename
 
 subject_id = '01'
@@ -24,6 +24,9 @@ bids_basename = make_bids_basename(
     subject=subject_id, session=session_id, run=run, acquisition=acq,
     task=task)
 
+def test_read_raw_bids():
+    output_path, bids_basename, raw, raw_fname = write_test_bids()
+    read_raw_bids(bids_basename, output_path)
 
 def test_read_raw():
     """Test the raw reading."""
@@ -44,15 +47,11 @@ def test_not_implemented():
                                               'this file format yet')):
             _read_raw(raw_fname)
 
-
-@requires_nibabel()
-def test_get_head_mri_trans():
-    """Test getting a trans object from BIDS data."""
-    import nibabel as nib
+def write_test_bids():
     # Get the MNE testing sample data
     output_path = _TempDir()
     data_path = testing.data_path()
-    raw_fname = op.join(data_path, 'MEG', 'sample',
+    raw_fname = op.join(data_path, 'data_bids', 'MEG', 'sample',
                         'sample_audvis_trunc_raw.fif')
 
     event_id = {'Auditory/Left': 1, 'Auditory/Right': 2, 'Visual/Left': 3,
@@ -66,6 +65,13 @@ def test_get_head_mri_trans():
         write_raw_bids(raw, bids_basename, output_path,
                        events_data=events_fname, event_id=event_id,
                        overwrite=False)
+    return output_path, bids_basename, raw, raw_fname
+
+@requires_nibabel()
+def test_get_head_mri_trans():
+    """Test getting a trans object from BIDS data."""
+    import nibabel as nib
+    output_path, bids_basename, raw, raw_fname = write_test_bids()
 
     # We cannot recover trans, if no MRI has yet been written
     with pytest.raises(RuntimeError):
