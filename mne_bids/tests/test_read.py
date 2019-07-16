@@ -93,12 +93,11 @@ def test_get_head_mri_trans():
     print(trans)
     print(estimated_trans)
 
-    # Provoke a warning by passing a path to bids_fname instead of a NAME
+    # Passing a path instead of a name works well
     bids_fpath = op.join(output_path, 'sub-{}'.format(subject_id),
                          'ses-{}'.format(session_id), 'meg',
                          bids_basename + '_meg.fif')
-    with pytest.warns(UserWarning, match='`bids_fname` seems to be a path.'):
-        estimated_trans = get_head_mri_trans(bids_fpath, output_path)
+    estimated_trans = get_head_mri_trans(bids_fpath, output_path)
 
     # provoke an error by pointing introducing NaNs into MEG coords
     with pytest.raises(RuntimeError, match='AnatomicalLandmarkCoordinates'):

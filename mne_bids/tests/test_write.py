@@ -620,15 +620,19 @@ def test_write_anat():
         _find_matching_sidecar('sub-01_ses-01_acq-01_T1w.nii.gz',
                                output_path, 'T1w.json')
 
-    # trans is not a Transform
-    with pytest.raises(ValueError, match='must be of type "Transform"'):
+    # trans has a wrong type
+    wrong_type = 1
+    match = 'transform type {} not known, must be'.format(type(wrong_type))
+    with pytest.raises(ValueError, match=match):
         write_anat(output_path, subject_id, t1w_mgh, session_id, raw=raw,
-                   trans=1, verbose=True, overwrite=True)
+                   trans=wrong_type, verbose=True, overwrite=True)
 
     # trans is a str, but file does not exist
-    with pytest.raises(ValueError, match='Expected `trans` to point to a '):
+    wrong_fname = 'not_a_trans'
+    match = 'trans file "{}" not found'.format(wrong_fname)
+    with pytest.raises(IOError, match=match):
         write_anat(output_path, subject_id, t1w_mgh, session_id, raw=raw,
-                   trans='not a trans', verbose=True, overwrite=True)
+                   trans=wrong_fname, verbose=True, overwrite=True)
 
     # However, reading trans if it is a string pointing to trans is fine
     write_anat(output_path, subject_id, t1w_mgh, session_id, raw=raw,

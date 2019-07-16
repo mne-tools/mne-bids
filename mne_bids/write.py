@@ -9,24 +9,20 @@
 # License: BSD (3-clause)
 import os
 import os.path as op
-
+from datetime import datetime
+from warnings import warn
 import shutil as sh
 from collections import defaultdict, OrderedDict
 
 import numpy as np
 from numpy.testing import assert_array_equal
-import mne
+from mne.transforms import _get_trans, apply_trans
 from mne import Epochs
 from mne.io.constants import FIFF
 from mne.io.pick import channel_type
 from mne.io import BaseRaw
 from mne.channels.channels import _unit2human
 from mne.utils import check_version, has_nibabel
-from mne.transforms import _ensure_trans, apply_trans
-
-
-from datetime import datetime
-from warnings import warn
 
 from .pick import coil_type
 from .utils import (_write_json, _write_tsv, _read_events, _mkdir_p,
@@ -36,7 +32,6 @@ from .utils import (_write_json, _write_tsv, _read_events, _mkdir_p,
                     _get_ch_type_mapping)
 from .copyfiles import (copyfile_brainvision, copyfile_eeglab, copyfile_ctf,
                         copyfile_bti)
-
 from .read import reader
 from .tsv_handler import _from_tsv, _combine, _drop, _contains_row
 
@@ -1037,44 +1032,36 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
                       .format(t1w_basename))
 
     # Check if we have necessary conditions for writing a sidecar JSON
-    if trans is None:
-        return anat_dir
+    if trans is not None:
 
-    if not(isinstance(trans, mne.transforms.Transform) or
-           isinstance(trans, str)):
-        raise ValueError('`trans` must be of type "Transform" or "str", '
-                         'but is of type "{}"'.format(type(trans)))
-    if isinstance(trans, str):
-        if not op.exists(trans):
-            raise ValueError('Expected `trans` to point to a *-trans.fif file, '
-                             'but it does not exist: "{}"'.format(trans))
-        trans = mne.read_trans(trans)
+        # get trans and ensure it is from head to MRI
+        trans, _ = _get_trans(trans, fro='head', to='mri')
 
-    if not isinstance(raw, BaseRaw):
-        raise ValueError('`raw` must be specified if `trans` is not None')
+        if not isinstance(raw, BaseRaw):
+            raise ValueError('`raw` must be specified if `trans` is not None')
 
-    # Prepare to write the sidecar JSON
-    # extract MEG landmarks
-    coords_dict = _extract_landmarks(raw.info['dig'])
-    meg_landmarks = np.asarray((coords_dict['LPA'],
-                                coords_dict['NAS'],
-                                coords_dict['RPA']))
+        # Prepare to write the sidecar JSON
+        # extract MEG landmarks
+        coords_dict = _extract_landmarks(raw.info['dig'])
+        meg_landmarks = np.asarray((coords_dict['LPA'],
+                                    coords_dict['NAS'],
+                                    coords_dict['RPA']))
 
-    # Transform MEG landmarks into MRI space, adjust units by * 1e3
-    trans = _ensure_trans(trans, fro='head', to='mri')
-    mri_landmarks = apply_trans(trans, meg_landmarks, move=True) * 1e3
+        # Transform MEG landmarks into MRI space, adjust units by * 1e3
+        mri_landmarks = apply_trans(trans, meg_landmarks, move=True) * 1e3
 
-    # Get landmarks in voxel space, using the mgh version of our T1 data
-    vox2ras_tkr = t1_mgh.header.get_vox2ras_tkr()
-    ras2vox_tkr = np.linalg.inv(vox2ras_tkr)
-    mri_landmarks = apply_trans(ras2vox_tkr, mri_landmarks)  # in vox
+        # Get landmarks in voxel space, using the mgh version of our T1 data
+        vox2ras_tkr = t1_mgh.header.get_vox2ras_tkr()
+        ras2vox_tkr = np.linalg.inv(vox2ras_tkr)
+        mri_landmarks = apply_trans(ras2vox_tkr, mri_landmarks)  # in vox
 
-    # Write sidecar.json
-    t1w_json = dict()
-    t1w_json['AnatomicalLandmarkCoordinates'] = \
-        {'LPA': list(mri_landmarks[0, :]),
-         'NAS': list(mri_landmarks[1, :]),
-         'RPA': list(mri_landmarks[2, :])}
-    fname = t1w_basename.replace('.nii.gz', '.json')
-    _write_json(fname, t1w_json, overwrite, verbose)
+        # Write sidecar.json
+        t1w_json = dict()
+        t1w_json['AnatomicalLandmarkCoordinates'] = \
+            {'LPA': list(mri_landmarks[0, :]),
+             'NAS': list(mri_landmarks[1, :]),
+             'RPA': list(mri_landmarks[2, :])}
+        fname = t1w_basename.replace('.nii.gz', '.json')
+        _write_json(fname, t1w_json, overwrite, verbose)
+
     return anat_dir
