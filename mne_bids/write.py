@@ -19,7 +19,7 @@ import mne
 from mne import Epochs
 from mne.io.constants import FIFF
 from mne.io.pick import channel_type
-from mne.io import BaseRaw
+from mne.io import BaseRaw, Raw
 from mne.channels.channels import _unit2human
 from mne.utils import check_version, has_nibabel
 from mne.transforms import _ensure_trans, apply_trans
@@ -790,12 +790,13 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
         raise ValueError('raw.filenames is missing. Please set raw.filenames'
                          'as a list with the full path of original raw file.')
 
+    raw_fname = raw.filenames[0]
+
     if raw.preload is not False:
-        raise ValueError('The data should not be preloaded.')
+        raw = Raw(raw_fname, preload=False)
 
     raw = raw.copy()
 
-    raw_fname = raw.filenames[0]
     if '.ds' in op.dirname(raw.filenames[0]):
         raw_fname = op.dirname(raw.filenames[0])
     # point to file containing header info for multifile systems
