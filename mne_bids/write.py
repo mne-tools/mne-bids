@@ -1046,7 +1046,7 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
                          'but is of type "{}"'.format(type(trans)))
     if isinstance(trans, str):
         if not op.exists(trans):
-            raise ValueError('Expected `trans` to point to a *.trans file, '
+            raise ValueError('Expected `trans` to point to a *-trans.fif file, '
                              'but it does not exist: "{}"'.format(trans))
         trans = mne.read_trans(trans)
 
