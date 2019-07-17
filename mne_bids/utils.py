@@ -13,6 +13,7 @@ import glob
 import warnings
 import json
 import shutil as sh
+import re
 from datetime import datetime
 from collections import defaultdict
 
@@ -132,19 +133,23 @@ def _parse_ext(raw_fname, verbose=False):
     return fname, ext
 
 
+# This regex matches key-val pairs. Any characters are allowed in the key and
+# the value, except these special symbols: - _ . \ /
+param_regex = re.compile(r'([^-_\.\\\/]+)-([^-_\.\\\/]+)')
+
+
 def _parse_bids_filename(fname, verbose):
     """Get dict from BIDS fname."""
+    # Extract part of the filename containing the parameters
     keys = ['sub', 'ses', 'task', 'acq', 'run', 'proc', 'run', 'space',
             'recording', 'kind']
     params = {key: None for key in keys}
-    entities = fname.split('_')
     idx_key = 0
-    for entity in entities:
-        assert '-' in entity
-        key, value = entity.split('-')
+    for match in re.finditer(param_regex, op.basename(fname)):
+        key, value = match.groups()
         if key not in keys:
             raise KeyError('Unexpected entity ''%s'' found in filename ''%s'''
-                           % (entity, fname))
+                           % (key, fname))
         if keys.index(key) < idx_key:
             raise ValueError('Entities in filename not ordered correctly.'
                              ' "%s" should have occured earlier in the '
@@ -371,31 +376,54 @@ def _find_matching_sidecar(bids_fname, bids_root, suffix, allow_fail=False):
         and no sidecar_fname was found
 
     """
-    bids_fname = op.basename(bids_fname)
+    params = _parse_bids_filename(bids_fname, verbose=False)
 
     # We only use subject and session as identifier, because all other
     # parameters are potentially not binding for metadata sidecar files
-    if 'ses' in bids_fname:
-        search_str = '_'.join(bids_fname.split('_')[:2])
-    else:
-        # only sub, no ses
-        search_str = '_'.join(bids_fname.split('_')[:1])
+    search_str = 'sub-' + params['sub']
+    if 'ses' in params:
+        search_str += '_ses-' + params['ses']
 
-    # find the sidecar file, doing a recursive glob from the bids_root
+    # Find all potential sidecar files, doing a recursive glob from bids_root
     search_str = op.join(bids_root, '**', search_str + '*' + suffix)
     candidate_list = glob.glob(search_str, recursive=True)
-    if len(candidate_list) != 1:
-        msg = ('Expected to find a single {} file associated with '
-               '{}, but found {}: "{}".\n\nThe search_str was "{}"'
-               .format(suffix, bids_fname, len(candidate_list),
-                       candidate_list, search_str))
-        # We failed. If this was expected, simply return None
-        if allow_fail:
-            warnings.warn(msg)
-            return None
-        else:
-            raise RuntimeError(msg)
 
+    # Sort the list of potential sidebar files by how many params are matched
+    best_candidates = []
+    best_score = 0
+    for candidate in candidate_list:
+        n_matches = 0
+        candidate_params = _parse_bids_filename(candidate, verbose=False)
+        for entity, value in params.items():
+            if entity in candidate_params:
+                if candidate_params[entity] == value:
+                    n_matches += 1
+                else:
+                    # Incompatible entity found, candidate is disqualified
+                    continue
+        if n_matches >= best_score:
+            best_score = n_matches
+            best_candidates.append(candidate)
+
+    if len(best_candidates) == 1:
+        # Success
+        return best_candidates[0]
+
+    # We failed. Construct a helpful error message.
+    # If this was expected, simply return None, otherwise, raise an exception.
+    msg = None
+    if len(best_candidates) == 0:
+        msg = ('Did not find any {} file associated with {}.'
+               .format(suffix, bids_fname))
+    elif len(best_candidates) > 1:
+        # More than one candidates were tied for best match
+        msg = ('Expected to find a single {} file associated with '
+               '{}, but found {}: "{}".'
+               .format(suffix, bids_fname, len(candidate_list),
+                       candidate_list))
+    msg += '\n\nThe search_str was "{}"'.format(search_str)
+    if allow_fail:
+        warnings.warn(msg)
+        return None
     else:
-        sidecar_fname = candidate_list[0]
-    return sidecar_fname
+        raise RuntimeError(msg)

@@ -17,7 +17,7 @@ from mne_bids import make_bids_folders, make_bids_basename, write_raw_bids
 from mne_bids.utils import (_check_types, print_dir_tree, _age_on_date,
                             _infer_eeg_placement_scheme, _handle_kind,
                             _find_matching_sidecar, _parse_ext,
-                            _get_ch_type_mapping)
+                            _get_ch_type_mapping, _parse_bids_filename)
 
 
 base_path = op.join(op.dirname(mne.__file__), 'io')
@@ -137,6 +137,23 @@ def test_parse_ext():
     assert ext == '.nii.gz'
 
 
+@pytest.mark.parametrize('fname', [
+    'sub-01_ses-02_task-test_run-3_meg.fif',
+    'sub-01_ses-02_task-test_run-3.fif',
+    'sub-01_ses-02_task-test_run-3',
+    '/bids_root/sub-01/ses-02/meg/sub-01_ses-02_task-test_run-3_meg.fif',
+])
+def test_parse_bids_filename(fname):
+    """Test parsing entities from a bids filename."""
+    params = _parse_bids_filename(fname, verbose=False)
+    assert params['sub'] == '01'
+    assert params['ses'] == '02'
+    assert params['run'] == '3'
+    assert params['task'] == 'test'
+    assert list(params.keys()) == ['sub', 'ses', 'task', 'acq', 'run', 'proc',
+                                   'space', 'recording', 'kind']
+
+
 def test_age_on_date():
     """Test whether the age is determined correctly."""
     bday = datetime(1994, 1, 26)
@@ -202,12 +219,18 @@ def test_find_matching_sidecar():
 
     assert sidecar_fname.endswith(expected_file)
 
-    # Find multiple sidecars, triggering an error
+    # Now find multiple sidecar candidates and pick the one that matches best
+    open(sidecar_fname.replace('acq-01', 'acq-02'), 'w').close()
+    sidecar_fname = _find_matching_sidecar(bids_basename, output_path,
+                                           'coordsystem.json')
+    assert sidecar_fname.endswith(expected_file)
+
+    # Find multiple sidecars, tied in score, triggering an error
     with pytest.raises(RuntimeError, match='Expected to find a single'):
         open(sidecar_fname.replace('coordsystem.json',
                                    '2coordsystem.json'), 'w').close()
         _find_matching_sidecar(bids_basename, output_path, 'coordsystem.json')
 
     # Find nothing but receive None, because we set `allow_fail` to True
-    with pytest.warns(UserWarning, match='Expected to find a single'):
+    with pytest.warns(UserWarning, match='Did not find any'):
         _find_matching_sidecar(bids_basename, output_path, 'foo.bogus', True)

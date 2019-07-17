@@ -13,7 +13,7 @@ import json
 import numpy as np
 import mne
 from mne import io
-from mne.utils import has_nibabel
+from mne.utils import has_nibabel, logger
 from mne.coreg import fit_matched_points
 from mne.transforms import apply_trans
 
@@ -76,6 +76,7 @@ def _handle_events_reading(events_fname, raw):
 
     Handle onset, duration, and description of each event.
     """
+    logger.info('Reading events from {}.'.format(events_fname))
     events_dict = _from_tsv(events_fname)
 
     # Get the descriptions of the events
@@ -112,6 +113,7 @@ def _handle_channels_reading(channels_fname, bids_fname, raw):
 
     Updates status (bad) and types of channels.
     """
+    logger.info('Reading channel info from {}.'.format(channels_fname))
     channels_dict = _from_tsv(channels_fname)
 
     # First, make sure that ordering of names in channels.tsv matches the
