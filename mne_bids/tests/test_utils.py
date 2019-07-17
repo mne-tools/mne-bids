@@ -216,7 +216,6 @@ def test_find_matching_sidecar():
                                            'coordsystem.json')
     expected_file = op.join('sub-01', 'ses-01', 'meg',
                             'sub-01_ses-01_acq-01_coordsystem.json')
-
     assert sidecar_fname.endswith(expected_file)
 
     # Now find multiple sidecar candidates and pick the one that matches best
@@ -224,6 +223,11 @@ def test_find_matching_sidecar():
     sidecar_fname = _find_matching_sidecar(bids_basename, output_path,
                                            'coordsystem.json')
     assert sidecar_fname.endswith(expected_file)
+    sidecar_fname2 = _find_matching_sidecar(
+        bids_basename.replace('acq-01', 'acq-02'),
+        output_path, 'coordsystem.json')
+    expected_file2 = expected_file.replace('acq-01', 'acq-02')
+    assert sidecar_fname2.endswith(expected_file2)
 
     # Find multiple sidecars, tied in score, triggering an error
     with pytest.raises(RuntimeError, match='Expected to find a single'):

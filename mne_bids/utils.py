@@ -394,15 +394,21 @@ def _find_matching_sidecar(bids_fname, bids_root, suffix, allow_fail=False):
     best_score = 0
     for candidate in candidate_list:
         n_matches = 0
+        candidate_disqualified = False
         candidate_params = _parse_bids_filename(candidate, verbose=False)
         for entity, value in params.items():
+            if value is None:
+                continue
             if entity in candidate_params:
-                if candidate_params[entity] == value:
+                if candidate_params[entity] is None:
+                    continue
+                elif candidate_params[entity] == value:
                     n_matches += 1
                 else:
                     # Incompatible entity found, candidate is disqualified
+                    candidate_disqualified = True
                     continue
-        if n_matches >= best_score:
+        if not candidate_disqualified and n_matches >= best_score:
             best_score = n_matches
             best_candidates.append(candidate)
 
