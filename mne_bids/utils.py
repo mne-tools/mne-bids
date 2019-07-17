@@ -388,7 +388,9 @@ def _find_matching_sidecar(bids_fname, bids_root, suffix, allow_fail=False):
     search_str = op.join(bids_root, '**', search_str + '*' + suffix)
     candidate_list = glob.glob(search_str, recursive=True)
 
-    # Sort the list of potential sidebar files by how many params are matched
+    # Assign each candidate a score, based on how many entities are shared with
+    # bids_fname. The candidate with the highest score wins. Candidates with
+    # entities that conflict with bids_fname are disqualified.
     best_candidates = []
     best_score = 0
     for candidate in candidate_list:
