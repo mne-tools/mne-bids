@@ -353,6 +353,59 @@ def _extract_landmarks(dig):
     return coords
 
 
+def _find_best_candidates(params, candidate_list):
+    """Return the best candidate, based on the number of param matches.
+
+    Assign each candidate a score, based on how many entities are shared with
+    the ones supplied in the `params` parameter. The candidate with the highest
+    score wins. Candidates with entities that conflict with bids_fname are
+    disqualified.
+
+    Parameters
+    ----------
+    params : dict
+        The entities that the candidate should match.
+    candidate_list : list of str
+        A list of candidate filenames.
+
+    Returns
+    -------
+    best_candidates : list of str
+        A list of all the candidate filenames that are tied for first place.
+        Hopefully, the list will have a length of one.
+    """
+    params = {key: value for key, value in params.items() if value is not None}
+    print('params:', params)
+    print('candidates:', candidate_list)
+
+    best_candidates = []
+    best_score = 0
+    for candidate in candidate_list:
+        n_matches = 0
+        candidate_disqualified = False
+        candidate_params = _parse_bids_filename(candidate, verbose=False)
+        for entity, value in params.items():
+            if entity in candidate_params:
+                if candidate_params[entity] is None:
+                    continue
+                elif candidate_params[entity] == value:
+                    print('match:', entity, candidate_params[entity], value)
+                    n_matches += 1
+                else:
+                    print('no match:', entity, candidate_params[entity], value)
+                    # Incompatible entity found, candidate is disqualified
+                    candidate_disqualified = True
+                    break
+        if not candidate_disqualified:
+            if n_matches > best_score:
+                best_score = n_matches
+                best_candidates = [candidate]
+            elif n_matches == best_score:
+                best_candidates.append(candidate)
+
+    return best_candidates
+
+
 def _find_matching_sidecar(bids_fname, bids_root, suffix, allow_fail=False):
     """Try to find a sidecar file with a given suffix for a data file.
 
@@ -386,31 +439,7 @@ def _find_matching_sidecar(bids_fname, bids_root, suffix, allow_fail=False):
     # Find all potential sidecar files, doing a recursive glob from bids_root
     search_str = op.join(bids_root, '**', search_str + '*' + suffix)
     candidate_list = glob.glob(search_str, recursive=True)
-
-    # Assign each candidate a score, based on how many entities are shared with
-    # bids_fname. The candidate with the highest score wins. Candidates with
-    # entities that conflict with bids_fname are disqualified.
-    best_candidates = []
-    best_score = 0
-    for candidate in candidate_list:
-        n_matches = 0
-        candidate_disqualified = False
-        candidate_params = _parse_bids_filename(candidate, verbose=False)
-        for entity, value in params.items():
-            if value is None:
-                continue
-            if entity in candidate_params:
-                if candidate_params[entity] is None:
-                    continue
-                elif candidate_params[entity] == value:
-                    n_matches += 1
-                else:
-                    # Incompatible entity found, candidate is disqualified
-                    candidate_disqualified = True
-                    break
-        if not candidate_disqualified and n_matches >= best_score:
-            best_score = n_matches
-            best_candidates.append(candidate)
+    best_candidates = _find_best_candidates(params, candidate_list)
 
     if len(best_candidates) == 1:
         # Success

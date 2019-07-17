@@ -17,7 +17,8 @@ from mne_bids import make_bids_folders, make_bids_basename, write_raw_bids
 from mne_bids.utils import (_check_types, print_dir_tree, _age_on_date,
                             _infer_eeg_placement_scheme, _handle_kind,
                             _find_matching_sidecar, _parse_ext,
-                            _get_ch_type_mapping, _parse_bids_filename)
+                            _get_ch_type_mapping, _parse_bids_filename,
+                            _find_best_candidates)
 
 
 base_path = op.join(op.dirname(mne.__file__), 'io')
@@ -192,6 +193,28 @@ def test_infer_eeg_placement_scheme():
     assert placement_scheme == 'n/a'
 
 
+@pytest.mark.parametrize('candidate_list, best_candidates', [
+    # Only one candidate
+    (['sub-01_ses-02'], ['sub-01_ses-02']),
+
+    # Two candidates, but the second matches on more entities
+    (['sub-01', 'sub-01_ses-02'], ['sub-01_ses-02']),
+
+    # No candidates match
+    (['sub-02_ses-02', 'sub-01_ses-01'], []),
+
+    # Second candidates is disqualified (session doesn't match)
+    (['sub-01_ses-01', 'sub-01_ses-02'], ['sub-01_ses-02']),
+
+    # Multiple equally good candidates
+    (['sub-01_run-01', 'sub-01_run-02'], ['sub-01_run-01', 'sub-01_run-02']),
+])
+def test_find_best_candidates(candidate_list, best_candidates):
+    """Test matching of candidate sidecar files."""
+    params = dict(sub='01', ses='02', acq=None)
+    assert _find_best_candidates(params, candidate_list) == best_candidates
+
+
 def test_find_matching_sidecar():
     """Test finding a sidecar file from a BIDS dir."""
     # First write a BIDS dir
@@ -217,17 +240,6 @@ def test_find_matching_sidecar():
     expected_file = op.join('sub-01', 'ses-01', 'meg',
                             'sub-01_ses-01_acq-01_coordsystem.json')
     assert sidecar_fname.endswith(expected_file)
-
-    # Now find multiple sidecar candidates and pick the one that matches best
-    open(sidecar_fname.replace('acq-01', 'acq-02'), 'w').close()
-    sidecar_fname = _find_matching_sidecar(bids_basename, output_path,
-                                           'coordsystem.json')
-    assert sidecar_fname.endswith(expected_file)
-    sidecar_fname2 = _find_matching_sidecar(
-        bids_basename.replace('acq-01', 'acq-02'),
-        output_path, 'coordsystem.json')
-    expected_file2 = expected_file.replace('acq-01', 'acq-02')
-    assert sidecar_fname2.endswith(expected_file2)
 
     # Find multiple sidecars, tied in score, triggering an error
     with pytest.raises(RuntimeError, match='Expected to find a single'):
