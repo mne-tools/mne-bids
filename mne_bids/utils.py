@@ -253,8 +253,8 @@ def _read_events(events_data, event_id, raw, ext):
         the MNE events array (shape n_events, 3). If None, events will be
         inferred from the stim channel using `find_events`.
     event_id : dict
-        The event_id dict as provided in write_raw_bids, mapping a
-        description key to an integer valued event code.
+        The event id dict used to create a 'trial_type' column in events.tsv,
+        mapping a description key to an integer valued event code.
     raw : instance of Raw
         The data as MNE-Python Raw object.
     ext : str
@@ -282,7 +282,7 @@ def _read_events(events_data, event_id, raw, ext):
     elif 'stim' in raw:
         events = find_events(raw, min_duration=0.001, initial_event=True)
     elif ext in ['.vhdr', '.set'] and check_version('mne', '0.18'):
-        events, event_id = events_from_annotations(raw)
+        events, event_id = events_from_annotations(raw, event_id)
     else:
         warnings.warn('No events found or provided. Please make sure to'
                       ' set channel type using raw.set_channel_types'
