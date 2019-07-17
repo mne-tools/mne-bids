@@ -303,7 +303,7 @@ def test_ctf():
 
     cmd = bids_validator_exe + [output_path]
     run_subprocess(cmd, shell=shell)
-    with pytest.warns(UserWarning, match='Expected to find a single events'):
+    with pytest.warns(UserWarning, match='Did not find any events'):
         raw = read_raw_bids(bids_basename + '_meg.ds', output_path)
 
     # test to check that running again with overwrite == False raises an error
@@ -616,7 +616,7 @@ def test_write_anat():
     sh.rmtree(anat_dir)
     write_anat(output_path, subject_id, t1w_mgh, session_id)
     # Assert that we truly cannot find a sidecar
-    with pytest.raises(RuntimeError, match='Expected to find a single'):
+    with pytest.raises(RuntimeError, match='Did not find any'):
         _find_matching_sidecar('sub-01_ses-01_acq-01_T1w.nii.gz',
                                output_path, 'T1w.json')
 

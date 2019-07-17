@@ -380,7 +380,7 @@ def _find_matching_sidecar(bids_fname, bids_root, suffix, allow_fail=False):
     # We only use subject and session as identifier, because all other
     # parameters are potentially not binding for metadata sidecar files
     search_str = 'sub-' + params['sub']
-    if 'ses' in params:
+    if params['ses'] is not None:
         search_str += '_ses-' + params['ses']
 
     # Find all potential sidecar files, doing a recursive glob from bids_root
