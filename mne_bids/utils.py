@@ -407,7 +407,7 @@ def _find_matching_sidecar(bids_fname, bids_root, suffix, allow_fail=False):
                 else:
                     # Incompatible entity found, candidate is disqualified
                     candidate_disqualified = True
-                    continue
+                    break
         if not candidate_disqualified and n_matches >= best_score:
             best_score = n_matches
             best_candidates.append(candidate)
