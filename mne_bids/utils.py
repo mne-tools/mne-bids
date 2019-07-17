@@ -140,7 +140,6 @@ param_regex = re.compile(r'([^-_\.\\\/]+)-([^-_\.\\\/]+)')
 
 def _parse_bids_filename(fname, verbose):
     """Get dict from BIDS fname."""
-    # Extract part of the filename containing the parameters
     keys = ['sub', 'ses', 'task', 'acq', 'run', 'proc', 'run', 'space',
             'recording', 'kind']
     params = {key: None for key in keys}
