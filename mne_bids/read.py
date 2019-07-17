@@ -195,7 +195,6 @@ def read_raw_bids(bids_fname, bids_root, verbose=True):
         The data as MNE-Python Raw object.
 
     """
-
     # Full path to data file is needed so that mne-bids knows
     # what is the modality -- meg, eeg, ieeg to read
     bids_fname = op.basename(bids_fname)
