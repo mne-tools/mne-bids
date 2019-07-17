@@ -375,8 +375,6 @@ def _find_best_candidates(params, candidate_list):
         Hopefully, the list will have a length of one.
     """
     params = {key: value for key, value in params.items() if value is not None}
-    print('params:', params)
-    print('candidates:', candidate_list)
 
     best_candidates = []
     best_score = 0
@@ -389,10 +387,8 @@ def _find_best_candidates(params, candidate_list):
                 if candidate_params[entity] is None:
                     continue
                 elif candidate_params[entity] == value:
-                    print('match:', entity, candidate_params[entity], value)
                     n_matches += 1
                 else:
-                    print('no match:', entity, candidate_params[entity], value)
                     # Incompatible entity found, candidate is disqualified
                     candidate_disqualified = True
                     break
