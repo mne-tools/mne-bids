@@ -11,8 +11,9 @@ import mne
 from mne.utils import _TempDir, requires_nibabel
 from mne.datasets import testing
 
-from mne_bids.read import _read_raw, get_head_mri_trans
+from mne_bids.read import _read_raw, get_head_mri_trans, _handle_events_reading
 from mne_bids.write import write_anat, write_raw_bids, make_bids_basename
+from mne_bids.tsv_handler import _to_tsv
 
 subject_id = '01'
 session_id = '01'
@@ -23,6 +24,11 @@ task = 'testing'
 bids_basename = make_bids_basename(
     subject=subject_id, session=session_id, run=run, acquisition=acq,
     task=task)
+
+# Get the MNE testing sample data
+data_path = testing.data_path()
+raw_fname = op.join(data_path, 'MEG', 'sample',
+                    'sample_audvis_trunc_raw.fif')
 
 
 def test_read_raw():
@@ -49,11 +55,6 @@ def test_not_implemented():
 def test_get_head_mri_trans():
     """Test getting a trans object from BIDS data."""
     import nibabel as nib
-    # Get the MNE testing sample data
-    output_path = _TempDir()
-    data_path = testing.data_path()
-    raw_fname = op.join(data_path, 'MEG', 'sample',
-                        'sample_audvis_trunc_raw.fif')
 
     event_id = {'Auditory/Left': 1, 'Auditory/Right': 2, 'Visual/Left': 3,
                 'Visual/Right': 4, 'Smiley': 5, 'Button': 32}
@@ -62,6 +63,7 @@ def test_get_head_mri_trans():
 
     # Write it to BIDS
     raw = mne.io.read_raw_fif(raw_fname)
+    output_path = _TempDir()
     with pytest.warns(UserWarning, match='No line frequency'):
         write_raw_bids(raw, bids_basename, output_path,
                        events_data=events_fname, event_id=event_id,
@@ -106,3 +108,19 @@ def test_get_head_mri_trans():
         write_anat(output_path, subject_id, t1w_mgh, session_id, acq, raw=raw,
                    trans=trans, verbose=True)
         estimated_trans = get_head_mri_trans(bids_fname, output_path)
+
+
+def test_handle_events_reading():
+    """Test reading events from a BIDS events.tsv file."""
+    # We can use any `raw` for this
+    raw = mne.io.read_raw_fif(raw_fname)
+
+    # Create an arbitrary events.tsv file
+    events = {'onset': [1, 2, 3],
+              'duration': ['n/a', 'n/a', 'n/a']
+              }
+    tmp_dir = _TempDir()
+    events_fname = op.join(tmp_dir, 'sub-01_task-test_events.json')
+    _to_tsv(events, events_fname)
+
+    _handle_events_reading(events_fname, raw)
