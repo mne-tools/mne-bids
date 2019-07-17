@@ -115,12 +115,13 @@ def test_handle_events_reading():
     # We can use any `raw` for this
     raw = mne.io.read_raw_fif(raw_fname)
 
-    # Create an arbitrary events.tsv file
-    events = {'onset': [1, 2, 3],
+    # Create an arbitrary events.tsv file, to test we can deal with 'n/a'
+    events = {'onset': [11, 12, 13],
               'duration': ['n/a', 'n/a', 'n/a']
               }
     tmp_dir = _TempDir()
     events_fname = op.join(tmp_dir, 'sub-01_task-test_events.json')
     _to_tsv(events, events_fname)
 
-    _handle_events_reading(events_fname, raw)
+    raw = _handle_events_reading(events_fname, raw)
+    events, event_id = mne.events_from_annotations(raw)
