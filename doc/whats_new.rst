@@ -33,6 +33,7 @@ Changelog
 Bug
 ~~~
 
+- Fixed bug where :func:`read_raw_bids` would throw a ValueError upon encountering strings in the "onset" or "duration" column of events.tsv files, by `Stefan Appelhoff`_ (`#234 <https://github.com/mne-tools/mne-bids/pull/234>`_)
 - Allow raw data from KIT systems to have two marker files specified, by `Matt Sanderson`_ (`#173 <https://github.com/mne-tools/mne-bids/pull/173>`_)
 
 API
