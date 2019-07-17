@@ -358,8 +358,8 @@ def _find_best_candidates(params, candidate_list):
 
     Assign each candidate a score, based on how many entities are shared with
     the ones supplied in the `params` parameter. The candidate with the highest
-    score wins. Candidates with entities that conflict with bids_fname are
-    disqualified.
+    score wins. Candidates with entities that conflict with the supplied
+    `params` are disqualified.
 
     Parameters
     ----------
