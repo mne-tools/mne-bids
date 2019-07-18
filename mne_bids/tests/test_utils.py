@@ -203,7 +203,7 @@ def test_infer_eeg_placement_scheme():
     # No candidates match
     (['sub-02_ses-02', 'sub-01_ses-01'], []),
 
-    # Second candidate is disqualified (session doesn't match)
+    # First candidate is disqualified (session doesn't match)
     (['sub-01_ses-01', 'sub-01_ses-02'], ['sub-01_ses-02']),
 
     # Multiple equally good candidates
