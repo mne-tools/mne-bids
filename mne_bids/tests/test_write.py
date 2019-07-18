@@ -81,8 +81,8 @@ def test_fif():
     write_raw_bids(raw, bids_basename, output_path, events_data=events_fname,
                    event_id=event_id, overwrite=False)
 
-    # Read the file back in check that the data has come through cleanly though
-    # the json sidecar files.
+    # Read the file back in to check that the data has come through cleanly.
+    # Events and bad channel information was read throught JSON sidecar files.
     raw2 = read_raw_bids(bids_basename + '_meg.fif', output_path)
     assert set(raw.info['bads']) == set(raw2.info['bads'])
     events, _ = mne.events_from_annotations(raw2)
