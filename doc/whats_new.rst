@@ -33,6 +33,7 @@ Bug
 ~~~
 
 - Allow raw data from KIT systems to have two marker files specified, by `Matt Sanderson`_ (`#173 <https://github.com/mne-tools/mne-bids/pull/173>`_)
+- Fix event onsets when reading raw files that contain measurement date information, by `Marijn van Vliet`_ (`#236 <https://github.com/mne-tools/mne-bids/pull/236>`_)
 
 API
 ~~~
