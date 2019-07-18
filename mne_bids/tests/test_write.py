@@ -81,6 +81,15 @@ def test_fif():
     write_raw_bids(raw, bids_basename, output_path, events_data=events_fname,
                    event_id=event_id, overwrite=False)
 
+    # Read the file back in check that the data has come through cleanly though
+    # the json sidecar files.
+    raw2 = read_raw_bids(bids_basename + '_meg.fif', output_path)
+    assert set(raw.info['bads']) == set(raw2.info['bads'])
+    events, _ = mne.events_from_annotations(raw2)
+    events2 = mne.read_events(events_fname)
+    events2 = events2[events2[:, 2] != 0]
+    assert_array_equal(events2[:, 0], events[:, 0])
+
     # check if write_raw_bids works when there is no stim channel
     raw.set_channel_types({raw.ch_names[i]: 'misc'
                            for i in
@@ -149,11 +158,6 @@ def test_fif():
     # now force the overwrite
     write_raw_bids(raw, bids_basename2, output_path, events_data=events_fname,
                    event_id=event_id, overwrite=True)
-    raw = read_raw_bids(bids_basename2 + '_meg.fif', output_path)
-    events, _ = mne.events_from_annotations(raw)
-    events2 = mne.read_events(events_fname)
-    events2 = events2[events2[:, 2] != 0]
-    assert_array_equal(events2[:, 0], events[:, 0])
 
     with pytest.raises(ValueError, match='raw_file must be'):
         write_raw_bids('blah', bids_basename, output_path)

@@ -101,7 +101,7 @@ def _handle_events_reading(events_fname, raw):
     annot_from_events = mne.Annotations(onset=onsets,
                                         duration=durations,
                                         description=descriptions,
-                                        orig_time=raw.info['meas_date'])
+                                        orig_time=None)
     raw.set_annotations(annot_from_events)
 
     return raw
