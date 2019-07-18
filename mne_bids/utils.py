@@ -377,7 +377,7 @@ def _find_best_candidates(params, candidate_list):
     params = {key: value for key, value in params.items() if value is not None}
 
     best_candidates = []
-    best_score = 0
+    best_n_matches = 0
     for candidate in candidate_list:
         n_matches = 0
         candidate_disqualified = False
@@ -393,10 +393,10 @@ def _find_best_candidates(params, candidate_list):
                     candidate_disqualified = True
                     break
         if not candidate_disqualified:
-            if n_matches > best_score:
-                best_score = n_matches
+            if n_matches > best_n_matches:
+                best_n_matches = n_matches
                 best_candidates = [candidate]
-            elif n_matches == best_score:
+            elif n_matches == best_n_matches:
                 best_candidates.append(candidate)
 
     return best_candidates
