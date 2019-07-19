@@ -96,16 +96,13 @@ def _handle_events_reading(events_fname, raw):
     else:
         descriptions = 'n/a'
 
-    # Check for 'n/a' strings before converting to float
-    ons = list(map(lambda on: np.nan if on == 'n/a' else on,
-               events_dict['onset']))
-
-    durs = list(map(lambda dur: np.nan if dur == 'n/a' else dur,
-                events_dict['duration']))
+    # Deal with "n/a" strings before converting to float
+    ons = [np.nan if on == 'n/a' else on for on in events_dict['onset']]
+    dus = [np.nan if du == 'n/a' else du for du in events_dict['duration']]
 
     # Add Events to raw as annotations
     onsets = np.asarray(ons, dtype=float)
-    durations = np.asarray(durs, dtype=float)
+    durations = np.asarray(dus, dtype=float)
     annot_from_events = mne.Annotations(onset=onsets,
                                         duration=durations,
                                         description=descriptions,
