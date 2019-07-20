@@ -59,13 +59,10 @@ bids_basename_minimal = make_bids_basename(subject=subject_id, task=task)
 # see: https://stackoverflow.com/q/28891053/5201771
 @pytest.fixture(scope="session")
 def _bids_validate():
+    """Fixture to run BIDS validator."""
     shell = False
-    config_path = _TempDir()
-    config_fname = op.join(config_path, 'validator_config.json')
-    with open(config_fname, 'w') as f:
-        json.dump(dict(error=["NIFTI_UNIT"]), f)
-
-    bids_validator_exe = ['bids-validator', '--config', config_fname]
+    bids_validator_exe = ['bids-validator', '--config.error=41',
+                          '--config.error=41']
     if platform.system() == 'Windows':
         shell = True
         exe = os.getenv('VALIDATOR_EXECUTABLE', 'n/a')
@@ -318,7 +315,7 @@ def test_ctf(_bids_validate):
         write_raw_bids(raw, bids_basename, output_path=output_path)
 
     _bids_validate(output_path)
-    with pytest.warns(UserWarning, match='Expected to find a single events'):
+    with pytest.warns(UserWarning, match='Did not find any events'):
         raw = read_raw_bids(bids_basename + '_meg.ds', output_path)
 
     # test to check that running again with overwrite == False raises an error
