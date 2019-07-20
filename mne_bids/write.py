@@ -1015,17 +1015,16 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
         raise ValueError('`t1w` must be a path to a T1 weighted MRI data file '
                          ', or a nibabel image object, but it is of type '
                          '"{}"'.format(type(t1w)))
-    t1_mgh = nib.MGHImage(t1w.dataobj, t1w.affine)
 
     # Now give the NIfTI file a BIDS name and write it to the BIDS location
     t1w_basename = make_bids_basename(subject=subject, session=session,
                                       acquisition=acquisition, prefix=anat_dir,
                                       suffix='T1w.nii.gz')
     if not op.exists(t1w_basename):
-        nib.save(t1_mgh, t1w_basename)
+        nib.save(t1w, t1w_basename)
     elif overwrite:
         os.remove(t1w_basename)
-        nib.save(t1_mgh, t1w_basename)
+        nib.save(t1w, t1w_basename)
     else:
         raise IOError('Wanted to write a file but it already exists and '
                       '`overwrite` is set to False. File: "{}"'
@@ -1051,6 +1050,7 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
         mri_landmarks = apply_trans(trans, meg_landmarks, move=True) * 1e3
 
         # Get landmarks in voxel space, using the mgh version of our T1 data
+        t1_mgh = nib.MGHImage(t1w.dataobj, t1w.affine)
         vox2ras_tkr = t1_mgh.header.get_vox2ras_tkr()
         ras2vox_tkr = np.linalg.inv(vox2ras_tkr)
         mri_landmarks = apply_trans(ras2vox_tkr, mri_landmarks)  # in vox

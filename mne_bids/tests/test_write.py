@@ -48,6 +48,7 @@ bids_basename = make_bids_basename(
     task=task)
 bids_basename_minimal = make_bids_basename(subject=subject_id, task=task)
 
+
 # WINDOWS issues:
 # the bids-validator development version does not work properly on Windows as
 # of 2019-06-25 --> https://github.com/bids-standard/bids-validator/issues/790
@@ -56,16 +57,29 @@ bids_basename_minimal = make_bids_basename(subject=subject_id, task=task)
 # using the stable bids-validator and make a direct call of bids-validator
 # also: for windows, shell = True is needed to call npm, bids-validator etc.
 # see: https://stackoverflow.com/q/28891053/5201771
-shell = False
-bids_validator_exe = ['bids-validator']
-if platform.system() == 'Windows':
-    shell = True
-    exe = os.getenv('VALIDATOR_EXECUTABLE', 'n/a')
-    if 'VALIDATOR_EXECUTABLE' != 'n/a':
-        bids_validator_exe = ['node', exe]
+@pytest.fixture(scope="session")
+def _bids_validate():
+    shell = False
+    config_path = _TempDir()
+    config_fname = op.join(config_path, 'validator_config.json')
+    with open(config_fname, 'w') as f:
+        json.dump(dict(error=["NIFTI_UNIT"]), f)
+
+    bids_validator_exe = ['bids-validator', '--config', config_fname]
+    if platform.system() == 'Windows':
+        shell = True
+        exe = os.getenv('VALIDATOR_EXECUTABLE', 'n/a')
+        if 'VALIDATOR_EXECUTABLE' != 'n/a':
+            bids_validator_exe = ['node', exe]
+
+    def _validate(output_path):
+        cmd = bids_validator_exe + [output_path]
+        run_subprocess(cmd, shell=shell)
+
+    return _validate
 
 
-def test_fif():
+def test_fif(_bids_validate):
     """Test functionality of the write_raw_bids conversion for fif."""
     output_path = _TempDir()
     data_path = testing.data_path()
@@ -98,8 +112,7 @@ def test_fif():
     with pytest.warns(UserWarning, match='No events found or provided.'):
         write_raw_bids(raw, bids_basename, output_path, overwrite=False)
 
-    cmd = bids_validator_exe + [output_path]
-    run_subprocess(cmd, shell=shell)
+    _bids_validate(output_path)
 
     # write the same data but pretend it is empty room data:
     raw = mne.io.read_raw_fif(raw_fname)
@@ -174,8 +187,7 @@ def test_fif():
     with pytest.raises(ValueError, match='raw.filenames is missing'):
         write_raw_bids(raw, bids_basename2, output_path)
 
-    cmd = bids_validator_exe + [output_path]
-    run_subprocess(cmd, shell=shell)
+    _bids_validate(output_path)
 
     assert op.exists(op.join(output_path, 'participants.tsv'))
 
@@ -203,7 +215,7 @@ def test_fif():
         assert 'part' in FILE
 
 
-def test_kit():
+def test_kit(_bids_validate):
     """Test functionality of the write_raw_bids conversion for KIT data."""
     output_path = _TempDir()
     data_path = op.join(base_path, 'kit', 'tests', 'data')
@@ -224,8 +236,8 @@ def test_kit():
     write_raw_bids(raw, kit_bids_basename, output_path,
                    events_data=events_fname,
                    event_id=event_id, overwrite=False)
-    cmd = bids_validator_exe + [output_path]
-    run_subprocess(cmd, shell=shell)
+
+    _bids_validate(output_path)
     assert op.exists(op.join(output_path, 'participants.tsv'))
 
     read_raw_bids(kit_bids_basename + '_meg.sqd', output_path)
@@ -268,8 +280,8 @@ def test_kit():
                    kit_bids_basename.replace('sub-01', 'sub-%s' % subject_id2),
                    output_path, events_data=events_fname, event_id=event_id,
                    overwrite=False)
-    cmd = bids_validator_exe + [output_path]
-    run_subprocess(cmd, shell=shell)
+
+    _bids_validate(output_path)
     # ensure the marker files are renamed correctly
     marker_fname = make_bids_basename(
         subject=subject_id2, session=session_id, task=task, run=run,
@@ -295,7 +307,7 @@ def test_kit():
             overwrite=True)
 
 
-def test_ctf():
+def test_ctf(_bids_validate):
     """Test functionality of the write_raw_bids conversion for CTF data."""
     output_path = _TempDir()
     data_path = op.join(testing.data_path(download=False), 'CTF')
@@ -305,9 +317,8 @@ def test_ctf():
     with pytest.warns(UserWarning, match='No line frequency'):
         write_raw_bids(raw, bids_basename, output_path=output_path)
 
-    cmd = bids_validator_exe + [output_path]
-    run_subprocess(cmd, shell=shell)
-    with pytest.warns(UserWarning, match='Did not find any events'):
+    _bids_validate(output_path)
+    with pytest.warns(UserWarning, match='Expected to find a single events'):
         raw = read_raw_bids(bids_basename + '_meg.ds', output_path)
 
     # test to check that running again with overwrite == False raises an error
@@ -317,7 +328,7 @@ def test_ctf():
     assert op.exists(op.join(output_path, 'participants.tsv'))
 
 
-def test_bti():
+def test_bti(_bids_validate):
     """Test functionality of the write_raw_bids conversion for BTi data."""
     output_path = _TempDir()
     data_path = op.join(base_path, 'bti', 'tests', 'data')
@@ -331,9 +342,7 @@ def test_bti():
     write_raw_bids(raw, bids_basename, output_path, verbose=True)
 
     assert op.exists(op.join(output_path, 'participants.tsv'))
-
-    cmd = bids_validator_exe + [output_path]
-    run_subprocess(cmd, shell=shell)
+    _bids_validate(output_path)
 
     raw = read_raw_bids(bids_basename + '_meg', output_path)
 
@@ -342,7 +351,7 @@ def test_bti():
 # see: https://github.com/mne-tools/mne-python/pull/6558
 @pytest.mark.skipif(LooseVersion(mne.__version__) < LooseVersion('0.19'),
                     reason="requires mne 0.19.dev0 or higher")
-def test_vhdr():
+def test_vhdr(_bids_validate):
     """Test write_raw_bids conversion for BrainVision data."""
     output_path = _TempDir()
     data_path = op.join(base_path, 'brainvision', 'tests', 'data')
@@ -357,9 +366,7 @@ def test_vhdr():
 
     # write with injected bad channels
     write_raw_bids(raw, bids_basename_minimal, output_path, overwrite=False)
-
-    cmd = bids_validator_exe + [output_path]
-    run_subprocess(cmd, shell=shell)
+    _bids_validate(output_path)
 
     # read and also get the bad channels
     raw = read_raw_bids(bids_basename_minimal + '_eeg.vhdr', output_path)
@@ -394,12 +401,10 @@ def test_vhdr():
                            for i in mne.pick_types(raw.info, eeg=True)})
     output_path = _TempDir()
     write_raw_bids(raw, bids_basename, output_path, overwrite=False)
-
-    cmd = bids_validator_exe + [output_path]
-    run_subprocess(cmd, shell=shell)
+    _bids_validate(output_path)
 
 
-def test_edf():
+def test_edf(_bids_validate):
     """Test write_raw_bids conversion for European Data Format data."""
     output_path = _TempDir()
     data_path = op.join(testing.data_path(), 'EDF')
@@ -426,9 +431,7 @@ def test_edf():
 
     bids_fname = bids_basename.replace('run-01', 'run-%s' % run2)
     write_raw_bids(raw, bids_fname, output_path, overwrite=True)
-
-    cmd = bids_validator_exe + [output_path]
-    run_subprocess(cmd, shell=shell)
+    _bids_validate(output_path)
 
     # ensure there is an EMG channel in the channels.tsv:
     channels_tsv = make_bids_basename(
@@ -451,12 +454,10 @@ def test_edf():
                            for i in mne.pick_types(raw.info, eeg=True)})
     output_path = _TempDir()
     write_raw_bids(raw, bids_basename, output_path)
-
-    cmd = bids_validator_exe + [output_path]
-    run_subprocess(cmd, shell=shell)
+    _bids_validate(output_path)
 
 
-def test_bdf():
+def test_bdf(_bids_validate):
     """Test write_raw_bids conversion for Biosemi data."""
     output_path = _TempDir()
     data_path = op.join(base_path, 'edf', 'tests', 'data')
@@ -465,9 +466,7 @@ def test_bdf():
     raw = mne.io.read_raw_bdf(raw_fname)
     with pytest.warns(UserWarning, match='No line frequency found'):
         write_raw_bids(raw, bids_basename, output_path, overwrite=False)
-
-    cmd = bids_validator_exe + [output_path]
-    run_subprocess(cmd, shell=shell)
+    _bids_validate(output_path)
 
     # Test also the reading of channel types from channels.tsv
     # the first channel in the raw data is not MISC right now
@@ -495,7 +494,7 @@ def test_bdf():
         write_raw_bids(raw, bids_basename, output_path)
 
 
-def test_set():
+def test_set(_bids_validate):
     """Test write_raw_bids conversion for EEGLAB data."""
     # standalone .set file
     output_path = _TempDir()
@@ -522,9 +521,7 @@ def test_set():
     with pytest.raises(FileExistsError, match="already exists"):  # noqa: F821
         write_raw_bids(raw, bids_basename, output_path=output_path,
                        overwrite=False)
-
-    cmd = bids_validator_exe + [output_path]
-    run_subprocess(cmd, shell=shell)
+    _bids_validate(output_path)
 
     # check events.tsv is written
     # XXX: only from 0.18 onwards because events_from_annotations
@@ -541,13 +538,11 @@ def test_set():
                            for i in mne.pick_types(raw.info, eeg=True)})
     output_path = _TempDir()
     write_raw_bids(raw, bids_basename, output_path)
-
-    cmd = bids_validator_exe + [output_path]
-    run_subprocess(cmd, shell=shell)
+    _bids_validate(output_path)
 
 
 @requires_nibabel()
-def test_write_anat():
+def test_write_anat(_bids_validate):
     """Test writing anatomical data."""
     # Get the MNE testing sample data
     output_path = _TempDir()
@@ -574,10 +569,7 @@ def test_write_anat():
 
     anat_dir = write_anat(output_path, subject_id, t1w_mgh, session_id, acq,
                           raw=raw, trans=trans, verbose=True)
-
-    # Validate BIDS
-    cmd = bids_validator_exe + [output_path]
-    run_subprocess(cmd, shell=shell)
+    _bids_validate(output_path)
 
     # Validate that files are as expected
     t1w_json_path = op.join(anat_dir, 'sub-01_ses-01_acq-01_T1w.json')

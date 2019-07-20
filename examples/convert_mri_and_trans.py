@@ -39,7 +39,9 @@ import shutil as sh
 
 import numpy as np
 import matplotlib.pyplot as plt
+
 from nilearn.plotting import plot_anat
+
 import mne
 from mne.datasets import sample
 from mne.source_space import head_to_mri
@@ -151,6 +153,7 @@ for point_idx, label in enumerate(('LPA', 'NAS', 'RPA')):
     plot_anat(t1_nii_fname, axes=axs[point_idx],
               cut_coords=mri_pos[point_idx, :],
               title=label)
+plt.show()
 
 
 ###############################################################################
