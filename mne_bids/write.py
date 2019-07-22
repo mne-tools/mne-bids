@@ -1016,6 +1016,10 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
                          ', or a nibabel image object, but it is of type '
                          '"{}"'.format(type(t1w)))
 
+    t1w = nib.Nifti1Image(t1w.dataobj, t1w.affine)
+    # XYZT_UNITS = NIFT_UNITS_MM (10 in binary or 2 in decimal)
+    # seems to be the default for Nifti files
+    t1w.header['xyzt_units'] = np.array(10, dtype='uint8')
     # Now give the NIfTI file a BIDS name and write it to the BIDS location
     t1w_basename = make_bids_basename(subject=subject, session=session,
                                       acquisition=acquisition, prefix=anat_dir,
