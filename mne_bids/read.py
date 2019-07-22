@@ -251,17 +251,16 @@ def read_raw_bids(bids_fname, bids_root, read_params=None, verbose=True):
     # Kind is mandatory
     kind_dir = op.join(kind_dir, kind)
 
-    config = None
-    if ext in ('.fif', '.ds', '.vhdr', '.edf', '.bdf', '.set', '.sqd', '.con'):
-        bids_fpath = op.join(kind_dir,
-                             bids_basename + '_{}{}'.format(kind, ext))
-
-    elif ext == '.pdf':
+    # BTI needs a config file
+    if ext == '.pdf':
         bids_raw_folder = op.join(kind_dir, bids_basename + '_{}'.format(kind))
         bids_fpath = glob.glob(op.join(bids_raw_folder, 'c,rf*'))[0]
         config = op.join(bids_raw_folder, 'config')
         # populate `config` only if not already supplied
-        read_params['config'] = read_params.get('config', config)
+        read_params['config_fname'] = read_params.get('config_fname', config)
+    else:
+        bids_fpath = op.join(kind_dir,
+                             bids_basename + '_{}{}'.format(kind, ext))
 
     raw = _read_raw(bids_fpath, read_params, verbose=verbose)
 
