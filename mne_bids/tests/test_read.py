@@ -11,7 +11,8 @@ import mne
 from mne.utils import _TempDir, requires_nibabel
 from mne.datasets import testing
 
-from mne_bids.read import _read_raw, get_head_mri_trans, _handle_events_reading
+from mne_bids.read import (_get_read_params, _read_raw, get_head_mri_trans,
+                           _handle_events_reading, read_raw_bids)
 from mne_bids.write import write_anat, write_raw_bids, make_bids_basename
 from mne_bids.tsv_handler import _to_tsv
 
@@ -29,6 +30,20 @@ bids_basename = make_bids_basename(
 data_path = testing.data_path()
 raw_fname = op.join(data_path, 'MEG', 'sample',
                     'sample_audvis_trunc_raw.fif')
+
+
+def test_read_raw_bids():
+    """Test reading raw bids data."""
+    msg = '`read_params` must be of type dict or None, but is'
+    with pytest.raises(ValueError, match=msg):
+        read_raw_bids(raw_fname, data_path, read_params='BAD')
+
+
+def test_get_read_params():
+    """Test getting parameters from a read_params dict."""
+    msg = 'The following entries in `read_params` will not be used: ["bad"]'
+    with pytest.warns(UserWarning, match=msg):
+        _get_read_params([], read_params=dict(bad=None), verbose=True)
 
 
 def test_read_raw():

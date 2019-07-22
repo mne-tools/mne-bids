@@ -37,7 +37,7 @@ def _get_read_params(params, read_params, verbose=None):
         vals.append(read_params.get(param, None))
 
     # Warn about unused read_param entries
-    unused = set(read_params.keys()) - set(params)
+    unused = list(set(read_params.keys()) - set(params))
     if verbose and len(unused) > 0:
         warnings.warn('The following entries in `read_params` will not be '
                       'used: "{}"'.format(unused))
