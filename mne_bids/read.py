@@ -9,6 +9,7 @@
 import os.path as op
 import glob
 import json
+import warnings
 
 import numpy as np
 import mne
@@ -29,33 +30,51 @@ reader = {'.con': io.read_raw_kit, '.sqd': io.read_raw_kit,
           '.set': io.read_raw_eeglab}
 
 
-def _read_raw(raw_fpath, electrode=None, hsp=None, hpi=None, config=None,
-              montage=None, verbose=None, allow_maxshield=False):
+def _get_read_params(params, read_params, verbose=None):
+    """Get the params from read_params and say which will be ignored."""
+    vals = list()
+    for param in params:
+        vals.append(read_params.get(param, None))
+
+    # Warn about unused read_param entries
+    if verbose:
+        unused = set(read_params.keys()) - set(params)
+        warnings.warn('The following entries in `read_params` will not be '
+                      'used: "{}"'.format(unused))
+
+    return vals
+
+
+def _read_raw(raw_fpath, read_params=None, verbose=None):
     """Read a raw file into MNE, making inferences based on extension."""
     _, ext = _parse_ext(raw_fpath)
 
     # KIT systems
     if ext in ['.con', '.sqd']:
-        raw = io.read_raw_kit(raw_fpath, elp=electrode, hsp=hsp,
-                              mrk=hpi, preload=False)
+        params = ['elp', 'hsp', 'hpi']
+        elp, hsp, mrk = _get_read_params(params, read_params,
+                                         verbose=verbose)
+        raw = io.read_raw_kit(raw_fpath, elp=elp, hsp=hsp,
+                              mrk=mrk, preload=False)
 
     # BTi systems
     elif ext == '.pdf':
+        params = ['config_fname', 'head_shape_fname']
+        config, hsp = _get_read_params(params, read_params, verbose=verbose)
         raw = io.read_raw_bti(raw_fpath, config_fname=config,
                               head_shape_fname=hsp,
                               preload=False, verbose=verbose)
 
+    # Elekta/Neuromag/Megin systems
     elif ext == '.fif':
+        params = ['allow_maxshield']
+        allow_maxshield = _get_read_params(params, read_params,
+                                           verbose=verbose)
         raw = reader[ext](raw_fpath, allow_maxshield=allow_maxshield)
 
-    elif ext in ['.ds', '.vhdr', '.set']:
+    # CTF, BrainVision, European data format, Biosemi, or EEGLAB format
+    elif ext in ['.ds', '.vhdr', '.edf', '.bdf', '.set']:
         raw = reader[ext](raw_fpath)
-
-    # EDF (european data format) or BDF (biosemi) format
-    # TODO: integrate with lines above once MNE can read
-    # annotations with preload=False
-    elif ext in ['.edf', '.bdf']:
-        raw = reader[ext](raw_fpath, preload=True)
 
     # MEF and NWB are allowed, but not yet implemented
     elif ext in ['.mef', '.nwb']:
@@ -63,8 +82,7 @@ def _read_raw(raw_fpath, electrode=None, hsp=None, hpi=None, config=None,
                          'but there is no IO support for this file format yet.'
                          .format(ext))
 
-    # No supported data found ...
-    # ---------------------------
+    # No supported data found
     else:
         raise ValueError('Raw file name extension must be one of {}\n'
                          'Got {}'.format(ALLOWED_EXTENSIONS, ext))
@@ -178,7 +196,7 @@ def _handle_channels_reading(channels_fname, bids_fname, raw):
     return raw
 
 
-def read_raw_bids(bids_fname, bids_root, verbose=True):
+def read_raw_bids(bids_fname, bids_root, read_params=None, verbose=True):
     """Read BIDS compatible data.
 
     Will attempt to read associated events.tsv and channels.tsv files to
@@ -190,6 +208,14 @@ def read_raw_bids(bids_fname, bids_root, verbose=True):
         Full name of the data file
     bids_root : str
         Path to root of the BIDS folder
+    read_params : dict | None
+        Additional parameters for reading BIDS compatible data in a dictionary.
+        The keys of the dictionary must correspond with potential input
+        parameters of MNE-Python's read_raw_* function for the data format you
+        intend to read. For example, when reading fif data you can specify
+        `read_params` as {allow_maxshield=False}. Non-fitting parameters will
+        be ignored. Not all parameters are currently supported. If None,
+        defaults to an empty dict.
     verbose : bool
         The verbosity level
 
@@ -199,6 +225,11 @@ def read_raw_bids(bids_fname, bids_root, verbose=True):
         The data as MNE-Python Raw object.
 
     """
+    # Check that `read_params` complies with our requirements
+    if not isinstance(read_params, (dict, type(None))):
+        raise ValueError('`read_params` must be of type dict or None, but is '
+                         '"{}"'.format(type(read_params)))
+
     # Full path to data file is needed so that mne-bids knows
     # what is the modality -- meg, eeg, ieeg to read
     bids_fname = op.basename(bids_fname)
@@ -227,9 +258,10 @@ def read_raw_bids(bids_fname, bids_root, verbose=True):
         bids_raw_folder = op.join(kind_dir, bids_basename + '_{}'.format(kind))
         bids_fpath = glob.glob(op.join(bids_raw_folder, 'c,rf*'))[0]
         config = op.join(bids_raw_folder, 'config')
+        # populate `config` only if not already supplied
+        read_params['config'] = read_params.get('config', config)
 
-    raw = _read_raw(bids_fpath, electrode=None, hsp=None, hpi=None,
-                    config=config, montage=None, verbose=None)
+    raw = _read_raw(bids_fpath, read_params, verbose=verbose)
 
     # Try to find an associated events.tsv to get information about the
     # events in the recorded data
