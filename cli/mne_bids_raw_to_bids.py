@@ -11,6 +11,7 @@ example usage:  $ mne_bids raw_to_bids --subject_id sub01 --task rest
 import mne_bids
 from mne_bids import write_raw_bids, make_bids_basename
 from mne_bids.read import _read_raw
+from mne_bids.utils import _parse_ext
 
 
 def run():
@@ -27,7 +28,7 @@ def run():
     parser.add_option('--task', dest='task',
                       help='Name of the task the data is based on.')
     parser.add_option('--raw', dest='raw_fname',
-                      help='The path to the raw MEG file.')
+                      help='The path to the raw MEEG file.')
     parser.add_option('--output_path', dest='output_path',
                       help='The path of the BIDS compatible folder.')
     parser.add_option('--session_id', dest='session_id',
@@ -66,12 +67,26 @@ def run():
         parser.error('Arguments missing. You need to specify at least the'
                      'following: --subject_id, --task, --raw, --output_path.')
 
+    # Get the format of the raw data
+    _, ext = _parse_ext(opt.raw_fname)
+
+    # Prepare a read_params dict
+    if ext in ['.con', '.sqd']:
+        read_params = dict(elp=opt.electrode, hsp=opt.hsp, hpi=opt.hpi)
+    elif ext == '.pdf':
+        read_params = dict(config_fname=opt.config, head_shape_fname=opt.hsp)
+    elif ext == '.fif':
+        read_params = dict(allow_maxshield=opt.allow_maxshield)
+    else:
+        read_params = None
+
+    # Read the raw data
+    raw = _read_raw(opt.raw_fname, read_params)
+
+    # Write to BIDS
     bids_basename = make_bids_basename(
         subject=opt.subject_id, session=opt.session_id, run=opt.run,
         acquisition=opt.acq, task=opt.task)
-    raw = _read_raw(opt.raw_fname, hpi=opt.hpi, electrode=opt.electrode,
-                    hsp=opt.hsp, config=opt.config,
-                    allow_maxshield=opt.allow_maxshield)
     write_raw_bids(raw, bids_basename, opt.output_path, event_id=opt.event_id,
                    events_data=opt.events_data, overwrite=opt.overwrite,
                    verbose=True)
