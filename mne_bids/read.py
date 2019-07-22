@@ -226,7 +226,9 @@ def read_raw_bids(bids_fname, bids_root, read_params=None, verbose=True):
 
     """
     # Check that `read_params` complies with our requirements
-    if not isinstance(read_params, (dict, type(None))):
+    if read_params is None:
+        read_params = dict()
+    if not isinstance(read_params, dict):
         raise ValueError('`read_params` must be of type dict or None, but is '
                          '"{}"'.format(type(read_params)))
 
