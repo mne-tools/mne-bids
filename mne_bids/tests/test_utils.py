@@ -72,10 +72,13 @@ def test_print_dir_tree(capsys):
     """Test printing a dir tree."""
     with pytest.raises(ValueError, match='Directory does not exist'):
         print_dir_tree('i_dont_exist')
+
+    # We check the testing directory
+    test_dir = op.dirname(__file__)
     with pytest.raises(ValueError, match='must be a positive integer'):
-        # We check the testing directory
-        test_dir = op.dirname(__file__)
         print_dir_tree(test_dir, max_depth=-1)
+    with pytest.raises(ValueError, match='must be a positive integer'):
+        print_dir_tree(test_dir, max_depth='bad')
 
     # Do not limit depth
     print_dir_tree(test_dir)
