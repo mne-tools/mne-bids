@@ -83,20 +83,42 @@ def _get_ch_type_mapping(fro='mne', to='bids'):
     return ch_type_mapping
 
 
-def print_dir_tree(folder):
-    """Recursively print a directory tree starting from `folder`."""
+def print_dir_tree(folder, max_depth=None):
+    """Recursively print dir tree starting from `folder` up to `max_depth`."""
     if not op.exists(folder):
         raise ValueError('Directory does not exist: {}'.format(folder))
+    msg = '`max_depth` must be a positive integer or None'
+    if not isinstance(max_depth, (int, type(None))):
+        raise ValueError(msg)
+    if max_depth is None:
+        max_depth = float('inf')
+    if max_depth < 0:
+        raise ValueError(msg)
 
-    baselen = len(folder.split(os.sep)) - 1  # makes tree always start at 0 len
+    # Use max_depth same as the -L param in the unix `tree` command
+    max_depth += 1
+
+    # Base length of a tree branch, to normalize each tree's start to 0
+    baselen = len(folder.split(os.sep)) - 1
+
+    # Recursively walk through all directories
     for root, dirs, files in os.walk(folder):
+
+        # Check how far we have walked
         branchlen = len(root.split(os.sep)) - baselen
-        if branchlen <= 1:
-            print('|%s' % (op.basename(root)))
-        else:
-            print('|%s %s' % ((branchlen - 1) * '---', op.basename(root)))  # noqa: E501
-        for file in files:
-            print('|%s %s' % (branchlen * '---', file))
+
+        # Only print, if this is up to the depth we asked
+        if branchlen <= max_depth:
+            if branchlen <= 1:
+                print('|{}'.format(op.basename(root) + os.sep))
+            else:
+                print('|{} {}'.format((branchlen - 1) * '---',
+                                      op.basename(root) + os.sep))
+
+            # Only print files if we are NOT yet up to max_depth or beyond
+            if branchlen < max_depth:
+                for file in files:
+                    print('|{} {}'.format(branchlen * '---', file))
 
 
 def _mkdir_p(path, overwrite=False, verbose=False):
