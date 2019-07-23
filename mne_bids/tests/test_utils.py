@@ -80,14 +80,12 @@ def test_print_dir_tree(capsys):
     print_dir_tree(test_dir)
     captured = capsys.readouterr()
     assert '|--- test_utils.py' in captured.out.split('\n')
-    assert '|--- __pycache__/' in captured.out.split('\n')
     assert '.pyc' in captured.out
 
     # Now limit depth ... we should not descend into pycache
     print_dir_tree(test_dir, max_depth=1)
     captured = capsys.readouterr()
     assert '|--- test_utils.py' in captured.out.split('\n')
-    assert '|--- __pycache__/' in captured.out.split('\n')
     assert '.pyc' not in captured.out
 
     # Limit depth even more
