@@ -83,10 +83,17 @@ def _get_ch_type_mapping(fro='mne', to='bids'):
     return ch_type_mapping
 
 
-def print_dir_tree(folder, max_depth=float('inf')):
+def print_dir_tree(folder, max_depth=None):
     """Recursively print dir tree starting from `folder` up to `max_depth`."""
     if not op.exists(folder):
         raise ValueError('Directory does not exist: {}'.format(folder))
+    msg = '`max_depth` must be a positive integer or None'
+    if not isinstance(max_depth, (int, type(None))):
+        raise ValueError(msg)
+    if max_depth is None:
+        max_depth = float('inf')
+    if max_depth < 0:
+        raise ValueError(msg)
 
     # Use max_depth same as the -L param in the unix `tree` command
     max_depth += 1

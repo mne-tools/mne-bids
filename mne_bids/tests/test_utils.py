@@ -67,13 +67,33 @@ def test_handle_kind():
         _handle_kind(raw)
 
 
-def test_print_dir_tree():
+def test_print_dir_tree(capsys):
     """Test printing a dir tree."""
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match='Directory does not exist'):
         print_dir_tree('i_dont_exist')
+    with pytest.raises(ValueError, match='must be a positive integer'):
+        # We check the testing directory
+        test_dir = op.dirname(__file__)
+        print_dir_tree(test_dir, max_depth=-1)
 
-    tmp_dir = _TempDir()
-    assert print_dir_tree(tmp_dir) is None
+    # Do not limit depth
+    print_dir_tree(test_dir)
+    captured = capsys.readouterr()
+    assert '|--- test_utils.py' in captured.out.split('\n')
+    assert '|--- __pycache__/' in captured.out.split('\n')
+    assert '.pyc' in captured.out
+
+    # Now limit depth ... we should not descend into pycache
+    print_dir_tree(test_dir, max_depth=1)
+    captured = capsys.readouterr()
+    assert '|--- test_utils.py' in captured.out.split('\n')
+    assert '|--- __pycache__/' in captured.out.split('\n')
+    assert '.pyc' not in captured.out
+
+    # Limit depth even more
+    print_dir_tree(test_dir, max_depth=0)
+    captured = capsys.readouterr()
+    assert captured.out == '|tests/\n'
 
 
 def test_make_filenames():
