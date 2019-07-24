@@ -42,7 +42,7 @@ from mne_bids.utils import print_dir_tree
 # well as four different motor imagery tasks. For the present example, we will
 # show how to format the data for two subjects and selected tasks to comply
 # with the Brain Imaging Data Structure
-# (`BIDS <http://bids.neuroimaging.io/>`).
+# (`BIDS <http://bids.neuroimaging.io/>`_).
 #
 # Conveniently, there is already a data loading function available with
 # MNE-Python:
@@ -84,11 +84,11 @@ print_dir_tree(data_dir)
 # --------------------------
 #
 # Let's start by formatting a single subject. We are reading the data using
-# MNE-Python's io module and the `read_raw_edf` function. Note that we must
-# use `preload=False`, the default in MNE-Python. It prevents the data from
-# being loaded and modified when converting to BIDS.
+# MNE-Python's io module and the :func:`read_raw_edf` function. Note that we
+# must use `preload=False`, the default in MNE-Python. It prevents the data
+# from being loaded and modified when converting to BIDS.
 edf_path = eegbci.load_data(subject=1, runs=2)[0]
-raw = mne.io.read_raw_edf(edf_path, preload=False, stim_channel=None)
+raw = mne.io.read_raw_edf(edf_path, preload=False)
 
 ###############################################################################
 # The annotations stored in the file must be read in separately and converted
@@ -101,15 +101,15 @@ print(raw)
 
 ###############################################################################
 # With this step, we have everything to start a new BIDS directory using
-# our data. To do that, we can use the function `write_raw_bids`
-# Generally, `write_raw_bids` tries to extract as much
+# our data. To do that, we can use :func:`write_raw_bids`
+# Generally, :func:`write_raw_bids` tries to extract as much
 # meta data as possible from the raw data and then formats it in a BIDS
-# compatible way. `write_raw_bids` takes a bunch of inputs, most of which are
-# however optional. The required inputs are:
+# compatible way. :func:`write_raw_bids` takes a bunch of inputs, most of
+# which are however optional. The required inputs are:
 #
-# * raw
-# * bids_basename
-# * output_path
+# * :code:`raw`
+# * :code:`bids_basename`
+# * :code:`output_path`
 #
 # ... as you can see in the docstring:
 print(write_raw_bids.__doc__)
@@ -166,9 +166,9 @@ for subj_idx in [1, 2]:
         raw.set_annotations(annot)
         events, event_id = mne.events_from_annotations(raw)
 
-        make_bids_basename(
-            subject='{:03}'.format(subj_idx), task=task_names[task_idx],
-            run=run_mapping[task_idx])
+        bids_basename = make_bids_basename(subject='{:03}'.format(subj_idx),
+                                           task=task_names[task_idx],
+                                           run=run_mapping[task_idx])
         write_raw_bids(raw, bids_basename, output_path, event_id=trial_type,
                        events_data=events, overwrite=True)
 
