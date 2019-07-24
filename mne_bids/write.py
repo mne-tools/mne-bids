@@ -973,7 +973,7 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
         `trans` has to be None as well
     trans : instance of mne.transforms.Transform | str | None
         The transformation matrix from head coordinates to MRI coordinates. Can
-        also be a string pointing to a *.trans file containing the
+        also be a string pointing to a .trans file containing the
         transformation matrix. If None, no sidecar JSON file will be written
         for `t1w`
     overwrite : bool
