@@ -59,11 +59,11 @@ def test_cp():
     # Check that help is printed
     check_usage(mne_bids_cp)
 
-    # should work
+    # Should work
     with ArgvSetter(('--input', raw_fname, '--output', outname)):
         mne_bids_cp.run()
 
-    # too few inputs
+    # Too few input args
     with pytest.raises(SystemExit):
         with ArgvSetter(('--input', raw_fname)):
             mne_bids_cp.run()
