@@ -37,11 +37,13 @@ def run():
 
     # Check the usage and raise error if invalid
     if len(args) > 0:
+        parser.print_help()
         parser.error('Do not specify arguments without flags. Found: "{}".\n'
                      'Did you forget to provide -i and -o?'
                      .format(args))
 
     if not opt_dict.get('input') or not opt_dict.get('output'):
+        parser.print_help()
         parser.error('Incorrect number of arguments. Supply one input and one '
                      'output file. You supplied: "{}"'.format(opt))
 

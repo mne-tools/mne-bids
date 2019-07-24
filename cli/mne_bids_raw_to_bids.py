@@ -56,6 +56,16 @@ def run():
 
     opt, args = parser.parse_args()
 
+    if len(args) > 0:
+        parser.print_help()
+        parser.error('Do not specify arguments without flags. Found: "{}".\n'
+                     .format(args))
+
+    if not all([opt.subject_id, opt.task, opt.raw_fname, opt.output_path]):
+        parser.print_help()
+        parser.error('Arguments missing. You need to specify at least the'
+                     'following: --subject_id, --task, --raw, --output_path.')
+
     bids_basename = make_bids_basename(
         subject=opt.subject_id, session=opt.session_id, run=opt.run,
         acquisition=opt.acq, task=opt.task)
