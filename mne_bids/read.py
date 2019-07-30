@@ -32,12 +32,15 @@ reader = {'.con': io.read_raw_kit, '.sqd': io.read_raw_kit,
 
 def _read_raw(raw_fpath, allow_maxshield, verbose=None):
     """Read a raw file into MNE, making inferences based on extension."""
-    _, ext = _parse_ext(raw_fpath)
+    fname, ext = _parse_ext(raw_fpath)
+    bids_root, bids_fname = op.split(fname)
 
     # KIT systems
     if ext in ['.con', '.sqd']:
+        mrk = _find_matching_sidecar(bids_fname, bids_root,
+                                     '_markers.???')
         raw = io.read_raw_kit(raw_fpath, elp=None, hsp=None,
-                              mrk=None, preload=False)
+                              mrk=mrk, preload=False)
 
     # BTi systems
     elif ext == '.pdf':
