@@ -234,6 +234,11 @@ def test_kit(_bids_validate):
                    events_data=events_fname,
                    event_id=event_id, overwrite=False)
 
+    data_path = make_bids_folders(subject=subject_id, session=session_id,
+                                  kind='meg', output_path=output_path)
+    marker_fname = op.join(data_path, kit_bids_basename + '_markers.sqd')
+    assert op.exists(marker_fname)
+
     _bids_validate(output_path)
     assert op.exists(op.join(output_path, 'participants.tsv'))
 

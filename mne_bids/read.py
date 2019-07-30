@@ -30,46 +30,24 @@ reader = {'.con': io.read_raw_kit, '.sqd': io.read_raw_kit,
           '.set': io.read_raw_eeglab}
 
 
-def _get_read_params(params, read_params, verbose=None):
-    """Get the params from read_params and say which will be ignored."""
-    vals = list()
-    for param in params:
-        vals.append(read_params.get(param, None))
-
-    # Warn about unused read_param entries
-    unused = list(set(read_params.keys()) - set(params))
-    if verbose and len(unused) > 0:
-        warnings.warn('The following entries in `read_params` will not be '
-                      'used: "{}"'.format(unused))
-
-    return vals
-
-
-def _read_raw(raw_fpath, read_params=None, verbose=None):
+def _read_raw(raw_fpath, allow_maxshield, verbose=None):
     """Read a raw file into MNE, making inferences based on extension."""
     _, ext = _parse_ext(raw_fpath)
 
     # KIT systems
     if ext in ['.con', '.sqd']:
-        params = ['elp', 'hsp', 'hpi']
-        elp, hsp, mrk = _get_read_params(params, read_params,
-                                         verbose=verbose)
-        raw = io.read_raw_kit(raw_fpath, elp=elp, hsp=hsp,
-                              mrk=mrk, preload=False)
+        raw = io.read_raw_kit(raw_fpath, elp=None, hsp=None,
+                              mrk=None, preload=False)
 
     # BTi systems
     elif ext == '.pdf':
-        params = ['config_fname', 'head_shape_fname']
-        config, hsp = _get_read_params(params, read_params, verbose=verbose)
+        config, hsp = None, None
         raw = io.read_raw_bti(raw_fpath, config_fname=config,
                               head_shape_fname=hsp,
                               preload=False, verbose=verbose)
 
     # Elekta/Neuromag/Megin systems
     elif ext == '.fif':
-        params = ['allow_maxshield']
-        allow_maxshield = _get_read_params(params, read_params,
-                                           verbose=verbose)
         raw = reader[ext](raw_fpath, allow_maxshield=allow_maxshield)
 
     # CTF, BrainVision, European data format, Biosemi, or EEGLAB format
