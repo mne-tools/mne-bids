@@ -176,6 +176,28 @@ def _events_tsv(events, raw, fname, trial_type, overwrite=False,
     return fname
 
 
+def _montage_tsv(raw, fname, overwrite=False, verbose=True):
+    from collections import OrderedDict
+    from mne.utils import _check_ch_locs
+    x, y, z, names = list(), list(), list(), list()
+    for ch in raw.info['chs']:
+        if _check_ch_locs([ch]):
+            x.append(ch['loc'][0])
+            y.append(ch['loc'][1])
+            z.append(ch['loc'][2])
+        else:
+            x.append('n/a')
+            y.append('n/a')
+            z.append('n/a')
+        names.append(ch['ch_name'])
+    data = OrderedDict([('name', names),
+                        ('x', x),
+                        ('y', y),
+                        ('z', z)])
+    _write_tsv(fname, data, overwrite=overwrite, verbose=verbose)
+    return fname
+
+
 def _participants_tsv(raw, subject_id, fname, overwrite=False,
                       verbose=True):
     """Create a participants.tsv file and save it.
@@ -875,6 +897,12 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
     if kind == 'meg' and not emptyroom:
         _coordsystem_json(raw, unit, orient, manufacturer, coordsystem_fname,
                           overwrite, verbose)
+
+    if kind == 'eeg':
+        montage_tsv_fname = make_bids_basename(
+            subject=subject_id, session=session_id, task=task, run=run,
+            acquisition=acquisition, suffix='electrodes.tsv', prefix=data_path)
+        _montage_tsv(raw, montage_tsv_fname)
 
     events, event_id = _read_events(events_data, event_id, raw, ext)
     if events is not None and len(events) > 0 and not emptyroom:

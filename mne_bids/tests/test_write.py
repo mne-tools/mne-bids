@@ -422,6 +422,11 @@ def test_edf(_bids_validate):
     raw.rename_channels({raw.info['ch_names'][1]: 'EMG'})
     raw.set_channel_types({'EMG': 'emg'})
 
+    montage = mne.channels.read_montage('standard_1005',
+                                        ch_names=raw.ch_names,
+                                        transform=True)
+    raw.set_montage(montage)
+
     write_raw_bids(raw, bids_basename, output_path)
 
     # Reading the file back should raise an error, because we renamed channels
