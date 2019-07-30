@@ -44,7 +44,8 @@ def _read_raw(raw_fpath, allow_maxshield, verbose=None):
 
     # BTi systems
     elif ext == '.pdf':
-        config, hsp = None, None
+        config = op.join(bids_root, 'config')
+        hsp = op.join(bids_root, 'hs_file')
         raw = io.read_raw_bti(raw_fpath, config_fname=config,
                               head_shape_fname=hsp,
                               preload=False, verbose=verbose)
