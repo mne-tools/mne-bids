@@ -22,7 +22,7 @@ from mne.io.constants import FIFF
 from mne.io.pick import channel_type
 from mne.io import BaseRaw
 from mne.channels.channels import _unit2human
-from mne.utils import check_version, has_nibabel
+from mne.utils import check_version, has_nibabel, _check_ch_locs
 
 from .pick import coil_type
 from .utils import (_write_json, _write_tsv, _read_events, _mkdir_p,
@@ -898,7 +898,7 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
         _coordsystem_json(raw, unit, orient, manufacturer, coordsystem_fname,
                           overwrite, verbose)
 
-    if kind == 'eeg':
+    if kind == 'eeg' and _check_ch_locs(raw.info['chs']):
         montage_tsv_fname = make_bids_basename(
             subject=subject_id, session=session_id, task=task, run=run,
             acquisition=acquisition, suffix='electrodes.tsv', prefix=data_path)

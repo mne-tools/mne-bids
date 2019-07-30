@@ -56,7 +56,11 @@ def _read_raw(raw_fpath, allow_maxshield, verbose=None):
 
     # CTF, BrainVision, European data format, Biosemi, or EEGLAB format
     elif ext in ['.ds', '.vhdr', '.edf', '.bdf', '.set']:
-        raw = reader[ext](raw_fpath)
+        montage = _find_matching_sidecar(bids_fname, bids_root,
+                                         '_electrodes.tsv')
+        # XXX: montage = _read_montage()
+        raw = reader[ext](raw_fpath, montage=montage)
+        # XXX: raw.set_montage(montage)
 
     # MEF and NWB are allowed, but not yet implemented
     elif ext in ['.mef', '.nwb']:
