@@ -12,6 +12,9 @@ from mne_bids.datasets import (fetch_matchingpennies, fetch_faces_data,
 
 def test_fetch_matchingpennies():
     """Dry test fetch matchingpennies."""
+    with pytest.raises(ValueError, match=''):
+        data_path = fetch_matchingpennies(subjects=1)
+
     data_path = fetch_matchingpennies(subjects=[], download_dataset_data=False)
     assert op.exists(data_path)
 
