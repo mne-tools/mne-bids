@@ -3,6 +3,7 @@
 #
 # License: BSD (3-clause)
 import os.path as op
+import time
 
 import pytest
 
@@ -29,7 +30,7 @@ def test_fetch_matchingpennies():
 
     # Overwrite is False, so it should only download ".bidsignore"
     fetch_matchingpennies(data_path, download_dataset_data=True, subjects=[])
-    assert op.exists(data_path)
+    assert op.exists(op.join(data_path, 'eeg_matchingpennies', '.bidsignore'))
 
 
 def test_fetch_faces_data():
@@ -40,6 +41,13 @@ def test_fetch_faces_data():
 
 def test_fetch_brainvision_testing_data():
     """Test downloading of BrainVision testing data (~500kB)."""
+    start = time.time()
     data_path = fetch_brainvision_testing_data(overwrite=True)
+    tdownload = time.time() - start
     raw = read_raw_brainvision(op.join(data_path, 'test.vhdr'))
     assert raw
+
+    # This should return without downloading: The files are all there
+    start = time.time()
+    data_path = fetch_brainvision_testing_data(overwrite=False)
+    assert time.time() - start < tdownload
