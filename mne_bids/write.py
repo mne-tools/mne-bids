@@ -24,19 +24,21 @@ from mne.io import BaseRaw
 from mne.channels.channels import _unit2human
 from mne.utils import check_version, has_nibabel
 
-from .pick import coil_type
-from .utils import (_write_json, _write_tsv, _read_events, _mkdir_p,
-                    _age_on_date, _infer_eeg_placement_scheme, _check_key_val,
-                    _parse_bids_filename, _handle_kind, _check_types,
-                    _get_mrk_meas_date, _extract_landmarks, _parse_ext,
-                    _get_ch_type_mapping)
-from .copyfiles import (copyfile_brainvision, copyfile_eeglab, copyfile_ctf,
-                        copyfile_bti)
-from .read import reader
-from .tsv_handler import _from_tsv, _combine, _drop, _contains_row
+from mne_bids.pick import coil_type
+from mne_bids.utils import (_write_json, _write_tsv, _read_events, _mkdir_p,
+                            _age_on_date, _infer_eeg_placement_scheme,
+                            _check_key_val,
+                            _parse_bids_filename, _handle_kind, _check_types,
+                            _get_mrk_meas_date, _extract_landmarks, _parse_ext,
+                            _get_ch_type_mapping)
+from mne_bids.copyfiles import (copyfile_brainvision, copyfile_eeglab,
+                                copyfile_ctf, copyfile_bti)
+from mne_bids.read import reader
+from mne_bids.tsv_handler import _from_tsv, _combine, _drop, _contains_row
 
-from .config import (ORIENTATION, UNITS, MANUFACTURERS,
-                     IGNORED_CHANNELS, ALLOWED_EXTENSIONS, BIDS_VERSION)
+from mne_bids.config import (ORIENTATION, UNITS, MANUFACTURERS,
+                             IGNORED_CHANNELS, ALLOWED_EXTENSIONS,
+                             BIDS_VERSION)
 
 
 def _channels_tsv(raw, fname, overwrite=False, verbose=True):

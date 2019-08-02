@@ -25,7 +25,7 @@ from mne.io.pick import pick_types
 from mne.io.kit.kit import get_kit_info
 from mne.io.constants import FIFF
 
-from .tsv_handler import _to_tsv, _tsv_to_str
+from mne_bids.tsv_handler import _to_tsv, _tsv_to_str
 
 
 def _get_ch_type_mapping(fro='mne', to='bids'):
