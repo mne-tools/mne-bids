@@ -113,7 +113,7 @@ def fetch_matchingpennies(data_path=None, download_dataset_data=True,
         _download_data(data, overwrite, verbose)
 
     # If requested, download general data
-    if download_dataset_data:  # pragma: no cover
+    if download_dataset_data:
         file_key_map = {
             '.bidsignore': '6thgf',
             'CHANGES': 'ckmbf',

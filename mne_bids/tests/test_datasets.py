@@ -4,6 +4,8 @@
 # License: BSD (3-clause)
 import os.path as op
 
+import pytest
+
 from mne.io import read_raw_brainvision
 
 from mne_bids.datasets import (fetch_matchingpennies, fetch_faces_data,
@@ -15,7 +17,19 @@ def test_fetch_matchingpennies():
     with pytest.raises(ValueError, match=''):
         data_path = fetch_matchingpennies(subjects=1)
 
-    data_path = fetch_matchingpennies(subjects=[], download_dataset_data=False)
+    # Write some mock data so we don't download too much in the test
+    data_path = op.join(op.expanduser('~'), 'mne_data', 'mne_bids_examples',
+                        'eeg_matchingpennies')
+    for ff in ['CHANGES', 'README', 'participants.tsv', 'participants.json',
+               'LICENSE', 'dataset_description.json',
+               'task-matchingpennies_eeg.json',
+               'task-matchingpennies_events.json']:
+        with open(op.join(data_path, ff), 'w') as fout:
+            fout.write('test file. Re-run fetch_matchingpennies with '
+                       'overwrite=True')
+
+    # Overwrite is False, so it should only download ".bidsignore"
+    fetch_matchingpennies(data_path, download_dataset_data=True, subjects=[])
     assert op.exists(data_path)
 
 
