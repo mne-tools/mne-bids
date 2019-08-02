@@ -21,7 +21,7 @@ import shutil as sh
 
 from scipy.io import loadmat, savemat
 
-from .read import _parse_ext
+from mne_bids.read import _parse_ext
 
 
 def _copytree(src, dst, **kwargs):
