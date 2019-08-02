@@ -6,7 +6,14 @@ import os.path as op
 
 from mne.io import read_raw_brainvision
 
-from mne_bids.datasets import fetch_faces_data, fetch_brainvision_testing_data
+from mne_bids.datasets import (fetch_matchingpennies, fetch_faces_data,
+                               fetch_brainvision_testing_data)
+
+
+def test_fetch_matchingpennies():
+    """Dry test fetch matchingpennies."""
+    data_path = fetch_matchingpennies(subjects=[], download_dataset_data=False)
+    assert op.exists(data_path)
 
 
 def test_fetch_faces_data():
@@ -17,6 +24,6 @@ def test_fetch_faces_data():
 
 def test_fetch_brainvision_testing_data():
     """Test downloading of BrainVision testing data (~500kB)."""
-    data_path = fetch_brainvision_testing_data()
+    data_path = fetch_brainvision_testing_data(overwrite=True)
     raw = read_raw_brainvision(op.join(data_path, 'test.vhdr'))
     assert raw

@@ -5,11 +5,11 @@
 #          Stefan Appelhoff <stefan.appelhoff@mailbox.org>
 #
 # License: BSD (3-clause)
-
 import os
 import os.path as op
 import shutil
 import tarfile
+import urllib
 
 from mne.utils import _fetch_file
 
@@ -68,13 +68,13 @@ def fetch_matchingpennies(data_path=None, download_dataset_data=True,
     data_path = op.join(data_path, 'eeg_matchingpennies')
     os.makedirs(data_path, exist_ok=True)
 
-    if not isinstance(subjects, [list, tuple, type(None)]):
+    if not isinstance(subjects, (list, tuple, type(None))):
         raise ValueError('Specify `subjects` as a list of str, or None.')
     if subjects is None:
         subjects = [str(ii) for ii in range(5, 12)]
 
     task = 'matchingpennies'
-    base_url = 'https://osf.io/{}/'
+    base_url = 'https://osf.io/{}/download'
 
     # Download subject data
     file_suffixes = ('channels.tsv', 'eeg.eeg', 'eeg.vhdr', 'eeg.vmrk',
@@ -191,8 +191,6 @@ def fetch_brainvision_testing_data(data_path=None, overwrite=False,
         be stored. Defaults to '~/mne_data/mne_bids_examples'
     overwrite : bool
         Whether or not to overwrite data. Defaults to False.
-    verbose : bool
-        Whether or not to print output. Defaults to True.
 
     Returns
     -------
@@ -207,7 +205,7 @@ def fetch_brainvision_testing_data(data_path=None, overwrite=False,
     os.makedirs(data_path, exist_ok=True)
 
     base_url = 'https://github.com/mne-tools/mne-python/'
-    base_url += 'tree/master/mne/io/brainvision/tests/data/test{}'
+    base_url += 'raw/master/mne/io/brainvision/tests/data/test{}'
     file_endings = ['.vhdr', '.vmrk', '.eeg', ]
 
     # Compile data
@@ -217,6 +215,11 @@ def fetch_brainvision_testing_data(data_path=None, overwrite=False,
         data[fname] = base_url.format(f_ending)
 
     # Download
-    _download_data(data, overwrite, verbose)
+    for fpath, url in data.items():
+        if op.exists(fpath) and not overwrite:
+            continue
+        response = urllib.request.urlopen(url)
+        with open(fpath, 'wb') as fout:
+            fout.write(response.read())
 
     return data_path
