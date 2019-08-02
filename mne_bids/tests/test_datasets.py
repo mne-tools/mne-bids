@@ -18,13 +18,12 @@ def test_fetch_matchingpennies():
         data_path = fetch_matchingpennies(subjects=1)
 
     # Write some mock data so we don't download too much in the test
-    data_path = op.join(op.expanduser('~'), 'mne_data', 'mne_bids_examples',
-                        'eeg_matchingpennies')
+    data_path = op.join(op.expanduser('~'), 'mne_data', 'mne_bids_examples')
     for ff in ['CHANGES', 'README', 'participants.tsv', 'participants.json',
                'LICENSE', 'dataset_description.json',
                'task-matchingpennies_eeg.json',
                'task-matchingpennies_events.json']:
-        with open(op.join(data_path, ff), 'w') as fout:
+        with open(op.join(data_path, 'eeg_matchingpennies', ff), 'w') as fout:
             fout.write('test file. Re-run fetch_matchingpennies with '
                        'overwrite=True')
 

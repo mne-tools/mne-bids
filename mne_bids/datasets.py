@@ -127,7 +127,7 @@ def fetch_matchingpennies(data_path=None, download_dataset_data=True,
         }
         # Compile data
         data = dict()
-        for name, key in file_key_map:
+        for fname, key in file_key_map.items():
             fpath = op.join(data_path, fname)
             data[fpath] = base_url.format(key)
 
