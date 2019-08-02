@@ -59,5 +59,6 @@ Datasets (:py:mod:`mne_bids.datasets`)
 .. autosummary::
     :toctree: generated/
 
+    fetch_matchingpennies
     fetch_faces_data
     fetch_brainvision_testing_data
