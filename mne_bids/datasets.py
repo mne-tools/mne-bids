@@ -89,7 +89,7 @@ def fetch_matchingpennies(data_path=None, download_dataset_data=True,
                     '11': ('6p8vr', 'ywnpg', 'p7xk2', '8u5fm', 'rjzhy'),
                     }
 
-    for subject in subjects:
+    for subject in subjects:  # pragma: no cover
         file_keys = file_key_map.get(subject, None)
 
         # If wrong subject, do not attempt to download
@@ -113,7 +113,7 @@ def fetch_matchingpennies(data_path=None, download_dataset_data=True,
         _download_data(data, overwrite, verbose)
 
     # If requested, download general data
-    if download_dataset_data:
+    if download_dataset_data:  # pragma: no cover
         file_key_map = {
             '.bidsignore': '6thgf',
             'CHANGES': 'ckmbf',
