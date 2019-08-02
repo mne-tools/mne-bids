@@ -22,6 +22,7 @@ Current
 Changelog
 ~~~~~~~~~
 
+- Add new dataset fetcher :func:`mne_bids.datasets.fetch_matchingpennies`, by `Stefan Appelhoff`_ (`#249 <https://github.com/mne-tools/mne-bids/pull/249>`_)
 - :func:`mne_bids.utils.print_dir_tree` now accepts an argument :code:`max_depth` which can limit the depth until which the directory tree is printed, by `Stefan Appelhoff`_ (`#245 <https://github.com/mne-tools/mne-bids/pull/245>`_)
 - New command line function exposed :code:`cp` for renaming/copying files including automatic doc generation "CLI", by `Stefan Appelhoff`_ (`#225 <https://github.com/mne-tools/mne-bids/pull/225>`_)
 - :func:`read_raw_bids` now also reads channels.tsv files accompanying a raw BIDS file and sets the channel types accordingly, by `Stefan Appelhoff`_ (`#219 <https://github.com/mne-tools/mne-bids/pull/219>`_)
