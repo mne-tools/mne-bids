@@ -2,6 +2,7 @@
 # Authors: Stefan Appelhoff <stefan.appelhoff@mailbox.org>
 #
 # License: BSD (3-clause)
+import os
 import os.path as op
 import time
 
@@ -13,29 +14,37 @@ from mne_bids.datasets import (fetch_matchingpennies, fetch_faces_data,
                                fetch_brainvision_testing_data)
 
 
-def test_fetch_matchingpennies():
+def test_fetch_matchingpennies(tmpdir):
     """Dry test fetch matchingpennies."""
-    with pytest.raises(ValueError, match=''):
-        data_path = fetch_matchingpennies(subjects=1)
+    tmpdir = str(tmpdir)
+    mp_path = op.join(tmpdir, 'eeg_matchingpennies')
 
-    # Write some mock data so we don't download too much in the test
-    data_path = op.join(op.expanduser('~'), 'mne_data', 'mne_bids_examples')
-    for ff in ['CHANGES', 'README', 'participants.tsv', 'participants.json',
-               'LICENSE', 'dataset_description.json',
-               'task-matchingpennies_eeg.json',
-               'task-matchingpennies_events.json']:
-        with open(op.join(data_path, 'eeg_matchingpennies', ff), 'w') as fout:
-            fout.write('test file. Re-run fetch_matchingpennies with '
-                       'overwrite=True')
+    # We write some mock data so we don't download too much in the test
+    for ff in [
+        'CHANGES', 'README', 'participants.tsv', 'participants.json',
+        'LICENSE', 'dataset_description.json', 'task-matchingpennies_eeg.json',
+        'task-matchingpennies_events.json',
+        'stimuli{}left_hand.png'.format(os.sep),
+        'stimuli{}right_hand.png'.format(os.sep),
+            ]:
+        fpath = op.join(mp_path, ff)
+        os.makedirs(op.dirname(fpath), exist_ok=True)
+        open(fpath, 'w').close()
 
     # Overwrite is False, so it should only download ".bidsignore"
-    fetch_matchingpennies(data_path, download_dataset_data=True, subjects=[])
-    assert op.exists(op.join(data_path, 'eeg_matchingpennies', '.bidsignore'))
+    assert not op.exists(op.join(mp_path, '.bidsignore'))
+    fetch_matchingpennies(tmpdir, download_dataset_data=True, subjects=[])
+    assert op.exists(op.join(mp_path, '.bidsignore'))
+
+    # Test we raise an error due to wrong subject, no downloading
+    with pytest.raises(ValueError, match='Specify `subjects` as a list'):
+        fetch_matchingpennies(tmpdir, subjects=1)
 
 
-def test_fetch_faces_data():
+def test_fetch_faces_data(tmpdir):
     """Dry test fetch_faces_data (Will not download anything)."""
-    data_path = fetch_faces_data(subject_ids=[])
+    tmpdir = str(tmpdir)
+    data_path = fetch_faces_data(tmpdir, subject_ids=[])
     assert op.exists(data_path)
 
 
