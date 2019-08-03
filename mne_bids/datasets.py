@@ -34,7 +34,7 @@ def fetch_matchingpennies(data_path=None, download_dataset_data=True,
     data_path : str
         Path to a directory into which to place the "eeg_matchingpennies"
         directory. Defaults to "~/mne_data/mne_bids_examples"
-    dataset_data : bool
+    download_dataset_data : bool
         If True, download the dataset metadata. Defaults to True.
     subjects : list of str | None
         The subject identifiers to download data from. Subjects identifiers
