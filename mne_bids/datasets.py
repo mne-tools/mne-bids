@@ -25,8 +25,8 @@ def _download_data(data, overwrite, verbose):
                     resume=True, timeout=10., verbose=verbose)
 
 
-def fetch_matchingpennies(data_path=None, download_dataset_data=True,
-                          subjects=None, overwrite=False, verbose=True):
+def fetch_matchingpennies(data_path=None, subjects=None, dataset_data=True,
+                          sourcedata=False, overwrite=False, verbose=True):
     """Fetch the eeg_matchingpennies dataset [1]_.
 
     Parameters
@@ -34,12 +34,15 @@ def fetch_matchingpennies(data_path=None, download_dataset_data=True,
     data_path : str
         Path to a directory into which to place the "eeg_matchingpennies"
         directory. Defaults to "~/mne_data/mne_bids_examples"
-    download_dataset_data : bool
-        If True, download the dataset metadata. Defaults to True.
     subjects : list of str | None
         The subject identifiers to download data from. Subjects identifiers
         that are invalid will be ignored. Defaults to downloading from all
         subjects. Specify an empty list to not download any subject data.
+    dataset_data : bool
+        If True, download the dataset metadata. Defaults to True.
+    sourcedata : bool
+        If True, download the "/sourcedata" directory containing the original
+        .xdf files. Defaults to False
     overwrite : bool
         Whether or not to overwrite data. Defaults to False.
     verbose : bool
@@ -49,11 +52,6 @@ def fetch_matchingpennies(data_path=None, download_dataset_data=True,
     -------
     data_path : str
         The path to the eeg_matchingpennies dataset.
-
-    Notes
-    -----
-    Download of the "/sourcedata" directory containing the original .xdf files
-    is not supported.
 
     References
     ----------
@@ -76,19 +74,21 @@ def fetch_matchingpennies(data_path=None, download_dataset_data=True,
     task = 'matchingpennies'
     base_url = 'https://osf.io/{}/download'
 
-    # Download subject data
+    # suffixes of files per subject
     file_suffixes = ('channels.tsv', 'eeg.eeg', 'eeg.vhdr', 'eeg.vmrk',
-                     'events.tsv')
+                     'events.tsv', 'eeg.xdf')
     # Mapping subjects to the identifier url suffixes
-    file_key_map = {'05': ('wdb42', '3at5h', '3m8et', '7gq4s', '9q8r2'),
-                    '06': ('256sk', 'p52dn', 'jk649', 'wdjk9', '5br27'),
-                    '07': ('qvze6', 'z792x', '2an4r', 'u7v2g', 'uyhtd'),
-                    '08': ('4safg', 'dg9b4', 'w6kn2', 'mrkag', 'u76fs'),
-                    '09': ('nqjfm', '6m5ez', 'btv7d', 'daz4f', 'ue7ah'),
-                    '10': ('5cfmh', 'ya8kr', 'he3c2', 'bw6fp', 'r5ydt'),
-                    '11': ('6p8vr', 'ywnpg', 'p7xk2', '8u5fm', 'rjzhy'),
+    file_key_map = {
+        '05': ('wdb42', '3at5h', '3m8et', '7gq4s', '9q8r2', 'agj2q'),
+        '06': ('256sk', 'p52dn', 'jk649', 'wdjk9', '5br27', 'rj3nf'),
+        '07': ('qvze6', 'z792x', '2an4r', 'u7v2g', 'uyhtd', 'aqesz'),
+        '08': ('4safg', 'dg9b4', 'w6kn2', 'mrkag', 'u76fs', '6t5vg'),
+        '09': ('nqjfm', '6m5ez', 'btv7d', 'daz4f', 'ue7ah', '59zde'),
+        '10': ('5cfmh', 'ya8kr', 'he3c2', 'bw6fp', 'r5ydt', 'gfsnv'),
+        '11': ('6p8vr', 'ywnpg', 'p7xk2', '8u5fm', 'rjzhy', '4m3g5'),
                     }
 
+    # Download subject data and optionally sourcedata for subjects
     for subject in subjects:  # pragma: no cover
         file_keys = file_key_map.get(subject, None)
 
@@ -107,13 +107,23 @@ def fetch_matchingpennies(data_path=None, download_dataset_data=True,
             fname = make_bids_basename(subject=subject, task=task,
                                        suffix=suffix)
             fpath = op.join(bids_sub_dir, fname)
+
+            # If this is the xdf sourcedata, only download if asked for
+            # and always place in "/sourcedata" directory
+            if suffix.endswith('.xdf'):
+                if not sourcedata:
+                    continue
+                else:
+                    fpath = fpath.replace(data_path,
+                                          op.join(data_path, 'sourcedata'))
+
             data[fpath] = base_url.format(key)
 
         # Download
         _download_data(data, overwrite, verbose)
 
     # If requested, download general data
-    if download_dataset_data:
+    if dataset_data:
         os.makedirs(op.join(data_path, 'stimuli'), exist_ok=True)
         file_key_map = {
             '.bidsignore': '6thgf',
