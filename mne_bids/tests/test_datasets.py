@@ -33,7 +33,7 @@ def test_fetch_matchingpennies(tmpdir):
 
     # Overwrite is False, so it should only download ".bidsignore"
     assert not op.exists(op.join(mp_path, '.bidsignore'))
-    fetch_matchingpennies(tmpdir, download_dataset_data=True, subjects=[])
+    fetch_matchingpennies(tmpdir, dataset_data=True, subjects=[])
     assert op.exists(op.join(mp_path, '.bidsignore'))
 
     # Test we raise an error due to wrong subject, no downloading
