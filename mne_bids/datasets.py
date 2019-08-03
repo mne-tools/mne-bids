@@ -114,6 +114,7 @@ def fetch_matchingpennies(data_path=None, download_dataset_data=True,
 
     # If requested, download general data
     if download_dataset_data:
+        os.makedirs(op.join(data_path, 'stimuli'), exist_ok=True)
         file_key_map = {
             '.bidsignore': '6thgf',
             'CHANGES': 'ckmbf',
@@ -124,6 +125,8 @@ def fetch_matchingpennies(data_path=None, download_dataset_data=True,
             'README': 'k8hjf',
             'task-matchingpennies_eeg.json': 'qf5d8',
             'task-matchingpennies_events.json': '3qztv',
+            'stimuli{}left_hand.png'.format(os.sep): 'g45de',
+            'stimuli{}right_hand.png'.format(os.sep): '2r9zd',
         }
         # Compile data
         data = dict()
