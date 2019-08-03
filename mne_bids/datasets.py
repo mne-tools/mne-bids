@@ -16,9 +16,12 @@ from mne.utils import _fetch_file
 from mne_bids import make_bids_basename, make_bids_folders
 
 
-def _download_data(data, overwrite, verbose):
+def _download_data(data, overwrite, verbose, dry=False):
     """Iterate over `data`, a dict with fpath, url and download."""
     for fpath, url in data.items():
+        if dry:
+            print(fpath, url)
+            continue
         if op.exists(fpath) and not overwrite:
             continue
         _fetch_file(url=url, file_name=fpath, print_destination=verbose,
@@ -26,7 +29,8 @@ def _download_data(data, overwrite, verbose):
 
 
 def fetch_matchingpennies(data_path=None, subjects=None, dataset_data=True,
-                          sourcedata=False, overwrite=False, verbose=True):
+                          sourcedata=False, overwrite=False, verbose=True,
+                          dry=False):
     """Fetch the eeg_matchingpennies dataset [1]_.
 
     Parameters
@@ -47,6 +51,8 @@ def fetch_matchingpennies(data_path=None, subjects=None, dataset_data=True,
         Whether or not to overwrite data. Defaults to False.
     verbose : bool
         Whether or not to print output. Defaults to True.
+    dry : bool
+        If True, will only print filepaths and urls instead of downloading.
 
     Returns
     -------
@@ -60,7 +66,7 @@ def fetch_matchingpennies(data_path=None, subjects=None, dataset_data=True,
            https://doi.org/10.17605/OSF.IO/CJ2DR
 
     """
-    if data_path is None:
+    if data_path is None:  # pragma: no cover
         data_path = op.join(op.expanduser('~'), 'mne_data',
                             'mne_bids_examples')
     data_path = op.join(data_path, 'eeg_matchingpennies')
@@ -120,7 +126,7 @@ def fetch_matchingpennies(data_path=None, subjects=None, dataset_data=True,
             data[fpath] = base_url.format(key)
 
         # Download
-        _download_data(data, overwrite, verbose)
+        _download_data(data, overwrite, verbose, dry)
 
     # If requested, download general data
     if dataset_data:
@@ -145,7 +151,7 @@ def fetch_matchingpennies(data_path=None, subjects=None, dataset_data=True,
             data[fpath] = base_url.format(key)
 
         # Download
-        _download_data(data, overwrite, verbose)
+        _download_data(data, overwrite, verbose, dry)
 
     return data_path
 
@@ -170,7 +176,7 @@ def fetch_faces_data(data_path=None, repo='ds000117', subject_ids=[1]):
         data is stored.
 
     """
-    if not data_path:
+    if not data_path:  # pragma: no cover
         data_path = os.path.join(os.path.expanduser('~'), 'mne_data',
                                  'mne_bids_examples')
     os.makedirs(data_path, exist_ok=True)
