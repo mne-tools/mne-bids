@@ -40,6 +40,8 @@ def test_fetch_matchingpennies(tmpdir):
     with pytest.raises(ValueError, match='Specify `subjects` as a list'):
         fetch_matchingpennies(tmpdir, subjects=1)
 
+    fetch_matchingpennies(tmpdir, sourcedata=True, dry=True)
+
 
 def test_fetch_faces_data(tmpdir):
     """Dry test fetch_faces_data (Will not download anything)."""
