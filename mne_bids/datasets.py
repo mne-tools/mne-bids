@@ -71,7 +71,7 @@ def fetch_matchingpennies(data_path=None, download_dataset_data=True,
     if not isinstance(subjects, (list, tuple, type(None))):
         raise ValueError('Specify `subjects` as a list of str, or None.')
     if subjects is None:  # pragma: no cover
-        subjects = [str(ii) for ii in range(5, 12)]
+        subjects = ['{:02}'.format(ii) for ii in range(5, 12)]
 
     task = 'matchingpennies'
     base_url = 'https://osf.io/{}/download'
