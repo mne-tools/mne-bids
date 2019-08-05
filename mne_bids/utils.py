@@ -30,10 +30,26 @@ from mne_bids.tsv_handler import _to_tsv, _tsv_to_str
 
 
 def get_list_of_entity(bids_root, key='sub'):
-    """Get list of a particular entity."""
+    """Get list of instances of a particular entity.
+
+    Parameters
+    ----------
+    bids_root : str
+        Path to the root of the BIDS directory.
+    key : str
+        The name of the entity to search for. Can be one of
+        ['sub', 'ses', 'run', 'acq']. Defaults to 'sub'.
+
+    Returns
+    -------
+    entities : list of str
+        List of the instances of the entity given by `key` in the BIDS
+        dataset pointed to by `bids_root`.
+
+    """
     accepted_keys = ('sub', 'ses', 'run', 'acq')
     if key not in accepted_keys:
-        raise ValueError('Key must be one of {}. Got {}'
+        raise ValueError('`key` must be one of "{}". Got "{}"'
                          .format(accepted_keys, key))
 
     p = re.compile(r'{}-(.*?)_'.format(key))
