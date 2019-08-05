@@ -36,7 +36,7 @@ def get_list_of_entity(bids_root, key='sub'):
         raise ValueError('Key must be one of {}. Got {}'
                          .format(accepted_keys, key))
 
-    p = re.compile(r'%s-(.*?)_' % key)
+    p = re.compile(r'{}-(.*?)_'.format(key))
     entities = list()
     for filename in Path(bids_root).rglob('*{}-*_*'.format(key)):
         match = p.search(filename.stem)
