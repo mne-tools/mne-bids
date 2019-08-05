@@ -16,6 +16,7 @@ import shutil as sh
 import re
 from datetime import datetime
 from collections import defaultdict
+from pathlib import Path
 
 import numpy as np
 from mne import read_events, find_events, events_from_annotations
@@ -26,6 +27,23 @@ from mne.io.kit.kit import get_kit_info
 from mne.io.constants import FIFF
 
 from mne_bids.tsv_handler import _to_tsv, _tsv_to_str
+
+
+def get_list_of_entity(bids_root, key='sub'):
+    """Get list of a particular entity."""
+    accepted_keys = ('sub', 'ses', 'run', 'acq')
+    if key not in accepted_keys:
+        raise ValueError('Key must be one of {}. Got {}'
+                         .format(accepted_keys, key))
+
+    p = re.compile(r'%s-(.*?)_' % key)
+    entities = list()
+    for filename in Path(bids_root).rglob('*{}-*_*'.format(key)):
+        match = p.search(filename.stem)
+        entity = match.group(1)
+        if entity not in entities:
+            entities.append(entity)
+    return entities
 
 
 def _get_ch_type_mapping(fro='mne', to='bids'):
