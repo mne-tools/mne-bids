@@ -19,7 +19,7 @@ from mne_bids.utils import (_check_types, print_dir_tree, _age_on_date,
                             _infer_eeg_placement_scheme, _handle_kind,
                             _find_matching_sidecar, _parse_ext,
                             _get_ch_type_mapping, _parse_bids_filename,
-                            _find_best_candidates)
+                            _find_best_candidates, get_list_of_entity)
 
 
 base_path = op.join(op.dirname(mne.__file__), 'io')
@@ -32,6 +32,40 @@ task = 'testing'
 bids_basename = make_bids_basename(
     subject=subject_id, session=session_id, run=run, acquisition=acq,
     task=task)
+
+
+@pytest.fixture(scope='session')
+def return_bids_test_dir(tmpdir_factory):
+    """Return path to a written test BIDS dir."""
+    output_path = str(tmpdir_factory.mktemp('mnebids_utils_test_bids_ds'))
+    data_path = testing.data_path()
+    raw_fname = op.join(data_path, 'MEG', 'sample',
+                        'sample_audvis_trunc_raw.fif')
+
+    event_id = {'Auditory/Left': 1, 'Auditory/Right': 2, 'Visual/Left': 3,
+                'Visual/Right': 4, 'Smiley': 5, 'Button': 32}
+    events_fname = op.join(data_path, 'MEG', 'sample',
+                           'sample_audvis_trunc_raw-eve.fif')
+
+    raw = mne.io.read_raw_fif(raw_fname)
+    with pytest.warns(UserWarning, match='No line frequency'):
+        write_raw_bids(raw, bids_basename, output_path,
+                       events_data=events_fname, event_id=event_id,
+                       overwrite=False)
+
+    return output_path
+
+
+def test_get_list_of_entity(return_bids_test_dir):
+    """Test getting a list of entities."""
+    bids_root = return_bids_test_dir
+    with pytest.raises(ValueError, match='Key must be one of'):
+        get_list_of_entity(bids_root, key='bogus')
+
+    assert get_list_of_entity(bids_root, 'sub') == [subject_id]
+    assert get_list_of_entity(bids_root, 'ses') == [session_id]
+    assert get_list_of_entity(bids_root, 'run') == [run]
+    assert get_list_of_entity(bids_root, 'acq') == [acq]
 
 
 def test_get_ch_type_mapping():
@@ -239,24 +273,9 @@ def test_find_best_candidates(candidate_list, best_candidates):
     assert _find_best_candidates(params, candidate_list) == best_candidates
 
 
-def test_find_matching_sidecar():
+def test_find_matching_sidecar(return_bids_test_dir):
     """Test finding a sidecar file from a BIDS dir."""
-    # First write a BIDS dir
-    output_path = _TempDir()
-    data_path = testing.data_path()
-    raw_fname = op.join(data_path, 'MEG', 'sample',
-                        'sample_audvis_trunc_raw.fif')
-
-    event_id = {'Auditory/Left': 1, 'Auditory/Right': 2, 'Visual/Left': 3,
-                'Visual/Right': 4, 'Smiley': 5, 'Button': 32}
-    events_fname = op.join(data_path, 'MEG', 'sample',
-                           'sample_audvis_trunc_raw-eve.fif')
-
-    raw = mne.io.read_raw_fif(raw_fname)
-    with pytest.warns(UserWarning, match='No line frequency'):
-        write_raw_bids(raw, bids_basename, output_path,
-                       events_data=events_fname, event_id=event_id,
-                       overwrite=False)
+    output_path = return_bids_test_dir
 
     # Now find a sidecar
     sidecar_fname = _find_matching_sidecar(bids_basename, output_path,
