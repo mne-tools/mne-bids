@@ -19,14 +19,14 @@ from mne_bids.utils import (_check_types, print_dir_tree, _age_on_date,
                             _infer_eeg_placement_scheme, _handle_kind,
                             _find_matching_sidecar, _parse_ext,
                             _get_ch_type_mapping, _parse_bids_filename,
-                            _find_best_candidates, get_list_of_entity)
+                            _find_best_candidates, get_values_for_key)
 
 
 base_path = op.join(op.dirname(mne.__file__), 'io')
 subject_id = '01'
 session_id = '01'
 run = '01'
-acq = '01'
+acq = None
 task = 'testing'
 
 bids_basename = make_bids_basename(
@@ -48,24 +48,29 @@ def return_bids_test_dir(tmpdir_factory):
                            'sample_audvis_trunc_raw-eve.fif')
 
     raw = mne.io.read_raw_fif(raw_fname)
-    with pytest.warns(UserWarning, match='No line frequency'):
-        write_raw_bids(raw, bids_basename, output_path,
-                       events_data=events_fname, event_id=event_id,
-                       overwrite=False)
+    # Write multiple runs for test_purposes
+    bids_basename2 = bids_basename.replace('run-{}'.format(run), 'run-02')
+    for name in [bids_basename,
+                 bids_basename2,
+                 ]:
+        with pytest.warns(UserWarning, match='No line frequency'):
+            write_raw_bids(raw, name, output_path,
+                           events_data=events_fname, event_id=event_id,
+                           overwrite=True)
 
     return output_path
 
 
-def test_get_list_of_entity(return_bids_test_dir):
+def test_get_values_for_key(return_bids_test_dir):
     """Test getting a list of entities."""
     bids_root = return_bids_test_dir
-    with pytest.raises(ValueError, match='Key must be one of'):
-        get_list_of_entity(bids_root, key='bogus')
+    with pytest.raises(ValueError, match='`key` must be one of'):
+        get_values_for_key(bids_root, key='bogus')
 
-    assert get_list_of_entity(bids_root, 'sub') == [subject_id]
-    assert get_list_of_entity(bids_root, 'ses') == [session_id]
-    assert get_list_of_entity(bids_root, 'run') == [run]
-    assert get_list_of_entity(bids_root, 'acq') == [acq]
+    assert get_values_for_key(bids_root, 'sub') == [subject_id]
+    assert get_values_for_key(bids_root, 'ses') == [session_id]
+    assert get_values_for_key(bids_root, 'run') == [run, '02']
+    assert get_values_for_key(bids_root, 'acq') == []
 
 
 def test_get_ch_type_mapping():
@@ -281,7 +286,7 @@ def test_find_matching_sidecar(return_bids_test_dir):
     sidecar_fname = _find_matching_sidecar(bids_basename, output_path,
                                            'coordsystem.json')
     expected_file = op.join('sub-01', 'ses-01', 'meg',
-                            'sub-01_ses-01_acq-01_coordsystem.json')
+                            'sub-01_ses-01_coordsystem.json')
     assert sidecar_fname.endswith(expected_file)
 
     # Find multiple sidecars, tied in score, triggering an error
