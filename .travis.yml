@@ -1,5 +1,5 @@
 node_js:
-  - "10.0.0"
+  - "10.16.1"
 language: python
 
 # Specify version of BIDS-validator to be used, 'master', or 'stable'
@@ -16,7 +16,7 @@ before_install:
   - export PATH=/home/travis/miniconda/bin:$PATH
   - conda update --yes --quiet conda
   - npm install -g npm stable
-  - npm install -g node@10.0.0
+  - npm install -g node@10.16.1
   - npm --version
   - node --version
   - yarn --version
