@@ -15,7 +15,8 @@ environment:
         PYTHON_ARCH: "64"
 
 install:
-  - ps: Install-Product node $env:NODEJS_VERSION
+  # https://www.appveyor.com/docs/lang/nodejs-iojs/
+  - ps: Update-NodeJsInstallation node $env:NODEJS_VERSION
   - node --version
   - npm --version
   - yarn --version
