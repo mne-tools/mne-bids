@@ -29,22 +29,28 @@ from mne.io.constants import FIFF
 from mne_bids.tsv_handler import _to_tsv, _tsv_to_str
 
 
-def get_list_of_entity(bids_root, key='sub'):
-    """Get list of instances of a particular entity.
+def get_values_for_key(bids_root, key):
+    """Get list of values for a key in a BIDS dataset.
+
+    BIDS file names are organized by key-value pairs called "entities" [1]_.
 
     Parameters
     ----------
     bids_root : str
         Path to the root of the BIDS directory.
     key : str
-        The name of the entity to search for. Can be one of
-        ['sub', 'ses', 'run', 'acq']. Defaults to 'sub'.
+        The name of the key to search for. Can be one of
+        ['sub', 'ses', 'run', 'acq'].
 
     Returns
     -------
-    entities : list of str
-        List of the instances of the entity given by `key` in the BIDS
-        dataset pointed to by `bids_root`.
+    value_list : list of str
+        List of the values associated with a `key` in the BIDS dataset pointed
+        to by `bids_root`.
+
+    References
+    ----------
+    .. [1] https://bids-specification.rtfd.io/en/latest/02-common-principles.html#file-name-structure  # noqa: E501
 
     """
     accepted_keys = ('sub', 'ses', 'run', 'acq')
@@ -53,13 +59,13 @@ def get_list_of_entity(bids_root, key='sub'):
                          .format(accepted_keys, key))
 
     p = re.compile(r'{}-(.*?)_'.format(key))
-    entities = list()
+    value_list = list()
     for filename in Path(bids_root).rglob('*{}-*_*'.format(key)):
         match = p.search(filename.stem)
-        entity = match.group(1)
-        if entity not in entities:
-            entities.append(entity)
-    return entities
+        value = match.group(1)
+        if value not in value_list:
+            value_list.append(value)
+    return sorted(value_list)
 
 
 def _get_ch_type_mapping(fro='mne', to='bids'):
