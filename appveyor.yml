@@ -7,7 +7,7 @@ environment:
         VALIDATOR_VERSION: "master"
         MNE_VERSION: "master"  # can be "maint/0.18" ... or "master"
         VALIDATOR_EXECUTABLE: "C:\\projects\\mne-bids\\bids-validator\\bids-validator\\bin\\bids-validator"
-        NODEJS_VERSION: "10.0.0"
+        NODEJS_VERSION: "10.16.1"
         PYTHON: "C:\\conda"
   matrix:
       - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
