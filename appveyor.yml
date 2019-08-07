@@ -1,11 +1,13 @@
 environment:
-# Specify version of BIDS-validator to be used, "master", or "stable"
+# Specify version of BIDS-validator to be used, "stable", or anything that can be used with git checkout
 # NOTE: For "master" you MUST adjust VALIDATOR_EXECUTABLE to the following value:
 # "C:\\projects\\mne-bids\\bids-validator\\bids-validator\\bin\\bids-validator"
 # ... whereas for "stable", VALIDATOR_EXECUTABLE MUST be set to "n/a"
   global:
-        VALIDATOR_VERSION: "master"
-        MNE_VERSION: "master"  # can be "maint/0.18" ... or "master"
+        # can be
+        VALIDATOR_VERSION: "a7e2fddeec489a8d5db81c561a5adc89363a306e"
+        # can be "maint/0.18" ... or "master"
+        MNE_VERSION: "master"
         VALIDATOR_EXECUTABLE: "C:\\projects\\mne-bids\\bids-validator\\bids-validator\\bin\\bids-validator"
         NODEJS_VERSION: "10.16.1"
         PYTHON: "C:\\conda"
@@ -20,17 +22,18 @@ install:
   - node --version
   - npm --version
   - yarn --version
-  - cmd: if [%VALIDATOR_VERSION%]==[master] (
-      git clone --depth 1 https://github.com/bids-standard/bids-validator &&
-      cd bids-validator &&
-      yarn &&
-      cd .. &&
-      set PATH="%PATH%;C:\projects\mne-bids\bids-validator\bids-validator\bin\" )
   - cmd: if [%VALIDATOR_VERSION%]==[stable] (
       npm install -g bids-validator
       bids-validator --version
       which bids-validator
       )
+  - cmd: if [%VALIDATOR_VERSION%]!=[stable] (
+      git clone https://github.com/bids-standard/bids-validator &&
+      cd bids-validator &&
+      git checkout %VALIDATOR_VERSION% &&
+      yarn &&
+      cd .. &&
+      set PATH="%PATH%;C:\projects\mne-bids\bids-validator\bids-validator\bin\" )
   - "git clone --depth 1 git://github.com/astropy/ci-helpers.git"
   - "powershell ci-helpers/appveyor/install-miniconda.ps1"
   - "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
