@@ -26,8 +26,7 @@ install:
       npm install -g bids-validator
       bids-validator --version
       which bids-validator
-      )
-  - cmd: if [%VALIDATOR_VERSION%]!=[stable] (
+      ) else (
       git clone https://github.com/bids-standard/bids-validator &&
       cd bids-validator &&
       git checkout %VALIDATOR_VERSION% &&
