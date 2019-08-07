@@ -72,7 +72,7 @@ error messages:
 
    $ python -c 'import mne_bids'
 
-For full functionality of ``mne-bids``, you will also need to `` pip install``
+For full functionality of ``mne-bids``, you will also need to ``pip install``
 the following packages:
 
 - nibabel
