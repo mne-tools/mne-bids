@@ -19,7 +19,8 @@ from mne_bids.utils import (_check_types, print_dir_tree, _age_on_date,
                             _infer_eeg_placement_scheme, _handle_kind,
                             _find_matching_sidecar, _parse_ext,
                             _get_ch_type_mapping, _parse_bids_filename,
-                            _find_best_candidates, get_values_for_key)
+                            _find_best_candidates, get_values_for_key,
+                            get_kinds)
 
 
 base_path = op.join(op.dirname(mne.__file__), 'io')
@@ -59,6 +60,12 @@ def return_bids_test_dir(tmpdir_factory):
                            overwrite=True)
 
     return output_path
+
+
+def test_get_keys(return_bids_test_dir):
+    """Test getting the datatypes (=kinds) of a dir."""
+    kinds = get_kinds(return_bids_test_dir)
+    assert kinds == ['meg']
 
 
 def test_get_values_for_key(return_bids_test_dir):
