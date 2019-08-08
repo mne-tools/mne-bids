@@ -27,9 +27,8 @@ install:
       bids-validator --version
       which bids-validator
       ) else (
-      git clone https://github.com/bids-standard/bids-validator &&
+      git clone https://github.com/nellh/bids-validator -b windows-file-tests &&
       cd bids-validator &&
-      git checkout %VALIDATOR_VERSION% &&
       yarn &&
       cd .. &&
       set PATH="%PATH%;C:\projects\mne-bids\bids-validator\bids-validator\bin\" )
