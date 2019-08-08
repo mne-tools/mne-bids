@@ -38,6 +38,7 @@ Utils (:py:mod:`mne_bids.utils`)
 
    print_dir_tree
    get_values_for_key
+   get_kinds
 
 Copyfiles (:py:mod:`mne_bids.copyfiles`)
 ========================================

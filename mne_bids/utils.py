@@ -29,6 +29,32 @@ from mne.io.constants import FIFF
 from mne_bids.tsv_handler import _to_tsv, _tsv_to_str
 
 
+def get_kinds(bids_root):
+    """Get list of data types ("kinds") present in a BIDS dataset.
+
+    Parameters
+    ----------
+    bids_root : str
+        Path to the root of the BIDS directory.
+
+    Returns
+    -------
+    kinds : list of str
+        List of the data types present in the BIDS dataset pointed to by
+        `bids_root`.
+
+    """
+    # Take all possible kinds from "entity" table (Appendix in BIDS spec)
+    kind_list = ('anat', 'func', 'dwi', 'fmap', 'beh', 'meg', 'eeg', 'ieeg')
+    kinds = list()
+    for root, dirs, files in os.walk(bids_root):
+        for dir in dirs:
+            if dir in kind_list and dir not in kinds:
+                kinds.append(dir)
+
+    return kinds
+
+
 def get_values_for_key(bids_root, key):
     """Get list of values for a key in a BIDS dataset.
 
