@@ -79,7 +79,7 @@ def get_values_for_key(bids_root, key):
     .. [1] https://bids-specification.rtfd.io/en/latest/02-common-principles.html#file-name-structure  # noqa: E501
 
     """
-    accepted_keys = ('sub', 'ses', 'run', 'acq')
+    accepted_keys = ('sub', 'ses', 'task', 'run', 'acq')
     if key not in accepted_keys:
         raise ValueError('`key` must be one of "{}". Got "{}"'
                          .format(accepted_keys, key))

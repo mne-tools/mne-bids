@@ -78,6 +78,7 @@ def test_get_values_for_key(return_bids_test_dir):
     assert get_values_for_key(bids_root, 'ses') == [session_id]
     assert get_values_for_key(bids_root, 'run') == [run, '02']
     assert get_values_for_key(bids_root, 'acq') == []
+    assert get_values_for_key(bids_root, 'task') == [task]
 
 
 def test_get_ch_type_mapping():
