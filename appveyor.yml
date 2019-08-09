@@ -27,7 +27,7 @@ install:
       bids-validator --version
       which bids-validator
       ) else (
-      git clone https://github.com/nellh/bids-validator -b windows-file-tests &&
+      git clone https://github.com/nellh/bids-validator -b 814-path-sep-fix &&
       cd bids-validator &&
       yarn &&
       cd .. &&
