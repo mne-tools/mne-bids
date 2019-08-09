@@ -491,9 +491,7 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, overwrite=False,
     return fname
 
 
-def make_bids_basename(subject=None, session=None, task=None,
-                       acquisition=None, run=None, processing=None,
-                       recording=None, space=None, prefix=None, suffix=None):
+class BIDSPath(dict):
     """Create a partial/full BIDS filename from its component parts.
 
     BIDS filename prefixes have one or more pieces of metadata in them. They
@@ -538,39 +536,34 @@ def make_bids_basename(subject=None, session=None, task=None,
     --------
     >>> print(make_bids_basename(subject='test', session='two', task='mytask', suffix='data.csv')) # noqa: E501
     sub-test_ses-two_task-mytask_data.csv
-
     """
-    order = OrderedDict([('sub', subject),
-                         ('ses', session),
-                         ('task', task),
-                         ('acq', acquisition),
-                         ('run', run),
-                         ('proc', processing),
-                         ('space', space),
-                         ('recording', recording)])
-    if order['run'] is not None and not isinstance(order['run'], str):
-        # Ensure that run is a string
-        order['run'] = '{:02}'.format(order['run'])
 
-    _check_types(order.values())
+    def __init__(self):
+        pass
 
-    if (all(ii is None for ii in order.values()) and suffix is None and
-            prefix is None):
-        raise ValueError("At least one parameter must be given.")
+    def __setitem__(self, key, value):
+        if key not in ('sub', 'ses', 'task', 'acq',
+                       'proc', 'acq', 'run', 'rec',
+                       'space', 'suffix', 'data_path'):
+            raise ValueError('Key must be one of blah, got %s' % key)
+        return dict.__setitem__(self, key, value)
 
-    filename = []
-    for key, val in order.items():
-        if val is not None:
-            _check_key_val(key, val)
-            filename.append('%s-%s' % (key, val))
+    @property
+    def name(self):
+        keys = ('sub', 'ses', 'task', 'acq', 'proc', 'acq',
+                'run', 'rec', 'space', 'suffix', 'data_path')
+        filename = []
+        for key in keys[:-2]:
+            if key in self:
+                filename.append('%s-%s' % (key, self[key]))
+        filename = '_'.join(filename)
 
-    if isinstance(suffix, str):
-        filename.append(suffix)
+        if 'suffix' in self:
+            filename += '_' + self['suffix']
 
-    filename = '_'.join(filename)
-    if isinstance(prefix, str):
-        filename = op.join(prefix, filename)
-    return filename
+        if 'data_path' in self:
+            filename = op.join(self['data_path'], filename)
+        return filename
 
 
 def make_bids_folders(subject, session=None, kind=None, output_path=None,
@@ -836,27 +829,6 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
                                      output_path=output_path, make_dir=False,
                                      overwrite=False, verbose=verbose)
 
-    # create filenames
-    scans_fname = make_bids_basename(
-        subject=subject_id, session=session_id, suffix='scans.tsv',
-        prefix=ses_path)
-    participants_tsv_fname = make_bids_basename(prefix=output_path,
-                                                suffix='participants.tsv')
-    participants_json_fname = make_bids_basename(prefix=output_path,
-                                                 suffix='participants.json')
-    coordsystem_fname = make_bids_basename(
-        subject=subject_id, session=session_id, acquisition=acquisition,
-        suffix='coordsystem.json', prefix=data_path)
-    sidecar_fname = make_bids_basename(
-        subject=subject_id, session=session_id, task=task, run=run,
-        acquisition=acquisition, suffix='%s.json' % kind, prefix=data_path)
-    events_fname = make_bids_basename(
-        subject=subject_id, session=session_id, task=task,
-        acquisition=acquisition, run=run, suffix='events.tsv',
-        prefix=data_path)
-    channels_fname = make_bids_basename(
-        subject=subject_id, session=session_id, task=task, run=run,
-        acquisition=acquisition, suffix='channels.tsv', prefix=data_path)
     if ext not in ['.fif', '.ds', '.vhdr', '.edf', '.bdf', '.set', '.con',
                    '.sqd']:
         bids_raw_folder = bids_fname.split('.')[0]
@@ -868,24 +840,38 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
     manufacturer = MANUFACTURERS.get(ext, 'n/a')
 
     # save all meta data
-    _participants_tsv(raw, subject_id, participants_tsv_fname, overwrite,
+    bids_path = BIDSPath(sub=subject_id, ses=session_id, data_path=ses_path)
+    bids_path.update({'data_path': output_path, 'suffix': 'participants.tsv'})
+    _participants_tsv(raw, subject_id, bids_path.name, overwrite,
                       verbose)
-    _participants_json(participants_json_fname, True, verbose)
-    _scans_tsv(raw, op.join(kind, bids_fname), scans_fname, overwrite, verbose)
+
+    bids_path['suffix'] = 'participants.tsv'
+    _participants_json(bids_path.name, True, verbose)
+
+    bids_path['suffix'] = 'scans.tsv'
+    _scans_tsv(raw, op.join(kind, bids_fname), bids_path.name,
+               overwrite, verbose)
 
     # TODO: Implement coordystem.json and electrodes.tsv for EEG and  iEEG
     if kind == 'meg' and not emptyroom:
-        _coordsystem_json(raw, unit, orient, manufacturer, coordsystem_fname,
+        bids_path.update({'acq': acquisition, 'data_path': data_path,
+                          'suffix': 'coordsystem.json'})
+        _coordsystem_json(raw, unit, orient, manufacturer, bids_path.name,
                           overwrite, verbose)
 
     events, event_id = _read_events(events_data, event_id, raw, ext)
     if events is not None and len(events) > 0 and not emptyroom:
-        _events_tsv(events, raw, events_fname, event_id, overwrite, verbose)
+        bids_path['suffix'] = 'events.tsv'
+        _events_tsv(events, raw, bids_path.name, event_id, overwrite, verbose)
 
     make_dataset_description(output_path, name=" ", verbose=verbose)
-    _sidecar_json(raw, task, manufacturer, sidecar_fname, kind, overwrite,
+
+    bids_path.update({'run': run, 'suffix': '%s.json' % kind,
+                      'task': task})
+    _sidecar_json(raw, task, manufacturer, bids_path.fname, kind, overwrite,
                   verbose)
-    _channels_tsv(raw, channels_fname, overwrite, verbose)
+    bids_path['suffix'] = 'channels.tsv'
+    _channels_tsv(raw, bids_path.fname, overwrite, verbose)
 
     # set the raw file name to now be the absolute path to ensure the files
     # are placed in the right location
@@ -938,11 +924,8 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
             _, marker_ext = _parse_ext(hpi)
             acq_map[None] = hpi
         for key, value in acq_map.items():
-            marker_fname = make_bids_basename(
-                subject=subject_id, session=session_id, task=task, run=run,
-                acquisition=key, suffix='markers%s' % marker_ext,
-                prefix=data_path)
-            sh.copyfile(value, marker_fname)
+            bids_path['suffix'] = 'markers%s' % 'marker%s' % marker_ext
+            sh.copyfile(value, bids_path.name)
 
     return output_path
 
