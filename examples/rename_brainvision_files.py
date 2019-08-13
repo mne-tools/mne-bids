@@ -66,7 +66,7 @@ for extension in ['.vhdr', '.vmrk', '.eeg']:
 # input: First, the path to the existing .vhdr file. And second, the path to
 # the future .vhdr file.
 #
-# func:`mne_bids.utils.copyfile_brainvision` will then create three new files
+# :func:`mne_bids.utils.copyfile_brainvision` will then create three new files
 # (.vhdr, .vmrk, and .eeg) with the new names as provided with the second
 # argument.
 #
