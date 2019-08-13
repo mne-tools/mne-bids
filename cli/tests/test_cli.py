@@ -6,14 +6,13 @@
 from os import path as op
 
 import pytest
+import mne
 from mne.datasets import testing
-from mne.utils import _TempDir, run_tests_if_main, ArgvSetter
-
-from mne_bids.datasets import fetch_brainvision_testing_data
+from mne.utils import run_tests_if_main, ArgvSetter
 
 from cli import mne_bids_raw_to_bids, mne_bids_cp
 
-
+base_path = op.join(op.dirname(mne.__file__), 'io')
 subject_id = '01'
 task = 'testing'
 
@@ -29,9 +28,9 @@ def check_usage(module, force_help=False):
         assert 'Usage: ' in out.stdout.getvalue()
 
 
-def test_raw_to_bids():
+def test_raw_to_bids(tmpdir):
     """Test mne_bids raw_to_bids."""
-    output_path = _TempDir()
+    output_path = str(tmpdir)
     data_path = testing.data_path()
     raw_fname = op.join(data_path, 'MEG', 'sample',
                         'sample_audvis_trunc_raw.fif')
@@ -49,10 +48,10 @@ def test_raw_to_bids():
             mne_bids_cp.run()
 
 
-def test_cp():
+def test_cp(tmpdir):
     """Test mne_bids cp."""
-    output_path = _TempDir()
-    data_path = fetch_brainvision_testing_data()
+    output_path = str(tmpdir)
+    data_path = op.join(base_path, 'brainvision', 'tests', 'data')
     raw_fname = op.join(data_path, 'test.vhdr')
     outname = op.join(output_path, 'test2.vhdr')
 
