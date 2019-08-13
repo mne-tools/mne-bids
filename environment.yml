@@ -25,4 +25,3 @@ dependencies:
   - numpydoc
   - sphinx_bootstrap_theme
   - sphinx_gallery
-  - awscli

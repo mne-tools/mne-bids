@@ -76,7 +76,6 @@ For full functionality of ``mne-bids``, you will also need to ``pip install``
 the following packages:
 
 - ``nibabel``, for interacting with MRI data
-- ``awscli``, for downloading data in the examples
 
 If you want to use the latest development version of ``mne-bids``, use the
 following command:
