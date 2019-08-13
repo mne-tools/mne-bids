@@ -31,10 +31,9 @@ for the :ref:`Python Command Line Interface <python_cli>`.
 ###############################################################################
 # We are importing everything we need for this example:
 import os.path as op
-import subprocess
 
 from numpy.testing import assert_array_equal
-from mne.io import read_raw_brainvision
+import mne
 
 from mne_bids.copyfiles import copyfile_brainvision
 
@@ -42,20 +41,12 @@ from mne_bids.copyfiles import copyfile_brainvision
 # Step 1: Download some example data
 # ----------------------------------
 # To demonstrate the MNE-BIDS functions, we need some testing data. Here, we
-# will use the AWS cli to download some BrainVision data. Feel free to use your
-# own BrainVision data.
+# will use the MNE-Python testing data. Feel free to use your own BrainVision
+# data.
+# .. warning :: This will download 1.6 GB of data!
 
-# First specify, where we want to download our data to
-examples_dir = op.join(op.expanduser('~'), 'mne_data', 'mne_bids_examples')
-
-# Now specify the data in the S3 remote storage and download the files
-data_address = 's3://openneuro.org/ds001810/'
-remote_dir = 'sub-01/ses-anodalpre/eeg/'
-fname = 'sub-01_ses-anodalpre_task-attentionalblink_eeg'
-for extension in ['.vhdr', '.vmrk', '.eeg']:
-    remote_file = data_address + remote_dir + fname + extension
-    cmd = ['aws', 's3', 'cp', '--no-sign-request', remote_file, examples_dir]
-    subprocess.run(cmd)
+data_path = mne.datasets.testing.data_path()
+examples_dir = op.join(data_path, 'Brainvision')
 
 ###############################################################################
 # Step 2: Rename the recording
@@ -70,10 +61,10 @@ for extension in ['.vhdr', '.vmrk', '.eeg']:
 # (.vhdr, .vmrk, and .eeg) with the new names as provided with the second
 # argument.
 #
-# Here, we rename the elaborate filename of our downloaded files to a simple
-# "test.vhdr"
-vhdr_file = op.join(examples_dir, fname + '.vhdr')
-vhdr_file_renamed = op.join(examples_dir, 'test.vhdr')
+# Here, we rename a test file name:
+
+vhdr_file = op.join(examples_dir, 'test_NO.vhdr')
+vhdr_file_renamed = op.join(examples_dir, 'test_renamed.vhdr')
 copyfile_brainvision(vhdr_file, vhdr_file_renamed)
 
 ###############################################################################
@@ -81,8 +72,8 @@ copyfile_brainvision(vhdr_file, vhdr_file_renamed)
 # --------------------------------------------------------------
 # Finally, let's use MNE-Python to read in both, the original BrainVision data
 # as well as the renamed data. They should be the same.
-raw = read_raw_brainvision(vhdr_file)
-raw_renamed = read_raw_brainvision(vhdr_file_renamed)
+raw = mne.io.read_raw_brainvision(vhdr_file)
+raw_renamed = mne.io.read_raw_brainvision(vhdr_file_renamed)
 
 assert_array_equal(raw.get_data(), raw_renamed.get_data())
 
