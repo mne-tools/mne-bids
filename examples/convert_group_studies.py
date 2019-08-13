@@ -26,7 +26,7 @@ from mne_bids.utils import print_dir_tree
 
 ###############################################################################
 # And fetch the data.
-# .. warning :: This will download 1.6 GB of data!
+# .. warning:: This will download 1.6 GB of data!
 
 data_path = mne.datasets.spm_face.data_path()
 
@@ -54,7 +54,7 @@ for subject_id in subject_ids:
                         'SPM_CTF_MEG_example_faces{}_3D.ds'.format(subject_id))
 
     raw = mne.io.read_raw_ctf(raw_fname)
-    bids_basename = make_bids_basename(subject=str(subject_id),
+    bids_basename = make_bids_basename(subject='{:02}'.format(subject_id),
                                        session='01', task='VisualFaces')
     write_raw_bids(raw, bids_basename, output_path, event_id=event_id,
                    overwrite=True)
