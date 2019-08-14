@@ -1,12 +1,11 @@
 environment:
-# Specify version of BIDS-validator to be used, "stable", or anything that can be used with git checkout
-# NOTE: For "master" you MUST adjust VALIDATOR_EXECUTABLE to the following value:
-# "C:\\projects\\mne-bids\\bids-validator\\bids-validator\\bin\\bids-validator"
-# ... whereas for "stable", VALIDATOR_EXECUTABLE MUST be set to "n/a"
   global:
-        # can be
-        VALIDATOR_VERSION: "a7e2fddeec489a8d5db81c561a5adc89363a306e"
-        # can be "maint/0.18" ... or "master"
+        # can be "stable" or anything to be passed to "git checkout". In the
+        # latter case, you MUST adjust VALIDATOR_EXECUTABLE to the following value:
+        # "C:\\projects\\mne-bids\\bids-validator\\bids-validator\\bin\\bids-validator"
+        # ... whereas for "stable", VALIDATOR_EXECUTABLE MUST be set to "n/a"
+        VALIDATOR_VERSION: "master"
+        # can be any branch of MNE-Python (e.g., "maint/0.18", "master", ...)
         MNE_VERSION: "master"
         VALIDATOR_EXECUTABLE: "C:\\projects\\mne-bids\\bids-validator\\bids-validator\\bin\\bids-validator"
         NODEJS_VERSION: "10.16.1"
