@@ -43,9 +43,8 @@ from mne_bids.copyfiles import copyfile_brainvision
 # To demonstrate the MNE-BIDS functions, we need some testing data. Here, we
 # will use the MNE-Python testing data. Feel free to use your own BrainVision
 # data.
-# .. warning::
 #
-#    This will download 1.6 GB of data!
+# .. warning:: This will download 1.6 GB of data!
 
 data_path = mne.datasets.testing.data_path()
 examples_dir = op.join(data_path, 'Brainvision')
