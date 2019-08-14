@@ -14,7 +14,8 @@ if version is None:
     raise RuntimeError('Could not determine version')
 
 
-descr = """Experimental code for BIDS using MNE."""
+descr = ('An MNE project for organizing and formatting MEG and EEG data '
+         'according to the BIDS specification.')
 
 DISTNAME = 'mne-bids'
 DESCRIPTION = descr
