@@ -54,7 +54,9 @@ def fetch_faces_data(data_path=None, repo='ds000117', subject_ids=[1]):
         src_url = ('http://openfmri.s3.amazonaws.com/tarballs/'
                    'ds117_R0.1.1_{}_raw.tgz'.format(sub_str))
         tar_fname = op.join(data_path, repo, sub_str + '.tgz')
-        _fetch_file(url=src_url, file_name=tar_fname, print_destination=True)
+        if not op.exists(tar_fname):
+            _fetch_file(url=src_url, file_name=tar_fname,
+                        print_destination=True)
 
         # Unpack the downloaded archive to the correct location
         tf = tarfile.open(tar_fname)
