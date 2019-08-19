@@ -76,6 +76,14 @@ def get_entity_vals(bids_root, entity_key):
         List of the values associated with an `entity_key` in the BIDS dataset
         pointed to by `bids_root`.
 
+    Examples
+    --------
+    >>> bids_root = '~/bids_datasets/eeg_matchingpennies'
+    >>> entity_key = 'sub'
+    >>> get_entity_vals(bids_root, entity_key)
+    ['05', '06', '07', '08', '09', '10', '11']
+
+
     References
     ----------
     .. [1] https://bids-specification.rtfd.io/en/latest/02-common-principles.html#file-name-structure  # noqa: E501
