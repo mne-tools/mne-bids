@@ -35,26 +35,36 @@ def fetch_faces_data(data_path=None, repo='ds000117', subject_ids=[1]):
         data is stored.
 
     """
-    if not data_path:
+    if data_path is None:
         home = os.path.expanduser('~')
         data_path = os.path.join(home, 'mne_data', 'mne_bids_examples')
-        if not os.path.exists(data_path):
-            os.makedirs(data_path)
+    if not os.path.exists(data_path):
+        os.makedirs(data_path)
 
+    target_dir = op.join(data_path, repo)
+    os.makedirs(target_dir, exist_ok=True)
     for subject_id in subject_ids:  # pragma: no cover
+
+        # If we have data for that subject already, skip
+        sub_str = 'sub{:03}'.format(subject_id)
+        if op.exists(op.join(target_dir, sub_str)):
+            continue
+
+        # Else, download it
         src_url = ('http://openfmri.s3.amazonaws.com/tarballs/'
-                   'ds117_R0.1.1_sub%03d_raw.tgz' % subject_id)
-        tar_fname = op.join(data_path, repo + '.tgz')
-        target_dir = op.join(data_path, repo)
-        if not op.exists(target_dir):
-            if not op.exists(tar_fname):
-                _fetch_file(url=src_url, file_name=tar_fname,
-                            print_destination=True, resume=True, timeout=10.)
-            tf = tarfile.open(tar_fname)
-            print('Extracting files. This may take a while ...')
-            tf.extractall(path=data_path)
-            shutil.move(op.join(data_path, 'ds117'), target_dir)
-            os.remove(tar_fname)
+                   'ds117_R0.1.1_{}_raw.tgz'.format(sub_str))
+        tar_fname = op.join(data_path, repo, sub_str + '.tgz')
+        _fetch_file(url=src_url, file_name=tar_fname, print_destination=True)
+
+        # Unpack the downloaded archive to the correct location
+        tf = tarfile.open(tar_fname)
+        print('Extracting files. This may take a while ...')
+        tf.extractall(path=data_path)  # will extract the 'ds117' directory
+        shutil.move(op.join(data_path, 'ds117', sub_str), target_dir)
+
+        # Clean up to get ready to download next subject
+        shutil.rmtree(op.join(data_path, 'ds117'))
+        os.remove(tar_fname)
 
     return data_path
 
