@@ -37,7 +37,7 @@ Utils (:py:mod:`mne_bids.utils`)
    :toctree: generated/
 
    print_dir_tree
-   get_values_for_key
+   get_entity_vals
    get_kinds
 
 Copyfiles (:py:mod:`mne_bids.copyfiles`)
