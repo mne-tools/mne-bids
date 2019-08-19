@@ -21,9 +21,9 @@ DISTNAME = 'mne-bids'
 DESCRIPTION = descr
 MAINTAINER = 'Mainak Jas'
 MAINTAINER_EMAIL = 'mainakjas@gmail.com'
-URL = 'https://mne-tools.github.io/mne-bids/'
+URL = 'https://mne.tools/mne-bids/'
 LICENSE = 'BSD (3-clause)'
-DOWNLOAD_URL = 'http://github.com/mne-tools/mne-bids'
+DOWNLOAD_URL = 'https://github.com/mne-tools/mne-bids.git'
 VERSION = version
 
 if __name__ == "__main__":
@@ -51,5 +51,10 @@ if __name__ == "__main__":
           ],
           platforms='any',
           packages=find_packages(),
-          scripts=['bin/mne_bids']
+          scripts=['bin/mne_bids'],
+          project_urls={
+              'Documentation': 'https://mne.tools/mne-bids',
+              'Bug Reports': 'https://github.com/mne-tools/mne-bids/issues',
+              'Source': 'https://github.com/mne-tools/mne-bids',
+          },
           )
