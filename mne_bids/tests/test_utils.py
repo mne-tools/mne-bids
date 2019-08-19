@@ -19,7 +19,7 @@ from mne_bids.utils import (_check_types, print_dir_tree, _age_on_date,
                             _infer_eeg_placement_scheme, _handle_kind,
                             _find_matching_sidecar, _parse_ext,
                             _get_ch_type_mapping, _parse_bids_filename,
-                            _find_best_candidates, get_values_for_key,
+                            _find_best_candidates, get_entity_vals,
                             get_kinds)
 
 
@@ -68,17 +68,17 @@ def test_get_keys(return_bids_test_dir):
     assert kinds == ['meg']
 
 
-def test_get_values_for_key(return_bids_test_dir):
+def test_get_entity_vals(return_bids_test_dir):
     """Test getting a list of entities."""
     bids_root = return_bids_test_dir
     with pytest.raises(ValueError, match='`key` must be one of'):
-        get_values_for_key(bids_root, key='bogus')
+        get_entity_vals(bids_root, entity_key='bogus')
 
-    assert get_values_for_key(bids_root, 'sub') == [subject_id]
-    assert get_values_for_key(bids_root, 'ses') == [session_id]
-    assert get_values_for_key(bids_root, 'run') == [run, '02']
-    assert get_values_for_key(bids_root, 'acq') == []
-    assert get_values_for_key(bids_root, 'task') == [task]
+    assert get_entity_vals(bids_root, 'sub') == [subject_id]
+    assert get_entity_vals(bids_root, 'ses') == [session_id]
+    assert get_entity_vals(bids_root, 'run') == [run, '02']
+    assert get_entity_vals(bids_root, 'acq') == []
+    assert get_entity_vals(bids_root, 'task') == [task]
 
 
 def test_get_ch_type_mapping():

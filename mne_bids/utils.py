@@ -55,38 +55,40 @@ def get_kinds(bids_root):
     return kinds
 
 
-def get_values_for_key(bids_root, key):
-    """Get list of values for a key in a BIDS dataset.
+def get_entity_vals(bids_root, entity_key):
+    """Get list of values associated with an `entity_key` in a BIDS dataset.
 
     BIDS file names are organized by key-value pairs called "entities" [1]_.
+    With this function, you can get all values for an entity indexed by its
+    key.
 
     Parameters
     ----------
     bids_root : str
         Path to the root of the BIDS directory.
-    key : str
-        The name of the key to search for. Can be one of
+    entity_key : str
+        The name of the entity key to search for. Can be one of
         ['sub', 'ses', 'run', 'acq'].
 
     Returns
     -------
-    value_list : list of str
-        List of the values associated with a `key` in the BIDS dataset pointed
-        to by `bids_root`.
+    entity_vals : list of str
+        List of the values associated with an `entity_key` in the BIDS dataset
+        pointed to by `bids_root`.
 
     References
     ----------
     .. [1] https://bids-specification.rtfd.io/en/latest/02-common-principles.html#file-name-structure  # noqa: E501
 
     """
-    accepted_keys = ('sub', 'ses', 'task', 'run', 'acq')
-    if key not in accepted_keys:
+    entities = ('sub', 'ses', 'task', 'run', 'acq')
+    if entity_key not in entities:
         raise ValueError('`key` must be one of "{}". Got "{}"'
-                         .format(accepted_keys, key))
+                         .format(entities, entity_key))
 
-    p = re.compile(r'{}-(.*?)_'.format(key))
+    p = re.compile(r'{}-(.*?)_'.format(entity_key))
     value_list = list()
-    for filename in Path(bids_root).rglob('*{}-*_*'.format(key)):
+    for filename in Path(bids_root).rglob('*{}-*_*'.format(entity_key)):
         match = p.search(filename.stem)
         value = match.group(1)
         if value not in value_list:
