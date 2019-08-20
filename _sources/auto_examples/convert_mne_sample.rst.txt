@@ -1,11 +1,13 @@
 .. note::
     :class: sphx-glr-download-link-note
 
-    Click :ref:`here <sphx_glr_download_auto_examples_convert_mne_sample.py>` to download the full example code
+    Click :ref:`here <sphx_glr_download_auto_examples_convert_mne_sample.py>` to download the full example code or run this example in your browser via Binder
 .. rst-class:: sphx-glr-example-title
 
 .. _sphx_glr_auto_examples_convert_mne_sample.py:
 
+
+.. _ex-convert-mne-sample:
 
 ======================================
 Convert MNE sample data to BIDS format
@@ -21,7 +23,8 @@ BIDS-compatible folder.
     # Authors: Mainak Jas <mainak.jas@telecom-paristech.fr>
     #          Alexandre Gramfort <alexandre.gramfort@telecom-paristech.fr>
     #          Teon Brooks <teon.brooks@gmail.com>
-
+    #          Stefan Appelhoff <stefan.appelhoff@mailbox.org>
+    #
     # License: BSD (3-clause)
 
 
@@ -77,15 +80,7 @@ And define the paths and event_id dictionary.
  .. code-block:: none
 
     Using default location ~/mne_data for sample...
-    Downloading archive MNE-sample-data-processed.tar.gz to /home/circleci/mne_data
-    Downloading https://files.osf.io/v1/resources/rxvq7/providers/osfstorage/59c0e26f9ad5a1025c4ab159?action=download&version=4&direct (1.54 GB)
 
-    Verifying hash fc2d5b9eb0a144b1d6ba84dc3b983602.
-    Decompressing the archive: /home/circleci/mne_data/MNE-sample-data-processed.tar.gz
-    (please be patient, this can take some time)
-    Successfully extracted to: ['/home/circleci/mne_data/MNE-sample-data']
-    Attempting to create new mne-python configuration file:
-    /home/circleci/.mne/mne-python.json
 
 
 Specify the raw_file and events_data and run the BIDS conversion.
@@ -218,6 +213,8 @@ Specify the raw_file and events_data and run the BIDS conversion.
         "Name": " ",
         "BIDSVersion": "1.2.0"
     }
+    /home/circleci/project/mne_bids/write.py:407: UserWarning: No line frequency found, defaulting to 50 Hz
+      warn('No line frequency found, defaulting to 50 Hz')
     Reading 0 ... 166799  =      0.000 ...   277.714 secs...
 
     Writing '/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.json'...
@@ -252,8 +249,10 @@ Specify the raw_file and events_data and run the BIDS conversion.
     MEG 0122        MEGGRADPLANAR   T/m     0.10000000149011612     172.17630004882812      Planar Gradiometer      600.614990234375        good
     MEG 0123        MEGGRADPLANAR   T/m     0.10000000149011612     172.17630004882812      Planar Gradiometer      600.614990234375        good
     Copying data files to /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif
+    Overwriting existing file.
     Writing /home/circleci/mne_data/MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif
     Closing /home/circleci/mne_data/MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif [done]
+
 
 
 Specify some empty room data and run BIDS conversion on it.
@@ -375,6 +374,7 @@ Specify some empty room data and run BIDS conversion on it.
     Closing /home/circleci/mne_data/MNE-sample-data-bids/sub-emptyroom/ses-20021206/meg/sub-emptyroom_ses-20021206_task-noise_meg.fif [done]
 
 
+
 Now let's see the structure of the BIDS folder we created.
 
 
@@ -392,26 +392,30 @@ Now let's see the structure of the BIDS folder we created.
 
  .. code-block:: none
 
-    |MNE-sample-data-bids
+    |MNE-sample-data-bids/
+    |--- dataset_description.json
     |--- participants.tsv
     |--- participants.json
-    |--- dataset_description.json
-    |--- sub-01
-    |------ ses-01
-    |--------- sub-01_ses-01_scans.tsv
-    |--------- meg
-    |------------ sub-01_ses-01_task-audiovisual_run-01_events.tsv
-    |------------ sub-01_ses-01_task-audiovisual_run-01_meg.fif
-    |------------ sub-01_ses-01_task-audiovisual_run-01_meg.json
-    |------------ sub-01_ses-01_coordsystem.json
-    |------------ sub-01_ses-01_task-audiovisual_run-01_channels.tsv
-    |--- sub-emptyroom
-    |------ ses-20021206
+    |--- sub-emptyroom/
+    |------ ses-20021206/
     |--------- sub-emptyroom_ses-20021206_scans.tsv
-    |--------- meg
-    |------------ sub-emptyroom_ses-20021206_task-noise_channels.tsv
-    |------------ sub-emptyroom_ses-20021206_task-noise_meg.json
+    |--------- meg/
     |------------ sub-emptyroom_ses-20021206_task-noise_meg.fif
+    |------------ sub-emptyroom_ses-20021206_task-noise_meg.json
+    |------------ sub-emptyroom_ses-20021206_task-noise_channels.tsv
+    |--- sub-01/
+    |------ ses-01/
+    |--------- sub-01_ses-01_scans.tsv
+    |--------- meg/
+    |------------ sub-01_ses-01_task-audiovisual_run-01_meg.json
+    |------------ sub-01_ses-01_task-audiovisual_run-01_events.tsv
+    |------------ sub-01_ses-01_task-audiovisual_run-01_channels.tsv
+    |------------ sub-01_ses-01_task-audiovisual_run-01_meg.fif
+    |------------ sub-01_ses-01_coordsystem.json
+    |--------- anat/
+    |------------ sub-01_ses-01_T1w.nii.gz
+    |------------ sub-01_ses-01_T1w.json
+
 
 
 Finally, we can read the BIDS data we created as well.
@@ -419,7 +423,8 @@ Finally, we can read the BIDS data we created as well.
 
 .. code-block:: default
 
-    raw, events, event_id = read_raw_bids(bids_basename + '_meg.fif', output_path)
+    bids_fname = bids_basename + '_meg.fif'
+    raw = read_raw_bids(bids_fname, output_path)
 
 
 
@@ -431,7 +436,7 @@ Finally, we can read the BIDS data we created as well.
 
  .. code-block:: none
 
-    Opening raw data file /home/circleci/mne_data/MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif...
+    Opening raw data file /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif...
         Read a total of 3 projection items:
             PCA-v1 (1 x 102)  idle
             PCA-v2 (1 x 102)  idle
@@ -439,6 +444,11 @@ Finally, we can read the BIDS data we created as well.
         Range : 25800 ... 192599 =     42.956 ...   320.670 secs
     Ready.
     Current compensation grade : 0
+    Reading events from /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_events.tsv.
+    Reading channel info from /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_channels.tsv.
+    /home/circleci/project/mne_bids/read.py:165: RuntimeWarning: The unit for channel(s) STI 001, STI 002, STI 003, STI 004, STI 005, STI 006, STI 014, STI 015, STI 016 has changed from V to NA.
+      raw.set_channel_types(channel_type_dict)
+
 
 
 The data is already in a convenient form to create epochs and evokeds.
@@ -446,6 +456,7 @@ The data is already in a convenient form to create epochs and evokeds.
 
 .. code-block:: default
 
+    events, event_id = mne.events_from_annotations(raw)
     epochs = mne.Epochs(raw, events, event_id)
     epochs['Auditory'].average().plot()
 
@@ -461,6 +472,7 @@ The data is already in a convenient form to create epochs and evokeds.
 
  .. code-block:: none
 
+    Used Annotations descriptions: ['Auditory/Left', 'Auditory/Right', 'Button', 'Smiley', 'Visual/Left', 'Visual/Right']
     320 matching events found
     Applying baseline correction (mode: mean)
     Not setting metadata
@@ -469,9 +481,10 @@ The data is already in a convenient form to create epochs and evokeds.
 
 
 
+
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 1 minutes  11.586 seconds)
+   **Total running time of the script:** ( 0 minutes  7.291 seconds)
 
 
 .. _sphx_glr_download_auto_examples_convert_mne_sample.py:
@@ -482,6 +495,12 @@ The data is already in a convenient form to create epochs and evokeds.
  .. container:: sphx-glr-footer
     :class: sphx-glr-footer-example
 
+
+  .. container:: binder-badge
+
+    .. image:: https://mybinder.org/badge_logo.svg
+      :target: https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=notebooks/auto_examples/convert_mne_sample.ipynb
+      :width: 150 px
 
 
   .. container:: sphx-glr-download
@@ -499,4 +518,4 @@ The data is already in a convenient form to create epochs and evokeds.
 
  .. rst-class:: sphx-glr-signature
 
-    `Gallery generated by Sphinx-Gallery <https://sphinx-gallery.readthedocs.io>`_
+    `Gallery generated by Sphinx-Gallery <https://sphinx-gallery.github.io>`_

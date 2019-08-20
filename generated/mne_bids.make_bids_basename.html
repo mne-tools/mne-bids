@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>mne_bids.make_bids_basename &#8212; mne_bids 0.2 documentation</title>
+    <title>mne_bids.make_bids_basename &#8212; mne_bids 0.3 documentation</title>
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
@@ -36,14 +36,15 @@
         </button>
         <a class="navbar-brand" href="../index.html">
           MNE-BIDS</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.2</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.3</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
           <ul class="nav navbar-nav">
             
-                <li><a href="../auto_examples/index.html">Gallery</a></li>
+                <li><a href="../auto_examples/index.html">Examples</a></li>
                 <li><a href="../api.html">API</a></li>
+                <li><a href="cli.html">CLI</a></li>
                 <li><a href="../whats_new.html">What's new</a></li>
                 <li><a href="https://github.com/mne-tools/mne-bids">Github</a></li>
             
@@ -59,30 +60,12 @@
       aria-labelledby="dLabelGlobalToc"></ul>
 </li>
               
-                <li class="dropdown">
-  <a role="button"
-     id="dLabelLocalToc"
-     data-toggle="dropdown"
-     data-target="#"
-     href="#">Page <b class="caret"></b></a>
-  <ul class="dropdown-menu localtoc"
-      role="menu"
-      aria-labelledby="dLabelLocalToc"><ul>
-<li><a class="reference internal" href="#">mne_bids.make_bids_basename</a></li>
-</ul>
-</ul>
-</li>
-              
             
             
             
             
             
-              <li class="hidden-sm">
-<div id="sourcelink">
-  <a href="../_sources/generated/mne_bids.make_bids_basename.rst.txt"
-     rel="nofollow">Source</a>
-</div></li>
+              <li class="hidden-sm"></li>
             
           </ul>
 
@@ -108,7 +91,7 @@
 <h1>mne_bids.make_bids_basename<a class="headerlink" href="#mne-bids-make-bids-basename" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
 <dt id="mne_bids.make_bids_basename">
-<code class="descclassname">mne_bids.</code><code class="descname">make_bids_basename</code><span class="sig-paren">(</span><em>subject=None</em>, <em>session=None</em>, <em>task=None</em>, <em>acquisition=None</em>, <em>run=None</em>, <em>processing=None</em>, <em>recording=None</em>, <em>space=None</em>, <em>prefix=None</em>, <em>suffix=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/write.html#make_bids_basename"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.make_bids_basename" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">mne_bids.</code><code class="sig-name descname">make_bids_basename</code><span class="sig-paren">(</span><em class="sig-param">subject=None</em>, <em class="sig-param">session=None</em>, <em class="sig-param">task=None</em>, <em class="sig-param">acquisition=None</em>, <em class="sig-param">run=None</em>, <em class="sig-param">processing=None</em>, <em class="sig-param">recording=None</em>, <em class="sig-param">space=None</em>, <em class="sig-param">prefix=None</em>, <em class="sig-param">suffix=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/write.html#make_bids_basename"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.make_bids_basename" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a partial/full BIDS filename from its component parts.</p>
 <p>BIDS filename prefixes have one or more pieces of metadata in them. They
 must follow a particular order, which is followed by this function. This
@@ -139,7 +122,7 @@ example, electrode location TSV files do not need a task field.</p>
 <dt><strong>prefix</strong><span class="classifier">str | None</span></dt><dd><p>The prefix for the filename to be created. E.g., a path to the folder
 in which you wish to create a file with this name.</p>
 </dd>
-<dt><strong>suffix</strong><span class="classifier">str | None</span></dt><dd><p>The suffix of a file that begins with this prefix. E.g., ‘audio.wav’.</p>
+<dt><strong>suffix</strong><span class="classifier">str | None</span></dt><dd><p>The suffix for the filename to be created. E.g., ‘audio.wav’.</p>
 </dd>
 </dl>
 </dd>
@@ -151,7 +134,7 @@ in which you wish to create a file with this name.</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">make_bids_basename</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="s1">&#39;two&#39;</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="s1">&#39;mytask&#39;</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;data.csv&#39;</span><span class="p">))</span> <span class="c1"># noqa</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">make_bids_basename</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="s1">&#39;two&#39;</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="s1">&#39;mytask&#39;</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;data.csv&#39;</span><span class="p">))</span> <span class="c1"># noqa: E501</span>
 <span class="go">sub-test_ses-two_task-mytask_data.csv</span>
 </pre></div>
 </div>
@@ -171,8 +154,8 @@ in which you wish to create a file with this name.</p>
       
     </p>
     <p>
-        &copy; Copyright 2019, MNE Developers. Last updated on 2019-04-26.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.0.1.<br/>
+        &copy; Copyright 2019, MNE Developers. Last updated on 2019-08-20.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.<br/>
     </p>
   </div>
 </footer>

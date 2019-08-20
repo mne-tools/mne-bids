@@ -2,24 +2,60 @@
 
 .. _whats_new:
 
+
 What's new?
 ===========
 
+Here we list a changelog of MNE-BIDS.
+
+.. contents:: Contents
+   :local:
+   :depth: 3
+
 .. currentmodule:: mne_bids
 
-.. _current:
+.. _changes_0_3:
 
-Current
--------
+Version 0.3
+-----------
 
 Changelog
 ~~~~~~~~~
 
+- New function :func:`mne_bids.utils.get_kinds` for getting data types from a BIDS dataset, by `Stefan Appelhoff`_ (`#253 <https://github.com/mne-tools/mne-bids/pull/253>`_)
+- New function :func:`mne_bids.utils.get_entity_vals` allows to get a list of instances of a certain entity in a BIDS directory, by `Mainak Jas`_ and `Stefan Appelhoff`_ (`#252 <https://github.com/mne-tools/mne-bids/pull/252>`_)
+- :func:`mne_bids.utils.print_dir_tree` now accepts an argument :code:`max_depth` which can limit the depth until which the directory tree is printed, by `Stefan Appelhoff`_ (`#245 <https://github.com/mne-tools/mne-bids/pull/245>`_)
+- New command line function exposed :code:`cp` for renaming/copying files including automatic doc generation "CLI", by `Stefan Appelhoff`_ (`#225 <https://github.com/mne-tools/mne-bids/pull/225>`_)
+- :func:`read_raw_bids` now also reads channels.tsv files accompanying a raw BIDS file and sets the channel types accordingly, by `Stefan Appelhoff`_ (`#219 <https://github.com/mne-tools/mne-bids/pull/219>`_)
+- Add example :code:`convert_mri_and_trans` for using :func:`get_head_mri_trans` and :func:`write_anat`, by `Stefan Appelhoff`_ (`#211 <https://github.com/mne-tools/mne-bids/pull/211>`_)
+- :func:`get_head_mri_trans` allows retrieving a :code:`trans` object from a BIDS dataset that contains MEG and T1 weighted MRI data, by `Stefan Appelhoff`_ (`#211 <https://github.com/mne-tools/mne-bids/pull/211>`_)
+- :func:`write_anat` allows writing T1 weighted MRI scans for subjects and optionally creating a T1w.json sidecar from a supplied :code:`trans` object, by `Stefan Appelhoff`_ (`#211 <https://github.com/mne-tools/mne-bids/pull/211>`_)
+- :func:`read_raw_bids` will return the the raw object with :code:`raw.info['bads']` already populated, whenever a :code:`channels.tsv` file is present, by `Stefan Appelhoff`_ (`#209 <https://github.com/mne-tools/mne-bids/pull/209>`_)
+- :func:`read_raw_bids` is now more likely to find event and channel sidecar json files, by `Marijn van Vliet`_ (`#233 <https://github.com/mne-tools/mne-bids/pull/233>`_)
+
 Bug
 ~~~
 
+- Fixed bug in :func:`mne_bids.datasets.fetch_faces_data` where downloading multiple subjects was impossible, by `Stefan Appelhoff`_ (`#262 <https://github.com/mne-tools/mne-bids/pull/262>`_)
+- Fixed bug where :func:`read_raw_bids` would throw a ValueError upon encountering strings in the "onset" or "duration" column of events.tsv files, by `Stefan Appelhoff`_ (`#234 <https://github.com/mne-tools/mne-bids/pull/234>`_)
+- Allow raw data from KIT systems to have two marker files specified, by `Matt Sanderson`_ (`#173 <https://github.com/mne-tools/mne-bids/pull/173>`_)
+
 API
 ~~~
+
+- :func:`read_raw_bids` no longer optionally returns :code:`events` and :code:`event_id` but returns the raw object with :code:`mne.Annotations`, whenever an :code:`events.tsv` file is present, by `Stefan Appelhoff`_ (`#209 <https://github.com/mne-tools/mne-bids/pull/209>`_)
+
+Authors
+~~~~~~~
+
+People who contributed to this release (in alphabetical order):
+
+* Alexandre Gramfort
+* Mainak Jas
+* Marijn van Vliet
+* Matt Sanderson
+* Stefan Appelhoff
+* Teon Brooks
 
 .. _changes_0_2:
 
@@ -132,3 +168,4 @@ People who contributed to this release (in alphabetical order):
 .. _Dominik Welke: https://github.com/dominikwelke
 .. _Maximilien Chaumon: https://github.com/dnacombo
 .. _Ezequiel Mikulan: https://github.com/ezemikulan
+.. _Marijn van Vliet: https://github.com/wmvanvliet

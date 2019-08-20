@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>mne_bids.write &#8212; mne_bids 0.2 documentation</title>
+    <title>mne_bids.write &#8212; mne_bids 0.3 documentation</title>
     <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/gallery.css" />
@@ -36,14 +36,15 @@
         </button>
         <a class="navbar-brand" href="../../index.html">
           MNE-BIDS</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.2</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.3</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
           <ul class="nav navbar-nav">
             
-                <li><a href="../../auto_examples/index.html">Gallery</a></li>
+                <li><a href="../../auto_examples/index.html">Examples</a></li>
                 <li><a href="../../api.html">API</a></li>
+                <li><a href="../../generated/cli.html">CLI</a></li>
                 <li><a href="../../whats_new.html">What's new</a></li>
                 <li><a href="https://github.com/mne-tools/mne-bids">Github</a></li>
             
@@ -57,17 +58,6 @@
   <ul class="dropdown-menu globaltoc"
       role="menu"
       aria-labelledby="dLabelGlobalToc"></ul>
-</li>
-              
-                <li class="dropdown">
-  <a role="button"
-     id="dLabelLocalToc"
-     data-toggle="dropdown"
-     data-target="#"
-     href="#">Page <b class="caret"></b></a>
-  <ul class="dropdown-menu localtoc"
-      role="menu"
-      aria-labelledby="dLabelLocalToc"></ul>
 </li>
               
             
@@ -109,35 +99,36 @@
 <span class="c1"># License: BSD (3-clause)</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">os.path</span> <span class="k">as</span> <span class="nn">op</span>
-
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">warnings</span> <span class="k">import</span> <span class="n">warn</span>
 <span class="kn">import</span> <span class="nn">shutil</span> <span class="k">as</span> <span class="nn">sh</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">defaultdict</span><span class="p">,</span> <span class="n">OrderedDict</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">numpy.testing</span> <span class="k">import</span> <span class="n">assert_array_equal</span>
-
+<span class="kn">from</span> <span class="nn">mne.transforms</span> <span class="k">import</span> <span class="n">_get_trans</span><span class="p">,</span> <span class="n">apply_trans</span>
 <span class="kn">from</span> <span class="nn">mne</span> <span class="k">import</span> <span class="n">Epochs</span>
 <span class="kn">from</span> <span class="nn">mne.io.constants</span> <span class="k">import</span> <span class="n">FIFF</span>
 <span class="kn">from</span> <span class="nn">mne.io.pick</span> <span class="k">import</span> <span class="n">channel_type</span>
 <span class="kn">from</span> <span class="nn">mne.io</span> <span class="k">import</span> <span class="n">BaseRaw</span>
 <span class="kn">from</span> <span class="nn">mne.channels.channels</span> <span class="k">import</span> <span class="n">_unit2human</span>
-<span class="kn">from</span> <span class="nn">mne.utils</span> <span class="k">import</span> <span class="n">check_version</span>
+<span class="kn">from</span> <span class="nn">mne.utils</span> <span class="k">import</span> <span class="n">check_version</span><span class="p">,</span> <span class="n">has_nibabel</span>
 
-<span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span>
-<span class="kn">from</span> <span class="nn">warnings</span> <span class="k">import</span> <span class="n">warn</span>
+<span class="kn">from</span> <span class="nn">mne_bids.pick</span> <span class="k">import</span> <span class="n">coil_type</span>
+<span class="kn">from</span> <span class="nn">mne_bids.utils</span> <span class="k">import</span> <span class="p">(</span><span class="n">_write_json</span><span class="p">,</span> <span class="n">_write_tsv</span><span class="p">,</span> <span class="n">_read_events</span><span class="p">,</span> <span class="n">_mkdir_p</span><span class="p">,</span>
+                            <span class="n">_age_on_date</span><span class="p">,</span> <span class="n">_infer_eeg_placement_scheme</span><span class="p">,</span>
+                            <span class="n">_check_key_val</span><span class="p">,</span>
+                            <span class="n">_parse_bids_filename</span><span class="p">,</span> <span class="n">_handle_kind</span><span class="p">,</span> <span class="n">_check_types</span><span class="p">,</span>
+                            <span class="n">_get_mrk_meas_date</span><span class="p">,</span> <span class="n">_extract_landmarks</span><span class="p">,</span> <span class="n">_parse_ext</span><span class="p">,</span>
+                            <span class="n">_get_ch_type_mapping</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">mne_bids.copyfiles</span> <span class="k">import</span> <span class="p">(</span><span class="n">copyfile_brainvision</span><span class="p">,</span> <span class="n">copyfile_eeglab</span><span class="p">,</span>
+                                <span class="n">copyfile_ctf</span><span class="p">,</span> <span class="n">copyfile_bti</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">mne_bids.read</span> <span class="k">import</span> <span class="n">reader</span>
+<span class="kn">from</span> <span class="nn">mne_bids.tsv_handler</span> <span class="k">import</span> <span class="n">_from_tsv</span><span class="p">,</span> <span class="n">_combine</span><span class="p">,</span> <span class="n">_drop</span><span class="p">,</span> <span class="n">_contains_row</span>
 
-<span class="kn">from</span> <span class="nn">.pick</span> <span class="k">import</span> <span class="n">coil_type</span>
-<span class="kn">from</span> <span class="nn">.utils</span> <span class="k">import</span> <span class="p">(</span><span class="n">_write_json</span><span class="p">,</span> <span class="n">_write_tsv</span><span class="p">,</span> <span class="n">_read_events</span><span class="p">,</span> <span class="n">_mkdir_p</span><span class="p">,</span>
-                    <span class="n">_age_on_date</span><span class="p">,</span> <span class="n">_infer_eeg_placement_scheme</span><span class="p">,</span> <span class="n">_check_key_val</span><span class="p">,</span>
-                    <span class="n">_parse_bids_filename</span><span class="p">,</span> <span class="n">_handle_kind</span><span class="p">,</span> <span class="n">_check_types</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">.copyfiles</span> <span class="k">import</span> <span class="p">(</span><span class="n">copyfile_brainvision</span><span class="p">,</span> <span class="n">copyfile_eeglab</span><span class="p">,</span> <span class="n">copyfile_ctf</span><span class="p">,</span>
-                        <span class="n">copyfile_bti</span><span class="p">)</span>
-
-<span class="kn">from</span> <span class="nn">.read</span> <span class="k">import</span> <span class="n">_parse_ext</span><span class="p">,</span> <span class="n">reader</span>
-<span class="kn">from</span> <span class="nn">.tsv_handler</span> <span class="k">import</span> <span class="n">_from_tsv</span><span class="p">,</span> <span class="n">_combine</span><span class="p">,</span> <span class="n">_drop</span><span class="p">,</span> <span class="n">_contains_row</span>
-
-<span class="kn">from</span> <span class="nn">.config</span> <span class="k">import</span> <span class="p">(</span><span class="n">ALLOWED_KINDS</span><span class="p">,</span> <span class="n">ORIENTATION</span><span class="p">,</span> <span class="n">UNITS</span><span class="p">,</span> <span class="n">MANUFACTURERS</span><span class="p">,</span>
-                     <span class="n">IGNORED_CHANNELS</span><span class="p">,</span> <span class="n">ALLOWED_EXTENSIONS</span><span class="p">,</span> <span class="n">BIDS_VERSION</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">mne_bids.config</span> <span class="k">import</span> <span class="p">(</span><span class="n">ORIENTATION</span><span class="p">,</span> <span class="n">UNITS</span><span class="p">,</span> <span class="n">MANUFACTURERS</span><span class="p">,</span>
+                             <span class="n">IGNORED_CHANNELS</span><span class="p">,</span> <span class="n">ALLOWED_EXTENSIONS</span><span class="p">,</span>
+                             <span class="n">BIDS_VERSION</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">_channels_tsv</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
@@ -156,20 +147,18 @@
 <span class="sd">        Set verbose output to true or false.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">map_chs</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="s1">&#39;OTHER&#39;</span><span class="p">)</span>
-    <span class="n">map_chs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">meggradaxial</span><span class="o">=</span><span class="s1">&#39;MEGGRADAXIAL&#39;</span><span class="p">,</span>
-                   <span class="n">megrefgradaxial</span><span class="o">=</span><span class="s1">&#39;MEGREFGRADAXIAL&#39;</span><span class="p">,</span>
-                   <span class="n">meggradplanar</span><span class="o">=</span><span class="s1">&#39;MEGGRADPLANAR&#39;</span><span class="p">,</span>
-                   <span class="n">megmag</span><span class="o">=</span><span class="s1">&#39;MEGMAG&#39;</span><span class="p">,</span> <span class="n">megrefmag</span><span class="o">=</span><span class="s1">&#39;MEGREFMAG&#39;</span><span class="p">,</span>
-                   <span class="n">eeg</span><span class="o">=</span><span class="s1">&#39;EEG&#39;</span><span class="p">,</span> <span class="n">misc</span><span class="o">=</span><span class="s1">&#39;MISC&#39;</span><span class="p">,</span> <span class="n">stim</span><span class="o">=</span><span class="s1">&#39;TRIG&#39;</span><span class="p">,</span> <span class="n">emg</span><span class="o">=</span><span class="s1">&#39;EMG&#39;</span><span class="p">,</span>
-                   <span class="n">ecog</span><span class="o">=</span><span class="s1">&#39;ECOG&#39;</span><span class="p">,</span> <span class="n">seeg</span><span class="o">=</span><span class="s1">&#39;SEEG&#39;</span><span class="p">,</span> <span class="n">eog</span><span class="o">=</span><span class="s1">&#39;EOG&#39;</span><span class="p">,</span> <span class="n">ecg</span><span class="o">=</span><span class="s1">&#39;ECG&#39;</span><span class="p">)</span>
+    <span class="c1"># Get channel type mappings between BIDS and MNE nomenclatures</span>
+    <span class="n">map_chs</span> <span class="o">=</span> <span class="n">_get_ch_type_mapping</span><span class="p">(</span><span class="n">fro</span><span class="o">=</span><span class="s1">&#39;mne&#39;</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="s1">&#39;bids&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Prepare the descriptions for each channel type</span>
     <span class="n">map_desc</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="s1">&#39;Other type of channel&#39;</span><span class="p">)</span>
     <span class="n">map_desc</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">meggradaxial</span><span class="o">=</span><span class="s1">&#39;Axial Gradiometer&#39;</span><span class="p">,</span>
                     <span class="n">megrefgradaxial</span><span class="o">=</span><span class="s1">&#39;Axial Gradiometer Reference&#39;</span><span class="p">,</span>
                     <span class="n">meggradplanar</span><span class="o">=</span><span class="s1">&#39;Planar Gradiometer&#39;</span><span class="p">,</span>
                     <span class="n">megmag</span><span class="o">=</span><span class="s1">&#39;Magnetometer&#39;</span><span class="p">,</span>
                     <span class="n">megrefmag</span><span class="o">=</span><span class="s1">&#39;Magnetometer Reference&#39;</span><span class="p">,</span>
-                    <span class="n">stim</span><span class="o">=</span><span class="s1">&#39;Trigger&#39;</span><span class="p">,</span> <span class="n">eeg</span><span class="o">=</span><span class="s1">&#39;ElectroEncephaloGram&#39;</span><span class="p">,</span>
+                    <span class="n">stim</span><span class="o">=</span><span class="s1">&#39;Trigger&#39;</span><span class="p">,</span>
+                    <span class="n">eeg</span><span class="o">=</span><span class="s1">&#39;ElectroEncephaloGram&#39;</span><span class="p">,</span>
                     <span class="n">ecog</span><span class="o">=</span><span class="s1">&#39;Electrocorticography&#39;</span><span class="p">,</span>
                     <span class="n">seeg</span><span class="o">=</span><span class="s1">&#39;StereoEEG&#39;</span><span class="p">,</span>
                     <span class="n">ecg</span><span class="o">=</span><span class="s1">&#39;ElectroCardioGram&#39;</span><span class="p">,</span>
@@ -453,17 +442,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">dig</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;dig&#39;</span><span class="p">]</span>
-    <span class="n">coords</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
-    <span class="n">fids</span> <span class="o">=</span> <span class="p">{</span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;ident&#39;</span><span class="p">]:</span> <span class="n">d</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">dig</span> <span class="k">if</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;kind&#39;</span><span class="p">]</span> <span class="o">==</span>
-            <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_POINT_CARDINAL</span><span class="p">}</span>
-    <span class="k">if</span> <span class="n">fids</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_POINT_NASION</span> <span class="ow">in</span> <span class="n">fids</span><span class="p">:</span>
-            <span class="n">coords</span><span class="p">[</span><span class="s1">&#39;NAS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fids</span><span class="p">[</span><span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_POINT_NASION</span><span class="p">][</span><span class="s1">&#39;r&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_POINT_LPA</span> <span class="ow">in</span> <span class="n">fids</span><span class="p">:</span>
-            <span class="n">coords</span><span class="p">[</span><span class="s1">&#39;LPA&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fids</span><span class="p">[</span><span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_POINT_LPA</span><span class="p">][</span><span class="s1">&#39;r&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_POINT_RPA</span> <span class="ow">in</span> <span class="n">fids</span><span class="p">:</span>
-            <span class="n">coords</span><span class="p">[</span><span class="s1">&#39;RPA&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fids</span><span class="p">[</span><span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_POINT_RPA</span><span class="p">][</span><span class="s1">&#39;r&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
-
+    <span class="n">coords</span> <span class="o">=</span> <span class="n">_extract_landmarks</span><span class="p">(</span><span class="n">dig</span><span class="p">)</span>
     <span class="n">hpi</span> <span class="o">=</span> <span class="p">{</span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;ident&#39;</span><span class="p">]:</span> <span class="n">d</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">dig</span> <span class="k">if</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;kind&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_POINT_HPI</span><span class="p">}</span>
     <span class="k">if</span> <span class="n">hpi</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">ident</span> <span class="ow">in</span> <span class="n">hpi</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
@@ -592,9 +571,6 @@
         <span class="n">append_kind_json</span> <span class="o">=</span> <span class="n">ch_info_json_eeg</span>
     <span class="k">elif</span> <span class="n">kind</span> <span class="o">==</span> <span class="s1">&#39;ieeg&#39;</span><span class="p">:</span>
         <span class="n">append_kind_json</span> <span class="o">=</span> <span class="n">ch_info_json_ieeg</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Unexpected &quot;kind&quot;: </span><span class="si">{}</span><span class="s1">&#39;</span>
-                         <span class="s1">&#39; Use one of: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">kind</span><span class="p">,</span> <span class="n">ALLOWED_KINDS</span><span class="p">))</span>
 
     <span class="n">ch_info_json</span> <span class="o">+=</span> <span class="n">append_kind_json</span>
     <span class="n">ch_info_json</span> <span class="o">+=</span> <span class="n">ch_info_ch_counts</span>
@@ -641,7 +617,7 @@
 <span class="sd">        The prefix for the filename to be created. E.g., a path to the folder</span>
 <span class="sd">        in which you wish to create a file with this name.</span>
 <span class="sd">    suffix : str | None</span>
-<span class="sd">        The suffix of a file that begins with this prefix. E.g., &#39;audio.wav&#39;.</span>
+<span class="sd">        The suffix for the filename to be created. E.g., &#39;audio.wav&#39;.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -650,7 +626,7 @@
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; print(make_bids_basename(subject=&#39;test&#39;, session=&#39;two&#39;, task=&#39;mytask&#39;, suffix=&#39;data.csv&#39;)) # noqa</span>
+<span class="sd">    &gt;&gt;&gt; print(make_bids_basename(subject=&#39;test&#39;, session=&#39;two&#39;, task=&#39;mytask&#39;, suffix=&#39;data.csv&#39;)) # noqa: E501</span>
 <span class="sd">    sub-test_ses-two_task-mytask_data.csv</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -668,7 +644,8 @@
 
     <span class="n">_check_types</span><span class="p">(</span><span class="n">order</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">ii</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="n">order</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nb">all</span><span class="p">(</span><span class="n">ii</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="n">order</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="ow">and</span> <span class="n">suffix</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span>
+            <span class="n">prefix</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;At least one parameter must be given.&quot;</span><span class="p">)</span>
 
     <span class="n">filename</span> <span class="o">=</span> <span class="p">[]</span>
@@ -876,6 +853,11 @@
 <span class="sd">        If verbose is True, this will print a snippet of the sidecar files. If</span>
 <span class="sd">        False, no content will be printed.</span>
 
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    output_path : str</span>
+<span class="sd">        The path of the root of the BIDS compatible folder.</span>
+
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
 <span class="sd">    For the participants.tsv file, the raw.info[&#39;subjects_info&#39;] should be</span>
@@ -1036,14 +1018,151 @@
     <span class="c1"># KIT data requires the marker file to be copied over too</span>
     <span class="k">if</span> <span class="s1">&#39;mrk&#39;</span> <span class="ow">in</span> <span class="n">raw</span><span class="o">.</span><span class="n">_init_kwargs</span><span class="p">:</span>
         <span class="n">hpi</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">_init_kwargs</span><span class="p">[</span><span class="s1">&#39;mrk&#39;</span><span class="p">]</span>
-        <span class="n">_</span><span class="p">,</span> <span class="n">marker_ext</span> <span class="o">=</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">hpi</span><span class="p">)</span>
-        <span class="n">marker_fname</span> <span class="o">=</span> <span class="n">make_bids_basename</span><span class="p">(</span>
-            <span class="n">subject</span><span class="o">=</span><span class="n">subject_id</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session_id</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="n">task</span><span class="p">,</span> <span class="n">run</span><span class="o">=</span><span class="n">run</span><span class="p">,</span>
-            <span class="n">acquisition</span><span class="o">=</span><span class="n">acquisition</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;markers</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">marker_ext</span><span class="p">,</span>
-            <span class="n">prefix</span><span class="o">=</span><span class="n">data_path</span><span class="p">)</span>
-        <span class="n">sh</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">hpi</span><span class="p">,</span> <span class="n">marker_fname</span><span class="p">)</span>
+        <span class="n">acq_map</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">hpi</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">_get_mrk_meas_date</span><span class="p">(</span><span class="n">hpi</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&gt;</span> <span class="n">_get_mrk_meas_date</span><span class="p">(</span><span class="n">hpi</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Markers provided in incorrect order.&#39;</span><span class="p">)</span>
+            <span class="n">_</span><span class="p">,</span> <span class="n">marker_ext</span> <span class="o">=</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">hpi</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">acq_map</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">([</span><span class="s1">&#39;pre&#39;</span><span class="p">,</span> <span class="s1">&#39;post&#39;</span><span class="p">],</span> <span class="n">hpi</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">_</span><span class="p">,</span> <span class="n">marker_ext</span> <span class="o">=</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">hpi</span><span class="p">)</span>
+            <span class="n">acq_map</span><span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="n">hpi</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">acq_map</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">marker_fname</span> <span class="o">=</span> <span class="n">make_bids_basename</span><span class="p">(</span>
+                <span class="n">subject</span><span class="o">=</span><span class="n">subject_id</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session_id</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="n">task</span><span class="p">,</span> <span class="n">run</span><span class="o">=</span><span class="n">run</span><span class="p">,</span>
+                <span class="n">acquisition</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;markers</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">marker_ext</span><span class="p">,</span>
+                <span class="n">prefix</span><span class="o">=</span><span class="n">data_path</span><span class="p">)</span>
+            <span class="n">sh</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">marker_fname</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">output_path</span></div>
+
+
+<div class="viewcode-block" id="write_anat"><a class="viewcode-back" href="../../generated/mne_bids.write_anat.html#mne_bids.write_anat">[docs]</a><span class="k">def</span> <span class="nf">write_anat</span><span class="p">(</span><span class="n">bids_root</span><span class="p">,</span> <span class="n">subject</span><span class="p">,</span> <span class="n">t1w</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">acquisition</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+               <span class="n">raw</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">trans</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Put anatomical MRI data into a BIDS format.</span>
+
+<span class="sd">    Given a BIDS directory and a T1 weighted MRI scan for a certain subject,</span>
+<span class="sd">    format the MRI scan to be in BIDS format and put it into the correct</span>
+<span class="sd">    location in the bids_dir. If a transformation matrix is supplied, a</span>
+<span class="sd">    sidecar JSON file will be written for the T1 weighted data.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    bids_root : str</span>
+<span class="sd">        Path to root of the BIDS folder</span>
+<span class="sd">    subject : str</span>
+<span class="sd">        Subject label as in &#39;sub-&lt;label&gt;&#39;, for example: &#39;01&#39;</span>
+<span class="sd">    t1w : str | nibabel image object</span>
+<span class="sd">        Path to a T1 weighted MRI scan of the subject. Can be in any format</span>
+<span class="sd">        readable by nibabel. Can also be a nibabel image object of a T1</span>
+<span class="sd">        weighted MRI scan. Will be written as a .nii.gz file.</span>
+<span class="sd">    session : str | None</span>
+<span class="sd">        The session for `t1w`. Corresponds to &quot;ses&quot;</span>
+<span class="sd">    acquisition: str | None</span>
+<span class="sd">        The acquisition parameters for `t1w`. Corresponds to &quot;acq&quot;</span>
+<span class="sd">    raw : instance of Raw | None</span>
+<span class="sd">        The raw data of `subject` corresponding to `t1w`. If `raw` is None,</span>
+<span class="sd">        `trans` has to be None as well</span>
+<span class="sd">    trans : instance of mne.transforms.Transform | str | None</span>
+<span class="sd">        The transformation matrix from head coordinates to MRI coordinates. Can</span>
+<span class="sd">        also be a string pointing to a .trans file containing the</span>
+<span class="sd">        transformation matrix. If None, no sidecar JSON file will be written</span>
+<span class="sd">        for `t1w`</span>
+<span class="sd">    overwrite : bool</span>
+<span class="sd">        Whether to overwrite existing files or data in files.</span>
+<span class="sd">        Defaults to False.</span>
+<span class="sd">        If overwrite is True, any existing files with the same BIDS parameters</span>
+<span class="sd">        will be overwritten with the exception of the `participants.tsv` and</span>
+<span class="sd">        `scans.tsv` files. For these files, parts of pre-existing data that</span>
+<span class="sd">        match the current data will be replaced.</span>
+<span class="sd">        If overwrite is False, no existing data will be overwritten or</span>
+<span class="sd">        replaced.</span>
+<span class="sd">    verbose : bool</span>
+<span class="sd">        If verbose is True, this will print a snippet of the sidecar files. If</span>
+<span class="sd">        False, no content will be printed.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    anat_dir : str</span>
+<span class="sd">        Path to the anatomical scan in the `bids_dir`</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">has_nibabel</span><span class="p">():</span>  <span class="c1"># pragma: no cover</span>
+        <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s1">&#39;This function requires nibabel.&#39;</span><span class="p">)</span>
+    <span class="kn">import</span> <span class="nn">nibabel</span> <span class="k">as</span> <span class="nn">nib</span>
+
+    <span class="c1"># Make directory for anatomical data</span>
+    <span class="n">anat_dir</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bids_root</span><span class="p">,</span> <span class="s1">&#39;sub-</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">subject</span><span class="p">))</span>
+    <span class="c1"># Session is optional</span>
+    <span class="k">if</span> <span class="n">session</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">anat_dir</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">anat_dir</span><span class="p">,</span> <span class="s1">&#39;ses-</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">session</span><span class="p">))</span>
+    <span class="n">anat_dir</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">anat_dir</span><span class="p">,</span> <span class="s1">&#39;anat&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">op</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">anat_dir</span><span class="p">):</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">anat_dir</span><span class="p">)</span>
+
+    <span class="c1"># Try to read our T1 file and convert to MGH representation</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">t1w</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">t1w</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">t1w</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">t1w</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">nib</span><span class="o">.</span><span class="n">all_image_classes</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;`t1w` must be a path to a T1 weighted MRI data file &#39;</span>
+                         <span class="s1">&#39;, or a nibabel image object, but it is of type &#39;</span>
+                         <span class="s1">&#39;&quot;</span><span class="si">{}</span><span class="s1">&quot;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">t1w</span><span class="p">)))</span>
+
+    <span class="n">t1w</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">Nifti1Image</span><span class="p">(</span><span class="n">t1w</span><span class="o">.</span><span class="n">dataobj</span><span class="p">,</span> <span class="n">t1w</span><span class="o">.</span><span class="n">affine</span><span class="p">)</span>
+    <span class="c1"># XYZT_UNITS = NIFT_UNITS_MM (10 in binary or 2 in decimal)</span>
+    <span class="c1"># seems to be the default for Nifti files</span>
+    <span class="c1"># https://nifti.nimh.nih.gov/nifti-1/documentation/nifti1fields/nifti1fields_pages/xyzt_units.html</span>
+    <span class="k">if</span> <span class="n">t1w</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s1">&#39;xyzt_units&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">t1w</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s1">&#39;xyzt_units&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;uint8&#39;</span><span class="p">)</span>
+    <span class="c1"># Now give the NIfTI file a BIDS name and write it to the BIDS location</span>
+    <span class="n">t1w_basename</span> <span class="o">=</span> <span class="n">make_bids_basename</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="n">subject</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span>
+                                      <span class="n">acquisition</span><span class="o">=</span><span class="n">acquisition</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="n">anat_dir</span><span class="p">,</span>
+                                      <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;T1w.nii.gz&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">op</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">t1w_basename</span><span class="p">):</span>
+        <span class="n">nib</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">t1w</span><span class="p">,</span> <span class="n">t1w_basename</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">overwrite</span><span class="p">:</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">t1w_basename</span><span class="p">)</span>
+        <span class="n">nib</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">t1w</span><span class="p">,</span> <span class="n">t1w_basename</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="s1">&#39;Wanted to write a file but it already exists and &#39;</span>
+                      <span class="s1">&#39;`overwrite` is set to False. File: &quot;</span><span class="si">{}</span><span class="s1">&quot;&#39;</span>
+                      <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">t1w_basename</span><span class="p">))</span>
+
+    <span class="c1"># Check if we have necessary conditions for writing a sidecar JSON</span>
+    <span class="k">if</span> <span class="n">trans</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+
+        <span class="c1"># get trans and ensure it is from head to MRI</span>
+        <span class="n">trans</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_get_trans</span><span class="p">(</span><span class="n">trans</span><span class="p">,</span> <span class="n">fro</span><span class="o">=</span><span class="s1">&#39;head&#39;</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="s1">&#39;mri&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">BaseRaw</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;`raw` must be specified if `trans` is not None&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Prepare to write the sidecar JSON</span>
+        <span class="c1"># extract MEG landmarks</span>
+        <span class="n">coords_dict</span> <span class="o">=</span> <span class="n">_extract_landmarks</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;dig&#39;</span><span class="p">])</span>
+        <span class="n">meg_landmarks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">((</span><span class="n">coords_dict</span><span class="p">[</span><span class="s1">&#39;LPA&#39;</span><span class="p">],</span>
+                                    <span class="n">coords_dict</span><span class="p">[</span><span class="s1">&#39;NAS&#39;</span><span class="p">],</span>
+                                    <span class="n">coords_dict</span><span class="p">[</span><span class="s1">&#39;RPA&#39;</span><span class="p">]))</span>
+
+        <span class="c1"># Transform MEG landmarks into MRI space, adjust units by * 1e3</span>
+        <span class="n">mri_landmarks</span> <span class="o">=</span> <span class="n">apply_trans</span><span class="p">(</span><span class="n">trans</span><span class="p">,</span> <span class="n">meg_landmarks</span><span class="p">,</span> <span class="n">move</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="o">*</span> <span class="mf">1e3</span>
+
+        <span class="c1"># Get landmarks in voxel space, using the mgh version of our T1 data</span>
+        <span class="n">t1_mgh</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">MGHImage</span><span class="p">(</span><span class="n">t1w</span><span class="o">.</span><span class="n">dataobj</span><span class="p">,</span> <span class="n">t1w</span><span class="o">.</span><span class="n">affine</span><span class="p">)</span>
+        <span class="n">vox2ras_tkr</span> <span class="o">=</span> <span class="n">t1_mgh</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">get_vox2ras_tkr</span><span class="p">()</span>
+        <span class="n">ras2vox_tkr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">inv</span><span class="p">(</span><span class="n">vox2ras_tkr</span><span class="p">)</span>
+        <span class="n">mri_landmarks</span> <span class="o">=</span> <span class="n">apply_trans</span><span class="p">(</span><span class="n">ras2vox_tkr</span><span class="p">,</span> <span class="n">mri_landmarks</span><span class="p">)</span>  <span class="c1"># in vox</span>
+
+        <span class="c1"># Write sidecar.json</span>
+        <span class="n">t1w_json</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="n">t1w_json</span><span class="p">[</span><span class="s1">&#39;AnatomicalLandmarkCoordinates&#39;</span><span class="p">]</span> <span class="o">=</span> \
+            <span class="p">{</span><span class="s1">&#39;LPA&#39;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">mri_landmarks</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]),</span>
+             <span class="s1">&#39;NAS&#39;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">mri_landmarks</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]),</span>
+             <span class="s1">&#39;RPA&#39;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">mri_landmarks</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="p">:])}</span>
+        <span class="n">fname</span> <span class="o">=</span> <span class="n">t1w_basename</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.nii.gz&#39;</span><span class="p">,</span> <span class="s1">&#39;.json&#39;</span><span class="p">)</span>
+        <span class="n">_write_json</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">t1w_json</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">anat_dir</span></div>
 </pre></div>
 
     </div>
@@ -1057,8 +1176,8 @@
       
     </p>
     <p>
-        &copy; Copyright 2019, MNE Developers. Last updated on 2019-04-26.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.0.1.<br/>
+        &copy; Copyright 2019, MNE Developers. Last updated on 2019-08-20.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.<br/>
     </p>
   </div>
 </footer>

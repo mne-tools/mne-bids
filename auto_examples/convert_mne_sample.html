@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>Convert MNE sample data to BIDS format &#8212; mne_bids 0.2 documentation</title>
+    <title>Convert MNE sample data to BIDS format &#8212; mne_bids 0.3 documentation</title>
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
@@ -36,14 +36,15 @@
         </button>
         <a class="navbar-brand" href="../index.html">
           MNE-BIDS</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.2</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.3</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
           <ul class="nav navbar-nav">
             
-                <li><a href="index.html">Gallery</a></li>
+                <li><a href="index.html">Examples</a></li>
                 <li><a href="../api.html">API</a></li>
+                <li><a href="../generated/cli.html">CLI</a></li>
                 <li><a href="../whats_new.html">What's new</a></li>
                 <li><a href="https://github.com/mne-tools/mne-bids">Github</a></li>
             
@@ -59,30 +60,12 @@
       aria-labelledby="dLabelGlobalToc"></ul>
 </li>
               
-                <li class="dropdown">
-  <a role="button"
-     id="dLabelLocalToc"
-     data-toggle="dropdown"
-     data-target="#"
-     href="#">Page <b class="caret"></b></a>
-  <ul class="dropdown-menu localtoc"
-      role="menu"
-      aria-labelledby="dLabelLocalToc"><ul>
-<li><a class="reference internal" href="#">Convert MNE sample data to BIDS format</a></li>
-</ul>
-</ul>
-</li>
-              
             
             
             
             
             
-              <li class="hidden-sm">
-<div id="sourcelink">
-  <a href="../_sources/auto_examples/convert_mne_sample.rst.txt"
-     rel="nofollow">Source</a>
-</div></li>
+              <li class="hidden-sm"></li>
             
           </ul>
 
@@ -106,16 +89,17 @@
       
   <div class="sphx-glr-download-link-note admonition note">
 <p class="admonition-title">Note</p>
-<p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-convert-mne-sample-py"><span class="std std-ref">here</span></a> to download the full example code</p>
+<p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-convert-mne-sample-py"><span class="std std-ref">here</span></a> to download the full example code or run this example in your browser via Binder</p>
 </div>
 <div class="sphx-glr-example-title section" id="convert-mne-sample-data-to-bids-format">
-<span id="sphx-glr-auto-examples-convert-mne-sample-py"></span><h1>Convert MNE sample data to BIDS format<a class="headerlink" href="#convert-mne-sample-data-to-bids-format" title="Permalink to this headline">¶</a></h1>
+<span id="ex-convert-mne-sample"></span><span id="sphx-glr-auto-examples-convert-mne-sample-py"></span><h1>Convert MNE sample data to BIDS format<a class="headerlink" href="#convert-mne-sample-data-to-bids-format" title="Permalink to this headline">¶</a></h1>
 <p>This example demonstrates how to convert your existing files into a
 BIDS-compatible folder.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Authors: Mainak Jas &lt;mainak.jas@telecom-paristech.fr&gt;</span>
 <span class="c1">#          Alexandre Gramfort &lt;alexandre.gramfort@telecom-paristech.fr&gt;</span>
 <span class="c1">#          Teon Brooks &lt;teon.brooks@gmail.com&gt;</span>
-
+<span class="c1">#          Stefan Appelhoff &lt;stefan.appelhoff@mailbox.org&gt;</span>
+<span class="c1">#</span>
 <span class="c1"># License: BSD (3-clause)</span>
 </pre></div>
 </div>
@@ -132,7 +116,7 @@ BIDS-compatible folder.</p>
 </pre></div>
 </div>
 <p>And define the paths and event_id dictionary.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">data_path</span> <span class="o">=</span> <a href="http://mne-tools.github.io/stable/generated/mne.datasets.sample.data_path.html#mne.datasets.sample.data_path" title="View documentation for mne.datasets.sample.data_path"><span class="n">sample</span><span class="o">.</span><span class="n">data_path</span></a><span class="p">()</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">data_path</span> <span class="o">=</span> <a href="https://mne.tools/stable/generated/mne.datasets.sample.data_path.html#mne.datasets.sample.data_path" title="View documentation for mne.datasets.sample.data_path"><span class="n">sample</span><span class="o">.</span><span class="n">data_path</span></a><span class="p">()</span>
 <span class="n">event_id</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Auditory/Left&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;Auditory/Right&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;Visual/Left&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
             <span class="s1">&#39;Visual/Right&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="s1">&#39;Smiley&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s1">&#39;Button&#39;</span><span class="p">:</span> <span class="mi">32</span><span class="p">}</span>
 
@@ -143,19 +127,10 @@ BIDS-compatible folder.</p>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using default location ~/mne_data for sample...
-Downloading archive MNE-sample-data-processed.tar.gz to /home/circleci/mne_data
-Downloading https://files.osf.io/v1/resources/rxvq7/providers/osfstorage/59c0e26f9ad5a1025c4ab159?action=download&amp;version=4&amp;direct (1.54 GB)
-
-Verifying hash fc2d5b9eb0a144b1d6ba84dc3b983602.
-Decompressing the archive: /home/circleci/mne_data/MNE-sample-data-processed.tar.gz
-(please be patient, this can take some time)
-Successfully extracted to: [&#39;/home/circleci/mne_data/MNE-sample-data&#39;]
-Attempting to create new mne-python configuration file:
-/home/circleci/.mne/mne-python.json
 </pre></div>
 </div>
 <p>Specify the raw_file and events_data and run the BIDS conversion.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">raw</span> <span class="o">=</span> <a href="http://mne-tools.github.io/stable/generated/mne.io.read_raw_fif.html#mne.io.read_raw_fif" title="View documentation for mne.io.read_raw_fif"><span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_raw_fif</span></a><span class="p">(</span><span class="n">raw_fname</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">raw</span> <span class="o">=</span> <a href="https://mne.tools/stable/generated/mne.io.read_raw_fif.html#mne.io.read_raw_fif" title="View documentation for mne.io.read_raw_fif"><span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_raw_fif</span></a><span class="p">(</span><span class="n">raw_fname</span><span class="p">)</span>
 <span class="n">bids_basename</span> <span class="o">=</span> <span class="n">make_bids_basename</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="s1">&#39;01&#39;</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="s1">&#39;01&#39;</span><span class="p">,</span>
                                    <span class="n">task</span><span class="o">=</span><span class="s1">&#39;audiovisual&#39;</span><span class="p">,</span> <span class="n">run</span><span class="o">=</span><span class="s1">&#39;01&#39;</span><span class="p">)</span>
 <span class="n">write_raw_bids</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_basename</span><span class="p">,</span> <span class="n">output_path</span><span class="p">,</span> <span class="n">events_data</span><span class="o">=</span><span class="n">events_data</span><span class="p">,</span>
@@ -271,6 +246,8 @@ Writing &#39;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/dat
     &quot;Name&quot;: &quot; &quot;,
     &quot;BIDSVersion&quot;: &quot;1.2.0&quot;
 }
+/home/circleci/project/mne_bids/write.py:407: UserWarning: No line frequency found, defaulting to 50 Hz
+  warn(&#39;No line frequency found, defaulting to 50 Hz&#39;)
 Reading 0 ... 166799  =      0.000 ...   277.714 secs...
 
 Writing &#39;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.json&#39;...
@@ -305,13 +282,14 @@ MEG 0111        MEGMAG  T       0.10000000149011612     172.17630004882812      
 MEG 0122        MEGGRADPLANAR   T/m     0.10000000149011612     172.17630004882812      Planar Gradiometer      600.614990234375        good
 MEG 0123        MEGGRADPLANAR   T/m     0.10000000149011612     172.17630004882812      Planar Gradiometer      600.614990234375        good
 Copying data files to /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif
+Overwriting existing file.
 Writing /home/circleci/mne_data/MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif
 Closing /home/circleci/mne_data/MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif [done]
 </pre></div>
 </div>
 <p>Specify some empty room data and run BIDS conversion on it.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">er_raw_fname</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="s1">&#39;MEG&#39;</span><span class="p">,</span> <span class="s1">&#39;sample&#39;</span><span class="p">,</span> <span class="s1">&#39;ernoise_raw.fif&#39;</span><span class="p">)</span>
-<span class="n">er_raw</span> <span class="o">=</span> <a href="http://mne-tools.github.io/stable/generated/mne.io.read_raw_fif.html#mne.io.read_raw_fif" title="View documentation for mne.io.read_raw_fif"><span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_raw_fif</span></a><span class="p">(</span><span class="n">er_raw_fname</span><span class="p">)</span>
+<span class="n">er_raw</span> <span class="o">=</span> <a href="https://mne.tools/stable/generated/mne.io.read_raw_fif.html#mne.io.read_raw_fif" title="View documentation for mne.io.read_raw_fif"><span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_raw_fif</span></a><span class="p">(</span><span class="n">er_raw_fname</span><span class="p">)</span>
 <span class="c1"># For empty room data we need to specify that the subject ID is</span>
 <span class="c1"># &#39;emptyroom&#39;, and that the task is &#39;noise&#39;.</span>
 <span class="c1"># We also need to specify the recording date in the format YYYYMMDD for the</span>
@@ -421,34 +399,38 @@ Closing /home/circleci/mne_data/MNE-sample-data-bids/sub-emptyroom/ses-20021206/
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>|MNE-sample-data-bids
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>|MNE-sample-data-bids/
+|--- dataset_description.json
 |--- participants.tsv
 |--- participants.json
-|--- dataset_description.json
-|--- sub-01
-|------ ses-01
-|--------- sub-01_ses-01_scans.tsv
-|--------- meg
-|------------ sub-01_ses-01_task-audiovisual_run-01_events.tsv
-|------------ sub-01_ses-01_task-audiovisual_run-01_meg.fif
-|------------ sub-01_ses-01_task-audiovisual_run-01_meg.json
-|------------ sub-01_ses-01_coordsystem.json
-|------------ sub-01_ses-01_task-audiovisual_run-01_channels.tsv
-|--- sub-emptyroom
-|------ ses-20021206
+|--- sub-emptyroom/
+|------ ses-20021206/
 |--------- sub-emptyroom_ses-20021206_scans.tsv
-|--------- meg
-|------------ sub-emptyroom_ses-20021206_task-noise_channels.tsv
-|------------ sub-emptyroom_ses-20021206_task-noise_meg.json
+|--------- meg/
 |------------ sub-emptyroom_ses-20021206_task-noise_meg.fif
+|------------ sub-emptyroom_ses-20021206_task-noise_meg.json
+|------------ sub-emptyroom_ses-20021206_task-noise_channels.tsv
+|--- sub-01/
+|------ ses-01/
+|--------- sub-01_ses-01_scans.tsv
+|--------- meg/
+|------------ sub-01_ses-01_task-audiovisual_run-01_meg.json
+|------------ sub-01_ses-01_task-audiovisual_run-01_events.tsv
+|------------ sub-01_ses-01_task-audiovisual_run-01_channels.tsv
+|------------ sub-01_ses-01_task-audiovisual_run-01_meg.fif
+|------------ sub-01_ses-01_coordsystem.json
+|--------- anat/
+|------------ sub-01_ses-01_T1w.nii.gz
+|------------ sub-01_ses-01_T1w.json
 </pre></div>
 </div>
 <p>Finally, we can read the BIDS data we created as well.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">raw</span><span class="p">,</span> <span class="n">events</span><span class="p">,</span> <span class="n">event_id</span> <span class="o">=</span> <span class="n">read_raw_bids</span><span class="p">(</span><span class="n">bids_basename</span> <span class="o">+</span> <span class="s1">&#39;_meg.fif&#39;</span><span class="p">,</span> <span class="n">output_path</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">bids_fname</span> <span class="o">=</span> <span class="n">bids_basename</span> <span class="o">+</span> <span class="s1">&#39;_meg.fif&#39;</span>
+<span class="n">raw</span> <span class="o">=</span> <span class="n">read_raw_bids</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">,</span> <span class="n">output_path</span><span class="p">)</span>
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Opening raw data file /home/circleci/mne_data/MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif...
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Opening raw data file /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif...
     Read a total of 3 projection items:
         PCA-v1 (1 x 102)  idle
         PCA-v2 (1 x 102)  idle
@@ -456,32 +438,41 @@ Closing /home/circleci/mne_data/MNE-sample-data-bids/sub-emptyroom/ses-20021206/
     Range : 25800 ... 192599 =     42.956 ...   320.670 secs
 Ready.
 Current compensation grade : 0
+Reading events from /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_events.tsv.
+Reading channel info from /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_channels.tsv.
+/home/circleci/project/mne_bids/read.py:165: RuntimeWarning: The unit for channel(s) STI 001, STI 002, STI 003, STI 004, STI 005, STI 006, STI 014, STI 015, STI 016 has changed from V to NA.
+  raw.set_channel_types(channel_type_dict)
 </pre></div>
 </div>
 <p>The data is already in a convenient form to create epochs and evokeds.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">epochs</span> <span class="o">=</span> <a href="http://mne-tools.github.io/stable/generated/mne.Epochs.html#mne.Epochs" title="View documentation for mne.Epochs"><span class="n">mne</span><span class="o">.</span><span class="n">Epochs</span></a><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">events</span><span class="p">,</span> <span class="n">event_id</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">events</span><span class="p">,</span> <span class="n">event_id</span> <span class="o">=</span> <a href="https://mne.tools/stable/generated/mne.events_from_annotations.html#mne.events_from_annotations" title="View documentation for mne.events_from_annotations"><span class="n">mne</span><span class="o">.</span><span class="n">events_from_annotations</span></a><span class="p">(</span><span class="n">raw</span><span class="p">)</span>
+<span class="n">epochs</span> <span class="o">=</span> <a href="https://mne.tools/stable/generated/mne.Epochs.html#mne.Epochs" title="View documentation for mne.Epochs"><span class="n">mne</span><span class="o">.</span><span class="n">Epochs</span></a><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">events</span><span class="p">,</span> <span class="n">event_id</span><span class="p">)</span>
 <span class="n">epochs</span><span class="p">[</span><span class="s1">&#39;Auditory&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">average</span><span class="p">()</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 </pre></div>
 </div>
 <img alt="../_images/sphx_glr_convert_mne_sample_001.png" class="sphx-glr-single-img" src="../_images/sphx_glr_convert_mne_sample_001.png" />
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>320 matching events found
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Used Annotations descriptions: [&#39;Auditory/Left&#39;, &#39;Auditory/Right&#39;, &#39;Button&#39;, &#39;Smiley&#39;, &#39;Visual/Left&#39;, &#39;Visual/Right&#39;]
+320 matching events found
 Applying baseline correction (mode: mean)
 Not setting metadata
 Created an SSP operator (subspace dimension = 3)
 3 projection items activated
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 1 minutes  11.586 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  7.291 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-mne-sample-py">
-<div class="sphx-glr-download docutils container">
-<p><a class="reference download internal" download="" href="../_downloads/8b8c0be80156b320fa957efb5dcacc25/convert_mne_sample.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">convert_mne_sample.py</span></code></a></p>
+<div class="binder-badge docutils container">
+<a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=notebooks/auto_examples/convert_mne_sample.ipynb"><img alt="https://mybinder.org/badge_logo.svg" src="https://mybinder.org/badge_logo.svg" width="150px" /></a>
 </div>
 <div class="sphx-glr-download docutils container">
-<p><a class="reference download internal" download="" href="../_downloads/204521b88907c3993733283dffee226c/convert_mne_sample.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">convert_mne_sample.ipynb</span></code></a></p>
+<p><a class="reference download internal" download="" href="../_downloads/86851480108d4b249520df3993b0222b/convert_mne_sample.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">convert_mne_sample.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/529f3230e5683b7676557bd33b2ea01b/convert_mne_sample.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">convert_mne_sample.ipynb</span></code></a></p>
 </div>
 </div>
-<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.readthedocs.io">Gallery generated by Sphinx-Gallery</a></p>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
 </div>
 
 
@@ -496,8 +487,8 @@ Created an SSP operator (subspace dimension = 3)
       
     </p>
     <p>
-        &copy; Copyright 2019, MNE Developers. Last updated on 2019-04-26.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.0.1.<br/>
+        &copy; Copyright 2019, MNE Developers. Last updated on 2019-08-20.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.<br/>
     </p>
   </div>
 </footer>
