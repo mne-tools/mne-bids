@@ -14,6 +14,20 @@ Here we list a changelog of MNE-BIDS.
 
 .. currentmodule:: mne_bids
 
+.. _current:
+
+Current
+-------
+
+Changelog
+~~~~~~~~~
+
+Bug
+~~~
+
+API
+~~~
+
 .. _changes_0_3:
 
 Version 0.3
