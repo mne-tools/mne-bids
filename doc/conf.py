@@ -108,7 +108,7 @@ html_theme_options = {
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {
     'python': ('https://docs.python.org/3', None),
-    'mne': ('http://mne-tools.github.io/stable/', None),
+    'mne': ('https://mne.tools/stable/', None),
     'numpy': ('https://www.numpy.org/devdocs', None),
     'scipy': ('https://scipy.github.io/devdocs', None),
     'matplotlib': ('https://matplotlib.org', None),

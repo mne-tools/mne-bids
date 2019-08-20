@@ -14,10 +14,10 @@ Here we list a changelog of MNE-BIDS.
 
 .. currentmodule:: mne_bids
 
-.. _current:
+.. _changes_0_3:
 
-Current
--------
+Version 0.3
+-----------
 
 Changelog
 ~~~~~~~~~
@@ -44,6 +44,18 @@ API
 ~~~
 
 - :func:`read_raw_bids` no longer optionally returns :code:`events` and :code:`event_id` but returns the raw object with :code:`mne.Annotations`, whenever an :code:`events.tsv` file is present, by `Stefan Appelhoff`_ (`#209 <https://github.com/mne-tools/mne-bids/pull/209>`_)
+
+Authors
+~~~~~~~
+
+People who contributed to this release (in alphabetical order):
+
+* Alexandre Gramfort
+* Mainak Jas
+* Marijn van Vliet
+* Matt Sanderson
+* Stefan Appelhoff
+* Teon Brooks
 
 .. _changes_0_2:
 
