@@ -22,7 +22,7 @@ from mne.io.constants import FIFF
 from mne.io.pick import channel_type
 from mne.io import BaseRaw
 from mne.channels.channels import _unit2human
-from mne.utils import check_version, has_nibabel
+from mne.utils import check_version, has_nibabel, _check_ch_locs
 
 from mne_bids.pick import coil_type
 from mne_bids.utils import (_write_json, _write_tsv, _read_events, _mkdir_p,
@@ -325,6 +325,45 @@ def _scans_tsv(raw, raw_fname, fname, overwrite=False, verbose=True):
     # been handled by this point
     _write_tsv(fname, data, True, verbose)
 
+    return fname
+
+
+def _electrodes_tsv(raw, fname, overwrite=False, verbose=True):
+    """Create an electrodes.tsv file and save it.
+
+    Parameters
+    ----------
+    raw : instance of Raw
+        The data as MNE-Python Raw object.
+    fname : str
+        Filename to save the electrodes.tsv to.
+    overwrite : bool
+        Defaults to False.
+        Whether to overwrite the existing data in the file.
+        If there is already data for the given `fname` and overwrite is False,
+        an error will be raised.
+    verbose : bool
+        Set verbose output to true or false.
+
+    """
+    x, y, z, names, sizes = list(), list(), list(), list(), list()
+    for ch in raw.info['chs']:
+        if _check_ch_locs([ch]):
+            x.append(ch['loc'][0])
+            y.append(ch['loc'][1])
+            z.append(ch['loc'][2])
+        else:
+            x.append('n/a')
+            y.append('n/a')
+            z.append('n/a')
+        names.append(ch['ch_name'])
+        sizes.append('n/a')  # need sizes even if we don't know: iEEG REQUIRED
+    data = OrderedDict([('name', names),
+                        ('x', x),
+                        ('y', y),
+                        ('z', z)
+                        ('size', sizes)])
+    _write_tsv(fname, data, overwrite=overwrite, verbose=verbose)
     return fname
 
 
