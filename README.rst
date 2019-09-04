@@ -102,7 +102,7 @@ Installation via conda
 ######################
 
 If you have followed the
-`MNE-Python installation instructions <https://mne.tools/stable/install_mne_python.html?highlight=installation#installing-mne-python-and-its-dependencies>`_,
+`MNE-Python installation instructions <https://mne.tools/stable/install_mne_python.html#installing-mne-python-and-its-dependencies>`_,
 all that's left to do is to install ``mne-bids`` without its dependencies, as
 they've already been installed during the ``MNE`` installation proceess.
 
