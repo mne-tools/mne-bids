@@ -31,7 +31,7 @@ reader = {'.con': io.read_raw_kit, '.sqd': io.read_raw_kit,
 
 
 def _read_raw(raw_fpath, electrode=None, hsp=None, hpi=None, config=None,
-              montage=None, verbose=None, allow_maxshield=False):
+              verbose=None, allow_maxshield=False):
     """Read a raw file into MNE, making inferences based on extension."""
     _, ext = _parse_ext(raw_fpath)
 
@@ -230,7 +230,7 @@ def read_raw_bids(bids_fname, bids_root, verbose=True):
         config = op.join(bids_raw_folder, 'config')
 
     raw = _read_raw(bids_fpath, electrode=None, hsp=None, hpi=None,
-                    config=config, montage=None, verbose=None)
+                    config=config, verbose=None)
 
     # Try to find an associated events.tsv to get information about the
     # events in the recorded data

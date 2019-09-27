@@ -21,7 +21,7 @@ from pathlib import Path
 import numpy as np
 from mne import read_events, find_events, events_from_annotations
 from mne.utils import check_version
-from mne.channels import read_montage
+from mne.channels import make_standard_montage
 from mne.io.pick import pick_types
 from mne.io.kit.kit import get_kit_info
 from mne.io.constants import FIFF
@@ -427,7 +427,7 @@ def _infer_eeg_placement_scheme(raw):
     sel = pick_types(raw.info, meg=False, eeg=True)
     ch_names = [raw.ch_names[i] for i in sel]
     channel_names = [ch.lower() for ch in ch_names]
-    montage1005 = read_montage(kind='standard_1005')
+    montage1005 = make_standard_montage(kind='standard_1005')
     montage1005_names = [ch.lower() for ch in montage1005.ch_names]
 
     if set(channel_names).issubset(set(montage1005_names)):
