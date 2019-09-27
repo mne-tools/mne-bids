@@ -427,7 +427,7 @@ def _infer_eeg_placement_scheme(raw):
     sel = pick_types(raw.info, meg=False, eeg=True)
     ch_names = [raw.ch_names[i] for i in sel]
     channel_names = [ch.lower() for ch in ch_names]
-    montage1005 = make_standard_montage(kind='standard_1005')
+    montage1005 = make_standard_montage('standard_1005')
     montage1005_names = [ch.lower() for ch in montage1005.ch_names]
 
     if set(channel_names).issubset(set(montage1005_names)):
