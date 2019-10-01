@@ -491,10 +491,6 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, overwrite=False,
     return fname
 
 
-def _deface_t1w(t1w, method):
-    return t1w
-
-
 def make_bids_basename(subject=None, session=None, task=None,
                        acquisition=None, run=None, processing=None,
                        recording=None, space=None, prefix=None, suffix=None):
@@ -1010,6 +1006,10 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
         raise ImportError('This function requires nibabel.')
     import nibabel as nib
 
+    if deface is not None and trans is None:
+        raise ValueError('The raw object and trans must be provided to '
+                         'deface the T1')
+
     # Make directory for anatomical data
     anat_dir = op.join(bids_root, 'sub-{}'.format(subject))
     # Session is optional
@@ -1033,22 +1033,11 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
     # https://nifti.nimh.nih.gov/nifti-1/documentation/nifti1fields/nifti1fields_pages/xyzt_units.html
     if t1w.header['xyzt_units'] == 0:
         t1w.header['xyzt_units'] = np.array(10, dtype='uint8')
+
     # Now give the NIfTI file a BIDS name and write it to the BIDS location
     t1w_basename = make_bids_basename(subject=subject, session=session,
                                       acquisition=acquisition, prefix=anat_dir,
                                       suffix='T1w.nii.gz')
-    if op.exists(t1w_basename):
-        if overwrite:
-            os.remove(t1w_basename)
-        else:
-            raise IOError('Wanted to write a file but it already exists and '
-                          '`overwrite` is set to False. File: "{}"'
-                          .format(t1w_basename))
-
-    if deface is not None:
-        t1w = _deface_t1w(t1w, deface)
-
-    nib.save(t1w, t1w_basename)
 
     # Check if we have necessary conditions for writing a sidecar JSON
     if trans is not None:
@@ -1084,4 +1073,59 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
         fname = t1w_basename.replace('.nii.gz', '.json')
         _write_json(fname, t1w_json, overwrite, verbose)
 
+        if deface is not None:
+            t1w_data_defaced = _deface_t1w(t1w.get_data(), deface,
+                                           mri_landmarks)
+            t1w = nib.Nifti1Image(t1w_data_defaced, t1w.affine, t1w.header)
+
+    # Save anatomical data
+    if op.exists(t1w_basename):
+        if overwrite:
+            os.remove(t1w_basename)
+        else:
+            raise IOError('Wanted to write a file but it already exists and '
+                          '`overwrite` is set to False. File: "{}"'
+                          .format(t1w_basename))
+
+    nib.save(t1w, t1w_basename)
+
     return anat_dir
+
+
+def _deface_t1w(t1w_data, method, mri_landmarks, theta=35):
+    # x: L/R L+, y: S/I I+, z: A/P A+
+    normal = np.cross(mri_landmarks[0], mri_landmarks[1])
+    normal /= np.linalg.norm(normal)
+    deface_indices = np.zeros(t1w_data.shape, dtype=bool)
+    for i in range(t1w_data.shape[0]):
+        for j in range(t1w_data.shape[1]):
+            for k in range(t1w_data.shape[2]):
+                # translate to NAS, and shift up
+                v = np.array([i, j, k]) - mri_landmarks[1]
+                v[1] += t1w_data.shape[2] / 20
+                v = rotate(v, [np.deg2rad(theta), 0, 0])
+                if v[2] > 0:
+                    deface_indices[i, j, k] = True
+    if method == 'smooth':
+        raise ValueError('Smooth method not yet implemented')
+    elif method == 'erase':
+        t1w_data[deface_indices] = 0
+    else:
+        raise ValueError('Deface argument %s not recognized' % method)
+    return t1w_data
+
+
+def rotate(v, thetas):
+    rot_x = np.array([[1, 0, 0],
+                      [0, np.cos(thetas[0]), -np.sin(thetas[0])],
+                      [0, np.sin(thetas[0]), np.cos(thetas[0])]])
+    v = np.dot(rot_x, v)
+    rot_y = np.array([[np.cos(thetas[1]), 0, np.sin(thetas[1])],
+                      [0, 1, 0],
+                      [-np.sin(thetas[1]), 0, np.cos(thetas[1])]])
+    v = np.dot(rot_y, v)
+    rot_z = np.array([[np.cos(thetas[2]), -np.sin(thetas[2]), 0],
+                      [np.sin(thetas[2]), np.cos(thetas[2]), 0],
+                      [0, 0, 1]])
+    v = np.dot(rot_z, v)
+    return v
