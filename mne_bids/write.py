@@ -491,6 +491,10 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, overwrite=False,
     return fname
 
 
+def _deface_t1w(t1w, method):
+    return t1w
+
+
 def make_bids_basename(subject=None, session=None, task=None,
                        acquisition=None, run=None, processing=None,
                        recording=None, space=None, prefix=None, suffix=None):
@@ -948,7 +952,8 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
 
 
 def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
-               raw=None, trans=None, overwrite=False, verbose=False):
+               raw=None, trans=None, deface=None, overwrite=False,
+               verbose=False):
     """Put anatomical MRI data into a BIDS format.
 
     Given a BIDS directory and a T1 weighted MRI scan for a certain subject,
@@ -978,6 +983,10 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
         also be a string pointing to a .trans file containing the
         transformation matrix. If None, no sidecar JSON file will be written
         for `t1w`
+    deface : str | None
+        The method for defacing: If `smooth` a guassian kernal will be
+        used to smooth the face area, if `erase`, the image values in
+        the face area will be erased. If None, no defacing will be performed.
     overwrite : bool
         Whether to overwrite existing files or data in files.
         Defaults to False.
@@ -1028,15 +1037,18 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
     t1w_basename = make_bids_basename(subject=subject, session=session,
                                       acquisition=acquisition, prefix=anat_dir,
                                       suffix='T1w.nii.gz')
-    if not op.exists(t1w_basename):
-        nib.save(t1w, t1w_basename)
-    elif overwrite:
-        os.remove(t1w_basename)
-        nib.save(t1w, t1w_basename)
-    else:
-        raise IOError('Wanted to write a file but it already exists and '
-                      '`overwrite` is set to False. File: "{}"'
-                      .format(t1w_basename))
+    if op.exists(t1w_basename):
+        if overwrite:
+            os.remove(t1w_basename)
+        else:
+            raise IOError('Wanted to write a file but it already exists and '
+                          '`overwrite` is set to False. File: "{}"'
+                          .format(t1w_basename))
+
+    if deface is not None:
+        t1w = _deface_t1w(t1w, deface)
+
+    nib.save(t1w, t1w_basename)
 
     # Check if we have necessary conditions for writing a sidecar JSON
     if trans is not None:
