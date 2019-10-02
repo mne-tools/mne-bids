@@ -949,8 +949,8 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
 
 
 def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
-               raw=None, trans=None, deface=(0.05, 35., 'erase', False),
-               overwrite=False, verbose=False):
+               raw=None, trans=None, deface=False, overwrite=False,
+               verbose=False):
     """Put anatomical MRI data into a BIDS format.
 
     Given a BIDS directory and a T1 weighted MRI scan for a certain subject,
@@ -980,14 +980,17 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
         also be a string pointing to a .trans file containing the
         transformation matrix. If None, no sidecar JSON file will be written
         for `t1w`
-    deface : tuple (float, float, str, bool) | None
-        Deface parameters in the order (inset, theta, method, plot). Here inset
+    deface : bool | tuple (float, float, str, bool) | None
+        If True, deface with default parameters, if parameters are provided,
+        the order is inset, theta, method, plot. Here `inset`
         is how far back as a fraction of mri space to start defacing
-        relative to the naisan, theta is the angle of the defacing shear,
-        `method` accepts `smooth` to apply a guassian kernal to the masked
+        relative to the nasion (default 0.2), `theta` is the angle of
+        the defacing shear (default 35 degrees), `method` accepts
+        `smooth` to apply a guassian kernal to the masked
         face area and `erase` to set the image values in the face area
-        to zero, `plot_on` is whether or not to plot the results.
-        If None, no defacing will be performed.
+        to zero (default `smooth`, `plot_on` is whether or not to
+        plot the results (default False). If None, no defacing
+        will be performed.
     overwrite : bool
         Whether to overwrite existing files or data in files.
         Defaults to False.
@@ -1011,11 +1014,17 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
         raise ImportError('This function requires nibabel.')
     import nibabel as nib
 
-    if deface is not None and trans is None:
+    if deface and trans is None:
         raise ValueError('The raw object and trans must be provided to '
                          'deface the T1')
-    else:
+    if isinstance(deface, list) or isinstance(deface, tuple):
         inset, theta, method, plot_on = deface
+        assert isinstance(inset, float) or isinstance(inset, int)
+        assert isinstance(theta, float) or isinstance(inset, int)
+        assert isinstance(method, str)
+        assert isinstance(plot_on, bool)
+    elif deface:
+        inset, theta, method, plot_on = (0.2, 35., 'smooth', False)
 
     # Make directory for anatomical data
     anat_dir = op.join(bids_root, 'sub-{}'.format(subject))
@@ -1099,12 +1108,22 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
             trans_y = -mri_landmarks2[1, 1] + t1w_data.shape[2] * inset
             indices = apply_trans(translation(y=trans_y), indices)
             indices = apply_trans(rotation(x=-np.deg2rad(theta)), indices)
-
             coords = indices.reshape(t1w.shape + (3,))
             mask = (coords[..., 2] < 0)
 
             if method == 'smooth':
-                raise ValueError('Smooth method not yet implemented')
+                # https://docs.scipy.org/doc/scipy-0.16.1/reference/generated/scipy.ndimage.filters.gaussian_filter.html
+                from scipy.ndimage import gaussian_filter
+                for layer in range(5):
+                    t1w_data[mask] = gaussian_filter(t1w_data,
+                                                     sigma=0.5 * layer,
+                                                     order=0)[mask]
+                    z = t1w_data.shape[2] * 0.1
+                    indices = apply_trans(translation(z=z),
+                                          indices)
+                    coords = indices.reshape(t1w.shape + (3,))
+                    mask = (coords[..., 2] < 0)
+
             elif method == 'erase':
                 t1w_data[mask] = 0.
             else:
