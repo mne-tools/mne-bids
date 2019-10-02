@@ -492,6 +492,66 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, overwrite=False,
     return fname
 
 
+def _deface(t1w, mri_landmarks, deface, trans, raw):
+    if not has_nibabel():  # pragma: no cover
+        raise ImportError('This function requires nibabel.')
+    import nibabel as nib
+
+    inset, theta = (0.2, 35.)
+    if isinstance(deface, dict):
+        if 'inset' in deface:
+            inset = deface['inset']
+        if 'theta' in deface:
+            theta = deface['theta']
+
+    if not isinstance(inset, float):
+        raise ValueError('inset must be float. Got %s' % type(inset))
+
+    if not (isinstance(theta, float) or isinstance(theta, int)):
+        raise ValueError('theta must be float. Got %s' % type(theta))
+
+    if not 0 < inset < 1.0:
+        raise ValueError('inset should be between 0 and 1')
+
+    if not 0 < theta < 90:
+        raise ValueError('theta should be between 0 and 90 degrees')
+
+    # x: L/R L+, y: S/I I+, z: A/P A+
+    t1w_data = t1w.get_data().copy()
+    idxs_vox = np.meshgrid(np.arange(t1w_data.shape[0]),
+                           np.arange(t1w_data.shape[1]),
+                           np.arange(t1w_data.shape[2]),
+                           indexing='ij')
+    idxs_vox = np.array(idxs_vox)  # (3, *t1w_data.shape)
+    idxs_vox = np.transpose(idxs_vox,
+                            [1, 2, 3, 0])  # (*t1w_data.shape, 3)
+    idxs_vox = idxs_vox.reshape(-1, 3)  # (n_voxels, 3)
+
+    mri_landmarks_ras = apply_trans(t1w.affine, mri_landmarks)
+    ras_meg_t = \
+        get_ras_to_neuromag_trans(*mri_landmarks_ras[[1, 0, 2]])
+
+    idxs_ras = apply_trans(t1w.affine, idxs_vox)
+    idxs_meg = apply_trans(ras_meg_t, idxs_ras)
+
+    # now comes the actual defacing
+    # 1. move center of voxels to (nasion - inset)
+    # 2. rotate the head by theta from the normal to the plane passing
+    # through anatomical coordinates
+    trans_y = -mri_landmarks_ras[1, 1] + t1w_data.shape[2] * inset
+    idxs_meg = apply_trans(translation(y=trans_y), idxs_meg)
+    idxs_meg = apply_trans(rotation(x=-np.deg2rad(theta)), idxs_meg)
+    coords = idxs_meg.reshape(t1w.shape + (3,))  # (*t1w_data.shape, 3)
+    mask = (coords[..., 2] < 0)   # z < 0
+
+    t1w_data[mask] = 0.
+    # smooth decided against for potential lack of anonymizaton
+    # https://gist.github.com/alexrockhill/15043928b716a432db3a84a050b241ae
+
+    t1w = nib.Nifti1Image(t1w_data, t1w.affine, t1w.header)
+    return t1w
+
+
 def make_bids_basename(subject=None, session=None, task=None,
                        acquisition=None, run=None, processing=None,
                        recording=None, space=None, prefix=None, suffix=None):
@@ -1012,28 +1072,9 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
         raise ImportError('This function requires nibabel.')
     import nibabel as nib
 
-    if deface and trans is None:
-        raise ValueError('The raw object and trans must be provided to '
+    if deface and (trans is None or raw is None):
+        raise ValueError('The raw object, trans and raw must be provided to '
                          'deface the T1')
-
-    inset, theta = (0.2, 35.)
-    if isinstance(deface, dict):
-        if 'inset' in deface:
-            inset = deface['inset']
-        if 'theta' in deface:
-            theta = deface['theta']
-
-    if not isinstance(inset, float):
-        raise ValueError('inset must be float. Got %s' % type(inset))
-
-    if not (isinstance(theta, float) or isinstance(theta, int)):
-        raise ValueError('theta must be float. Got %s' % type(theta))
-
-    if not 0 < inset < 1.0:
-        raise ValueError('inset should be between 0 and 1')
-
-    if not 0 < theta < 90:
-        raise ValueError('theta should be between 0 and 90 degrees')
 
     # Make directory for anatomical data
     anat_dir = op.join(bids_root, 'sub-{}'.format(subject))
@@ -1103,39 +1144,7 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
         _write_json(fname, t1w_json, overwrite, verbose)
 
         if deface:
-            # x: L/R L+, y: S/I I+, z: A/P A+
-            t1w_data = t1w.get_data().copy()
-            idxs_vox = np.meshgrid(np.arange(t1w_data.shape[0]),
-                                   np.arange(t1w_data.shape[1]),
-                                   np.arange(t1w_data.shape[2]),
-                                   indexing='ij')
-            idxs_vox = np.array(idxs_vox)  # (3, *t1w_data.shape)
-            idxs_vox = np.transpose(idxs_vox,
-                                    [1, 2, 3, 0])  # (*t1w_data.shape, 3)
-            idxs_vox = idxs_vox.reshape(-1, 3)  # (n_voxels, 3)
-
-            mri_landmarks_ras = apply_trans(t1w.affine, mri_landmarks)
-            ras_meg_t = \
-                get_ras_to_neuromag_trans(*mri_landmarks_ras[[1, 0, 2]])
-
-            idxs_ras = apply_trans(t1w.affine, idxs_vox)
-            idxs_meg = apply_trans(ras_meg_t, idxs_ras)
-
-            # now comes the actual defacing
-            # 1. move center of voxels to (nasion - inset)
-            # 2. rotate the head by theta from the normal to the plane passing
-            # through anatomical coordinates
-            trans_y = -mri_landmarks_ras[1, 1] + t1w_data.shape[2] * inset
-            idxs_meg = apply_trans(translation(y=trans_y), idxs_meg)
-            idxs_meg = apply_trans(rotation(x=-np.deg2rad(theta)), idxs_meg)
-            coords = idxs_meg.reshape(t1w.shape + (3,))  # (*t1w_data.shape, 3)
-            mask = (coords[..., 2] < 0)   # z < 0
-
-            t1w_data[mask] = 0.
-            # smooth decided against for potential lack of anonymizaton
-            # https://gist.github.com/alexrockhill/15043928b716a432db3a84a050b241ae
-
-            t1w = nib.Nifti1Image(t1w_data, t1w.affine, t1w.header)
+            t1w = _deface(t1w, mri_landmarks, deface, trans, raw)
 
     # Save anatomical data
     if op.exists(t1w_basename):

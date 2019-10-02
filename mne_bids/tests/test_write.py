@@ -675,7 +675,7 @@ def test_write_anat(_bids_validate):
     assert vox_sum > vox_sum3
 
     with pytest.raises(ValueError,
-                       match='The raw object and trans must be provided'):
+                       match='The raw object, trans and raw must be provided'):
         write_anat(output_path, subject_id, t1w_mgh, session_id, raw=raw,
                    trans=None, verbose=True, deface=dict(inset=2),
                    overwrite=True)
