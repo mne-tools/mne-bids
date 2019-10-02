@@ -155,6 +155,27 @@ for point_idx, label in enumerate(('LPA', 'NAS', 'RPA')):
               title=label)
 plt.show()
 
+#
+# We can deface the MRI for anonymization
+#
+anat_dir = write_anat(bids_root=output_path,  # the BIDS dir we wrote earlier
+                      subject=sub,
+                      t1w=t1_mgh_fname,  # path to the MRI scan
+                      session=ses,
+                      raw=raw,  # the raw MEG data file connected to the MRI
+                      trans=trans,  # our transformation matrix
+                      deface=True,
+                      verbose=True  # this will print out the sidecar file
+                      )
+
+# Our MRI written to BIDS, we got `anat_dir` from our `write_anat` function
+t1_nii_fname = op.join(anat_dir, 'sub-01_ses-01_T1w.nii.gz')
+
+# Plot it
+fig, ax = plt.subplots()
+plot_anat(t1_nii_fname, axes=ax,
+          title='Defaced')
+plt.show()
 
 ###############################################################################
 # .. LINKS
