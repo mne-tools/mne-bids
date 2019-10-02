@@ -165,6 +165,7 @@ anat_dir = write_anat(bids_root=output_path,  # the BIDS dir we wrote earlier
                       raw=raw,  # the raw MEG data file connected to the MRI
                       trans=trans,  # our transformation matrix
                       deface=True,
+                      overwrite=True,
                       verbose=True  # this will print out the sidecar file
                       )
 
@@ -173,8 +174,7 @@ t1_nii_fname = op.join(anat_dir, 'sub-01_ses-01_T1w.nii.gz')
 
 # Plot it
 fig, ax = plt.subplots()
-plot_anat(t1_nii_fname, axes=ax,
-          title='Defaced')
+plot_anat(t1_nii_fname, axes=ax, title='Defaced')
 plt.show()
 
 ###############################################################################
