@@ -1074,9 +1074,7 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
         _write_json(fname, t1w_json, overwrite, verbose)
 
         if deface is not None:
-            t1w_data_defaced = _deface_t1w(t1w.get_data(), deface,
-                                           mri_landmarks)
-            t1w = nib.Nifti1Image(t1w_data_defaced, t1w.affine, t1w.header)
+            t1w = _deface_t1w(t1w, deface, meg_landmarks, trans, ras2vox_tkr)
 
     # Save anatomical data
     if op.exists(t1w_basename):
@@ -1092,10 +1090,10 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
     return anat_dir
 
 
-def _deface_t1w(t1w_data, method, mri_landmarks, theta=35):
+def _deface_t1w(t1w_data, method, meg_landmarks, trans, ras2vox_tkr, theta=35):
     # x: L/R L+, y: S/I I+, z: A/P A+
-    normal = np.cross(mri_landmarks[0], mri_landmarks[1])
-    normal /= np.linalg.norm(normal)
+    from mne.transforms import rotation
+    t1w_data = t1w.get_data()
     deface_indices = np.zeros(t1w_data.shape, dtype=bool)
     for i in range(t1w_data.shape[0]):
         for j in range(t1w_data.shape[1]):
@@ -1112,7 +1110,7 @@ def _deface_t1w(t1w_data, method, mri_landmarks, theta=35):
         t1w_data[deface_indices] = 0
     else:
         raise ValueError('Deface argument %s not recognized' % method)
-    return t1w_data
+    return nib.Nifti1Image(t1w_data, t1w.affine, t1w.header)
 
 
 def rotate(v, thetas):
