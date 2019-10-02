@@ -16,7 +16,8 @@ from collections import defaultdict, OrderedDict
 
 import numpy as np
 from numpy.testing import assert_array_equal
-from mne.transforms import _get_trans, apply_trans
+from mne.transforms import (_get_trans, apply_trans, get_ras_to_neuromag_trans,
+                            rotation, translation)
 from mne import Epochs
 from mne.io.constants import FIFF
 from mne.io.pick import channel_type
@@ -948,8 +949,8 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
 
 
 def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
-               raw=None, trans=None, deface=None, overwrite=False,
-               verbose=False):
+               raw=None, trans=None, deface=(0.05, 35., 'erase', False),
+               overwrite=False, verbose=False):
     """Put anatomical MRI data into a BIDS format.
 
     Given a BIDS directory and a T1 weighted MRI scan for a certain subject,
@@ -979,10 +980,14 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
         also be a string pointing to a .trans file containing the
         transformation matrix. If None, no sidecar JSON file will be written
         for `t1w`
-    deface : str | None
-        The method for defacing: If `smooth` a guassian kernal will be
-        used to smooth the face area, if `erase`, the image values in
-        the face area will be erased. If None, no defacing will be performed.
+    deface : tuple (float, float, str, bool) | None
+        Deface parameters in the order (inset, theta, method, plot). Here inset
+        is how far back as a fraction of mri space to start defacing
+        relative to the naisan, theta is the angle of the defacing shear,
+        `method` accepts `smooth` to apply a guassian kernal to the masked
+        face area and `erase` to set the image values in the face area
+        to zero, `plot_on` is whether or not to plot the results.
+        If None, no defacing will be performed.
     overwrite : bool
         Whether to overwrite existing files or data in files.
         Defaults to False.
@@ -1009,6 +1014,8 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
     if deface is not None and trans is None:
         raise ValueError('The raw object and trans must be provided to '
                          'deface the T1')
+    else:
+        inset, theta, method, plot_on = deface
 
     # Make directory for anatomical data
     anat_dir = op.join(bids_root, 'sub-{}'.format(subject))
@@ -1074,7 +1081,39 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
         _write_json(fname, t1w_json, overwrite, verbose)
 
         if deface is not None:
-            t1w = _deface_t1w(t1w, deface, meg_landmarks, trans, ras2vox_tkr)
+            # x: L/R L+, y: S/I I+, z: A/P A+
+            t1w_data = t1w.get_data().copy()
+            indices = np.meshgrid(np.arange(t1w_data.shape[0]),
+                                  np.arange(t1w_data.shape[1]),
+                                  np.arange(t1w_data.shape[2]),
+                                  indexing='ij')
+            indices = np.array(indices)  # e.g., (3, 86, 86, 86)
+            indices = np.transpose(indices, [1, 2, 3, 0])  # (86, 86, 86, 3)
+            indices = indices.reshape(-1, 3)  # (86 * 86 * 86, 3)
+
+            mri_landmarks2 = apply_trans(t1w.affine, mri_landmarks)
+            meg_trans = get_ras_to_neuromag_trans(*mri_landmarks2[[1, 0, 2]])
+
+            indices = apply_trans(t1w.affine, indices)
+            indices = apply_trans(meg_trans, indices)
+            trans_y = -mri_landmarks2[1, 1] + t1w_data.shape[2] * inset
+            indices = apply_trans(translation(y=trans_y), indices)
+            indices = apply_trans(rotation(x=-np.deg2rad(theta)), indices)
+
+            coords = indices.reshape(t1w.shape + (3,))
+            mask = (coords[..., 2] < 0)
+
+            if method == 'smooth':
+                raise ValueError('Smooth method not yet implemented')
+            elif method == 'erase':
+                t1w_data[mask] = 0.
+            else:
+                raise ValueError('Deface argument %s not recognized' % method)
+
+            t1w = nib.Nifti1Image(t1w_data, t1w.affine, t1w.header)
+            if plot_on:
+                fig = t1w.orthoview()
+                fig.show()
 
     # Save anatomical data
     if op.exists(t1w_basename):
@@ -1088,42 +1127,3 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
     nib.save(t1w, t1w_basename)
 
     return anat_dir
-
-
-def _deface_t1w(t1w_data, method, meg_landmarks, trans, ras2vox_tkr, theta=35):
-    # x: L/R L+, y: S/I I+, z: A/P A+
-    from mne.transforms import rotation
-    t1w_data = t1w.get_data()
-    deface_indices = np.zeros(t1w_data.shape, dtype=bool)
-    for i in range(t1w_data.shape[0]):
-        for j in range(t1w_data.shape[1]):
-            for k in range(t1w_data.shape[2]):
-                # translate to NAS, and shift up
-                v = np.array([i, j, k]) - mri_landmarks[1]
-                v[1] += t1w_data.shape[2] / 20
-                v = rotate(v, [np.deg2rad(theta), 0, 0])
-                if v[2] > 0:
-                    deface_indices[i, j, k] = True
-    if method == 'smooth':
-        raise ValueError('Smooth method not yet implemented')
-    elif method == 'erase':
-        t1w_data[deface_indices] = 0
-    else:
-        raise ValueError('Deface argument %s not recognized' % method)
-    return nib.Nifti1Image(t1w_data, t1w.affine, t1w.header)
-
-
-def rotate(v, thetas):
-    rot_x = np.array([[1, 0, 0],
-                      [0, np.cos(thetas[0]), -np.sin(thetas[0])],
-                      [0, np.sin(thetas[0]), np.cos(thetas[0])]])
-    v = np.dot(rot_x, v)
-    rot_y = np.array([[np.cos(thetas[1]), 0, np.sin(thetas[1])],
-                      [0, 1, 0],
-                      [-np.sin(thetas[1]), 0, np.cos(thetas[1])]])
-    v = np.dot(rot_y, v)
-    rot_z = np.array([[np.cos(thetas[2]), -np.sin(thetas[2]), 0],
-                      [np.sin(thetas[2]), np.cos(thetas[2]), 0],
-                      [0, 0, 1]])
-    v = np.dot(rot_z, v)
-    return v
