@@ -980,17 +980,14 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
         also be a string pointing to a .trans file containing the
         transformation matrix. If None, no sidecar JSON file will be written
         for `t1w`
-    deface : bool | tuple (float, float, str, bool) | None
-        If True, deface with default parameters, if parameters are provided,
-        the order is inset, theta, method, plot. Here `inset`
-        is how far back as a fraction of mri space to start defacing
-        relative to the nasion (default 0.2), `theta` is the angle of
-        the defacing shear (default 35 degrees), `method` accepts
-        `smooth` to apply a guassian kernal to the masked
-        face area and `erase` to set the image values in the face area
-        to zero (default `smooth`, `plot_on` is whether or not to
-        plot the results (default False). If None, no defacing
-        will be performed.
+    deface : bool | tuple (float, float, bool)
+        If False, no defacing is performed.
+        If True, deface with default parameters.
+        If parameters are provided, the order is inset, theta, plot.
+        Here `inset` is how far back as a fraction of mri space to start
+        defacing relative to the nasion (default 0.2), `theta` is the angle of
+        the defacing shear (default 35 degrees), and `plot_on`
+        is whether or not to plot the results (default False).
     overwrite : bool
         Whether to overwrite existing files or data in files.
         Defaults to False.
@@ -1017,14 +1014,14 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
     if deface and trans is None:
         raise ValueError('The raw object and trans must be provided to '
                          'deface the T1')
+
     if isinstance(deface, list) or isinstance(deface, tuple):
-        inset, theta, method, plot_on = deface
+        inset, theta, plot_on = deface
         assert isinstance(inset, float) or isinstance(inset, int)
         assert isinstance(theta, float) or isinstance(inset, int)
-        assert isinstance(method, str)
         assert isinstance(plot_on, bool)
     elif deface:
-        inset, theta, method, plot_on = (0.2, 35., 'smooth', False)
+        inset, theta, plot_on = (0.2, 35., False)
 
     # Make directory for anatomical data
     anat_dir = op.join(bids_root, 'sub-{}'.format(subject))
@@ -1087,9 +1084,13 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
              'NAS': list(mri_landmarks[1, :]),
              'RPA': list(mri_landmarks[2, :])}
         fname = t1w_basename.replace('.nii.gz', '.json')
+        if op.isfile(fname) and not overwrite:
+            raise IOError('Wanted to write a file but it already exists and '
+                          '`overwrite` is set to False. File: "{}"'
+                          .format(fname))
         _write_json(fname, t1w_json, overwrite, verbose)
 
-        if deface is not None:
+        if deface:
             # x: L/R L+, y: S/I I+, z: A/P A+
             t1w_data = t1w.get_data().copy()
             indices = np.meshgrid(np.arange(t1w_data.shape[0]),
@@ -1111,23 +1112,9 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
             coords = indices.reshape(t1w.shape + (3,))
             mask = (coords[..., 2] < 0)
 
-            if method == 'smooth':
-                # https://docs.scipy.org/doc/scipy-0.16.1/reference/generated/scipy.ndimage.filters.gaussian_filter.html
-                from scipy.ndimage import gaussian_filter
-                for layer in range(5):
-                    t1w_data[mask] = gaussian_filter(t1w_data,
-                                                     sigma=0.5 * layer,
-                                                     order=0)[mask]
-                    z = t1w_data.shape[2] * 0.1
-                    indices = apply_trans(translation(z=z),
-                                          indices)
-                    coords = indices.reshape(t1w.shape + (3,))
-                    mask = (coords[..., 2] < 0)
-
-            elif method == 'erase':
-                t1w_data[mask] = 0.
-            else:
-                raise ValueError('Deface argument %s not recognized' % method)
+            t1w_data[mask] = 0.
+            # smooth decided against for potential lack of anonymizaton
+            # https://gist.github.com/alexrockhill/15043928b716a432db3a84a050b241ae
 
             t1w = nib.Nifti1Image(t1w_data, t1w.affine, t1w.header)
             if plot_on:

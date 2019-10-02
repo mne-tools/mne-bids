@@ -565,7 +565,8 @@ def test_write_anat(_bids_validate):
     t1w_mgh = op.join(data_path, 'subjects', 'sample', 'mri', 'T1.mgz')
 
     anat_dir = write_anat(output_path, subject_id, t1w_mgh, session_id, acq,
-                          raw=raw, trans=trans, verbose=True)
+                          raw=raw, trans=trans, deface=True, verbose=True,
+                          overwrite=True)
     _bids_validate(output_path)
 
     # Validate that files are as expected
@@ -598,12 +599,13 @@ def test_write_anat(_bids_validate):
     # We already have some MRI data there
     with pytest.raises(IOError, match='`overwrite` is set to False'):
         write_anat(output_path, subject_id, t1w_mgh, session_id, acq,
-                   raw=raw, trans=trans, verbose=True, overwrite=False)
+                   raw=raw, trans=trans, verbose=True, deface=True,
+                   overwrite=False)
 
     # pass some invalid type as T1 MRI
     with pytest.raises(ValueError, match='must be a path to a T1 weighted'):
         write_anat(output_path, subject_id, 9999999999999, session_id, raw=raw,
-                   trans=trans, verbose=True, overwrite=True)
+                   trans=trans, verbose=True, deface=True, overwrite=True)
 
     # Return without writing sidecar
     sh.rmtree(anat_dir)
@@ -618,7 +620,8 @@ def test_write_anat(_bids_validate):
     match = 'transform type {} not known, must be'.format(type(wrong_type))
     with pytest.raises(ValueError, match=match):
         write_anat(output_path, subject_id, t1w_mgh, session_id, raw=raw,
-                   trans=wrong_type, verbose=True, overwrite=True)
+                   trans=wrong_type, verbose=True, deface=True,
+                   overwrite=True)
 
     # trans is a str, but file does not exist
     wrong_fname = 'not_a_trans'
