@@ -1023,16 +1023,17 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
         if 'theta' in deface:
             theta = deface['theta']
 
-    if not 0 < inset < 1.0:
-        raise ValueError('inset should be between 0 and 1')
-    if not 0 < theta < 90:
-        raise ValueError('theta should be between 0 and 90 degrees')
-
     if not isinstance(inset, float):
         raise ValueError('inset must be float. Got %s' % type(inset))
 
     if not (isinstance(theta, float) or isinstance(theta, int)):
         raise ValueError('theta must be float. Got %s' % type(theta))
+
+    if not 0 < inset < 1.0:
+        raise ValueError('inset should be between 0 and 1')
+
+    if not 0 < theta < 90:
+        raise ValueError('theta should be between 0 and 90 degrees')
 
     # Make directory for anatomical data
     anat_dir = op.join(bids_root, 'sub-{}'.format(subject))

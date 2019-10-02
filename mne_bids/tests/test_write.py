@@ -682,7 +682,7 @@ def test_write_anat(_bids_validate):
 
     with pytest.raises(ValueError, match='inset must be float'):
         write_anat(output_path, subject_id, t1w_mgh, session_id, raw=raw,
-                   trans=trans, verbose=True, deface=dict(inset=2),
+                   trans=trans, verbose=True, deface=dict(inset='small'),
                    overwrite=True)
 
     with pytest.raises(ValueError, match='inset should be between 0 and 1'):
