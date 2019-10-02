@@ -980,14 +980,15 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
         also be a string pointing to a .trans file containing the
         transformation matrix. If None, no sidecar JSON file will be written
         for `t1w`
-    deface : bool | tuple (float, float, bool)
+    deface : bool | dict
         If False, no defacing is performed.
         If True, deface with default parameters.
-        If parameters are provided, the order is inset, theta, plot.
+        If dict, it will update the following dict of defaults:
+                dict(inset=0.2, theta=35, plot_on=False)
         Here `inset` is how far back as a fraction of mri space to start
-        defacing relative to the nasion (default 0.2), `theta` is the angle of
-        the defacing shear (default 35 degrees), and `plot_on`
-        is whether or not to plot the results (default False).
+        defacing relative to the nasion, `theta` is the angle of
+        the defacing shear in degrees, and `plot_on`
+        is whether or not to plot the results.
     overwrite : bool
         Whether to overwrite existing files or data in files.
         Defaults to False.
@@ -1015,13 +1016,18 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
         raise ValueError('The raw object and trans must be provided to '
                          'deface the T1')
 
-    if isinstance(deface, list) or isinstance(deface, tuple):
-        inset, theta, plot_on = deface
-        assert isinstance(inset, float) or isinstance(inset, int)
-        assert isinstance(theta, float) or isinstance(inset, int)
-        assert isinstance(plot_on, bool)
-    elif deface:
-        inset, theta, plot_on = (0.2, 35., False)
+    inset, theta = (0.2, 35.)
+    if isinstance(deface, dict):
+        if 'inset' in deface:
+            inset = deface['inset']
+        if 'theta' in deface:
+            theta = deface['theta']
+
+    if not isinstance(inset, float):
+        raise ValueError('inset must be float. Got %s' % type(inset))
+
+    if not (isinstance(theta, float) or isinstance(theta, int)):
+        raise ValueError('theta must be float. Got %s' % type(theta))
 
     # Make directory for anatomical data
     anat_dir = op.join(bids_root, 'sub-{}'.format(subject))
@@ -1117,9 +1123,6 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
             # https://gist.github.com/alexrockhill/15043928b716a432db3a84a050b241ae
 
             t1w = nib.Nifti1Image(t1w_data, t1w.affine, t1w.header)
-            if plot_on:
-                fig = t1w.orthoview()
-                fig.show()
 
     # Save anatomical data
     if op.exists(t1w_basename):
