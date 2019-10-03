@@ -543,6 +543,7 @@ def test_set(_bids_validate):
 def test_write_anat(_bids_validate):
     """Test writing anatomical data."""
     # Get the MNE testing sample data
+    import nibabel as nib
     output_path = _TempDir()
     data_path = testing.data_path()
     raw_fname = op.join(data_path, 'MEG', 'sample',
@@ -647,9 +648,6 @@ def test_write_anat(_bids_validate):
                    trans=trans, verbose=True, deface=False, overwrite=True)
 
     # test deface
-    if not has_nibabel():  # pragma: no cover
-        raise ImportError('This function requires nibabel.')
-    import nibabel as nib
     anat_dir = write_anat(output_path, subject_id, t1w_mgh,
                           session_id, raw=raw, trans=trans_fname,
                           verbose=True, deface=True, overwrite=True)
