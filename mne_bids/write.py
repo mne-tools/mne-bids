@@ -497,7 +497,7 @@ def _deface(t1w, mri_landmarks, deface, trans, raw):
         raise ImportError('This function requires nibabel.')
     import nibabel as nib
 
-    inset, theta = (0.2, 35.)
+    inset, theta = (20, 35.)
     if isinstance(deface, dict):
         if 'inset' in deface:
             inset = deface['inset']
@@ -538,7 +538,7 @@ def _deface(t1w, mri_landmarks, deface, trans, raw):
     # 1. move center of voxels to (nasion - inset)
     # 2. rotate the head by theta from the normal to the plane passing
     # through anatomical coordinates
-    trans_y = -mri_landmarks_ras[1, 1] + t1w_data.shape[2] * inset
+    trans_y = -mri_landmarks_ras[1, 1] + inset
     idxs_meg = apply_trans(translation(y=trans_y), idxs_meg)
     idxs_meg = apply_trans(rotation(x=-np.deg2rad(theta)), idxs_meg)
     coords = idxs_meg.reshape(t1w.shape + (3,))  # (*t1w_data.shape, 3)
@@ -1044,8 +1044,8 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
         If False, no defacing is performed.
         If True, deface with default parameters.
         If dict, accepts the following keys:
-            `inset`: how far back as a fraction of mri space to start
-                     defacing relative to the nasion (default 0.2)
+            `inset`: how far back in millimeters to start defacing
+                     defacing relative to the nasion (default 20)
             `theta`: is the angle of the defacing shear in degrees relative
                      to the normal to the plane passing through the anatomical
                      landmarks (default 35).
