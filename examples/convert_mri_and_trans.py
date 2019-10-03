@@ -155,7 +155,7 @@ for point_idx, label in enumerate(('LPA', 'NAS', 'RPA')):
               title=label)
 plt.show()
 
-#
+###############################################################################
 # We can deface the MRI for anonymization
 #
 anat_dir = write_anat(bids_root=output_path,  # the BIDS dir we wrote earlier
