@@ -1048,7 +1048,7 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
                      defacing relative to the nasion (default 0.2)
             `theta`: is the angle of the defacing shear in degrees relative
                      to the normal to the plane passing through the anatomical
-                     landmarks (default 35)
+                     landmarks (default 35).
     overwrite : bool
         Whether to overwrite existing files or data in files.
         Defaults to False.
