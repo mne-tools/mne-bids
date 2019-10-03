@@ -42,6 +42,10 @@ from mne_bids.config import (ORIENTATION, UNITS, MANUFACTURERS,
                              BIDS_VERSION)
 
 
+def _is_numeric(n):
+    return isinstance(n, (np.integer, np.floating, int, float))
+
+
 def _channels_tsv(raw, fname, overwrite=False, verbose=True):
     """Create a channels.tsv file and save it.
 
@@ -504,17 +508,21 @@ def _deface(t1w, mri_landmarks, deface, trans, raw):
         if 'theta' in deface:
             theta = deface['theta']
 
-    if not isinstance(inset, float):
-        raise ValueError('inset must be float. Got %s' % type(inset))
+    if not _is_numeric(inset):
+        raise ValueError('inset must be numeric (float, int). '
+                         'Got %s' % type(inset))
 
-    if not (isinstance(theta, float) or isinstance(theta, int)):
-        raise ValueError('theta must be float. Got %s' % type(theta))
+    if not _is_numeric(theta):
+        raise ValueError('theta must be numeric (float, int). '
+                         'Got %s' % type(theta))
 
-    if not 0 < inset < 1.0:
-        raise ValueError('inset should be between 0 and 1')
+    if inset < 0:
+        raise ValueError('inset should be positive, '
+                         'Got %s' % inset)
 
     if not 0 < theta < 90:
-        raise ValueError('theta should be between 0 and 90 degrees')
+        raise ValueError('theta should be between 0 and 90 '
+                         'degrees. Got %s' % theta)
 
     # x: L/R L+, y: S/I I+, z: A/P A+
     t1w_data = t1w.get_data().copy()
