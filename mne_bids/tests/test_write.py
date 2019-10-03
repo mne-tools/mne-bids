@@ -656,7 +656,7 @@ def test_write_anat(_bids_validate):
 
     anat_dir2 = write_anat(output_path, subject_id, t1w_mgh,
                            session_id, raw=raw, trans=trans_fname,
-                           verbose=True, deface=dict(inset=20.),
+                           verbose=True, deface=dict(inset=25.),
                            overwrite=True)
     t1w2 = nib.load(op.join(anat_dir2, 'sub-01_ses-01_T1w.nii.gz'))
     vox_sum2 = t1w2.get_data().sum()
@@ -675,7 +675,7 @@ def test_write_anat(_bids_validate):
     with pytest.raises(ValueError,
                        match='The raw object, trans and raw must be provided'):
         write_anat(output_path, subject_id, t1w_mgh, session_id, raw=raw,
-                   trans=None, verbose=True, deface=dict(inset=20.),
+                   trans=None, verbose=True, deface=True,
                    overwrite=True)
 
     with pytest.raises(ValueError, match='inset must be numeric'):
@@ -683,12 +683,12 @@ def test_write_anat(_bids_validate):
                    trans=trans, verbose=True, deface=dict(inset='small'),
                    overwrite=True)
 
-    with pytest.raises(ValueError, match='inset should positive'):
+    with pytest.raises(ValueError, match='inset should be positive'):
         write_anat(output_path, subject_id, t1w_mgh, session_id, raw=raw,
-                   trans=trans, verbose=True, deface=dict(inset=-2),
+                   trans=trans, verbose=True, deface=dict(inset=-2.),
                    overwrite=True)
 
-    with pytest.raises(ValueError, match='theta must be float'):
+    with pytest.raises(ValueError, match='theta must be numeric'):
         write_anat(output_path, subject_id, t1w_mgh, session_id, raw=raw,
                    trans=trans, verbose=True, deface=dict(theta='big'),
                    overwrite=True)
