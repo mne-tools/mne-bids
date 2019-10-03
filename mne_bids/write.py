@@ -1051,6 +1051,7 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
     deface : bool | dict
         If False, no defacing is performed.
         If True, deface with default parameters.
+        `trans` and `raw` must not be `None` if True.
         If dict, accepts the following keys:
             `inset`: how far back in millimeters to start defacing
                      relative to the nasion (default 20)
