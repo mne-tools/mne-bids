@@ -1053,7 +1053,7 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
         If True, deface with default parameters.
         If dict, accepts the following keys:
             `inset`: how far back in millimeters to start defacing
-                     defacing relative to the nasion (default 20)
+                     relative to the nasion (default 20)
             `theta`: is the angle of the defacing shear in degrees relative
                      to the normal to the plane passing through the anatomical
                      landmarks (default 35).
