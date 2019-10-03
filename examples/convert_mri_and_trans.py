@@ -157,7 +157,6 @@ plt.show()
 
 ###############################################################################
 # We can deface the MRI for anonymization
-#
 anat_dir = write_anat(bids_root=output_path,  # the BIDS dir we wrote earlier
                       subject=sub,
                       t1w=t1_mgh_fname,  # path to the MRI scan
