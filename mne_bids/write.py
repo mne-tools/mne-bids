@@ -16,7 +16,8 @@ from collections import defaultdict, OrderedDict
 
 import numpy as np
 from numpy.testing import assert_array_equal
-from mne.transforms import _get_trans, apply_trans
+from mne.transforms import (_get_trans, apply_trans, get_ras_to_neuromag_trans,
+                            rotation, translation)
 from mne import Epochs
 from mne.io.constants import FIFF
 from mne.io.pick import channel_type
@@ -39,6 +40,10 @@ from mne_bids.tsv_handler import _from_tsv, _combine, _drop, _contains_row
 from mne_bids.config import (ORIENTATION, UNITS, MANUFACTURERS,
                              IGNORED_CHANNELS, ALLOWED_EXTENSIONS,
                              BIDS_VERSION)
+
+
+def _is_numeric(n):
+    return isinstance(n, (np.integer, np.floating, int, float))
 
 
 def _channels_tsv(raw, fname, overwrite=False, verbose=True):
@@ -489,6 +494,70 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, overwrite=False,
     _write_json(fname, ch_info_json, overwrite, verbose)
 
     return fname
+
+
+def _deface(t1w, mri_landmarks, deface, trans, raw):
+    if not has_nibabel():  # pragma: no cover
+        raise ImportError('This function requires nibabel.')
+    import nibabel as nib
+
+    inset, theta = (20, 35.)
+    if isinstance(deface, dict):
+        if 'inset' in deface:
+            inset = deface['inset']
+        if 'theta' in deface:
+            theta = deface['theta']
+
+    if not _is_numeric(inset):
+        raise ValueError('inset must be numeric (float, int). '
+                         'Got %s' % type(inset))
+
+    if not _is_numeric(theta):
+        raise ValueError('theta must be numeric (float, int). '
+                         'Got %s' % type(theta))
+
+    if inset < 0:
+        raise ValueError('inset should be positive, '
+                         'Got %s' % inset)
+
+    if not 0 < theta < 90:
+        raise ValueError('theta should be between 0 and 90 '
+                         'degrees. Got %s' % theta)
+
+    # x: L/R L+, y: S/I I+, z: A/P A+
+    t1w_data = t1w.get_data().copy()
+    idxs_vox = np.meshgrid(np.arange(t1w_data.shape[0]),
+                           np.arange(t1w_data.shape[1]),
+                           np.arange(t1w_data.shape[2]),
+                           indexing='ij')
+    idxs_vox = np.array(idxs_vox)  # (3, *t1w_data.shape)
+    idxs_vox = np.transpose(idxs_vox,
+                            [1, 2, 3, 0])  # (*t1w_data.shape, 3)
+    idxs_vox = idxs_vox.reshape(-1, 3)  # (n_voxels, 3)
+
+    mri_landmarks_ras = apply_trans(t1w.affine, mri_landmarks)
+    ras_meg_t = \
+        get_ras_to_neuromag_trans(*mri_landmarks_ras[[1, 0, 2]])
+
+    idxs_ras = apply_trans(t1w.affine, idxs_vox)
+    idxs_meg = apply_trans(ras_meg_t, idxs_ras)
+
+    # now comes the actual defacing
+    # 1. move center of voxels to (nasion - inset)
+    # 2. rotate the head by theta from the normal to the plane passing
+    # through anatomical coordinates
+    trans_y = -mri_landmarks_ras[1, 1] + inset
+    idxs_meg = apply_trans(translation(y=trans_y), idxs_meg)
+    idxs_meg = apply_trans(rotation(x=-np.deg2rad(theta)), idxs_meg)
+    coords = idxs_meg.reshape(t1w.shape + (3,))  # (*t1w_data.shape, 3)
+    mask = (coords[..., 2] < 0)   # z < 0
+
+    t1w_data[mask] = 0.
+    # smooth decided against for potential lack of anonymizaton
+    # https://gist.github.com/alexrockhill/15043928b716a432db3a84a050b241ae
+
+    t1w = nib.Nifti1Image(t1w_data, t1w.affine, t1w.header)
+    return t1w
 
 
 def make_bids_basename(subject=None, session=None, task=None,
@@ -948,7 +1017,8 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
 
 
 def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
-               raw=None, trans=None, overwrite=False, verbose=False):
+               raw=None, trans=None, deface=False, overwrite=False,
+               verbose=False):
     """Put anatomical MRI data into a BIDS format.
 
     Given a BIDS directory and a T1 weighted MRI scan for a certain subject,
@@ -978,6 +1048,16 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
         also be a string pointing to a .trans file containing the
         transformation matrix. If None, no sidecar JSON file will be written
         for `t1w`
+    deface : bool | dict
+        If False, no defacing is performed.
+        If True, deface with default parameters.
+        `trans` and `raw` must not be `None` if True.
+        If dict, accepts the following keys:
+            `inset`: how far back in millimeters to start defacing
+                     relative to the nasion (default 20)
+            `theta`: is the angle of the defacing shear in degrees relative
+                     to the normal to the plane passing through the anatomical
+                     landmarks (default 35).
     overwrite : bool
         Whether to overwrite existing files or data in files.
         Defaults to False.
@@ -1000,6 +1080,10 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
     if not has_nibabel():  # pragma: no cover
         raise ImportError('This function requires nibabel.')
     import nibabel as nib
+
+    if deface and (trans is None or raw is None):
+        raise ValueError('The raw object, trans and raw must be provided to '
+                         'deface the T1')
 
     # Make directory for anatomical data
     anat_dir = op.join(bids_root, 'sub-{}'.format(subject))
@@ -1024,19 +1108,11 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
     # https://nifti.nimh.nih.gov/nifti-1/documentation/nifti1fields/nifti1fields_pages/xyzt_units.html
     if t1w.header['xyzt_units'] == 0:
         t1w.header['xyzt_units'] = np.array(10, dtype='uint8')
+
     # Now give the NIfTI file a BIDS name and write it to the BIDS location
     t1w_basename = make_bids_basename(subject=subject, session=session,
                                       acquisition=acquisition, prefix=anat_dir,
                                       suffix='T1w.nii.gz')
-    if not op.exists(t1w_basename):
-        nib.save(t1w, t1w_basename)
-    elif overwrite:
-        os.remove(t1w_basename)
-        nib.save(t1w, t1w_basename)
-    else:
-        raise IOError('Wanted to write a file but it already exists and '
-                      '`overwrite` is set to False. File: "{}"'
-                      .format(t1w_basename))
 
     # Check if we have necessary conditions for writing a sidecar JSON
     if trans is not None:
@@ -1070,6 +1146,24 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
              'NAS': list(mri_landmarks[1, :]),
              'RPA': list(mri_landmarks[2, :])}
         fname = t1w_basename.replace('.nii.gz', '.json')
+        if op.isfile(fname) and not overwrite:
+            raise IOError('Wanted to write a file but it already exists and '
+                          '`overwrite` is set to False. File: "{}"'
+                          .format(fname))
         _write_json(fname, t1w_json, overwrite, verbose)
+
+        if deface:
+            t1w = _deface(t1w, mri_landmarks, deface, trans, raw)
+
+    # Save anatomical data
+    if op.exists(t1w_basename):
+        if overwrite:
+            os.remove(t1w_basename)
+        else:
+            raise IOError('Wanted to write a file but it already exists and '
+                          '`overwrite` is set to False. File: "{}"'
+                          .format(t1w_basename))
+
+    nib.save(t1w, t1w_basename)
 
     return anat_dir
