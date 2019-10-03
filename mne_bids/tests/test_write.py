@@ -25,7 +25,7 @@ from numpy.testing import assert_array_equal
 import mne
 from mne.datasets import testing
 from mne.utils import (_TempDir, run_subprocess, check_version,
-                       requires_nibabel, has_nibabel)
+                       requires_nibabel)
 from mne.io.constants import FIFF
 from mne.io.kit.kit import get_kit_info
 
