@@ -22,7 +22,7 @@ Current
 Changelog
 ~~~~~~~~~
 
--New feature in :func`mne_bids.write.write_anat` for shear deface of mri, by `Alex Rockhill`_ (`#271 <https://github.com/mne-tools/mne-bids/pull/271>`_)
+- New feature in :func`mne_bids.write.write_anat` for shear deface of mri, by `Alex Rockhill`_ (`#271 <https://github.com/mne-tools/mne-bids/pull/271>`_)
 
 
 Bug
