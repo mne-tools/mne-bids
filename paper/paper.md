@@ -40,7 +40,7 @@ With the emergence of the Brain Imaging Data Structure
 standard to organize and share data in the broad domain of neuroscience.
 
 Originally limited to MRI data types, BIDS is continuously being extended and
-by now also supports other neuroimaging modalities such as MEG [@NISO2018] and
+by now also supports other neuroimaging modalities such as MEG [@Niso2018] and
 EEG [@Pernet2019].
 
 BIDS prescribes how complex experiment data should be structured and which
