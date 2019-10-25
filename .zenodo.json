@@ -1,0 +1,30 @@
+{
+  "title": "MNE-BIDS: An MNE project for organizing and formatting MEG and EEG data according to the BIDS specification.",
+  "description": "MNE-BIDS is a Python library to facilitate the analysis of MEG and EEG with MNE-Python for data conforming to the BIDS (Brain Imaging Data Structure) format. More information about BIDS and MNE can be found under <a href=\"https://bids.neuroimaging.io\">bids.neuroimaging.io</a> and <a href=\"https://mne.tools\">mne.tools</a> respectively.",
+  "creators": [
+    {
+      "affiliation": "Center for Adaptive Rationality, Max Planck Institute for Human Development, Berlin, Germany",
+      "name": "Appelhoff, Stefan",
+      "orcid": "0000-0001-8002-0877"
+    },
+    {
+      "affiliation": "",
+      "name": "",
+      "orcid": ""
+    },
+  ],
+  "keywords": [
+    "BIDS",
+    "brain imaging data structure",
+    "neuroscience",
+    "neuroimaging",
+    "mne",
+    "python",
+    "magnetoencephalography",
+    "meg",
+    "electroencephalography",
+    "eeg"
+  ],
+  "license": "BSD 3-Clause License",
+  "upload_type": "software"
+}
