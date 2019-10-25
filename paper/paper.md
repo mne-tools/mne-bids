@@ -22,7 +22,7 @@ authors:
     orcid:
 affiliations:
 - index: 1
-  name: Max Planck Institute for Human Development, Berlin, Germany
+  name: Center for Adaptive Rationality, Max Planck Institute for Human Development, Berlin, Germany
 - index: 2
   name: Télécom ParisTech, France  
 - index: 3
