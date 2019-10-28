@@ -13,7 +13,7 @@ authors:
     orcid: 0000-0001-8002-0877
   - affiliation: 2
     name: Mainak Jas
-    orcid: 0000-0002-3199-9027    
+    orcid: 0000-0002-3199-9027
   - affiliation: 3
     name: monkeyman192
     orcid: xxxx-xxxx-xxxx-xxxx
@@ -40,24 +40,24 @@ authors:
     orcid: xxxx-xxxx-xxxx-xxxx
   - affiliation: 11
     name: hoechenberger
-    orcid: xxxx-xxxx-xxxx-xxxx    
+    orcid: xxxx-xxxx-xxxx-xxxx
   - affiliation: 12
     name: dominikwelke
-    orcid: xxxx-xxxx-xxxx-xxxx          
+    orcid: xxxx-xxxx-xxxx-xxxx
   - affiliation: 13
-    name: cbrnr
-    orcid: xxxx-xxxx-xxxx-xxxx     
+    name: Clemens Brunner
+    orcid: 0000-0002-6030-2233
   - affiliation: 14
     name: alexrockhill
     orcid: xxxx-xxxx-xxxx-xxxx
   - affiliation: 15
     name: Alexandre Gramfort
-    orcid: xxxx-xxxx-xxxx-xxxx                     
+    orcid: xxxx-xxxx-xxxx-xxxx
 affiliations:
 - index: 1
   name: Center for Adaptive Rationality, Max Planck Institute for Human Development, Berlin, Germany
 - index: 2
-  name: Télécom ParisTech, France  
+  name: Télécom ParisTech, France
 - index: 3
   name:
 - index: 4
@@ -79,7 +79,7 @@ affiliations:
 - index: 12
   name:
 - index: 13
-  name:
+  name: Institute of Psychology, University of Graz, Austria
 - index: 14
   name:
 - index: 15
