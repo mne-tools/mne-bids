@@ -68,9 +68,23 @@ affiliations:
   name:
 - index: 7
   name: University of California at Berkeley
-- index:
+- index: 8
   name:
-date: 25 October 2019
+- index: 9
+  name:
+- index: 10
+  name:
+- index: 11
+  name:
+- index: 12
+  name:
+- index: 13
+  name:
+- index: 14
+  name:
+- index: 15
+  name:
+date: 27 October 2019
 bibliography: paper.bib
 ---
 
@@ -115,7 +129,9 @@ files into BIDS format, and write additional meta data. Moreover,
 ``MNE-BIDS`` supports conversion from raw data formats that are not BIDS
 compatible into permissible formats. As a result, users can easily convert
 their datasets to BIDS in a matter of minutes, rather than after hours of
-manual labour.
+manual labour. All conversions performed by MNE-BIDS are validated with the
+bids-validator for a maximum certainty that the results hold up to the BIDS
+format.
 
 Next to this core functionality, ``MNE-BIDS`` is continuously being extended
 to facilitate the analysis of BIDS formatted data. To name some features, it is
