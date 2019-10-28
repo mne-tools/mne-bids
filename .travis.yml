@@ -73,7 +73,7 @@ cache:
 
 script:
     - pytest . --cov=./mne_bids --cov-report=xml --verbose --ignore mne-python
-    - check-manifest --ignore .circleci*,doc,coverage.xml
+    - check-manifest --ignore .circleci*,doc,paper,coverage.xml,.zenodo*
     - flake8 --count mne_bids
 
 after_success:
