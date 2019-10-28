@@ -15,17 +15,58 @@ authors:
     name: Mainak Jas
     orcid: 0000-0002-3199-9027    
   - affiliation: 3
+    name: monkeyman192
+    orcid: xxxx-xxxx-xxxx-xxxx
+  - affiliation: 4
+    name: Teon Brooks
+    orcid: xxxx-xxxx-xxxx-xxxx
+  - affiliation: 5
+    name: wmvanvliet
+    orcid:
+  - affiliation: 6
+    name: romquentin
+    orcid: xxxx-xxxx-xxxx-xxxx
+  - affiliation: 7
     name: Chris Holdgraf
     orcid: 0000-0002-2391-0678
-  - affiliation:
-    name:
-    orcid:
+  - affiliation: 8
+    name: dnacombo
+    orcid: xxxx-xxxx-xxxx-xxxx
+  - affiliation: 9
+    name: ezemikulan
+    orcid: xxxx-xxxx-xxxx-xxxx
+  - affiliation: 10
+    name: ktavabi
+    orcid: xxxx-xxxx-xxxx-xxxx
+  - affiliation: 11
+    name: hoechenberger
+    orcid: xxxx-xxxx-xxxx-xxxx    
+  - affiliation: 12
+    name: dominikwelke
+    orcid: xxxx-xxxx-xxxx-xxxx          
+  - affiliation: 13
+    name: cbrnr
+    orcid: xxxx-xxxx-xxxx-xxxx     
+  - affiliation: 14
+    name: alexrockhill
+    orcid: xxxx-xxxx-xxxx-xxxx
+  - affiliation: 15
+    name: Alexandre Gramfort
+    orcid: xxxx-xxxx-xxxx-xxxx                     
 affiliations:
 - index: 1
   name: Center for Adaptive Rationality, Max Planck Institute for Human Development, Berlin, Germany
 - index: 2
   name: Télécom ParisTech, France  
 - index: 3
+  name:
+- index: 4
+  name:
+- index: 5
+  name:
+- index: 6
+  name:
+- index: 7
   name: University of California at Berkeley
 - index:
   name:
