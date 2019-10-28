@@ -8,10 +8,75 @@
       "orcid": "0000-0001-8002-0877"
     },
     {
-      "affiliation": "to be done",
-      "name": "to be done",
-      "orcid": "to be done"
+      "affiliation": "",
+      "name": "Mainak Jas",
+      "orcid": "0000-0002-3199-9027"
     },
+    {
+     "affiliation": "",
+      "name": "monkeyman192",
+      "orcid": "xxxx-xxxx-xxxx-xxxx"
+    },
+    {
+     "affiliation": "",
+      "name":"Teon Brooks",
+      "orcid": "xxxx-xxxx-xxxx-xxxx"
+    },
+    {
+     "affiliation": "",
+      "name": "wmvanvliet",
+      "orcid":
+    },
+    {
+     "affiliation": "",
+      "name": "romquentin",
+      "orcid": "xxxx-xxxx-xxxx-xxxx"
+    },
+    {
+     "affiliation": "",
+      "name": "Chris Holdgraf",
+      "orcid": "0000-0002-2391-0678"
+    },
+    {
+     "affiliation": "",
+      "name": "dnacombo",
+      "orcid": "xxxx-xxxx-xxxx-xxxx"
+    },
+    {
+     "affiliation": "",
+      "name": "ezemikulan",
+      "orcid": "xxxx-xxxx-xxxx-xxxx"
+    },
+    {
+     "affiliation": "",
+      "name": "ktavabi",
+      "orcid": "xxxx-xxxx-xxxx-xxxx"
+    },
+    {
+     "affiliation": "",
+      "name": "hoechenberger",
+      "orcid": "xxxx-xxxx-xxxx-xxxx"
+    },
+    {
+     "affiliation": "",
+      "name": "dominikwelke",
+      "orcid": "xxxx-xxxx-xxxx-xxxx"
+    },
+    {
+     "affiliation": "",
+      "name": "cbrnr",
+      "orcid": "xxxx-xxxx-xxxx-xxxx"
+    },
+    {
+     "affiliation": "",
+      "name": "alexrockhill",
+      "orcid": "xxxx-xxxx-xxxx-xxxx"
+    },
+    {
+     "affiliation": "",
+      "name": "Alexandre Gramfort",
+      "orcid": "xxxx-xxxx-xxxx-xxxx"
+    }
   ],
   "keywords": [
     "BIDS",
