@@ -10,6 +10,7 @@ recursive-include cli *.py
 
 ### Exclude
 
+exclude .zenodo
 exclude .github
 exclude .github/PULL_REQUEST_TEMPLATE.md
 exclude Makefile
@@ -20,3 +21,4 @@ exclude .mailmap
 recursive-exclude mne_bids *.pyc
 
 recursive-exclude doc *
+recursive-exclude paper *
