@@ -13,7 +13,7 @@ authors:
     name: Stefan Appelhoff
     orcid: 0000-0001-8002-0877
   - affiliation: 2
-    name: monkeyman192
+    name: Matthew Sanderson
     orcid: xxxx-xxxx-xxxx-xxxx
   - affiliation: 3
     name: Teon L Brooks
@@ -61,7 +61,7 @@ affiliations:
 - index: 1
   name: Center for Adaptive Rationality, Max Planck Institute for Human Development, Berlin, Germany
 - index: 2
-  name:
+  name: Macquarie university
 - index: 3
   name: Mozilla
 - index: 4
@@ -160,10 +160,13 @@ contributors and its user base is steadily growing. Code development is
 active and users are typically receiving support within a few hours of opening
 an issue on our dedicated issue tracker.
 
-MNE-BIDS is used in automated analysis pipelines such as the
-MNE-study-template (https://github.com/mne-tools/mne-study-template)
-[@Mainak2018] several large institutions such as
-Martinos and "insert Matt's institution" have started to use MNE-BIDS.
+MNE-BIDS is used as a dependency in several other software packages such as
+the [MNE-study-template](https://github.com/mne-tools/mne-study-template), an
+automated analysis pipeline based on [@Mainak2018], and
+[Biscuit](https://github.com/Macquarie-MEG-Research/Biscuit), a graphical
+application to format BIDS data.
+Lastly, several large institutions have adopted MNE-BIDS for their
+workflows such as the Martinos Center for Biomedical Imaging.
 
 The developer team is excited to improve the state of the art in data handling
 and looking forward to welcoming new contributors and users.
