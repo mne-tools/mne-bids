@@ -31,8 +31,8 @@ authors:
     name: Chris Holdgraf
     orcid: 0000-0002-2391-0678
   - affiliation: 8
-    name: dnacombo
-    orcid: xxxx-xxxx-xxxx-xxxx
+    name: Maximilien Chaumon
+    orcid: 0000-0001-9664-8861
   - affiliation: 9
     name: Ezequiel Mikulan
     orcid: 0000-0001-7259-6120
@@ -70,7 +70,7 @@ affiliations:
 - index: 7
   name: UC Berkeley, Project Jupyter
 - index: 8
-  name:
+  name: Institut du cerveau et de la moelle épinière (ICM), Paris, France
 - index: 9
   name: Department of Biomedical and Clinical Sciences 'L. Sacco', University of Milan, Milan, Italy
 - index: 10
