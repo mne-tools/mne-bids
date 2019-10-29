@@ -19,11 +19,11 @@ authors:
     name: monkeyman192
     orcid: xxxx-xxxx-xxxx-xxxx
   - affiliation: 4
-    name: Teon Brooks
+    name: Teon L Brooks
     orcid: 0000-0001-7344-3230
   - affiliation: 5
-    name: wmvanvliet
-    orcid:
+    name: Marijn van Vliet
+    orcid: 0000-0002-6537-6899
   - affiliation: 6
     name: romquentin
     orcid: xxxx-xxxx-xxxx-xxxx
@@ -34,8 +34,8 @@ authors:
     name: dnacombo
     orcid: xxxx-xxxx-xxxx-xxxx
   - affiliation: 9
-    name: ezemikulan
-    orcid: xxxx-xxxx-xxxx-xxxx
+    name: Ezequiel Mikulan
+    orcid: 0000-0001-7259-6120
   - affiliation: 10
     name: ktavabi
     orcid: xxxx-xxxx-xxxx-xxxx
@@ -49,30 +49,30 @@ authors:
     name: Clemens Brunner
     orcid: 0000-0002-6030-2233
   - affiliation: 14
-    name: alexrockhill
-    orcid: xxxx-xxxx-xxxx-xxxx
+    name: Alexander P Rockhill
+    orcid: 0000-0003-3868-7453
   - affiliation: 15
     name: Alexandre Gramfort
-    orcid: xxxx-xxxx-xxxx-xxxx
+    orcid: 0000-0001-9791-4404
 affiliations:
 - index: 1
   name: Center for Adaptive Rationality, Max Planck Institute for Human Development, Berlin, Germany
 - index: 2
-  name: Télécom ParisTech, France
+  name: Athinoula A. Martinos Center for Biomedical Imaging, Massachusetts General Hospital, Charlestown, MA, USA
 - index: 3
   name:
 - index: 4
   name: Mozilla
 - index: 5
-  name:
+  name: Department of Neuroscience and Biomedical Engineering, Aalto University, Espoo, Finland
 - index: 6
   name:
 - index: 7
-  name: University of California at Berkeley
+  name: UC Berkeley, Project Jupyter
 - index: 8
   name:
 - index: 9
-  name:
+  name: Department of Biomedical and Clinical Sciences 'L. Sacco', University of Milan, Milan, Italy
 - index: 10
   name:
 - index: 11
@@ -82,10 +82,10 @@ affiliations:
 - index: 13
   name: Institute of Psychology, University of Graz, Austria
 - index: 14
-  name:
+  name: University of Oregon, Eugene OR, USA
 - index: 15
-  name:
-date: 27 October 2019
+  name: Université Paris-Saclay, Inria, CEA, Palaiseau, France
+date: 28 October 2019
 bibliography: paper.bib
 ---
 

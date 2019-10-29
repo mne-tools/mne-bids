@@ -23,9 +23,9 @@
       "orcid": "0000-0001-7344-3230"
     },
     {
-     "affiliation": "",
-      "name": "wmvanvliet",
-      "orcid":
+     "affiliation": "Department of Neuroscience and Biomedical Engineering, Aalto University, Espoo, Finland",
+      "name": "Marijn van Vliet",
+      "orcid": "0000-0002-6537-6899"
     },
     {
      "affiliation": "",
@@ -43,9 +43,9 @@
       "orcid": "xxxx-xxxx-xxxx-xxxx"
     },
     {
-     "affiliation": "",
-      "name": "ezemikulan",
-      "orcid": "xxxx-xxxx-xxxx-xxxx"
+     "affiliation": "Department of Biomedical and Clinical Sciences 'L. Sacco', University of Milan, Milan, Italy",
+      "name": "Ezequiel Mikulan",
+      "orcid": "0000-0001-7259-6120"
     },
     {
      "affiliation": "",
@@ -68,14 +68,14 @@
       "orcid": "0000-0002-6030-2233"
     },
     {
-     "affiliation": "",
-      "name": "alexrockhill",
-      "orcid": "xxxx-xxxx-xxxx-xxxx"
+     "affiliation": "University of Oregon, Eugene OR, USA",
+      "name": "Alexander P Rockhill",
+      "orcid": "0000-0003-3868-7453"
     },
     {
-     "affiliation": "",
+     "affiliation": "Université Paris-Saclay, Inria, CEA, Palaiseau, France",
       "name": "Alexandre Gramfort",
-      "orcid": "xxxx-xxxx-xxxx-xxxx"
+      "orcid": "0000-0001-9791-4404"
     }
   ],
   "keywords": [
