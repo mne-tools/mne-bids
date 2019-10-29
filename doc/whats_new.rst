@@ -22,8 +22,8 @@ Current
 Changelog
 ~~~~~~~~~
 
+- Added automatic conversion of FIF to BrainVision format with warning for EEG only data and conversion to FIF for meg non-FIF data, by `Alex Rockhill` _ (`#237 <https://github.com/mne-tools/mne-bids/pull/237>`_)
 - New feature in :func`mne_bids.write.write_anat` for shear deface of mri, by `Alex Rockhill`_ (`#271 <https://github.com/mne-tools/mne-bids/pull/271>`_)
-
 
 Bug
 ~~~
@@ -186,3 +186,4 @@ People who contributed to this release (in alphabetical order):
 .. _Maximilien Chaumon: https://github.com/dnacombo
 .. _Ezequiel Mikulan: https://github.com/ezemikulan
 .. _Marijn van Vliet: https://github.com/wmvanvliet
+.. _Alex Rockhill: http://github.com/alexrockhill

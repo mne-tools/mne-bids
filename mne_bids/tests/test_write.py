@@ -21,11 +21,11 @@ import json
 from distutils.version import LooseVersion
 
 import numpy as np
-from numpy.testing import assert_array_equal
+from numpy.testing import assert_array_equal, assert_array_almost_equal
 import mne
 from mne.datasets import testing
 from mne.utils import (_TempDir, run_subprocess, check_version,
-                       requires_nibabel)
+                       requires_nibabel, requires_version)
 from mne.io.constants import FIFF
 from mne.io.kit.kit import get_kit_info
 
@@ -77,6 +77,7 @@ def _bids_validate():
     return _validate
 
 
+@requires_version('pybv', '0.2.0')
 def test_fif(_bids_validate):
     """Test functionality of the write_raw_bids conversion for fif."""
     output_path = _TempDir()
@@ -110,6 +111,31 @@ def test_fif(_bids_validate):
     with pytest.warns(UserWarning, match='No events found or provided.'):
         write_raw_bids(raw, bids_basename, output_path, overwrite=False)
 
+    _bids_validate(output_path)
+
+    # try with eeg data only (conversion to bv)
+    output_path = _TempDir()
+    raw = mne.io.read_raw_fif(raw_fname)
+    raw.load_data()
+    raw2 = raw.pick_types(meg=False, eeg=True, stim=True, eog=True, ecg=True)
+    raw2.save(op.join(output_path, 'test.fif'), overwrite=True)
+    raw2 = mne.io.Raw(op.join(output_path, 'test.fif'), preload=False)
+    with pytest.warns(UserWarning,
+                      match='Converting data files to BrainVision format'):
+        write_raw_bids(raw2, bids_basename, output_path,
+                       events_data=events_fname,
+                       event_id=event_id, overwrite=False)
+    os.remove(op.join(output_path, 'test.fif'))
+    bids_dir = op.join(output_path, 'sub-%s' % subject_id,
+                       'ses-%s' % session_id, 'eeg')
+    for sidecar in ['channels.tsv', 'eeg.eeg', 'eeg.json', 'eeg.vhdr',
+                    'eeg.vmrk', 'events.tsv']:
+        assert op.isfile(op.join(bids_dir, bids_basename + '_' + sidecar))
+
+    raw2 = mne.io.read_raw_brainvision(op.join(bids_dir,
+                                               bids_basename + '_eeg.vhdr'))
+
+    assert_array_almost_equal(raw.get_data(), raw2.get_data())
     _bids_validate(output_path)
 
     # write the same data but pretend it is empty room data:

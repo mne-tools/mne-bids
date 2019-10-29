@@ -18,7 +18,7 @@ import numpy as np
 from numpy.testing import assert_array_equal
 from mne.transforms import (_get_trans, apply_trans, get_ras_to_neuromag_trans,
                             rotation, translation)
-from mne import Epochs
+from mne import Epochs, events_from_annotations
 from mne.io.constants import FIFF
 from mne.io.pick import channel_type
 from mne.io import BaseRaw
@@ -777,9 +777,11 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
                    event_id=None, overwrite=False, verbose=True):
     """Walk over a folder of files and create BIDS compatible folder.
 
-    .. warning:: The original files are simply copied over. This function
-                 cannot convert modify data files from one format to another.
-                 Modification of the original data files is not allowed.
+    .. warning:: The original files are simply copied over if the original
+                 file format is BIDS-supported for that modality. Otherwise,
+                 this function will convert to a BIDS-supported file format
+                 while warning the user. For EEG and iEEG data, conversion will
+                 be to BrainVision format, for MEG conversion will be to FIF.
 
     Parameters
     ----------
@@ -965,21 +967,34 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
     _mkdir_p(os.path.dirname(bids_fname))
 
     if verbose:
-        print('Copying data files to %s' % bids_fname)
+        print('Copying data files to %s' % op.splitext(bids_fname)[0])
 
-    if ext not in ALLOWED_EXTENSIONS:
-        raise ValueError('ext must be in %s, got %s'
-                         % (''.join(ALLOWED_EXTENSIONS), ext))
-
+    convert = ext not in ALLOWED_EXTENSIONS[kind]
     # Copy the imaging data files
-    if ext in ['.fif']:
+    if convert:
+        if kind == 'meg':
+            raise ValueError('Got file extension %s for MEG data, ' +
+                             'expected one of %s' % ALLOWED_EXTENSIONS['meg'])
+        if verbose:
+            warn('Converting data files to BrainVision format')
+        if not check_version('pybv', '0.2'):
+            raise ImportError('pybv >=0.2.0 is required for converting ' +
+                              '%s files to Brainvision format' % ext)
+        from pybv import write_brainvision
+        events, event_id = events_from_annotations(raw)
+        write_brainvision(raw.get_data(), raw.info['sfreq'],
+                          raw.ch_names,
+                          op.splitext(op.basename(bids_fname))[0],
+                          op.dirname(bids_fname), events[:, [0, 2]],
+                          resolution=1e-6)
+    elif ext == '.fif':
         n_rawfiles = len(raw.filenames)
         if n_rawfiles > 1:
             split_naming = 'bids'
             raw.save(bids_fname, split_naming=split_naming, overwrite=True)
         else:
             # This ensures that single FIF files do not have the part param
-            raw.save(bids_fname, overwrite=True, split_naming='neuromag')
+            raw.save(bids_fname, split_naming='neuromag', overwrite=True)
 
     # CTF data is saved and renamed in a directory
     elif ext == '.ds':
