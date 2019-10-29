@@ -100,7 +100,7 @@ by now also supports other neuroimaging modalities such as MEG [@Niso2018],
 EEG [@Pernet2019], and iEEG [@Holdgraf2019].
 
 BIDS prescribes how complex experiment data should be structured and which
-metadata should be encoded next to the raw data. This set of guidelines
+metadata should be present next to the raw data. This set of guidelines
 allows users to reap several benefits, such as:
 
 1. **sharing data within a lab and between labs:** Through reading the BIDS
@@ -119,20 +119,20 @@ To make use of these benefits, datasets must first be converted to
 BIDS format. Furthermore, already existing data analysis software must be
 extended to be aware of a BIDS format and how to properly use it.
 
-This is where ``MNE-BIDS`` steps in: Harnessing BIDS and the data analysis
+This is where ``MNE-BIDS`` steps in. Harnessing BIDS and the data analysis
 software MNE-Python [@Agramfort2013], it is the goal of ``MNE-BIDS`` to
-automatically organize raw MEG, EEG, and iEEG data into BIDS format and to facilitate
-their analysis.
+automatically organize raw MEG, EEG, and iEEG data into BIDS format and to
+facilitate their analysis.
 
 For example, starting with a single directory full of datafiles with arbitrary
 naming, ``MNE-BIDS`` can be used to extract present metadata, reorganize the
 files into BIDS format, and write additional metadata. Moreover,
 ``MNE-BIDS`` supports conversion from raw data formats that are not BIDS
 compatible into permissible formats. As a result, users can easily convert
-their datasets to BIDS in a matter of minutes, rather than after hours of
-manual labour. All conversions performed by MNE-BIDS are validated with the
-[bids-validator](https://github.com/bids-standard/bids-validator) for a maximum
-certainty that the results hold up to the BIDS format.
+their datasets to BIDS in a matter of minutes, rather than hours of manual
+labour. All conversions performed by MNE-BIDS are validated with the
+[bids-validator](https://github.com/bids-standard/bids-validator) to ensure
+compatibility with the BIDS format.
 
 Next to this core functionality, ``MNE-BIDS`` is continuously being extended
 to facilitate the analysis of BIDS formatted data. To name some features, it is
@@ -145,10 +145,11 @@ which allows for automatic computation of forward and inverse solutions.
 
 Users can easily install ``MNE-BIDS`` on all platforms via `pip` and `conda`
 and its functionality is continuously tested on Windows and Linux.
-Next to three core dependencies for scientific computation (`numpy`, `scipy`),
-and handling of MEG, EEG, and iEEG data (`mne`), ``MNE-BIDS`` has minimal
-dependencies, all of which are optional. The API of the package is stable and
-extensively documented and explained in examples (https://mne.tools/mne-bids/).
+Other than three core dependencies for scientific computation
+(`numpy`, `scipy`), and handling of MEG, EEG, and iEEG data (`mne`),
+``MNE-BIDS`` has minimal dependencies, all of which are optional. The API of
+the package is stable and extensively documented and explained in examples
+(https://mne.tools/mne-bids/).
 
 As of writing, ``MNE-BIDS`` has received code contributions from 15
 contributors and its user base is steadily growing. Code development is
@@ -165,6 +166,7 @@ and looking forward to welcoming new contributors and users.
 
 # Acknowledgements
 
-MNE-BIDS development is partly supported by XYZ.
+MNE-BIDS development is partly supported by the Academy of Finland
+(grant 310988).
 
 # References
