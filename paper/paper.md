@@ -97,25 +97,25 @@ a standard to organize and share data. Originally limited to MRI data formats,
 BIDS is continuously being extended and by now also supports other neuroimaging
 modalities such as MEG [@Niso2018], EEG [@Pernet2019], and iEEG [@Holdgraf2019].
 
-BIDS prescribes how complex experiment data should be structured and which
+BIDS prescribes how complex experimental data should be structured and which
 metadata should be present next to the raw data. This set of guidelines
-allows users to reap several benefits, such as:
+provides the following benefits:
 
-1. **sharing data within a lab and between labs:** Through reading the BIDS
-   specification, users are empowered to understand any BIDS dataset
-   without requiring specialist knowledge.
-1. **data validation:** Dedicated software can check whether the rules of
-   BIDS are being followed in a dataset, and alert users to missing or broken
+1. **Sharing data within a lab and between labs:** The BIDS specification
+   empowers users to understand any BIDS dataset without requiring specialist
+   knowledge.
+1. **Data validation:** Dedicated software can check whether the rules of
+   BIDS are being followed in a dataset and alert users to missing or broken
    data (see
    [bids-validator](https://github.com/bids-standard/bids-validator)).
-1. **automatic data handling and analysis pipelines:** With a perfect
-   knowledge about which data to expect and where to search for it, many
-   common workflows in data handling and analysis can be simplified or
-   automated through specialized software.
+1. **Automatic data handling and analysis pipelines:** Knowing which data to
+   expect and where to search for it, many common workflows in data handling
+   and analysis can be simplified or automated through specialized software
+   tools.
 
-To make use of these benefits, datasets must first be converted to
+To make use of these benefits, datasets must first be converted to the
 BIDS format. Furthermore, already existing data analysis software must be
-extended to be aware of a BIDS format and how to properly use it.
+extended to be aware of the BIDS format and how to properly use it.
 
 This is where ``MNE-BIDS`` steps in. Harnessing BIDS and the data analysis
 software MNE-Python [@Agramfort2013], it is the goal of ``MNE-BIDS`` to
@@ -145,7 +145,7 @@ automatic computation of forward and inverse solutions.
 Users can easily install ``MNE-BIDS`` on all platforms via `pip` and `conda`,
 and its functionality is continuously tested on Windows and Linux.
 Other than three core dependencies for scientific computing
-(`numpy`, `scipy`) and handling of MEG, EEG, and iEEG data (`mne`),
+(`numpy`, `scipy`) and handling of neurophysiological data (`mne`),
 ``MNE-BIDS`` has minimal dependencies, all of which are optional. The API of
 the package is stable and extensively documented and explained in examples
 (https://mne.tools/mne-bids/).
