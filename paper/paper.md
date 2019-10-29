@@ -149,7 +149,7 @@ dependencies, all of which are optional. The API of the package is stable and
 extensively documented and explained in examples (https://mne.tools/mne-bids/).
 
 As of writing, ``MNE-BIDS`` has received code contributions from 15
-contributors and its' user base is steadily growing. Code development is
+contributors and its user base is steadily growing. Code development is
 active and users are typically receiving support within a few hours of opening
 an issue on our dedicated issue tracker.
 
