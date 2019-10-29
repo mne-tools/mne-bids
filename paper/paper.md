@@ -37,8 +37,8 @@ authors:
     name: ktavabi
     orcid: xxxx-xxxx-xxxx-xxxx
   - affiliation: 10
-    name: hoechenberger
-    orcid: xxxx-xxxx-xxxx-xxxx
+    name: Richard Höchenberger
+    orcid: 0000-0002-0380-4798
   - affiliation: 11
     name: Dominik Welke
     orcid: 0000-0002-5529-1998
@@ -77,7 +77,7 @@ affiliations:
 - index: 9
   name:
 - index: 10
-  name:
+  name: Institute of Neuroscience and Medicine (INM-3), Research Center Jülich, Germany
 - index: 11
   name: Max-Planck-Institute for Empirical Aesthetics, Frankfurt a.M., Germany
 - index: 12
