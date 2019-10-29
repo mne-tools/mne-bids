@@ -1,6 +1,6 @@
 {
-  "title": "MNE-BIDS: Organizing MEG, EEG, and iEEG data according to the BIDS specification and facilitating their analysis with MNE-Python.",
-  "description": "MNE-BIDS is a Python library to facilitate the analysis of MEG, EEG, and iEEG data with MNE-Python for data conforming to the BIDS (Brain Imaging Data Structure) format. More information about BIDS and MNE can be found under <a href=\"https://bids.neuroimaging.io\">bids.neuroimaging.io</a> and <a href=\"https://mne.tools\">mne.tools</a> respectively.",
+  "title": "MNE-BIDS: Organizing MEG, EEG, and iEEG data according to the BIDS specification and facilitating their analysis with MNE-Python",
+  "description": "MNE-BIDS is a Python library to facilitate the analysis of MEG, EEG, and iEEG data with MNE-Python for data conforming to the BIDS (Brain Imaging Data Structure) format. More information about BIDS and MNE-Python can be found at <a href=\"https://bids.neuroimaging.io\">bids.neuroimaging.io</a> and <a href=\"https://mne.tools\">mne.tools</a>, respectively.",
   "creators": [
     {
       "affiliation": "Center for Adaptive Rationality, Max Planck Institute for Human Development, Berlin, Germany",
@@ -9,7 +9,7 @@
     },
     {
       "affiliation": "Athinoula A. Martinos Center for Biomedical Imaging, Massachusetts General Hospital, Charlestown, MA, USA",
-      "name": "Mainak Jas",
+      "name": "Jas, Mainak",
       "orcid": "0000-0002-3199-9027"
     },
     {
@@ -19,22 +19,22 @@
     },
     {
      "affiliation": "Mozilla",
-      "name":"Teon L Brooks",
+      "name":"Brooks, Teon L ",
       "orcid": "0000-0001-7344-3230"
     },
     {
      "affiliation": "Department of Neuroscience and Biomedical Engineering, Aalto University, Espoo, Finland",
-      "name": "Marijn van Vliet",
+      "name": "van Vliet, Marijn",
       "orcid": "0000-0002-6537-6899"
     },
     {
      "affiliation": "Human Cortical Physiology and Neurorehabilitation Section, NINDS, NIH, Bethesda, Maryland 20892",
-      "name": "Romain Quentin",
+      "name": "Quentin, Romain",
       "orcid": "0000-0001-7659-3605"
     },
     {
      "affiliation": "UC Berkeley, Project Jupyter",
-      "name": "Chris Holdgraf",
+      "name": "Holdgraf, Chris",
       "orcid": "0000-0002-2391-0678"
     },
     {
@@ -44,7 +44,7 @@
     },
     {
      "affiliation": "Department of Biomedical and Clinical Sciences 'L. Sacco', University of Milan, Milan, Italy",
-      "name": "Ezequiel Mikulan",
+      "name": "Mikulan, Ezequiel",
       "orcid": "0000-0001-7259-6120"
     },
     {
@@ -64,17 +64,17 @@
     },
     {
      "affiliation": "Institute of Psychology, University of Graz, Austria",
-      "name": "Clemens Brunner",
+      "name": "Brunner, Clemens",
       "orcid": "0000-0002-6030-2233"
     },
     {
      "affiliation": "University of Oregon, Eugene OR, USA",
-      "name": "Alexander P Rockhill",
+      "name": "Rockhill, Alexander P",
       "orcid": "0000-0003-3868-7453"
     },
     {
      "affiliation": "Université Paris-Saclay, Inria, CEA, Palaiseau, France",
-      "name": "Alexandre Gramfort",
+      "name": "Gramfort, Alexandre",
       "orcid": "0000-0001-9791-4404"
     }
   ],

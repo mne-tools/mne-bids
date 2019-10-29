@@ -92,12 +92,10 @@ bibliography: paper.bib
 # Summary
 
 With the emergence of the Brain Imaging Data Structure
-(``BIDS``; [@Gorgolewski2016]) in 2016, the scientific community received a
-standard to organize and share data in the broad domain of neuroscience.
-
-Originally limited to MRI data types, BIDS is continuously being extended and
-by now also supports other neuroimaging modalities such as MEG [@Niso2018],
-EEG [@Pernet2019], and iEEG [@Holdgraf2019].
+(``BIDS``; [@Gorgolewski2016]) in 2016, the neuroscientific community received
+a standard to organize and share data. Originally limited to MRI data formats,
+BIDS is continuously being extended and by now also supports other neuroimaging
+modalities such as MEG [@Niso2018], EEG [@Pernet2019], and iEEG [@Holdgraf2019].
 
 BIDS prescribes how complex experiment data should be structured and which
 metadata should be present next to the raw data. This set of guidelines
@@ -121,32 +119,33 @@ extended to be aware of a BIDS format and how to properly use it.
 
 This is where ``MNE-BIDS`` steps in. Harnessing BIDS and the data analysis
 software MNE-Python [@Agramfort2013], it is the goal of ``MNE-BIDS`` to
-automatically organize raw MEG, EEG, and iEEG data into BIDS format and to
-facilitate their analysis.
+automatically organize raw MEG, EEG, and iEEG datasets into the BIDS format and
+to facilitate their analysis.
 
-For example, starting with a single directory full of datafiles with arbitrary
-naming, ``MNE-BIDS`` can be used to extract present metadata, reorganize the
-files into BIDS format, and write additional metadata. Moreover,
-``MNE-BIDS`` supports conversion from raw data formats that are not BIDS
+For example, starting with a single directory full of data files with arbitrary
+names, ``MNE-BIDS`` can be used to extract existing metadata, reorganize the
+files into the BIDS format, and write additional metadata. Moreover,
+``MNE-BIDS`` supports converting raw data formats that are not BIDS
 compatible into permissible formats. As a result, users can easily convert
 their datasets to BIDS in a matter of minutes, rather than hours of manual
 labour. All conversions performed by MNE-BIDS are validated with the
 [bids-validator](https://github.com/bids-standard/bids-validator) to ensure
 compatibility with the BIDS format.
 
-Next to this core functionality, ``MNE-BIDS`` is continuously being extended
-to facilitate the analysis of BIDS formatted data. To name some features, it is
-possible to read a raw BIDS dataset and obtain a Python object, ready for
-analyis with MNE-Python. Users can save a T1 weighted anatomical MRI image
-alongside the MEG or EEG data and apply an automatic defacing algorithm for
-anonymization purposes. As a last example, fiducial points can be saved to
-store coregistration information between the electrophysiology and mri data,
-which allows for automatic computation of forward and inverse solutions.
+In addition to this core functionality, ``MNE-BIDS`` is continuously being
+extended to facilitate the analysis of BIDS formatted data.
+To name some features, it is possible to read a raw BIDS dataset and obtain a
+Python object, ready for analyis with MNE-Python.
+Users can save a T1-weighted anatomical MRI image alongside the MEG or EEG data
+and apply an automatic defacing algorithm for anonymization purposes.
+As a last example, fiducial points can be saved to store coregistration
+information between the electrophysiology and MRI data, which allows for
+automatic computation of forward and inverse solutions.
 
-Users can easily install ``MNE-BIDS`` on all platforms via `pip` and `conda`
+Users can easily install ``MNE-BIDS`` on all platforms via `pip` and `conda`,
 and its functionality is continuously tested on Windows and Linux.
-Other than three core dependencies for scientific computation
-(`numpy`, `scipy`), and handling of MEG, EEG, and iEEG data (`mne`),
+Other than three core dependencies for scientific computing
+(`numpy`, `scipy`) and handling of MEG, EEG, and iEEG data (`mne`),
 ``MNE-BIDS`` has minimal dependencies, all of which are optional. The API of
 the package is stable and extensively documented and explained in examples
 (https://mne.tools/mne-bids/).

@@ -15,7 +15,7 @@ if version is None:
 
 
 descr = ('MNE-BIDS: Organizing MEG, EEG, and iEEG data according to the BIDS '
-         'specification and facilitating their analysis with MNE-Python.')
+         'specification and facilitating their analysis with MNE-Python')
 
 DISTNAME = 'mne-bids'
 DESCRIPTION = descr
