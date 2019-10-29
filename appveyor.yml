@@ -36,14 +36,14 @@ install:
       set PATH="%PATH%;C:\projects\mne-bids\bids-validator\bids-validator\bin\" )
   - CALL "%PYTHON_ROOT%\\Scripts\\activate.bat"
   - "conda install -y python=%PYTHON_VERSION% conda numpy scipy"
-  - "pip install nibabel flake8 pytest pytest-sugar pytest-faulthandler"
+  - "pip install nibabel flake8 pytest pytest-sugar pytest-faulthandler pybv"
   - "pip uninstall -yq mne"
-  - ps: |-
-        cd ..
-        git clone --depth 1 https://github.com/mne-tools/mne-python.git -b $env:MNE_VERSION
-        cd mne-python
-        python setup.py develop
-        cd ..
+  - cmd:
+        cd .. &&
+        git clone --depth 1 https://github.com/mne-tools/mne-python.git -b %MNE_VERSION% &&
+        cd mne-python &&
+        python setup.py develop &&
+        cd .. &&
         cd mne-bids
   - "python setup.py develop"
   - "python -c \"import mne; mne.datasets.testing.data_path()\""

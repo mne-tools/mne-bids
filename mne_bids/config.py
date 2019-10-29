@@ -49,6 +49,6 @@ allowed_extensions_ieeg = ['.vhdr',  # BrainVision, accompanied by .vmrk, .eeg
                            '.nwb',  # Neurodata without borders
                            ]
 
-ALLOWED_EXTENSIONS = (allowed_extensions_meg +
-                      allowed_extensions_eeg +
-                      allowed_extensions_ieeg)
+ALLOWED_EXTENSIONS = {'meg': allowed_extensions_meg,
+                      'eeg': allowed_extensions_eeg,
+                      'ieeg': allowed_extensions_ieeg}
