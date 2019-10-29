@@ -13,78 +13,83 @@ authors:
     name: Stefan Appelhoff
     orcid: 0000-0001-8002-0877
   - affiliation: 2
-    name: Mainak Jas
-    orcid: 0000-0002-3199-9027
-  - affiliation: 3
     name: monkeyman192
     orcid: xxxx-xxxx-xxxx-xxxx
-  - affiliation: 4
+  - affiliation: 3
     name: Teon L Brooks
     orcid: 0000-0001-7344-3230
-  - affiliation: 5
+  - affiliation: 4
     name: Marijn van Vliet
     orcid: 0000-0002-6537-6899
-  - affiliation: 6
+  - affiliation: 5
     name: Romain Quentin
     orcid: 0000-0001-7659-3605
-  - affiliation: 7
+  - affiliation: 6
     name: Chris Holdgraf
     orcid: 0000-0002-2391-0678
-  - affiliation: 8
+  - affiliation: 7
     name: Maximilien Chaumon
     orcid: 0000-0001-9664-8861
-  - affiliation: 9
+  - affiliation: 8
     name: Ezequiel Mikulan
     orcid: 0000-0001-7259-6120
-  - affiliation: 10
+  - affiliation: 9
     name: ktavabi
     orcid: xxxx-xxxx-xxxx-xxxx
-  - affiliation: 11
+  - affiliation: 10
     name: hoechenberger
     orcid: xxxx-xxxx-xxxx-xxxx
-  - affiliation: 12
+  - affiliation: 11
     name: Dominik Welke
     orcid: 0000-0002-5529-1998
-  - affiliation: 13
+  - affiliation: 12
     name: Clemens Brunner
     orcid: 0000-0002-6030-2233
-  - affiliation: 14
+  - affiliation: 13
     name: Alexander P Rockhill
     orcid: 0000-0003-3868-7453
+  - affiliation: 14
+    name: Eric Larson
+    orcid: 0000-0003-4782-5360
   - affiliation: 15
     name: Alexandre Gramfort
     orcid: 0000-0001-9791-4404
+  - affiliation: 16
+    name: Mainak Jas
+    orcid: 0000-0002-3199-9027
 affiliations:
 - index: 1
   name: Center for Adaptive Rationality, Max Planck Institute for Human Development, Berlin, Germany
 - index: 2
-  name: Athinoula A. Martinos Center for Biomedical Imaging, Massachusetts General Hospital, Charlestown, MA, USA
-- index: 3
   name:
-- index: 4
+- index: 3
   name: Mozilla
-- index: 5
+- index: 4
   name: Department of Neuroscience and Biomedical Engineering, Aalto University, Espoo, Finland
-- index: 6
+- index: 5
   name: Human Cortical Physiology and Neurorehabilitation Section, NINDS, NIH, Bethesda, Maryland 20892
-- index: 7
+- index: 6
   name: UC Berkeley, Project Jupyter
-- index: 8
+- index: 7
   name: Institut du cerveau et de la moelle épinière (ICM), Paris, France
-- index: 9
+- index: 8
   name: Department of Biomedical and Clinical Sciences 'L. Sacco', University of Milan, Milan, Italy
+- index: 9
+  name:
 - index: 10
   name:
 - index: 11
-  name:
-- index: 12
   name: Max-Planck-Institute for Empirical Aesthetics, Frankfurt a.M., Germany
-- index: 13
+- index: 12
   name: Institute of Psychology, University of Graz, Austria
-- index: 14
+- index: 13
   name: University of Oregon, Eugene OR, USA
+- index: 14
+  name: Institute for Learning and Brain Sciences, University of Washington, Seattle, WA, USA
 - index: 15
   name: Université Paris-Saclay, Inria, CEA, Palaiseau, France
+- index: 16
+  name: Athinoula A. Martinos Center for Biomedical Imaging, Massachusetts General Hospital, Charlestown, MA, USA
 date: 29 October 2019
 bibliography: paper.bib
 ---
@@ -166,6 +171,6 @@ and looking forward to welcoming new contributors and users.
 # Acknowledgements
 
 MNE-BIDS development is partly supported by the Academy of Finland
-(grant 310988).
+(grant 310988), and the Google Summer of Code 2019.
 
 # References

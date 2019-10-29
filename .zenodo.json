@@ -8,11 +8,6 @@
       "orcid": "0000-0001-8002-0877"
     },
     {
-      "affiliation": "Athinoula A. Martinos Center for Biomedical Imaging, Massachusetts General Hospital, Charlestown, MA, USA",
-      "name": "Jas, Mainak",
-      "orcid": "0000-0002-3199-9027"
-    },
-    {
      "affiliation": "",
       "name": "monkeyman192",
       "orcid": "xxxx-xxxx-xxxx-xxxx"
@@ -73,9 +68,19 @@
       "orcid": "0000-0003-3868-7453"
     },
     {
+      "affiliation": "Institute for Learning and Brain Sciences, University of Washington, Seattle, WA, USA",
+      "name": "Larson, Eric",
+      "orcid": "0000-0003-4782-5360"
+    },
+    {
      "affiliation": "Université Paris-Saclay, Inria, CEA, Palaiseau, France",
       "name": "Gramfort, Alexandre",
       "orcid": "0000-0001-9791-4404"
+    },
+    {
+      "affiliation": "Athinoula A. Martinos Center for Biomedical Imaging, Massachusetts General Hospital, Charlestown, MA, USA",
+      "name": "Jas, Mainak",
+      "orcid": "0000-0002-3199-9027"
     }
   ],
   "keywords": [
