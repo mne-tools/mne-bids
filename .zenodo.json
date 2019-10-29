@@ -8,7 +8,7 @@
       "orcid": "0000-0001-8002-0877"
     },
     {
-      "affiliation": "",
+      "affiliation": "Athinoula A. Martinos Center for Biomedical Imaging, Massachusetts General Hospital, Charlestown, MA, USA",
       "name": "Mainak Jas",
       "orcid": "0000-0002-3199-9027"
     },
@@ -18,9 +18,9 @@
       "orcid": "xxxx-xxxx-xxxx-xxxx"
     },
     {
-     "affiliation": "",
-      "name":"Teon Brooks",
-      "orcid": "xxxx-xxxx-xxxx-xxxx"
+     "affiliation": "Mozilla",
+      "name":"Teon L Brooks",
+      "orcid": "0000-0001-7344-3230"
     },
     {
      "affiliation": "",
@@ -33,7 +33,7 @@
       "orcid": "xxxx-xxxx-xxxx-xxxx"
     },
     {
-     "affiliation": "",
+     "affiliation": "UC Berkeley, Project Jupyter",
       "name": "Chris Holdgraf",
       "orcid": "0000-0002-2391-0678"
     },
@@ -88,7 +88,8 @@
     "magnetoencephalography",
     "meg",
     "electroencephalography",
-    "eeg"
+    "eeg",
+    "ieeg"
   ],
   "license": "BSD 3-Clause License",
   "upload_type": "software"

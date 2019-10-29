@@ -7,6 +7,7 @@ tags:
   - neuroimaging
   - MEG
   - EEG
+  - iEEG
 authors:
   - affiliation: 1
     name: Stefan Appelhoff
@@ -19,7 +20,7 @@ authors:
     orcid: xxxx-xxxx-xxxx-xxxx
   - affiliation: 4
     name: Teon Brooks
-    orcid: xxxx-xxxx-xxxx-xxxx
+    orcid: 0000-0001-7344-3230
   - affiliation: 5
     name: wmvanvliet
     orcid:
@@ -61,7 +62,7 @@ affiliations:
 - index: 3
   name:
 - index: 4
-  name:
+  name: Mozilla
 - index: 5
   name:
 - index: 6
@@ -114,18 +115,18 @@ allows users to reap several benefits, such as:
    common workflows in data handling and analysis can be simplified or
    automated through specialized software.
 
-To make use of these benefits however, datasets first must be converted to
+To make use of these benefits, datasets must first be converted to
 BIDS format. Furthermore, already existing data analysis software must be
 extended to be aware of a BIDS format and how to properly use it.
 
 This is where ``MNE-BIDS`` steps in: Harnessing BIDS and the data analysis
 software MNE-Python [@Agramfort2013], it is the goal of ``MNE-BIDS`` to
-automatically organize raw MEG and EEG data into BIDS format and to facilitate
+automatically organize raw MEG, EEG, and iEEG data into BIDS format and to facilitate
 their analysis.
 
-Starting with, for example, a single directory full of datafiles with arbitrary
-naming, ``MNE-BIDS`` can be used to extract present meta data, reorganize the
-files into BIDS format, and write additional meta data. Moreover,
+For example, starting with a single directory full of datafiles with arbitrary
+naming, ``MNE-BIDS`` can be used to extract present metadata, reorganize the
+files into BIDS format, and write additional metadata. Moreover,
 ``MNE-BIDS`` supports conversion from raw data formats that are not BIDS
 compatible into permissible formats. As a result, users can easily convert
 their datasets to BIDS in a matter of minutes, rather than after hours of
@@ -138,12 +139,12 @@ to facilitate the analysis of BIDS formatted data. To name some features, it is
 possible to read a raw BIDS dataset and obtain a Python object, ready for
 analyis with MNE-Python, or to save a T1 weighted anatomical MRI image
 alongside the MEG or EEG data and apply an automatic defacing algorithm for
-anonymization purposes
+anonymization purposes.
 
 Users can easily install ``MNE-BIDS`` on all platforms via `pip` and `conda`
 and its functionality is continuously tested on Windows and Linux.
 Next to three core dependencies for scientific computation (`numpy`, `scipy`),
-and handling of MEG and EEG data (`mne`), ``MNE-BIDS`` has only minimal
+and handling of MEG, EEG, and iEEG data (`mne`), ``MNE-BIDS`` has minimal
 dependencies, all of which are optional. The API of the package is stable and
 extensively documented and explained in examples (https://mne.tools/mne-bids/).
 
