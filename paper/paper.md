@@ -174,6 +174,6 @@ and looking forward to welcoming new contributors and users.
 # Acknowledgements
 
 MNE-BIDS development is partly supported by the Academy of Finland
-(grant 310988), and the Google Summer of Code 2019.
+(grant 310988), NIH NINDS R01-NS104585, and the Google Summer of Code 2019.
 
 # References
