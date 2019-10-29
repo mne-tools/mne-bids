@@ -43,8 +43,8 @@ authors:
     name: hoechenberger
     orcid: xxxx-xxxx-xxxx-xxxx
   - affiliation: 12
-    name: dominikwelke
-    orcid: xxxx-xxxx-xxxx-xxxx
+    name: Dominik Welke
+    orcid: 0000-0002-5529-1998
   - affiliation: 13
     name: Clemens Brunner
     orcid: 0000-0002-6030-2233
@@ -78,14 +78,14 @@ affiliations:
 - index: 11
   name:
 - index: 12
-  name:
+  name: Max-Planck-Institute for Empirical Aesthetics, Frankfurt a.M., Germany
 - index: 13
   name: Institute of Psychology, University of Graz, Austria
 - index: 14
   name: University of Oregon, Eugene OR, USA
 - index: 15
   name: Université Paris-Saclay, Inria, CEA, Palaiseau, France
-date: 28 October 2019
+date: 29 October 2019
 bibliography: paper.bib
 ---
 
@@ -98,7 +98,7 @@ BIDS is continuously being extended and by now also supports other neuroimaging
 modalities such as MEG [@Niso2018], EEG [@Pernet2019], and iEEG [@Holdgraf2019].
 
 BIDS prescribes how complex experimental data should be structured and which
-metadata should be present next to the raw data. This set of guidelines
+metadata should be present besides the raw data. This set of guidelines
 provides the following benefits:
 
 1. **Sharing data within a lab and between labs:** The BIDS specification
