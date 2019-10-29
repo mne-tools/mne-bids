@@ -25,8 +25,8 @@ authors:
     name: Marijn van Vliet
     orcid: 0000-0002-6537-6899
   - affiliation: 6
-    name: romquentin
-    orcid: xxxx-xxxx-xxxx-xxxx
+    name: Romain Quentin
+    orcid: 0000-0001-7659-3605
   - affiliation: 7
     name: Chris Holdgraf
     orcid: 0000-0002-2391-0678
@@ -66,7 +66,7 @@ affiliations:
 - index: 5
   name: Department of Neuroscience and Biomedical Engineering, Aalto University, Espoo, Finland
 - index: 6
-  name:
+  name: Human Cortical Physiology and Neurorehabilitation Section, NINDS, NIH, Bethesda, Maryland 20892
 - index: 7
   name: UC Berkeley, Project Jupyter
 - index: 8
