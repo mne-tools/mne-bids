@@ -131,15 +131,17 @@ files into BIDS format, and write additional metadata. Moreover,
 compatible into permissible formats. As a result, users can easily convert
 their datasets to BIDS in a matter of minutes, rather than after hours of
 manual labour. All conversions performed by MNE-BIDS are validated with the
-bids-validator for a maximum certainty that the results hold up to the BIDS
-format.
+[bids-validator](https://github.com/bids-standard/bids-validator) for a maximum
+certainty that the results hold up to the BIDS format.
 
 Next to this core functionality, ``MNE-BIDS`` is continuously being extended
 to facilitate the analysis of BIDS formatted data. To name some features, it is
 possible to read a raw BIDS dataset and obtain a Python object, ready for
-analyis with MNE-Python, or to save a T1 weighted anatomical MRI image
+analyis with MNE-Python. Users can save a T1 weighted anatomical MRI image
 alongside the MEG or EEG data and apply an automatic defacing algorithm for
-anonymization purposes.
+anonymization purposes. As a last example, fiducial points can be saved to
+store coregistration information between the electrophysiology and mri data,
+which allows for automatic computation of forward and inverse solutions.
 
 Users can easily install ``MNE-BIDS`` on all platforms via `pip` and `conda`
 and its functionality is continuously tested on Windows and Linux.
@@ -154,8 +156,9 @@ active and users are typically receiving support within a few hours of opening
 an issue on our dedicated issue tracker.
 
 MNE-BIDS is used in automated analysis pipelines such as the
-MNE-study-template (https://github.com/mne-tools/mne-study-template) and
-several large institutions such as Martinos and "insert Matt's institution" have started to use MNE-BIDS.
+MNE-study-template (https://github.com/mne-tools/mne-study-template)
+[@Mainak2018] several large institutions such as
+Martinos and "insert Matt's institution" have started to use MNE-BIDS.
 
 The developer team is excited to improve the state of the art in data handling
 and looking forward to welcoming new contributors and users.
