@@ -1,7 +1,5 @@
 language: c
 dist: xenial
-cache:
-  pip: true
 
 node_js:
   - "10.16.1"
@@ -34,6 +32,7 @@ before_install:
   - npm install -g node@10.16.1
   - npm --version
   - node --version
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install yarn; fi
   - yarn --version
 
 install:
