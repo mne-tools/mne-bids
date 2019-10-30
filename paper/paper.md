@@ -155,8 +155,9 @@ the package is stable and extensively documented and explained in examples
 
 As of writing, ``MNE-BIDS`` has received code contributions from 15
 contributors and its user base is steadily growing. Code development is
-active and users are typically receiving support within a few hours of opening
-an issue on our dedicated issue tracker.
+active (https://github.com/mne-tools/mne-bids/graphs/commit-activity) and the
+developer team is committed to provide timely support for issues opened on the
+GitHub issue tracker.
 
 MNE-BIDS is used as a dependency in several other software packages such as
 the [MNE-study-template](https://github.com/mne-tools/mne-study-template), an
