@@ -34,7 +34,7 @@ authors:
     name: Ezequiel Mikulan
     orcid: 0000-0001-7259-6120
   - affiliation: 9
-    name: ktavabi
+    name: Kambiz Tavabi
     orcid: 0000-0003-1881-892X
   - affiliation: 10
     name: Richard Höchenberger
@@ -48,13 +48,13 @@ authors:
   - affiliation: 13
     name: Alexander P Rockhill
     orcid: 0000-0003-3868-7453
-  - affiliation: 14
+  - affiliation: 9
     name: Eric Larson
     orcid: 0000-0003-4782-5360
-  - affiliation: 15
+  - affiliation: 14
     name: Alexandre Gramfort
     orcid: 0000-0001-9791-4404
-  - affiliation: 16
+  - affiliation: 15
     name: Mainak Jas
     orcid: 0000-0002-3199-9027
 affiliations:
@@ -85,10 +85,8 @@ affiliations:
 - index: 13
   name: University of Oregon, Eugene OR, USA
 - index: 14
-  name: Institute for Learning and Brain Sciences, University of Washington, Seattle, WA, USA
-- index: 15
   name: Université Paris-Saclay, Inria, CEA, Palaiseau, France
-- index: 16
+- index: 15
   name: Athinoula A. Martinos Center for Biomedical Imaging, Massachusetts General Hospital, Charlestown, MA, USA
 date: 29 October 2019
 bibliography: paper.bib
@@ -174,7 +172,8 @@ and looking forward to welcoming new contributors and users.
 # Acknowledgements
 
 MNE-BIDS development is partly supported by the Academy of Finland
-(grant 310988), NIH NINDS R01-NS104585, and the Google Summer of Code 2019. 
-Bezos Family Foundation. Simms Mann Foundation.
+(grant 310988), NIH NINDS R01-NS104585, ERC Starting Grant SLAB ERC-YStG-676943,
+ANR meegBIDS.fr, the Bezos Family Foundation, the Simms Mann Foundation, and
+the Google Summer of Code 2019.
 
 # References
