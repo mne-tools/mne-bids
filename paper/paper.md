@@ -1,5 +1,5 @@
 ---
-title: 'MNE-BIDS'
+title: 'MNE-BIDS: Organizing neurophysiological data into the BIDS format and facilitating their analysis'
 tags:
   - Python
   - BIDS
