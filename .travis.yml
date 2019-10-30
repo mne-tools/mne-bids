@@ -1,6 +1,10 @@
+language: c
+dist: xenial
+cache:
+  pip: true
+
 node_js:
   - "10.16.1"
-language: python
 
 matrix:
     include:
