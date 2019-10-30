@@ -2,6 +2,11 @@ node_js:
   - "10.16.1"
 language: python
 
+matrix:
+    include:
+        - os: linux
+        - os: osx
+
 # Specify version of BIDS-validator to be used, 'master', or 'stable'
 env:
   global:
@@ -12,10 +17,14 @@ env:
 
 
 before_install:
-  - wget -q https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
+  - if [ "${TRAVIS_OS_NAME}" == "linux" ]; then
+        wget -q https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
+    else
+        wget -q https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-x86_64.sh -O miniconda.sh;
+    fi;
   - chmod +x miniconda.sh
-  - ./miniconda.sh -b -p /home/travis/miniconda
-  - export PATH=/home/travis/miniconda/bin:$PATH
+  - ./miniconda.sh -b -p ${HOME}/miniconda
+  - export PATH=${HOME}/miniconda/bin:$PATH
   - conda update --yes --quiet conda
   - npm install -g npm stable
   - npm install -g node@10.16.1
