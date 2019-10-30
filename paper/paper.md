@@ -35,7 +35,7 @@ authors:
     orcid: 0000-0001-7259-6120
   - affiliation: 9
     name: ktavabi
-    orcid: xxxx-xxxx-xxxx-xxxx
+    orcid: 0000-0003-1881-892X
   - affiliation: 10
     name: Richard Höchenberger
     orcid: 0000-0002-0380-4798
@@ -75,7 +75,7 @@ affiliations:
 - index: 8
   name: Department of Biomedical and Clinical Sciences 'L. Sacco', University of Milan, Milan, Italy
 - index: 9
-  name:
+  name: Institute for Learning and Brain Sciences, University of Washington, Seattle, WA, USA
 - index: 10
   name: Institute of Neuroscience and Medicine (INM-3), Research Center Jülich, Germany
 - index: 11
@@ -174,6 +174,7 @@ and looking forward to welcoming new contributors and users.
 # Acknowledgements
 
 MNE-BIDS development is partly supported by the Academy of Finland
-(grant 310988), NIH NINDS R01-NS104585, and the Google Summer of Code 2019.
+(grant 310988), NIH NINDS R01-NS104585, and the Google Summer of Code 2019. 
+Bezos Family Foundation. Simms Mann Foundation.
 
 # References
