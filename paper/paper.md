@@ -145,8 +145,9 @@ As a last example, fiducial points can be saved to store coregistration
 information between the electrophysiology and MRI data, which allows for
 automatic computation of forward and inverse solutions.
 
-Users can easily install ``MNE-BIDS`` on all platforms via `pip` and `conda`,
-and its functionality is continuously tested on Windows and Linux.
+Users can easily install ``MNE-BIDS`` on all majorplatforms via `pip` and
+`conda`, and its functionality is continuously tested on Windows, OSX, and
+Linux.
 Other than three core dependencies for scientific computing
 (`numpy`, `scipy`) and handling of neurophysiological data (`mne`),
 ``MNE-BIDS`` has minimal dependencies, all of which are optional. The API of
