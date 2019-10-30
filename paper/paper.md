@@ -164,7 +164,7 @@ MNE-BIDS is used as a dependency in several other software packages such as
 the [MNE-study-template](https://github.com/mne-tools/mne-study-template), an
 automated analysis pipeline based on [@Mainak2018], and
 [Biscuit](https://github.com/Macquarie-MEG-Research/Biscuit), a graphical
-application to format BIDS data.
+user interface to format BIDS data.
 Lastly, several large institutions have adopted MNE-BIDS for their
 workflows such as the Martinos Center for Biomedical Imaging.
 
