@@ -174,7 +174,9 @@ and looking forward to welcoming new contributors and users.
 
 MNE-BIDS development is partly supported by the Academy of Finland
 (grant 310988), NIH NINDS R01-NS104585, ERC Starting Grant SLAB ERC-YStG-676943,
-ANR meegBIDS.fr, the Bezos Family Foundation, the Simms Mann Foundation, and
+ANR meegBIDS.fr,
+BRAIN Initiative and National Institute of Mental Health (1R24MH114705),
+the Bezos Family Foundation, the Simms Mann Foundation, and
 the Google Summer of Code 2019.
 
 # References
