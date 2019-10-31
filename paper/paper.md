@@ -14,7 +14,7 @@ authors:
     orcid: 0000-0001-8002-0877
   - affiliation: 2
     name: Matthew Sanderson
-    orcid: xxxx-xxxx-xxxx-xxxx
+    orcid: 0000-0002-4645-8979
   - affiliation: 3
     name: Teon L Brooks
     orcid: 0000-0001-7344-3230
@@ -61,7 +61,7 @@ affiliations:
 - index: 1
   name: Center for Adaptive Rationality, Max Planck Institute for Human Development, Berlin, Germany
 - index: 2
-  name: Macquarie university
+  name: Department of Cognitive Sciences, Macquarie University, Sydney, Australia
 - index: 3
   name: Mozilla
 - index: 4
@@ -163,7 +163,7 @@ GitHub issue tracker.
 
 MNE-BIDS is used as a dependency in several other software packages such as
 the [MNE-study-template](https://github.com/mne-tools/mne-study-template), an
-automated analysis pipeline based on [@Mainak2018], and
+automated pipeline for group analysis with MNE [@Mainak2018], and
 [Biscuit](https://github.com/Macquarie-MEG-Research/Biscuit), a graphical
 user interface to format BIDS data.
 Lastly, several large institutions have adopted MNE-BIDS for their
