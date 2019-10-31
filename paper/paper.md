@@ -131,7 +131,7 @@ files into the BIDS format, and write additional metadata. Moreover,
 ``MNE-BIDS`` supports converting data formats that are not BIDS
 compatible into permissible formats. As a result, users can easily convert
 their datasets to BIDS in a matter of minutes, rather than hours of manual
-labour. All conversions performed by MNE-BIDS are validated with the
+labour. All conversions performed by ``MNE-BIDS`` are validated with the
 [bids-validator](https://github.com/bids-standard/bids-validator) to ensure
 compatibility with the BIDS format.
 
@@ -161,12 +161,12 @@ active](https://github.com/mne-tools/mne-bids/graphs/commit-activity) and the
 developer team is committed to provide timely support for issues opened on the
 GitHub issue tracker.
 
-MNE-BIDS is used as a dependency in several other software packages such as
+``MNE-BIDS`` is used as a dependency in several other software packages such as
 the [MNE-study-template](https://github.com/mne-tools/mne-study-template), an
 automated pipeline for group analysis with MNE [@Mainak2018], and
 [Biscuit](https://github.com/Macquarie-MEG-Research/Biscuit), a graphical
 user interface to format BIDS data.
-Lastly, several large institutions have adopted MNE-BIDS for their
+Lastly, several large institutions have adopted ``MNE-BIDS`` for their
 workflows such as the Martinos Center for Biomedical Imaging.
 
 The developer team is excited to improve the state of the art in data handling
@@ -174,7 +174,7 @@ and looking forward to welcoming new contributors and users.
 
 # Acknowledgements
 
-MNE-BIDS development is partly supported by the Academy of Finland
+``MNE-BIDS`` development is partly supported by the Academy of Finland
 (grant 310988), NIH NINDS R01-NS104585, ERC Starting Grant SLAB ERC-YStG-676943,
 ANR meegBIDS.fr,
 BRAIN Initiative and National Institute of Mental Health (1R24MH114705),
