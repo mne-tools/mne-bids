@@ -106,18 +106,18 @@ While BIDS was originally intended for Magnetic Resonance Imaging (MRI)
 data, it has recently been extended for electro-/magneto-encephalography (EEG/MEG)
 [@Niso2018, @Pernet2019], and intracranial EEG (iEEG) [@Holdgraf2019].
 In this context, many software packages for electrophysiology data analysis are
-now BIDS compatible. Yet, BIDS is not just another data storage format but a rich system
-to curate, aggregate and annotate neuroimaging databases. It is for this reason we
-developed a dedicated software, ``MNE-BIDS`` with the unique vision to provide
+now becoming BIDS compatible. BIDS is a rich system to curate, aggregate and
+annotate neuroimaging databases. For this reason we developed a dedicated
+software, ``MNE-BIDS`` with the goal to provide
 a programmable interface for BIDS datasets in electrophysiology. ``MNE-BIDS`` allows
 users to re-organize data into BIDS formats, store associated
 metadata after anonymization, extract information necessary for preprocessing and
-read them into ``MNE-Python`` objects [@Agramfort2013] ready for source localization.
+read them into ``MNE-Python`` objects [@Agramfort2013], ready for source localization.
 
 Starting with a single directory full of data files with arbitrary
 names, ``MNE-BIDS`` can be used to extract existing metadata, reorganize the
 files into the BIDS format, and write additional metadata.
-All the conversion routines are thoroughly tested that check the output with the
+All the conversion routines are thoroughly tested by running the output through the
 [BIDS validator](https://github.com/bids-standard/bids-validator).
 Moreover, ``MNE-BIDS`` supports converting data formats that are not BIDS
 compatible into permissible formats. As a result of this, users can easily convert
