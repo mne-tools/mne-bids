@@ -96,6 +96,21 @@ def _test_anonymize(raw, bids_basename, events_fname=None, event_id=None):
     return output_path
 
 
+@requires_version('pybv', '0.2.0')
+def _test_convert(raw, bids_basename, events_fname=None, event_id=None):
+    output_path = _TempDir()
+    if mne.pick_types(raw.info, meg=True).size > 0:
+        match = 'Converting data files to FIF format'
+    else:
+        match = 'Converting data files to BrainVision format'
+    with pytest.warns(UserWarning, match=match):
+        write_raw_bids(raw, bids_basename, output_path,
+                       events_data=events_fname,
+                       event_id=event_id, convert=True,
+                       overwrite=False, verbose=True)
+    return output_path
+
+
 def test_stamp_to_dt():
     """Test conversions of meas_date to datetime objects."""
     meas_date = (1346981585, 835782)
@@ -188,6 +203,10 @@ def test_fif(_bids_validate):
         write_raw_bids(raw2, bids_basename, output_path,
                        events_data=events_fname, event_id=event_id,
                        verbose=True, overwrite=False)
+
+    output_path2 = _test_convert(raw2, bids_basename, events_fname, event_id)
+    _bids_validate(output_path2)
+
     os.remove(op.join(output_path, 'test-raw.fif'))
     bids_dir = op.join(output_path, 'sub-%s' % subject_id,
                        'ses-%s' % session_id, 'eeg')
@@ -447,6 +466,18 @@ def test_kit(_bids_validate):
             output_path, events_data=events_fname, event_id=event_id,
             overwrite=True)
 
+    # test anonymize and convert
+    raw = mne.io.read_raw_kit(
+        raw_fname, mrk=hpi_fname, elp=electrode_fname,
+        hsp=headshape_fname)
+    output_path = _test_anonymize(raw, kit_bids_basename,
+                                  events_fname, event_id)
+    _bids_validate(output_path)
+
+    output_path = _test_convert(raw, bids_basename,
+                                events_fname, event_id)
+    _bids_validate(output_path)
+
 
 def test_ctf(_bids_validate):
     """Test functionality of the write_raw_bids conversion for CTF data."""
@@ -479,6 +510,9 @@ def test_ctf(_bids_validate):
     with pytest.raises(ValueError, match='All measurement dates are None'):
         get_anonymization_daysback(raw)
 
+    output_path = _test_convert(raw, bids_basename)
+    _bids_validate(output_path)
+
 
 def test_bti(_bids_validate):
     """Test functionality of the write_raw_bids conversion for BTi data."""
@@ -510,6 +544,12 @@ def test_bti(_bids_validate):
         output_path = _test_anonymize(raw, bids_basename)
     _bids_validate(output_path)
 
+<<<<<<< HEAD
+=======
+    output_path = _test_convert(raw, bids_basename)
+    _bids_validate(output_path)
+
+>>>>>>> anonymize keyword argument for write_raw_bids
 
 # XXX: vhdr test currently passes only on MNE master. Skip until next release.
 # see: https://github.com/mne-tools/mne-python/pull/6558
@@ -634,6 +674,12 @@ def test_edf(_bids_validate):
     output_path = _test_anonymize(raw, bids_basename)
     _bids_validate(output_path)
 
+<<<<<<< HEAD
+=======
+    output_path = _test_convert(raw, bids_basename)
+    _bids_validate(output_path)
+
+>>>>>>> anonymize keyword argument for write_raw_bids
 
 def test_bdf(_bids_validate):
     """Test write_raw_bids conversion for Biosemi data."""
@@ -679,6 +725,12 @@ def test_bdf(_bids_validate):
     output_path = _test_anonymize(raw, bids_basename)
     _bids_validate(output_path)
 
+<<<<<<< HEAD
+=======
+    output_path = _test_convert(raw, bids_basename)
+    _bids_validate(output_path)
+
+>>>>>>> anonymize keyword argument for write_raw_bids
 
 def test_set(_bids_validate):
     """Test write_raw_bids conversion for EEGLAB data."""
@@ -734,6 +786,12 @@ def test_set(_bids_validate):
     output_path = _test_anonymize(raw, bids_basename)
     _bids_validate(output_path)
 
+<<<<<<< HEAD
+=======
+    output_path = _test_convert(raw, bids_basename)
+    _bids_validate(output_path)
+
+>>>>>>> anonymize keyword argument for write_raw_bids
 
 @requires_nibabel()
 def test_write_anat(_bids_validate):

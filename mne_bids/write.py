@@ -913,7 +913,7 @@ def make_dataset_description(path, name=None, data_license=None,
 
 
 def write_raw_bids(raw, bids_basename, output_path, events_data=None,
-                   event_id=None, anonymize=None,
+                   event_id=None, anonymize=None, convert=None,
                    overwrite=False, verbose=True):
     """Walk over a folder of files and create BIDS compatible folder.
 
@@ -984,6 +984,12 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
             If True info['subject_info']['his_id'] of subject_info will NOT be
             overwritten. Defaults to False.
 
+    convert : bool | None
+        Whether or not to save in BrainVision for EEG or iEEG data and FIF
+        for MEG data if the data file is not already in that format.
+        Defaults to None in which case conversion will be done only if
+        the file type is not compatible (e.g. an EEG-only FIF file). If
+        anonymize is used, the file must be converted.
     overwrite : bool
         Whether to overwrite existing files or data in files.
         Defaults to False.
@@ -1126,7 +1132,6 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
         if kind == 'meg' and ext != '.fif':
             if verbose:
                 warn('Converting to FIF for anonymization')
-            bids_fname = bids_fname.replace(ext, '.fif')
 
     # Read in Raw object and extract metadata from Raw object if needed
     orient = ORIENTATION.get(ext, 'n/a')
@@ -1161,12 +1166,8 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
                               'overwrite to True.' % bids_fname)
     _mkdir_p(os.path.dirname(bids_fname))
 
-    convert = ext not in ALLOWED_EXTENSIONS[kind]
-
-    if kind == 'meg' and convert and not anonymize:
-        raise ValueError('Got file extension %s for MEG data, ' +
-                         'expected one of %s' %
-                         ALLOWED_EXTENSIONS['meg'])
+    if convert is None:
+        convert = ext not in ALLOWED_EXTENSIONS[kind]
 
     if not (convert or anonymize) and verbose:
         print('Copying data files to %s' % op.splitext(bids_fname)[0])
@@ -1176,6 +1177,10 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
         if kind == 'meg':
             if ext == '.pdf':
                 bids_fname = op.join(data_path, op.basename(bids_fname))
+            if ext != '.fif':
+                bids_fname = op.splitext(bids_fname)[0] + '.fif'
+            if convert and verbose:
+                warn('Converting data files to FIF format')
             _write_raw_fif(raw, bids_fname)
         else:
             if verbose:
