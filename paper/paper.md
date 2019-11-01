@@ -112,7 +112,7 @@ developed a dedicated software, ``MNE-BIDS`` with the unique vision to provide
 a programmable interface for BIDS datasets in electrophysiology. ``MNE-BIDS`` allows
 users to re-organize data into BIDS formats, store associated
 metadata after anonymization, extract information necessary for preprocessing and
-store them in ``MNE-Python`` objects [@Agramfort2013] ready for source localization.
+read them into ``MNE-Python`` objects [@Agramfort2013] ready for source localization.
 
 Starting with a single directory full of data files with arbitrary
 names, ``MNE-BIDS`` can be used to extract existing metadata, reorganize the
