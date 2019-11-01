@@ -94,46 +94,35 @@ bibliography: paper.bib
 
 # Summary
 
-With the emergence of the Brain Imaging Data Structure
-(``BIDS``; [@Gorgolewski2016]) in 2016, the neuroscientific community received
-a standard to organize and share data. Originally developed for Magnetic Resonance Imaging (MRI)
-data formats, BIDS now also supports magnetoencephalography (MEG) [@Niso2018],
-electroencephalography (EEG) [@Pernet2019], and intracranial EEG (iEEG) [@Holdgraf2019].
+With the development of the Brain Imaging Data Structure
+(``BIDS``; [@Gorgolewski2016]), the neuroscientific community received
+a standard to organize and share data. BIDS standardizes storage of complex experimental
+data by prescribing a set of file naming conventions and templates to store the
+associated metadata in the form of Javascript Object Notation (JSON) files. It thus
+facilitates data sharing, eases metadata querying and enables automatic data
+analysis pipelines.
 
-BIDS standardizes how complex experimental data should be structured and which
-metadata should be present besides the unprocessed data. This set of guidelines
-provides the following benefits:
+While BIDS was originally intended for Magnetic Resonance Imaging (MRI)
+data, it has recently been extended for electro-/magneto-encephalography (EEG/MEG)
+[@Niso2018, @Pernet2019], and intracranial EEG (iEEG) [@Holdgraf2019].
+In this context, many software packages for electrophysiology data analysis are
+now BIDS compatible. Yet, BIDS is not just another data storage format but a rich system
+to curate, aggregate and annotate neuroimaging databases. It is for this reason we
+developed a dedicated software, ``MNE-BIDS`` with the unique vision to provide
+a programmable interface for BIDS datasets in electrophysiology. ``MNE-BIDS`` allows
+users to re-organize data into BIDS formats, store associated
+metadata after anonymization, extract information necessary for preprocessing and
+store them in ``MNE-Python`` objects [@Agramfort2013] ready for source localization.
 
-1. **Sharing data within a lab and between labs:** The BIDS specification
-   empowers users to understand any BIDS dataset without requiring specialist
-   knowledge.
-1. **Data validation:** Dedicated software can check whether the rules of
-   BIDS are being followed in a dataset and alert users to missing or broken
-   data (see
-   [bids-validator](https://github.com/bids-standard/bids-validator)).
-1. **Automatic data handling and analysis pipelines:** Knowing which data to
-   expect and where to search for it, many common workflows in data handling
-   and analysis can be simplified or automated through specialized software
-   tools.
-
-To make use of these benefits, datasets must first be converted to the
-BIDS format. Furthermore, already existing data analysis software must be
-extended to be aware of the BIDS format and how to properly use it.
-
-This is where ``MNE-BIDS`` steps in. Harnessing BIDS and the data analysis
-software ``MNE-Python`` [@Agramfort2013], ``MNE-BIDS`` provides a programmable interface to
-automatically organize unprocessed MEG, EEG, and iEEG datasets into the BIDS format and
-to analyze them in ``MNE-Python``.
-
-For example, starting with a single directory full of data files with arbitrary
+Starting with a single directory full of data files with arbitrary
 names, ``MNE-BIDS`` can be used to extract existing metadata, reorganize the
-files into the BIDS format, and write additional metadata. Moreover,
-``MNE-BIDS`` supports converting data formats that are not BIDS
-compatible into permissible formats. As a result, users can easily convert
+files into the BIDS format, and write additional metadata.
+All the conversion routines are thoroughly tested that check the output with the
+[BIDS validator](https://github.com/bids-standard/bids-validator).
+Moreover, ``MNE-BIDS`` supports converting data formats that are not BIDS
+compatible into permissible formats. As a result of this, users can easily convert
 their datasets to BIDS in a matter of minutes, rather than hours of manual
-labour. All conversions performed by ``MNE-BIDS`` are validated with the
-[bids-validator](https://github.com/bids-standard/bids-validator) to ensure
-compatibility with the BIDS format.
+labour.
 
 In addition to this core functionality, ``MNE-BIDS`` is continuously being
 extended to facilitate the analysis of BIDS formatted data.
@@ -153,7 +142,8 @@ Other than the core dependencies for scientific computing
 ``MNE-BIDS`` has minimal dependencies, all of which are optional. The Application
 Programming Interface (API) of
 the package is stable and extensively documented and explained in examples
-(https://mne.tools/mne-bids/).
+(https://mne.tools/mne-bids/). In addition, a command-line interface is provided
+that allows even non-Python users to benefit from some of the core functionality.
 
 As of writing, ``MNE-BIDS`` has received code contributions from 15
 contributors and its user base is steadily growing. Code development is
