@@ -14,7 +14,7 @@ import os
 import os.path as op
 import pytest
 from glob import glob
-from datetime import datetime
+from datetime import datetime, timezone
 import platform
 import shutil as sh
 import json
@@ -31,6 +31,7 @@ from mne.io.kit.kit import get_kit_info
 
 from mne_bids import (write_raw_bids, read_raw_bids, make_bids_basename,
                       make_bids_folders, write_anat)
+from mne_bids.write import _stamp_to_dt
 from mne_bids.tsv_handler import _from_tsv, _to_tsv
 from mne_bids.utils import _find_matching_sidecar
 from mne_bids.pick import coil_type
@@ -78,6 +79,30 @@ def _bids_validate():
 
 
 @requires_version('pybv', '0.2.0')
+def _test_anonymize(raw, bids_basename, events_fname=None, event_id=None):
+    output_path = _TempDir()
+    write_raw_bids(raw, bids_basename, output_path,
+                   events_data=events_fname,
+                   event_id=event_id, anonymize=dict(daysback=600),
+                   overwrite=False)
+    scans_tsv = make_bids_basename(
+        subject=subject_id, session=session_id, suffix='scans.tsv',
+        prefix=op.join(output_path, 'sub-01', 'ses-01'))
+    data = _from_tsv(scans_tsv)
+    assert datetime.strptime(data['acq_time'][0],
+                             '%Y-%m-%dT%H:%M:%S').year < 1925
+    return output_path
+
+
+def test_stamp_to_dt():
+    """Test conversions of meas_date to datetime objects."""
+    meas_date = (1346981585, 835782)
+    meas_datetime = _stamp_to_dt(meas_date)
+    assert(meas_datetime == datetime(2012, 9, 7, 1, 33, 5, 835782,
+                                     tzinfo=timezone.utc))
+
+
+@requires_version('pybv', '0.2.0')
 def test_fif(_bids_validate):
     """Test functionality of the write_raw_bids conversion for fif."""
     output_path = _TempDir()
@@ -118,14 +143,14 @@ def test_fif(_bids_validate):
     raw = mne.io.read_raw_fif(raw_fname)
     raw.load_data()
     raw2 = raw.pick_types(meg=False, eeg=True, stim=True, eog=True, ecg=True)
-    raw2.save(op.join(output_path, 'test.fif'), overwrite=True)
-    raw2 = mne.io.Raw(op.join(output_path, 'test.fif'), preload=False)
+    raw2.save(op.join(output_path, 'test-raw.fif'), overwrite=True)
+    raw2 = mne.io.Raw(op.join(output_path, 'test-raw.fif'), preload=False)
     with pytest.warns(UserWarning,
                       match='Converting data files to BrainVision format'):
         write_raw_bids(raw2, bids_basename, output_path,
-                       events_data=events_fname,
-                       event_id=event_id, overwrite=False)
-    os.remove(op.join(output_path, 'test.fif'))
+                       events_data=events_fname, event_id=event_id,
+                       verbose=True, overwrite=False)
+    os.remove(op.join(output_path, 'test-raw.fif'))
     bids_dir = op.join(output_path, 'sub-%s' % subject_id,
                        'ses-%s' % session_id, 'eeg')
     for sidecar in ['channels.tsv', 'eeg.eeg', 'eeg.json', 'eeg.vhdr',
@@ -170,6 +195,7 @@ def test_fif(_bids_validate):
                        events_data=events_fname, event_id=event_id,
                        overwrite=False)
 
+    # test anonymize
     raw = mne.io.read_raw_fif(raw_fname)
     raw.anonymize()
 
@@ -222,6 +248,46 @@ def test_fif(_bids_validate):
         assert 'part' not in FILE
     assert ii < 1
 
+    # test keyword mne-bids anonymize
+    raw = mne.io.read_raw_fif(raw_fname)
+    with pytest.raises(ValueError, match='`daysback` must be a positive'):
+        write_raw_bids(raw, bids_basename, output_path,
+                       events_data=events_fname,
+                       event_id=event_id,
+                       anonymize=dict(daysback=-10),
+                       overwrite=True)
+
+    with pytest.raises(ValueError, match='`daysback` argument required'):
+        write_raw_bids(raw, bids_basename, output_path,
+                       events_data=events_fname,
+                       event_id=event_id,
+                       anonymize=dict(),
+                       overwrite=True)
+
+    output_path = _TempDir()
+    raw = mne.io.read_raw_fif(raw_fname)
+    with pytest.raises(ValueError, match='`daysback` is too large'):
+        write_raw_bids(raw, bids_basename, output_path,
+                       events_data=events_fname,
+                       event_id=event_id,
+                       anonymize=dict(daysback=10000),
+                       overwrite=False)
+
+    output_path = _TempDir()
+    raw = mne.io.read_raw_fif(raw_fname)
+    write_raw_bids(raw, bids_basename, output_path,
+                   events_data=events_fname,
+                   event_id=event_id,
+                   anonymize=dict(daysback=600, keep_his=True),
+                   overwrite=False)
+    scans_tsv = make_bids_basename(
+        subject=subject_id, session=session_id, suffix='scans.tsv',
+        prefix=op.join(output_path, 'sub-01', 'ses-01'))
+    data = _from_tsv(scans_tsv)
+    assert datetime.strptime(data['acq_time'][0],
+                             '%Y-%m-%dT%H:%M:%S').year < 1925
+    _bids_validate(output_path)
+
     # check that split files have part key
     raw = mne.io.read_raw_fif(raw_fname)
     data_path3 = _TempDir()
@@ -265,6 +331,11 @@ def test_kit(_bids_validate):
     assert op.exists(op.join(output_path, 'participants.tsv'))
 
     read_raw_bids(kit_bids_basename + '_meg.sqd', output_path)
+
+    # test anonymize
+    output_path = _test_anonymize(raw, kit_bids_basename,
+                                  events_fname, event_id)
+    _bids_validate(output_path)
 
     # ensure the channels file has no STI 014 channel:
     channels_tsv = make_bids_basename(
@@ -351,6 +422,14 @@ def test_ctf(_bids_validate):
 
     assert op.exists(op.join(output_path, 'participants.tsv'))
 
+    # test anonymize
+    raw = mne.io.read_raw_ctf(raw_fname)
+    raw.info['meas_date'] = (np.int32(0), np.int32(0))
+    with pytest.warns(UserWarning,
+                      match='Converting to FIF for anonymization'):
+        output_path = _test_anonymize(raw, bids_basename)
+    _bids_validate(output_path)
+
 
 def test_bti(_bids_validate):
     """Test functionality of the write_raw_bids conversion for BTi data."""
@@ -369,6 +448,14 @@ def test_bti(_bids_validate):
     _bids_validate(output_path)
 
     raw = read_raw_bids(bids_basename + '_meg', output_path)
+
+    # test anonymize
+    raw = mne.io.read_raw_bti(raw_fname, config_fname=config_fname,
+                              head_shape_fname=headshape_fname)
+    with pytest.warns(UserWarning,
+                      match='Converting to FIF for anonymization'):
+        output_path = _test_anonymize(raw, bids_basename)
+    _bids_validate(output_path)
 
 
 # XXX: vhdr test currently passes only on MNE master. Skip until next release.
@@ -417,6 +504,10 @@ def test_vhdr(_bids_validate):
     data_path = make_bids_folders(subject=subject_id, kind='eeg',
                                   output_path=output_path, overwrite=True)
     assert len([f for f in os.listdir(data_path) if op.isfile(f)]) == 0
+
+    # test anonymize and convert
+    raw = mne.io.read_raw_brainvision(raw_fname)
+    _test_anonymize(raw, bids_basename)
 
     # Also cover iEEG
     # We use the same data and pretend that eeg channels are ecog
@@ -480,6 +571,12 @@ def test_edf(_bids_validate):
     write_raw_bids(raw, bids_basename, output_path)
     _bids_validate(output_path)
 
+    # test anonymize and convert
+    raw = mne.io.read_raw_edf(raw_fname, preload=True)
+    raw.preload = False
+    output_path = _test_anonymize(raw, bids_basename)
+    _bids_validate(output_path)
+
 
 def test_bdf(_bids_validate):
     """Test write_raw_bids conversion for Biosemi data."""
@@ -516,6 +613,11 @@ def test_bdf(_bids_validate):
     raw.crop(0, raw.times[-2])
     with pytest.raises(AssertionError, match='cropped'):
         write_raw_bids(raw, bids_basename, output_path)
+
+    # test anonymize and convert
+    raw = mne.io.read_raw_bdf(raw_fname)
+    output_path = _test_anonymize(raw, bids_basename)
+    _bids_validate(output_path)
 
 
 def test_set(_bids_validate):
@@ -562,6 +664,11 @@ def test_set(_bids_validate):
                            for i in mne.pick_types(raw.info, eeg=True)})
     output_path = _TempDir()
     write_raw_bids(raw, bids_basename, output_path)
+    _bids_validate(output_path)
+
+    # test anonymize and convert
+    raw.info['meas_date'] = (np.int32(0), np.int32(0))
+    output_path = _test_anonymize(raw, bids_basename)
     _bids_validate(output_path)
 
 

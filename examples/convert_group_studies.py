@@ -71,8 +71,14 @@ for subject_id in subject_ids:
         bids_basename = make_bids_basename(subject=str(subject_id),
                                            session='01', task='VisualFaces',
                                            run=str(run))
+
+        # By using the same anonymization `daysback` number we can
+        # preserve the longitudinal structure of mulitple sessions for a
+        # single subject and the relation between subjects. Be sure to
+        # change or delete this number before putting code online, you
+        # wouldn't want to inadvertently de-anonymize your data.
         write_raw_bids(raw, bids_basename, output_path, event_id=event_id,
-                       overwrite=True)
+                       anonymize=dict(daysback=2117), overwrite=True)
 
 ###############################################################################
 # Now let's see the structure of the BIDS folder we created.

@@ -9,7 +9,7 @@
 # License: BSD (3-clause)
 import os
 import os.path as op
-from datetime import datetime
+from datetime import datetime, date, timedelta, timezone
 from warnings import warn
 import shutil as sh
 from collections import defaultdict, OrderedDict
@@ -21,7 +21,7 @@ from mne.transforms import (_get_trans, apply_trans, get_ras_to_neuromag_trans,
 from mne import Epochs, events_from_annotations
 from mne.io.constants import FIFF
 from mne.io.pick import channel_type
-from mne.io import BaseRaw
+from mne.io import BaseRaw, anonymize_info
 from mne.channels.channels import _unit2human
 from mne.utils import check_version, has_nibabel
 
@@ -44,6 +44,16 @@ from mne_bids.config import (ORIENTATION, UNITS, MANUFACTURERS,
 
 def _is_numeric(n):
     return isinstance(n, (np.integer, np.floating, int, float))
+
+
+def _stamp_to_dt(utc_stamp):
+    """Convert timestamp to datetime object in Windows-friendly way."""
+    # The min on windows is 86400
+    stamp = [int(s) for s in utc_stamp]
+    if len(stamp) == 1:  # In case there is no microseconds information
+        stamp.append(0)
+    return (datetime.fromtimestamp(stamp[0], tz=timezone.utc) +
+            timedelta(0, 0, stamp[1]))  # day, sec, μs
 
 
 def _channels_tsv(raw, fname, overwrite=False, verbose=True):
@@ -309,8 +319,12 @@ def _scans_tsv(raw, raw_fname, fname, overwrite=False, verbose=True):
     meas_date = raw.info['meas_date']
     if isinstance(meas_date, (tuple, list, np.ndarray)):
         meas_date = meas_date[0]
-        acq_time = datetime.fromtimestamp(
-            meas_date).strftime('%Y-%m-%dT%H:%M:%S')
+        # windows datetime bug for timestamp < 0
+        # OSError [Errno 22] Invalid Argument
+        acq_time = \
+            (datetime.fromtimestamp(0) +
+                timedelta(seconds=int(meas_date))).strftime(
+                    '%Y-%m-%dT%H:%M:%S')
     else:
         acq_time = 'n/a'
 
@@ -560,6 +574,51 @@ def _deface(t1w, mri_landmarks, deface, trans, raw):
     return t1w
 
 
+def _write_raw_fif(raw, bids_fname):
+    """Save out the raw file in FIF.
+
+    Parameters
+    ----------
+    raw : mne.io.Raw
+        Raw file to save out.
+    bids_fname : str
+        The name of the BIDS-specified file where the raw object
+        should be saved.
+
+    """
+    n_rawfiles = len(raw.filenames)
+    if n_rawfiles > 1:
+        split_naming = 'bids'
+        raw.save(bids_fname, split_naming=split_naming, overwrite=True)
+    else:
+        # This ensures that single FIF files do not have the part param
+        raw.save(bids_fname, split_naming='neuromag', overwrite=True)
+
+
+def _write_raw_brainvision(raw, bids_fname):
+    """Save out the raw file in BrainVision format.
+
+    Parameters
+    ----------
+    raw : mne.io.Raw
+        Raw file to save out.
+    bids_fname : str
+        The name of the BIDS-specified file where the raw object
+        should be saved.
+
+    """
+    if not check_version('pybv', '0.2'):
+        raise ImportError('pybv >=0.2.0 is required for converting ' +
+                          'file to Brainvision format')
+    from pybv import write_brainvision
+    events, event_id = events_from_annotations(raw)
+    write_brainvision(raw.get_data(), raw.info['sfreq'],
+                      raw.ch_names,
+                      op.splitext(op.basename(bids_fname))[0],
+                      op.dirname(bids_fname), events[:, [0, 2]],
+                      resolution=1e-6)
+
+
 def make_bids_basename(subject=None, session=None, task=None,
                        acquisition=None, run=None, processing=None,
                        recording=None, space=None, prefix=None, suffix=None):
@@ -774,7 +833,8 @@ def make_dataset_description(path, name=None, data_license=None,
 
 
 def write_raw_bids(raw, bids_basename, output_path, events_data=None,
-                   event_id=None, overwrite=False, verbose=True):
+                   event_id=None, anonymize=None,
+                   overwrite=False, verbose=True):
     """Walk over a folder of files and create BIDS compatible folder.
 
     .. warning:: * The original files are simply copied over if the original
@@ -827,6 +887,23 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
         inferred from the stim channel using `mne.find_events`.
     event_id : dict | None
         The event id dict used to create a 'trial_type' column in events.tsv
+    anonymize : dict | None
+        If a dictionary is passed, data will be anonymized; identifying data
+        structures such as study date and time will be changed.
+        `daysback` is a required argument and `keep_his` is optional, these
+        arguments are passed to :func:`mne.io.anonymize_info`.
+
+        `daysback` : int
+            Number of days to move back the date. To keep relative dates
+            for a subject use the same `daysback`. According to BIDS
+            specifications, the number of days back must be great enough
+            that the date is before 1925
+            from Dec 31, 1924.
+
+        `keep_his` : bool
+            If True his_id of subject_info will NOT be overwritten.
+            Defaults to False.
+
     overwrite : bool
         Whether to overwrite existing files or data in files.
         Defaults to False.
@@ -939,6 +1016,35 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
         bids_raw_folder = bids_fname.split('.')[0]
         bids_fname = op.join(bids_raw_folder, bids_fname)
 
+    # Anonymize
+    if anonymize is not None:
+        if 'daysback' not in anonymize:
+            raise ValueError('`daysback` argument required to anonymize.')
+        daysback = anonymize['daysback']
+        if daysback < 0:
+            raise ValueError('`daysback` must be a positive number')
+        min_secondsback = (_stamp_to_dt(raw.info['meas_date']).date() -
+                           date(year=1924, month=12, day=31)).total_seconds()
+        # 86400 == seconds in a day
+        min_daysback = np.ceil(min_secondsback / 86400)
+        daysback += min_daysback
+        new_date = (_stamp_to_dt(raw.info['meas_date']).date() -
+                    timedelta(days=daysback))
+        seconds_from_0 = (datetime.fromtimestamp(0).date() - new_date
+                          ).total_seconds()
+        if abs(seconds_from_0) > np.iinfo('>i4').max:
+            max_val = np.ceil((int(raw.info['meas_date'][0]) -
+                              np.iinfo('>i4').min) / 86400) - min_daysback
+            raise ValueError('`daysback` is too large to be stored with FIF file format, maximum value: %i' %
+                             max_val)
+        keep_his = anonymize['keep_his'] if 'keep_his' in anonymize else False
+        raw.info = anonymize_info(raw.info, daysback=daysback,
+                                  keep_his=keep_his)
+        if kind == 'meg' and ext != 'fif':
+            if verbose:
+                warn('Converting to FIF for anonymization')
+            bids_fname = bids_fname.replace(ext, '.fif')
+
     # Read in Raw object and extract metadata from Raw object if needed
     orient = ORIENTATION.get(ext, 'n/a')
     unit = UNITS.get(ext, 'n/a')
@@ -972,36 +1078,23 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
                               'overwrite to True.' % bids_fname)
     _mkdir_p(os.path.dirname(bids_fname))
 
-    if verbose:
+    convert = ext not in ALLOWED_EXTENSIONS[kind]
+
+    if not (convert or anonymize) and verbose:
         print('Copying data files to %s' % op.splitext(bids_fname)[0])
 
-    convert = ext not in ALLOWED_EXTENSIONS[kind]
-    # Copy the imaging data files
-    if convert:
+    # File saving branching logic
+    if convert or (anonymize is not None):
         if kind == 'meg':
-            raise ValueError('Got file extension %s for MEG data, ' +
-                             'expected one of %s' % ALLOWED_EXTENSIONS['meg'])
-        if verbose:
-            warn('Converting data files to BrainVision format')
-        if not check_version('pybv', '0.2'):
-            raise ImportError('pybv >=0.2.0 is required for converting ' +
-                              '%s files to Brainvision format' % ext)
-        from pybv import write_brainvision
-        events, event_id = events_from_annotations(raw)
-        write_brainvision(raw.get_data(), raw.info['sfreq'],
-                          raw.ch_names,
-                          op.splitext(op.basename(bids_fname))[0],
-                          op.dirname(bids_fname), events[:, [0, 2]],
-                          resolution=1e-6)
-    elif ext == '.fif':
-        n_rawfiles = len(raw.filenames)
-        if n_rawfiles > 1:
-            split_naming = 'bids'
-            raw.save(bids_fname, split_naming=split_naming, overwrite=True)
+            if ext == '.pdf':
+                bids_fname = op.join(data_path, op.basename(bids_fname))
+            _write_raw_fif(raw, bids_fname)
         else:
-            # This ensures that single FIF files do not have the part param
-            raw.save(bids_fname, split_naming='neuromag', overwrite=True)
-
+            if verbose:
+                warn('Converting data files to BrainVision format')
+            _write_raw_brainvision(raw, bids_fname)
+    elif ext == '.fif':
+        _write_raw_fif(raw, bids_fname)
     # CTF data is saved and renamed in a directory
     elif ext == '.ds':
         copyfile_ctf(raw_fname, bids_fname)
