@@ -48,6 +48,15 @@ The documentation can be found under the following links:
 - for the `stable release <https://mne.tools/mne-bids/>`_
 - for the `latest (development) version <https://circleci.com/api/v1.1/project/github/mne-tools/mne-bids/latest/artifacts/0/html/index.html?branch=master>`_
 
+Dependencies
+------------
+
+* numpy (>=1.14)
+* scipy (>=1.18.1)
+* mne (>=0.19.1)
+* nibabel (optional)
+* pybv (optional)
+
 Installation
 ------------
 
