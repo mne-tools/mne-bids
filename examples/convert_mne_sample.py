@@ -41,8 +41,15 @@ events_data = op.join(data_path, 'MEG', 'sample', 'sample_audvis_raw-eve.fif')
 output_path = op.join(data_path, '..', 'MNE-sample-data-bids')
 
 ###############################################################################
+#
+# .. note::
+#
+#   ``mne-bids`` will infer the manufacturer information from the file
+#   extension. If your file format is non-standard for the
+#   manufacturer, please update the manufacturer field in the sidecars
+#   manually.
+#
 # Specify the raw_file and events_data and run the BIDS conversion.
-
 raw = mne.io.read_raw_fif(raw_fname)
 bids_basename = make_bids_basename(subject='01', session='01',
                                    task='audiovisual', run='01')
