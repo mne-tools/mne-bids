@@ -96,23 +96,26 @@ bibliography: paper.bib
 
 With the development of the Brain Imaging Data Structure
 (``BIDS``; [@Gorgolewski2016]), the neuroscientific community received
-a standard to organize and share data. BIDS standardizes storage of complex experimental
-data by prescribing a set of file naming conventions and templates to store the
-associated metadata in the form of Javascript Object Notation (JSON) files. It thus
-facilitates data sharing, eases metadata querying and enables automatic data
-analysis pipelines.
+a standard to organize and share data.
+BIDS standardizes storage of complex experimental data by prescribing a set of
+file naming conventions and templates to store the associated metadata in the
+form of Javascript Object Notation (JSON) and tab separated value (TSV) files.
+It thus facilitates data sharing, eases metadata querying and enables automatic
+data analysis pipelines. BIDS is a rich system to curate, aggregate and
+annotate neuroimaging databases.
 
 While BIDS was originally intended for Magnetic Resonance Imaging (MRI)
-data, it has recently been extended for electro-/magneto-encephalography (EEG/MEG)
-[@Niso2018, @Pernet2019], and intracranial EEG (iEEG) [@Holdgraf2019].
-In this context, many software packages for electrophysiology data analysis are
-now becoming BIDS compatible. BIDS is a rich system to curate, aggregate and
-annotate neuroimaging databases. For this reason we developed a dedicated
-software, ``MNE-BIDS`` with the goal to provide
-a programmable interface for BIDS datasets in electrophysiology. ``MNE-BIDS`` allows
-users to re-organize data into BIDS formats, store associated
-metadata after anonymization, extract information necessary for preprocessing and
-read them into ``MNE-Python`` objects [@Agramfort2013], ready for source localization.
+data, it has recently been extended for magneto-encephalography
+(MEG; [@Niso2018]), electro-encephalography (EEG; [@Pernet2019]), and
+intracranial encephalography (iEEG; [@Holdgraf2019]).
+In this context, many software packages for neurophysiology data analysis are
+now becoming BIDS compatible.
+For this reason, we developed a dedicated software, ``MNE-BIDS`` with the goal
+to provide a programmable interface for BIDS datasets in neurophysiology.
+``MNE-BIDS`` allows users to re-organize data into BIDS formats, store
+associated metadata after anonymization, extract information necessary for
+preprocessing and read them into ``MNE-Python`` objects [@Agramfort2013], ready
+for source localization.
 
 Starting with a single directory full of data files with arbitrary
 names, ``MNE-BIDS`` can be used to extract existing metadata, reorganize the
@@ -147,7 +150,7 @@ that allows even non-Python users to benefit from some of the core functionality
 
 As of writing, ``MNE-BIDS`` has received code contributions from 15
 contributors and its user base is steadily growing. Code development is
-active](https://github.com/mne-tools/mne-bids/graphs/commit-activity) and the
+[active](https://github.com/mne-tools/mne-bids/graphs/commit-activity) and the
 developer team is committed to provide timely support for issues opened on the
 GitHub issue tracker.
 
