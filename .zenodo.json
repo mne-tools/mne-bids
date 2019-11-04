@@ -1,0 +1,101 @@
+{
+  "title": "MNE-BIDS: Organizing MEG, EEG, and iEEG data according to the BIDS specification and facilitating their analysis with MNE-Python",
+  "description": "MNE-BIDS is a Python library to facilitate the analysis of MEG, EEG, and iEEG data with MNE-Python for data conforming to the BIDS (Brain Imaging Data Structure) format. More information about BIDS and MNE-Python can be found at <a href=\"https://bids.neuroimaging.io\">bids.neuroimaging.io</a> and <a href=\"https://mne.tools\">mne.tools</a>, respectively.",
+  "creators": [
+    {
+      "affiliation": "Center for Adaptive Rationality, Max Planck Institute for Human Development, Berlin, Germany",
+      "name": "Appelhoff, Stefan",
+      "orcid": "0000-0001-8002-0877"
+    },
+    {
+     "affiliation": "Department of Cognitive Sciences, Macquarie University, Sydney, Australia",
+      "name": "Sanderson, Matthew",
+      "orcid": "0000-0002-4645-8979"
+    },
+    {
+     "affiliation": "Mozilla",
+      "name":"Brooks, Teon L ",
+      "orcid": "0000-0001-7344-3230"
+    },
+    {
+     "affiliation": "Department of Neuroscience and Biomedical Engineering, Aalto University, Espoo, Finland",
+      "name": "van Vliet, Marijn",
+      "orcid": "0000-0002-6537-6899"
+    },
+    {
+     "affiliation": "Human Cortical Physiology and Neurorehabilitation Section, NINDS, NIH, Bethesda, Maryland 20892",
+      "name": "Quentin, Romain",
+      "orcid": "0000-0001-7659-3605"
+    },
+    {
+     "affiliation": "UC Berkeley, Project Jupyter",
+      "name": "Holdgraf, Chris",
+      "orcid": "0000-0002-2391-0678"
+    },
+    {
+     "affiliation": "Institut du cerveau et de la moelle épinière (ICM), Paris, France",
+      "name": "Chaumon, Maximilien",
+      "orcid": "0000-0001-9664-8861"
+    },
+    {
+     "affiliation": "Department of Biomedical and Clinical Sciences 'L. Sacco', University of Milan, Milan, Italy",
+      "name": "Mikulan, Ezequiel",
+      "orcid": "0000-0001-7259-6120"
+    },
+    {
+     "affiliation": "Institute for Learning and Brain Sciences, University of Washington, Seattle, WA, USA",
+      "name": "Tavabi, Kambiz",
+      "orcid": "0000-0003-1881-892X"
+    },
+    {
+     "affiliation": "Institute of Neuroscience and Medicine (INM-3), Research Center Jülich, Germany",
+      "name": "Richard Höchenberger",
+      "orcid": "0000-0002-0380-4798"
+    },
+    {
+     "affiliation": "Max-Planck-Institute for Empirical Aesthetics, Frankfurt a.M., Germany",
+      "name": "Welke, Dominik",
+      "orcid": "0000-0002-5529-1998"
+    },
+    {
+     "affiliation": "Institute of Psychology, University of Graz, Austria",
+      "name": "Brunner, Clemens",
+      "orcid": "0000-0002-6030-2233"
+    },
+    {
+     "affiliation": "University of Oregon, Eugene OR, USA",
+      "name": "Rockhill, Alexander P",
+      "orcid": "0000-0003-3868-7453"
+    },
+    {
+      "affiliation": "Institute for Learning and Brain Sciences, University of Washington, Seattle, WA, USA",
+      "name": "Larson, Eric",
+      "orcid": "0000-0003-4782-5360"
+    },
+    {
+     "affiliation": "Université Paris-Saclay, Inria, CEA, Palaiseau, France",
+      "name": "Gramfort, Alexandre",
+      "orcid": "0000-0001-9791-4404"
+    },
+    {
+      "affiliation": "Athinoula A. Martinos Center for Biomedical Imaging, Massachusetts General Hospital, Charlestown, MA, USA",
+      "name": "Jas, Mainak",
+      "orcid": "0000-0002-3199-9027"
+    }
+  ],
+  "keywords": [
+    "BIDS",
+    "brain imaging data structure",
+    "neuroscience",
+    "neuroimaging",
+    "mne",
+    "python",
+    "magnetoencephalography",
+    "meg",
+    "electroencephalography",
+    "eeg",
+    "ieeg"
+  ],
+  "license": "BSD 3-Clause License",
+  "upload_type": "software"
+}
