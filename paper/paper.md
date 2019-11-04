@@ -95,7 +95,7 @@ bibliography: paper.bib
 # Summary
 
 With the development of the Brain Imaging Data Structure
-(``BIDS``; [@Gorgolewski2016]), the neuroscientific community received
+[``BIDS``; @Gorgolewski2016], the neuroscientific community received
 a standard to organize and share data.
 BIDS standardizes storage of complex experimental data by prescribing a set of
 file naming conventions and templates to store the associated metadata in the
@@ -104,10 +104,10 @@ It thus facilitates data sharing, eases metadata querying and enables automatic
 data analysis pipelines. BIDS is a rich system to curate, aggregate and
 annotate neuroimaging databases.
 
-While BIDS was originally intended for Magnetic Resonance Imaging (MRI)
-data, it has recently been extended for magneto-encephalography
-(MEG; [@Niso2018]), electro-encephalography (EEG; [@Pernet2019]), and
-intracranial encephalography (iEEG; [@Holdgraf2019]).
+While BIDS was originally intended for magnetic resonance imaging (MRI)
+data, it has recently been extended for magnetoencephalography
+[MEG; @Niso2018], electroencephalography [EEG; @Pernet2019], and
+intracranial encephalography [iEEG; @Holdgraf2019].
 In this context, many software packages for neurophysiology data analysis are
 now becoming BIDS compatible.
 For this reason, we developed a dedicated software, ``MNE-BIDS`` with the goal
