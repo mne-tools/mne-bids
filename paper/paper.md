@@ -100,9 +100,10 @@ a standard to organize and share data.
 BIDS standardizes storage of complex experimental data by prescribing a set of
 file naming conventions and templates to store the associated metadata in the
 form of Javascript Object Notation (JSON) and tab separated value (TSV) files.
-It thus facilitates data sharing, eases metadata querying and enables automatic
-data analysis pipelines. BIDS is a rich system to curate, aggregate and
-annotate neuroimaging databases.
+It thus facilitates data sharing, eases metadata querying, and enables
+automatic data analysis pipelines.
+BIDS is a rich system to curate, aggregate, and annotate neuroimaging
+databases.
 
 While BIDS was originally intended for magnetic resonance imaging (MRI)
 data, it has recently been extended for magnetoencephalography
@@ -114,8 +115,8 @@ For this reason, we developed a dedicated software, ``MNE-BIDS`` with the goal
 to provide a programmable interface for BIDS datasets in neurophysiology.
 ``MNE-BIDS`` allows users to re-organize data into BIDS formats, store
 associated metadata after anonymization, extract information necessary for
-preprocessing and read them into ``MNE-Python`` objects [@Agramfort2013], ready
-for source localization.
+preprocessing ,and read them into ``MNE-Python`` objects [@Agramfort2013],
+ready for source localization.
 
 Starting with a single directory full of data files with arbitrary
 names, ``MNE-BIDS`` can be used to extract existing metadata, reorganize the
@@ -138,7 +139,7 @@ coregistration between the MEG/EEG and MRI data, which is necessary for
 computation of forward and inverse solutions.
 
 Users can easily install ``MNE-BIDS`` on all major platforms via `pip` and
-`conda`, and its functionality is continuously tested on Windows, OS X, and
+`conda`, and its functionality is continuously tested on Windows, macOS, and
 Linux.
 Other than the core dependencies for scientific computing (`numpy`, `scipy`)
 and handling of MEG/EEG data (`mne`), ``MNE-BIDS`` has minimal dependencies,
@@ -146,7 +147,7 @@ all of which are optional.
 The Application Programming Interface (API) of the package is stable and
 extensively documented and explained in examples
 ([https://mne.tools/mne-bids/](https://mne.tools/mne-bids/)).
-In addition, a command-line interface is provided that allows even non-Python
+In addition, a command-line interface is provided that allows non-Python
 users to benefit from some of the core functionality.
 
 As of writing, ``MNE-BIDS`` has received code contributions from 15
