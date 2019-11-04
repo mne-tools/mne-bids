@@ -1,5 +1,5 @@
 ---
-title: 'MNE-BIDS: Organizing neurophysiological data into the BIDS format and facilitating their analysis'
+title: "MNE-BIDS: Organizing neurophysiological data into the BIDS format and facilitating their analysis"
 tags:
   - Python
   - BIDS
@@ -88,7 +88,7 @@ affiliations:
   name: Université Paris-Saclay, Inria, CEA, Palaiseau, France
 - index: 15
   name: Athinoula A. Martinos Center for Biomedical Imaging, Massachusetts General Hospital, Charlestown, MA, USA
-date: 29 October 2019
+date: 4 November 2019
 bibliography: paper.bib
 ---
 
@@ -120,12 +120,12 @@ for source localization.
 Starting with a single directory full of data files with arbitrary
 names, ``MNE-BIDS`` can be used to extract existing metadata, reorganize the
 files into the BIDS format, and write additional metadata.
-All the conversion routines are thoroughly tested by running the output through the
-[BIDS validator](https://github.com/bids-standard/bids-validator).
+All the conversion routines are thoroughly tested by running the output through
+the [BIDS validator](https://github.com/bids-standard/bids-validator).
 Moreover, ``MNE-BIDS`` supports converting data formats that are not BIDS
-compatible into permissible formats. As a result of this, users can easily convert
-their datasets to BIDS in a matter of minutes, rather than hours of manual
-labour.
+compatible into permissible formats.
+As a result of this, users can easily convert their datasets to BIDS in a
+matter of minutes, rather than hours of manual labour.
 
 In addition to this core functionality, ``MNE-BIDS`` is continuously being
 extended to facilitate the analysis of BIDS formatted data.
@@ -133,23 +133,25 @@ To name some features, it is possible to read a BIDS dataset and obtain a
 Python object, ready for analyis with ``MNE-Python``.
 Users can save a T1-weighted anatomical MRI image alongside the MEG or EEG data
 and apply an automatic defacing algorithm for anonymization purposes.
-As a last example, anatomical landmark coordinates can be saved to enable coregistration
-between the MEG/EEG and MRI data, which is necessary for
+As a last example, anatomical landmark coordinates can be saved to enable
+coregistration between the MEG/EEG and MRI data, which is necessary for
 computation of forward and inverse solutions.
 
 Users can easily install ``MNE-BIDS`` on all major platforms via `pip` and
 `conda`, and its functionality is continuously tested on Windows, OS X, and
 Linux.
-Other than the core dependencies for scientific computing
-(`numpy`, `scipy`) and handling of MEG/EEG data (`mne`),
-``MNE-BIDS`` has minimal dependencies, all of which are optional. The Application
-Programming Interface (API) of
-the package is stable and extensively documented and explained in examples
-(https://mne.tools/mne-bids/). In addition, a command-line interface is provided
-that allows even non-Python users to benefit from some of the core functionality.
+Other than the core dependencies for scientific computing (`numpy`, `scipy`)
+and handling of MEG/EEG data (`mne`), ``MNE-BIDS`` has minimal dependencies,
+all of which are optional.
+The Application Programming Interface (API) of the package is stable and
+extensively documented and explained in examples
+([https://mne.tools/mne-bids/](https://mne.tools/mne-bids/)).
+In addition, a command-line interface is provided that allows even non-Python
+users to benefit from some of the core functionality.
 
 As of writing, ``MNE-BIDS`` has received code contributions from 15
-contributors and its user base is steadily growing. Code development is
+contributors and its user base is steadily growing.
+Code development is
 [active](https://github.com/mne-tools/mne-bids/graphs/commit-activity) and the
 developer team is committed to provide timely support for issues opened on the
 GitHub issue tracker.
@@ -167,11 +169,15 @@ and looking forward to welcoming new contributors and users.
 
 # Acknowledgements
 
-``MNE-BIDS`` development is partly supported by the Academy of Finland
-(grant 310988), NIH NINDS R01-NS104585, ERC Starting Grant SLAB ERC-YStG-676943,
+``MNE-BIDS`` development is partly supported by
+the Academy of Finland (grant 310988),
+NIH NINDS R01-NS104585,
+ERC Starting Grant SLAB ERC-YStG-676943,
 ANR meegBIDS.fr,
 BRAIN Initiative and National Institute of Mental Health (1R24MH114705),
-the Bezos Family Foundation, the Simms Mann Foundation, and
+the Bezos Family Foundation,
+the Simms Mann Foundation,
+and
 the Google Summer of Code 2019.
 
 # References
