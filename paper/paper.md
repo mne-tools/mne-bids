@@ -95,7 +95,7 @@ bibliography: paper.bib
 # Summary
 
 With the development of the Brain Imaging Data Structure
-[``BIDS``; @Gorgolewski2016], the neuroscientific community received
+[BIDS; @Gorgolewski2016], the neuroscientific community received
 a standard to organize and share data.
 BIDS standardizes storage of complex experimental data by prescribing a set of
 file naming conventions and templates to store the associated metadata in the
