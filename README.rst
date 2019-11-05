@@ -52,7 +52,7 @@ Dependencies
 ------------
 
 * numpy (>=1.14)
-* scipy (>=1.18.1)
+* scipy (>=0.18.1)
 * mne (>=0.19.1)
 * nibabel (optional)
 * pybv (optional)

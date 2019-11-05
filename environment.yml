@@ -7,7 +7,7 @@ dependencies:
 - pip=19
 - mkl
 - numpy>=1.14
-- scipy>=1.18.1
+- scipy>=0.18.1
 - scikit-learn
 - matplotlib
 - pip:
