@@ -777,11 +777,17 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
                    event_id=None, overwrite=False, verbose=True):
     """Walk over a folder of files and create BIDS compatible folder.
 
-    .. warning:: The original files are simply copied over if the original
-                 file format is BIDS-supported for that modality. Otherwise,
-                 this function will convert to a BIDS-supported file format
-                 while warning the user. For EEG and iEEG data, conversion will
-                 be to BrainVision format, for MEG conversion will be to FIF.
+    .. warning:: * The original files are simply copied over if the original
+                   file format is BIDS-supported for that modality. Otherwise,
+                   this function will convert to a BIDS-supported file format
+                   while warning the user. For EEG and iEEG data, conversion
+                   will be to BrainVision format, for MEG conversion will be
+                   to FIF.
+
+                 * ``mne-bids`` will infer the manufacturer information
+                   from the file extension. If your file format is non-standard
+                   for the manufacturer, please update the manufacturer field
+                   in the sidecars manually.
 
     Parameters
     ----------
