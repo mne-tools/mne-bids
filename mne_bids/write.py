@@ -53,8 +53,8 @@ def _stamp_to_dt(utc_stamp):
     stamp = [int(s) for s in utc_stamp]
     if len(stamp) == 1:  # In case there is no microseconds information
         stamp.append(0)
-    return (datetime.fromtimestamp(stamp[0], tz=timezone.utc) +
-            timedelta(0, 0, stamp[1]))  # day, sec, μs
+    return (datetime.fromtimestamp(0, tz=timezone.utc) +
+            timedelta(0, stamp[0], stamp[1]))  # day, sec, μs
 
 
 def _channels_tsv(raw, fname, overwrite=False, verbose=True):
