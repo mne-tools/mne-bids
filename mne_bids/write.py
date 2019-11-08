@@ -320,8 +320,13 @@ def _scans_tsv(raw, raw_fname, fname, overwrite=False, verbose=True):
     meas_date = raw.info['meas_date']
     if isinstance(meas_date, (tuple, list, np.ndarray)):
         meas_date = meas_date[0]
-        # windows datetime bug for timestamp < 0
-        # OSError [Errno 22] Invalid Argument
+        # This is equivalent to
+        # acq_time = datetime.fromtimestamp(
+        #     meas_date).strftime('%Y-%m-%dT%H:%M:%S')
+        # This is a windows datetime bug for timestamp < 0. The negative value
+        # is needed for anonymization which requires the date to be moved back
+        # to before 1925. This then requires a negative value of daysback
+        # compared the 1970 reference date.
         acq_time = \
             (datetime.fromtimestamp(0) +
                 timedelta(seconds=int(meas_date))).strftime(
