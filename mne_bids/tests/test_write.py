@@ -100,6 +100,10 @@ def test_stamp_to_dt():
     meas_datetime = _stamp_to_dt(meas_date)
     assert(meas_datetime == datetime(2012, 9, 7, 1, 33, 5, 835782,
                                      tzinfo=timezone.utc))
+    meas_date = (1346981585,)
+    meas_datetime = _stamp_to_dt(meas_date)
+    assert(meas_datetime == datetime(2012, 9, 7, 1, 33, 5, 0,
+                                     tzinfo=timezone.utc))
 
 
 @requires_version('pybv', '0.2.0')

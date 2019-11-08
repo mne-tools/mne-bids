@@ -49,7 +49,7 @@ def _is_numeric(n):
 def _stamp_to_dt(utc_stamp):
     """Convert timestamp to datetime object in Windows-friendly way."""
     # The min on windows is 86400,
-    # see https://github.com/home-assistant/appdaemon/issues/83
+    # fsee https://github.com/home-assistant/appdaemon/issues/83
     stamp = [int(s) for s in utc_stamp]
     if len(stamp) == 1:  # In case there is no microseconds information
         stamp.append(0)
@@ -889,6 +889,7 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
     event_id : dict | None
         The event id dict used to create a 'trial_type' column in events.tsv
     anonymize : dict | None
+        If None is provided (default) no anonymization is performed.
         If a dictionary is passed, data will be anonymized; identifying data
         structures such as study date and time will be changed.
         `daysback` is a required argument and `keep_his` is optional, these
