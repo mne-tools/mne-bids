@@ -1027,7 +1027,7 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
         if 'daysback' not in anonymize:
             raise ValueError('`daysback` argument required to anonymize.')
         daysback = anonymize['daysback']
-        daysback += 36525  # add 100 years back by default
+        daysback += 36525  # add 100 years (or 36525 days) back by default
         new_date = (_stamp_to_dt(raw.info['meas_date']).date() -
                     timedelta(days=daysback))
         seconds_from_0 = (datetime.fromtimestamp(0).date() - new_date
