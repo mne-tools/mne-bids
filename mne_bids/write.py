@@ -48,7 +48,8 @@ def _is_numeric(n):
 
 def _stamp_to_dt(utc_stamp):
     """Convert timestamp to datetime object in Windows-friendly way."""
-    # The min on windows is 86400
+    # The min on windows is 86400,
+    # see https://github.com/home-assistant/appdaemon/issues/83
     stamp = [int(s) for s in utc_stamp]
     if len(stamp) == 1:  # In case there is no microseconds information
         stamp.append(0)
