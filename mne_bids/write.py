@@ -894,11 +894,10 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
         arguments are passed to :func:`mne.io.anonymize_info`.
 
         `daysback` : int
-            Number of days to move back the date. To keep relative dates
-            for a subject use the same `daysback`. According to BIDS
-            specifications, the number of days back must be great enough
-            that the date is before 1925
-            from Dec 31, 1924.
+            Number of days to move back the date with a 100 year offset as 0.
+            To keep relative dates for a subject use the same `daysback`.
+            According to BIDS specifications, the number of days back must be
+            great enough that the date is before 1925.
 
         `keep_his` : bool
             If True his_id of subject_info will NOT be overwritten.
@@ -1021,22 +1020,25 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
         if 'daysback' not in anonymize:
             raise ValueError('`daysback` argument required to anonymize.')
         daysback = anonymize['daysback']
-        if daysback < 0:
-            raise ValueError('`daysback` must be a positive number')
-        min_secondsback = (_stamp_to_dt(raw.info['meas_date']).date() -
-                           date(year=1924, month=12, day=31)).total_seconds()
-        # 86400 == seconds in a day
-        min_daysback = np.ceil(min_secondsback / 86400)
-        daysback += min_daysback
+        daysback += 36525  # add 100 years back by default
         new_date = (_stamp_to_dt(raw.info['meas_date']).date() -
                     timedelta(days=daysback))
         seconds_from_0 = (datetime.fromtimestamp(0).date() - new_date
                           ).total_seconds()
         if abs(seconds_from_0) > np.iinfo('>i4').max:
-            max_val = np.ceil((int(raw.info['meas_date'][0]) -
-                              np.iinfo('>i4').min) / 86400) - min_daysback
-            raise ValueError('`daysback` is too large to be stored with FIF file format, maximum value: %i' %
-                             max_val)
+            min_val = \
+                (_stamp_to_dt(raw.info['meas_date']).date() -
+                 date(year=1924, month=12, day=31)).days - 36525
+            max_val = \
+                (_stamp_to_dt(raw.info['meas_date']).date() -
+                 (datetime.fromtimestamp(0).date() -
+                  timedelta(seconds=np.iinfo('>i4').max))).days - 36525
+            raise ValueError('`daysback` creates a date that is too large ' +
+                             'to be stored in FIF file format, ' +
+                             '`daysback` must be between: ' +
+                             '%i and %i ' % (min_val, max_val) +
+                             'for the given raw.info[\'meas_date\']: ' +
+                             '%s' % _stamp_to_dt(raw.info['meas_date']).date())
         keep_his = anonymize['keep_his'] if 'keep_his' in anonymize else False
         raw.info = anonymize_info(raw.info, daysback=daysback,
                                   keep_his=keep_his)

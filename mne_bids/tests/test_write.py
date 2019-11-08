@@ -83,7 +83,7 @@ def _test_anonymize(raw, bids_basename, events_fname=None, event_id=None):
     output_path = _TempDir()
     write_raw_bids(raw, bids_basename, output_path,
                    events_data=events_fname,
-                   event_id=event_id, anonymize=dict(daysback=600),
+                   event_id=event_id, anonymize=dict(daysback=300),
                    overwrite=False)
     scans_tsv = make_bids_basename(
         subject=subject_id, session=session_id, suffix='scans.tsv',
@@ -250,13 +250,6 @@ def test_fif(_bids_validate):
 
     # test keyword mne-bids anonymize
     raw = mne.io.read_raw_fif(raw_fname)
-    with pytest.raises(ValueError, match='`daysback` must be a positive'):
-        write_raw_bids(raw, bids_basename, output_path,
-                       events_data=events_fname,
-                       event_id=event_id,
-                       anonymize=dict(daysback=-10),
-                       overwrite=True)
-
     with pytest.raises(ValueError, match='`daysback` argument required'):
         write_raw_bids(raw, bids_basename, output_path,
                        events_data=events_fname,
@@ -266,7 +259,8 @@ def test_fif(_bids_validate):
 
     output_path = _TempDir()
     raw = mne.io.read_raw_fif(raw_fname)
-    with pytest.raises(ValueError, match='`daysback` is too large'):
+    with pytest.raises(ValueError, match='`daysback` creates a date that ' +
+                                         'is too large'):
         write_raw_bids(raw, bids_basename, output_path,
                        events_data=events_fname,
                        event_id=event_id,
@@ -278,7 +272,7 @@ def test_fif(_bids_validate):
     write_raw_bids(raw, bids_basename, output_path,
                    events_data=events_fname,
                    event_id=event_id,
-                   anonymize=dict(daysback=600, keep_his=True),
+                   anonymize=dict(daysback=300, keep_his=True),
                    overwrite=False)
     scans_tsv = make_bids_basename(
         subject=subject_id, session=session_id, suffix='scans.tsv',
@@ -424,7 +418,7 @@ def test_ctf(_bids_validate):
 
     # test anonymize
     raw = mne.io.read_raw_ctf(raw_fname)
-    raw.info['meas_date'] = (np.int32(0), np.int32(0))
+    raw.info['meas_date'] = (np.int32(1038942070), np.int32(0))
     with pytest.warns(UserWarning,
                       match='Converting to FIF for anonymization'):
         output_path = _test_anonymize(raw, bids_basename)
@@ -667,7 +661,7 @@ def test_set(_bids_validate):
     _bids_validate(output_path)
 
     # test anonymize and convert
-    raw.info['meas_date'] = (np.int32(0), np.int32(0))
+    raw.info['meas_date'] = (np.int32(1038942070), np.int32(0))
     output_path = _test_anonymize(raw, bids_basename)
     _bids_validate(output_path)
 
