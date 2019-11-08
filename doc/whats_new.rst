@@ -24,6 +24,7 @@ Changelog
 
 - Added option to anonymize by shifting measurement date with `anonymize` parameter, in accordance with BIDS specifications, by `Alex Rockhill`_ (`#280 <https://github.com/mne-tools/mne-bids/pull/280>`_)
 - Added automatic conversion of FIF to BrainVision format with warning for EEG only data and conversion to FIF for meg non-FIF data, by `Alex Rockhill`_ (`#237 <https://github.com/mne-tools/mne-bids/pull/237>`_)
+- Add possibility to pass raw readers parameters (e.g. `allow_maxshield`) to :func:`read_raw_bids` to allow reading BIDS-formatted data before applying maxfilter, by  `Sophie Herbst`_
 - New feature in :func`mne_bids.write.write_anat` for shear deface of mri, by `Alex Rockhill`_ (`#271 <https://github.com/mne-tools/mne-bids/pull/271>`_)
 
 Bug
@@ -188,3 +189,4 @@ People who contributed to this release (in alphabetical order):
 .. _Ezequiel Mikulan: https://github.com/ezemikulan
 .. _Marijn van Vliet: https://github.com/wmvanvliet
 .. _Alex Rockhill: http://github.com/alexrockhill
+.. _Sophie Herbst: http://github.com/SophieHerbst

@@ -179,7 +179,8 @@ def _handle_channels_reading(channels_fname, bids_fname, raw):
     return raw
 
 
-def read_raw_bids(bids_fname, bids_root, verbose=True):
+def read_raw_bids(bids_fname, bids_root, allow_maxshield=False,
+                  verbose=True):
     """Read BIDS compatible data.
 
     Will attempt to read associated events.tsv and channels.tsv files to
@@ -191,6 +192,12 @@ def read_raw_bids(bids_fname, bids_root, verbose=True):
         Full name of the data file
     bids_root : str
         Path to root of the BIDS folder
+    allow_maxshield : bool | str (default False)
+        If True, allow loading of data that has been recorded with internal
+        active compensation (MaxShield). Data recorded with MaxShield should
+        generally not be loaded directly, but should first be processed
+        using SSS/tSSS to remove the compensation signals that may also affect
+        brain activity. Can also be “yes” to load without eliciting a warning.
     verbose : bool
         The verbosity level
 
@@ -230,7 +237,8 @@ def read_raw_bids(bids_fname, bids_root, verbose=True):
         config = op.join(bids_raw_folder, 'config')
 
     raw = _read_raw(bids_fpath, electrode=None, hsp=None, hpi=None,
-                    config=config, verbose=None)
+                    config=config, allow_maxshield=allow_maxshield,
+                    verbose=None)
 
     # Try to find an associated events.tsv to get information about the
     # events in the recorded data
