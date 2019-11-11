@@ -616,7 +616,7 @@ def _write_raw_brainvision(raw, bids_fname):
                       resolution=1e-6)
 
 
-def get_anonymization_daysback(raw):
+def _get_anonymization_daysback(raw):
     """Get the min and max number of daysback necessary to satisfy BIDS specs.
 
     .. warning:: It is important that you remember the anonymization
@@ -638,19 +638,19 @@ def get_anonymization_daysback(raw):
 
     Returns
     -------
-    min_val : int
+    daysback_min : int
         The minimum number of daysback necessary to be compatible with BIDS.
-    max_val : int
+    daysback_max : int
         The maximum number of daysback that MNE can store.
     """
     this_date = _stamp_to_dt(raw.info['meas_date']).date()
-    min_val = (this_date - date(year=1924, month=12, day=31)).days
-    max_val = (this_date - datetime.fromtimestamp(0).date() +
-               timedelta(seconds=np.iinfo('>i4').max)).days
-    return min_val, max_val
+    daysback_min = (this_date - date(year=1924, month=12, day=31)).days
+    daysback_max = (this_date - datetime.fromtimestamp(0).date() +
+                    timedelta(seconds=np.iinfo('>i4').max)).days
+    return daysback_min, daysback_max
 
 
-def get_group_anonymization_daysback(raws):
+def get_anonymization_daysback(raws):
     """Get the group min and max number of daysback necessary for BIDS specs.
 
     .. warning:: It is important that you remember the anonymization
@@ -672,23 +672,25 @@ def get_group_anonymization_daysback(raws):
 
     Returns
     -------
-    min_val : int
+    daysback_min : int
         The minimum number of daysback necessary to be compatible with BIDS.
-    max_val : int
+    daysback_max : int
         The maximum number of daysback that MNE can store.
     """
-    min_vals = list()
-    max_vals = list()
+    daysback_min_list = list()
+    daysback_max_list = list()
     for raw in raws:
-        min_val, max_val = get_anonymization_daysback(raw)
-        min_vals.append(min_val)
-        max_vals.append(max_val)
-    if max(min_vals) > min(max_vals):
+        daysback_min, daysback_max = _get_anonymization_daysback(raw)
+        daysback_min_list.append(daysback_min)
+        daysback_max_list.append(daysback_max)
+    daysback_min = max(daysback_min_list)
+    daysback_max = min(daysback_max_list)
+    if daysback_min > daysback_max:
         raise ValueError('The dataset spans more time than can be ' +
                          'accomodated by MNE, you may have to ' +
                          'not follow BIDS recommendations and use' +
                          'anonymized dates after 1925')
-    return max(min_vals), min(max_vals)
+    return daysback_min, daysback_max
 
 
 def make_bids_basename(subject=None, session=None, task=None,
@@ -967,10 +969,10 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
         arguments are passed to :func:`mne.io.anonymize_info`.
 
         `daysback` : int
-            Number of days to move back the date with a 100 year offset as 0.
-            To keep relative dates for a subject use the same `daysback`.
-            According to BIDS specifications, the number of days back must be
-            great enough that the date is before 1925.
+            Number of days to move back the date. To keep relative dates for
+            a subject use the same `daysback`. According to BIDS
+            specifications, the number of days back must be great enough
+            that the date is before 1925.
 
         `keep_his` : bool
             If True info['subject_info']['his_id'] of subject_info will NOT be
@@ -1093,15 +1095,15 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
         if 'daysback' not in anonymize or anonymize['daysback'] is None:
             raise ValueError('`daysback` argument required to anonymize.')
         daysback = anonymize['daysback']
-        min_val, max_val = get_anonymization_daysback(raw)
-        if daysback < min_val:
+        daysback_min, daysback_max = _get_anonymization_daysback(raw)
+        if daysback < daysback_min:
             warn('`daysback` is too small; the measurement date ' +
                  'is after 1925, which is not recommended by BIDS.' +
                  'The minimum `daysback` value for changing the measurement' +
-                 'date of this data to before this date is %i' % min_val)
-        if daysback > max_val:
+                 'date of this data to before this date is %i' % daysback_min)
+        if daysback > daysback_max:
             raise ValueError('`daysback` exceeds maximum value MNE is able ' +
-                             'to store, must be less than %i' % max_val)
+                             'to store, must be less than %i' % daysback_max)
         keep_his = anonymize['keep_his'] if 'keep_his' in anonymize else False
         raw.info = anonymize_info(raw.info, daysback=daysback,
                                   keep_his=keep_his)
@@ -1144,6 +1146,11 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
     _mkdir_p(os.path.dirname(bids_fname))
 
     convert = ext not in ALLOWED_EXTENSIONS[kind]
+
+    if kind == 'meg' and convert and not anonymize:
+        raise ValueError('Got file extension %s for MEG data, ' +
+                         'expected one of %s' %
+                         ALLOWED_EXTENSIONS['meg'])
 
     if not (convert or anonymize) and verbose:
         print('Copying data files to %s' % op.splitext(bids_fname)[0])
