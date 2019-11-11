@@ -625,6 +625,81 @@ def _write_raw_brainvision(raw, bids_fname):
                       resolution=1e-6)
 
 
+def get_anonymization_daysback(raw):
+    """Get the min and max number of daysback necessary to satisfy BIDS specs.
+
+    .. warning:: It is important that you remember the anonymization
+                 number if you would ever like to de-anonymize but
+                 that it is not included in the code publication
+                 as that would break the anonymization.
+
+    BIDS requires that anonymized dates be before 1925. In order to
+    preserve the longitudinal structure and ensure anonymization, the
+    user is asked to provide the same `daysback` argument to each call
+    of `write_raw_bids`. To determine the miniumum number of daysback
+    necessary, this function will calculate the minimum number based on
+    the most recent measurement date of raw objects.
+
+    Parameters
+    ----------
+    raw : instance of mne.io.Raw
+        The raw data. It must be an instance or list of instances of mne.Raw.
+
+    Returns
+    -------
+    min_val : int
+        The minimum number of daysback necessary to be compatible with BIDS.
+    max_val : int
+        The maximum number of daysback that MNE can store.
+    """
+    this_date = _stamp_to_dt(raw.info['meas_date']).date()
+    min_val = (this_date - date(year=1924, month=12, day=31)).days
+    max_val = (this_date - datetime.fromtimestamp(0).date() +
+               timedelta(seconds=np.iinfo('>i4').max)).days
+    return min_val, max_val
+
+
+def get_group_anonymization_daysback(raws):
+    """Get the group min and max number of daysback necessary for BIDS specs.
+
+    .. warning:: It is important that you remember the anonymization
+                 number if you would ever like to de-anonymize but
+                 that it is not included in the code publication
+                 as that would break the anonymization.
+
+    BIDS requires that anonymized dates be before 1925. In order to
+    preserve the longitudinal structure and ensure anonymization, the
+    user is asked to provide the same `daysback` argument to each call
+    of `write_raw_bids`. To determine the miniumum number of daysback
+    necessary, this function will calculate the minimum number based on
+    the most recent measurement date of raw objects.
+
+    Parameters
+    ----------
+    raw : list
+        The group raw data. It must be a list of instances of mne.Raw.
+
+    Returns
+    -------
+    min_val : int
+        The minimum number of daysback necessary to be compatible with BIDS.
+    max_val : int
+        The maximum number of daysback that MNE can store.
+    """
+    min_vals = list()
+    max_vals = list()
+    for raw in raws:
+        min_val, max_val = get_anonymization_daysback(raw)
+        min_vals.append(min_val)
+        max_vals.append(max_val)
+    if max(min_vals) > min(max_vals):
+        raise ValueError('The dataset spans more time than can be ' +
+                         'accomodated by MNE, you may have to ' +
+                         'not follow BIDS recommendations and use' +
+                         'anonymized dates after 1925')
+    return max(min_vals), min(max_vals)
+
+
 def make_bids_basename(subject=None, session=None, task=None,
                        acquisition=None, run=None, processing=None,
                        recording=None, space=None, prefix=None, suffix=None):
@@ -1024,28 +1099,18 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
 
     # Anonymize
     if anonymize is not None:
-        if 'daysback' not in anonymize:
+        if 'daysback' not in anonymize or anonymize['daysback'] is None:
             raise ValueError('`daysback` argument required to anonymize.')
         daysback = anonymize['daysback']
-        daysback += 36525  # add 100 years (or 36525 days) back by default
-        new_date = (_stamp_to_dt(raw.info['meas_date']).date() -
-                    timedelta(days=daysback))
-        seconds_from_0 = (datetime.fromtimestamp(0).date() - new_date
-                          ).total_seconds()
-        if abs(seconds_from_0) > np.iinfo('>i4').max:
-            min_val = \
-                (_stamp_to_dt(raw.info['meas_date']).date() -
-                 date(year=1924, month=12, day=31)).days - 36525
-            max_val = \
-                (_stamp_to_dt(raw.info['meas_date']).date() -
-                 (datetime.fromtimestamp(0).date() -
-                  timedelta(seconds=np.iinfo('>i4').max))).days - 36525
-            raise ValueError('`daysback` creates a date that is too large ' +
-                             'to be stored in FIF file format, ' +
-                             '`daysback` must be between: ' +
-                             '%i and %i ' % (min_val, max_val) +
-                             'for the given raw.info[\'meas_date\']: ' +
-                             '%s' % _stamp_to_dt(raw.info['meas_date']).date())
+        min_val, max_val = get_anonymization_daysback(raw)
+        if daysback < min_val:
+            warn('`daysback` is too small; the measurement date ' +
+                 'is after 1925, which is not recommended by BIDS.' +
+                 'The minimum `daysback` value for changing the measurement' +
+                 'date of this data to before this date is %i' % min_val)
+        if daysback > max_val:
+            raise ValueError('`daysback` exceeds maximum value MNE is able ' +
+                             'to store, must be less than %i' % max_val)
         keep_his = anonymize['keep_his'] if 'keep_his' in anonymize else False
         raw.info = anonymize_info(raw.info, daysback=daysback,
                                   keep_his=keep_his)
