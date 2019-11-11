@@ -30,7 +30,9 @@ from mne.io.constants import FIFF
 from mne.io.kit.kit import get_kit_info
 
 from mne_bids import (write_raw_bids, read_raw_bids, make_bids_basename,
-                      make_bids_folders, write_anat)
+                      make_bids_folders, write_anat,
+                      get_anonymization_daysback,
+                      get_group_anonymization_daysback)
 from mne_bids.write import _stamp_to_dt
 from mne_bids.tsv_handler import _from_tsv, _to_tsv
 from mne_bids.utils import _find_matching_sidecar
@@ -83,7 +85,7 @@ def _test_anonymize(raw, bids_basename, events_fname=None, event_id=None):
     output_path = _TempDir()
     write_raw_bids(raw, bids_basename, output_path,
                    events_data=events_fname,
-                   event_id=event_id, anonymize=dict(daysback=300),
+                   event_id=event_id, anonymize=dict(daysback=33000),
                    overwrite=False)
     scans_tsv = make_bids_basename(
         subject=subject_id, session=session_id, suffix='scans.tsv',
@@ -104,6 +106,25 @@ def test_stamp_to_dt():
     meas_datetime = _stamp_to_dt(meas_date)
     assert(meas_datetime == datetime(2012, 9, 7, 1, 33, 5, 0,
                                      tzinfo=timezone.utc))
+
+
+def test_get_anonymization_daysback():
+    data_path = testing.data_path()
+    raw_fname = op.join(data_path, 'MEG', 'sample',
+                        'sample_audvis_trunc_raw.fif')
+    raw = mne.io.read_raw_fif(raw_fname)
+    min_val, max_val = get_anonymization_daysback(raw)
+    assert min_val == 28461 and max_val == 36880
+    raw2 = raw.copy()
+    raw2.info['meas_date'] = (np.int32(1158942080), np.int32(720100))
+    raw3 = raw.copy()
+    raw3.info['meas_date'] = (np.int32(914992080), np.int32(720100))
+    min_val, max_val = get_group_anonymization_daysback([raw, raw2, raw3])
+    assert min_val == 29850 and max_val == 35446
+    raw4 = raw.copy()
+    raw4.info['meas_date'] = (np.int32(4992080), np.int32(720100))
+    with pytest.raises(ValueError, match='The dataset spans more time'):
+        min_val, max_val = get_group_anonymization_daysback([raw, raw2, raw4])
 
 
 @requires_version('pybv', '0.2.0')
@@ -263,12 +284,20 @@ def test_fif(_bids_validate):
 
     output_path = _TempDir()
     raw = mne.io.read_raw_fif(raw_fname)
-    with pytest.raises(ValueError, match='`daysback` creates a date that ' +
-                                         'is too large'):
+    with pytest.warns(UserWarning, match='daysback` is too small'):
         write_raw_bids(raw, bids_basename, output_path,
                        events_data=events_fname,
                        event_id=event_id,
-                       anonymize=dict(daysback=10000),
+                       anonymize=dict(daysback=400),
+                       overwrite=False)
+
+    output_path = _TempDir()
+    raw = mne.io.read_raw_fif(raw_fname)
+    with pytest.raises(ValueError, match='`daysback` exceeds maximum value'):
+        write_raw_bids(raw, bids_basename, output_path,
+                       events_data=events_fname,
+                       event_id=event_id,
+                       anonymize=dict(daysback=40000),
                        overwrite=False)
 
     output_path = _TempDir()
@@ -276,7 +305,7 @@ def test_fif(_bids_validate):
     write_raw_bids(raw, bids_basename, output_path,
                    events_data=events_fname,
                    event_id=event_id,
-                   anonymize=dict(daysback=300, keep_his=True),
+                   anonymize=dict(daysback=30000, keep_his=True),
                    overwrite=False)
     scans_tsv = make_bids_basename(
         subject=subject_id, session=session_id, suffix='scans.tsv',
