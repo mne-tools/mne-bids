@@ -667,7 +667,7 @@ def get_anonymization_daysback(raws):
 
     Parameters
     ----------
-    raw : list
+    raw : mne.io.raw | list
         The group raw data. It must be a list of instances of mne.Raw.
 
     Returns
@@ -677,6 +677,8 @@ def get_anonymization_daysback(raws):
     daysback_max : int
         The maximum number of daysback that MNE can store.
     """
+    if not isinstance(raws, list):
+        raws = list([raws])
     daysback_min_list = list()
     daysback_max_list = list()
     for raw in raws:
