@@ -73,7 +73,7 @@ for subject_id in subject_ids:
                                            run=str(run))
 
         # By using the same anonymization `daysback` number we can
-        # preserve the longitudinal structure of mulitple sessions for a
+        # preserve the longitudinal structure of multiple sessions for a
         # single subject and the relation between subjects. Be sure to
         # change or delete this number before putting code online, you
         # wouldn't want to inadvertently de-anonymize your data.
