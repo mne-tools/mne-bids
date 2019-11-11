@@ -47,9 +47,11 @@ def _is_numeric(n):
 
 
 def _stamp_to_dt(utc_stamp):
-    """Convert timestamp to datetime object in Windows-friendly way."""
-    # The min on windows is 86400,
-    # fsee https://github.com/home-assistant/appdaemon/issues/83
+    """Convert POSIX timestamp to datetime object in Windows-friendly way."""
+    # This is a windows datetime bug for timestamp < 0. A negative value
+    # is needed for anonymization which requires the date to be moved back
+    # to before 1925. This then requires a negative value of daysback
+    # compared the 1970 reference date.
     stamp = [int(s) for s in utc_stamp]
     if len(stamp) == 1:  # In case there is no microseconds information
         stamp.append(0)
@@ -319,18 +321,7 @@ def _scans_tsv(raw, raw_fname, fname, overwrite=False, verbose=True):
     # get measurement date from the data info
     meas_date = raw.info['meas_date']
     if isinstance(meas_date, (tuple, list, np.ndarray)):
-        meas_date = meas_date[0]
-        # This is equivalent to
-        # acq_time = datetime.fromtimestamp(
-        #     meas_date).strftime('%Y-%m-%dT%H:%M:%S')
-        # This is a windows datetime bug for timestamp < 0. The negative value
-        # is needed for anonymization which requires the date to be moved back
-        # to before 1925. This then requires a negative value of daysback
-        # compared the 1970 reference date.
-        acq_time = \
-            (datetime.fromtimestamp(0) +
-                timedelta(seconds=int(meas_date))).strftime(
-                    '%Y-%m-%dT%H:%M:%S')
+        acq_time = _stamp_to_dt(meas_date).strftime('%Y-%m-%dT%H:%M:%S')
     else:
         acq_time = 'n/a'
 
@@ -982,8 +973,8 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
             great enough that the date is before 1925.
 
         `keep_his` : bool
-            If True his_id of subject_info will NOT be overwritten.
-            Defaults to False.
+            If True info['subject_info']['his_id'] of subject_info will NOT be
+            overwritten. Defaults to False.
 
     overwrite : bool
         Whether to overwrite existing files or data in files.
