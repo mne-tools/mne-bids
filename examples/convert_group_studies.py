@@ -25,7 +25,8 @@ References
 import os.path as op
 
 import mne
-from mne_bids import write_raw_bids, make_bids_basename
+from mne_bids import (write_raw_bids, make_bids_basename,
+                      get_anonymization_daysback)
 from mne_bids.datasets import fetch_faces_data
 from mne_bids.utils import print_dir_tree
 
@@ -61,6 +62,11 @@ event_id = {
 ###############################################################################
 # Let us loop over the subjects and create BIDS-compatible folder
 
+daysback_min, daysback_max = get_anonymization_daysback(
+    [mne.io.read_raw_fif(op.join(data_path, repo, 'sub%03d' % subject_id,
+                                 'MEG', 'run_%02d_raw.fif' % run))
+     for run in runs for subject_id in subject_ids])
+
 for subject_id in subject_ids:
     subject = 'sub%03d' % subject_id
     for run in runs:
@@ -78,7 +84,8 @@ for subject_id in subject_ids:
         # change or delete this number before putting code online, you
         # wouldn't want to inadvertently de-anonymize your data.
         write_raw_bids(raw, bids_basename, output_path, event_id=event_id,
-                       anonymize=dict(daysback=2117), overwrite=True)
+                       anonymize=dict(daysback=daysback_min + 2117),
+                       overwrite=True)
 
 ###############################################################################
 # Now let's see the structure of the BIDS folder we created.
