@@ -25,8 +25,8 @@ References
 import os.path as op
 
 import mne
-from mne_bids import write_raw_bids, make_bids_basename
-from mne_bids.write import _get_anonymization_daysback
+from mne_bids import (write_raw_bids, make_bids_basename,
+                      get_anonymization_daysback)
 from mne_bids.datasets import fetch_faces_data
 from mne_bids.utils import print_dir_tree
 
@@ -80,7 +80,7 @@ for subject_id in subject_ids:
                                            run=str(run))
         bids_list.append(bids_basename)
 
-daysback_min, daysback_max = _get_anonymization_daysback(raw_list)
+daysback_min, daysback_max = get_anonymization_daysback(raw_list)
 
 for raw, bids_basename in zip(raw_list, bids_list):
     # By using the same anonymization `daysback` number we can

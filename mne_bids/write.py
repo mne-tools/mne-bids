@@ -616,7 +616,7 @@ def _write_raw_brainvision(raw, bids_fname):
                       resolution=1e-6)
 
 
-def _get_this_anonymization_daysback(raw):
+def _get_anonymization_daysback(raw):
     """Get the min and max number of daysback necessary to satisfy BIDS specs.
 
     .. warning:: It is important that you remember the anonymization
@@ -650,7 +650,7 @@ def _get_this_anonymization_daysback(raw):
     return daysback_min, daysback_max
 
 
-def _get_anonymization_daysback(raws):
+def get_anonymization_daysback(raws):
     """Get the group min and max number of daysback necessary for BIDS specs.
 
     .. warning:: It is important that you remember the anonymization
@@ -682,7 +682,7 @@ def _get_anonymization_daysback(raws):
     daysback_min_list = list()
     daysback_max_list = list()
     for raw in raws:
-        daysback_min, daysback_max = _get_this_anonymization_daysback(raw)
+        daysback_min, daysback_max = _get_anonymization_daysback(raw)
         daysback_min_list.append(daysback_min)
         daysback_max_list.append(daysback_max)
     daysback_min = max(daysback_min_list)
@@ -1030,6 +1030,10 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
     raw_fname = raw_fname.replace('.fdt', '.set')
     _, ext = _parse_ext(raw_fname, verbose=verbose)
 
+    if ext not in [this_ext for data_type in ALLOWED_EXTENSIONS
+                   for this_ext in ALLOWED_EXTENSIONS[data_type]]:
+        raise ValueError('Unrecognized file format %s' % ext)
+
     raw_orig = reader[ext](**raw._init_kwargs)
     assert_array_equal(raw.times, raw_orig.times,
                        "raw.times should not have changed since reading"
@@ -1097,7 +1101,7 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
         if 'daysback' not in anonymize or anonymize['daysback'] is None:
             raise ValueError('`daysback` argument required to anonymize.')
         daysback = anonymize['daysback']
-        daysback_min, daysback_max = _get_this_anonymization_daysback(raw)
+        daysback_min, daysback_max = _get_anonymization_daysback(raw)
         if daysback < daysback_min:
             warn('`daysback` is too small; the measurement date ' +
                  'is after 1925, which is not recommended by BIDS.' +
