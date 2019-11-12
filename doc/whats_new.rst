@@ -22,6 +22,7 @@ Current
 Changelog
 ~~~~~~~~~
 
+- Added option to convert files to FIF for MEG and BV for EEG/iEEG, forcing not to convert when not a BIDS-acceptable format is also added, by `Alex Rockhill`_ (`#285 https://github.com/mne-tools/mne-bids/pull/285>`_)
 - Added option to anonymize by shifting measurement date with `anonymize` parameter, in accordance with BIDS specifications, by `Alex Rockhill`_ (`#280 <https://github.com/mne-tools/mne-bids/pull/280>`_)
 - Added automatic conversion of FIF to BrainVision format with warning for EEG only data and conversion to FIF for meg non-FIF data, by `Alex Rockhill`_ (`#237 <https://github.com/mne-tools/mne-bids/pull/237>`_)
 - Add possibility to pass raw readers parameters (e.g. `allow_maxshield`) to :func:`read_raw_bids` to allow reading BIDS-formatted data before applying maxfilter, by  `Sophie Herbst`_
