@@ -1103,17 +1103,18 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
         daysback = anonymize['daysback']
         daysback_min, daysback_max = _get_anonymization_daysback(raw)
         if daysback < daysback_min:
-            warn('`daysback` is too small; the measurement date ' +
-                 'is after 1925, which is not recommended by BIDS.' +
-                 'The minimum `daysback` value for changing the measurement' +
+            warn('`daysback` is too small; the measurement date '
+                 'is after 1925, which is not recommended by BIDS.'
+                 'The minimum `daysback` value for changing the measurement'
                  'date of this data to before this date is %i' % daysback_min)
-        if daysback > daysback_max:
-            raise ValueError('`daysback` exceeds maximum value MNE is able ' +
-                             'to store, must be less than %i' % daysback_max)
+        if ext == '.fif' and daysback > daysback_max:
+            raise ValueError('`daysback` exceeds maximum value MNE is able '
+                             'to store in FIF format, must be less than %i' %
+                             daysback_max)
         keep_his = anonymize['keep_his'] if 'keep_his' in anonymize else False
         raw.info = anonymize_info(raw.info, daysback=daysback,
                                   keep_his=keep_his)
-        if kind == 'meg' and ext != 'fif':
+        if kind == 'meg' and ext != '.fif':
             if verbose:
                 warn('Converting to FIF for anonymization')
             bids_fname = bids_fname.replace(ext, '.fif')
