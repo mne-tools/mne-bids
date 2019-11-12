@@ -90,8 +90,9 @@ def _test_anonymize(raw, bids_basename, events_fname=None, event_id=None):
         subject=subject_id, session=session_id, suffix='scans.tsv',
         prefix=op.join(output_path, 'sub-01', 'ses-01'))
     data = _from_tsv(scans_tsv)
-    assert datetime.strptime(data['acq_time'][0],
-                             '%Y-%m-%dT%H:%M:%S').year < 1925
+    if data['acq_time'] is not None:
+        assert datetime.strptime(data['acq_time'][0],
+                                 '%Y-%m-%dT%H:%M:%S').year < 1925
     return output_path
 
 
@@ -459,7 +460,6 @@ def test_ctf(_bids_validate):
 
     # test anonymize
     raw = mne.io.read_raw_ctf(raw_fname)
-    raw.info['meas_date'] = (np.int32(1038942070), np.int32(0))
     with pytest.warns(UserWarning,
                       match='Converting to FIF for anonymization'):
         output_path = _test_anonymize(raw, bids_basename)
@@ -698,7 +698,6 @@ def test_set(_bids_validate):
     _bids_validate(output_path)
 
     # test anonymize and convert
-    raw.info['meas_date'] = (np.int32(1038942070), np.int32(0))
     output_path = _test_anonymize(raw, bids_basename)
     _bids_validate(output_path)
 
