@@ -30,9 +30,9 @@ from mne.io.constants import FIFF
 from mne.io.kit.kit import get_kit_info
 
 from mne_bids import (write_raw_bids, read_raw_bids, make_bids_basename,
-                      make_bids_folders, write_anat,
-                      get_anonymization_daysback)
-from mne_bids.write import _stamp_to_dt, _get_anonymization_daysback
+                      make_bids_folders, write_anat)
+from mne_bids.write import (_stamp_to_dt, _get_anonymization_daysback,
+                            _get_this_anonymization_daysback)
 from mne_bids.tsv_handler import _from_tsv, _to_tsv
 from mne_bids.utils import _find_matching_sidecar
 from mne_bids.pick import coil_type
@@ -113,20 +113,20 @@ def test_get_anonymization_daysback():
     raw_fname = op.join(data_path, 'MEG', 'sample',
                         'sample_audvis_trunc_raw.fif')
     raw = mne.io.read_raw_fif(raw_fname)
-    daysback_min, daysback_max = _get_anonymization_daysback(raw)
+    daysback_min, daysback_max = _get_this_anonymization_daysback(raw)
     # max_val off by 1 on Windows for some reason
     assert abs(daysback_min - 28461) < 2 and abs(daysback_max - 36880) < 2
     raw2 = raw.copy()
     raw2.info['meas_date'] = (np.int32(1158942080), np.int32(720100))
     raw3 = raw.copy()
     raw3.info['meas_date'] = (np.int32(914992080), np.int32(720100))
-    daysback_min, daysback_max = get_anonymization_daysback([raw, raw2, raw3])
+    daysback_min, daysback_max = _get_anonymization_daysback([raw, raw2, raw3])
     assert abs(daysback_min - 29850) < 2 and abs(daysback_max - 35446) < 2
     raw4 = raw.copy()
     raw4.info['meas_date'] = (np.int32(4992080), np.int32(720100))
     with pytest.raises(ValueError, match='The dataset spans more time'):
         daysback_min, daysback_max = \
-            get_anonymization_daysback([raw, raw2, raw4])
+            _get_anonymization_daysback([raw, raw2, raw4])
 
 
 @requires_version('pybv', '0.2.0')
