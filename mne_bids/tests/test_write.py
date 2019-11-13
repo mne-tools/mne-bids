@@ -544,12 +544,9 @@ def test_bti(_bids_validate):
         output_path = _test_anonymize(raw, bids_basename)
     _bids_validate(output_path)
 
-<<<<<<< HEAD
-=======
     output_path = _test_convert(raw, bids_basename)
     _bids_validate(output_path)
 
->>>>>>> anonymize keyword argument for write_raw_bids
 
 # XXX: vhdr test currently passes only on MNE master. Skip until next release.
 # see: https://github.com/mne-tools/mne-python/pull/6558
@@ -674,12 +671,9 @@ def test_edf(_bids_validate):
     output_path = _test_anonymize(raw, bids_basename)
     _bids_validate(output_path)
 
-<<<<<<< HEAD
-=======
     output_path = _test_convert(raw, bids_basename)
     _bids_validate(output_path)
 
->>>>>>> anonymize keyword argument for write_raw_bids
 
 def test_bdf(_bids_validate):
     """Test write_raw_bids conversion for Biosemi data."""
@@ -725,12 +719,9 @@ def test_bdf(_bids_validate):
     output_path = _test_anonymize(raw, bids_basename)
     _bids_validate(output_path)
 
-<<<<<<< HEAD
-=======
     output_path = _test_convert(raw, bids_basename)
     _bids_validate(output_path)
 
->>>>>>> anonymize keyword argument for write_raw_bids
 
 def test_set(_bids_validate):
     """Test write_raw_bids conversion for EEGLAB data."""
@@ -786,12 +777,9 @@ def test_set(_bids_validate):
     output_path = _test_anonymize(raw, bids_basename)
     _bids_validate(output_path)
 
-<<<<<<< HEAD
-=======
     output_path = _test_convert(raw, bids_basename)
     _bids_validate(output_path)
 
->>>>>>> anonymize keyword argument for write_raw_bids
 
 @requires_nibabel()
 def test_write_anat(_bids_validate):
