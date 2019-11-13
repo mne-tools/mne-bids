@@ -1056,6 +1056,9 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
 
     bids_fname = bids_basename + '_%s%s' % (kind, ext)
 
+    if convert is None:
+        convert = ext not in ALLOWED_EXTENSIONS[kind]
+
     # check whether the info provided indicates that the data is emptyroom
     # data
     emptyroom = False
@@ -1108,6 +1111,7 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
 
     # Anonymize
     if anonymize is not None:
+<<<<<<< HEAD
         # if info['meas_date'] None, then the dates are not stored
         if raw.info['meas_date'] is None:
             daysback = None
@@ -1126,6 +1130,22 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
                 raise ValueError('`daysback` exceeds maximum value MNE '
                                  'is able to store in FIF format, must '
                                  'be less than %i' % daysback_max)
+=======
+        if 'daysback' not in anonymize or anonymize['daysback'] is None:
+            raise ValueError('`daysback` argument required to anonymize.')
+        daysback = anonymize['daysback']
+        daysback_min, daysback_max = _get_anonymization_daysback(raw)
+        if daysback < daysback_min:
+            warn('`daysback` is too small; the measurement date '
+                 'is after 1925, which is not recommended by BIDS.'
+                 'The minimum `daysback` value for changing the measurement'
+                 'date of this data to before this date is %i' % daysback_min)
+        if (ext == '.fif' or (kind == 'meg' and convert) and
+                daysback > daysback_max):
+            raise ValueError('`daysback` exceeds maximum value MNE is able '
+                             'to store in FIF format, must be less than %i' %
+                             daysback_max)
+>>>>>>> moved convert up for anonymization daysback not exceeding max
         keep_his = anonymize['keep_his'] if 'keep_his' in anonymize else False
         raw.info = anonymize_info(raw.info, daysback=daysback,
                                   keep_his=keep_his)
@@ -1165,9 +1185,6 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
         raise FileExistsError('"%s" already exists. Please set '  # noqa: F821
                               'overwrite to True.' % bids_fname)
     _mkdir_p(os.path.dirname(bids_fname))
-
-    if convert is None:
-        convert = ext not in ALLOWED_EXTENSIONS[kind]
 
     if not (convert or anonymize) and verbose:
         print('Copying data files to %s' % op.splitext(bids_fname)[0])
