@@ -682,11 +682,15 @@ def get_anonymization_daysback(raws):
     daysback_min_list = list()
     daysback_max_list = list()
     for raw in raws:
-        daysback_min, daysback_max = _get_anonymization_daysback(raw)
-        daysback_min_list.append(daysback_min)
-        daysback_max_list.append(daysback_max)
+        if raw.info['meas_date'] is not None:
+            daysback_min, daysback_max = _get_anonymization_daysback(raw)
+            daysback_min_list.append(daysback_min)
+            daysback_max_list.append(daysback_max)
     daysback_min = max(daysback_min_list)
     daysback_max = min(daysback_max_list)
+    if not daysback_min or not daysback_max:
+        raise ValueError('All measurement dates are None, ' +
+                         'pass any `daysback` value to anonymize.')
     if daysback_min > daysback_max:
         raise ValueError('The dataset spans more time than can be ' +
                          'accomodated by MNE, you may have to ' +
