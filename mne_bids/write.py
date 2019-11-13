@@ -667,7 +667,7 @@ def get_anonymization_daysback(raws):
 
     Parameters
     ----------
-    raw : mne.io.raw | list
+    raw : mne.io.Raw | list of Raw
         The group raw data. It must be a list of instances of mne.Raw.
 
     Returns
