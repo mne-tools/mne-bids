@@ -1102,11 +1102,13 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
 
     # Anonymize
     if anonymize is not None:
-        if 'daysback' not in anonymize or anonymize['daysback'] is None:
-            raise ValueError('`daysback` argument required to anonymize.')
-        daysback = anonymize['daysback']
         # if info['meas_date'] None, then the dates are not stored
-        if raw.info['meas_date'] is not None:
+        if raw.info['meas_date'] is None:
+            daysback = None
+        else:
+            if 'daysback' not in anonymize or anonymize['daysback'] is None:
+                raise ValueError('`daysback` argument required to anonymize.')
+            daysback = anonymize['daysback']
             daysback_min, daysback_max = _get_anonymization_daysback(raw)
             if daysback < daysback_min:
                 warn('`daysback` is too small; the measurement date '
