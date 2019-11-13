@@ -90,7 +90,7 @@ def _test_anonymize(raw, bids_basename, events_fname=None, event_id=None):
         subject=subject_id, session=session_id, suffix='scans.tsv',
         prefix=op.join(output_path, 'sub-01', 'ses-01'))
     data = _from_tsv(scans_tsv)
-    if data['acq_time'] is not None:
+    if data['acq_time'] is not None and data['acq_time'][0] != 'n/a':
         assert datetime.strptime(data['acq_time'][0],
                                  '%Y-%m-%dT%H:%M:%S').year < 1925
     return output_path

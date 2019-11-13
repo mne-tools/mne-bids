@@ -686,11 +686,11 @@ def get_anonymization_daysback(raws):
             daysback_min, daysback_max = _get_anonymization_daysback(raw)
             daysback_min_list.append(daysback_min)
             daysback_max_list.append(daysback_max)
-    daysback_min = max(daysback_min_list)
-    daysback_max = min(daysback_max_list)
-    if not daysback_min or not daysback_max:
+    if not daysback_min_list or not daysback_max_list:
         raise ValueError('All measurement dates are None, ' +
                          'pass any `daysback` value to anonymize.')
+    daysback_min = max(daysback_min_list)
+    daysback_max = min(daysback_max_list)
     if daysback_min > daysback_max:
         raise ValueError('The dataset spans more time than can be ' +
                          'accomodated by MNE, you may have to ' +
@@ -1105,16 +1105,19 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
         if 'daysback' not in anonymize or anonymize['daysback'] is None:
             raise ValueError('`daysback` argument required to anonymize.')
         daysback = anonymize['daysback']
-        daysback_min, daysback_max = _get_anonymization_daysback(raw)
-        if daysback < daysback_min:
-            warn('`daysback` is too small; the measurement date '
-                 'is after 1925, which is not recommended by BIDS.'
-                 'The minimum `daysback` value for changing the measurement'
-                 'date of this data to before this date is %i' % daysback_min)
-        if ext == '.fif' and daysback > daysback_max:
-            raise ValueError('`daysback` exceeds maximum value MNE is able '
-                             'to store in FIF format, must be less than %i' %
-                             daysback_max)
+        # if info['meas_date'] None, then the dates are not stored
+        if raw.info['meas_date'] is not None:
+            daysback_min, daysback_max = _get_anonymization_daysback(raw)
+            if daysback < daysback_min:
+                warn('`daysback` is too small; the measurement date '
+                     'is after 1925, which is not recommended by BIDS.'
+                     'The minimum `daysback` value for changing the '
+                     'measurement date of this data to before this date '
+                     'is %i' % daysback_min)
+            if (ext == '.fif' and daysback > daysback_max):
+                raise ValueError('`daysback` exceeds maximum value MNE '
+                                 'is able to store in FIF format, must '
+                                 'be less than %i' % daysback_max)
         keep_his = anonymize['keep_his'] if 'keep_his' in anonymize else False
         raw.info = anonymize_info(raw.info, daysback=daysback,
                                   keep_his=keep_his)
