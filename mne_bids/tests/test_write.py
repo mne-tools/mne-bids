@@ -465,6 +465,9 @@ def test_ctf(_bids_validate):
         output_path = _test_anonymize(raw, bids_basename)
     _bids_validate(output_path)
 
+    with pytest.raises(ValueError, match='All measurement dates are None'):
+        get_anonymization_daysback([raw])
+
 
 def test_bti(_bids_validate):
     """Test functionality of the write_raw_bids conversion for BTi data."""
