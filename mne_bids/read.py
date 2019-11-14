@@ -195,7 +195,7 @@ def read_raw_bids(bids_fname, bids_root, extra_params=None,
         Path to root of the BIDS folder
     extra_params : None | dict
         Extra parameters to be passed to MNE read_raw_* functions.
-        Expects a dict, for example: kwargs=dict(allow_maxshield=True)
+        If a dict, for example: ``extra_params=dict(allow_maxshield=True)``.
     verbose : bool
         The verbosity level
 
