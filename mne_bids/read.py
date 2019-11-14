@@ -31,14 +31,14 @@ reader = {'.con': io.read_raw_kit, '.sqd': io.read_raw_kit,
 
 
 def _read_raw(raw_fpath, electrode=None, hsp=None, hpi=None, config=None,
-              verbose=None, allow_maxshield=False):
+              verbose=None, **kwargs):
     """Read a raw file into MNE, making inferences based on extension."""
     _, ext = _parse_ext(raw_fpath)
 
     # KIT systems
     if ext in ['.con', '.sqd']:
         raw = io.read_raw_kit(raw_fpath, elp=electrode, hsp=hsp,
-                              mrk=hpi, preload=False)
+                              mrk=hpi, preload=False, **kwargs)
 
     # BTi systems
     elif ext == '.pdf':
@@ -47,16 +47,16 @@ def _read_raw(raw_fpath, electrode=None, hsp=None, hpi=None, config=None,
                               preload=False, verbose=verbose)
 
     elif ext == '.fif':
-        raw = reader[ext](raw_fpath, allow_maxshield=allow_maxshield)
+        raw = reader[ext](raw_fpath, **kwargs)
 
     elif ext in ['.ds', '.vhdr', '.set']:
-        raw = reader[ext](raw_fpath)
+        raw = reader[ext](raw_fpath, **kwargs)
 
     # EDF (european data format) or BDF (biosemi) format
     # TODO: integrate with lines above once MNE can read
     # annotations with preload=False
     elif ext in ['.edf', '.bdf']:
-        raw = reader[ext](raw_fpath, preload=True)
+        raw = reader[ext](raw_fpath, preload=True, **kwargs)
 
     # MEF and NWB are allowed, but not yet implemented
     elif ext in ['.mef', '.nwb']:
@@ -179,7 +179,7 @@ def _handle_channels_reading(channels_fname, bids_fname, raw):
     return raw
 
 
-def read_raw_bids(bids_fname, bids_root, allow_maxshield=False,
+def read_raw_bids(bids_fname, bids_root, extra_params=None,
                   verbose=True):
     """Read BIDS compatible data.
 
@@ -192,12 +192,8 @@ def read_raw_bids(bids_fname, bids_root, allow_maxshield=False,
         Full name of the data file
     bids_root : str
         Path to root of the BIDS folder
-    allow_maxshield : bool | str (default False)
-        If True, allow loading of data that has been recorded with internal
-        active compensation (MaxShield). Data recorded with MaxShield should
-        generally not be loaded directly, but should first be processed
-        using SSS/tSSS to remove the compensation signals that may also affect
-        brain activity. Can also be “yes” to load without eliciting a warning.
+    extra_params : None | dict
+        Extra parameters to be passed to MNE read_raw_* functions.
     verbose : bool
         The verbosity level
 
@@ -236,9 +232,10 @@ def read_raw_bids(bids_fname, bids_root, allow_maxshield=False,
         bids_fpath = glob.glob(op.join(bids_raw_folder, 'c,rf*'))[0]
         config = op.join(bids_raw_folder, 'config')
 
+    if extra_params is None:
+        extra_params = dict()
     raw = _read_raw(bids_fpath, electrode=None, hsp=None, hpi=None,
-                    config=config, allow_maxshield=allow_maxshield,
-                    verbose=None)
+                    config=config, verbose=None, **extra_params)
 
     # Try to find an associated events.tsv to get information about the
     # events in the recorded data
