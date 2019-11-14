@@ -1116,7 +1116,7 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
                      'The minimum `daysback` value for changing the '
                      'measurement date of this data to before this date '
                      'is %i' % daysback_min)
-            if (ext == '.fif' and daysback > daysback_max):
+            if ext == '.fif' and daysback > daysback_max:
                 raise ValueError('`daysback` exceeds maximum value MNE '
                                  'is able to store in FIF format, must '
                                  'be less than %i' % daysback_max)
