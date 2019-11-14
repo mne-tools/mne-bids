@@ -127,8 +127,9 @@ def test_get_anonymization_daysback():
     raw4.info['meas_date'] = (np.int32(4992080), np.int32(720100))
     raw5 = raw.copy()
     raw5.info['meas_date'] = None
-    daysback_min1, daysback_max2 = get_anonymization_daysback([raw, raw2, raw3, raw5])
-    assert daysback_min1 = daysback_min
+    daysback_min2, daysback_max2 = get_anonymization_daysback([raw, raw2,
+                                                               raw3, raw5])
+    assert daysback_min2 == daysback_min and daysback_max2 == daysback_max
     with pytest.raises(ValueError, match='The dataset spans more time'):
         daysback_min, daysback_max = \
             get_anonymization_daysback([raw, raw2, raw4])
