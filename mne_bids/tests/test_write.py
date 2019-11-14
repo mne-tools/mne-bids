@@ -154,7 +154,12 @@ def test_fif(_bids_validate):
 
     # Read the file back in to check that the data has come through cleanly.
     # Events and bad channel information was read through JSON sidecar files.
-    raw2 = read_raw_bids(bids_basename + '_meg.fif', output_path)
+    with pytest.raises(TypeError, match="unexpected keyword argument 'foo'"):
+        read_raw_bids(bids_basename + '_meg.fif', output_path,
+                      extra_params=dict(foo='bar'))
+
+    raw2 = read_raw_bids(bids_basename + '_meg.fif', output_path,
+                         extra_params=dict(allow_maxshield=True))
     assert set(raw.info['bads']) == set(raw2.info['bads'])
     events, _ = mne.events_from_annotations(raw2)
     events2 = mne.read_events(events_fname)
@@ -455,7 +460,8 @@ def test_ctf(_bids_validate):
 
     _bids_validate(output_path)
     with pytest.warns(UserWarning, match='Did not find any events'):
-        raw = read_raw_bids(bids_basename + '_meg.ds', output_path)
+        raw = read_raw_bids(bids_basename + '_meg.ds', output_path,
+                            extra_params=dict(clean_names=False))
 
     # test to check that running again with overwrite == False raises an error
     with pytest.raises(FileExistsError, match="already exists"):  # noqa: F821
@@ -492,6 +498,10 @@ def test_bti(_bids_validate):
 
     raw = read_raw_bids(bids_basename + '_meg', output_path)
 
+    with pytest.raises(TypeError, match="unexpected keyword argument 'foo'"):
+        read_raw_bids(bids_basename + '_meg', output_path,
+                      extra_params=dict(foo='bar'))
+
     # test anonymize
     raw = mne.io.read_raw_bti(raw_fname, config_fname=config_fname,
                               head_shape_fname=headshape_fname)
@@ -524,6 +534,10 @@ def test_vhdr(_bids_validate):
 
     # read and also get the bad channels
     raw = read_raw_bids(bids_basename_minimal + '_eeg.vhdr', output_path)
+
+    with pytest.raises(TypeError, match="unexpected keyword argument 'foo'"):
+        read_raw_bids(bids_basename_minimal + '_eeg.vhdr', output_path,
+                      extra_params=dict(foo='bar'))
 
     # Check that injected bad channel shows up in raw after reading
     np.testing.assert_array_equal(np.asarray(raw.info['bads']),
@@ -583,6 +597,10 @@ def test_edf(_bids_validate):
     # in raw clash
     with pytest.raises(RuntimeError, match='Channels do not correspond'):
         read_raw_bids(bids_basename + '_eeg.edf', output_path)
+
+    with pytest.raises(TypeError, match="unexpected keyword argument 'foo'"):
+        read_raw_bids(bids_basename + '_eeg.edf', output_path,
+                      extra_params=dict(foo='bar'))
 
     bids_fname = bids_basename.replace('run-01', 'run-%s' % run2)
     write_raw_bids(raw, bids_fname, output_path, overwrite=True)
@@ -647,6 +665,9 @@ def test_bdf(_bids_validate):
     raw = read_raw_bids(bids_fname, output_path)
     assert coil_type(raw.info, test_ch_idx) == 'misc'
 
+    with pytest.raises(TypeError, match="unexpected keyword argument 'foo'"):
+        read_raw_bids(bids_fname, output_path, extra_params=dict(foo='bar'))
+
     # Test cropped assertion error
     raw = mne.io.read_raw_bdf(raw_fname)
     raw.crop(0, raw.times[-2])
@@ -682,6 +703,10 @@ def test_set(_bids_validate):
     # proceed with the actual test for EEGLAB data
     write_raw_bids(raw, bids_basename, output_path, overwrite=False)
     read_raw_bids(bids_basename + '_eeg.set', output_path)
+
+    with pytest.raises(TypeError, match="unexpected keyword argument 'foo'"):
+        read_raw_bids(bids_basename + '_eeg.set', output_path,
+                      extra_params=dict(foo='bar'))
 
     with pytest.raises(FileExistsError, match="already exists"):  # noqa: F821
         write_raw_bids(raw, bids_basename, output_path=output_path,
