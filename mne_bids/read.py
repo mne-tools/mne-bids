@@ -179,7 +179,7 @@ def _handle_channels_reading(channels_fname, bids_fname, raw):
     return raw
 
 
-def read_raw_bids(bids_fname, bids_root, verbose=True):
+def read_raw_bids(bids_fname, bids_root, verbose=True, allow_maxshield=False):
     """Read BIDS compatible data.
 
     Will attempt to read associated events.tsv and channels.tsv files to
@@ -230,7 +230,7 @@ def read_raw_bids(bids_fname, bids_root, verbose=True):
         config = op.join(bids_raw_folder, 'config')
 
     raw = _read_raw(bids_fpath, electrode=None, hsp=None, hpi=None,
-                    config=config, verbose=None)
+                    config=config, verbose=None,allow_maxshield=allow_maxshield)
 
     # Try to find an associated events.tsv to get information about the
     # events in the recorded data
@@ -313,7 +313,7 @@ def get_head_mri_trans(bids_fname, bids_root):
     mri_landmarks = mri_landmarks * 1e-3
 
     # Get MEG landmarks from the raw file
-    raw = read_raw_bids(bids_fname, bids_root)
+    raw = read_raw_bids(bids_fname, bids_root,allow_maxshield=True)
     meg_coords_dict = _extract_landmarks(raw.info['dig'])
     meg_landmarks = np.asarray((meg_coords_dict['LPA'],
                                 meg_coords_dict['NAS'],
