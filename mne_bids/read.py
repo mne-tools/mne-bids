@@ -44,7 +44,8 @@ def _read_raw(raw_fpath, electrode=None, hsp=None, hpi=None, config=None,
     elif ext == '.pdf':
         raw = io.read_raw_bti(raw_fpath, config_fname=config,
                               head_shape_fname=hsp,
-                              preload=False, verbose=verbose)
+                              preload=False, verbose=verbose,
+                              **kwargs)
 
     elif ext == '.fif':
         raw = reader[ext](raw_fpath, **kwargs)
