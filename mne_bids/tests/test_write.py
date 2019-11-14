@@ -466,7 +466,7 @@ def test_ctf(_bids_validate):
     _bids_validate(output_path)
 
     with pytest.raises(ValueError, match='All measurement dates are None'):
-        get_anonymization_daysback([raw])
+        get_anonymization_daysback(raw)
 
 
 def test_bti(_bids_validate):
