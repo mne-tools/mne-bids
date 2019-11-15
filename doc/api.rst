@@ -27,6 +27,7 @@ MNE BIDS (:py:mod:`mne_bids`)
    make_dataset_description
    write_anat
    get_head_mri_trans
+   get_matched_empty_room
    get_anonymization_daysback
 
 Utils (:py:mod:`mne_bids.utils`)

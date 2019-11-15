@@ -7,6 +7,7 @@
 #
 # License: BSD (3-clause)
 import os.path as op
+from datetime import datetime
 import glob
 import json
 
@@ -254,6 +255,52 @@ def read_raw_bids(bids_fname, bids_root, extra_params=None,
         raw = _handle_channels_reading(channels_fname, bids_fname, raw)
 
     return raw
+
+
+def get_matched_empty_room(bids_fname, bids_root):
+    """Get matching empty room file.
+
+    Parameters
+    ----------
+    bids_fname : str
+        The filename for which to find the matching empty room file.
+    bids_root : str
+        Path to the BIDS root folder.
+
+    Returns
+    -------
+    er_fname : str | None.
+        The filename corresponding to the empty room.
+        Returns None if no file found.
+    """
+    from mne_bids.write import make_bids_folders
+
+    bids_fname = op.basename(bids_fname)
+    _, ext = _parse_ext(bids_fname)
+
+    raw = read_raw_bids(bids_fname, bids_root)
+    if raw.info['meas_date'] is None:
+        raise ValueError('Measurement date not available. Cannot get matching'
+                         'empty room file')
+
+    ref_date = datetime.fromtimestamp(raw.info['meas_date'][0])
+    search_path = make_bids_folders(output_path=bids_root, subject='emptyroom',
+                                    session='**', make_dir=False)
+    search_path = op.join(search_path, '**', '**%s' % ext)
+    er_fnames = glob.glob(search_path)
+
+    if len(er_fnames) == 0:
+        return None
+
+    min_seconds = np.inf
+    for er_fname in er_fnames:
+        params = _parse_bids_filename(er_fname, verbose=False)
+        dt = datetime.strptime(params['ses'], '%Y%m%d')
+        delta_t = dt - ref_date
+        if delta_t.total_seconds() < min_seconds:
+            best_er_fname = er_fname
+
+    return best_er_fname
 
 
 def get_head_mri_trans(bids_fname, bids_root):
