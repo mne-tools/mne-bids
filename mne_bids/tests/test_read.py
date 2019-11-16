@@ -14,6 +14,7 @@ import mne
 from mne.utils import _TempDir, requires_nibabel
 from mne.datasets import testing
 
+import mne_bids
 from mne_bids import get_matched_empty_room
 from mne_bids.read import _read_raw, get_head_mri_trans, _handle_events_reading
 from mne_bids.write import write_anat, write_raw_bids, make_bids_basename
@@ -161,26 +162,31 @@ def test_get_head_mri_trans_ctf():
 
 def test_empty_room():
     """Test reading of empty room data."""
-    from mne.datasets import sample
-    data_path = sample.data_path()
-    output_path = _TempDir()
+    bids_root = _TempDir()
 
     raw = mne.io.read_raw_fif(raw_fname)
     bids_basename = make_bids_basename(subject='01', session='01',
                                        task='audiovisual', run='01')
-    write_raw_bids(raw, bids_basename, output_path, overwrite=True)
+    write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
 
     er_fname = get_matched_empty_room(bids_basename + '_meg.fif',
-                                      output_path)
+                                      bids_root)
     assert er_fname is None
 
     er_raw_fname = op.join(data_path, 'MEG', 'sample', 'ernoise_raw.fif')
     er_raw = mne.io.read_raw_fif(er_raw_fname)
     er_date = datetime.fromtimestamp(
         er_raw.info['meas_date'][0]).strftime('%Y%m%d')
-    er_bids_basename = 'sub-emptyroom_ses-{0}_task-noise'.format(er_date)
-    write_raw_bids(er_raw, er_bids_basename, output_path, overwrite=True)
+    er_bids_basename = make_bids_basename(subject='emptyroom',
+                                          task='noise', session=er_date)
+    write_raw_bids(er_raw, er_bids_basename, bids_root, overwrite=True)
 
     er_fname = get_matched_empty_room(bids_basename + '_meg.fif',
-                                      output_path)
+                                      bids_root)
     assert er_bids_basename in er_fname
+
+    raw = mne_bids.read_raw_bids(bids_basename + '_meg.fif', bids_root)
+    raw.info['meas_date'] = None
+    write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
+    with pytest.raises(ValueError, match='Measurement date not available'):
+        get_matched_empty_room(bids_basename + '_meg.fif', bids_root)
