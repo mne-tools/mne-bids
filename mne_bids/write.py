@@ -929,6 +929,12 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
                    for the manufacturer, please update the manufacturer field
                    in the sidecars manually.
 
+                 * If `convert` is False, files will not be BIDS compatible
+                   unless they were already in a BIDS compatible file type for
+                   that modality. Once all issues with converting are fixed
+                   and the conversion is known to be stable, this is strongly
+                   recommended not to be used.
+
     Parameters
     ----------
     raw : instance of mne.io.Raw
@@ -1056,8 +1062,14 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
 
     bids_fname = bids_basename + '_%s%s' % (kind, ext)
 
-    if convert is None:
-        convert = ext not in ALLOWED_EXTENSIONS[kind]
+    if not convert:
+        if convert is None:
+            convert = ext not in ALLOWED_EXTENSIONS[kind]
+        else:
+            if ext not in ALLOWED_EXTENSIONS[kind] and verbose:
+                warn('The format %s is not supported by BIDS, unless ' % ext +
+                     'there are issues with the conversion, it is strongly ' +
+                     'recommended that you do not use `convert=False`')
 
     # check whether the info provided indicates that the data is emptyroom
     # data
