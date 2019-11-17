@@ -321,10 +321,10 @@ def get_head_mri_trans(bids_fname, bids_root):
 
     # Get MEG landmarks from the raw file
     _, ext = _parse_ext(bids_fname)
+    extra_params = None
     if ext == '.fif':
         extra_params = dict(allow_maxshield=True)
-    else:
-        extra_params = None
+
     raw = read_raw_bids(bids_fname, bids_root, extra_params=extra_params)
     meg_coords_dict = _extract_landmarks(raw.info['dig'])
     meg_landmarks = np.asarray((meg_coords_dict['LPA'],

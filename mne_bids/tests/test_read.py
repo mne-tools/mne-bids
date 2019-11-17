@@ -7,6 +7,8 @@ import pytest
 import shutil as sh
 
 import numpy as np
+from numpy.testing import assert_almost_equal
+
 import mne
 from mne.utils import _TempDir, requires_nibabel
 from mne.datasets import testing
@@ -90,8 +92,7 @@ def test_get_head_mri_trans():
 
     assert trans['from'] == estimated_trans['from']
     assert trans['to'] == estimated_trans['to']
-    np.testing.assert_almost_equal(trans['trans'],
-                                   estimated_trans['trans'])
+    assert_almost_equal(trans['trans'], estimated_trans['trans'])
     print(trans)
     print(estimated_trans)
 
@@ -125,3 +126,32 @@ def test_handle_events_reading():
 
     raw = _handle_events_reading(events_fname, raw)
     events, event_id = mne.events_from_annotations(raw)
+
+
+@requires_nibabel()
+def test_get_head_mri_trans_ctf():
+    """Test getting a trans object from BIDS data in CTF."""
+    import nibabel as nib
+
+    ctf_data_path = op.join(testing.data_path(), 'CTF')
+    raw_ctf_fname = op.join(ctf_data_path, 'testdata_ctf.ds')
+    raw_ctf = mne.io.read_raw_ctf(raw_ctf_fname)
+    output_path = _TempDir()
+    write_raw_bids(raw_ctf, bids_basename, output_path,
+                   overwrite=False)
+
+    # Take a fake trans
+    trans = mne.read_trans(raw_fname.replace('_raw.fif', '-trans.fif'))
+
+    # Get the T1 weighted MRI data file ... test write_anat with a nibabel
+    # image instead of a file path
+    t1w_mgh = op.join(data_path, 'subjects', 'sample', 'mri', 'T1.mgz')
+    t1w_mgh = nib.load(t1w_mgh)
+
+    write_anat(output_path, subject_id, t1w_mgh, session_id, acq,
+               raw=raw_ctf, trans=trans)
+
+    # Try to get trans back through fitting points
+    bids_fname = bids_basename + '_meg.ds'
+    estimated_trans = get_head_mri_trans(bids_fname, output_path)
+    assert_almost_equal(trans['trans'], estimated_trans['trans'])
