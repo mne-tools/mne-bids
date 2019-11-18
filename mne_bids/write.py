@@ -929,12 +929,6 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
                    for the manufacturer, please update the manufacturer field
                    in the sidecars manually.
 
-                 * If `convert` is False, files will not be BIDS compatible
-                   unless they were already in a BIDS compatible file type for
-                   that modality. Once all issues with converting are fixed
-                   and the conversion is known to be stable, this is strongly
-                   recommended not to be used.
-
     Parameters
     ----------
     raw : instance of mne.io.Raw
@@ -995,7 +989,7 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
         for MEG data if the data file is not already in that format.
         Defaults to None in which case conversion will be done only if
         the file type is not compatible (e.g. an EEG-only FIF file). If
-        anonymize is used, the file must be converted.
+        anonymize is used, the file must be converted. False is not allowed.
     overwrite : bool
         Whether to overwrite existing files or data in files.
         Defaults to False.
@@ -1062,14 +1056,11 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
 
     bids_fname = bids_basename + '_%s%s' % (kind, ext)
 
-    if not convert:
-        if convert is None:
-            convert = ext not in ALLOWED_EXTENSIONS[kind]
-        else:
-            if ext not in ALLOWED_EXTENSIONS[kind] and verbose:
-                warn('The format %s is not supported by BIDS, unless ' % ext +
-                     'there are issues with the conversion, it is strongly ' +
-                     'recommended that you do not use `convert=False`')
+    if convert is None:
+        convert = ext not in ALLOWED_EXTENSIONS[kind]
+    elif not convert:
+        raise ValueError('Not converting could result in a non-BIDS ' +
+                         'compatible dataset')
 
     # check whether the info provided indicates that the data is emptyroom
     # data

@@ -207,7 +207,7 @@ def test_fif(_bids_validate):
     output_path2 = _test_convert(raw2, bids_basename, events_fname, event_id)
     _bids_validate(output_path2)
 
-    with pytest.warns(UserWarning, match='not supported by BIDS'):
+    with pytest.raises(ValueError, match='Not converting'):
         write_raw_bids(raw2, bids_basename, output_path2,
                        events_data=events_fname,
                        event_id=event_id, convert=False,
