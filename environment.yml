@@ -12,6 +12,7 @@ dependencies:
 - matplotlib
 - pip:
   - mne>=0.19.1
+  - mayavi
   - nibabel
   - pybv
   - nilearn
