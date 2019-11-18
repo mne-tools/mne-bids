@@ -59,7 +59,11 @@ elec = mat['elec']  # electrode positions given in meters
 # transform is the identity.
 montage = mne.channels.make_dig_montage(ch_pos=dict(zip(ch_names, elec)),
                                         coord_frame='head',
-                                        lpa=pos[0], nasion=pos[1], rpa=pos[2])
+                                        lpa=np.zeros((3,)),
+                                        nasion=np.zeros((3,)),
+                                        rpa=np.zeros((3,)))
+# I was going to use pos[0:2] but interestingly zeros work also
+# possibly due to an automicatic fiduical detection algorithm?
 
 # Since human heads are relatively similar in size, aligning the
 # fiducial points from the example data will work pretty well.
@@ -68,7 +72,7 @@ info = mne.create_info(ch_names, 1000., 'ecog', montage=montage)
 # Use random data as a placeholder
 raw = mne.io.RawArray(np.random.random((len(ch_names), 1000)), info)
 
-raw.save('sample_ecog.fif')
+raw.save('sample_ecog.fif')  # bug with not saving out if raw passed directly
 
 # Now align the fiducial points and save out the aligned trans file.
 # See https://mne.tools/stable/generated/mne.gui.coregistration.html
