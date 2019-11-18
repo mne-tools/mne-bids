@@ -52,8 +52,6 @@ montage = mne.channels.make_dig_montage(ch_pos=dict(zip(ch_names, elec)),
                                         lpa=np.zeros((3,)),
                                         nasion=np.zeros((3,)),
                                         rpa=np.zeros((3,)))
-# I was going to use fids from sample but interestingly zeros work also
-# possibly due to an automicatic fiduical detection algorithm?
 
 # Make an info object containing the montage
 info = mne.create_info(ch_names, 1000., 'ecog', montage=montage)
