@@ -59,18 +59,21 @@ info = mne.create_info(ch_names, 1000., 'ecog', montage=montage)
 # Use random data as a placeholder
 raw = mne.io.RawArray(np.random.random((len(ch_names), 1000)), info)
 
-raw.save('sample_ecog.fif')  # bug with not saving out if raw passed directly
-
 # Now align the fiducial points and save out the aligned trans file.
 # See https://mne.tools/stable/generated/mne.gui.coregistration.html
 # for instructions on how to do this. Briefly, click on the LPA
 # checkbox, click on the LPA on the head, then do the same for
 # nasion and RPA. Then click save in the same menu box.
-mne.gui.coregistration(subject='sample',
-                       subjects_dir=op.join(data_path, 'subjects'),
-                       inst='sample_ecog.fif')
 
-os.remove('sample_ecog.fif')
+# It can be run from the command line using using `mne coreg` or
+# from inside a python script using
+# ```
+# raw.save('sample_ecog.fif')
+# mne.gui.coregistration(subject='sample',
+#                        subjects_dir=op.join(data_path, 'subjects'),
+#                        inst='sample_ecog.fif')
+# os.remove('sample_ecog.fif')
+# ```
 
 # The changed fiducials were saved as sample-fiducials.fif in this case.
 fids, coord_frame = mne.io.read_fiducials(
@@ -110,7 +113,7 @@ anat_dir = write_anat(bids_root=output_path,  # the BIDS dir we wrote earlier
 t1_nii_fname = op.join(anat_dir, 'sub-01_ses-01_T1w.nii.gz')
 
 # Plot it
-importlib.reload(plt)  # bug due to mne.gui
+importlib.reload(plt)  # needed because of mne.gui
 fig, ax = plt.subplots()
 plot_anat(t1_nii_fname, axes=ax, title='Defaced')
 plt.show()
