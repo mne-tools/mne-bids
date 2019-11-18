@@ -12,6 +12,7 @@ knows where the face is for the defacing anonymization algorithm.
 
 ###############################################################################
 # We are importing everything we need for this example:
+
 import os
 import os.path as op
 import importlib
@@ -31,18 +32,7 @@ from mne_bids import write_anat
 
 data_path = sample.data_path()
 
-# load in the raw data for the fiducials
-raw_fname = op.join(data_path, 'MEG', 'sample', 'sample_audvis_raw.fif')
-raw = mne.io.read_raw_fif(raw_fname)
-
-# Get Landmarks from the file. 0, 1, and 2 correspond to LPA, NAS, RPA
-# and the 'r' key will provide us with the xyz coordinates
-pos = np.asarray((raw.info['dig'][0]['r'],
-                  raw.info['dig'][1]['r'],
-                  raw.info['dig'][2]['r']))
-del raw
-
-# load in the T1
+# set the path of the T1
 t1_mgh_fname = op.join(data_path, 'subjects', 'sample', 'mri', 'T1.mgz')
 
 # load in ECoG data
@@ -62,11 +52,10 @@ montage = mne.channels.make_dig_montage(ch_pos=dict(zip(ch_names, elec)),
                                         lpa=np.zeros((3,)),
                                         nasion=np.zeros((3,)),
                                         rpa=np.zeros((3,)))
-# I was going to use pos[0:2] but interestingly zeros work also
+# I was going to use fids from sample but interestingly zeros work also
 # possibly due to an automicatic fiduical detection algorithm?
 
-# Since human heads are relatively similar in size, aligning the
-# fiducial points from the example data will work pretty well.
+# Make an info object containing the montage
 info = mne.create_info(ch_names, 1000., 'ecog', montage=montage)
 
 # Use random data as a placeholder
