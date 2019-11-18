@@ -298,6 +298,7 @@ def get_matched_empty_room(bids_fname, bids_root):
         dt = datetime.strptime(params['ses'], '%Y%m%d')
         delta_t = dt - ref_date
         if delta_t.total_seconds() < min_seconds:
+            min_seconds = delta_t.total_seconds()
             best_er_fname = er_fname
 
     return best_er_fname
