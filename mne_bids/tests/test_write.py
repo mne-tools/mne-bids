@@ -934,11 +934,13 @@ def test_write_anat(_bids_validate):
                           verbose=True, overwrite=True)
     _bids_validate(output_path)
 
+    # test raise error on meg_landmarks with no trans
     with pytest.raises(ValueError, match='head space landmarks provided'):
         anat_dir = write_anat(output_path, subject_id, t1w_mgh, session_id,
                               acq, deface=True, landmarks='meg_landmarks.fif',
                               verbose=True, overwrite=True)
 
+    # test unsupported (any coord_frame other than head and mri) coord_frame
     fail_landmarks = meg_landmarks.copy()
     fail_landmarks[0]['coord_frame'] = 3
     fail_landmarks[1]['coord_frame'] = 3
