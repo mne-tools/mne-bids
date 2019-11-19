@@ -1348,7 +1348,7 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
         t1_mgh = nib.MGHImage(t1w.dataobj, t1w.affine)
 
         if landmarks is not None:
-            if (trans is not None or raw is not None) and verbose:
+            if raw is not None and verbose:
                 warn('Using provided `landmarks` instead of using ' +
                      'the `trans` to convert the landmarks from `raw` ' +
                      'space')
