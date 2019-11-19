@@ -894,36 +894,39 @@ def test_write_anat(_bids_validate):
         write_anat(output_path, subject_id, t1w_mgh, session_id, raw=raw,
                    trans=trans, verbose=True, deface=dict(theta=100),
                    overwrite=True)
-    # Write some MRI data and supply `mri_landmarks`
-    mri_landmarks = [{'kind': 1, 'ident': 1,
-                      'r': np.array([66.085805, 51.33362, 46.52982013]),
-                      'coord_frame': FIFF.FIFFV_COORD_MRI},
-                     {'kind': 1, 'ident': 2,
-                      'r': np.array([41.873635, 32.246944, 74.553143]),
-                      'coord_frame': FIFF.FIFFV_COORD_MRI},
-                     {'kind': 1, 'ident': 3,
-                      'r': np.array([17.238125, 53.0829408, 47.017890]),
-                      'coord_frame': FIFF.FIFFV_COORD_MRI}]
-    mne.io.write_fiducials('mri_landmarks.fif', mri_landmarks,
-                           FIFF.FIFFV_COORD_MRI)
-    meg_landmarks = \
-        [{'kind': 1, 'ident': 1,
-          'r': np.array([-7.13766068e-02, 0.00000000e+00, 5.12227416e-09]),
-          'coord_frame': FIFF.FIFFV_COORD_HEAD},
-         {'kind': 1, 'ident': 2,
-          'r': np.array([3.72529030e-09, 1.02605611e-01, 4.19095159e-09]),
-          'coord_frame': FIFF.FIFFV_COORD_HEAD},
-         {'kind': 1, 'ident': 3,
-          'r': np.array([7.52676800e-02, 0.00000000e+00, 5.58793545e-09]),
-          'coord_frame': FIFF.FIFFV_COORD_HEAD}]
-    mne.io.write_fiducials('meg_landmarks.fif', meg_landmarks,
-                           FIFF.FIFFV_COORD_HEAD)
+
+    # Write some MRI data and supply `landmarks`
+    mri_voxel_landmarks = mne.channels.make_dig_montage(
+        lpa=[66.08580, 51.33362, 46.52982],
+        nasion=[41.87363, 32.24694, 74.55314],
+        rpa=[17.23812, 53.08294, 47.01789],
+        coord_frame='mri_voxel')
+
+    mri_landmarks = mne.channels.make_dig_montage(
+        lpa=[-0.07629625, -0.00062556, -0.00776012],
+        nasion=[0.00267222, 0.09362256, 0.03224791],
+        rpa=[0.07635873, -0.00258065, -0.01212903],
+        coord_frame='mri')
+
+    meg_landmarks = mne.channels.make_dig_montage(
+        lpa=[-7.13766068e-02, 0.00000000e+00, 5.12227416e-09],
+        nasion=[3.72529030e-09, 1.02605611e-01, 4.19095159e-09],
+        rpa=[7.52676800e-02, 0.00000000e+00, 5.58793545e-09],
+        coord_frame='head')
+
+    meg_landmarks.save('meg_landmarks.fif')
+
+    # test mri voxel landmarks
+    anat_dir = write_anat(output_path, subject_id, t1w_mgh, session_id, acq,
+                          deface=True, landmarks=mri_voxel_landmarks,
+                          verbose=True, overwrite=True)
+    _bids_validate(output_path)
 
     # test mri landmarks
     with pytest.warns(UserWarning, match='Using provided `landmarks`'):
         anat_dir = write_anat(output_path, subject_id, t1w_mgh, session_id,
                               acq, raw=raw, trans=trans, deface=True,
-                              landmarks='mri_landmarks.fif', verbose=True,
+                              landmarks=mri_landmarks, verbose=True,
                               overwrite=True)
     _bids_validate(output_path)
 
@@ -935,23 +938,26 @@ def test_write_anat(_bids_validate):
     _bids_validate(output_path)
 
     # test raise error on meg_landmarks with no trans
-    with pytest.raises(ValueError, match='head space landmarks provided'):
+    with pytest.raises(ValueError, match='Head space landmarks provided'):
         anat_dir = write_anat(output_path, subject_id, t1w_mgh, session_id,
                               acq, deface=True, landmarks='meg_landmarks.fif',
                               verbose=True, overwrite=True)
 
     # test unsupported (any coord_frame other than head and mri) coord_frame
     fail_landmarks = meg_landmarks.copy()
-    fail_landmarks[0]['coord_frame'] = 3
-    fail_landmarks[1]['coord_frame'] = 3
-    fail_landmarks[2]['coord_frame'] = 3
-    mne.io.write_fiducials('fail_landmarks.fif', meg_landmarks, 3)
+    fail_landmarks.dig[0]['coord_frame'] = 3
+
+    with pytest.raises(ValueError, match='Mismatched coordinates'):
+        anat_dir = write_anat(output_path, subject_id, t1w_mgh, session_id,
+                              acq, deface=True, landmarks=fail_landmarks,
+                              verbose=True, overwrite=True)
+
+    fail_landmarks.dig[1]['coord_frame'] = 3
+    fail_landmarks.dig[2]['coord_frame'] = 3
 
     with pytest.raises(ValueError, match='Coordinate frame not recognized'):
         anat_dir = write_anat(output_path, subject_id, t1w_mgh, session_id,
-                              acq, deface=True, landmarks='fail_landmarks.fif',
+                              acq, deface=True, landmarks=fail_landmarks,
                               verbose=True, overwrite=True)
 
-    os.remove('mri_landmarks.fif')
     os.remove('meg_landmarks.fif')
-    os.remove('fail_landmarks.fif')
