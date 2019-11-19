@@ -21,7 +21,7 @@ from mne.transforms import (_get_trans, apply_trans, get_ras_to_neuromag_trans,
 from mne import Epochs, events_from_annotations
 from mne.io.constants import FIFF
 from mne.io.pick import channel_type
-from mne.io import BaseRaw, anonymize_info
+from mne.io import BaseRaw, anonymize_info, read_fiducials
 from mne.channels.channels import _unit2human
 from mne.utils import check_version, has_nibabel
 
@@ -391,6 +391,29 @@ def _coordsystem_json(raw, unit, orient, manufacturer, fname,
     return fname
 
 
+def _meg_landmarks_to_mri_landmarks(meg_landmarks, trans, t1_mgh):
+    """Convert landmarks from head space to mri space.
+
+    Parameters
+    ----------
+    meg_landmarks : array-like
+        The meg landmark data: rows LPA, NAS, RPA, columns x, y, z.
+    trans : instance of mne.transforms.Transform
+        The transformation matrix from head coordinates to MRI coordinates.
+    t1_mgh : nib.MGHImage
+        The image data in MGH format.
+    """
+
+    # Transform MEG landmarks into MRI space, adjust units by * 1e3
+    mri_landmarks = apply_trans(trans, meg_landmarks, move=True) * 1e3
+
+    # Get landmarks in voxel space, using the T1 data
+    vox2ras_tkr = t1_mgh.header.get_vox2ras_tkr()
+    ras2vox_tkr = np.linalg.inv(vox2ras_tkr)
+    mri_landmarks = apply_trans(ras2vox_tkr, mri_landmarks)  # in vox
+    return mri_landmarks
+
+
 def _sidecar_json(raw, task, manufacturer, fname, kind, overwrite=False,
                   verbose=True):
     """Create a sidecar json file depending on the kind and save it.
@@ -507,7 +530,7 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, overwrite=False,
     return fname
 
 
-def _deface(t1w, mri_landmarks, deface, trans, raw):
+def _deface(t1w, mri_landmarks, deface):
     if not has_nibabel():  # pragma: no cover
         raise ImportError('This function requires nibabel.')
     import nibabel as nib
@@ -1219,8 +1242,8 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
 
 
 def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
-               raw=None, trans=None, deface=False, overwrite=False,
-               verbose=False):
+               raw=None, trans=None, landmarks=None, deface=False,
+               overwrite=False, verbose=False):
     """Put anatomical MRI data into a BIDS format.
 
     Given a BIDS directory and a T1 weighted MRI scan for a certain subject,
@@ -1260,6 +1283,10 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
             `theta`: is the angle of the defacing shear in degrees relative
                      to the normal to the plane passing through the anatomical
                      landmarks (default 35).
+    landmarks: str
+        The filepath to load a file with the landmarks can be passed to
+        provide information for defacing. Landmarks can be determined
+        from anatomy using `mne coreg` GUI.
     overwrite : bool
         Whether to overwrite existing files or data in files.
         Defaults to False.
@@ -1283,9 +1310,9 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
         raise ImportError('This function requires nibabel.')
     import nibabel as nib
 
-    if deface and (trans is None or raw is None):
-        raise ValueError('The raw object, trans and raw must be provided to '
-                         'deface the T1')
+    if deface and (trans is None or raw is None) and landmarks is None:
+        raise ValueError('The raw object, trans and raw or the landmarks '
+                         'must be provided to deface the T1')
 
     # Make directory for anatomical data
     anat_dir = op.join(bids_root, 'sub-{}'.format(subject))
@@ -1317,29 +1344,44 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
                                       suffix='T1w.nii.gz')
 
     # Check if we have necessary conditions for writing a sidecar JSON
-    if trans is not None:
-
-        # get trans and ensure it is from head to MRI
-        trans, _ = _get_trans(trans, fro='head', to='mri')
-
-        if not isinstance(raw, BaseRaw):
-            raise ValueError('`raw` must be specified if `trans` is not None')
-
-        # Prepare to write the sidecar JSON
-        # extract MEG landmarks
-        coords_dict = _extract_landmarks(raw.info['dig'])
-        meg_landmarks = np.asarray((coords_dict['LPA'],
-                                    coords_dict['NAS'],
-                                    coords_dict['RPA']))
-
-        # Transform MEG landmarks into MRI space, adjust units by * 1e3
-        mri_landmarks = apply_trans(trans, meg_landmarks, move=True) * 1e3
-
-        # Get landmarks in voxel space, using the mgh version of our T1 data
+    if trans is not None or landmarks is not None:
         t1_mgh = nib.MGHImage(t1w.dataobj, t1w.affine)
-        vox2ras_tkr = t1_mgh.header.get_vox2ras_tkr()
-        ras2vox_tkr = np.linalg.inv(vox2ras_tkr)
-        mri_landmarks = apply_trans(ras2vox_tkr, mri_landmarks)  # in vox
+
+        if landmarks is not None:
+            if (trans is not None or raw is not None) and verbose:
+                warn('Using provided `landmarks` instead of using ' +
+                     'the `trans` to convert the landmarks from `raw` ' +
+                     'space')
+            landmarks, coord_frame = read_fiducials(landmarks)
+            landmarks = np.array([landmark['r'] for landmark in
+                                  landmarks], dtype=float)  # unpack
+            if coord_frame == FIFF.FIFFV_COORD_MRI:
+                mri_landmarks = landmarks
+            elif coord_frame == FIFF.FIFFV_COORD_HEAD:
+                if trans is None:
+                    raise ValueError('head space landmarks provided, ' +
+                                     '`trans` required')
+                mri_landmarks = _meg_landmarks_to_mri_landmarks(
+                    landmarks, trans, t1_mgh)
+            else:
+                raise ValueError('Coordinate frame not recognized, ' +
+                                 'found %s' % coord_frame)
+        elif trans is not None:
+            # get trans and ensure it is from head to MRI
+            trans, _ = _get_trans(trans, fro='head', to='mri')
+
+            if not isinstance(raw, BaseRaw):
+                raise ValueError('`raw` must be specified if `trans` ' +
+                                 'is not None')
+
+            # Prepare to write the sidecar JSON
+            # extract MEG landmarks
+            coords_dict = _extract_landmarks(raw.info['dig'])
+            meg_landmarks = np.asarray((coords_dict['LPA'],
+                                        coords_dict['NAS'],
+                                        coords_dict['RPA']))
+            mri_landmarks = _meg_landmarks_to_mri_landmarks(
+                meg_landmarks, trans, t1_mgh)
 
         # Write sidecar.json
         t1w_json = dict()
@@ -1355,7 +1397,7 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
         _write_json(fname, t1w_json, overwrite, verbose)
 
         if deface:
-            t1w = _deface(t1w, mri_landmarks, deface, trans, raw)
+            t1w = _deface(t1w, mri_landmarks, deface)
 
     # Save anatomical data
     if op.exists(t1w_basename):
