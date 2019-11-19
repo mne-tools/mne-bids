@@ -15,6 +15,7 @@ import shutil as sh
 from collections import defaultdict, OrderedDict
 
 import numpy as np
+from scipy import linalg
 from numpy.testing import assert_array_equal
 from mne.transforms import (_get_trans, apply_trans, get_ras_to_neuromag_trans,
                             rotation, translation)
@@ -22,6 +23,7 @@ from mne import Epochs, events_from_annotations
 from mne.io.constants import FIFF
 from mne.io.pick import channel_type
 from mne.io import BaseRaw, anonymize_info, read_fiducials
+from mne.io._digitization import _get_fid_coords
 from mne.channels.channels import _unit2human
 from mne.utils import check_version, has_nibabel
 
@@ -400,26 +402,34 @@ def _meg_landmarks_to_mri_landmarks(meg_landmarks, trans):
         The meg landmark data: rows LPA, NAS, RPA, columns x, y, z.
     trans : instance of mne.transforms.Transform
         The transformation matrix from head coordinates to MRI coordinates.
+
+    Returns
+    -------
+    mri_landmarks : array-like
+        The mri ras landmark data converted to from mm to m.
     """
     # Transform MEG landmarks into MRI space, adjust units by * 1e3
     return apply_trans(trans, meg_landmarks, move=True) * 1e3
 
 
-def _mri_landmarks_to_mri_voxels(mri_landmarks, trans, t1_mgh):
+def _mri_landmarks_to_mri_voxels(mri_landmarks, t1_mgh):
     """Convert landmarks from mri ras space to mri voxel space.
 
     Parameters
     ----------
     mri_landmarks : array-like
         The mri ras landmark data: rows LPA, NAS, RPA, columns x, y, z.
-    trans : instance of mne.transforms.Transform
-        The transformation matrix from head coordinates to MRI coordinates.
     t1_mgh : nib.MGHImage
         The image data in MGH format.
+
+    Returns
+    -------
+    mri_landmarks : array-like
+        The mri voxel-space landmark data.
     """
     # Get landmarks in voxel space, using the T1 data
     vox2ras_tkr = t1_mgh.header.get_vox2ras_tkr()
-    ras2vox_tkr = np.linalg.inv(vox2ras_tkr)
+    ras2vox_tkr = linalg.inv(vox2ras_tkr)
     mri_landmarks = apply_trans(ras2vox_tkr, mri_landmarks)  # in vox
     return mri_landmarks
 
@@ -1360,37 +1370,35 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
 
         if landmarks is not None:
             if raw is not None and verbose:
-                warn('Using provided `landmarks` instead of using ' +
-                     'the `trans` to convert the landmarks from `raw` ' +
-                     'space')
+                raise ValueError('Please use either `landmarks` or `raw`, ' +
+                                 'which digitization to use is ambiguous.')
             if isinstance(landmarks, str):
                 landmarks, coord_frame = read_fiducials(landmarks)
                 landmarks = np.array([landmark['r'] for landmark in
                                       landmarks], dtype=float)  # unpack
             else:
-                coords_dict = _extract_landmarks(landmarks.dig)
-                coord_frame = landmarks.dig[0]['coord_frame']
-                if any([landmarks.dig[i]['coord_frame'] != coord_frame
-                        for i in range(3)]):
-                    raise ValueError('Mismatched coordinates: coord_frame, ' +
-                                     '%s, found %s' % (coord_frame,
-                                                       landmarks.dig))
-                landmarks = np.asarray((coords_dict['LPA'],
-                                        coords_dict['NAS'],
-                                        coords_dict['RPA']))
-            if coord_frame == FIFF.FIFFV_MNE_COORD_MRI_VOXEL:
-                mri_landmarks = landmarks
-            elif coord_frame == FIFF.FIFFV_COORD_MRI:
-                mri_landmarks = _mri_landmarks_to_mri_voxels(landmarks * 1e3,
-                                                             trans, t1_mgh)
-            elif coord_frame == FIFF.FIFFV_COORD_HEAD:
+                coords_dict, coord_frame = _get_fid_coords(landmarks.dig)
+                landmarks = np.asarray((coords_dict['lpa'],
+                                        coords_dict['nasion'],
+                                        coords_dict['rpa']))
+            if coord_frame == FIFF.FIFFV_COORD_HEAD:
                 if trans is None:
                     raise ValueError('Head space landmarks provided, ' +
                                      '`trans` required')
                 mri_landmarks = _meg_landmarks_to_mri_landmarks(
                     landmarks, trans)
                 mri_landmarks = _mri_landmarks_to_mri_voxels(
-                    mri_landmarks, trans, t1_mgh)
+                    mri_landmarks, t1_mgh)
+            elif coord_frame in (FIFF.FIFFV_MNE_COORD_MRI_VOXEL,
+                                 FIFF.FIFFV_COORD_MRI):
+                if trans is not None:
+                    raise ValueError('`trans` was provided but `landmark` ' +
+                                     'data is in mri space. Please use ' +
+                                     'only one of these.')
+                if coord_frame == FIFF.FIFFV_COORD_MRI:
+                    landmarks = _mri_landmarks_to_mri_voxels(landmarks * 1e3,
+                                                             t1_mgh)
+                mri_landmarks = landmarks
             else:
                 raise ValueError('Coordinate frame not recognized, ' +
                                  'found %s' % coord_frame)
@@ -1404,14 +1412,14 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
 
             # Prepare to write the sidecar JSON
             # extract MEG landmarks
-            coords_dict = _extract_landmarks(raw.info['dig'])
-            meg_landmarks = np.asarray((coords_dict['LPA'],
-                                        coords_dict['NAS'],
-                                        coords_dict['RPA']))
+            coords_dict, coord_fname = _get_fid_coords(raw.info['dig'])
+            meg_landmarks = np.asarray((coords_dict['lpa'],
+                                        coords_dict['nasion'],
+                                        coords_dict['rpa']))
             mri_landmarks = _meg_landmarks_to_mri_landmarks(
                 meg_landmarks, trans)
             mri_landmarks = _mri_landmarks_to_mri_voxels(
-                mri_landmarks, trans, t1_mgh)
+                mri_landmarks, t1_mgh)
 
         # Write sidecar.json
         t1w_json = dict()

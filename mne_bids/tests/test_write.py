@@ -914,8 +914,6 @@ def test_write_anat(_bids_validate):
         rpa=[7.52676800e-02, 0.00000000e+00, 5.58793545e-09],
         coord_frame='head')
 
-    meg_landmarks.save('meg_landmarks.fif')
-
     # test mri voxel landmarks
     anat_dir = write_anat(output_path, subject_id, t1w_mgh, session_id, acq,
                           deface=True, landmarks=mri_voxel_landmarks,
@@ -923,35 +921,44 @@ def test_write_anat(_bids_validate):
     _bids_validate(output_path)
 
     # test mri landmarks
-    with pytest.warns(UserWarning, match='Using provided `landmarks`'):
+    anat_dir = write_anat(output_path, subject_id, t1w_mgh, session_id,
+                          acq, deface=True,
+                          landmarks=mri_landmarks, verbose=True,
+                          overwrite=True)
+    _bids_validate(output_path)
+
+    # crash for raw also
+    with pytest.raises(ValueError, match='Please use either `landmarks`'):
         anat_dir = write_anat(output_path, subject_id, t1w_mgh, session_id,
                               acq, raw=raw, trans=trans, deface=True,
                               landmarks=mri_landmarks, verbose=True,
                               overwrite=True)
-    _bids_validate(output_path)
+
+    # crash for trans also
+    with pytest.raises(ValueError, match='`trans` was provided'):
+        anat_dir = write_anat(output_path, subject_id, t1w_mgh, session_id,
+                              acq, trans=trans, deface=True,
+                              landmarks=mri_landmarks, verbose=True,
+                              overwrite=True)
 
     # test meg landmarks
+    tmp_dir = _TempDir()
+    meg_landmarks.save(op.join(tmp_dir, 'meg_landmarks.fif'))
     anat_dir = write_anat(output_path, subject_id, t1w_mgh, session_id,
                           acq, deface=True, trans=trans,
-                          landmarks='meg_landmarks.fif',
+                          landmarks=op.join(tmp_dir, 'meg_landmarks.fif'),
                           verbose=True, overwrite=True)
     _bids_validate(output_path)
 
     # test raise error on meg_landmarks with no trans
     with pytest.raises(ValueError, match='Head space landmarks provided'):
         anat_dir = write_anat(output_path, subject_id, t1w_mgh, session_id,
-                              acq, deface=True, landmarks='meg_landmarks.fif',
+                              acq, deface=True, landmarks=meg_landmarks,
                               verbose=True, overwrite=True)
 
     # test unsupported (any coord_frame other than head and mri) coord_frame
     fail_landmarks = meg_landmarks.copy()
     fail_landmarks.dig[0]['coord_frame'] = 3
-
-    with pytest.raises(ValueError, match='Mismatched coordinates'):
-        anat_dir = write_anat(output_path, subject_id, t1w_mgh, session_id,
-                              acq, deface=True, landmarks=fail_landmarks,
-                              verbose=True, overwrite=True)
-
     fail_landmarks.dig[1]['coord_frame'] = 3
     fail_landmarks.dig[2]['coord_frame'] = 3
 
@@ -959,5 +966,3 @@ def test_write_anat(_bids_validate):
         anat_dir = write_anat(output_path, subject_id, t1w_mgh, session_id,
                               acq, deface=True, landmarks=fail_landmarks,
                               verbose=True, overwrite=True)
-
-    os.remove('meg_landmarks.fif')
