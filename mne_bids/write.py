@@ -391,7 +391,7 @@ def _coordsystem_json(raw, unit, orient, manufacturer, fname,
     return fname
 
 
-def _meg_landmarks_to_mri_landmarks(meg_landmarks, trans, t1_mgh):
+def _meg_landmarks_to_mri_landmarks(meg_landmarks, trans):
     """Convert landmarks from head space to mri space.
 
     Parameters
@@ -400,13 +400,23 @@ def _meg_landmarks_to_mri_landmarks(meg_landmarks, trans, t1_mgh):
         The meg landmark data: rows LPA, NAS, RPA, columns x, y, z.
     trans : instance of mne.transforms.Transform
         The transformation matrix from head coordinates to MRI coordinates.
+    """
+    # Transform MEG landmarks into MRI space, adjust units by * 1e3
+    return apply_trans(trans, meg_landmarks, move=True) * 1e3
+
+
+def _mri_landmarks_to_mri_voxels(mri_landmarks, trans, t1_mgh):
+    """Convert landmarks from mri ras space to mri voxel space.
+
+    Parameters
+    ----------
+    mri_landmarks : array-like
+        The mri ras landmark data: rows LPA, NAS, RPA, columns x, y, z.
+    trans : instance of mne.transforms.Transform
+        The transformation matrix from head coordinates to MRI coordinates.
     t1_mgh : nib.MGHImage
         The image data in MGH format.
     """
-
-    # Transform MEG landmarks into MRI space, adjust units by * 1e3
-    mri_landmarks = apply_trans(trans, meg_landmarks, move=True) * 1e3
-
     # Get landmarks in voxel space, using the T1 data
     vox2ras_tkr = t1_mgh.header.get_vox2ras_tkr()
     ras2vox_tkr = np.linalg.inv(vox2ras_tkr)
@@ -1283,10 +1293,11 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
             `theta`: is the angle of the defacing shear in degrees relative
                      to the normal to the plane passing through the anatomical
                      landmarks (default 35).
-    landmarks: str
-        The filepath to load a file with the landmarks can be passed to
-        provide information for defacing. Landmarks can be determined
-        from anatomy using `mne coreg` GUI.
+    landmarks: instance of DigMontage | str
+        The DigMontage or filepath to a DigMontage with landmarks that can be
+        passed to provide information for defacing. Landmarks can be determined
+        from the head model using `mne coreg` GUI, or they can be determined
+        from the aMRI using `freeview`.
     overwrite : bool
         Whether to overwrite existing files or data in files.
         Defaults to False.
@@ -1352,17 +1363,34 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
                 warn('Using provided `landmarks` instead of using ' +
                      'the `trans` to convert the landmarks from `raw` ' +
                      'space')
-            landmarks, coord_frame = read_fiducials(landmarks)
-            landmarks = np.array([landmark['r'] for landmark in
-                                  landmarks], dtype=float)  # unpack
-            if coord_frame == FIFF.FIFFV_COORD_MRI:
+            if isinstance(landmarks, str):
+                landmarks, coord_frame = read_fiducials(landmarks)
+                landmarks = np.array([landmark['r'] for landmark in
+                                      landmarks], dtype=float)  # unpack
+            else:
+                coords_dict = _extract_landmarks(landmarks.dig)
+                coord_frame = landmarks.dig[0]['coord_frame']
+                if any([landmarks.dig[i]['coord_frame'] != coord_frame
+                        for i in range(3)]):
+                    raise ValueError('Mismatched coordinates: coord_frame, ' +
+                                     '%s, found %s' % (coord_frame,
+                                                       landmarks.dig))
+                landmarks = np.asarray((coords_dict['LPA'],
+                                        coords_dict['NAS'],
+                                        coords_dict['RPA']))
+            if coord_frame == FIFF.FIFFV_MNE_COORD_MRI_VOXEL:
                 mri_landmarks = landmarks
+            elif coord_frame == FIFF.FIFFV_COORD_MRI:
+                mri_landmarks = _mri_landmarks_to_mri_voxels(landmarks * 1e3,
+                                                             trans, t1_mgh)
             elif coord_frame == FIFF.FIFFV_COORD_HEAD:
                 if trans is None:
-                    raise ValueError('head space landmarks provided, ' +
+                    raise ValueError('Head space landmarks provided, ' +
                                      '`trans` required')
                 mri_landmarks = _meg_landmarks_to_mri_landmarks(
-                    landmarks, trans, t1_mgh)
+                    landmarks, trans)
+                mri_landmarks = _mri_landmarks_to_mri_voxels(
+                    mri_landmarks, trans, t1_mgh)
             else:
                 raise ValueError('Coordinate frame not recognized, ' +
                                  'found %s' % coord_frame)
@@ -1381,7 +1409,9 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
                                         coords_dict['NAS'],
                                         coords_dict['RPA']))
             mri_landmarks = _meg_landmarks_to_mri_landmarks(
-                meg_landmarks, trans, t1_mgh)
+                meg_landmarks, trans)
+            mri_landmarks = _mri_landmarks_to_mri_voxels(
+                mri_landmarks, trans, t1_mgh)
 
         # Write sidecar.json
         t1w_json = dict()
