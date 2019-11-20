@@ -394,38 +394,38 @@ def _coordsystem_json(raw, unit, orient, manufacturer, fname,
 
 
 def _meg_landmarks_to_mri_landmarks(meg_landmarks, trans):
-    """Convert landmarks from head space to mri space.
+    """Convert landmarks from head space to MRI space.
 
     Parameters
     ----------
-    meg_landmarks : array-like
+    meg_landmarks : array, shape (3, 3)
         The meg landmark data: rows LPA, NAS, RPA, columns x, y, z.
     trans : instance of mne.transforms.Transform
         The transformation matrix from head coordinates to MRI coordinates.
 
     Returns
     -------
-    mri_landmarks : array-like
-        The mri ras landmark data converted to from mm to m.
+    mri_landmarks : array, shape (3, 3)
+        The mri ras landmark data converted to from m to mm.
     """
     # Transform MEG landmarks into MRI space, adjust units by * 1e3
     return apply_trans(trans, meg_landmarks, move=True) * 1e3
 
 
 def _mri_landmarks_to_mri_voxels(mri_landmarks, t1_mgh):
-    """Convert landmarks from mri ras space to mri voxel space.
+    """Convert landmarks from MRI RAS space to MRI voxel space.
 
     Parameters
     ----------
-    mri_landmarks : array-like
-        The mri ras landmark data: rows LPA, NAS, RPA, columns x, y, z.
+    mri_landmarks : array, shape (3, 3)
+        The MRI RAS landmark data: rows LPA, NAS, RPA, columns x, y, z.
     t1_mgh : nib.MGHImage
         The image data in MGH format.
 
     Returns
     -------
-    mri_landmarks : array-like
-        The mri voxel-space landmark data.
+    mri_landmarks : array, shape (3, 3)
+        The MRI voxel-space landmark data.
     """
     # Get landmarks in voxel space, using the T1 data
     vox2ras_tkr = t1_mgh.header.get_vox2ras_tkr()
