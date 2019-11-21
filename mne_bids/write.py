@@ -18,7 +18,7 @@ import numpy as np
 from numpy.testing import assert_array_equal
 from mne.transforms import (_get_trans, apply_trans, get_ras_to_neuromag_trans,
                             rotation, translation)
-from mne import Epochs, events_from_annotations, pick_types
+from mne import Epochs, events_from_annotations
 from mne.io.constants import FIFF
 from mne.io.pick import channel_type
 from mne.io import BaseRaw, anonymize_info
