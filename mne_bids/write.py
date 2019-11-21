@@ -1307,7 +1307,7 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
         The DigMontage or filepath to a DigMontage with landmarks that can be
         passed to provide information for defacing. Landmarks can be determined
         from the head model using `mne coreg` GUI, or they can be determined
-        from the aMRI using `freeview`.
+        from the MRI using `freeview`.
     overwrite : bool
         Whether to overwrite existing files or data in files.
         Defaults to False.
