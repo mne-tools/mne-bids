@@ -592,7 +592,7 @@ def _write_raw_fif(raw, bids_fname):
         raw.save(bids_fname, split_naming='neuromag', overwrite=True)
 
 
-def _write_raw_brainvision(raw, bids_fname):
+def _write_raw_brainvision(raw, bids_fname, events):
     """Save out the raw file in BrainVision format.
 
     Parameters
@@ -608,10 +608,11 @@ def _write_raw_brainvision(raw, bids_fname):
         raise ImportError('pybv >=0.2.0 is required for converting ' +
                           'file to Brainvision format')
     from pybv import write_brainvision
-    events, _ = events_from_annotations(raw)
     # Subtract raw.fist_samp because brainvision marks events starting from
     # the first available data point and ignores the raw.first_samp
-    events[:, 0] -= raw.first_samp
+    if events is not None:
+        events[:, 0] -= raw.first_samp
+        events = events[:, [0, 2]]  # reorder for pybv required order
     meas_date = raw.info['meas_date']
     if meas_date is not None:
         meas_date = _stamp_to_dt(meas_date)
@@ -619,7 +620,7 @@ def _write_raw_brainvision(raw, bids_fname):
                       raw.ch_names,
                       op.splitext(op.basename(bids_fname))[0],
                       op.dirname(bids_fname),
-                      events=events[:, [0, 2]],
+                      events=events,
                       resolution=1e-9,
                       meas_date=meas_date)
 
@@ -1188,7 +1189,7 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
         else:
             if verbose:
                 warn('Converting data files to BrainVision format')
-            _write_raw_brainvision(raw, bids_fname)
+            _write_raw_brainvision(raw, bids_fname, events)
     elif ext == '.fif':
         _write_raw_fif(raw, bids_fname)
     # CTF data is saved and renamed in a directory
