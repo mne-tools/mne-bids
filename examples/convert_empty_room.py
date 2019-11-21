@@ -62,8 +62,8 @@ er_bids_basename = 'sub-emptyroom_ses-{0}_task-noise'.format(er_date)
 write_raw_bids(er_raw, er_bids_basename, output_path, overwrite=True)
 
 ###############################################################################
-# Just to illustrate, we can save more than one empty room files. Here, they
-# will all contain the same data but this will not be the case in reality.
+# Just to illustrate, we can save more than one empty room file. Here, they
+# will all contain the same data but in your original scripts, you would pass different data.
 dates = ['20021204', '20021201', '20021001']
 
 for date in dates:
