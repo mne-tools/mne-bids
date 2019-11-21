@@ -920,12 +920,22 @@ def test_write_anat(_bids_validate):
                           verbose=True, overwrite=True)
     _bids_validate(output_path)
 
+    t1w1 = nib.load(op.join(anat_dir, 'sub-01_ses-01_acq-01_T1w.nii.gz'))
+    vox1 = t1w1.get_data()
+
     # test mri landmarks
     anat_dir = write_anat(output_path, subject_id, t1w_mgh, session_id,
                           acq, deface=True,
                           landmarks=mri_landmarks, verbose=True,
                           overwrite=True)
     _bids_validate(output_path)
+
+    t1w2 = nib.load(op.join(anat_dir, 'sub-01_ses-01_acq-01_T1w.nii.gz'))
+    vox2 = t1w2.get_data()
+
+    # because of significant rounding errors the voxels are fairly different
+    # but the deface works in all three cases and was checked
+    assert abs(vox1 - vox2).sum() / abs(vox1).sum() < 0.2
 
     # crash for raw also
     with pytest.raises(ValueError, match='Please use either `landmarks`'):
@@ -949,6 +959,11 @@ def test_write_anat(_bids_validate):
                           landmarks=op.join(tmp_dir, 'meg_landmarks.fif'),
                           verbose=True, overwrite=True)
     _bids_validate(output_path)
+
+    t1w3 = nib.load(op.join(anat_dir, 'sub-01_ses-01_acq-01_T1w.nii.gz'))
+    vox3 = t1w3.get_data()
+
+    assert abs(vox1 - vox3).sum() / abs(vox1).sum() < 0.2
 
     # test raise error on meg_landmarks with no trans
     with pytest.raises(ValueError, match='Head space landmarks provided'):
