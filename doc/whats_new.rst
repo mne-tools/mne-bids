@@ -31,6 +31,8 @@ Changelog
 Bug
 ~~~
 
+- Fixed broken event timing broken by conversion to BV in :func:`write_raw_bids`, by `Alex Rockhill`_ (`# <https://github.com/mne-tools/mne-bids/pull/>`_)
+
 API
 ~~~
 

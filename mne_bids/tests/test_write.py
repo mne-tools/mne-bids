@@ -180,6 +180,7 @@ def test_fif(_bids_validate):
     output_path = _TempDir()
     raw = mne.io.read_raw_fif(raw_fname)
     raw.load_data()
+    events = mne.find_events(raw)
     raw2 = raw.pick_types(meg=False, eeg=True, stim=True, eog=True, ecg=True)
     raw2.save(op.join(output_path, 'test-raw.fif'), overwrite=True)
     raw2 = mne.io.Raw(op.join(output_path, 'test-raw.fif'), preload=False)
@@ -195,10 +196,13 @@ def test_fif(_bids_validate):
                     'eeg.vmrk', 'events.tsv']:
         assert op.isfile(op.join(bids_dir, bids_basename + '_' + sidecar))
 
-    raw2 = mne.io.read_raw_brainvision(op.join(bids_dir,
-                                               bids_basename + '_eeg.vhdr'))
+    raw2 = read_raw_bids(bids_basename + '_eeg.vhdr', output_path)
 
+    events2 = mne.find_events(raw2)
+    events2[:, 0] += raw.first_samp
+    # events2, _ = mne.events_from_annotations(raw2)
     assert_array_almost_equal(raw.get_data(), raw2.get_data())
+    assert_array_almost_equal(events, events2)
     _bids_validate(output_path)
 
     # write the same data but pretend it is empty room data:

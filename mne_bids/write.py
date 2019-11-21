@@ -18,7 +18,7 @@ import numpy as np
 from numpy.testing import assert_array_equal
 from mne.transforms import (_get_trans, apply_trans, get_ras_to_neuromag_trans,
                             rotation, translation)
-from mne import Epochs, events_from_annotations
+from mne import Epochs, events_from_annotations, pick_types
 from mne.io.constants import FIFF
 from mne.io.pick import channel_type
 from mne.io import BaseRaw, anonymize_info
@@ -608,12 +608,15 @@ def _write_raw_brainvision(raw, bids_fname):
         raise ImportError('pybv >=0.2.0 is required for converting ' +
                           'file to Brainvision format')
     from pybv import write_brainvision
-    events, event_id = events_from_annotations(raw)
+    events, _ = events_from_annotations(raw)
+    events[:, 0] -= 2334  # raw.first_samp
     write_brainvision(raw.get_data(), raw.info['sfreq'],
                       raw.ch_names,
                       op.splitext(op.basename(bids_fname))[0],
-                      op.dirname(bids_fname), events[:, [0, 2]],
-                      resolution=1e-6)
+                      op.dirname(bids_fname),
+                      events=events[:, [0, 2]],
+                      resolution=1e-7,
+                      meas_date=_stamp_to_dt(raw.info['meas_date']))
 
 
 def _get_anonymization_daysback(raw):
