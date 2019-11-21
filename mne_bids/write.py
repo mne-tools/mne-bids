@@ -1369,7 +1369,7 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
         t1_mgh = nib.MGHImage(t1w.dataobj, t1w.affine)
 
         if landmarks is not None:
-            if raw is not None and verbose:
+            if raw is not None:
                 raise ValueError('Please use either `landmarks` or `raw`, ' +
                                  'which digitization to use is ambiguous.')
             if isinstance(landmarks, str):
