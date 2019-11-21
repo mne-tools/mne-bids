@@ -609,6 +609,8 @@ def _write_raw_brainvision(raw, bids_fname):
                           'file to Brainvision format')
     from pybv import write_brainvision
     events, _ = events_from_annotations(raw)
+    # Subtract raw.fist_samp because brainvision marks events starting from
+    # the first available data point and ignores the raw.first_samp
     events[:, 0] -= raw.first_samp
     meas_date = raw.info['meas_date']
     if meas_date is not None:
