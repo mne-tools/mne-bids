@@ -180,16 +180,19 @@ def test_fif(_bids_validate):
     output_path = _TempDir()
     raw = mne.io.read_raw_fif(raw_fname)
     raw.load_data()
-    events = mne.find_events(raw)
     raw2 = raw.pick_types(meg=False, eeg=True, stim=True, eog=True, ecg=True)
     raw2.save(op.join(output_path, 'test-raw.fif'), overwrite=True)
     raw2 = mne.io.Raw(op.join(output_path, 'test-raw.fif'), preload=False)
+    events = mne.find_events(raw2)
+    event_id = {'auditory/left': 1, 'auditory/right': 2, 'visual/left': 3,
+                'visual/right': 4, 'smiley': 5, 'button': 32}
+    epochs = mne.Epochs(raw2, events, event_id=event_id, tmin=-0.2, tmax=0.5,
+                        preload=True)
     with pytest.warns(UserWarning,
                       match='Converting data files to BrainVision format'):
         write_raw_bids(raw2, bids_basename, output_path,
                        events_data=events_fname, event_id=event_id,
                        verbose=True, overwrite=False)
-    os.remove(op.join(output_path, 'test-raw.fif'))
     bids_dir = op.join(output_path, 'sub-%s' % subject_id,
                        'ses-%s' % session_id, 'eeg')
     for sidecar in ['channels.tsv', 'eeg.eeg', 'eeg.json', 'eeg.vhdr',
@@ -197,12 +200,13 @@ def test_fif(_bids_validate):
         assert op.isfile(op.join(bids_dir, bids_basename + '_' + sidecar))
 
     raw2 = read_raw_bids(bids_basename + '_eeg.vhdr', output_path)
+    os.remove(op.join(output_path, 'test-raw.fif'))
 
     events2 = mne.find_events(raw2)
-    events2[:, 0] += raw.first_samp
-    # events2, _ = mne.events_from_annotations(raw2)
+    epochs2 = mne.Epochs(raw2, events2, event_id=event_id, tmin=-0.2, tmax=0.5,
+                         preload=True)
     assert_array_almost_equal(raw.get_data(), raw2.get_data())
-    assert_array_almost_equal(events, events2)
+    assert_array_almost_equal(epochs.get_data(), epochs2.get_data(), decimal=4)
     _bids_validate(output_path)
 
     # write the same data but pretend it is empty room data:

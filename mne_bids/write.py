@@ -609,14 +609,16 @@ def _write_raw_brainvision(raw, bids_fname):
                           'file to Brainvision format')
     from pybv import write_brainvision
     events, _ = events_from_annotations(raw)
-    events[:, 0] -= 2334  # raw.first_samp
+    meas_date = raw.info['meas_date']
+    if meas_date is not None:
+        meas_date = _stamp_to_dt(meas_date)
     write_brainvision(raw.get_data(), raw.info['sfreq'],
                       raw.ch_names,
                       op.splitext(op.basename(bids_fname))[0],
                       op.dirname(bids_fname),
                       events=events[:, [0, 2]],
-                      resolution=1e-7,
-                      meas_date=_stamp_to_dt(raw.info['meas_date']))
+                      resolution=1e-9,
+                      meas_date=meas_date)
 
 
 def _get_anonymization_daysback(raw):
