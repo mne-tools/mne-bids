@@ -11,6 +11,7 @@ import numpy as np
 from numpy.testing import assert_almost_equal
 
 import mne
+from mne.io import anonymize_info
 from mne.utils import _TempDir, requires_nibabel
 from mne.datasets import testing
 
@@ -187,6 +188,7 @@ def test_get_matched_empty_room():
 
     raw = mne_bids.read_raw_bids(bids_basename + '_meg.fif', bids_root)
     raw.info['meas_date'] = None
+    anonymize_info(raw.info)
     write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
     with pytest.raises(ValueError, match='Measurement date not available'):
         get_matched_empty_room(bids_basename + '_meg.fif', bids_root)
