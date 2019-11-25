@@ -14,7 +14,15 @@ and how to retrieve them.
 # License: BSD (3-clause)
 
 ###############################################################################
-# Let us first import mne_bids
+# The empty room measurement is necessary to get an estimate of the noise that
+# is used to whiten the data during source localization. To get an accurate
+# estimate of the noise, it is important that the empty room recording be as
+# close in date as the raw data. BIDS mandates that the empty room files be
+# stored under a separate subject called 'emptyroom' and the sessions be
+# named with the date of their recording. This example demonstrates how to
+# get the matching empty room file to a raw recording.
+#
+# Let us first import mne_bids.
 
 import os.path as op
 
@@ -57,20 +65,22 @@ raw_date = datetime.fromtimestamp(
 print(raw_date)
 
 ###############################################################################
-# We also need to specify that the subject ID is 'emptyroom', and that the 
+# We also need to specify that the subject ID is 'emptyroom', and that the
 # task is 'noise'.
 er_bids_basename = 'sub-emptyroom_ses-{0}_task-noise'.format(er_date)
 write_raw_bids(er_raw, er_bids_basename, bids_path, overwrite=True)
 
 ###############################################################################
 # Just to illustrate, we can save more than one empty room file. Here, they
-# will all contain the same data but in your original scripts, you would pass different data.
+# will all contain the same data but in your original scripts, you would pass
+# different data.
 dates = ['20021204', '20021201', '20021001']
 
 for date in dates:
-	er_bids_basename = 'sub-emptyroom_ses-{0}_task-noise'.format(date)
-	er_raw.info['meas_date'] = (datetime.strptime(date, '%Y%m%d').timestamp(), 0)
-	write_raw_bids(er_raw, er_bids_basename, bids_path, overwrite=True)
+    er_bids_basename = 'sub-emptyroom_ses-{0}_task-noise'.format(date)
+    er_raw.info['meas_date'] = (datetime.strptime(date,
+                                                  '%Y%m%d').timestamp(), 0)
+    write_raw_bids(er_raw, er_bids_basename, bids_path, overwrite=True)
 
 ###############################################################################
 # Let us look at the directory structure
