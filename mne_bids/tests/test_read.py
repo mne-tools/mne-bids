@@ -160,7 +160,7 @@ def test_get_head_mri_trans_ctf():
     assert_almost_equal(trans['trans'], estimated_trans['trans'])
 
 
-def test_empty_room():
+def test_get_matched_empty_room():
     """Test reading of empty room data."""
     bids_root = _TempDir()
 
