@@ -10,7 +10,7 @@ import mne
 from mne.datasets import testing
 from mne.utils import run_tests_if_main, ArgvSetter
 
-from cli import mne_bids_raw_to_bids, mne_bids_cp
+from mne_bids.commands import mne_bids_raw_to_bids, mne_bids_cp
 
 base_path = op.join(op.dirname(mne.__file__), 'io')
 subject_id = '01'
