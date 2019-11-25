@@ -18,7 +18,7 @@ import numpy as np
 from numpy.testing import assert_array_equal
 from mne.transforms import (_get_trans, apply_trans, get_ras_to_neuromag_trans,
                             rotation, translation)
-from mne import Epochs, events_from_annotations
+from mne import Epochs
 from mne.io.constants import FIFF
 from mne.io.pick import channel_type
 from mne.io import BaseRaw, anonymize_info
@@ -608,7 +608,7 @@ def _write_raw_brainvision(raw, bids_fname, events):
         raise ImportError('pybv >=0.2.0 is required for converting ' +
                           'file to Brainvision format')
     from pybv import write_brainvision
-    # Subtract raw.fist_samp because brainvision marks events starting from
+    # Subtract raw.first_samp because brainvision marks events starting from
     # the first available data point and ignores the raw.first_samp
     if events is not None:
         events[:, 0] -= raw.first_samp
