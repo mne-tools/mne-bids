@@ -289,9 +289,7 @@ def get_matched_empty_room(bids_fname, bids_root):
     search_path = op.join(search_path, '**', '**%s' % ext)
     er_fnames = glob.glob(search_path)
 
-    if len(er_fnames) == 0:
-        return None
-
+    best_er_fname = None
     min_seconds = np.inf
     for er_fname in er_fnames:
         params = _parse_bids_filename(er_fname, verbose=False)
