@@ -68,7 +68,7 @@ def generate_cli_rst(app=None):
     out_fname = op.join(out_dir, 'cli.rst.new')
 
     cli_path = op.abspath(
-        op.join(os.path.dirname(__file__), '..', '..', 'cli'))
+        op.join(os.path.dirname(__file__), '..', '..', 'mne_bids', 'commands'))
     fnames = sorted([
         op.basename(fname)
         for fname in glob.glob(op.join(cli_path, 'mne_bids*.py'))])

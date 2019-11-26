@@ -51,7 +51,9 @@ if __name__ == "__main__":
           ],
           platforms='any',
           packages=find_packages(),
-          scripts=['bin/mne_bids'],
+          entry_points={'console_scripts': [
+              'mne_bids = mne_bids.commands.run:main',
+          ]},
           project_urls={
               'Documentation': 'https://mne.tools/mne-bids',
               'Bug Reports': 'https://github.com/mne-tools/mne-bids/issues',

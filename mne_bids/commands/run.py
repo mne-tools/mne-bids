@@ -1,4 +1,4 @@
-"""CLI for MNE-BIDS."""
+"""Command Line Interface for MNE-BIDS."""
 # Authors: Teon Brooks <teon.brooks@gmail.com>
 #          Stefan Appelhoff <stefan.appelhoff@mailbox.org>
 #
@@ -10,9 +10,9 @@ import os.path as op
 
 import mne_bids
 
-mne_bin_dir = op.abspath(op.join(op.dirname(mne_bids.__file__), '..'))
+mne_bin_dir = op.abspath(op.dirname(mne_bids.__file__))
 valid_commands = sorted(glob.glob(op.join(mne_bin_dir,
-                                          'cli', 'mne_bids_*.py')))
+                                          'commands', 'mne_bids_*.py')))
 valid_commands = [c.split(op.sep)[-1][9:-3] for c in valid_commands]
 
 
@@ -27,7 +27,7 @@ def print_help():
     sys.exit(0)
 
 
-if __name__ == '__main__':
+def main():
 
     if len(sys.argv) == 1:
         print_help()
@@ -41,5 +41,5 @@ if __name__ == '__main__':
         sys.exit(0)
     else:
         cmd = sys.argv[1]
-        cmd_path = op.join(mne_bin_dir, 'cli', 'mne_bids_%s.py' % cmd)
+        cmd_path = op.join(mne_bin_dir, 'commands', 'mne_bids_%s.py' % cmd)
         sys.exit(subprocess.call([sys.executable, cmd_path] + sys.argv[2:]))

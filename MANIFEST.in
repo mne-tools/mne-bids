@@ -6,7 +6,6 @@ recursive-include examples *.py
 recursive-include examples *.txt
 
 recursive-include mne_bids *.py
-recursive-include cli *.py
 
 ### Exclude
 
