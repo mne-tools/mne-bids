@@ -177,9 +177,6 @@ iEEG is experimental at the moment.
 .. code:: python
 
     >>> from mne import io
-        >>> from mne_bids import write_raw_bids
-        >>> raw = io.read_raw_fif('my_old_file.fif')
-        >>> write_raw_bids(raw, 'sub-01_ses-01_run-05', bids_root='./bids_dataset')
     >>> from mne_bids import write_raw_bids
     >>> raw = io.read_raw_fif('my_old_file.fif')
     >>> write_raw_bids(raw, 'sub-01_ses-01_run-05', bids_root='./bids_dataset')
