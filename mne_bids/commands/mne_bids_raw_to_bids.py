@@ -72,7 +72,7 @@ def run():
     raw = _read_raw(opt.raw_fname, hpi=opt.hpi, electrode=opt.electrode,
                     hsp=opt.hsp, config=opt.config,
                     allow_maxshield=opt.allow_maxshield)
-    write_raw_bids(raw, bids_basename, opt.output_path, event_id=opt.event_id,
+    write_raw_bids(raw, bids_basename, opt.bids_root, event_id=opt.event_id,
                    events_data=opt.events_data, overwrite=opt.overwrite,
                    verbose=True)
 
