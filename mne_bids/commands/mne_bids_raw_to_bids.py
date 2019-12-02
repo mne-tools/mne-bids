@@ -61,7 +61,7 @@ def run():
         parser.error('Do not specify arguments without flags. Found: "{}".\n'
                      .format(args))
 
-    if not all([opt.subject_id, opt.task, opt.raw_fname, opt.output_path]):
+    if not all([opt.subject_id, opt.task, opt.raw_fname, opt.bids_root]):
         parser.print_help()
         parser.error('Arguments missing. You need to specify at least the'
                      'following: --subject_id, --task, --raw, --bids_root.')
