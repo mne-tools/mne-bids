@@ -469,7 +469,7 @@ def test_ctf(_bids_validate):
 
     raw = mne.io.read_raw_ctf(raw_fname)
     with pytest.warns(UserWarning, match='No line frequency'):
-        write_raw_bids(raw, bids_basename, output_path=output_path)
+        write_raw_bids(raw, bids_basename, bids_root=output_path)
 
     _bids_validate(output_path)
     with pytest.warns(UserWarning, match='Did not find any events'):
@@ -478,7 +478,7 @@ def test_ctf(_bids_validate):
 
     # test to check that running again with overwrite == False raises an error
     with pytest.raises(FileExistsError, match="already exists"):  # noqa: F821
-        write_raw_bids(raw, bids_basename, output_path=output_path)
+        write_raw_bids(raw, bids_basename, bids_root=output_path)
 
     assert op.exists(op.join(output_path, 'participants.tsv'))
 
@@ -730,7 +730,7 @@ def test_set(_bids_validate):
                       extra_params=dict(foo='bar'))
 
     with pytest.raises(FileExistsError, match="already exists"):  # noqa: F821
-        write_raw_bids(raw, bids_basename, output_path=output_path,
+        write_raw_bids(raw, bids_basename, bids_root=output_path,
                        overwrite=False)
     _bids_validate(output_path)
 

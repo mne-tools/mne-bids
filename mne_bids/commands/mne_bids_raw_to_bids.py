@@ -1,7 +1,7 @@
 """Write raw files to BIDS format.
 
 example usage:  $ mne_bids raw_to_bids --subject_id sub01 --task rest
---raw data.edf --output_path new_path
+--raw data.edf --bids_root new_path
 
 """
 # Authors: Teon Brooks <teon.brooks@gmail.com>
@@ -27,9 +27,9 @@ def run():
     parser.add_option('--task', dest='task',
                       help='name of the task the data is based on')
     parser.add_option('--raw', dest='raw_fname',
-                      help='path to the raw MEEG file')
-    parser.add_option('--output_path', dest='output_path',
-                      help='path to the BIDS compatible folder')
+                      help='path to the raw MEG file')
+    parser.add_option('--bids_root', dest='bids_root',
+                      help='The path of the BIDS compatible folder.')
     parser.add_option('--session_id', dest='session_id',
                       help='session name in BIDS compatible format')
     parser.add_option('--run', dest='run',
@@ -64,7 +64,7 @@ def run():
     if not all([opt.subject_id, opt.task, opt.raw_fname, opt.output_path]):
         parser.print_help()
         parser.error('Arguments missing. You need to specify at least the'
-                     'following: --subject_id, --task, --raw, --output_path.')
+                     'following: --subject_id, --task, --raw, --bids_root.')
 
     bids_basename = make_bids_basename(
         subject=opt.subject_id, session=opt.session_id, run=opt.run,

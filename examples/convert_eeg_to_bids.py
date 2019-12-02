@@ -109,7 +109,7 @@ print(raw)
 #
 # * :code:`raw`
 # * :code:`bids_basename`
-# * :code:`output_path`
+# * :code:`bids_root`
 #
 # ... as you can see in the docstring:
 print(write_raw_bids.__doc__)

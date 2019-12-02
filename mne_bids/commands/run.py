@@ -23,7 +23,7 @@ def print_help():
     for c in valid_commands:
         print("\t- %s" % c)
     print("\nExample : mne_bids raw_to_bids --subject_id sub01 --task rest",
-          "--raw_file data.edf --output_path new_path")
+          "--raw_file data.edf --bids_root new_path")
     sys.exit(0)
 
 
