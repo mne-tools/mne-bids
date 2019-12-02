@@ -120,7 +120,7 @@ print(write_raw_bids.__doc__)
 subject_id = '001'  # zero padding to account for >100 subjects in this dataset
 task = 'resteyesclosed'
 raw_file = raw
-output_path = os.path.join(home, 'mne_data', 'eegmmidb_bids')
+bids_root = os.path.join(home, 'mne_data', 'eegmmidb_bids')
 
 ###############################################################################
 # Now we just need to specify a few more EEG details to get something sensible:
@@ -132,17 +132,17 @@ trial_type = {'rest': 0, 'imagine left fist': 1, 'imagine right fist': 2}
 
 # Now convert our data to be in a new BIDS dataset.
 bids_basename = make_bids_basename(subject=subject_id, task=task)
-write_raw_bids(raw_file, bids_basename, output_path, event_id=trial_type,
+write_raw_bids(raw_file, bids_basename, bids_root, event_id=trial_type,
                events_data=events, overwrite=True)
 ###############################################################################
 # What does our fresh BIDS directory look like?
-print_dir_tree(output_path)
+print_dir_tree(bids_root)
 
 ###############################################################################
 # Looks good so far, let's convert the data for all tasks and subjects.
 
 # Start with a clean directory
-sh.rmtree(output_path)
+sh.rmtree(bids_root)
 
 # Some initial information that we found in the PhysioBank documentation
 task_names = {2: 'resteyesclosed',
@@ -169,14 +169,14 @@ for subj_idx in [1, 2]:
         bids_basename = make_bids_basename(subject='{:03}'.format(subj_idx),
                                            task=task_names[task_idx],
                                            run=run_mapping[task_idx])
-        write_raw_bids(raw, bids_basename, output_path, event_id=trial_type,
+        write_raw_bids(raw, bids_basename, bids_root, event_id=trial_type,
                        events_data=events, overwrite=True)
 
 ###############################################################################
 # Step 3: Check and compare with standard
 # ---------------------------------------
 # Now we have written our BIDS directory.
-print_dir_tree(output_path)
+print_dir_tree(bids_root)
 
 ###############################################################################
 # MNE-BIDS has created a suitable directory structure for us, and among other

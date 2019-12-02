@@ -847,7 +847,7 @@ def make_bids_folders(subject, session=None, kind=None, output_path=None,
     """Create a BIDS folder hierarchy.
 
     This creates a hierarchy of folders *within* a BIDS dataset. You should
-    plan to create these folders *inside* the bids_root folder of the dataset.
+    plan to create these folders *inside* the output_path folder of the dataset.
 
     Parameters
     ----------
@@ -859,7 +859,7 @@ def make_bids_folders(subject, session=None, kind=None, output_path=None,
     session : str | None
         The session for a item. Corresponds to "ses".
     output_path : str | None
-        The bids_root for the folders to be created. If None, folders will be
+        The output_path for the folders to be created. If None, folders will be
         created in the current working directory.
     make_dir : bool
         Whether to actually create the folders specified. If False, only a
@@ -881,7 +881,7 @@ def make_bids_folders(subject, session=None, kind=None, output_path=None,
     Examples
     --------
     >>> print(make_bids_folders('sub_01', session='my_session',
-                                kind='meg', bids_root='path/to/project',
+                                kind='meg', output_path='path/to/project',
                                 make_dir=False))  # noqa
     path/to/project/sub-sub_01/ses-my_session/meg
 
@@ -1060,7 +1060,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
 
     Returns
     -------
-    output_path : str
+    bids_root : str
         The path of the root of the BIDS compatible folder.
 
     Notes
