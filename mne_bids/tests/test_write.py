@@ -730,7 +730,7 @@ def test_set(_bids_validate):
                       extra_params=dict(foo='bar'))
 
     with pytest.raises(FileExistsError, match="already exists"):  # noqa: F821
-        write_raw_bids(raw, bids_basename, bids_root=output_path,
+        write_raw_bids(raw, bids_basename, bids_root=bids_root,
                        overwrite=False)
     _bids_validate(output_path)
 
