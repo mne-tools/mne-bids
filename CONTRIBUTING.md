@@ -29,6 +29,10 @@ Finally, it is necessary to install the
 [BIDS validator](https://github.com/bids-standard/bids-validator). The outputs
 of MNE-BIDS are run through the BIDS validator to check if the conversion
 worked.
+You will need the `command line version` of the validator, to be installed via
+[Node.js](https://nodejs.org/en/).
+Please follow the installation instructions as detailed in the README of the
+bids-validator repository.
 
 ##### Building the documentation
 
