@@ -65,10 +65,10 @@ def test_get_brainvision_paths():
 
 def test_copyfile_brainvision():
     """Test the copying of BrainVision vhdr, vmrk and eeg files."""
-    output_path = _TempDir()
+    bids_root = _TempDir()
     data_path = op.join(base_path, 'brainvision', 'tests', 'data')
     raw_fname = op.join(data_path, 'test.vhdr')
-    new_name = op.join(output_path, 'tested_conversion.vhdr')
+    new_name = op.join(bids_root, 'tested_conversion.vhdr')
 
     # IO error testing
     with pytest.raises(ValueError, match='Need to move data with same'):
@@ -90,10 +90,10 @@ def test_copyfile_brainvision():
 
 def test_copyfile_eeglab():
     """Test the copying of EEGlab set and fdt files."""
-    output_path = _TempDir()
+    bids_root = _TempDir()
     data_path = op.join(testing.data_path(), 'EEGLAB')
     raw_fname = op.join(data_path, 'test_raw.set')
-    new_name = op.join(output_path, 'tested_conversion.set')
+    new_name = op.join(bids_root, 'tested_conversion.set')
 
     # IO error testing
     with pytest.raises(ValueError):

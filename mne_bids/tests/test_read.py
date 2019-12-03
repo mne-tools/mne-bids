@@ -65,16 +65,16 @@ def test_get_head_mri_trans():
 
     # Write it to BIDS
     raw = mne.io.read_raw_fif(raw_fname)
-    output_path = _TempDir()
+    bids_root = _TempDir()
     with pytest.warns(UserWarning, match='No line frequency'):
-        write_raw_bids(raw, bids_basename, output_path,
+        write_raw_bids(raw, bids_basename, bids_root,
                        events_data=events_fname, event_id=event_id,
                        overwrite=False)
 
     # We cannot recover trans, if no MRI has yet been written
     with pytest.raises(RuntimeError):
         bids_fname = bids_basename + '_meg.fif'
-        estimated_trans = get_head_mri_trans(bids_fname, output_path)
+        estimated_trans = get_head_mri_trans(bids_fname, bids_root)
 
     # Write some MRI data and supply a `trans` so that a sidecar gets written
     trans = mne.read_trans(raw_fname.replace('_raw.fif', '-trans.fif'))
@@ -84,11 +84,11 @@ def test_get_head_mri_trans():
     t1w_mgh = op.join(data_path, 'subjects', 'sample', 'mri', 'T1.mgz')
     t1w_mgh = nib.load(t1w_mgh)
 
-    anat_dir = write_anat(output_path, subject_id, t1w_mgh, session_id, acq,
+    anat_dir = write_anat(bids_root, subject_id, t1w_mgh, session_id, acq,
                           raw=raw, trans=trans, verbose=True)
 
     # Try to get trans back through fitting points
-    estimated_trans = get_head_mri_trans(bids_fname, output_path)
+    estimated_trans = get_head_mri_trans(bids_fname, bids_root)
 
     assert trans['from'] == estimated_trans['from']
     assert trans['to'] == estimated_trans['to']
@@ -97,18 +97,18 @@ def test_get_head_mri_trans():
     print(estimated_trans)
 
     # Passing a path instead of a name works well
-    bids_fpath = op.join(output_path, 'sub-{}'.format(subject_id),
+    bids_fpath = op.join(bids_root, 'sub-{}'.format(subject_id),
                          'ses-{}'.format(session_id), 'meg',
                          bids_basename + '_meg.fif')
-    estimated_trans = get_head_mri_trans(bids_fpath, output_path)
+    estimated_trans = get_head_mri_trans(bids_fpath, bids_root)
 
     # provoke an error by pointing introducing NaNs into MEG coords
     with pytest.raises(RuntimeError, match='AnatomicalLandmarkCoordinates'):
         raw.info['dig'][0]['r'] = np.ones(3) * np.nan
         sh.rmtree(anat_dir)
-        write_anat(output_path, subject_id, t1w_mgh, session_id, acq, raw=raw,
+        write_anat(bids_root, subject_id, t1w_mgh, session_id, acq, raw=raw,
                    trans=trans, verbose=True)
-        estimated_trans = get_head_mri_trans(bids_fname, output_path)
+        estimated_trans = get_head_mri_trans(bids_fname, bids_root)
 
 
 def test_handle_events_reading():
@@ -136,8 +136,8 @@ def test_get_head_mri_trans_ctf():
     ctf_data_path = op.join(testing.data_path(), 'CTF')
     raw_ctf_fname = op.join(ctf_data_path, 'testdata_ctf.ds')
     raw_ctf = mne.io.read_raw_ctf(raw_ctf_fname)
-    output_path = _TempDir()
-    write_raw_bids(raw_ctf, bids_basename, output_path,
+    bids_root = _TempDir()
+    write_raw_bids(raw_ctf, bids_basename, bids_root,
                    overwrite=False)
 
     # Take a fake trans
@@ -148,10 +148,10 @@ def test_get_head_mri_trans_ctf():
     t1w_mgh = op.join(data_path, 'subjects', 'sample', 'mri', 'T1.mgz')
     t1w_mgh = nib.load(t1w_mgh)
 
-    write_anat(output_path, subject_id, t1w_mgh, session_id, acq,
+    write_anat(bids_root, subject_id, t1w_mgh, session_id, acq,
                raw=raw_ctf, trans=trans)
 
     # Try to get trans back through fitting points
     bids_fname = bids_basename + '_meg.ds'
-    estimated_trans = get_head_mri_trans(bids_fname, output_path)
+    estimated_trans = get_head_mri_trans(bids_fname, bids_root)
     assert_almost_equal(trans['trans'], estimated_trans['trans'])

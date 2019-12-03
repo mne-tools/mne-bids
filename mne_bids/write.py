@@ -842,7 +842,7 @@ def make_bids_basename(subject=None, session=None, task=None,
     return filename
 
 
-def make_bids_folders(subject, session=None, kind=None, output_path=None,
+def make_bids_folders(subject, session=None, kind=None, bids_root=None,
                       make_dir=True, overwrite=False, verbose=False):
     """Create a BIDS folder hierarchy.
 
@@ -858,7 +858,7 @@ def make_bids_folders(subject, session=None, kind=None, output_path=None,
         "anat", "func", etc.
     session : str | None
         The session for a item. Corresponds to "ses".
-    output_path : str | None
+    bids_root : str | None
         The output_path for the folders to be created. If None, folders will be
         created in the current working directory.
     make_dir : bool
@@ -886,7 +886,7 @@ def make_bids_folders(subject, session=None, kind=None, output_path=None,
     path/to/project/sub-sub_01/ses-my_session/meg
 
     """
-    _check_types((subject, kind, session, output_path))
+    _check_types((subject, kind, session, bids_root))
     if session is not None:
         _check_key_val('ses', session)
 
@@ -896,8 +896,8 @@ def make_bids_folders(subject, session=None, kind=None, output_path=None,
     if isinstance(kind, str):
         path.append(kind)
     path = op.join(*path)
-    if isinstance(output_path, str):
-        path = op.join(output_path, path)
+    if isinstance(bids_root, str):
+        path = op.join(bids_root, path)
 
     if make_dir is True:
         _mkdir_p(path, overwrite=overwrite, verbose=verbose)
@@ -1132,13 +1132,13 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
                                  "session date.")
 
     data_path = make_bids_folders(subject=subject_id, session=session_id,
-                                  kind=kind, output_path=bids_root,
+                                  kind=kind, bids_root=bids_root,
                                   overwrite=False, verbose=verbose)
     if session_id is None:
         ses_path = os.sep.join(data_path.split(os.sep)[:-1])
     else:
         ses_path = make_bids_folders(subject=subject_id, session=session_id,
-                                     output_path=bids_root, make_dir=False,
+                                     bids_root=bids_root, make_dir=False,
                                      overwrite=False, verbose=verbose)
 
     # create filenames
