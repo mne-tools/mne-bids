@@ -179,6 +179,11 @@ Bug reports
 Use the `github issue tracker <https://github.com/mne-tools/mne-bids/issues>`_
 to report bugs.
 
+Contributing
+------------
+
+Please see our `contributing guide <https://github.com/mne-tools/mne-bids/blob/master/CONTRIBUTING.md>`_.
+
 Cite
 ----
 
