@@ -21,9 +21,14 @@ pypi. Update your installation as follows.
     $ pip uninstall mne  # uninstall pypi mne
     $ pip install -e .  # use the cloned repo for a local install of mne
 
-Then, install the following python packages:
+Then, install the following python packages for testing purposes:
 
     $ pip install flake8 pytest pytest-cov
+
+Afterwards, also install all optional dependencies of `mne-bids` and their
+dependencies:
+
+    $ pip install scikit-learn nibabel nilean pybv
 
 Finally, it is necessary to install the
 [BIDS validator](https://github.com/bids-standard/bids-validator). The outputs
