@@ -1281,6 +1281,28 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
                 acquisition=key, suffix='markers%s' % marker_ext,
                 prefix=data_path)
             sh.copyfile(value, marker_fname)
+    if 'elp' in raw._init_kwargs:
+        hpi = raw._init_kwargs['elp']
+        acq_map = dict()
+        _, marker_ext = _parse_ext(hpi)
+        acq_map[None] = hpi
+        for key, value in acq_map.items():
+            marker_fname = make_bids_basename(
+                subject=subject_id, session=session_id, task=task, run=run,
+                acquisition=key, suffix='headshape%s' % marker_ext,
+                prefix=data_path)
+            sh.copyfile(value, marker_fname)
+    if 'hsp' in raw._init_kwargs:
+        hpi = raw._init_kwargs['hsp']
+        acq_map = dict()
+        _, marker_ext = _parse_ext(hpi)
+        acq_map[None] = hpi
+        for key, value in acq_map.items():
+            marker_fname = make_bids_basename(
+                subject=subject_id, session=session_id, task=task, run=run,
+                acquisition=key, suffix='headshape%s' % marker_ext,
+                prefix=data_path)
+            sh.copyfile(value, marker_fname)
 
     return bids_root
 
