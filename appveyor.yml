@@ -35,8 +35,8 @@ install:
       cd .. &&
       set PATH="%PATH%;C:\projects\mne-bids\bids-validator\bids-validator\bin\" )
   - CALL "%PYTHON_ROOT%\\Scripts\\activate.bat"
-  - "conda install -y python=%PYTHON_VERSION% conda numpy scipy"
-  - "pip install nibabel flake8 pytest pytest-sugar pytest-faulthandler pybv"
+  - "conda env create -f environment.yml"
+  - "conda activate mne-bids"
   - "pip uninstall -yq mne"
   - cmd:
         cd .. &&
