@@ -6,7 +6,7 @@ environment:
         # ... whereas for "stable", VALIDATOR_EXECUTABLE MUST be set to "n/a"
         VALIDATOR_VERSION: "9d8a6ffae5e0ee117b97bc8c978fe34ec3c13af4"
         # can be any branch of MNE-Python (e.g., "maint/0.18", "master", ...)
-        MNE_VERSION: "maint/0.18"
+        MNE_VERSION: "maint/0.19"
         VALIDATOR_EXECUTABLE: "C:\\projects\\mne-bids\\bids-validator\\bids-validator\\bin\\bids-validator"
         NODEJS_VERSION: "10.16.1"
         PYTHON: "C:\\conda"
@@ -36,7 +36,7 @@ install:
   - "powershell ci-helpers/appveyor/install-miniconda.ps1"
   - "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
   - "activate test"
-  - "conda install numpy'<=1.14' scipy'<=0.18.1'"
+  - "conda install numpy'>1.14' scipy'>0.18.1'"
   - "pip install nibabel flake8 pytest pytest-sugar pytest-faulthandler"
   - "pip uninstall -yq mne"
   - ps: |-

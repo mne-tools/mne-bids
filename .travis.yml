@@ -8,7 +8,7 @@ env:
     # can be "stable", or anything that can be used with git checkout
     - VALIDATOR_VERSION="9d8a6ffae5e0ee117b97bc8c978fe34ec3c13af4"
     # can be any branch of MNE-Python (e.g., "maint/0.18", "master", ...)
-    - MNE_VERSION="maint/0.18"
+    - MNE_VERSION="maint/0.19"
 
 
 before_install:
