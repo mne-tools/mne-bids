@@ -123,7 +123,7 @@ the goal to provide a programmable interface for BIDS datasets in
 neurophysiology, neatly interfacing with ``MNE-Python``.
 ``MNE-BIDS`` allows users to re-organize data into BIDS formats, store
 associated metadata after anonymization, extract information necessary for
-preprocessing ,and read them into ``MNE-Python`` objects,
+preprocessing, and read them into ``MNE-Python`` objects,
 ready for source localization.
 
 Starting with a single directory full of data files with arbitrary
