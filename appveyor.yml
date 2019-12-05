@@ -36,7 +36,7 @@ install:
       set PATH="%PATH%;C:\projects\mne-bids\bids-validator\bids-validator\bin\" )
   - CALL "%PYTHON_ROOT%\\Scripts\\activate.bat"
   - "conda env create -f environment.yml"
-  - "conda activate mne-bids"
+  - "conda activate mne_bids"
   - "pip uninstall -yq mne"
   - cmd:
         cd .. &&
