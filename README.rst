@@ -39,6 +39,7 @@
 MNE-BIDS
 ========
 
+
 This is a repository for creating
 `BIDS <http://bids.neuroimaging.io/>`_\ -compatible datasets with
 `MNE <https://mne.tools/stable/index.html>`_.
