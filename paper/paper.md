@@ -97,9 +97,11 @@ bibliography: paper.bib
 With the development of the Brain Imaging Data Structure
 [BIDS; @Gorgolewski2016], the neuroscientific community received
 a standard to organize and share data.
-BIDS standardizes storage of complex experimental data by prescribing a set of
-file naming conventions and templates to store the associated metadata in the
-form of Javascript Object Notation (JSON) and tab separated value (TSV) files.
+BIDS prescribes file naming conventions and a folder structure to
+store data in a set of already existing file formats.
+Next to rules about organization of the data itself, BIDS provides standardized
+templates to store associated metadata in the form of Javascript Object
+Notation (JSON) and tab separated value (TSV) files.
 It thus facilitates data sharing, eases metadata querying, and enables
 automatic data analysis pipelines.
 BIDS is a rich system to curate, aggregate, and annotate neuroimaging
