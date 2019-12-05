@@ -36,7 +36,7 @@ install:
   - "powershell ci-helpers/appveyor/install-miniconda.ps1"
   - "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
   - "activate test"
-  - "conda install numpy'>1.14' scipy'>0.18.1'"
+  - "conda install numpy scipy"
   - "pip install nibabel flake8 pytest pytest-sugar pytest-faulthandler"
   - "pip uninstall -yq mne"
   - ps: |-
