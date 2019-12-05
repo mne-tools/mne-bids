@@ -114,11 +114,16 @@ intracranial encephalography [iEEG; @Holdgraf2019].
 In this context, many software packages for neurophysiology data analysis are
 now starting to support data organized using the BIDS standard, thereby
 becoming "BIDS compatible".
-For this reason, we developed a dedicated software, ``MNE-BIDS`` with the goal
-to provide a programmable interface for BIDS datasets in neurophysiology.
+Within the Python ecosystem, ``MNE-Python`` [@Agramfort2013] is a major
+software package for neurophysiology data analysis, and extending its
+functionality to support BIDS would be a great benefit for its growing user
+base.
+For this reason, we developed a dedicated Python software ``MNE-BIDS``, with
+the goal to provide a programmable interface for BIDS datasets in
+neurophysiology, neatly interfacing with ``MNE-Python``.
 ``MNE-BIDS`` allows users to re-organize data into BIDS formats, store
 associated metadata after anonymization, extract information necessary for
-preprocessing ,and read them into ``MNE-Python`` objects [@Agramfort2013],
+preprocessing ,and read them into ``MNE-Python`` objects,
 ready for source localization.
 
 Starting with a single directory full of data files with arbitrary
