@@ -112,7 +112,8 @@ data, it has recently been extended for magnetoencephalography
 [MEG; @Niso2018], electroencephalography [EEG; @Pernet2019], and
 intracranial encephalography [iEEG; @Holdgraf2019].
 In this context, many software packages for neurophysiology data analysis are
-now becoming BIDS compatible.
+now starting to support data organized using the BIDS standard, thereby
+becoming "BIDS compatible".
 For this reason, we developed a dedicated software, ``MNE-BIDS`` with the goal
 to provide a programmable interface for BIDS datasets in neurophysiology.
 ``MNE-BIDS`` allows users to re-organize data into BIDS formats, store
