@@ -28,7 +28,7 @@ Then, install the following python packages for testing purposes:
 Afterwards, also install all optional dependencies of `mne-bids` and their
 dependencies:
 
-    $ pip install scikit-learn nibabel nilean pybv
+    $ pip install scikit-learn nibabel nilearn pybv
 
 Finally, it is necessary to install the
 [BIDS validator](https://github.com/bids-standard/bids-validator). The outputs
@@ -36,8 +36,10 @@ of MNE-BIDS are run through the BIDS validator to check if the conversion
 worked.
 You will need the `command line version` of the validator, to be installed via
 [Node.js](https://nodejs.org/en/).
-Please follow the installation instructions as detailed in the README of the
-bids-validator repository.
+
+- For installing the *stable* version of the bids-validator, please follow the
+instructions as detailed in the README of the bids-validator repository.
+- For installing the *development* version, see [here](https://github.com/bids-standard/bids-validator/blob/master/CONTRIBUTING.md#using-the-development-version-of-bids-validator)
 
 ##### Building the documentation
 
