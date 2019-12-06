@@ -14,23 +14,23 @@ def run():
     """Run the cp command."""
     from mne.commands.utils import get_optparser
 
-    accepted_formats_msg = ('Accepted formats are BrainVision (.vhdr), '
-                            'EEGLAB (.set), CTF (.ds).')
+    accepted_formats_msg = ('(accepted formats: BrainVision .vhdr, '
+                            'EEGLAB .set, CTF .ds)')
 
     parser = get_optparser(__file__, usage="usage: %prog -i INPUT -o OUTPUT",
                            prog_prefix='mne_bids',
                            version=mne_bids.__version__)
 
     parser.add_option('-i', '--input', dest='input',
-                      help=('Path to the input file. {}'
+                      help=('path to the input file. {}'
                             .format(accepted_formats_msg)), metavar='INPUT')
 
     parser.add_option('-o', '--output', dest='output',
-                      help=('Path to the output file. MUST be same format '
-                            'as input file.'), metavar='OUTPUT')
+                      help=('path to the output file (MUST be same format '
+                            'as input file)'), metavar='OUTPUT')
 
     parser.add_option('-v', '--verbose', dest="verbose",
-                      help='Set logging level to verbose', action="store_true")
+                      help='set logging level to verbose', action="store_true")
 
     opt, args = parser.parse_args()
     opt_dict = vars(opt)
