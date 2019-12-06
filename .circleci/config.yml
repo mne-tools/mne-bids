@@ -31,7 +31,7 @@ jobs:
                   conda update --yes --quiet conda
                   conda env create -f environment.yml --name=testenv
                   source activate testenv
-                  pip install -U https://api.github.com/repos/mne-tools/mne-python/zipball/master
+                  pip install mne~=0.19.0
                   python setup.py develop
 
             - run:
