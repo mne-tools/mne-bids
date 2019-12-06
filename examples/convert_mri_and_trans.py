@@ -73,6 +73,7 @@ bids_basename = make_bids_basename(subject=sub, session=ses, task=task,
 write_raw_bids(raw, bids_basename, output_path, events_data=events_data,
                event_id=event_id, overwrite=True)
 
+###############################################################################
 # Print the directory tree
 print_dir_tree(output_path)
 
@@ -106,6 +107,7 @@ anat_dir = write_anat(bids_root=output_path,  # the BIDS dir we wrote earlier
                       verbose=True  # this will print out the sidecar file
                       )
 
+###############################################################################
 # Let's have another look at our BIDS directory
 print_dir_tree(output_path)
 
