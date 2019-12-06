@@ -32,6 +32,7 @@ from mne_bids.utils import print_dir_tree
 
 ###############################################################################
 # And fetch the data.
+#
 # .. warning:: This will download 7.9 GB of data for one subject!
 
 subject_ids = [1]
