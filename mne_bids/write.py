@@ -770,17 +770,17 @@ def make_bids_basename(subject=None, session=None, task=None,
     subject : str | None
         The subject ID. Corresponds to "sub".
     session : str | None
-        The session for a item. Corresponds to "ses".
+        The session identifier. Corresponds to "ses".
     task : str | None
-        The task for a item. Corresponds to "task".
+        The task identifier. Corresponds to "task".
     acquisition: str | None
-        The acquisition parameters for the item. Corresponds to "acq".
+        The acquisition parameters. Corresponds to "acq".
     run : int | None
-        The run number for this item. Corresponds to "run".
+        The run number. Corresponds to "run".
     processing : str | None
-        The processing label for this item. Corresponds to "proc".
+        The processing label. Corresponds to "proc".
     recording : str | None
-        The recording name for this item. Corresponds to "recording".
+        The recording name. Corresponds to "recording".
     space : str | None
         The coordinate space for an anatomical file. Corresponds to "space".
     prefix : str | None
