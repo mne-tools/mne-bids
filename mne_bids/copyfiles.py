@@ -157,13 +157,17 @@ def copyfile_ctf(src, dest):
 def copyfile_brainvision(vhdr_src, vhdr_dest, verbose=False):
     """Copy a BrainVision file triplet to a new location and repair links.
 
+    The BrainVision file format consists of three files: .vhdr, .eeg, and .vmrk
+    The .eeg and .vmrk files associated with the .vhdr file will be given names
+    as in `vhdr_dest` with adjusted extensions. Internal file pointers will be
+    fixed.
+
     Parameters
     ----------
-    vhdr_src, vhdr_dest: str
-        The src path of the .vhdr file to be copied and the destination
-        path. The .eeg and .vmrk files associated with the .vhdr file
-        will be given names as in vhdr_dest with adjusted extensions.
-        Internal file pointers will be fixed.
+    vhdr_src : str
+        The src path of the .vhdr file to be copied
+    vhdr_dest : str
+        The destination path of the .vhdr file
 
     """
     # Get extenstion of the brainvision file
@@ -220,10 +224,12 @@ def copyfile_eeglab(src, dest):
     move it to an appropriate location as well as update an internal pointer
     within the .set file.
 
-    Notes
-    -----
-    Work in progress. This function will abort upon the encounter of a .fdt
-    file.
+    Parameters
+    ----------
+    src : str
+        path to the source raw .set file
+    dest : str
+        path to the destination of the new .set file
 
     """
     # Get extenstion of the EEGLAB file
@@ -265,7 +271,16 @@ def copyfile_eeglab(src, dest):
 
 
 def copyfile_bti(raw, dest):
-    """Copy BTi data."""
+    """Copy BTi data.
+
+    Parameters
+    ----------
+    raw : instance of Raw
+        An MNE-Python raw object of BTi data
+    dest : str
+        destination to copy the BTi data to
+
+    """
     pdf_fname = 'c,rfDC'
     if raw.info['highpass'] is not None:
         pdf_fname = 'c,rf%0.1fHz' % raw.info['highpass']
