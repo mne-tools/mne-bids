@@ -89,7 +89,7 @@
       
   <div class="sphx-glr-download-link-note admonition note">
 <p class="admonition-title">Note</p>
-<p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-convert-eeg-to-bids-py"><span class="std std-ref">here</span></a> to download the full example code or run this example in your browser via Binder</p>
+<p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-convert-eeg-to-bids-py"><span class="std std-ref">here</span></a> to download the full example code or to run this example in your browser via Binder</p>
 </div>
 <div class="sphx-glr-example-title section" id="convert-eeg-data-to-bids-format">
 <span id="sphx-glr-auto-examples-convert-eeg-to-bids-py"></span><h1>Convert EEG data to BIDS format<a class="headerlink" href="#convert-eeg-data-to-bids-format" title="Permalink to this headline">¶</a></h1>
@@ -110,10 +110,10 @@ data. Specifically, we will follow these steps:</p>
 <span class="kn">import</span> <span class="nn">shutil</span> <span class="k">as</span> <span class="nn">sh</span>
 
 <span class="kn">import</span> <span class="nn">mne</span>
-<span class="kn">from</span> <span class="nn">mne.datasets</span> <span class="k">import</span> <span class="n">eegbci</span>
+<span class="kn">from</span> <span class="nn">mne.datasets</span> <span class="kn">import</span> <span class="n">eegbci</span>
 
-<span class="kn">from</span> <span class="nn">mne_bids</span> <span class="k">import</span> <span class="n">write_raw_bids</span><span class="p">,</span> <span class="n">make_bids_basename</span>
-<span class="kn">from</span> <span class="nn">mne_bids.utils</span> <span class="k">import</span> <span class="n">print_dir_tree</span>
+<span class="kn">from</span> <span class="nn">mne_bids</span> <span class="kn">import</span> <span class="n">write_raw_bids</span><span class="p">,</span> <span class="n">make_bids_basename</span>
+<span class="kn">from</span> <span class="nn">mne_bids.utils</span> <span class="kn">import</span> <span class="n">print_dir_tree</span>
 </pre></div>
 </div>
 <div class="section" id="step-1-download-the-data">
@@ -130,28 +130,28 @@ with the Brain Imaging Data Structure
 <p>Conveniently, there is already a data loading function available with
 MNE-Python:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Make a directory to save the data to</span>
-<span class="n">home</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s1">&#39;~&#39;</span><span class="p">)</span>
-<span class="n">mne_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">home</span><span class="p">,</span> <span class="s1">&#39;mne_data&#39;</span><span class="p">)</span>
-<span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">mne_dir</span><span class="p">):</span>
-    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">mne_dir</span><span class="p">)</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">home</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/os.path.html#os.path.expanduser" title="View documentation for os.path.expanduser"><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span></a><span class="p">(</span><span class="s1">&#39;~&#39;</span><span class="p">)</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">mne_dir</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/os.path.html#os.path.join" title="View documentation for os.path.join"><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">home</span></a><span class="p">,</span> <span class="s1">&#39;mne_data&#39;</span><span class="p">)</span>
+<span class="k">if</span> <span class="ow">not</span> <a href="https://docs.python.org/3/library/os.path.html#os.path.exists" title="View documentation for os.path.exists"><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">mne_dir</span></a><span class="p">):</span>
+    <a href="https://docs.python.org/3/library/os.html#os.makedirs" title="View documentation for os.makedirs"><span class="n">os</span><span class="o">.</span><span class="n">makedirs</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">mne_dir</span></a><span class="p">)</span>
 
 <span class="c1"># Define which tasks we want to download.</span>
-<span class="n">tasks</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span>  <span class="c1"># This is 2 minutes of eyes closed rest</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#list" title="View documentation for builtins.list"><span class="n">tasks</span></a> <span class="o">=</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span>  <span class="c1"># This is 2 minutes of eyes closed rest</span>
          <span class="mi">4</span><span class="p">,</span>  <span class="c1"># This is run #1 of imagining to close left or right fist</span>
          <span class="mi">12</span><span class="p">]</span>  <span class="c1"># This is run #2 of imagining to close left or right fist</span>
 
 <span class="c1"># Download the data for subjects 1 and 2</span>
-<span class="k">for</span> <span class="n">subj_idx</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]:</span>
-    <a href="https://mne.tools/stable/generated/mne.datasets.eegbci.load_data.html#mne.datasets.eegbci.load_data" title="View documentation for mne.datasets.eegbci.load_data"><span class="n">eegbci</span><span class="o">.</span><span class="n">load_data</span></a><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="n">subj_idx</span><span class="p">,</span>
-                     <span class="n">runs</span><span class="o">=</span><span class="n">tasks</span><span class="p">,</span>
-                     <span class="n">path</span><span class="o">=</span><span class="n">mne_dir</span><span class="p">,</span>
+<span class="k">for</span> <a href="https://docs.python.org/3/library/functions.html#int" title="View documentation for builtins.int"><span class="n">subj_idx</span></a> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]:</span>
+    <a href="https://mne.tools/stable/generated/mne.datasets.eegbci.load_data.html#mne.datasets.eegbci.load_data" title="View documentation for mne.datasets.eegbci.load_data"><span class="n">eegbci</span><span class="o">.</span><span class="n">load_data</span></a><span class="p">(</span><span class="n">subject</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="View documentation for builtins.int"><span class="n">subj_idx</span></a><span class="p">,</span>
+                     <span class="n">runs</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="View documentation for builtins.list"><span class="n">tasks</span></a><span class="p">,</span>
+                     <span class="n">path</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">mne_dir</span></a><span class="p">,</span>
                      <span class="n">update_path</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Let’s see whether the data has been downloaded using a quick visualization
 of the directory tree.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">data_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">mne_dir</span><span class="p">,</span> <span class="s1">&#39;MNE-eegbci-data&#39;</span><span class="p">)</span>
-<span class="n">print_dir_tree</span><span class="p">(</span><span class="n">data_dir</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">data_dir</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/os.path.html#os.path.join" title="View documentation for os.path.join"><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">mne_dir</span></a><span class="p">,</span> <span class="s1">&#39;MNE-eegbci-data&#39;</span><span class="p">)</span>
+<span class="n">print_dir_tree</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">data_dir</span></a><span class="p">)</span>
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
@@ -159,14 +159,14 @@ of the directory tree.</p>
 |--- physiobank/
 |------ database/
 |--------- eegmmidb/
-|------------ S002/
-|--------------- S002R12.edf
-|--------------- S002R04.edf
-|--------------- S002R02.edf
 |------------ S001/
-|--------------- S001R04.edf
 |--------------- S001R02.edf
 |--------------- S001R12.edf
+|--------------- S001R04.edf
+|------------ S002/
+|--------------- S002R12.edf
+|--------------- S002R02.edf
+|--------------- S002R04.edf
 </pre></div>
 </div>
 <p>The data are in the <a class="reference external" href="https://www.edfplus.info/">European Data Format</a>
@@ -181,8 +181,8 @@ files to properly <em>bidsify</em> this data.</p>
 MNE-Python’s io module and the <code class="xref py py-func docutils literal notranslate"><span class="pre">read_raw_edf()</span></code> function. Note that we
 must use <cite>preload=False</cite>, the default in MNE-Python. It prevents the data
 from being loaded and modified when converting to BIDS.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">edf_path</span> <span class="o">=</span> <a href="https://mne.tools/stable/generated/mne.datasets.eegbci.load_data.html#mne.datasets.eegbci.load_data" title="View documentation for mne.datasets.eegbci.load_data"><span class="n">eegbci</span><span class="o">.</span><span class="n">load_data</span></a><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">runs</span><span class="o">=</span><span class="mi">2</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-<span class="n">raw</span> <span class="o">=</span> <a href="https://mne.tools/stable/generated/mne.io.read_raw_edf.html#mne.io.read_raw_edf" title="View documentation for mne.io.read_raw_edf"><span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_raw_edf</span></a><span class="p">(</span><span class="n">edf_path</span><span class="p">,</span> <span class="n">preload</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">edf_path</span></a> <span class="o">=</span> <a href="https://mne.tools/stable/generated/mne.datasets.eegbci.load_data.html#mne.datasets.eegbci.load_data" title="View documentation for mne.datasets.eegbci.load_data"><span class="n">eegbci</span><span class="o">.</span><span class="n">load_data</span></a><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">runs</span><span class="o">=</span><span class="mi">2</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">raw</span> <span class="o">=</span> <a href="https://mne.tools/stable/generated/mne.io.read_raw_edf.html#mne.io.read_raw_edf" title="View documentation for mne.io.read_raw_edf"><span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_raw_edf</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">edf_path</span></a><span class="p">,</span> <span class="n">preload</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
@@ -194,16 +194,16 @@ Creating raw.info structure...
 </div>
 <p>The annotations stored in the file must be read in separately and converted
 into a 2D numpy array of events that is compatible with MNE.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">annot</span> <span class="o">=</span> <a href="https://mne.tools/stable/generated/mne.read_annotations.html#mne.read_annotations" title="View documentation for mne.read_annotations"><span class="n">mne</span><span class="o">.</span><span class="n">read_annotations</span></a><span class="p">(</span><span class="n">edf_path</span><span class="p">)</span>
-<span class="n">raw</span><span class="o">.</span><span class="n">set_annotations</span><span class="p">(</span><span class="n">annot</span><span class="p">)</span>
-<span class="n">events</span><span class="p">,</span> <span class="n">event_id</span> <span class="o">=</span> <a href="https://mne.tools/stable/generated/mne.events_from_annotations.html#mne.events_from_annotations" title="View documentation for mne.events_from_annotations"><span class="n">mne</span><span class="o">.</span><span class="n">events_from_annotations</span></a><span class="p">(</span><span class="n">raw</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://mne.tools/stable/generated/mne.Annotations.html#mne.Annotations" title="View documentation for mne.Annotations"><span class="n">annot</span></a> <span class="o">=</span> <a href="https://mne.tools/stable/generated/mne.read_annotations.html#mne.read_annotations" title="View documentation for mne.read_annotations"><span class="n">mne</span><span class="o">.</span><span class="n">read_annotations</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">edf_path</span></a><span class="p">)</span>
+<span class="n">raw</span><span class="o">.</span><span class="n">set_annotations</span><span class="p">(</span><a href="https://mne.tools/stable/generated/mne.Annotations.html#mne.Annotations" title="View documentation for mne.Annotations"><span class="n">annot</span></a><span class="p">)</span>
+<a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="View documentation for numpy.ndarray"><span class="n">events</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="View documentation for builtins.dict"><span class="n">event_id</span></a> <span class="o">=</span> <a href="https://mne.tools/stable/generated/mne.events_from_annotations.html#mne.events_from_annotations" title="View documentation for mne.events_from_annotations"><span class="n">mne</span><span class="o">.</span><span class="n">events_from_annotations</span></a><span class="p">(</span><span class="n">raw</span><span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span>
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Used Annotations descriptions: [&#39;T0&#39;]
-&lt;RawEDF  |  S001R02.edf, n_channels x n_times : 64 x 9760 (61.0 sec), ~127 kB, data not loaded&gt;
+&lt;RawEDF  |  S001R02.edf, n_channels x n_times : 64 x 9760 (61.0 sec), ~128 kB, data not loaded&gt;
 </pre></div>
 </div>
 <p>With this step, we have everything to start a new BIDS directory using
@@ -293,22 +293,22 @@ which are however optional. The required inputs are:</p>
 </div>
 <p>We loaded ‘S001R02.edf’, which corresponds to subject 1 in the second task.
 The second task was to rest with closed eyes.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">subject_id</span> <span class="o">=</span> <span class="s1">&#39;001&#39;</span>  <span class="c1"># zero padding to account for &gt;100 subjects in this dataset</span>
-<span class="n">task</span> <span class="o">=</span> <span class="s1">&#39;resteyesclosed&#39;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">subject_id</span></a> <span class="o">=</span> <span class="s1">&#39;001&#39;</span>  <span class="c1"># zero padding to account for &gt;100 subjects in this dataset</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">task</span></a> <span class="o">=</span> <span class="s1">&#39;resteyesclosed&#39;</span>
 <span class="n">raw_file</span> <span class="o">=</span> <span class="n">raw</span>
-<span class="n">output_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">home</span><span class="p">,</span> <span class="s1">&#39;mne_data&#39;</span><span class="p">,</span> <span class="s1">&#39;eegmmidb_bids&#39;</span><span class="p">)</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">output_path</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/os.path.html#os.path.join" title="View documentation for os.path.join"><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">home</span></a><span class="p">,</span> <span class="s1">&#39;mne_data&#39;</span><span class="p">,</span> <span class="s1">&#39;eegmmidb_bids&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Now we just need to specify a few more EEG details to get something sensible:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Brief description of the event markers present in the data. This will become</span>
 <span class="c1"># the `trial_type` column in our BIDS `events.tsv`. We know about the event</span>
 <span class="c1"># meaning from the documentation on PhysioBank</span>
-<span class="n">trial_type</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;rest&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;imagine left fist&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;imagine right fist&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">}</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="View documentation for builtins.dict"><span class="n">trial_type</span></a> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;rest&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;imagine left fist&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;imagine right fist&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">}</span>
 
 <span class="c1"># Now convert our data to be in a new BIDS dataset.</span>
-<span class="n">bids_basename</span> <span class="o">=</span> <span class="n">make_bids_basename</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="n">subject_id</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="n">task</span><span class="p">)</span>
-<span class="n">write_raw_bids</span><span class="p">(</span><span class="n">raw_file</span><span class="p">,</span> <span class="n">bids_basename</span><span class="p">,</span> <span class="n">output_path</span><span class="p">,</span> <span class="n">event_id</span><span class="o">=</span><span class="n">trial_type</span><span class="p">,</span>
-               <span class="n">events_data</span><span class="o">=</span><span class="n">events</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">bids_basename</span></a> <span class="o">=</span> <span class="n">make_bids_basename</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">subject_id</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">task</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">task</span></a><span class="p">)</span>
+<span class="n">write_raw_bids</span><span class="p">(</span><span class="n">raw_file</span><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">bids_basename</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">output_path</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="View documentation for builtins.dict"><span class="n">event_id</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="View documentation for builtins.dict"><span class="n">trial_type</span></a><span class="p">,</span>
+               <span class="n">events_data</span><span class="o">=</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="View documentation for numpy.ndarray"><span class="n">events</span></a><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
@@ -364,6 +364,10 @@ Writing &#39;/home/circleci/mne_data/eegmmidb_bids/dataset_description.json&#39;
 /home/circleci/project/mne_bids/write.py:407: UserWarning: No line frequency found, defaulting to 50 Hz
   warn(&#39;No line frequency found, defaulting to 50 Hz&#39;)
 Reading 0 ... 9759  =      0.000 ...    60.994 secs...
+/home/circleci/miniconda/envs/testenv/lib/python3.6/site-packages/mne/utils/docs.py:830: DeprecationWarning: Function read_montage is deprecated; ``read_montage`` is deprecated and will be removed in v0.20. Please use ``read_dig_fif``, ``read_dig_egi``, ``read_custom_montage``, or ``read_dig_captrack`` to read a digitization based on your needs instead; or ``make_standard_montage`` to create ``DigMontage`` based on template; or ``make_dig_montage`` to create a ``DigMontage`` out of np.arrays
+  warnings.warn(msg, category=DeprecationWarning)
+/home/circleci/miniconda/envs/testenv/lib/python3.6/site-packages/mne/utils/docs.py:813: DeprecationWarning: Class Montage is deprecated; Montage class is deprecated and will be removed in v0.20. Please use DigMontage instead.
+  warnings.warn(msg, category=DeprecationWarning)
 
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_eeg.json&#39;...
 
@@ -395,80 +399,82 @@ Fc1.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
 Fcz.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
 Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
 Copying data files to /home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_eeg.edf
+
+&#39;/home/circleci/mne_data/eegmmidb_bids&#39;
 </pre></div>
 </div>
 <p>What does our fresh BIDS directory look like?</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">print_dir_tree</span><span class="p">(</span><span class="n">output_path</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">print_dir_tree</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">output_path</span></a><span class="p">)</span>
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>|eegmmidb_bids/
-|--- dataset_description.json
 |--- participants.tsv
+|--- dataset_description.json
 |--- participants.json
+|--- sub-002/
+|------ sub-002_scans.tsv
+|------ eeg/
+|--------- sub-002_task-imaginefists_run-1_channels.tsv
+|--------- sub-002_task-imaginefists_run-2_eeg.edf
+|--------- sub-002_task-imaginefists_run-2_events.tsv
+|--------- sub-002_task-resteyesclosed_eeg.json
+|--------- sub-002_task-imaginefists_run-1_eeg.json
+|--------- sub-002_task-imaginefists_run-2_eeg.json
+|--------- sub-002_task-imaginefists_run-1_eeg.edf
+|--------- sub-002_task-imaginefists_run-1_events.tsv
+|--------- sub-002_task-resteyesclosed_eeg.edf
+|--------- sub-002_task-imaginefists_run-2_channels.tsv
+|--------- sub-002_task-resteyesclosed_channels.tsv
+|--------- sub-002_task-resteyesclosed_events.tsv
 |--- sub-001/
 |------ sub-001_scans.tsv
 |------ eeg/
 |--------- sub-001_task-imaginefists_run-2_eeg.json
-|--------- sub-001_task-imaginefists_run-1_channels.tsv
-|--------- sub-001_task-resteyesclosed_eeg.json
-|--------- sub-001_task-resteyesclosed_eeg.edf
-|--------- sub-001_task-imaginefists_run-1_events.tsv
-|--------- sub-001_task-resteyesclosed_events.tsv
-|--------- sub-001_task-imaginefists_run-2_events.tsv
-|--------- sub-001_task-imaginefists_run-2_channels.tsv
-|--------- sub-001_task-resteyesclosed_channels.tsv
-|--------- sub-001_task-imaginefists_run-1_eeg.json
 |--------- sub-001_task-imaginefists_run-1_eeg.edf
+|--------- sub-001_task-imaginefists_run-2_channels.tsv
+|--------- sub-001_task-imaginefists_run-2_events.tsv
+|--------- sub-001_task-resteyesclosed_eeg.json
+|--------- sub-001_task-imaginefists_run-1_channels.tsv
+|--------- sub-001_task-imaginefists_run-1_eeg.json
+|--------- sub-001_task-resteyesclosed_events.tsv
+|--------- sub-001_task-resteyesclosed_eeg.edf
+|--------- sub-001_task-resteyesclosed_channels.tsv
+|--------- sub-001_task-imaginefists_run-1_events.tsv
 |--------- sub-001_task-imaginefists_run-2_eeg.edf
-|--- sub-002/
-|------ sub-002_scans.tsv
-|------ eeg/
-|--------- sub-002_task-imaginefists_run-2_channels.tsv
-|--------- sub-002_task-resteyesclosed_events.tsv
-|--------- sub-002_task-imaginefists_run-2_eeg.json
-|--------- sub-002_task-imaginefists_run-1_channels.tsv
-|--------- sub-002_task-imaginefists_run-1_eeg.json
-|--------- sub-002_task-resteyesclosed_channels.tsv
-|--------- sub-002_task-imaginefists_run-2_eeg.edf
-|--------- sub-002_task-resteyesclosed_eeg.json
-|--------- sub-002_task-resteyesclosed_eeg.edf
-|--------- sub-002_task-imaginefists_run-1_events.tsv
-|--------- sub-002_task-imaginefists_run-2_events.tsv
-|--------- sub-002_task-imaginefists_run-1_eeg.edf
 </pre></div>
 </div>
 <p>Looks good so far, let’s convert the data for all tasks and subjects.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Start with a clean directory</span>
-<span class="n">sh</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">output_path</span><span class="p">)</span>
+<a href="https://docs.python.org/3/library/shutil.html#shutil.rmtree" title="View documentation for shutil.rmtree"><span class="n">sh</span><span class="o">.</span><span class="n">rmtree</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">output_path</span></a><span class="p">)</span>
 
 <span class="c1"># Some initial information that we found in the PhysioBank documentation</span>
-<span class="n">task_names</span> <span class="o">=</span> <span class="p">{</span><span class="mi">2</span><span class="p">:</span> <span class="s1">&#39;resteyesclosed&#39;</span><span class="p">,</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="View documentation for builtins.dict"><span class="n">task_names</span></a> <span class="o">=</span> <span class="p">{</span><span class="mi">2</span><span class="p">:</span> <span class="s1">&#39;resteyesclosed&#39;</span><span class="p">,</span>
               <span class="mi">4</span><span class="p">:</span> <span class="s1">&#39;imaginefists&#39;</span><span class="p">,</span>  <span class="c1"># run 1</span>
               <span class="mi">12</span><span class="p">:</span> <span class="s1">&#39;imaginefists&#39;</span>  <span class="c1"># run 2</span>
               <span class="p">}</span>
 
-<span class="n">run_mapping</span> <span class="o">=</span> <span class="p">{</span><span class="mi">2</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># for resting eyes closed task, there was only one run</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="View documentation for builtins.dict"><span class="n">run_mapping</span></a> <span class="o">=</span> <span class="p">{</span><span class="mi">2</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># for resting eyes closed task, there was only one run</span>
                <span class="mi">4</span><span class="p">:</span> <span class="s1">&#39;1&#39;</span><span class="p">,</span>
                <span class="mi">12</span><span class="p">:</span> <span class="s1">&#39;2&#39;</span>
                <span class="p">}</span>
 
 <span class="c1"># Now go over subjects and *bidsify*</span>
-<span class="k">for</span> <span class="n">subj_idx</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]:</span>
-    <span class="k">for</span> <span class="n">task_idx</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">12</span><span class="p">]:</span>
+<span class="k">for</span> <a href="https://docs.python.org/3/library/functions.html#int" title="View documentation for builtins.int"><span class="n">subj_idx</span></a> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]:</span>
+    <span class="k">for</span> <a href="https://docs.python.org/3/library/functions.html#int" title="View documentation for builtins.int"><span class="n">task_idx</span></a> <span class="ow">in</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">12</span><span class="p">]:</span>
         <span class="c1"># Load the data</span>
-        <span class="n">edf_path</span> <span class="o">=</span> <a href="https://mne.tools/stable/generated/mne.datasets.eegbci.load_data.html#mne.datasets.eegbci.load_data" title="View documentation for mne.datasets.eegbci.load_data"><span class="n">eegbci</span><span class="o">.</span><span class="n">load_data</span></a><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="n">subj_idx</span><span class="p">,</span> <span class="n">runs</span><span class="o">=</span><span class="n">task_idx</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">edf_path</span></a> <span class="o">=</span> <a href="https://mne.tools/stable/generated/mne.datasets.eegbci.load_data.html#mne.datasets.eegbci.load_data" title="View documentation for mne.datasets.eegbci.load_data"><span class="n">eegbci</span><span class="o">.</span><span class="n">load_data</span></a><span class="p">(</span><span class="n">subject</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="View documentation for builtins.int"><span class="n">subj_idx</span></a><span class="p">,</span> <span class="n">runs</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="View documentation for builtins.int"><span class="n">task_idx</span></a><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 
-        <span class="n">raw</span> <span class="o">=</span> <a href="https://mne.tools/stable/generated/mne.io.read_raw_edf.html#mne.io.read_raw_edf" title="View documentation for mne.io.read_raw_edf"><span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_raw_edf</span></a><span class="p">(</span><span class="n">edf_path</span><span class="p">,</span> <span class="n">preload</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">stim_channel</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-        <span class="n">annot</span> <span class="o">=</span> <a href="https://mne.tools/stable/generated/mne.read_annotations.html#mne.read_annotations" title="View documentation for mne.read_annotations"><span class="n">mne</span><span class="o">.</span><span class="n">read_annotations</span></a><span class="p">(</span><span class="n">edf_path</span><span class="p">)</span>
-        <span class="n">raw</span><span class="o">.</span><span class="n">set_annotations</span><span class="p">(</span><span class="n">annot</span><span class="p">)</span>
-        <span class="n">events</span><span class="p">,</span> <span class="n">event_id</span> <span class="o">=</span> <a href="https://mne.tools/stable/generated/mne.events_from_annotations.html#mne.events_from_annotations" title="View documentation for mne.events_from_annotations"><span class="n">mne</span><span class="o">.</span><span class="n">events_from_annotations</span></a><span class="p">(</span><span class="n">raw</span><span class="p">)</span>
+        <span class="n">raw</span> <span class="o">=</span> <a href="https://mne.tools/stable/generated/mne.io.read_raw_edf.html#mne.io.read_raw_edf" title="View documentation for mne.io.read_raw_edf"><span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_raw_edf</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">edf_path</span></a><span class="p">,</span> <span class="n">preload</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">stim_channel</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        <a href="https://mne.tools/stable/generated/mne.Annotations.html#mne.Annotations" title="View documentation for mne.Annotations"><span class="n">annot</span></a> <span class="o">=</span> <a href="https://mne.tools/stable/generated/mne.read_annotations.html#mne.read_annotations" title="View documentation for mne.read_annotations"><span class="n">mne</span><span class="o">.</span><span class="n">read_annotations</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">edf_path</span></a><span class="p">)</span>
+        <span class="n">raw</span><span class="o">.</span><span class="n">set_annotations</span><span class="p">(</span><a href="https://mne.tools/stable/generated/mne.Annotations.html#mne.Annotations" title="View documentation for mne.Annotations"><span class="n">annot</span></a><span class="p">)</span>
+        <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="View documentation for numpy.ndarray"><span class="n">events</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="View documentation for builtins.dict"><span class="n">event_id</span></a> <span class="o">=</span> <a href="https://mne.tools/stable/generated/mne.events_from_annotations.html#mne.events_from_annotations" title="View documentation for mne.events_from_annotations"><span class="n">mne</span><span class="o">.</span><span class="n">events_from_annotations</span></a><span class="p">(</span><span class="n">raw</span><span class="p">)</span>
 
-        <span class="n">bids_basename</span> <span class="o">=</span> <span class="n">make_bids_basename</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">{:03}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">subj_idx</span><span class="p">),</span>
-                                           <span class="n">task</span><span class="o">=</span><span class="n">task_names</span><span class="p">[</span><span class="n">task_idx</span><span class="p">],</span>
-                                           <span class="n">run</span><span class="o">=</span><span class="n">run_mapping</span><span class="p">[</span><span class="n">task_idx</span><span class="p">])</span>
-        <span class="n">write_raw_bids</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_basename</span><span class="p">,</span> <span class="n">output_path</span><span class="p">,</span> <span class="n">event_id</span><span class="o">=</span><span class="n">trial_type</span><span class="p">,</span>
-                       <span class="n">events_data</span><span class="o">=</span><span class="n">events</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">bids_basename</span></a> <span class="o">=</span> <span class="n">make_bids_basename</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">{:03}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><a href="https://docs.python.org/3/library/functions.html#int" title="View documentation for builtins.int"><span class="n">subj_idx</span></a><span class="p">),</span>
+                                           <a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">task</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="View documentation for builtins.dict"><span class="n">task_names</span></a><span class="p">[</span><a href="https://docs.python.org/3/library/functions.html#int" title="View documentation for builtins.int"><span class="n">task_idx</span></a><span class="p">],</span>
+                                           <span class="n">run</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="View documentation for builtins.dict"><span class="n">run_mapping</span></a><span class="p">[</span><a href="https://docs.python.org/3/library/functions.html#int" title="View documentation for builtins.int"><span class="n">task_idx</span></a><span class="p">])</span>
+        <span class="n">write_raw_bids</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">bids_basename</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">output_path</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="View documentation for builtins.dict"><span class="n">event_id</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="View documentation for builtins.dict"><span class="n">trial_type</span></a><span class="p">,</span>
+                       <span class="n">events_data</span><span class="o">=</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="View documentation for numpy.ndarray"><span class="n">events</span></a><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
@@ -524,6 +530,10 @@ Writing &#39;/home/circleci/mne_data/eegmmidb_bids/dataset_description.json&#39;
     &quot;BIDSVersion&quot;: &quot;1.2.0&quot;
 }
 Reading 0 ... 9759  =      0.000 ...    60.994 secs...
+/home/circleci/miniconda/envs/testenv/lib/python3.6/site-packages/mne/utils/docs.py:830: DeprecationWarning: Function read_montage is deprecated; ``read_montage`` is deprecated and will be removed in v0.20. Please use ``read_dig_fif``, ``read_dig_egi``, ``read_custom_montage``, or ``read_dig_captrack`` to read a digitization based on your needs instead; or ``make_standard_montage`` to create ``DigMontage`` based on template; or ``make_dig_montage`` to create a ``DigMontage`` out of np.arrays
+  warnings.warn(msg, category=DeprecationWarning)
+/home/circleci/miniconda/envs/testenv/lib/python3.6/site-packages/mne/utils/docs.py:813: DeprecationWarning: Class Montage is deprecated; Montage class is deprecated and will be removed in v0.20. Please use DigMontage instead.
+  warnings.warn(msg, category=DeprecationWarning)
 
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_eeg.json&#39;...
 
@@ -612,6 +622,10 @@ Writing &#39;/home/circleci/mne_data/eegmmidb_bids/dataset_description.json&#39;
     &quot;BIDSVersion&quot;: &quot;1.2.0&quot;
 }
 Reading 0 ... 19999  =      0.000 ...   124.994 secs...
+/home/circleci/miniconda/envs/testenv/lib/python3.6/site-packages/mne/utils/docs.py:830: DeprecationWarning: Function read_montage is deprecated; ``read_montage`` is deprecated and will be removed in v0.20. Please use ``read_dig_fif``, ``read_dig_egi``, ``read_custom_montage``, or ``read_dig_captrack`` to read a digitization based on your needs instead; or ``make_standard_montage`` to create ``DigMontage`` based on template; or ``make_dig_montage`` to create a ``DigMontage`` out of np.arrays
+  warnings.warn(msg, category=DeprecationWarning)
+/home/circleci/miniconda/envs/testenv/lib/python3.6/site-packages/mne/utils/docs.py:813: DeprecationWarning: Class Montage is deprecated; Montage class is deprecated and will be removed in v0.20. Please use DigMontage instead.
+  warnings.warn(msg, category=DeprecationWarning)
 
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-imaginefists_run-1_eeg.json&#39;...
 
@@ -701,6 +715,10 @@ Writing &#39;/home/circleci/mne_data/eegmmidb_bids/dataset_description.json&#39;
     &quot;BIDSVersion&quot;: &quot;1.2.0&quot;
 }
 Reading 0 ... 19999  =      0.000 ...   124.994 secs...
+/home/circleci/miniconda/envs/testenv/lib/python3.6/site-packages/mne/utils/docs.py:830: DeprecationWarning: Function read_montage is deprecated; ``read_montage`` is deprecated and will be removed in v0.20. Please use ``read_dig_fif``, ``read_dig_egi``, ``read_custom_montage``, or ``read_dig_captrack`` to read a digitization based on your needs instead; or ``make_standard_montage`` to create ``DigMontage`` based on template; or ``make_dig_montage`` to create a ``DigMontage`` out of np.arrays
+  warnings.warn(msg, category=DeprecationWarning)
+/home/circleci/miniconda/envs/testenv/lib/python3.6/site-packages/mne/utils/docs.py:813: DeprecationWarning: Class Montage is deprecated; Montage class is deprecated and will be removed in v0.20. Please use DigMontage instead.
+  warnings.warn(msg, category=DeprecationWarning)
 
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-imaginefists_run-2_eeg.json&#39;...
 
@@ -785,6 +803,10 @@ Writing &#39;/home/circleci/mne_data/eegmmidb_bids/dataset_description.json&#39;
     &quot;BIDSVersion&quot;: &quot;1.2.0&quot;
 }
 Reading 0 ... 9759  =      0.000 ...    60.994 secs...
+/home/circleci/miniconda/envs/testenv/lib/python3.6/site-packages/mne/utils/docs.py:830: DeprecationWarning: Function read_montage is deprecated; ``read_montage`` is deprecated and will be removed in v0.20. Please use ``read_dig_fif``, ``read_dig_egi``, ``read_custom_montage``, or ``read_dig_captrack`` to read a digitization based on your needs instead; or ``make_standard_montage`` to create ``DigMontage`` based on template; or ``make_dig_montage`` to create a ``DigMontage`` out of np.arrays
+  warnings.warn(msg, category=DeprecationWarning)
+/home/circleci/miniconda/envs/testenv/lib/python3.6/site-packages/mne/utils/docs.py:813: DeprecationWarning: Class Montage is deprecated; Montage class is deprecated and will be removed in v0.20. Please use DigMontage instead.
+  warnings.warn(msg, category=DeprecationWarning)
 
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-resteyesclosed_eeg.json&#39;...
 
@@ -874,6 +896,10 @@ Writing &#39;/home/circleci/mne_data/eegmmidb_bids/dataset_description.json&#39;
     &quot;BIDSVersion&quot;: &quot;1.2.0&quot;
 }
 Reading 0 ... 19679  =      0.000 ...   122.994 secs...
+/home/circleci/miniconda/envs/testenv/lib/python3.6/site-packages/mne/utils/docs.py:830: DeprecationWarning: Function read_montage is deprecated; ``read_montage`` is deprecated and will be removed in v0.20. Please use ``read_dig_fif``, ``read_dig_egi``, ``read_custom_montage``, or ``read_dig_captrack`` to read a digitization based on your needs instead; or ``make_standard_montage`` to create ``DigMontage`` based on template; or ``make_dig_montage`` to create a ``DigMontage`` out of np.arrays
+  warnings.warn(msg, category=DeprecationWarning)
+/home/circleci/miniconda/envs/testenv/lib/python3.6/site-packages/mne/utils/docs.py:813: DeprecationWarning: Class Montage is deprecated; Montage class is deprecated and will be removed in v0.20. Please use DigMontage instead.
+  warnings.warn(msg, category=DeprecationWarning)
 
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-imaginefists_run-1_eeg.json&#39;...
 
@@ -964,6 +990,10 @@ Writing &#39;/home/circleci/mne_data/eegmmidb_bids/dataset_description.json&#39;
     &quot;BIDSVersion&quot;: &quot;1.2.0&quot;
 }
 Reading 0 ... 19679  =      0.000 ...   122.994 secs...
+/home/circleci/miniconda/envs/testenv/lib/python3.6/site-packages/mne/utils/docs.py:830: DeprecationWarning: Function read_montage is deprecated; ``read_montage`` is deprecated and will be removed in v0.20. Please use ``read_dig_fif``, ``read_dig_egi``, ``read_custom_montage``, or ``read_dig_captrack`` to read a digitization based on your needs instead; or ``make_standard_montage`` to create ``DigMontage`` based on template; or ``make_dig_montage`` to create a ``DigMontage`` out of np.arrays
+  warnings.warn(msg, category=DeprecationWarning)
+/home/circleci/miniconda/envs/testenv/lib/python3.6/site-packages/mne/utils/docs.py:813: DeprecationWarning: Class Montage is deprecated; Montage class is deprecated and will be removed in v0.20. Please use DigMontage instead.
+  warnings.warn(msg, category=DeprecationWarning)
 
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-imaginefists_run-2_eeg.json&#39;...
 
@@ -1001,44 +1031,44 @@ Copying data files to /home/circleci/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_
 <div class="section" id="step-3-check-and-compare-with-standard">
 <h2>Step 3: Check and compare with standard<a class="headerlink" href="#step-3-check-and-compare-with-standard" title="Permalink to this headline">¶</a></h2>
 <p>Now we have written our BIDS directory.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">print_dir_tree</span><span class="p">(</span><span class="n">output_path</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">print_dir_tree</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">output_path</span></a><span class="p">)</span>
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>|eegmmidb_bids/
-|--- dataset_description.json
 |--- participants.tsv
+|--- dataset_description.json
 |--- participants.json
+|--- sub-002/
+|------ sub-002_scans.tsv
+|------ eeg/
+|--------- sub-002_task-imaginefists_run-1_channels.tsv
+|--------- sub-002_task-imaginefists_run-2_eeg.edf
+|--------- sub-002_task-imaginefists_run-2_events.tsv
+|--------- sub-002_task-resteyesclosed_eeg.json
+|--------- sub-002_task-imaginefists_run-1_eeg.json
+|--------- sub-002_task-imaginefists_run-2_eeg.json
+|--------- sub-002_task-imaginefists_run-1_eeg.edf
+|--------- sub-002_task-imaginefists_run-1_events.tsv
+|--------- sub-002_task-resteyesclosed_eeg.edf
+|--------- sub-002_task-imaginefists_run-2_channels.tsv
+|--------- sub-002_task-resteyesclosed_channels.tsv
+|--------- sub-002_task-resteyesclosed_events.tsv
 |--- sub-001/
 |------ sub-001_scans.tsv
 |------ eeg/
 |--------- sub-001_task-imaginefists_run-2_eeg.json
-|--------- sub-001_task-imaginefists_run-1_channels.tsv
-|--------- sub-001_task-resteyesclosed_eeg.json
-|--------- sub-001_task-resteyesclosed_eeg.edf
-|--------- sub-001_task-imaginefists_run-1_events.tsv
-|--------- sub-001_task-resteyesclosed_events.tsv
-|--------- sub-001_task-imaginefists_run-2_events.tsv
-|--------- sub-001_task-imaginefists_run-2_channels.tsv
-|--------- sub-001_task-resteyesclosed_channels.tsv
-|--------- sub-001_task-imaginefists_run-1_eeg.json
 |--------- sub-001_task-imaginefists_run-1_eeg.edf
+|--------- sub-001_task-imaginefists_run-2_channels.tsv
+|--------- sub-001_task-imaginefists_run-2_events.tsv
+|--------- sub-001_task-resteyesclosed_eeg.json
+|--------- sub-001_task-imaginefists_run-1_channels.tsv
+|--------- sub-001_task-imaginefists_run-1_eeg.json
+|--------- sub-001_task-resteyesclosed_events.tsv
+|--------- sub-001_task-resteyesclosed_eeg.edf
+|--------- sub-001_task-resteyesclosed_channels.tsv
+|--------- sub-001_task-imaginefists_run-1_events.tsv
 |--------- sub-001_task-imaginefists_run-2_eeg.edf
-|--- sub-002/
-|------ sub-002_scans.tsv
-|------ eeg/
-|--------- sub-002_task-imaginefists_run-2_channels.tsv
-|--------- sub-002_task-resteyesclosed_events.tsv
-|--------- sub-002_task-imaginefists_run-2_eeg.json
-|--------- sub-002_task-imaginefists_run-1_channels.tsv
-|--------- sub-002_task-imaginefists_run-1_eeg.json
-|--------- sub-002_task-resteyesclosed_channels.tsv
-|--------- sub-002_task-imaginefists_run-2_eeg.edf
-|--------- sub-002_task-resteyesclosed_eeg.json
-|--------- sub-002_task-resteyesclosed_eeg.edf
-|--------- sub-002_task-imaginefists_run-1_events.tsv
-|--------- sub-002_task-imaginefists_run-2_events.tsv
-|--------- sub-002_task-imaginefists_run-1_eeg.edf
 </pre></div>
 </div>
 <p>MNE-BIDS has created a suitable directory structure for us, and among other
@@ -1053,7 +1083,7 @@ directories called the “BIDS-validator”, available as a web version and a
 command line tool:</p>
 <p>Web version: <a class="reference external" href="https://bids-standard.github.io/bids-validator/">https://bids-standard.github.io/bids-validator/</a></p>
 <p>Command line tool: <a class="reference external" href="https://www.npmjs.com/package/bids-validator">https://www.npmjs.com/package/bids-validator</a></p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.763 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.658 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-eeg-to-bids-py">
 <div class="binder-badge docutils container">
 <a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=notebooks/auto_examples/convert_eeg_to_bids.ipynb"><img alt="https://mybinder.org/badge_logo.svg" src="https://mybinder.org/badge_logo.svg" width="150px" /></a>
@@ -1081,8 +1111,8 @@ command line tool:</p>
       
     </p>
     <p>
-        &copy; Copyright 2019, MNE Developers. Last updated on 2019-08-20.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.<br/>
+        &copy; Copyright 2019, MNE Developers. Last updated on 2019-12-06.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.2.<br/>
     </p>
   </div>
 </footer>

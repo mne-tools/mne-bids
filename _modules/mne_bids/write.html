@@ -99,34 +99,34 @@
 <span class="c1"># License: BSD (3-clause)</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">os.path</span> <span class="k">as</span> <span class="nn">op</span>
-<span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span>
-<span class="kn">from</span> <span class="nn">warnings</span> <span class="k">import</span> <span class="n">warn</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">warnings</span> <span class="kn">import</span> <span class="n">warn</span>
 <span class="kn">import</span> <span class="nn">shutil</span> <span class="k">as</span> <span class="nn">sh</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">defaultdict</span><span class="p">,</span> <span class="n">OrderedDict</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span><span class="p">,</span> <span class="n">OrderedDict</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">numpy.testing</span> <span class="k">import</span> <span class="n">assert_array_equal</span>
-<span class="kn">from</span> <span class="nn">mne.transforms</span> <span class="k">import</span> <span class="n">_get_trans</span><span class="p">,</span> <span class="n">apply_trans</span>
-<span class="kn">from</span> <span class="nn">mne</span> <span class="k">import</span> <span class="n">Epochs</span>
-<span class="kn">from</span> <span class="nn">mne.io.constants</span> <span class="k">import</span> <span class="n">FIFF</span>
-<span class="kn">from</span> <span class="nn">mne.io.pick</span> <span class="k">import</span> <span class="n">channel_type</span>
-<span class="kn">from</span> <span class="nn">mne.io</span> <span class="k">import</span> <span class="n">BaseRaw</span>
-<span class="kn">from</span> <span class="nn">mne.channels.channels</span> <span class="k">import</span> <span class="n">_unit2human</span>
-<span class="kn">from</span> <span class="nn">mne.utils</span> <span class="k">import</span> <span class="n">check_version</span><span class="p">,</span> <span class="n">has_nibabel</span>
+<span class="kn">from</span> <span class="nn">numpy.testing</span> <span class="kn">import</span> <span class="n">assert_array_equal</span>
+<span class="kn">from</span> <span class="nn">mne.transforms</span> <span class="kn">import</span> <span class="n">_get_trans</span><span class="p">,</span> <span class="n">apply_trans</span>
+<span class="kn">from</span> <span class="nn">mne</span> <span class="kn">import</span> <span class="n">Epochs</span>
+<span class="kn">from</span> <span class="nn">mne.io.constants</span> <span class="kn">import</span> <span class="n">FIFF</span>
+<span class="kn">from</span> <span class="nn">mne.io.pick</span> <span class="kn">import</span> <span class="n">channel_type</span>
+<span class="kn">from</span> <span class="nn">mne.io</span> <span class="kn">import</span> <span class="n">BaseRaw</span>
+<span class="kn">from</span> <span class="nn">mne.channels.channels</span> <span class="kn">import</span> <span class="n">_unit2human</span>
+<span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="n">check_version</span><span class="p">,</span> <span class="n">has_nibabel</span>
 
-<span class="kn">from</span> <span class="nn">mne_bids.pick</span> <span class="k">import</span> <span class="n">coil_type</span>
-<span class="kn">from</span> <span class="nn">mne_bids.utils</span> <span class="k">import</span> <span class="p">(</span><span class="n">_write_json</span><span class="p">,</span> <span class="n">_write_tsv</span><span class="p">,</span> <span class="n">_read_events</span><span class="p">,</span> <span class="n">_mkdir_p</span><span class="p">,</span>
+<span class="kn">from</span> <span class="nn">mne_bids.pick</span> <span class="kn">import</span> <span class="n">coil_type</span>
+<span class="kn">from</span> <span class="nn">mne_bids.utils</span> <span class="kn">import</span> <span class="p">(</span><span class="n">_write_json</span><span class="p">,</span> <span class="n">_write_tsv</span><span class="p">,</span> <span class="n">_read_events</span><span class="p">,</span> <span class="n">_mkdir_p</span><span class="p">,</span>
                             <span class="n">_age_on_date</span><span class="p">,</span> <span class="n">_infer_eeg_placement_scheme</span><span class="p">,</span>
                             <span class="n">_check_key_val</span><span class="p">,</span>
                             <span class="n">_parse_bids_filename</span><span class="p">,</span> <span class="n">_handle_kind</span><span class="p">,</span> <span class="n">_check_types</span><span class="p">,</span>
                             <span class="n">_get_mrk_meas_date</span><span class="p">,</span> <span class="n">_extract_landmarks</span><span class="p">,</span> <span class="n">_parse_ext</span><span class="p">,</span>
                             <span class="n">_get_ch_type_mapping</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">mne_bids.copyfiles</span> <span class="k">import</span> <span class="p">(</span><span class="n">copyfile_brainvision</span><span class="p">,</span> <span class="n">copyfile_eeglab</span><span class="p">,</span>
+<span class="kn">from</span> <span class="nn">mne_bids.copyfiles</span> <span class="kn">import</span> <span class="p">(</span><span class="n">copyfile_brainvision</span><span class="p">,</span> <span class="n">copyfile_eeglab</span><span class="p">,</span>
                                 <span class="n">copyfile_ctf</span><span class="p">,</span> <span class="n">copyfile_bti</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">mne_bids.read</span> <span class="k">import</span> <span class="n">reader</span>
-<span class="kn">from</span> <span class="nn">mne_bids.tsv_handler</span> <span class="k">import</span> <span class="n">_from_tsv</span><span class="p">,</span> <span class="n">_combine</span><span class="p">,</span> <span class="n">_drop</span><span class="p">,</span> <span class="n">_contains_row</span>
+<span class="kn">from</span> <span class="nn">mne_bids.read</span> <span class="kn">import</span> <span class="n">reader</span>
+<span class="kn">from</span> <span class="nn">mne_bids.tsv_handler</span> <span class="kn">import</span> <span class="n">_from_tsv</span><span class="p">,</span> <span class="n">_combine</span><span class="p">,</span> <span class="n">_drop</span><span class="p">,</span> <span class="n">_contains_row</span>
 
-<span class="kn">from</span> <span class="nn">mne_bids.config</span> <span class="k">import</span> <span class="p">(</span><span class="n">ORIENTATION</span><span class="p">,</span> <span class="n">UNITS</span><span class="p">,</span> <span class="n">MANUFACTURERS</span><span class="p">,</span>
+<span class="kn">from</span> <span class="nn">mne_bids.config</span> <span class="kn">import</span> <span class="p">(</span><span class="n">ORIENTATION</span><span class="p">,</span> <span class="n">UNITS</span><span class="p">,</span> <span class="n">MANUFACTURERS</span><span class="p">,</span>
                              <span class="n">IGNORED_CHANNELS</span><span class="p">,</span> <span class="n">ALLOWED_EXTENSIONS</span><span class="p">,</span>
                              <span class="n">BIDS_VERSION</span><span class="p">)</span>
 
@@ -1176,8 +1176,8 @@
       
     </p>
     <p>
-        &copy; Copyright 2019, MNE Developers. Last updated on 2019-08-20.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.0.<br/>
+        &copy; Copyright 2019, MNE Developers. Last updated on 2019-12-06.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.2.<br/>
     </p>
   </div>
 </footer>

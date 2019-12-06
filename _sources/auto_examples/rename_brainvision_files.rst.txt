@@ -1,7 +1,7 @@
 .. note::
     :class: sphx-glr-download-link-note
 
-    Click :ref:`here <sphx_glr_download_auto_examples_rename_brainvision_files.py>` to download the full example code or run this example in your browser via Binder
+    Click :ref:`here <sphx_glr_download_auto_examples_rename_brainvision_files.py>` to download the full example code or to run this example in your browser via Binder
 .. rst-class:: sphx-glr-example-title
 
 .. _sphx_glr_auto_examples_rename_brainvision_files.py:
@@ -45,6 +45,7 @@ for the :ref:`Python Command Line Interface <python_cli>`.
 
 
 
+
 We are importing everything we need for this example:
 
 
@@ -56,6 +57,7 @@ We are importing everything we need for this example:
     import mne
 
     from mne_bids.copyfiles import copyfile_brainvision
+
 
 
 
@@ -94,6 +96,7 @@ data.
 
 
 
+
 Step 2: Rename the recording
 ----------------------------------
 Above, at the top of the example, we imported
@@ -115,6 +118,7 @@ Here, we rename a test file name:
     vhdr_file = op.join(examples_dir, 'test_NO.vhdr')
     vhdr_file_renamed = op.join(examples_dir, 'test_renamed.vhdr')
     copyfile_brainvision(vhdr_file, vhdr_file_renamed)
+
 
 
 
@@ -152,6 +156,7 @@ as well as the renamed data. They should be the same.
 
 
 
+
 Further information
 -------------------
 There are alternative options to rename your BrainVision files. You could
@@ -169,7 +174,7 @@ For that, see the `BrainVision Validator <bv-validator_>`_
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  0.067 seconds)
+   **Total running time of the script:** ( 0 minutes  0.021 seconds)
 
 
 .. _sphx_glr_download_auto_examples_rename_brainvision_files.py:

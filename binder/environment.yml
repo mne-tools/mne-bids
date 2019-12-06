@@ -6,12 +6,12 @@ dependencies:
 - python<3.7
 - pip=19
 - mkl
-- numpy
-- scipy
+- numpy>1.14
+- scipy>0.18
 - scikit-learn
 - matplotlib
 - pip:
-  - mne
+  - mne~=0.19.0
   - nibabel
   - nilearn
   - flake8

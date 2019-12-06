@@ -1,7 +1,7 @@
 .. note::
     :class: sphx-glr-download-link-note
 
-    Click :ref:`here <sphx_glr_download_auto_examples_convert_mri_and_trans.py>` to download the full example code or run this example in your browser via Binder
+    Click :ref:`here <sphx_glr_download_auto_examples_convert_mri_and_trans.py>` to download the full example code or to run this example in your browser via Binder
 .. rst-class:: sphx-glr-example-title
 
 .. _sphx_glr_auto_examples_convert_mri_and_trans.py:
@@ -48,6 +48,7 @@ See the documentation pages in the MNE docs for more information on
 
 
 
+
 We are importing everything we need for this example:
 
 
@@ -82,6 +83,7 @@ We are importing everything we need for this example:
 
     /home/circleci/miniconda/envs/testenv/lib/python3.6/site-packages/sklearn/externals/joblib/__init__.py:15: DeprecationWarning: sklearn.externals.joblib is deprecated in 0.21 and will be removed in 0.23. Please import this functionality directly from joblib, which can be installed with: pip install joblib. If this warning is raised when loading pickled models, you may need to re-serialize those models with scikit-learn 0.21+.
       warnings.warn(msg, category=DeprecationWarning)
+
 
 
 
@@ -235,6 +237,10 @@ BIDS dataset. For more information, you can checkout the respective
     /home/circleci/project/mne_bids/write.py:407: UserWarning: No line frequency found, defaulting to 50 Hz
       warn('No line frequency found, defaulting to 50 Hz')
     Reading 0 ... 166799  =      0.000 ...   277.714 secs...
+    /home/circleci/miniconda/envs/testenv/lib/python3.6/site-packages/mne/utils/docs.py:830: DeprecationWarning: Function read_montage is deprecated; ``read_montage`` is deprecated and will be removed in v0.20. Please use ``read_dig_fif``, ``read_dig_egi``, ``read_custom_montage``, or ``read_dig_captrack`` to read a digitization based on your needs instead; or ``make_standard_montage`` to create ``DigMontage`` based on template; or ``make_dig_montage`` to create a ``DigMontage`` out of np.arrays
+      warnings.warn(msg, category=DeprecationWarning)
+    /home/circleci/miniconda/envs/testenv/lib/python3.6/site-packages/mne/utils/docs.py:813: DeprecationWarning: Class Montage is deprecated; Montage class is deprecated and will be removed in v0.20. Please use DigMontage instead.
+      warnings.warn(msg, category=DeprecationWarning)
 
     Writing '/home/circleci/mne_data/MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.json'...
 
@@ -271,18 +277,19 @@ BIDS dataset. For more information, you can checkout the respective
     Writing /home/circleci/mne_data/MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif
     Closing /home/circleci/mne_data/MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif [done]
     |MNE-sample-data-bids/
-    |--- dataset_description.json
     |--- participants.tsv
+    |--- dataset_description.json
     |--- participants.json
     |--- sub-01/
     |------ ses-01/
     |--------- sub-01_ses-01_scans.tsv
     |--------- meg/
-    |------------ sub-01_ses-01_task-audiovisual_run-01_meg.json
     |------------ sub-01_ses-01_task-audiovisual_run-01_events.tsv
-    |------------ sub-01_ses-01_task-audiovisual_run-01_channels.tsv
     |------------ sub-01_ses-01_task-audiovisual_run-01_meg.fif
+    |------------ sub-01_ses-01_task-audiovisual_run-01_meg.json
     |------------ sub-01_ses-01_coordsystem.json
+    |------------ sub-01_ses-01_task-audiovisual_run-01_channels.tsv
+
 
 
 
@@ -319,6 +326,7 @@ matrix :code:`trans`.
      [ 0.00998479  0.81240475 -0.58300853  0.01130214]
      [-0.03578702  0.58295429  0.81171638 -0.02755522]
      [ 0.          0.          0.          1.        ]]
+
 
 
 
@@ -376,21 +384,22 @@ retrieve our transformation matrix :code:`trans`.
         }
     }
     |MNE-sample-data-bids/
-    |--- dataset_description.json
     |--- participants.tsv
+    |--- dataset_description.json
     |--- participants.json
     |--- sub-01/
     |------ ses-01/
     |--------- sub-01_ses-01_scans.tsv
     |--------- meg/
-    |------------ sub-01_ses-01_task-audiovisual_run-01_meg.json
     |------------ sub-01_ses-01_task-audiovisual_run-01_events.tsv
-    |------------ sub-01_ses-01_task-audiovisual_run-01_channels.tsv
     |------------ sub-01_ses-01_task-audiovisual_run-01_meg.fif
+    |------------ sub-01_ses-01_task-audiovisual_run-01_meg.json
     |------------ sub-01_ses-01_coordsystem.json
+    |------------ sub-01_ses-01_task-audiovisual_run-01_channels.tsv
     |--------- anat/
-    |------------ sub-01_ses-01_T1w.nii.gz
     |------------ sub-01_ses-01_T1w.json
+    |------------ sub-01_ses-01_T1w.nii.gz
+
 
 
 
@@ -430,6 +439,7 @@ transformation matrix using ``MNE-BIDS`` and the BIDS dataset.
     Reading channel info from /home/circleci/mne_data/MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_channels.tsv.
     /home/circleci/project/mne_bids/read.py:165: RuntimeWarning: The unit for channel(s) STI 001, STI 002, STI 003, STI 004, STI 005, STI 006, STI 014, STI 015, STI 016 has changed from V to NA.
       raw.set_channel_types(channel_type_dict)
+
 
 
 
@@ -481,6 +491,7 @@ plot the results.
 
 
 
+
 .. LINKS
 
 .. _coregistration GUI:
@@ -494,7 +505,7 @@ plot the results.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  5.302 seconds)
+   **Total running time of the script:** ( 0 minutes  4.737 seconds)
 
 
 .. _sphx_glr_download_auto_examples_convert_mri_and_trans.py:

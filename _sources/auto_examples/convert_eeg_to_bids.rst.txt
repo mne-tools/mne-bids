@@ -1,7 +1,7 @@
 .. note::
     :class: sphx-glr-download-link-note
 
-    Click :ref:`here <sphx_glr_download_auto_examples_convert_eeg_to_bids.py>` to download the full example code or run this example in your browser via Binder
+    Click :ref:`here <sphx_glr_download_auto_examples_convert_eeg_to_bids.py>` to download the full example code or to run this example in your browser via Binder
 .. rst-class:: sphx-glr-example-title
 
 .. _sphx_glr_auto_examples_convert_eeg_to_bids.py:
@@ -35,6 +35,7 @@ data. Specifically, we will follow these steps:
 
 
 
+
 We are importing everything we need for this example:
 
 
@@ -48,6 +49,7 @@ We are importing everything we need for this example:
 
     from mne_bids import write_raw_bids, make_bids_basename
     from mne_bids.utils import print_dir_tree
+
 
 
 
@@ -100,6 +102,7 @@ MNE-Python:
 
 
 
+
 Let's see whether the data has been downloaded using a quick visualization
 of the directory tree.
 
@@ -124,14 +127,15 @@ of the directory tree.
     |--- physiobank/
     |------ database/
     |--------- eegmmidb/
-    |------------ S002/
-    |--------------- S002R12.edf
-    |--------------- S002R04.edf
-    |--------------- S002R02.edf
     |------------ S001/
-    |--------------- S001R04.edf
     |--------------- S001R02.edf
     |--------------- S001R12.edf
+    |--------------- S001R04.edf
+    |------------ S002/
+    |--------------- S002R12.edf
+    |--------------- S002R02.edf
+    |--------------- S002R04.edf
+
 
 
 
@@ -172,6 +176,7 @@ from being loaded and modified when converting to BIDS.
 
 
 
+
 The annotations stored in the file must be read in separately and converted
 into a 2D numpy array of events that is compatible with MNE.
 
@@ -195,7 +200,8 @@ into a 2D numpy array of events that is compatible with MNE.
  .. code-block:: none
 
     Used Annotations descriptions: ['T0']
-    <RawEDF  |  S001R02.edf, n_channels x n_times : 64 x 9760 (61.0 sec), ~127 kB, data not loaded>
+    <RawEDF  |  S001R02.edf, n_channels x n_times : 64 x 9760 (61.0 sec), ~128 kB, data not loaded>
+
 
 
 
@@ -299,6 +305,7 @@ which are however optional. The required inputs are:
 
 
 
+
 We loaded 'S001R02.edf', which corresponds to subject 1 in the second task.
 The second task was to rest with closed eyes.
 
@@ -309,6 +316,7 @@ The second task was to rest with closed eyes.
     task = 'resteyesclosed'
     raw_file = raw
     output_path = os.path.join(home, 'mne_data', 'eegmmidb_bids')
+
 
 
 
@@ -393,6 +401,10 @@ Now we just need to specify a few more EEG details to get something sensible:
     /home/circleci/project/mne_bids/write.py:407: UserWarning: No line frequency found, defaulting to 50 Hz
       warn('No line frequency found, defaulting to 50 Hz')
     Reading 0 ... 9759  =      0.000 ...    60.994 secs...
+    /home/circleci/miniconda/envs/testenv/lib/python3.6/site-packages/mne/utils/docs.py:830: DeprecationWarning: Function read_montage is deprecated; ``read_montage`` is deprecated and will be removed in v0.20. Please use ``read_dig_fif``, ``read_dig_egi``, ``read_custom_montage``, or ``read_dig_captrack`` to read a digitization based on your needs instead; or ``make_standard_montage`` to create ``DigMontage`` based on template; or ``make_dig_montage`` to create a ``DigMontage`` out of np.arrays
+      warnings.warn(msg, category=DeprecationWarning)
+    /home/circleci/miniconda/envs/testenv/lib/python3.6/site-packages/mne/utils/docs.py:813: DeprecationWarning: Class Montage is deprecated; Montage class is deprecated and will be removed in v0.20. Please use DigMontage instead.
+      warnings.warn(msg, category=DeprecationWarning)
 
     Writing '/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_eeg.json'...
 
@@ -425,6 +437,8 @@ Now we just need to specify a few more EEG details to get something sensible:
     Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
     Copying data files to /home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_eeg.edf
 
+    '/home/circleci/mne_data/eegmmidb_bids'
+
 
 
 What does our fresh BIDS directory look like?
@@ -445,39 +459,40 @@ What does our fresh BIDS directory look like?
  .. code-block:: none
 
     |eegmmidb_bids/
-    |--- dataset_description.json
     |--- participants.tsv
+    |--- dataset_description.json
     |--- participants.json
+    |--- sub-002/
+    |------ sub-002_scans.tsv
+    |------ eeg/
+    |--------- sub-002_task-imaginefists_run-1_channels.tsv
+    |--------- sub-002_task-imaginefists_run-2_eeg.edf
+    |--------- sub-002_task-imaginefists_run-2_events.tsv
+    |--------- sub-002_task-resteyesclosed_eeg.json
+    |--------- sub-002_task-imaginefists_run-1_eeg.json
+    |--------- sub-002_task-imaginefists_run-2_eeg.json
+    |--------- sub-002_task-imaginefists_run-1_eeg.edf
+    |--------- sub-002_task-imaginefists_run-1_events.tsv
+    |--------- sub-002_task-resteyesclosed_eeg.edf
+    |--------- sub-002_task-imaginefists_run-2_channels.tsv
+    |--------- sub-002_task-resteyesclosed_channels.tsv
+    |--------- sub-002_task-resteyesclosed_events.tsv
     |--- sub-001/
     |------ sub-001_scans.tsv
     |------ eeg/
     |--------- sub-001_task-imaginefists_run-2_eeg.json
-    |--------- sub-001_task-imaginefists_run-1_channels.tsv
-    |--------- sub-001_task-resteyesclosed_eeg.json
-    |--------- sub-001_task-resteyesclosed_eeg.edf
-    |--------- sub-001_task-imaginefists_run-1_events.tsv
-    |--------- sub-001_task-resteyesclosed_events.tsv
-    |--------- sub-001_task-imaginefists_run-2_events.tsv
-    |--------- sub-001_task-imaginefists_run-2_channels.tsv
-    |--------- sub-001_task-resteyesclosed_channels.tsv
-    |--------- sub-001_task-imaginefists_run-1_eeg.json
     |--------- sub-001_task-imaginefists_run-1_eeg.edf
+    |--------- sub-001_task-imaginefists_run-2_channels.tsv
+    |--------- sub-001_task-imaginefists_run-2_events.tsv
+    |--------- sub-001_task-resteyesclosed_eeg.json
+    |--------- sub-001_task-imaginefists_run-1_channels.tsv
+    |--------- sub-001_task-imaginefists_run-1_eeg.json
+    |--------- sub-001_task-resteyesclosed_events.tsv
+    |--------- sub-001_task-resteyesclosed_eeg.edf
+    |--------- sub-001_task-resteyesclosed_channels.tsv
+    |--------- sub-001_task-imaginefists_run-1_events.tsv
     |--------- sub-001_task-imaginefists_run-2_eeg.edf
-    |--- sub-002/
-    |------ sub-002_scans.tsv
-    |------ eeg/
-    |--------- sub-002_task-imaginefists_run-2_channels.tsv
-    |--------- sub-002_task-resteyesclosed_events.tsv
-    |--------- sub-002_task-imaginefists_run-2_eeg.json
-    |--------- sub-002_task-imaginefists_run-1_channels.tsv
-    |--------- sub-002_task-imaginefists_run-1_eeg.json
-    |--------- sub-002_task-resteyesclosed_channels.tsv
-    |--------- sub-002_task-imaginefists_run-2_eeg.edf
-    |--------- sub-002_task-resteyesclosed_eeg.json
-    |--------- sub-002_task-resteyesclosed_eeg.edf
-    |--------- sub-002_task-imaginefists_run-1_events.tsv
-    |--------- sub-002_task-imaginefists_run-2_events.tsv
-    |--------- sub-002_task-imaginefists_run-1_eeg.edf
+
 
 
 
@@ -580,6 +595,10 @@ Looks good so far, let's convert the data for all tasks and subjects.
         "BIDSVersion": "1.2.0"
     }
     Reading 0 ... 9759  =      0.000 ...    60.994 secs...
+    /home/circleci/miniconda/envs/testenv/lib/python3.6/site-packages/mne/utils/docs.py:830: DeprecationWarning: Function read_montage is deprecated; ``read_montage`` is deprecated and will be removed in v0.20. Please use ``read_dig_fif``, ``read_dig_egi``, ``read_custom_montage``, or ``read_dig_captrack`` to read a digitization based on your needs instead; or ``make_standard_montage`` to create ``DigMontage`` based on template; or ``make_dig_montage`` to create a ``DigMontage`` out of np.arrays
+      warnings.warn(msg, category=DeprecationWarning)
+    /home/circleci/miniconda/envs/testenv/lib/python3.6/site-packages/mne/utils/docs.py:813: DeprecationWarning: Class Montage is deprecated; Montage class is deprecated and will be removed in v0.20. Please use DigMontage instead.
+      warnings.warn(msg, category=DeprecationWarning)
 
     Writing '/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_eeg.json'...
 
@@ -668,6 +687,10 @@ Looks good so far, let's convert the data for all tasks and subjects.
         "BIDSVersion": "1.2.0"
     }
     Reading 0 ... 19999  =      0.000 ...   124.994 secs...
+    /home/circleci/miniconda/envs/testenv/lib/python3.6/site-packages/mne/utils/docs.py:830: DeprecationWarning: Function read_montage is deprecated; ``read_montage`` is deprecated and will be removed in v0.20. Please use ``read_dig_fif``, ``read_dig_egi``, ``read_custom_montage``, or ``read_dig_captrack`` to read a digitization based on your needs instead; or ``make_standard_montage`` to create ``DigMontage`` based on template; or ``make_dig_montage`` to create a ``DigMontage`` out of np.arrays
+      warnings.warn(msg, category=DeprecationWarning)
+    /home/circleci/miniconda/envs/testenv/lib/python3.6/site-packages/mne/utils/docs.py:813: DeprecationWarning: Class Montage is deprecated; Montage class is deprecated and will be removed in v0.20. Please use DigMontage instead.
+      warnings.warn(msg, category=DeprecationWarning)
 
     Writing '/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-imaginefists_run-1_eeg.json'...
 
@@ -757,6 +780,10 @@ Looks good so far, let's convert the data for all tasks and subjects.
         "BIDSVersion": "1.2.0"
     }
     Reading 0 ... 19999  =      0.000 ...   124.994 secs...
+    /home/circleci/miniconda/envs/testenv/lib/python3.6/site-packages/mne/utils/docs.py:830: DeprecationWarning: Function read_montage is deprecated; ``read_montage`` is deprecated and will be removed in v0.20. Please use ``read_dig_fif``, ``read_dig_egi``, ``read_custom_montage``, or ``read_dig_captrack`` to read a digitization based on your needs instead; or ``make_standard_montage`` to create ``DigMontage`` based on template; or ``make_dig_montage`` to create a ``DigMontage`` out of np.arrays
+      warnings.warn(msg, category=DeprecationWarning)
+    /home/circleci/miniconda/envs/testenv/lib/python3.6/site-packages/mne/utils/docs.py:813: DeprecationWarning: Class Montage is deprecated; Montage class is deprecated and will be removed in v0.20. Please use DigMontage instead.
+      warnings.warn(msg, category=DeprecationWarning)
 
     Writing '/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-imaginefists_run-2_eeg.json'...
 
@@ -841,6 +868,10 @@ Looks good so far, let's convert the data for all tasks and subjects.
         "BIDSVersion": "1.2.0"
     }
     Reading 0 ... 9759  =      0.000 ...    60.994 secs...
+    /home/circleci/miniconda/envs/testenv/lib/python3.6/site-packages/mne/utils/docs.py:830: DeprecationWarning: Function read_montage is deprecated; ``read_montage`` is deprecated and will be removed in v0.20. Please use ``read_dig_fif``, ``read_dig_egi``, ``read_custom_montage``, or ``read_dig_captrack`` to read a digitization based on your needs instead; or ``make_standard_montage`` to create ``DigMontage`` based on template; or ``make_dig_montage`` to create a ``DigMontage`` out of np.arrays
+      warnings.warn(msg, category=DeprecationWarning)
+    /home/circleci/miniconda/envs/testenv/lib/python3.6/site-packages/mne/utils/docs.py:813: DeprecationWarning: Class Montage is deprecated; Montage class is deprecated and will be removed in v0.20. Please use DigMontage instead.
+      warnings.warn(msg, category=DeprecationWarning)
 
     Writing '/home/circleci/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-resteyesclosed_eeg.json'...
 
@@ -930,6 +961,10 @@ Looks good so far, let's convert the data for all tasks and subjects.
         "BIDSVersion": "1.2.0"
     }
     Reading 0 ... 19679  =      0.000 ...   122.994 secs...
+    /home/circleci/miniconda/envs/testenv/lib/python3.6/site-packages/mne/utils/docs.py:830: DeprecationWarning: Function read_montage is deprecated; ``read_montage`` is deprecated and will be removed in v0.20. Please use ``read_dig_fif``, ``read_dig_egi``, ``read_custom_montage``, or ``read_dig_captrack`` to read a digitization based on your needs instead; or ``make_standard_montage`` to create ``DigMontage`` based on template; or ``make_dig_montage`` to create a ``DigMontage`` out of np.arrays
+      warnings.warn(msg, category=DeprecationWarning)
+    /home/circleci/miniconda/envs/testenv/lib/python3.6/site-packages/mne/utils/docs.py:813: DeprecationWarning: Class Montage is deprecated; Montage class is deprecated and will be removed in v0.20. Please use DigMontage instead.
+      warnings.warn(msg, category=DeprecationWarning)
 
     Writing '/home/circleci/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-imaginefists_run-1_eeg.json'...
 
@@ -1020,6 +1055,10 @@ Looks good so far, let's convert the data for all tasks and subjects.
         "BIDSVersion": "1.2.0"
     }
     Reading 0 ... 19679  =      0.000 ...   122.994 secs...
+    /home/circleci/miniconda/envs/testenv/lib/python3.6/site-packages/mne/utils/docs.py:830: DeprecationWarning: Function read_montage is deprecated; ``read_montage`` is deprecated and will be removed in v0.20. Please use ``read_dig_fif``, ``read_dig_egi``, ``read_custom_montage``, or ``read_dig_captrack`` to read a digitization based on your needs instead; or ``make_standard_montage`` to create ``DigMontage`` based on template; or ``make_dig_montage`` to create a ``DigMontage`` out of np.arrays
+      warnings.warn(msg, category=DeprecationWarning)
+    /home/circleci/miniconda/envs/testenv/lib/python3.6/site-packages/mne/utils/docs.py:813: DeprecationWarning: Class Montage is deprecated; Montage class is deprecated and will be removed in v0.20. Please use DigMontage instead.
+      warnings.warn(msg, category=DeprecationWarning)
 
     Writing '/home/circleci/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-imaginefists_run-2_eeg.json'...
 
@@ -1054,6 +1093,7 @@ Looks good so far, let's convert the data for all tasks and subjects.
 
 
 
+
 Step 3: Check and compare with standard
 ---------------------------------------
 Now we have written our BIDS directory.
@@ -1074,39 +1114,40 @@ Now we have written our BIDS directory.
  .. code-block:: none
 
     |eegmmidb_bids/
-    |--- dataset_description.json
     |--- participants.tsv
+    |--- dataset_description.json
     |--- participants.json
+    |--- sub-002/
+    |------ sub-002_scans.tsv
+    |------ eeg/
+    |--------- sub-002_task-imaginefists_run-1_channels.tsv
+    |--------- sub-002_task-imaginefists_run-2_eeg.edf
+    |--------- sub-002_task-imaginefists_run-2_events.tsv
+    |--------- sub-002_task-resteyesclosed_eeg.json
+    |--------- sub-002_task-imaginefists_run-1_eeg.json
+    |--------- sub-002_task-imaginefists_run-2_eeg.json
+    |--------- sub-002_task-imaginefists_run-1_eeg.edf
+    |--------- sub-002_task-imaginefists_run-1_events.tsv
+    |--------- sub-002_task-resteyesclosed_eeg.edf
+    |--------- sub-002_task-imaginefists_run-2_channels.tsv
+    |--------- sub-002_task-resteyesclosed_channels.tsv
+    |--------- sub-002_task-resteyesclosed_events.tsv
     |--- sub-001/
     |------ sub-001_scans.tsv
     |------ eeg/
     |--------- sub-001_task-imaginefists_run-2_eeg.json
-    |--------- sub-001_task-imaginefists_run-1_channels.tsv
-    |--------- sub-001_task-resteyesclosed_eeg.json
-    |--------- sub-001_task-resteyesclosed_eeg.edf
-    |--------- sub-001_task-imaginefists_run-1_events.tsv
-    |--------- sub-001_task-resteyesclosed_events.tsv
-    |--------- sub-001_task-imaginefists_run-2_events.tsv
-    |--------- sub-001_task-imaginefists_run-2_channels.tsv
-    |--------- sub-001_task-resteyesclosed_channels.tsv
-    |--------- sub-001_task-imaginefists_run-1_eeg.json
     |--------- sub-001_task-imaginefists_run-1_eeg.edf
+    |--------- sub-001_task-imaginefists_run-2_channels.tsv
+    |--------- sub-001_task-imaginefists_run-2_events.tsv
+    |--------- sub-001_task-resteyesclosed_eeg.json
+    |--------- sub-001_task-imaginefists_run-1_channels.tsv
+    |--------- sub-001_task-imaginefists_run-1_eeg.json
+    |--------- sub-001_task-resteyesclosed_events.tsv
+    |--------- sub-001_task-resteyesclosed_eeg.edf
+    |--------- sub-001_task-resteyesclosed_channels.tsv
+    |--------- sub-001_task-imaginefists_run-1_events.tsv
     |--------- sub-001_task-imaginefists_run-2_eeg.edf
-    |--- sub-002/
-    |------ sub-002_scans.tsv
-    |------ eeg/
-    |--------- sub-002_task-imaginefists_run-2_channels.tsv
-    |--------- sub-002_task-resteyesclosed_events.tsv
-    |--------- sub-002_task-imaginefists_run-2_eeg.json
-    |--------- sub-002_task-imaginefists_run-1_channels.tsv
-    |--------- sub-002_task-imaginefists_run-1_eeg.json
-    |--------- sub-002_task-resteyesclosed_channels.tsv
-    |--------- sub-002_task-imaginefists_run-2_eeg.edf
-    |--------- sub-002_task-resteyesclosed_eeg.json
-    |--------- sub-002_task-resteyesclosed_eeg.edf
-    |--------- sub-002_task-imaginefists_run-1_events.tsv
-    |--------- sub-002_task-imaginefists_run-2_events.tsv
-    |--------- sub-002_task-imaginefists_run-1_eeg.edf
+
 
 
 
@@ -1130,7 +1171,7 @@ Command line tool: https://www.npmjs.com/package/bids-validator
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  0.763 seconds)
+   **Total running time of the script:** ( 0 minutes  0.658 seconds)
 
 
 .. _sphx_glr_download_auto_examples_convert_eeg_to_bids.py:

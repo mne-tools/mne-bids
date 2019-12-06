@@ -23,9 +23,9 @@ Here we show some exemplary use cases for MNE-BIDS.
 
 .. only:: html
 
-    .. figure:: /auto_examples/images/thumb/sphx_glr_rename_brainvision_files_thumb.png
+ .. figure:: /auto_examples/images/thumb/sphx_glr_rename_brainvision_files_thumb.png
 
-        :ref:`sphx_glr_auto_examples_rename_brainvision_files.py`
+     :ref:`sphx_glr_auto_examples_rename_brainvision_files.py`
 
 .. raw:: html
 
@@ -43,9 +43,9 @@ Here we show some exemplary use cases for MNE-BIDS.
 
 .. only:: html
 
-    .. figure:: /auto_examples/images/thumb/sphx_glr_create_bids_folder_thumb.png
+ .. figure:: /auto_examples/images/thumb/sphx_glr_create_bids_folder_thumb.png
 
-        :ref:`sphx_glr_auto_examples_create_bids_folder.py`
+     :ref:`sphx_glr_auto_examples_create_bids_folder.py`
 
 .. raw:: html
 
@@ -63,9 +63,9 @@ Here we show some exemplary use cases for MNE-BIDS.
 
 .. only:: html
 
-    .. figure:: /auto_examples/images/thumb/sphx_glr_convert_group_studies_thumb.png
+ .. figure:: /auto_examples/images/thumb/sphx_glr_convert_group_studies_thumb.png
 
-        :ref:`sphx_glr_auto_examples_convert_group_studies.py`
+     :ref:`sphx_glr_auto_examples_convert_group_studies.py`
 
 .. raw:: html
 
@@ -83,9 +83,9 @@ Here we show some exemplary use cases for MNE-BIDS.
 
 .. only:: html
 
-    .. figure:: /auto_examples/images/thumb/sphx_glr_convert_mne_sample_thumb.png
+ .. figure:: /auto_examples/images/thumb/sphx_glr_convert_mne_sample_thumb.png
 
-        :ref:`sphx_glr_auto_examples_convert_mne_sample.py`
+     :ref:`sphx_glr_auto_examples_convert_mne_sample.py`
 
 .. raw:: html
 
@@ -103,9 +103,9 @@ Here we show some exemplary use cases for MNE-BIDS.
 
 .. only:: html
 
-    .. figure:: /auto_examples/images/thumb/sphx_glr_convert_eeg_to_bids_thumb.png
+ .. figure:: /auto_examples/images/thumb/sphx_glr_convert_eeg_to_bids_thumb.png
 
-        :ref:`sphx_glr_auto_examples_convert_eeg_to_bids.py`
+     :ref:`sphx_glr_auto_examples_convert_eeg_to_bids.py`
 
 .. raw:: html
 
@@ -123,9 +123,9 @@ Here we show some exemplary use cases for MNE-BIDS.
 
 .. only:: html
 
-    .. figure:: /auto_examples/images/thumb/sphx_glr_convert_mri_and_trans_thumb.png
+ .. figure:: /auto_examples/images/thumb/sphx_glr_convert_mri_and_trans_thumb.png
 
-        :ref:`sphx_glr_auto_examples_convert_mri_and_trans.py`
+     :ref:`sphx_glr_auto_examples_convert_mri_and_trans.py`
 
 .. raw:: html
 
@@ -138,7 +138,7 @@ Here we show some exemplary use cases for MNE-BIDS.
    /auto_examples/convert_mri_and_trans
 .. raw:: html
 
-    <div style='clear:both'></div>
+    <div class="sphx-glr-clear"></div>
 
 
 
