@@ -41,7 +41,22 @@ MNE-BIDS
 
 This is a repository for creating
 `BIDS <http://bids.neuroimaging.io/>`_\ -compatible datasets with
-`MNE <https://mne.tools/stable/index.html>`_.
+`MNE-Python <https://mne.tools/stable/index.html>`_.
+
+BIDS (*B*rain *I*maging *D*ata *S*tructure) is a standard to organize data
+according to a set of rules that describe ...
+
+- how to name your files
+- where to place your files within a directory structure
+- what additional metadata to encode, and how to encode it
+
+MNE-Python is a software package for analyzing neurophysiology data.
+
+MNE-BIDS links BIDS and MNE with the goal to make your analyses faster to code,
+more robust to errors, and easily sharable with colleagues.
+
+Documentation
+-------------
 
 The documentation can be found under the following links:
 
