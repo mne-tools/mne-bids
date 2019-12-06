@@ -41,17 +41,16 @@ def _get_brainvision_encoding(vhdr_file, verbose=False):
     Parameters
     ----------
     vhdr_file : str
-        path to the header file
+        Path to the header file.
     verbose : Bool
-        determine whether results should be logged.
-        (default False)
+        Determine whether results should be logged (default False).
 
     Returns
     -------
     enc : str
-        encoding of the .vhdr file to pass it on to open() function
+        Encoding of the .vhdr file to pass it on to open() function
         either 'UTF-8' (default) or whatever encoding scheme is specified
-        in the header
+        in the header.
 
     """
     with open(vhdr_file, 'rb') as ef:
@@ -75,13 +74,13 @@ def _get_brainvision_paths(vhdr_path):
     Parameters
     ----------
     vhdr_path : str
-        path to the header file
+        Path to the header file.
 
     Returns
     -------
     paths : tuple
-        paths to the .eeg file at index 0 and the .vmrk file
-        at index 1 of the returned tuple
+        Paths to the .eeg file at index 0 and the .vmrk file at index 1 of
+        the returned tuple.
 
     """
     fname, ext = _parse_ext(vhdr_path)
@@ -136,9 +135,9 @@ def copyfile_ctf(src, dest):
     Parameters
     ----------
     src : str
-        path to the source raw .ds folder
+        Path to the source raw .ds folder.
     dest : str
-        path to the destination of the new bids folder.
+        Path to the destination of the new bids folder.
 
     """
     _copytree(src, dest)
@@ -165,9 +164,9 @@ def copyfile_brainvision(vhdr_src, vhdr_dest, verbose=False):
     Parameters
     ----------
     vhdr_src : str
-        The src path of the .vhdr file to be copied
+        The src path of the .vhdr file to be copied.
     vhdr_dest : str
-        The destination path of the .vhdr file
+        The destination path of the .vhdr file.
 
     """
     # Get extenstion of the brainvision file
@@ -227,9 +226,9 @@ def copyfile_eeglab(src, dest):
     Parameters
     ----------
     src : str
-        path to the source raw .set file
+        Path to the source raw .set file.
     dest : str
-        path to the destination of the new .set file
+        Path to the destination of the new .set file.
 
     """
     # Get extenstion of the EEGLAB file
@@ -276,9 +275,9 @@ def copyfile_bti(raw, dest):
     Parameters
     ----------
     raw : instance of Raw
-        An MNE-Python raw object of BTi data
+        An MNE-Python raw object of BTi data.
     dest : str
-        destination to copy the BTi data to
+        Destination to copy the BTi data to.
 
     """
     pdf_fname = 'c,rfDC'
