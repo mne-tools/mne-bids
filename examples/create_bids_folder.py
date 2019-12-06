@@ -1,7 +1,7 @@
 """
-==========================================
-Creating BIDS-compatible folders and files
-==========================================
+==============================================
+01. Creating BIDS-compatible folders and files
+==============================================
 
 The Brain Imaging Data Structure (BIDS) has standard conventions for file
 names and folder hierarchy. MNE-BIDS comes with convenience functions if you

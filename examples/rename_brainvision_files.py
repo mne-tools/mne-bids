@@ -1,7 +1,7 @@
 """
-=================================
-Rename BrainVision EEG data files
-=================================
+=====================================
+05. Rename BrainVision EEG data files
+=====================================
 
 The BrainVision file format is one of the recommended formats to store EEG data
 within a BIDS directory. To organize EEG data in BIDS format, it is often

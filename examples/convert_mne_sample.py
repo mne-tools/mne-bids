@@ -1,9 +1,9 @@
 """
 .. _ex-convert-mne-sample:
 
-======================================
-Convert MNE sample data to BIDS format
-======================================
+==========================================
+02. Convert MNE sample data to BIDS format
+==========================================
 
 This example demonstrates how to convert your existing files into a
 BIDS-compatible folder.
