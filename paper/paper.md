@@ -118,9 +118,9 @@ Within the Python ecosystem, ``MNE-Python`` [@Agramfort2013] is a major
 software package for neurophysiology data analysis, and extending its
 functionality to support BIDS would be a great benefit for its growing user
 base.
-For this reason, we developed a dedicated Python software ``MNE-BIDS``, with
+For this reason, we developed a dedicated Python software package ``MNE-BIDS``, with
 the goal to provide a programmable interface for BIDS datasets in
-neurophysiology, neatly interfacing with ``MNE-Python``.
+neurophysiology with ``MNE-Python``.
 ``MNE-BIDS`` allows users to re-organize data into BIDS formats, store
 associated metadata after anonymization, extract information necessary for
 preprocessing, and read them into ``MNE-Python`` objects,
