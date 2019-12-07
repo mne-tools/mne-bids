@@ -48,7 +48,7 @@ according to a set of rules that describe ...
 
 - how to name your files
 - where to place your files within a directory structure
-- what additional metadata to encode, and how to encode it
+- what additional metadata to store, and how to store it in sidecar json and tsv files
 
 MNE-Python is a software package for analyzing neurophysiology data.
 
