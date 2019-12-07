@@ -1,0 +1,2 @@
+# requirements for binder
+mne_bids~=0.3
