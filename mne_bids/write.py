@@ -770,17 +770,17 @@ def make_bids_basename(subject=None, session=None, task=None,
     subject : str | None
         The subject ID. Corresponds to "sub".
     session : str | None
-        The session for a item. Corresponds to "ses".
+        The session identifier. Corresponds to "ses".
     task : str | None
-        The task for a item. Corresponds to "task".
+        The task identifier. Corresponds to "task".
     acquisition: str | None
-        The acquisition parameters for the item. Corresponds to "acq".
+        The acquisition parameters. Corresponds to "acq".
     run : int | None
-        The run number for this item. Corresponds to "run".
+        The run number. Corresponds to "run".
     processing : str | None
-        The processing label for this item. Corresponds to "proc".
+        The processing label. Corresponds to "proc".
     recording : str | None
-        The recording name for this item. Corresponds to "recording".
+        The recording name. Corresponds to "recording".
     space : str | None
         The coordinate space for an anatomical file. Corresponds to "space".
     prefix : str | None
@@ -916,7 +916,7 @@ def make_dataset_description(path, name=None, data_license=None,
         The license under which this datset is published.
     authors : list | str | None
         List of individuals who contributed to the creation/curation of the
-        dataset. Must be a list of strings or a single comma separated string
+        dataset. Must be a list of str or a single comma separated str
         like ['a', 'b', 'c'].
     acknowledgements : list | str | None
         Either a str acknowledging individuals who contributed to the
@@ -927,11 +927,11 @@ def make_dataset_description(path, name=None, data_license=None,
         publications that should be cited.
     funding : list | str | None
         List of sources of funding (e.g., grant numbers). Must be a list of
-        strings or a single comma separated string like ['a', 'b', 'c'].
+        str or a single comma separated str like ['a', 'b', 'c'].
     references_and_links : list | str | None
         List of references to publication that contain information on the
-        dataset, or links.  Must be a list of strings or a single comma
-        separated string like ['a', 'b', 'c'].
+        dataset, or links.  Must be a list of str or a single comma
+        separated str like ['a', 'b', 'c'].
     doi : str | None
         The DOI for the dataset.
 

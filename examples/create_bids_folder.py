@@ -1,7 +1,7 @@
 """
-==========================================
-Creating BIDS-compatible folders and files
-==========================================
+=======================================================
+01. Creating BIDS-compatible folder names and filenames
+=======================================================
 
 The Brain Imaging Data Structure (BIDS) has standard conventions for file
 names and folder hierarchy. MNE-BIDS comes with convenience functions if you
@@ -17,7 +17,7 @@ wish to create these files/folders on your own.
 # License: BSD (3-clause)
 
 ###############################################################################
-# We'll import the relevant functions from the write module
+# First we will import the relevant functions
 
 from mne_bids import make_bids_folders, make_bids_basename
 
