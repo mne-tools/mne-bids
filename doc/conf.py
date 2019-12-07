@@ -128,7 +128,7 @@ sphinx_gallery_conf = {
         'binderhub_url': 'https://mybinder.org',  # noqa: E501 Any URL of a binderhub deployment. Must be full URL (e.g. https://mybinder.org).
         'dependencies': [
             '../environment.yml',
-            './binder-requirements.txt'
+            './requirements.txt'
         ],
     }
 }
