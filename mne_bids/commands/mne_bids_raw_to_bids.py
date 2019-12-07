@@ -22,36 +22,36 @@ def run():
                            version=mne_bids.__version__)
 
     parser.add_option('--subject_id', dest='subject_id',
-                      help=('The subject name in BIDS compatible format'
-                            '(01,02, etc.)'))
+                      help=('subject name in BIDS compatible format '
+                            '(01, 02, etc.)'))
     parser.add_option('--task', dest='task',
-                      help='Name of the task the data is based on.')
+                      help='name of the task the data is based on')
     parser.add_option('--raw', dest='raw_fname',
-                      help='The path to the raw MEG file.')
+                      help='path to the raw MEEG file')
     parser.add_option('--output_path', dest='output_path',
-                      help='The path of the BIDS compatible folder.')
+                      help='path to the BIDS compatible folder')
     parser.add_option('--session_id', dest='session_id',
-                      help='The session name in BIDS compatible format.')
+                      help='session name in BIDS compatible format')
     parser.add_option('--run', dest='run',
-                      help='The run number for this dataset.')
+                      help='run number for this dataset')
     parser.add_option('--acq', dest='acq',
-                      help='The acquisition parameter.')
+                      help='acquisition parameter for this dataset')
     parser.add_option('--events_data', dest='events_data',
-                      help='The events file.')
+                      help='events file (events.tsv)')
     parser.add_option('--event_id', dest='event_id',
-                      help='The event id dict.', metavar='eid')
+                      help='event id dict', metavar='eid')
     parser.add_option('--hpi', dest='hpi',
-                      help='The path to the MEG Marker points')
+                      help='path to the MEG marker points')
     parser.add_option('--electrode', dest='electrode',
-                      help='The path to head-native Digitizer points')
+                      help='path to head-native digitizer points')
     parser.add_option('--hsp', dest='hsp',
-                      help='The path to headshape points.')
+                      help='path to headshape points')
     parser.add_option('--config', dest='config',
-                      help='The path to the configuration file')
+                      help='path to the configuration file')
     parser.add_option('--overwrite', dest='overwrite',
-                      help="Boolean. Whether to overwrite existing data")
+                      help="whether to overwrite existing data (BOOLEAN)")
     parser.add_option('--allow_maxshield', dest='allow_maxshield',
-                      help="Boolean. Whether to allow non Maxfiltered data.",
+                      help="whether to allow non maxfiltered data (BOOLEAN)",
                       action='store_true')
 
     opt, args = parser.parse_args()
