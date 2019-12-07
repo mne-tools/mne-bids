@@ -1232,6 +1232,9 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     if kind == 'meg' and not emptyroom:
         _coordsystem_json(raw, unit, orient, manufacturer, coordsystem_fname,
                           overwrite, verbose)
+    elif kind == "ieeg":
+        _coordsystem_json(raw, unit, orient, manufacturer, coordsystem_fname,
+                          overwrite, verbose)
 
     events, event_id = _read_events(events_data, event_id, raw, ext)
     if events is not None and len(events) > 0 and not emptyroom:
