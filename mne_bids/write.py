@@ -23,7 +23,10 @@ from mne import Epochs
 from mne.io.constants import FIFF
 from mne.io.pick import channel_type
 from mne.io import BaseRaw, anonymize_info, read_fiducials
-from mne.io._digitization import _get_fid_coords
+try:
+    from mne.io._digitization import _get_fid_coords
+except ImportError:
+    from mne._digitization._utils import _get_fid_coords
 from mne.channels.channels import _unit2human
 from mne.utils import check_version, has_nibabel
 
