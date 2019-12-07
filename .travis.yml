@@ -64,7 +64,8 @@ install:
     - echo $PATH
     - bids-validator --version
     - which bids-validator
-    - if [ "${DEPS}" != "minimal" ]; then
+    - |
+      if [ "${DEPS}" != "minimal" ]; then
           conda env create -f $CONDA_ENV --name=testenv
           source activate testenv
           pip uninstall --yes --quiet mne  # uninstall the pip version of mne to install dev version below
