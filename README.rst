@@ -40,15 +40,20 @@ MNE-BIDS
 ========
 
 This is a repository for creating
-`BIDS <http://bids.neuroimaging.io/>`_\ -compatible datasets with
+`BIDS <https://bids.neuroimaging.io/>`_\ -compatible datasets with
 `MNE-Python <https://mne.tools/stable/index.html>`_.
 
 BIDS (Brain Imaging Data Structure) is a standard to organize data
-according to a set of rules that describe ...
+according to a set of rules that describe:
 
 - how to name your files
 - where to place your files within a directory structure
 - what additional metadata to store, and how to store it in sidecar json and tsv files
+
+The complete set of rules is written down in the
+`BIDS specification <https://bids-specification.readthedocs.io/en/stable/>`_.
+A BIDS-compatible dataset conforms to these rules and passes the
+`BIDS-validator <https://github.com/bids-standard/bids-validator>`_.
 
 MNE-Python is a software package for analyzing neurophysiology data.
 
