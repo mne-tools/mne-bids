@@ -6,8 +6,18 @@ node_js:
 
 matrix:
     include:
+        # Linux
         - os: linux
+          env: CONDA_ENV="environment.yml"
+
+        # OSX conda
         - os: osx
+          env: CONDA_ENV="environment.yml"
+
+        # Minimal
+        - os: linux
+          env: DEPS=minimial
+               MINIMAL_DEPENDENCIES="numpy>=1.14 scipy>=0.18.1 mne>=0.19.1"
 
 # Specify version of BIDS-validator to be used, 'master', or 'stable'
 env:
@@ -16,7 +26,6 @@ env:
     - VALIDATOR_VERSION="master"
     # can be any branch of MNE-Python (e.g., "maint/0.18", "master", ...)
     - MNE_VERSION="master"
-
 
 before_install:
   - if [ "${TRAVIS_OS_NAME}" == "linux" ]; then
@@ -55,14 +64,17 @@ install:
     - echo $PATH
     - bids-validator --version
     - which bids-validator
-    - conda env create -f environment.yml --name=testenv
-    - source activate testenv
-    - pip uninstall --yes --quiet mne  # uninstall the pip version of mne to install dev version below
-    - |
-      git clone --depth 1 https://github.com/mne-tools/mne-python.git -b $MNE_VERSION
-      cd mne-python
-      pip install --no-deps -e .
-      cd ../
+    - if [ "${DEPS}" != "minimal" ]; then
+          conda env create -f $CONDA_ENV --name=testenv
+          source activate testenv
+          pip uninstall --yes --quiet mne  # uninstall the pip version of mne to install dev version below
+          git clone --depth 1 https://github.com/mne-tools/mne-python.git -b $MNE_VERSION
+          cd mne-python
+          pip install --no-deps -e .
+          cd ../
+      else
+          pip install $MINIMAL_DEPENDENCIES
+      fi;
     - python setup.py develop
 
 # Cache the python dependencies
