@@ -9,15 +9,18 @@ matrix:
         # Linux
         - os: linux
           env: CONDA_ENV="environment.yml"
+          name: "Linux conda full"
 
         # OSX conda
         - os: osx
           env: CONDA_ENV="environment.yml"
+          name: "MacOS conda full"
 
         # Minimal
         - os: linux
           env: DEPS=minimial
                MINIMAL_DEPENDENCIES="numpy>=1.14 scipy>=0.18.1 mne>=0.19.1"
+          name: "Linux pip minimal"
 
 # Specify version of BIDS-validator to be used, 'master', or 'stable'
 env:
@@ -75,6 +78,7 @@ install:
           cd ../
       else
           pip install $MINIMAL_DEPENDENCIES
+          pip install pyflakes pytest pytest-cov check-manifest  # for testing
       fi;
     - python setup.py develop
 
