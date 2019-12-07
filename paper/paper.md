@@ -1,5 +1,5 @@
 ---
-title: "MNE-BIDS: Organizing neurophysiological data into the BIDS format and facilitating their analysis"
+title: "MNE-BIDS: Organizing electrophysiological data into the BIDS format and facilitating their analysis"
 tags:
   - Python
   - BIDS
@@ -111,16 +111,16 @@ While BIDS was originally intended for magnetic resonance imaging (MRI)
 data, it has recently been extended for magnetoencephalography
 [MEG; @Niso2018], electroencephalography [EEG; @Pernet2019], and
 intracranial encephalography [iEEG; @Holdgraf2019].
-In this context, many software packages for neurophysiology data analysis are
+In this context, many software packages for electrophysiology data analysis are
 now starting to support data organized using the BIDS standard, thereby
 becoming "BIDS compatible".
 Within the Python ecosystem, ``MNE-Python`` [@Agramfort2013] is a major
-software package for neurophysiology data analysis, and extending its
+software package for electrophysiology data analysis, and extending its
 functionality to support BIDS would be a great benefit for its growing user
 base.
 For this reason, we developed a dedicated Python software package ``MNE-BIDS``, with
 the goal to provide a programmable interface for BIDS datasets in
-neurophysiology with ``MNE-Python``.
+electrophysiology with ``MNE-Python``.
 ``MNE-BIDS`` allows users to re-organize data into BIDS formats, store
 associated metadata after anonymization, extract information necessary for
 preprocessing, and read them into ``MNE-Python`` objects,
