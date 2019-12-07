@@ -18,7 +18,7 @@ matrix:
 
         # Minimal
         - os: linux
-          env: DEPS=minimial
+          env: DEPS=minimal
                MINIMAL_DEPENDENCIES="numpy>=1.14 scipy>=0.18.1 mne>=0.19.1"
           name: "Linux pip minimal"
 
@@ -68,7 +68,10 @@ install:
     - bids-validator --version
     - which bids-validator
     - |
-      if [ "${DEPS}" != "minimal" ]; then
+      if [ "${DEPS}" == "minimal" ]; then
+          pip install $MINIMAL_DEPENDENCIES
+          pip install pyflakes pytest pytest-cov check-manifest  # for testing
+      else
           conda env create -f $CONDA_ENV --name=testenv
           source activate testenv
           pip uninstall --yes --quiet mne  # uninstall the pip version of mne to install dev version below
@@ -76,9 +79,6 @@ install:
           cd mne-python
           pip install --no-deps -e .
           cd ../
-      else
-          pip install $MINIMAL_DEPENDENCIES
-          pip install pyflakes pytest pytest-cov check-manifest  # for testing
       fi;
     - python setup.py develop
 
