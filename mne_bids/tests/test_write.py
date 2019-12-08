@@ -79,7 +79,6 @@ def _bids_validate():
     return _validate
 
 
-@requires_version('pybv', '0.2.0')
 def _test_anonymize(raw, bids_basename, events_fname=None, event_id=None):
     output_path = _TempDir()
     write_raw_bids(raw, bids_basename, output_path,
@@ -582,7 +581,7 @@ def test_vhdr(_bids_validate):
     assert len([f for f in os.listdir(data_path) if op.isfile(f)]) == 0
 
     # test anonymize and convert
-    if check_version('mne', '0.20'):
+    if check_version('mne', '0.20') and check_version('pybv', '0.2.0'):
         raw = mne.io.read_raw_brainvision(raw_fname)
         output_path = _test_anonymize(raw, bids_basename)
         _bids_validate(output_path)
@@ -651,7 +650,7 @@ def test_edf(_bids_validate):
     _bids_validate(output_path)
 
     # test anonymize and convert
-    if check_version('mne', '0.20'):
+    if check_version('mne', '0.20') and check_version('pybv', '0.2.0'):
         raw = mne.io.read_raw_edf(raw_fname)
         output_path = _test_anonymize(raw, bids_basename)
         _bids_validate(output_path)
@@ -697,7 +696,7 @@ def test_bdf(_bids_validate):
         write_raw_bids(raw, bids_basename, output_path)
 
     # test anonymize and convert
-    if check_version('mne', '0.20'):
+    if check_version('mne', '0.20') and check_version('pybv', '0.2.0'):
         raw = mne.io.read_raw_bdf(raw_fname)
         output_path = _test_anonymize(raw, bids_basename)
         _bids_validate(output_path)
@@ -754,7 +753,7 @@ def test_set(_bids_validate):
     _bids_validate(output_path)
 
     # test anonymize and convert
-    if check_version('mne', '0.20'):
+    if check_version('mne', '0.20') and check_version('pybv', '0.2.0'):
         output_path = _test_anonymize(raw, bids_basename)
         _bids_validate(output_path)
 
