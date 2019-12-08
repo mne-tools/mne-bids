@@ -395,7 +395,9 @@ def _get_mrk_meas_date(mrk):
     meas_date = info.get('meas_date', None)
     if isinstance(meas_date, (tuple, list, np.ndarray)):
         meas_date = meas_date[0]
-    if meas_date is not None:
+    if isinstance(meas_date, datetime):
+        meas_datetime = meas_date
+    elif meas_date is not None:
         meas_datetime = datetime.fromtimestamp(meas_date)
     else:
         meas_datetime = datetime.min
