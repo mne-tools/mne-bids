@@ -1069,8 +1069,9 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
                          'Please update to 0.17 or newer.')
 
     if not check_version('mne', '0.20') and anonymize:
-        raise ValueError('Your version of MNE is too old to be able to anonymize the '
-                         'data on write. Please update to 0.20.dev version or newer.')
+        raise ValueError('Your version of MNE is too old to be able to '
+                         'anonymize the data on write. Please update to '
+                         '0.20.dev version or newer.')
 
     if not isinstance(raw, BaseRaw):
         raise ValueError('raw_file must be an instance of BaseRaw, '

@@ -63,7 +63,7 @@ pydocstyle:
 	@pydocstyle
 
 pep:
-	@$(MAKE) -k flake pydocstyle
+	@$(MAKE) -k flake pydocstyle check-manifest
 
 build-doc:
 	cd doc; make clean

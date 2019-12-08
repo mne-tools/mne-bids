@@ -9,7 +9,7 @@ recursive-include mne_bids *.py
 
 ### Exclude
 
-exclude .zenodo
+exclude .zenodo*
 exclude .github
 exclude .github/PULL_REQUEST_TEMPLATE.md
 exclude Makefile
@@ -17,6 +17,7 @@ exclude CONTRIBUTING.md
 exclude .coveragerc
 exclude *.yml
 exclude .mailmap
+exclude paper
 recursive-exclude mne_bids *.pyc
 
 recursive-exclude doc *
