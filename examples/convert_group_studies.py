@@ -1,7 +1,7 @@
 """
-=================================
-BIDS conversion for group studies
-=================================
+=====================================
+04. BIDS conversion for group studies
+=====================================
 
 Here, we show how to do BIDS conversion for group studies.
 The data from Wakeman et al. [1]_ is available here:
@@ -32,6 +32,7 @@ from mne_bids.utils import print_dir_tree
 
 ###############################################################################
 # And fetch the data.
+#
 # .. warning:: This will download 7.9 GB of data for one subject!
 
 subject_ids = [1]

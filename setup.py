@@ -37,6 +37,7 @@ if __name__ == "__main__":
           download_url=DOWNLOAD_URL,
           long_description=open('README.rst').read(),
           long_description_content_type='text/x-rst',
+          python_requires='~=3.5',
           classifiers=[
               'Intended Audience :: Science/Research',
               'Intended Audience :: Developers',
@@ -48,6 +49,9 @@ if __name__ == "__main__":
               'Operating System :: POSIX',
               'Operating System :: Unix',
               'Operating System :: MacOS',
+              'Programming Language :: Python :: 3.5',
+              'Programming Language :: Python :: 3.6',
+              'Programming Language :: Python :: 3.7',
           ],
           platforms='any',
           packages=find_packages(),

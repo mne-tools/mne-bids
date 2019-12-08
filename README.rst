@@ -40,8 +40,28 @@ MNE-BIDS
 ========
 
 This is a repository for creating
-`BIDS <http://bids.neuroimaging.io/>`_\ -compatible datasets with
-`MNE <https://mne.tools/stable/index.html>`_.
+`BIDS <https://bids.neuroimaging.io/>`_\ -compatible datasets with
+`MNE-Python <https://mne.tools/stable/index.html>`_.
+
+BIDS (Brain Imaging Data Structure) is a standard to organize data
+according to a set of rules that describe:
+
+- how to name your files
+- where to place your files within a directory structure
+- what additional metadata to store, and how to store it in sidecar json and tsv files
+
+The complete set of rules is written down in the
+`BIDS specification <https://bids-specification.readthedocs.io/en/stable/>`_.
+A BIDS-compatible dataset conforms to these rules and passes the
+`BIDS-validator <https://github.com/bids-standard/bids-validator>`_.
+
+MNE-Python is a software package for analyzing neurophysiology data.
+
+**MNE-BIDS links BIDS and MNE with the goal to make your analyses faster to code,
+more robust to errors, and easily sharable with colleagues.**
+
+Documentation
+-------------
 
 The documentation can be found under the following links:
 
@@ -61,9 +81,10 @@ Installation
 ------------
 
 We recommend the `Anaconda <https://www.anaconda.com/download/>`_ Python
-distribution. We require that you use Python 3. You may choose to install
-``mne-bids`` `via pip <#Installation via pip>`_ or
-`via conda <#Installation via conda>`_
+distribution. We require that you use Python 3.5 or higher.
+You may choose to install ``mne-bids``
+`via pip <#Installation via pip>`_ or
+`via conda <#Installation via conda>`_.
 
 Installation via pip
 ####################
@@ -177,6 +198,11 @@ Bug reports
 
 Use the `github issue tracker <https://github.com/mne-tools/mne-bids/issues>`_
 to report bugs.
+
+Contributing
+------------
+
+Please see our `contributing guide <https://github.com/mne-tools/mne-bids/blob/master/CONTRIBUTING.md>`_.
 
 Cite
 ----

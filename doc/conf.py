@@ -4,6 +4,7 @@ import sys
 from datetime import date
 
 import sphinx_gallery  # noqa: F401
+from sphinx_gallery.sorting import ExampleTitleSortKey
 import sphinx_bootstrap_theme
 
 import mne_bids
@@ -117,6 +118,7 @@ intersphinx_mapping = {
 
 sphinx_gallery_conf = {
     'examples_dirs': '../examples',
+    'within_subsection_order': ExampleTitleSortKey,
     'gallery_dirs': 'auto_examples',
     'filename_pattern': '^((?!sgskip).)*$',
     'backreferences_dir': 'generated',
