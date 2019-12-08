@@ -21,6 +21,7 @@ dependencies:
   - pytest-sugar
   - pytest-faulthandler
   - check-manifest
+  - pydocstyle
   - sphinx
   - pillow
   - numpydoc

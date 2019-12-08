@@ -6,8 +6,24 @@ node_js:
 
 matrix:
     include:
+        # Linux
         - os: linux
+          env: CONDA_ENV="environment.yml"
+               MNE_VERSION="master"
+          name: "Linux conda full"
+
+        # OSX conda
         - os: osx
+          env: CONDA_ENV="environment.yml"
+               MNE_VERSION="master"
+          name: "MacOS conda full"
+
+        # Minimal
+        - os: linux
+          env: DEPS=minimal
+               MINIMAL_DEPENDENCIES="numpy>=1.14 scipy>=0.18.1"
+               MNE_VERSION="maint/0.19"
+          name: "Linux pip minimal"
 
 # Specify version of BIDS-validator to be used, 'master', or 'stable'
 env:
@@ -15,8 +31,6 @@ env:
     # can be "stable", or anything that can be used with git checkout
     - VALIDATOR_VERSION="master"
     # can be any branch of MNE-Python (e.g., "maint/0.18", "master", ...)
-    - MNE_VERSION="master"
-
 
 before_install:
   - if [ "${TRAVIS_OS_NAME}" == "linux" ]; then
@@ -55,10 +69,15 @@ install:
     - echo $PATH
     - bids-validator --version
     - which bids-validator
-    - conda env create -f environment.yml --name=testenv
-    - source activate testenv
-    - pip uninstall --yes --quiet mne  # uninstall the pip version of mne to install dev version below
     - |
+      if [ "${DEPS}" == "minimal" ]; then
+          pip install $MINIMAL_DEPENDENCIES
+          pip install pytest pytest-cov check-manifest pydocstyle flake8  # for testing
+      else
+          conda env create -f $CONDA_ENV --name=testenv
+          source activate testenv
+          pip uninstall --yes --quiet mne  # uninstall the pip version of mne to install dev version below
+      fi;
       git clone --depth 1 https://github.com/mne-tools/mne-python.git -b $MNE_VERSION
       cd mne-python
       pip install --no-deps -e .
@@ -73,8 +92,7 @@ cache:
 
 script:
     - pytest . --cov=./mne_bids --cov-report=xml --verbose --ignore mne-python
-    - check-manifest --ignore .circleci*,doc,paper,coverage.xml,.zenodo*
-    - flake8 --count mne_bids
+    - make pep
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)

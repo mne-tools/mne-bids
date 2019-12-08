@@ -23,7 +23,10 @@ from mne import Epochs
 from mne.io.constants import FIFF
 from mne.io.pick import channel_type
 from mne.io import BaseRaw, anonymize_info, read_fiducials
-from mne.io._digitization import _get_fid_coords
+try:
+    from mne.io._digitization import _get_fid_coords
+except ImportError:
+    from mne._digitization._utils import _get_fid_coords
 from mne.channels.channels import _unit2human
 from mne.utils import check_version, has_nibabel
 
@@ -1064,6 +1067,11 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
     if not check_version('mne', '0.17'):
         raise ValueError('Your version of MNE is too old. '
                          'Please update to 0.17 or newer.')
+
+    if not check_version('mne', '0.20') and anonymize:
+        raise ValueError('Your version of MNE is too old to be able to '
+                         'anonymize the data on write. Please update to '
+                         '0.20.dev version or newer.')
 
     if not isinstance(raw, BaseRaw):
         raise ValueError('raw_file must be an instance of BaseRaw, '
