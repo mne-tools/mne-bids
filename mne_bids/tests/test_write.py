@@ -489,9 +489,7 @@ def test_ctf(_bids_validate):
             output_path = _test_anonymize(raw, bids_basename)
         _bids_validate(output_path)
 
-        # XXX: change the next two lines once raw.set_meas_date() is
-        # available.
-        raw.info['meas_date'] = None
+        raw.set_meas_date(None)
         raw.anonymize()
         with pytest.raises(ValueError, match='All measurement dates are None'):
             get_anonymization_daysback(raw)

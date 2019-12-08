@@ -57,6 +57,8 @@ def _stamp_to_dt(utc_stamp):
     # is needed for anonymization which requires the date to be moved back
     # to before 1925. This then requires a negative value of daysback
     # compared the 1970 reference date.
+    if isinstance(utc_stamp, datetime):
+        return utc_stamp
     stamp = [int(s) for s in utc_stamp]
     if len(stamp) == 1:  # In case there is no microseconds information
         stamp.append(0)
