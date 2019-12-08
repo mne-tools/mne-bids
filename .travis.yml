@@ -9,17 +9,20 @@ matrix:
         # Linux
         - os: linux
           env: CONDA_ENV="environment.yml"
+               MNE_VERSION="master"
           name: "Linux conda full"
 
         # OSX conda
         - os: osx
           env: CONDA_ENV="environment.yml"
+               MNE_VERSION="master"
           name: "MacOS conda full"
 
         # Minimal
         - os: linux
           env: DEPS=minimal
-               MINIMAL_DEPENDENCIES="numpy>=1.14 scipy>=0.18.1 mne>=0.19.1"
+               MINIMAL_DEPENDENCIES="numpy>=1.14 scipy>=0.18.1"
+               MNE_VERSION="maint/0.19"
           name: "Linux pip minimal"
 
 # Specify version of BIDS-validator to be used, 'master', or 'stable'
@@ -28,7 +31,6 @@ env:
     # can be "stable", or anything that can be used with git checkout
     - VALIDATOR_VERSION="master"
     # can be any branch of MNE-Python (e.g., "maint/0.18", "master", ...)
-    - MNE_VERSION="master"
 
 before_install:
   - if [ "${TRAVIS_OS_NAME}" == "linux" ]; then
@@ -75,11 +77,11 @@ install:
           conda env create -f $CONDA_ENV --name=testenv
           source activate testenv
           pip uninstall --yes --quiet mne  # uninstall the pip version of mne to install dev version below
-          git clone --depth 1 https://github.com/mne-tools/mne-python.git -b $MNE_VERSION
-          cd mne-python
-          pip install --no-deps -e .
-          cd ../
       fi;
+      git clone --depth 1 https://github.com/mne-tools/mne-python.git -b $MNE_VERSION
+      cd mne-python
+      pip install --no-deps -e .
+      cd ../
     - python setup.py develop
 
 # Cache the python dependencies
