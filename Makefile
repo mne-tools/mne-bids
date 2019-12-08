@@ -26,7 +26,7 @@ clean-cache:
 clean: clean-build clean-pyc clean-so clean-ctags clean-cache
 
 inplace:
-	$(PYTHON) setup.py install
+	$(PYTHON) setup.py develop
 
 test: inplace check-manifest
 	rm -f .coverage
