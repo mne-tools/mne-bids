@@ -387,9 +387,14 @@ def test_kit(_bids_validate):
     read_raw_bids(kit_bids_basename + '_meg.sqd', output_path)
 
     # test anonymize
-    output_path = _test_anonymize(raw, kit_bids_basename,
-                                  events_fname, event_id)
-    _bids_validate(output_path)
+    if check_version('mne', '0.20'):
+        output_path = _test_anonymize(raw, kit_bids_basename,
+                                      events_fname, event_id)
+        _bids_validate(output_path)
+    else:
+        with pytest.raises(ValueError, match='MNE is too old.'):
+            output_path = _test_anonymize(raw, kit_bids_basename,
+                                          events_fname, event_id)
 
     # ensure the channels file has no STI 014 channel:
     channels_tsv = make_bids_basename(
@@ -478,18 +483,19 @@ def test_ctf(_bids_validate):
     assert op.exists(op.join(output_path, 'participants.tsv'))
 
     # test anonymize
-    raw = mne.io.read_raw_ctf(raw_fname)
-    with pytest.warns(UserWarning,
-                      match='Converting to FIF for anonymization'):
-        output_path = _test_anonymize(raw, bids_basename)
-    _bids_validate(output_path)
+    if check_version('mne', '0.20'):
+        raw = mne.io.read_raw_ctf(raw_fname)
+        with pytest.warns(UserWarning,
+                          match='Converting to FIF for anonymization'):
+            output_path = _test_anonymize(raw, bids_basename)
+        _bids_validate(output_path)
 
-    # XXX: change the next two lines once raw.set_meas_date() is
-    # available.
-    raw.info['meas_date'] = None
-    raw.anonymize()
-    with pytest.raises(ValueError, match='All measurement dates are None'):
-        get_anonymization_daysback(raw)
+        # XXX: change the next two lines once raw.set_meas_date() is
+        # available.
+        raw.info['meas_date'] = None
+        raw.anonymize()
+        with pytest.raises(ValueError, match='All measurement dates are None'):
+            get_anonymization_daysback(raw)
 
 
 def test_bti(_bids_validate):
@@ -514,13 +520,14 @@ def test_bti(_bids_validate):
         read_raw_bids(bids_basename + '_meg', output_path,
                       extra_params=dict(foo='bar'))
 
-    # test anonymize
-    raw = mne.io.read_raw_bti(raw_fname, config_fname=config_fname,
-                              head_shape_fname=headshape_fname)
-    with pytest.warns(UserWarning,
-                      match='Converting to FIF for anonymization'):
-        output_path = _test_anonymize(raw, bids_basename)
-    _bids_validate(output_path)
+    if check_version('mne', '0.20'):
+        # test anonymize
+        raw = mne.io.read_raw_bti(raw_fname, config_fname=config_fname,
+                                  head_shape_fname=headshape_fname)
+        with pytest.warns(UserWarning,
+                          match='Converting to FIF for anonymization'):
+            output_path = _test_anonymize(raw, bids_basename)
+        _bids_validate(output_path)
 
 
 # XXX: vhdr test currently passes only on MNE master. Skip until next release.
@@ -575,8 +582,10 @@ def test_vhdr(_bids_validate):
     assert len([f for f in os.listdir(data_path) if op.isfile(f)]) == 0
 
     # test anonymize and convert
-    raw = mne.io.read_raw_brainvision(raw_fname)
-    _test_anonymize(raw, bids_basename)
+    if check_version('mne', '0.20'):
+        raw = mne.io.read_raw_brainvision(raw_fname)
+        output_path = _test_anonymize(raw, bids_basename)
+        _bids_validate(output_path)
 
     # Also cover iEEG
     # We use the same data and pretend that eeg channels are ecog
@@ -642,9 +651,10 @@ def test_edf(_bids_validate):
     _bids_validate(output_path)
 
     # test anonymize and convert
-    raw = mne.io.read_raw_edf(raw_fname)
-    output_path = _test_anonymize(raw, bids_basename)
-    _bids_validate(output_path)
+    if check_version('mne', '0.20'):
+        raw = mne.io.read_raw_edf(raw_fname)
+        output_path = _test_anonymize(raw, bids_basename)
+        _bids_validate(output_path)
 
 
 def test_bdf(_bids_validate):
@@ -687,9 +697,10 @@ def test_bdf(_bids_validate):
         write_raw_bids(raw, bids_basename, output_path)
 
     # test anonymize and convert
-    raw = mne.io.read_raw_bdf(raw_fname)
-    output_path = _test_anonymize(raw, bids_basename)
-    _bids_validate(output_path)
+    if check_version('mne', '0.20'):
+        raw = mne.io.read_raw_bdf(raw_fname)
+        output_path = _test_anonymize(raw, bids_basename)
+        _bids_validate(output_path)
 
 
 def test_set(_bids_validate):
@@ -743,8 +754,9 @@ def test_set(_bids_validate):
     _bids_validate(output_path)
 
     # test anonymize and convert
-    output_path = _test_anonymize(raw, bids_basename)
-    _bids_validate(output_path)
+    if check_version('mne', '0.20'):
+        output_path = _test_anonymize(raw, bids_basename)
+        _bids_validate(output_path)
 
 
 @requires_nibabel()
