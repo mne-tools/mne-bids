@@ -370,8 +370,8 @@ def test_kit(_bids_validate):
     hpi_post_fname = op.join(data_path, 'test_mrk_post.sqd')
     #electrode_fname = op.join(data_path, 'test_elp.txt')
     #headshape_fname = op.join(data_path, 'test_hsp.txt')
-    electrode_fname = op.join(data_path, 'test_elp.elp')
-    headshape_fname = op.join(data_path, 'test_hsp.hsp')
+    electrode_fname = op.join(data_path, 'test.elp')
+    headshape_fname = op.join(data_path, 'test.hsp')
     event_id = dict(cond=1)
 
     kit_bids_basename = bids_basename.replace('_acq-01', '')
