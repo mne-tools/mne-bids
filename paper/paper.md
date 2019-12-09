@@ -94,8 +94,8 @@ bibliography: paper.bib
 
 # Summary
 
-With the development of the Brain Imaging Data Structure
-[BIDS; @Gorgolewski2016], the neuroscientific community received
+The development of the Brain Imaging Data Structure
+[BIDS; @Gorgolewski2016] gave the neuroscientific community
 a standard to organize and share data.
 BIDS prescribes file naming conventions and a folder structure to
 store data in a set of already existing file formats.
@@ -108,22 +108,22 @@ BIDS is a rich system to curate, aggregate, and annotate neuroimaging
 databases.
 
 While BIDS was originally intended for magnetic resonance imaging (MRI)
-data, it has recently been extended for magnetoencephalography
+data, it has extensions for other data modalities including: magnetoencephalography
 [MEG; @Niso2018], electroencephalography [EEG; @Pernet2019], and
 intracranial encephalography [iEEG; @Holdgraf2019].
-In this context, many software packages for electrophysiology data analysis are
+Software packages analyzing MEG, EEG, and iEEG are
 now starting to support data organized using the BIDS standard, thereby
 becoming "BIDS compatible".
 Within the Python ecosystem, ``MNE-Python`` [@Agramfort2013] is a major
 software package for electrophysiology data analysis, and extending its
 functionality to support BIDS would be a great benefit for its growing user
 base.
-For this reason, we developed a dedicated Python software package ``MNE-BIDS``, with
+For this reason, we developed a dedicated Python software package *``MNE-BIDS`` with
 the goal to provide a programmable interface for BIDS datasets in
-electrophysiology with ``MNE-Python``.
+electrophysiology with ``MNE-Python``*.
 ``MNE-BIDS`` allows users to re-organize data into BIDS formats, store
 associated metadata after anonymization, extract information necessary for
-preprocessing, and read them into ``MNE-Python`` objects,
+preprocessing, and read the data into ``MNE-Python`` objects,
 ready for source localization.
 
 Starting with a single directory full of data files with arbitrary
@@ -133,16 +133,15 @@ All the conversion routines are thoroughly tested by running the output through
 the [BIDS validator](https://github.com/bids-standard/bids-validator).
 Moreover, ``MNE-BIDS`` supports converting data formats that are not BIDS
 compatible into permissible formats.
-As a result of this, users can easily convert their datasets to BIDS in a
+These utilities allow users to easily convert their datasets to BIDS in a
 matter of minutes, rather than hours of manual labour.
 
 In addition to this core functionality, ``MNE-BIDS`` is continuously being
 extended to facilitate the analysis of BIDS formatted data.
-To name some features, it is possible to read a BIDS dataset and obtain a
-Python object, ready for analyis with ``MNE-Python``.
-Users can save a T1-weighted anatomical MRI image alongside the MEG or EEG data
-and apply an automatic defacing algorithm for anonymization purposes.
-As a last example, anatomical landmark coordinates can be saved to enable
+Some features include: reading a BIDS dataset as a set of Python objects for
+analysis with ``MNE-Python``,
+defacing T1-weighted anatomical MRI images to anonymize data and facilitate sharing,
+and saving anatomical landmark coordinates to enable
 coregistration between the MEG/EEG and MRI data, which is necessary for
 computation of forward and inverse solutions.
 
@@ -156,7 +155,7 @@ The Application Programming Interface (API) of the package is stable and
 extensively documented and explained in examples
 ([https://mne.tools/mne-bids/](https://mne.tools/mne-bids/)).
 In addition, a command-line interface is provided that allows non-Python
-users to benefit from some of the core functionality.
+users to benefit from the core functionality.
 
 As of writing, ``MNE-BIDS`` has received code contributions from 15
 contributors and its user base is steadily growing.
