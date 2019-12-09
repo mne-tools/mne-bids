@@ -7,6 +7,9 @@ Here, we show how to do BIDS conversion for group studies.
 The data from Wakeman et al. [1]_ is available here:
 https://openneuro.org/datasets/ds000117
 
+We recommend that you go through the more basic BIDS conversion example before
+checking out this group conversion example: :ref:`_ex-convert-mne-sample`
+
 References
 ----------
 .. [1] Wakeman, Daniel G., and Richard N. Henson. "A multi-subject, multi-modal
