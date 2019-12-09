@@ -38,7 +38,7 @@ from mne_bids.utils import (_write_json, _write_tsv, _read_events, _mkdir_p,
                             _get_mrk_meas_date, _extract_landmarks, _parse_ext,
                             _get_ch_type_mapping)
 from mne_bids.copyfiles import (copyfile_brainvision, copyfile_eeglab,
-                                copyfile_ctf, copyfile_bti)
+                                copyfile_ctf, copyfile_bti, copyfile_kit)
 from mne_bids.read import reader
 from mne_bids.tsv_handler import _from_tsv, _combine, _drop, _contains_row
 
@@ -1261,8 +1261,12 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
         copyfile_eeglab(raw_fname, bids_fname)
     elif ext == '.pdf':
         copyfile_bti(raw_orig, op.join(data_path, bids_raw_folder))
+    elif ext == '.con' or '.sqd':
+        copyfile_kit(raw_fname, bids_fname, subject_id, session_id,
+                     task, run, raw._init_kwargs, make_bids_basename)
     else:
         sh.copyfile(raw_fname, bids_fname)
+<<<<<<< HEAD
     # KIT data requires the marker file to be copied over too
     if 'mrk' in raw._init_kwargs:
         hpi = raw._init_kwargs['mrk']

@@ -22,6 +22,7 @@ import shutil as sh
 from scipy.io import loadmat, savemat
 
 from mne_bids.read import _parse_ext
+from mne_bids.utils import _get_mrk_meas_date
 
 
 def _copytree(src, dst, **kwargs):
@@ -151,6 +152,77 @@ def copyfile_ctf(src, dest):
         ext = op.splitext(fname)[-1]
         os.rename(op.join(dest, fname),
                   op.join(dest, bids_folder_name + ext))
+
+
+def copyfile_kit(src, dest, subject_id, session_id,
+                 task, run, _init_kwargs, make_bids_basename):
+    """Copy and rename KIT files to a new location.
+
+    Parameters
+    ----------
+    src : str
+        Path to the source raw .con or .sqd folder.
+    dest : str
+        Path to the destination of the new bids folder.
+    subject_id : str | None
+        The subject ID. Corresponds to "sub".
+    session_id : str | None
+        The session identifier. Corresponds to "ses".
+    task : str | None
+        The task identifier. Corresponds to "task".
+    run : int | None
+        The run number. Corresponds to "run".
+    _init_kwargs : dict
+        Extract information of marker and headpoints
+    make_bids_basename : helper function
+
+    """
+    # KIT data requires the marker file to be copied over too
+    sh.copyfile(src, dest)
+    data_path = op.split(dest)[0]
+    if 'mrk' in _init_kwargs:
+        hpi = _init_kwargs['mrk']
+        acq_map = dict()
+        if isinstance(hpi, list):
+            if _get_mrk_meas_date(hpi[0]) > _get_mrk_meas_date(hpi[1]):
+                raise ValueError('Markers provided in incorrect order.')
+            _, marker_ext = _parse_ext(hpi[0])
+            acq_map = dict(zip(['pre', 'post'], hpi))
+        else:
+            _, marker_ext = _parse_ext(hpi)
+            acq_map[None] = hpi
+        for key, value in acq_map.items():
+            marker_fname = make_bids_basename(
+                subject=subject_id, session=session_id, task=task, run=run,
+                acquisition=key, suffix='markers%s' % marker_ext,
+                prefix=data_path)
+            sh.copyfile(value, marker_fname)
+    if 'elp' in _init_kwargs:
+        hpi = _init_kwargs['elp']
+        acq_map = dict()
+        _, marker_ext = _parse_ext(hpi)
+        acq_map[None] = hpi
+        for key, value in acq_map.items():
+            task, run, key = None, None, 'ELP'
+            marker_ext = '.pos'
+            marker_fname = make_bids_basename(
+                subject=subject_id, session=session_id, task=task, run=run,
+                acquisition=key, suffix='headshape%s' % marker_ext,
+                prefix=data_path)
+            sh.copyfile(value, marker_fname)
+    if 'hsp' in _init_kwargs:
+        hpi = _init_kwargs['hsp']
+        acq_map = dict()
+        _, marker_ext = _parse_ext(hpi)
+        acq_map[None] = hpi
+        for key, value in acq_map.items():
+            task, run, key = None, None, 'HSP'
+            marker_ext = '.pos'
+            marker_fname = make_bids_basename(
+                subject=subject_id, session=session_id, task=task, run=run,
+                acquisition=key, suffix='headshape%s' % marker_ext,
+                prefix=data_path)
+            sh.copyfile(value, marker_fname)
 
 
 def copyfile_brainvision(vhdr_src, vhdr_dest, verbose=False):
