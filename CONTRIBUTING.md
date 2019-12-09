@@ -21,6 +21,12 @@ pypi. Update your installation as follows.
     $ pip uninstall mne  # uninstall pypi mne
     $ pip install -e .  # use the cloned repo for a local install of mne
 
+The same needs to be done with mne-bids:
+
+    $ git clone https://github.com/mne-tools/mne-bids --depth 1
+    $ cd mne-bids
+    $ pip install -e .
+
 Then, install the following python packages for testing purposes:
 
     $ pip install flake8 pytest pytest-cov
