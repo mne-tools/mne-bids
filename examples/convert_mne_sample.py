@@ -64,8 +64,10 @@ er_raw = mne.io.read_raw_fif(er_raw_fname)
 # 'emptyroom', and that the task is 'noise'.
 # We also need to specify the recording date in the format YYYYMMDD for the
 # session id.
-er_date = datetime.fromtimestamp(
-    er_raw.info['meas_date'][0]).strftime('%Y%m%d')
+meas_date = er_raw.info['meas_date']
+if not isinstance(meas_date, datetime):
+    meas_date = datetime.fromtimestamp([0])  # for MNE < v0.20
+er_date = meas_date.strftime('%Y%m%d')
 er_bids_basename = 'sub-emptyroom_ses-{0}_task-noise'.format(er_date)
 write_raw_bids(er_raw, er_bids_basename, output_path, overwrite=True)
 
