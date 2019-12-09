@@ -6,6 +6,12 @@ jobs:
         steps:
             - checkout
 
+            - run:
+              name: Check environment.yml and doc/environment.yml syncing
+              # doc/environment.yml must be a perfect copy of environment.yml
+              # with a single line "  - mne_bids~=0.X" added in the pip section
+              command: diff <(grep -v '^  - mne_bids~=0.3$' doc/environment.yml) <(cat environment.yml)
+
             # restore cache from last build. Unless __init__.py has changed since then
             - restore_cache:
                 keys:
