@@ -100,7 +100,7 @@ def _handle_events_reading(events_fname, raw):
 
     # Deal with "n/a" strings before converting to float
     ons = [np.nan if on == 'n/a' else on for on in events_dict['onset']]
-    dus = [np.nan if du == 'n/a' else du for du in events_dict['duration']]
+    dus = [0. if du == 'n/a' else du for du in events_dict['duration']]
 
     # Add Events to raw as annotations
     onsets = np.asarray(ons, dtype=float)
