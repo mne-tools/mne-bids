@@ -19,9 +19,10 @@ from mne_bids.copyfiles import (_get_brainvision_encoding,
                                 copyfile_eeglab,
                                 copyfile_kit)
 
-from mne_bids.write import make_bids_basename, make_bids_folders
+from mne_bids.write import make_bids_basename
 
 base_path = op.join(op.dirname(mne.__file__), 'io')
+
 
 def test_get_brainvision_encoding():
     """Test getting the file-encoding from a BrainVision header."""
@@ -131,8 +132,8 @@ def test_copyfile_kit():
     task = 'testing'
 
     bids_basename = make_bids_basename(
-    subject=subject_id, session=session_id, run=run, acquisition=acq,
-    task=task)
+        subject=subject_id, session=session_id, run=run, acquisition=acq,
+        task=task)
 
     kit_bids_basename = bids_basename.replace('_acq-01', '')
 
@@ -149,9 +150,9 @@ def test_copyfile_kit():
     assert op.exists(bids_fname)
     _, ext = _parse_ext(hpi_fname, verbose=True)
     if ext == '.spd':
-        assert op.exists(op.join(kit_bids_basename,'_markers.sqd'))
+        assert op.exists(op.join(kit_bids_basename, '_markers.sqd'))
     elif ext == '.mrk':
-        assert op.exists(op.join(kit_bids_basename,'_markers.mrk'))
+        assert op.exists(op.join(kit_bids_basename, '_markers.mrk'))
 
     if op.exists(electrode_fname):
         task, run, key = None, None, 'ELP'
