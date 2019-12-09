@@ -210,8 +210,10 @@ def test_fif(_bids_validate):
 
     # write the same data but pretend it is empty room data:
     raw = mne.io.read_raw_fif(raw_fname)
-    er_date = datetime.fromtimestamp(
-        raw.info['meas_date'][0]).strftime('%Y%m%d')
+    meas_date = raw.info['meas_date']
+    if not isinstance(meas_date, datetime):
+        meas_date = datetime.fromtimestamp(meas_date[0])
+    er_date = meas_date.strftime('%Y%m%d')
     er_bids_basename = 'sub-emptyroom_ses-{0}_task-noise'.format(str(er_date))
     write_raw_bids(raw, er_bids_basename, output_path, overwrite=False)
     assert op.exists(op.join(
@@ -331,8 +333,7 @@ def test_fif(_bids_validate):
         subject=subject_id, session=session_id, suffix='scans.tsv',
         prefix=op.join(output_path, 'sub-01', 'ses-01'))
     data = _from_tsv(scans_tsv)
-    assert datetime.strptime(data['acq_time'][0],
-                             '%Y-%m-%dT%H:%M:%S').year < 1925
+    assert data['acq_time'][0] == 'n/a'
     _bids_validate(output_path)
 
     # check that split files have part key
