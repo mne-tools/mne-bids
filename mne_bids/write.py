@@ -35,7 +35,7 @@ from mne_bids.utils import (_write_json, _write_tsv, _read_events, _mkdir_p,
                             _age_on_date, _infer_eeg_placement_scheme,
                             _check_key_val,
                             _parse_bids_filename, _handle_kind, _check_types,
-                            _get_mrk_meas_date, _extract_landmarks, _parse_ext,
+                            _extract_landmarks, _parse_ext,
                             _get_ch_type_mapping)
 from mne_bids.copyfiles import (copyfile_brainvision, copyfile_eeglab,
                                 copyfile_ctf, copyfile_bti, copyfile_kit)
