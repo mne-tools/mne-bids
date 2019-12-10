@@ -386,6 +386,17 @@ def test_kit(_bids_validate):
 
     read_raw_bids(kit_bids_basename + '_meg.sqd', bids_root)
 
+    # ensure the marker file is produced in the right place
+    marker_fname = make_bids_basename(
+        subject=subject_id, session=session_id, task=task, run=run,
+        suffix='markers.sqd',
+        prefix=op.join(output_path, 'sub-01', 'ses-01', 'meg'))
+    print(f"check copyfile: {marker_fname}")
+    print("/tmp/tmp_mne_tempdir_le6dp92g/sub-01/ses-01/meg/sub-01_ses-01_task-testing_run-01_markers.sqd")
+    # __import__('IPython').embed()
+    # __import__('sys').exit()
+    assert op.exists(marker_fname)
+
     # test anonymize
     if check_version('mne', '0.20'):
         output_path = _test_anonymize(raw, kit_bids_basename,
