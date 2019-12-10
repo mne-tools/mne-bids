@@ -195,3 +195,4 @@ People who contributed to this release (in alphabetical order):
 .. _Marijn van Vliet: https://github.com/wmvanvliet
 .. _Alex Rockhill: http://github.com/alexrockhill
 .. _Sophie Herbst: http://github.com/SophieHerbst
+.. _Adam Li: https://github.com/adam2392

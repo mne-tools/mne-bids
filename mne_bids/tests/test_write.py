@@ -252,7 +252,7 @@ def test_fif(_bids_validate):
 
     bids_basename2 = bids_basename.replace(subject_id, subject_id2)
     raw = mne.io.read_raw_fif(raw_fname2)
-    bids_bids_root = write_raw_bids(raw, bids_basename2, bids_root,
+    bids_output_path = write_raw_bids(raw, bids_basename2, bids_root,
                                     events_data=events_fname,
                                     event_id=event_id, overwrite=False)
 
@@ -289,7 +289,7 @@ def test_fif(_bids_validate):
     assert op.exists(op.join(bids_root, 'participants.tsv'))
 
     # asserting that single fif files do not include the part key
-    files = glob(op.join(bids_bids_root, 'sub-' + subject_id2,
+    files = glob(op.join(bids_output_path, 'sub-' + subject_id2,
                          'ses-' + subject_id2, 'meg', '*.fif'))
     for ii, FILE in enumerate(files):
         assert 'part' not in FILE
