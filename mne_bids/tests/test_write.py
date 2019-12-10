@@ -253,8 +253,8 @@ def test_fif(_bids_validate):
     bids_basename2 = bids_basename.replace(subject_id, subject_id2)
     raw = mne.io.read_raw_fif(raw_fname2)
     bids_output_path = write_raw_bids(raw, bids_basename2, bids_root,
-                                    events_data=events_fname,
-                                    event_id=event_id, overwrite=False)
+                                      events_data=events_fname,
+                                      event_id=event_id, overwrite=False)
 
     # check that the overwrite parameters work correctly for the participant
     # data
