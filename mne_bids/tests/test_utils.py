@@ -38,7 +38,7 @@ bids_basename = make_bids_basename(
 @pytest.fixture(scope='session')
 def return_bids_test_dir(tmpdir_factory):
     """Return path to a written test BIDS dir."""
-    output_path = str(tmpdir_factory.mktemp('mnebids_utils_test_bids_ds'))
+    bids_root = str(tmpdir_factory.mktemp('mnebids_utils_test_bids_ds'))
     data_path = testing.data_path()
     raw_fname = op.join(data_path, 'MEG', 'sample',
                         'sample_audvis_trunc_raw.fif')
@@ -55,11 +55,11 @@ def return_bids_test_dir(tmpdir_factory):
                  bids_basename2,
                  ]:
         with pytest.warns(UserWarning, match='No line frequency'):
-            write_raw_bids(raw, name, output_path,
+            write_raw_bids(raw, name, bids_root,
                            events_data=events_fname, event_id=event_id,
                            overwrite=True)
 
-    return output_path
+    return bids_root
 
 
 def test_get_keys(return_bids_test_dir):
@@ -169,16 +169,16 @@ def test_make_filenames():
 def test_make_folders():
     """Test that folders are created and named properly."""
     # Make sure folders are created properly
-    output_path = _TempDir()
+    bids_root = _TempDir()
     make_bids_folders(subject='hi', session='foo', kind='ba',
-                      output_path=output_path)
-    assert op.isdir(op.join(output_path, 'sub-hi', 'ses-foo', 'ba'))
+                      bids_root=bids_root)
+    assert op.isdir(op.join(bids_root, 'sub-hi', 'ses-foo', 'ba'))
     # If we remove a kwarg the folder shouldn't be created
-    output_path = _TempDir()
-    make_bids_folders(subject='hi', kind='ba', output_path=output_path)
-    assert op.isdir(op.join(output_path, 'sub-hi', 'ba'))
+    bids_root = _TempDir()
+    make_bids_folders(subject='hi', kind='ba', bids_root=bids_root)
+    assert op.isdir(op.join(bids_root, 'sub-hi', 'ba'))
     # check overwriting of folders
-    make_bids_folders(subject='hi', kind='ba', output_path=output_path,
+    make_bids_folders(subject='hi', kind='ba', bids_root=bids_root,
                       overwrite=True, verbose=True)
 
 
@@ -288,10 +288,10 @@ def test_find_best_candidates(candidate_list, best_candidates):
 
 def test_find_matching_sidecar(return_bids_test_dir):
     """Test finding a sidecar file from a BIDS dir."""
-    output_path = return_bids_test_dir
+    bids_root = return_bids_test_dir
 
     # Now find a sidecar
-    sidecar_fname = _find_matching_sidecar(bids_basename, output_path,
+    sidecar_fname = _find_matching_sidecar(bids_basename, bids_root,
                                            'coordsystem.json')
     expected_file = op.join('sub-01', 'ses-01', 'meg',
                             'sub-01_ses-01_coordsystem.json')
@@ -301,8 +301,8 @@ def test_find_matching_sidecar(return_bids_test_dir):
     with pytest.raises(RuntimeError, match='Expected to find a single'):
         open(sidecar_fname.replace('coordsystem.json',
                                    '2coordsystem.json'), 'w').close()
-        _find_matching_sidecar(bids_basename, output_path, 'coordsystem.json')
+        _find_matching_sidecar(bids_basename, bids_root, 'coordsystem.json')
 
     # Find nothing but receive None, because we set `allow_fail` to True
     with pytest.warns(UserWarning, match='Did not find any'):
-        _find_matching_sidecar(bids_basename, output_path, 'foo.bogus', True)
+        _find_matching_sidecar(bids_basename, bids_root, 'foo.bogus', True)

@@ -22,6 +22,7 @@ Current
 Changelog
 ~~~~~~~~~
 
+- Standardized `bids_root` and `output_path` arguments in :func:`read_raw_bids`, :func:`write_raw_bids`, and :func:`make_bids_folder` to just `bids_root`, by `Adam Li`_ (`#303 <https://github.com/mne-tools/mne-bids/pull/303>`_)
 - Added landmark argument to :func:`write_anat` to pass landmark location directly for deface, by `Alex Rockhill`_ (`#292 <https://github.com/mne-tools/mne-bids/pull/292>`_)
 - Added option to anonymize by shifting measurement date with `anonymize` parameter, in accordance with BIDS specifications, by `Alex Rockhill`_ (`#280 <https://github.com/mne-tools/mne-bids/pull/280>`_)
 - Added automatic conversion of FIF to BrainVision format with warning for EEG only data and conversion to FIF for meg non-FIF data, by `Alex Rockhill`_ (`#237 <https://github.com/mne-tools/mne-bids/pull/237>`_)
@@ -194,3 +195,4 @@ People who contributed to this release (in alphabetical order):
 .. _Marijn van Vliet: https://github.com/wmvanvliet
 .. _Alex Rockhill: http://github.com/alexrockhill
 .. _Sophie Herbst: http://github.com/SophieHerbst
+.. _Adam Li: https://github.com/adam2392

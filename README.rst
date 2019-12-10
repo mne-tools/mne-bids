@@ -176,7 +176,7 @@ iEEG is experimental at the moment.
     >>> from mne import io
     >>> from mne_bids import write_raw_bids
     >>> raw = io.read_raw_fif('my_old_file.fif')
-    >>> write_raw_bids(raw, 'sub-01_ses-01_run-05', output_path='./bids_dataset')
+    >>> write_raw_bids(raw, 'sub-01_ses-01_run-05', bids_root='./bids_dataset')
 
 Command Line Interface
 ----------------------
@@ -191,7 +191,7 @@ Example:
 
 .. code-block:: bash
 
-  $ mne_bids raw_to_bids --subject_id sub01 --task rest --raw data.edf --output_path new_path
+  $ mne_bids raw_to_bids --subject_id sub01 --task rest --raw data.edf --bids_root new_path
 
 Bug reports
 -----------

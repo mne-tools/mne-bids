@@ -842,12 +842,12 @@ def make_bids_basename(subject=None, session=None, task=None,
     return filename
 
 
-def make_bids_folders(subject, session=None, kind=None, output_path=None,
+def make_bids_folders(subject, session=None, kind=None, bids_root=None,
                       make_dir=True, overwrite=False, verbose=False):
     """Create a BIDS folder hierarchy.
 
     This creates a hierarchy of folders *within* a BIDS dataset. You should
-    plan to create these folders *inside* the output_path folder of the dataset.
+    plan to create these folders *inside* the bids_root folder of the dataset.
 
     Parameters
     ----------
@@ -858,8 +858,8 @@ def make_bids_folders(subject, session=None, kind=None, output_path=None,
         "anat", "func", etc.
     session : str | None
         The session for a item. Corresponds to "ses".
-    output_path : str | None
-        The output_path for the folders to be created. If None, folders will be
+    bids_root : str | None
+        The bids_root for the folders to be created. If None, folders will be
         created in the current working directory.
     make_dir : bool
         Whether to actually create the folders specified. If False, only a
@@ -881,12 +881,12 @@ def make_bids_folders(subject, session=None, kind=None, output_path=None,
     Examples
     --------
     >>> print(make_bids_folders('sub_01', session='my_session',
-                                kind='meg', output_path='path/to/project',
+                                kind='meg', bids_root='path/to/project',
                                 make_dir=False))  # noqa
     path/to/project/sub-sub_01/ses-my_session/meg
 
     """
-    _check_types((subject, kind, session, output_path))
+    _check_types((subject, kind, session, bids_root))
     if session is not None:
         _check_key_val('ses', session)
 
@@ -896,8 +896,8 @@ def make_bids_folders(subject, session=None, kind=None, output_path=None,
     if isinstance(kind, str):
         path.append(kind)
     path = op.join(*path)
-    if isinstance(output_path, str):
-        path = op.join(output_path, path)
+    if isinstance(bids_root, str):
+        path = op.join(bids_root, path)
 
     if make_dir is True:
         _mkdir_p(path, overwrite=overwrite, verbose=verbose)
@@ -973,7 +973,7 @@ def make_dataset_description(path, name=None, data_license=None,
     _write_json(fname, description, overwrite=True, verbose=verbose)
 
 
-def write_raw_bids(raw, bids_basename, output_path, events_data=None,
+def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
                    event_id=None, anonymize=None,
                    overwrite=False, verbose=True):
     """Walk over a folder of files and create BIDS compatible folder.
@@ -1000,7 +1000,7 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
         generated using make_bids_basename.
         Example: `sub-01_ses-01_task-testing_acq-01_run-01`.
         This will write the following files in the correct subfolder of the
-        output_path::
+        bids_root::
 
             sub-01_ses-01_task-testing_acq-01_run-01_meg.fif
             sub-01_ses-01_task-testing_acq-01_run-01_meg.json
@@ -1018,7 +1018,7 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
 
         Note that the modality 'meg' is automatically inferred from the raw
         object and extension '.fif' is copied from raw.filenames.
-    output_path : str
+    bids_root : str
         The path of the root of the BIDS compatible folder. The session and
         subject specific folders will be populated automatically by parsing
         bids_basename.
@@ -1060,7 +1060,7 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
 
     Returns
     -------
-    output_path : str
+    bids_root : str
         The path of the root of the BIDS compatible folder.
 
     Notes
@@ -1132,22 +1132,22 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
                                  "session date.")
 
     data_path = make_bids_folders(subject=subject_id, session=session_id,
-                                  kind=kind, output_path=output_path,
+                                  kind=kind, bids_root=bids_root,
                                   overwrite=False, verbose=verbose)
     if session_id is None:
         ses_path = os.sep.join(data_path.split(os.sep)[:-1])
     else:
         ses_path = make_bids_folders(subject=subject_id, session=session_id,
-                                     output_path=output_path, make_dir=False,
+                                     bids_root=bids_root, make_dir=False,
                                      overwrite=False, verbose=verbose)
 
     # create filenames
     scans_fname = make_bids_basename(
         subject=subject_id, session=session_id, suffix='scans.tsv',
         prefix=ses_path)
-    participants_tsv_fname = make_bids_basename(prefix=output_path,
+    participants_tsv_fname = make_bids_basename(prefix=bids_root,
                                                 suffix='participants.tsv')
-    participants_json_fname = make_bids_basename(prefix=output_path,
+    participants_json_fname = make_bids_basename(prefix=bids_root,
                                                  suffix='participants.json')
     coordsystem_fname = make_bids_basename(
         subject=subject_id, session=session_id, acquisition=acquisition,
@@ -1215,7 +1215,7 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
     if events is not None and len(events) > 0 and not emptyroom:
         _events_tsv(events, raw, events_fname, event_id, overwrite, verbose)
 
-    make_dataset_description(output_path, name=" ", verbose=verbose)
+    make_dataset_description(bids_root, name=" ", verbose=verbose)
     _sidecar_json(raw, task, manufacturer, sidecar_fname, kind, overwrite,
                   verbose)
     _channels_tsv(raw, channels_fname, overwrite, verbose)
@@ -1282,7 +1282,7 @@ def write_raw_bids(raw, bids_basename, output_path, events_data=None,
                 prefix=data_path)
             sh.copyfile(value, marker_fname)
 
-    return output_path
+    return bids_root
 
 
 def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
