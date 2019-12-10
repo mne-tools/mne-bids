@@ -21,9 +21,9 @@ pypi. Update your installation as follows.
     $ pip uninstall mne  # uninstall pypi mne
     $ pip install -e .  # use the cloned repo for a local install of mne
 
-The same needs to be done with mne-bids:
+The same needs to be done with mne-bids. However, here you need to make sure that you work on your [fork](https://help.github.com/en/github/getting-started-with-github/fork-a-repo) of the mne-bids repository.
 
-    $ git clone https://github.com/mne-tools/mne-bids --depth 1
+    $ git clone https://github.com/<your-GitHub-username>/mne-bids
     $ cd mne-bids
     $ pip install -e .
 
