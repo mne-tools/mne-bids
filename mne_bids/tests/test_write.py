@@ -616,7 +616,17 @@ def test_edf(_bids_validate):
     raw.rename_channels({raw.info['ch_names'][1]: 'EMG'})
     raw.set_channel_types({'EMG': 'emg'})
 
-    write_raw_bids(raw, bids_basename, bids_root)
+    # test dataset description overwrite
+    make_dataset_description(bids_root, name="test",
+                             authors=["test1", "test2"])
+    write_raw_bids(raw, bids_basename, bids_root, overwrite=False)
+    dataset_description_fpath = op.join(bids_root, "dataset_description.json")
+    with open(dataset_description_fpath, 'r') as f:
+        dataset_description_json = json.load(f)
+    assert dataset_description_json["Authors"] == ["test1", "test2"]
+
+    # write from fresh start w/ overwrite
+    write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
 
     # Reading the file back should raise an error, because we renamed channels
     # in `raw` and used that information to write a channels.tsv. Yet, we
