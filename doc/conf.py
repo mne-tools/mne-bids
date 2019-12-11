@@ -129,7 +129,7 @@ sphinx_gallery_conf = {
         'branch': 'gh-pages',  # noqa: E501 Can be any branch, tag, or commit hash. Use a branch that hosts your docs.
         'binderhub_url': 'https://mybinder.org',  # noqa: E501 Any URL of a binderhub deployment. Must be full URL (e.g. https://mybinder.org).
         'dependencies': [
-            '../environment.yml'
+            './environment.yml'
         ],
     }
 }
