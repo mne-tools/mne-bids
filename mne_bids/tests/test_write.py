@@ -623,12 +623,14 @@ def test_edf(_bids_validate):
     dataset_description_fpath = op.join(bids_root, "dataset_description.json")
     with open(dataset_description_fpath, 'r') as f:
         dataset_description_json = json.load(f)
-    assert dataset_description_json["Authors"] == ["test1", "test2"]
+        assert dataset_description_json["Authors"] == ["test1", "test2"]
 
     # write from fresh start w/ overwrite
     write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
     # after overwrite, the dataset description if defaulted to MNE-BIDS
-    assert dataset_description_json["Authors"] == "MNE-BIDS"
+    with open(dataset_description_fpath, 'r') as f:
+        dataset_description_json = json.load(f)
+        assert dataset_description_json["Authors"] == "MNE-BIDS"
 
     # Reading the file back should raise an error, because we renamed channels
     # in `raw` and used that information to write a channels.tsv. Yet, we
