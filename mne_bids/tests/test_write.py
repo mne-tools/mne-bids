@@ -627,6 +627,8 @@ def test_edf(_bids_validate):
 
     # write from fresh start w/ overwrite
     write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
+    # after overwrite, the dataset description if defaulted to MNE-BIDS
+    assert dataset_description_json["Authors"] == "MNE-BIDS"
 
     # Reading the file back should raise an error, because we renamed channels
     # in `raw` and used that information to write a channels.tsv. Yet, we

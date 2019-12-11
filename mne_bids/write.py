@@ -898,6 +898,10 @@ def make_dataset_description(path, name, data_license=None,
     The required field BIDSVersion will be automatically filled by mne_bids.
 
     """
+    # default author to make dataset description BIDS compliant
+    if authors is None:
+        authors = "MNE-BIDS"
+
     # Put potential string input into list of strings
     if isinstance(authors, str):
         authors = authors.split(', ')
