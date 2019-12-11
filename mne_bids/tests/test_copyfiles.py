@@ -149,10 +149,12 @@ def test_copyfile_kit():
                  task, run, raw._init_kwargs, make_bids_basename)
     assert op.exists(bids_fname)
     _, ext = _parse_ext(hpi_fname, verbose=True)
-    if ext == '.spd':
-        assert op.exists(op.join(kit_bids_basename, '_markers.sqd'))
+    if ext == '.sqd':
+        assert op.exists(op.join(
+            output_path, kit_bids_basename+'_markers.sqd'))
     elif ext == '.mrk':
-        assert op.exists(op.join(kit_bids_basename, '_markers.mrk'))
+        assert op.exists(op.join(
+            output_path, kit_bids_basename+'_markers.mrk'))
 
     if op.exists(electrode_fname):
         task, run, key = None, None, 'ELP'

@@ -198,31 +198,23 @@ def copyfile_kit(src, dest, subject_id, session_id,
                 prefix=data_path)
             sh.copyfile(value, marker_fname)
     if 'elp' in _init_kwargs:
-        hpi = _init_kwargs['elp']
-        acq_map = dict()
-        _, marker_ext = _parse_ext(hpi)
-        acq_map[None] = hpi
-        for key, value in acq_map.items():
-            task, run, key = None, None, 'ELP'
-            marker_ext = '.pos'
-            marker_fname = make_bids_basename(
-                subject=subject_id, session=session_id, task=task, run=run,
-                acquisition=key, suffix='headshape%s' % marker_ext,
-                prefix=data_path)
-            sh.copyfile(value, marker_fname)
+        hpi_file = _init_kwargs['elp']
+        task, run, acp = None, None, 'ELP'
+        marker_ext = '.pos'
+        marker_fname = make_bids_basename(
+            subject=subject_id, session=session_id, task=task, run=run,
+            acquisition=acp, suffix='headshape%s' % marker_ext,
+            prefix=data_path)
+        sh.copyfile(hpi_file, marker_fname)
     if 'hsp' in _init_kwargs:
-        hpi = _init_kwargs['hsp']
-        acq_map = dict()
-        _, marker_ext = _parse_ext(hpi)
-        acq_map[None] = hpi
-        for key, value in acq_map.items():
-            task, run, key = None, None, 'HSP'
-            marker_ext = '.pos'
-            marker_fname = make_bids_basename(
-                subject=subject_id, session=session_id, task=task, run=run,
-                acquisition=key, suffix='headshape%s' % marker_ext,
-                prefix=data_path)
-            sh.copyfile(value, marker_fname)
+        hpi_file = _init_kwargs['hsp']
+        task, run, acp = None, None, 'HSP'
+        marker_ext = '.pos'
+        marker_fname = make_bids_basename(
+            subject=subject_id, session=session_id, task=task, run=run,
+            acquisition=acp, suffix='headshape%s' % marker_ext,
+            prefix=data_path)
+        sh.copyfile(hpi_file, marker_fname)
 
 
 def copyfile_brainvision(vhdr_src, vhdr_dest, verbose=False):
