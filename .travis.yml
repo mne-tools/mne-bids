@@ -43,8 +43,6 @@ before_install:
   - export PATH=${HOME}/miniconda/bin:$PATH
   - conda update --yes --quiet conda
   - npm install -g npm@2
-  - npm install -g npm stable
-  - npm install -g node@10.16.1
   - npm --version
   - node --version
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
