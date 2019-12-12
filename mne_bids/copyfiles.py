@@ -199,20 +199,20 @@ def copyfile_kit(src, dest, subject_id, session_id,
             sh.copyfile(value, marker_fname)
     if 'elp' in _init_kwargs:
         hpi_file = _init_kwargs['elp']
-        task, run, acp = None, None, 'ELP'
+        task, run, acq = None, None, 'ELP'
         marker_ext = '.pos'
         marker_fname = make_bids_basename(
             subject=subject_id, session=session_id, task=task, run=run,
-            acquisition=acp, suffix='headshape%s' % marker_ext,
+            acquisition=acq, suffix='headshape%s' % marker_ext,
             prefix=data_path)
         sh.copyfile(hpi_file, marker_fname)
     if 'hsp' in _init_kwargs:
         hpi_file = _init_kwargs['hsp']
-        task, run, acp = None, None, 'HSP'
+        task, run, acq = None, None, 'HSP'
         marker_ext = '.pos'
         marker_fname = make_bids_basename(
             subject=subject_id, session=session_id, task=task, run=run,
-            acquisition=acp, suffix='headshape%s' % marker_ext,
+            acquisition=acq, suffix='headshape%s' % marker_ext,
             prefix=data_path)
         sh.copyfile(hpi_file, marker_fname)
 
