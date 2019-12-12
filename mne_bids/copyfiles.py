@@ -155,7 +155,7 @@ def copyfile_ctf(src, dest):
 
 
 def copyfile_kit(src, dest, subject_id, session_id,
-                 task, run, _init_kwargs, make_bids_basename):
+                 task, run, _init_kwargs):
     """Copy and rename KIT files to a new location.
 
     Parameters
@@ -174,9 +174,9 @@ def copyfile_kit(src, dest, subject_id, session_id,
         The run number. Corresponds to "run".
     _init_kwargs : dict
         Extract information of marker and headpoints
-    make_bids_basename : helper function
 
     """
+    from mne_bids.write import make_bids_basename
     # KIT data requires the marker file to be copied over too
     sh.copyfile(src, dest)
     data_path = op.split(dest)[0]

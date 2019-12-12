@@ -146,7 +146,7 @@ def test_copyfile_kit():
     bids_fname = op.join(output_path, bids_fname)
 
     copyfile_kit(raw_fname, bids_fname, subject_id, session_id,
-                 task, run, raw._init_kwargs, make_bids_basename)
+                 task, run, raw._init_kwargs)
     assert op.exists(bids_fname)
     _, ext = _parse_ext(hpi_fname, verbose=True)
     if ext == '.sqd':

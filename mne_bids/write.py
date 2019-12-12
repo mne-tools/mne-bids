@@ -1263,7 +1263,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
         copyfile_bti(raw_orig, op.join(data_path, bids_raw_folder))
     elif ext == '.con' or '.sqd':
         copyfile_kit(raw_fname, bids_fname, subject_id, session_id,
-                     task, run, raw._init_kwargs, make_bids_basename)
+                     task, run, raw._init_kwargs)
     else:
         sh.copyfile(raw_fname, bids_fname)
 <<<<<<< HEAD
