@@ -23,6 +23,7 @@ from mne import Epochs
 from mne.io.constants import FIFF
 from mne.io.pick import channel_type
 from mne.io import BaseRaw, anonymize_info, read_fiducials
+
 try:
     from mne.io._digitization import _get_fid_coords
 except ImportError:
@@ -342,7 +343,7 @@ def _scans_tsv(raw, raw_fname, fname, overwrite=False, verbose=True):
         acq_time = meas_date.strftime('%Y-%m-%dT%H:%M:%S')
 
     data = OrderedDict([('filename', ['%s' % raw_fname.replace(os.sep, '/')]),
-                       ('acq_time', [acq_time])])
+                        ('acq_time', [acq_time])])
 
     if os.path.exists(fname):
         orig_data = _from_tsv(fname)
@@ -359,14 +360,19 @@ def _scans_tsv(raw, raw_fname, fname, overwrite=False, verbose=True):
 
     return fname
 
-def _electrodes_tsv(raw, fname, overwrite=False, verbose=True):
-    """Create an electrodes.tsv file and save it.
+
+def _electrodes_tsv(raw, fname, kind, overwrite=False, verbose=True):
+    """
+    Create an electrodes.tsv file and save it.
+
     Parameters
     ----------
     raw : instance of Raw
         The data as MNE-Python Raw object.
     fname : str
         Filename to save the electrodes.tsv to.
+    kind : str
+        Acquisition type to save electrodes in. For iEEG, requires size.
     overwrite : bool
         Defaults to False.
         Whether to overwrite the existing data in the file.
@@ -386,13 +392,24 @@ def _electrodes_tsv(raw, fname, overwrite=False, verbose=True):
             y.append('n/a')
             z.append('n/a')
         names.append(ch['ch_name'])
-    data = OrderedDict([('name', names),
-                        ('x', x),
-                        ('y', y),
-                        ('z', z),
-                        ])
+
+    if kind == "ieeg":
+        sizes = ['n/a'] * len(names)
+        data = OrderedDict([('name', names),
+                            ('x', x),
+                            ('y', y),
+                            ('z', z),
+                            ('size', sizes),
+                            ])
+    else:
+        data = OrderedDict([('name', names),
+                            ('x', x),
+                            ('y', y),
+                            ('z', z),
+                            ])
     _write_tsv(fname, data, overwrite=overwrite, verbose=verbose)
     return fname
+
 
 def _coordsystem_json(raw, unit, orient, coordsystem_name, fname,
                       kind, overwrite=False, verbose=True):
@@ -452,12 +469,10 @@ def _coordsystem_json(raw, unit, orient, coordsystem_name, fname,
                     'AnatomicalLandmarkCoordinateUnits': unit,
                     }
     elif kind == "ieeg":
-        fid_json = {'iEEGCoordinateSystem': coordsystem_name, # Pixels, or ACPC
-                    'iEEGCoordinateUnits': unit, # m, mm, cm , or pixels
-                    'AnatomicalLandmarkCoordinates': coords,
-                    'AnatomicalLandmarkCoordinateSystem': coordsystem_name,
-                    'AnatomicalLandmarkCoordinateUnits': unit,
-                    }
+        fid_json = {
+            'iEEGCoordinateSystem': coordsystem_name,  # Pixels, or ACPC
+            'iEEGCoordinateUnits': unit,  # m, mm, cm , or pixels
+        }
     else:
         warn('Writing of electrodes.tsv is not supported for kind "{}". '
              'Skipping ...'.format(kind))
@@ -680,7 +695,7 @@ def _deface(t1w, mri_landmarks, deface):
     idxs_meg = apply_trans(translation(y=trans_y), idxs_meg)
     idxs_meg = apply_trans(rotation(x=-np.deg2rad(theta)), idxs_meg)
     coords = idxs_meg.reshape(t1w.shape + (3,))  # (*t1w_data.shape, 3)
-    mask = (coords[..., 2] < 0)   # z < 0
+    mask = (coords[..., 2] < 0)  # z < 0
 
     t1w_data[mask] = 0.
     # smooth decided against for potential lack of anonymizaton
@@ -1182,8 +1197,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     raw_fname = raw_fname.replace('.fdt', '.set')
     _, ext = _parse_ext(raw_fname, verbose=verbose)
 
-    if ext not in [this_ext for data_type in ALLOWED_EXTENSIONS
-                   for this_ext in ALLOWED_EXTENSIONS[data_type]]:
+    if ext not in [this_ext for this_ext in ALLOWED_EXTENSIONS]:
         raise ValueError('Unrecognized file format %s' % ext)
 
     raw_orig = reader[ext](**raw._init_kwargs)
@@ -1296,6 +1310,8 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
         _coordsystem_json(raw, unit, orient, manufacturer, coordsystem_fname,
                           kind, overwrite, verbose)
     elif kind == "ieeg":
+        # TODO: add space of ieeg electrodes
+
         # We only write EEG electrodes.tsv and accompanying coordsystem.json
         # if we have LPA, RPA, and NAS available to rescale to a known
         # coordinate system frame
@@ -1304,8 +1320,9 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
             # Rescale to MNE-Python "head" coord system, which is the
             # "ElektaNeuromag" system, and equivalent to "CapTrak"
             pass
-        # Now write the data
-        _electrodes_tsv(raw, electrodes_fname, overwrite, verbose)
+        unit = "m"  # defaults to meters?
+        # Now write the data to the elec coords and the coordsystem
+        _electrodes_tsv(raw, electrodes_fname, kind, overwrite, verbose)
 
         _coordsystem_json(raw, unit, orient, manufacturer, coordsystem_fname,
                           kind, overwrite, verbose)
@@ -1330,8 +1347,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
                               'overwrite to True.' % bids_fname)
     _mkdir_p(os.path.dirname(bids_fname))
 
-    convert = ext not in ALLOWED_EXTENSIONS[kind]
-
+    convert = ext not in ALLOWED_EXTENSIONS
     if kind == 'meg' and convert and not anonymize:
         raise ValueError('Got file extension %s for MEG data, ' +
                          'expected one of %s' %
