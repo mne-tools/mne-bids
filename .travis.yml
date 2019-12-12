@@ -42,6 +42,7 @@ before_install:
   - ./miniconda.sh -b -p ${HOME}/miniconda
   - export PATH=${HOME}/miniconda/bin:$PATH
   - conda update --yes --quiet conda
+  - npm install -g npm@2
   - npm install -g npm stable
   - npm install -g node@10.16.1
   - npm --version
