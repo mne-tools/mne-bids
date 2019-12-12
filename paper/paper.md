@@ -119,7 +119,7 @@ software package for electrophysiology data analysis, and extending its
 functionality to support BIDS would be a great benefit for its growing user
 base.
 For this reason, we developed a dedicated Python software package *``MNE-BIDS`` with
-the goal to provide a programmable interface for BIDS datasets in
+the goal of providing a programmable interface for BIDS datasets in
 electrophysiology with ``MNE-Python``*.
 ``MNE-BIDS`` allows users to re-organize data into BIDS formats, store
 associated metadata after anonymization, extract information necessary for
