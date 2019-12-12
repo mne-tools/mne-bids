@@ -390,7 +390,7 @@ def test_kit(_bids_validate):
     marker_fname = make_bids_basename(
         subject=subject_id, session=session_id, task=task, run=run,
         suffix='markers.sqd',
-        prefix=op.join(output_path, 'sub-01', 'ses-01', 'meg'))
+        prefix=op.join(bids_root, 'sub-01', 'ses-01', 'meg'))
     assert op.exists(marker_fname)
 
     # test anonymize

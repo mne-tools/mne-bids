@@ -1266,47 +1266,6 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
                      task, run, raw._init_kwargs)
     else:
         sh.copyfile(raw_fname, bids_fname)
-<<<<<<< HEAD
-    # KIT data requires the marker file to be copied over too
-    if 'mrk' in raw._init_kwargs:
-        hpi = raw._init_kwargs['mrk']
-        acq_map = dict()
-        if isinstance(hpi, list):
-            if _get_mrk_meas_date(hpi[0]) > _get_mrk_meas_date(hpi[1]):
-                raise ValueError('Markers provided in incorrect order.')
-            _, marker_ext = _parse_ext(hpi[0])
-            acq_map = dict(zip(['pre', 'post'], hpi))
-        else:
-            _, marker_ext = _parse_ext(hpi)
-            acq_map[None] = hpi
-        for key, value in acq_map.items():
-            marker_fname = make_bids_basename(
-                subject=subject_id, session=session_id, task=task, run=run,
-                acquisition=key, suffix='markers%s' % marker_ext,
-                prefix=data_path)
-            sh.copyfile(value, marker_fname)
-    if 'elp' in raw._init_kwargs:
-        hpi = raw._init_kwargs['elp']
-        acq_map = dict()
-        _, marker_ext = _parse_ext(hpi)
-        acq_map[None] = hpi
-        for key, value in acq_map.items():
-            marker_fname = make_bids_basename(
-                subject=subject_id, session=session_id, task=task, run=run,
-                acquisition=key, suffix='headshape%s' % marker_ext,
-                prefix=data_path)
-            sh.copyfile(value, marker_fname)
-    if 'hsp' in raw._init_kwargs:
-        hpi = raw._init_kwargs['hsp']
-        acq_map = dict()
-        _, marker_ext = _parse_ext(hpi)
-        acq_map[None] = hpi
-        for key, value in acq_map.items():
-            marker_fname = make_bids_basename(
-                subject=subject_id, session=session_id, task=task, run=run,
-                acquisition=key, suffix='headshape%s' % marker_ext,
-                prefix=data_path)
-            sh.copyfile(value, marker_fname)
 
     return bids_root
 
