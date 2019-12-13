@@ -34,10 +34,10 @@ Bug
 ~~~
 
 - Fixed broken event timing broken by conversion to BV in :func:`write_raw_bids`, by `Alex Rockhill`_ (`#294 <https://github.com/mne-tools/mne-bids/pull/294>`_)
+- Enforce that the name arg is a required field for :func`mne_bids.make_dataset_description`, by `Teon Brooks`_(`#279 <https://github.com/mne-tools/mne-bids/pull/279>`)
 
 API
 ~~~
-- Enforce that the name arg is a required field for :func`mne_bids.make_dataset_description`, by `Teon Brooks`_(`#279 <https://github.com/mne-tools/mne-bids/pull/279>`)
 
 .. _changes_0_3:
 
