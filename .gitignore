@@ -23,6 +23,9 @@ cover
 # Pycharm
 .idea/
 
+# VS Code
+.vscode/
+
 *.pyc
 
 .cache
