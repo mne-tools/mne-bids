@@ -10,6 +10,7 @@ dependencies:
 - scipy>=0.18.1
 - scikit-learn
 - matplotlib
+- m2r
 - pip:
   - mne_bids~=0.3
   - mne>=0.19.1
