@@ -1,6 +1,8 @@
 Contributions
 -------------
 
+`mne-bids` development takes place
+[on Github](https://github.com/mne-tools/mne-bids).
 Contributions are welcome in the form of pull requests.
 
 Once the implementation of a piece of functionality is considered to be bug
