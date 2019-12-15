@@ -43,6 +43,7 @@ extensions = [
     'sphinx.ext.intersphinx',
     'sphinx_gallery.gen_gallery',
     'numpydoc',
+    'm2r',
     'gen_cli'  # custom extension, see ./sphinxext/gen_cli.py
 ]
 
@@ -52,8 +53,8 @@ autosummary_generate = True
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
 #
-# source_suffix = ['.rst', '.md']
-source_suffix = '.rst'
+source_suffix = ['.rst', '.md']
+# source_suffix = '.rst'
 
 # The master toctree document.
 master_doc = 'index'
@@ -102,7 +103,7 @@ html_theme_options = {
         ("API", "api"),
         ("CLI", "generated/cli"),
         ("What's new", "whats_new"),
-        ("Github", "https://github.com/mne-tools/mne-bids", True),
+        ("Contribute", "contribute"),
     ]}
 
 
