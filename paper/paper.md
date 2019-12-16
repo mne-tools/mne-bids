@@ -88,7 +88,7 @@ affiliations:
   name: Université Paris-Saclay, Inria, CEA, Palaiseau, France
 - index: 15
   name: Athinoula A. Martinos Center for Biomedical Imaging, Massachusetts General Hospital, Charlestown, MA, USA
-date: 4 November 2019
+date: 16 December 2019
 bibliography: paper.bib
 ---
 
