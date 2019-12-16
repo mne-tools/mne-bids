@@ -35,6 +35,9 @@
    :target: https://anaconda.org/conda-forge/mne-bids/
    :alt: Latest conda-forge release
 
+.. image:: https://joss.theoj.org/papers/5b9024503f7bea324d5e738a12b0a108/status.svg
+  :target: https://joss.theoj.org/papers/5b9024503f7bea324d5e738a12b0a108
+  :alt: JOSS publication
 
 MNE-BIDS
 ========
