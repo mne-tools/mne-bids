@@ -1,5 +1,5 @@
 {
-  "title": "MNE-BIDS: Organizing MEG, EEG, and iEEG data according to the BIDS specification and facilitating their analysis with MNE-Python",
+  "title": "MNE-BIDS: Organizing electrophysiological data into the BIDS format and facilitating their analysis",
   "description": "MNE-BIDS is a Python library to facilitate the analysis of MEG, EEG, and iEEG data with MNE-Python for data conforming to the BIDS (Brain Imaging Data Structure) format. More information about BIDS and MNE-Python can be found at <a href=\"https://bids.neuroimaging.io\">bids.neuroimaging.io</a> and <a href=\"https://mne.tools\">mne.tools</a>, respectively.",
   "creators": [
     {
