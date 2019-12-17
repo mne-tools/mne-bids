@@ -198,3 +198,4 @@ People who contributed to this release (in alphabetical order):
 .. _Alex Rockhill: http://github.com/alexrockhill
 .. _Sophie Herbst: http://github.com/SophieHerbst
 .. _Adam Li: https://github.com/adam2392
+.. _Fu-Te Wong: https://github.com/zuxfoucault
