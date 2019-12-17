@@ -35,7 +35,7 @@ Bug
 
 - Fixed broken event timing broken by conversion to BV in :func:`write_raw_bids`, by `Alex Rockhill`_ (`#294 <https://github.com/mne-tools/mne-bids/pull/294>`_)
 
-- Support KIT related files .elp and .hsp BIDS conversion in :func:`write_raw_bids`, by `zuxfoucault`_ (`#323 <https://github.com/mne-tools/mne-bids/pull/323>`_)
+- Support KIT related files .elp and .hsp BIDS conversion in :func:`write_raw_bids`, by `foucault`_ (`#323 <https://github.com/mne-tools/mne-bids/pull/323>`_)
 
 API
 ~~~
