@@ -30,9 +30,9 @@ from mne.io.constants import FIFF
 from mne.io.kit.kit import get_kit_info
 
 from mne_bids import (write_raw_bids, read_raw_bids, make_bids_basename,
-                      make_bids_folders, write_anat,
-                      get_anonymization_daysback)
-from mne_bids.write import _stamp_to_dt, _get_anonymization_daysback
+                      make_bids_folders, write_anat)
+from mne_bids.write import (_stamp_to_dt, _get_anonymization_daysback,
+                            get_anonymization_daysback)
 from mne_bids.tsv_handler import _from_tsv, _to_tsv
 from mne_bids.utils import _find_matching_sidecar
 from mne_bids.pick import coil_type
@@ -368,8 +368,8 @@ def test_kit(_bids_validate):
     hpi_fname = op.join(data_path, 'test_mrk.sqd')
     hpi_pre_fname = op.join(data_path, 'test_mrk_pre.sqd')
     hpi_post_fname = op.join(data_path, 'test_mrk_post.sqd')
-    electrode_fname = op.join(data_path, 'test_elp.txt')
-    headshape_fname = op.join(data_path, 'test_hsp.txt')
+    electrode_fname = op.join(data_path, 'test.elp')
+    headshape_fname = op.join(data_path, 'test.hsp')
     event_id = dict(cond=1)
 
     kit_bids_basename = bids_basename.replace('_acq-01', '')
@@ -385,6 +385,13 @@ def test_kit(_bids_validate):
     assert op.exists(op.join(bids_root, 'participants.tsv'))
 
     read_raw_bids(kit_bids_basename + '_meg.sqd', bids_root)
+
+    # ensure the marker file is produced in the right place
+    marker_fname = make_bids_basename(
+        subject=subject_id, session=session_id, task=task, run=run,
+        suffix='markers.sqd',
+        prefix=op.join(bids_root, 'sub-01', 'ses-01', 'meg'))
+    assert op.exists(marker_fname)
 
     # test anonymize
     if check_version('mne', '0.20'):

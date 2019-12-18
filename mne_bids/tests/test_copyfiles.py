@@ -11,10 +11,15 @@ from scipy.io import savemat
 import mne
 from mne.datasets import testing
 from mne.utils import _TempDir
+from mne_bids.utils import _handle_kind, _parse_ext
 
 from mne_bids.copyfiles import (_get_brainvision_encoding,
                                 _get_brainvision_paths,
-                                copyfile_brainvision, copyfile_eeglab)
+                                copyfile_brainvision,
+                                copyfile_eeglab,
+                                copyfile_kit)
+
+from mne_bids.write import make_bids_basename
 
 base_path = op.join(op.dirname(mne.__file__), 'io')
 
@@ -110,3 +115,61 @@ def test_copyfile_eeglab():
     copyfile_eeglab(raw_fname, new_name)
     raw = mne.io.read_raw_eeglab(new_name)
     assert isinstance(raw, mne.io.BaseRaw)
+
+
+def test_copyfile_kit():
+    """Test copying and renaming KIT files to a new location."""
+    output_path = _TempDir()
+    data_path = op.join(base_path, 'kit', 'tests', 'data')
+    raw_fname = op.join(data_path, 'test.sqd')
+    hpi_fname = op.join(data_path, 'test_mrk.sqd')
+    electrode_fname = op.join(data_path, 'test.elp')
+    headshape_fname = op.join(data_path, 'test.hsp')
+    subject_id = '01'
+    session_id = '01'
+    run = '01'
+    acq = '01'
+    task = 'testing'
+
+    bids_basename = make_bids_basename(
+        subject=subject_id, session=session_id, run=run, acquisition=acq,
+        task=task)
+
+    kit_bids_basename = bids_basename.replace('_acq-01', '')
+
+    raw = mne.io.read_raw_kit(
+        raw_fname, mrk=hpi_fname, elp=electrode_fname,
+        hsp=headshape_fname)
+    _, ext = _parse_ext(raw_fname, verbose=True)
+    kind = _handle_kind(raw)
+    bids_fname = bids_basename + '_%s%s' % (kind, ext)
+    bids_fname = op.join(output_path, bids_fname)
+
+    copyfile_kit(raw_fname, bids_fname, subject_id, session_id,
+                 task, run, raw._init_kwargs)
+    assert op.exists(bids_fname)
+    _, ext = _parse_ext(hpi_fname, verbose=True)
+    if ext == '.sqd':
+        assert op.exists(op.join(
+            output_path, kit_bids_basename + '_markers.sqd'))
+    elif ext == '.mrk':
+        assert op.exists(op.join(
+            output_path, kit_bids_basename + '_markers.mrk'))
+
+    if op.exists(electrode_fname):
+        task, run, key = None, None, 'ELP'
+        elp_ext = '.pos'
+        elp_fname = make_bids_basename(
+            subject=subject_id, session=session_id, task=task, run=run,
+            acquisition=key, suffix='headshape%s' % elp_ext,
+            prefix=output_path)
+        assert op.exists(elp_fname)
+
+    if op.exists(headshape_fname):
+        task, run, key = None, None, 'HSP'
+        hsp_ext = '.pos'
+        hsp_fname = make_bids_basename(
+            subject=subject_id, session=session_id, task=task, run=run,
+            acquisition=key, suffix='headshape%s' % hsp_ext,
+            prefix=output_path)
+        assert op.exists(hsp_fname)

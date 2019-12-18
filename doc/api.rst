@@ -53,6 +53,7 @@ Copyfiles (:py:mod:`mne_bids.copyfiles`)
    copyfile_eeglab
    copyfile_ctf
    copyfile_bti
+   copyfile_kit
 
 Datasets (:py:mod:`mne_bids.datasets`)
 ======================================

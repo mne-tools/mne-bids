@@ -35,6 +35,8 @@ Bug
 
 - Fixed broken event timing broken by conversion to BV in :func:`write_raw_bids`, by `Alex Rockhill`_ (`#294 <https://github.com/mne-tools/mne-bids/pull/294>`_)
 
+- Support KIT related files .elp and .hsp BIDS conversion in :func:`write_raw_bids`, by `Fu-Te Wong`_ (`#323 <https://github.com/mne-tools/mne-bids/pull/323>`_)
+
 API
 ~~~
 
@@ -196,3 +198,4 @@ People who contributed to this release (in alphabetical order):
 .. _Alex Rockhill: http://github.com/alexrockhill
 .. _Sophie Herbst: http://github.com/SophieHerbst
 .. _Adam Li: https://github.com/adam2392
+.. _Fu-Te Wong: https://github.com/zuxfoucault
