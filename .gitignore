@@ -1,5 +1,4 @@
 # Distribution / packaging
-mne-python/*
 .Python
 dist/
 *.egg*
