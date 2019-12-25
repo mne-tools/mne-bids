@@ -1197,7 +1197,8 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     raw_fname = raw_fname.replace('.fdt', '.set')
     _, ext = _parse_ext(raw_fname, verbose=verbose)
 
-    if ext not in [this_ext for this_ext in ALLOWED_EXTENSIONS]:
+    if ext not in [this_ext for data_type in ALLOWED_EXTENSIONS
+                   for this_ext in ALLOWED_EXTENSIONS[data_type]]:
         raise ValueError('Unrecognized file format %s' % ext)
 
     raw_orig = reader[ext](**raw._init_kwargs)
