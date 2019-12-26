@@ -47,6 +47,7 @@ allowed_extensions_ieeg = ['.vhdr',  # BrainVision, accompanied by .vmrk, .eeg
                            '.set',  # EEGLAB, potentially accompanied by .fdt
                            '.mef',  # MEF: Multiscale Electrophysiology File
                            '.nwb',  # Neurodata without borders
+                           '.fif',
                            ]
 
 ALLOWED_EXTENSIONS = {'meg': allowed_extensions_meg,

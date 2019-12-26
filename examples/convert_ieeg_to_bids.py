@@ -21,18 +21,19 @@ the electrodes.tsv and coord_system.json files.
 # Authors: Adam Li <adam2392@gmail.com>
 # License: BSD (3-clause)
 
-###############################################################################
-# We are importing everything we need for this example:
-import numpy as np
-import tempfile
 import os
-import shutil as sh
-from scipy.io import loadmat
-import mne
-from mne.datasets import eegbci
+import tempfile
 
-from mne_bids import write_raw_bids, make_bids_basename
+import mne
+import numpy as np
+from mne.viz import plot_alignment
+from scipy.io import loadmat
+
+from mne_bids import write_raw_bids, make_bids_basename, read_raw_bids
 from mne_bids.utils import print_dir_tree
+
+# need to install visualization
+import matplotlib.pyplot as plt
 
 ###############################################################################
 # Step 1: Download the data
@@ -123,8 +124,8 @@ with tempfile.TemporaryDirectory() as tmp_root:
     raw_file = raw
 
     write_raw_bids(raw_file, bids_basename,
-               bids_root,
-               overwrite=True)
+                   bids_root,
+                   overwrite=True)
 
 ###############################################################################
 # Step 3: Check and compare with standard
@@ -149,3 +150,22 @@ print_dir_tree(bids_root)
 # Web version: https://bids-standard.github.io/bids-validator/
 #
 # Command line tool: https://www.npmjs.com/package/bids-validator
+
+###############################################################################
+# Step 4: Plot output channels and check that they match!
+# -------------------------------------------------------
+# Now we have written our BIDS directory.
+bids_fname = bids_basename + "_ieeg.fif"
+raw = read_raw_bids(bids_fname, bids_root=bids_root)
+
+# extract the info from this raw
+info = raw.info
+
+print(info)
+
+subjects_dir = mne.datasets.sample.data_path() + '/subjects'
+fig = plot_alignment(info, subject='sample', subjects_dir=subjects_dir,
+                     surfaces=['pial'])
+mne.viz.set_3d_view(fig, 200, 70)
+plt.show()
+plt.savefig('./myfig.png')
