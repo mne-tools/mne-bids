@@ -29,7 +29,7 @@ matrix:
 env:
   global:
     # can be "stable", or anything that can be used with git checkout
-    - VALIDATOR_VERSION="master"
+    - VALIDATOR_VERSION="347117838f2b929e"
     # can be any branch of MNE-Python (e.g., "maint/0.18", "master", ...)
 
 before_install:
