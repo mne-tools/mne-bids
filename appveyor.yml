@@ -4,7 +4,7 @@ environment:
         # latter case, you MUST adjust VALIDATOR_EXECUTABLE to the following value:
         # "C:\\projects\\mne-bids\\bids-validator\\bids-validator\\bin\\bids-validator"
         # ... whereas for "stable", VALIDATOR_EXECUTABLE MUST be set to "n/a"
-        VALIDATOR_VERSION: "master"
+        VALIDATOR_VERSION: "347117838f2b929e"
         # can be any branch of MNE-Python (e.g., "maint/0.18", "master", ...)
         MNE_VERSION: "master"
         VALIDATOR_EXECUTABLE: "C:\\projects\\mne-bids\\bids-validator\\bids-validator\\bin\\bids-validator"
