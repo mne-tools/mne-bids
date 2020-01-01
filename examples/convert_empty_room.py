@@ -14,19 +14,15 @@ and how to retrieve them.
 # License: BSD (3-clause)
 
 ###############################################################################
-# The empty room measurement is necessary to get an estimate of the noise that
-# is used to whiten the data during source localization. To get an accurate
-# estimate of the noise, it is important that the empty room recording be as
-# close in date as the raw data. BIDS mandates that the empty room files be
-# stored under a separate subject called 'emptyroom' and the sessions be
-# named with the date of their recording. This example demonstrates how to
-# get the matching empty room file to a raw recording.
+# We are dealing with MEG data, which is often accompanied by so-called
+# "empty room" recordings for noise modeling. Below we show that we can use
+# MNE-BIDS to also save such a recording with the just converted data.
 #
 # Let us first import mne_bids.
 
 import os.path as op
 
-from datetime import datetime
+from datetime import datetime, timezone
 
 import mne
 from mne.datasets import sample
@@ -54,19 +50,17 @@ er_raw = mne.io.read_raw_fif(er_raw_fname)
 
 # For empty room data we need to specify the recording date in the format
 # YYYYMMDD for the session id.
-er_date = datetime.fromtimestamp(
-    er_raw.info['meas_date'][0]).strftime('%Y%m%d')
+er_date = er_raw.info['meas_date'].strftime('%Y%m%d')
 print(er_date)
 
 ###############################################################################
 # The measurement date is
-raw_date = datetime.fromtimestamp(
-    raw.info['meas_date'][0]).strftime('%Y%m%d')
+raw_date = raw.info['meas_date'].strftime('%Y%m%d')
 print(raw_date)
 
 ###############################################################################
 # We also need to specify that the subject ID is 'emptyroom', and that the
-# task is 'noise'.
+# task is 'noise' (these are BIDS rules).
 er_bids_basename = 'sub-emptyroom_ses-{0}_task-noise'.format(er_date)
 write_raw_bids(er_raw, er_bids_basename, bids_path, overwrite=True)
 
@@ -78,8 +72,8 @@ dates = ['20021204', '20021201', '20021001']
 
 for date in dates:
     er_bids_basename = 'sub-emptyroom_ses-{0}_task-noise'.format(date)
-    er_raw.info['meas_date'] = (datetime.strptime(date,
-                                                  '%Y%m%d').timestamp(), 0)
+    er_meas_date = datetime.strptime(date, '%Y%m%d')
+    er_raw.set_meas_date(er_meas_date.replace(tzinfo=timezone.utc))
     write_raw_bids(er_raw, er_bids_basename, bids_path, overwrite=True)
 
 ###############################################################################
@@ -89,8 +83,10 @@ from mne_bids.utils import print_dir_tree
 print_dir_tree(bids_path)
 
 ###############################################################################
-# Now we can retrieve the filename corresponding to the empty room
-# file that is closest in time to the measurement file.
+# To get an accurate estimate of the noise, it is important that the empty
+# room recording be as close in date as the raw data.
+# We can retrieve the filename corresponding to the empty room
+# file that is closest in time to the measurement file using MNE-BIDS.
 from mne_bids import get_matched_empty_room
 
 bids_fname = bids_basename + '_meg.fif'
