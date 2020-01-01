@@ -23,7 +23,6 @@ In a second step we will read the organized dataset using MNE-BIDS.
 # sample data, and then finally the MNE-BIDS functions we need for this example
 
 import os.path as op
-from datetime import datetime
 
 import mne
 from mne.datasets import sample

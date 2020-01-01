@@ -65,9 +65,9 @@ er_bids_basename = 'sub-emptyroom_ses-{0}_task-noise'.format(er_date)
 write_raw_bids(er_raw, er_bids_basename, bids_path, overwrite=True)
 
 ###############################################################################
-# Just to illustrate, we can save more than one empty room file. Here, they
-# will all contain the same data but in your original scripts, you would pass
-# different data.
+# Just to illustrate, we can save more than one empty room file for different
+# dates. Here, they will all contain the same data but in your study, they
+# will be different on different days.
 dates = ['20021204', '20021201', '20021001']
 
 for date in dates:
@@ -78,7 +78,7 @@ for date in dates:
 
 ###############################################################################
 # Let us look at the directory structure
-from mne_bids.utils import print_dir_tree
+from mne_bids.utils import print_dir_tree # noqa
 
 print_dir_tree(bids_path)
 
@@ -87,7 +87,7 @@ print_dir_tree(bids_path)
 # room recording be as close in date as the raw data.
 # We can retrieve the filename corresponding to the empty room
 # file that is closest in time to the measurement file using MNE-BIDS.
-from mne_bids import get_matched_empty_room
+from mne_bids import get_matched_empty_room # noqa
 
 bids_fname = bids_basename + '_meg.fif'
 best_er_fname = get_matched_empty_room(bids_fname, bids_path)
