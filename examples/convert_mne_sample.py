@@ -67,28 +67,6 @@ write_raw_bids(raw, bids_basename, output_path, events_data=events_data,
                event_id=event_id, overwrite=True)
 
 ###############################################################################
-# We are dealing with MEG data, which is often accompanied by so-called
-# "empty room" recordings for noise modeling. Below we show that we can use
-# MNE-BIDS to also save such a recording with the just converted data.
-
-# Specify the path to the not-yet-BIDS empty room data and read it
-er_raw_fname = op.join(data_path, 'MEG', 'sample', 'ernoise_raw.fif')
-er_raw = mne.io.read_raw_fif(er_raw_fname)
-
-# For empty room data we need to specify that the subject ID is
-# 'emptyroom', and that the task is 'noise' (these are BIDS rules).
-# We also need to specify the recording date in the format YYYYMMDD for the
-# session id.
-meas_date = er_raw.info['meas_date']
-if not isinstance(meas_date, datetime):
-    meas_date = datetime.fromtimestamp([0])  # for MNE < v0.20
-er_date = meas_date.strftime('%Y%m%d')
-er_bids_basename = 'sub-emptyroom_ses-{0}_task-noise'.format(er_date)
-
-# Now we automatically convert it to BIDS
-write_raw_bids(er_raw, er_bids_basename, output_path, overwrite=True)
-
-###############################################################################
 # Now let's see the structure of the BIDS folder we created.
 
 print_dir_tree(output_path)
