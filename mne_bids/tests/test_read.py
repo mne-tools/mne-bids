@@ -3,7 +3,7 @@
 #
 # License: BSD (3-clause)
 import os.path as op
-from datetime import datetime
+
 import pytest
 import shutil as sh
 
