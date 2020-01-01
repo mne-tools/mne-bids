@@ -3,6 +3,7 @@
 #
 # License: BSD (3-clause)
 import os.path as op
+from datetime import datetime, timezone
 
 import pytest
 import shutil as sh
@@ -12,7 +13,7 @@ from numpy.testing import assert_almost_equal
 
 import mne
 from mne.io import anonymize_info
-from mne.utils import _TempDir, requires_nibabel
+from mne.utils import _TempDir, requires_nibabel, check_version
 from mne.datasets import testing
 
 import mne_bids
@@ -180,7 +181,11 @@ def test_get_matched_empty_room():
     raw.crop(0, 10).save(er_raw_fname, overwrite=True)
 
     er_raw = mne.io.read_raw_fif(er_raw_fname)
-    er_date = er_raw.info['meas_date'].strftime('%Y%m%d')
+    er_date = er_raw.info['meas_date']
+    if not isinstance(er_date, datetime):
+        # mne < v0.20
+        er_date = datetime.fromtimestamp(er_raw.info['meas_date'][0])
+    er_date = er_date.strftime('%Y%m%d')
     er_bids_basename = make_bids_basename(subject='emptyroom',
                                           task='noise', session=er_date)
     write_raw_bids(er_raw, er_bids_basename, bids_root, overwrite=True)
@@ -189,8 +194,29 @@ def test_get_matched_empty_room():
                                       bids_root)
     assert er_bids_basename in er_fname
 
+    # assert that we get best emptyroom if there are multiple available
+    sh.rmtree(op.join(bids_root, 'sub-emptyroom'))
+    dates = ['20021204', '20021201', '20021001']
+    for date in dates:
+        er_bids_basename = 'sub-emptyroom_ses-{0}_task-noise'.format(date)
+        er_meas_date = datetime.strptime(date, '%Y%m%d')
+        if check_version('mne', '0.20'):
+            er_raw.set_meas_date(er_meas_date.replace(tzinfo=timezone.utc))
+        else:
+            er_raw.info['meas_date'] = (er_meas_date.timestamp(), 0)
+        write_raw_bids(er_raw, er_bids_basename, bids_root)
+
+    best_er_fname = get_matched_empty_room(bids_basename + '_meg.fif',
+                                           bids_root)
+    assert '20021204' in best_er_fname
+
+    # assert that we get error if meas_date is not available.
     raw = mne_bids.read_raw_bids(bids_basename + '_meg.fif', bids_root)
-    raw.set_meas_date(None)
+    if check_version('mne', '0.20'):
+        raw.set_meas_date(None)
+    else:
+        raw.info['meas_date'] = None
+        raw.annotations.orig_time = None
     anonymize_info(raw.info)
     write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
     with pytest.raises(ValueError, match='Measurement date not available'):
