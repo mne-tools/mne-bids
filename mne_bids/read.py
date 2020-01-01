@@ -281,11 +281,12 @@ def get_matched_empty_room(bids_fname, bids_root):
     raw = read_raw_bids(bids_fname, bids_root)
     if raw.info['meas_date'] is None:
         raise ValueError('Measurement date not available. Cannot get matching'
-                         'empty room file')
+                         ' empty room file')
 
     ref_date = raw.info['meas_date']
     if not isinstance(ref_date, datetime):
-        ref_date = datetime.fromtimestamp([0])  # for MNE < v0.20
+        # for MNE < v0.20
+        ref_date = datetime.fromtimestamp(raw.info['meas_date'][0])
     search_path = make_bids_folders(bids_root=bids_root, subject='emptyroom',
                                     session='**', make_dir=False)
     search_path = op.join(search_path, '**', '**%s' % ext)
@@ -298,8 +299,8 @@ def get_matched_empty_room(bids_fname, bids_root):
         dt = datetime.strptime(params['ses'], '%Y%m%d')
         dt = dt.replace(tzinfo=ref_date.tzinfo)
         delta_t = dt - ref_date
-        if delta_t.total_seconds() < min_seconds:
-            min_seconds = delta_t.total_seconds()
+        if abs(delta_t.total_seconds()) < min_seconds:
+            min_seconds = abs(delta_t.total_seconds())
             best_er_fname = er_fname
 
     return best_er_fname
