@@ -174,10 +174,13 @@ def test_get_matched_empty_room():
                                       bids_root)
     assert er_fname is None
 
+    # testing data has no noise recording, so save the actual data
+    # as if it were noise
     er_raw_fname = op.join(data_path, 'MEG', 'sample', 'ernoise_raw.fif')
+    raw.crop(0, 10).save(er_raw_fname, overwrite=True)
+
     er_raw = mne.io.read_raw_fif(er_raw_fname)
-    er_date = datetime.fromtimestamp(
-        er_raw.info['meas_date'][0]).strftime('%Y%m%d')
+    er_date = er_raw.info['meas_date'].strftime('%Y%m%d')
     er_bids_basename = make_bids_basename(subject='emptyroom',
                                           task='noise', session=er_date)
     write_raw_bids(er_raw, er_bids_basename, bids_root, overwrite=True)
@@ -187,7 +190,7 @@ def test_get_matched_empty_room():
     assert er_bids_basename in er_fname
 
     raw = mne_bids.read_raw_bids(bids_basename + '_meg.fif', bids_root)
-    raw.info['meas_date'] = None
+    raw.set_meas_date(None)
     anonymize_info(raw.info)
     write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
     with pytest.raises(ValueError, match='Measurement date not available'):
