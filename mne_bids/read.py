@@ -74,6 +74,25 @@ def _read_raw(raw_fpath, electrode=None, hsp=None, hpi=None, config=None,
     return raw
 
 
+def _handle_info_reading(sidecar_fname, raw):
+    """Read associated sidecar.json and populate raw.
+
+    Handle PowerLineFrequency of recording.
+    """
+    with open(sidecar_fname, "r") as f:
+        sidecar_json = json.load(f)
+
+    line_freq = sidecar_json["PowerLineFrequency"]
+    if line_freq is not None:
+        if line_freq != raw.info["line_freq"]:
+            raise ValueError("Line frequency in sidecar json does not match the info datastructure of the mne.Raw.")
+        raw.info["line_freq"] = line_freq
+    else:
+        raise RuntimeWarning("Line frequency inside sidecar json is not set. Defaulting to what the read in "
+                             "data snapshot has.")
+
+    return raw
+
 def _handle_events_reading(events_fname, raw):
     """Read associated events.tsv and populate raw.
 
@@ -253,6 +272,13 @@ def read_raw_bids(bids_fname, bids_root, extra_params=None,
                                             'channels.tsv', allow_fail=True)
     if channels_fname is not None:
         raw = _handle_channels_reading(channels_fname, bids_fname, raw)
+
+    # Try to find an associated sidecar.json to get information about the
+    # recording snapshot
+    sidecar_fname = _find_matching_sidecar(bids_fname, bids_root,
+                                            f"{kind}.json", allow_fail=True)
+    if sidecar_fname is not None:
+        raw = _handle_info_reading(sidecar_fname, raw)
 
     return raw
 
