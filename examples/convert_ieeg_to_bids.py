@@ -26,13 +26,13 @@ import tempfile
 
 import mne
 import numpy as np
-from mne.viz import plot_alignment
 from scipy.io import loadmat
 
 from mne_bids import write_raw_bids, make_bids_basename, read_raw_bids
 from mne_bids.utils import print_dir_tree
 
 # need to install visualization
+from mpl_toolkits import mplot3d
 import matplotlib.pyplot as plt
 
 ###############################################################################
@@ -161,11 +161,10 @@ raw = read_raw_bids(bids_fname, bids_root=bids_root)
 # extract the info from this raw
 info = raw.info
 
-print(info)
-
-subjects_dir = mne.datasets.sample.data_path() + '/subjects'
-fig = plot_alignment(info, subject='sample', subjects_dir=subjects_dir,
-                     surfaces=['pial'])
-mne.viz.set_3d_view(fig, 200, 70)
+fig = plt.figure()
+ax2d = fig.add_subplot(121)
+ax3d = fig.add_subplot(122, projection='3d')
+raw.plot_sensors(ch_type='ecog', axes=ax2d)
+raw.plot_sensors(ch_type="ecog", axes=ax3d, kind='3d')
 plt.show()
 plt.savefig('./myfig.png')
