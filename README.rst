@@ -223,7 +223,11 @@ and one of the following papers, depending on which modality you used:
 
 .. code-block:: Text
 
-  Appelhoff, S., Sanderson, M., Brooks, T., Vliet, M., Quentin, R., Holdgraf, C., Chaumon, M., Mikulan, E., Tavabi, K., Höchenberger, R., Welke, D., Brunner, C., Rockhill, A., Larson, E., Gramfort, A. and Jas, M. (2019). MNE-BIDS: Organizing electrophysiological data into the BIDS format and facilitating their analysis. Journal of Open Source Software 4: (1896).
+  Appelhoff, S., Sanderson, M., Brooks, T., Vliet, M., Quentin, R., Holdgraf, C.,
+  Chaumon, M., Mikulan, E., Tavabi, K., Höchenberger, R., Welke, D., Brunner, C.,
+  Rockhill, A., Larson, E., Gramfort, A. and Jas, M. (2019). MNE-BIDS: Organizing
+  electrophysiological data into the BIDS format and facilitating their analysis.
+  Journal of Open Source Software 4: (1896).
 
 `EEG <https://doi.org/10.1038/s41597-019-0104-8>`_
 ##################################################

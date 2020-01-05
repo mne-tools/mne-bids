@@ -72,7 +72,8 @@ write_raw_bids(er_raw, er_bids_basename, bids_path, overwrite=True)
 dates = ['20021204', '20021201', '20021001']
 
 for date in dates:
-    er_bids_basename = 'sub-emptyroom_ses-{0}_task-noise'.format(date)
+    er_bids_basename = make_bids_basename(subject='emptyroom', session=date,
+                                          task='noise')
     er_meas_date = datetime.strptime(date, '%Y%m%d')
     er_raw.set_meas_date(er_meas_date.replace(tzinfo=timezone.utc))
     write_raw_bids(er_raw, er_bids_basename, bids_path, overwrite=True)
