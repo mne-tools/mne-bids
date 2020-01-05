@@ -22,7 +22,7 @@ from mne_bids.tsv_handler import _from_tsv, _drop
 from mne_bids.config import ALLOWED_EXTENSIONS
 from mne_bids.utils import (_parse_bids_filename, _extract_landmarks,
                             _find_matching_sidecar, _parse_ext,
-                            _get_ch_type_mapping)
+                            _get_ch_type_mapping, make_bids_folders)
 
 reader = {'.con': io.read_raw_kit, '.sqd': io.read_raw_kit,
           '.fif': io.read_raw_fif, '.pdf': io.read_raw_bti,
@@ -273,8 +273,6 @@ def get_matched_empty_room(bids_fname, bids_root):
         The filename corresponding to the empty room.
         Returns None if no file found.
     """
-    from mne_bids.write import make_bids_folders
-
     bids_fname = op.basename(bids_fname)
     _, ext = _parse_ext(bids_fname)
 
