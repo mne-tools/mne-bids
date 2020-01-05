@@ -61,7 +61,8 @@ print(raw_date)
 ###############################################################################
 # We also need to specify that the subject ID is 'emptyroom', and that the
 # task is 'noise' (these are BIDS rules).
-er_bids_basename = 'sub-emptyroom_ses-{0}_task-noise'.format(er_date)
+er_bids_basename = make_bids_basename(subject='emptyroom', session=er_date,
+                                      task='noise')
 write_raw_bids(er_raw, er_bids_basename, bids_path, overwrite=True)
 
 ###############################################################################

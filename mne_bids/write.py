@@ -779,9 +779,11 @@ def make_bids_basename(subject=None, session=None, task=None,
     subject : str | None
         The subject ID. Corresponds to "sub".
     session : str | None
-        The session identifier. Corresponds to "ses".
+        The session identifier. Corresponds to "ses". Must be a date in
+        format "YYYYMMDD" if subject is "emptyroom".
     task : str | None
-        The task identifier. Corresponds to "task".
+        The task identifier. Corresponds to "task". Must be "noise" if
+        subject is "emptyroom".
     acquisition: str | None
         The acquisition parameters. Corresponds to "acq".
     run : int | None
@@ -826,6 +828,15 @@ def make_bids_basename(subject=None, session=None, task=None,
     if (all(ii is None for ii in order.values()) and suffix is None and
             prefix is None):
         raise ValueError("At least one parameter must be given.")
+
+    if subject == 'emptyroom':
+        if suffix is None and task != 'noise':
+            raise ValueError('task must be ''noise'' if subject is'
+                             ' ''emptyroom''')
+        try:
+            datetime.strptime(session, '%Y%m%d')
+        except ValueError:
+            raise ValueError("session must be string of format YYYYMMDD")
 
     filename = []
     for key, val in order.items():

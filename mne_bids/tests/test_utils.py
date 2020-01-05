@@ -165,6 +165,15 @@ def test_make_filenames():
     with pytest.raises(ValueError, match='At least one'):
         make_bids_basename()
 
+    # emptyroom checks
+    with pytest.raises(ValueError, match='session must be string of format'
+                                         ' YYYYMMDD'):
+        make_bids_basename(subject='emptyroom', session='12345', task='noise')
+    with pytest.raises(ValueError, match='task must be ''noise'' if subject is'
+                                         ' ''emptyroom'''):
+        make_bids_basename(subject='emptyroom', session='20131201',
+                           task='blah')
+
 
 def test_make_folders():
     """Test that folders are created and named properly."""
