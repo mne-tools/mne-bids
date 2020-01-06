@@ -48,7 +48,7 @@ import matplotlib.pyplot as plt
 # MNE-Python:
 
 # get MNE directory w/ example data
-mne_dir = mne.get_config('MNE_DATA')
+mne_dir = mne.get_config('MNE_DATASETS_SAMPLE_PATH')
 
 mat = loadmat(mne.datasets.misc.data_path() + '/ecog/sample_ecog.mat')
 ch_names = mat['ch_names'].tolist()

@@ -48,7 +48,7 @@ from mne_bids.utils import print_dir_tree
 # MNE-Python:
 
 # get MNE directory w/ example data
-mne_dir = mne.get_config('MNE_DATA')
+mne_dir = mne.get_config('MNE_DATASETS_SAMPLE_PATH')
 
 # Define which tasks we want to download.
 tasks = [2,  # This is 2 minutes of eyes closed rest
