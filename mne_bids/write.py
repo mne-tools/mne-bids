@@ -853,7 +853,7 @@ def make_bids_basename(subject=None, session=None, task=None,
     return filename
 
 
-def make_dataset_description(path, name=None, data_license=None,
+def make_dataset_description(path, name, data_license=None,
                              authors=None, acknowledgements=None,
                              how_to_acknowledge=None, funding=None,
                              references_and_links=None, doi=None,
@@ -868,7 +868,7 @@ def make_dataset_description(path, name=None, data_license=None,
     ----------
     path : str
         A path to a folder where the description will be created.
-    name : str | None
+    name : str
         The name of this BIDS dataset.
     data_license : str | None
         The license under which this datset is published.
