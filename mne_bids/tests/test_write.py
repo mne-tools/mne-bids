@@ -616,7 +616,7 @@ def test_edf(_bids_validate):
     raw.rename_channels({raw.info['ch_names'][1]: 'EMG'})
     raw.set_channel_types({'EMG': 'emg'})
 
-    # test dataset description overwrite
+    # test dataset description overwrites with the authors set
     make_dataset_description(bids_root, name="test",
                              authors=["test1", "test2"])
     write_raw_bids(raw, bids_basename, bids_root, overwrite=False)
