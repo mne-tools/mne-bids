@@ -79,16 +79,15 @@ def _handle_info_reading(sidecar_fname, raw):
 
     Handle PowerLineFrequency of recording.
     """
-    with open(sidecar_fname, "r") as f:
-        sidecar_json = json.load(f)
+    with open(sidecar_fname, "r") as fin:
+        sidecar_json = json.load(fin)
 
-    line_freq = sidecar_json["PowerLineFrequency"]
+    line_freq = sidecar_json.get("PowerLineFrequency")
     if line_freq is not None:
         if line_freq != raw.info["line_freq"]:
             raise ValueError("Line frequency in sidecar json does "
                              "not match the info datastructure of "
                              "the mne.Raw.")
-        raw.info["line_freq"] = line_freq
     else:
         raise RuntimeWarning("Line frequency inside sidecar json "
                              "is not set. "
@@ -281,7 +280,8 @@ def read_raw_bids(bids_fname, bids_root, extra_params=None,
     # Try to find an associated sidecar.json to get information about the
     # recording snapshot
     sidecar_fname = _find_matching_sidecar(bids_fname, bids_root,
-                                           f"{kind}.json", allow_fail=True)
+                                           '{}.json'.format(kind),
+                                           allow_fail=True)
     if sidecar_fname is not None:
         raw = _handle_info_reading(sidecar_fname, raw)
 
