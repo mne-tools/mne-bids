@@ -3,7 +3,7 @@
 07. Convert iEEG data to BIDS format
 ===================================
 
-In this example, we use MNE-BIDS to create a BIDS-compatible directory of EEG
+In this example, we use MNE-BIDS to create a BIDS-compatible directory of iEEG
 data. Specifically, we will follow these steps:
 
 1. Download some iEEG data from the MNE-Python API
@@ -100,7 +100,7 @@ print(write_raw_bids.__doc__)
 # There is a subject, and specific task for the dataset
 subject_id = '001'  # zero padding to account for >100 subjects in this dataset
 task = 'testresteyes'
-bids_root = os.path.join(home, 'mne_data', 'eegmmidb_bids')
+bids_root = os.path.join(mne_dir, 'eegmmidb_bids')
 
 ###############################################################################
 # Now we just need to specify a few more EEG details to get something sensible:
