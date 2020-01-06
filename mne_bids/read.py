@@ -83,11 +83,28 @@ def _handle_info_reading(sidecar_fname, raw):
         sidecar_json = json.load(fin)
 
     line_freq = sidecar_json.get("PowerLineFrequency")
-    if line_freq is not None:
-        if line_freq != raw.info["line_freq"]:
+    if line_freq is None and raw.info["line_freq"] is None:
+        # defaults to 50 Hz if neither raw, or sidecar json
+        # has Power Line Freq set
+        raw.info["line_freq"] = 50
+        raise RuntimeWarning("Neither sidecar json, "
+                             "or Raw has Power Line "
+                             "Frequency. Defaulting "
+                             "to 50 Hz.")
+    elif raw.info["line_freq"] is not None and line_freq is not None:
+        # if both have a set Power Line Frequency, then
+        # check that they are the same, else there is a
+        # discrepency in the metadata of the dataset.
+        if raw.info["line_freq"] != line_freq:
             raise ValueError("Line frequency in sidecar json does "
                              "not match the info datastructure of "
-                             "the mne.Raw.")
+                             "the mne.Raw. "
+                             "Raw is -> {} ".format(raw.info["line_freq"]),
+                             "Sidecar JSON is -> {} ".format(line_freq))
+    elif raw.info["line_freq"] is None and line_freq is not None:
+        # if the read in frequency is not set inside Raw
+        # -> set it to what the sidecar JSON specifies
+        raw.info["line_freq"] = line_freq
     else:
         raise RuntimeWarning("Line frequency inside sidecar json "
                              "is not set. "
