@@ -47,11 +47,8 @@ import matplotlib.pyplot as plt
 # Conveniently, there is already a data loading function available with
 # MNE-Python:
 
-# Make a directory to save the data to
-home = os.path.expanduser('~')
-mne_dir = os.path.join(home, 'mne_data')
-if not os.path.exists(mne_dir):
-    os.makedirs(mne_dir)
+# get MNE directory w/ example data
+mne_dir = mne.get_config('MNE_DATA')
 
 mat = loadmat(mne.datasets.misc.data_path() + '/ecog/sample_ecog.mat')
 ch_names = mat['ch_names'].tolist()
@@ -167,4 +164,3 @@ ax3d = fig.add_subplot(122, projection='3d')
 raw.plot_sensors(ch_type='ecog', axes=ax2d)
 raw.plot_sensors(ch_type="ecog", axes=ax3d, kind='3d')
 plt.show()
-plt.savefig('./myfig.png')
