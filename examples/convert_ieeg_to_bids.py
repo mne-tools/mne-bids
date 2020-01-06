@@ -14,8 +14,9 @@ data. Specifically, we will follow these steps:
 
 3. Check the result and compare it with the standard
 
-The iEEG data will be pretty similar to the EEG data with the addition of extra elements in
-the electrodes.tsv and coord_system.json files.
+The iEEG data will be pretty similar to the iEEG data with
+the addition of extra elements in the electrodes.tsv and
+coord_system.json files.
 """
 
 # Authors: Adam Li <adam2392@gmail.com>
@@ -24,16 +25,14 @@ the electrodes.tsv and coord_system.json files.
 import os
 import tempfile
 
+# need to install visualization
+import matplotlib.pyplot as plt
 import mne
 import numpy as np
 from scipy.io import loadmat
 
 from mne_bids import write_raw_bids, make_bids_basename, read_raw_bids
 from mne_bids.utils import print_dir_tree
-
-# need to install visualization
-from mpl_toolkits import mplot3d
-import matplotlib.pyplot as plt
 
 ###############################################################################
 # Step 1: Download the data
@@ -52,21 +51,22 @@ mne_dir = mne.get_config('MNE_DATASETS_SAMPLE_PATH')
 
 mat = loadmat(mne.datasets.misc.data_path() + '/ecog/sample_ecog.mat')
 ch_names = mat['ch_names'].tolist()
+ch_names = [x.strip() for x in ch_names]
 elec = mat['elec']  # electrode positions given in meters
-# Now we make a montage stating that the sEEG contacts are in head
-# coordinate system (although they are in MRI). This is compensated
-# by the fact that below we do not specicty a trans file so the Head<->MRI
-# transform is the identity.
+# Now we make a montage stating that the iEEG contacts are in MRI
+# coordinate system.
 montage = mne.channels.make_dig_montage(ch_pos=dict(zip(ch_names, elec)),
-                                        coord_frame='head')
+                                        coord_frame='mri')
 print('Created %s channel positions' % len(ch_names))
 print(ch_names)
 
 ###############################################################################
-# The electrode data are in the Matlab format: '.mat'. This is easy to read in with
-# `scipy.io.loadmat` function. We also need to get some sample EEG data, so we will
-# just generate random data from white noise. Here is where you would use your own data
-# if you had it.
+# The electrode data are in the Matlab format: '.mat'.
+# This is easy to read in with
+# `scipy.io.loadmat` function. We also need to get some
+# sample EEG data, so we will just generate random data
+# from white noise.
+# Here is where you would use your own data if you had it.
 eegdata = np.random.rand(len(ch_names), 1000)
 
 # However, apart from the data format, we need to build
@@ -118,9 +118,8 @@ with tempfile.TemporaryDirectory() as tmp_root:
     tmp_fpath = os.path.join(tmp_root, "test_raw.fif")
     raw.save(tmp_fpath)
     raw = mne.io.read_raw_fif(tmp_fpath)
-    raw_file = raw
 
-    write_raw_bids(raw_file, bids_basename,
+    write_raw_bids(raw, bids_basename,
                    bids_root,
                    overwrite=True)
 
@@ -152,15 +151,13 @@ print_dir_tree(bids_root)
 # Step 4: Plot output channels and check that they match!
 # -------------------------------------------------------
 # Now we have written our BIDS directory.
-bids_fname = bids_basename + "_ieeg.fif"
+bids_fname = bids_basename + "_ieeg.vhdr"
 raw = read_raw_bids(bids_fname, bids_root=bids_root)
-
-# extract the info from this raw
-info = raw.info
 
 fig = plt.figure()
 ax2d = fig.add_subplot(121)
-ax3d = fig.add_subplot(122, projection='3d')
 raw.plot_sensors(ch_type='ecog', axes=ax2d)
-raw.plot_sensors(ch_type="ecog", axes=ax3d, kind='3d')
+# import mpl_toolkits
+# ax3d = fig.add_subplot(122, projection='3d')
+# raw.plot_sensors(ch_type="ecog", axes=ax3d, kind='3d')
 plt.show()

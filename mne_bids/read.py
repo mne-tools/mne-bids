@@ -157,6 +157,55 @@ def _handle_events_reading(events_fname, raw):
     return raw
 
 
+def _handle_electrodes_reading(electrodes_fname, coord_frame, raw):
+    """Read associated electrodes.tsv and populate raw.
+
+    Handle xyz coordinates and coordinate frame of each channel.
+    """
+    logger.info('Reading electrode '
+                'coords from {}.'.format(electrodes_fname))
+    electrodes_dict = _from_tsv(electrodes_fname)
+    # First, make sure that ordering of names in channels.tsv matches the
+    # ordering of names in the raw data. The "name" column is mandatory in BIDS
+    ch_names_raw = list(raw.ch_names)
+    ch_names_tsv = electrodes_dict['name']
+
+    if ch_names_raw != ch_names_tsv:
+        msg = ('Channels do not correspond between raw data and the '
+               'channels.tsv file. For MNE-BIDS, the channel names in the '
+               'tsv MUST be equal and in the same order as the channels in '
+               'the raw data.\n\n'
+               '{} channels in tsv file: "{}"\n\n --> {}\n\n'
+               '{} channels in raw file: "{}"\n\n --> {}\n\n'
+               .format(len(ch_names_tsv), electrodes_fname, ch_names_tsv,
+                       len(ch_names_raw), raw.filenames, ch_names_raw)
+               )
+
+        # XXX: this could be due to MNE inserting a 'STI 014' channel as the
+        # last channel: In that case, we can work. --> Can be removed soon,
+        # because MNE will stop the synthesis of stim channels in the near
+        # future
+        if not (ch_names_raw[-1] == 'STI 014' and
+                ch_names_raw[:-1] == ch_names_tsv):
+            raise RuntimeError(msg)
+
+    # convert coordinates to float and create list of tuples
+    electrodes_dict['x'] = [float(x) for x in electrodes_dict['x']]
+    electrodes_dict['y'] = [float(x) for x in electrodes_dict['y']]
+    electrodes_dict['z'] = [float(x) for x in electrodes_dict['z']]
+    ch_locs = list(zip(electrodes_dict['x'],
+                       electrodes_dict['y'],
+                       electrodes_dict['z']))
+    ch_pos = dict(zip(ch_names_raw, ch_locs))
+
+    # create mne.DigMontage
+    montage = mne.channels.make_dig_montage(ch_pos=ch_pos,
+                                            coord_frame=coord_frame)
+    raw.set_montage(montage)
+
+    return raw
+
+
 def _handle_channels_reading(channels_fname, bids_fname, raw):
     """Read associated channels.tsv and populate raw.
 
@@ -295,6 +344,36 @@ def read_raw_bids(bids_fname, bids_root, extra_params=None,
                                             'channels.tsv', allow_fail=True)
     if channels_fname is not None:
         raw = _handle_channels_reading(channels_fname, bids_fname, raw)
+
+    # Try to find an associated channels.tsv to get information about the
+    # status and type of present channels
+    electrodes_fname = _find_matching_sidecar(bids_fname, bids_root,
+                                              'electrodes.tsv',
+                                              allow_fail=True)
+    coordsystem_fname = _find_matching_sidecar(bids_fname, bids_root,
+                                               'coordsystem.json',
+                                               allow_fail=True)
+    if electrodes_fname is not None:
+        if coordsystem_fname is None:
+            raise RuntimeError("BIDS mandates that the coordsystem.json "
+                               "should exist if electrodes.tsv does. "
+                               "Please create coordsystem.json for"
+                               "{}".format(bids_basename))
+        # Get MRI landmarks from the JSON sidecar
+        with open(coordsystem_fname, 'r') as fin:
+            coordsystem_json = json.load(fin)
+
+        if kind == "meg":
+            coord_frame = coordsystem_json['MEGCoordinateSystem']
+        elif kind == "eeg":
+            coord_frame = coordsystem_json['EEGCoordinateSystem']
+        elif kind in ["ieeg", "seeg", "ecog"]:
+            coord_frame = coordsystem_json['iEEGCoordinateSystem']
+        else:
+            raise RuntimeError("Kind {} not supported yet for "
+                               "coordsystem.json.".format(kind))
+
+        raw = _handle_electrodes_reading(electrodes_fname, coord_frame, raw)
 
     # Try to find an associated sidecar.json to get information about the
     # recording snapshot

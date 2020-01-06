@@ -117,7 +117,7 @@ print(write_raw_bids.__doc__)
 subject_id = '001'  # zero padding to account for >100 subjects in this dataset
 task = 'resteyesclosed'
 raw_file = raw
-bids_root = os.path.join(home, 'mne_data', 'eegmmidb_bids')
+bids_root = os.path.join(mne_dir, 'eegmmidb_bids')
 
 ###############################################################################
 # Now we just need to specify a few more EEG details to get something sensible:

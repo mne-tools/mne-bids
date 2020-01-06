@@ -481,53 +481,6 @@ def _scans_tsv(raw, raw_fname, fname, overwrite=False, verbose=True):
     return fname
 
 
-def _coordsystem_json(raw, unit, orient, manufacturer, fname,
-                      overwrite=False, verbose=True):
-    """Create a coordsystem.json file and save it.
-
-    Parameters
-    ----------
-    raw : instance of Raw
-        The data as MNE-Python Raw object.
-    unit : str
-        Units to be used in the coordsystem specification.
-    orient : str
-        Used to define the coordinate system for the head coils.
-    manufacturer : str
-        Used to define the coordinate system for the MEG sensors.
-    fname : str
-        Filename to save the coordsystem.json to.
-    overwrite : bool
-        Whether to overwrite the existing file.
-        Defaults to False.
-    verbose : bool
-        Set verbose output to true or false.
-
-    """
-    dig = raw.info['dig']
-    coords = _extract_landmarks(dig)
-    hpi = {d['ident']: d for d in dig if d['kind'] == FIFF.FIFFV_POINT_HPI}
-    if hpi:
-        for ident in hpi.keys():
-            coords['coil%d' % ident] = hpi[ident]['r'].tolist()
-
-    coord_frame = set([dig[ii]['coord_frame'] for ii in range(len(dig))])
-    if len(coord_frame) > 1:
-        err = 'All HPI and Fiducials must be in the same coordinate frame.'
-        raise ValueError(err)
-
-    fid_json = {'MEGCoordinateSystem': manufacturer,
-                'MEGCoordinateUnits': unit,  # XXX validate this
-                'HeadCoilCoordinates': coords,
-                'HeadCoilCoordinateSystem': orient,
-                'HeadCoilCoordinateUnits': unit  # XXX validate this
-                }
-
-    _write_json(fname, fid_json, overwrite, verbose)
-
-    return fname
-
-
 def _meg_landmarks_to_mri_landmarks(meg_landmarks, trans):
     """Convert landmarks from head space to MRI space.
 
@@ -981,68 +934,6 @@ def make_bids_basename(subject=None, session=None, task=None,
     return filename
 
 
-def make_bids_folders(subject, session=None, kind=None, bids_root=None,
-                      make_dir=True, overwrite=False, verbose=False):
-    """Create a BIDS folder hierarchy.
-
-    This creates a hierarchy of folders *within* a BIDS dataset. You should
-    plan to create these folders *inside* the bids_root folder of the dataset.
-
-    Parameters
-    ----------
-    subject : str
-        The subject ID. Corresponds to "sub".
-    kind : str
-        The kind of folder being created at the end of the hierarchy. E.g.,
-        "anat", "func", etc.
-    session : str | None
-        The session for a item. Corresponds to "ses".
-    bids_root : str | None
-        The bids_root for the folders to be created. If None, folders will be
-        created in the current working directory.
-    make_dir : bool
-        Whether to actually create the folders specified. If False, only a
-        path will be generated but no folders will be created.
-    overwrite : bool
-        How to handle overwriting previously generated data.
-        If overwrite == False then no existing folders will be removed, however
-        if overwrite == True then any existing folders at the session level
-        or lower will be removed, including any contained data.
-    verbose : bool
-        If verbose is True, print status updates
-        as folders are created.
-
-    Returns
-    -------
-    path : str
-        The (relative) path to the folder that was created.
-
-    Examples
-    --------
-    >>> print(make_bids_folders('sub_01', session='my_session',
-                                kind='meg', bids_root='path/to/project',
-                                make_dir=False))  # noqa
-    path/to/project/sub-sub_01/ses-my_session/meg
-
-    """
-    _check_types((subject, kind, session, bids_root))
-    if session is not None:
-        _check_key_val('ses', session)
-
-    path = ['sub-%s' % subject]
-    if isinstance(session, str):
-        path.append('ses-%s' % session)
-    if isinstance(kind, str):
-        path.append(kind)
-    path = op.join(*path)
-    if isinstance(bids_root, str):
-        path = op.join(bids_root, path)
-
-    if make_dir is True:
-        _mkdir_p(path, overwrite=overwrite, verbose=verbose)
-    return path
-
-
 def make_dataset_description(path, name=None, data_license=None,
                              authors=None, acknowledgements=None,
                              how_to_acknowledge=None, funding=None,
@@ -1352,13 +1243,14 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     # TODO: Implement coordystem.json and electrodes.tsv for EEG and  iEEG
     if kind == 'meg' and not emptyroom:
         _coordsystem_json(raw, unit, orient, manufacturer, coordsystem_fname,
-                          overwrite, verbose)
+                          kind, overwrite, verbose)
     elif kind == 'ieeg':
         electrodes_fname = make_bids_basename(
             subject=subject_id, session=session_id, acquisition=acquisition,
             suffix='electrodes.tsv', prefix=data_path)
 
-        # TODO: add space of ieeg electrodes
+        coord_frame = "mri"
+
         # We only write EEG electrodes.tsv and accompanying coordsystem.json
         # if we have LPA, RPA, and NAS available to rescale to a known
         # coordinate system frame
@@ -1371,7 +1263,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
         # Now write the data to the elec coords and the coordsystem
         _electrodes_tsv(raw, electrodes_fname, kind, overwrite, verbose)
 
-        _coordsystem_json(raw, unit, orient, coordsystem_fname,
+        _coordsystem_json(raw, unit, orient, coord_frame, coordsystem_fname,
                           kind, overwrite, verbose)
 
     events, event_id = _read_events(events_data, event_id, raw, ext)
