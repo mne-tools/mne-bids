@@ -2,25 +2,25 @@
 # Authors: Stefan Appelhoff <stefan.appelhoff@mailbox.org>
 #
 # License: BSD (3-clause)
+import json
 import os.path as op
+import shutil as sh
 from datetime import datetime, timezone
 
-import pytest
-import shutil as sh
-
-import numpy as np
-from numpy.testing import assert_almost_equal
-
 import mne
+import numpy as np
+import pytest
+from mne.datasets import testing
 from mne.io import anonymize_info
 from mne.utils import _TempDir, requires_nibabel, check_version
-from mne.datasets import testing
+from numpy.testing import assert_almost_equal
 
 import mne_bids
 from mne_bids import get_matched_empty_room
 from mne_bids.read import _read_raw, get_head_mri_trans, _handle_events_reading
-from mne_bids.write import write_anat, write_raw_bids, make_bids_basename
 from mne_bids.tsv_handler import _to_tsv
+from mne_bids.utils import (_find_matching_sidecar)
+from mne_bids.write import write_anat, write_raw_bids, make_bids_basename
 
 subject_id = '01'
 session_id = '01'
@@ -132,17 +132,51 @@ def test_handle_events_reading():
     raw = _handle_events_reading(events_fname, raw)
     events, event_id = mne.events_from_annotations(raw)
 
+
 def test_handle_info_reading():
     """Test reading information from a BIDS sidecar.json file."""
     bids_root = _TempDir()
 
     raw = mne.io.read_raw_fif(raw_fname)
+    raw.info['line_freq'] = 60
     bids_basename = make_bids_basename(subject='01', session='01',
                                        task='audiovisual', run='01')
+    kind = "meg"
     write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
 
-    # assert that we get error if meas_date is not available.
-    raw = mne_bids.read_raw_bids(bids_basename + '_meg.fif', bids_root)
+    # assert that we get the same line frequency set
+    bids_fname = bids_basename + '_{}.fif'.format(kind)
+    raw = mne_bids.read_raw_bids(bids_fname, bids_root)
+    assert raw.info['line_freq'] == 60
+
+    # assert that we get an error when sidecar json doesn't match
+    sidecar_fname = _find_matching_sidecar(bids_fname, bids_root,
+                                           '{}.json'.format(kind),
+                                           allow_fail=True)
+    with open(sidecar_fname, "r") as fin:
+        sidecar_json = json.load(fin)
+    sidecar_json["PowerLineFrequency"] = 55
+    with open(sidecar_fname, "w") as fout:
+        json.dump(sidecar_json, fout)
+    with pytest.raises(ValueError, match="Line frequency in sidecar json"):
+        raw = mne_bids.read_raw_bids(bids_fname, bids_root)
+
+    # if line frequency is not set in raw file, then default to sidecar
+    raw.info['line_freq'] = None
+    write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
+    with open(sidecar_fname, "r") as fin:
+        sidecar_json = json.load(fin)
+    sidecar_json["PowerLineFrequency"] = 55
+    with open(sidecar_fname, "w") as fout:
+        json.dump(sidecar_json, fout)
+    raw = mne_bids.read_raw_bids(bids_fname, bids_root)
+    assert raw.info['line_freq'] == 55
+
+    # when nothing is set, default to 50 Hz
+    raw.info['line_freq'] = None
+    write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
+    raw = mne_bids.read_raw_bids(bids_fname, bids_root)
+    assert raw.info['line_freq'] == 50
 
 @requires_nibabel()
 def test_get_head_mri_trans_ctf():
