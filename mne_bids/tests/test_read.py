@@ -132,6 +132,17 @@ def test_handle_events_reading():
     raw = _handle_events_reading(events_fname, raw)
     events, event_id = mne.events_from_annotations(raw)
 
+def test_handle_info_reading():
+    """Test reading information from a BIDS sidecar.json file."""
+    bids_root = _TempDir()
+
+    raw = mne.io.read_raw_fif(raw_fname)
+    bids_basename = make_bids_basename(subject='01', session='01',
+                                       task='audiovisual', run='01')
+    write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
+
+    # assert that we get error if meas_date is not available.
+    raw = mne_bids.read_raw_bids(bids_basename + '_meg.fif', bids_root)
 
 @requires_nibabel()
 def test_get_head_mri_trans_ctf():
