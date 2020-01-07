@@ -26,6 +26,7 @@ import os
 import tempfile
 
 # need to install visualization
+from mpl_toolkits.mplot3d import Axes3D  # noqa
 import matplotlib.pyplot as plt
 import mne
 import numpy as np
@@ -157,7 +158,6 @@ raw = read_raw_bids(bids_fname, bids_root=bids_root)
 fig = plt.figure()
 ax2d = fig.add_subplot(121)
 raw.plot_sensors(ch_type='ecog', axes=ax2d)
-# import mpl_toolkits
-# ax3d = fig.add_subplot(122, projection='3d')
-# raw.plot_sensors(ch_type="ecog", axes=ax3d, kind='3d')
+ax3d = fig.add_subplot(122, projection='3d')
+raw.plot_sensors(ch_type="ecog", axes=ax3d, kind='3d')
 plt.show()
