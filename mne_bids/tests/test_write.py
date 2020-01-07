@@ -514,10 +514,11 @@ def test_bti(_bids_validate):
     raw = mne.io.read_raw_bti(raw_fname, config_fname=config_fname,
                               head_shape_fname=headshape_fname)
 
+    # write the BIDS dataset description, then write BIDS files
+    make_dataset_description(bids_root, name="BTi data")
     write_raw_bids(raw, bids_basename, bids_root, verbose=True)
 
     assert op.exists(op.join(bids_root, 'participants.tsv'))
-    make_dataset_description(bids_root, name="BTi data")
     _bids_validate(bids_root)
 
     raw = read_raw_bids(bids_basename + '_meg', bids_root)
