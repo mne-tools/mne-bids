@@ -1,4 +1,6 @@
 """Check whether a file format is supported by BIDS and then load it."""
+import glob
+import json
 # Authors: Mainak Jas <mainak.jas@telecom-paristech.fr>
 #          Alexandre Gramfort <alexandre.gramfort@telecom-paristech.fr>
 #          Teon Brooks <teon.brooks@gmail.com>
@@ -8,18 +10,17 @@
 # License: BSD (3-clause)
 import os.path as op
 from datetime import datetime
-import glob
-import json
+from warnings import warn
 
-import numpy as np
 import mne
+import numpy as np
 from mne import io
-from mne.utils import has_nibabel, logger
 from mne.coreg import fit_matched_points
 from mne.transforms import apply_trans
+from mne.utils import has_nibabel, logger
 
-from mne_bids.tsv_handler import _from_tsv, _drop
 from mne_bids.config import ALLOWED_EXTENSIONS
+from mne_bids.tsv_handler import _from_tsv, _drop
 from mne_bids.utils import (_parse_bids_filename, _extract_landmarks,
                             _find_matching_sidecar, _parse_ext,
                             _get_ch_type_mapping, make_bids_folders)
@@ -87,11 +88,17 @@ def _handle_info_reading(sidecar_fname, raw):
         # defaults to 50 Hz if neither raw, or sidecar json
         # has Power Line Freq set
         raw.info["line_freq"] = 50
-        raise RuntimeWarning("Neither sidecar json, "
-                             "or Raw has Power Line "
-                             "Frequency. Defaulting "
-                             "to 50 Hz.")
-    elif raw.info["line_freq"] is not None and line_freq is not None:
+        warn("Neither sidecar json, "
+             "or Raw has Power Line "
+             "Frequency. Defaulting "
+             "to 50 Hz.")
+    elif raw.info["line_freq"] is None and line_freq is not None:
+        # if the read in frequency is not set inside Raw
+        # -> set it to what the sidecar JSON specifies
+        raw.info["line_freq"] = line_freq
+    elif raw.info["line_freq"] is not None \
+            and line_freq is not None \
+            and line_freq != 'n/a':
         # if both have a set Power Line Frequency, then
         # check that they are the same, else there is a
         # discrepency in the metadata of the dataset.
@@ -101,15 +108,11 @@ def _handle_info_reading(sidecar_fname, raw):
                              "the mne.Raw. "
                              "Raw is -> {} ".format(raw.info["line_freq"]),
                              "Sidecar JSON is -> {} ".format(line_freq))
-    elif raw.info["line_freq"] is None and line_freq is not None:
-        # if the read in frequency is not set inside Raw
-        # -> set it to what the sidecar JSON specifies
-        raw.info["line_freq"] = line_freq
     else:
-        raise RuntimeWarning("Line frequency inside sidecar json "
-                             "is not set. "
-                             "Defaulting to what the read in "
-                             "data snapshot has.")
+        warn("Line frequency in sidecar json "
+             "is not set. "
+             "Defaulting to what the read in "
+             "data snapshot has.")
 
     return raw
 

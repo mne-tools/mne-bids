@@ -149,10 +149,31 @@ def test_handle_info_reading():
     raw = mne_bids.read_raw_bids(bids_fname, bids_root)
     assert raw.info['line_freq'] == 60
 
-    # assert that we get an error when sidecar json doesn't match
     sidecar_fname = _find_matching_sidecar(bids_fname, bids_root,
                                            '{}.json'.format(kind),
                                            allow_fail=True)
+
+    # when nothing is set, default to 50 Hz
+    raw.info['line_freq'] = None
+    write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
+    raw = mne_bids.read_raw_bids(bids_fname, bids_root)
+    # with pytest.warns(UserWarning, match="Neither sidecar json"):
+    raw = mne_bids.read_raw_bids(bids_fname, bids_root)
+    assert raw.info['line_freq'] == 50
+
+    # when raw.info has it, but sidecar json does not
+    raw.info['line_freq'] = 60
+    write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
+    with open(sidecar_fname, "r") as fin:
+        sidecar_json = json.load(fin)
+    sidecar_json["PowerLineFrequency"] = "n/a"
+    with open(sidecar_fname, "w") as fout:
+        json.dump(sidecar_json, fout)
+    with pytest.warns(UserWarning, match="Line frequency in sidecar json"):
+        raw = mne_bids.read_raw_bids(bids_fname, bids_root)
+        assert raw.info['line_freq'] == 60
+
+    # assert that we get an error when sidecar json doesn't match
     with open(sidecar_fname, "r") as fin:
         sidecar_json = json.load(fin)
     sidecar_json["PowerLineFrequency"] = 55
@@ -171,12 +192,6 @@ def test_handle_info_reading():
         json.dump(sidecar_json, fout)
     raw = mne_bids.read_raw_bids(bids_fname, bids_root)
     assert raw.info['line_freq'] == 55
-
-    # when nothing is set, default to 50 Hz
-    raw.info['line_freq'] = None
-    write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
-    raw = mne_bids.read_raw_bids(bids_fname, bids_root)
-    assert raw.info['line_freq'] == 50
 
 
 @requires_nibabel()
