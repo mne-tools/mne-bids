@@ -254,77 +254,6 @@ def _events_tsv(events, raw, fname, trial_type, overwrite=False,
     return fname
 
 
-def _coordsystem_json(raw, unit, orient, coordsystem_name, fname,
-                      kind, overwrite=False, verbose=True):
-    """Create a coordsystem.json file and save it.
-
-    Parameters
-    ----------
-    raw : instance of Raw
-        The data as MNE-Python Raw object.
-    unit : str
-        Units to be used in the coordsystem specification.
-    orient : str
-        Used to define the coordinate system for the head coils.
-    coordsystem_name : str
-        Name of the coordinate system for the sensor positions.
-    fname : str
-        Filename to save the coordsystem.json to.
-    kind : str
-        Type of the data as in ALLOWED_KINDS.
-    overwrite : bool
-        Whether to overwrite the existing file.
-        Defaults to False.
-    verbose : bool
-        Set verbose output to true or false.
-
-    """
-    dig = raw.info['dig']
-    coords = _extract_landmarks(dig)
-    hpi = {d['ident']: d for d in dig if d['kind'] == FIFF.FIFFV_POINT_HPI}
-    if hpi:
-        for ident in hpi.keys():
-            coords['coil%d' % ident] = hpi[ident]['r'].tolist()
-
-    coord_frame = set([dig[ii]['coord_frame'] for ii in range(len(dig))])
-    if len(coord_frame) > 1:
-        raise ValueError('All HPI, electrodes, and fiducials must be in the '
-                         'same coordinate frame. Found: "{}"'
-                         .format(coord_frame))
-
-    if kind == 'meg':
-        hpi = {d['ident']: d for d in dig if d['kind'] == FIFF.FIFFV_POINT_HPI}
-        if hpi:
-            for ident in hpi.keys():
-                coords['coil%d' % ident] = hpi[ident]['r'].tolist()
-
-        fid_json = {'MEGCoordinateSystem': coordsystem_name,
-                    'MEGCoordinateUnits': unit,  # XXX validate this
-                    'HeadCoilCoordinates': coords,
-                    'HeadCoilCoordinateSystem': orient,
-                    'HeadCoilCoordinateUnits': unit  # XXX validate this
-                    }
-    elif kind == 'eeg':
-        fid_json = {'EEGCoordinateSystem': coordsystem_name,
-                    'EEGCoordinateUnits': unit,
-                    'AnatomicalLandmarkCoordinates': coords,
-                    'AnatomicalLandmarkCoordinateSystem': coordsystem_name,
-                    'AnatomicalLandmarkCoordinateUnits': unit,
-                    }
-    elif kind == "ieeg":
-        fid_json = {
-            'iEEGCoordinateSystem': coordsystem_name,  # Pixels, or ACPC
-            'iEEGCoordinateUnits': unit,  # m, mm, cm , or pixels
-        }
-    else:
-        warn('Writing of electrodes.tsv is not supported for kind "{}". '
-             'Skipping ...'.format(kind))
-
-    _write_json(fname, fid_json, overwrite, verbose)
-
-    return fname
-
-
 def _participants_tsv(raw, subject_id, fname, overwrite=False,
                       verbose=True):
     """Create a participants.tsv file and save it.
@@ -399,6 +328,77 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False,
     # overwrite is forced to True as all issues with overwrite == False have
     # been handled by this point
     _write_tsv(fname, data, True, verbose)
+
+    return fname
+
+
+def _coordsystem_json(raw, unit, orient, coordsystem_name, fname,
+                      kind, overwrite=False, verbose=True):
+    """Create a coordsystem.json file and save it.
+
+    Parameters
+    ----------
+    raw : instance of Raw
+        The data as MNE-Python Raw object.
+    unit : str
+        Units to be used in the coordsystem specification.
+    orient : str
+        Used to define the coordinate system for the head coils.
+    coordsystem_name : str
+        Name of the coordinate system for the sensor positions.
+    fname : str
+        Filename to save the coordsystem.json to.
+    kind : str
+        Type of the data as in ALLOWED_KINDS.
+    overwrite : bool
+        Whether to overwrite the existing file.
+        Defaults to False.
+    verbose : bool
+        Set verbose output to true or false.
+
+    """
+    dig = raw.info['dig']
+    coords = _extract_landmarks(dig)
+    hpi = {d['ident']: d for d in dig if d['kind'] == FIFF.FIFFV_POINT_HPI}
+    if hpi:
+        for ident in hpi.keys():
+            coords['coil%d' % ident] = hpi[ident]['r'].tolist()
+
+    coord_frame = set([dig[ii]['coord_frame'] for ii in range(len(dig))])
+    if len(coord_frame) > 1:
+        raise ValueError('All HPI, electrodes, and fiducials must be in the '
+                         'same coordinate frame. Found: "{}"'
+                         .format(coord_frame))
+
+    if kind == 'meg':
+        hpi = {d['ident']: d for d in dig if d['kind'] == FIFF.FIFFV_POINT_HPI}
+        if hpi:
+            for ident in hpi.keys():
+                coords['coil%d' % ident] = hpi[ident]['r'].tolist()
+
+        fid_json = {'MEGCoordinateSystem': coordsystem_name,
+                    'MEGCoordinateUnits': unit,  # XXX validate this
+                    'HeadCoilCoordinates': coords,
+                    'HeadCoilCoordinateSystem': orient,
+                    'HeadCoilCoordinateUnits': unit  # XXX validate this
+                    }
+    elif kind == 'eeg':
+        fid_json = {'EEGCoordinateSystem': coordsystem_name,
+                    'EEGCoordinateUnits': unit,
+                    'AnatomicalLandmarkCoordinates': coords,
+                    'AnatomicalLandmarkCoordinateSystem': coordsystem_name,
+                    'AnatomicalLandmarkCoordinateUnits': unit,
+                    }
+    elif kind == "ieeg":
+        fid_json = {
+            'iEEGCoordinateSystem': coordsystem_name,  # Pixels, or ACPC
+            'iEEGCoordinateUnits': unit,  # m, mm, cm , or pixels
+        }
+    else:
+        warn('Writing of electrodes.tsv is not supported for kind "{}". '
+             'Skipping ...'.format(kind))
+
+    _write_json(fname, fid_json, overwrite, verbose)
 
     return fname
 
