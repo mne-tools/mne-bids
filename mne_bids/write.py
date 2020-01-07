@@ -456,13 +456,6 @@ def _coordsystem_json(raw, unit, orient, coordsystem_name, fname,
                     'HeadCoilCoordinateSystem': orient,
                     'HeadCoilCoordinateUnits': unit  # XXX validate this
                     }
-    elif kind == 'eeg':
-        fid_json = {'EEGCoordinateSystem': coordsystem_name,
-                    'EEGCoordinateUnits': unit,
-                    'AnatomicalLandmarkCoordinates': coords,
-                    'AnatomicalLandmarkCoordinateSystem': coordsystem_name,
-                    'AnatomicalLandmarkCoordinateUnits': unit,
-                    }
     elif kind == "ieeg":
         fid_json = {
             'iEEGCoordinateSystem': coordsystem_name,  # Pixels, or ACPC

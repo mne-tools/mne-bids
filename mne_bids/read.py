@@ -365,8 +365,6 @@ def read_raw_bids(bids_fname, bids_root, extra_params=None,
 
         if kind == "meg":
             coord_frame = coordsystem_json['MEGCoordinateSystem']
-        elif kind == "eeg":
-            coord_frame = coordsystem_json['EEGCoordinateSystem']
         elif kind in ["ieeg", "seeg", "ecog"]:
             coord_frame = coordsystem_json['iEEGCoordinateSystem']
         else:
