@@ -1286,7 +1286,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     _participants_json(participants_json_fname, True, verbose)
     _scans_tsv(raw, op.join(kind, bids_fname), scans_fname, overwrite, verbose)
 
-    # TODO: Implement coordystem.json and electrodes.tsv for EEG and  iEEG
+    # TODO: Implement coordystem.json and electrodes.tsv for EEG
     if kind == 'meg' and not emptyroom:
         _coordsystem_json(raw, unit, orient, manufacturer, coordsystem_fname,
                           kind, overwrite, verbose)
@@ -1295,22 +1295,22 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
             subject=subject_id, session=session_id, acquisition=acquisition,
             suffix='electrodes.tsv', prefix=data_path)
 
-        coord_frame = "mri"
+        # We only write iEEG electrodes.tsv and accompanying coordsystem.json
+        # if we have an available DigMontage
+        if raw.info['dig'] is not None:
+            coords = _extract_landmarks(raw.info['dig'])
+            if set(['RPA', 'NAS', 'LPA']) == set(list(coords.keys())):
+                # Rescale to MNE-Python "head" coord system, which is the
+                # "ElektaNeuromag" system, and equivalent to "CapTrak"
+                pass
+            unit = "m"  # defaults to meters?
+            # Now write the data to the elec coords and the coordsystem
+            _electrodes_tsv(raw, electrodes_fname, kind, overwrite, verbose)
 
-        # We only write EEG electrodes.tsv and accompanying coordsystem.json
-        # if we have LPA, RPA, and NAS available to rescale to a known
-        # coordinate system frame
-        coords = _extract_landmarks(raw.info['dig'])
-        if set(['RPA', 'NAS', 'LPA']) == set(list(coords.keys())):
-            # Rescale to MNE-Python "head" coord system, which is the
-            # "ElektaNeuromag" system, and equivalent to "CapTrak"
-            pass
-        unit = "m"  # defaults to meters?
-        # Now write the data to the elec coords and the coordsystem
-        _electrodes_tsv(raw, electrodes_fname, kind, overwrite, verbose)
-
-        _coordsystem_json(raw, unit, orient, coord_frame, coordsystem_fname,
-                          kind, overwrite, verbose)
+            coord_frame = "mri"
+            _coordsystem_json(raw, unit, orient,
+                              coord_frame, coordsystem_fname, kind,
+                              overwrite, verbose)
 
     events, event_id = _read_events(events_data, event_id, raw, ext)
     if events is not None and len(events) > 0 and not emptyroom:

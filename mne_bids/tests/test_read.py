@@ -3,26 +3,26 @@
 #
 # License: BSD (3-clause)
 import os.path as op
-from datetime import datetime, timezone
-
-import pytest
 import shutil as sh
+from datetime import datetime, timezone
 
 import numpy as np
 from numpy.testing import assert_almost_equal
+import pytest
 
 import mne
-from mne.io import anonymize_info
-from mne.utils import _TempDir, requires_nibabel, check_version
 from mne.datasets import testing, somato
+from mne.io import anonymize_info
+from mne.utils import _TempDir, requires_nibabel, check_version, object_diff
 
 import mne_bids
 from mne_bids import get_matched_empty_room
-from mne_bids.read import _read_raw, get_head_mri_trans, \
-    _handle_events_reading, _handle_info_reading
+from mne_bids.read import (read_raw_bids,
+                           _read_raw, get_head_mri_trans,
+                           _handle_events_reading, _handle_info_reading)
 from mne_bids.tsv_handler import _to_tsv
-from mne_bids.utils import (_find_matching_sidecar, _update_sidecar)
 from mne_bids.write import write_anat, write_raw_bids, make_bids_basename
+from mne_bids.utils import (_find_matching_sidecar, _update_sidecar)
 
 subject_id = '01'
 session_id = '01'
@@ -229,6 +229,42 @@ def test_handle_info_reading():
     _update_sidecar(sidecar_fname, "PowerLineFrequency", 55)
     with pytest.raises(ValueError, match="Line frequency in sidecar json"):
         raw = mne_bids.read_raw_bids(bids_fname, bids_root)
+
+
+def test_handle_coords_reading():
+    """Test reading coordinates from a
+    BIDS electrodes.tsv and coordsystem.json files."""
+    bids_root = _TempDir()
+
+    data_path = op.join(testing.data_path(), 'EDF')
+    raw_fname = op.join(data_path, 'test_reduced.edf')
+
+    raw = mne.io.read_raw_edf(raw_fname)
+
+    # ensure we are writing 'ecog'/'ieeg' data
+    raw.set_channel_types({ch: 'ecog'
+                           for ch in raw.ch_names})
+
+    # set a `random` montage
+    ch_names = raw.ch_names
+    elec_locs = np.random.random((len(ch_names), 3)).astype(float)
+    ch_pos = dict(zip(ch_names, elec_locs))
+    montage = mne.channels.make_dig_montage(ch_pos=ch_pos,
+                                            coord_frame="mri")
+    raw.set_montage(montage)
+    write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
+
+    # read in the data and assert montage is the same
+    bids_fname = bids_basename + "_ieeg.edf"
+
+    raw_test = read_raw_bids(bids_fname, bids_root)
+
+    # obtain the sensor positions
+    orig_locs = raw.info['dig'][1]
+    test_locs = raw_test.info['dig'][1]
+
+    assert orig_locs == test_locs
+    assert not object_diff(raw.info['chs'], raw_test.info['chs'])
 
 
 @requires_nibabel()
