@@ -360,6 +360,52 @@ def _participants_json(fname, overwrite=False, verbose=True):
     return fname
 
 
+def _scans_tsv(raw, raw_fname, fname, overwrite=False, verbose=True):
+    """Create a scans.tsv file and save it.
+
+    Parameters
+    ----------
+    raw : instance of Raw
+        The data as MNE-Python Raw object.
+    raw_fname : str
+        Relative path to the raw data file.
+    fname : str
+        Filename to save the scans.tsv to.
+    overwrite : bool
+        Defaults to False.
+        Whether to overwrite the existing data in the file.
+        If there is already data for the given `fname` and overwrite is False,
+        an error will be raised.
+    verbose : bool
+        Set verbose output to true or false.
+
+    """
+    # get measurement date from the data info
+    meas_date = raw.info['meas_date']
+    if isinstance(meas_date, (tuple, list, np.ndarray)):
+        acq_time = _stamp_to_dt(meas_date).strftime('%Y-%m-%dT%H:%M:%S')
+    else:
+        acq_time = 'n/a'
+
+    data = OrderedDict([('filename', ['%s' % raw_fname.replace(os.sep, '/')]),
+                       ('acq_time', [acq_time])])
+
+    if os.path.exists(fname):
+        orig_data = _from_tsv(fname)
+        # if the file name is already in the file raise an error
+        if raw_fname in orig_data['filename'] and not overwrite:
+            raise FileExistsError('"%s" already exists in the scans list. '  # noqa: E501 F821
+                                  'Please set overwrite to True.' % raw_fname)
+        # otherwise add the new data
+        data = _combine(orig_data, data, 'filename')
+
+    # overwrite is forced to True as all issues with overwrite == False have
+    # been handled by this point
+    _write_tsv(fname, data, True, verbose)
+
+    return fname
+
+
 def _coordsystem_json(raw, unit, orient, coordsystem_name, fname,
                       kind, overwrite=False, verbose=True):
     """Create a coordsystem.json file and save it.
