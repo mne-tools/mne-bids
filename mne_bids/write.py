@@ -332,6 +332,34 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False,
     return fname
 
 
+def _participants_json(fname, overwrite=False, verbose=True):
+    """Create participants.json for non-default columns in accompanying TSV.
+
+    Parameters
+    ----------
+    fname : str
+        Filename to save the scans.tsv to.
+    overwrite : bool
+        Defaults to False.
+        Whether to overwrite the existing data in the file.
+        If there is already data for the given `fname` and overwrite is False,
+        an error will be raised.
+    verbose : bool
+        Set verbose output to true or false.
+
+    """
+    cols = OrderedDict()
+    cols['participant_id'] = {'Description': 'Unique participant identifier'}
+    cols['age'] = {'Description': 'Age of the participant at time of testing',
+                   'Units': 'years'}
+    cols['sex'] = {'Description': 'Biological sex of the participant',
+                   'Levels': {'F': 'female', 'M': 'male'}}
+
+    _write_json(fname, cols, overwrite, verbose)
+
+    return fname
+
+
 def _coordsystem_json(raw, unit, orient, coordsystem_name, fname,
                       kind, overwrite=False, verbose=True):
     """Create a coordsystem.json file and save it.
@@ -399,34 +427,6 @@ def _coordsystem_json(raw, unit, orient, coordsystem_name, fname,
              'Skipping ...'.format(kind))
 
     _write_json(fname, fid_json, overwrite, verbose)
-
-    return fname
-
-
-def _participants_json(fname, overwrite=False, verbose=True):
-    """Create participants.json for non-default columns in accompanying TSV.
-
-    Parameters
-    ----------
-    fname : str
-        Filename to save the scans.tsv to.
-    overwrite : bool
-        Defaults to False.
-        Whether to overwrite the existing data in the file.
-        If there is already data for the given `fname` and overwrite is False,
-        an error will be raised.
-    verbose : bool
-        Set verbose output to true or false.
-
-    """
-    cols = OrderedDict()
-    cols['participant_id'] = {'Description': 'Unique participant identifier'}
-    cols['age'] = {'Description': 'Age of the participant at time of testing',
-                   'Units': 'years'}
-    cols['sex'] = {'Description': 'Biological sex of the participant',
-                   'Levels': {'F': 'female', 'M': 'male'}}
-
-    _write_json(fname, cols, overwrite, verbose)
 
     return fname
 
