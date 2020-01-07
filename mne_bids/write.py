@@ -195,6 +195,65 @@ def _electrodes_tsv(raw, fname, kind, overwrite=False, verbose=True):
     return fname
 
 
+def _events_tsv(events, raw, fname, trial_type, overwrite=False,
+                verbose=True):
+    """Create an events.tsv file and save it.
+
+    This function will write the mandatory 'onset', and 'duration' columns as
+    well as the optional 'value' and 'sample'. The 'value'
+    corresponds to the marker value as found in the TRIG channel of the
+    recording. In addition, the 'trial_type' field can be written.
+
+    Parameters
+    ----------
+    events : array, shape = (n_events, 3)
+        The first column contains the event time in samples and the third
+        column contains the event id. The second column is ignored for now but
+        typically contains the value of the trigger channel either immediately
+        before the event or immediately after.
+    raw : instance of Raw
+        The data as MNE-Python Raw object.
+    fname : str
+        Filename to save the events.tsv to.
+    trial_type : dict | None
+        Dictionary mapping a brief description key to an event id (value). For
+        example {'Go': 1, 'No Go': 2}.
+    overwrite : bool
+        Whether to overwrite the existing file.
+        Defaults to False.
+    verbose : bool
+        Set verbose output to true or false.
+
+    Notes
+    -----
+    The function writes durations of zero for each event.
+
+    """
+    # Start by filling all data that we know into an ordered dictionary
+    first_samp = raw.first_samp
+    sfreq = raw.info['sfreq']
+    events[:, 0] -= first_samp
+
+    # Onset column needs to be specified in seconds
+    data = OrderedDict([('onset', events[:, 0] / sfreq),
+                        ('duration', np.zeros(events.shape[0])),
+                        ('trial_type', None),
+                        ('value', events[:, 2]),
+                        ('sample', events[:, 0])])
+
+    # Now check if trial_type is specified or should be removed
+    if trial_type:
+        trial_type_map = {v: k for k, v in trial_type.items()}
+        data['trial_type'] = [trial_type_map.get(i, 'n/a') for
+                              i in events[:, 2]]
+    else:
+        del data['trial_type']
+
+    _write_tsv(fname, data, overwrite, verbose)
+
+    return fname
+
+
 def _coordsystem_json(raw, unit, orient, coordsystem_name, fname,
                       kind, overwrite=False, verbose=True):
     """Create a coordsystem.json file and save it.
@@ -262,65 +321,6 @@ def _coordsystem_json(raw, unit, orient, coordsystem_name, fname,
              'Skipping ...'.format(kind))
 
     _write_json(fname, fid_json, overwrite, verbose)
-
-    return fname
-
-
-def _events_tsv(events, raw, fname, trial_type, overwrite=False,
-                verbose=True):
-    """Create an events.tsv file and save it.
-
-    This function will write the mandatory 'onset', and 'duration' columns as
-    well as the optional 'value' and 'sample'. The 'value'
-    corresponds to the marker value as found in the TRIG channel of the
-    recording. In addition, the 'trial_type' field can be written.
-
-    Parameters
-    ----------
-    events : array, shape = (n_events, 3)
-        The first column contains the event time in samples and the third
-        column contains the event id. The second column is ignored for now but
-        typically contains the value of the trigger channel either immediately
-        before the event or immediately after.
-    raw : instance of Raw
-        The data as MNE-Python Raw object.
-    fname : str
-        Filename to save the events.tsv to.
-    trial_type : dict | None
-        Dictionary mapping a brief description key to an event id (value). For
-        example {'Go': 1, 'No Go': 2}.
-    overwrite : bool
-        Whether to overwrite the existing file.
-        Defaults to False.
-    verbose : bool
-        Set verbose output to true or false.
-
-    Notes
-    -----
-    The function writes durations of zero for each event.
-
-    """
-    # Start by filling all data that we know into an ordered dictionary
-    first_samp = raw.first_samp
-    sfreq = raw.info['sfreq']
-    events[:, 0] -= first_samp
-
-    # Onset column needs to be specified in seconds
-    data = OrderedDict([('onset', events[:, 0] / sfreq),
-                        ('duration', np.zeros(events.shape[0])),
-                        ('trial_type', None),
-                        ('value', events[:, 2]),
-                        ('sample', events[:, 0])])
-
-    # Now check if trial_type is specified or should be removed
-    if trial_type:
-        trial_type_map = {v: k for k, v in trial_type.items()}
-        data['trial_type'] = [trial_type_map.get(i, 'n/a') for
-                              i in events[:, 2]]
-    else:
-        del data['trial_type']
-
-    _write_tsv(fname, data, overwrite, verbose)
 
     return fname
 
@@ -934,7 +934,7 @@ def make_bids_basename(subject=None, session=None, task=None,
     return filename
 
 
-def make_dataset_description(path, name=None, data_license=None,
+def make_dataset_description(path, name, data_license=None,
                              authors=None, acknowledgements=None,
                              how_to_acknowledge=None, funding=None,
                              references_and_links=None, doi=None,
