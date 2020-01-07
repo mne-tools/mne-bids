@@ -178,6 +178,7 @@ def test_handle_info_reading():
     raw = mne_bids.read_raw_bids(bids_fname, bids_root)
     assert raw.info['line_freq'] == 50
 
+
 @requires_nibabel()
 def test_get_head_mri_trans_ctf():
     """Test getting a trans object from BIDS data in CTF."""
