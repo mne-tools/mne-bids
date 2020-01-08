@@ -898,6 +898,10 @@ def make_dataset_description(path, name, data_license=None,
     The required field BIDSVersion will be automatically filled by mne_bids.
 
     """
+    # default author to make dataset description BIDS compliant
+    if authors is None:
+        authors = "MNE-BIDS"
+
     # Put potential string input into list of strings
     if isinstance(authors, str):
         authors = authors.split(', ')
@@ -1164,7 +1168,10 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     if events is not None and len(events) > 0 and not emptyroom:
         _events_tsv(events, raw, events_fname, event_id, overwrite, verbose)
 
-    make_dataset_description(bids_root, name=" ", verbose=verbose)
+    dataset_description_fpath = op.join(bids_root, "dataset_description.json")
+    if not op.exists(dataset_description_fpath) or overwrite:
+        make_dataset_description(bids_root, name=" ", verbose=verbose)
+
     _sidecar_json(raw, task, manufacturer, sidecar_fname, kind, overwrite,
                   verbose)
     _channels_tsv(raw, channels_fname, overwrite, verbose)

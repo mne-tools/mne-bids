@@ -514,10 +514,11 @@ def test_bti(_bids_validate):
     raw = mne.io.read_raw_bti(raw_fname, config_fname=config_fname,
                               head_shape_fname=headshape_fname)
 
+    # write the BIDS dataset description, then write BIDS files
+    make_dataset_description(bids_root, name="BTi data")
     write_raw_bids(raw, bids_basename, bids_root, verbose=True)
 
     assert op.exists(op.join(bids_root, 'participants.tsv'))
-    make_dataset_description(bids_root, name="BTi data")
     _bids_validate(bids_root)
 
     raw = read_raw_bids(bids_basename + '_meg', bids_root)
@@ -616,7 +617,21 @@ def test_edf(_bids_validate):
     raw.rename_channels({raw.info['ch_names'][1]: 'EMG'})
     raw.set_channel_types({'EMG': 'emg'})
 
-    write_raw_bids(raw, bids_basename, bids_root)
+    # test dataset description overwrites with the authors set
+    make_dataset_description(bids_root, name="test",
+                             authors=["test1", "test2"])
+    write_raw_bids(raw, bids_basename, bids_root, overwrite=False)
+    dataset_description_fpath = op.join(bids_root, "dataset_description.json")
+    with open(dataset_description_fpath, 'r') as f:
+        dataset_description_json = json.load(f)
+        assert dataset_description_json["Authors"] == ["test1", "test2"]
+
+    # write from fresh start w/ overwrite
+    write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
+    # after overwrite, the dataset description if defaulted to MNE-BIDS
+    with open(dataset_description_fpath, 'r') as f:
+        dataset_description_json = json.load(f)
+        assert dataset_description_json["Authors"] == ["MNE-BIDS"]
 
     # Reading the file back should raise an error, because we renamed channels
     # in `raw` and used that information to write a channels.tsv. Yet, we
