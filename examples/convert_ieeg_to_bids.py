@@ -1,7 +1,7 @@
 """
-===================================
+====================================
 07. Convert iEEG data to BIDS format
-===================================
+====================================
 
 In this example, we use MNE-BIDS to create a BIDS-compatible directory of iEEG
 data. Specifically, we will follow these steps:
@@ -28,9 +28,12 @@ import tempfile
 # need to install visualization
 from mpl_toolkits.mplot3d import Axes3D  # noqa
 import matplotlib.pyplot as plt
-import mne
+
+# install basic sci python tools
 import numpy as np
 from scipy.io import loadmat
+
+import mne
 
 from mne_bids import write_raw_bids, make_bids_basename, read_raw_bids
 from mne_bids.utils import print_dir_tree
