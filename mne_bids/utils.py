@@ -621,3 +621,22 @@ def _find_matching_sidecar(bids_fname, bids_root, suffix, allow_fail=False):
         return None
     else:
         raise RuntimeError(msg)
+
+
+def _update_sidecar(sidecar_fname, key, val):
+    """Update a sidecar JSON file with a given key/value pair.
+
+    Parameters
+    ----------
+    sidecar_fname : str
+        Full name of the data file
+    key : str
+        The key in the sidecar JSON file. E.g. "PowerLineFrequency"
+    val : str
+        The corresponding value to change to in the sidecar JSON file.
+    """
+    with open(sidecar_fname, "r") as fin:
+        sidecar_json = json.load(fin)
+    sidecar_json[key] = val
+    with open(sidecar_fname, "w") as fout:
+        json.dump(sidecar_json, fout)

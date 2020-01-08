@@ -2,24 +2,25 @@
 # Authors: Stefan Appelhoff <stefan.appelhoff@mailbox.org>
 #
 # License: BSD (3-clause)
-import json
 import os.path as op
-import shutil as sh
 from datetime import datetime, timezone
 
-import mne
-import numpy as np
 import pytest
-from mne.datasets import testing
+import shutil as sh
+
+import numpy as np
+from numpy.testing import assert_almost_equal
+
+import mne
 from mne.io import anonymize_info
 from mne.utils import _TempDir, requires_nibabel, check_version
-from numpy.testing import assert_almost_equal
+from mne.datasets import testing
 
 import mne_bids
 from mne_bids import get_matched_empty_room
 from mne_bids.read import _read_raw, get_head_mri_trans, _handle_events_reading
 from mne_bids.tsv_handler import _to_tsv
-from mne_bids.utils import (_find_matching_sidecar)
+from mne_bids.utils import (_find_matching_sidecar, _update_sidecar)
 from mne_bids.write import write_anat, write_raw_bids, make_bids_basename
 
 subject_id = '01'
@@ -153,45 +154,33 @@ def test_handle_info_reading():
                                            '{}.json'.format(kind),
                                            allow_fail=True)
 
-    # when nothing is set, default to 50 Hz
+    # 1. when nothing is set, default to 50 Hz
     raw.info['line_freq'] = None
     write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
+    _update_sidecar(sidecar_fname, "PowerLineFrequency", "n/a")
     raw = mne_bids.read_raw_bids(bids_fname, bids_root)
-    # with pytest.warns(UserWarning, match="Neither sidecar json"):
-    raw = mne_bids.read_raw_bids(bids_fname, bids_root)
-    assert raw.info['line_freq'] == 50
-
-    # when raw.info has it, but sidecar json does not
-    raw.info['line_freq'] = 60
-    write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
-    with open(sidecar_fname, "r") as fin:
-        sidecar_json = json.load(fin)
-    sidecar_json["PowerLineFrequency"] = "n/a"
-    with open(sidecar_fname, "w") as fout:
-        json.dump(sidecar_json, fout)
-    with pytest.warns(UserWarning, match="Line frequency in sidecar json"):
+    with pytest.warns(UserWarning, match="Neither sidecar json,"):
         raw = mne_bids.read_raw_bids(bids_fname, bids_root)
-        assert raw.info['line_freq'] == 60
+        assert raw.info['line_freq'] == 50
 
-    # assert that we get an error when sidecar json doesn't match
-    with open(sidecar_fname, "r") as fin:
-        sidecar_json = json.load(fin)
-    sidecar_json["PowerLineFrequency"] = 55
-    with open(sidecar_fname, "w") as fout:
-        json.dump(sidecar_json, fout)
-    with pytest.raises(ValueError, match="Line frequency in sidecar json"):
-        raw = mne_bids.read_raw_bids(bids_fname, bids_root)
-
-    # if line frequency is not set in raw file, then default to sidecar
+    # 2. if line frequency is not set in raw file, then default to sidecar
     raw.info['line_freq'] = None
     write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
-    with open(sidecar_fname, "r") as fin:
-        sidecar_json = json.load(fin)
-    sidecar_json["PowerLineFrequency"] = 55
-    with open(sidecar_fname, "w") as fout:
-        json.dump(sidecar_json, fout)
+    _update_sidecar(sidecar_fname, "PowerLineFrequency", 55)
     raw = mne_bids.read_raw_bids(bids_fname, bids_root)
     assert raw.info['line_freq'] == 55
+
+    # 3. if line frequency is set in raw file, but not sidecar
+    raw.info['line_freq'] = 60
+    write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
+    _update_sidecar(sidecar_fname, "PowerLineFrequency", "n/a")
+    raw = mne_bids.read_raw_bids(bids_fname, bids_root)
+    assert raw.info['line_freq'] == 60
+
+    # 4. assert that we get an error when sidecar json doesn't match
+    _update_sidecar(sidecar_fname, "PowerLineFrequency", 55)
+    with pytest.raises(ValueError, match="Line frequency in sidecar json"):
+        raw = mne_bids.read_raw_bids(bids_fname, bids_root)
 
 
 @requires_nibabel()
