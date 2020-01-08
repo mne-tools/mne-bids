@@ -161,7 +161,7 @@ def test_handle_info_reading():
     raw = mne_bids.read_raw_bids(bids_fname, bids_root)
     with pytest.warns(UserWarning, match="Neither sidecar json,"):
         raw = mne_bids.read_raw_bids(bids_fname, bids_root)
-        assert raw.info['line_freq'] == 50
+        assert raw.info['line_freq'] is None
 
     # 2. if line frequency is not set in raw file, then default to sidecar
     raw.info['line_freq'] = None
