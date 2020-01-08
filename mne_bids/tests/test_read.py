@@ -159,7 +159,7 @@ def test_handle_info_reading():
     write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
     _update_sidecar(sidecar_fname, "PowerLineFrequency", "n/a")
     raw = mne_bids.read_raw_bids(bids_fname, bids_root)
-    with pytest.warns(UserWarning, match="Neither sidecar json,"):
+    with pytest.warns(UserWarning, match="No line frequency found"):
         raw = mne_bids.read_raw_bids(bids_fname, bids_root)
         assert raw.info['line_freq'] is None
 

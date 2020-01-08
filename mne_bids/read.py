@@ -18,6 +18,7 @@ from mne import io
 from mne.utils import has_nibabel, logger
 from mne.coreg import fit_matched_points
 from mne.transforms import apply_trans
+from mne.time_frequency import psd_multitaper
 
 from mne_bids.tsv_handler import _from_tsv, _drop
 from mne_bids.config import ALLOWED_EXTENSIONS
@@ -89,11 +90,31 @@ def _handle_info_reading(sidecar_fname, raw):
         line_freq = None
 
     if line_freq is None and raw.info["line_freq"] is None:
-        # TODO: Add PSD peak-estimation if None is found...
         # if neither raw, or sidecar json has Pwr Line Freq set
-        warn("Neither sidecar json, "
-             "or Raw has Power Line "
-             "Frequency.")
+        # first bandpass the signal to just between 45 and 65 Hz
+        temp_raw = raw.copy()
+        temp_raw.load_data()
+        temp_raw = temp_raw.filter(l_freq=45, h_freq=65)
+
+        # only sample first 10 seconds, or whole dataset
+        tmin = 0
+        tmax = max(len(raw.times), 10 * raw.info['sfreq'])
+
+        # run a multi-taper FFT
+        psds, freqs = psd_multitaper(temp_raw, low_bias=True,
+                                     tmin=tmin, tmax=tmax,
+                                     fmin=45, fmax=65,
+                                     n_jobs=1)
+        psds = np.mean(np.abs(10 * np.log10(psds)), axis=1)
+        possible_power_lines = np.array([50, 60])
+        max_freq = freqs[np.argmax(psds)]
+        estimated_index = np.argmax([abs(max_freq - x) for x in possible_power_lines])
+        powerlinefrequency = possible_power_lines[estimated_index]
+
+        warn('No line frequency found, defaulting to {} Hz '
+             'estimated from multi-taper FFT '
+             'on 10 seconds of data.'.format(powerlinefrequency))
+
     elif raw.info["line_freq"] is None and line_freq is not None:
         # if the read in frequency is not set inside Raw
         # -> set it to what the sidecar JSON specifies

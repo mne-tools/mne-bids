@@ -29,6 +29,7 @@ except ImportError:
     from mne._digitization._utils import _get_fid_coords
 from mne.channels.channels import _unit2human
 from mne.utils import check_version, has_nibabel
+from mne.time_frequency import psd_multitaper
 
 from mne_bids.pick import coil_type
 from mne_bids.utils import (_write_json, _write_tsv, _read_events, _mkdir_p,
@@ -475,10 +476,31 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, overwrite=False,
     """
     sfreq = raw.info['sfreq']
     powerlinefrequency = raw.info.get('line_freq', None)
-    # TODO: Add PSD peak-estimation if None is found...
     if powerlinefrequency is None:
-        warn('No line frequency found, defaulting to 50 Hz')
-        powerlinefrequency = 50
+        temp_raw = raw.copy()
+        temp_raw.load_data()
+
+        # first bandpass the signal to just between 45 and 65 Hz
+        temp_raw = temp_raw.filter(l_freq=45, h_freq=65)
+
+        # only sample first 10 seconds, or whole dataset
+        tmin = 0
+        tmax = max(len(raw.times), 10*raw.info['sfreq'])
+
+        # run a multi-taper FFT
+        psds, freqs = psd_multitaper(temp_raw, low_bias=True,
+                                     tmin=tmin, tmax=tmax,
+                                     fmin=45, fmax=65,
+                                     n_jobs=1)
+        psds = np.mean(np.abs(10 * np.log10(psds)), axis=1)
+        possible_power_lines = np.array([50, 60])
+        max_freq = freqs[np.argmax(psds)]
+        estimated_index = np.argmax([abs(max_freq - x) for x in possible_power_lines])
+        powerlinefrequency = str(possible_power_lines[estimated_index])
+
+        warn('No line frequency found, defaulting to {} Hz '
+             'estimated from multi-taper FFT '
+             'on 10 seconds of data.'.format(powerlinefrequency))
 
     if isinstance(raw, BaseRaw):
         rec_type = 'continuous'
