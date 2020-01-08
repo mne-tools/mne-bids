@@ -475,6 +475,7 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, overwrite=False,
     """
     sfreq = raw.info['sfreq']
     powerlinefrequency = raw.info.get('line_freq', None)
+    # TODO: Add PSD peak-estimation if None is found...
     if powerlinefrequency is None:
         warn('No line frequency found, defaulting to 50 Hz')
         powerlinefrequency = 50
