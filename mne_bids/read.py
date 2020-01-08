@@ -89,13 +89,11 @@ def _handle_info_reading(sidecar_fname, raw):
         line_freq = None
 
     if line_freq is None and raw.info["line_freq"] is None:
-        # defaults to 50 Hz if neither raw, or sidecar json
-        # has Power Line Freq set
-        raw.info["line_freq"] = 50
+        # TODO: Add PSD peak-estimation if None is found...
+        # if neither raw, or sidecar json has Pwr Line Freq set
         warn("Neither sidecar json, "
              "or Raw has Power Line "
-             "Frequency. Defaulting "
-             "to 50 Hz.")
+             "Frequency.")
     elif raw.info["line_freq"] is None and line_freq is not None:
         # if the read in frequency is not set inside Raw
         # -> set it to what the sidecar JSON specifies
