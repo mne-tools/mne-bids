@@ -78,6 +78,7 @@ eegdata = np.random.rand(len(ch_names), 1000)
 # files to properly *bidsify* this data.
 info = mne.create_info(ch_names, 1000., 'ecog', montage=montage)
 raw = mne.io.RawArray(eegdata, info)
+raw.set_montage(montage)
 
 ###############################################################################
 # Step 2: Formatting as BIDS
