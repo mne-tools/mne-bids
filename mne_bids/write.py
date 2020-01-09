@@ -19,6 +19,7 @@ from scipy import linalg
 from numpy.testing import assert_array_equal
 from mne.transforms import (_get_trans, apply_trans, get_ras_to_neuromag_trans,
                             rotation, translation)
+import mne
 from mne import Epochs
 from mne.io.constants import FIFF
 from mne.io.pick import channel_type
@@ -479,24 +480,38 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, overwrite=False,
     if powerlinefrequency is None:
         temp_raw = raw.copy()
         temp_raw.load_data()
+        picks = mne.pick_types(temp_raw.info, meg=True, eeg=True,
+                               stim=True, ecog=True, seeg=True,
+                               exclude='bads')
+        ch_names = [temp_raw.ch_names[k] for k in picks]
+        temp_raw = temp_raw.pick_channels(ch_names)
 
         # first bandpass the signal to just between 45 and 65 Hz
-        temp_raw = temp_raw.filter(l_freq=45, h_freq=65)
+        l_freq = 45
+        h_freq = min(temp_raw.info['sfreq'] // 2 - 1, 65)
+        temp_raw = temp_raw.filter(l_freq=l_freq,
+                                   h_freq=h_freq)
 
         # only sample first 10 seconds, or whole dataset
         tmin = 0
-        tmax = max(len(raw.times), 10*raw.info['sfreq'])
+        tmax = max(len(temp_raw.times), 10*temp_raw.info['sfreq'])
 
         # run a multi-taper FFT
         psds, freqs = psd_multitaper(temp_raw, low_bias=True,
                                      tmin=tmin, tmax=tmax,
                                      fmin=45, fmax=65,
                                      n_jobs=1)
-        psds = np.mean(np.abs(10 * np.log10(psds)), axis=1)
-        possible_power_lines = np.array([50, 60])
+        if psds.ndim > 1:
+            axis = 0
+        else:
+            axis = None
+        psds = np.mean(np.abs(10 * np.log10(psds)), axis=axis)
+        if len(freqs) != len(psds):
+            raise RuntimeError("{} != {}".format(len(freqs), len(psds)))
+        possible_power_lines = [50, 60]
         max_freq = freqs[np.argmax(psds)]
         estimated_index = np.argmax([abs(max_freq - x) for x in possible_power_lines])
-        powerlinefrequency = str(possible_power_lines[estimated_index])
+        powerlinefrequency = possible_power_lines[estimated_index]
 
         warn('No line frequency found, defaulting to {} Hz '
              'estimated from multi-taper FFT '
