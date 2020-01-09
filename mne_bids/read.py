@@ -124,7 +124,8 @@ def _handle_info_reading(sidecar_fname, raw):
             raise RuntimeError("{} != {}".format(len(freqs), len(psds)))
         possible_power_lines = [50, 60]
         max_freq = freqs[np.argmax(psds)]
-        estimated_index = np.argmax([abs(max_freq - x) for x in possible_power_lines])
+        estimated_index = np.argmax([abs(max_freq - x)
+                                     for x in possible_power_lines])
         powerlinefrequency = possible_power_lines[estimated_index]
 
         warn('No line frequency found, defaulting to {} Hz '

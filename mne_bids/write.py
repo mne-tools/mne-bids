@@ -494,7 +494,7 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, overwrite=False,
 
         # only sample first 10 seconds, or whole dataset
         tmin = 0
-        tmax = max(len(temp_raw.times), 10*temp_raw.info['sfreq'])
+        tmax = max(len(temp_raw.times), 10 * temp_raw.info['sfreq'])
 
         # run a multi-taper FFT
         psds, freqs = psd_multitaper(temp_raw, low_bias=True,
@@ -510,7 +510,8 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, overwrite=False,
             raise RuntimeError("{} != {}".format(len(freqs), len(psds)))
         possible_power_lines = [50, 60]
         max_freq = freqs[np.argmax(psds)]
-        estimated_index = np.argmax([abs(max_freq - x) for x in possible_power_lines])
+        estimated_index = np.argmax([abs(max_freq - x)
+                                     for x in possible_power_lines])
         powerlinefrequency = possible_power_lines[estimated_index]
 
         warn('No line frequency found, defaulting to {} Hz '
