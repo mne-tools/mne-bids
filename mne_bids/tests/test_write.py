@@ -676,10 +676,11 @@ def test_edf(_bids_validate):
 
     # Also cover iEEG
     # We use the same data and pretend that eeg channels are ecog
-    raw.set_channel_types({raw.ch_names[i]: 'ecog'
-                           for i in mne.pick_types(raw.info, eeg=True)})
+    ieeg_raw = raw.copy()
+    ieeg_raw.set_channel_types({raw.ch_names[i]: 'ecog'
+                           for i in mne.pick_types(ieeg_raw.info, eeg=True)})
     bids_root = _TempDir()
-    write_raw_bids(raw, bids_basename, bids_root)
+    write_raw_bids(ieeg_raw, bids_basename, bids_root)
     _bids_validate(bids_root)
 
     # test anonymize and convert
