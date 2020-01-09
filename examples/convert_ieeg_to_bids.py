@@ -112,7 +112,7 @@ bids_root = os.path.join(mne_dir, 'eegmmidb_bids')
 # the `trial_type` column in our BIDS `events.tsv`. We know about the event
 # meaning from the documentation on PhysioBank
 
-# # Now convert our data to be in a new BIDS dataset.
+# Now convert our data to be in a new BIDS dataset.
 bids_basename = make_bids_basename(subject=subject_id,
                                    task=task,
                                    acquisition="ecog")
