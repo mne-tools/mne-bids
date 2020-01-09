@@ -3,26 +3,27 @@
 #
 # License: BSD (3-clause)
 import os.path as op
-import shutil as sh
 from datetime import datetime, timezone
+
+import pytest
+import shutil as sh
 
 import numpy as np
 from numpy.testing import assert_almost_equal
-import pytest
 
 import mne
-from mne.datasets import testing, somato
 from mne.io import anonymize_info
 from mne.utils import _TempDir, requires_nibabel, check_version, object_diff
+from mne.datasets import testing, somato
 
 import mne_bids
 from mne_bids import get_matched_empty_room
 from mne_bids.read import (read_raw_bids,
                            _read_raw, get_head_mri_trans,
                            _handle_events_reading, _handle_info_reading)
-from mne_bids.tsv_handler import _to_tsv
-from mne_bids.write import write_anat, write_raw_bids, make_bids_basename
 from mne_bids.utils import (_find_matching_sidecar, _update_sidecar)
+from mne_bids.write import write_anat, write_raw_bids, make_bids_basename
+from mne_bids.tsv_handler import _to_tsv
 
 subject_id = '01'
 session_id = '01'
