@@ -25,6 +25,8 @@ from mne.channels import make_standard_montage
 from mne.io.pick import pick_types
 from mne.io.kit.kit import get_kit_info
 from mne.io.constants import FIFF
+from mne.time_frequency import psd_array_multitaper
+from mne.filter import filter_data
 
 from mne_bids.tsv_handler import _to_tsv, _tsv_to_str
 
@@ -640,3 +642,55 @@ def _update_sidecar(sidecar_fname, key, val):
     sidecar_json[key] = val
     with open(sidecar_fname, "w") as fout:
         json.dump(sidecar_json, fout)
+
+
+def _estimate_line_noise(raw):
+    """Estimate power lin noise from a given BaseRaw.
+
+    Parameters
+    ----------
+    raw : mne.io.BaseRaw
+
+    Returns
+    -------
+    powerlinefrequency : int
+        Either 50, or 60 Hz depending if European,
+        or USA data recording.
+    """
+    temp_raw = raw.copy()
+    temp_raw.load_data()
+    picks = pick_types(temp_raw.info, meg=True, eeg=True,
+                       stim=True, ecog=True, seeg=True,
+                       exclude='bads')
+    ch_names = [temp_raw.ch_names[k] for k in picks]
+    temp_raw = temp_raw.pick_channels(ch_names)
+
+    # first bandpass the signal to just between 45 and 65 Hz
+    sfreq = temp_raw.info['sfreq']
+    l_freq = 45
+    h_freq = min(sfreq // 2 - 1, 65)
+
+    # only sample first 10 seconds, or whole dataset
+    tmin = 0
+    tmax = max(len(temp_raw.times), 10 * sfreq)
+    temp_data = temp_raw.get_data(start=tmin, stop=tmax, return_times=False)
+    temp_data = filter_data(temp_data, sfreq=sfreq,
+                            l_freq=l_freq, h_freq=h_freq)
+
+    # run a multi-taper FFT
+    psds, freqs = psd_array_multitaper(temp_data, sfreq=sfreq,
+                                       fmin=45, fmax=65,
+                                       n_jobs=1)
+    if psds.ndim > 1:
+        axis = 0
+    else:
+        axis = None
+    psds = np.mean(np.abs(10 * np.log10(psds)), axis=axis)
+    if len(freqs) != len(psds):
+        raise RuntimeError("{} != {}".format(len(freqs), len(psds)))
+    possible_power_lines = [50, 60]
+    max_freq = freqs[np.argmax(psds)]
+    estimated_index = np.argmax([abs(max_freq - x)
+                                 for x in possible_power_lines])
+    powerlinefrequency = possible_power_lines[estimated_index]
+    return powerlinefrequency

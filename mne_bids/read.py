@@ -18,13 +18,13 @@ from mne import io
 from mne.utils import has_nibabel, logger
 from mne.coreg import fit_matched_points
 from mne.transforms import apply_trans
-from mne.time_frequency import psd_multitaper
 
 from mne_bids.tsv_handler import _from_tsv, _drop
 from mne_bids.config import ALLOWED_EXTENSIONS
 from mne_bids.utils import (_parse_bids_filename, _extract_landmarks,
                             _find_matching_sidecar, _parse_ext,
-                            _get_ch_type_mapping, make_bids_folders)
+                            _get_ch_type_mapping, make_bids_folders,
+                            _estimate_line_noise)
 
 reader = {'.con': io.read_raw_kit, '.sqd': io.read_raw_kit,
           '.fif': io.read_raw_fif, '.pdf': io.read_raw_bti,
@@ -90,44 +90,8 @@ def _handle_info_reading(sidecar_fname, raw):
         line_freq = None
 
     if line_freq is None and raw.info["line_freq"] is None:
-        # if neither raw, or sidecar json has Pwr Line Freq set
-        # first bandpass the signal to just between 45 and 65 Hz
-        temp_raw = raw.copy()
-        temp_raw.load_data()
-        picks = mne.pick_types(temp_raw.info, meg=True, eeg=True,
-                               stim=True, ecog=True, seeg=True,
-                               exclude='bads')
-        ch_names = [temp_raw.ch_names[k] for k in picks]
-        temp_raw = temp_raw.pick_channels(ch_names)
-
-        # first bandpass the signal to just between 45 and 65 Hz
-        l_freq = 45
-        h_freq = min(temp_raw.info['sfreq'] // 2 - 1, 65)
-        temp_raw = temp_raw.filter(l_freq=l_freq,
-                                   h_freq=h_freq)
-
-        # only sample first 10 seconds, or whole dataset
-        tmin = 0
-        tmax = max(len(temp_raw.times), 10 * temp_raw.info['sfreq'])
-
-        # run a multi-taper FFT
-        psds, freqs = psd_multitaper(temp_raw, low_bias=True,
-                                     tmin=tmin, tmax=tmax,
-                                     fmin=45, fmax=65,
-                                     n_jobs=1)
-        if psds.ndim > 1:
-            axis = 0
-        else:
-            axis = None
-        psds = np.mean(np.abs(10 * np.log10(psds)), axis=axis)
-        if len(freqs) != len(psds):
-            raise RuntimeError("{} != {}".format(len(freqs), len(psds)))
-        possible_power_lines = [50, 60]
-        max_freq = freqs[np.argmax(psds)]
-        estimated_index = np.argmax([abs(max_freq - x)
-                                     for x in possible_power_lines])
-        powerlinefrequency = possible_power_lines[estimated_index]
-
+        # estimate line noise using PSD from multitaper FFT
+        powerlinefrequency = _estimate_line_noise(raw)
         warn('No line frequency found, defaulting to {} Hz '
              'estimated from multi-taper FFT '
              'on 10 seconds of data.'.format(powerlinefrequency))

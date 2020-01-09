@@ -19,7 +19,6 @@ from scipy import linalg
 from numpy.testing import assert_array_equal
 from mne.transforms import (_get_trans, apply_trans, get_ras_to_neuromag_trans,
                             rotation, translation)
-import mne
 from mne import Epochs
 from mne.io.constants import FIFF
 from mne.io.pick import channel_type
@@ -30,7 +29,6 @@ except ImportError:
     from mne._digitization._utils import _get_fid_coords
 from mne.channels.channels import _unit2human
 from mne.utils import check_version, has_nibabel
-from mne.time_frequency import psd_multitaper
 
 from mne_bids.pick import coil_type
 from mne_bids.utils import (_write_json, _write_tsv, _read_events, _mkdir_p,
@@ -38,7 +36,8 @@ from mne_bids.utils import (_write_json, _write_tsv, _read_events, _mkdir_p,
                             _check_key_val,
                             _parse_bids_filename, _handle_kind, _check_types,
                             _extract_landmarks, _parse_ext,
-                            _get_ch_type_mapping, make_bids_folders)
+                            _get_ch_type_mapping, make_bids_folders,
+                            _estimate_line_noise)
 from mne_bids.copyfiles import (copyfile_brainvision, copyfile_eeglab,
                                 copyfile_ctf, copyfile_bti, copyfile_kit)
 from mne_bids.read import reader
@@ -478,42 +477,7 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, overwrite=False,
     sfreq = raw.info['sfreq']
     powerlinefrequency = raw.info.get('line_freq', None)
     if powerlinefrequency is None:
-        temp_raw = raw.copy()
-        temp_raw.load_data()
-        picks = mne.pick_types(temp_raw.info, meg=True, eeg=True,
-                               stim=True, ecog=True, seeg=True,
-                               exclude='bads')
-        ch_names = [temp_raw.ch_names[k] for k in picks]
-        temp_raw = temp_raw.pick_channels(ch_names)
-
-        # first bandpass the signal to just between 45 and 65 Hz
-        l_freq = 45
-        h_freq = min(temp_raw.info['sfreq'] // 2 - 1, 65)
-        temp_raw = temp_raw.filter(l_freq=l_freq,
-                                   h_freq=h_freq)
-
-        # only sample first 10 seconds, or whole dataset
-        tmin = 0
-        tmax = max(len(temp_raw.times), 10 * temp_raw.info['sfreq'])
-
-        # run a multi-taper FFT
-        psds, freqs = psd_multitaper(temp_raw, low_bias=True,
-                                     tmin=tmin, tmax=tmax,
-                                     fmin=45, fmax=65,
-                                     n_jobs=1)
-        if psds.ndim > 1:
-            axis = 0
-        else:
-            axis = None
-        psds = np.mean(np.abs(10 * np.log10(psds)), axis=axis)
-        if len(freqs) != len(psds):
-            raise RuntimeError("{} != {}".format(len(freqs), len(psds)))
-        possible_power_lines = [50, 60]
-        max_freq = freqs[np.argmax(psds)]
-        estimated_index = np.argmax([abs(max_freq - x)
-                                     for x in possible_power_lines])
-        powerlinefrequency = possible_power_lines[estimated_index]
-
+        powerlinefrequency = _estimate_line_noise(raw)
         warn('No line frequency found, defaulting to {} Hz '
              'estimated from multi-taper FFT '
              'on 10 seconds of data.'.format(powerlinefrequency))
