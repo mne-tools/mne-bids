@@ -76,7 +76,7 @@ eegdata = np.random.rand(len(ch_names), 1000)
 # However, apart from the data format, we need to build
 # a directory structure and supply meta data
 # files to properly *bidsify* this data.
-info = mne.create_info(ch_names, 1000., 'ecog', montage=montage)
+info = mne.create_info(ch_names, 1000., 'ecog')
 raw = mne.io.RawArray(eegdata, info)
 raw.set_montage(montage)
 
