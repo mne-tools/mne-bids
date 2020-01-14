@@ -657,19 +657,20 @@ def _estimate_line_noise(raw):
         Either 50, or 60 Hz depending if European,
         or USA data recording.
     """
+    # setup picks of the data
     picks = pick_types(raw.info, meg=True, eeg=True,
                        stim=True, ecog=True, seeg=True,
                        exclude='bads')
 
-    # first bandpass the signal to just between 45 and 65 Hz
-    sfreq = raw.info['sfreq']
-    l_freq = 45
-    h_freq = min(sfreq // 2 - 1, 65)
-
     # only sample first 10 seconds, or whole dataset
+    sfreq = raw.info['sfreq']
     tmin = 0
     tmax = max(len(raw.times), 10 * sfreq)
     data = raw.get_data(start=tmin, stop=tmax, picks=picks, return_times=False)
+
+    # first bandpass the signal to just between 45 and 65 Hz
+    l_freq = 45
+    h_freq = min(sfreq // 2 - 1, 65)
     data = filter_data(data, sfreq=sfreq,
                        l_freq=l_freq, h_freq=h_freq)
 
