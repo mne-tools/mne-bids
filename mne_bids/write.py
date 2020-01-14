@@ -309,7 +309,8 @@ def _participants_json(fname, overwrite=False, verbose=True):
     return fname
 
 
-def _scans_tsv(raw, raw_fname, fname, overwrite=False, verbose=True):
+def _scans_tsv(raw, raw_fname, fname,
+               anonymize=None, overwrite=False, verbose=True):
     """Create a scans.tsv file and save it.
 
     Parameters
@@ -320,6 +321,9 @@ def _scans_tsv(raw, raw_fname, fname, overwrite=False, verbose=True):
         Relative path to the raw data file.
     fname : str
         Filename to save the scans.tsv to.
+    anonymize : dict | None
+        If a dictionary is passed, data will be anonymized; identifying data
+        structures such as study date and time will be changed.
     overwrite : bool
         Defaults to False.
         Whether to overwrite the existing data in the file.
@@ -331,10 +335,10 @@ def _scans_tsv(raw, raw_fname, fname, overwrite=False, verbose=True):
     """
     # get measurement date from the data info
     meas_date = raw.info['meas_date']
-    if isinstance(meas_date, (tuple, list, np.ndarray)):
-        acq_time = _stamp_to_dt(meas_date).strftime('%Y-%m-%dT%H:%M:%S')
-    else:
+    if meas_date is None or anonymize is not None:
         acq_time = 'n/a'
+    else:
+        acq_time = meas_date.strftime('%Y-%m-%dT%H:%M:%S')
 
     data = OrderedDict([('filename', ['%s' % raw_fname.replace(os.sep, '/')]),
                        ('acq_time', [acq_time])])
@@ -1157,7 +1161,8 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     _participants_tsv(raw, subject_id, participants_tsv_fname, overwrite,
                       verbose)
     _participants_json(participants_json_fname, True, verbose)
-    _scans_tsv(raw, op.join(kind, bids_fname), scans_fname, overwrite, verbose)
+    _scans_tsv(raw, op.join(kind, bids_fname), scans_fname,
+               anonymize, overwrite, verbose)
 
     # TODO: Implement coordystem.json and electrodes.tsv for EEG and  iEEG
     if kind == 'meg' and not emptyroom:
