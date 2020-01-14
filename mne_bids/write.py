@@ -337,7 +337,11 @@ def _scans_tsv(raw, raw_fname, fname,
     meas_date = raw.info['meas_date']
     if meas_date is None or anonymize is not None:
         acq_time = 'n/a'
+    elif isinstance(meas_date, (tuple, list, np.ndarray)):
+        # for MNE < v0.20
+        acq_time = _stamp_to_dt(meas_date).strftime('%Y-%m-%dT%H:%M:%S')
     else:
+        # for MNE >= v0.20
         acq_time = meas_date.strftime('%Y-%m-%dT%H:%M:%S')
 
     data = OrderedDict([('filename', ['%s' % raw_fname.replace(os.sep, '/')]),
