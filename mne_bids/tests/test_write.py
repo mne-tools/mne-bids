@@ -229,7 +229,6 @@ def test_fif(_bids_validate):
         prefix=op.join(bids_root, 'sub-01', 'ses-01'))
     data = _from_tsv(scans_tsv)
     assert data['acq_time'][0] == meas_date.strftime('%Y-%m-%dT%H:%M:%S')
-    assert data['acq_time'][0] != "n/a"
 
     # give the raw object some fake participant data (potentially overwriting)
     raw = mne.io.read_raw_fif(raw_fname)
