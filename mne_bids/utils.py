@@ -657,40 +657,36 @@ def _estimate_line_noise(raw):
         Either 50, or 60 Hz depending if European,
         or USA data recording.
     """
-    temp_raw = raw.copy()
-    temp_raw.load_data()
-    picks = pick_types(temp_raw.info, meg=True, eeg=True,
+    picks = pick_types(raw.info, meg=True, eeg=True,
                        stim=True, ecog=True, seeg=True,
                        exclude='bads')
-    ch_names = [temp_raw.ch_names[k] for k in picks]
-    temp_raw = temp_raw.pick_channels(ch_names)
 
     # first bandpass the signal to just between 45 and 65 Hz
-    sfreq = temp_raw.info['sfreq']
+    sfreq = raw.info['sfreq']
     l_freq = 45
     h_freq = min(sfreq // 2 - 1, 65)
 
     # only sample first 10 seconds, or whole dataset
     tmin = 0
-    tmax = max(len(temp_raw.times), 10 * sfreq)
-    temp_data = temp_raw.get_data(start=tmin, stop=tmax, return_times=False)
-    temp_data = filter_data(temp_data, sfreq=sfreq,
-                            l_freq=l_freq, h_freq=h_freq)
+    tmax = max(len(raw.times), 10 * sfreq)
+    data = raw.get_data(start=tmin, stop=tmax, picks=picks, return_times=False)
+    data = filter_data(data, sfreq=sfreq,
+                       l_freq=l_freq, h_freq=h_freq)
 
     # run a multi-taper FFT
-    psds, freqs = psd_array_multitaper(temp_data, sfreq=sfreq,
-                                       fmin=45, fmax=65,
-                                       n_jobs=1)
-    if psds.ndim > 1:
-        axis = 0
+    usa_psds, usa_freqs = psd_array_multitaper(data, sfreq=sfreq,
+                                               fmin=58, fmax=62,
+                                               n_jobs=1)
+    eu_psds, eu_freqs = psd_array_multitaper(data, sfreq=sfreq,
+                                             fmin=48, fmax=52,
+                                             n_jobs=1)
+
+    # get the average power within those frequency bands
+    usa_psd = np.mean(np.abs(10 * np.log10(usa_psds)))
+    eu_psd = np.mean(np.abs(10 * np.log10(eu_psds)))
+
+    if usa_psd > eu_psd:
+        powerlinefrequency = 60
     else:
-        axis = None
-    psds = np.mean(np.abs(10 * np.log10(psds)), axis=axis)
-    if len(freqs) != len(psds):
-        raise RuntimeError("{} != {}".format(len(freqs), len(psds)))
-    possible_power_lines = [50, 60]
-    max_freq = freqs[np.argmax(psds)]
-    estimated_index = np.argmax([abs(max_freq - x)
-                                 for x in possible_power_lines])
-    powerlinefrequency = possible_power_lines[estimated_index]
+        powerlinefrequency = 50
     return powerlinefrequency
