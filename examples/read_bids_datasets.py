@@ -14,8 +14,9 @@ varying types of data, which can be loaded in via `read_raw_bids` function.
 In order to check if your dataset is compliant with BIDS, you can first
 run the BIDS validator online.
 
-In this tutorial, we show how `read_raw_bids` can be used to load any BIDS format
-data, and to display the data that is saved within the accompanying sidecars.
+In this tutorial, we show how `read_raw_bids`
+can be used to load any BIDS format data,
+and to display the data that is saved within the accompanying sidecars.
 
 .. note:: For this example you will need to install ``matplotlib`` and
           ``nilearn`` on top of your usual ``mne-bids`` installation.
