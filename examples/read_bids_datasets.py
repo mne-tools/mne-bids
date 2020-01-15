@@ -28,17 +28,16 @@ and to display the data that is saved within the accompanying sidecars.
 ###############################################################################
 # We are importing everything we need for this example:
 
+import json
 import os
+import tempfile
 
 import mne
 from mne.datasets import eegbci
 
 from mne_bids import (make_bids_basename, write_raw_bids, read_raw_bids)
-from mne_bids.utils import print_dir_tree
-
-import shutil as sh
-import numpy as np
-import matplotlib.pyplot as plt
+from mne_bids.tsv_handler import _from_tsv, _to_tsv
+from mne_bids.utils import print_dir_tree, _find_matching_sidecar
 
 ###############################################################################
 # We will be using the `MNE sample data <mne_sample_data_>`_ and write a basic
@@ -54,7 +53,7 @@ mne_dir = mne.get_config('MNE_DATASETS_SAMPLE_PATH')
 #
 # Let's start by formatting a few subjects to test. This code is
 # copied over from the `convert_eeg_to_bids` example.
-bids_root = os.path.join(mne_dir, 'eegmmidb_bids')
+bids_root = tempfile.TemporaryDirectory()
 
 # Define which tasks we want to download.
 tasks = [2,  # This is 2 minutes of eyes closed rest
@@ -126,25 +125,55 @@ print(raw.info['dig'])
 # `raw.info` has the PowerLineFrequency loaded in
 print(raw.info['line_freq'])
 
+# annotations
+print(raw.annotations)
+
+# channel info dictionary
+print(raw.info['chs'])
+
 ###############################################################################
 # Let's modify data in some of the sidecar files and re-load the data
 # and see how the `raw.info` has changed.
-
-
 ###############################################################################
-# `raw.info` has the basic subject metadata
-print(raw.info['subject_info'])
+# modify sidecar json
+sidecar_fname = _find_matching_sidecar(bids_fname, bids_root, 'eeg.json')
+with open(sidecar_fname, 'r') as fin:
+    sidecar_json = json.load(fin)
+sidecar_json["PowerLineFrequency"] = 75  # for the sake of example
+with open(sidecar_fname, 'w') as fout:
+    json.dump(sidecar_json, fout)
 
-# `raw.info` has the basic channel metadata
-print(raw.info['dig'])
-
-# `raw.info` has the PowerLineFrequency loaded in
+# check new raw read in
+raw = read_raw_bids(bids_fname, bids_root, verbose=True)
 print(raw.info['line_freq'])
 
-# Plot it
-# fig, ax = plt.subplots()
-# plot_anat(t1_nii_fname, axes=ax, title='Defaced')
-# plt.show()
+# modify channels tsv
+channels_fname = _find_matching_sidecar(bids_fname, bids_root, 'channels.tsv')
+channels_dict = _from_tsv(channels_fname)
+channels_dict['type'][0] = 'MISC'
+channels_dict['type'][0] = 'EEG'
+_to_tsv(channels_dict, channels_fname)
+
+# check new raw read in
+raw = read_raw_bids(bids_fname, bids_root, verbose=True)
+print(raw.info['chs'])
+
+# modify events tsv
+events_fname = _find_matching_sidecar(bids_fname, bids_root, 'events.tsv')
+# Create an arbitrary events
+events = {'onset': [11, 12, 13],
+          'duration': ['n/a', 'n/a', 'n/a']
+          }
+_to_tsv(events, events_fname)
+
+# check new raw read in
+raw = read_raw_bids(bids_fname, bids_root, verbose=True)
+print(raw.annotations)
+
+# TODO: add electrode coordinates
+
+# TODO: add subject_info from participants.tsv
+
 
 ###############################################################################
 # .. LINKS
