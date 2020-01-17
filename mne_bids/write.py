@@ -309,8 +309,7 @@ def _participants_json(fname, overwrite=False, verbose=True):
     return fname
 
 
-def _scans_tsv(raw, raw_fname, fname,
-               anonymize=None, overwrite=False, verbose=True):
+def _scans_tsv(raw, raw_fname, fname, overwrite=False, verbose=True):
     """Create a scans.tsv file and save it.
 
     Parameters
@@ -321,9 +320,6 @@ def _scans_tsv(raw, raw_fname, fname,
         Relative path to the raw data file.
     fname : str
         Filename to save the scans.tsv to.
-    anonymize : dict | None
-        If a dictionary is passed, data will be anonymized; identifying data
-        structures such as study date and time will be changed.
     overwrite : bool
         Defaults to False.
         Whether to overwrite the existing data in the file.
@@ -335,14 +331,22 @@ def _scans_tsv(raw, raw_fname, fname,
     """
     # get measurement date from the data info
     meas_date = raw.info['meas_date']
-    if meas_date is None or anonymize is not None:
+    if meas_date is None:
         acq_time = 'n/a'
     elif isinstance(meas_date, (tuple, list, np.ndarray)):  # noqa: E501
         # for MNE < v0.20
         acq_time = _stamp_to_dt(meas_date).strftime('%Y-%m-%dT%H:%M:%S')
-    else:
+    elif isinstance(meas_date, datetime):
         # for MNE >= v0.20
         acq_time = meas_date.strftime('%Y-%m-%dT%H:%M:%S')
+    else:  # noqa: E501
+        # this should not be reached since MNE makes checks
+        # on
+        acq_time = 'n/a'
+        warn("We have checked everything "
+             "that the acquisition time could be ... "
+             "we have to set it to 'n/a', because "
+             "there is no other sensible thing to do... ")
 
     data = OrderedDict([('filename', ['%s' % raw_fname.replace(os.sep, '/')]),
                        ('acq_time', [acq_time])])
@@ -1165,8 +1169,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     _participants_tsv(raw, subject_id, participants_tsv_fname, overwrite,
                       verbose)
     _participants_json(participants_json_fname, True, verbose)
-    _scans_tsv(raw, op.join(kind, bids_fname), scans_fname,
-               anonymize, overwrite, verbose)
+    _scans_tsv(raw, op.join(kind, bids_fname), scans_fname, overwrite, verbose)
 
     # TODO: Implement coordystem.json and electrodes.tsv for EEG and  iEEG
     if kind == 'meg' and not emptyroom:
