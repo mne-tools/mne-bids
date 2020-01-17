@@ -14,7 +14,8 @@ data. Specifically, we will follow these steps:
 
 3. Check the result and compare it with the standard
 
-The iEEG data will be pretty similar to the iEEG data with
+The iEEG data will be pretty similar to the
+one naively written by `write_raw_bids` with
 the addition of extra elements in the electrodes.tsv and
 coord_system.json files.
 """
