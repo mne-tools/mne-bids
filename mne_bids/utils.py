@@ -645,7 +645,7 @@ def _update_sidecar(sidecar_fname, key, val):
 
 
 def _estimate_line_noise(raw):
-    """Estimate power lin noise from a given BaseRaw.
+    """Estimate power line noise from a given BaseRaw.
 
     Parameters
     ----------
@@ -657,24 +657,27 @@ def _estimate_line_noise(raw):
         Either 50, or 60 Hz depending if European,
         or USA data recording.
     """
+    sfreq = raw.info['sfreq']
+
     # setup picks of the data
     picks = pick_types(raw.info, meg=True, eeg=True,
                        stim=True, ecog=True, seeg=True,
                        exclude='bads')
 
     # only sample first 10 seconds, or whole dataset
-    sfreq = raw.info['sfreq']
     tmin = 0
     tmax = max(len(raw.times), 10 * sfreq)
     data = raw.get_data(start=tmin, stop=tmax, picks=picks, return_times=False)
 
     # first bandpass the signal to just between 45 and 65 Hz
-    l_freq = 45
-    h_freq = min(sfreq // 2 - 1, 65)
-    data = filter_data(data, sfreq=sfreq,
-                       l_freq=l_freq, h_freq=h_freq)
+    # only ran if sampling freq is high enough
+    if sfreq > 90:
+        l_freq = 45
+        h_freq = min(sfreq // 2 - 1, 65)
+        data = filter_data(data, sfreq=sfreq,
+                           l_freq=l_freq, h_freq=h_freq)
 
-    # run a multi-taper FFT
+    # run a multi-taper FFT between Power Line Frequencies of interest
     usa_psds, usa_freqs = psd_array_multitaper(data, sfreq=sfreq,
                                                fmin=58, fmax=62,
                                                n_jobs=1)
@@ -685,7 +688,6 @@ def _estimate_line_noise(raw):
     # get the average power within those frequency bands
     usa_psd = np.mean(np.abs(10 * np.log10(usa_psds)))
     eu_psd = np.mean(np.abs(10 * np.log10(eu_psds)))
-
     if usa_psd > eu_psd:
         powerlinefrequency = 60
     else:
