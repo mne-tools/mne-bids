@@ -30,7 +30,6 @@ import tempfile
 from mpl_toolkits.mplot3d import Axes3D  # noqa
 import matplotlib.pyplot as plt
 
-# install basic sci python tools
 import numpy as np
 from scipy.io import loadmat
 
