@@ -26,15 +26,12 @@ coord_system.json files.
 import os
 import tempfile
 
-# need to install visualization
 from mpl_toolkits.mplot3d import Axes3D  # noqa
 import matplotlib.pyplot as plt
-
 import numpy as np
 from scipy.io import loadmat
 
 import mne
-
 from mne_bids import write_raw_bids, make_bids_basename, read_raw_bids
 from mne_bids.utils import print_dir_tree
 

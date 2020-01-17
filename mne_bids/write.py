@@ -1292,18 +1292,19 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
         # if we have an available DigMontage
         if raw.info['dig'] is not None:
             coords = _extract_landmarks(raw.info['dig'])
-            if set(['RPA', 'NAS', 'LPA']) == set(list(coords.keys())):
-                # Rescale to MNE-Python "head" coord system, which is the
-                # "ElektaNeuromag" system, and equivalent to "CapTrak"
-                pass
-            unit = "m"  # defaults to meters?
-            # Now write the data to the elec coords and the coordsystem
-            _electrodes_tsv(raw, electrodes_fname, kind, overwrite, verbose)
 
-            coord_frame = "mri"
-            _coordsystem_json(raw, unit, orient,
-                              coord_frame, coordsystem_fname, kind,
-                              overwrite, verbose)
+            # Rescale to MNE-Python "head" coord system, which is the
+            # BIDS "ElektaNeuromag" system, and equivalent to BIDS "CapTrak"
+            if set(['RPA', 'NAS', 'LPA']) != set(list(coords.keys())):
+                unit = "m"  # defaults to meters
+
+                # Now write the data to the elec coords and the coordsystem
+                _electrodes_tsv(raw, electrodes_fname, kind, overwrite, verbose)
+
+                coord_frame = "mri"
+                _coordsystem_json(raw, unit, orient,
+                                  coord_frame, coordsystem_fname, kind,
+                                  overwrite, verbose)
 
     events, event_id = _read_events(events_data, event_id, raw, ext)
     if events is not None and len(events) > 0 and not emptyroom:
