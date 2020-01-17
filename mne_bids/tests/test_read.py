@@ -40,7 +40,7 @@ raw_fname = op.join(data_path, 'MEG', 'sample',
 
 # Get the MNE somato data - EU
 somato_path = somato.data_path()
-somato_raw_fname = op.join(data_path, 'sub-01}', 'meg',
+somato_raw_fname = op.join(somato_path, 'sub-01', 'meg',
                            'sub-01_task-somato_meg.fif')
 
 
@@ -139,23 +139,20 @@ def test_handle_events_reading():
     events, event_id = mne.events_from_annotations(raw)
 
 
-def test_handle_info_reading():
-    """Test reading information from a BIDS sidecar.json file."""
+def test_line_freq_estimation():
+    """Test estimating line frequency when
+    reading a BIDS sidecar.json file."""
     bids_root = _TempDir()
 
     # read in USA dataset, so it should find 50 Hz
     raw = mne.io.read_raw_fif(raw_fname)
-    raw.info['line_freq'] = 60
-    bids_basename = make_bids_basename(subject='01', session='01',
-                                       task='audiovisual', run='01')
     kind = "meg"
-    write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
 
     # assert that we get the same line frequency set
     bids_fname = bids_basename + '_{}.fif'.format(kind)
-    raw = mne_bids.read_raw_bids(bids_fname, bids_root)
-    assert raw.info['line_freq'] == 60
 
+    # find sidecar JSON fname
+    write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
     sidecar_fname = _find_matching_sidecar(bids_fname, bids_root,
                                            '{}.json'.format(kind),
                                            allow_fail=True)
@@ -165,20 +162,46 @@ def test_handle_info_reading():
     raw.info['line_freq'] = None
     write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
     _update_sidecar(sidecar_fname, "PowerLineFrequency", "n/a")
-    raw = mne_bids.read_raw_bids(bids_fname, bids_root)
     with pytest.warns(UserWarning, match="No line frequency found"):
         raw = mne_bids.read_raw_bids(bids_fname, bids_root)
         assert raw.info['line_freq'] == 60
 
     # test that `somato` dataset finds 60 Hz (USA dataset)
     somato_raw = mne.io.read_raw_fif(somato_raw_fname)
-    somato_raw['line_freq'] = None
-    write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
+    somato_raw.info['line_freq'] = None
+    write_raw_bids(somato_raw, bids_basename, bids_root, overwrite=True)
+    sidecar_fname = _find_matching_sidecar(bids_fname, bids_root,
+                                           '{}.json'.format(kind),
+                                           allow_fail=True)
     _update_sidecar(sidecar_fname, "PowerLineFrequency", "n/a")
-    raw = mne_bids.read_raw_bids(bids_fname, bids_root)
     with pytest.warns(UserWarning, match="No line frequency found"):
-        raw = mne_bids.read_raw_bids(bids_fname, bids_root)
-        assert raw.info['line_freq'] == 50
+        somato_raw = mne_bids.read_raw_bids(bids_fname, bids_root)
+        assert somato_raw.info['line_freq'] == 50
+
+
+def test_handle_info_reading():
+    """Test reading information from a BIDS sidecar.json file."""
+    bids_root = _TempDir()
+
+    # read in USA dataset, so it should find 50 Hz
+    raw = mne.io.read_raw_fif(raw_fname)
+    raw.info['line_freq'] = 60
+
+    # bids basename and fname
+    bids_basename = make_bids_basename(subject='01', session='01',
+                                       task='audiovisual', run='01')
+    kind = "meg"
+    bids_fname = bids_basename + '_{}.fif'.format(kind)
+
+    # find sidecar JSON fname
+    write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
+    sidecar_fname = _find_matching_sidecar(bids_fname, bids_root,
+                                           '{}.json'.format(kind),
+                                           allow_fail=True)
+
+    # assert that we get the same line frequency set
+    raw = mne_bids.read_raw_bids(bids_fname, bids_root)
+    assert raw.info['line_freq'] == 60
 
     # 2. if line frequency is not set in raw file, then default to sidecar
     raw.info['line_freq'] = None
