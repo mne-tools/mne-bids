@@ -19,13 +19,13 @@ from collections import defaultdict
 from pathlib import Path
 
 import numpy as np
+import mne
 from mne import read_events, find_events, events_from_annotations
 from mne.utils import check_version
 from mne.channels import make_standard_montage
 from mne.io.pick import pick_types
 from mne.io.kit.kit import get_kit_info
 from mne.io.constants import FIFF
-from mne.time_frequency import psd_array_multitaper
 from mne.filter import filter_data
 
 from mne_bids.tsv_handler import _to_tsv, _tsv_to_str
@@ -644,7 +644,7 @@ def _update_sidecar(sidecar_fname, key, val):
         json.dump(sidecar_json, fout)
 
 
-def _estimate_line_noise(raw):
+def _estimate_line_noise(raw, verbose=False):
     """Estimate power line noise from a given BaseRaw.
 
     Parameters
@@ -666,7 +666,7 @@ def _estimate_line_noise(raw):
 
     # only sample first 10 seconds, or whole dataset
     tmin = 0
-    tmax = max(len(raw.times), 10 * sfreq)
+    tmax = int(min(len(raw.times), 10 * sfreq))
     data = raw.get_data(start=tmin, stop=tmax, picks=picks, return_times=False)
 
     # first bandpass the signal to just between 45 and 65 Hz
@@ -678,16 +678,22 @@ def _estimate_line_noise(raw):
                            l_freq=l_freq, h_freq=h_freq)
 
     # run a multi-taper FFT between Power Line Frequencies of interest
-    usa_psds, usa_freqs = psd_array_multitaper(data, sfreq=sfreq,
-                                               fmin=58, fmax=62,
-                                               n_jobs=1)
-    eu_psds, eu_freqs = psd_array_multitaper(data, sfreq=sfreq,
-                                             fmin=48, fmax=52,
-                                             n_jobs=1)
+    raw = mne.io.RawArray(data, info=mne.pick_info(raw.info, sel=picks))
+    usa_psds, usa_freqs = mne.time_frequency.psd_welch(raw,
+                                                       fmin=58, fmax=62,
+                                                       n_jobs=1)
+    eu_psds, eu_freqs = mne.time_frequency.psd_welch(raw,
+                                                     fmin=48, fmax=52,
+                                                     n_jobs=1)
 
     # get the average power within those frequency bands
-    usa_psd = np.mean(np.abs(10 * np.log10(usa_psds)))
-    eu_psd = np.mean(np.abs(10 * np.log10(eu_psds)))
+    usa_psd = np.mean(10 * np.log10(np.abs(usa_psds)))
+    eu_psd = np.mean(10 * np.log10(np.abs(eu_psds)))
+
+    if verbose is True:
+        print("EU (i.e. 50 Hz) PSD is {} and "
+              "USA (i.e. 60 Hz) PSD is {}".format(eu_psd, usa_psd))
+
     if usa_psd > eu_psd:
         powerlinefrequency = 60
     else:

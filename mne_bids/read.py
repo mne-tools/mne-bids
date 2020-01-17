@@ -76,7 +76,7 @@ def _read_raw(raw_fpath, electrode=None, hsp=None, hpi=None, config=None,
     return raw
 
 
-def _handle_info_reading(sidecar_fname, raw):
+def _handle_info_reading(sidecar_fname, raw, verbose=None):
     """Read associated sidecar.json and populate raw.
 
     Handle PowerLineFrequency of recording.
@@ -91,7 +91,8 @@ def _handle_info_reading(sidecar_fname, raw):
 
     if line_freq is None and raw.info["line_freq"] is None:
         # estimate line noise using PSD from multitaper FFT
-        powerlinefrequency = _estimate_line_noise(raw)
+        powerlinefrequency = _estimate_line_noise(raw, verbose=verbose)
+        raw.info["line_freq"] = powerlinefrequency
         warn('No line frequency found, defaulting to {} Hz '
              'estimated from multi-taper FFT '
              'on 10 seconds of data.'.format(powerlinefrequency))
@@ -301,7 +302,7 @@ def read_raw_bids(bids_fname, bids_root, extra_params=None,
                                            '{}.json'.format(kind),
                                            allow_fail=True)
     if sidecar_fname is not None:
-        raw = _handle_info_reading(sidecar_fname, raw)
+        raw = _handle_info_reading(sidecar_fname, raw, verbose=verbose)
 
     return raw
 
