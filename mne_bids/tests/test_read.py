@@ -33,10 +33,12 @@ bids_basename = make_bids_basename(
     subject=subject_id, session=session_id, run=run, acquisition=acq,
     task=task)
 
-# Get the MNE testing sample data
+# Get the MNE testing sample data - USA
 data_path = testing.data_path()
 raw_fname = op.join(data_path, 'MEG', 'sample',
                     'sample_audvis_trunc_raw.fif')
+
+somato_raw_fname = op.join(data_path, '', )
 
 
 def test_read_raw():
@@ -134,10 +136,18 @@ def test_handle_events_reading():
     events, event_id = mne.events_from_annotations(raw)
 
 
+def test1():
+    bids_fname = mne.datasets.somato.data_path(data_path, verbose=True)
+
+    print(bids_fname)
+
+    raise Exception("")
+
 def test_handle_info_reading():
     """Test reading information from a BIDS sidecar.json file."""
     bids_root = _TempDir()
 
+    # read in USA dataset, so it should find 50 Hz
     raw = mne.io.read_raw_fif(raw_fname)
     raw.info['line_freq'] = 60
     bids_basename = make_bids_basename(subject='01', session='01',
@@ -154,14 +164,25 @@ def test_handle_info_reading():
                                            '{}.json'.format(kind),
                                            allow_fail=True)
 
-    # 1. when nothing is set, default to 50 Hz
+    # 1. when nothing is set, default to use PSD estimation -> should be 50
+    # for `sample` dataset
     raw.info['line_freq'] = None
     write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
     _update_sidecar(sidecar_fname, "PowerLineFrequency", "n/a")
     raw = mne_bids.read_raw_bids(bids_fname, bids_root)
     with pytest.warns(UserWarning, match="No line frequency found"):
         raw = mne_bids.read_raw_bids(bids_fname, bids_root)
-        assert raw.info['line_freq'] is None
+        assert raw.info['line_freq'] == 60
+
+    # test that `somato` dataset finds 60 Hz (USA dataset)
+    somato_raw = mne.io.read_raw_fif(somato_raw_fname)
+    somato_raw['line_freq'] = None
+    write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
+    _update_sidecar(sidecar_fname, "PowerLineFrequency", "n/a")
+    raw = mne_bids.read_raw_bids(bids_fname, bids_root)
+    with pytest.warns(UserWarning, match="No line frequency found"):
+        raw = mne_bids.read_raw_bids(bids_fname, bids_root)
+        assert raw.info['line_freq'] == 50
 
     # 2. if line frequency is not set in raw file, then default to sidecar
     raw.info['line_freq'] = None
