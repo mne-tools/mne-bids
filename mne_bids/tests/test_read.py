@@ -41,7 +41,7 @@ raw_fname = op.join(data_path, 'MEG', 'sample',
 # Get the MNE somato data - EU
 somato_path = somato.data_path()
 somato_raw_fname = op.join(data_path, 'sub-01}', 'meg',
-                    'sub-01_task-somato_meg.fif')
+                           'sub-01_task-somato_meg.fif')
 
 
 def test_read_raw():
@@ -138,13 +138,6 @@ def test_handle_events_reading():
     raw = _handle_events_reading(events_fname, raw)
     events, event_id = mne.events_from_annotations(raw)
 
-
-def test1():
-    bids_fname = mne.datasets.somato.data_path(data_path, verbose=True)
-
-    print(bids_fname)
-
-    raise Exception("")
 
 def test_handle_info_reading():
     """Test reading information from a BIDS sidecar.json file."""
