@@ -14,7 +14,7 @@ from numpy.testing import assert_almost_equal
 import mne
 from mne.io import anonymize_info
 from mne.utils import _TempDir, requires_nibabel, check_version
-from mne.datasets import testing
+from mne.datasets import testing, somato
 
 import mne_bids
 from mne_bids import get_matched_empty_room
@@ -38,7 +38,10 @@ data_path = testing.data_path()
 raw_fname = op.join(data_path, 'MEG', 'sample',
                     'sample_audvis_trunc_raw.fif')
 
-somato_raw_fname = op.join(data_path, '', )
+# Get the MNE somato data - EU
+somato_path = somato.data_path()
+somato_raw_fname = op.join(data_path, 'sub-01}', 'meg',
+                    'sub-01_task-somato_meg.fif')
 
 
 def test_read_raw():
