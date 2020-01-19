@@ -140,8 +140,7 @@ def test_handle_events_reading():
 
 
 def test_line_freq_estimation():
-    """Test estimating line frequency when
-    reading a BIDS sidecar.json file."""
+    """Test estimating line frequency."""
     bids_root = _TempDir()
 
     # read in USA dataset, so it should find 50 Hz
@@ -166,7 +165,7 @@ def test_line_freq_estimation():
         raw = mne_bids.read_raw_bids(bids_fname, bids_root)
         assert raw.info['line_freq'] == 60
 
-    # test that `somato` dataset finds 60 Hz (USA dataset)
+    # test that `somato` dataset finds 50 Hz (USA dataset)
     somato_raw = mne.io.read_raw_fif(somato_raw_fname)
     somato_raw.info['line_freq'] = None
     write_raw_bids(somato_raw, bids_basename, bids_root, overwrite=True)
