@@ -19,14 +19,13 @@ from collections import defaultdict
 from pathlib import Path
 
 import numpy as np
-import mne
 from mne import read_events, find_events, events_from_annotations
 from mne.utils import check_version
 from mne.channels import make_standard_montage
 from mne.io.pick import pick_types
 from mne.io.kit.kit import get_kit_info
 from mne.io.constants import FIFF
-from mne.filter import filter_data
+from mne.time_frequency import psd_array_welch
 
 from mne_bids.tsv_handler import _to_tsv, _tsv_to_str
 
@@ -653,7 +652,7 @@ def _estimate_line_noise(raw, verbose=False):
 
     Returns
     -------
-    powerlinefrequency : int
+    line_freq : int
         Either 50, or 60 Hz depending if European,
         or USA data recording.
     """
@@ -669,33 +668,26 @@ def _estimate_line_noise(raw, verbose=False):
     tmax = int(min(len(raw.times), 10 * sfreq))
     data = raw.get_data(start=tmin, stop=tmax, picks=picks, return_times=False)
 
-    # first bandpass the signal to just between 45 and 65 Hz
-    # only ran if sampling freq is high enough
-    if sfreq > 90:
-        l_freq = 45
-        h_freq = min(sfreq // 2 - 1, 65)
-        data = filter_data(data, sfreq=sfreq,
-                           l_freq=l_freq, h_freq=h_freq)
+    # if sampling is not high enough, line_freq does not matter
+    if sfreq < 100:
+        return None
 
     # run a multi-taper FFT between Power Line Frequencies of interest
-    raw = mne.io.RawArray(data, info=mne.pick_info(raw.info, sel=picks))
-    usa_psds, usa_freqs = mne.time_frequency.psd_welch(raw,
-                                                       fmin=58, fmax=62,
-                                                       n_jobs=1)
-    eu_psds, eu_freqs = mne.time_frequency.psd_welch(raw,
-                                                     fmin=48, fmax=52,
-                                                     n_jobs=1)
+    usa_psds, usa_freqs = psd_array_welch(data, fmin=59, fmax=61,
+                                          sfreq=sfreq, average="mean")
+    eu_psds, eu_freqs = psd_array_welch(data, fmin=49, fmax=51,
+                                        sfreq=sfreq, average="mean")
 
     # get the average power within those frequency bands
-    usa_psd = np.mean(10 * np.log10(np.abs(usa_psds)))
-    eu_psd = np.mean(10 * np.log10(np.abs(eu_psds)))
+    usa_psd = np.mean((usa_psds))
+    eu_psd = np.mean((eu_psds))
 
     if verbose is True:
         print("EU (i.e. 50 Hz) PSD is {} and "
               "USA (i.e. 60 Hz) PSD is {}".format(eu_psd, usa_psd))
 
     if usa_psd > eu_psd:
-        powerlinefrequency = 60
+        line_freq = 60
     else:
-        powerlinefrequency = 50
-    return powerlinefrequency
+        line_freq = 50
+    return line_freq
