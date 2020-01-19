@@ -339,11 +339,10 @@ def _scans_tsv(raw, raw_fname, fname, overwrite=False, verbose=True):
     elif isinstance(meas_date, datetime):
         # for MNE >= v0.20
         acq_time = meas_date.strftime('%Y-%m-%dT%H:%M:%S')
-    else:  # noqa: E501
+    else:
         # this should not be reached since MNE makes checks
-        # on
-        acq_time = 'n/a'
-        warn("We have checked everything "
+        acq_time = 'n/a'  # noqa: E501 F821
+        warn("We have checked everything "   # noqa: E501 F821
              "that the acquisition time could be ... "
              "we have to set it to 'n/a', because "
              "there is no other sensible thing to do... ")
