@@ -439,7 +439,7 @@ def _coordsystem_json(raw, unit, orient, coordsystem_name, fname,
             coords['coil%d' % ident] = hpi[ident]['r'].tolist()
 
     coord_frame = set([dig[ii]['coord_frame'] for ii in range(len(dig))])
-    if len(coord_frame) > 1:
+    if len(coord_frame) > 1:  # noqa E501
         raise ValueError('All HPI, electrodes, and fiducials must be in the '
                          'same coordinate frame. Found: "{}"'
                          .format(coord_frame))
@@ -458,8 +458,8 @@ def _coordsystem_json(raw, unit, orient, coordsystem_name, fname,
                     }
     elif kind == "ieeg":
         fid_json = {
-            'iEEGCoordinateSystem': coordsystem_name,  # Pixels, or ACPC
-            'iEEGCoordinateUnits': unit,  # m, mm, cm , or pixels
+            'iEEGCoordinateSystem': coordsystem_name,  # MRI, Pixels, or ACPC
+            'iEEGCoordinateUnits': unit,  # m (MNE), mm, cm , or pixels
         }
     else:
         warn('Writing of electrodes.tsv is not supported for kind "{}". '
@@ -1296,12 +1296,12 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
             # Rescale to MNE-Python "head" coord system, which is the
             # BIDS "ElektaNeuromag" system, and equivalent to BIDS "CapTrak"
             if set(['RPA', 'NAS', 'LPA']) != set(list(coords.keys())):
+                coord_frame = "mri"  # defaults to MRI coordinates
                 unit = "m"  # defaults to meters
 
                 # Now write the data to the elec coords and the coordsystem
-                _electrodes_tsv(raw, electrodes_fname, kind, overwrite, verbose)
-
-                coord_frame = "mri"
+                _electrodes_tsv(raw, electrodes_fname,
+                                kind, overwrite, verbose)
                 _coordsystem_json(raw, unit, orient,
                                   coord_frame, coordsystem_fname, kind,
                                   overwrite, verbose)

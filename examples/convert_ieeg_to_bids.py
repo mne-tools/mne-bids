@@ -8,7 +8,8 @@ data. Specifically, we will follow these steps:
 
 1. Download some iEEG data from the
    `PhysioBank database <https://physionet.org/physiobank/database>`_.
-   and the `MNE ECoG example <https://mne.tools/stable/auto_tutorials/misc/plot_ecog>`_.
+   and the
+   `MNE-ECoG ex <https://mne.tools/stable/auto_tutorials/misc/plot_ecog>`_.
 
 2. Load the data, extract information, and save in a new BIDS directory
 
@@ -105,7 +106,7 @@ task = 'testresteyes'
 bids_root = os.path.join(mne_dir, 'ieegmmidb_bids')
 
 ###############################################################################
-# Now we just need to specify a few more iEEG details to get something sensible:
+# Now we just need to specify a few iEEG details to make things work:
 # We need the basename of the dataset. In addition, write_raw_bids
 # requires a `filenames` of the Raw object to be non-empty, so since we
 # initialized the dataset from an array, we need to do a hack where we
@@ -123,7 +124,8 @@ with tempfile.TemporaryDirectory() as tmp_root:
     raw = mne.io.read_raw_fif(tmp_fpath)
 
 # write `raw` to BIDS
-write_raw_bids(raw, bids_basename, bids_root=bids_root, anonymize=dict(daysback=30000), overwrite=True)
+write_raw_bids(raw, bids_basename, bids_root=bids_root,
+               anonymize=dict(daysback=30000), overwrite=True)
 
 ###############################################################################
 # Step 3: Check and compare with standard
