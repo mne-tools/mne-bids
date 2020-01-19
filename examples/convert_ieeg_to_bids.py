@@ -142,6 +142,8 @@ print_dir_tree(bids_root)
 # describe iEEGReference and iEEGGround yourself. It's easy to find these by
 # searching for "n/a" in the sidecar files.
 #
+# grep -i 'n/a' <bids_root>
+#
 # Remember that there is a convenient javascript tool to validate all your BIDS
 # directories called the "BIDS-validator", available as a web version and a
 # command line tool:
