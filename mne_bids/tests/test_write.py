@@ -26,6 +26,7 @@ import mne
 from mne.datasets import testing
 from mne.utils import (_TempDir, run_subprocess, check_version,
                        requires_nibabel, requires_version)
+from mne.io import anonymize_info
 from mne.io.constants import FIFF
 from mne.io.kit.kit import get_kit_info
 
@@ -339,7 +340,11 @@ def test_fif(_bids_validate):
         subject=subject_id, session=session_id, suffix='scans.tsv',
         prefix=op.join(bids_root, 'sub-01', 'ses-01'))
     data = _from_tsv(scans_tsv)
-    assert data['acq_time'][0] == 'n/a'
+    # anonymize using MNE manually
+    anonymized_info = anonymize_info(info=raw.info, daysback=30000,
+                                     keep_his=True)
+    anon_date = anonymized_info['meas_date'].strftime("%Y-%m-%dT%H:%M:%S")
+    assert data['acq_time'][0] == anon_date
     _bids_validate(bids_root)
 
     # check that split files have part key
