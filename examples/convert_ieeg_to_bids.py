@@ -8,7 +8,7 @@ data. Specifically, we will follow these steps:
 
 1. Download some iEEG data from the
    `PhysioBank database <https://physionet.org/physiobank/database>`_.
-    `https://mne.tools/stable/auto_tutorials/misc/plot_ecog.html#sphx-glr-auto-tutorials-misc-plot-ecog-py`_.
+   and the `MNE ECoG example <https://mne.tools/stable/auto_tutorials/misc/plot_ecog>`_.
 
 2. Load the data, extract information, and save in a new BIDS directory
 
@@ -62,19 +62,18 @@ print('Created %s channel positions' % len(ch_names))
 print(ch_names)
 
 ###############################################################################
-# The electrode data are in the Matlab format: '.mat'.
-# This is easy to read in with
-# `scipy.io.loadmat` function. We also need to get some
-# sample EEG data, so we will just generate random data
-# from white noise.
+# The electrode coords data are in the Matlab format: '.mat'.
+# This is easy to read in with :py:function:`scipy.io.loadmat` function.
+# We also need to get some sample iEEG data,
+# so we will just generate random data from white noise.
 # Here is where you would use your own data if you had it.
-eegdata = np.random.rand(len(ch_names), 1000)
+ieegdata = np.random.rand(len(ch_names), 1000)
 
 # However, apart from the data format, we need to build
 # a directory structure and supply meta data
 # files to properly *bidsify* this data.
 info = mne.create_info(ch_names, 1000., 'ecog')
-raw = mne.io.RawArray(eegdata, info)
+raw = mne.io.RawArray(ieegdata, info)
 raw.set_montage(montage)
 
 ###############################################################################
@@ -82,6 +81,7 @@ raw.set_montage(montage)
 # --------------------------
 #
 # Let's start by formatting a single subject.
+
 ###############################################################################
 # With this step, we have everything to start a new BIDS directory using
 # our data. To do that, we can use :func:`write_raw_bids`
@@ -102,13 +102,14 @@ print(write_raw_bids.__doc__)
 # There is a subject, and specific task for the dataset
 subject_id = '001'  # zero padding to account for >100 subjects in this dataset
 task = 'testresteyes'
-bids_root = os.path.join(mne_dir, 'eegmmidb_bids')
+bids_root = os.path.join(mne_dir, 'ieegmmidb_bids')
 
 ###############################################################################
-# Now we just need to specify a few more EEG details to get something sensible:
-# Brief description of the event markers present in the data. This will become
-# the `trial_type` column in our BIDS `events.tsv`. We know about the event
-# meaning from the documentation on PhysioBank
+# Now we just need to specify a few more iEEG details to get something sensible:
+# We need the basename of the dataset. In addition, write_raw_bids
+# requires a `filenames` of the Raw object to be non-empty, so since we
+# initialized the dataset from an array, we need to do a hack where we
+# save the data to disc first.
 
 # Now convert our data to be in a new BIDS dataset.
 bids_basename = make_bids_basename(subject=subject_id,
@@ -121,13 +122,13 @@ with tempfile.TemporaryDirectory() as tmp_root:
     raw.save(tmp_fpath)
     raw = mne.io.read_raw_fif(tmp_fpath)
 
-    write_raw_bids(raw, bids_basename,
-                   bids_root,
-                   overwrite=True)
+# write `raw` to BIDS
+write_raw_bids(raw, bids_basename, bids_root=bids_root, anonymize=dict(daysback=30000), overwrite=True)
 
 ###############################################################################
 # Step 3: Check and compare with standard
 # ---------------------------------------
+
 # Now we have written our BIDS directory.
 print_dir_tree(bids_root)
 
@@ -138,7 +139,7 @@ print_dir_tree(bids_root)
 #
 # Now it's time to manually check the BIDS directory and the meta files to add
 # all the information that MNE-BIDS could not infer. For instance, you must
-# describe EEGReference and EEGGround yourself. It's easy to find these by
+# describe iEEGReference and iEEGGround yourself. It's easy to find these by
 # searching for "n/a" in the sidecar files.
 #
 # Remember that there is a convenient javascript tool to validate all your BIDS
@@ -152,7 +153,10 @@ print_dir_tree(bids_root)
 ###############################################################################
 # Step 4: Plot output channels and check that they match!
 # -------------------------------------------------------
+#
 # Now we have written our BIDS directory.
+
+# read in the BIDS dataset and plot the coordinates
 bids_fname = bids_basename + "_ieeg.vhdr"
 raw = read_raw_bids(bids_fname, bids_root=bids_root)
 
