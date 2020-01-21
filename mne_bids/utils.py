@@ -663,24 +663,27 @@ def _estimate_line_noise(raw, verbose=False):
                        stim=True, ecog=True, seeg=True,
                        exclude='bads')
 
-    # only sample first 10 seconds, or whole dataset
+    # only sample first 10 seconds, or whole time series
     tmin = 0
     tmax = int(min(len(raw.times), 10 * sfreq))
-    data = raw.get_data(start=tmin, stop=tmax, picks=picks, return_times=False)
+
+    # get just five channels of data to estimate on
+    data = raw.get_data(start=tmin, stop=tmax,
+                        picks=picks, return_times=False)[0:5, :]
 
     # if sampling is not high enough, line_freq does not matter
     if sfreq < 100:
         return None
 
     # run a multi-taper FFT between Power Line Frequencies of interest
-    usa_psds, usa_freqs = psd_array_welch(data, fmin=59, fmax=61,
-                                          sfreq=sfreq, average="mean")
-    eu_psds, eu_freqs = psd_array_welch(data, fmin=49, fmax=51,
-                                        sfreq=sfreq, average="mean")
+    psds, freqs = psd_array_welch(data, fmin=49, fmax=61,
+                                  sfreq=sfreq, average="mean")
+    usa_ind = np.where(freqs == min(freqs, key=lambda x: abs(x - 60)))[0]
+    eu_ind = np.where(freqs == min(freqs, key=lambda x: abs(x - 50)))[0]
 
     # get the average power within those frequency bands
-    usa_psd = np.mean((usa_psds))
-    eu_psd = np.mean((eu_psds))
+    usa_psd = np.mean((psds[..., usa_ind]))
+    eu_psd = np.mean((psds[..., eu_ind]))
 
     if verbose is True:
         print("EU (i.e. 50 Hz) PSD is {} and "

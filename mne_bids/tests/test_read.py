@@ -156,7 +156,7 @@ def test_line_freq_estimation():
                                            '{}.json'.format(kind),
                                            allow_fail=True)
 
-    # 1. when nothing is set, default to use PSD estimation -> should be 50
+    # 1. when nothing is set, default to use PSD estimation -> should be 60
     # for `sample` dataset
     raw.info['line_freq'] = None
     write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
@@ -165,7 +165,7 @@ def test_line_freq_estimation():
         raw = mne_bids.read_raw_bids(bids_fname, bids_root)
         assert raw.info['line_freq'] == 60
 
-    # test that `somato` dataset finds 50 Hz (USA dataset)
+    # test that `somato` dataset finds 50 Hz (EU dataset)
     somato_raw = mne.io.read_raw_fif(somato_raw_fname)
     somato_raw.info['line_freq'] = None
     write_raw_bids(somato_raw, bids_basename, bids_root, overwrite=True)
