@@ -37,7 +37,7 @@ from mne_bids.utils import (_write_json, _write_tsv, _read_events, _mkdir_p,
                             _parse_bids_filename, _handle_kind, _check_types,
                             _extract_landmarks, _parse_ext,
                             _get_ch_type_mapping, make_bids_folders,
-                            _estimate_line_noise)
+                            _estimate_line_freq)
 from mne_bids.copyfiles import (copyfile_brainvision, copyfile_eeglab,
                                 copyfile_ctf, copyfile_bti, copyfile_kit)
 from mne_bids.read import reader

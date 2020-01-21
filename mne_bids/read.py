@@ -24,7 +24,7 @@ from mne_bids.config import ALLOWED_EXTENSIONS
 from mne_bids.utils import (_parse_bids_filename, _extract_landmarks,
                             _find_matching_sidecar, _parse_ext,
                             _get_ch_type_mapping, make_bids_folders,
-                            _estimate_line_noise)
+                            _estimate_line_freq)
 
 reader = {'.con': io.read_raw_kit, '.sqd': io.read_raw_kit,
           '.fif': io.read_raw_fif, '.pdf': io.read_raw_bti,
@@ -91,7 +91,7 @@ def _handle_info_reading(sidecar_fname, raw, verbose=None):
 
     if line_freq is None and raw.info["line_freq"] is None:
         # estimate line noise using PSD from multitaper FFT
-        powerlinefrequency = _estimate_line_noise(raw, verbose=verbose)
+        powerlinefrequency = _estimate_line_freq(raw, verbose=verbose)
         raw.info["line_freq"] = powerlinefrequency
         warn('No line frequency found, defaulting to {} Hz '
              'estimated from multi-taper FFT '
