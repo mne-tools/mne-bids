@@ -643,7 +643,7 @@ def _update_sidecar(sidecar_fname, key, val):
         json.dump(sidecar_json, fout)
 
 
-def _estimate_line_noise(raw, verbose=False):
+def _estimate_line_freq(raw, verbose=False):
     """Estimate power line noise from a given BaseRaw.
 
     Parameters
