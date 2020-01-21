@@ -192,7 +192,7 @@ def _handle_electrodes_reading(electrodes_fname, coord_frame, raw, verbose):
 
     if verbose:
         print("The read in electrodes file is: \n", electrodes_dict)
-        
+
     # convert coordinates to float and create list of tuples
     electrodes_dict['x'] = [float(x) for x in electrodes_dict['x']]
     electrodes_dict['y'] = [float(x) for x in electrodes_dict['y']]

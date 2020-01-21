@@ -57,6 +57,8 @@ mat = loadmat(mne.datasets.misc.data_path() + '/ecog/sample_ecog.mat')
 ch_names = mat['ch_names'].tolist()
 ch_names = [x.strip() for x in ch_names]
 elec = mat['elec']  # electrode positions given in meters
+
+###############################################################################
 # Now we make a montage stating that the iEEG contacts are in MRI
 # coordinate system.
 montage = mne.channels.make_dig_montage(ch_pos=dict(zip(ch_names, elec)),
@@ -148,14 +150,14 @@ print_dir_tree(bids_root)
 ###############################################################################
 # MNE-BIDS has created a suitable directory structure for us, and among other
 # meta data files, it started an `events.tsv` and `channels.tsv` and made an
-# initial `dataset_description` on top!
+# initial `dataset_description.json` on top!
 #
 # Now it's time to manually check the BIDS directory and the meta files to add
 # all the information that MNE-BIDS could not infer. For instance, you must
 # describe iEEGReference and iEEGGround yourself. It's easy to find these by
 # searching for "n/a" in the sidecar files.
 #
-# grep -i 'n/a' <bids_root>
+# $ grep -i 'n/a' <bids_root>
 #
 # Remember that there is a convenient javascript tool to validate all your BIDS
 # directories called the "BIDS-validator", available as a web version and a

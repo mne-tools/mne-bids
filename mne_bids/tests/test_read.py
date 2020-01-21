@@ -233,8 +233,7 @@ def test_handle_info_reading():
 
 
 def test_handle_coords_reading():
-    """Test reading coordinates from a
-    BIDS electrodes.tsv and coordsystem.json files."""
+    """Test reading coordinates from BIDS files."""
     bids_root = _TempDir()
 
     data_path = op.join(testing.data_path(), 'EDF')
