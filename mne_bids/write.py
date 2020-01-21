@@ -477,7 +477,7 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, overwrite=False,
     sfreq = raw.info['sfreq']
     powerlinefrequency = raw.info.get('line_freq', None)
     if powerlinefrequency is None:
-        powerlinefrequency = _estimate_line_noise(raw)
+        powerlinefrequency = _estimate_line_freq(raw)
         warn('No line frequency found, defaulting to {} Hz '
              'estimated from multi-taper FFT '
              'on 10 seconds of data.'.format(powerlinefrequency))
