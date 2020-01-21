@@ -51,7 +51,7 @@ check-manifest:
 flake:
 	@if command -v flake8 > /dev/null; then \
 		echo "Running flake8"; \
-		flake8 --count mne_bids examples; \
+		flake8 --count mne_bids examples mne_bids/tests; \
 	else \
 		echo "flake8 not found, please install it!"; \
 		exit 1; \
