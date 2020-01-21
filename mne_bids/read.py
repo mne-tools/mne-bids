@@ -375,7 +375,8 @@ def read_raw_bids(bids_fname, bids_root, extra_params=None,
             raise RuntimeError("Kind {} not supported yet for "
                                "coordsystem.json.".format(kind))
 
-        raw = _handle_electrodes_reading(electrodes_fname, coord_frame, raw, verbose)
+        raw = _handle_electrodes_reading(electrodes_fname, coord_frame, raw,
+                                         verbose)
 
     # Try to find an associated sidecar.json to get information about the
     # recording snapshot
