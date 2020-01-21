@@ -18,7 +18,8 @@ data. Specifically, we will follow these steps:
 The iEEG data will be pretty similar to the
 one naively written by `write_raw_bids` with
 the addition of extra elements in the electrodes.tsv and
-coord_system.json files.
+coord_system.json files. For information on these two files,
+refer to the iEEG-BIDS specification.
 """
 
 # Authors: Adam Li <adam2392@gmail.com>
@@ -26,6 +27,7 @@ coord_system.json files.
 
 import os
 import tempfile
+from pprint import pprint
 
 from mpl_toolkits.mplot3d import Axes3D  # noqa
 import matplotlib.pyplot as plt
@@ -43,7 +45,7 @@ from mne_bids.utils import print_dir_tree
 # First, we need some data to work with. We will use the
 # data downloaded via MNE-Python's API.
 #
-# `https://mne.tools/stable/generated/mne.datasets.misc.data_path.html#mne.datasets.misc.data_path`_.
+# `<https://mne.tools/stable/generated/mne.datasets.misc.data_path>`_.
 #
 # Conveniently, there is already a data loading function available with
 # MNE-Python:
@@ -60,7 +62,7 @@ elec = mat['elec']  # electrode positions given in meters
 montage = mne.channels.make_dig_montage(ch_pos=dict(zip(ch_names, elec)),
                                         coord_frame='mri')
 print('Created %s channel positions' % len(ch_names))
-print(ch_names)
+print(dict(zip(ch_names, elec)))
 
 ###############################################################################
 # The electrode coords data are in the Matlab format: '.mat'.
@@ -76,6 +78,15 @@ ieegdata = np.random.rand(len(ch_names), 1000)
 info = mne.create_info(ch_names, 1000., 'ecog')
 raw = mne.io.RawArray(ieegdata, info)
 raw.set_montage(montage)
+
+# get the first 5 channels and show their locations
+picks = mne.pick_types(raw.info, ecog=True)
+dig = [raw.info['dig'][pick] for pick in picks]
+chs = [raw.info['chs'][pick] for pick in picks]
+pos = np.array([ch['r'] for ch in dig[:5]])
+ch_names = np.array([ch['ch_name'] for ch in chs[:5]])
+print("The channel coordinates before writing into BIDS: ")
+pprint([x for x in zip(ch_names, pos)])
 
 ###############################################################################
 # Step 2: Formatting as BIDS
@@ -123,9 +134,9 @@ with tempfile.TemporaryDirectory() as tmp_root:
     raw.save(tmp_fpath)
     raw = mne.io.read_raw_fif(tmp_fpath)
 
-# write `raw` to BIDS
-write_raw_bids(raw, bids_basename, bids_root=bids_root,
-               anonymize=dict(daysback=30000), overwrite=True)
+    # write `raw` to BIDS
+    write_raw_bids(raw, bids_basename, bids_root=bids_root,
+                   anonymize=dict(daysback=30000), overwrite=True)
 
 ###############################################################################
 # Step 3: Check and compare with standard
@@ -164,9 +175,19 @@ print_dir_tree(bids_root)
 bids_fname = bids_basename + "_ieeg.vhdr"
 raw = read_raw_bids(bids_fname, bids_root=bids_root)
 
+# get the first 5 channels and show their locations
+# this should match what was printed earlier.
+picks = mne.pick_types(raw.info, ecog=True)
+dig = [raw.info['dig'][pick] for pick in picks]
+chs = [raw.info['chs'][pick] for pick in picks]
+pos = np.array([ch['r'] for ch in dig[:5]])
+ch_names = np.array([ch['ch_name'] for ch in chs[:5]])
+print("The channel coordinates after writing into BIDS: ")
+pprint([x for x in zip(ch_names, pos)])
+
+# make a plot of the sensors in 2D plane, or on a 3D plot
 fig = plt.figure()
 ax2d = fig.add_subplot(121)
 raw.plot_sensors(ch_type='ecog', axes=ax2d)
 ax3d = fig.add_subplot(122, projection='3d')
 raw.plot_sensors(ch_type="ecog", axes=ax3d, kind='3d')
-plt.show()
