@@ -53,3 +53,14 @@ The documentation can be built using sphinx. For that, please additionally
 install the following:
 
     $ pip install matplotlib nilearn sphinx numpydoc sphinx-gallery sphinx_bootstrap_theme pillow
+
+To build the examples locally, one can run:
+
+    $ cd doc/
+    $ make html
+
+or
+
+    $ make html-noplot
+    
+if you don't want to render the plots.
