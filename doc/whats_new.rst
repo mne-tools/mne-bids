@@ -31,6 +31,7 @@ Changelog
 - Added landmark argument to :func:`write_anat` to pass landmark location directly for deface, by `Alex Rockhill`_ (`#292 <https://github.com/mne-tools/mne-bids/pull/292>`_)
 - Standardized `bids_root` and `output_path` arguments in :func:`read_raw_bids`, :func:`write_raw_bids`, and :func:`make_bids_folder` to just `bids_root`, by `Adam Li`_ (`#303 <https://github.com/mne-tools/mne-bids/pull/303>`_)
 - Add existence check for :func:`write_raw_bids` before :func:`make_dataset_description` is called, by `Adam Li`_ (`#331 <https://github.com/mne-tools/mne-bids/pull/331>`_)
+- Update scans.tsv writer to adhere to MNE-Python v0.20+ where `meas_date` is stored as a `datetime` object, by `Adam Li`_ (`#344 <https://github.com/mne-tools/mne-bids/pull/344>`_)
 
 Bug
 ~~~
