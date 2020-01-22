@@ -33,6 +33,7 @@ Changelog
 - Add existence check for :func:`write_raw_bids` before :func:`make_dataset_description` is called, by `Adam Li`_ (`#331 <https://github.com/mne-tools/mne-bids/pull/331>`_)
 - Update scans.tsv writer to adhere to MNE-Python v0.20+ where `meas_date` is stored as a `datetime` object, by `Adam Li`_ (`#344 <https://github.com/mne-tools/mne-bids/pull/344>`_)
 - :func:`read_raw_bids` now reads in sidecar json files to set, or estimate Power Line Frequency, by `Adam Li`_ (`#341 <https://github.com/mne-tools/mne-bids/pull/341>`_)
+- Allow FIF files with multiple parts to be read using :func:`read_raw_bids`, by `Teon Brooks`_(`#346 <https://github.com/mne-tools/mne-bids/pull/346>`)
 
 Bug
 ~~~
