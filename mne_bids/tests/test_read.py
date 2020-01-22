@@ -18,7 +18,8 @@ from mne.datasets import testing, somato
 
 import mne_bids
 from mne_bids import get_matched_empty_room
-from mne_bids.read import _read_raw, get_head_mri_trans, _handle_events_reading
+from mne_bids.read import _read_raw, get_head_mri_trans, \
+    _handle_events_reading, _handle_info_reading
 from mne_bids.tsv_handler import _to_tsv
 from mne_bids.utils import (_find_matching_sidecar, _update_sidecar)
 from mne_bids.write import write_anat, write_raw_bids, make_bids_basename
@@ -176,6 +177,14 @@ def test_line_freq_estimation():
     with pytest.warns(UserWarning, match="No line frequency found"):
         somato_raw = mne_bids.read_raw_bids(bids_fname, bids_root)
         assert somato_raw.info['line_freq'] == 50
+
+    # assert that line_freq should be None when
+    # all picks are not meg/eeg/ecog/seeg
+    somato_raw.info['line_freq'] = None
+    somato_raw.set_channel_types({somato_raw.ch_names[i]: 'bio'
+                                  for i in range(len(somato_raw.ch_names))})
+    somato_raw = _handle_info_reading(sidecar_fname, somato_raw, verbose=True)
+    assert somato_raw.info['line_freq'] is None
 
 
 def test_handle_info_reading():
