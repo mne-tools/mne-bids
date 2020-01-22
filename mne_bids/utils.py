@@ -302,13 +302,13 @@ param_regex = re.compile(r'([^-_\.\\\/]+)-([^-_\.\\\/]+)')
 def _parse_bids_filename(fname, verbose):
     """Get dict from BIDS fname."""
     keys = ['sub', 'ses', 'task', 'acq', 'run', 'proc', 'run', 'space',
-            'recording', 'kind']
+            'recording', 'part', 'kind']
     params = {key: None for key in keys}
     idx_key = 0
     for match in re.finditer(param_regex, op.basename(fname)):
         key, value = match.groups()
         if key not in keys:
-            raise KeyError('Unexpected entity ''%s'' found in filename ''%s'''
+            raise KeyError('Unexpected entity "%s" found in filename "%s"'
                            % (key, fname))
         if keys.index(key) < idx_key:
             raise ValueError('Entities in filename not ordered correctly.'
