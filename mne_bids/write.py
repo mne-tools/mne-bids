@@ -331,10 +331,14 @@ def _scans_tsv(raw, raw_fname, fname, overwrite=False, verbose=True):
     """
     # get measurement date from the data info
     meas_date = raw.info['meas_date']
-    if isinstance(meas_date, (tuple, list, np.ndarray)):
-        acq_time = _stamp_to_dt(meas_date).strftime('%Y-%m-%dT%H:%M:%S')
-    else:
+    if meas_date is None:
         acq_time = 'n/a'
+    elif isinstance(meas_date, (tuple, list, np.ndarray)):  # noqa: E501
+        # for MNE < v0.20
+        acq_time = _stamp_to_dt(meas_date).strftime('%Y-%m-%dT%H:%M:%S')
+    elif isinstance(meas_date, datetime):
+        # for MNE >= v0.20
+        acq_time = meas_date.strftime('%Y-%m-%dT%H:%M:%S')
 
     data = OrderedDict([('filename', ['%s' % raw_fname.replace(os.sep, '/')]),
                        ('acq_time', [acq_time])])

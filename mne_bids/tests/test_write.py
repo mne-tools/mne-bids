@@ -26,6 +26,7 @@ import mne
 from mne.datasets import testing
 from mne.utils import (_TempDir, run_subprocess, check_version,
                        requires_nibabel, requires_version)
+from mne.io import anonymize_info
 from mne.io.constants import FIFF
 from mne.io.kit.kit import get_kit_info
 
@@ -223,6 +224,12 @@ def test_fif(_bids_validate):
     er_bids_basename_bad = 'sub-emptyroom_ses-19000101_task-noise'
     with pytest.raises(ValueError, match='Date provided'):
         write_raw_bids(raw, er_bids_basename_bad, bids_root, overwrite=False)
+    # test that the acquisition time was written properly
+    scans_tsv = make_bids_basename(
+        subject=subject_id, session=session_id, suffix='scans.tsv',
+        prefix=op.join(bids_root, 'sub-01', 'ses-01'))
+    data = _from_tsv(scans_tsv)
+    assert data['acq_time'][0] == meas_date.strftime('%Y-%m-%dT%H:%M:%S')
 
     # give the raw object some fake participant data (potentially overwriting)
     raw = mne.io.read_raw_fif(raw_fname)
@@ -333,7 +340,11 @@ def test_fif(_bids_validate):
         subject=subject_id, session=session_id, suffix='scans.tsv',
         prefix=op.join(bids_root, 'sub-01', 'ses-01'))
     data = _from_tsv(scans_tsv)
-    assert data['acq_time'][0] == 'n/a'
+    # anonymize using MNE manually
+    anonymized_info = anonymize_info(info=raw.info, daysback=30000,
+                                     keep_his=True)
+    anon_date = anonymized_info['meas_date'].strftime("%Y-%m-%dT%H:%M:%S")
+    assert data['acq_time'][0] == anon_date
     _bids_validate(bids_root)
 
     # check that split files have part key
