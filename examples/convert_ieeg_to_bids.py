@@ -15,8 +15,11 @@ data. Specifically, we will follow these steps:
 
 3. Check the result and compare it with the standard
 
+4. Confirm that written iEEG coordinates are the same before
+:func:`write_raw_bids` was called
+
 The iEEG data will be pretty similar to the
-one naively written by `write_raw_bids` with
+one naively written by :func:`write_raw_bids` with
 the addition of extra elements in the electrodes.tsv and
 coord_system.json files. For information on these two files,
 refer to the iEEG-BIDS specification.
@@ -29,7 +32,6 @@ import os
 import tempfile
 from pprint import pprint
 
-from mpl_toolkits.mplot3d import Axes3D  # noqa
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.io import loadmat
@@ -53,6 +55,8 @@ from mne_bids.utils import print_dir_tree
 # get MNE directory w/ example data
 mne_dir = mne.get_config('MNE_DATASETS_SAMPLE_PATH')
 
+# The electrode coords data are in the Matlab format: '.mat'.
+# This is easy to read in with :func:`scipy.io.loadmat` function.
 mat = loadmat(mne.datasets.misc.data_path() + '/ecog/sample_ecog.mat')
 ch_names = mat['ch_names'].tolist()
 ch_names = [x.strip() for x in ch_names]
@@ -67,21 +71,26 @@ print('Created %s channel positions' % len(ch_names))
 print(dict(zip(ch_names, elec)))
 
 ###############################################################################
-# The electrode coords data are in the Matlab format: '.mat'.
-# This is easy to read in with :py:function:`scipy.io.loadmat` function.
 # We also need to get some sample iEEG data,
 # so we will just generate random data from white noise.
 # Here is where you would use your own data if you had it.
 ieegdata = np.random.rand(len(ch_names), 1000)
 
-# However, apart from the data format, we need to build
-# a directory structure and supply meta data
-# files to properly *bidsify* this data.
+# We will create a :func:`mne.io.RawArray` object and
+# use the montage we created.
 info = mne.create_info(ch_names, 1000., 'ecog')
 raw = mne.io.RawArray(ieegdata, info)
 raw.set_montage(montage)
 
-# get the first 5 channels and show their locations
+###############################################################################
+# Let us confirm what our channel coordinates look like.
+
+# make a plot of the sensors in 2D plane, or on a 3D plot
+fig = plt.figure()
+ax2d = fig.add_subplot(111)
+raw.plot_sensors(ch_type='ecog', axes=ax2d)
+
+# Get the first 5 channels and show their locations.
 picks = mne.pick_types(raw.info, ecog=True)
 dig = [raw.info['dig'][pick] for pick in picks]
 chs = [raw.info['chs'][pick] for pick in picks]
@@ -94,7 +103,7 @@ pprint([x for x in zip(ch_names, pos)])
 # Step 2: Formatting as BIDS
 # --------------------------
 #
-# Let's start by formatting a single subject.
+# Now, let us format the `Raw` object into BIDS.
 
 ###############################################################################
 # With this step, we have everything to start a new BIDS directory using
@@ -113,9 +122,11 @@ print(write_raw_bids.__doc__)
 
 ###############################################################################
 # Let us initialize some of the necessary data for the subject
-# There is a subject, and specific task for the dataset
+# There is a subject, and specific task for the dataset.
 subject_id = '001'  # zero padding to account for >100 subjects in this dataset
 task = 'testresteyes'
+
+# There is the root directory for where we will write our data.
 bids_root = os.path.join(mne_dir, 'ieegmmidb_bids')
 
 ###############################################################################
@@ -136,7 +147,7 @@ with tempfile.TemporaryDirectory() as tmp_root:
     raw.save(tmp_fpath)
     raw = mne.io.read_raw_fif(tmp_fpath)
 
-    # write `raw` to BIDS
+    # write `raw` to BIDS and anonymize it into BrainVision format
     write_raw_bids(raw, bids_basename, bids_root=bids_root,
                    anonymize=dict(daysback=30000), overwrite=True)
 
@@ -157,7 +168,7 @@ print_dir_tree(bids_root)
 # describe iEEGReference and iEEGGround yourself. It's easy to find these by
 # searching for "n/a" in the sidecar files.
 #
-# $ grep -i 'n/a' <bids_root>
+# `$ grep -i 'n/a' <bids_root>`
 #
 # Remember that there is a convenient javascript tool to validate all your BIDS
 # directories called the "BIDS-validator", available as a web version and a
@@ -171,7 +182,8 @@ print_dir_tree(bids_root)
 # Step 4: Plot output channels and check that they match!
 # -------------------------------------------------------
 #
-# Now we have written our BIDS directory.
+# Now we have written our BIDS directory. We can use
+# :func:`read_raw_bids` to read in the data.
 
 # read in the BIDS dataset and plot the coordinates
 bids_fname = bids_basename + "_ieeg.vhdr"
@@ -189,7 +201,5 @@ pprint([x for x in zip(ch_names, pos)])
 
 # make a plot of the sensors in 2D plane, or on a 3D plot
 fig = plt.figure()
-ax2d = fig.add_subplot(121)
+ax2d = fig.add_subplot(111)
 raw.plot_sensors(ch_type='ecog', axes=ax2d)
-ax3d = fig.add_subplot(122, projection='3d')
-raw.plot_sensors(ch_type="ecog", axes=ax3d, kind='3d')
