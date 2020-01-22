@@ -222,7 +222,8 @@ def test_parse_ext():
     'sub-01_ses-02_task-test_run-3_part-01_meg.fif',
     'sub-01_ses-02_task-test_run-3_part-01.fif',
     'sub-01_ses-02_task-test_run-3_part-01',
-    '/bids_root/sub-01/ses-02/meg/sub-01_ses-02_task-test_run-3_part-01_meg.fif',
+    ('/bids_root/sub-01/ses-02/meg/' +
+     'sub-01_ses-02_task-test_run-3_part-01_meg.fif'),
 ])
 def test_parse_bids_filename(fname):
     """Test parsing entities from a bids filename."""
