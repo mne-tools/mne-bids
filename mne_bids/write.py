@@ -1244,13 +1244,11 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     else:
         coord_frame = None
         unit = None
-        warn('Writing of electrodes.tsv is not supported for kind "{}". '
-             'Skipping ...'.format(kind))
 
     # We only write iEEG electrodes.tsv and accompanying coordsystem.json
     # if we have an available DigMontage
-    if raw.info['dig'] is not None and kind != "meg":
-        if unit is not None and coord_frame is not None:
+    if raw.info['dig'] is not None:
+        if kind in ["ieeg"]:
             coords = _extract_landmarks(raw.info['dig'])
 
             # Rescale to MNE-Python "head" coord system, which is the
@@ -1262,6 +1260,9 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
                 _coordsystem_json(raw, unit, orient,
                                   coord_frame, coordsystem_fname, kind,
                                   overwrite, verbose)
+        elif kind != "meg":
+            warn('Writing of electrodes.tsv is not supported for kind "{}". '
+                 'Skipping ...'.format(kind))
 
     events, event_id = _read_events(events_data, event_id, raw, ext)
     if events is not None and len(events) > 0 and not emptyroom:
