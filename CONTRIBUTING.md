@@ -54,7 +54,7 @@ install the following:
 
     $ pip install matplotlib nilearn sphinx numpydoc sphinx-gallery sphinx_bootstrap_theme pillow
 
-To build the examples locally, one can run:
+To build the documentation locally, one can run:
 
     $ cd doc/
     $ make html
