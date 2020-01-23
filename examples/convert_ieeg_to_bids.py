@@ -18,10 +18,16 @@ data. Specifically, we will follow these steps:
 4. Confirm that written iEEG coordinates are the same before
 :func:`write_raw_bids` was called
 
-The iEEG data will be pretty similar to the
-one naively written by :func:`write_raw_bids` with
-the addition of extra elements in the electrodes.tsv and
-coord_system.json files. For information on these two files,
+The iEEG data will be written by :func:`write_raw_bids` with
+the addition of extra metadata elements in the following files:
+
+    * sidecar.json
+    * electrodes.tsv
+    * coord_system.json
+    * events.tsv
+    * channels.tsv
+
+For information on these files,
 refer to the iEEG-BIDS specification.
 """
 
