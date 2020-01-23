@@ -21,9 +21,9 @@ from mne_bids import get_matched_empty_room
 from mne_bids.read import (read_raw_bids,
                            _read_raw, get_head_mri_trans,
                            _handle_events_reading, _handle_info_reading)
+from mne_bids.tsv_handler import _to_tsv
 from mne_bids.utils import (_find_matching_sidecar, _update_sidecar)
 from mne_bids.write import write_anat, write_raw_bids, make_bids_basename
-from mne_bids.tsv_handler import _to_tsv
 
 subject_id = '01'
 session_id = '01'
