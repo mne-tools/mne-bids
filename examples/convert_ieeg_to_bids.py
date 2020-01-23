@@ -134,7 +134,7 @@ bids_root = os.path.join(mne_dir, 'ieegmmidb_bids')
 # We need the basename of the dataset. In addition, write_raw_bids
 # requires a `filenames` of the Raw object to be non-empty, so since we
 # initialized the dataset from an array, we need to do a hack where we
-# save the data to disc first.
+# temporarily save the data to disc before reading it back in.
 
 # Now convert our data to be in a new BIDS dataset.
 bids_basename = make_bids_basename(subject=subject_id,
