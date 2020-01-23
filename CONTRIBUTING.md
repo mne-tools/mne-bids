@@ -63,4 +63,4 @@ or
 
     $ make html-noplot
     
-if you don't want to render the plots.
+if you don't want to run the examples to build the documentation. This will result in a faster build but produce no plots in the examples.
