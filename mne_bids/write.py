@@ -415,9 +415,6 @@ def _coordsystem_json(raw, unit, orient, coordsystem_name, fname,
             'iEEGCoordinateSystem': coordsystem_name,  # MRI, Pixels, or ACPC
             'iEEGCoordinateUnits': unit,  # m (MNE), mm, cm , or pixels
         }
-    else:
-        warn('Writing of electrodes.tsv is not supported for kind "{}". '
-             'Skipping ...'.format(kind))
 
     _write_json(fname, fid_json, overwrite, verbose)
 
@@ -1234,25 +1231,31 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     _scans_tsv(raw, op.join(kind, bids_fname), scans_fname, overwrite, verbose)
 
     # TODO: Implement coordystem.json and electrodes.tsv for EEG
+    electrodes_fname = make_bids_basename(
+        subject=subject_id, session=session_id, acquisition=acquisition,
+        suffix='electrodes.tsv', prefix=data_path)
     if kind == 'meg' and not emptyroom:
-        _coordsystem_json(raw, unit, orient, manufacturer, coordsystem_fname,
-                          kind, overwrite, verbose)
+        _coordsystem_json(raw, unit, orient,
+                          manufacturer, coordsystem_fname, kind,
+                          overwrite, verbose)
     elif kind == 'ieeg':
-        electrodes_fname = make_bids_basename(
-            subject=subject_id, session=session_id, acquisition=acquisition,
-            suffix='electrodes.tsv', prefix=data_path)
+        coord_frame = "mri"  # defaults to MRI coordinates
+        unit = "m"  # defaults to meters
+    else:
+        coord_frame = None
+        unit = None
+        warn('Writing of electrodes.tsv is not supported for kind "{}". '
+             'Skipping ...'.format(kind))
 
-        # We only write iEEG electrodes.tsv and accompanying coordsystem.json
-        # if we have an available DigMontage
-        if raw.info['dig'] is not None:
+    # We only write iEEG electrodes.tsv and accompanying coordsystem.json
+    # if we have an available DigMontage
+    if raw.info['dig'] is not None and kind != "meg":
+        if unit is not None and coord_frame is not None:
             coords = _extract_landmarks(raw.info['dig'])
 
             # Rescale to MNE-Python "head" coord system, which is the
             # "ElektaNeuromag" system (equivalent to "CapTrak" system)
             if set(['RPA', 'NAS', 'LPA']) != set(list(coords.keys())):
-                coord_frame = "mri"  # defaults to MRI coordinates
-                unit = "m"  # defaults to meters
-
                 # Now write the data to the elec coords and the coordsystem
                 _electrodes_tsv(raw, electrodes_fname,
                                 kind, overwrite, verbose)

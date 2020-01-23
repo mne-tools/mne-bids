@@ -194,9 +194,15 @@ def _handle_electrodes_reading(electrodes_fname, coord_frame, raw, verbose):
         print("The read in electrodes file is: \n", electrodes_dict)
 
     # convert coordinates to float and create list of tuples
-    electrodes_dict['x'] = [float(x) for x in electrodes_dict['x']]
-    electrodes_dict['y'] = [float(x) for x in electrodes_dict['y']]
-    electrodes_dict['z'] = [float(x) for x in electrodes_dict['z']]
+    ch_names_raw = [x for i, x in enumerate(ch_names_raw)
+                    if electrodes_dict['x'][i] != "n/a"]
+    electrodes_dict['x'] = [float(x) for x in electrodes_dict['x']
+                            if x != "n/a"]
+    electrodes_dict['y'] = [float(x) for x in electrodes_dict['y']
+                            if x != "n/a"]
+    electrodes_dict['z'] = [float(x) for x in electrodes_dict['z']
+                            if x != "n/a"]
+
     ch_locs = list(zip(electrodes_dict['x'],
                        electrodes_dict['y'],
                        electrodes_dict['z']))
@@ -371,9 +377,10 @@ def read_raw_bids(bids_fname, bids_root, extra_params=None,
             coord_frame = coordsystem_json['MEGCoordinateSystem']
         elif kind in ["ieeg", "seeg", "ecog"]:
             coord_frame = coordsystem_json['iEEGCoordinateSystem']
-        else:
+        else:  # noqa
             raise RuntimeError("Kind {} not supported yet for "
-                               "coordsystem.json.".format(kind))
+                               "coordsystem.json and "
+                               "electrodes.tsv.".format(kind))
 
         raw = _handle_electrodes_reading(electrodes_fname, coord_frame, raw,
                                          verbose)

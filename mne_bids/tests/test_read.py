@@ -21,7 +21,7 @@ from mne_bids import get_matched_empty_room
 from mne_bids.read import (read_raw_bids,
                            _read_raw, get_head_mri_trans,
                            _handle_events_reading, _handle_info_reading)
-from mne_bids.tsv_handler import _to_tsv
+from mne_bids.tsv_handler import _to_tsv, _from_tsv
 from mne_bids.utils import (_find_matching_sidecar, _update_sidecar)
 from mne_bids.write import write_anat, write_raw_bids, make_bids_basename
 
@@ -256,15 +256,26 @@ def test_handle_coords_reading():
 
     # read in the data and assert montage is the same
     bids_fname = bids_basename + "_ieeg.edf"
-
     raw_test = read_raw_bids(bids_fname, bids_root)
 
     # obtain the sensor positions
     orig_locs = raw.info['dig'][1]
     test_locs = raw_test.info['dig'][1]
-
     assert orig_locs == test_locs
     assert not object_diff(raw.info['chs'], raw_test.info['chs'])
+
+    # test error message if electrodes don't match
+    electrodes_fname = _find_matching_sidecar(bids_fname, bids_root,
+                                              "electrodes.tsv",
+                                              allow_fail=True)
+    electrodes_dict = _from_tsv(electrodes_fname)
+    # pop off 5 channels
+    for key in electrodes_dict.keys():
+        for i in range(5):
+            electrodes_dict[key].pop()
+    _to_tsv(electrodes_dict, electrodes_fname)
+    with pytest.raises(RuntimeError, match='Channels do not correspond'):
+        raw_test = read_raw_bids(bids_fname, bids_root)
 
 
 @requires_nibabel()
