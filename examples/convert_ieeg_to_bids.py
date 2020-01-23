@@ -199,7 +199,7 @@ ch_names = np.array([ch['ch_name'] for ch in chs[:5]])
 print("The channel coordinates after writing into BIDS: ")
 pprint([x for x in zip(ch_names, pos)])
 
-# make a plot of the sensors in 2D plane, or on a 3D plot
+# make a plot of the sensors in 2D plane
 fig = plt.figure()
 ax2d = fig.add_subplot(111)
 raw.plot_sensors(ch_type='ecog', axes=ax2d)
