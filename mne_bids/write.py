@@ -1248,7 +1248,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
             coords = _extract_landmarks(raw.info['dig'])
 
             # Rescale to MNE-Python "head" coord system, which is the
-            # BIDS "ElektaNeuromag" system, and equivalent to BIDS "CapTrak"
+            # "ElektaNeuromag" system (equivalent to "CapTrak" system)
             if set(['RPA', 'NAS', 'LPA']) != set(list(coords.keys())):
                 coord_frame = "mri"  # defaults to MRI coordinates
                 unit = "m"  # defaults to meters
