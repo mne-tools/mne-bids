@@ -27,7 +27,9 @@ the addition of extra metadata elements in the following files:
     * events.tsv
     * channels.tsv
 
-For information on these files,
+Compared to EEG data, the main differences are within the
+coord_system and electrodes files.
+For more information on these files,
 refer to the iEEG-BIDS specification.
 """
 
