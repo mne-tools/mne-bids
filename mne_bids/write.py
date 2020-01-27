@@ -1248,7 +1248,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     # We only write electrodes.tsv and accompanying coordsystem.json
     # if we have an available DigMontage
     if raw.info['dig'] is not None:
-        if kind in ["ieeg"]:
+        if kind == "ieeg":
             coords = _extract_landmarks(raw.info['dig'])
 
             # Rescale to MNE-Python "head" coord system, which is the
