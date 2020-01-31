@@ -40,7 +40,6 @@ import os
 import tempfile
 from pprint import pprint
 
-import matplotlib.pyplot as plt
 import numpy as np
 from scipy.io import loadmat
 
@@ -93,10 +92,8 @@ raw.set_montage(montage)
 ###############################################################################
 # Let us confirm what our channel coordinates look like.
 
-# make a plot of the sensors in 2D plane, or on a 3D plot
-fig = plt.figure()
-ax2d = fig.add_subplot(111)
-raw.plot_sensors(ch_type='ecog', axes=ax2d)
+# make a plot of the sensors in 2D plane
+raw.plot_sensors(ch_type='ecog')
 
 # Get the first 5 channels and show their locations.
 picks = mne.pick_types(raw.info, ecog=True)
@@ -208,6 +205,4 @@ print("The channel coordinates after writing into BIDS: ")
 pprint([x for x in zip(ch_names, pos)])
 
 # make a plot of the sensors in 2D plane
-fig = plt.figure()
-ax2d = fig.add_subplot(111)
-raw.plot_sensors(ch_type='ecog', axes=ax2d)
+raw.plot_sensors(ch_type='ecog')
