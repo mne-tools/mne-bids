@@ -7,7 +7,7 @@ In this example, we use MNE-BIDS to create a BIDS-compatible directory of iEEG
 data. Specifically, we will follow these steps:
 
 1. Download some iEEG data from the
-   `PhysioBank database <https://physionet.org/physiobank/database>`_.
+   `PhysioBank database <https://physionet.org/physiobank/database>`_
    and the
    `MNE-ECoG ex <https://mne.tools/stable/auto_tutorials/misc/plot_ecog>`_.
 
