@@ -355,8 +355,8 @@ def read_raw_bids(bids_fname, bids_root, extra_params=None,
     if channels_fname is not None:
         raw = _handle_channels_reading(channels_fname, bids_fname, raw)
 
-    # Try to find an associated channels.tsv to get information about the
-    # status and type of present channels
+    # Try to find an associated electrodes.tsv and coordsystem.json
+    # to get information about the status and type of present channels
     electrodes_fname = _find_matching_sidecar(bids_fname, bids_root,
                                               'electrodes.tsv',
                                               allow_fail=True)
@@ -373,15 +373,16 @@ def read_raw_bids(bids_fname, bids_root, extra_params=None,
         with open(coordsystem_fname, 'r') as fin:
             coordsystem_json = json.load(fin)
 
+        # Get coordinate frames that electrode coordinates are in
         if kind == "meg":
             coord_frame = coordsystem_json['MEGCoordinateSystem']
-        elif kind in ["ieeg", "seeg", "ecog"]:
+        elif kind == "ieeg":
             coord_frame = coordsystem_json['iEEGCoordinateSystem']
         else:  # noqa
             raise RuntimeError("Kind {} not supported yet for "
                                "coordsystem.json and "
                                "electrodes.tsv.".format(kind))
-
+        # read in electrode coordinates and attach to raw
         raw = _handle_electrodes_reading(electrodes_fname, coord_frame, raw,
                                          verbose)
 
