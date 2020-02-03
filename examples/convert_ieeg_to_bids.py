@@ -11,12 +11,12 @@ data. Specifically, we will follow these steps:
    and the
    `MNE-ECoG ex <https://mne.tools/stable/auto_tutorials/misc/plot_ecog>`_.
 
-2. Load the data, extract information, and save in a new BIDS directory
+2. Load the data, extract information, and save in a new BIDS directory.
 
-3. Check the result and compare it with the standard
+3. Check the result and compare it with the standard.
 
 4. Confirm that written iEEG coordinates are the
-    same before :func:`write_raw_bids` was called
+   same before :func:`write_raw_bids` was called.
 
 The iEEG data will be written by :func:`write_raw_bids` with
 the addition of extra metadata elements in the following files:
