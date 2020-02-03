@@ -28,7 +28,7 @@ try:
 except ImportError:
     from mne._digitization._utils import _get_fid_coords
 from mne.channels.channels import _unit2human
-from mne.utils import check_version, has_nibabel
+from mne.utils import check_version, has_nibabel, _check_ch_locs
 
 from mne_bids.pick import coil_type
 from mne_bids.utils import (_write_json, _write_tsv, _read_events, _mkdir_p,
@@ -142,6 +142,56 @@ def _channels_tsv(raw, fname, overwrite=False, verbose=True):
 
     _write_tsv(fname, ch_data, overwrite, verbose)
 
+    return fname
+
+
+def _electrodes_tsv(raw, fname, kind, overwrite=False, verbose=True):
+    """
+    Create an electrodes.tsv file and save it.
+
+    Parameters
+    ----------
+    raw : instance of Raw
+        The data as MNE-Python Raw object.
+    fname : str
+        Filename to save the electrodes.tsv to.
+    kind : str
+        Acquisition type to save electrodes in. For iEEG, requires size.
+    overwrite : bool
+        Defaults to False.
+        Whether to overwrite the existing data in the file.
+        If there is already data for the given `fname` and overwrite is False,
+        an error will be raised.
+    verbose : bool
+        Set verbose output to true or false.
+    """
+    x, y, z, names = list(), list(), list(), list()
+    for ch in raw.info['chs']:
+        if _check_ch_locs([ch]):
+            x.append(ch['loc'][0])
+            y.append(ch['loc'][1])
+            z.append(ch['loc'][2])
+        else:
+            x.append('n/a')
+            y.append('n/a')
+            z.append('n/a')
+        names.append(ch['ch_name'])
+
+    if kind == "ieeg":
+        sizes = ['n/a'] * len(names)
+        data = OrderedDict([('name', names),
+                            ('x', x),
+                            ('y', y),
+                            ('z', z),
+                            ('size', sizes),
+                            ])
+    else:
+        data = OrderedDict([('name', names),
+                            ('x', x),
+                            ('y', y),
+                            ('z', z),
+                            ])
+    _write_tsv(fname, data, overwrite=overwrite, verbose=verbose)
     return fname
 
 
@@ -310,6 +360,67 @@ def _participants_json(fname, overwrite=False, verbose=True):
     return fname
 
 
+def _coordsystem_json(raw, unit, orient, coordsystem_name, fname,
+                      kind, overwrite=False, verbose=True):
+    """Create a coordsystem.json file and save it.
+
+    Parameters
+    ----------
+    raw : instance of Raw
+        The data as MNE-Python Raw object.
+    unit : str
+        Units to be used in the coordsystem specification.
+    orient : str
+        Used to define the coordinate system for the head coils.
+    coordsystem_name : str
+        Name of the coordinate system for the sensor positions.
+    fname : str
+        Filename to save the coordsystem.json to.
+    kind : str
+        Type of the data as in ALLOWED_KINDS.
+    overwrite : bool
+        Whether to overwrite the existing file.
+        Defaults to False.
+    verbose : bool
+        Set verbose output to true or false.
+
+    """
+    dig = raw.info['dig']
+    coords = _extract_landmarks(dig)
+    hpi = {d['ident']: d for d in dig if d['kind'] == FIFF.FIFFV_POINT_HPI}
+    if hpi:
+        for ident in hpi.keys():
+            coords['coil%d' % ident] = hpi[ident]['r'].tolist()
+
+    coord_frame = set([dig[ii]['coord_frame'] for ii in range(len(dig))])
+    if len(coord_frame) > 1:  # noqa E501
+        raise ValueError('All HPI, electrodes, and fiducials must be in the '
+                         'same coordinate frame. Found: "{}"'
+                         .format(coord_frame))
+
+    if kind == 'meg':
+        hpi = {d['ident']: d for d in dig if d['kind'] == FIFF.FIFFV_POINT_HPI}
+        if hpi:
+            for ident in hpi.keys():
+                coords['coil%d' % ident] = hpi[ident]['r'].tolist()
+
+        fid_json = {'MEGCoordinateSystem': coordsystem_name,
+                    'MEGCoordinateUnits': unit,  # XXX validate this
+                    'HeadCoilCoordinates': coords,
+                    'HeadCoilCoordinateSystem': orient,
+                    'HeadCoilCoordinateUnits': unit  # XXX validate this
+                    }
+    elif kind == "ieeg":
+        fid_json = {
+            'iEEGCoordinateSystem': coordsystem_name,  # MRI, Pixels, or ACPC
+            'iEEGCoordinateUnits': unit,  # m (MNE), mm, cm , or pixels
+        }
+
+    _write_json(fname, fid_json, overwrite, verbose)
+
+    return fname
+
+
 def _scans_tsv(raw, raw_fname, fname, overwrite=False, verbose=True):
     """Create a scans.tsv file and save it.
 
@@ -356,53 +467,6 @@ def _scans_tsv(raw, raw_fname, fname, overwrite=False, verbose=True):
     # overwrite is forced to True as all issues with overwrite == False have
     # been handled by this point
     _write_tsv(fname, data, True, verbose)
-
-    return fname
-
-
-def _coordsystem_json(raw, unit, orient, manufacturer, fname,
-                      overwrite=False, verbose=True):
-    """Create a coordsystem.json file and save it.
-
-    Parameters
-    ----------
-    raw : instance of Raw
-        The data as MNE-Python Raw object.
-    unit : str
-        Units to be used in the coordsystem specification.
-    orient : str
-        Used to define the coordinate system for the head coils.
-    manufacturer : str
-        Used to define the coordinate system for the MEG sensors.
-    fname : str
-        Filename to save the coordsystem.json to.
-    overwrite : bool
-        Whether to overwrite the existing file.
-        Defaults to False.
-    verbose : bool
-        Set verbose output to true or false.
-
-    """
-    dig = raw.info['dig']
-    coords = _extract_landmarks(dig)
-    hpi = {d['ident']: d for d in dig if d['kind'] == FIFF.FIFFV_POINT_HPI}
-    if hpi:
-        for ident in hpi.keys():
-            coords['coil%d' % ident] = hpi[ident]['r'].tolist()
-
-    coord_frame = set([dig[ii]['coord_frame'] for ii in range(len(dig))])
-    if len(coord_frame) > 1:
-        err = 'All HPI and Fiducials must be in the same coordinate frame.'
-        raise ValueError(err)
-
-    fid_json = {'MEGCoordinateSystem': manufacturer,
-                'MEGCoordinateUnits': unit,  # XXX validate this
-                'HeadCoilCoordinates': coords,
-                'HeadCoilCoordinateSystem': orient,
-                'HeadCoilCoordinateUnits': unit  # XXX validate this
-                }
-
-    _write_json(fname, fid_json, overwrite, verbose)
 
     return fname
 
@@ -1166,10 +1230,39 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     _participants_json(participants_json_fname, True, verbose)
     _scans_tsv(raw, op.join(kind, bids_fname), scans_fname, overwrite, verbose)
 
-    # TODO: Implement coordystem.json and electrodes.tsv for EEG and  iEEG
+    # TODO: Implement coordystem.json and electrodes.tsv for EEG
+    electrodes_fname = make_bids_basename(
+        subject=subject_id, session=session_id, acquisition=acquisition,
+        suffix='electrodes.tsv', prefix=data_path)
     if kind == 'meg' and not emptyroom:
-        _coordsystem_json(raw, unit, orient, manufacturer, coordsystem_fname,
+        _coordsystem_json(raw, unit, orient,
+                          manufacturer, coordsystem_fname, kind,
                           overwrite, verbose)
+    elif kind == 'ieeg':
+        coord_frame = "mri"  # defaults to MRI coordinates
+        unit = "m"  # defaults to meters
+    else:
+        coord_frame = None
+        unit = None
+
+    # We only write electrodes.tsv and accompanying coordsystem.json
+    # if we have an available DigMontage
+    if raw.info['dig'] is not None:
+        if kind == "ieeg":
+            coords = _extract_landmarks(raw.info['dig'])
+
+            # Rescale to MNE-Python "head" coord system, which is the
+            # "ElektaNeuromag" system (equivalent to "CapTrak" system)
+            if set(['RPA', 'NAS', 'LPA']) != set(list(coords.keys())):
+                # Now write the data to the elec coords and the coordsystem
+                _electrodes_tsv(raw, electrodes_fname,
+                                kind, overwrite, verbose)
+                _coordsystem_json(raw, unit, orient,
+                                  coord_frame, coordsystem_fname, kind,
+                                  overwrite, verbose)
+        elif kind != "meg":
+            warn('Writing of electrodes.tsv is not supported for kind "{}". '
+                 'Skipping ...'.format(kind))
 
     events, event_id = _read_events(events_data, event_id, raw, ext)
     if events is not None and len(events) > 0 and not emptyroom:

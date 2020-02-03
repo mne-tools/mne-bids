@@ -47,11 +47,8 @@ from mne_bids.utils import print_dir_tree
 # Conveniently, there is already a data loading function available with
 # MNE-Python:
 
-# Make a directory to save the data to
-home = os.path.expanduser('~')
-mne_dir = os.path.join(home, 'mne_data')
-if not os.path.exists(mne_dir):
-    os.makedirs(mne_dir)
+# get MNE directory w/ example data
+mne_dir = mne.get_config('MNE_DATASETS_SAMPLE_PATH')
 
 # Define which tasks we want to download.
 tasks = [2,  # This is 2 minutes of eyes closed rest
@@ -120,7 +117,7 @@ print(write_raw_bids.__doc__)
 subject_id = '001'  # zero padding to account for >100 subjects in this dataset
 task = 'resteyesclosed'
 raw_file = raw
-bids_root = os.path.join(home, 'mne_data', 'eegmmidb_bids')
+bids_root = os.path.join(mne_dir, 'eegmmidb_bids')
 
 ###############################################################################
 # Now we just need to specify a few more EEG details to get something sensible:

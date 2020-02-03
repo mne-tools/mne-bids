@@ -149,6 +149,13 @@ def test_fif(_bids_validate):
                            'sample_audvis_trunc_raw-eve.fif')
 
     raw = mne.io.read_raw_fif(raw_fname)
+    # add data in as a montage for MEG
+    ch_names = raw.ch_names
+    elec_locs = np.random.random((len(ch_names), 3)).tolist()
+    ch_pos = dict(zip(ch_names, elec_locs))
+    meg_montage = mne.channels.make_dig_montage(ch_pos=ch_pos,
+                                                coord_frame='head')
+    raw.set_montage(meg_montage)
     write_raw_bids(raw, bids_basename, bids_root, events_data=events_fname,
                    event_id=event_id, overwrite=False)
 
@@ -656,6 +663,13 @@ def test_edf(_bids_validate):
                       extra_params=dict(foo='bar'))
 
     bids_fname = bids_basename.replace('run-01', 'run-%s' % run2)
+    # add data in as a montage
+    ch_names = raw.ch_names
+    elec_locs = np.random.random((len(ch_names), 3)).tolist()
+    ch_pos = dict(zip(ch_names, elec_locs))
+    eeg_montage = mne.channels.make_dig_montage(ch_pos=ch_pos,
+                                                coord_frame='head')
+    raw.set_montage(eeg_montage)
     write_raw_bids(raw, bids_fname, bids_root, overwrite=True)
     _bids_validate(bids_root)
 
@@ -682,6 +696,18 @@ def test_edf(_bids_validate):
                                 for i in eeg_picks})
     bids_root = _TempDir()
     write_raw_bids(ieeg_raw, bids_basename, bids_root)
+    _bids_validate(bids_root)
+
+    # test writing electrode coordinates (.tsv)
+    # and coordinate system (.json)
+    ch_names = raw.ch_names
+    elec_locs = np.random.random((len(ch_names), 3)).tolist()
+    ch_pos = dict(zip(ch_names, elec_locs))
+    ecog_montage = mne.channels.make_dig_montage(ch_pos=ch_pos,
+                                                 coord_frame='mri')
+    raw.set_montage(ecog_montage)
+    bids_root = _TempDir()
+    write_raw_bids(raw, bids_basename, bids_root)
     _bids_validate(bids_root)
 
     # test anonymize and convert
