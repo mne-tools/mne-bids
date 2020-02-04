@@ -18,9 +18,6 @@ In this tutorial, we show how `read_raw_bids`
 can be used to load any BIDS format data,
 and to display the data that is saved within the accompanying sidecars.
 
-.. note:: For this example you will need to install ``matplotlib``
-    on top of your usual ``mne-bids`` installation.
-
 """
 # Authors: Adam Li <https://github.com/adam2392>
 # License: BSD (3-clause)
@@ -36,9 +33,10 @@ from mne_bids import (make_bids_basename, read_raw_bids)
 from mne_bids.utils import print_dir_tree
 
 ###############################################################################
-# We will be using the `MNE sample data <mne_sample_data_>`_ and write a basic
-# BIDS dataset. For more information, you can checkout the respective
-# :ref:`example <ex-convert-mne-sample>`.
+# We will be using the `MNE somato data <mne_somato_data_>`_, which
+# is already stored in BIDS format.
+# For more information, you can checkout the
+# respective :ref:`example <ex-convert-mne-sample>`.
 
 # get MNE directory w/ example data
 mne_dir = mne.get_config('MNE_DATASETS_SAMPLE_PATH')
@@ -90,6 +88,6 @@ print(raw.annotations)
 ###############################################################################
 # .. LINKS
 #
-# .. _mne_sample_data:
-#    https://martinos.org/mne/stable/manual/sample_dataset.html
+# .. _mne_somato_data:
+#    https://mne.tools/dev/generated/mne.datasets.somato.data_path.html
 #
