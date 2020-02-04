@@ -18,8 +18,8 @@ In this tutorial, we show how `read_raw_bids`
 can be used to load any BIDS format data,
 and to display the data that is saved within the accompanying sidecars.
 
-.. note:: For this example you will need to install ``matplotlib`` and
-          ``nilearn`` on top of your usual ``mne-bids`` installation.
+.. note:: For this example you will need to install ``matplotlib``
+    on top of your usual ``mne-bids`` installation.
 
 """
 # Authors: Adam Li <https://github.com/adam2392>
@@ -27,17 +27,13 @@ and to display the data that is saved within the accompanying sidecars.
 
 ###############################################################################
 # We are importing everything we need for this example:
-
-import json
 import os
-import tempfile
 
 import mne
-from mne.datasets import eegbci
+from mne.datasets import somato
 
-from mne_bids import (make_bids_basename, write_raw_bids, read_raw_bids)
-from mne_bids.tsv_handler import _from_tsv, _to_tsv
-from mne_bids.utils import print_dir_tree, _find_matching_sidecar
+from mne_bids import (make_bids_basename, read_raw_bids)
+from mne_bids.utils import print_dir_tree
 
 ###############################################################################
 # We will be using the `MNE sample data <mne_sample_data_>`_ and write a basic
@@ -51,56 +47,19 @@ mne_dir = mne.get_config('MNE_DATASETS_SAMPLE_PATH')
 # Step 1: Download/Get a BIDS dataset
 # -----------------------------------
 #
-# Let's start by formatting a few subjects to test. This code is
-# copied over from the `convert_eeg_to_bids` example.
-bids_root = tempfile.TemporaryDirectory()
+# Get the MNE somato data
+bids_root = somato.data_path()
+somato_raw_fname = os.path.join(bids_root, 'sub-01', 'meg',
+                                'sub-01_task-somato_meg.fif')
 
-# Define which tasks we want to download.
-tasks = [2,  # This is 2 minutes of eyes closed rest
-         4,  # This is run #1 of imagining to close left or right fist
-         12]  # This is run #2 of imagining to close left or right fist
+subject_id = '01'
+task = 'somato'
+kind = "meg"
 
-# Download the data for subjects 1 and 2
-for subj_idx in [1, 2]:
-    eegbci.load_data(subject=subj_idx,
-                     runs=tasks,
-                     path=mne_dir,
-                     update_path=True)
-data_dir = os.path.join(mne_dir, 'MNE-eegbci-data')
+bids_basename = make_bids_basename(subject=subject_id, task=task)
 
-# Some initial information that we found in the PhysioBank documentation
-task_names = {2: 'resteyesclosed',
-              4: 'imaginefists',  # run 1
-              12: 'imaginefists'  # run 2
-              }
-
-run_mapping = {2: None,  # for resting eyes closed task, there was only one run
-               4: '1',
-               12: '2'
-               }
-
-# Brief description of the event markers present in the data. This will become
-# the `trial_type` column in our BIDS `events.tsv`. We know about the event
-# meaning from the documentation on PhysioBank
-trial_type = {'rest': 0, 'imagine left fist': 1, 'imagine right fist': 2}
-
-# Now go over subjects and *bidsify*
-for subj_idx in [1, 2]:
-    for task_idx in [2, 4, 12]:
-        # Load the data
-        edf_path = eegbci.load_data(subject=subj_idx, runs=task_idx)[0]
-
-        raw = mne.io.read_raw_edf(edf_path, preload=False, stim_channel=None)
-        annot = mne.read_annotations(edf_path)
-        raw.set_annotations(annot)
-        events, event_id = mne.events_from_annotations(raw)
-
-        bids_basename = make_bids_basename(subject='{:03}'.format(subj_idx),
-                                           task=task_names[task_idx],
-                                           run=run_mapping[task_idx])
-
-        write_raw_bids(raw, bids_basename, bids_root, event_id=trial_type,
-                       events_data=events, overwrite=True)
+# bids basename is nicely formatted
+print(bids_basename)
 
 ###############################################################################
 # Print the directory tree
@@ -111,69 +70,22 @@ print_dir_tree(bids_root)
 # ---------------------------
 #
 # Let's read in the dataset and show off a few features of the
-# loading function `read_raw_bids`.
-bids_fname = bids_basename + "_eeg.edf"
+# loading function `read_raw_bids`. Note, this is just one line of code.
+bids_fname = bids_basename + "_{}.fif".format(kind)
 raw = read_raw_bids(bids_fname, bids_root, verbose=True)
 
 ###############################################################################
 # `raw.info` has the basic subject metadata
 print(raw.info['subject_info'])
 
-# `raw.info` has the basic channel metadata
-print(raw.info['dig'])
-
-# `raw.info` has the PowerLineFrequency loaded in
+# `raw.info` has the PowerLineFrequency loaded in, which should be 50 Hz here
 print(raw.info['line_freq'])
+
+# `raw.info` has the sampling frequency loaded in
+print(raw.info['sfreq'])
 
 # annotations
 print(raw.annotations)
-
-# channel info dictionary
-print(raw.info['chs'])
-
-###############################################################################
-# Let's modify data in some of the sidecar files and re-load the data
-# and see how the `raw.info` has changed.
-###############################################################################
-# modify sidecar json
-sidecar_fname = _find_matching_sidecar(bids_fname, bids_root, 'eeg.json')
-with open(sidecar_fname, 'r') as fin:
-    sidecar_json = json.load(fin)
-sidecar_json["PowerLineFrequency"] = 75  # for the sake of example
-with open(sidecar_fname, 'w') as fout:
-    json.dump(sidecar_json, fout)
-
-# check new raw read in
-raw = read_raw_bids(bids_fname, bids_root, verbose=True)
-print(raw.info['line_freq'])
-
-# modify channels tsv
-channels_fname = _find_matching_sidecar(bids_fname, bids_root, 'channels.tsv')
-channels_dict = _from_tsv(channels_fname)
-channels_dict['type'][0] = 'MISC'
-channels_dict['type'][0] = 'EEG'
-_to_tsv(channels_dict, channels_fname)
-
-# check new raw read in
-raw = read_raw_bids(bids_fname, bids_root, verbose=True)
-print(raw.info['chs'])
-
-# modify events tsv
-events_fname = _find_matching_sidecar(bids_fname, bids_root, 'events.tsv')
-# Create an arbitrary events
-events = {'onset': [11, 12, 13],
-          'duration': ['n/a', 'n/a', 'n/a']
-          }
-_to_tsv(events, events_fname)
-
-# check new raw read in
-raw = read_raw_bids(bids_fname, bids_root, verbose=True)
-print(raw.annotations)
-
-# TODO: add electrode coordinates
-
-# TODO: add subject_info from participants.tsv
-
 
 ###############################################################################
 # .. LINKS
