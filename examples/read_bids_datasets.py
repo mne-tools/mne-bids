@@ -1,6 +1,6 @@
 """
 =========================================
-07. Read and load datasets in BIDS format
+02. Read and load datasets in BIDS format
 =========================================
 
 When working with neural data in the BIDS format, we usually have
@@ -29,7 +29,7 @@ import os
 import mne
 from mne.datasets import somato
 
-from mne_bids import (make_bids_basename, read_raw_bids)
+from mne_bids import make_bids_basename, read_raw_bids
 from mne_bids.utils import print_dir_tree
 
 ###############################################################################
