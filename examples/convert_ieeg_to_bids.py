@@ -1,6 +1,6 @@
 """
 ====================================
-07. Convert iEEG data to BIDS format
+08. Convert iEEG data to BIDS format
 ====================================
 
 In this example, we use MNE-BIDS to create a BIDS-compatible directory of iEEG

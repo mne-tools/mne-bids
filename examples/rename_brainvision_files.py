@@ -1,6 +1,6 @@
 """
 =====================================
-05. Rename BrainVision EEG data files
+06. Rename BrainVision EEG data files
 =====================================
 
 The BrainVision file format is one of the recommended formats to store EEG data
