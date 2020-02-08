@@ -388,10 +388,12 @@ def read_raw_bids(bids_fname, bids_root, extra_params=None,
 
     # Try to find an associated sidecar.json to get information about the
     # recording snapshot
-    sidecar_fname = bids_fname.replace(ext, ".json")
+    sidecar_fname = bids_basename + '_{}.json'.format(kind)
     # Find all potential sidecar files, doing a recursive glob from bids_root
     search_str = op.join(bids_root, '**', sidecar_fname)
     candidate_list = glob.glob(search_str, recursive=True)
+    print("Sidecar filnema is: ", sidecar_fname)
+    print(bids_fpath)
     if len(candidate_list) == 1:
         # Success
         sidecar_fname = candidate_list[0]
