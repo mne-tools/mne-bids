@@ -19,7 +19,7 @@ can be used to load any BIDS format data,
 and to display the data that is saved within the accompanying sidecars.
 
 """
-# Authors: Adam Li <https://github.com/adam2392>
+# Authors: Adam Li <adam2392@gmail.com>
 # License: BSD (3-clause)
 
 ###############################################################################
