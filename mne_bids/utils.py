@@ -596,7 +596,8 @@ def _find_matching_sidecar(bids_fname, bids_root, suffix, allow_fail=False):
     if params['ses'] is not None:
         search_str += '_ses-' + params['ses']
 
-    # Find all potential sidecar files, doing a recursive glob from bids_root
+    # Find all potential sidecar files, doing a recursive glob
+    # from bids_root/sub_id/
     search_str = op.join(bids_root, sub_id, '**', search_str + '*' + suffix)
     candidate_list = glob.glob(search_str, recursive=True)
     best_candidates = _find_best_candidates(params, candidate_list)
