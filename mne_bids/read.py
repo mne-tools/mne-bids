@@ -388,22 +388,11 @@ def read_raw_bids(bids_fname, bids_root, extra_params=None,
 
     # Try to find an associated sidecar.json to get information about the
     # recording snapshot
-    sidecar_fname = bids_basename + '_{}.json'.format(kind)
-    # Find all potential sidecar files, doing a recursive glob from bids_root
-    search_str = op.join(bids_root, '**', sidecar_fname)
-    candidate_list = glob.glob(search_str, recursive=True)
-    print("Sidecar filnema is: ", sidecar_fname)
-    print(bids_fpath)
-    if len(candidate_list) == 1:
-        # Success
-        sidecar_fname = candidate_list[0]
-
-        if sidecar_fname is not None:
-            raw = _handle_info_reading(sidecar_fname, raw, verbose=verbose)
-    else:
-        warn("All raw datasets should have an accompanying sidecar JSON file."
-             "For the file you want to read in, you should have a file named: "
-             "{}".format(sidecar_fname))
+    sidecar_fname = _find_matching_sidecar(bids_fname, bids_root,
+                                           '{}.json'.format(kind),
+                                           allow_fail=True)
+    if sidecar_fname is not None:
+        raw = _handle_info_reading(sidecar_fname, raw, verbose=verbose)
 
     return raw
 

@@ -196,18 +196,18 @@ def test_handle_info_reading():
     raw = mne.io.read_raw_fif(raw_fname)
     raw.info['line_freq'] = 60
 
+    # write copy of raw with line freq of 60
     # bids basename and fname
     bids_basename = make_bids_basename(subject='01', session='01',
                                        task='audiovisual', run='01')
     kind = "meg"
     bids_fname = bids_basename + '_{}.fif'.format(kind)
+    write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
 
     # find sidecar JSON fname
-    write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
     sidecar_fname = _find_matching_sidecar(bids_fname, bids_root,
                                            '{}.json'.format(kind),
                                            allow_fail=True)
-
     # assert that we get the same line frequency set
     raw = mne_bids.read_raw_bids(bids_fname, bids_root)
     assert raw.info['line_freq'] == 60
