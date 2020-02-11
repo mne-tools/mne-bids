@@ -692,8 +692,8 @@ def test_edf(_bids_validate):
     # check that scans list is properly converted to brainvision
     if check_version('mne', '0.20') and check_version('pybv', '0.2.0'):
         write_raw_bids(raw, bids_basename, bids_root,
-                                   anonymize=dict(daysback=33000),
-                                   overwrite=True)
+                       anonymize=dict(daysback=33000),
+                       overwrite=True)
         data = _from_tsv(scans_tsv)
         bids_fname = bids_basename + "_eeg.vhdr"
         assert any([bids_fname in fname for fname in data['filename']])
