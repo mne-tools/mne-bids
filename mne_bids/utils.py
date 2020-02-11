@@ -591,14 +591,14 @@ def _find_matching_sidecar(bids_fname, bids_root, suffix, allow_fail=False):
 
     # We only use subject and session as identifier, because all other
     # parameters are potentially not binding for metadata sidecar files
-    sub_id = 'sub-' + params['sub']
-    search_str = sub_id
+    search_str = 'sub-' + params['sub']
     if params['ses'] is not None:
         search_str += '_ses-' + params['ses']
 
     # Find all potential sidecar files, doing a recursive glob
     # from bids_root/sub_id/
-    search_str = op.join(bids_root, sub_id, '**', search_str + '*' + suffix)
+    search_str = op.join(bids_root, 'sub-' + params['sub'],
+                         '**', search_str + '*' + suffix)
     candidate_list = glob.glob(search_str, recursive=True)
     best_candidates = _find_best_candidates(params, candidate_list)
 
