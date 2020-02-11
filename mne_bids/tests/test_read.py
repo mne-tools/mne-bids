@@ -2,6 +2,8 @@
 # Authors: Stefan Appelhoff <stefan.appelhoff@mailbox.org>
 #
 # License: BSD (3-clause)
+import json
+import os
 import os.path as op
 from datetime import datetime, timezone
 
@@ -22,7 +24,8 @@ from mne_bids.read import (read_raw_bids,
                            _read_raw, get_head_mri_trans,
                            _handle_events_reading, _handle_info_reading)
 from mne_bids.tsv_handler import _to_tsv, _from_tsv
-from mne_bids.utils import (_find_matching_sidecar, _update_sidecar)
+from mne_bids.utils import (_find_matching_sidecar, _update_sidecar,
+                            _write_json)
 from mne_bids.write import write_anat, write_raw_bids, make_bids_basename
 
 subject_id = '01'
@@ -208,6 +211,15 @@ def test_handle_info_reading():
     sidecar_fname = _find_matching_sidecar(bids_fname, bids_root,
                                            '{}.json'.format(kind),
                                            allow_fail=True)
+    # make a copy of the sidecar in "derivatives/"
+    # to check that we make sure we always get the right sidecar
+    deriv_dir = op.join(bids_root, "derivatives")
+    sidecar_copy = op.join(deriv_dir, op.basename(sidecar_fname))
+    os.mkdir(deriv_dir)
+    with open(sidecar_fname, "r") as fin:
+        sidecar_json = json.load(fin)
+    _write_json(sidecar_copy, sidecar_json)
+
     # assert that we get the same line frequency set
     raw = mne_bids.read_raw_bids(bids_fname, bids_root)
     assert raw.info['line_freq'] == 60
