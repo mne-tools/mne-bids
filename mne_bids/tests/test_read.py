@@ -211,6 +211,7 @@ def test_handle_info_reading():
     sidecar_fname = _find_matching_sidecar(bids_fname, bids_root,
                                            '{}.json'.format(kind),
                                            allow_fail=True)
+
     # make a copy of the sidecar in "derivatives/"
     # to check that we make sure we always get the right sidecar
     deriv_dir = op.join(bids_root, "derivatives")
@@ -218,6 +219,7 @@ def test_handle_info_reading():
     os.mkdir(deriv_dir)
     with open(sidecar_fname, "r") as fin:
         sidecar_json = json.load(fin)
+        sidecar_json["PowerLineFrequency"] = "nonsense"
     _write_json(sidecar_copy, sidecar_json)
 
     # assert that we get the same line frequency set
