@@ -93,6 +93,7 @@ def _test_anonymize(raw, bids_basename, events_fname=None, event_id=None):
     if data['acq_time'] is not None and data['acq_time'][0] != 'n/a':
         assert datetime.strptime(data['acq_time'][0],
                                  '%Y-%m-%dT%H:%M:%S').year < 1925
+
     return bids_root
 
 
@@ -687,6 +688,15 @@ def test_edf(_bids_validate):
         prefix=op.join(bids_root, 'sub-01', 'ses-01'))
     data = _from_tsv(scans_tsv)
     assert len(list(data.values())[0]) == 2
+
+    # check that scans list is properly converted to brainvision
+    if check_version('mne', '0.20') and check_version('pybv', '0.2.0'):
+        write_raw_bids(raw, bids_basename, bids_root,
+                       anonymize=dict(daysback=33000),
+                       overwrite=True)
+        data = _from_tsv(scans_tsv)
+        bids_fname = bids_basename + "_eeg.vhdr"
+        assert any([bids_fname in fname for fname in data['filename']])
 
     # Also cover iEEG
     # We use the same data and pretend that eeg channels are ecog
