@@ -219,7 +219,7 @@ def test_handle_info_reading():
     os.mkdir(deriv_dir)
     with open(sidecar_fname, "r") as fin:
         sidecar_json = json.load(fin)
-        sidecar_json["PowerLineFrequency"] = "nonsense"
+        sidecar_json["PowerLineFrequency"] = 45
     _write_json(sidecar_copy, sidecar_json)
 
     # assert that we get the same line frequency set
