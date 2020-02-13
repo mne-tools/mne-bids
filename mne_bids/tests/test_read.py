@@ -212,16 +212,6 @@ def test_handle_info_reading():
                                            '{}.json'.format(kind),
                                            allow_fail=True)
 
-    # make a copy of the sidecar in "derivatives/"
-    # to check that we make sure we always get the right sidecar
-    deriv_dir = op.join(bids_root, "derivatives")
-    sidecar_copy = op.join(deriv_dir, op.basename(sidecar_fname))
-    os.mkdir(deriv_dir)
-    with open(sidecar_fname, "r") as fin:
-        sidecar_json = json.load(fin)
-        sidecar_json["PowerLineFrequency"] = 45
-    _write_json(sidecar_copy, sidecar_json)
-
     # assert that we get the same line frequency set
     raw = mne_bids.read_raw_bids(bids_fname, bids_root)
     assert raw.info['line_freq'] == 60
@@ -230,6 +220,20 @@ def test_handle_info_reading():
     raw.info['line_freq'] = None
     write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
     _update_sidecar(sidecar_fname, "PowerLineFrequency", 55)
+    raw = mne_bids.read_raw_bids(bids_fname, bids_root)
+    assert raw.info['line_freq'] == 55
+
+    # make a copy of the sidecar in "derivatives/"
+    # to check that we make sure we always get the right sidecar
+    # in addition, it should not break the sidecar reading
+    # in `read_raw_bids`
+    deriv_dir = op.join(bids_root, "derivatives")
+    sidecar_copy = op.join(deriv_dir, op.basename(sidecar_fname))
+    os.mkdir(deriv_dir)
+    with open(sidecar_fname, "r") as fin:
+        sidecar_json = json.load(fin)
+        sidecar_json["PowerLineFrequency"] = 45
+    _write_json(sidecar_copy, sidecar_json)
     raw = mne_bids.read_raw_bids(bids_fname, bids_root)
     assert raw.info['line_freq'] == 55
 
