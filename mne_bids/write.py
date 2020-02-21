@@ -307,7 +307,7 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False,
             subject_age = "n/a"
 
         # add handedness
-        hand_options = {0: 'n/a', 1: 'R', 2: 'L', 3: 'AMBI'}  # not according to mne conventions (only r/l)
+        hand_options = {0: 'n/a', 1: 'R', 2: 'L', 3: 'A'}  # not according to mne conventions (only r/l)
         hand = hand_options[subject_info.get('hand', 0)]
 
     data.update({'age': [subject_age], 'sex': [sex], 'hand': [hand]})
@@ -360,6 +360,8 @@ def _participants_json(fname, overwrite=False, verbose=True):
                    'Units': 'years'}
     cols['sex'] = {'Description': 'Biological sex of the participant',
                    'Levels': {'F': 'female', 'M': 'male'}}
+    cols['hand'] = {'Description': 'Handedness of the participant',
+                    'Levels': {'R': 'right', 'L': 'left', 'A': 'ambidextrous'}}
 
     _write_json(fname, cols, overwrite, verbose)
 
