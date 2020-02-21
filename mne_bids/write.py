@@ -290,6 +290,7 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False,
         sex = sexes[subject_info.get('sex', 0)]
 
         # add handedness
+        # XXX: MNE currently only handles R/L, follow <https://github.com/mne-tools/mne-python/issues/7347>
         hand_options = {0: 'n/a', 1: 'R', 2: 'L', 3: 'A'}
         hand = hand_options[subject_info.get('hand', 0)]
 
