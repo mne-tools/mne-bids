@@ -283,6 +283,7 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False,
 
     subject_age = "n/a"
     sex = "n/a"
+    hand = 'n/a'
     subject_info = raw.info['subject_info']
     if subject_info is not None:
         sexes = {0: 'n/a', 1: 'M', 2: 'F'}
@@ -305,7 +306,11 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False,
         else:
             subject_age = "n/a"
 
-    data.update({'age': [subject_age], 'sex': [sex]})
+        # add handedness
+        hand_options = {0: 'n/a', 1: 'R', 2: 'L', 3: 'AMBI'}  # not according to mne conventions (only r/l)
+        hand = hand_options[subject_info.get('hand', 0)]
+
+    data.update({'age': [subject_age], 'sex': [sex], 'hand': [hand]})
 
     if os.path.exists(fname):
         orig_data = _from_tsv(fname)
@@ -313,7 +318,8 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False,
         exact_included = _contains_row(orig_data,
                                        {'participant_id': subject_id,
                                         'age': subject_age,
-                                        'sex': sex})
+                                        'sex': sex,
+                                        'hand': hand})
         # whether the subject id is in the previous data
         sid_included = subject_id in orig_data['participant_id']
         # if the subject data provided is different to the currently existing

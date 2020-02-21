@@ -242,7 +242,7 @@ def test_fif(_bids_validate):
     # give the raw object some fake participant data (potentially overwriting)
     raw = mne.io.read_raw_fif(raw_fname)
     raw.info['subject_info'] = {'his_id': subject_id2,
-                                'birthday': (1993, 1, 26), 'sex': 1}
+                                'birthday': (1993, 1, 26), 'sex': 1, 'hand': 2}
     write_raw_bids(raw, bids_basename, bids_root, events_data=events_fname,
                    event_id=event_id, overwrite=True)
     # assert age of participant is correct
@@ -275,7 +275,7 @@ def test_fif(_bids_validate):
     # data
     # change the gender but don't force overwrite.
     raw.info['subject_info'] = {'his_id': subject_id2,
-                                'birthday': (1994, 1, 26), 'sex': 2}
+                                'birthday': (1994, 1, 26), 'sex': 2, 'hand': 1}
     with pytest.raises(FileExistsError, match="already exists"):  # noqa: F821
         write_raw_bids(raw, bids_basename2, bids_root,
                        events_data=events_fname, event_id=event_id,
