@@ -301,7 +301,7 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False,
             if isinstance(meas_date, datetime):
                 meas_datetime = meas_date
             else:
-                meas_datetime = datetime.fromtimestamp(meas_date)
+                meas_datetime = datetime.fromtimestamp(meas_date, tz=timezone.utc)
             subject_age = _age_on_date(bday, meas_datetime)
         else:
             subject_age = "n/a"
@@ -1155,7 +1155,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
         meas_date = raw.info.get('meas_date', None)
         if meas_date is not None:
             if not isinstance(meas_date, datetime):
-                meas_date = datetime.fromtimestamp(meas_date[0])
+                meas_date = datetime.fromtimestamp(meas_date[0], tz=timezone.utc)
             er_date = meas_date.strftime('%Y%m%d')
             if er_date != session_id:
                 raise ValueError("Date provided for session doesn't match "
