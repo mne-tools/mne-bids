@@ -43,6 +43,7 @@ Bug
 - Enforce that the name arg is a required field for :func:`mne_bids.make_dataset_description`, by `Teon Brooks`_ and `Stefan Appelhoff`_ (`#342 <https://github.com/mne-tools/mne-bids/pull/342>`_)
 - Fix writing to scans.tsv file when anonymization is turned on, by `Adam Li`_ (`#352 <https://github.com/mne-tools/mne-bids/pull/352>`_)
 - Fix :func:`read_raw_bids` to properly read in sidecar json even if a similarly named copy lives inside "derivatives/" sub-folder, by `Adam Li`_  (`#350 <https://github.com/mne-tools/mne-bids/pull/350>`_)
+- Fix :func:`read_raw_bids` to properly read in events.tsv sidecar if the 'trial_type' description has a "#" character in it by `Adam Li`_ (`#355 <https://github.com/mne-tools/mne-bids/pull/355>`_)
 
 API
 ~~~
