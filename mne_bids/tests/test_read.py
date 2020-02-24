@@ -134,7 +134,8 @@ def test_handle_events_reading():
 
     # Create an arbitrary events.tsv file, to test we can deal with 'n/a'
     events = {'onset': [11, 12, 13],
-              'duration': ['n/a', 'n/a', 'n/a']
+              'duration': ['n/a', 'n/a', 'n/a'],
+              'trial_type': ["rec start", "trial #1", "trial #2!"]
               }
     tmp_dir = _TempDir()
     events_fname = op.join(tmp_dir, 'sub-01_task-test_events.json')
