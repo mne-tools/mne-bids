@@ -133,6 +133,7 @@ def test_handle_events_reading():
     raw = mne.io.read_raw_fif(raw_fname)
 
     # Create an arbitrary events.tsv file, to test we can deal with 'n/a'
+    # make sure we can deal w/ "#" characters
     events = {'onset': [11, 12, 13],
               'duration': ['n/a', 'n/a', 'n/a'],
               'trial_type': ["rec start", "trial #1", "trial #2!"]
