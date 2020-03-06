@@ -61,7 +61,7 @@ A BIDS-compatible dataset conforms to these rules and passes the
 MNE-Python is a software package for analyzing neurophysiology data.
 
 **MNE-BIDS links BIDS and MNE with the goal to make your analyses faster to code,
-more robust to errors, and easily sharable with colleagues.**
+more robust to errors, and easily shareable with colleagues.**
 
 Documentation
 -------------
