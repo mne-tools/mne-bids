@@ -243,7 +243,7 @@ def make_bids_folders(subject, session=None, kind=None, bids_root=None,
 
     """
     _check_types((subject, kind, session))
-    bids_root = _ensure_pathlike(bids_root)
+    bids_root = _path_to_str(bids_root)
 
     if session is not None:
         _check_key_val('ses', session)
@@ -370,15 +370,11 @@ def _check_types(variables):
                              "string or None was expected." % type(var))
 
 
-def _ensure_pathlike(var):
-    """Make sure the var is None or Path-like, and convert Path to str."""
-    if not isinstance(var, (Path, str, type(None))):
-        raise ValueError("All path parameters must be either None, strings, "
-                         "or pathlib.Path objects. "
-                         "Found type %s." % type(var))
-
-    if var is None:
-        return None
+def _path_to_str(var):
+    """Make sure var is a string or Path, return string representation."""
+    if not isinstance(var, (Path, str)):
+        raise ValueError("All path parameters must be either strings  or "
+                         "pathlib.Path objects. Found type %s." % type(var))
     else:
         return str(var)
 
