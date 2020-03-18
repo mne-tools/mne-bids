@@ -8,6 +8,7 @@ import os
 import os.path as op
 import pytest
 from datetime import datetime
+from pathlib import Path
 
 from numpy.random import random
 import mne
@@ -20,7 +21,7 @@ from mne_bids.utils import (_check_types, print_dir_tree, _age_on_date,
                             _find_matching_sidecar, _parse_ext,
                             _get_ch_type_mapping, _parse_bids_filename,
                             _find_best_candidates, get_entity_vals,
-                            get_kinds)
+                            _ensure_pathlike, get_kinds)
 
 
 base_path = op.join(op.dirname(mne.__file__), 'io')
@@ -196,6 +197,17 @@ def test_check_types():
     assert _check_types(['foo', 'bar', None]) is None
     with pytest.raises(ValueError):
         _check_types([None, 1, 3.14, 'meg', [1, 2]])
+
+
+def test_ensure_pathlike():
+    """Test if _ensure_pathlike returns str or None with correct input."""
+    path_str = 'foo'
+    assert _ensure_pathlike(path_str) == path_str
+    assert _ensure_pathlike(Path(path_str)) == path_str
+    assert _ensure_pathlike(None) is None
+    
+    with pytest.raises(ValueError):
+        _ensure_pathlike(1)
 
 
 def test_parse_ext():

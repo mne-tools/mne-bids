@@ -35,6 +35,7 @@ from mne_bids.utils import (_write_json, _write_tsv, _read_events, _mkdir_p,
                             _age_on_date, _infer_eeg_placement_scheme,
                             _check_key_val,
                             _parse_bids_filename, _handle_kind, _check_types,
+                            _ensure_pathlike,
                             _extract_landmarks, _parse_ext,
                             _get_ch_type_mapping, make_bids_folders,
                             _estimate_line_freq)
@@ -1125,6 +1126,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     if raw.preload is not False:
         raise ValueError('The data should not be preloaded.')
 
+    bids_root = _ensure_pathlike(bids_root)
     raw = raw.copy()
 
     raw_fname = raw.filenames[0]

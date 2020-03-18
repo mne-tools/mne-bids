@@ -242,7 +242,9 @@ def make_bids_folders(subject, session=None, kind=None, bids_root=None,
     path/to/project/sub-sub_01/ses-my_session/meg
 
     """
-    _check_types((subject, kind, session, bids_root))
+    _check_types((subject, kind, session))
+    bids_root = _ensure_pathlike(bids_root)
+
     if session is not None:
         _check_key_val('ses', session)
 
@@ -364,8 +366,21 @@ def _check_types(variables):
     """Make sure all vars are str or None."""
     for var in variables:
         if not isinstance(var, (str, type(None))):
-            raise ValueError("All values must be either None or strings. "
-                             "Found type %s." % type(var))
+            raise ValueError("You supplied a value of type %s, where a "
+                             "string or None was expected." % type(var))
+
+
+def _ensure_pathlike(var):
+    """Make sure the var is None or Path-like, and convert Path to str."""
+    if not isinstance(var, (Path, str, type(None))):
+        raise ValueError("All path parameters must be either None, strings, "
+                         "or pathlib.Path objects. "
+                         "Found type %s." % type(var))
+
+    if var is None:
+        return None
+    else:
+        return str(var)
 
 
 def _write_json(fname, dictionary, overwrite=False, verbose=False):
