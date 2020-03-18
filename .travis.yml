@@ -72,7 +72,7 @@ install:
     - |
       if [ "${DEPS}" == "minimal" ]; then
           pip install $MINIMAL_DEPENDENCIES
-          pip install pytest<5.4.0 pytest-cov check-manifest pydocstyle flake8  # for testing
+          pip install "pytest<5.4.0" pytest-cov check-manifest pydocstyle flake8  # for testing
       else
           conda env create -f $CONDA_ENV --name=testenv
           source activate testenv
