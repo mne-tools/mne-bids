@@ -205,7 +205,7 @@ def test_ensure_pathlike():
     assert _ensure_pathlike(path_str) == path_str
     assert _ensure_pathlike(Path(path_str)) == path_str
     assert _ensure_pathlike(None) is None
-    
+
     with pytest.raises(ValueError):
         _ensure_pathlike(1)
 
