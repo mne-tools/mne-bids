@@ -16,7 +16,7 @@ dependencies:
   - pybv
   - nilearn
   - flake8
-  - pytest
+  - pytest<5.4
   - pytest-cov
   - pytest-sugar
   - pytest-faulthandler
