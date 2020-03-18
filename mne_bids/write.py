@@ -13,6 +13,7 @@ from datetime import datetime, date, timedelta, timezone
 from warnings import warn
 import shutil as sh
 from collections import defaultdict, OrderedDict
+from pathlib import Path
 
 import numpy as np
 from scipy import linalg
@@ -1054,7 +1055,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
 
         Note that the modality 'meg' is automatically inferred from the raw
         object and extension '.fif' is copied from raw.filenames.
-    bids_root : str
+    bids_root : str | Path
         The path of the root of the BIDS compatible folder. The session and
         subject specific folders will be populated automatically by parsing
         bids_basename.

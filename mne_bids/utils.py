@@ -214,7 +214,7 @@ def make_bids_folders(subject, session=None, kind=None, bids_root=None,
         "anat", "func", etc.
     session : str | None
         The session for a item. Corresponds to "ses".
-    bids_root : str | None
+    bids_root : str | Path | None
         The bids_root for the folders to be created. If None, folders will be
         created in the current working directory.
     make_dir : bool
@@ -243,7 +243,8 @@ def make_bids_folders(subject, session=None, kind=None, bids_root=None,
 
     """
     _check_types((subject, kind, session))
-    bids_root = _path_to_str(bids_root)
+    if bids_root is not None:
+        bids_root = _path_to_str(bids_root)
 
     if session is not None:
         _check_key_val('ses', session)

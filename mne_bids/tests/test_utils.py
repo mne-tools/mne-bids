@@ -183,13 +183,26 @@ def test_make_folders():
     make_bids_folders(subject='hi', session='foo', kind='ba',
                       bids_root=bids_root)
     assert op.isdir(op.join(bids_root, 'sub-hi', 'ses-foo', 'ba'))
+
     # If we remove a kwarg the folder shouldn't be created
     bids_root = _TempDir()
     make_bids_folders(subject='hi', kind='ba', bids_root=bids_root)
     assert op.isdir(op.join(bids_root, 'sub-hi', 'ba'))
+
     # check overwriting of folders
     make_bids_folders(subject='hi', kind='ba', bids_root=bids_root,
                       overwrite=True, verbose=True)
+
+    # Check if bids_root=None creates folders in the current working directory
+    make_bids_folders(subject='hi', session='foo', kind='ba',
+                      bids_root=None)
+    assert op.isdir(op.join(os.getcwd(), 'sub-hi', 'ses-foo', 'ba'))
+    
+    # Check if a pathlib.Path bids_root works.
+    bids_root = Path(_TempDir())
+    make_bids_folders(subject='hi', session='foo', kind='ba',
+                      bids_root=bids_root)
+    assert op.isdir(op.join(bids_root, 'sub-hi', 'ses-foo', 'ba'))
 
 
 def test_check_types():
