@@ -29,3 +29,4 @@ cover
 .pytest_cache
 .ipynb_checkpoints
 .DS_Store
+.vscode/
