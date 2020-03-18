@@ -1100,7 +1100,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
 
     Notes
     -----
-    For the participants.tsv file, the raw.info['subjects_info'] should be
+    For the participants.tsv file, the raw.info['subject_info'] should be
     updated and raw.info['meas_date'] should not be None to compute the age
     of the participant correctly.
 
