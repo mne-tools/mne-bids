@@ -1098,6 +1098,7 @@ def test_write_raw_pathlike():
     assert bids_root_ == str(bids_root)
 
 
+@requires_nibabel()
 def test_write_anat_pathlike():
     """Test writing anatomical data with pathlib.Paths."""
     data_path = testing.data_path()
