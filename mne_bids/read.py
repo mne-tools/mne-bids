@@ -291,7 +291,7 @@ def read_raw_bids(bids_fname, bids_root, extra_params=None,
 
     Parameters
     ----------
-    bids_fname : str | pathlib.Path
+    bids_fname : str
         Full name of the data file
     bids_root : str | pathlib.Path
         Path to root of the BIDS folder
@@ -402,7 +402,7 @@ def get_matched_empty_room(bids_fname, bids_root):
 
     Parameters
     ----------
-    bids_fname : str | pathlib.Path
+    bids_fname : str
         The filename for which to find the matching empty room file.
     bids_root : str | pathlib.Path
         Path to the BIDS root folder.
@@ -454,7 +454,7 @@ def get_head_mri_trans(bids_fname, bids_root):
 
     Parameters
     ----------
-    bids_fname : str | pathlib.Path
+    bids_fname : str
         Full name of the MEG data file
     bids_root : str | pathlib.Path
         Path to root of the BIDS folder
