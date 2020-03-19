@@ -13,7 +13,6 @@ from datetime import datetime, date, timedelta, timezone
 from warnings import warn
 import shutil as sh
 from collections import defaultdict, OrderedDict
-from pathlib import Path
 
 import numpy as np
 from scipy import linalg
@@ -1055,14 +1054,15 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
 
         Note that the modality 'meg' is automatically inferred from the raw
         object and extension '.fif' is copied from raw.filenames.
-    bids_root : str | Path
+    bids_root : str | pathlib.Path
         The path of the root of the BIDS compatible folder. The session and
         subject specific folders will be populated automatically by parsing
         bids_basename.
-    events_data : str | array | None
-        The events file. If a string, a path to the events file. If an array,
-        the MNE events array (shape n_events, 3). If None, events will be
-        inferred from the stim channel using `mne.find_events`.
+    events_data : str | pathlib.Path | array | None
+        The events file. If a string or a Path object, specifies the path of
+        the events file. If an array, the MNE events array (shape n_events, 3).
+        If None, events will be inferred from the stim channel using
+        `mne.find_events`.
     event_id : dict | None
         The event id dict used to create a 'trial_type' column in events.tsv
     anonymize : dict | None
@@ -1357,11 +1357,11 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
 
     Parameters
     ----------
-    bids_root : str
+    bids_root : str | pathlib.Path
         Path to root of the BIDS folder
     subject : str
         Subject label as in 'sub-<label>', for example: '01'
-    t1w : str | nibabel image object
+    t1w : str | pathlib.Path | nibabel image object
         Path to a T1 weighted MRI scan of the subject. Can be in any format
         readable by nibabel. Can also be a nibabel image object of a T1
         weighted MRI scan. Will be written as a .nii.gz file.
@@ -1429,12 +1429,20 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
         os.makedirs(anat_dir)
 
     # Try to read our T1 file and convert to MGH representation
-    if isinstance(t1w, str):
+    try:
+        t1w = _path_to_str(t1w)
+    except ValueError:
+        # t1w -> str conversion failed, so maybe the user passed an nibabel
+        # object instead of a path.
+        if type(t1w) not in nib.all_image_classes:
+            raise ValueError('`t1w` must be a path to a T1 weighted MRI data '
+                             'file , or a nibabel image object, but it is of '
+                             'type "{}"'.format(type(t1w)))
+    else:
+        # t1w -> str conversion in the try block was successful, so load the
+        # file from the specified location. We do this here and not in the try
+        # block to keep the try block as short as possible.
         t1w = nib.load(t1w)
-    elif type(t1w) not in nib.all_image_classes:
-        raise ValueError('`t1w` must be a path to a T1 weighted MRI data file '
-                         ', or a nibabel image object, but it is of type '
-                         '"{}"'.format(type(t1w)))
 
     t1w = nib.Nifti1Image(t1w.dataobj, t1w.affine)
     # XYZT_UNITS = NIFT_UNITS_MM (10 in binary or 2 in decimal)
