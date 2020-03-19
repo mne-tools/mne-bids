@@ -203,9 +203,9 @@ def _handle_electrodes_reading(electrodes_fname, coord_frame, raw, verbose):
     electrodes_dict['z'] = [float(x) for x in electrodes_dict['z']
                             if x != "n/a"]
 
-    ch_locs = list(zip(electrodes_dict['x'],
-                       electrodes_dict['y'],
-                       electrodes_dict['z']))
+    ch_locs = np.array(list(zip(electrodes_dict['x'],
+                                electrodes_dict['y'],
+                                electrodes_dict['z'])))
     ch_pos = dict(zip(ch_names_raw, ch_locs))
 
     # create mne.DigMontage
