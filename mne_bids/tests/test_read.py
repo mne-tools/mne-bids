@@ -377,8 +377,10 @@ def test_get_matched_empty_room():
         er_bids_basename = make_bids_basename(subject='emptyroom',
                                               task='noise', session=date)
         er_meas_date = datetime.strptime(date, '%Y%m%d')
+        er_meas_date = er_meas_date.replace(tzinfo=timezone.utc)
+
         if check_version('mne', '0.20'):
-            er_raw.set_meas_date(er_meas_date.replace(tzinfo=timezone.utc))
+            er_raw.set_meas_date(er_meas_date)
         else:
             er_raw.info['meas_date'] = (er_meas_date.timestamp(), 0)
         write_raw_bids(er_raw, er_bids_basename, bids_root)
