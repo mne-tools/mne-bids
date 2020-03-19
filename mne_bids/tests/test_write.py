@@ -19,6 +19,7 @@ import platform
 import shutil as sh
 import json
 from distutils.version import LooseVersion
+from pathlib import Path
 
 import numpy as np
 from numpy.testing import assert_array_equal, assert_array_almost_equal
@@ -1075,3 +1076,45 @@ def test_write_anat(_bids_validate):
         anat_dir = write_anat(bids_root, subject_id, t1w_mgh, session_id,
                               acq, deface=True, landmarks=fail_landmarks,
                               verbose=True, overwrite=True)
+
+
+def test_write_raw_pathlike():
+    data_path = testing.data_path()
+    raw_fname = op.join(data_path, 'MEG', 'sample',
+                        'sample_audvis_trunc_raw.fif')
+    event_id = {'Auditory/Left': 1, 'Auditory/Right': 2, 'Visual/Left': 3,
+                'Visual/Right': 4, 'Smiley': 5, 'Button': 32}
+    raw = mne.io.read_raw_fif(raw_fname)
+
+    bids_root = Path(_TempDir())
+    events_fname = (Path(data_path) / 'MEG' / 'sample' /
+                    'sample_audvis_trunc_raw-eve.fif')
+    bids_root_ = write_raw_bids(raw=raw, bids_basename=bids_basename,
+                                bids_root=bids_root, events_data=events_fname,
+                                event_id=event_id, overwrite=False)
+
+    # write_raw_bids() should return a string.
+    assert isinstance(bids_root_, str)
+    assert bids_root_ == str(bids_root)
+
+
+@requires_nibabel()
+def test_write_anat_pathlike():
+    """Test writing anatomical data with pathlib.Paths."""
+    data_path = testing.data_path()
+    raw_fname = op.join(data_path, 'MEG', 'sample',
+                        'sample_audvis_trunc_raw.fif')
+    trans_fname = raw_fname.replace('_raw.fif', '-trans.fif')
+    raw = mne.io.read_raw_fif(raw_fname)
+    trans = mne.read_trans(trans_fname)
+
+    bids_root = Path(_TempDir())
+    t1w_mgh_fname = Path(data_path) / 'subjects' / 'sample' / 'mri' / 'T1.mgz'
+    anat_dir = write_anat(bids_root=bids_root, subject=subject_id,
+                          t1w=t1w_mgh_fname,
+                          session=session_id, acquisition=acq,
+                          raw=raw, trans=trans, deface=True, verbose=True,
+                          overwrite=True)
+
+    # write_anat() should return a string.
+    assert isinstance(anat_dir, str)

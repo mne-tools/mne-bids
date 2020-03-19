@@ -203,9 +203,9 @@ def _handle_electrodes_reading(electrodes_fname, coord_frame, raw, verbose):
     electrodes_dict['z'] = [float(x) for x in electrodes_dict['z']
                             if x != "n/a"]
 
-    ch_locs = list(zip(electrodes_dict['x'],
-                       electrodes_dict['y'],
-                       electrodes_dict['z']))
+    ch_locs = np.array(list(zip(electrodes_dict['x'],
+                                electrodes_dict['y'],
+                                electrodes_dict['z'])))
     ch_pos = dict(zip(ch_names_raw, ch_locs))
 
     # create mne.DigMontage
@@ -293,7 +293,7 @@ def read_raw_bids(bids_fname, bids_root, extra_params=None,
     ----------
     bids_fname : str
         Full name of the data file
-    bids_root : str
+    bids_root : str | pathlib.Path
         Path to root of the BIDS folder
     extra_params : None | dict
         Extra parameters to be passed to MNE read_raw_* functions.
@@ -404,7 +404,7 @@ def get_matched_empty_room(bids_fname, bids_root):
     ----------
     bids_fname : str
         The filename for which to find the matching empty room file.
-    bids_root : str
+    bids_root : str | pathlib.Path
         Path to the BIDS root folder.
 
     Returns
@@ -456,7 +456,7 @@ def get_head_mri_trans(bids_fname, bids_root):
     ----------
     bids_fname : str
         Full name of the MEG data file
-    bids_root : str
+    bids_root : str | pathlib.Path
         Path to root of the BIDS folder
 
     Returns

@@ -8,6 +8,7 @@ import os
 import os.path as op
 import pytest
 from datetime import datetime
+from pathlib import Path
 
 from numpy.random import random
 import mne
@@ -20,7 +21,7 @@ from mne_bids.utils import (_check_types, print_dir_tree, _age_on_date,
                             _find_matching_sidecar, _parse_ext,
                             _get_ch_type_mapping, _parse_bids_filename,
                             _find_best_candidates, get_entity_vals,
-                            get_kinds)
+                            _path_to_str, get_kinds)
 
 
 base_path = op.join(op.dirname(mne.__file__), 'io')
@@ -182,13 +183,26 @@ def test_make_folders():
     make_bids_folders(subject='hi', session='foo', kind='ba',
                       bids_root=bids_root)
     assert op.isdir(op.join(bids_root, 'sub-hi', 'ses-foo', 'ba'))
+
     # If we remove a kwarg the folder shouldn't be created
     bids_root = _TempDir()
     make_bids_folders(subject='hi', kind='ba', bids_root=bids_root)
     assert op.isdir(op.join(bids_root, 'sub-hi', 'ba'))
+
     # check overwriting of folders
     make_bids_folders(subject='hi', kind='ba', bids_root=bids_root,
                       overwrite=True, verbose=True)
+
+    # Check if bids_root=None creates folders in the current working directory
+    make_bids_folders(subject='hi', session='foo', kind='ba',
+                      bids_root=None)
+    assert op.isdir(op.join(os.getcwd(), 'sub-hi', 'ses-foo', 'ba'))
+
+    # Check if a pathlib.Path bids_root works.
+    bids_root = Path(_TempDir())
+    make_bids_folders(subject='hi', session='foo', kind='ba',
+                      bids_root=bids_root)
+    assert op.isdir(op.join(bids_root, 'sub-hi', 'ses-foo', 'ba'))
 
 
 def test_check_types():
@@ -196,6 +210,16 @@ def test_check_types():
     assert _check_types(['foo', 'bar', None]) is None
     with pytest.raises(ValueError):
         _check_types([None, 1, 3.14, 'meg', [1, 2]])
+
+
+def test_path_to_str():
+    """Test that _path_to_str returns a string."""
+    path_str = 'foo'
+    assert _path_to_str(path_str) == path_str
+    assert _path_to_str(Path(path_str)) == path_str
+
+    with pytest.raises(ValueError):
+        _path_to_str(1)
 
 
 def test_parse_ext():

@@ -35,7 +35,7 @@ def get_kinds(bids_root):
 
     Parameters
     ----------
-    bids_root : str
+    bids_root : str | pathlib.Path
         Path to the root of the BIDS directory.
 
     Returns
@@ -65,7 +65,7 @@ def get_entity_vals(bids_root, entity_key):
 
     Parameters
     ----------
-    bids_root : str
+    bids_root : str | pathlib.Path
         Path to the root of the BIDS directory.
     entity_key : str
         The name of the entity key to search for. Can be one of
@@ -214,7 +214,7 @@ def make_bids_folders(subject, session=None, kind=None, bids_root=None,
         "anat", "func", etc.
     session : str | None
         The session for a item. Corresponds to "ses".
-    bids_root : str | None
+    bids_root : str | pathlib.Path | None
         The bids_root for the folders to be created. If None, folders will be
         created in the current working directory.
     make_dir : bool
@@ -242,7 +242,10 @@ def make_bids_folders(subject, session=None, kind=None, bids_root=None,
     path/to/project/sub-sub_01/ses-my_session/meg
 
     """
-    _check_types((subject, kind, session, bids_root))
+    _check_types((subject, kind, session))
+    if bids_root is not None:
+        bids_root = _path_to_str(bids_root)
+
     if session is not None:
         _check_key_val('ses', session)
 
@@ -364,8 +367,17 @@ def _check_types(variables):
     """Make sure all vars are str or None."""
     for var in variables:
         if not isinstance(var, (str, type(None))):
-            raise ValueError("All values must be either None or strings. "
-                             "Found type %s." % type(var))
+            raise ValueError("You supplied a value of type %s, where a "
+                             "string or None was expected." % type(var))
+
+
+def _path_to_str(var):
+    """Make sure var is a string or Path, return string representation."""
+    if not isinstance(var, (Path, str)):
+        raise ValueError("All path parameters must be either strings or "
+                         "pathlib.Path objects. Found type %s." % type(var))
+    else:
+        return str(var)
 
 
 def _write_json(fname, dictionary, overwrite=False, verbose=False):
@@ -572,7 +584,7 @@ def _find_matching_sidecar(bids_fname, bids_root, suffix, allow_fail=False):
     ----------
     bids_fname : str
         Full name of the data file
-    bids_root : str
+    bids_root : str | pathlib.Path
         Path to root of the BIDS folder
     suffix : str
         The suffix of the sidecar file to be found. E.g., "_coordsystem.json"

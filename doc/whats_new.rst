@@ -35,6 +35,7 @@ Changelog
 - Update scans.tsv writer to adhere to MNE-Python v0.20+ where `meas_date` is stored as a `datetime` object, by `Adam Li`_ (`#344 <https://github.com/mne-tools/mne-bids/pull/344>`_)
 - :func:`read_raw_bids` now reads in sidecar json files to set, or estimate Power Line Frequency, by `Adam Li`_ (`#341 <https://github.com/mne-tools/mne-bids/pull/341>`_)
 - Allow FIF files with multiple parts to be read using :func:`read_raw_bids`, by `Teon Brooks`_(`#346 <https://github.com/mne-tools/mne-bids/pull/346>`)
+- MNE-BIDS can now handle a paths that are `pathlib.Path` objects (in addition to strings), by `Richard Höchenberger`_(`#362 <https://github.com/mne-tools/mne-bids/pull/362>`)
 
 Bug
 ~~~
@@ -209,3 +210,4 @@ People who contributed to this release (in alphabetical order):
 .. _Sophie Herbst: http://github.com/SophieHerbst
 .. _Adam Li: https://github.com/adam2392
 .. _Fu-Te Wong: https://github.com/zuxfoucault
+.. _Richard Höchenberger: https://github.com/hoechenberger

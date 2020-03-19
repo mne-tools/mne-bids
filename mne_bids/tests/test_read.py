@@ -6,6 +6,7 @@ import json
 import os
 import os.path as op
 from datetime import datetime, timezone
+from pathlib import Path
 
 import pytest
 import shutil as sh
@@ -326,6 +327,10 @@ def test_get_head_mri_trans_ctf():
     estimated_trans = get_head_mri_trans(bids_fname, bids_root)
     assert_almost_equal(trans['trans'], estimated_trans['trans'])
 
+    # Test if Path objects work.
+    estimated_trans = get_head_mri_trans(Path(bids_fname), Path(bids_root))
+    assert_almost_equal(trans['trans'], estimated_trans['trans'])
+
 
 def test_get_matched_empty_room():
     """Test reading of empty room data."""
@@ -359,6 +364,12 @@ def test_get_matched_empty_room():
                                       bids_root)
     assert er_bids_basename in er_fname
 
+    # Test if Path objects work.
+    er_fname = get_matched_empty_room(bids_basename + '_meg.fif',
+                                      Path(bids_root))
+    assert isinstance(er_fname, str)
+    assert er_bids_basename in er_fname
+
     # assert that we get best emptyroom if there are multiple available
     sh.rmtree(op.join(bids_root, 'sub-emptyroom'))
     dates = ['20021204', '20021201', '20021001']
@@ -387,3 +398,14 @@ def test_get_matched_empty_room():
     write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
     with pytest.raises(ValueError, match='Measurement date not available'):
         get_matched_empty_room(bids_basename + '_meg.fif', bids_root)
+
+
+def test_read_raw_bids_pathlike():
+    """Test that read_raw_bids() can handle a Path-like bids_root."""
+    bids_root = _TempDir()
+    raw = mne.io.read_raw_fif(raw_fname, verbose=False)
+    write_raw_bids(raw, bids_basename, bids_root, overwrite=True,
+                   verbose=False)
+
+    bids_fname = bids_basename + '_meg.fif'
+    read_raw_bids(bids_fname, Path(bids_root))
