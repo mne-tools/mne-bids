@@ -1,5 +1,5 @@
 """
-.. _ex-convert-mne-sample:
+.. _ex-convert-empty-room:
 
 ======================================
 Storing empty room data in BIDS format

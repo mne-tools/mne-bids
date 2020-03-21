@@ -9,13 +9,6 @@ import sphinx_bootstrap_theme
 
 import mne_bids
 
-# If extensions (or modules to document with autodoc) are in another directory,
-# add these directories to sys.path here. If the directory is relative to the
-# documentation root, use os.path.abspath to make it absolute, like shown here.
-curdir = os.path.dirname(__file__)
-sys.path.append(os.path.abspath(os.path.join(curdir, '..', 'mne_bids')))
-sys.path.append(os.path.abspath(os.path.join(curdir, 'sphinxext')))
-
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -102,7 +95,7 @@ html_theme_options = {
         ("API", "api"),
         ("CLI", "generated/cli"),
         ("What's new", "whats_new"),
-        ("Github", "https://github.com/mne-tools/mne-bids", True),
+        ("GitHub", "https://github.com/mne-tools/mne-bids", True),
     ]}
 
 
