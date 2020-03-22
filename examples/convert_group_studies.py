@@ -8,7 +8,7 @@ The data from Wakeman et al. [1]_ is available here:
 https://openneuro.org/datasets/ds000117
 
 We recommend that you go through the more basic BIDS conversion example before
-checking out this group conversion example: :ref:`_ex-convert-mne-sample`
+checking out this group conversion example: :ref:`ex-convert-mne-sample`
 
 References
 ----------

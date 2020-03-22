@@ -1382,11 +1382,14 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
         If True, deface with default parameters.
         `trans` and `raw` must not be `None` if True.
         If dict, accepts the following keys:
-            `inset`: how far back in millimeters to start defacing
-                     relative to the nasion (default 20)
-            `theta`: is the angle of the defacing shear in degrees relative
-                     to the normal to the plane passing through the anatomical
-                     landmarks (default 35).
+
+        - `inset`: how far back in millimeters to start defacing
+          relative to the nasion (default 20)
+
+        - `theta`: is the angle of the defacing shear in degrees relative
+          to the normal to the plane passing through the anatomical
+          landmarks (default 35).
+
     landmarks: instance of DigMontage | str
         The DigMontage or filepath to a DigMontage with landmarks that can be
         passed to provide information for defacing. Landmarks can be determined

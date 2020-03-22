@@ -9,13 +9,6 @@ import sphinx_bootstrap_theme
 
 import mne_bids
 
-# If extensions (or modules to document with autodoc) are in another directory,
-# add these directories to sys.path here. If the directory is relative to the
-# documentation root, use os.path.abspath to make it absolute, like shown here.
-curdir = os.path.dirname(__file__)
-sys.path.append(os.path.abspath(os.path.join(curdir, '..', 'mne_bids')))
-sys.path.append(os.path.abspath(os.path.join(curdir, 'sphinxext')))
-
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -88,6 +81,9 @@ html_show_sourcelink = False
 html_theme = 'bootstrap'
 html_theme_path = sphinx_bootstrap_theme.get_html_theme_path()
 
+# Add any paths that contain templates here, relative to this directory.
+templates_path = ['_templates']
+
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
@@ -102,19 +98,21 @@ html_theme_options = {
         ("API", "api"),
         ("CLI", "generated/cli"),
         ("What's new", "whats_new"),
-        ("Github", "https://github.com/mne-tools/mne-bids", True),
+        ("GitHub", "https://github.com/mne-tools/mne-bids", True),
     ]}
 
 
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {
     'python': ('https://docs.python.org/3', None),
-    'mne': ('https://mne.tools/stable/', None),
+    'mne': ('https://mne.tools/dev', None),
     'numpy': ('https://www.numpy.org/devdocs', None),
     'scipy': ('https://scipy.github.io/devdocs', None),
     'matplotlib': ('https://matplotlib.org', None),
-    'nilearn': ('http://nilearn.github.io', None),
+    'nilearn': ('https://nilearn.github.io', None),
 }
+intersphinx_timeout = 5
+
 
 sphinx_gallery_conf = {
     'examples_dirs': '../examples',
