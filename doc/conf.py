@@ -106,7 +106,7 @@ intersphinx_mapping = {
     'numpy': ('https://www.numpy.org/devdocs', None),
     'scipy': ('https://scipy.github.io/devdocs', None),
     'matplotlib': ('https://matplotlib.org', None),
-    'nilearn': ('http://nilearn.github.io', None),
+    'nilearn': ('https://nilearn.github.io', None),
 }
 
 sphinx_gallery_conf = {
