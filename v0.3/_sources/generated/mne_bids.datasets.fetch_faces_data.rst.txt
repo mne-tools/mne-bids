@@ -1,0 +1,6 @@
+mne\_bids.datasets.fetch\_faces\_data
+=====================================
+
+.. currentmodule:: mne_bids.datasets
+
+.. autofunction:: fetch_faces_data

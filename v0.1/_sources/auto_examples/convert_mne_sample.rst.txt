@@ -1,0 +1,285 @@
+.. note::
+    :class: sphx-glr-download-link-note
+
+    Click :ref:`here <sphx_glr_download_auto_examples_convert_mne_sample.py>` to download the full example code
+.. rst-class:: sphx-glr-example-title
+
+.. _sphx_glr_auto_examples_convert_mne_sample.py:
+
+
+======================================
+Convert MNE sample data to BIDS format
+======================================
+
+This example demonstrates how to convert your existing files into a
+BIDS-compatible folder.
+
+
+.. code-block:: default
+
+
+    # Authors: Mainak Jas <mainak.jas@telecom-paristech.fr>
+    #          Alexandre Gramfort <alexandre.gramfort@telecom-paristech.fr>
+    #          Teon Brooks <teon.brooks@gmail.com>
+
+    # License: BSD (3-clause)
+
+
+
+
+
+
+
+
+Let us import mne_bids
+
+
+.. code-block:: default
+
+
+    import os.path as op
+
+    import mne
+    from mne.datasets import sample
+
+    from mne_bids import write_raw_bids
+    from mne_bids.utils import print_dir_tree
+
+
+
+
+
+
+
+
+And define the paths and event_id dictionary.
+
+
+.. code-block:: default
+
+
+    data_path = sample.data_path()
+    event_id = {'Auditory/Left': 1, 'Auditory/Right': 2, 'Visual/Left': 3,
+                'Visual/Right': 4, 'Smiley': 5, 'Button': 32}
+
+    raw_fname = op.join(data_path, 'MEG', 'sample', 'sample_audvis_raw.fif')
+    events_data = op.join(data_path, 'MEG', 'sample', 'sample_audvis_raw-eve.fif')
+    output_path = op.join(data_path, '..', 'MNE-sample-data-bids')
+
+
+
+
+
+
+
+
+Finally, we specify the raw_file and events_data
+
+
+.. code-block:: default
+
+
+    raw = mne.io.read_raw_fif(raw_fname)
+    bids_basename = 'sub-01_ses-01_task-audiovisual_run-01'
+    write_raw_bids(raw, bids_basename, output_path, events_data=events_data,
+                   event_id=event_id, overwrite=True)
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    Opening raw data file /home/stefanappelhoff/mne_data/MNE-sample-data/MEG/sample/sample_audvis_raw.fif...
+        Read a total of 3 projection items:
+            PCA-v1 (1 x 102)  idle
+            PCA-v2 (1 x 102)  idle
+            PCA-v3 (1 x 102)  idle
+        Range : 25800 ... 192599 =     42.956 ...   320.670 secs
+    Ready.
+    Current compensation grade : 0
+    Opening raw data file /home/stefanappelhoff/mne_data/MNE-sample-data/MEG/sample/sample_audvis_raw.fif...
+        Read a total of 3 projection items:
+            PCA-v1 (1 x 102)  idle
+            PCA-v2 (1 x 102)  idle
+            PCA-v3 (1 x 102)  idle
+        Range : 25800 ... 192599 =     42.956 ...   320.670 secs
+    Ready.
+    Current compensation grade : 0
+
+    Writing '/home/stefanappelhoff/mne_data/MNE-sample-data/../MNE-sample-data-bids/participants.tsv'...
+
+       age group hand participant_id  sex
+    0  NaN   NaN  NaN         sub-01  NaN
+    1  n/a   n/a  n/a  sub-emptyroom  n/a
+
+    Writing '/home/stefanappelhoff/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/sub-01_ses-01_scans.tsv'...
+
+                                                filename             acq_time
+    0  meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif  2002-12-03T20:01:10
+
+    Writing '/home/stefanappelhoff/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_events.tsv'...
+
+          onset  duration      trial_type  event_value  event_sample
+    0  3.624618       0.0  Auditory/Right            2          2177
+    1  4.237323       0.0     Visual/Left            3          2545
+    2  4.946596       0.0   Auditory/Left            1          2971
+    3  5.692499       0.0    Visual/Right            4          3419
+    4  6.413426       0.0  Auditory/Right            2          3852
+
+    Writing '/home/stefanappelhoff/mne_data/MNE-sample-data/../MNE-sample-data-bids/dataset_description.json'...
+
+    {
+        "Name": " ",
+        "BIDSVersion": "1.1.1 (draft)"
+    }
+    /home/stefanappelhoff/Desktop/bids/mne-bids/mne_bids/mne_bids.py:431: UserWarning: No line frequency found, defaulting to 50 Hz
+      warn('No line frequency found, defaulting to 50 Hz')
+    Reading 0 ... 166799  =      0.000 ...   277.714 secs...
+
+    Writing '/home/stefanappelhoff/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.json'...
+
+    {
+        "TaskName": "audiovisual",
+        "Manufacturer": "Elekta",
+        "PowerLineFrequency": 50,
+        "SamplingFrequency": 600.614990234375,
+        "SoftwareFilters": "n/a",
+        "RecordingDuration": 277.7136813300495,
+        "RecordingType": "continuous",
+        "DewarPosition": "n/a",
+        "DigitizedLandmarks": false,
+        "DigitizedHeadPoints": false,
+        "MEGChannelCount": 306,
+        "MEGREFChannelCount": 0,
+        "EEGChannelCount": 60,
+        "EOGChannelCount": 1,
+        "ECGChannelCount": 0,
+        "EMGChannelCount": 0,
+        "MiscChannelCount": 0,
+        "TriggerChannelCount": 9
+    }
+
+    Writing '/home/stefanappelhoff/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_channels.tsv'...
+
+           name           type units         description  sampling_frequency  \
+    0  MEG 0113  MEGGRADPLANAR   T/m  Planar Gradiometer           600.61499   
+    1  MEG 0112  MEGGRADPLANAR   T/m  Planar Gradiometer           600.61499   
+    2  MEG 0111         MEGMAG     T        Magnetometer           600.61499   
+    3  MEG 0122  MEGGRADPLANAR   T/m  Planar Gradiometer           600.61499   
+    4  MEG 0123  MEGGRADPLANAR   T/m  Planar Gradiometer           600.61499   
+
+       low_cutoff  high_cutoff status  
+    0         0.1     172.1763   good  
+    1         0.1     172.1763   good  
+    2         0.1     172.1763   good  
+    3         0.1     172.1763   good  
+    4         0.1     172.1763   good  
+    Copying data files to /home/stefanappelhoff/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif
+    /home/stefanappelhoff/Desktop/bids/mne-bids/mne_bids/mne_bids.py:711: RuntimeWarning: This filename (/home/stefanappelhoff/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif) does not conform to MNE naming conventions. All raw files should end with raw.fif, raw_sss.fif, raw_tsss.fif, raw.fif.gz, raw_sss.fif.gz or raw_tsss.fif.gz
+      raw.save(bids_fname, overwrite=True)
+    Overwriting existing file.
+    Writing /home/stefanappelhoff/mne_data/MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif
+    Closing /home/stefanappelhoff/mne_data/MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif [done]
+
+    '/home/stefanappelhoff/mne_data/MNE-sample-data/../MNE-sample-data-bids'
+
+
+
+Now let's see the structure of the BIDS folder we created.
+
+
+.. code-block:: default
+
+    print_dir_tree(output_path)
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    |------------------ MNE-sample-data-bids
+    |--------------------- participants.tsv
+    |--------------------- dataset_description.json
+    |--------------------- participants.json
+    |--------------------- sub-emptyroom
+    |------------------------ ses-20021201
+    |--------------------------- sub-emptyroom_ses-20021201_scans.tsv
+    |--------------------------- meg
+    |------------------------------ sub-emptyroom_ses-20021201_task-noise_meg.json
+    |------------------------------ sub-emptyroom_ses-20021201_task-noise_channels.tsv
+    |------------------------------ sub-emptyroom_ses-20021201_task-noise_meg.fif
+    |------------------------ ses-20021001
+    |--------------------------- sub-emptyroom_ses-20021001_scans.tsv
+    |--------------------------- meg
+    |------------------------------ sub-emptyroom_ses-20021001_task-noise_meg.json
+    |------------------------------ sub-emptyroom_ses-20021001_task-noise_meg.fif
+    |------------------------------ sub-emptyroom_ses-20021001_task-noise_channels.tsv
+    |------------------------ ses-20021206
+    |--------------------------- sub-emptyroom_ses-20021206_scans.tsv
+    |--------------------------- meg
+    |------------------------------ sub-emptyroom_ses-20021206_task-noise_meg.json
+    |------------------------------ sub-emptyroom_ses-20021206_task-noise_channels.tsv
+    |------------------------------ sub-emptyroom_ses-20021206_task-noise_meg.fif
+    |------------------------ ses-20021204
+    |--------------------------- sub-emptyroom_ses-20021204_scans.tsv
+    |--------------------------- meg
+    |------------------------------ sub-emptyroom_ses-20021204_task-noise_meg.json
+    |------------------------------ sub-emptyroom_ses-20021204_task-noise_meg.fif
+    |------------------------------ sub-emptyroom_ses-20021204_task-noise_channels.tsv
+    |--------------------- sub-01
+    |------------------------ ses-01
+    |--------------------------- sub-01_ses-01_scans.tsv
+    |--------------------------- meg
+    |------------------------------ sub-01_ses-01_coordsystem.json
+    |------------------------------ sub-01_ses-01_task-audiovisual_run-01_meg.json
+    |------------------------------ sub-01_ses-01_task-audiovisual_run-01_channels.tsv
+    |------------------------------ sub-01_ses-01_task-audiovisual_run-01_meg.fif
+    |------------------------------ sub-01_ses-01_task-audiovisual_run-01_events.tsv
+    |--------------------------- anat
+    |------------------------------ sub-01_ses-01_T1w.nii.gz
+    |------------------------------ sub-01_ses-01_T1w.json
+
+
+
+
+
+.. rst-class:: sphx-glr-timing
+
+   **Total running time of the script:** ( 0 minutes  1.469 seconds)
+
+
+.. _sphx_glr_download_auto_examples_convert_mne_sample.py:
+
+
+.. only :: html
+
+ .. container:: sphx-glr-footer
+    :class: sphx-glr-footer-example
+
+
+
+  .. container:: sphx-glr-download
+
+     :download:`Download Python source code: convert_mne_sample.py <convert_mne_sample.py>`
+
+
+
+  .. container:: sphx-glr-download
+
+     :download:`Download Jupyter notebook: convert_mne_sample.ipynb <convert_mne_sample.ipynb>`
+
+
+.. only:: html
+
+ .. rst-class:: sphx-glr-signature
+
+    `Gallery generated by Sphinx-Gallery <https://sphinx-gallery.github.io>`_

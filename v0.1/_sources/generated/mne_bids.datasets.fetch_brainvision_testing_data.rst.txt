@@ -1,0 +1,6 @@
+mne\_bids.datasets.fetch\_brainvision\_testing\_data
+====================================================
+
+.. currentmodule:: mne_bids.datasets
+
+.. autofunction:: fetch_brainvision_testing_data

@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>mne_bids.copyfiles &#8212; mne_bids 0.2 documentation</title>
+    <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/gallery.css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../../_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../index.html">
+          MNE-BIDS</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.2</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../../auto_examples/index.html">Gallery</a></li>
+                <li><a href="../../api.html">API</a></li>
+                <li><a href="../../whats_new.html">What's new</a></li>
+                <li><a href="https://github.com/mne-tools/mne-bids">Github</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"></ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"></ul>
+</li>
+              
+            
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <h1>Source code for mne_bids.copyfiles</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Utility functions to copy raw data files.</span>
+
+<span class="sd">When writing BIDS datasets, we often move and/or rename raw data files. several</span>
+<span class="sd">original data formats have properties that restrict such operations. That is,</span>
+<span class="sd">moving/renaming raw data files naively might lead to broken files, for example</span>
+<span class="sd">due to internal pointers that are not being updated.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c1"># Authors: Mainak Jas &lt;mainak.jas@telecom-paristech.fr&gt;</span>
+<span class="c1">#          Alexandre Gramfort &lt;alexandre.gramfort@telecom-paristech.fr&gt;</span>
+<span class="c1">#          Teon Brooks &lt;teon.brooks@gmail.com&gt;</span>
+<span class="c1">#          Chris Holdgraf &lt;choldgraf@berkeley.edu&gt;</span>
+<span class="c1">#          Stefan Appelhoff &lt;stefan.appelhoff@mailbox.org&gt;</span>
+<span class="c1">#          Matt Sanderson &lt;matt.sanderson@mq.edu.au&gt;</span>
+<span class="c1">#</span>
+<span class="c1"># License: BSD (3-clause)</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">os.path</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">shutil</span> <span class="k">as</span> <span class="nn">sh</span>
+
+<span class="kn">from</span> <span class="nn">scipy.io</span> <span class="kn">import</span> <span class="n">loadmat</span><span class="p">,</span> <span class="n">savemat</span>
+
+<span class="kn">from</span> <span class="nn">.read</span> <span class="kn">import</span> <span class="n">_parse_ext</span>
+
+
+<span class="k">def</span> <span class="nf">_copytree</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;See: https://github.com/jupyterlab/jupyterlab/pull/5150.&quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">sh</span><span class="o">.</span><span class="n">copytree</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">sh</span><span class="o">.</span><span class="n">Error</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+        <span class="c1"># `copytree` throws an error if copying to + from NFS even though</span>
+        <span class="c1"># the copy is successful (see https://bugs.python.org/issue24564)</span>
+        <span class="k">if</span> <span class="s1">&#39;[Errno 22]&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">error</span><span class="p">)</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">op</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">dst</span><span class="p">):</span>
+            <span class="k">raise</span>
+
+
+<span class="k">def</span> <span class="nf">_get_brainvision_encoding</span><span class="p">(</span><span class="n">vhdr_file</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Get the encoding of .vhdr and .vmrk files.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    vhdr_file : str</span>
+<span class="sd">        path to the header file</span>
+<span class="sd">    verbose : Bool</span>
+<span class="sd">        determine whether results should be logged.</span>
+<span class="sd">        (default False)</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    enc : str</span>
+<span class="sd">        encoding of the .vhdr file to pass it on to open() function</span>
+<span class="sd">        either &#39;UTF-8&#39; (default) or whatever encoding scheme is specified</span>
+<span class="sd">        in the header</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">vhdr_file</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">ef</span><span class="p">:</span>
+        <span class="n">enc</span> <span class="o">=</span> <span class="n">ef</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">enc</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;Codepage=&#39;</span><span class="p">)</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">enc</span> <span class="o">=</span> <span class="n">enc</span><span class="p">[</span><span class="n">enc</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;Codepage=&#39;</span><span class="p">)</span><span class="o">+</span><span class="mi">9</span><span class="p">:]</span>
+            <span class="n">enc</span> <span class="o">=</span> <span class="n">enc</span><span class="o">.</span><span class="n">split</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">enc</span> <span class="o">=</span> <span class="n">enc</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+            <span class="n">src</span> <span class="o">=</span> <span class="s1">&#39;(read from header)&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">enc</span> <span class="o">=</span> <span class="s1">&#39;UTF-8&#39;</span>
+            <span class="n">src</span> <span class="o">=</span> <span class="s1">&#39;(default)&#39;</span>
+        <span class="k">if</span> <span class="n">verbose</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;file encoding: </span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">enc</span><span class="p">,</span> <span class="n">src</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">enc</span>
+
+
+<span class="k">def</span> <span class="nf">_get_brainvision_paths</span><span class="p">(</span><span class="n">vhdr_path</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Get the .eeg and .vmrk file paths from a BrainVision header file.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    vhdr_path : str</span>
+<span class="sd">        path to the header file</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    paths : tuple</span>
+<span class="sd">        paths to the .eeg file at index 0 and the .vmrk file</span>
+<span class="sd">        at index 1 of the returned tuple</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">fname</span><span class="p">,</span> <span class="n">ext</span> <span class="o">=</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">vhdr_path</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">ext</span> <span class="o">!=</span> <span class="s1">&#39;.vhdr&#39;</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Expecting file ending in &quot;.vhdr&quot;,&#39;</span>
+                         <span class="s1">&#39; but got </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ext</span><span class="p">))</span>
+
+    <span class="c1"># Header file seems fine</span>
+    <span class="c1"># extract encoding from brainvision header file, or default to utf-8</span>
+    <span class="n">enc</span> <span class="o">=</span> <span class="n">_get_brainvision_encoding</span><span class="p">(</span><span class="n">vhdr_path</span><span class="p">)</span>
+
+    <span class="c1"># ..and read it</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">vhdr_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">enc</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+
+    <span class="c1"># Try to find data file .eeg</span>
+    <span class="n">eeg_file_match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;DataFile=(.*\.eeg)&#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">))</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">eeg_file_match</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Could not find a .eeg file link in&#39;</span>
+                         <span class="s1">&#39; </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">vhdr_path</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">eeg_file</span> <span class="o">=</span> <span class="n">eeg_file_match</span><span class="o">.</span><span class="n">groups</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="c1"># Try to find marker file .vmrk</span>
+    <span class="n">vmrk_file_match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;MarkerFile=(.*\.vmrk)&#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">))</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">vmrk_file_match</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Could not find a .vmrk file link in&#39;</span>
+                         <span class="s1">&#39; </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">vhdr_path</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">vmrk_file</span> <span class="o">=</span> <span class="n">vmrk_file_match</span><span class="o">.</span><span class="n">groups</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="c1"># Make sure we are dealing with file names as is customary, not paths</span>
+    <span class="c1"># Paths are problematic when copying the files to another system. Instead,</span>
+    <span class="c1"># always use the file name and keep the file triplet in the same directory</span>
+    <span class="k">assert</span> <span class="n">os</span><span class="o">.</span><span class="n">sep</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">eeg_file</span>
+    <span class="k">assert</span> <span class="n">os</span><span class="o">.</span><span class="n">sep</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">vmrk_file</span>
+
+    <span class="c1"># Assert the paths exist</span>
+    <span class="n">head</span><span class="p">,</span> <span class="n">tail</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">vhdr_path</span><span class="p">)</span>
+    <span class="n">eeg_file_path</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">head</span><span class="p">,</span> <span class="n">eeg_file</span><span class="p">)</span>
+    <span class="n">vmrk_file_path</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">head</span><span class="p">,</span> <span class="n">vmrk_file</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">op</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">eeg_file_path</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">op</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">vmrk_file_path</span><span class="p">)</span>
+
+    <span class="c1"># Return the paths</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">eeg_file_path</span><span class="p">,</span> <span class="n">vmrk_file_path</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="copyfile_ctf"><a class="viewcode-back" href="../../generated/mne_bids.copyfiles.copyfile_ctf.html#mne_bids.copyfiles.copyfile_ctf">[docs]</a><span class="k">def</span> <span class="nf">copyfile_ctf</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dest</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Copy and rename CTF files to a new location.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    src : str</span>
+<span class="sd">        path to the source raw .ds folder</span>
+<span class="sd">    dest : str</span>
+<span class="sd">        path to the destination of the new bids folder.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_copytree</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dest</span><span class="p">)</span>
+    <span class="c1"># list of file types to rename</span>
+    <span class="n">file_types</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;.acq&#39;</span><span class="p">,</span> <span class="s1">&#39;.eeg&#39;</span><span class="p">,</span> <span class="s1">&#39;.hc&#39;</span><span class="p">,</span> <span class="s1">&#39;.hist&#39;</span><span class="p">,</span> <span class="s1">&#39;.infods&#39;</span><span class="p">,</span> <span class="s1">&#39;.bak&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;.meg4&#39;</span><span class="p">,</span> <span class="s1">&#39;.newds&#39;</span><span class="p">,</span> <span class="s1">&#39;.res4&#39;</span><span class="p">)</span>
+    <span class="c1"># Rename files in dest with the name of the dest directory</span>
+    <span class="n">fnames</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">dest</span><span class="p">)</span> <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">file_types</span><span class="p">)]</span>
+    <span class="n">bids_folder_name</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">dest</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">fname</span> <span class="ow">in</span> <span class="n">fnames</span><span class="p">:</span>
+        <span class="n">ext</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">fname</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dest</span><span class="p">,</span> <span class="n">fname</span><span class="p">),</span>
+                  <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dest</span><span class="p">,</span> <span class="n">bids_folder_name</span> <span class="o">+</span> <span class="n">ext</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="copyfile_brainvision"><a class="viewcode-back" href="../../generated/mne_bids.copyfiles.copyfile_brainvision.html#mne_bids.copyfiles.copyfile_brainvision">[docs]</a><span class="k">def</span> <span class="nf">copyfile_brainvision</span><span class="p">(</span><span class="n">vhdr_src</span><span class="p">,</span> <span class="n">vhdr_dest</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Copy a BrainVision file triplet to a new location and repair links.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    vhdr_src, vhdr_dest: str</span>
+<span class="sd">        The src path of the .vhdr file to be copied and the destination</span>
+<span class="sd">        path. The .eeg and .vmrk files associated with the .vhdr file</span>
+<span class="sd">        will be given names as in vhdr_dest with adjusted extensions.</span>
+<span class="sd">        Internal file pointers will be fixed.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Get extenstion of the brainvision file</span>
+    <span class="n">fname_src</span><span class="p">,</span> <span class="n">ext_src</span> <span class="o">=</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">vhdr_src</span><span class="p">)</span>
+    <span class="n">fname_dest</span><span class="p">,</span> <span class="n">ext_dest</span> <span class="o">=</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">vhdr_dest</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">ext_src</span> <span class="o">!=</span> <span class="n">ext_dest</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Need to move data with same extension&#39;</span>
+                         <span class="s1">&#39; but got &quot;</span><span class="si">{}</span><span class="s1">&quot;, &quot;</span><span class="si">{}</span><span class="s1">&quot;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ext_src</span><span class="p">,</span> <span class="n">ext_dest</span><span class="p">))</span>
+
+    <span class="n">eeg_file_path</span><span class="p">,</span> <span class="n">vmrk_file_path</span> <span class="o">=</span> <span class="n">_get_brainvision_paths</span><span class="p">(</span><span class="n">vhdr_src</span><span class="p">)</span>
+
+    <span class="c1"># extract encoding from brainvision header file, or default to utf-8</span>
+    <span class="n">enc</span> <span class="o">=</span> <span class="n">_get_brainvision_encoding</span><span class="p">(</span><span class="n">vhdr_src</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># Copy data .eeg ... no links to repair</span>
+    <span class="n">sh</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">eeg_file_path</span><span class="p">,</span> <span class="n">fname_dest</span> <span class="o">+</span> <span class="s1">&#39;.eeg&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Write new header and marker files, fixing the file pointer links</span>
+    <span class="c1"># For that, we need to replace an old &quot;basename&quot; with a new one</span>
+    <span class="c1"># assuming that all .eeg, .vhdr, .vmrk share one basename</span>
+    <span class="n">__</span><span class="p">,</span> <span class="n">basename_src</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">fname_src</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">basename_src</span> <span class="o">+</span> <span class="s1">&#39;.eeg&#39;</span> <span class="o">==</span> <span class="n">op</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">eeg_file_path</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">assert</span> <span class="n">basename_src</span> <span class="o">+</span> <span class="s1">&#39;.vmrk&#39;</span> <span class="o">==</span> <span class="n">op</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">vmrk_file_path</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">__</span><span class="p">,</span> <span class="n">basename_dest</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">fname_dest</span><span class="p">)</span>
+    <span class="n">search_lines</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;DataFile=&#39;</span> <span class="o">+</span> <span class="n">basename_src</span> <span class="o">+</span> <span class="s1">&#39;.eeg&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;MarkerFile=&#39;</span> <span class="o">+</span> <span class="n">basename_src</span> <span class="o">+</span> <span class="s1">&#39;.vmrk&#39;</span><span class="p">]</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">vhdr_src</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">enc</span><span class="p">)</span> <span class="k">as</span> <span class="n">fin</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">vhdr_dest</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">enc</span><span class="p">)</span> <span class="k">as</span> <span class="n">fout</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">fin</span><span class="o">.</span><span class="n">readlines</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="ow">in</span> <span class="n">search_lines</span><span class="p">:</span>
+                    <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">basename_src</span><span class="p">,</span> <span class="n">basename_dest</span><span class="p">)</span>
+                <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">vmrk_file_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">enc</span><span class="p">)</span> <span class="k">as</span> <span class="n">fin</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname_dest</span> <span class="o">+</span> <span class="s1">&#39;.vmrk&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="n">enc</span><span class="p">)</span> <span class="k">as</span> <span class="n">fout</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">fin</span><span class="o">.</span><span class="n">readlines</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="ow">in</span> <span class="n">search_lines</span><span class="p">:</span>
+                    <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">basename_src</span><span class="p">,</span> <span class="n">basename_dest</span><span class="p">)</span>
+                <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="copyfile_eeglab"><a class="viewcode-back" href="../../generated/mne_bids.copyfiles.copyfile_eeglab.html#mne_bids.copyfiles.copyfile_eeglab">[docs]</a><span class="k">def</span> <span class="nf">copyfile_eeglab</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dest</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Copy a EEGLAB files to a new location and adjust pointer to &#39;.fdt&#39; file.</span>
+
+<span class="sd">    Some EEGLAB .set files come with a .fdt binary file that contains the data.</span>
+<span class="sd">    When moving a .set file, we need to check for an associated .fdt file and</span>
+<span class="sd">    move it to an appropriate location as well as update an internal pointer</span>
+<span class="sd">    within the .set file.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Work in progress. This function will abort upon the encounter of a .fdt</span>
+<span class="sd">    file.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Get extenstion of the EEGLAB file</span>
+    <span class="n">fname_src</span><span class="p">,</span> <span class="n">ext_src</span> <span class="o">=</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
+    <span class="n">fname_dest</span><span class="p">,</span> <span class="n">ext_dest</span> <span class="o">=</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">dest</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">ext_src</span> <span class="o">!=</span> <span class="n">ext_dest</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Need to move data with same extension&#39;</span>
+                         <span class="s1">&#39; but got </span><span class="si">{}</span><span class="s1">, </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ext_src</span><span class="p">,</span> <span class="n">ext_dest</span><span class="p">))</span>
+
+    <span class="c1"># Extract matlab struct &quot;EEG&quot; from EEGLAB file</span>
+    <span class="n">mat</span> <span class="o">=</span> <span class="n">loadmat</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">squeeze_me</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">chars_as_strings</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                  <span class="n">mat_dtype</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">struct_as_record</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s1">&#39;EEG&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">mat</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Could not find &quot;EEG&quot; field in </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">src</span><span class="p">))</span>
+    <span class="n">eeg</span> <span class="o">=</span> <span class="n">mat</span><span class="p">[</span><span class="s1">&#39;EEG&#39;</span><span class="p">]</span>
+
+    <span class="c1"># If the data field is a string, it points to a .fdt file in src dir</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">eeg</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;data&#39;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">all</span><span class="p">([</span><span class="n">item</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">4</span><span class="p">:]</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="s1">&#39;.fdt&#39;</span><span class="p">]):</span>
+        <span class="n">head</span><span class="p">,</span> <span class="n">tail</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
+        <span class="n">fdt_pointer</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">tolist</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">fdt_path</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">head</span><span class="p">,</span> <span class="n">fdt_pointer</span><span class="p">)</span>
+        <span class="n">fdt_name</span><span class="p">,</span> <span class="n">fdt_ext</span> <span class="o">=</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">fdt_path</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">fdt_ext</span> <span class="o">!=</span> <span class="s1">&#39;.fdt&#39;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="s1">&#39;Expected extension </span><span class="si">{}</span><span class="s1"> for linked data but found&#39;</span>
+                          <span class="s1">&#39; </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;.fdt&#39;</span><span class="p">,</span> <span class="n">fdt_ext</span><span class="p">))</span>
+
+        <span class="c1"># Copy the fdt file and give it a new name</span>
+        <span class="n">sh</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">fdt_path</span><span class="p">,</span> <span class="n">fname_dest</span> <span class="o">+</span> <span class="s1">&#39;.fdt&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Now adjust the pointer in the set file</span>
+        <span class="n">head</span><span class="p">,</span> <span class="n">tail</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">fname_dest</span> <span class="o">+</span> <span class="s1">&#39;.fdt&#39;</span><span class="p">)</span>
+        <span class="n">mat</span><span class="p">[</span><span class="s1">&#39;EEG&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;data&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">tail</span>
+        <span class="n">savemat</span><span class="p">(</span><span class="n">dest</span><span class="p">,</span> <span class="n">mat</span><span class="p">,</span> <span class="n">appendmat</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="c1"># If no .fdt file, simply copy the .set file, no modifications necessary</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">sh</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dest</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="copyfile_bti"><a class="viewcode-back" href="../../generated/mne_bids.copyfiles.copyfile_bti.html#mne_bids.copyfiles.copyfile_bti">[docs]</a><span class="k">def</span> <span class="nf">copyfile_bti</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">dest</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Copy BTi data.&quot;&quot;&quot;</span>
+    <span class="n">pdf_fname</span> <span class="o">=</span> <span class="s1">&#39;c,rfDC&#39;</span>
+    <span class="k">if</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;highpass&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">pdf_fname</span> <span class="o">=</span> <span class="s1">&#39;c,rf</span><span class="si">%0.1f</span><span class="s1">Hz&#39;</span> <span class="o">%</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;highpass&#39;</span><span class="p">]</span>
+    <span class="n">sh</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">_init_kwargs</span><span class="p">[</span><span class="s1">&#39;pdf_fname&#39;</span><span class="p">],</span>
+                <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dest</span><span class="p">,</span> <span class="n">pdf_fname</span><span class="p">))</span>
+    <span class="n">sh</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">_init_kwargs</span><span class="p">[</span><span class="s1">&#39;config_fname&#39;</span><span class="p">],</span>
+                <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dest</span><span class="p">,</span> <span class="s1">&#39;config&#39;</span><span class="p">))</span>
+    <span class="n">sh</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">_init_kwargs</span><span class="p">[</span><span class="s1">&#39;head_shape_fname&#39;</span><span class="p">],</span>
+                <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dest</span><span class="p">,</span> <span class="s1">&#39;hs_file&#39;</span><span class="p">))</span></div>
+</pre></div>
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2020, MNE Developers. Last updated on 2020-03-22.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

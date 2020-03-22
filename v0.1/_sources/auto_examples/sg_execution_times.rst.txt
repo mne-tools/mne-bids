@@ -1,0 +1,20 @@
+
+:orphan:
+
+.. _sphx_glr_auto_examples_sg_execution_times:
+
+Computation times
+=================
+**00:38.044** total execution time for **auto_examples** files:
+
++---------------------------------------------------------------------------------------------+-----------+--------+
+| :ref:`sphx_glr_auto_examples_convert_group_studies.py` (``convert_group_studies.py``)       | 00:33.389 | 0.0 MB |
++---------------------------------------------------------------------------------------------+-----------+--------+
+| :ref:`sphx_glr_auto_examples_rename_brainvision_files.py` (``rename_brainvision_files.py``) | 00:02.510 | 0.0 MB |
++---------------------------------------------------------------------------------------------+-----------+--------+
+| :ref:`sphx_glr_auto_examples_convert_mne_sample.py` (``convert_mne_sample.py``)             | 00:01.469 | 0.0 MB |
++---------------------------------------------------------------------------------------------+-----------+--------+
+| :ref:`sphx_glr_auto_examples_convert_eeg_to_bids.py` (``convert_eeg_to_bids.py``)           | 00:00.674 | 0.0 MB |
++---------------------------------------------------------------------------------------------+-----------+--------+
+| :ref:`sphx_glr_auto_examples_create_bids_folder.py` (``create_bids_folder.py``)             | 00:00.002 | 0.0 MB |
++---------------------------------------------------------------------------------------------+-----------+--------+

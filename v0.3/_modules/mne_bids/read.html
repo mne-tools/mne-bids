@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>mne_bids.read &#8212; mne_bids 0.3 documentation</title>
+    <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/gallery.css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../../_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../index.html">
+          MNE-BIDS</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.3</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../../auto_examples/index.html">Examples</a></li>
+                <li><a href="../../api.html">API</a></li>
+                <li><a href="../../generated/cli.html">CLI</a></li>
+                <li><a href="../../whats_new.html">What's new</a></li>
+                <li><a href="https://github.com/mne-tools/mne-bids">Github</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"></ul>
+</li>
+              
+            
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <h1>Source code for mne_bids.read</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Check whether a file format is supported by BIDS and then load it.&quot;&quot;&quot;</span>
+<span class="c1"># Authors: Mainak Jas &lt;mainak.jas@telecom-paristech.fr&gt;</span>
+<span class="c1">#          Alexandre Gramfort &lt;alexandre.gramfort@telecom-paristech.fr&gt;</span>
+<span class="c1">#          Teon Brooks &lt;teon.brooks@gmail.com&gt;</span>
+<span class="c1">#          Chris Holdgraf &lt;choldgraf@berkeley.edu&gt;</span>
+<span class="c1">#          Stefan Appelhoff &lt;stefan.appelhoff@mailbox.org&gt;</span>
+<span class="c1">#</span>
+<span class="c1"># License: BSD (3-clause)</span>
+<span class="kn">import</span> <span class="nn">os.path</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="kn">import</span> <span class="nn">glob</span>
+<span class="kn">import</span> <span class="nn">json</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">mne</span>
+<span class="kn">from</span> <span class="nn">mne</span> <span class="kn">import</span> <span class="n">io</span>
+<span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="n">has_nibabel</span><span class="p">,</span> <span class="n">logger</span>
+<span class="kn">from</span> <span class="nn">mne.coreg</span> <span class="kn">import</span> <span class="n">fit_matched_points</span>
+<span class="kn">from</span> <span class="nn">mne.transforms</span> <span class="kn">import</span> <span class="n">apply_trans</span>
+
+<span class="kn">from</span> <span class="nn">mne_bids.tsv_handler</span> <span class="kn">import</span> <span class="n">_from_tsv</span><span class="p">,</span> <span class="n">_drop</span>
+<span class="kn">from</span> <span class="nn">mne_bids.config</span> <span class="kn">import</span> <span class="n">ALLOWED_EXTENSIONS</span>
+<span class="kn">from</span> <span class="nn">mne_bids.utils</span> <span class="kn">import</span> <span class="p">(</span><span class="n">_parse_bids_filename</span><span class="p">,</span> <span class="n">_extract_landmarks</span><span class="p">,</span>
+                            <span class="n">_find_matching_sidecar</span><span class="p">,</span> <span class="n">_parse_ext</span><span class="p">,</span>
+                            <span class="n">_get_ch_type_mapping</span><span class="p">)</span>
+
+<span class="n">reader</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;.con&#39;</span><span class="p">:</span> <span class="n">io</span><span class="o">.</span><span class="n">read_raw_kit</span><span class="p">,</span> <span class="s1">&#39;.sqd&#39;</span><span class="p">:</span> <span class="n">io</span><span class="o">.</span><span class="n">read_raw_kit</span><span class="p">,</span>
+          <span class="s1">&#39;.fif&#39;</span><span class="p">:</span> <span class="n">io</span><span class="o">.</span><span class="n">read_raw_fif</span><span class="p">,</span> <span class="s1">&#39;.pdf&#39;</span><span class="p">:</span> <span class="n">io</span><span class="o">.</span><span class="n">read_raw_bti</span><span class="p">,</span>
+          <span class="s1">&#39;.ds&#39;</span><span class="p">:</span> <span class="n">io</span><span class="o">.</span><span class="n">read_raw_ctf</span><span class="p">,</span> <span class="s1">&#39;.vhdr&#39;</span><span class="p">:</span> <span class="n">io</span><span class="o">.</span><span class="n">read_raw_brainvision</span><span class="p">,</span>
+          <span class="s1">&#39;.edf&#39;</span><span class="p">:</span> <span class="n">io</span><span class="o">.</span><span class="n">read_raw_edf</span><span class="p">,</span> <span class="s1">&#39;.bdf&#39;</span><span class="p">:</span> <span class="n">io</span><span class="o">.</span><span class="n">read_raw_bdf</span><span class="p">,</span>
+          <span class="s1">&#39;.set&#39;</span><span class="p">:</span> <span class="n">io</span><span class="o">.</span><span class="n">read_raw_eeglab</span><span class="p">}</span>
+
+
+<span class="k">def</span> <span class="nf">_read_raw</span><span class="p">(</span><span class="n">raw_fpath</span><span class="p">,</span> <span class="n">electrode</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hsp</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hpi</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+              <span class="n">montage</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">allow_maxshield</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Read a raw file into MNE, making inferences based on extension.&quot;&quot;&quot;</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">ext</span> <span class="o">=</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">raw_fpath</span><span class="p">)</span>
+
+    <span class="c1"># KIT systems</span>
+    <span class="k">if</span> <span class="n">ext</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;.con&#39;</span><span class="p">,</span> <span class="s1">&#39;.sqd&#39;</span><span class="p">]:</span>
+        <span class="n">raw</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">read_raw_kit</span><span class="p">(</span><span class="n">raw_fpath</span><span class="p">,</span> <span class="n">elp</span><span class="o">=</span><span class="n">electrode</span><span class="p">,</span> <span class="n">hsp</span><span class="o">=</span><span class="n">hsp</span><span class="p">,</span>
+                              <span class="n">mrk</span><span class="o">=</span><span class="n">hpi</span><span class="p">,</span> <span class="n">preload</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="c1"># BTi systems</span>
+    <span class="k">elif</span> <span class="n">ext</span> <span class="o">==</span> <span class="s1">&#39;.pdf&#39;</span><span class="p">:</span>
+        <span class="n">raw</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">read_raw_bti</span><span class="p">(</span><span class="n">raw_fpath</span><span class="p">,</span> <span class="n">config_fname</span><span class="o">=</span><span class="n">config</span><span class="p">,</span>
+                              <span class="n">head_shape_fname</span><span class="o">=</span><span class="n">hsp</span><span class="p">,</span>
+                              <span class="n">preload</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">ext</span> <span class="o">==</span> <span class="s1">&#39;.fif&#39;</span><span class="p">:</span>
+        <span class="n">raw</span> <span class="o">=</span> <span class="n">reader</span><span class="p">[</span><span class="n">ext</span><span class="p">](</span><span class="n">raw_fpath</span><span class="p">,</span> <span class="n">allow_maxshield</span><span class="o">=</span><span class="n">allow_maxshield</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">ext</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;.ds&#39;</span><span class="p">,</span> <span class="s1">&#39;.vhdr&#39;</span><span class="p">,</span> <span class="s1">&#39;.set&#39;</span><span class="p">]:</span>
+        <span class="n">raw</span> <span class="o">=</span> <span class="n">reader</span><span class="p">[</span><span class="n">ext</span><span class="p">](</span><span class="n">raw_fpath</span><span class="p">)</span>
+
+    <span class="c1"># EDF (european data format) or BDF (biosemi) format</span>
+    <span class="c1"># TODO: integrate with lines above once MNE can read</span>
+    <span class="c1"># annotations with preload=False</span>
+    <span class="k">elif</span> <span class="n">ext</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;.edf&#39;</span><span class="p">,</span> <span class="s1">&#39;.bdf&#39;</span><span class="p">]:</span>
+        <span class="n">raw</span> <span class="o">=</span> <span class="n">reader</span><span class="p">[</span><span class="n">ext</span><span class="p">](</span><span class="n">raw_fpath</span><span class="p">,</span> <span class="n">preload</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># MEF and NWB are allowed, but not yet implemented</span>
+    <span class="k">elif</span> <span class="n">ext</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;.mef&#39;</span><span class="p">,</span> <span class="s1">&#39;.nwb&#39;</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Got &quot;</span><span class="si">{}</span><span class="s1">&quot; as extension. This is an allowed extension &#39;</span>
+                         <span class="s1">&#39;but there is no IO support for this file format yet.&#39;</span>
+                         <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ext</span><span class="p">))</span>
+
+    <span class="c1"># No supported data found ...</span>
+    <span class="c1"># ---------------------------</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Raw file name extension must be one of </span><span class="si">{}</span><span class="se">\n</span><span class="s1">&#39;</span>
+                         <span class="s1">&#39;Got </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ALLOWED_EXTENSIONS</span><span class="p">,</span> <span class="n">ext</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">raw</span>
+
+
+<span class="k">def</span> <span class="nf">_handle_events_reading</span><span class="p">(</span><span class="n">events_fname</span><span class="p">,</span> <span class="n">raw</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Read associated events.tsv and populate raw.</span>
+
+<span class="sd">    Handle onset, duration, and description of each event.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Reading events from </span><span class="si">{}</span><span class="s1">.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">events_fname</span><span class="p">))</span>
+    <span class="n">events_dict</span> <span class="o">=</span> <span class="n">_from_tsv</span><span class="p">(</span><span class="n">events_fname</span><span class="p">)</span>
+
+    <span class="c1"># Get the descriptions of the events</span>
+    <span class="k">if</span> <span class="s1">&#39;trial_type&#39;</span> <span class="ow">in</span> <span class="n">events_dict</span><span class="p">:</span>
+        <span class="c1"># Drop events unrelated to a trial type</span>
+        <span class="n">events_dict</span> <span class="o">=</span> <span class="n">_drop</span><span class="p">(</span><span class="n">events_dict</span><span class="p">,</span> <span class="s1">&#39;n/a&#39;</span><span class="p">,</span> <span class="s1">&#39;trial_type&#39;</span><span class="p">)</span>
+        <span class="n">descriptions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">events_dict</span><span class="p">[</span><span class="s1">&#39;trial_type&#39;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
+
+    <span class="c1"># If we don&#39;t have a proper description of the events, perhaps we have</span>
+    <span class="c1"># at least an event value?</span>
+    <span class="k">elif</span> <span class="s1">&#39;value&#39;</span> <span class="ow">in</span> <span class="n">events_dict</span><span class="p">:</span>
+        <span class="c1"># Drop events unrelated to value</span>
+        <span class="n">events_dict</span> <span class="o">=</span> <span class="n">_drop</span><span class="p">(</span><span class="n">events_dict</span><span class="p">,</span> <span class="s1">&#39;n/a&#39;</span><span class="p">,</span> <span class="s1">&#39;value&#39;</span><span class="p">)</span>
+        <span class="n">descriptions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">events_dict</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
+
+    <span class="c1"># Worst case, we go with &#39;n/a&#39; for all events</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">descriptions</span> <span class="o">=</span> <span class="s1">&#39;n/a&#39;</span>
+
+    <span class="c1"># Deal with &quot;n/a&quot; strings before converting to float</span>
+    <span class="n">ons</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span> <span class="k">if</span> <span class="n">on</span> <span class="o">==</span> <span class="s1">&#39;n/a&#39;</span> <span class="k">else</span> <span class="n">on</span> <span class="k">for</span> <span class="n">on</span> <span class="ow">in</span> <span class="n">events_dict</span><span class="p">[</span><span class="s1">&#39;onset&#39;</span><span class="p">]]</span>
+    <span class="n">dus</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span> <span class="k">if</span> <span class="n">du</span> <span class="o">==</span> <span class="s1">&#39;n/a&#39;</span> <span class="k">else</span> <span class="n">du</span> <span class="k">for</span> <span class="n">du</span> <span class="ow">in</span> <span class="n">events_dict</span><span class="p">[</span><span class="s1">&#39;duration&#39;</span><span class="p">]]</span>
+
+    <span class="c1"># Add Events to raw as annotations</span>
+    <span class="n">onsets</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">ons</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="n">durations</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">dus</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="n">annot_from_events</span> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">Annotations</span><span class="p">(</span><span class="n">onset</span><span class="o">=</span><span class="n">onsets</span><span class="p">,</span>
+                                        <span class="n">duration</span><span class="o">=</span><span class="n">durations</span><span class="p">,</span>
+                                        <span class="n">description</span><span class="o">=</span><span class="n">descriptions</span><span class="p">,</span>
+                                        <span class="n">orig_time</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+    <span class="n">raw</span><span class="o">.</span><span class="n">set_annotations</span><span class="p">(</span><span class="n">annot_from_events</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">raw</span>
+
+
+<span class="k">def</span> <span class="nf">_handle_channels_reading</span><span class="p">(</span><span class="n">channels_fname</span><span class="p">,</span> <span class="n">bids_fname</span><span class="p">,</span> <span class="n">raw</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Read associated channels.tsv and populate raw.</span>
+
+<span class="sd">    Updates status (bad) and types of channels.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Reading channel info from </span><span class="si">{}</span><span class="s1">.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">channels_fname</span><span class="p">))</span>
+    <span class="n">channels_dict</span> <span class="o">=</span> <span class="n">_from_tsv</span><span class="p">(</span><span class="n">channels_fname</span><span class="p">)</span>
+
+    <span class="c1"># First, make sure that ordering of names in channels.tsv matches the</span>
+    <span class="c1"># ordering of names in the raw data. The &quot;name&quot; column is mandatory in BIDS</span>
+    <span class="n">ch_names_raw</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">ch_names</span><span class="p">)</span>
+    <span class="n">ch_names_tsv</span> <span class="o">=</span> <span class="n">channels_dict</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">ch_names_raw</span> <span class="o">!=</span> <span class="n">ch_names_tsv</span><span class="p">:</span>
+
+        <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;Channels do not correspond between raw data and the &#39;</span>
+               <span class="s1">&#39;channels.tsv file. For MNE-BIDS, the channel names in the &#39;</span>
+               <span class="s1">&#39;tsv MUST be equal and in the same order as the channels in &#39;</span>
+               <span class="s1">&#39;the raw data.</span><span class="se">\n\n</span><span class="s1">&#39;</span>
+               <span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> channels in tsv file: &quot;</span><span class="si">{}</span><span class="s1">&quot;</span><span class="se">\n\n</span><span class="s1"> --&gt; </span><span class="si">{}</span><span class="se">\n\n</span><span class="s1">&#39;</span>
+               <span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> channels in raw file: &quot;</span><span class="si">{}</span><span class="s1">&quot;</span><span class="se">\n\n</span><span class="s1"> --&gt; </span><span class="si">{}</span><span class="se">\n\n</span><span class="s1">&#39;</span>
+               <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ch_names_tsv</span><span class="p">),</span> <span class="n">channels_fname</span><span class="p">,</span> <span class="n">ch_names_tsv</span><span class="p">,</span>
+                       <span class="nb">len</span><span class="p">(</span><span class="n">ch_names_raw</span><span class="p">),</span> <span class="n">bids_fname</span><span class="p">,</span> <span class="n">ch_names_raw</span><span class="p">)</span>
+               <span class="p">)</span>
+
+        <span class="c1"># XXX: this could be due to MNE inserting a &#39;STI 014&#39; channel as the</span>
+        <span class="c1"># last channel: In that case, we can work. --&gt; Can be removed soon,</span>
+        <span class="c1"># because MNE will stop the synthesis of stim channels in the near</span>
+        <span class="c1"># future</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">ch_names_raw</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;STI 014&#39;</span> <span class="ow">and</span>
+                <span class="n">ch_names_raw</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">ch_names_tsv</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="c1"># Now we can do some work.</span>
+    <span class="c1"># The &quot;type&quot; column is mandatory in BIDS. We can use it to set channel</span>
+    <span class="c1"># types in the raw data using a mapping between channel types</span>
+    <span class="n">channel_type_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+
+    <span class="c1"># Get the best mapping we currently have from BIDS to MNE nomenclature</span>
+    <span class="n">bids_to_mne_ch_types</span> <span class="o">=</span> <span class="n">_get_ch_type_mapping</span><span class="p">(</span><span class="n">fro</span><span class="o">=</span><span class="s1">&#39;bids&#39;</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="s1">&#39;mne&#39;</span><span class="p">)</span>
+    <span class="n">ch_types_json</span> <span class="o">=</span> <span class="n">channels_dict</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">ch_name</span><span class="p">,</span> <span class="n">ch_type</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">ch_names_tsv</span><span class="p">,</span> <span class="n">ch_types_json</span><span class="p">):</span>
+
+        <span class="c1"># Try to map from BIDS nomenclature to MNE, leave channel type</span>
+        <span class="c1"># untouched if we are uncertain</span>
+        <span class="n">updated_ch_type</span> <span class="o">=</span> <span class="n">bids_to_mne_ch_types</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ch_type</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">updated_ch_type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">channel_type_dict</span><span class="p">[</span><span class="n">ch_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">updated_ch_type</span>
+
+    <span class="c1"># Set the channel types in the raw data according to channels.tsv</span>
+    <span class="n">raw</span><span class="o">.</span><span class="n">set_channel_types</span><span class="p">(</span><span class="n">channel_type_dict</span><span class="p">)</span>
+
+    <span class="c1"># Check whether there is the optional &quot;status&quot; column from which to infer</span>
+    <span class="c1"># good and bad channels</span>
+    <span class="k">if</span> <span class="s1">&#39;status&#39;</span> <span class="ow">in</span> <span class="n">channels_dict</span><span class="p">:</span>
+        <span class="c1"># find bads from channels.tsv</span>
+        <span class="n">bad_bool</span> <span class="o">=</span> <span class="p">[</span><span class="kc">True</span> <span class="k">if</span> <span class="n">chn</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;bad&#39;</span> <span class="k">else</span> <span class="kc">False</span>
+                    <span class="k">for</span> <span class="n">chn</span> <span class="ow">in</span> <span class="n">channels_dict</span><span class="p">[</span><span class="s1">&#39;status&#39;</span><span class="p">]]</span>
+        <span class="n">bads</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">channels_dict</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">])[</span><span class="n">bad_bool</span><span class="p">]</span>
+
+        <span class="c1"># merge with bads already present in raw data file (if there are any)</span>
+        <span class="n">unique_bads</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;bads&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">bads</span><span class="p">))</span>
+        <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;bads&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">unique_bads</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">raw</span>
+
+
+<div class="viewcode-block" id="read_raw_bids"><a class="viewcode-back" href="../../generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids">[docs]</a><span class="k">def</span> <span class="nf">read_raw_bids</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">,</span> <span class="n">bids_root</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Read BIDS compatible data.</span>
+
+<span class="sd">    Will attempt to read associated events.tsv and channels.tsv files to</span>
+<span class="sd">    populate the returned raw object with raw.annotations and raw.info[&#39;bads&#39;].</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    bids_fname : str</span>
+<span class="sd">        Full name of the data file</span>
+<span class="sd">    bids_root : str</span>
+<span class="sd">        Path to root of the BIDS folder</span>
+<span class="sd">    verbose : bool</span>
+<span class="sd">        The verbosity level</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    raw : instance of Raw</span>
+<span class="sd">        The data as MNE-Python Raw object.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Full path to data file is needed so that mne-bids knows</span>
+    <span class="c1"># what is the modality -- meg, eeg, ieeg to read</span>
+    <span class="n">bids_fname</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">)</span>
+    <span class="n">bids_basename</span> <span class="o">=</span> <span class="s1">&#39;_&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bids_fname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">kind</span> <span class="o">=</span> <span class="n">bids_fname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">ext</span> <span class="o">=</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">)</span>
+
+    <span class="c1"># Get the BIDS parameters (=entities)</span>
+    <span class="n">params</span> <span class="o">=</span> <span class="n">_parse_bids_filename</span><span class="p">(</span><span class="n">bids_basename</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
+
+    <span class="c1"># Construct the path to the &quot;kind&quot; where the data is stored</span>
+    <span class="c1"># Subject is mandatory ...</span>
+    <span class="n">kind_dir</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bids_root</span><span class="p">,</span> <span class="s1">&#39;sub-</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;sub&#39;</span><span class="p">]))</span>
+    <span class="c1"># Session is optional ...</span>
+    <span class="k">if</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;ses&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">kind_dir</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">kind_dir</span><span class="p">,</span> <span class="s1">&#39;ses-</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;ses&#39;</span><span class="p">]))</span>
+    <span class="c1"># Kind is mandatory</span>
+    <span class="n">kind_dir</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">kind_dir</span><span class="p">,</span> <span class="n">kind</span><span class="p">)</span>
+
+    <span class="n">config</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">ext</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;.fif&#39;</span><span class="p">,</span> <span class="s1">&#39;.ds&#39;</span><span class="p">,</span> <span class="s1">&#39;.vhdr&#39;</span><span class="p">,</span> <span class="s1">&#39;.edf&#39;</span><span class="p">,</span> <span class="s1">&#39;.bdf&#39;</span><span class="p">,</span> <span class="s1">&#39;.set&#39;</span><span class="p">,</span> <span class="s1">&#39;.sqd&#39;</span><span class="p">,</span> <span class="s1">&#39;.con&#39;</span><span class="p">):</span>
+        <span class="n">bids_fpath</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">kind_dir</span><span class="p">,</span>
+                             <span class="n">bids_basename</span> <span class="o">+</span> <span class="s1">&#39;_</span><span class="si">{}{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">kind</span><span class="p">,</span> <span class="n">ext</span><span class="p">))</span>
+
+    <span class="k">elif</span> <span class="n">ext</span> <span class="o">==</span> <span class="s1">&#39;.pdf&#39;</span><span class="p">:</span>
+        <span class="n">bids_raw_folder</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">kind_dir</span><span class="p">,</span> <span class="n">bids_basename</span> <span class="o">+</span> <span class="s1">&#39;_</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">kind</span><span class="p">))</span>
+        <span class="n">bids_fpath</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bids_raw_folder</span><span class="p">,</span> <span class="s1">&#39;c,rf*&#39;</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">config</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bids_raw_folder</span><span class="p">,</span> <span class="s1">&#39;config&#39;</span><span class="p">)</span>
+
+    <span class="n">raw</span> <span class="o">=</span> <span class="n">_read_raw</span><span class="p">(</span><span class="n">bids_fpath</span><span class="p">,</span> <span class="n">electrode</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hsp</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hpi</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                    <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span> <span class="n">montage</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+    <span class="c1"># Try to find an associated events.tsv to get information about the</span>
+    <span class="c1"># events in the recorded data</span>
+    <span class="n">events_fname</span> <span class="o">=</span> <span class="n">_find_matching_sidecar</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">,</span> <span class="n">bids_root</span><span class="p">,</span> <span class="s1">&#39;events.tsv&#39;</span><span class="p">,</span>
+                                          <span class="n">allow_fail</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">events_fname</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">raw</span> <span class="o">=</span> <span class="n">_handle_events_reading</span><span class="p">(</span><span class="n">events_fname</span><span class="p">,</span> <span class="n">raw</span><span class="p">)</span>
+
+    <span class="c1"># Try to find an associated channels.tsv to get information about the</span>
+    <span class="c1"># status and type of present channels</span>
+    <span class="n">channels_fname</span> <span class="o">=</span> <span class="n">_find_matching_sidecar</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">,</span> <span class="n">bids_root</span><span class="p">,</span>
+                                            <span class="s1">&#39;channels.tsv&#39;</span><span class="p">,</span> <span class="n">allow_fail</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">channels_fname</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">raw</span> <span class="o">=</span> <span class="n">_handle_channels_reading</span><span class="p">(</span><span class="n">channels_fname</span><span class="p">,</span> <span class="n">bids_fname</span><span class="p">,</span> <span class="n">raw</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">raw</span></div>
+
+
+<div class="viewcode-block" id="get_head_mri_trans"><a class="viewcode-back" href="../../generated/mne_bids.get_head_mri_trans.html#mne_bids.get_head_mri_trans">[docs]</a><span class="k">def</span> <span class="nf">get_head_mri_trans</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">,</span> <span class="n">bids_root</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Produce transformation matrix from MEG and MRI landmark points.</span>
+
+<span class="sd">    Will attempt to read the landmarks of Nasion, LPA, and RPA from the sidecar</span>
+<span class="sd">    files of (i) the MEG and (ii) the T1 weighted MRI data. The two sets of</span>
+<span class="sd">    points will then be used to calculate a transformation matrix from head</span>
+<span class="sd">    coordinates to MRI coordinates.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    bids_fname : str</span>
+<span class="sd">        Full name of the MEG data file</span>
+<span class="sd">    bids_root : str</span>
+<span class="sd">        Path to root of the BIDS folder</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    trans : instance of mne.transforms.Transform</span>
+<span class="sd">        The data transformation matrix from head to MRI coordinates</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">has_nibabel</span><span class="p">():</span>  <span class="c1"># pragma: no cover</span>
+        <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s1">&#39;This function requires nibabel.&#39;</span><span class="p">)</span>
+    <span class="kn">import</span> <span class="nn">nibabel</span> <span class="k">as</span> <span class="nn">nib</span>
+
+    <span class="c1"># Get the sidecar file for MRI landmarks</span>
+    <span class="n">bids_fname</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">)</span>
+    <span class="n">t1w_json_path</span> <span class="o">=</span> <span class="n">_find_matching_sidecar</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">,</span> <span class="n">bids_root</span><span class="p">,</span> <span class="s1">&#39;T1w.json&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Get MRI landmarks from the JSON sidecar</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">t1w_json_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">t1w_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+    <span class="n">mri_coords_dict</span> <span class="o">=</span> <span class="n">t1w_json</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;AnatomicalLandmarkCoordinates&#39;</span><span class="p">,</span> <span class="nb">dict</span><span class="p">())</span>
+    <span class="n">mri_landmarks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">((</span><span class="n">mri_coords_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;LPA&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">),</span>
+                                <span class="n">mri_coords_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;NAS&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">),</span>
+                                <span class="n">mri_coords_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;RPA&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)))</span>
+    <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">mri_landmarks</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Could not parse T1w sidecar file: &quot;</span><span class="si">{}</span><span class="s1">&quot;</span><span class="se">\n\n</span><span class="s1">&#39;</span>
+                           <span class="s1">&#39;The sidecar file MUST contain a key &#39;</span>
+                           <span class="s1">&#39;&quot;AnatomicalLandmarkCoordinates&quot; pointing to a &#39;</span>
+                           <span class="s1">&#39;dict with keys &quot;LPA&quot;, &quot;NAS&quot;, &quot;RPA&quot;. &#39;</span>
+                           <span class="s1">&#39;Yet, the following structure was found:</span><span class="se">\n\n</span><span class="s1">&quot;</span><span class="si">{}</span><span class="s1">&quot;&#39;</span>
+                           <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">t1w_json_path</span><span class="p">,</span> <span class="n">t1w_json</span><span class="p">))</span>
+
+    <span class="c1"># The MRI landmarks are in &quot;voxels&quot;. We need to convert the to the</span>
+    <span class="c1"># neuromag RAS coordinate system in order to compare the with MEG landmarks</span>
+    <span class="c1"># see also: `mne_bids.write.write_anat`</span>
+    <span class="n">t1w_path</span> <span class="o">=</span> <span class="n">t1w_json_path</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.json&#39;</span><span class="p">,</span> <span class="s1">&#39;.nii&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">op</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">t1w_path</span><span class="p">):</span>
+        <span class="n">t1w_path</span> <span class="o">+=</span> <span class="s1">&#39;.gz&#39;</span>  <span class="c1"># perhaps it is .nii.gz? ... else raise an error</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">op</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">t1w_path</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Could not find the T1 weighted MRI associated &#39;</span>
+                           <span class="s1">&#39;with &quot;</span><span class="si">{}</span><span class="s1">&quot;. Tried: &quot;</span><span class="si">{}</span><span class="s1">&quot; but it does not exist.&#39;</span>
+                           <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">t1w_json_path</span><span class="p">,</span> <span class="n">t1w_path</span><span class="p">))</span>
+    <span class="n">t1_nifti</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">t1w_path</span><span class="p">)</span>
+    <span class="c1"># Convert to MGH format to access vox2ras method</span>
+    <span class="n">t1_mgh</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">MGHImage</span><span class="p">(</span><span class="n">t1_nifti</span><span class="o">.</span><span class="n">dataobj</span><span class="p">,</span> <span class="n">t1_nifti</span><span class="o">.</span><span class="n">affine</span><span class="p">)</span>
+
+    <span class="c1"># now extract transformation matrix and put back to RAS coordinates of MRI</span>
+    <span class="n">vox2ras_tkr</span> <span class="o">=</span> <span class="n">t1_mgh</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">get_vox2ras_tkr</span><span class="p">()</span>
+    <span class="n">mri_landmarks</span> <span class="o">=</span> <span class="n">apply_trans</span><span class="p">(</span><span class="n">vox2ras_tkr</span><span class="p">,</span> <span class="n">mri_landmarks</span><span class="p">)</span>
+    <span class="n">mri_landmarks</span> <span class="o">=</span> <span class="n">mri_landmarks</span> <span class="o">*</span> <span class="mf">1e-3</span>
+
+    <span class="c1"># Get MEG landmarks from the raw file</span>
+    <span class="n">raw</span> <span class="o">=</span> <span class="n">read_raw_bids</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">,</span> <span class="n">bids_root</span><span class="p">)</span>
+    <span class="n">meg_coords_dict</span> <span class="o">=</span> <span class="n">_extract_landmarks</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;dig&#39;</span><span class="p">])</span>
+    <span class="n">meg_landmarks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">((</span><span class="n">meg_coords_dict</span><span class="p">[</span><span class="s1">&#39;LPA&#39;</span><span class="p">],</span>
+                                <span class="n">meg_coords_dict</span><span class="p">[</span><span class="s1">&#39;NAS&#39;</span><span class="p">],</span>
+                                <span class="n">meg_coords_dict</span><span class="p">[</span><span class="s1">&#39;RPA&#39;</span><span class="p">]))</span>
+
+    <span class="c1"># Given the two sets of points, fit the transform</span>
+    <span class="n">trans_fitted</span> <span class="o">=</span> <span class="n">fit_matched_points</span><span class="p">(</span><span class="n">src_pts</span><span class="o">=</span><span class="n">meg_landmarks</span><span class="p">,</span>
+                                      <span class="n">tgt_pts</span><span class="o">=</span><span class="n">mri_landmarks</span><span class="p">)</span>
+    <span class="n">trans</span> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">transforms</span><span class="o">.</span><span class="n">Transform</span><span class="p">(</span><span class="n">fro</span><span class="o">=</span><span class="s1">&#39;head&#39;</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="s1">&#39;mri&#39;</span><span class="p">,</span> <span class="n">trans</span><span class="o">=</span><span class="n">trans_fitted</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">trans</span></div>
+</pre></div>
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2020, MNE Developers. Last updated on 2020-03-22.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

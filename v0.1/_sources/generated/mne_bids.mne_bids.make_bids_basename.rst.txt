@@ -1,0 +1,6 @@
+mne\_bids.mne\_bids.make\_bids\_basename
+========================================
+
+.. currentmodule:: mne_bids.mne_bids
+
+.. autofunction:: make_bids_basename

@@ -1,0 +1,6 @@
+mne\_bids.write\_anat
+=====================
+
+.. currentmodule:: mne_bids
+
+.. autofunction:: write_anat

@@ -1,0 +1,534 @@
+.. note::
+    :class: sphx-glr-download-link-note
+
+    Click :ref:`here <sphx_glr_download_auto_examples_convert_mne_sample.py>` to download the full example code
+.. rst-class:: sphx-glr-example-title
+
+.. _sphx_glr_auto_examples_convert_mne_sample.py:
+
+
+======================================
+Convert MNE sample data to BIDS format
+======================================
+
+This example demonstrates how to convert your existing files into a
+BIDS-compatible folder.
+
+
+.. code-block:: default
+
+
+    # Authors: Mainak Jas <mainak.jas@telecom-paristech.fr>
+    #          Alexandre Gramfort <alexandre.gramfort@telecom-paristech.fr>
+    #          Teon Brooks <teon.brooks@gmail.com>
+
+    # License: BSD (3-clause)
+
+
+
+
+
+
+
+
+Let us import mne_bids
+
+
+.. code-block:: default
+
+
+    import os.path as op
+
+    from datetime import datetime
+
+    import mne
+    from mne.datasets import sample
+
+    from mne_bids import write_raw_bids, read_raw_bids, make_bids_basename
+    from mne_bids.utils import print_dir_tree
+
+
+
+
+
+
+
+
+And define the paths and event_id dictionary.
+
+
+.. code-block:: default
+
+
+    data_path = sample.data_path()
+    event_id = {'Auditory/Left': 1, 'Auditory/Right': 2, 'Visual/Left': 3,
+                'Visual/Right': 4, 'Smiley': 5, 'Button': 32}
+
+    raw_fname = op.join(data_path, 'MEG', 'sample', 'sample_audvis_raw.fif')
+    events_data = op.join(data_path, 'MEG', 'sample', 'sample_audvis_raw-eve.fif')
+    output_path = op.join(data_path, '..', 'MNE-sample-data-bids')
+
+
+
+
+
+
+
+
+Specify the raw_file and events_data and run the BIDS conversion.
+
+
+.. code-block:: default
+
+
+    raw = mne.io.read_raw_fif(raw_fname)
+    bids_basename = make_bids_basename(subject='01', session='01',
+                                       task='audiovisual', run='01')
+    write_raw_bids(raw, bids_basename, output_path, events_data=events_data,
+                   event_id=event_id, overwrite=True)
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    Opening raw data file /home/stefanappelhoff/mne_data/MNE-sample-data/MEG/sample/sample_audvis_raw.fif...
+        Read a total of 3 projection items:
+            PCA-v1 (1 x 102)  idle
+            PCA-v2 (1 x 102)  idle
+            PCA-v3 (1 x 102)  idle
+        Range : 25800 ... 192599 =     42.956 ...   320.670 secs
+    Ready.
+    Current compensation grade : 0
+    Opening raw data file /home/stefanappelhoff/mne_data/MNE-sample-data/MEG/sample/sample_audvis_raw.fif...
+        Read a total of 3 projection items:
+            PCA-v1 (1 x 102)  idle
+            PCA-v2 (1 x 102)  idle
+            PCA-v3 (1 x 102)  idle
+        Range : 25800 ... 192599 =     42.956 ...   320.670 secs
+    Ready.
+    Current compensation grade : 0
+    Creating folder: /home/stefanappelhoff/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg
+
+    Writing '/home/stefanappelhoff/mne_data/MNE-sample-data/../MNE-sample-data-bids/participants.tsv'...
+
+    age     group   hand    participant_id  sex
+    n/a     n/a     n/a     sub-01  n/a
+    n/a     n/a     n/a     sub-emptyroom   n/a
+
+    Writing '/home/stefanappelhoff/mne_data/MNE-sample-data/../MNE-sample-data-bids/participants.json'...
+
+    {
+        "participant_id": {
+            "Description": "Unique participant identifier"
+        },
+        "age": {
+            "Description": "Age of the participant at time of testing",
+            "Units": "years"
+        },
+        "sex": {
+            "Description": "Biological sex of the participant",
+            "Levels": {
+                "F": "female",
+                "M": "male"
+            }
+        }
+    }
+
+    Writing '/home/stefanappelhoff/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/sub-01_ses-01_scans.tsv'...
+
+    filename        acq_time
+    meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif       2002-12-03T20:01:10
+
+    Writing '/home/stefanappelhoff/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_coordsystem.json'...
+
+    {
+        "MEGCoordinateSystem": "Elekta",
+        "MEGCoordinateUnits": "m",
+        "HeadCoilCoordinates": {
+            "NAS": [
+                3.725290298461914e-09,
+                0.10260561108589172,
+                4.190951585769653e-09
+            ],
+            "LPA": [
+                -0.07137660682201385,
+                0.0,
+                5.122274160385132e-09
+            ],
+            "RPA": [
+                0.07526767998933792,
+                0.0,
+                5.587935447692871e-09
+            ],
+            "coil1": [
+                0.032922741025686264,
+                0.09897983074188232,
+                0.07984329760074615
+            ],
+            "coil2": [
+                -0.06998106092214584,
+                0.06771647930145264,
+                0.06888450682163239
+            ],
+            "coil3": [
+                -0.07260829955339432,
+                -0.02086828649044037,
+                0.0971473976969719
+            ],
+            "coil4": [
+                0.04996863007545471,
+                -0.007233052980154753,
+                0.1228904277086258
+            ]
+        },
+        "HeadCoilCoordinateSystem": "RAS",
+        "HeadCoilCoordinateUnits": "m"
+    }
+
+    Writing '/home/stefanappelhoff/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_events.tsv'...
+
+    onset   duration        trial_type      value   sample
+    3.6246181587150867      0.0     Auditory/Right  2       2177
+    4.237323479067476       0.0     Visual/Left     3       2545
+    4.946596485779753       0.0     Auditory/Left   1       2971
+    5.692498614904401       0.0     Visual/Right    4       3419
+    6.41342634238425        0.0     Auditory/Right  2       3852
+
+    Writing '/home/stefanappelhoff/mne_data/MNE-sample-data/../MNE-sample-data-bids/dataset_description.json'...
+
+    {
+        "Name": " ",
+        "BIDSVersion": "1.2.0"
+    }
+    /home/stefanappelhoff/Desktop/bids/mne-bids/mne_bids/write.py:418: UserWarning: No line frequency found, defaulting to 50 Hz
+      warn('No line frequency found, defaulting to 50 Hz')
+    Reading 0 ... 166799  =      0.000 ...   277.714 secs...
+
+    Writing '/home/stefanappelhoff/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.json'...
+
+    {
+        "TaskName": "audiovisual",
+        "Manufacturer": "Elekta",
+        "PowerLineFrequency": 50,
+        "SamplingFrequency": 600.614990234375,
+        "SoftwareFilters": "n/a",
+        "RecordingDuration": 277.7136813300495,
+        "RecordingType": "continuous",
+        "DewarPosition": "n/a",
+        "DigitizedLandmarks": false,
+        "DigitizedHeadPoints": false,
+        "MEGChannelCount": 306,
+        "MEGREFChannelCount": 0,
+        "EEGChannelCount": 60,
+        "EOGChannelCount": 1,
+        "ECGChannelCount": 0,
+        "EMGChannelCount": 0,
+        "MiscChannelCount": 0,
+        "TriggerChannelCount": 9
+    }
+
+    Writing '/home/stefanappelhoff/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_channels.tsv'...
+
+    name    type    units   low_cutoff      high_cutoff     description     sampling_frequency      status
+    MEG 0113        MEGGRADPLANAR   T/m     0.10000000149011612     172.17630004882812      Planar Gradiometer      600.614990234375        good
+    MEG 0112        MEGGRADPLANAR   T/m     0.10000000149011612     172.17630004882812      Planar Gradiometer      600.614990234375        good
+    MEG 0111        MEGMAG  T       0.10000000149011612     172.17630004882812      Magnetometer    600.614990234375        good
+    MEG 0122        MEGGRADPLANAR   T/m     0.10000000149011612     172.17630004882812      Planar Gradiometer      600.614990234375        good
+    MEG 0123        MEGGRADPLANAR   T/m     0.10000000149011612     172.17630004882812      Planar Gradiometer      600.614990234375        good
+    Copying data files to /home/stefanappelhoff/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif
+    /home/stefanappelhoff/Desktop/bids/mne-bids/mne_bids/write.py:921: RuntimeWarning: This filename (/home/stefanappelhoff/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif) does not conform to MNE naming conventions. All raw files should end with raw.fif, raw_sss.fif, raw_tsss.fif, raw.fif.gz, raw_sss.fif.gz or raw_tsss.fif.gz
+      raw.save(bids_fname, overwrite=True, split_naming='neuromag')
+    Overwriting existing file.
+    Writing /home/stefanappelhoff/mne_data/MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif
+    Closing /home/stefanappelhoff/mne_data/MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif [done]
+
+    '/home/stefanappelhoff/mne_data/MNE-sample-data/../MNE-sample-data-bids'
+
+
+
+Specify some empty room data and run BIDS conversion on it.
+
+
+.. code-block:: default
+
+    er_raw_fname = op.join(data_path, 'MEG', 'sample', 'ernoise_raw.fif')
+    er_raw = mne.io.read_raw_fif(er_raw_fname)
+    # For empty room data we need to specify that the subject ID is
+    # 'emptyroom', and that the task is 'noise'.
+    # We also need to specify the recording date in the format YYYYMMDD for the
+    # session id.
+    er_date = datetime.fromtimestamp(
+        er_raw.info['meas_date'][0]).strftime('%Y%m%d')
+    er_bids_basename = 'sub-emptyroom_ses-{0}_task-noise'.format(er_date)
+    write_raw_bids(er_raw, er_bids_basename, output_path, overwrite=True)
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    Opening raw data file /home/stefanappelhoff/mne_data/MNE-sample-data/MEG/sample/ernoise_raw.fif...
+    Isotrak not found
+        Read a total of 3 projection items:
+            PCA-v1 (1 x 102)  idle
+            PCA-v2 (1 x 102)  idle
+            PCA-v3 (1 x 102)  idle
+        Range : 19800 ... 85867 =     32.966 ...   142.965 secs
+    Ready.
+    Current compensation grade : 0
+    Opening raw data file /home/stefanappelhoff/mne_data/MNE-sample-data/MEG/sample/ernoise_raw.fif...
+    Isotrak not found
+        Read a total of 3 projection items:
+            PCA-v1 (1 x 102)  idle
+            PCA-v2 (1 x 102)  idle
+            PCA-v3 (1 x 102)  idle
+        Range : 19800 ... 85867 =     32.966 ...   142.965 secs
+    Ready.
+    Current compensation grade : 0
+    Creating folder: /home/stefanappelhoff/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-emptyroom/ses-20021206/meg
+
+    Writing '/home/stefanappelhoff/mne_data/MNE-sample-data/../MNE-sample-data-bids/participants.tsv'...
+
+    age     group   hand    participant_id  sex
+    n/a     n/a     n/a     sub-01  n/a
+    n/a     n/a     n/a     sub-emptyroom   n/a
+
+    Writing '/home/stefanappelhoff/mne_data/MNE-sample-data/../MNE-sample-data-bids/participants.json'...
+
+    {
+        "participant_id": {
+            "Description": "Unique participant identifier"
+        },
+        "age": {
+            "Description": "Age of the participant at time of testing",
+            "Units": "years"
+        },
+        "sex": {
+            "Description": "Biological sex of the participant",
+            "Levels": {
+                "F": "female",
+                "M": "male"
+            }
+        }
+    }
+
+    Writing '/home/stefanappelhoff/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-emptyroom/ses-20021206/sub-emptyroom_ses-20021206_scans.tsv'...
+
+    filename        acq_time
+    meg/sub-emptyroom_ses-20021206_task-noise_meg.fif       2002-12-06T16:16:18
+
+    Writing '/home/stefanappelhoff/mne_data/MNE-sample-data/../MNE-sample-data-bids/dataset_description.json'...
+
+    {
+        "Name": " ",
+        "BIDSVersion": "1.2.0"
+    }
+
+    Writing '/home/stefanappelhoff/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-emptyroom/ses-20021206/meg/sub-emptyroom_ses-20021206_task-noise_meg.json'...
+
+    {
+        "TaskName": "noise",
+        "Manufacturer": "Elekta",
+        "PowerLineFrequency": 50,
+        "SamplingFrequency": 600.614990234375,
+        "SoftwareFilters": "n/a",
+        "RecordingDuration": 109.9989195644601,
+        "RecordingType": "continuous",
+        "DewarPosition": "n/a",
+        "DigitizedLandmarks": false,
+        "DigitizedHeadPoints": false,
+        "MEGChannelCount": 306,
+        "MEGREFChannelCount": 0,
+        "EEGChannelCount": 0,
+        "EOGChannelCount": 0,
+        "ECGChannelCount": 0,
+        "EMGChannelCount": 0,
+        "MiscChannelCount": 0,
+        "TriggerChannelCount": 9
+    }
+
+    Writing '/home/stefanappelhoff/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-emptyroom/ses-20021206/meg/sub-emptyroom_ses-20021206_task-noise_channels.tsv'...
+
+    name    type    units   low_cutoff      high_cutoff     description     sampling_frequency      status
+    MEG 0113        MEGGRADPLANAR   T/m     0.10000000149011612     172.17630004882812      Planar Gradiometer      600.614990234375        good
+    MEG 0112        MEGGRADPLANAR   T/m     0.10000000149011612     172.17630004882812      Planar Gradiometer      600.614990234375        good
+    MEG 0111        MEGMAG  T       0.10000000149011612     172.17630004882812      Magnetometer    600.614990234375        good
+    MEG 0122        MEGGRADPLANAR   T/m     0.10000000149011612     172.17630004882812      Planar Gradiometer      600.614990234375        good
+    MEG 0123        MEGGRADPLANAR   T/m     0.10000000149011612     172.17630004882812      Planar Gradiometer      600.614990234375        good
+    Copying data files to /home/stefanappelhoff/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-emptyroom/ses-20021206/meg/sub-emptyroom_ses-20021206_task-noise_meg.fif
+    /home/stefanappelhoff/Desktop/bids/mne-bids/mne_bids/write.py:921: RuntimeWarning: This filename (/home/stefanappelhoff/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-emptyroom/ses-20021206/meg/sub-emptyroom_ses-20021206_task-noise_meg.fif) does not conform to MNE naming conventions. All raw files should end with raw.fif, raw_sss.fif, raw_tsss.fif, raw.fif.gz, raw_sss.fif.gz or raw_tsss.fif.gz
+      raw.save(bids_fname, overwrite=True, split_naming='neuromag')
+    Overwriting existing file.
+    Writing /home/stefanappelhoff/mne_data/MNE-sample-data-bids/sub-emptyroom/ses-20021206/meg/sub-emptyroom_ses-20021206_task-noise_meg.fif
+    Closing /home/stefanappelhoff/mne_data/MNE-sample-data-bids/sub-emptyroom/ses-20021206/meg/sub-emptyroom_ses-20021206_task-noise_meg.fif [done]
+
+    '/home/stefanappelhoff/mne_data/MNE-sample-data/../MNE-sample-data-bids'
+
+
+
+Now let's see the structure of the BIDS folder we created.
+
+
+.. code-block:: default
+
+    print_dir_tree(output_path)
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    |MNE-sample-data-bids
+    |--- participants.tsv
+    |--- dataset_description.json
+    |--- participants.json
+    |--- sub-emptyroom
+    |------ ses-20021201
+    |--------- sub-emptyroom_ses-20021201_scans.tsv
+    |--------- meg
+    |------------ sub-emptyroom_ses-20021201_task-noise_meg.json
+    |------------ sub-emptyroom_ses-20021201_task-noise_channels.tsv
+    |------------ sub-emptyroom_ses-20021201_task-noise_meg.fif
+    |------ ses-20021001
+    |--------- sub-emptyroom_ses-20021001_scans.tsv
+    |--------- meg
+    |------------ sub-emptyroom_ses-20021001_task-noise_meg.json
+    |------------ sub-emptyroom_ses-20021001_task-noise_meg.fif
+    |------------ sub-emptyroom_ses-20021001_task-noise_channels.tsv
+    |------ ses-20021206
+    |--------- sub-emptyroom_ses-20021206_scans.tsv
+    |--------- meg
+    |------------ sub-emptyroom_ses-20021206_task-noise_meg.json
+    |------------ sub-emptyroom_ses-20021206_task-noise_channels.tsv
+    |------------ sub-emptyroom_ses-20021206_task-noise_meg.fif
+    |------ ses-20021204
+    |--------- sub-emptyroom_ses-20021204_scans.tsv
+    |--------- meg
+    |------------ sub-emptyroom_ses-20021204_task-noise_meg.json
+    |------------ sub-emptyroom_ses-20021204_task-noise_meg.fif
+    |------------ sub-emptyroom_ses-20021204_task-noise_channels.tsv
+    |--- sub-01
+    |------ ses-01
+    |--------- sub-01_ses-01_scans.tsv
+    |--------- meg
+    |------------ sub-01_ses-01_coordsystem.json
+    |------------ sub-01_ses-01_task-audiovisual_run-01_meg.json
+    |------------ sub-01_ses-01_task-audiovisual_run-01_channels.tsv
+    |------------ sub-01_ses-01_task-audiovisual_run-01_meg.fif
+    |------------ sub-01_ses-01_task-audiovisual_run-01_events.tsv
+    |--------- anat
+    |------------ sub-01_ses-01_T1w.nii.gz
+    |------------ sub-01_ses-01_T1w.json
+
+
+
+
+Finally, we can read the BIDS data we created as well.
+
+
+.. code-block:: default
+
+    raw, events, event_id = read_raw_bids(bids_basename + '_meg.fif', output_path)
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    Opening raw data file /home/stefanappelhoff/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif...
+    /home/stefanappelhoff/Desktop/bids/mne-bids/mne_bids/read.py:55: RuntimeWarning: This filename (/home/stefanappelhoff/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif) does not conform to MNE naming conventions. All raw files should end with raw.fif, raw_sss.fif, raw_tsss.fif, raw.fif.gz, raw_sss.fif.gz or raw_tsss.fif.gz
+      raw = reader[ext](raw_fname, allow_maxshield=allow_maxshield)
+        Read a total of 3 projection items:
+            PCA-v1 (1 x 102)  idle
+            PCA-v2 (1 x 102)  idle
+            PCA-v3 (1 x 102)  idle
+        Range : 25800 ... 192599 =     42.956 ...   320.670 secs
+    Ready.
+    Current compensation grade : 0
+
+
+
+
+The data is already in a convenient form to create epochs and evokeds.
+
+
+.. code-block:: default
+
+    epochs = mne.Epochs(raw, events, event_id)
+    epochs['Auditory'].average().plot()
+
+
+
+.. image:: /auto_examples/images/sphx_glr_convert_mne_sample_001.png
+    :class: sphx-glr-single-img
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    320 matching events found
+    Applying baseline correction (mode: mean)
+    Not setting metadata
+    Created an SSP operator (subspace dimension = 3)
+    3 projection items activated
+
+    <Figure size 640x500 with 3 Axes>
+
+
+
+
+.. rst-class:: sphx-glr-timing
+
+   **Total running time of the script:** ( 0 minutes  4.385 seconds)
+
+
+.. _sphx_glr_download_auto_examples_convert_mne_sample.py:
+
+
+.. only :: html
+
+ .. container:: sphx-glr-footer
+    :class: sphx-glr-footer-example
+
+
+
+  .. container:: sphx-glr-download
+
+     :download:`Download Python source code: convert_mne_sample.py <convert_mne_sample.py>`
+
+
+
+  .. container:: sphx-glr-download
+
+     :download:`Download Jupyter notebook: convert_mne_sample.ipynb <convert_mne_sample.ipynb>`
+
+
+.. only:: html
+
+ .. rst-class:: sphx-glr-signature
+
+    `Gallery generated by Sphinx-Gallery <https://sphinx-gallery.github.io>`_

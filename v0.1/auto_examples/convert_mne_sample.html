@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Convert MNE sample data to BIDS format &#8212; mne_bids 0.1 documentation</title>
+    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          MNE-BIDS</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.1</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="index.html">Gallery</a></li>
+                <li><a href="../api.html">API</a></li>
+                <li><a href="https://github.com/mne-tools/mne-bids">Github</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"></ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">Convert MNE sample data to BIDS format</a></li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+              <li class="hidden-sm">
+<div id="sourcelink">
+  <a href="../_sources/auto_examples/convert_mne_sample.rst.txt"
+     rel="nofollow">Source</a>
+</div></li>
+            
+          </ul>
+
+          
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-convert-mne-sample-py"><span class="std std-ref">here</span></a> to download the full example code</p>
+</div>
+<div class="sphx-glr-example-title section" id="convert-mne-sample-data-to-bids-format">
+<span id="sphx-glr-auto-examples-convert-mne-sample-py"></span><h1>Convert MNE sample data to BIDS format<a class="headerlink" href="#convert-mne-sample-data-to-bids-format" title="Permalink to this headline">¶</a></h1>
+<p>This example demonstrates how to convert your existing files into a
+BIDS-compatible folder.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Authors: Mainak Jas &lt;mainak.jas@telecom-paristech.fr&gt;</span>
+<span class="c1">#          Alexandre Gramfort &lt;alexandre.gramfort@telecom-paristech.fr&gt;</span>
+<span class="c1">#          Teon Brooks &lt;teon.brooks@gmail.com&gt;</span>
+
+<span class="c1"># License: BSD (3-clause)</span>
+</pre></div>
+</div>
+<p>Let us import mne_bids</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os.path</span> <span class="k">as</span> <span class="nn">op</span>
+
+<span class="kn">import</span> <span class="nn">mne</span>
+<span class="kn">from</span> <span class="nn">mne.datasets</span> <span class="kn">import</span> <span class="n">sample</span>
+
+<span class="kn">from</span> <span class="nn">mne_bids</span> <span class="kn">import</span> <span class="n">write_raw_bids</span>
+<span class="kn">from</span> <span class="nn">mne_bids.utils</span> <span class="kn">import</span> <span class="n">print_dir_tree</span>
+</pre></div>
+</div>
+<p>And define the paths and event_id dictionary.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">data_path</span> <span class="o">=</span> <a href="http://mne-tools.github.io/stable/generated/mne.datasets.sample.data_path.html#mne.datasets.sample.data_path" title="View documentation for mne.datasets.sample.data_path"><span class="n">sample</span><span class="o">.</span><span class="n">data_path</span></a><span class="p">()</span>
+<span class="n">event_id</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Auditory/Left&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;Auditory/Right&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;Visual/Left&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+            <span class="s1">&#39;Visual/Right&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="s1">&#39;Smiley&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s1">&#39;Button&#39;</span><span class="p">:</span> <span class="mi">32</span><span class="p">}</span>
+
+<span class="n">raw_fname</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="s1">&#39;MEG&#39;</span><span class="p">,</span> <span class="s1">&#39;sample&#39;</span><span class="p">,</span> <span class="s1">&#39;sample_audvis_raw.fif&#39;</span><span class="p">)</span>
+<span class="n">events_data</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="s1">&#39;MEG&#39;</span><span class="p">,</span> <span class="s1">&#39;sample&#39;</span><span class="p">,</span> <span class="s1">&#39;sample_audvis_raw-eve.fif&#39;</span><span class="p">)</span>
+<span class="n">output_path</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="s1">&#39;..&#39;</span><span class="p">,</span> <span class="s1">&#39;MNE-sample-data-bids&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Finally, we specify the raw_file and events_data</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="http://mne-tools.github.io/stable/generated/mne.io.Raw.html#mne.io.Raw" title="View documentation for mne.io.Raw"><span class="n">raw</span></a> <span class="o">=</span> <a href="http://mne-tools.github.io/stable/generated/mne.io.read_raw_fif.html#mne.io.read_raw_fif" title="View documentation for mne.io.read_raw_fif"><span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_raw_fif</span></a><span class="p">(</span><span class="n">raw_fname</span><span class="p">)</span>
+<span class="n">bids_basename</span> <span class="o">=</span> <span class="s1">&#39;sub-01_ses-01_task-audiovisual_run-01&#39;</span>
+<span class="n">write_raw_bids</span><span class="p">(</span><a href="http://mne-tools.github.io/stable/generated/mne.io.Raw.html#mne.io.Raw" title="View documentation for mne.io.Raw"><span class="n">raw</span></a><span class="p">,</span> <span class="n">bids_basename</span><span class="p">,</span> <span class="n">output_path</span><span class="p">,</span> <span class="n">events_data</span><span class="o">=</span><span class="n">events_data</span><span class="p">,</span>
+               <span class="n">event_id</span><span class="o">=</span><span class="n">event_id</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Opening raw data file /home/stefanappelhoff/mne_data/MNE-sample-data/MEG/sample/sample_audvis_raw.fif...
+    Read a total of 3 projection items:
+        PCA-v1 (1 x 102)  idle
+        PCA-v2 (1 x 102)  idle
+        PCA-v3 (1 x 102)  idle
+    Range : 25800 ... 192599 =     42.956 ...   320.670 secs
+Ready.
+Current compensation grade : 0
+Opening raw data file /home/stefanappelhoff/mne_data/MNE-sample-data/MEG/sample/sample_audvis_raw.fif...
+    Read a total of 3 projection items:
+        PCA-v1 (1 x 102)  idle
+        PCA-v2 (1 x 102)  idle
+        PCA-v3 (1 x 102)  idle
+    Range : 25800 ... 192599 =     42.956 ...   320.670 secs
+Ready.
+Current compensation grade : 0
+
+Writing &#39;/home/stefanappelhoff/mne_data/MNE-sample-data/../MNE-sample-data-bids/participants.tsv&#39;...
+
+   age group hand participant_id  sex
+0  NaN   NaN  NaN         sub-01  NaN
+1  n/a   n/a  n/a  sub-emptyroom  n/a
+
+Writing &#39;/home/stefanappelhoff/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/sub-01_ses-01_scans.tsv&#39;...
+
+                                            filename             acq_time
+0  meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif  2002-12-03T20:01:10
+
+Writing &#39;/home/stefanappelhoff/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_events.tsv&#39;...
+
+      onset  duration      trial_type  event_value  event_sample
+0  3.624618       0.0  Auditory/Right            2          2177
+1  4.237323       0.0     Visual/Left            3          2545
+2  4.946596       0.0   Auditory/Left            1          2971
+3  5.692499       0.0    Visual/Right            4          3419
+4  6.413426       0.0  Auditory/Right            2          3852
+
+Writing &#39;/home/stefanappelhoff/mne_data/MNE-sample-data/../MNE-sample-data-bids/dataset_description.json&#39;...
+
+{
+    &quot;Name&quot;: &quot; &quot;,
+    &quot;BIDSVersion&quot;: &quot;1.1.1 (draft)&quot;
+}
+/home/stefanappelhoff/Desktop/bids/mne-bids/mne_bids/mne_bids.py:431: UserWarning: No line frequency found, defaulting to 50 Hz
+  warn(&#39;No line frequency found, defaulting to 50 Hz&#39;)
+Reading 0 ... 166799  =      0.000 ...   277.714 secs...
+
+Writing &#39;/home/stefanappelhoff/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.json&#39;...
+
+{
+    &quot;TaskName&quot;: &quot;audiovisual&quot;,
+    &quot;Manufacturer&quot;: &quot;Elekta&quot;,
+    &quot;PowerLineFrequency&quot;: 50,
+    &quot;SamplingFrequency&quot;: 600.614990234375,
+    &quot;SoftwareFilters&quot;: &quot;n/a&quot;,
+    &quot;RecordingDuration&quot;: 277.7136813300495,
+    &quot;RecordingType&quot;: &quot;continuous&quot;,
+    &quot;DewarPosition&quot;: &quot;n/a&quot;,
+    &quot;DigitizedLandmarks&quot;: false,
+    &quot;DigitizedHeadPoints&quot;: false,
+    &quot;MEGChannelCount&quot;: 306,
+    &quot;MEGREFChannelCount&quot;: 0,
+    &quot;EEGChannelCount&quot;: 60,
+    &quot;EOGChannelCount&quot;: 1,
+    &quot;ECGChannelCount&quot;: 0,
+    &quot;EMGChannelCount&quot;: 0,
+    &quot;MiscChannelCount&quot;: 0,
+    &quot;TriggerChannelCount&quot;: 9
+}
+
+Writing &#39;/home/stefanappelhoff/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_channels.tsv&#39;...
+
+       name           type units         description  sampling_frequency  \
+0  MEG 0113  MEGGRADPLANAR   T/m  Planar Gradiometer           600.61499
+1  MEG 0112  MEGGRADPLANAR   T/m  Planar Gradiometer           600.61499
+2  MEG 0111         MEGMAG     T        Magnetometer           600.61499
+3  MEG 0122  MEGGRADPLANAR   T/m  Planar Gradiometer           600.61499
+4  MEG 0123  MEGGRADPLANAR   T/m  Planar Gradiometer           600.61499
+
+   low_cutoff  high_cutoff status
+0         0.1     172.1763   good
+1         0.1     172.1763   good
+2         0.1     172.1763   good
+3         0.1     172.1763   good
+4         0.1     172.1763   good
+Copying data files to /home/stefanappelhoff/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif
+/home/stefanappelhoff/Desktop/bids/mne-bids/mne_bids/mne_bids.py:711: RuntimeWarning: This filename (/home/stefanappelhoff/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif) does not conform to MNE naming conventions. All raw files should end with raw.fif, raw_sss.fif, raw_tsss.fif, raw.fif.gz, raw_sss.fif.gz or raw_tsss.fif.gz
+  raw.save(bids_fname, overwrite=True)
+Overwriting existing file.
+Writing /home/stefanappelhoff/mne_data/MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif
+Closing /home/stefanappelhoff/mne_data/MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif [done]
+
+&#39;/home/stefanappelhoff/mne_data/MNE-sample-data/../MNE-sample-data-bids&#39;
+</pre></div>
+</div>
+<p>Now let’s see the structure of the BIDS folder we created.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">print_dir_tree</span><span class="p">(</span><span class="n">output_path</span><span class="p">)</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>|------------------ MNE-sample-data-bids
+|--------------------- participants.tsv
+|--------------------- dataset_description.json
+|--------------------- participants.json
+|--------------------- sub-emptyroom
+|------------------------ ses-20021201
+|--------------------------- sub-emptyroom_ses-20021201_scans.tsv
+|--------------------------- meg
+|------------------------------ sub-emptyroom_ses-20021201_task-noise_meg.json
+|------------------------------ sub-emptyroom_ses-20021201_task-noise_channels.tsv
+|------------------------------ sub-emptyroom_ses-20021201_task-noise_meg.fif
+|------------------------ ses-20021001
+|--------------------------- sub-emptyroom_ses-20021001_scans.tsv
+|--------------------------- meg
+|------------------------------ sub-emptyroom_ses-20021001_task-noise_meg.json
+|------------------------------ sub-emptyroom_ses-20021001_task-noise_meg.fif
+|------------------------------ sub-emptyroom_ses-20021001_task-noise_channels.tsv
+|------------------------ ses-20021206
+|--------------------------- sub-emptyroom_ses-20021206_scans.tsv
+|--------------------------- meg
+|------------------------------ sub-emptyroom_ses-20021206_task-noise_meg.json
+|------------------------------ sub-emptyroom_ses-20021206_task-noise_channels.tsv
+|------------------------------ sub-emptyroom_ses-20021206_task-noise_meg.fif
+|------------------------ ses-20021204
+|--------------------------- sub-emptyroom_ses-20021204_scans.tsv
+|--------------------------- meg
+|------------------------------ sub-emptyroom_ses-20021204_task-noise_meg.json
+|------------------------------ sub-emptyroom_ses-20021204_task-noise_meg.fif
+|------------------------------ sub-emptyroom_ses-20021204_task-noise_channels.tsv
+|--------------------- sub-01
+|------------------------ ses-01
+|--------------------------- sub-01_ses-01_scans.tsv
+|--------------------------- meg
+|------------------------------ sub-01_ses-01_coordsystem.json
+|------------------------------ sub-01_ses-01_task-audiovisual_run-01_meg.json
+|------------------------------ sub-01_ses-01_task-audiovisual_run-01_channels.tsv
+|------------------------------ sub-01_ses-01_task-audiovisual_run-01_meg.fif
+|------------------------------ sub-01_ses-01_task-audiovisual_run-01_events.tsv
+|--------------------------- anat
+|------------------------------ sub-01_ses-01_T1w.nii.gz
+|------------------------------ sub-01_ses-01_T1w.json
+</pre></div>
+</div>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  1.469 seconds)</p>
+<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-mne-sample-py">
+<div class="sphx-glr-download docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/86851480108d4b249520df3993b0222b/convert_mne_sample.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">convert_mne_sample.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/529f3230e5683b7676557bd33b2ea01b/convert_mne_sample.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">convert_mne_sample.ipynb</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2020, MNE Developers. Last updated on 2020-03-22.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>
