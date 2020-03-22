@@ -81,6 +81,9 @@ html_show_sourcelink = False
 html_theme = 'bootstrap'
 html_theme_path = sphinx_bootstrap_theme.get_html_theme_path()
 
+# Add any paths that contain templates here, relative to this directory.
+templates_path = ['_templates']
+
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
@@ -102,12 +105,14 @@ html_theme_options = {
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {
     'python': ('https://docs.python.org/3', None),
-    'mne': ('https://mne.tools/stable/', None),
+    'mne': ('https://mne.tools/dev', None),
     'numpy': ('https://www.numpy.org/devdocs', None),
     'scipy': ('https://scipy.github.io/devdocs', None),
     'matplotlib': ('https://matplotlib.org', None),
     'nilearn': ('https://nilearn.github.io', None),
 }
+intersphinx_timeout = 5
+
 
 sphinx_gallery_conf = {
     'examples_dirs': '../examples',
