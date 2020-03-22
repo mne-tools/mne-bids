@@ -1012,9 +1012,9 @@ def make_dataset_description(path, name, data_license=None,
 def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
                    event_id=None, anonymize=None,
                    overwrite=False, verbose=True):
-    """Walk over a folder of files and create BIDS compatible folder.
+    """Save raw data to a BIDS-compliant folder structure.
 
-    .. warning:: * The original files are simply copied over if the original
+    .. warning:: * The original file is simply copied over if the original
                    file format is BIDS-supported for that modality. Otherwise,
                    this function will convert to a BIDS-supported file format
                    while warning the user. For EEG and iEEG data, conversion
@@ -1030,7 +1030,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     ----------
     raw : instance of mne.io.Raw
         The raw data. It must be an instance of mne.Raw. The data should not be
-        loaded on disk, i.e., raw.preload must be False.
+        loaded from disk, i.e., raw.preload must be False.
     bids_basename : str
         The base filename of the BIDS compatible files. Typically, this can be
         generated using make_bids_basename.
