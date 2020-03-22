@@ -45,6 +45,7 @@ output_path = op.join(data_path, 'ds000117-bids')
 ###############################################################################
 #
 # .. warning:: This will download 7.9 GB of data for one subject!
+#
 # Define event_ids.
 
 event_id = {
