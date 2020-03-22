@@ -49,7 +49,7 @@ People who contributed to this release  (in alphabetical order):
 * Mainak Jas
 * Matt Sanderson
 * Romain Quentin
-* Stefan Appel
+* Stefan Appelhoff
 * Teon Brooks
 
 .. _Mainak Jas: https://perso.telecom-paristech.fr/mjas/
