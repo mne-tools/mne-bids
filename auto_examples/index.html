@@ -3,15 +3,15 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>Examples Gallery &#8212; mne_bids 0.3 documentation</title>
+    <title>Examples Gallery &#8212; mne_bids 0.2 documentation</title>
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-    <script type="text/javascript" src="../_static/jquery.js"></script>
-    <script type="text/javascript" src="../_static/underscore.js"></script>
-    <script type="text/javascript" src="../_static/doctools.js"></script>
-    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
 <meta charset='utf-8'>
@@ -36,15 +36,14 @@
         </button>
         <a class="navbar-brand" href="../index.html">
           MNE-BIDS</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.3</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.2</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
           <ul class="nav navbar-nav">
             
-                <li><a href="#">Examples</a></li>
+                <li><a href="#">Gallery</a></li>
                 <li><a href="../api.html">API</a></li>
-                <li><a href="../generated/cli.html">CLI</a></li>
                 <li><a href="../whats_new.html">What's new</a></li>
                 <li><a href="https://github.com/mne-tools/mne-bids">Github</a></li>
             
@@ -60,16 +59,49 @@
       aria-labelledby="dLabelGlobalToc"></ul>
 </li>
               
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">Examples Gallery</a><ul>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
             
             
             
             
             
-              <li class="hidden-sm"></li>
+              <li class="hidden-sm">
+<div id="sourcelink">
+  <a href="../_sources/auto_examples/index.rst.txt"
+     rel="nofollow">Source</a>
+</div></li>
             
           </ul>
 
           
+<div class="navbar-form navbar-right navbar-btn dropdown btn-group-sm" style="margin-left: 20px; margin-top: 5px; margin-bottom: 5px">
+  <button type="button" class="btn btn-primary navbar-btn dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown">
+    v0.2
+    <span class="caret"></span>
+  </button>
+  <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+    <li><a href="https://mne.tools/mne-bids/dev/index.html">Development</a></li>
+    <li><a href="https://mne.tools/mne-bids/stable/index.html">Stable</a></li>
+    <li><a href="https://mne.tools/mne-bids/v0.1/index.html">v0.1</a></li>
+  </ul>
+</div>
+
+
             
 <form class="navbar-form navbar-right" action="../search.html" method="get">
  <div class="form-group">
@@ -79,6 +111,7 @@
   <input type="hidden" name="area" value="default" />
 </form>
           
+
         </div>
     </div>
   </div>
@@ -89,7 +122,6 @@
       
   <div class="section" id="examples-gallery">
 <span id="general-examples"></span><span id="sphx-glr-auto-examples"></span><h1>Examples Gallery<a class="headerlink" href="#examples-gallery" title="Permalink to this headline">¶</a></h1>
-<p>Here we show some exemplary use cases for MNE-BIDS.</p>
 <div class="sphx-glr-thumbcontainer" tooltip="The BrainVision file format is one of the recommended formats to store EEG data within a BIDS d..."><div class="figure align-default" id="id1">
 <img alt="../_images/sphx_glr_rename_brainvision_files_thumb.png" src="../_images/sphx_glr_rename_brainvision_files_thumb.png" />
 <p class="caption"><span class="caption-text"><a class="reference internal" href="rename_brainvision_files.html#sphx-glr-auto-examples-rename-brainvision-files-py"><span class="std std-ref">Rename BrainVision EEG data files</span></a></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
@@ -102,7 +134,7 @@
 </div>
 </div><div class="toctree-wrapper compound">
 </div>
-<div class="sphx-glr-thumbcontainer" tooltip="Here, we show how to do BIDS conversion for group studies. The data from Wakeman et al. [1]_ is..."><div class="figure align-default" id="id3">
+<div class="sphx-glr-thumbcontainer" tooltip="Here, we show how to do BIDS conversion for group studies. The data is available here: https://..."><div class="figure align-default" id="id3">
 <img alt="../_images/sphx_glr_convert_group_studies_thumb.png" src="../_images/sphx_glr_convert_group_studies_thumb.png" />
 <p class="caption"><span class="caption-text"><a class="reference internal" href="convert_group_studies.html#sphx-glr-auto-examples-convert-group-studies-py"><span class="std std-ref">BIDS conversion for group studies</span></a></span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
 </div>
@@ -117,12 +149,6 @@
 <div class="sphx-glr-thumbcontainer" tooltip="In this example, we use MNE-BIDS to create a BIDS-compatible directory of EEG data. Specificall..."><div class="figure align-default" id="id5">
 <img alt="../_images/sphx_glr_convert_eeg_to_bids_thumb.png" src="../_images/sphx_glr_convert_eeg_to_bids_thumb.png" />
 <p class="caption"><span class="caption-text"><a class="reference internal" href="convert_eeg_to_bids.html#sphx-glr-auto-examples-convert-eeg-to-bids-py"><span class="std std-ref">Convert EEG data to BIDS format</span></a></span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
-</div>
-</div><div class="toctree-wrapper compound">
-</div>
-<div class="sphx-glr-thumbcontainer" tooltip="When working with MEEG data in the domain of source localization, we usually have to deal with ..."><div class="figure align-default" id="id6">
-<img alt="../_images/sphx_glr_convert_mri_and_trans_thumb.png" src="../_images/sphx_glr_convert_mri_and_trans_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="convert_mri_and_trans.html#sphx-glr-auto-examples-convert-mri-and-trans-py"><span class="std std-ref">Save and load T1-weighted MRI scan along with anatomical landmarks in BIDS</span></a></span><a class="headerlink" href="#id6" title="Permalink to this image">¶</a></p>
 </div>
 </div><div class="toctree-wrapper compound">
 </div>
@@ -149,8 +175,8 @@
       
     </p>
     <p>
-        &copy; Copyright 2019, MNE Developers. Last updated on 2019-12-07.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.2.2.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-03-24.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.<br/>
     </p>
   </div>
 </footer>

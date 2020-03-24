@@ -1,7 +1,7 @@
 .. note::
     :class: sphx-glr-download-link-note
 
-    Click :ref:`here <sphx_glr_download_auto_examples_convert_eeg_to_bids.py>` to download the full example code or to run this example in your browser via Binder
+    Click :ref:`here <sphx_glr_download_auto_examples_convert_eeg_to_bids.py>` to download the full example code
 .. rst-class:: sphx-glr-example-title
 
 .. _sphx_glr_auto_examples_convert_eeg_to_bids.py:
@@ -69,7 +69,7 @@ each subject, there were two baseline tasks (1. eyes open, 2. eyes closed) as
 well as four different motor imagery tasks. For the present example, we will
 show how to format the data for two subjects and selected tasks to comply
 with the Brain Imaging Data Structure
-(`BIDS <http://bids.neuroimaging.io/>`_).
+(`BIDS <http://bids.neuroimaging.io/>`).
 
 Conveniently, there is already a data loading function available with
 MNE-Python:
@@ -100,6 +100,25 @@ MNE-Python:
 
 
 
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    Downloading http://www.physionet.org/physiobank/database/eegmmidb/S001/S001R02.edf (1.2 MB)
+
+    Downloading http://www.physionet.org/physiobank/database/eegmmidb/S001/S001R04.edf (2.5 MB)
+
+    Downloading http://www.physionet.org/physiobank/database/eegmmidb/S001/S001R12.edf (2.5 MB)
+
+    Downloading http://www.physionet.org/physiobank/database/eegmmidb/S002/S002R02.edf (1.2 MB)
+
+    Downloading http://www.physionet.org/physiobank/database/eegmmidb/S002/S002R04.edf (2.4 MB)
+
+    Downloading http://www.physionet.org/physiobank/database/eegmmidb/S002/S002R12.edf (2.4 MB)
+
+
 
 
 
@@ -123,18 +142,18 @@ of the directory tree.
 
  .. code-block:: none
 
-    |MNE-eegbci-data/
-    |--- physiobank/
-    |------ database/
-    |--------- eegmmidb/
-    |------------ S001/
+    |MNE-eegbci-data
+    |--- physiobank
+    |------ database
+    |--------- eegmmidb
+    |------------ S001
+    |--------------- S001R12.edf
     |--------------- S001R04.edf
     |--------------- S001R02.edf
-    |--------------- S001R12.edf
-    |------------ S002/
+    |------------ S002
+    |--------------- S002R04.edf
     |--------------- S002R12.edf
     |--------------- S002R02.edf
-    |--------------- S002R04.edf
 
 
 
@@ -149,15 +168,15 @@ Step 2: Formatting as BIDS
 --------------------------
 
 Let's start by formatting a single subject. We are reading the data using
-MNE-Python's io module and the :func:`read_raw_edf` function. Note that we
-must use `preload=False`, the default in MNE-Python. It prevents the data
-from being loaded and modified when converting to BIDS.
+MNE-Python's io module and the `read_raw_edf` function. Note that we must
+use `preload=False`, the default in MNE-Python. It prevents the data from
+being loaded and modified when converting to BIDS.
 
 
 .. code-block:: default
 
     edf_path = eegbci.load_data(subject=1, runs=2)[0]
-    raw = mne.io.read_raw_edf(edf_path, preload=False)
+    raw = mne.io.read_raw_edf(edf_path, preload=False, stim_channel=None)
 
 
 
@@ -206,15 +225,15 @@ into a 2D numpy array of events that is compatible with MNE.
 
 
 With this step, we have everything to start a new BIDS directory using
-our data. To do that, we can use :func:`write_raw_bids`
-Generally, :func:`write_raw_bids` tries to extract as much
+our data. To do that, we can use the function `write_raw_bids`
+Generally, `write_raw_bids` tries to extract as much
 meta data as possible from the raw data and then formats it in a BIDS
-compatible way. :func:`write_raw_bids` takes a bunch of inputs, most of
-which are however optional. The required inputs are:
+compatible way. `write_raw_bids` takes a bunch of inputs, most of which are
+however optional. The required inputs are:
 
-* :code:`raw`
-* :code:`bids_basename`
-* :code:`output_path`
+* raw
+* bids_basename
+* output_path
 
 ... as you can see in the docstring:
 
@@ -290,11 +309,6 @@ which are however optional. The required inputs are:
             If verbose is True, this will print a snippet of the sidecar files. If
             False, no content will be printed.
 
-        Returns
-        -------
-        output_path : str
-            The path of the root of the BIDS compatible folder.
-
         Notes
         -----
         For the participants.tsv file, the raw.info['subjects_info'] should be
@@ -359,7 +373,6 @@ Now we just need to specify a few more EEG details to get something sensible:
 
     participant_id  age     sex
     sub-001 n/a     n/a
-    sub-002 n/a     n/a
 
     Writing '/home/circleci/mne_data/eegmmidb_bids/participants.json'...
 
@@ -383,8 +396,6 @@ Now we just need to specify a few more EEG details to get something sensible:
     Writing '/home/circleci/mne_data/eegmmidb_bids/sub-001/sub-001_scans.tsv'...
 
     filename        acq_time
-    eeg/sub-001_task-imaginefists_run-1_eeg.edf     2009-08-12T16:15:00
-    eeg/sub-001_task-imaginefists_run-2_eeg.edf     2009-08-12T16:15:00
     eeg/sub-001_task-resteyesclosed_eeg.edf 2009-08-12T16:15:00
 
     Writing '/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_events.tsv'...
@@ -398,7 +409,7 @@ Now we just need to specify a few more EEG details to get something sensible:
         "Name": " ",
         "BIDSVersion": "1.2.0"
     }
-    /home/circleci/project/mne_bids/write.py:407: UserWarning: No line frequency found, defaulting to 50 Hz
+    /home/circleci/project/mne_bids/write.py:418: UserWarning: No line frequency found, defaulting to 50 Hz
       warn('No line frequency found, defaulting to 50 Hz')
     Reading 0 ... 9759  =      0.000 ...    60.994 secs...
     /home/circleci/miniconda/envs/testenv/lib/python3.6/site-packages/mne/utils/docs.py:830: DeprecationWarning: Function read_montage is deprecated; ``read_montage`` is deprecated and will be removed in v0.20. Please use ``read_dig_fif``, ``read_dig_egi``, ``read_custom_montage``, or ``read_dig_captrack`` to read a digitization based on your needs instead; or ``make_standard_montage`` to create ``DigMontage`` based on template; or ``make_dig_montage`` to create a ``DigMontage`` out of np.arrays
@@ -458,40 +469,17 @@ What does our fresh BIDS directory look like?
 
  .. code-block:: none
 
-    |eegmmidb_bids/
-    |--- dataset_description.json
-    |--- participants.json
+    |eegmmidb_bids
     |--- participants.tsv
-    |--- sub-001/
+    |--- participants.json
+    |--- dataset_description.json
+    |--- sub-001
     |------ sub-001_scans.tsv
-    |------ eeg/
-    |--------- sub-001_task-imaginefists_run-1_channels.tsv
-    |--------- sub-001_task-imaginefists_run-1_eeg.edf
-    |--------- sub-001_task-imaginefists_run-2_eeg.json
-    |--------- sub-001_task-resteyesclosed_eeg.json
-    |--------- sub-001_task-imaginefists_run-1_eeg.json
-    |--------- sub-001_task-imaginefists_run-2_events.tsv
-    |--------- sub-001_task-resteyesclosed_channels.tsv
-    |--------- sub-001_task-resteyesclosed_eeg.edf
+    |------ eeg
     |--------- sub-001_task-resteyesclosed_events.tsv
-    |--------- sub-001_task-imaginefists_run-2_eeg.edf
-    |--------- sub-001_task-imaginefists_run-1_events.tsv
-    |--------- sub-001_task-imaginefists_run-2_channels.tsv
-    |--- sub-002/
-    |------ sub-002_scans.tsv
-    |------ eeg/
-    |--------- sub-002_task-imaginefists_run-1_events.tsv
-    |--------- sub-002_task-imaginefists_run-2_events.tsv
-    |--------- sub-002_task-imaginefists_run-1_eeg.json
-    |--------- sub-002_task-imaginefists_run-1_eeg.edf
-    |--------- sub-002_task-resteyesclosed_channels.tsv
-    |--------- sub-002_task-imaginefists_run-1_channels.tsv
-    |--------- sub-002_task-resteyesclosed_events.tsv
-    |--------- sub-002_task-resteyesclosed_eeg.json
-    |--------- sub-002_task-resteyesclosed_eeg.edf
-    |--------- sub-002_task-imaginefists_run-2_eeg.edf
-    |--------- sub-002_task-imaginefists_run-2_eeg.json
-    |--------- sub-002_task-imaginefists_run-2_channels.tsv
+    |--------- sub-001_task-resteyesclosed_eeg.edf
+    |--------- sub-001_task-resteyesclosed_eeg.json
+    |--------- sub-001_task-resteyesclosed_channels.tsv
 
 
 
@@ -527,9 +515,9 @@ Looks good so far, let's convert the data for all tasks and subjects.
             raw.set_annotations(annot)
             events, event_id = mne.events_from_annotations(raw)
 
-            bids_basename = make_bids_basename(subject='{:03}'.format(subj_idx),
-                                               task=task_names[task_idx],
-                                               run=run_mapping[task_idx])
+            make_bids_basename(
+                subject='{:03}'.format(subj_idx), task=task_names[task_idx],
+                run=run_mapping[task_idx])
             write_raw_bids(raw, bids_basename, output_path, event_id=trial_type,
                            events_data=events, overwrite=True)
 
@@ -668,10 +656,9 @@ Looks good so far, let's convert the data for all tasks and subjects.
     Writing '/home/circleci/mne_data/eegmmidb_bids/sub-001/sub-001_scans.tsv'...
 
     filename        acq_time
-    eeg/sub-001_task-imaginefists_run-1_eeg.edf     2009-08-12T16:15:00
     eeg/sub-001_task-resteyesclosed_eeg.edf 2009-08-12T16:15:00
 
-    Writing '/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-imaginefists_run-1_events.tsv'...
+    Writing '/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_events.tsv'...
 
     onset   duration        trial_type      value   sample
     0.0     0.0     imagine left fist       1       0
@@ -692,10 +679,10 @@ Looks good so far, let's convert the data for all tasks and subjects.
     /home/circleci/miniconda/envs/testenv/lib/python3.6/site-packages/mne/utils/docs.py:813: DeprecationWarning: Class Montage is deprecated; Montage class is deprecated and will be removed in v0.20. Please use DigMontage instead.
       warnings.warn(msg, category=DeprecationWarning)
 
-    Writing '/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-imaginefists_run-1_eeg.json'...
+    Writing '/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_eeg.json'...
 
     {
-        "TaskName": "imaginefists",
+        "TaskName": "resteyesclosed",
         "Manufacturer": "n/a",
         "PowerLineFrequency": 50,
         "SamplingFrequency": 160.0,
@@ -713,7 +700,7 @@ Looks good so far, let's convert the data for all tasks and subjects.
         "TriggerChannelCount": 0
     }
 
-    Writing '/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-imaginefists_run-1_channels.tsv'...
+    Writing '/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_channels.tsv'...
 
     name    type    units   low_cutoff      high_cutoff     description     sampling_frequency      status
     Fc5.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
@@ -721,7 +708,7 @@ Looks good so far, let's convert the data for all tasks and subjects.
     Fc1.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
     Fcz.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
     Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
-    Copying data files to /home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-imaginefists_run-1_eeg.edf
+    Copying data files to /home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_eeg.edf
     Extracting EDF parameters from /home/circleci/mne_data/MNE-eegbci-data/physiobank/database/eegmmidb/S001/S001R12.edf...
     EDF file detected
     Setting channel info structure...
@@ -760,11 +747,9 @@ Looks good so far, let's convert the data for all tasks and subjects.
     Writing '/home/circleci/mne_data/eegmmidb_bids/sub-001/sub-001_scans.tsv'...
 
     filename        acq_time
-    eeg/sub-001_task-imaginefists_run-1_eeg.edf     2009-08-12T16:15:00
-    eeg/sub-001_task-imaginefists_run-2_eeg.edf     2009-08-12T16:15:00
     eeg/sub-001_task-resteyesclosed_eeg.edf 2009-08-12T16:15:00
 
-    Writing '/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-imaginefists_run-2_events.tsv'...
+    Writing '/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_events.tsv'...
 
     onset   duration        trial_type      value   sample
     0.0     0.0     imagine left fist       1       0
@@ -785,10 +770,10 @@ Looks good so far, let's convert the data for all tasks and subjects.
     /home/circleci/miniconda/envs/testenv/lib/python3.6/site-packages/mne/utils/docs.py:813: DeprecationWarning: Class Montage is deprecated; Montage class is deprecated and will be removed in v0.20. Please use DigMontage instead.
       warnings.warn(msg, category=DeprecationWarning)
 
-    Writing '/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-imaginefists_run-2_eeg.json'...
+    Writing '/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_eeg.json'...
 
     {
-        "TaskName": "imaginefists",
+        "TaskName": "resteyesclosed",
         "Manufacturer": "n/a",
         "PowerLineFrequency": 50,
         "SamplingFrequency": 160.0,
@@ -806,7 +791,7 @@ Looks good so far, let's convert the data for all tasks and subjects.
         "TriggerChannelCount": 0
     }
 
-    Writing '/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-imaginefists_run-2_channels.tsv'...
+    Writing '/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_channels.tsv'...
 
     name    type    units   low_cutoff      high_cutoff     description     sampling_frequency      status
     Fc5.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
@@ -814,7 +799,7 @@ Looks good so far, let's convert the data for all tasks and subjects.
     Fc1.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
     Fcz.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
     Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
-    Copying data files to /home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-imaginefists_run-2_eeg.edf
+    Copying data files to /home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_eeg.edf
     Extracting EDF parameters from /home/circleci/mne_data/MNE-eegbci-data/physiobank/database/eegmmidb/S002/S002R02.edf...
     EDF file detected
     Setting channel info structure...
@@ -824,13 +809,12 @@ Looks good so far, let's convert the data for all tasks and subjects.
     EDF file detected
     Setting channel info structure...
     Creating raw.info structure...
-    Creating folder: /home/circleci/mne_data/eegmmidb_bids/sub-002/eeg
+    Creating folder: /home/circleci/mne_data/eegmmidb_bids/sub-001/eeg
 
     Writing '/home/circleci/mne_data/eegmmidb_bids/participants.tsv'...
 
     participant_id  age     sex
     sub-001 n/a     n/a
-    sub-002 n/a     n/a
 
     Writing '/home/circleci/mne_data/eegmmidb_bids/participants.json'...
 
@@ -851,12 +835,12 @@ Looks good so far, let's convert the data for all tasks and subjects.
         }
     }
 
-    Writing '/home/circleci/mne_data/eegmmidb_bids/sub-002/sub-002_scans.tsv'...
+    Writing '/home/circleci/mne_data/eegmmidb_bids/sub-001/sub-001_scans.tsv'...
 
     filename        acq_time
-    eeg/sub-002_task-resteyesclosed_eeg.edf 2009-08-12T16:15:00
+    eeg/sub-001_task-resteyesclosed_eeg.edf 2009-08-12T16:15:00
 
-    Writing '/home/circleci/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-resteyesclosed_events.tsv'...
+    Writing '/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_events.tsv'...
 
     onset   duration        trial_type      value   sample
     0.0     0.0     imagine left fist       1       0
@@ -873,7 +857,7 @@ Looks good so far, let's convert the data for all tasks and subjects.
     /home/circleci/miniconda/envs/testenv/lib/python3.6/site-packages/mne/utils/docs.py:813: DeprecationWarning: Class Montage is deprecated; Montage class is deprecated and will be removed in v0.20. Please use DigMontage instead.
       warnings.warn(msg, category=DeprecationWarning)
 
-    Writing '/home/circleci/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-resteyesclosed_eeg.json'...
+    Writing '/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_eeg.json'...
 
     {
         "TaskName": "resteyesclosed",
@@ -894,7 +878,7 @@ Looks good so far, let's convert the data for all tasks and subjects.
         "TriggerChannelCount": 0
     }
 
-    Writing '/home/circleci/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-resteyesclosed_channels.tsv'...
+    Writing '/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_channels.tsv'...
 
     name    type    units   low_cutoff      high_cutoff     description     sampling_frequency      status
     Fc5.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
@@ -902,7 +886,7 @@ Looks good so far, let's convert the data for all tasks and subjects.
     Fc1.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
     Fcz.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
     Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
-    Copying data files to /home/circleci/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-resteyesclosed_eeg.edf
+    Copying data files to /home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_eeg.edf
     Extracting EDF parameters from /home/circleci/mne_data/MNE-eegbci-data/physiobank/database/eegmmidb/S002/S002R04.edf...
     EDF file detected
     Setting channel info structure...
@@ -912,13 +896,12 @@ Looks good so far, let's convert the data for all tasks and subjects.
     EDF file detected
     Setting channel info structure...
     Creating raw.info structure...
-    Creating folder: /home/circleci/mne_data/eegmmidb_bids/sub-002/eeg
+    Creating folder: /home/circleci/mne_data/eegmmidb_bids/sub-001/eeg
 
     Writing '/home/circleci/mne_data/eegmmidb_bids/participants.tsv'...
 
     participant_id  age     sex
     sub-001 n/a     n/a
-    sub-002 n/a     n/a
 
     Writing '/home/circleci/mne_data/eegmmidb_bids/participants.json'...
 
@@ -939,13 +922,12 @@ Looks good so far, let's convert the data for all tasks and subjects.
         }
     }
 
-    Writing '/home/circleci/mne_data/eegmmidb_bids/sub-002/sub-002_scans.tsv'...
+    Writing '/home/circleci/mne_data/eegmmidb_bids/sub-001/sub-001_scans.tsv'...
 
     filename        acq_time
-    eeg/sub-002_task-imaginefists_run-1_eeg.edf     2009-08-12T16:15:00
-    eeg/sub-002_task-resteyesclosed_eeg.edf 2009-08-12T16:15:00
+    eeg/sub-001_task-resteyesclosed_eeg.edf 2009-08-12T16:15:00
 
-    Writing '/home/circleci/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-imaginefists_run-1_events.tsv'...
+    Writing '/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_events.tsv'...
 
     onset   duration        trial_type      value   sample
     0.0     0.0     imagine left fist       1       0
@@ -966,10 +948,10 @@ Looks good so far, let's convert the data for all tasks and subjects.
     /home/circleci/miniconda/envs/testenv/lib/python3.6/site-packages/mne/utils/docs.py:813: DeprecationWarning: Class Montage is deprecated; Montage class is deprecated and will be removed in v0.20. Please use DigMontage instead.
       warnings.warn(msg, category=DeprecationWarning)
 
-    Writing '/home/circleci/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-imaginefists_run-1_eeg.json'...
+    Writing '/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_eeg.json'...
 
     {
-        "TaskName": "imaginefists",
+        "TaskName": "resteyesclosed",
         "Manufacturer": "n/a",
         "PowerLineFrequency": 50,
         "SamplingFrequency": 160.0,
@@ -987,7 +969,7 @@ Looks good so far, let's convert the data for all tasks and subjects.
         "TriggerChannelCount": 0
     }
 
-    Writing '/home/circleci/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-imaginefists_run-1_channels.tsv'...
+    Writing '/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_channels.tsv'...
 
     name    type    units   low_cutoff      high_cutoff     description     sampling_frequency      status
     Fc5.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
@@ -995,7 +977,7 @@ Looks good so far, let's convert the data for all tasks and subjects.
     Fc1.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
     Fcz.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
     Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
-    Copying data files to /home/circleci/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-imaginefists_run-1_eeg.edf
+    Copying data files to /home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_eeg.edf
     Extracting EDF parameters from /home/circleci/mne_data/MNE-eegbci-data/physiobank/database/eegmmidb/S002/S002R12.edf...
     EDF file detected
     Setting channel info structure...
@@ -1005,13 +987,12 @@ Looks good so far, let's convert the data for all tasks and subjects.
     EDF file detected
     Setting channel info structure...
     Creating raw.info structure...
-    Creating folder: /home/circleci/mne_data/eegmmidb_bids/sub-002/eeg
+    Creating folder: /home/circleci/mne_data/eegmmidb_bids/sub-001/eeg
 
     Writing '/home/circleci/mne_data/eegmmidb_bids/participants.tsv'...
 
     participant_id  age     sex
     sub-001 n/a     n/a
-    sub-002 n/a     n/a
 
     Writing '/home/circleci/mne_data/eegmmidb_bids/participants.json'...
 
@@ -1032,14 +1013,12 @@ Looks good so far, let's convert the data for all tasks and subjects.
         }
     }
 
-    Writing '/home/circleci/mne_data/eegmmidb_bids/sub-002/sub-002_scans.tsv'...
+    Writing '/home/circleci/mne_data/eegmmidb_bids/sub-001/sub-001_scans.tsv'...
 
     filename        acq_time
-    eeg/sub-002_task-imaginefists_run-1_eeg.edf     2009-08-12T16:15:00
-    eeg/sub-002_task-imaginefists_run-2_eeg.edf     2009-08-12T16:15:00
-    eeg/sub-002_task-resteyesclosed_eeg.edf 2009-08-12T16:15:00
+    eeg/sub-001_task-resteyesclosed_eeg.edf 2009-08-12T16:15:00
 
-    Writing '/home/circleci/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-imaginefists_run-2_events.tsv'...
+    Writing '/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_events.tsv'...
 
     onset   duration        trial_type      value   sample
     0.0     0.0     imagine left fist       1       0
@@ -1060,10 +1039,10 @@ Looks good so far, let's convert the data for all tasks and subjects.
     /home/circleci/miniconda/envs/testenv/lib/python3.6/site-packages/mne/utils/docs.py:813: DeprecationWarning: Class Montage is deprecated; Montage class is deprecated and will be removed in v0.20. Please use DigMontage instead.
       warnings.warn(msg, category=DeprecationWarning)
 
-    Writing '/home/circleci/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-imaginefists_run-2_eeg.json'...
+    Writing '/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_eeg.json'...
 
     {
-        "TaskName": "imaginefists",
+        "TaskName": "resteyesclosed",
         "Manufacturer": "n/a",
         "PowerLineFrequency": 50,
         "SamplingFrequency": 160.0,
@@ -1081,7 +1060,7 @@ Looks good so far, let's convert the data for all tasks and subjects.
         "TriggerChannelCount": 0
     }
 
-    Writing '/home/circleci/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-imaginefists_run-2_channels.tsv'...
+    Writing '/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_channels.tsv'...
 
     name    type    units   low_cutoff      high_cutoff     description     sampling_frequency      status
     Fc5.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
@@ -1089,7 +1068,7 @@ Looks good so far, let's convert the data for all tasks and subjects.
     Fc1.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
     Fcz.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
     Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
-    Copying data files to /home/circleci/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-imaginefists_run-2_eeg.edf
+    Copying data files to /home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_eeg.edf
 
 
 
@@ -1113,40 +1092,17 @@ Now we have written our BIDS directory.
 
  .. code-block:: none
 
-    |eegmmidb_bids/
-    |--- dataset_description.json
-    |--- participants.json
+    |eegmmidb_bids
     |--- participants.tsv
-    |--- sub-001/
+    |--- participants.json
+    |--- dataset_description.json
+    |--- sub-001
     |------ sub-001_scans.tsv
-    |------ eeg/
-    |--------- sub-001_task-imaginefists_run-1_channels.tsv
-    |--------- sub-001_task-imaginefists_run-1_eeg.edf
-    |--------- sub-001_task-imaginefists_run-2_eeg.json
-    |--------- sub-001_task-resteyesclosed_eeg.json
-    |--------- sub-001_task-imaginefists_run-1_eeg.json
-    |--------- sub-001_task-imaginefists_run-2_events.tsv
-    |--------- sub-001_task-resteyesclosed_channels.tsv
-    |--------- sub-001_task-resteyesclosed_eeg.edf
+    |------ eeg
     |--------- sub-001_task-resteyesclosed_events.tsv
-    |--------- sub-001_task-imaginefists_run-2_eeg.edf
-    |--------- sub-001_task-imaginefists_run-1_events.tsv
-    |--------- sub-001_task-imaginefists_run-2_channels.tsv
-    |--- sub-002/
-    |------ sub-002_scans.tsv
-    |------ eeg/
-    |--------- sub-002_task-imaginefists_run-1_events.tsv
-    |--------- sub-002_task-imaginefists_run-2_events.tsv
-    |--------- sub-002_task-imaginefists_run-1_eeg.json
-    |--------- sub-002_task-imaginefists_run-1_eeg.edf
-    |--------- sub-002_task-resteyesclosed_channels.tsv
-    |--------- sub-002_task-imaginefists_run-1_channels.tsv
-    |--------- sub-002_task-resteyesclosed_events.tsv
-    |--------- sub-002_task-resteyesclosed_eeg.json
-    |--------- sub-002_task-resteyesclosed_eeg.edf
-    |--------- sub-002_task-imaginefists_run-2_eeg.edf
-    |--------- sub-002_task-imaginefists_run-2_eeg.json
-    |--------- sub-002_task-imaginefists_run-2_channels.tsv
+    |--------- sub-001_task-resteyesclosed_eeg.edf
+    |--------- sub-001_task-resteyesclosed_eeg.json
+    |--------- sub-001_task-resteyesclosed_channels.tsv
 
 
 
@@ -1171,7 +1127,7 @@ Command line tool: https://www.npmjs.com/package/bids-validator
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  0.630 seconds)
+   **Total running time of the script:** ( 0 minutes  3.307 seconds)
 
 
 .. _sphx_glr_download_auto_examples_convert_eeg_to_bids.py:
@@ -1182,12 +1138,6 @@ Command line tool: https://www.npmjs.com/package/bids-validator
  .. container:: sphx-glr-footer
     :class: sphx-glr-footer-example
 
-
-  .. container:: binder-badge
-
-    .. image:: https://mybinder.org/badge_logo.svg
-      :target: https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=notebooks/auto_examples/convert_eeg_to_bids.ipynb
-      :width: 150 px
 
 
   .. container:: sphx-glr-download
