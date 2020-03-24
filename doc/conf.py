@@ -63,8 +63,8 @@ master_doc = 'index'
 # General information about the project.
 project = u'mne_bids'
 td = date.today()
-copyright = u'%s, MNE Developers. Last updated on %s' % (td.year,
-                                                         td.isoformat())
+copyright = u'2017-%s, MNE Developers. Last updated on %s' % (td.year,
+                                                              td.isoformat())
 
 author = u'MNE Developers'
 
