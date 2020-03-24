@@ -68,8 +68,16 @@ def _contains_row(data, row_data):
 
     """
     mask = None
-    for key, value in row_data.items():
-        column_mask = np.in1d(np.array(data[key]), value)
+    for key, row_value in row_data.items():
+        data_value = np.array(data[key])
+
+        # Cast row_value to the same dtype as data_value to avoid a NumPy
+        # FutureWarning, see
+        # https://github.com/mne-tools/mne-bids/pull/372
+        data_value_dtype = data_value.dtype
+        row_value = np.array(row_value, dtype=data_value_dtype)
+
+        column_mask = np.in1d(data_value, row_value)
         mask = column_mask if mask is None else (mask & column_mask)
     return np.any(mask)
 
