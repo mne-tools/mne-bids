@@ -1,0 +1,6 @@
+mne\_bids.utils.print\_dir\_tree
+================================
+
+.. currentmodule:: mne_bids.utils
+
+.. autofunction:: print_dir_tree

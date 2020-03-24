@@ -1,0 +1,6 @@
+mne\_bids.copyfiles.copyfile\_ctf
+=================================
+
+.. currentmodule:: mne_bids.copyfiles
+
+.. autofunction:: copyfile_ctf

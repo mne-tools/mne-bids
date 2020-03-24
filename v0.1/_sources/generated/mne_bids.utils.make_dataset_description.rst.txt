@@ -1,0 +1,6 @@
+mne\_bids.utils.make\_dataset\_description
+==========================================
+
+.. currentmodule:: mne_bids.utils
+
+.. autofunction:: make_dataset_description
