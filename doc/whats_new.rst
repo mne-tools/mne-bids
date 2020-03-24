@@ -22,7 +22,6 @@ Current
 Changelog
 ~~~~~~~~~
 
-- Added handedness to participant files, by `Dominik Welke`_ (`#354 <https://github.com/mne-tools/mne-bids/pull/354>`_)
 - Added automatic conversion of FIF to BrainVision format with warning for EEG only data and conversion to FIF for meg non-FIF data, by `Alex Rockhill`_ (`#237 <https://github.com/mne-tools/mne-bids/pull/237>`_)
 - Add possibility to pass raw readers parameters (e.g. `allow_maxshield`) to :func:`read_raw_bids` to allow reading BIDS-formatted data before applying maxfilter, by  `Sophie Herbst`_
 - New feature in :func`mne_bids.write.write_anat` for shear deface of mri, by `Alex Rockhill`_ (`#271 <https://github.com/mne-tools/mne-bids/pull/271>`_)
@@ -35,7 +34,9 @@ Changelog
 - Update scans.tsv writer to adhere to MNE-Python v0.20+ where `meas_date` is stored as a `datetime` object, by `Adam Li`_ (`#344 <https://github.com/mne-tools/mne-bids/pull/344>`_)
 - :func:`read_raw_bids` now reads in sidecar json files to set, or estimate Power Line Frequency, by `Adam Li`_ (`#341 <https://github.com/mne-tools/mne-bids/pull/341>`_)
 - Allow FIF files with multiple parts to be read using :func:`read_raw_bids`, by `Teon Brooks`_ (`#346 <https://github.com/mne-tools/mne-bids/pull/346>`)
+- Added handedness to participant files, by `Dominik Welke`_ (`#354 <https://github.com/mne-tools/mne-bids/pull/354>`_)
 - MNE-BIDS can now handle a paths that are `pathlib.Path` objects (in addition to strings), by `Richard Höchenberger`_ (`#362 <https://github.com/mne-tools/mne-bids/pull/362>`)
+- The documentation is now available for all MNE-BIDS versions via a dropdown menu, by `Stefan Appelhoff`_(`#370 <https://github.com/mne-tools/mne-bids/pull/370>`)
 
 Bug
 ~~~
