@@ -2,72 +2,71 @@
 version: 2.1
 
 jobs:
-
   docs-build:
     docker:
       - image: circleci/python:3.7.3-stretch
     steps:
-      - checkout
+        - checkout
 
-      - run:
-        name: Check environment.yml and doc/environment.yml syncing
-        # doc/environment.yml must be a perfect copy of environment.yml
-        # with a single line "  - mne_bids~=0.X" added in the pip section
-        command: diff <(grep -v '^  - mne_bids>=0.*,<0.*$' doc/environment.yml) <(cat environment.yml)
+        - run:
+            name: Check environment.yml and doc/environment.yml syncing
+            # doc/environment.yml must be a perfect copy of environment.yml
+            # with a single line "  - mne_bids~=0.X" added in the pip section
+            command: diff <(grep -v '^  - mne_bids~=0.3$' doc/environment.yml) <(cat environment.yml)
 
-      # restore cache from last build. Unless __init__.py has changed since then
-      - restore_cache:
-        keys:
-          - data-cache-0-{{ checksum "./mne_bids/__init__.py" }}
+        # restore cache from last build. Unless __init__.py has changed since then
+        - restore_cache:
+            keys:
+              - data-cache-0-{{ checksum "./mne_bids/__init__.py" }}
 
-      # Also restore pip cache to speed up installations
-      - restore_cache:
-        keys:
-          - pip-cache-0-{{ checksum "./environment.yml" }}
+        # Also restore pip cache to speed up installations
+        - restore_cache:
+            keys:
+              - pip-cache-0-{{ checksum "./environment.yml" }}
 
-      - run:
-        name: Install miniconda
-        command: |
-          wget -q https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh;
-          chmod +x ~/miniconda.sh;
-          ~/miniconda.sh -b -p ~/miniconda;
-          echo "export PATH=~/miniconda/bin:$PATH" >> $BASH_ENV;
+        - run:
+            name: Install miniconda
+            command: |
+              wget -q https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh;
+              chmod +x ~/miniconda.sh;
+              ~/miniconda.sh -b -p ~/miniconda;
+              echo "export PATH=~/miniconda/bin:$PATH" >> $BASH_ENV;
 
-      - run:
-        name: Setup Python environment
-        # ... but use latest version of MNE
-        command: |
-          conda update --yes --quiet conda
-          conda env create -f environment.yml --name=testenv
-          source activate testenv
-          pip install -U https://api.github.com/repos/mne-tools/mne-python/zipball/master
-          python setup.py develop
+        - run:
+            name: Setup Python environment
+            # ... but use latest version of MNE
+            command: |
+              conda update --yes --quiet conda
+              conda env create -f environment.yml --name=testenv
+              source activate testenv
+              pip install -U https://api.github.com/repos/mne-tools/mne-python/zipball/master
+              python setup.py develop
 
-      - run:
-        name: Build the documentation
-        command: |
-            source activate testenv
-            make build-doc
+        - run:
+            name: Build the documentation
+            command: |
+                source activate testenv
+                make build-doc
 
-      - persist_to_workspace:
-        root: doc/_build
-        paths: html
+        - persist_to_workspace:
+            root: doc/_build
+            paths: html
 
-      - store_artifacts:
-        path: doc/_build/html/
-        destination: html
+        - store_artifacts:
+            path: doc/_build/html/
+            destination: html
 
-      # Store the data cache
-      - save_cache:
-        key: data-cache-0-{{ checksum "./mne_bids/__init__.py" }}
-        paths:
-          - ~/mne_data
+        # Store the data cache
+        - save_cache:
+            key: data-cache-0-{{ checksum "./mne_bids/__init__.py" }}
+            paths:
+              - ~/mne_data
 
-      # Store pip cache
-      - save_cache:
-        key: pip-cache-0-{{ checksum "./environment.yml" }}
-        paths:
-          - ~/.cache/pip
+        # Store pip cache
+        - save_cache:
+            key: pip-cache-0-{{ checksum "./environment.yml" }}
+            paths:
+              - ~/.cache/pip
 
   docs-deploy:
     # will only be run on master branch
@@ -77,32 +76,31 @@ jobs:
       - checkout
 
       - attach_workspace:
-        at: doc/_build
+          at: doc/_build
 
       - run:
-        name: Install and configure dependencies
-        command: |
-          npm install -g --silent gh-pages@2.2
-          git config --global user.email "circle@mne.com"
-          git config --global user.name "Circle Ci"
+          name: Install and configure dependencies
+          command: |
+            npm install -g --silent gh-pages@2.2
+            git config --global user.email "circle@mne.com"
+            git config --global user.name "Circle Ci"
 
       - add_ssh_keys:
-        fingerprints:
-          - "7f:74:00:17:2b:1a:7d:68:56:68:6b:64:b5:e0:7f:91"
+          fingerprints:
+            - "7f:74:00:17:2b:1a:7d:68:56:68:6b:64:b5:e0:7f:91"
 
       - run:
-        # push built docs to the `gh-pages` branch into the `dev` directory
-        name: Deploy docs to gh-pages branch
-        command: gh-pages --dotfiles --message "doc updates [skip ci]" --dist doc/_build/html --dest ./dev
+          # push built docs into the `dev` directory on the `gh-pages` branch
+          name: Deploy docs to gh-pages branch
+          command: gh-pages --dotfiles --message "doc updates [skip ci]" --dist doc/_build/html --dest ./dev
 
 workflows:
-  version: 2.1
   build:
     jobs:
       - docs-build
       - docs-deploy:
-        requires:
-          - docs-build
-        filters:
-          branches:
-            only: master
+          requires:
+            - docs-build
+          filters:
+            branches:
+              only: master
