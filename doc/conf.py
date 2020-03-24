@@ -123,11 +123,11 @@ intersphinx_timeout = 5
 if 'dev' in version:
     filepath_prefix = 'dev'
 else:
-    assert version
     filepath_prefix = 'v{}'.format(version)
 
 sphinx_gallery_conf = {
     'examples_dirs': '../examples',
+    'within_subsection_order': ExampleTitleSortKey,
     'gallery_dirs': 'auto_examples',
     'filename_pattern': '^((?!sgskip).)*$',
     'backreferences_dir': 'generated',
