@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Rename BrainVision EEG data files &#8212; mne_bids 0.3 documentation</title>
+    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          MNE-BIDS</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.3</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="index.html">Examples</a></li>
+                <li><a href="../api.html">API</a></li>
+                <li><a href="../generated/cli.html">CLI</a></li>
+                <li><a href="../whats_new.html">What's new</a></li>
+                <li><a href="https://github.com/mne-tools/mne-bids">Github</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"></ul>
+</li>
+              
+            
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+<div class="navbar-form navbar-right navbar-btn dropdown btn-group-sm" style="margin-left: 20px; margin-top: 5px; margin-bottom: 5px">
+  <button type="button" class="btn btn-primary navbar-btn dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown">
+    v0.3
+    <span class="caret"></span>
+  </button>
+  <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+    <li><a href="https://mne.tools/mne-bids/dev/index.html">Development</a></li>
+    <li><a href="https://mne.tools/mne-bids/stable/index.html">Stable</a></li>
+    <li><a href="https://mne.tools/mne-bids/v0.2/index.html">v0.2</a></li>
+    <li><a href="https://mne.tools/mne-bids/v0.1/index.html">v0.1</a></li>
+  </ul>
+</div>
+
+
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-rename-brainvision-files-py"><span class="std std-ref">here</span></a> to download the full example code or to run this example in your browser via Binder</p>
+</div>
+<div class="sphx-glr-example-title section" id="rename-brainvision-eeg-data-files">
+<span id="sphx-glr-auto-examples-rename-brainvision-files-py"></span><h1>Rename BrainVision EEG data files<a class="headerlink" href="#rename-brainvision-eeg-data-files" title="Permalink to this headline">¶</a></h1>
+<p>The BrainVision file format is one of the recommended formats to store EEG data
+within a BIDS directory. To organize EEG data in BIDS format, it is often
+necessary to rename the files. In the case of BrainVision files, we would have
+to rename multiple files for each dataset instance (i.e., once per recording):</p>
+<ol class="arabic simple">
+<li><p>A text header file (<code class="docutils literal notranslate"><span class="pre">.vhdr</span></code>) containing meta data</p></li>
+<li><p>A text marker file (<code class="docutils literal notranslate"><span class="pre">.vmrk</span></code>) containing information about events in the
+data</p></li>
+<li><p>A binary data file (<code class="docutils literal notranslate"><span class="pre">.eeg</span></code>) containing the voltage values of the EEG</p></li>
+</ol>
+<p>The problem is that the three files contain internal links that guide a
+potential data reading software. If we just rename the three files without also
+adjusting the internal links, we corrupt the file format.</p>
+<p>In this example, we use MNE-BIDS to rename BrainVision data files including a
+repair of the internal file pointers.</p>
+<p>For the command line version of this tool, see the <code class="code docutils literal notranslate"><span class="pre">cp</span></code> tool in the docs
+for the <a class="reference internal" href="../generated/cli.html#python-cli"><span class="std std-ref">Python Command Line Interface</span></a>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Authors: Stefan Appelhoff &lt;stefan.appelhoff@mailbox.org&gt;</span>
+<span class="c1"># License: BSD (3-clause)</span>
+</pre></div>
+</div>
+<p>We are importing everything we need for this example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os.path</span> <span class="k">as</span> <span class="nn">op</span>
+
+<span class="kn">from</span> <span class="nn">numpy.testing</span> <span class="kn">import</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.testing.assert_array_equal.html#numpy.testing.assert_array_equal" title="View documentation for numpy.testing.assert_array_equal"><span class="n">assert_array_equal</span></a>
+<span class="kn">import</span> <span class="nn">mne</span>
+
+<span class="kn">from</span> <span class="nn">mne_bids.copyfiles</span> <span class="kn">import</span> <span class="n">copyfile_brainvision</span>
+</pre></div>
+</div>
+<div class="section" id="step-1-download-some-example-data">
+<h2>Step 1: Download some example data<a class="headerlink" href="#step-1-download-some-example-data" title="Permalink to this headline">¶</a></h2>
+<p>To demonstrate the MNE-BIDS functions, we need some testing data. Here, we
+will use the MNE-Python testing data. Feel free to use your own BrainVision
+data.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This will download 1.6 GB of data!</p>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">data_path</span></a> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">data_path</span></a><span class="p">()</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">examples_dir</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/os.path.html#os.path.join" title="View documentation for os.path.join"><span class="n">op</span><span class="o">.</span><span class="n">join</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">data_path</span></a><span class="p">,</span> <span class="s1">&#39;Brainvision&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="step-2-rename-the-recording">
+<h2>Step 2: Rename the recording<a class="headerlink" href="#step-2-rename-the-recording" title="Permalink to this headline">¶</a></h2>
+<p>Above, at the top of the example, we imported
+<code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.utils.copyfile_brainvision()</span></code> from
+the MNE-BIDS <code class="docutils literal notranslate"><span class="pre">utils.py</span></code> module. This function takes two arguments as
+input: First, the path to the existing .vhdr file. And second, the path to
+the future .vhdr file.</p>
+<p><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.utils.copyfile_brainvision()</span></code> will then create three new files
+(.vhdr, .vmrk, and .eeg) with the new names as provided with the second
+argument.</p>
+<p>Here, we rename a test file name:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">vhdr_file</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/os.path.html#os.path.join" title="View documentation for os.path.join"><span class="n">op</span><span class="o">.</span><span class="n">join</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">examples_dir</span></a><span class="p">,</span> <span class="s1">&#39;test_NO.vhdr&#39;</span><span class="p">)</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">vhdr_file_renamed</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/os.path.html#os.path.join" title="View documentation for os.path.join"><span class="n">op</span><span class="o">.</span><span class="n">join</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">examples_dir</span></a><span class="p">,</span> <span class="s1">&#39;test_renamed.vhdr&#39;</span><span class="p">)</span>
+<span class="n">copyfile_brainvision</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">vhdr_file</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">vhdr_file_renamed</span></a><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="step-3-assert-that-the-renamed-data-can-be-read-by-a-software">
+<h2>Step 3: Assert that the renamed data can be read by a software<a class="headerlink" href="#step-3-assert-that-the-renamed-data-can-be-read-by-a-software" title="Permalink to this headline">¶</a></h2>
+<p>Finally, let’s use MNE-Python to read in both, the original BrainVision data
+as well as the renamed data. They should be the same.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">raw</span> <span class="o">=</span> <a href="https://mne.tools/stable/generated/mne.io.read_raw_brainvision.html#mne.io.read_raw_brainvision" title="View documentation for mne.io.read_raw_brainvision"><span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_raw_brainvision</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">vhdr_file</span></a><span class="p">)</span>
+<span class="n">raw_renamed</span> <span class="o">=</span> <a href="https://mne.tools/stable/generated/mne.io.read_raw_brainvision.html#mne.io.read_raw_brainvision" title="View documentation for mne.io.read_raw_brainvision"><span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_raw_brainvision</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">vhdr_file_renamed</span></a><span class="p">)</span>
+
+<a href="https://numpy.org/devdocs/reference/generated/numpy.testing.assert_array_equal.html#numpy.testing.assert_array_equal" title="View documentation for numpy.testing.assert_array_equal"><span class="n">assert_array_equal</span></a><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">get_data</span><span class="p">(),</span> <span class="n">raw_renamed</span><span class="o">.</span><span class="n">get_data</span><span class="p">())</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Extracting parameters from /home/stefanappelhoff/mne_data/MNE-testing-data/Brainvision/test_NO.vhdr...
+Setting channel info structure...
+Extracting parameters from /home/stefanappelhoff/mne_data/MNE-testing-data/Brainvision/test_renamed.vhdr...
+Setting channel info structure...
+</pre></div>
+</div>
+</div>
+<div class="section" id="further-information">
+<h2>Further information<a class="headerlink" href="#further-information" title="Permalink to this headline">¶</a></h2>
+<p>There are alternative options to rename your BrainVision files. You could
+for example check out the
+<a class="reference external" href="https://github.com/stefanSchinkel/bvarenamer">BVARENAMER</a> by Stefan
+Schinkel.</p>
+<p>Lastly, there is a tool to check the integrity of your BrainVision files.
+For that, see the <a class="reference external" href="https://github.com/sappelhoff/brainvision-validator">BrainVision Validator</a></p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.025 seconds)</p>
+<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-rename-brainvision-files-py">
+<div class="binder-badge docutils container">
+<a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=v0.3/notebooks/auto_examples/rename_brainvision_files.ipynb"><img alt="https://mybinder.org/badge_logo.svg" src="https://mybinder.org/badge_logo.svg" width="150px" /></a>
+</div>
+<div class="sphx-glr-download docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/49d15d935de3a358386688419eb26d73/rename_brainvision_files.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">rename_brainvision_files.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/fecfce9ee6664349717e6262ae61875d/rename_brainvision_files.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">rename_brainvision_files.ipynb</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-03-24.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

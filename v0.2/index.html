@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>MNE-BIDS &#8212; mne_bids 0.2 documentation</title>
+    <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/gallery.css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#">
+          MNE-BIDS</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.2</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="auto_examples/index.html">Gallery</a></li>
+                <li><a href="api.html">API</a></li>
+                <li><a href="whats_new.html">What's new</a></li>
+                <li><a href="https://github.com/mne-tools/mne-bids">Github</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"></ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"><ul>
+<li><a class="reference internal" href="#">MNE-BIDS</a><ul>
+<li><a class="reference internal" href="#installation">Installation</a></li>
+<li><a class="reference internal" href="#quickstart">Quickstart</a></li>
+<li><a class="reference internal" href="#command-line-interface">Command Line Interface</a></li>
+<li><a class="reference internal" href="#bug-reports">Bug reports</a></li>
+<li><a class="reference internal" href="#cite">Cite</a><ul>
+<li><a class="reference internal" href="#meg">MEG</a></li>
+<li><a class="reference internal" href="#eeg">EEG</a></li>
+<li><a class="reference internal" href="#ieeg">iEEG</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</ul>
+</li>
+              
+            
+            
+            
+            
+            
+              <li class="hidden-sm">
+<div id="sourcelink">
+  <a href="_sources/index.rst.txt"
+     rel="nofollow">Source</a>
+</div></li>
+            
+          </ul>
+
+          
+<div class="navbar-form navbar-right navbar-btn dropdown btn-group-sm" style="margin-left: 20px; margin-top: 5px; margin-bottom: 5px">
+  <button type="button" class="btn btn-primary navbar-btn dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown">
+    v0.2
+    <span class="caret"></span>
+  </button>
+  <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+    <li><a href="https://mne.tools/mne-bids/dev/index.html">Development</a></li>
+    <li><a href="https://mne.tools/mne-bids/stable/index.html">Stable</a></li>
+    <li><a href="https://mne.tools/mne-bids/v0.1/index.html">v0.1</a></li>
+  </ul>
+</div>
+
+
+            
+<form class="navbar-form navbar-right" action="search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <a class="reference external image-reference" href="https://gitter.im/mne-tools/mne-bids?utm_source=badge&amp;utm_medium=badge&amp;utm_campaign=pr-badge&amp;utm_content=badge"><img alt="Gitter" src="https://badges.gitter.im/mne-tools/mne-bids.svg" /></a>
+<a class="reference external image-reference" href="https://travis-ci.org/mne-tools/mne-bids"><img alt="Travis" src="https://api.travis-ci.org/mne-tools/mne-bids.svg?branch=master&quot;Travis&quot;" /></a>
+<a class="reference external image-reference" href="https://ci.appveyor.com/project/mne-tools/mne-bids/branch/master"><img alt="Appveyor" src="https://ci.appveyor.com/api/projects/status/d4u70pht341cwqxb/branch/master?svg=true" /></a>
+<a class="reference external image-reference" href="https://codecov.io/gh/mne-tools/mne-bids"><img alt="codecov" src="https://codecov.io/gh/mne-tools/mne-bids/branch/master/graph/badge.svg" /></a>
+<a class="reference external image-reference" href="https://circleci.com/gh/mne-tools/mne-bids"><img alt="CircleCi" src="https://circleci.com/gh/mne-tools/mne-bids.svg?style=svg" /></a>
+<a class="reference external image-reference" href="https://pepy.tech/project/mne-bids"><img alt="Downloads" src="https://pepy.tech/badge/mne-bids" /></a>
+<div class="section" id="mne-bids">
+<h1>MNE-BIDS<a class="headerlink" href="#mne-bids" title="Permalink to this headline">¶</a></h1>
+<p>This is a repository for creating
+<a class="reference external" href="http://bids.neuroimaging.io/">BIDS</a>-compatible datasets with
+<a class="reference external" href="https://mne-tools.github.io/stable/index.html">MNE</a>.</p>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>We recommend the <a class="reference external" href="https://www.anaconda.com/download/">Anaconda</a> Python
+distribution. We require that you use Python 3.
+Besides <code class="docutils literal notranslate"><span class="pre">numpy</span></code> and <code class="docutils literal notranslate"><span class="pre">scipy</span></code> (which are included in the standard Anaconda
+installation), you will need to install the most recent version of MNE using
+the <code class="docutils literal notranslate"><span class="pre">pip</span></code> tool:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ pip install -U mne
+</pre></div>
+</div>
+<p>Then install <code class="docutils literal notranslate"><span class="pre">mne-bids</span></code>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ pip install -U mne-bids
+</pre></div>
+</div>
+<p>These <code class="docutils literal notranslate"><span class="pre">pip</span></code> commands also work if you want to upgrade if a newer version of
+<code class="docutils literal notranslate"><span class="pre">mne-bids</span></code> is available. If you do not have administrator privileges on the
+computer, use the <code class="docutils literal notranslate"><span class="pre">--user</span></code> flag with <code class="docutils literal notranslate"><span class="pre">pip</span></code>.</p>
+<p>To check if everything worked fine, the following command should not give any
+error messages:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python -c <span class="s1">&#39;import mne_bids&#39;</span>
+</pre></div>
+</div>
+<p>If you want to use the latest development version, use the following command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ pip install https://api.github.com/repos/mne-tools/mne-bids/zipball/master
+</pre></div>
+</div>
+</div>
+<div class="section" id="quickstart">
+<h2>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this headline">¶</a></h2>
+<p>Currently, we support writing of BIDS datasets for MEG and EEG. Support for
+iEEG is experimental at the moment.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">mne</span> <span class="kn">import</span> <span class="n">io</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">mne_bids</span> <span class="kn">import</span> <span class="n">write_raw_bids</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">raw</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">read_raw_fif</span><span class="p">(</span><span class="s1">&#39;my_old_file.fif&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">write_raw_bids</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="s1">&#39;sub-01_ses-01_run-05&#39;</span><span class="p">,</span> <span class="n">output_path</span><span class="o">=</span><span class="s1">&#39;./bids_dataset&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="command-line-interface">
+<h2>Command Line Interface<a class="headerlink" href="#command-line-interface" title="Permalink to this headline">¶</a></h2>
+<p>In addition to <code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">mne_bids</span></code>, you can use the command line interface.</p>
+<p>Example:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ mne_bids raw_to_bids --subject_id sub01 --task rest --raw data.edf --output_path new_path
+</pre></div>
+</div>
+</div>
+<div class="section" id="bug-reports">
+<h2>Bug reports<a class="headerlink" href="#bug-reports" title="Permalink to this headline">¶</a></h2>
+<p>Use the <a class="reference external" href="https://github.com/mne-tools/mne-bids/issues">github issue tracker</a>
+to report bugs.</p>
+</div>
+<div class="section" id="cite">
+<h2>Cite<a class="headerlink" href="#cite" title="Permalink to this headline">¶</a></h2>
+<p>If you use <code class="docutils literal notranslate"><span class="pre">mne-bids</span></code> in your work, please cite one of the following papers,
+depending on which modality you used:</p>
+<div class="section" id="meg">
+<h3>MEG<a class="headerlink" href="#meg" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-Text notranslate"><div class="highlight"><pre><span></span>Niso, G., Gorgolewski, K. J., Bock, E., Brooks, T. L., Flandin, G., Gramfort, A.,
+Henson, R. N., Jas, M., Litvak, V., Moreau, J., Oostenveld, R., Schoffelen, J.,
+Tadel, F., Wexler, J., Baillet, S. (2018). MEG-BIDS, the brain imaging data
+structure extended to magnetoencephalography. Scientific Data, 5, 180110.
+http://doi.org/10.1038/sdata.2018.110
+</pre></div>
+</div>
+</div>
+<div class="section" id="eeg">
+<h3>EEG<a class="headerlink" href="#eeg" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-Text notranslate"><div class="highlight"><pre><span></span>Pernet, C. R., Appelhoff, S., Flandin, G., Phillips, C., Delorme, A., &amp;
+Oostenveld, R. (2018, December 6). BIDS-EEG: an extension to the Brain
+Imaging Data Structure  (BIDS) Specification for electroencephalography.
+https://doi.org/10.31234/osf.io/63a4y
+</pre></div>
+</div>
+</div>
+<div class="section" id="ieeg">
+<h3>iEEG<a class="headerlink" href="#ieeg" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-Text notranslate"><div class="highlight"><pre><span></span>Holdgraf, C., Appelhoff, S., Bickel, S., Bouchard, K., D&#39;Ambrosio, S.,
+David, O., … Hermes, D. (2018, December 13). BIDS-iEEG: an extension to the
+brain imaging data structure  (BIDS) specification for human intracranial
+electrophysiology. https://doi.org/10.31234/osf.io/r7vc2
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-03-24.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

@@ -1,0 +1,1221 @@
+.. note::
+    :class: sphx-glr-download-link-note
+
+    Click :ref:`here <sphx_glr_download_auto_examples_convert_eeg_to_bids.py>` to download the full example code or to run this example in your browser via Binder
+.. rst-class:: sphx-glr-example-title
+
+.. _sphx_glr_auto_examples_convert_eeg_to_bids.py:
+
+
+===============================
+Convert EEG data to BIDS format
+===============================
+
+In this example, we use MNE-BIDS to create a BIDS-compatible directory of EEG
+data. Specifically, we will follow these steps:
+
+1. Download some EEG data from the
+   `PhysioBank database <https://physionet.org/physiobank/database>`_.
+
+2. Load the data, extract information, and save in a new BIDS directory
+
+3. Check the result and compare it with the standard
+
+
+
+.. code-block:: default
+
+
+    # Authors: Stefan Appelhoff <stefan.appelhoff@mailbox.org>
+    # License: BSD (3-clause)
+
+
+
+
+
+
+
+
+We are importing everything we need for this example:
+
+
+.. code-block:: default
+
+    import os
+    import shutil as sh
+
+    import mne
+    from mne.datasets import eegbci
+
+    from mne_bids import write_raw_bids, make_bids_basename
+    from mne_bids.utils import print_dir_tree
+
+
+
+
+
+
+
+
+Step 1: Download the data
+-------------------------
+
+First, we need some data to work with. We will use the
+`EEG Motor Movement/Imagery Dataset <https://doi.org/10.13026/C28G6P>`_
+available on the PhysioBank database.
+
+The data consists of 109 volunteers performing 14 experimental runs each. For
+each subject, there were two baseline tasks (1. eyes open, 2. eyes closed) as
+well as four different motor imagery tasks. For the present example, we will
+show how to format the data for two subjects and selected tasks to comply
+with the Brain Imaging Data Structure
+(`BIDS <http://bids.neuroimaging.io/>`_).
+
+Conveniently, there is already a data loading function available with
+MNE-Python:
+
+
+.. code-block:: default
+
+
+    # Make a directory to save the data to
+    home = os.path.expanduser('~')
+    mne_dir = os.path.join(home, 'mne_data')
+    if not os.path.exists(mne_dir):
+        os.makedirs(mne_dir)
+
+    # Define which tasks we want to download.
+    tasks = [2,  # This is 2 minutes of eyes closed rest
+             4,  # This is run #1 of imagining to close left or right fist
+             12]  # This is run #2 of imagining to close left or right fist
+
+    # Download the data for subjects 1 and 2
+    for subj_idx in [1, 2]:
+        eegbci.load_data(subject=subj_idx,
+                         runs=tasks,
+                         path=mne_dir,
+                         update_path=True)
+
+
+
+
+
+
+
+
+Let's see whether the data has been downloaded using a quick visualization
+of the directory tree.
+
+
+.. code-block:: default
+
+
+    data_dir = os.path.join(mne_dir, 'MNE-eegbci-data')
+    print_dir_tree(data_dir)
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    |MNE-eegbci-data/
+    |--- files/
+    |------ eegmmidb/
+    |--------- 1.0.0/
+    |------------ S001/
+    |--------------- S001R12.edf
+    |--------------- S001R04.edf
+    |--------------- S001R02.edf
+    |------------ S002/
+    |--------------- S002R04.edf
+    |--------------- S002R12.edf
+    |--------------- S002R02.edf
+    |--- physiobank/
+    |------ database/
+    |--------- eegmmidb/
+    |------------ S004/
+    |--------------- S004R01.edf
+    |------------ S001/
+    |--------------- S001R12.edf
+    |--------------- S001R04.edf
+    |--------------- S001R02.edf
+    |------------ S002/
+    |--------------- S002R04.edf
+    |--------------- S002R12.edf
+    |--------------- S002R02.edf
+
+
+
+
+The data are in the `European Data Format <https://www.edfplus.info/>`_
+'.edf', which is good for us because next to the BrainVision format, EDF is
+one of the recommended file formats for EEG BIDS. However, apart from the
+data format, we need to build a directory structure and supply meta data
+files to properly *bidsify* this data.
+
+Step 2: Formatting as BIDS
+--------------------------
+
+Let's start by formatting a single subject. We are reading the data using
+MNE-Python's io module and the :func:`read_raw_edf` function. Note that we
+must use `preload=False`, the default in MNE-Python. It prevents the data
+from being loaded and modified when converting to BIDS.
+
+
+.. code-block:: default
+
+    edf_path = eegbci.load_data(subject=1, runs=2)[0]
+    raw = mne.io.read_raw_edf(edf_path, preload=False)
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    Extracting EDF parameters from /home/stefanappelhoff/mne_data/MNE-eegbci-data/physiobank/database/eegmmidb/S001/S001R02.edf...
+    EDF file detected
+    Setting channel info structure...
+    Creating raw.info structure...
+
+
+
+
+The annotations stored in the file must be read in separately and converted
+into a 2D numpy array of events that is compatible with MNE.
+
+
+.. code-block:: default
+
+    annot = mne.read_annotations(edf_path)
+    raw.set_annotations(annot)
+    events, event_id = mne.events_from_annotations(raw)
+
+    print(raw)
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    Used Annotations descriptions: ['T0']
+    <RawEDF  |  S001R02.edf, n_channels x n_times : 64 x 9760 (61.0 sec), ~128 kB, data not loaded>
+
+
+
+
+With this step, we have everything to start a new BIDS directory using
+our data. To do that, we can use :func:`write_raw_bids`
+Generally, :func:`write_raw_bids` tries to extract as much
+meta data as possible from the raw data and then formats it in a BIDS
+compatible way. :func:`write_raw_bids` takes a bunch of inputs, most of
+which are however optional. The required inputs are:
+
+* :code:`raw`
+* :code:`bids_basename`
+* :code:`output_path`
+
+... as you can see in the docstring:
+
+
+.. code-block:: default
+
+    print(write_raw_bids.__doc__)
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    Walk over a folder of files and create BIDS compatible folder.
+
+        .. warning:: The original files are simply copied over. This function
+                     cannot convert modify data files from one format to another.
+                     Modification of the original data files is not allowed.
+
+        Parameters
+        ----------
+        raw : instance of mne.io.Raw
+            The raw data. It must be an instance of mne.Raw. The data should not be
+            loaded on disk, i.e., raw.preload must be False.
+        bids_basename : str
+            The base filename of the BIDS compatible files. Typically, this can be
+            generated using make_bids_basename.
+            Example: `sub-01_ses-01_task-testing_acq-01_run-01`.
+            This will write the following files in the correct subfolder of the
+            output_path::
+
+                sub-01_ses-01_task-testing_acq-01_run-01_meg.fif
+                sub-01_ses-01_task-testing_acq-01_run-01_meg.json
+                sub-01_ses-01_task-testing_acq-01_run-01_channels.tsv
+                sub-01_ses-01_task-testing_acq-01_run-01_coordsystem.json
+
+            and the following one if events_data is not None::
+
+                sub-01_ses-01_task-testing_acq-01_run-01_events.tsv
+
+            and add a line to the following files::
+
+                participants.tsv
+                scans.tsv
+
+            Note that the modality 'meg' is automatically inferred from the raw
+            object and extension '.fif' is copied from raw.filenames.
+        output_path : str
+            The path of the root of the BIDS compatible folder. The session and
+            subject specific folders will be populated automatically by parsing
+            bids_basename.
+        events_data : str | array | None
+            The events file. If a string, a path to the events file. If an array,
+            the MNE events array (shape n_events, 3). If None, events will be
+            inferred from the stim channel using `mne.find_events`.
+        event_id : dict | None
+            The event id dict used to create a 'trial_type' column in events.tsv
+        overwrite : bool
+            Whether to overwrite existing files or data in files.
+            Defaults to False.
+            If overwrite is True, any existing files with the same BIDS parameters
+            will be overwritten with the exception of the `participants.tsv` and
+            `scans.tsv` files. For these files, parts of pre-existing data that
+            match the current data will be replaced.
+            If overwrite is False, no existing data will be overwritten or
+            replaced.
+        verbose : bool
+            If verbose is True, this will print a snippet of the sidecar files. If
+            False, no content will be printed.
+
+        Returns
+        -------
+        output_path : str
+            The path of the root of the BIDS compatible folder.
+
+        Notes
+        -----
+        For the participants.tsv file, the raw.info['subjects_info'] should be
+        updated and raw.info['meas_date'] should not be None to compute the age
+        of the participant correctly.
+
+    
+
+
+
+
+We loaded 'S001R02.edf', which corresponds to subject 1 in the second task.
+The second task was to rest with closed eyes.
+
+
+.. code-block:: default
+
+    subject_id = '001'  # zero padding to account for >100 subjects in this dataset
+    task = 'resteyesclosed'
+    raw_file = raw
+    output_path = os.path.join(home, 'mne_data', 'eegmmidb_bids')
+
+
+
+
+
+
+
+
+Now we just need to specify a few more EEG details to get something sensible:
+
+
+.. code-block:: default
+
+
+    # Brief description of the event markers present in the data. This will become
+    # the `trial_type` column in our BIDS `events.tsv`. We know about the event
+    # meaning from the documentation on PhysioBank
+    trial_type = {'rest': 0, 'imagine left fist': 1, 'imagine right fist': 2}
+
+    # Now convert our data to be in a new BIDS dataset.
+    bids_basename = make_bids_basename(subject=subject_id, task=task)
+    write_raw_bids(raw_file, bids_basename, output_path, event_id=trial_type,
+                   events_data=events, overwrite=True)
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    Extracting EDF parameters from /home/stefanappelhoff/mne_data/MNE-eegbci-data/physiobank/database/eegmmidb/S001/S001R02.edf...
+    EDF file detected
+    Setting channel info structure...
+    Creating raw.info structure...
+    Creating folder: /home/stefanappelhoff/mne_data/eegmmidb_bids/sub-001/eeg
+
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/participants.tsv'...
+
+    participant_id  age     sex
+    sub-001 n/a     n/a
+    sub-002 n/a     n/a
+
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/participants.json'...
+
+    {
+        "participant_id": {
+            "Description": "Unique participant identifier"
+        },
+        "age": {
+            "Description": "Age of the participant at time of testing",
+            "Units": "years"
+        },
+        "sex": {
+            "Description": "Biological sex of the participant",
+            "Levels": {
+                "F": "female",
+                "M": "male"
+            }
+        }
+    }
+
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-001/sub-001_scans.tsv'...
+
+    filename        acq_time
+    eeg/sub-001_task-imaginefists_run-1_eeg.edf     2009-08-12T18:15:00
+    eeg/sub-001_task-imaginefists_run-2_eeg.edf     2009-08-12T18:15:00
+    eeg/sub-001_task-resteyesclosed_eeg.edf 2009-08-12T18:15:00
+
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_events.tsv'...
+
+    onset   duration        trial_type      value   sample
+    0.0     0.0     imagine left fist       1       0
+
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/dataset_description.json'...
+
+    {
+        "Name": " ",
+        "BIDSVersion": "1.2.0"
+    }
+    /home/stefanappelhoff/Desktop/bids/mne-bids/mne_bids/write.py:407: UserWarning: No line frequency found, defaulting to 50 Hz
+      warn('No line frequency found, defaulting to 50 Hz')
+    Reading 0 ... 9759  =      0.000 ...    60.994 secs...
+    /home/stefanappelhoff/miniconda3/envs/mne_bids3/lib/python3.6/site-packages/mne/utils/docs.py:830: DeprecationWarning: Function read_montage is deprecated; ``read_montage`` is deprecated and will be removed in v0.20. Please use ``read_dig_fif``, ``read_dig_egi``, ``read_custom_montage``, or ``read_dig_captrack`` to read a digitization based on your needs instead; or ``make_standard_montage`` to create ``DigMontage`` based on template; or ``make_dig_montage`` to create a ``DigMontage`` out of np.arrays
+      warnings.warn(msg, category=DeprecationWarning)
+    /home/stefanappelhoff/miniconda3/envs/mne_bids3/lib/python3.6/site-packages/mne/utils/docs.py:813: DeprecationWarning: Class Montage is deprecated; Montage class is deprecated and will be removed in v0.20. Please use DigMontage instead.
+      warnings.warn(msg, category=DeprecationWarning)
+
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_eeg.json'...
+
+    {
+        "TaskName": "resteyesclosed",
+        "Manufacturer": "n/a",
+        "PowerLineFrequency": 50,
+        "SamplingFrequency": 160.0,
+        "SoftwareFilters": "n/a",
+        "RecordingDuration": 60.99375,
+        "RecordingType": "continuous",
+        "EEGReference": "n/a",
+        "EEGGround": "n/a",
+        "EEGPlacementScheme": "n/a",
+        "EEGChannelCount": 64,
+        "EOGChannelCount": 0,
+        "ECGChannelCount": 0,
+        "EMGChannelCount": 0,
+        "MiscChannelCount": 0,
+        "TriggerChannelCount": 0
+    }
+
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_channels.tsv'...
+
+    name    type    units   low_cutoff      high_cutoff     description     sampling_frequency      status
+    Fc5.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+    Fc3.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+    Fc1.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+    Fcz.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+    Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+    Copying data files to /home/stefanappelhoff/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_eeg.edf
+
+    '/home/stefanappelhoff/mne_data/eegmmidb_bids'
+
+
+
+What does our fresh BIDS directory look like?
+
+
+.. code-block:: default
+
+    print_dir_tree(output_path)
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    |eegmmidb_bids/
+    |--- participants.tsv
+    |--- dataset_description.json
+    |--- participants.json
+    |--- sub-002/
+    |------ sub-002_scans.tsv
+    |------ eeg/
+    |--------- sub-002_task-resteyesclosed_eeg.edf
+    |--------- sub-002_task-resteyesclosed_events.tsv
+    |--------- sub-002_task-imaginefists_run-1_eeg.json
+    |--------- sub-002_task-imaginefists_run-2_eeg.json
+    |--------- sub-002_task-resteyesclosed_channels.tsv
+    |--------- sub-002_task-imaginefists_run-2_channels.tsv
+    |--------- sub-002_task-imaginefists_run-1_eeg.edf
+    |--------- sub-002_task-imaginefists_run-1_events.tsv
+    |--------- sub-002_task-imaginefists_run-1_channels.tsv
+    |--------- sub-002_task-imaginefists_run-2_eeg.edf
+    |--------- sub-002_task-imaginefists_run-2_events.tsv
+    |--------- sub-002_task-resteyesclosed_eeg.json
+    |--- sub-001/
+    |------ sub-001_scans.tsv
+    |------ eeg/
+    |--------- sub-001_task-resteyesclosed_eeg.edf
+    |--------- sub-001_task-imaginefists_run-1_events.tsv
+    |--------- sub-001_task-resteyesclosed_events.tsv
+    |--------- sub-001_task-imaginefists_run-2_channels.tsv
+    |--------- sub-001_task-imaginefists_run-1_eeg.json
+    |--------- sub-001_task-imaginefists_run-1_channels.tsv
+    |--------- sub-001_task-imaginefists_run-2_eeg.json
+    |--------- sub-001_task-resteyesclosed_channels.tsv
+    |--------- sub-001_task-imaginefists_run-2_eeg.edf
+    |--------- sub-001_task-imaginefists_run-2_events.tsv
+    |--------- sub-001_task-imaginefists_run-1_eeg.edf
+    |--------- sub-001_task-resteyesclosed_eeg.json
+
+
+
+
+Looks good so far, let's convert the data for all tasks and subjects.
+
+
+.. code-block:: default
+
+
+    # Start with a clean directory
+    sh.rmtree(output_path)
+
+    # Some initial information that we found in the PhysioBank documentation
+    task_names = {2: 'resteyesclosed',
+                  4: 'imaginefists',  # run 1
+                  12: 'imaginefists'  # run 2
+                  }
+
+    run_mapping = {2: None,  # for resting eyes closed task, there was only one run
+                   4: '1',
+                   12: '2'
+                   }
+
+    # Now go over subjects and *bidsify*
+    for subj_idx in [1, 2]:
+        for task_idx in [2, 4, 12]:
+            # Load the data
+            edf_path = eegbci.load_data(subject=subj_idx, runs=task_idx)[0]
+
+            raw = mne.io.read_raw_edf(edf_path, preload=False, stim_channel=None)
+            annot = mne.read_annotations(edf_path)
+            raw.set_annotations(annot)
+            events, event_id = mne.events_from_annotations(raw)
+
+            bids_basename = make_bids_basename(subject='{:03}'.format(subj_idx),
+                                               task=task_names[task_idx],
+                                               run=run_mapping[task_idx])
+            write_raw_bids(raw, bids_basename, output_path, event_id=trial_type,
+                           events_data=events, overwrite=True)
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    Extracting EDF parameters from /home/stefanappelhoff/mne_data/MNE-eegbci-data/physiobank/database/eegmmidb/S001/S001R02.edf...
+    EDF file detected
+    Setting channel info structure...
+    Creating raw.info structure...
+    Used Annotations descriptions: ['T0']
+    Extracting EDF parameters from /home/stefanappelhoff/mne_data/MNE-eegbci-data/physiobank/database/eegmmidb/S001/S001R02.edf...
+    EDF file detected
+    Setting channel info structure...
+    Creating raw.info structure...
+    Creating folder: /home/stefanappelhoff/mne_data/eegmmidb_bids/sub-001/eeg
+
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/participants.tsv'...
+
+    participant_id  age     sex
+    sub-001 n/a     n/a
+
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/participants.json'...
+
+    {
+        "participant_id": {
+            "Description": "Unique participant identifier"
+        },
+        "age": {
+            "Description": "Age of the participant at time of testing",
+            "Units": "years"
+        },
+        "sex": {
+            "Description": "Biological sex of the participant",
+            "Levels": {
+                "F": "female",
+                "M": "male"
+            }
+        }
+    }
+
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-001/sub-001_scans.tsv'...
+
+    filename        acq_time
+    eeg/sub-001_task-resteyesclosed_eeg.edf 2009-08-12T18:15:00
+
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_events.tsv'...
+
+    onset   duration        trial_type      value   sample
+    0.0     0.0     imagine left fist       1       0
+
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/dataset_description.json'...
+
+    {
+        "Name": " ",
+        "BIDSVersion": "1.2.0"
+    }
+    Reading 0 ... 9759  =      0.000 ...    60.994 secs...
+    /home/stefanappelhoff/miniconda3/envs/mne_bids3/lib/python3.6/site-packages/mne/utils/docs.py:830: DeprecationWarning: Function read_montage is deprecated; ``read_montage`` is deprecated and will be removed in v0.20. Please use ``read_dig_fif``, ``read_dig_egi``, ``read_custom_montage``, or ``read_dig_captrack`` to read a digitization based on your needs instead; or ``make_standard_montage`` to create ``DigMontage`` based on template; or ``make_dig_montage`` to create a ``DigMontage`` out of np.arrays
+      warnings.warn(msg, category=DeprecationWarning)
+    /home/stefanappelhoff/miniconda3/envs/mne_bids3/lib/python3.6/site-packages/mne/utils/docs.py:813: DeprecationWarning: Class Montage is deprecated; Montage class is deprecated and will be removed in v0.20. Please use DigMontage instead.
+      warnings.warn(msg, category=DeprecationWarning)
+
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_eeg.json'...
+
+    {
+        "TaskName": "resteyesclosed",
+        "Manufacturer": "n/a",
+        "PowerLineFrequency": 50,
+        "SamplingFrequency": 160.0,
+        "SoftwareFilters": "n/a",
+        "RecordingDuration": 60.99375,
+        "RecordingType": "continuous",
+        "EEGReference": "n/a",
+        "EEGGround": "n/a",
+        "EEGPlacementScheme": "n/a",
+        "EEGChannelCount": 64,
+        "EOGChannelCount": 0,
+        "ECGChannelCount": 0,
+        "EMGChannelCount": 0,
+        "MiscChannelCount": 0,
+        "TriggerChannelCount": 0
+    }
+
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_channels.tsv'...
+
+    name    type    units   low_cutoff      high_cutoff     description     sampling_frequency      status
+    Fc5.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+    Fc3.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+    Fc1.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+    Fcz.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+    Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+    Copying data files to /home/stefanappelhoff/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_eeg.edf
+    Extracting EDF parameters from /home/stefanappelhoff/mne_data/MNE-eegbci-data/physiobank/database/eegmmidb/S001/S001R04.edf...
+    EDF file detected
+    Setting channel info structure...
+    Creating raw.info structure...
+    Used Annotations descriptions: ['T0', 'T1', 'T2']
+    Extracting EDF parameters from /home/stefanappelhoff/mne_data/MNE-eegbci-data/physiobank/database/eegmmidb/S001/S001R04.edf...
+    EDF file detected
+    Setting channel info structure...
+    Creating raw.info structure...
+    Creating folder: /home/stefanappelhoff/mne_data/eegmmidb_bids/sub-001/eeg
+
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/participants.tsv'...
+
+    participant_id  age     sex
+    sub-001 n/a     n/a
+
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/participants.json'...
+
+    {
+        "participant_id": {
+            "Description": "Unique participant identifier"
+        },
+        "age": {
+            "Description": "Age of the participant at time of testing",
+            "Units": "years"
+        },
+        "sex": {
+            "Description": "Biological sex of the participant",
+            "Levels": {
+                "F": "female",
+                "M": "male"
+            }
+        }
+    }
+
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-001/sub-001_scans.tsv'...
+
+    filename        acq_time
+    eeg/sub-001_task-imaginefists_run-1_eeg.edf     2009-08-12T18:15:00
+    eeg/sub-001_task-resteyesclosed_eeg.edf 2009-08-12T18:15:00
+
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-imaginefists_run-1_events.tsv'...
+
+    onset   duration        trial_type      value   sample
+    0.0     0.0     imagine left fist       1       0
+    4.2     0.0     n/a     3       672
+    8.3     0.0     imagine left fist       1       1328
+    12.5    0.0     imagine right fist      2       2000
+    16.6    0.0     imagine left fist       1       2656
+
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/dataset_description.json'...
+
+    {
+        "Name": " ",
+        "BIDSVersion": "1.2.0"
+    }
+    Reading 0 ... 19999  =      0.000 ...   124.994 secs...
+    /home/stefanappelhoff/miniconda3/envs/mne_bids3/lib/python3.6/site-packages/mne/utils/docs.py:830: DeprecationWarning: Function read_montage is deprecated; ``read_montage`` is deprecated and will be removed in v0.20. Please use ``read_dig_fif``, ``read_dig_egi``, ``read_custom_montage``, or ``read_dig_captrack`` to read a digitization based on your needs instead; or ``make_standard_montage`` to create ``DigMontage`` based on template; or ``make_dig_montage`` to create a ``DigMontage`` out of np.arrays
+      warnings.warn(msg, category=DeprecationWarning)
+    /home/stefanappelhoff/miniconda3/envs/mne_bids3/lib/python3.6/site-packages/mne/utils/docs.py:813: DeprecationWarning: Class Montage is deprecated; Montage class is deprecated and will be removed in v0.20. Please use DigMontage instead.
+      warnings.warn(msg, category=DeprecationWarning)
+
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-imaginefists_run-1_eeg.json'...
+
+    {
+        "TaskName": "imaginefists",
+        "Manufacturer": "n/a",
+        "PowerLineFrequency": 50,
+        "SamplingFrequency": 160.0,
+        "SoftwareFilters": "n/a",
+        "RecordingDuration": 124.99375,
+        "RecordingType": "continuous",
+        "EEGReference": "n/a",
+        "EEGGround": "n/a",
+        "EEGPlacementScheme": "n/a",
+        "EEGChannelCount": 64,
+        "EOGChannelCount": 0,
+        "ECGChannelCount": 0,
+        "EMGChannelCount": 0,
+        "MiscChannelCount": 0,
+        "TriggerChannelCount": 0
+    }
+
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-imaginefists_run-1_channels.tsv'...
+
+    name    type    units   low_cutoff      high_cutoff     description     sampling_frequency      status
+    Fc5.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+    Fc3.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+    Fc1.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+    Fcz.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+    Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+    Copying data files to /home/stefanappelhoff/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-imaginefists_run-1_eeg.edf
+    Extracting EDF parameters from /home/stefanappelhoff/mne_data/MNE-eegbci-data/physiobank/database/eegmmidb/S001/S001R12.edf...
+    EDF file detected
+    Setting channel info structure...
+    Creating raw.info structure...
+    Used Annotations descriptions: ['T0', 'T1', 'T2']
+    Extracting EDF parameters from /home/stefanappelhoff/mne_data/MNE-eegbci-data/physiobank/database/eegmmidb/S001/S001R12.edf...
+    EDF file detected
+    Setting channel info structure...
+    Creating raw.info structure...
+    Creating folder: /home/stefanappelhoff/mne_data/eegmmidb_bids/sub-001/eeg
+
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/participants.tsv'...
+
+    participant_id  age     sex
+    sub-001 n/a     n/a
+
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/participants.json'...
+
+    {
+        "participant_id": {
+            "Description": "Unique participant identifier"
+        },
+        "age": {
+            "Description": "Age of the participant at time of testing",
+            "Units": "years"
+        },
+        "sex": {
+            "Description": "Biological sex of the participant",
+            "Levels": {
+                "F": "female",
+                "M": "male"
+            }
+        }
+    }
+
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-001/sub-001_scans.tsv'...
+
+    filename        acq_time
+    eeg/sub-001_task-imaginefists_run-1_eeg.edf     2009-08-12T18:15:00
+    eeg/sub-001_task-imaginefists_run-2_eeg.edf     2009-08-12T18:15:00
+    eeg/sub-001_task-resteyesclosed_eeg.edf 2009-08-12T18:15:00
+
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-imaginefists_run-2_events.tsv'...
+
+    onset   duration        trial_type      value   sample
+    0.0     0.0     imagine left fist       1       0
+    4.2     0.0     n/a     3       672
+    8.3     0.0     imagine left fist       1       1328
+    12.5    0.0     imagine right fist      2       2000
+    16.6    0.0     imagine left fist       1       2656
+
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/dataset_description.json'...
+
+    {
+        "Name": " ",
+        "BIDSVersion": "1.2.0"
+    }
+    Reading 0 ... 19999  =      0.000 ...   124.994 secs...
+    /home/stefanappelhoff/miniconda3/envs/mne_bids3/lib/python3.6/site-packages/mne/utils/docs.py:830: DeprecationWarning: Function read_montage is deprecated; ``read_montage`` is deprecated and will be removed in v0.20. Please use ``read_dig_fif``, ``read_dig_egi``, ``read_custom_montage``, or ``read_dig_captrack`` to read a digitization based on your needs instead; or ``make_standard_montage`` to create ``DigMontage`` based on template; or ``make_dig_montage`` to create a ``DigMontage`` out of np.arrays
+      warnings.warn(msg, category=DeprecationWarning)
+    /home/stefanappelhoff/miniconda3/envs/mne_bids3/lib/python3.6/site-packages/mne/utils/docs.py:813: DeprecationWarning: Class Montage is deprecated; Montage class is deprecated and will be removed in v0.20. Please use DigMontage instead.
+      warnings.warn(msg, category=DeprecationWarning)
+
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-imaginefists_run-2_eeg.json'...
+
+    {
+        "TaskName": "imaginefists",
+        "Manufacturer": "n/a",
+        "PowerLineFrequency": 50,
+        "SamplingFrequency": 160.0,
+        "SoftwareFilters": "n/a",
+        "RecordingDuration": 124.99375,
+        "RecordingType": "continuous",
+        "EEGReference": "n/a",
+        "EEGGround": "n/a",
+        "EEGPlacementScheme": "n/a",
+        "EEGChannelCount": 64,
+        "EOGChannelCount": 0,
+        "ECGChannelCount": 0,
+        "EMGChannelCount": 0,
+        "MiscChannelCount": 0,
+        "TriggerChannelCount": 0
+    }
+
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-imaginefists_run-2_channels.tsv'...
+
+    name    type    units   low_cutoff      high_cutoff     description     sampling_frequency      status
+    Fc5.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+    Fc3.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+    Fc1.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+    Fcz.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+    Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+    Copying data files to /home/stefanappelhoff/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-imaginefists_run-2_eeg.edf
+    Extracting EDF parameters from /home/stefanappelhoff/mne_data/MNE-eegbci-data/physiobank/database/eegmmidb/S002/S002R02.edf...
+    EDF file detected
+    Setting channel info structure...
+    Creating raw.info structure...
+    Used Annotations descriptions: ['T0']
+    Extracting EDF parameters from /home/stefanappelhoff/mne_data/MNE-eegbci-data/physiobank/database/eegmmidb/S002/S002R02.edf...
+    EDF file detected
+    Setting channel info structure...
+    Creating raw.info structure...
+    Creating folder: /home/stefanappelhoff/mne_data/eegmmidb_bids/sub-002/eeg
+
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/participants.tsv'...
+
+    participant_id  age     sex
+    sub-001 n/a     n/a
+    sub-002 n/a     n/a
+
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/participants.json'...
+
+    {
+        "participant_id": {
+            "Description": "Unique participant identifier"
+        },
+        "age": {
+            "Description": "Age of the participant at time of testing",
+            "Units": "years"
+        },
+        "sex": {
+            "Description": "Biological sex of the participant",
+            "Levels": {
+                "F": "female",
+                "M": "male"
+            }
+        }
+    }
+
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-002/sub-002_scans.tsv'...
+
+    filename        acq_time
+    eeg/sub-002_task-resteyesclosed_eeg.edf 2009-08-12T18:15:00
+
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-resteyesclosed_events.tsv'...
+
+    onset   duration        trial_type      value   sample
+    0.0     0.0     imagine left fist       1       0
+
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/dataset_description.json'...
+
+    {
+        "Name": " ",
+        "BIDSVersion": "1.2.0"
+    }
+    Reading 0 ... 9759  =      0.000 ...    60.994 secs...
+    /home/stefanappelhoff/miniconda3/envs/mne_bids3/lib/python3.6/site-packages/mne/utils/docs.py:830: DeprecationWarning: Function read_montage is deprecated; ``read_montage`` is deprecated and will be removed in v0.20. Please use ``read_dig_fif``, ``read_dig_egi``, ``read_custom_montage``, or ``read_dig_captrack`` to read a digitization based on your needs instead; or ``make_standard_montage`` to create ``DigMontage`` based on template; or ``make_dig_montage`` to create a ``DigMontage`` out of np.arrays
+      warnings.warn(msg, category=DeprecationWarning)
+    /home/stefanappelhoff/miniconda3/envs/mne_bids3/lib/python3.6/site-packages/mne/utils/docs.py:813: DeprecationWarning: Class Montage is deprecated; Montage class is deprecated and will be removed in v0.20. Please use DigMontage instead.
+      warnings.warn(msg, category=DeprecationWarning)
+
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-resteyesclosed_eeg.json'...
+
+    {
+        "TaskName": "resteyesclosed",
+        "Manufacturer": "n/a",
+        "PowerLineFrequency": 50,
+        "SamplingFrequency": 160.0,
+        "SoftwareFilters": "n/a",
+        "RecordingDuration": 60.99375,
+        "RecordingType": "continuous",
+        "EEGReference": "n/a",
+        "EEGGround": "n/a",
+        "EEGPlacementScheme": "n/a",
+        "EEGChannelCount": 64,
+        "EOGChannelCount": 0,
+        "ECGChannelCount": 0,
+        "EMGChannelCount": 0,
+        "MiscChannelCount": 0,
+        "TriggerChannelCount": 0
+    }
+
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-resteyesclosed_channels.tsv'...
+
+    name    type    units   low_cutoff      high_cutoff     description     sampling_frequency      status
+    Fc5.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+    Fc3.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+    Fc1.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+    Fcz.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+    Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+    Copying data files to /home/stefanappelhoff/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-resteyesclosed_eeg.edf
+    Extracting EDF parameters from /home/stefanappelhoff/mne_data/MNE-eegbci-data/physiobank/database/eegmmidb/S002/S002R04.edf...
+    EDF file detected
+    Setting channel info structure...
+    Creating raw.info structure...
+    Used Annotations descriptions: ['T0', 'T1', 'T2']
+    Extracting EDF parameters from /home/stefanappelhoff/mne_data/MNE-eegbci-data/physiobank/database/eegmmidb/S002/S002R04.edf...
+    EDF file detected
+    Setting channel info structure...
+    Creating raw.info structure...
+    Creating folder: /home/stefanappelhoff/mne_data/eegmmidb_bids/sub-002/eeg
+
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/participants.tsv'...
+
+    participant_id  age     sex
+    sub-001 n/a     n/a
+    sub-002 n/a     n/a
+
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/participants.json'...
+
+    {
+        "participant_id": {
+            "Description": "Unique participant identifier"
+        },
+        "age": {
+            "Description": "Age of the participant at time of testing",
+            "Units": "years"
+        },
+        "sex": {
+            "Description": "Biological sex of the participant",
+            "Levels": {
+                "F": "female",
+                "M": "male"
+            }
+        }
+    }
+
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-002/sub-002_scans.tsv'...
+
+    filename        acq_time
+    eeg/sub-002_task-imaginefists_run-1_eeg.edf     2009-08-12T18:15:00
+    eeg/sub-002_task-resteyesclosed_eeg.edf 2009-08-12T18:15:00
+
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-imaginefists_run-1_events.tsv'...
+
+    onset   duration        trial_type      value   sample
+    0.0     0.0     imagine left fist       1       0
+    4.1     0.0     imagine right fist      2       656
+    8.2     0.0     imagine left fist       1       1312
+    12.3    0.0     n/a     3       1968
+    16.4    0.0     imagine left fist       1       2624
+
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/dataset_description.json'...
+
+    {
+        "Name": " ",
+        "BIDSVersion": "1.2.0"
+    }
+    Reading 0 ... 19679  =      0.000 ...   122.994 secs...
+    /home/stefanappelhoff/miniconda3/envs/mne_bids3/lib/python3.6/site-packages/mne/utils/docs.py:830: DeprecationWarning: Function read_montage is deprecated; ``read_montage`` is deprecated and will be removed in v0.20. Please use ``read_dig_fif``, ``read_dig_egi``, ``read_custom_montage``, or ``read_dig_captrack`` to read a digitization based on your needs instead; or ``make_standard_montage`` to create ``DigMontage`` based on template; or ``make_dig_montage`` to create a ``DigMontage`` out of np.arrays
+      warnings.warn(msg, category=DeprecationWarning)
+    /home/stefanappelhoff/miniconda3/envs/mne_bids3/lib/python3.6/site-packages/mne/utils/docs.py:813: DeprecationWarning: Class Montage is deprecated; Montage class is deprecated and will be removed in v0.20. Please use DigMontage instead.
+      warnings.warn(msg, category=DeprecationWarning)
+
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-imaginefists_run-1_eeg.json'...
+
+    {
+        "TaskName": "imaginefists",
+        "Manufacturer": "n/a",
+        "PowerLineFrequency": 50,
+        "SamplingFrequency": 160.0,
+        "SoftwareFilters": "n/a",
+        "RecordingDuration": 122.99375,
+        "RecordingType": "continuous",
+        "EEGReference": "n/a",
+        "EEGGround": "n/a",
+        "EEGPlacementScheme": "n/a",
+        "EEGChannelCount": 64,
+        "EOGChannelCount": 0,
+        "ECGChannelCount": 0,
+        "EMGChannelCount": 0,
+        "MiscChannelCount": 0,
+        "TriggerChannelCount": 0
+    }
+
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-imaginefists_run-1_channels.tsv'...
+
+    name    type    units   low_cutoff      high_cutoff     description     sampling_frequency      status
+    Fc5.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+    Fc3.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+    Fc1.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+    Fcz.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+    Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+    Copying data files to /home/stefanappelhoff/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-imaginefists_run-1_eeg.edf
+    Extracting EDF parameters from /home/stefanappelhoff/mne_data/MNE-eegbci-data/physiobank/database/eegmmidb/S002/S002R12.edf...
+    EDF file detected
+    Setting channel info structure...
+    Creating raw.info structure...
+    Used Annotations descriptions: ['T0', 'T1', 'T2']
+    Extracting EDF parameters from /home/stefanappelhoff/mne_data/MNE-eegbci-data/physiobank/database/eegmmidb/S002/S002R12.edf...
+    EDF file detected
+    Setting channel info structure...
+    Creating raw.info structure...
+    Creating folder: /home/stefanappelhoff/mne_data/eegmmidb_bids/sub-002/eeg
+
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/participants.tsv'...
+
+    participant_id  age     sex
+    sub-001 n/a     n/a
+    sub-002 n/a     n/a
+
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/participants.json'...
+
+    {
+        "participant_id": {
+            "Description": "Unique participant identifier"
+        },
+        "age": {
+            "Description": "Age of the participant at time of testing",
+            "Units": "years"
+        },
+        "sex": {
+            "Description": "Biological sex of the participant",
+            "Levels": {
+                "F": "female",
+                "M": "male"
+            }
+        }
+    }
+
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-002/sub-002_scans.tsv'...
+
+    filename        acq_time
+    eeg/sub-002_task-imaginefists_run-1_eeg.edf     2009-08-12T18:15:00
+    eeg/sub-002_task-imaginefists_run-2_eeg.edf     2009-08-12T18:15:00
+    eeg/sub-002_task-resteyesclosed_eeg.edf 2009-08-12T18:15:00
+
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-imaginefists_run-2_events.tsv'...
+
+    onset   duration        trial_type      value   sample
+    0.0     0.0     imagine left fist       1       0
+    4.1     0.0     imagine right fist      2       656
+    8.2     0.0     imagine left fist       1       1312
+    12.3    0.0     n/a     3       1968
+    16.4    0.0     imagine left fist       1       2624
+
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/dataset_description.json'...
+
+    {
+        "Name": " ",
+        "BIDSVersion": "1.2.0"
+    }
+    Reading 0 ... 19679  =      0.000 ...   122.994 secs...
+    /home/stefanappelhoff/miniconda3/envs/mne_bids3/lib/python3.6/site-packages/mne/utils/docs.py:830: DeprecationWarning: Function read_montage is deprecated; ``read_montage`` is deprecated and will be removed in v0.20. Please use ``read_dig_fif``, ``read_dig_egi``, ``read_custom_montage``, or ``read_dig_captrack`` to read a digitization based on your needs instead; or ``make_standard_montage`` to create ``DigMontage`` based on template; or ``make_dig_montage`` to create a ``DigMontage`` out of np.arrays
+      warnings.warn(msg, category=DeprecationWarning)
+    /home/stefanappelhoff/miniconda3/envs/mne_bids3/lib/python3.6/site-packages/mne/utils/docs.py:813: DeprecationWarning: Class Montage is deprecated; Montage class is deprecated and will be removed in v0.20. Please use DigMontage instead.
+      warnings.warn(msg, category=DeprecationWarning)
+
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-imaginefists_run-2_eeg.json'...
+
+    {
+        "TaskName": "imaginefists",
+        "Manufacturer": "n/a",
+        "PowerLineFrequency": 50,
+        "SamplingFrequency": 160.0,
+        "SoftwareFilters": "n/a",
+        "RecordingDuration": 122.99375,
+        "RecordingType": "continuous",
+        "EEGReference": "n/a",
+        "EEGGround": "n/a",
+        "EEGPlacementScheme": "n/a",
+        "EEGChannelCount": 64,
+        "EOGChannelCount": 0,
+        "ECGChannelCount": 0,
+        "EMGChannelCount": 0,
+        "MiscChannelCount": 0,
+        "TriggerChannelCount": 0
+    }
+
+    Writing '/home/stefanappelhoff/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-imaginefists_run-2_channels.tsv'...
+
+    name    type    units   low_cutoff      high_cutoff     description     sampling_frequency      status
+    Fc5.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+    Fc3.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+    Fc1.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+    Fcz.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+    Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+    Copying data files to /home/stefanappelhoff/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-imaginefists_run-2_eeg.edf
+
+
+
+
+Step 3: Check and compare with standard
+---------------------------------------
+Now we have written our BIDS directory.
+
+
+.. code-block:: default
+
+    print_dir_tree(output_path)
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    |eegmmidb_bids/
+    |--- participants.tsv
+    |--- dataset_description.json
+    |--- participants.json
+    |--- sub-002/
+    |------ sub-002_scans.tsv
+    |------ eeg/
+    |--------- sub-002_task-resteyesclosed_eeg.edf
+    |--------- sub-002_task-resteyesclosed_events.tsv
+    |--------- sub-002_task-imaginefists_run-1_eeg.json
+    |--------- sub-002_task-imaginefists_run-2_eeg.json
+    |--------- sub-002_task-resteyesclosed_channels.tsv
+    |--------- sub-002_task-imaginefists_run-2_channels.tsv
+    |--------- sub-002_task-imaginefists_run-1_eeg.edf
+    |--------- sub-002_task-imaginefists_run-1_events.tsv
+    |--------- sub-002_task-imaginefists_run-1_channels.tsv
+    |--------- sub-002_task-imaginefists_run-2_eeg.edf
+    |--------- sub-002_task-imaginefists_run-2_events.tsv
+    |--------- sub-002_task-resteyesclosed_eeg.json
+    |--- sub-001/
+    |------ sub-001_scans.tsv
+    |------ eeg/
+    |--------- sub-001_task-resteyesclosed_eeg.edf
+    |--------- sub-001_task-imaginefists_run-1_events.tsv
+    |--------- sub-001_task-resteyesclosed_events.tsv
+    |--------- sub-001_task-imaginefists_run-2_channels.tsv
+    |--------- sub-001_task-imaginefists_run-1_eeg.json
+    |--------- sub-001_task-imaginefists_run-1_channels.tsv
+    |--------- sub-001_task-imaginefists_run-2_eeg.json
+    |--------- sub-001_task-resteyesclosed_channels.tsv
+    |--------- sub-001_task-imaginefists_run-2_eeg.edf
+    |--------- sub-001_task-imaginefists_run-2_events.tsv
+    |--------- sub-001_task-imaginefists_run-1_eeg.edf
+    |--------- sub-001_task-resteyesclosed_eeg.json
+
+
+
+
+MNE-BIDS has created a suitable directory structure for us, and among other
+meta data files, it started an `events.tsv` and `channels.tsv` and made an
+initial `dataset_description` on top!
+
+Now it's time to manually check the BIDS directory and the meta files to add
+all the information that MNE-BIDS could not infer. For instance, you must
+describe EEGReference and EEGGround yourself. It's easy to find these by
+searching for "n/a" in the sidecar files.
+
+Remember that there is a convenient javascript tool to validate all your BIDS
+directories called the "BIDS-validator", available as a web version and a
+command line tool:
+
+Web version: https://bids-standard.github.io/bids-validator/
+
+Command line tool: https://www.npmjs.com/package/bids-validator
+
+
+.. rst-class:: sphx-glr-timing
+
+   **Total running time of the script:** ( 0 minutes  0.584 seconds)
+
+
+.. _sphx_glr_download_auto_examples_convert_eeg_to_bids.py:
+
+
+.. only :: html
+
+ .. container:: sphx-glr-footer
+    :class: sphx-glr-footer-example
+
+
+  .. container:: binder-badge
+
+    .. image:: https://mybinder.org/badge_logo.svg
+      :target: https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=v0.3/notebooks/auto_examples/convert_eeg_to_bids.ipynb
+      :width: 150 px
+
+
+  .. container:: sphx-glr-download
+
+     :download:`Download Python source code: convert_eeg_to_bids.py <convert_eeg_to_bids.py>`
+
+
+
+  .. container:: sphx-glr-download
+
+     :download:`Download Jupyter notebook: convert_eeg_to_bids.ipynb <convert_eeg_to_bids.ipynb>`
+
+
+.. only:: html
+
+ .. rst-class:: sphx-glr-signature
+
+    `Gallery generated by Sphinx-Gallery <https://sphinx-gallery.github.io>`_

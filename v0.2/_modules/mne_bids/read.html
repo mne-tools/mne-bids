@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>mne_bids.read &#8212; mne_bids 0.2 documentation</title>
+    <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/gallery.css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../../_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../index.html">
+          MNE-BIDS</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.2</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../../auto_examples/index.html">Gallery</a></li>
+                <li><a href="../../api.html">API</a></li>
+                <li><a href="../../whats_new.html">What's new</a></li>
+                <li><a href="https://github.com/mne-tools/mne-bids">Github</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"></ul>
+</li>
+              
+                <li class="dropdown">
+  <a role="button"
+     id="dLabelLocalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="#">Page <b class="caret"></b></a>
+  <ul class="dropdown-menu localtoc"
+      role="menu"
+      aria-labelledby="dLabelLocalToc"></ul>
+</li>
+              
+            
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+<div class="navbar-form navbar-right navbar-btn dropdown btn-group-sm" style="margin-left: 20px; margin-top: 5px; margin-bottom: 5px">
+  <button type="button" class="btn btn-primary navbar-btn dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown">
+    v0.2
+    <span class="caret"></span>
+  </button>
+  <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+    <li><a href="https://mne.tools/mne-bids/dev/index.html">Development</a></li>
+    <li><a href="https://mne.tools/mne-bids/stable/index.html">Stable</a></li>
+    <li><a href="https://mne.tools/mne-bids/v0.1/index.html">v0.1</a></li>
+  </ul>
+</div>
+
+
+            
+<form class="navbar-form navbar-right" action="../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <h1>Source code for mne_bids.read</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Check whether a file format is supported by BIDS and then load it.&quot;&quot;&quot;</span>
+<span class="c1"># Authors: Mainak Jas &lt;mainak.jas@telecom-paristech.fr&gt;</span>
+<span class="c1">#          Alexandre Gramfort &lt;alexandre.gramfort@telecom-paristech.fr&gt;</span>
+<span class="c1">#          Teon Brooks &lt;teon.brooks@gmail.com&gt;</span>
+<span class="c1">#          Chris Holdgraf &lt;choldgraf@berkeley.edu&gt;</span>
+<span class="c1">#          Stefan Appelhoff &lt;stefan.appelhoff@mailbox.org&gt;</span>
+<span class="c1">#</span>
+<span class="c1"># License: BSD (3-clause)</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">os.path</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="kn">import</span> <span class="nn">glob</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">mne</span> <span class="kn">import</span> <span class="n">io</span>
+
+<span class="kn">from</span> <span class="nn">.tsv_handler</span> <span class="kn">import</span> <span class="n">_from_tsv</span><span class="p">,</span> <span class="n">_drop</span>
+<span class="kn">from</span> <span class="nn">.config</span> <span class="kn">import</span> <span class="n">ALLOWED_EXTENSIONS</span>
+
+<span class="n">reader</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;.con&#39;</span><span class="p">:</span> <span class="n">io</span><span class="o">.</span><span class="n">read_raw_kit</span><span class="p">,</span> <span class="s1">&#39;.sqd&#39;</span><span class="p">:</span> <span class="n">io</span><span class="o">.</span><span class="n">read_raw_kit</span><span class="p">,</span>
+          <span class="s1">&#39;.fif&#39;</span><span class="p">:</span> <span class="n">io</span><span class="o">.</span><span class="n">read_raw_fif</span><span class="p">,</span> <span class="s1">&#39;.pdf&#39;</span><span class="p">:</span> <span class="n">io</span><span class="o">.</span><span class="n">read_raw_bti</span><span class="p">,</span>
+          <span class="s1">&#39;.ds&#39;</span><span class="p">:</span> <span class="n">io</span><span class="o">.</span><span class="n">read_raw_ctf</span><span class="p">,</span> <span class="s1">&#39;.vhdr&#39;</span><span class="p">:</span> <span class="n">io</span><span class="o">.</span><span class="n">read_raw_brainvision</span><span class="p">,</span>
+          <span class="s1">&#39;.edf&#39;</span><span class="p">:</span> <span class="n">io</span><span class="o">.</span><span class="n">read_raw_edf</span><span class="p">,</span> <span class="s1">&#39;.bdf&#39;</span><span class="p">:</span> <span class="n">io</span><span class="o">.</span><span class="n">read_raw_edf</span><span class="p">,</span>
+          <span class="s1">&#39;.set&#39;</span><span class="p">:</span> <span class="n">io</span><span class="o">.</span><span class="n">read_raw_eeglab</span><span class="p">}</span>
+
+
+<span class="k">def</span> <span class="nf">_parse_ext</span><span class="p">(</span><span class="n">raw_fname</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Split a filename into its name and extension.&quot;&quot;&quot;</span>
+    <span class="n">fname</span><span class="p">,</span> <span class="n">ext</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">raw_fname</span><span class="p">)</span>
+    <span class="c1"># BTi data is the only file format that does not have a file extension</span>
+    <span class="k">if</span> <span class="n">ext</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span> <span class="ow">or</span> <span class="s1">&#39;c,rf&#39;</span> <span class="ow">in</span> <span class="n">fname</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">verbose</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Found no extension for raw file, assuming &quot;BTi&quot; format and &#39;</span>
+                  <span class="s1">&#39;appending extension .pdf&#39;</span><span class="p">)</span>
+        <span class="n">ext</span> <span class="o">=</span> <span class="s1">&#39;.pdf&#39;</span>
+    <span class="k">return</span> <span class="n">fname</span><span class="p">,</span> <span class="n">ext</span>
+
+
+<span class="k">def</span> <span class="nf">_read_raw</span><span class="p">(</span><span class="n">raw_fname</span><span class="p">,</span> <span class="n">electrode</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hsp</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hpi</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+              <span class="n">montage</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">allow_maxshield</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Read a raw file into MNE, making inferences based on extension.&quot;&quot;&quot;</span>
+    <span class="n">fname</span><span class="p">,</span> <span class="n">ext</span> <span class="o">=</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">raw_fname</span><span class="p">)</span>
+
+    <span class="c1"># KIT systems</span>
+    <span class="k">if</span> <span class="n">ext</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;.con&#39;</span><span class="p">,</span> <span class="s1">&#39;.sqd&#39;</span><span class="p">]:</span>
+        <span class="n">raw</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">read_raw_kit</span><span class="p">(</span><span class="n">raw_fname</span><span class="p">,</span> <span class="n">elp</span><span class="o">=</span><span class="n">electrode</span><span class="p">,</span> <span class="n">hsp</span><span class="o">=</span><span class="n">hsp</span><span class="p">,</span>
+                              <span class="n">mrk</span><span class="o">=</span><span class="n">hpi</span><span class="p">,</span> <span class="n">preload</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="c1"># BTi systems</span>
+    <span class="k">elif</span> <span class="n">ext</span> <span class="o">==</span> <span class="s1">&#39;.pdf&#39;</span><span class="p">:</span>
+        <span class="n">raw</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">read_raw_bti</span><span class="p">(</span><span class="n">raw_fname</span><span class="p">,</span> <span class="n">config_fname</span><span class="o">=</span><span class="n">config</span><span class="p">,</span>
+                              <span class="n">head_shape_fname</span><span class="o">=</span><span class="n">hsp</span><span class="p">,</span>
+                              <span class="n">preload</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">ext</span> <span class="o">==</span> <span class="s1">&#39;.fif&#39;</span><span class="p">:</span>
+        <span class="n">raw</span> <span class="o">=</span> <span class="n">reader</span><span class="p">[</span><span class="n">ext</span><span class="p">](</span><span class="n">raw_fname</span><span class="p">,</span> <span class="n">allow_maxshield</span><span class="o">=</span><span class="n">allow_maxshield</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">ext</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;.ds&#39;</span><span class="p">,</span> <span class="s1">&#39;.vhdr&#39;</span><span class="p">,</span> <span class="s1">&#39;.set&#39;</span><span class="p">]:</span>
+        <span class="n">raw</span> <span class="o">=</span> <span class="n">reader</span><span class="p">[</span><span class="n">ext</span><span class="p">](</span><span class="n">raw_fname</span><span class="p">)</span>
+
+    <span class="c1"># EDF (european data format) or BDF (biosemi) format</span>
+    <span class="c1"># TODO: integrate with lines above once MNE can read</span>
+    <span class="c1"># annotations with preload=False</span>
+    <span class="k">elif</span> <span class="n">ext</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;.edf&#39;</span><span class="p">,</span> <span class="s1">&#39;.bdf&#39;</span><span class="p">]:</span>
+        <span class="n">raw</span> <span class="o">=</span> <span class="n">reader</span><span class="p">[</span><span class="n">ext</span><span class="p">](</span><span class="n">raw_fname</span><span class="p">,</span> <span class="n">preload</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># MEF and NWB are allowed, but not yet implemented</span>
+    <span class="k">elif</span> <span class="n">ext</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;.mef&#39;</span><span class="p">,</span> <span class="s1">&#39;.nwb&#39;</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Got &quot;</span><span class="si">{}</span><span class="s1">&quot; as extension. This is an allowed extension &#39;</span>
+                         <span class="s1">&#39;but there is no IO support for this file format yet.&#39;</span>
+                         <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ext</span><span class="p">))</span>
+
+    <span class="c1"># No supported data found ...</span>
+    <span class="c1"># ---------------------------</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Raw file name extension must be one of </span><span class="si">{}</span><span class="se">\n</span><span class="s1">&#39;</span>
+                         <span class="s1">&#39;Got </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ALLOWED_EXTENSIONS</span><span class="p">,</span> <span class="n">ext</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">raw</span>
+
+
+<div class="viewcode-block" id="read_raw_bids"><a class="viewcode-back" href="../../generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids">[docs]</a><span class="k">def</span> <span class="nf">read_raw_bids</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">,</span> <span class="n">bids_root</span><span class="p">,</span> <span class="n">return_events</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                  <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Read BIDS compatible data.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    bids_fname : str</span>
+<span class="sd">        Full name of the data file</span>
+<span class="sd">    bids_root : str</span>
+<span class="sd">        Path to root of the BIDS folder</span>
+<span class="sd">    return_events: bool</span>
+<span class="sd">        Whether to return events or not. Default is True.</span>
+<span class="sd">    verbose : bool</span>
+<span class="sd">        The verbosity level</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    raw : instance of Raw</span>
+<span class="sd">        The data as MNE-Python Raw object.</span>
+<span class="sd">    events : ndarray, shape = (n_events, 3)</span>
+<span class="sd">        The first column contains the event time in samples and the third</span>
+<span class="sd">        column contains the event id. The second column is ignored for now but</span>
+<span class="sd">        typically contains the value of the trigger channel either immediately</span>
+<span class="sd">        before the event or immediately after.</span>
+<span class="sd">    event_id : dict</span>
+<span class="sd">        Dictionary of events in the raw data mapping from the event value</span>
+<span class="sd">        to an index.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">.utils</span> <span class="kn">import</span> <span class="n">_parse_bids_filename</span>
+
+    <span class="c1"># Full path to data file is needed so that mne-bids knows</span>
+    <span class="c1"># what is the modality -- meg, eeg, ieeg to read</span>
+    <span class="n">bids_basename</span> <span class="o">=</span> <span class="s1">&#39;_&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bids_fname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">kind</span> <span class="o">=</span> <span class="n">bids_fname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">ext</span> <span class="o">=</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">)</span>
+
+    <span class="n">params</span> <span class="o">=</span> <span class="n">_parse_bids_filename</span><span class="p">(</span><span class="n">bids_basename</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
+    <span class="n">kind_dir</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bids_root</span><span class="p">,</span> <span class="s1">&#39;sub-</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;sub&#39;</span><span class="p">],</span>
+                       <span class="s1">&#39;ses-</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;ses&#39;</span><span class="p">],</span> <span class="n">kind</span><span class="p">)</span>
+
+    <span class="n">config</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">ext</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;.fif&#39;</span><span class="p">,</span> <span class="s1">&#39;.ds&#39;</span><span class="p">,</span> <span class="s1">&#39;.vhdr&#39;</span><span class="p">,</span> <span class="s1">&#39;.edf&#39;</span><span class="p">,</span> <span class="s1">&#39;.bdf&#39;</span><span class="p">,</span> <span class="s1">&#39;.set&#39;</span><span class="p">,</span> <span class="s1">&#39;.sqd&#39;</span><span class="p">,</span> <span class="s1">&#39;.con&#39;</span><span class="p">):</span>
+        <span class="n">bids_fname</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">kind_dir</span><span class="p">,</span>
+                             <span class="n">bids_basename</span> <span class="o">+</span> <span class="s1">&#39;_</span><span class="si">%s%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">kind</span><span class="p">,</span> <span class="n">ext</span><span class="p">))</span>
+
+    <span class="k">elif</span> <span class="n">ext</span> <span class="o">==</span> <span class="s1">&#39;.pdf&#39;</span><span class="p">:</span>
+        <span class="n">bids_raw_folder</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">kind_dir</span><span class="p">,</span> <span class="n">bids_basename</span> <span class="o">+</span> <span class="s1">&#39;_</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">kind</span><span class="p">)</span>
+        <span class="n">bids_fname</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bids_raw_folder</span><span class="p">,</span> <span class="s1">&#39;c,rf*&#39;</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">config</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bids_raw_folder</span><span class="p">,</span> <span class="s1">&#39;config&#39;</span><span class="p">)</span>
+    <span class="n">raw</span> <span class="o">=</span> <span class="n">_read_raw</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">,</span> <span class="n">electrode</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hsp</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hpi</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                    <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">,</span> <span class="n">montage</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+    <span class="n">events_fname</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">kind_dir</span><span class="p">,</span> <span class="n">bids_basename</span> <span class="o">+</span> <span class="s1">&#39;_events.tsv&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">return_events</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">raw</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">op</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">events_fname</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;return_events=True but _events.tsv file&#39;</span>
+                         <span class="s1">&#39; not found&#39;</span><span class="p">)</span>
+
+    <span class="n">events</span><span class="p">,</span> <span class="n">event_id</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="n">dtypes</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span>
+    <span class="n">events_dict</span> <span class="o">=</span> <span class="n">_from_tsv</span><span class="p">(</span><span class="n">events_fname</span><span class="p">,</span> <span class="n">dtypes</span><span class="o">=</span><span class="n">dtypes</span><span class="p">)</span>
+    <span class="n">events_dict</span> <span class="o">=</span> <span class="n">_drop</span><span class="p">(</span><span class="n">events_dict</span><span class="p">,</span> <span class="s1">&#39;n/a&#39;</span><span class="p">,</span> <span class="s1">&#39;trial_type&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="s1">&#39;trial_type&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">events_dict</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;trial_type column is missing. Cannot&#39;</span>
+                         <span class="s1">&#39; return events&#39;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">ev</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">events_dict</span><span class="p">[</span><span class="s1">&#39;trial_type&#39;</span><span class="p">])):</span>
+        <span class="n">event_id</span><span class="p">[</span><span class="n">ev</span><span class="p">]</span> <span class="o">=</span> <span class="n">idx</span>
+
+    <span class="n">events</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">events_dict</span><span class="p">[</span><span class="s1">&#39;onset&#39;</span><span class="p">]),</span> <span class="mi">3</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+    <span class="n">events</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">events_dict</span><span class="p">[</span><span class="s1">&#39;onset&#39;</span><span class="p">])</span> <span class="o">*</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;sfreq&#39;</span><span class="p">]</span> <span class="o">+</span> \
+        <span class="n">raw</span><span class="o">.</span><span class="n">first_samp</span>
+    <span class="n">events</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">event_id</span><span class="p">[</span><span class="n">ev</span><span class="p">]</span> <span class="k">for</span> <span class="n">ev</span>
+                             <span class="ow">in</span> <span class="n">events_dict</span><span class="p">[</span><span class="s1">&#39;trial_type&#39;</span><span class="p">]])</span>
+
+    <span class="k">return</span> <span class="n">raw</span><span class="p">,</span> <span class="n">events</span><span class="p">,</span> <span class="n">event_id</span></div>
+</pre></div>
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-03-24.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

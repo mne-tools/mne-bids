@@ -1,0 +1,139 @@
+body {
+    font-family: 'Open Sans', 'Lucida Grande', 'Lucida Sans Unicode', 'Geneva', 'Verdana', sans-serif;
+}
+
+.navbar-version {
+    display: none;
+}
+
+a {
+    color: rgb(41, 122, 204);
+    text-decoration: none;
+}
+
+a:hover {
+    color: rgb(102, 179, 255);
+}
+
+h2 a {
+    color: rgb(0,0,0);
+    text-decoration: none;
+}
+
+h1 {
+    font-weight: 1000;
+    font-size: 130%;
+}
+
+h2 {
+    background-color: rgb(255,255,255);
+    font-size: 120%;
+    font-weight: 800;
+}
+
+h3 {
+    font-size: 110%;
+    font-weight: 600;
+}
+
+blockquote {
+    font-size: 100% !important;
+}
+
+code {
+    color: rgb(61, 107, 153) !important;
+    background-color: rgb(230, 242, 255) !important;
+}
+
+.devbar {
+    background-color: rgb(242, 80, 80);
+    color: white;
+    font-weight:bold;
+    text-align: center;
+    padding: 10px;
+    min-width: 910px;
+}
+
+.devbar a {
+    color: rgb(255, 238, 0);
+    text-decoration: none;
+}
+
+.devbar a:hover {
+    color: black;
+    text-decoration: underline;
+}
+
+#navbar a:hover {
+    color: rgb(242, 80, 80);
+}
+
+.note a {
+    color: rgb(0,0,255);
+}
+
+.note {
+    background-color: rgb(204, 230, 255);
+    color: rgb(0, 0, 0);
+    border: none;
+}
+
+.note pre {
+    background-color: rgb(242, 249, 255);
+}
+
+blockquote {
+  padding: 0 0 0 15px;
+  margin: 0 0 20px;
+  border-left: 5px solid #eeeeee;
+}
+
+.span.box {
+    width: 47%;
+    height: 230px;
+    float: left;
+    border-radius: 20px;
+    background: rgb(242, 249, 255);
+    border-style: solid;
+    border-color: rgb(143, 173, 204);
+    margin: 5px;
+    padding: 0px 0px 0px 10px;
+}
+
+.span h2 {
+    background: rgb(242, 249, 255);
+}
+
+.span.box code {
+    background-color: rgb(204, 230, 255) !important;
+}
+
+/* OVERRIDES */
+.sphx-glr-download {
+    background-color: rgb(204, 230, 255);
+    border-radius: 10px;
+    border-style: solid;
+    border-color: rgb(143, 173, 204);
+    max-width: 55ex;
+}
+.highlight pre {
+    background-color: rgb(242, 249, 255) !important;
+}
+.warning {
+    background-color: rgb(230, 57, 57);
+    color: white;
+}
+.warning a {
+    color: rgb(255, 238, 0);
+}
+dt:target, .highlighted {
+    background-color: rgb(255, 238, 0);
+}
+dt:target code {
+    color: inherit !important;
+    background-color: inherit !important;
+}
+
+.label {  /* Necessary for multiple refs, from bootstrap.min.css:7 */
+    color: #2c3e50;
+}
