@@ -35,6 +35,9 @@ jobs:
                   - "bf:ac:92:1d:dc:ca:a0:2d:aa:f6:b2:b6:d5:1c:ac:74"
             - deploy:
                 name: github pages deployment
+                # NOTE 2020-03-24 ... replaced line after "cd doc;" from "make install;"
+                # to "echo "No deployment (build: ${CIRCLE_BRANCH}).";" to prevent
+                # pushes to current `gh-pages` from past branches
                 command: |
                   source activate testenv
                   if [ "${CIRCLE_BRANCH}" == "maint/0.2" ]; then
@@ -42,7 +45,7 @@ jobs:
                     git config --global user.email "circle@mne.com";
                     git config --global user.name "Circle Ci";
                     cd doc;
-                    make install;
+                    echo "No deployment (build: ${CIRCLE_BRANCH}).";
                   else
                     echo "No deployment (build: ${CIRCLE_BRANCH}).";
                   fi
