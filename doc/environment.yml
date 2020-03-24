@@ -11,8 +11,8 @@ dependencies:
 - scikit-learn
 - matplotlib
 - pip:
-  - mne_bids~=0.3
-  - mne~=0.19.0
+  - mne_bids>=0.3,<0.4
+  - mne>=0.19,<0.20
   - nibabel
   - nilearn
   - flake8
