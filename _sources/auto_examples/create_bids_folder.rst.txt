@@ -1,7 +1,7 @@
 .. note::
     :class: sphx-glr-download-link-note
 
-    Click :ref:`here <sphx_glr_download_auto_examples_create_bids_folder.py>` to download the full example code
+    Click :ref:`here <sphx_glr_download_auto_examples_create_bids_folder.py>` to download the full example code or to run this example in your browser via Binder
 .. rst-class:: sphx-glr-example-title
 
 .. _sphx_glr_auto_examples_create_bids_folder.py:
@@ -150,6 +150,12 @@ You can also use MNE-BIDS to create folder hierarchies.
  .. container:: sphx-glr-footer
     :class: sphx-glr-footer-example
 
+
+  .. container:: binder-badge
+
+    .. image:: https://mybinder.org/badge_logo.svg
+      :target: https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=v0.3/notebooks/auto_examples/create_bids_folder.ipynb
+      :width: 150 px
 
 
   .. container:: sphx-glr-download

@@ -4,14 +4,13 @@ BIDS conversion for group studies
 =================================
 
 Here, we show how to do BIDS conversion for group studies.
-The data is available here: https://openneuro.org/datasets/ds000117
+The data from Wakeman et al. [1]_ is available here:
+https://openneuro.org/datasets/ds000117
 
 References
 ----------
-
-[1] Wakeman, Daniel G., and Richard N. Henson.
-"A multi-subject, multi-modal human neuroimaging dataset."
-Scientific data, 2 (2015): 150001.
+.. [1] Wakeman, Daniel G., and Richard N. Henson. "A multi-subject, multi-modal
+   human neuroimaging dataset." Scientific data, 2 (2015): 150001.
 
 """
 
@@ -32,20 +31,19 @@ from mne_bids.utils import print_dir_tree
 
 ###############################################################################
 # And fetch the data.
+# .. warning:: This will download 7.9 GB of data for one subject!
 
 subject_ids = [1]
 runs = range(1, 7)
 
-data_path = op.join(op.expanduser('~'), 'mne_data')
+home = op.expanduser('~')
+data_path = op.join(home, 'mne_data', 'mne_bids_examples')
 repo = 'ds000117'
 fetch_faces_data(data_path, repo, subject_ids)
 
 output_path = op.join(data_path, 'ds000117-bids')
 
 ###############################################################################
-#
-# .. warning:: This will download 7.9 GB of data for one subject!
-#
 # Define event_ids.
 
 event_id = {
@@ -78,4 +76,5 @@ for subject_id in subject_ids:
 
 ###############################################################################
 # Now let's see the structure of the BIDS folder we created.
+
 print_dir_tree(output_path)

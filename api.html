@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>API Documentation &#8212; mne_bids 0.2 documentation</title>
+    <title>API Documentation &#8212; mne_bids 0.3 documentation</title>
     <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="_static/gallery.css" />
@@ -36,14 +36,15 @@
         </button>
         <a class="navbar-brand" href="index.html">
           MNE-BIDS</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.2</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.3</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
           <ul class="nav navbar-nav">
             
-                <li><a href="auto_examples/index.html">Gallery</a></li>
+                <li><a href="auto_examples/index.html">Examples</a></li>
                 <li><a href="#">API</a></li>
+                <li><a href="generated/cli.html">CLI</a></li>
                 <li><a href="whats_new.html">What's new</a></li>
                 <li><a href="https://github.com/mne-tools/mne-bids">Github</a></li>
             
@@ -59,44 +60,25 @@
       aria-labelledby="dLabelGlobalToc"></ul>
 </li>
               
-                <li class="dropdown">
-  <a role="button"
-     id="dLabelLocalToc"
-     data-toggle="dropdown"
-     data-target="#"
-     href="#">Page <b class="caret"></b></a>
-  <ul class="dropdown-menu localtoc"
-      role="menu"
-      aria-labelledby="dLabelLocalToc"><ul>
-<li><a class="reference internal" href="#">API Documentation</a><ul>
-</ul>
-</li>
-</ul>
-</ul>
-</li>
-              
             
             
             
             
             
-              <li class="hidden-sm">
-<div id="sourcelink">
-  <a href="_sources/api.rst.txt"
-     rel="nofollow">Source</a>
-</div></li>
+              <li class="hidden-sm"></li>
             
           </ul>
 
           
 <div class="navbar-form navbar-right navbar-btn dropdown btn-group-sm" style="margin-left: 20px; margin-top: 5px; margin-bottom: 5px">
   <button type="button" class="btn btn-primary navbar-btn dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown">
-    v0.2
+    v0.3
     <span class="caret"></span>
   </button>
   <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
     <li><a href="https://mne.tools/mne-bids/dev/index.html">Development</a></li>
     <li><a href="https://mne.tools/mne-bids/stable/index.html">Stable</a></li>
+    <li><a href="https://mne.tools/mne-bids/v0.2/index.html">v0.2</a></li>
     <li><a href="https://mne.tools/mne-bids/v0.1/index.html">v0.1</a></li>
   </ul>
 </div>
@@ -122,7 +104,18 @@
       
   <div class="section" id="api-documentation">
 <span id="id1"></span><h1>API Documentation<a class="headerlink" href="#api-documentation" title="Permalink to this headline">¶</a></h1>
-<p>MNE BIDS (<code class="xref py py-mod docutils literal notranslate"><span class="pre">mne_bids</span></code>):</p>
+<p>Here we list the Application Programming Interface (API) for MNE-BIDS.</p>
+<div class="contents local topic" id="contents">
+<p class="topic-title">Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#mne-bids-mne-bids" id="id2">MNE BIDS (<code class="xref py py-mod docutils literal notranslate"><span class="pre">mne_bids</span></code>)</a></p></li>
+<li><p><a class="reference internal" href="#utils-mne-bids-utils" id="id3">Utils (<code class="xref py py-mod docutils literal notranslate"><span class="pre">mne_bids.utils</span></code>)</a></p></li>
+<li><p><a class="reference internal" href="#copyfiles-mne-bids-copyfiles" id="id4">Copyfiles (<code class="xref py py-mod docutils literal notranslate"><span class="pre">mne_bids.copyfiles</span></code>)</a></p></li>
+<li><p><a class="reference internal" href="#datasets-mne-bids-datasets" id="id5">Datasets (<code class="xref py py-mod docutils literal notranslate"><span class="pre">mne_bids.datasets</span></code>)</a></p></li>
+</ul>
+</div>
+<div class="section" id="mne-bids-mne-bids">
+<h2><a class="toc-backref" href="#id2">MNE BIDS (<code class="xref py py-mod docutils literal notranslate"><span class="pre">mne_bids</span></code>)</a><a class="headerlink" href="#mne-bids-mne-bids" title="Permalink to this headline">¶</a></h2>
 <table class="longtable docutils align-default">
 <colgroup>
 <col style="width: 10%" />
@@ -132,7 +125,7 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_raw_bids</span></code></a>(raw, bids_basename, output_path)</p></td>
 <td><p>Walk over a folder of files and create BIDS compatible folder.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_raw_bids</span></code></a>(bids_fname, bids_root[, …])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_raw_bids</span></code></a>(bids_fname, bids_root[, verbose])</p></td>
 <td><p>Read BIDS compatible data.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/mne_bids.make_bids_folders.html#mne_bids.make_bids_folders" title="mne_bids.make_bids_folders"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_bids_folders</span></code></a>(subject[, session, kind, …])</p></td>
@@ -144,28 +137,44 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/mne_bids.make_dataset_description.html#mne_bids.make_dataset_description" title="mne_bids.make_dataset_description"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_dataset_description</span></code></a>(path[, name, …])</p></td>
 <td><p>Create json for a dataset description.</p></td>
 </tr>
-</tbody>
-</table>
-<p>Utils (<code class="xref py py-mod docutils literal notranslate"><span class="pre">mne_bids.utils</span></code>):</p>
-<table class="longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/mne_bids.utils.print_dir_tree.html#mne_bids.utils.print_dir_tree" title="mne_bids.utils.print_dir_tree"><code class="xref py py-obj docutils literal notranslate"><span class="pre">print_dir_tree</span></code></a>(folder)</p></td>
-<td><p>Recursively print a directory tree starting from <cite>folder</cite>.</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/mne_bids.write_anat.html#mne_bids.write_anat" title="mne_bids.write_anat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_anat</span></code></a>(bids_root, subject, t1w[, …])</p></td>
+<td><p>Put anatomical MRI data into a BIDS format.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/mne_bids.get_head_mri_trans.html#mne_bids.get_head_mri_trans" title="mne_bids.get_head_mri_trans"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_head_mri_trans</span></code></a>(bids_fname, bids_root)</p></td>
+<td><p>Produce transformation matrix from MEG and MRI landmark points.</p></td>
 </tr>
 </tbody>
 </table>
-<p>Copyfiles (<code class="xref py py-mod docutils literal notranslate"><span class="pre">mne_bids.copyfiles</span></code>):</p>
+</div>
+<div class="section" id="utils-mne-bids-utils">
+<h2><a class="toc-backref" href="#id3">Utils (<code class="xref py py-mod docutils literal notranslate"><span class="pre">mne_bids.utils</span></code>)</a><a class="headerlink" href="#utils-mne-bids-utils" title="Permalink to this headline">¶</a></h2>
 <table class="longtable docutils align-default">
 <colgroup>
 <col style="width: 10%" />
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/mne_bids.copyfiles.copyfile_brainvision.html#mne_bids.copyfiles.copyfile_brainvision" title="mne_bids.copyfiles.copyfile_brainvision"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copyfile_brainvision</span></code></a>(vhdr_src, vhdr_dest)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/mne_bids.utils.print_dir_tree.html#mne_bids.utils.print_dir_tree" title="mne_bids.utils.print_dir_tree"><code class="xref py py-obj docutils literal notranslate"><span class="pre">print_dir_tree</span></code></a>(folder[, max_depth])</p></td>
+<td><p>Recursively print dir tree starting from <cite>folder</cite> up to <cite>max_depth</cite>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/mne_bids.utils.get_entity_vals.html#mne_bids.utils.get_entity_vals" title="mne_bids.utils.get_entity_vals"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_entity_vals</span></code></a>(bids_root, entity_key)</p></td>
+<td><p>Get list of values associated with an <cite>entity_key</cite> in a BIDS dataset.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/mne_bids.utils.get_kinds.html#mne_bids.utils.get_kinds" title="mne_bids.utils.get_kinds"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_kinds</span></code></a>(bids_root)</p></td>
+<td><p>Get list of data types (“kinds”) present in a BIDS dataset.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="copyfiles-mne-bids-copyfiles">
+<h2><a class="toc-backref" href="#id4">Copyfiles (<code class="xref py py-mod docutils literal notranslate"><span class="pre">mne_bids.copyfiles</span></code>)</a><a class="headerlink" href="#copyfiles-mne-bids-copyfiles" title="Permalink to this headline">¶</a></h2>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/mne_bids.copyfiles.copyfile_brainvision.html#mne_bids.copyfiles.copyfile_brainvision" title="mne_bids.copyfiles.copyfile_brainvision"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copyfile_brainvision</span></code></a>(vhdr_src, vhdr_dest[, …])</p></td>
 <td><p>Copy a BrainVision file triplet to a new location and repair links.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/mne_bids.copyfiles.copyfile_eeglab.html#mne_bids.copyfiles.copyfile_eeglab" title="mne_bids.copyfiles.copyfile_eeglab"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copyfile_eeglab</span></code></a>(src, dest)</p></td>
@@ -179,7 +188,9 @@
 </tr>
 </tbody>
 </table>
-<p>Datasets (<code class="xref py py-mod docutils literal notranslate"><span class="pre">mne_bids.datasets</span></code>):</p>
+</div>
+<div class="section" id="datasets-mne-bids-datasets">
+<h2><a class="toc-backref" href="#id5">Datasets (<code class="xref py py-mod docutils literal notranslate"><span class="pre">mne_bids.datasets</span></code>)</a><a class="headerlink" href="#datasets-mne-bids-datasets" title="Permalink to this headline">¶</a></h2>
 <table class="longtable docutils align-default">
 <colgroup>
 <col style="width: 10%" />
@@ -194,6 +205,7 @@
 </tr>
 </tbody>
 </table>
+</div>
 </div>
 
 

@@ -9,6 +9,8 @@
 Examples Gallery
 ================
 
+Here we show some exemplary use cases for MNE-BIDS.
+
 .. contents:: Contents
    :local:
    :depth: 3
@@ -57,7 +59,7 @@ Examples Gallery
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="Here, we show how to do BIDS conversion for group studies. The data is available here: https://...">
+    <div class="sphx-glr-thumbcontainer" tooltip="Here, we show how to do BIDS conversion for group studies. The data from Wakeman et al. [1]_ is...">
 
 .. only:: html
 
@@ -114,6 +116,26 @@ Examples Gallery
    :hidden:
 
    /auto_examples/convert_eeg_to_bids
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="When working with MEEG data in the domain of source localization, we usually have to deal with ...">
+
+.. only:: html
+
+ .. figure:: /auto_examples/images/thumb/sphx_glr_convert_mri_and_trans_thumb.png
+
+     :ref:`sphx_glr_auto_examples_convert_mri_and_trans.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/convert_mri_and_trans
 .. raw:: html
 
     <div class="sphx-glr-clear"></div>

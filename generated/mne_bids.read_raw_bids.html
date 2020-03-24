@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>mne_bids.read_raw_bids &#8212; mne_bids 0.2 documentation</title>
+    <title>mne_bids.read_raw_bids &#8212; mne_bids 0.3 documentation</title>
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
@@ -36,14 +36,15 @@
         </button>
         <a class="navbar-brand" href="../index.html">
           MNE-BIDS</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.2</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.3</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
           <ul class="nav navbar-nav">
             
-                <li><a href="../auto_examples/index.html">Gallery</a></li>
+                <li><a href="../auto_examples/index.html">Examples</a></li>
                 <li><a href="../api.html">API</a></li>
+                <li><a href="cli.html">CLI</a></li>
                 <li><a href="../whats_new.html">What's new</a></li>
                 <li><a href="https://github.com/mne-tools/mne-bids">Github</a></li>
             
@@ -59,42 +60,25 @@
       aria-labelledby="dLabelGlobalToc"></ul>
 </li>
               
-                <li class="dropdown">
-  <a role="button"
-     id="dLabelLocalToc"
-     data-toggle="dropdown"
-     data-target="#"
-     href="#">Page <b class="caret"></b></a>
-  <ul class="dropdown-menu localtoc"
-      role="menu"
-      aria-labelledby="dLabelLocalToc"><ul>
-<li><a class="reference internal" href="#">mne_bids.read_raw_bids</a></li>
-</ul>
-</ul>
-</li>
-              
             
             
             
             
             
-              <li class="hidden-sm">
-<div id="sourcelink">
-  <a href="../_sources/generated/mne_bids.read_raw_bids.rst.txt"
-     rel="nofollow">Source</a>
-</div></li>
+              <li class="hidden-sm"></li>
             
           </ul>
 
           
 <div class="navbar-form navbar-right navbar-btn dropdown btn-group-sm" style="margin-left: 20px; margin-top: 5px; margin-bottom: 5px">
   <button type="button" class="btn btn-primary navbar-btn dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown">
-    v0.2
+    v0.3
     <span class="caret"></span>
   </button>
   <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
     <li><a href="https://mne.tools/mne-bids/dev/index.html">Development</a></li>
     <li><a href="https://mne.tools/mne-bids/stable/index.html">Stable</a></li>
+    <li><a href="https://mne.tools/mne-bids/v0.2/index.html">v0.2</a></li>
     <li><a href="https://mne.tools/mne-bids/v0.1/index.html">v0.1</a></li>
   </ul>
 </div>
@@ -122,16 +106,16 @@
 <h1>mne_bids.read_raw_bids<a class="headerlink" href="#mne-bids-read-raw-bids" title="Permalink to this headline">¶</a></h1>
 <dl class="function">
 <dt id="mne_bids.read_raw_bids">
-<code class="sig-prename descclassname">mne_bids.</code><code class="sig-name descname">read_raw_bids</code><span class="sig-paren">(</span><em class="sig-param">bids_fname</em>, <em class="sig-param">bids_root</em>, <em class="sig-param">return_events=True</em>, <em class="sig-param">verbose=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/read.html#read_raw_bids"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.read_raw_bids" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">mne_bids.</code><code class="sig-name descname">read_raw_bids</code><span class="sig-paren">(</span><em class="sig-param">bids_fname</em>, <em class="sig-param">bids_root</em>, <em class="sig-param">verbose=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/read.html#read_raw_bids"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.read_raw_bids" title="Permalink to this definition">¶</a></dt>
 <dd><p>Read BIDS compatible data.</p>
+<p>Will attempt to read associated events.tsv and channels.tsv files to
+populate the returned raw object with raw.annotations and raw.info[‘bads’].</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>bids_fname</strong><span class="classifier">str</span></dt><dd><p>Full name of the data file</p>
 </dd>
 <dt><strong>bids_root</strong><span class="classifier">str</span></dt><dd><p>Path to root of the BIDS folder</p>
-</dd>
-<dt><strong>return_events: bool</strong></dt><dd><p>Whether to return events or not. Default is True.</p>
 </dd>
 <dt><strong>verbose</strong><span class="classifier">bool</span></dt><dd><p>The verbosity level</p>
 </dd>
@@ -140,14 +124,6 @@
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
 <dt><strong>raw</strong><span class="classifier">instance of Raw</span></dt><dd><p>The data as MNE-Python Raw object.</p>
-</dd>
-<dt><strong>events</strong><span class="classifier">ndarray, shape = (n_events, 3)</span></dt><dd><p>The first column contains the event time in samples and the third
-column contains the event id. The second column is ignored for now but
-typically contains the value of the trigger channel either immediately
-before the event or immediately after.</p>
-</dd>
-<dt><strong>event_id</strong><span class="classifier">dict</span></dt><dd><p>Dictionary of events in the raw data mapping from the event value
-to an index.</p>
 </dd>
 </dl>
 </dd>

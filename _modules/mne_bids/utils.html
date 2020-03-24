@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>mne_bids.utils &#8212; mne_bids 0.2 documentation</title>
+    <title>mne_bids.utils &#8212; mne_bids 0.3 documentation</title>
     <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/gallery.css" />
@@ -36,14 +36,15 @@
         </button>
         <a class="navbar-brand" href="../../index.html">
           MNE-BIDS</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.2</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.3</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
           <ul class="nav navbar-nav">
             
-                <li><a href="../../auto_examples/index.html">Gallery</a></li>
+                <li><a href="../../auto_examples/index.html">Examples</a></li>
                 <li><a href="../../api.html">API</a></li>
+                <li><a href="../../generated/cli.html">CLI</a></li>
                 <li><a href="../../whats_new.html">What's new</a></li>
                 <li><a href="https://github.com/mne-tools/mne-bids">Github</a></li>
             
@@ -59,17 +60,6 @@
       aria-labelledby="dLabelGlobalToc"></ul>
 </li>
               
-                <li class="dropdown">
-  <a role="button"
-     id="dLabelLocalToc"
-     data-toggle="dropdown"
-     data-target="#"
-     href="#">Page <b class="caret"></b></a>
-  <ul class="dropdown-menu localtoc"
-      role="menu"
-      aria-labelledby="dLabelLocalToc"></ul>
-</li>
-              
             
             
             
@@ -82,12 +72,13 @@
           
 <div class="navbar-form navbar-right navbar-btn dropdown btn-group-sm" style="margin-left: 20px; margin-top: 5px; margin-bottom: 5px">
   <button type="button" class="btn btn-primary navbar-btn dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown">
-    v0.2
+    v0.3
     <span class="caret"></span>
   </button>
   <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
     <li><a href="https://mne.tools/mne-bids/dev/index.html">Development</a></li>
     <li><a href="https://mne.tools/mne-bids/stable/index.html">Stable</a></li>
+    <li><a href="https://mne.tools/mne-bids/v0.2/index.html">v0.2</a></li>
     <li><a href="https://mne.tools/mne-bids/v0.1/index.html">v0.1</a></li>
   </ul>
 </div>
@@ -123,33 +114,192 @@
 <span class="c1"># License: BSD (3-clause)</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">os.path</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="kn">import</span> <span class="nn">glob</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">shutil</span> <span class="k">as</span> <span class="nn">sh</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">mne</span> <span class="kn">import</span> <span class="n">read_events</span><span class="p">,</span> <span class="n">find_events</span><span class="p">,</span> <span class="n">events_from_annotations</span>
 <span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="n">check_version</span>
 <span class="kn">from</span> <span class="nn">mne.channels</span> <span class="kn">import</span> <span class="n">read_montage</span>
 <span class="kn">from</span> <span class="nn">mne.io.pick</span> <span class="kn">import</span> <span class="n">pick_types</span>
+<span class="kn">from</span> <span class="nn">mne.io.kit.kit</span> <span class="kn">import</span> <span class="n">get_kit_info</span>
+<span class="kn">from</span> <span class="nn">mne.io.constants</span> <span class="kn">import</span> <span class="n">FIFF</span>
 
-<span class="kn">from</span> <span class="nn">.tsv_handler</span> <span class="kn">import</span> <span class="n">_to_tsv</span><span class="p">,</span> <span class="n">_tsv_to_str</span>
+<span class="kn">from</span> <span class="nn">mne_bids.tsv_handler</span> <span class="kn">import</span> <span class="n">_to_tsv</span><span class="p">,</span> <span class="n">_tsv_to_str</span>
 
 
-<div class="viewcode-block" id="print_dir_tree"><a class="viewcode-back" href="../../generated/mne_bids.utils.print_dir_tree.html#mne_bids.utils.print_dir_tree">[docs]</a><span class="k">def</span> <span class="nf">print_dir_tree</span><span class="p">(</span><span class="n">folder</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Recursively print a directory tree starting from `folder`.&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="get_kinds"><a class="viewcode-back" href="../../generated/mne_bids.utils.get_kinds.html#mne_bids.utils.get_kinds">[docs]</a><span class="k">def</span> <span class="nf">get_kinds</span><span class="p">(</span><span class="n">bids_root</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Get list of data types (&quot;kinds&quot;) present in a BIDS dataset.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    bids_root : str</span>
+<span class="sd">        Path to the root of the BIDS directory.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    kinds : list of str</span>
+<span class="sd">        List of the data types present in the BIDS dataset pointed to by</span>
+<span class="sd">        `bids_root`.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Take all possible kinds from &quot;entity&quot; table (Appendix in BIDS spec)</span>
+    <span class="n">kind_list</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;anat&#39;</span><span class="p">,</span> <span class="s1">&#39;func&#39;</span><span class="p">,</span> <span class="s1">&#39;dwi&#39;</span><span class="p">,</span> <span class="s1">&#39;fmap&#39;</span><span class="p">,</span> <span class="s1">&#39;beh&#39;</span><span class="p">,</span> <span class="s1">&#39;meg&#39;</span><span class="p">,</span> <span class="s1">&#39;eeg&#39;</span><span class="p">,</span> <span class="s1">&#39;ieeg&#39;</span><span class="p">)</span>
+    <span class="n">kinds</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">root</span><span class="p">,</span> <span class="n">dirs</span><span class="p">,</span> <span class="n">files</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">bids_root</span><span class="p">):</span>
+        <span class="k">for</span> <span class="nb">dir</span> <span class="ow">in</span> <span class="n">dirs</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">dir</span> <span class="ow">in</span> <span class="n">kind_list</span> <span class="ow">and</span> <span class="nb">dir</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kinds</span><span class="p">:</span>
+                <span class="n">kinds</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">dir</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">kinds</span></div>
+
+
+<div class="viewcode-block" id="get_entity_vals"><a class="viewcode-back" href="../../generated/mne_bids.utils.get_entity_vals.html#mne_bids.utils.get_entity_vals">[docs]</a><span class="k">def</span> <span class="nf">get_entity_vals</span><span class="p">(</span><span class="n">bids_root</span><span class="p">,</span> <span class="n">entity_key</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Get list of values associated with an `entity_key` in a BIDS dataset.</span>
+
+<span class="sd">    BIDS file names are organized by key-value pairs called &quot;entities&quot; [1]_.</span>
+<span class="sd">    With this function, you can get all values for an entity indexed by its</span>
+<span class="sd">    key.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    bids_root : str</span>
+<span class="sd">        Path to the root of the BIDS directory.</span>
+<span class="sd">    entity_key : str</span>
+<span class="sd">        The name of the entity key to search for. Can be one of</span>
+<span class="sd">        [&#39;sub&#39;, &#39;ses&#39;, &#39;run&#39;, &#39;acq&#39;].</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    entity_vals : list of str</span>
+<span class="sd">        List of the values associated with an `entity_key` in the BIDS dataset</span>
+<span class="sd">        pointed to by `bids_root`.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; bids_root = &#39;~/bids_datasets/eeg_matchingpennies&#39;</span>
+<span class="sd">    &gt;&gt;&gt; entity_key = &#39;sub&#39;</span>
+<span class="sd">    &gt;&gt;&gt; get_entity_vals(bids_root, entity_key)</span>
+<span class="sd">    [&#39;05&#39;, &#39;06&#39;, &#39;07&#39;, &#39;08&#39;, &#39;09&#39;, &#39;10&#39;, &#39;11&#39;]</span>
+
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] https://bids-specification.rtfd.io/en/latest/02-common-principles.html#file-name-structure  # noqa: E501</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">entities</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;sub&#39;</span><span class="p">,</span> <span class="s1">&#39;ses&#39;</span><span class="p">,</span> <span class="s1">&#39;task&#39;</span><span class="p">,</span> <span class="s1">&#39;run&#39;</span><span class="p">,</span> <span class="s1">&#39;acq&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">entity_key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">entities</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;`key` must be one of &quot;</span><span class="si">{}</span><span class="s1">&quot;. Got &quot;</span><span class="si">{}</span><span class="s1">&quot;&#39;</span>
+                         <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">entities</span><span class="p">,</span> <span class="n">entity_key</span><span class="p">))</span>
+
+    <span class="n">p</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">-(.*?)_&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">entity_key</span><span class="p">))</span>
+    <span class="n">value_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">Path</span><span class="p">(</span><span class="n">bids_root</span><span class="p">)</span><span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="s1">&#39;*</span><span class="si">{}</span><span class="s1">-*_*&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">entity_key</span><span class="p">)):</span>
+        <span class="n">match</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">filename</span><span class="o">.</span><span class="n">stem</span><span class="p">)</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">value_list</span><span class="p">:</span>
+            <span class="n">value_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">value_list</span><span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">_get_ch_type_mapping</span><span class="p">(</span><span class="n">fro</span><span class="o">=</span><span class="s1">&#39;mne&#39;</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="s1">&#39;bids&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Map between BIDS and MNE nomenclatures for channel types.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    fro : str</span>
+<span class="sd">        Mapping from nomenclature of `fro`. Can be &#39;mne&#39;, &#39;bids&#39;</span>
+<span class="sd">    to : str</span>
+<span class="sd">        Mapping to nomenclature of `to`. Can be &#39;mne&#39;, &#39;bids&#39;</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    ch_type_mapping : collections.defaultdict</span>
+<span class="sd">        Dictionary mapping from one nomenclature of channel types to another.</span>
+<span class="sd">        If a key is not present, a default value will be returned that depends</span>
+<span class="sd">        on the `fro` and `to` parameters.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    For the mapping from BIDS to MNE, MEG channel types are ignored for now.</span>
+<span class="sd">    Furthermore, this is not a one-to-one mapping: Incomplete and partially</span>
+<span class="sd">    one-to-many/many-to-one.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">fro</span> <span class="o">==</span> <span class="s1">&#39;mne&#39;</span> <span class="ow">and</span> <span class="n">to</span> <span class="o">==</span> <span class="s1">&#39;bids&#39;</span><span class="p">:</span>
+        <span class="n">map_chs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">eeg</span><span class="o">=</span><span class="s1">&#39;EEG&#39;</span><span class="p">,</span> <span class="n">misc</span><span class="o">=</span><span class="s1">&#39;MISC&#39;</span><span class="p">,</span> <span class="n">stim</span><span class="o">=</span><span class="s1">&#39;TRIG&#39;</span><span class="p">,</span> <span class="n">emg</span><span class="o">=</span><span class="s1">&#39;EMG&#39;</span><span class="p">,</span>
+                       <span class="n">ecog</span><span class="o">=</span><span class="s1">&#39;ECOG&#39;</span><span class="p">,</span> <span class="n">seeg</span><span class="o">=</span><span class="s1">&#39;SEEG&#39;</span><span class="p">,</span> <span class="n">eog</span><span class="o">=</span><span class="s1">&#39;EOG&#39;</span><span class="p">,</span> <span class="n">ecg</span><span class="o">=</span><span class="s1">&#39;ECG&#39;</span><span class="p">,</span>
+                       <span class="c1"># MEG channels</span>
+                       <span class="n">meggradaxial</span><span class="o">=</span><span class="s1">&#39;MEGGRADAXIAL&#39;</span><span class="p">,</span> <span class="n">megmag</span><span class="o">=</span><span class="s1">&#39;MEGMAG&#39;</span><span class="p">,</span>
+                       <span class="n">megrefgradaxial</span><span class="o">=</span><span class="s1">&#39;MEGREFGRADAXIAL&#39;</span><span class="p">,</span>
+                       <span class="n">meggradplanar</span><span class="o">=</span><span class="s1">&#39;MEGGRADPLANAR&#39;</span><span class="p">,</span> <span class="n">megrefmag</span><span class="o">=</span><span class="s1">&#39;MEGREFMAG&#39;</span><span class="p">,</span>
+                       <span class="p">)</span>
+        <span class="n">default_value</span> <span class="o">=</span> <span class="s1">&#39;OTHER&#39;</span>
+
+    <span class="k">elif</span> <span class="n">fro</span> <span class="o">==</span> <span class="s1">&#39;bids&#39;</span> <span class="ow">and</span> <span class="n">to</span> <span class="o">==</span> <span class="s1">&#39;mne&#39;</span><span class="p">:</span>
+        <span class="n">map_chs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">EEG</span><span class="o">=</span><span class="s1">&#39;eeg&#39;</span><span class="p">,</span> <span class="n">MISC</span><span class="o">=</span><span class="s1">&#39;misc&#39;</span><span class="p">,</span> <span class="n">TRIG</span><span class="o">=</span><span class="s1">&#39;stim&#39;</span><span class="p">,</span> <span class="n">EMG</span><span class="o">=</span><span class="s1">&#39;emg&#39;</span><span class="p">,</span>
+                       <span class="n">ECOG</span><span class="o">=</span><span class="s1">&#39;ecog&#39;</span><span class="p">,</span> <span class="n">SEEG</span><span class="o">=</span><span class="s1">&#39;seeg&#39;</span><span class="p">,</span> <span class="n">EOG</span><span class="o">=</span><span class="s1">&#39;eog&#39;</span><span class="p">,</span> <span class="n">ECG</span><span class="o">=</span><span class="s1">&#39;ecg&#39;</span><span class="p">,</span>
+                       <span class="c1"># No MEG channels for now</span>
+                       <span class="c1"># Many to one mapping</span>
+                       <span class="n">VEOG</span><span class="o">=</span><span class="s1">&#39;eog&#39;</span><span class="p">,</span> <span class="n">HEOG</span><span class="o">=</span><span class="s1">&#39;eog&#39;</span><span class="p">,</span>
+                       <span class="p">)</span>
+        <span class="n">default_value</span> <span class="o">=</span> <span class="s1">&#39;misc&#39;</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Only two types of mappings are currently supported: &#39;</span>
+                         <span class="s1">&#39;from mne to bids, or from bids to mne. However, &#39;</span>
+                         <span class="s1">&#39;you specified from &quot;</span><span class="si">{}</span><span class="s1">&quot; to &quot;</span><span class="si">{}</span><span class="s1">&quot;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fro</span><span class="p">,</span> <span class="n">to</span><span class="p">))</span>
+
+    <span class="c1"># Make it a defaultdict to prevent key errors</span>
+    <span class="n">ch_type_mapping</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">default_value</span><span class="p">)</span>
+    <span class="n">ch_type_mapping</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">map_chs</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">ch_type_mapping</span>
+
+
+<div class="viewcode-block" id="print_dir_tree"><a class="viewcode-back" href="../../generated/mne_bids.utils.print_dir_tree.html#mne_bids.utils.print_dir_tree">[docs]</a><span class="k">def</span> <span class="nf">print_dir_tree</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="n">max_depth</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Recursively print dir tree starting from `folder` up to `max_depth`.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">op</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">folder</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Directory does not exist: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">folder</span><span class="p">))</span>
+    <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;`max_depth` must be a positive integer or None&#39;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">max_depth</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">))):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">max_depth</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">max_depth</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s1">&#39;inf&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">max_depth</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
-    <span class="n">baselen</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">folder</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span>  <span class="c1"># makes tree always start at 0 len</span>
+    <span class="c1"># Use max_depth same as the -L param in the unix `tree` command</span>
+    <span class="n">max_depth</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="c1"># Base length of a tree branch, to normalize each tree&#39;s start to 0</span>
+    <span class="n">baselen</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">folder</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span>
+
+    <span class="c1"># Recursively walk through all directories</span>
     <span class="k">for</span> <span class="n">root</span><span class="p">,</span> <span class="n">dirs</span><span class="p">,</span> <span class="n">files</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">folder</span><span class="p">):</span>
+
+        <span class="c1"># Check how far we have walked</span>
         <span class="n">branchlen</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">root</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">))</span> <span class="o">-</span> <span class="n">baselen</span>
-        <span class="k">if</span> <span class="n">branchlen</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;|</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">root</span><span class="p">)))</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;|</span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">((</span><span class="n">branchlen</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="s1">&#39;---&#39;</span><span class="p">,</span> <span class="n">op</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">root</span><span class="p">)))</span>  <span class="c1"># noqa: E501</span>
-        <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;|</span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">branchlen</span> <span class="o">*</span> <span class="s1">&#39;---&#39;</span><span class="p">,</span> <span class="n">file</span><span class="p">))</span></div>
+
+        <span class="c1"># Only print, if this is up to the depth we asked</span>
+        <span class="k">if</span> <span class="n">branchlen</span> <span class="o">&lt;=</span> <span class="n">max_depth</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">branchlen</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;|</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">root</span><span class="p">)</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;|</span><span class="si">{}</span><span class="s1"> </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">((</span><span class="n">branchlen</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="s1">&#39;---&#39;</span><span class="p">,</span>
+                                      <span class="n">op</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">root</span><span class="p">)</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">))</span>
+
+            <span class="c1"># Only print files if we are NOT yet up to max_depth or beyond</span>
+            <span class="k">if</span> <span class="n">branchlen</span> <span class="o">&lt;</span> <span class="n">max_depth</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;|</span><span class="si">{}</span><span class="s1"> </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">branchlen</span> <span class="o">*</span> <span class="s1">&#39;---&#39;</span><span class="p">,</span> <span class="n">file</span><span class="p">))</span></div>
 
 
 <span class="k">def</span> <span class="nf">_mkdir_p</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
@@ -170,19 +320,38 @@
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Creating folder: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">path</span><span class="p">)</span>
 
 
+<span class="k">def</span> <span class="nf">_parse_ext</span><span class="p">(</span><span class="n">raw_fname</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Split a filename into its name and extension.&quot;&quot;&quot;</span>
+    <span class="n">fname</span><span class="p">,</span> <span class="n">ext</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">raw_fname</span><span class="p">)</span>
+    <span class="c1"># BTi data is the only file format that does not have a file extension</span>
+    <span class="k">if</span> <span class="n">ext</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span> <span class="ow">or</span> <span class="s1">&#39;c,rf&#39;</span> <span class="ow">in</span> <span class="n">fname</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">verbose</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Found no extension for raw file, assuming &quot;BTi&quot; format and &#39;</span>
+                  <span class="s1">&#39;appending extension .pdf&#39;</span><span class="p">)</span>
+        <span class="n">ext</span> <span class="o">=</span> <span class="s1">&#39;.pdf&#39;</span>
+    <span class="c1"># If ending on .gz, check whether it is an .nii.gz file</span>
+    <span class="k">elif</span> <span class="n">ext</span> <span class="o">==</span> <span class="s1">&#39;.gz&#39;</span> <span class="ow">and</span> <span class="n">raw_fname</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.nii.gz&#39;</span><span class="p">):</span>
+        <span class="n">ext</span> <span class="o">=</span> <span class="s1">&#39;.nii.gz&#39;</span>
+        <span class="n">fname</span> <span class="o">=</span> <span class="n">fname</span><span class="p">[:</span><span class="o">-</span><span class="mi">4</span><span class="p">]</span>  <span class="c1"># cut off the .nii</span>
+    <span class="k">return</span> <span class="n">fname</span><span class="p">,</span> <span class="n">ext</span>
+
+
+<span class="c1"># This regex matches key-val pairs. Any characters are allowed in the key and</span>
+<span class="c1"># the value, except these special symbols: - _ . \ /</span>
+<span class="n">param_regex</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;([^-_\.</span><span class="se">\\</span><span class="s1">\/]+)-([^-_\.</span><span class="se">\\</span><span class="s1">\/]+)&#39;</span><span class="p">)</span>
+
+
 <span class="k">def</span> <span class="nf">_parse_bids_filename</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">verbose</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Get dict from BIDS fname.&quot;&quot;&quot;</span>
     <span class="n">keys</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;sub&#39;</span><span class="p">,</span> <span class="s1">&#39;ses&#39;</span><span class="p">,</span> <span class="s1">&#39;task&#39;</span><span class="p">,</span> <span class="s1">&#39;acq&#39;</span><span class="p">,</span> <span class="s1">&#39;run&#39;</span><span class="p">,</span> <span class="s1">&#39;proc&#39;</span><span class="p">,</span> <span class="s1">&#39;run&#39;</span><span class="p">,</span> <span class="s1">&#39;space&#39;</span><span class="p">,</span>
             <span class="s1">&#39;recording&#39;</span><span class="p">,</span> <span class="s1">&#39;kind&#39;</span><span class="p">]</span>
     <span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">}</span>
-    <span class="n">entities</span> <span class="o">=</span> <span class="n">fname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)</span>
     <span class="n">idx_key</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="k">for</span> <span class="n">entity</span> <span class="ow">in</span> <span class="n">entities</span><span class="p">:</span>
-        <span class="k">assert</span> <span class="s1">&#39;-&#39;</span> <span class="ow">in</span> <span class="n">entity</span>
-        <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">entity</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">re</span><span class="o">.</span><span class="n">finditer</span><span class="p">(</span><span class="n">param_regex</span><span class="p">,</span> <span class="n">op</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">fname</span><span class="p">)):</span>
+        <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">groups</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s1">&#39;Unexpected entity &#39;&#39;</span><span class="si">%s</span><span class="s1">&#39;&#39; found in filename &#39;&#39;</span><span class="si">%s</span><span class="s1">&#39;&#39;&#39;</span>
-                           <span class="o">%</span> <span class="p">(</span><span class="n">entity</span><span class="p">,</span> <span class="n">fname</span><span class="p">))</span>
+                           <span class="o">%</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">fname</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">keys</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">idx_key</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Entities in filename not ordered correctly.&#39;</span>
                              <span class="s1">&#39; &quot;</span><span class="si">%s</span><span class="s1">&quot; should have occured earlier in the &#39;</span>
@@ -287,8 +456,8 @@
 <span class="sd">        the MNE events array (shape n_events, 3). If None, events will be</span>
 <span class="sd">        inferred from the stim channel using `find_events`.</span>
 <span class="sd">    event_id : dict</span>
-<span class="sd">        The event_id dict as provided in write_raw_bids, mapping a</span>
-<span class="sd">        description key to an integer valued event code.</span>
+<span class="sd">        The event id dict used to create a &#39;trial_type&#39; column in events.tsv,</span>
+<span class="sd">        mapping a description key to an integer valued event code.</span>
 <span class="sd">    raw : instance of Raw</span>
 <span class="sd">        The data as MNE-Python Raw object.</span>
 <span class="sd">    ext : str</span>
@@ -315,14 +484,27 @@
         <span class="n">events</span> <span class="o">=</span> <span class="n">events_data</span>
     <span class="k">elif</span> <span class="s1">&#39;stim&#39;</span> <span class="ow">in</span> <span class="n">raw</span><span class="p">:</span>
         <span class="n">events</span> <span class="o">=</span> <span class="n">find_events</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">min_duration</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span> <span class="n">initial_event</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">ext</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;.vhdr&#39;</span><span class="p">,</span> <span class="s1">&#39;.set&#39;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">check_version</span><span class="p">(</span><span class="s1">&#39;mne&#39;</span><span class="p">,</span> <span class="s1">&#39;0.18.dev0&#39;</span><span class="p">):</span>
-        <span class="n">events</span><span class="p">,</span> <span class="n">event_id</span> <span class="o">=</span> <span class="n">events_from_annotations</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">ext</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;.vhdr&#39;</span><span class="p">,</span> <span class="s1">&#39;.set&#39;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">check_version</span><span class="p">(</span><span class="s1">&#39;mne&#39;</span><span class="p">,</span> <span class="s1">&#39;0.18&#39;</span><span class="p">):</span>
+        <span class="n">events</span><span class="p">,</span> <span class="n">event_id</span> <span class="o">=</span> <span class="n">events_from_annotations</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">event_id</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;No events found or provided. Please make sure to&#39;</span>
                       <span class="s1">&#39; set channel type using raw.set_channel_types&#39;</span>
                       <span class="s1">&#39; or provide events_data.&#39;</span><span class="p">)</span>
         <span class="n">events</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">return</span> <span class="n">events</span><span class="p">,</span> <span class="n">event_id</span>
+
+
+<span class="k">def</span> <span class="nf">_get_mrk_meas_date</span><span class="p">(</span><span class="n">mrk</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Find the measurement date from a KIT marker file.&quot;&quot;&quot;</span>
+    <span class="n">info</span> <span class="o">=</span> <span class="n">get_kit_info</span><span class="p">(</span><span class="n">mrk</span><span class="p">,</span> <span class="kc">False</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">meas_date</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;meas_date&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">meas_date</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)):</span>
+        <span class="n">meas_date</span> <span class="o">=</span> <span class="n">meas_date</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">meas_date</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">meas_datetime</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">meas_date</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">meas_datetime</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">min</span>
+    <span class="k">return</span> <span class="n">meas_datetime</span>
 
 
 <span class="k">def</span> <span class="nf">_infer_eeg_placement_scheme</span><span class="p">(</span><span class="n">raw</span><span class="p">):</span>
@@ -357,6 +539,129 @@
         <span class="n">placement_scheme</span> <span class="o">=</span> <span class="s1">&#39;based on the extended 10/20 system&#39;</span>
 
     <span class="k">return</span> <span class="n">placement_scheme</span>
+
+
+<span class="k">def</span> <span class="nf">_extract_landmarks</span><span class="p">(</span><span class="n">dig</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Extract NAS, LPA, and RPA from raw.info[&#39;dig&#39;].&quot;&quot;&quot;</span>
+    <span class="n">coords</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="n">landmarks</span> <span class="o">=</span> <span class="p">{</span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;ident&#39;</span><span class="p">]:</span> <span class="n">d</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">dig</span>
+                 <span class="k">if</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;kind&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_POINT_CARDINAL</span><span class="p">}</span>
+    <span class="k">if</span> <span class="n">landmarks</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_POINT_NASION</span> <span class="ow">in</span> <span class="n">landmarks</span><span class="p">:</span>
+            <span class="n">coords</span><span class="p">[</span><span class="s1">&#39;NAS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">landmarks</span><span class="p">[</span><span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_POINT_NASION</span><span class="p">][</span><span class="s1">&#39;r&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_POINT_LPA</span> <span class="ow">in</span> <span class="n">landmarks</span><span class="p">:</span>
+            <span class="n">coords</span><span class="p">[</span><span class="s1">&#39;LPA&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">landmarks</span><span class="p">[</span><span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_POINT_LPA</span><span class="p">][</span><span class="s1">&#39;r&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_POINT_RPA</span> <span class="ow">in</span> <span class="n">landmarks</span><span class="p">:</span>
+            <span class="n">coords</span><span class="p">[</span><span class="s1">&#39;RPA&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">landmarks</span><span class="p">[</span><span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_POINT_RPA</span><span class="p">][</span><span class="s1">&#39;r&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">coords</span>
+
+
+<span class="k">def</span> <span class="nf">_find_best_candidates</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">candidate_list</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return the best candidate, based on the number of param matches.</span>
+
+<span class="sd">    Assign each candidate a score, based on how many entities are shared with</span>
+<span class="sd">    the ones supplied in the `params` parameter. The candidate with the highest</span>
+<span class="sd">    score wins. Candidates with entities that conflict with the supplied</span>
+<span class="sd">    `params` are disqualified.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    params : dict</span>
+<span class="sd">        The entities that the candidate should match.</span>
+<span class="sd">    candidate_list : list of str</span>
+<span class="sd">        A list of candidate filenames.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    best_candidates : list of str</span>
+<span class="sd">        A list of all the candidate filenames that are tied for first place.</span>
+<span class="sd">        Hopefully, the list will have a length of one.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">value</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">params</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">}</span>
+
+    <span class="n">best_candidates</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">best_n_matches</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">candidate</span> <span class="ow">in</span> <span class="n">candidate_list</span><span class="p">:</span>
+        <span class="n">n_matches</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">candidate_disqualified</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">candidate_params</span> <span class="o">=</span> <span class="n">_parse_bids_filename</span><span class="p">(</span><span class="n">candidate</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">entity</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">params</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">entity</span> <span class="ow">in</span> <span class="n">candidate_params</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">candidate_params</span><span class="p">[</span><span class="n">entity</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="k">elif</span> <span class="n">candidate_params</span><span class="p">[</span><span class="n">entity</span><span class="p">]</span> <span class="o">==</span> <span class="n">value</span><span class="p">:</span>
+                    <span class="n">n_matches</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># Incompatible entity found, candidate is disqualified</span>
+                    <span class="n">candidate_disqualified</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="k">break</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">candidate_disqualified</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">n_matches</span> <span class="o">&gt;</span> <span class="n">best_n_matches</span><span class="p">:</span>
+                <span class="n">best_n_matches</span> <span class="o">=</span> <span class="n">n_matches</span>
+                <span class="n">best_candidates</span> <span class="o">=</span> <span class="p">[</span><span class="n">candidate</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="n">n_matches</span> <span class="o">==</span> <span class="n">best_n_matches</span><span class="p">:</span>
+                <span class="n">best_candidates</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">candidate</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">best_candidates</span>
+
+
+<span class="k">def</span> <span class="nf">_find_matching_sidecar</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">,</span> <span class="n">bids_root</span><span class="p">,</span> <span class="n">suffix</span><span class="p">,</span> <span class="n">allow_fail</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Try to find a sidecar file with a given suffix for a data file.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    bids_fname : str</span>
+<span class="sd">        Full name of the data file</span>
+<span class="sd">    bids_root : str</span>
+<span class="sd">        Path to root of the BIDS folder</span>
+<span class="sd">    suffix : str</span>
+<span class="sd">        The suffix of the sidecar file to be found. E.g., &quot;_coordsystem.json&quot;</span>
+<span class="sd">    allow_fail : bool</span>
+<span class="sd">        If False, will raise RuntimeError if not exactly one matching sidecar</span>
+<span class="sd">        was found. If True, will return None in that case. Defaults to False</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    sidecar_fname : str | None</span>
+<span class="sd">        Path to the identified sidecar file, or None, if `allow_fail` is True</span>
+<span class="sd">        and no sidecar_fname was found</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">params</span> <span class="o">=</span> <span class="n">_parse_bids_filename</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="c1"># We only use subject and session as identifier, because all other</span>
+    <span class="c1"># parameters are potentially not binding for metadata sidecar files</span>
+    <span class="n">search_str</span> <span class="o">=</span> <span class="s1">&#39;sub-&#39;</span> <span class="o">+</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;sub&#39;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;ses&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">search_str</span> <span class="o">+=</span> <span class="s1">&#39;_ses-&#39;</span> <span class="o">+</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;ses&#39;</span><span class="p">]</span>
+
+    <span class="c1"># Find all potential sidecar files, doing a recursive glob from bids_root</span>
+    <span class="n">search_str</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bids_root</span><span class="p">,</span> <span class="s1">&#39;**&#39;</span><span class="p">,</span> <span class="n">search_str</span> <span class="o">+</span> <span class="s1">&#39;*&#39;</span> <span class="o">+</span> <span class="n">suffix</span><span class="p">)</span>
+    <span class="n">candidate_list</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">search_str</span><span class="p">,</span> <span class="n">recursive</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">best_candidates</span> <span class="o">=</span> <span class="n">_find_best_candidates</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">candidate_list</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">best_candidates</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="c1"># Success</span>
+        <span class="k">return</span> <span class="n">best_candidates</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="c1"># We failed. Construct a helpful error message.</span>
+    <span class="c1"># If this was expected, simply return None, otherwise, raise an exception.</span>
+    <span class="n">msg</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">best_candidates</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;Did not find any </span><span class="si">{}</span><span class="s1"> file associated with </span><span class="si">{}</span><span class="s1">.&#39;</span>
+               <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">suffix</span><span class="p">,</span> <span class="n">bids_fname</span><span class="p">))</span>
+    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">best_candidates</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="c1"># More than one candidates were tied for best match</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;Expected to find a single </span><span class="si">{}</span><span class="s1"> file associated with &#39;</span>
+               <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">, but found </span><span class="si">{}</span><span class="s1">: &quot;</span><span class="si">{}</span><span class="s1">&quot;.&#39;</span>
+               <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">suffix</span><span class="p">,</span> <span class="n">bids_fname</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">candidate_list</span><span class="p">),</span>
+                       <span class="n">candidate_list</span><span class="p">))</span>
+    <span class="n">msg</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1">The search_str was &quot;</span><span class="si">{}</span><span class="s1">&quot;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">search_str</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">allow_fail</span><span class="p">:</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 </pre></div>
 
     </div>
