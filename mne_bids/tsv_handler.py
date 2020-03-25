@@ -102,7 +102,15 @@ def _drop(data, values, column):
 
     """
     new_data = deepcopy(data)
-    mask = np.in1d(new_data[column], values, invert=True)
+    new_data_col = np.array(new_data[column])
+
+    # Cast `values` to the same dtype as `new_data_col` to avoid a NumPy
+    # FutureWarning, see
+    # https://github.com/mne-tools/mne-bids/pull/372
+    new_data_col_dtype = new_data_col.dtype
+    values = np.array(values, dtype=new_data_col_dtype)
+
+    mask = np.in1d(new_data_col, values, invert=True)
     for key in new_data.keys():
         new_data[key] = np.array(new_data[key])[mask].tolist()
     return new_data
