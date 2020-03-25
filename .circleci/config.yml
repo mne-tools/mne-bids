@@ -1,81 +1,106 @@
-version: 2
+# See: https://circleci.com/blog/deploying-documentation-to-github-pages-with-continuous-integration/
+version: 2.1
+
 jobs:
-    build:
-        docker:
-            - image: circleci/python:3.7.3-stretch
-        steps:
-            - checkout
+  docs-build:
+    docker:
+      - image: circleci/python:3.7.3-stretch
+    steps:
+        - checkout
 
-            - run:
-                name: Check environment.yml and doc/environment.yml syncing
-                # doc/environment.yml must be a perfect copy of environment.yml
-                # with a single line "  - mne_bids~=0.X" added in the pip section
-                command: diff <(grep -v '^  - mne_bids~=0.3$' doc/environment.yml) <(cat environment.yml)
+        - run:
+            name: Check environment.yml and doc/environment.yml syncing
+            # doc/environment.yml must be a perfect copy of environment.yml
+            # with a single line "  - mne_bids>=0.X,<0.Y" added in the pip section
+            command: diff <(grep -v '^  - mne_bids>=0.*,<0.*$' doc/environment.yml) <(cat environment.yml)
 
-            # restore cache from last build. Unless __init__.py has changed since then
-            - restore_cache:
-                keys:
-                  - data-cache-0-{{ checksum "./mne_bids/__init__.py" }}
+        # restore cache from last build. Unless __init__.py has changed since then
+        - restore_cache:
+            keys:
+              - data-cache-0-{{ checksum "./mne_bids/__init__.py" }}
 
-            # Also restore pip cache to speed up installations
-            - restore_cache:
-                keys:
-                  - pip-cache-0-{{ checksum "./environment.yml" }}
+        # Also restore pip cache to speed up installations
+        - restore_cache:
+            keys:
+              - pip-cache-0-{{ checksum "./environment.yml" }}
 
-            - run:
-                name: Install miniconda
-                command: |
-                  wget -q https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh;
-                  chmod +x ~/miniconda.sh;
-                  ~/miniconda.sh -b -p ~/miniconda;
-                  echo "export PATH=~/miniconda/bin:$PATH" >> $BASH_ENV;
+        - run:
+            name: Install miniconda
+            command: |
+              wget -q https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh;
+              chmod +x ~/miniconda.sh;
+              ~/miniconda.sh -b -p ~/miniconda;
+              echo "export PATH=~/miniconda/bin:$PATH" >> $BASH_ENV;
 
-            - run:
-                name: Setup Python environment
-                # ... but use latest version of MNE
-                command: |
-                  conda update --yes --quiet conda
-                  conda env create -f environment.yml --name=testenv
-                  source activate testenv
-                  pip install -U https://api.github.com/repos/mne-tools/mne-python/zipball/master
-                  python setup.py develop
+        - run:
+            name: Setup Python environment
+            # ... but use latest version of MNE
+            command: |
+              conda update --yes --quiet conda
+              conda env create -f environment.yml --name=testenv
+              source activate testenv
+              pip install -U https://api.github.com/repos/mne-tools/mne-python/zipball/master
+              python setup.py develop
 
-            - run:
-                name: Build the documentation
-                command: |
-                    source activate testenv
-                    make build-doc
+        - run:
+            name: Build the documentation
+            command: |
+                source activate testenv
+                make build-doc
 
-            - store_artifacts:
-                path: doc/_build/html/
-                destination: html
+        - persist_to_workspace:
+            root: doc/_build
+            paths: html
 
-            # Store the data cache
-            - save_cache:
-                key: data-cache-0-{{ checksum "./mne_bids/__init__.py" }}
-                paths:
-                  - ~/mne_data
+        - store_artifacts:
+            path: doc/_build/html/
+            destination: html
 
-            # Store pip cache
-            - save_cache:
-                key: pip-cache-0-{{ checksum "./environment.yml" }}
-                paths:
-                  - ~/.cache/pip
+        # Store the data cache
+        - save_cache:
+            key: data-cache-0-{{ checksum "./mne_bids/__init__.py" }}
+            paths:
+              - ~/mne_data
 
-            - add_ssh_keys:
-                fingerprints:
-                  - "bf:ac:92:1d:dc:ca:a0:2d:aa:f6:b2:b6:d5:1c:ac:74"
+        # Store pip cache
+        - save_cache:
+            key: pip-cache-0-{{ checksum "./environment.yml" }}
+            paths:
+              - ~/.cache/pip
 
-            - deploy:
-                name: github pages deployment
-                command: |
-                  source activate testenv
-                  if [ "${CIRCLE_BRANCH}" == "maint/0.3" ]; then
-                    echo "Deploying stable docs for ${CIRCLE_BRANCH}.";
-                    git config --global user.email "circle@mne.com";
-                    git config --global user.name "Circle Ci";
-                    cd doc;
-                    make install;
-                  else
-                    echo "No deployment (build: ${CIRCLE_BRANCH}).";
-                  fi
+  docs-deploy:
+    # will only be run on master branch
+    docker:
+      - image: node:8.10.0
+    steps:
+      - checkout
+
+      - attach_workspace:
+          at: doc/_build
+
+      - run:
+          name: Install and configure dependencies
+          command: |
+            npm install -g --silent gh-pages@2.2
+            git config --global user.email "circle@mne.com"
+            git config --global user.name "Circle Ci"
+
+      - add_ssh_keys:
+          fingerprints:
+            - "7f:74:00:17:2b:1a:7d:68:56:68:6b:64:b5:e0:7f:91"
+
+      - run:
+          # push built docs into the `dev` directory on the `gh-pages` branch
+          name: Deploy docs to gh-pages branch
+          command: gh-pages --dotfiles --message "doc updates [skip ci]" --dist doc/_build/html --dest ./dev
+
+workflows:
+  build:
+    jobs:
+      - docs-build
+      - docs-deploy:
+          requires:
+            - docs-build
+          filters:
+            branches:
+              only: master

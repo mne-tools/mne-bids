@@ -69,7 +69,7 @@ Documentation
 The documentation can be found under the following links:
 
 - for the `stable release <https://mne.tools/mne-bids/>`_
-- for the `latest (development) version <https://circleci.com/api/v1.1/project/github/mne-tools/mne-bids/latest/artifacts/0/html/index.html?branch=master>`_
+- for the `latest (development) version <https://mne.tools/mne-bids/dev/index.html>`_
 
 Dependencies
 ------------

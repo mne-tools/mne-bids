@@ -28,6 +28,7 @@ sys.path.append(os.path.abspath(os.path.join(curdir, 'sphinxext')))
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
+    'sphinx.ext.githubpages',
     'sphinx.ext.autodoc',
     'sphinx.ext.mathjax',
     'sphinx.ext.viewcode',
@@ -54,8 +55,8 @@ master_doc = 'index'
 # General information about the project.
 project = u'mne_bids'
 td = date.today()
-copyright = u'%s, MNE Developers. Last updated on %s' % (td.year,
-                                                         td.isoformat())
+copyright = u'2017-%s, MNE Developers. Last updated on %s' % (td.year,
+                                                              td.isoformat())
 
 author = u'MNE Developers'
 
@@ -113,6 +114,16 @@ intersphinx_mapping = {
 }
 intersphinx_timeout = 5
 
+# Resolve binder filepath_prefix. From the docs:
+# "A prefix to append to the filepath in the Binder links. You should use this
+# if you will store your built documentation in a sub-folder of a repository,
+# instead of in the root."
+# we will store dev docs in a `dev` subdirectory and all other docs in a
+# directory "v" + version_str. E.g., "v0.3"
+if 'dev' in version:
+    filepath_prefix = 'dev'
+else:
+    filepath_prefix = 'v{}'.format(version)
 
 sphinx_gallery_conf = {
     'examples_dirs': '../examples',
@@ -126,8 +137,9 @@ sphinx_gallery_conf = {
         'repo': 'mne-bids',
         'branch': 'gh-pages',  # noqa: E501 Can be any branch, tag, or commit hash. Use a branch that hosts your docs.
         'binderhub_url': 'https://mybinder.org',  # noqa: E501 Any URL of a binderhub deployment. Must be full URL (e.g. https://mybinder.org).
+        'filepath_prefix': filepath_prefix,  # noqa: E501 A prefix to prepend to any filepaths in Binder links.
         'dependencies': [
-            './environment.yml'
+            './environment.yml',
         ],
     }
 }
