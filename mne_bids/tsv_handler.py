@@ -68,8 +68,15 @@ def _contains_row(data, row_data):
 
     """
     mask = None
-    for key, value in row_data.items():
-        column_mask = np.in1d(np.array(data[key]), value)
+    for key, row_value in row_data.items():
+        data_value = np.array(data[key])
+
+        # Cast row_value to the same dtype as data_value to avoid a NumPy
+        # FutureWarning, see
+        # https://github.com/mne-tools/mne-bids/pull/372
+        row_value = np.array(row_value, dtype=data_value.dtype)
+
+        column_mask = np.in1d(data_value, row_value)
         mask = column_mask if mask is None else (mask & column_mask)
     return np.any(mask)
 
@@ -94,7 +101,14 @@ def _drop(data, values, column):
 
     """
     new_data = deepcopy(data)
-    mask = np.in1d(new_data[column], values, invert=True)
+    new_data_col = np.array(new_data[column])
+
+    # Cast `values` to the same dtype as `new_data_col` to avoid a NumPy
+    # FutureWarning, see
+    # https://github.com/mne-tools/mne-bids/pull/372
+    values = np.array(values, dtype=new_data_col.dtype)
+
+    mask = np.in1d(new_data_col, values, invert=True)
     for key in new_data.keys():
         new_data[key] = np.array(new_data[key])[mask].tolist()
     return new_data

@@ -59,3 +59,31 @@ def test_tsv_handler():
     d = _combine(d, d2)
     assert d['b'] == ['three', 'four', 'n/a']
     assert _contains_row(d, {'a': 5})
+
+
+def test_contains_row_different_types():
+    """Test that _contains_row() can handle different dtypes without warning.
+
+    This is to check if we're successfully avoiding a FutureWarning emitted by
+    NumPy, see https://github.com/mne-tools/mne-bids/pull/372
+    (pytest must be configured to fail on warnings for this to work!)
+    """
+    data = odict(age=[20, 30, 40, 'n/a'])  # string
+    row = dict(age=60)  # int
+    _contains_row(data, row)
+
+
+def test_drop_different_types():
+    """Test that _drop() can handle different dtypes without warning.
+
+    This is to check if we're successfully avoiding a FutureWarning emitted by
+    NumPy, see https://github.com/mne-tools/mne-bids/pull/372
+    (pytest must be configured to fail on warnings for this to work!)
+    """
+    column = 'age'
+    data = odict([(column, [20, 30, 40, 'n/a'])])  # string
+    values_to_drop = (20,)  # int
+
+    result = _drop(data, values=values_to_drop, column=column)
+    for value in values_to_drop:
+        assert value not in result

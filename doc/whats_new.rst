@@ -34,8 +34,8 @@ Changelog
 - Add existence check for :func:`write_raw_bids` before :func:`make_dataset_description` is called, by `Adam Li`_ (`#331 <https://github.com/mne-tools/mne-bids/pull/331>`_)
 - Update scans.tsv writer to adhere to MNE-Python v0.20+ where `meas_date` is stored as a `datetime` object, by `Adam Li`_ (`#344 <https://github.com/mne-tools/mne-bids/pull/344>`_)
 - :func:`read_raw_bids` now reads in sidecar json files to set, or estimate Power Line Frequency, by `Adam Li`_ (`#341 <https://github.com/mne-tools/mne-bids/pull/341>`_)
-- Allow FIF files with multiple parts to be read using :func:`read_raw_bids`, by `Teon Brooks`_(`#346 <https://github.com/mne-tools/mne-bids/pull/346>`)
-- MNE-BIDS can now handle a paths that are `pathlib.Path` objects (in addition to strings), by `Richard Höchenberger`_(`#362 <https://github.com/mne-tools/mne-bids/pull/362>`)
+- Allow FIF files with multiple parts to be read using :func:`read_raw_bids`, by `Teon Brooks`_ (`#346 <https://github.com/mne-tools/mne-bids/pull/346>`)
+- MNE-BIDS can now handle a paths that are `pathlib.Path` objects (in addition to strings), by `Richard Höchenberger`_ (`#362 <https://github.com/mne-tools/mne-bids/pull/362>`)
 
 Bug
 ~~~
@@ -46,6 +46,7 @@ Bug
 - Fix writing to scans.tsv file when anonymization is turned on, by `Adam Li`_ (`#352 <https://github.com/mne-tools/mne-bids/pull/352>`_)
 - Fix :func:`read_raw_bids` to properly read in sidecar json even if a similarly named copy lives inside "derivatives/" sub-folder, by `Adam Li`_  (`#350 <https://github.com/mne-tools/mne-bids/pull/350>`_)
 - Fix :func:`read_raw_bids` to properly read in events.tsv sidecar if the 'trial_type' description has a "#" character in it by `Adam Li`_ (`#355 <https://github.com/mne-tools/mne-bids/pull/355>`_)
+- Avoid cases in which NumPy would raise a `FutureWarning` when populating TSV files, by `Richard Höchenberger`_ (`#372 <https://github.com/mne-tools/mne-bids/pull/372>`)
 
 API
 ~~~
