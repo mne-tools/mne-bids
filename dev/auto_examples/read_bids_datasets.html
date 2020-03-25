@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>02. Read and load datasets in BIDS format &#8212; mne_bids 0.4.dev0 documentation</title>
+    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          MNE-BIDS</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.4.dev0</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="index.html">Examples</a></li>
+                <li><a href="../api.html">API</a></li>
+                <li><a href="../generated/cli.html">CLI</a></li>
+                <li><a href="../whats_new.html">What's new</a></li>
+                <li><a href="https://github.com/mne-tools/mne-bids">GitHub</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"></ul>
+</li>
+              
+            
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+<div class="navbar-form navbar-right navbar-btn dropdown btn-group-sm" style="margin-left: 20px; margin-top: 5px; margin-bottom: 5px">
+  <button type="button" class="btn btn-primary navbar-btn dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown">
+    v0.4.dev0
+    <span class="caret"></span>
+  </button>
+  <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+    <li><a href="https://mne.tools/mne-bids/dev/index.html">Development</a></li>
+    <li><a href="https://mne.tools/mne-bids/stable/index.html">Stable</a></li>
+    <li><a href="https://mne.tools/mne-bids/v0.3/index.html">v0.3</a></li>
+    <li><a href="https://mne.tools/mne-bids/v0.2/index.html">v0.2</a></li>
+    <li><a href="https://mne.tools/mne-bids/v0.1/index.html">v0.1</a></li>
+  </ul>
+</div>
+
+
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-read-bids-datasets-py"><span class="std std-ref">here</span></a> to download the full example code or to run this example in your browser via Binder</p>
+</div>
+<div class="sphx-glr-example-title section" id="read-and-load-datasets-in-bids-format">
+<span id="sphx-glr-auto-examples-read-bids-datasets-py"></span><h1>02. Read and load datasets in BIDS format<a class="headerlink" href="#read-and-load-datasets-in-bids-format" title="Permalink to this headline">¶</a></h1>
+<p>When working with neural data in the BIDS format, we usually have
+varying types of data, which can be loaded in via <cite>read_raw_bids</cite> function.</p>
+<ul class="simple">
+<li><p>MEG</p></li>
+<li><p>EEG (scalp)</p></li>
+<li><p>iEEG (ECoG and SEEG)</p></li>
+<li><p>the anatomical MRI scan of a study participant</p></li>
+</ul>
+<p>In order to check if your dataset is compliant with BIDS, you can first
+run the BIDS validator online.</p>
+<p>In this tutorial, we show how <cite>read_raw_bids</cite>
+can be used to load any BIDS format data,
+and to display the data that is saved within the accompanying sidecars.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Authors: Adam Li &lt;adam2392@gmail.com&gt;</span>
+<span class="c1"># License: BSD (3-clause)</span>
+</pre></div>
+</div>
+<p>We are importing everything we need for this example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">import</span> <span class="nn">mne</span>
+<span class="kn">from</span> <span class="nn">mne.datasets</span> <span class="kn">import</span> <span class="n">somato</span>
+
+<span class="kn">from</span> <span class="nn">mne_bids</span> <span class="kn">import</span> <span class="n">make_bids_basename</span><span class="p">,</span> <span class="n">read_raw_bids</span>
+<span class="kn">from</span> <span class="nn">mne_bids.utils</span> <span class="kn">import</span> <span class="n">print_dir_tree</span>
+</pre></div>
+</div>
+<p>We will be using the <a class="reference external" href="https://mne.tools/dev/generated/mne.datasets.somato.data_path.html">MNE somato data</a>, which
+is already stored in BIDS format.
+For more information, you can checkout the
+respective <a class="reference internal" href="convert_mne_sample.html#ex-convert-mne-sample"><span class="std std-ref">example</span></a>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># get MNE directory w/ example data</span>
+<a href="https://docs.python.org/3/library/functions.html#object" title="View documentation for builtins.object"><span class="n">mne_dir</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.get_config.html#mne.get_config" title="View documentation for mne.get_config"><span class="n">mne</span><span class="o">.</span><span class="n">get_config</span></a><span class="p">(</span><span class="s1">&#39;MNE_DATASETS_SAMPLE_PATH&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="section" id="step-1-download-get-a-bids-dataset">
+<h2>Step 1: Download/Get a BIDS dataset<a class="headerlink" href="#step-1-download-get-a-bids-dataset" title="Permalink to this headline">¶</a></h2>
+<p>Get the MNE somato data</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">bids_root</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.datasets.somato.data_path.html#mne.datasets.somato.data_path" title="View documentation for mne.datasets.somato.data_path"><span class="n">somato</span><span class="o">.</span><span class="n">data_path</span></a><span class="p">()</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">somato_raw_fname</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/os.path.html#os.path.join" title="View documentation for os.path.join"><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">bids_root</span></a><span class="p">,</span> <span class="s1">&#39;sub-01&#39;</span><span class="p">,</span> <span class="s1">&#39;meg&#39;</span><span class="p">,</span>
+                                <span class="s1">&#39;sub-01_task-somato_meg.fif&#39;</span><span class="p">)</span>
+
+<a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">subject_id</span></a> <span class="o">=</span> <span class="s1">&#39;01&#39;</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">task</span></a> <span class="o">=</span> <span class="s1">&#39;somato&#39;</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">kind</span></a> <span class="o">=</span> <span class="s2">&quot;meg&quot;</span>
+
+<a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">bids_basename</span></a> <span class="o">=</span> <span class="n">make_bids_basename</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">subject_id</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">task</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">task</span></a><span class="p">)</span>
+
+<span class="c1"># bids basename is nicely formatted</span>
+<span class="nb">print</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">bids_basename</span></a><span class="p">)</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using default location ~/mne_data for somato...
+Attempting to create new mne-python configuration file:
+/home/circleci/.mne/mne-python.json
+sub-01_task-somato
+</pre></div>
+</div>
+<p>Print the directory tree</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">print_dir_tree</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">bids_root</span></a><span class="p">)</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>|MNE-somato-data/
+|--- CHANGES
+|--- participants.json
+|--- participants.tsv
+|--- dataset_description.json
+|--- README
+|--- sub-01/
+|------ sub-01_scans.tsv
+|------ meg/
+|--------- sub-01_task-somato_meg.fif
+|--------- sub-01_task-somato_events.tsv
+|--------- sub-01_coordsystem.json
+|--------- sub-01_task-somato_channels.tsv
+|--------- sub-01_task-somato_meg.json
+|------ anat/
+|--------- sub-01_T1w.json
+|--------- sub-01_T1w.nii.gz
+|--- code/
+|------ convert_somato_data.py
+|------ README
+|--- derivatives/
+|------ sub-01/
+|--------- sub-01_task-somato-fwd.fif
+|------ freesurfer/
+|--------- subjects/
+|------------ fsaverage
+|------------ 01/
+|--------------- surf/
+|------------------ rh.qsphere.nofix
+|------------------ lh.defect_labels
+|------------------ lh.seghead.inflated
+|------------------ rh.jacobian_white
+|------------------ rh.white.H
+|------------------ rh.inflated.K
+|------------------ rh.smoothwm.BE.crv
+|------------------ lh.defect_chull
+|------------------ rh.orig
+|------------------ lh.white
+|------------------ lh.jacobian_white
+|------------------ rh.avg_curv
+|------------------ lh.inflated.nofix
+|------------------ rh.smoothwm.FI.crv
+|------------------ rh.white.preaparc.K
+|------------------ rh.pial
+|------------------ rh.curv.pial
+|------------------ lh.orig.nofix
+|------------------ rh.orig.nofix
+|------------------ lh.thickness
+|------------------ lh.smoothwm.nofix
+|------------------ rh.sphere.reg
+|------------------ lh.smoothwm.H.crv
+|------------------ rh.smoothwm.nofix
+|------------------ rh.white.K
+|------------------ rh.smoothwm.S.crv
+|------------------ lh.sphere
+|------------------ lh.curv
+|------------------ rh.defect_borders
+|------------------ rh.inflated.H
+|------------------ lh.smoothwm.C.crv
+|------------------ rh.smoothwm.C.crv
+|------------------ lh.smoothwm.K.crv
+|------------------ lh.avg_curv
+|------------------ rh.smoothwm.K2.crv
+|------------------ lh.area.pial
+|------------------ lh.white.preaparc
+|------------------ lh.white.preaparc.H
+|------------------ rh.defect_chull
+|------------------ lh.sulc
+|------------------ rh.curv
+|------------------ lh.smoothwm.FI.crv
+|------------------ lh.smoothwm.K1.crv
+|------------------ rh.sphere
+|------------------ lh.smoothwm.K2.crv
+|------------------ lh.area.mid
+|------------------ lh.inflated.K
+|------------------ lh.sphere.reg
+|------------------ lh.area.seghead
+|------------------ rh.area.pial
+|------------------ lh.sulc.seghead
+|------------------ lh.seghead
+|------------------ lh.white.H
+|------------------ lh.smoothwm.S.crv
+|------------------ lh.curv.seghead
+|------------------ lh.smoothwm
+|------------------ rh.thickness
+|------------------ rh.smoothwm
+|------------------ lh.white.K
+|------------------ lh.qsphere.nofix
+|------------------ rh.area.mid
+|------------------ lh.volume
+|------------------ rh.smoothwm.H.crv
+|------------------ rh.inflated
+|------------------ rh.smoothwm.K1.crv
+|------------------ lh.area
+|------------------ lh.curv.pial
+|------------------ lh.inflated
+|------------------ lh.defect_borders
+|------------------ lh.pial
+|------------------ lh.white.preaparc.K
+|------------------ rh.area
+|------------------ rh.smoothwm.K.crv
+|------------------ rh.sulc
+|------------------ lh.orig
+|------------------ lh.smoothwm.BE.crv
+|------------------ rh.w-g.pct.mgh
+|------------------ rh.defect_labels
+|------------------ lh.w-g.pct.mgh
+|------------------ rh.volume
+|------------------ rh.white.preaparc.H
+|------------------ rh.white.preaparc
+|------------------ rh.inflated.nofix
+|------------------ rh.white
+|------------------ lh.inflated.H
+|--------------- stats/
+|------------------ wmparc.stats
+|------------------ lh.BA_exvivo.thresh.stats
+|------------------ rh.aparc.pial.stats
+|------------------ rh.BA_exvivo.thresh.stats
+|------------------ rh.aparc.DKTatlas.stats
+|------------------ rh.aparc.stats
+|------------------ lh.w-g.pct.stats
+|------------------ aseg.stats
+|------------------ lh.aparc.DKTatlas.stats
+|------------------ lh.aparc.pial.stats
+|------------------ lh.aparc.a2009s.stats
+|------------------ lh.aparc.stats
+|------------------ lh.BA_exvivo.stats
+|------------------ lh.curv.stats
+|------------------ rh.w-g.pct.stats
+|------------------ rh.aparc.a2009s.stats
+|------------------ rh.BA_exvivo.stats
+|------------------ rh.curv.stats
+|--------------- bem/
+|------------------ outer_skin.surf
+|------------------ outer_skull.surf
+|------------------ inner_skull.surf
+|------------------ 01-head-medium.fif
+|------------------ brain.surf
+|------------------ 01-head-dense.fif
+|------------------ 01-head-sparse.fif
+|------------------ 01-head.fif
+|------------------ watershed/
+|--------------------- 01_inner_skull_surface
+|--------------------- 01_outer_skull_surface
+|--------------------- 01_outer_skin_surface
+|--------------------- 01_brain_surface
+|--------------------- ws/
+|------------------------ COR-138
+|------------------------ COR-253
+|------------------------ COR-028
+|------------------------ COR-137
+|------------------------ COR-038
+|------------------------ COR-010
+|------------------------ COR-208
+|------------------------ COR-055
+|------------------------ COR-252
+|------------------------ COR-109
+|------------------------ COR-129
+|------------------------ COR-195
+|------------------------ COR-226
+|------------------------ COR-135
+|------------------------ COR-215
+|------------------------ COR-163
+|------------------------ COR-210
+|------------------------ COR-113
+|------------------------ COR-248
+|------------------------ COR-128
+|------------------------ COR-025
+|------------------------ COR-196
+|------------------------ COR-199
+|------------------------ COR-110
+|------------------------ COR-021
+|------------------------ COR-045
+|------------------------ COR-140
+|------------------------ COR-061
+|------------------------ COR-237
+|------------------------ COR-170
+|------------------------ COR-097
+|------------------------ COR-166
+|------------------------ COR-125
+|------------------------ COR-042
+|------------------------ COR-133
+|------------------------ COR-171
+|------------------------ COR-102
+|------------------------ COR-018
+|------------------------ COR-188
+|------------------------ COR-093
+|------------------------ COR-086
+|------------------------ COR-040
+|------------------------ COR-060
+|------------------------ COR-053
+|------------------------ COR-214
+|------------------------ COR-085
+|------------------------ COR-202
+|------------------------ COR-063
+|------------------------ COR-164
+|------------------------ COR-013
+|------------------------ COR-036
+|------------------------ COR-241
+|------------------------ COR-187
+|------------------------ COR-240
+|------------------------ COR-075
+|------------------------ COR-216
+|------------------------ COR-054
+|------------------------ COR-074
+|------------------------ COR-098
+|------------------------ COR-026
+|------------------------ COR-254
+|------------------------ COR-030
+|------------------------ COR-183
+|------------------------ COR-227
+|------------------------ COR-101
+|------------------------ COR-159
+|------------------------ COR-235
+|------------------------ COR-058
+|------------------------ COR-243
+|------------------------ COR-039
+|------------------------ COR-161
+|------------------------ COR-066
+|------------------------ COR-088
+|------------------------ COR-080
+|------------------------ COR-146
+|------------------------ COR-005
+|------------------------ COR-016
+|------------------------ COR-120
+|------------------------ COR-179
+|------------------------ COR-152
+|------------------------ COR-250
+|------------------------ COR-225
+|------------------------ COR-160
+|------------------------ COR-186
+|------------------------ COR-203
+|------------------------ COR-089
+|------------------------ COR-071
+|------------------------ COR-111
+|------------------------ COR-197
+|------------------------ COR-009
+|------------------------ COR-012
+|------------------------ COR-181
+|------------------------ COR-126
+|------------------------ COR-123
+|------------------------ COR-050
+|------------------------ COR-107
+|------------------------ COR-099
+|------------------------ COR-052
+|------------------------ COR-207
+|------------------------ COR-029
+|------------------------ COR-046
+|------------------------ COR-233
+|------------------------ COR-144
+|------------------------ COR-121
+|------------------------ COR-218
+|------------------------ COR-229
+|------------------------ COR-007
+|------------------------ COR-081
+|------------------------ COR-020
+|------------------------ COR-185
+|------------------------ COR-056
+|------------------------ COR-105
+|------------------------ COR-224
+|------------------------ COR-059
+|------------------------ COR-065
+|------------------------ COR-174
+|------------------------ COR-096
+|------------------------ COR-238
+|------------------------ COR-095
+|------------------------ COR-200
+|------------------------ COR-247
+|------------------------ COR-103
+|------------------------ COR-156
+|------------------------ COR-230
+|------------------------ COR-256
+|------------------------ COR-130
+|------------------------ COR-228
+|------------------------ COR-255
+|------------------------ COR-112
+|------------------------ COR-180
+|------------------------ COR-078
+|------------------------ COR-212
+|------------------------ COR-173
+|------------------------ COR-192
+|------------------------ COR-249
+|------------------------ COR-079
+|------------------------ COR-204
+|------------------------ COR-082
+|------------------------ COR-232
+|------------------------ COR-184
+|------------------------ COR-014
+|------------------------ COR-198
+|------------------------ COR-047
+|------------------------ COR-155
+|------------------------ COR-104
+|------------------------ COR-194
+|------------------------ COR-189
+|------------------------ COR-084
+|------------------------ COR-201
+|------------------------ COR-011
+|------------------------ COR-236
+|------------------------ COR-134
+|------------------------ COR-220
+|------------------------ COR-217
+|------------------------ COR-205
+|------------------------ COR-067
+|------------------------ COR-094
+|------------------------ COR-068
+|------------------------ COR-182
+|------------------------ COR-169
+|------------------------ COR-245
+|------------------------ COR-176
+|------------------------ COR-041
+|------------------------ COR-069
+|------------------------ COR-147
+|------------------------ COR-251
+|------------------------ COR-092
+|------------------------ COR-.info
+|------------------------ COR-139
+|------------------------ COR-090
+|------------------------ COR-221
+|------------------------ COR-034
+|------------------------ COR-175
+|------------------------ COR-213
+|------------------------ COR-151
+|------------------------ COR-145
+|------------------------ COR-154
+|------------------------ COR-043
+|------------------------ COR-191
+|------------------------ COR-209
+|------------------------ COR-172
+|------------------------ COR-024
+|------------------------ COR-158
+|------------------------ COR-148
+|------------------------ COR-033
+|------------------------ COR-162
+|------------------------ COR-157
+|------------------------ COR-231
+|------------------------ COR-017
+|------------------------ COR-190
+|------------------------ COR-141
+|------------------------ COR-051
+|------------------------ COR-070
+|------------------------ COR-027
+|------------------------ COR-165
+|------------------------ COR-062
+|------------------------ COR-072
+|------------------------ COR-001
+|------------------------ COR-037
+|------------------------ COR-019
+|------------------------ COR-178
+|------------------------ COR-116
+|------------------------ COR-023
+|------------------------ COR-004
+|------------------------ COR-057
+|------------------------ COR-127
+|------------------------ COR-142
+|------------------------ COR-022
+|------------------------ COR-246
+|------------------------ COR-131
+|------------------------ COR-223
+|------------------------ COR-076
+|------------------------ COR-077
+|------------------------ COR-015
+|------------------------ COR-003
+|------------------------ COR-153
+|------------------------ COR-177
+|------------------------ COR-168
+|------------------------ COR-119
+|------------------------ COR-115
+|------------------------ COR-136
+|------------------------ COR-106
+|------------------------ COR-132
+|------------------------ COR-122
+|------------------------ COR-048
+|------------------------ COR-219
+|------------------------ COR-118
+|------------------------ COR-149
+|------------------------ COR-073
+|------------------------ COR-087
+|------------------------ COR-206
+|------------------------ COR-008
+|------------------------ COR-100
+|------------------------ COR-222
+|------------------------ COR-035
+|------------------------ COR-064
+|------------------------ COR-049
+|------------------------ COR-211
+|------------------------ COR-032
+|------------------------ COR-117
+|------------------------ COR-239
+|------------------------ COR-234
+|------------------------ COR-143
+|------------------------ COR-242
+|------------------------ COR-244
+|------------------------ COR-124
+|------------------------ COR-044
+|------------------------ COR-150
+|------------------------ COR-193
+|------------------------ COR-091
+|------------------------ COR-006
+|------------------------ COR-167
+|------------------------ COR-031
+|------------------------ COR-114
+|------------------------ COR-083
+|------------------------ COR-108
+|------------------------ COR-002
+|--------------- tmp/
+|--------------- touch/
+|------------------ lh.jacobian_white.touch
+|------------------ rusage.mris_inflate.rh.dat
+|------------------ inorm1.touch
+|------------------ rh.inflate2.touch
+|------------------ lh.sphmorph.touch
+|------------------ relabelhypos.touch
+|------------------ lh.aparc.touch
+|------------------ cortical_ribbon.touch
+|------------------ wmaparc.stats.touch
+|------------------ lh.surfvolume.touch
+|------------------ nu.touch
+|------------------ rh.topofix.touch
+|------------------ lh.avgcurv.touch
+|------------------ rusage.mris_sphere.lh.dat
+|------------------ segstats.touch
+|------------------ rh.white_surface.touch
+|------------------ rh.curvstats.touch
+|------------------ skull.lta.touch
+|------------------ rh.jacobian_white.touch
+|------------------ rusage.mris_register.rh.dat
+|------------------ lh.inflate.H.K.touch
+|------------------ fill.touch
+|------------------ lh.white.H.K.touch
+|------------------ conform.touch
+|------------------ lh.qsphere.touch
+|------------------ rh.tessellate.touch
+|------------------ ca_register.touch
+|------------------ aparc.a2009s2aseg.touch
+|------------------ lh.inflate2.touch
+|------------------ lh.inflate1.touch
+|------------------ aparc.DKTatlas2aseg.touch
+|------------------ wmsegment.touch
+|------------------ rh.sphmorph.touch
+|------------------ lh.sphreg.touch
+|------------------ ca_label.touch
+|------------------ lh.white_surface.touch
+|------------------ rh.smoothwm1.touch
+|------------------ rusage.mris_register.lh.dat
+|------------------ rh.aparcstats.touch
+|------------------ rusage.mri_em_register.dat
+|------------------ rh.sphreg.touch
+|------------------ rh.avgcurv.touch
+|------------------ rusage.mri_ca_register.dat
+|------------------ rh.qsphere.touch
+|------------------ rh.aparcstats2.touch
+|------------------ em_register.touch
+|------------------ rh.aparcstats3.touch
+|------------------ rusage.mris_sphere.rh.dat
+|------------------ lh.aparcstats.touch
+|------------------ rh.inflate.H.K.touch
+|------------------ rusage.mris_fix_topology.rh.dat
+|------------------ wmaparc.touch
+|------------------ rh.final_surfaces.touch
+|------------------ lh.aparcstats2.touch
+|------------------ lh.aparc2.touch
+|------------------ rh.surfvolume.touch
+|------------------ rusage.mris_inflate.lh.dat
+|------------------ inorm2.touch
+|------------------ rh.pial_surface.touch
+|------------------ talairach.touch
+|------------------ lh.final_surfaces.touch
+|------------------ lh.smoothwm1.touch
+|------------------ rh.pctsurfcon.touch
+|------------------ lh.curvstats.touch
+|------------------ lh.topofix.touch
+|------------------ ca_normalize.touch
+|------------------ rusage.mri_em_register.skull.dat
+|------------------ lh.aparcstats3.touch
+|------------------ asegmerge.touch
+|------------------ rh.inflate1.touch
+|------------------ rusage.mris_fix_topology.lh.dat
+|------------------ rh.white.H.K.touch
+|------------------ lh.tessellate.touch
+|------------------ apas2aseg.touch
+|------------------ rh.aparc2.touch
+|------------------ lh.smoothwm2.touch
+|------------------ lh.pctsurfcon.touch
+|------------------ rh.aparc.touch
+|------------------ rh.smoothwm2.touch
+|------------------ rusage.mri_watershed.dat
+|------------------ lh.pial_surface.touch
+|------------------ skull_strip.touch
+|--------------- mri/
+|------------------ filled.mgz
+|------------------ orig.mgz
+|------------------ wm.asegedit.mgz
+|------------------ rh.ribbon.mgz
+|------------------ aseg.presurf.mgz
+|------------------ aseg.presurf.hypos.mgz
+|------------------ aparc.a2009s+aseg.mgz
+|------------------ mri_nu_correct.mni.log
+|------------------ brainmask.auto.mgz
+|------------------ segment.dat
+|------------------ aparc.DKTatlas+aseg.mgz
+|------------------ ctrl_pts.mgz
+|------------------ wmparc.mgz
+|------------------ talairach.log
+|------------------ aseg.auto.mgz
+|------------------ nu.mgz
+|------------------ lh.ribbon.mgz
+|------------------ aseg.auto_noCCseg.mgz
+|------------------ talairach.label_intensities.txt
+|------------------ wm.seg.mgz
+|------------------ mri_nu_correct.mni.log.bak
+|------------------ aparc+aseg.mgz
+|------------------ seghead.mgz
+|------------------ wm.mgz
+|------------------ aseg.mgz
+|------------------ talairach_with_skull.log
+|------------------ T1.mgz
+|------------------ aseg.auto_noCCseg.label_intensities.txt
+|------------------ ribbon.mgz
+|------------------ brain.finalsurfs.mgz
+|------------------ brain.mgz
+|------------------ norm.mgz
+|------------------ brainmask.mgz
+|------------------ orig_nu.mgz
+|------------------ rawavg.mgz
+|------------------ transforms/
+|--------------------- talairach.xfm
+|--------------------- talairach.auto.xfm
+|--------------------- talairach.auto.xfm.lta
+|--------------------- cc_up.lta
+|--------------------- talairach.lta
+|--------------------- talsrcimg_to_711-2C_as_mni_average_305_t4_vox2vox.txt
+|--------------------- talairach_avi_QA.log
+|--------------------- talairach_with_skull.lta
+|--------------------- talairach_avi.log
+|--------------------- talairach.m3z
+|--------------------- bak/
+|------------------ orig/
+|--------------------- 001.mgz
+|--------------- label/
+|------------------ lh.BA4p_exvivo.label
+|------------------ rh.V1_exvivo.label
+|------------------ rh.BA4p_exvivo.label
+|------------------ lh.BA44_exvivo.label
+|------------------ rh.entorhinal_exvivo.thresh.label
+|------------------ rh.BA_exvivo.annot
+|------------------ lh.BA3b_exvivo.label
+|------------------ rh.perirhinal_exvivo.thresh.label
+|------------------ rh.MT_exvivo.thresh.label
+|------------------ rh.BA3a_exvivo.label
+|------------------ rh.BA3a_exvivo.thresh.label
+|------------------ rh.aparc.a2009s.annot
+|------------------ rh.BA6_exvivo.thresh.label
+|------------------ aparc.annot.ctab
+|------------------ lh.BA3a_exvivo.label
+|------------------ lh.BA_exvivo.annot
+|------------------ rh.BA4p_exvivo.thresh.label
+|------------------ lh.V1_exvivo.thresh.label
+|------------------ lh.cortex.label
+|------------------ lh.BA3b_exvivo.thresh.label
+|------------------ lh.BA44_exvivo.thresh.label
+|------------------ BA_exvivo.ctab
+|------------------ rh.BA2_exvivo.label
+|------------------ rh.MT_exvivo.label
+|------------------ rh.entorhinal_exvivo.label
+|------------------ lh.entorhinal_exvivo.thresh.label
+|------------------ rh.cortex.label
+|------------------ rh.BA3b_exvivo.thresh.label
+|------------------ rh.BA1_exvivo.label
+|------------------ lh.BA1_exvivo.label
+|------------------ lh.BA6_exvivo.label
+|------------------ rh.BA4a_exvivo.label
+|------------------ lh.entorhinal_exvivo.label
+|------------------ lh.V1_exvivo.label
+|------------------ rh.BA44_exvivo.label
+|------------------ lh.BA2_exvivo.thresh.label
+|------------------ BA_exvivo.thresh.ctab
+|------------------ lh.BA6_exvivo.thresh.label
+|------------------ lh.BA45_exvivo.thresh.label
+|------------------ lh.aparc.DKTatlas.annot
+|------------------ lh.MT_exvivo.thresh.label
+|------------------ lh.BA1_exvivo.thresh.label
+|------------------ rh.BA45_exvivo.label
+|------------------ rh.BA_exvivo.thresh.annot
+|------------------ aparc.annot.DKTatlas.ctab
+|------------------ lh.aparc.annot
+|------------------ lh.BA4a_exvivo.label
+|------------------ rh.aparc.annot
+|------------------ rh.V2_exvivo.thresh.label
+|------------------ lh.perirhinal_exvivo.label
+|------------------ aparc.annot.a2009s.ctab
+|------------------ lh.BA_exvivo.thresh.annot
+|------------------ lh.V2_exvivo.thresh.label
+|------------------ rh.BA6_exvivo.label
+|------------------ lh.BA2_exvivo.label
+|------------------ rh.BA1_exvivo.thresh.label
+|------------------ rh.perirhinal_exvivo.label
+|------------------ lh.BA4p_exvivo.thresh.label
+|------------------ lh.BA3a_exvivo.thresh.label
+|------------------ rh.V2_exvivo.label
+|------------------ rh.aparc.DKTatlas.annot
+|------------------ rh.BA2_exvivo.thresh.label
+|------------------ rh.BA45_exvivo.thresh.label
+|------------------ lh.aparc.a2009s.annot
+|------------------ lh.V2_exvivo.label
+|------------------ lh.BA4a_exvivo.thresh.label
+|------------------ lh.perirhinal_exvivo.thresh.label
+|------------------ lh.MT_exvivo.label
+|------------------ rh.BA3b_exvivo.label
+|------------------ rh.BA4a_exvivo.thresh.label
+|------------------ rh.BA44_exvivo.thresh.label
+|------------------ lh.BA45_exvivo.label
+|------------------ rh.V1_exvivo.thresh.label
+|--------------- trash/
+|--------------- scripts/
+|------------------ recon-all.log
+|------------------ ponscc.cut.log
+|------------------ recon-all.local-copy
+|------------------ pctsurfcon.log.old
+|------------------ recon-all-status.log
+|------------------ recon-all.done
+|------------------ recon-all.env
+|------------------ patchdir.txt
+|------------------ build-stamp.txt
+|------------------ mkheadsurf.log
+|------------------ pctsurfcon.log
+|------------------ lastcall.build-stamp.txt
+|------------------ recon-all.cmd
+</pre></div>
+</div>
+</div>
+<div class="section" id="step-2-read-a-bids-dataset">
+<h2>Step 2: Read a BIDS dataset<a class="headerlink" href="#step-2-read-a-bids-dataset" title="Permalink to this headline">¶</a></h2>
+<p>Let’s read in the dataset and show off a few features of the
+loading function <cite>read_raw_bids</cite>. Note, this is just one line of code.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">bids_fname</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">bids_basename</span></a> <span class="o">+</span> <span class="s2">&quot;_</span><span class="si">{}</span><span class="s2">.fif&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">kind</span></a><span class="p">)</span>
+<a href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw" title="View documentation for mne.io.Raw"><span class="n">raw</span></a> <span class="o">=</span> <span class="n">read_raw_bids</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">bids_fname</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">bids_root</span></a><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Opening raw data file /home/circleci/mne_data/MNE-somato-data/sub-01/meg/sub-01_task-somato_meg.fif...
+    Range : 237600 ... 506999 =    791.189 ...  1688.266 secs
+Ready.
+Current compensation grade : 0
+Reading events from /home/circleci/mne_data/MNE-somato-data/sub-01/meg/sub-01_task-somato_events.tsv.
+Reading channel info from /home/circleci/mne_data/MNE-somato-data/sub-01/meg/sub-01_task-somato_channels.tsv.
+/home/circleci/project/mne_bids/read.py:268: RuntimeWarning: The unit for channel(s) STI 001, STI 002, STI 003, STI 004, STI 005, STI 006, STI 014, STI 015, STI 016 has changed from V to NA.
+  raw.set_channel_types(channel_type_dict)
+/home/circleci/project/mne_bids/utils.py:635: UserWarning: Did not find any electrodes.tsv file associated with sub-01_task-somato_meg.fif.
+
+The search_str was &quot;/home/circleci/mne_data/MNE-somato-data/sub-01/**/sub-01*electrodes.tsv&quot;
+  warnings.warn(msg)
+</pre></div>
+</div>
+<p><cite>raw.info</cite> has the basic subject metadata</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw" title="View documentation for mne.io.Raw"><span class="n">raw</span></a><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;subject_info&#39;</span><span class="p">])</span>
+
+<span class="c1"># `raw.info` has the PowerLineFrequency loaded in, which should be 50 Hz here</span>
+<span class="nb">print</span><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw" title="View documentation for mne.io.Raw"><span class="n">raw</span></a><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;line_freq&#39;</span><span class="p">])</span>
+
+<span class="c1"># `raw.info` has the sampling frequency loaded in</span>
+<span class="nb">print</span><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw" title="View documentation for mne.io.Raw"><span class="n">raw</span></a><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;sfreq&#39;</span><span class="p">])</span>
+
+<span class="c1"># annotations</span>
+<span class="nb">print</span><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw.annotations" title="View documentation for mne.io.Raw.annotations"><span class="n">raw</span><span class="o">.</span><span class="n">annotations</span></a><span class="p">)</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;id&#39;: 175, &#39;sex&#39;: 1}
+50
+300.3074951171875
+&lt;Annotations | 111 segments: somato_event1 (111)&gt;
+</pre></div>
+</div>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.131 seconds)</p>
+<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-read-bids-datasets-py">
+<div class="binder-badge docutils container">
+<a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/read_bids_datasets.ipynb"><img alt="https://mybinder.org/badge_logo.svg" src="https://mybinder.org/badge_logo.svg" width="150px" /></a>
+</div>
+<div class="sphx-glr-download docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/5eebd75ee4f8ffd30e34a83e87d0e28b/read_bids_datasets.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">read_bids_datasets.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/07841a9269d1816a3add41f32d8a5ed2/read_bids_datasets.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">read_bids_datasets.ipynb</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-03-25.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

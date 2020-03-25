@@ -1,0 +1,6 @@
+mne\_bids.get\_head\_mri\_trans
+===============================
+
+.. currentmodule:: mne_bids
+
+.. autofunction:: get_head_mri_trans

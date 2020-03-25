@@ -1,0 +1,29 @@
+name: mne_bids
+channels:
+- defaults
+- conda-forge
+dependencies:
+- python<3.7
+- pip=19
+- mkl
+- numpy>=1.14
+- scipy>=0.18.1
+- scikit-learn
+- matplotlib
+- pip:
+  - mne_bids>=0.3,<0.4
+  - mne>=0.19.1
+  - nibabel
+  - pybv
+  - nilearn
+  - flake8
+  - pytest<5.4
+  - pytest-cov
+  - pytest-sugar
+  - check-manifest
+  - pydocstyle
+  - sphinx
+  - pillow
+  - numpydoc
+  - sphinx_bootstrap_theme
+  - sphinx_gallery

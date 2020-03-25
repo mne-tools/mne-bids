@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>mne_bids.write_raw_bids &#8212; mne_bids 0.4.dev0 documentation</title>
+    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          MNE-BIDS</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.4.dev0</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../auto_examples/index.html">Examples</a></li>
+                <li><a href="../api.html">API</a></li>
+                <li><a href="cli.html">CLI</a></li>
+                <li><a href="../whats_new.html">What's new</a></li>
+                <li><a href="https://github.com/mne-tools/mne-bids">GitHub</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"></ul>
+</li>
+              
+            
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+<div class="navbar-form navbar-right navbar-btn dropdown btn-group-sm" style="margin-left: 20px; margin-top: 5px; margin-bottom: 5px">
+  <button type="button" class="btn btn-primary navbar-btn dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown">
+    v0.4.dev0
+    <span class="caret"></span>
+  </button>
+  <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+    <li><a href="https://mne.tools/mne-bids/dev/index.html">Development</a></li>
+    <li><a href="https://mne.tools/mne-bids/stable/index.html">Stable</a></li>
+    <li><a href="https://mne.tools/mne-bids/v0.3/index.html">v0.3</a></li>
+    <li><a href="https://mne.tools/mne-bids/v0.2/index.html">v0.2</a></li>
+    <li><a href="https://mne.tools/mne-bids/v0.1/index.html">v0.1</a></li>
+  </ul>
+</div>
+
+
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <div class="section" id="mne-bids-write-raw-bids">
+<h1>mne_bids.write_raw_bids<a class="headerlink" href="#mne-bids-write-raw-bids" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="mne_bids.write_raw_bids">
+<code class="sig-prename descclassname">mne_bids.</code><code class="sig-name descname">write_raw_bids</code><span class="sig-paren">(</span><em class="sig-param">raw</em>, <em class="sig-param">bids_basename</em>, <em class="sig-param">bids_root</em>, <em class="sig-param">events_data=None</em>, <em class="sig-param">event_id=None</em>, <em class="sig-param">anonymize=None</em>, <em class="sig-param">overwrite=False</em>, <em class="sig-param">verbose=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/write.html#write_raw_bids"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.write_raw_bids" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save raw data to a BIDS-compliant folder structure.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<ul class="simple">
+<li><p>The original file is simply copied over if the original
+file format is BIDS-supported for that modality. Otherwise,
+this function will convert to a BIDS-supported file format
+while warning the user. For EEG and iEEG data, conversion
+will be to BrainVision format, for MEG conversion will be
+to FIF.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mne-bids</span></code> will infer the manufacturer information
+from the file extension. If your file format is non-standard
+for the manufacturer, please update the manufacturer field
+in the sidecars manually.</p></li>
+</ul>
+</div>
+<dl class="field-list">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl>
+<dt><strong>raw</strong><span class="classifier">instance of mne.io.Raw</span></dt><dd><p>The raw data. It must be an instance of mne.Raw. The data should not be
+loaded from disk, i.e., raw.preload must be False.</p>
+</dd>
+<dt><strong>bids_basename</strong><span class="classifier">str</span></dt><dd><p>The base filename of the BIDS compatible files. Typically, this can be
+generated using make_bids_basename.
+Example: <cite>sub-01_ses-01_task-testing_acq-01_run-01</cite>.
+This will write the following files in the correct subfolder of the
+bids_root:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sub</span><span class="o">-</span><span class="mi">01</span><span class="n">_ses</span><span class="o">-</span><span class="mi">01</span><span class="n">_task</span><span class="o">-</span><span class="n">testing_acq</span><span class="o">-</span><span class="mi">01</span><span class="n">_run</span><span class="o">-</span><span class="mi">01</span><span class="n">_meg</span><span class="o">.</span><span class="n">fif</span>
+<span class="n">sub</span><span class="o">-</span><span class="mi">01</span><span class="n">_ses</span><span class="o">-</span><span class="mi">01</span><span class="n">_task</span><span class="o">-</span><span class="n">testing_acq</span><span class="o">-</span><span class="mi">01</span><span class="n">_run</span><span class="o">-</span><span class="mi">01</span><span class="n">_meg</span><span class="o">.</span><span class="n">json</span>
+<span class="n">sub</span><span class="o">-</span><span class="mi">01</span><span class="n">_ses</span><span class="o">-</span><span class="mi">01</span><span class="n">_task</span><span class="o">-</span><span class="n">testing_acq</span><span class="o">-</span><span class="mi">01</span><span class="n">_run</span><span class="o">-</span><span class="mi">01</span><span class="n">_channels</span><span class="o">.</span><span class="n">tsv</span>
+<span class="n">sub</span><span class="o">-</span><span class="mi">01</span><span class="n">_ses</span><span class="o">-</span><span class="mi">01</span><span class="n">_task</span><span class="o">-</span><span class="n">testing_acq</span><span class="o">-</span><span class="mi">01</span><span class="n">_run</span><span class="o">-</span><span class="mi">01</span><span class="n">_coordsystem</span><span class="o">.</span><span class="n">json</span>
+</pre></div>
+</div>
+<p>and the following one if events_data is not None:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sub</span><span class="o">-</span><span class="mi">01</span><span class="n">_ses</span><span class="o">-</span><span class="mi">01</span><span class="n">_task</span><span class="o">-</span><span class="n">testing_acq</span><span class="o">-</span><span class="mi">01</span><span class="n">_run</span><span class="o">-</span><span class="mi">01</span><span class="n">_events</span><span class="o">.</span><span class="n">tsv</span>
+</pre></div>
+</div>
+<p>and add a line to the following files:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">participants</span><span class="o">.</span><span class="n">tsv</span>
+<span class="n">scans</span><span class="o">.</span><span class="n">tsv</span>
+</pre></div>
+</div>
+<p>Note that the modality ‘meg’ is automatically inferred from the raw
+object and extension ‘.fif’ is copied from raw.filenames.</p>
+</dd>
+<dt><strong>bids_root</strong><span class="classifier">str | pathlib.Path</span></dt><dd><p>The path of the root of the BIDS compatible folder. The session and
+subject specific folders will be populated automatically by parsing
+bids_basename.</p>
+</dd>
+<dt><strong>events_data</strong><span class="classifier">str | pathlib.Path | array | None</span></dt><dd><p>The events file. If a string or a Path object, specifies the path of
+the events file. If an array, the MNE events array (shape n_events, 3).
+If None, events will be inferred from the stim channel using
+<cite>mne.find_events</cite>.</p>
+</dd>
+<dt><strong>event_id</strong><span class="classifier">dict | None</span></dt><dd><p>The event id dict used to create a ‘trial_type’ column in events.tsv</p>
+</dd>
+<dt><strong>anonymize</strong><span class="classifier">dict | None</span></dt><dd><p>If None is provided (default) no anonymization is performed.
+If a dictionary is passed, data will be anonymized; identifying data
+structures such as study date and time will be changed.
+<cite>daysback</cite> is a required argument and <cite>keep_his</cite> is optional, these
+arguments are passed to <a class="reference external" href="https://mne.tools/dev/generated/mne.io.anonymize_info.html#mne.io.anonymize_info" title="(in MNE v0.20.dev0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.io.anonymize_info()</span></code></a>.</p>
+<dl class="simple">
+<dt><cite>daysback</cite><span class="classifier">int</span></dt><dd><p>Number of days to move back the date. To keep relative dates for
+a subject use the same <cite>daysback</cite>. According to BIDS
+specifications, the number of days back must be great enough
+that the date is before 1925.</p>
+</dd>
+<dt><cite>keep_his</cite><span class="classifier">bool</span></dt><dd><p>If True info[‘subject_info’][‘his_id’] of subject_info will NOT be
+overwritten. Defaults to False.</p>
+</dd>
+</dl>
+</dd>
+<dt><strong>overwrite</strong><span class="classifier">bool</span></dt><dd><p>Whether to overwrite existing files or data in files.
+Defaults to False.
+If overwrite is True, any existing files with the same BIDS parameters
+will be overwritten with the exception of the <cite>participants.tsv</cite> and
+<cite>scans.tsv</cite> files. For these files, parts of pre-existing data that
+match the current data will be replaced.
+If overwrite is False, no existing data will be overwritten or
+replaced.</p>
+</dd>
+<dt><strong>verbose</strong><span class="classifier">bool</span></dt><dd><p>If verbose is True, this will print a snippet of the sidecar files. If
+False, no content will be printed.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>bids_root</strong><span class="classifier">str</span></dt><dd><p>The path of the root of the BIDS compatible folder.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>For the participants.tsv file, the raw.info[‘subject_info’] should be
+updated and raw.info[‘meas_date’] should not be None to compute the age
+of the participant correctly.</p>
+</dd></dl>
+
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-03-25.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

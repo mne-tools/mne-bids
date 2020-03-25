@@ -1,0 +1,230 @@
+:orphan:
+
+
+
+.. _sphx_glr_auto_examples:
+
+.. _general_examples:
+
+Examples Gallery
+================
+
+Here we show some exemplary use cases for MNE-BIDS. Each example has a badge
+called "Binder" at the end. By clicking on that badge, you can interactively
+run the examples in your browser.
+
+The examples are loosely ordered from more general to more advanced use cases.
+
+.. contents:: Contents
+   :local:
+   :depth: 3
+
+
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="The Brain Imaging Data Structure (BIDS) has standard conventions for file names and folder hier...">
+
+.. only:: html
+
+ .. figure:: /auto_examples/images/thumb/sphx_glr_create_bids_folder_thumb.png
+
+     :ref:`sphx_glr_auto_examples_create_bids_folder.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/create_bids_folder
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="When working with neural data in the BIDS format, we usually have varying types of data, which ...">
+
+.. only:: html
+
+ .. figure:: /auto_examples/images/thumb/sphx_glr_read_bids_datasets_thumb.png
+
+     :ref:`sphx_glr_auto_examples_read_bids_datasets.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/read_bids_datasets
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="In this example we will use MNE-BIDS to organize the MNE sample data according to the BIDS stan...">
+
+.. only:: html
+
+ .. figure:: /auto_examples/images/thumb/sphx_glr_convert_mne_sample_thumb.png
+
+     :ref:`sphx_glr_auto_examples_convert_mne_sample.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/convert_mne_sample
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="In this example, we use MNE-BIDS to create a BIDS-compatible directory of EEG data. Specificall...">
+
+.. only:: html
+
+ .. figure:: /auto_examples/images/thumb/sphx_glr_convert_eeg_to_bids_thumb.png
+
+     :ref:`sphx_glr_auto_examples_convert_eeg_to_bids.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/convert_eeg_to_bids
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="Here, we show how to do BIDS conversion for group studies. The data from Wakeman et al. [1]_ is...">
+
+.. only:: html
+
+ .. figure:: /auto_examples/images/thumb/sphx_glr_convert_group_studies_thumb.png
+
+     :ref:`sphx_glr_auto_examples_convert_group_studies.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/convert_group_studies
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="The BrainVision file format is one of the recommended formats to store EEG data within a BIDS d...">
+
+.. only:: html
+
+ .. figure:: /auto_examples/images/thumb/sphx_glr_rename_brainvision_files_thumb.png
+
+     :ref:`sphx_glr_auto_examples_rename_brainvision_files.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/rename_brainvision_files
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="When working with MEEG data in the domain of source localization, we usually have to deal with ...">
+
+.. only:: html
+
+ .. figure:: /auto_examples/images/thumb/sphx_glr_convert_mri_and_trans_thumb.png
+
+     :ref:`sphx_glr_auto_examples_convert_mri_and_trans.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/convert_mri_and_trans
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="In this example, we use MNE-BIDS to create a BIDS-compatible directory of iEEG data. Specifical...">
+
+.. only:: html
+
+ .. figure:: /auto_examples/images/thumb/sphx_glr_convert_ieeg_to_bids_thumb.png
+
+     :ref:`sphx_glr_auto_examples_convert_ieeg_to_bids.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/convert_ieeg_to_bids
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates how to store empty room data in BIDS format and how to retrieve them....">
+
+.. only:: html
+
+ .. figure:: /auto_examples/images/thumb/sphx_glr_convert_empty_room_thumb.png
+
+     :ref:`sphx_glr_auto_examples_convert_empty_room.py`
+
+.. raw:: html
+
+    </div>
+
+
+.. toctree::
+   :hidden:
+
+   /auto_examples/convert_empty_room
+.. raw:: html
+
+    <div class="sphx-glr-clear"></div>
+
+
+
+.. only :: html
+
+ .. container:: sphx-glr-footer
+    :class: sphx-glr-footer-gallery
+
+
+  .. container:: sphx-glr-download
+
+    :download:`Download all examples in Python source code: auto_examples_python.zip <//home/circleci/project/doc/auto_examples/auto_examples_python.zip>`
+
+
+
+  .. container:: sphx-glr-download
+
+    :download:`Download all examples in Jupyter notebooks: auto_examples_jupyter.zip <//home/circleci/project/doc/auto_examples/auto_examples_jupyter.zip>`
+
+
+.. only:: html
+
+ .. rst-class:: sphx-glr-signature
+
+    `Gallery generated by Sphinx-Gallery <https://sphinx-gallery.github.io>`_

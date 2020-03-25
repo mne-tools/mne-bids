@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>08. Convert iEEG data to BIDS format &#8212; mne_bids 0.4.dev0 documentation</title>
+    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          MNE-BIDS</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.4.dev0</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="index.html">Examples</a></li>
+                <li><a href="../api.html">API</a></li>
+                <li><a href="../generated/cli.html">CLI</a></li>
+                <li><a href="../whats_new.html">What's new</a></li>
+                <li><a href="https://github.com/mne-tools/mne-bids">GitHub</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"></ul>
+</li>
+              
+            
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+<div class="navbar-form navbar-right navbar-btn dropdown btn-group-sm" style="margin-left: 20px; margin-top: 5px; margin-bottom: 5px">
+  <button type="button" class="btn btn-primary navbar-btn dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown">
+    v0.4.dev0
+    <span class="caret"></span>
+  </button>
+  <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+    <li><a href="https://mne.tools/mne-bids/dev/index.html">Development</a></li>
+    <li><a href="https://mne.tools/mne-bids/stable/index.html">Stable</a></li>
+    <li><a href="https://mne.tools/mne-bids/v0.3/index.html">v0.3</a></li>
+    <li><a href="https://mne.tools/mne-bids/v0.2/index.html">v0.2</a></li>
+    <li><a href="https://mne.tools/mne-bids/v0.1/index.html">v0.1</a></li>
+  </ul>
+</div>
+
+
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-convert-ieeg-to-bids-py"><span class="std std-ref">here</span></a> to download the full example code or to run this example in your browser via Binder</p>
+</div>
+<div class="sphx-glr-example-title section" id="convert-ieeg-data-to-bids-format">
+<span id="sphx-glr-auto-examples-convert-ieeg-to-bids-py"></span><h1>08. Convert iEEG data to BIDS format<a class="headerlink" href="#convert-ieeg-data-to-bids-format" title="Permalink to this headline">¶</a></h1>
+<p>In this example, we use MNE-BIDS to create a BIDS-compatible directory of iEEG
+data. Specifically, we will follow these steps:</p>
+<ol class="arabic simple">
+<li><p>Download some iEEG data from the
+<a class="reference external" href="https://physionet.org/physiobank/database">PhysioBank database</a>
+and the
+<a class="reference external" href="https://mne.tools/stable/auto_tutorials/misc/plot_ecog">MNE-ECoG ex</a>.</p></li>
+<li><p>Load the data, extract information, and save in a new BIDS directory.</p></li>
+<li><p>Check the result and compare it with the standard.</p></li>
+<li><p>Confirm that written iEEG coordinates are the
+same before <code class="xref py py-func docutils literal notranslate"><span class="pre">write_raw_bids()</span></code> was called.</p></li>
+</ol>
+<p>The iEEG data will be written by <code class="xref py py-func docutils literal notranslate"><span class="pre">write_raw_bids()</span></code> with
+the addition of extra metadata elements in the following files:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>sidecar.json</p></li>
+<li><p>electrodes.tsv</p></li>
+<li><p>coord_system.json</p></li>
+<li><p>events.tsv</p></li>
+<li><p>channels.tsv</p></li>
+</ul>
+</div></blockquote>
+<p>Compared to EEG data, the main differences are within the
+coord_system and electrodes files.
+For more information on these files,
+refer to the iEEG-BIDS specification.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Authors: Adam Li &lt;adam2392@gmail.com&gt;</span>
+<span class="c1"># License: BSD (3-clause)</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">tempfile</span>
+<span class="kn">from</span> <span class="nn">pprint</span> <span class="kn">import</span> <a href="https://docs.python.org/3/library/pprint.html#pprint.pprint" title="View documentation for pprint.pprint"><span class="n">pprint</span></a>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">scipy.io</span> <span class="kn">import</span> <a href="https://scipy.github.io/devdocs/generated/scipy.io.loadmat.html#scipy.io.loadmat" title="View documentation for scipy.io.loadmat"><span class="n">loadmat</span></a>
+
+<span class="kn">import</span> <span class="nn">mne</span>
+<span class="kn">from</span> <span class="nn">mne_bids</span> <span class="kn">import</span> <span class="n">write_raw_bids</span><span class="p">,</span> <span class="n">make_bids_basename</span><span class="p">,</span> <span class="n">read_raw_bids</span>
+<span class="kn">from</span> <span class="nn">mne_bids.utils</span> <span class="kn">import</span> <span class="n">print_dir_tree</span>
+</pre></div>
+</div>
+<div class="section" id="step-1-download-the-data">
+<h2>Step 1: Download the data<a class="headerlink" href="#step-1-download-the-data" title="Permalink to this headline">¶</a></h2>
+<p>First, we need some data to work with. We will use the
+data downloaded via MNE-Python’s API.</p>
+<p><a class="reference external" href="https://mne.tools/stable/generated/mne.datasets.misc.data_path">https://mne.tools/stable/generated/mne.datasets.misc.data_path</a>.</p>
+<p>Conveniently, there is already a data loading function available with
+MNE-Python:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># get MNE directory w/ example data</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">mne_dir</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.get_config.html#mne.get_config" title="View documentation for mne.get_config"><span class="n">mne</span><span class="o">.</span><span class="n">get_config</span></a><span class="p">(</span><span class="s1">&#39;MNE_DATASETS_SAMPLE_PATH&#39;</span><span class="p">)</span>
+
+<span class="c1"># The electrode coords data are in the Matlab format: &#39;.mat&#39;.</span>
+<span class="c1"># This is easy to read in with :func:`scipy.io.loadmat` function.</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="View documentation for builtins.dict"><span class="n">mat</span></a> <span class="o">=</span> <a href="https://scipy.github.io/devdocs/generated/scipy.io.loadmat.html#scipy.io.loadmat" title="View documentation for scipy.io.loadmat"><span class="n">loadmat</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.datasets.misc.data_path.html#mne.datasets.misc.data_path" title="View documentation for mne.datasets.misc.data_path"><span class="n">mne</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">misc</span><span class="o">.</span><span class="n">data_path</span></a><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39;/ecog/sample_ecog.mat&#39;</span><span class="p">)</span>
+<a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="View documentation for numpy.ndarray"><span class="n">ch_names</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="View documentation for builtins.dict"><span class="n">mat</span></a><span class="p">[</span><span class="s1">&#39;ch_names&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+<a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="View documentation for numpy.ndarray"><span class="n">ch_names</span></a> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="View documentation for numpy.ndarray"><span class="n">ch_names</span></a><span class="p">]</span>
+<a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="View documentation for numpy.ndarray"><span class="n">elec</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="View documentation for builtins.dict"><span class="n">mat</span></a><span class="p">[</span><span class="s1">&#39;elec&#39;</span><span class="p">]</span>  <span class="c1"># electrode positions given in meters</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using default location ~/mne_data for misc...
+</pre></div>
+</div>
+<p>Now we make a montage stating that the iEEG contacts are in MRI
+coordinate system.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="View documentation for mne.channels.DigMontage"><span class="n">montage</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.channels.make_dig_montage.html#mne.channels.make_dig_montage" title="View documentation for mne.channels.make_dig_montage"><span class="n">mne</span><span class="o">.</span><span class="n">channels</span><span class="o">.</span><span class="n">make_dig_montage</span></a><span class="p">(</span><span class="n">ch_pos</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="View documentation for numpy.ndarray"><span class="n">ch_names</span></a><span class="p">,</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="View documentation for numpy.ndarray"><span class="n">elec</span></a><span class="p">)),</span>
+                                        <span class="n">coord_frame</span><span class="o">=</span><span class="s1">&#39;mri&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Created </span><span class="si">%s</span><span class="s1"> channel positions&#39;</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="View documentation for numpy.ndarray"><span class="n">ch_names</span></a><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="View documentation for numpy.ndarray"><span class="n">ch_names</span></a><span class="p">,</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="View documentation for numpy.ndarray"><span class="n">elec</span></a><span class="p">)))</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Created 64 channel positions
+{&#39;POL LPG1-Ref&#39;: array([-0.01319475, -0.06537354,  0.07015674]), &#39;POL LPG2-Ref&#39;: array([-0.01446107, -0.05939256,  0.07805224]), &#39;POL LPG3-Ref&#39;: array([-0.01562162, -0.05178238,  0.08383159]), &#39;POL LPG4-Ref&#39;: array([-0.01542273, -0.04525053,  0.08948554]), &#39;POL LPG5-Ref&#39;: array([-0.01487775, -0.03852912,  0.09396847]), &#39;POL LPG6-Ref&#39;: array([-0.01307837, -0.02902713,  0.09850599]), &#39;POL LPG7-Ref&#39;: array([-0.01359957, -0.02028753,  0.1009258 ]), &#39;POL LPG8-Ref&#39;: array([-0.0108829 , -0.00930631,  0.10348425]), &#39;POL LPG9-Ref&#39;: array([-0.02154753, -0.06642563,  0.06912147]), &#39;POL LPG10-Ref&#39;: array([-0.02327222, -0.06074122,  0.07691736]), &#39;POL LPG11-Ref&#39;: array([-0.02474644, -0.0533903 ,  0.08223433]), &#39;POL LPG12-Ref&#39;: array([-0.02632337, -0.04606533,  0.08709487]), &#39;POL LPG13-Ref&#39;: array([-0.0261479 , -0.0382572 ,  0.09175405]), &#39;POL LPG14-Ref&#39;: array([-0.02525023, -0.02987171,  0.09489567]), &#39;POL LPG15-Ref&#39;: array([-0.02331042, -0.01934099,  0.09894071]), &#39;POL LPG16-Ref&#39;: array([-0.02108674, -0.00797552,  0.1025569 ]), &#39;POL LPG17-Ref&#39;: array([-0.0303566 , -0.06742905,  0.06775238]), &#39;POL LPG18-Ref&#39;: array([-0.03277563, -0.06100421,  0.0737788 ]), &#39;POL LPG19-Ref&#39;: array([-0.03369498, -0.05385209,  0.07930177]), &#39;POL LPG20-Ref&#39;: array([-0.03437536, -0.04655476,  0.08423193]), &#39;POL LPG21-Ref&#39;: array([-0.03627066, -0.03878722,  0.08779606]), &#39;POL LPG22-Ref&#39;: array([-0.03445379, -0.02883017,  0.09262682]), &#39;POL LPG23-Ref&#39;: array([-0.03352449, -0.01795435,  0.0954834 ]), &#39;POL LPG24-Ref&#39;: array([-0.02986222, -0.00800269,  0.09773305]), &#39;POL LPG25-Ref&#39;: array([-0.03949066, -0.06611425,  0.06322438]), &#39;POL LPG26-Ref&#39;: array([-0.04173993, -0.05987147,  0.06903918]), &#39;POL LPG27-Ref&#39;: array([-0.04263702, -0.05290591,  0.0743644 ]), &#39;POL LPG28-Ref&#39;: array([-0.04377296, -0.04564748,  0.07952718]), &#39;POL LPG29-Ref&#39;: array([-0.04569133, -0.03760912,  0.08295954]), &#39;POL LPG30-Ref&#39;: array([-0.04460317, -0.02733297,  0.08814251]), &#39;POL LPG31-Ref&#39;: array([-0.04300759, -0.01760467,  0.09012438]), &#39;POL LPG32-Ref&#39;: array([-0.03956011, -0.00625048,  0.08837144]), &#39;POL LPG33-Ref&#39;: array([-0.0445793 , -0.06573858,  0.05814573]), &#39;POL LPG34-Ref&#39;: array([-0.04824952, -0.05929582,  0.06322013]), &#39;POL LPG35-Ref&#39;: array([-0.05054796, -0.05233206,  0.06939953]), &#39;POL LPG36-Ref&#39;: array([-0.05363233, -0.04382743,  0.07313115]), &#39;POL LPG37-Ref&#39;: array([-0.05484415, -0.03568853,  0.07694293]), &#39;POL LPG38-Ref&#39;: array([-0.05327717, -0.02539124,  0.08083972]), &#39;POL LPG39-Ref&#39;: array([-0.05115428, -0.01564116,  0.08229832]), &#39;POL LPG40-Ref&#39;: array([-0.04732043, -0.00440023,  0.08078417]), &#39;POL LPG41-Ref&#39;: array([-0.05180684, -0.06374008,  0.05126565]), &#39;POL LPG42-Ref&#39;: array([-0.054985  , -0.05721633,  0.05740975]), &#39;POL LPG43-Ref&#39;: array([-0.05751256, -0.05005348,  0.06253482]), &#39;POL LPG44-Ref&#39;: array([-0.06058705, -0.0414252 ,  0.06662151]), &#39;POL LPG45-Ref&#39;: array([-0.06140005, -0.03339784,  0.07086563]), &#39;POL LPG46-Ref&#39;: array([-0.06117977, -0.02303283,  0.07327374]), &#39;POL LPG47-Ref&#39;: array([-0.05892394, -0.01350239,  0.074307  ]), &#39;POL LPG48-Ref&#39;: array([-0.05525155, -0.00254127,  0.0739286 ]), &#39;POL LPG49-Ref&#39;: array([-0.05753089, -0.0605335 ,  0.04550514]), &#39;POL LPG50-Ref&#39;: array([-0.06154114, -0.05356016,  0.0499875 ]), &#39;POL LPG51-Ref&#39;: array([-0.06351517, -0.0473602 ,  0.05540717]), &#39;POL LPG52-Ref&#39;: array([-0.06602076, -0.03851005,  0.0584159 ]), &#39;POL LPG53-Ref&#39;: array([-0.06714931, -0.0305876 ,  0.06297414]), &#39;POL LPG54-Ref&#39;: array([-0.06722665, -0.02039802,  0.06437857]), &#39;POL LPG55-Ref&#39;: array([-0.06426395, -0.01123459,  0.06384582]), &#39;POL LPG56-Ref&#39;: array([-0.06023369, -0.00067103,  0.0640136 ]), &#39;POL LPG57-Ref&#39;: array([-0.06137646, -0.05744936,  0.03716252]), &#39;POL LPG58-Ref&#39;: array([-0.06594827, -0.04996002,  0.04119299]), &#39;POL LPG59-Ref&#39;: array([-0.06806244, -0.04335446,  0.04628402]), &#39;POL LPG60-Ref&#39;: array([-0.0694307 , -0.0357257 ,  0.05029811]), &#39;POL LPG61-Ref&#39;: array([-0.0704345 , -0.02766433,  0.05298704]), &#39;POL LPG62-Ref&#39;: array([-0.07051575, -0.01773528,  0.0540562 ]), &#39;POL LPG63-Ref&#39;: array([-0.06801403, -0.00742642,  0.05301937]), &#39;POL LPG64-Ref&#39;: array([-0.06415953,  0.00155849,  0.05387343])}
+</pre></div>
+</div>
+<p>We also need to get some sample iEEG data,
+so we will just generate random data from white noise.
+Here is where you would use your own data if you had it.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="View documentation for numpy.ndarray"><span class="n">ieegdata</span></a> <span class="o">=</span> <a href="https://numpy.org/devdocs/reference/random/generated/numpy.random.rand.html#numpy.random.rand" title="View documentation for numpy.random.rand"><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span></a><span class="p">(</span><span class="nb">len</span><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="View documentation for numpy.ndarray"><span class="n">ch_names</span></a><span class="p">),</span> <span class="mi">1000</span><span class="p">)</span>
+
+<span class="c1"># We will create a :func:`mne.io.RawArray` object and</span>
+<span class="c1"># use the montage we created.</span>
+<a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="View documentation for mne.Info"><span class="n">info</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.create_info.html#mne.create_info" title="View documentation for mne.create_info"><span class="n">mne</span><span class="o">.</span><span class="n">create_info</span></a><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="View documentation for numpy.ndarray"><span class="n">ch_names</span></a><span class="p">,</span> <span class="mf">1000.</span><span class="p">,</span> <span class="s1">&#39;ecog&#39;</span><span class="p">)</span>
+<span class="n">raw</span> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.io.RawArray.html#mne.io.RawArray" title="View documentation for mne.io.RawArray"><span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">RawArray</span></a><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="View documentation for numpy.ndarray"><span class="n">ieegdata</span></a><span class="p">,</span> <a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="View documentation for mne.Info"><span class="n">info</span></a><span class="p">)</span>
+<span class="n">raw</span><span class="o">.</span><span class="n">set_montage</span><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="View documentation for mne.channels.DigMontage"><span class="n">montage</span></a><span class="p">)</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Creating RawArray with float64 data, n_channels=64, n_times=1000
+    Range : 0 ... 999 =      0.000 ...     0.999 secs
+Ready.
+/home/circleci/project/examples/convert_ieeg_to_bids.py:90: RuntimeWarning: Fiducial point nasion not found, assuming identity unknown to head transformation
+  raw.set_montage(montage)
+
+&lt;RawArray | 64 x 1000 (1.0 s), ~676 kB, data loaded&gt;
+</pre></div>
+</div>
+<p>Let us confirm what our channel coordinates look like.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># make a plot of the sensors in 2D plane</span>
+<span class="n">raw</span><span class="o">.</span><span class="n">plot_sensors</span><span class="p">(</span><span class="n">ch_type</span><span class="o">=</span><span class="s1">&#39;ecog&#39;</span><span class="p">)</span>
+
+<span class="c1"># Get the first 5 channels and show their locations.</span>
+<a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="View documentation for numpy.ndarray"><span class="n">picks</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.pick_types.html#mne.pick_types" title="View documentation for mne.pick_types"><span class="n">mne</span><span class="o">.</span><span class="n">pick_types</span></a><span class="p">(</span><span class="n">raw</span><span class="o">.</span><a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="View documentation for mne.Info"><span class="n">info</span></a><span class="p">,</span> <span class="n">ecog</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#list" title="View documentation for builtins.list"><span class="n">dig</span></a> <span class="o">=</span> <span class="p">[</span><span class="n">raw</span><span class="o">.</span><a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="View documentation for mne.Info"><span class="n">info</span></a><span class="p">[</span><span class="s1">&#39;dig&#39;</span><span class="p">][</span><span class="n">pick</span><span class="p">]</span> <span class="k">for</span> <span class="n">pick</span> <span class="ow">in</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="View documentation for numpy.ndarray"><span class="n">picks</span></a><span class="p">]</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#list" title="View documentation for builtins.list"><span class="n">chs</span></a> <span class="o">=</span> <span class="p">[</span><span class="n">raw</span><span class="o">.</span><a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="View documentation for mne.Info"><span class="n">info</span></a><span class="p">[</span><span class="s1">&#39;chs&#39;</span><span class="p">][</span><span class="n">pick</span><span class="p">]</span> <span class="k">for</span> <span class="n">pick</span> <span class="ow">in</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="View documentation for numpy.ndarray"><span class="n">picks</span></a><span class="p">]</span>
+<a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="View documentation for numpy.ndarray"><span class="n">pos</span></a> <span class="o">=</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.array.html#numpy.array" title="View documentation for numpy.array"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">([</span><span class="n">ch</span><span class="p">[</span><span class="s1">&#39;r&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="View documentation for builtins.list"><span class="n">dig</span></a><span class="p">[:</span><span class="mi">5</span><span class="p">]])</span>
+<a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="View documentation for numpy.ndarray"><span class="n">ch_names</span></a> <span class="o">=</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.array.html#numpy.array" title="View documentation for numpy.array"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">([</span><span class="n">ch</span><span class="p">[</span><span class="s1">&#39;ch_name&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="View documentation for builtins.list"><span class="n">chs</span></a><span class="p">[:</span><span class="mi">5</span><span class="p">]])</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The channel coordinates before writing into BIDS: &quot;</span><span class="p">)</span>
+<a href="https://docs.python.org/3/library/pprint.html#pprint.pprint" title="View documentation for pprint.pprint"><span class="n">pprint</span></a><span class="p">([</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="View documentation for numpy.ndarray"><span class="n">ch_names</span></a><span class="p">,</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="View documentation for numpy.ndarray"><span class="n">pos</span></a><span class="p">)])</span>
+</pre></div>
+</div>
+<img alt="../_images/sphx_glr_convert_ieeg_to_bids_001.png" class="sphx-glr-single-img" src="../_images/sphx_glr_convert_ieeg_to_bids_001.png" />
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>The channel coordinates before writing into BIDS:
+[(&#39;POL LPG1-Ref&#39;, array([-0.01319475, -0.06537354,  0.07015674])),
+ (&#39;POL LPG2-Ref&#39;, array([-0.02327222, -0.06074122,  0.07691736])),
+ (&#39;POL LPG3-Ref&#39;, array([-0.02474644, -0.0533903 ,  0.08223433])),
+ (&#39;POL LPG4-Ref&#39;, array([-0.02632337, -0.04606533,  0.08709487])),
+ (&#39;POL LPG5-Ref&#39;, array([-0.0261479 , -0.0382572 ,  0.09175405]))]
+</pre></div>
+</div>
+</div>
+<div class="section" id="step-2-formatting-as-bids">
+<h2>Step 2: Formatting as BIDS<a class="headerlink" href="#step-2-formatting-as-bids" title="Permalink to this headline">¶</a></h2>
+<p>Now, let us format the <cite>Raw</cite> object into BIDS.</p>
+<p>With this step, we have everything to start a new BIDS directory using
+our data. To do that, we can use <code class="xref py py-func docutils literal notranslate"><span class="pre">write_raw_bids()</span></code>
+Generally, <code class="xref py py-func docutils literal notranslate"><span class="pre">write_raw_bids()</span></code> tries to extract as much
+meta data as possible from the raw data and then formats it in a BIDS
+compatible way. <code class="xref py py-func docutils literal notranslate"><span class="pre">write_raw_bids()</span></code> takes a bunch of inputs, most of
+which are however optional. The required inputs are:</p>
+<ul class="simple">
+<li><p><code class="code docutils literal notranslate"><span class="pre">raw</span></code></p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">bids_basename</span></code></p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">bids_root</span></code></p></li>
+</ul>
+<p>… as you can see in the docstring:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">write_raw_bids</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">)</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Save raw data to a BIDS-compliant folder structure.
+
+    .. warning:: * The original file is simply copied over if the original
+                   file format is BIDS-supported for that modality. Otherwise,
+                   this function will convert to a BIDS-supported file format
+                   while warning the user. For EEG and iEEG data, conversion
+                   will be to BrainVision format, for MEG conversion will be
+                   to FIF.
+
+                 * ``mne-bids`` will infer the manufacturer information
+                   from the file extension. If your file format is non-standard
+                   for the manufacturer, please update the manufacturer field
+                   in the sidecars manually.
+
+    Parameters
+    ----------
+    raw : instance of mne.io.Raw
+        The raw data. It must be an instance of mne.Raw. The data should not be
+        loaded from disk, i.e., raw.preload must be False.
+    bids_basename : str
+        The base filename of the BIDS compatible files. Typically, this can be
+        generated using make_bids_basename.
+        Example: `sub-01_ses-01_task-testing_acq-01_run-01`.
+        This will write the following files in the correct subfolder of the
+        bids_root::
+
+            sub-01_ses-01_task-testing_acq-01_run-01_meg.fif
+            sub-01_ses-01_task-testing_acq-01_run-01_meg.json
+            sub-01_ses-01_task-testing_acq-01_run-01_channels.tsv
+            sub-01_ses-01_task-testing_acq-01_run-01_coordsystem.json
+
+        and the following one if events_data is not None::
+
+            sub-01_ses-01_task-testing_acq-01_run-01_events.tsv
+
+        and add a line to the following files::
+
+            participants.tsv
+            scans.tsv
+
+        Note that the modality &#39;meg&#39; is automatically inferred from the raw
+        object and extension &#39;.fif&#39; is copied from raw.filenames.
+    bids_root : str | pathlib.Path
+        The path of the root of the BIDS compatible folder. The session and
+        subject specific folders will be populated automatically by parsing
+        bids_basename.
+    events_data : str | pathlib.Path | array | None
+        The events file. If a string or a Path object, specifies the path of
+        the events file. If an array, the MNE events array (shape n_events, 3).
+        If None, events will be inferred from the stim channel using
+        `mne.find_events`.
+    event_id : dict | None
+        The event id dict used to create a &#39;trial_type&#39; column in events.tsv
+    anonymize : dict | None
+        If None is provided (default) no anonymization is performed.
+        If a dictionary is passed, data will be anonymized; identifying data
+        structures such as study date and time will be changed.
+        `daysback` is a required argument and `keep_his` is optional, these
+        arguments are passed to :func:`mne.io.anonymize_info`.
+
+        `daysback` : int
+            Number of days to move back the date. To keep relative dates for
+            a subject use the same `daysback`. According to BIDS
+            specifications, the number of days back must be great enough
+            that the date is before 1925.
+
+        `keep_his` : bool
+            If True info[&#39;subject_info&#39;][&#39;his_id&#39;] of subject_info will NOT be
+            overwritten. Defaults to False.
+
+    overwrite : bool
+        Whether to overwrite existing files or data in files.
+        Defaults to False.
+        If overwrite is True, any existing files with the same BIDS parameters
+        will be overwritten with the exception of the `participants.tsv` and
+        `scans.tsv` files. For these files, parts of pre-existing data that
+        match the current data will be replaced.
+        If overwrite is False, no existing data will be overwritten or
+        replaced.
+    verbose : bool
+        If verbose is True, this will print a snippet of the sidecar files. If
+        False, no content will be printed.
+
+    Returns
+    -------
+    bids_root : str
+        The path of the root of the BIDS compatible folder.
+
+    Notes
+    -----
+    For the participants.tsv file, the raw.info[&#39;subject_info&#39;] should be
+    updated and raw.info[&#39;meas_date&#39;] should not be None to compute the age
+    of the participant correctly.
+</pre></div>
+</div>
+<p>Let us initialize some of the necessary data for the subject
+There is a subject, and specific task for the dataset.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">subject_id</span></a> <span class="o">=</span> <span class="s1">&#39;001&#39;</span>  <span class="c1"># zero padding to account for &gt;100 subjects in this dataset</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">task</span></a> <span class="o">=</span> <span class="s1">&#39;testresteyes&#39;</span>
+
+<span class="c1"># There is the root directory for where we will write our data.</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">bids_root</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/os.path.html#os.path.join" title="View documentation for os.path.join"><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">mne_dir</span></a><span class="p">,</span> <span class="s1">&#39;ieegmmidb_bids&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Now we just need to specify a few iEEG details to make things work:
+We need the basename of the dataset. In addition, write_raw_bids
+requires a <cite>filenames</cite> of the Raw object to be non-empty, so since we
+initialized the dataset from an array, we need to do a hack where we
+temporarily save the data to disc before reading it back in.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Now convert our data to be in a new BIDS dataset.</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">bids_basename</span></a> <span class="o">=</span> <span class="n">make_bids_basename</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">subject_id</span></a><span class="p">,</span>
+                                   <a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">task</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">task</span></a><span class="p">,</span>
+                                   <span class="n">acquisition</span><span class="o">=</span><span class="s2">&quot;ecog&quot;</span><span class="p">)</span>
+
+<span class="c1"># need to set the filenames if we are initializing data from array</span>
+<span class="k">with</span> <a href="https://docs.python.org/3/library/tempfile.html#tempfile.TemporaryDirectory" title="View documentation for tempfile.TemporaryDirectory"><span class="n">tempfile</span><span class="o">.</span><span class="n">TemporaryDirectory</span></a><span class="p">()</span> <span class="k">as</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">tmp_root</span></a><span class="p">:</span>
+    <a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">tmp_fpath</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/os.path.html#os.path.join" title="View documentation for os.path.join"><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">tmp_root</span></a><span class="p">,</span> <span class="s2">&quot;test_raw.fif&quot;</span><span class="p">)</span>
+    <span class="n">raw</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">tmp_fpath</span></a><span class="p">)</span>
+    <span class="n">raw</span> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.io.read_raw_fif.html#mne.io.read_raw_fif" title="View documentation for mne.io.read_raw_fif"><span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_raw_fif</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">tmp_fpath</span></a><span class="p">)</span>
+
+    <span class="c1"># write `raw` to BIDS and anonymize it into BrainVision format</span>
+    <span class="n">write_raw_bids</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">bids_basename</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">bids_root</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">bids_root</span></a><span class="p">,</span>
+                   <span class="n">anonymize</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">daysback</span><span class="o">=</span><span class="mi">30000</span><span class="p">),</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Writing /tmp/tmpi0plij_q/test_raw.fif
+Closing /tmp/tmpi0plij_q/test_raw.fif [done]
+Opening raw data file /tmp/tmpi0plij_q/test_raw.fif...
+    Range : 0 ... 999 =      0.000 ...     0.999 secs
+Ready.
+Opening raw data file /tmp/tmpi0plij_q/test_raw.fif...
+    Range : 0 ... 999 =      0.000 ...     0.999 secs
+Ready.
+Creating folder: /home/circleci/mne_data/ieegmmidb_bids/sub-001/ieeg
+/home/circleci/project/mne_bids/write.py:1231: RuntimeWarning: Input info has &#39;meas_date&#39; set to None. Removing all information from time/date structures. *NOT* performing any time shifts
+  keep_his=keep_his)
+/home/circleci/project/mne_bids/write.py:1238: UserWarning: Converting to BV for anonymization
+  warn(&#39;Converting to BV for anonymization&#39;)
+
+Writing &#39;/home/circleci/mne_data/ieegmmidb_bids/participants.tsv&#39;...
+
+participant_id  age     sex     hand
+sub-001 n/a     n/a     n/a
+
+Writing &#39;/home/circleci/mne_data/ieegmmidb_bids/participants.json&#39;...
+
+{
+    &quot;participant_id&quot;: {
+        &quot;Description&quot;: &quot;Unique participant identifier&quot;
+    },
+    &quot;age&quot;: {
+        &quot;Description&quot;: &quot;Age of the participant at time of testing&quot;,
+        &quot;Units&quot;: &quot;years&quot;
+    },
+    &quot;sex&quot;: {
+        &quot;Description&quot;: &quot;Biological sex of the participant&quot;,
+        &quot;Levels&quot;: {
+            &quot;F&quot;: &quot;female&quot;,
+            &quot;M&quot;: &quot;male&quot;
+        }
+    },
+    &quot;hand&quot;: {
+        &quot;Description&quot;: &quot;Handedness of the participant&quot;,
+        &quot;Levels&quot;: {
+            &quot;R&quot;: &quot;right&quot;,
+            &quot;L&quot;: &quot;left&quot;,
+            &quot;A&quot;: &quot;ambidextrous&quot;
+        }
+    }
+}
+
+Writing &#39;/home/circleci/mne_data/ieegmmidb_bids/sub-001/sub-001_scans.tsv&#39;...
+
+filename        acq_time
+ieeg/sub-001_task-testresteyes_acq-ecog_ieeg.vhdr       n/a
+
+Writing &#39;/home/circleci/mne_data/ieegmmidb_bids/sub-001/ieeg/sub-001_acq-ecog_electrodes.tsv&#39;...
+
+name    x       y       z       size
+POL LPG1-Ref    -0.013194745406508446   -0.06537354737520218    0.07015674561262131     n/a
+POL LPG2-Ref    -0.014461069367825985   -0.05939256399869919    0.07805224508047104     n/a
+POL LPG3-Ref    -0.015621616505086422   -0.05178237706422806    0.08383159339427948     n/a
+POL LPG4-Ref    -0.015422730706632137   -0.045250535011291504   0.0894855409860611      n/a
+POL LPG5-Ref    -0.014877748675644398   -0.03852912411093712    0.093968465924263       n/a
+
+Writing &#39;/home/circleci/mne_data/ieegmmidb_bids/sub-001/ieeg/sub-001_acq-ecog_coordsystem.json&#39;...
+
+{
+    &quot;iEEGCoordinateSystem&quot;: &quot;mri&quot;,
+    &quot;iEEGCoordinateUnits&quot;: &quot;m&quot;
+}
+/home/circleci/project/mne_bids/utils.py:460: UserWarning: No events found or provided. Please make sure to set channel type using raw.set_channel_types or provide events_data.
+  warnings.warn(&#39;No events found or provided. Please make sure to&#39;
+
+Writing &#39;/home/circleci/mne_data/ieegmmidb_bids/dataset_description.json&#39;...
+
+{
+    &quot;Name&quot;: &quot; &quot;,
+    &quot;BIDSVersion&quot;: &quot;1.2.0&quot;,
+    &quot;Authors&quot;: [
+        &quot;MNE-BIDS&quot;
+    ]
+}
+Effective window size : 0.256 (s)
+/home/circleci/project/mne_bids/write.py:559: UserWarning: No line frequency found, defaulting to 50 Hz estimated from multi-taper FFT on 10 seconds of data.
+  &#39;on 10 seconds of data.&#39;.format(powerlinefrequency))
+
+Writing &#39;/home/circleci/mne_data/ieegmmidb_bids/sub-001/ieeg/sub-001_task-testresteyes_acq-ecog_ieeg.json&#39;...
+
+{
+    &quot;TaskName&quot;: &quot;testresteyes&quot;,
+    &quot;Manufacturer&quot;: &quot;Elekta&quot;,
+    &quot;PowerLineFrequency&quot;: 50,
+    &quot;SamplingFrequency&quot;: 1000.0,
+    &quot;SoftwareFilters&quot;: &quot;n/a&quot;,
+    &quot;RecordingDuration&quot;: 0.999,
+    &quot;RecordingType&quot;: &quot;continuous&quot;,
+    &quot;iEEGReference&quot;: &quot;n/a&quot;,
+    &quot;ECOGChannelCount&quot;: 64,
+    &quot;SEEGChannelCount&quot;: 0,
+    &quot;EEGChannelCount&quot;: 0,
+    &quot;EOGChannelCount&quot;: 0,
+    &quot;ECGChannelCount&quot;: 0,
+    &quot;EMGChannelCount&quot;: 0,
+    &quot;MiscChannelCount&quot;: 0,
+    &quot;TriggerChannelCount&quot;: 0
+}
+
+Writing &#39;/home/circleci/mne_data/ieegmmidb_bids/sub-001/ieeg/sub-001_task-testresteyes_acq-ecog_channels.tsv&#39;...
+
+name    type    units   low_cutoff      high_cutoff     description     sampling_frequency      status
+POL LPG1-Ref    ECOG    V       0.0     500.0   Electrocorticography    1000.0  good
+POL LPG2-Ref    ECOG    V       0.0     500.0   Electrocorticography    1000.0  good
+POL LPG3-Ref    ECOG    V       0.0     500.0   Electrocorticography    1000.0  good
+POL LPG4-Ref    ECOG    V       0.0     500.0   Electrocorticography    1000.0  good
+POL LPG5-Ref    ECOG    V       0.0     500.0   Electrocorticography    1000.0  good
+/home/circleci/project/mne_bids/write.py:1324: UserWarning: Converting data files to BrainVision format
+  warn(&#39;Converting data files to BrainVision format&#39;)
+</pre></div>
+</div>
+</div>
+<div class="section" id="step-3-check-and-compare-with-standard">
+<h2>Step 3: Check and compare with standard<a class="headerlink" href="#step-3-check-and-compare-with-standard" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Now we have written our BIDS directory.</span>
+<span class="n">print_dir_tree</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">bids_root</span></a><span class="p">)</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>|ieegmmidb_bids/
+|--- participants.json
+|--- participants.tsv
+|--- dataset_description.json
+|--- sub-001/
+|------ sub-001_scans.tsv
+|------ ieeg/
+|--------- sub-001_acq-ecog_coordsystem.json
+|--------- sub-001_task-testresteyes_acq-ecog_ieeg.json
+|--------- sub-001_task-testresteyes_acq-ecog_ieeg.vhdr
+|--------- sub-001_task-testresteyes_acq-ecog_channels.tsv
+|--------- sub-001_acq-ecog_electrodes.tsv
+|--------- sub-001_task-testresteyes_acq-ecog_ieeg.vmrk
+|--------- sub-001_task-testresteyes_acq-ecog_ieeg.eeg
+</pre></div>
+</div>
+<p>MNE-BIDS has created a suitable directory structure for us, and among other
+meta data files, it started an <cite>events.tsv</cite> and <cite>channels.tsv</cite> and made an
+initial <cite>dataset_description.json</cite> on top!</p>
+<p>Now it’s time to manually check the BIDS directory and the meta files to add
+all the information that MNE-BIDS could not infer. For instance, you must
+describe iEEGReference and iEEGGround yourself. It’s easy to find these by
+searching for “n/a” in the sidecar files.</p>
+<p><cite>$ grep -i ‘n/a’ &lt;bids_root&gt;</cite></p>
+<p>Remember that there is a convenient javascript tool to validate all your BIDS
+directories called the “BIDS-validator”, available as a web version and a
+command line tool:</p>
+<p>Web version: <a class="reference external" href="https://bids-standard.github.io/bids-validator/">https://bids-standard.github.io/bids-validator/</a></p>
+<p>Command line tool: <a class="reference external" href="https://www.npmjs.com/package/bids-validator">https://www.npmjs.com/package/bids-validator</a></p>
+</div>
+<div class="section" id="step-4-plot-output-channels-and-check-that-they-match">
+<h2>Step 4: Plot output channels and check that they match!<a class="headerlink" href="#step-4-plot-output-channels-and-check-that-they-match" title="Permalink to this headline">¶</a></h2>
+<p>Now we have written our BIDS directory. We can use
+<code class="xref py py-func docutils literal notranslate"><span class="pre">read_raw_bids()</span></code> to read in the data.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># read in the BIDS dataset and plot the coordinates</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">bids_fname</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">bids_basename</span></a> <span class="o">+</span> <span class="s2">&quot;_ieeg.vhdr&quot;</span>
+<span class="n">raw</span> <span class="o">=</span> <span class="n">read_raw_bids</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">bids_fname</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">bids_root</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="View documentation for builtins.str"><span class="n">bids_root</span></a><span class="p">)</span>
+
+<span class="c1"># get the first 5 channels and show their locations</span>
+<span class="c1"># this should match what was printed earlier.</span>
+<a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="View documentation for numpy.ndarray"><span class="n">picks</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.pick_types.html#mne.pick_types" title="View documentation for mne.pick_types"><span class="n">mne</span><span class="o">.</span><span class="n">pick_types</span></a><span class="p">(</span><span class="n">raw</span><span class="o">.</span><a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="View documentation for mne.Info"><span class="n">info</span></a><span class="p">,</span> <span class="n">ecog</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#list" title="View documentation for builtins.list"><span class="n">dig</span></a> <span class="o">=</span> <span class="p">[</span><span class="n">raw</span><span class="o">.</span><a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="View documentation for mne.Info"><span class="n">info</span></a><span class="p">[</span><span class="s1">&#39;dig&#39;</span><span class="p">][</span><span class="n">pick</span><span class="p">]</span> <span class="k">for</span> <span class="n">pick</span> <span class="ow">in</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="View documentation for numpy.ndarray"><span class="n">picks</span></a><span class="p">]</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#list" title="View documentation for builtins.list"><span class="n">chs</span></a> <span class="o">=</span> <span class="p">[</span><span class="n">raw</span><span class="o">.</span><a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="View documentation for mne.Info"><span class="n">info</span></a><span class="p">[</span><span class="s1">&#39;chs&#39;</span><span class="p">][</span><span class="n">pick</span><span class="p">]</span> <span class="k">for</span> <span class="n">pick</span> <span class="ow">in</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="View documentation for numpy.ndarray"><span class="n">picks</span></a><span class="p">]</span>
+<a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="View documentation for numpy.ndarray"><span class="n">pos</span></a> <span class="o">=</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.array.html#numpy.array" title="View documentation for numpy.array"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">([</span><span class="n">ch</span><span class="p">[</span><span class="s1">&#39;r&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="View documentation for builtins.list"><span class="n">dig</span></a><span class="p">[:</span><span class="mi">5</span><span class="p">]])</span>
+<a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="View documentation for numpy.ndarray"><span class="n">ch_names</span></a> <span class="o">=</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.array.html#numpy.array" title="View documentation for numpy.array"><span class="n">np</span><span class="o">.</span><span class="n">array</span></a><span class="p">([</span><span class="n">ch</span><span class="p">[</span><span class="s1">&#39;ch_name&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="View documentation for builtins.list"><span class="n">chs</span></a><span class="p">[:</span><span class="mi">5</span><span class="p">]])</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The channel coordinates after writing into BIDS: &quot;</span><span class="p">)</span>
+<a href="https://docs.python.org/3/library/pprint.html#pprint.pprint" title="View documentation for pprint.pprint"><span class="n">pprint</span></a><span class="p">([</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="View documentation for numpy.ndarray"><span class="n">ch_names</span></a><span class="p">,</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="View documentation for numpy.ndarray"><span class="n">pos</span></a><span class="p">)])</span>
+
+<span class="c1"># make a plot of the sensors in 2D plane</span>
+<span class="n">raw</span><span class="o">.</span><span class="n">plot_sensors</span><span class="p">(</span><span class="n">ch_type</span><span class="o">=</span><span class="s1">&#39;ecog&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="../_images/sphx_glr_convert_ieeg_to_bids_002.png" class="sphx-glr-single-img" src="../_images/sphx_glr_convert_ieeg_to_bids_002.png" />
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Extracting parameters from /home/circleci/mne_data/ieegmmidb_bids/sub-001/ieeg/sub-001_task-testresteyes_acq-ecog_ieeg.vhdr...
+Setting channel info structure...
+/home/circleci/project/mne_bids/utils.py:635: UserWarning: Did not find any events.tsv file associated with sub-001_task-testresteyes_acq-ecog_ieeg.vhdr.
+
+The search_str was &quot;/home/circleci/mne_data/ieegmmidb_bids/sub-001/**/sub-001*events.tsv&quot;
+  warnings.warn(msg)
+Reading channel info from /home/circleci/mne_data/ieegmmidb_bids/sub-001/ieeg/sub-001_task-testresteyes_acq-ecog_channels.tsv.
+Reading electrode coords from /home/circleci/mne_data/ieegmmidb_bids/sub-001/ieeg/sub-001_acq-ecog_electrodes.tsv.
+The read in electrodes file is:
+ OrderedDict([(&#39;name&#39;, [&#39;POL LPG1-Ref&#39;, &#39;POL LPG2-Ref&#39;, &#39;POL LPG3-Ref&#39;, &#39;POL LPG4-Ref&#39;, &#39;POL LPG5-Ref&#39;, &#39;POL LPG6-Ref&#39;, &#39;POL LPG7-Ref&#39;, &#39;POL LPG8-Ref&#39;, &#39;POL LPG9-Ref&#39;, &#39;POL LPG10-Ref&#39;, &#39;POL LPG11-Ref&#39;, &#39;POL LPG12-Ref&#39;, &#39;POL LPG13-Ref&#39;, &#39;POL LPG14-Ref&#39;, &#39;POL LPG15-Ref&#39;, &#39;POL LPG16-Ref&#39;, &#39;POL LPG17-Ref&#39;, &#39;POL LPG18-Ref&#39;, &#39;POL LPG19-Ref&#39;, &#39;POL LPG20-Ref&#39;, &#39;POL LPG21-Ref&#39;, &#39;POL LPG22-Ref&#39;, &#39;POL LPG23-Ref&#39;, &#39;POL LPG24-Ref&#39;, &#39;POL LPG25-Ref&#39;, &#39;POL LPG26-Ref&#39;, &#39;POL LPG27-Ref&#39;, &#39;POL LPG28-Ref&#39;, &#39;POL LPG29-Ref&#39;, &#39;POL LPG30-Ref&#39;, &#39;POL LPG31-Ref&#39;, &#39;POL LPG32-Ref&#39;, &#39;POL LPG33-Ref&#39;, &#39;POL LPG34-Ref&#39;, &#39;POL LPG35-Ref&#39;, &#39;POL LPG36-Ref&#39;, &#39;POL LPG37-Ref&#39;, &#39;POL LPG38-Ref&#39;, &#39;POL LPG39-Ref&#39;, &#39;POL LPG40-Ref&#39;, &#39;POL LPG41-Ref&#39;, &#39;POL LPG42-Ref&#39;, &#39;POL LPG43-Ref&#39;, &#39;POL LPG44-Ref&#39;, &#39;POL LPG45-Ref&#39;, &#39;POL LPG46-Ref&#39;, &#39;POL LPG47-Ref&#39;, &#39;POL LPG48-Ref&#39;, &#39;POL LPG49-Ref&#39;, &#39;POL LPG50-Ref&#39;, &#39;POL LPG51-Ref&#39;, &#39;POL LPG52-Ref&#39;, &#39;POL LPG53-Ref&#39;, &#39;POL LPG54-Ref&#39;, &#39;POL LPG55-Ref&#39;, &#39;POL LPG56-Ref&#39;, &#39;POL LPG57-Ref&#39;, &#39;POL LPG58-Ref&#39;, &#39;POL LPG59-Ref&#39;, &#39;POL LPG60-Ref&#39;, &#39;POL LPG61-Ref&#39;, &#39;POL LPG62-Ref&#39;, &#39;POL LPG63-Ref&#39;, &#39;POL LPG64-Ref&#39;]), (&#39;x&#39;, [&#39;-0.013194745406508446&#39;, &#39;-0.014461069367825985&#39;, &#39;-0.015621616505086422&#39;, &#39;-0.015422730706632137&#39;, &#39;-0.014877748675644398&#39;, &#39;-0.013078372925519943&#39;, &#39;-0.013599568046629429&#39;, &#39;-0.010882899165153503&#39;, &#39;-0.021547531709074974&#39;, &#39;-0.023272216320037842&#39;, &#39;-0.02474643662571907&#39;, &#39;-0.02632337249815464&#39;, &#39;-0.02614789642393589&#39;, &#39;-0.025250233709812164&#39;, &#39;-0.02331041917204857&#39;, &#39;-0.021086739376187325&#39;, &#39;-0.030356602743268013&#39;, &#39;-0.032775625586509705&#39;, &#39;-0.03369498252868652&#39;, &#39;-0.03437535837292671&#39;, &#39;-0.036270663142204285&#39;, &#39;-0.03445379436016083&#39;, &#39;-0.03352448716759682&#39;, &#39;-0.02986222319304943&#39;, &#39;-0.03949065878987312&#39;, &#39;-0.04173993319272995&#39;, &#39;-0.042637016624212265&#39;, &#39;-0.04377295821905136&#39;, &#39;-0.04569132626056671&#39;, &#39;-0.04460316523909569&#39;, &#39;-0.043007589876651764&#39;, &#39;-0.03956010937690735&#39;, &#39;-0.04457930102944374&#39;, &#39;-0.048249516636133194&#39;, &#39;-0.05054796114563942&#39;, &#39;-0.053632333874702454&#39;, &#39;-0.054844148457050323&#39;, &#39;-0.05327717587351799&#39;, &#39;-0.05115427449345589&#39;, &#39;-0.047320425510406494&#39;, &#39;-0.05180684104561806&#39;, &#39;-0.05498500168323517&#39;, &#39;-0.0575125627219677&#39;, &#39;-0.060587044805288315&#39;, &#39;-0.061400044709444046&#39;, &#39;-0.06117977201938629&#39;, &#39;-0.058923933655023575&#39;, &#39;-0.055251553654670715&#39;, &#39;-0.05753088742494583&#39;, &#39;-0.06154113635420799&#39;, &#39;-0.06351517140865326&#39;, &#39;-0.06602075695991516&#39;, &#39;-0.06714931130409241&#39;, &#39;-0.06722664833068848&#39;, &#39;-0.06426394730806351&#39;, &#39;-0.06023368984460831&#39;, &#39;-0.06137646362185478&#39;, &#39;-0.06594827026128769&#39;, &#39;-0.0680624470114708&#39;, &#39;-0.06943069398403168&#39;, &#39;-0.07043450325727463&#39;, &#39;-0.07051574438810349&#39;, &#39;-0.06801402568817139&#39;, &#39;-0.06415952742099762&#39;]), (&#39;y&#39;, [&#39;-0.06537354737520218&#39;, &#39;-0.05939256399869919&#39;, &#39;-0.05178237706422806&#39;, &#39;-0.045250535011291504&#39;, &#39;-0.03852912411093712&#39;, &#39;-0.02902713045477867&#39;, &#39;-0.0202875267714262&#39;, &#39;-0.009306307882070541&#39;, &#39;-0.0664256289601326&#39;, &#39;-0.06074121594429016&#39;, &#39;-0.053390298038721085&#39;, &#39;-0.04606533423066139&#39;, &#39;-0.03825720399618149&#39;, &#39;-0.029871713370084763&#39;, &#39;-0.019340993836522102&#39;, &#39;-0.007975514978170395&#39;, &#39;-0.06742905080318451&#39;, &#39;-0.061004213988780975&#39;, &#39;-0.05385209619998932&#39;, &#39;-0.04655476287007332&#39;, &#39;-0.03878721594810486&#39;, &#39;-0.02883017435669899&#39;, &#39;-0.017954347655177116&#39;, &#39;-0.008002692833542824&#39;, &#39;-0.06611424684524536&#39;, &#39;-0.05987147241830826&#39;, &#39;-0.05290590599179268&#39;, &#39;-0.045647479593753815&#39;, &#39;-0.03760911524295807&#39;, &#39;-0.027332965284585953&#39;, &#39;-0.017604675143957138&#39;, &#39;-0.006250479258596897&#39;, &#39;-0.06573858112096786&#39;, &#39;-0.05929581820964813&#39;, &#39;-0.05233205854892731&#39;, &#39;-0.04382742941379547&#39;, &#39;-0.035688526928424835&#39;, &#39;-0.025391235947608948&#39;, &#39;-0.015641164034605026&#39;, &#39;-0.004400234669446945&#39;, &#39;-0.063740074634552&#39;, &#39;-0.057216327637434006&#39;, &#39;-0.05005347728729248&#39;, &#39;-0.0414251983165741&#39;, &#39;-0.03339783847332001&#39;, &#39;-0.02303282730281353&#39;, &#39;-0.013502392917871475&#39;, &#39;-0.0025412733666598797&#39;, &#39;-0.06053349748253822&#39;, &#39;-0.053560156375169754&#39;, &#39;-0.047360196709632874&#39;, &#39;-0.038510050624608994&#39;, &#39;-0.03058759868144989&#39;, &#39;-0.020398015156388283&#39;, &#39;-0.011234592646360397&#39;, &#39;-0.0006710337474942207&#39;, &#39;-0.057449355721473694&#39;, &#39;-0.049960020929574966&#39;, &#39;-0.04335445538163185&#39;, &#39;-0.03572570160031319&#39;, &#39;-0.02766432613134384&#39;, &#39;-0.017735280096530914&#39;, &#39;-0.007426424417644739&#39;, &#39;0.0015584935899823904&#39;]), (&#39;z&#39;, [&#39;0.07015674561262131&#39;, &#39;0.07805224508047104&#39;, &#39;0.08383159339427948&#39;, &#39;0.0894855409860611&#39;, &#39;0.093968465924263&#39;, &#39;0.09850599616765976&#39;, &#39;0.10092580318450928&#39;, &#39;0.10348425060510635&#39;, &#39;0.06912147253751755&#39;, &#39;0.07691735774278641&#39;, &#39;0.08223433047533035&#39;, &#39;0.08709487318992615&#39;, &#39;0.09175404906272888&#39;, &#39;0.09489567577838898&#39;, &#39;0.09894071519374847&#39;, &#39;0.10255689918994904&#39;, &#39;0.06775238364934921&#39;, &#39;0.07377880066633224&#39;, &#39;0.07930176705121994&#39;, &#39;0.08423192799091339&#39;, &#39;0.08779606223106384&#39;, &#39;0.09262681752443314&#39;, &#39;0.09548339992761612&#39;, &#39;0.0977330431342125&#39;, &#39;0.06322437524795532&#39;, &#39;0.06903918087482452&#39;, &#39;0.07436439394950867&#39;, &#39;0.07952717691659927&#39;, &#39;0.08295954763889313&#39;, &#39;0.0881425067782402&#39;, &#39;0.09012438356876373&#39;, &#39;0.08837144076824188&#39;, &#39;0.058145731687545776&#39;, &#39;0.06322012841701508&#39;, &#39;0.06939953565597534&#39;, &#39;0.07313114404678345&#39;, &#39;0.07694293558597565&#39;, &#39;0.08083971589803696&#39;, &#39;0.08229832351207733&#39;, &#39;0.08078417181968689&#39;, &#39;0.051265649497509&#39;, &#39;0.05740974843502045&#39;, &#39;0.06253481656312943&#39;, &#39;0.06662151217460632&#39;, &#39;0.07086562365293503&#39;, &#39;0.07327373325824738&#39;, &#39;0.07430699467658997&#39;, &#39;0.073928602039814&#39;, &#39;0.04550513997673988&#39;, &#39;0.04998749867081642&#39;, &#39;0.055407170206308365&#39;, &#39;0.05841590464115143&#39;, &#39;0.06297414004802704&#39;, &#39;0.06437857449054718&#39;, &#39;0.06384582072496414&#39;, &#39;0.06401360034942627&#39;, &#39;0.03716251999139786&#39;, &#39;0.04119298979640007&#39;, &#39;0.0462840236723423&#39;, &#39;0.050298113375902176&#39;, &#39;0.05298703908920288&#39;, &#39;0.05405620113015175&#39;, &#39;0.05301937460899353&#39;, &#39;0.05387342721223831&#39;]), (&#39;size&#39;, [&#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;, &#39;n/a&#39;])])
+/home/circleci/project/mne_bids/read.py:214: RuntimeWarning: Fiducial point nasion not found, assuming identity unknown to head transformation
+  raw.set_montage(montage)
+The channel coordinates after writing into BIDS:
+[(&#39;POL LPG1-Ref&#39;, array([-0.01319475, -0.06537355,  0.07015675])),
+ (&#39;POL LPG2-Ref&#39;, array([-0.02327222, -0.06074122,  0.07691736])),
+ (&#39;POL LPG3-Ref&#39;, array([-0.02474644, -0.0533903 ,  0.08223433])),
+ (&#39;POL LPG4-Ref&#39;, array([-0.02632337, -0.04606533,  0.08709487])),
+ (&#39;POL LPG5-Ref&#39;, array([-0.0261479 , -0.0382572 ,  0.09175405]))]
+
+&lt;Figure size 640x640 with 1 Axes&gt;
+</pre></div>
+</div>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.165 seconds)</p>
+<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-ieeg-to-bids-py">
+<div class="binder-badge docutils container">
+<a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/convert_ieeg_to_bids.ipynb"><img alt="https://mybinder.org/badge_logo.svg" src="https://mybinder.org/badge_logo.svg" width="150px" /></a>
+</div>
+<div class="sphx-glr-download docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/a577037ece7a732b0607a269316e55b8/convert_ieeg_to_bids.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">convert_ieeg_to_bids.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/cf640e6bfa39f55978e620ef4269fd4c/convert_ieeg_to_bids.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">convert_ieeg_to_bids.ipynb</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-03-25.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>
