@@ -74,8 +74,7 @@ def _contains_row(data, row_data):
         # Cast row_value to the same dtype as data_value to avoid a NumPy
         # FutureWarning, see
         # https://github.com/mne-tools/mne-bids/pull/372
-        data_value_dtype = data_value.dtype
-        row_value = np.array(row_value, dtype=data_value_dtype)
+        row_value = np.array(row_value, dtype=data_value.dtype)
 
         column_mask = np.in1d(data_value, row_value)
         mask = column_mask if mask is None else (mask & column_mask)
@@ -107,8 +106,7 @@ def _drop(data, values, column):
     # Cast `values` to the same dtype as `new_data_col` to avoid a NumPy
     # FutureWarning, see
     # https://github.com/mne-tools/mne-bids/pull/372
-    new_data_col_dtype = new_data_col.dtype
-    values = np.array(values, dtype=new_data_col_dtype)
+    values = np.array(values, dtype=new_data_col.dtype)
 
     mask = np.in1d(new_data_col, values, invert=True)
     for key in new_data.keys():
