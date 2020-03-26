@@ -777,7 +777,7 @@
                          <span class="s1">&#39;degrees. Got </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">theta</span><span class="p">)</span>
 
     <span class="c1"># x: L/R L+, y: S/I I+, z: A/P A+</span>
-    <span class="n">t1w_data</span> <span class="o">=</span> <span class="n">t1w</span><span class="o">.</span><span class="n">get_data</span><span class="p">()</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">t1w_data</span> <span class="o">=</span> <span class="n">t1w</span><span class="o">.</span><span class="n">get_fdata</span><span class="p">()</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
     <span class="n">idxs_vox</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">t1w_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span>
                            <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">t1w_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
                            <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">t1w_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span>
@@ -1663,7 +1663,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-03-25.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-03-26.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.<br/>
     </p>
   </div>

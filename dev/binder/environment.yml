@@ -13,7 +13,7 @@ dependencies:
 - pip:
   - mne_bids>=0.3,<0.4
   - mne>=0.19.1
-  - nibabel
+  - nibabel>=2.2
   - pybv
   - nilearn
   - flake8

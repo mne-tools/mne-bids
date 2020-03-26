@@ -378,12 +378,12 @@ temporarily save the data to disc before reading it back in.</p>
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Writing /tmp/tmpi0plij_q/test_raw.fif
-Closing /tmp/tmpi0plij_q/test_raw.fif [done]
-Opening raw data file /tmp/tmpi0plij_q/test_raw.fif...
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Writing /tmp/tmpwhhuvnnl/test_raw.fif
+Closing /tmp/tmpwhhuvnnl/test_raw.fif [done]
+Opening raw data file /tmp/tmpwhhuvnnl/test_raw.fif...
     Range : 0 ... 999 =      0.000 ...     0.999 secs
 Ready.
-Opening raw data file /tmp/tmpi0plij_q/test_raw.fif...
+Opening raw data file /tmp/tmpwhhuvnnl/test_raw.fif...
     Range : 0 ... 999 =      0.000 ...     0.999 secs
 Ready.
 Creating folder: /home/circleci/mne_data/ieegmmidb_bids/sub-001/ieeg
@@ -502,19 +502,19 @@ POL LPG5-Ref    ECOG    V       0.0     500.0   Electrocorticography    1000.0  
 </div>
 <p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>|ieegmmidb_bids/
-|--- participants.json
 |--- participants.tsv
+|--- participants.json
 |--- dataset_description.json
 |--- sub-001/
 |------ sub-001_scans.tsv
 |------ ieeg/
-|--------- sub-001_acq-ecog_coordsystem.json
-|--------- sub-001_task-testresteyes_acq-ecog_ieeg.json
+|--------- sub-001_task-testresteyes_acq-ecog_ieeg.vmrk
 |--------- sub-001_task-testresteyes_acq-ecog_ieeg.vhdr
 |--------- sub-001_task-testresteyes_acq-ecog_channels.tsv
-|--------- sub-001_acq-ecog_electrodes.tsv
-|--------- sub-001_task-testresteyes_acq-ecog_ieeg.vmrk
 |--------- sub-001_task-testresteyes_acq-ecog_ieeg.eeg
+|--------- sub-001_acq-ecog_electrodes.tsv
+|--------- sub-001_task-testresteyes_acq-ecog_ieeg.json
+|--------- sub-001_acq-ecog_coordsystem.json
 </pre></div>
 </div>
 <p>MNE-BIDS has created a suitable directory structure for us, and among other
@@ -577,7 +577,7 @@ The channel coordinates after writing into BIDS:
 &lt;Figure size 640x640 with 1 Axes&gt;
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.165 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.168 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-ieeg-to-bids-py">
 <div class="binder-badge docutils container">
 <a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/convert_ieeg_to_bids.ipynb"><img alt="https://mybinder.org/badge_logo.svg" src="https://mybinder.org/badge_logo.svg" width="150px" /></a>
@@ -605,7 +605,7 @@ The channel coordinates after writing into BIDS:
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-03-25.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-03-26.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.<br/>
     </p>
   </div>
