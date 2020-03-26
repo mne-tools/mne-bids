@@ -671,7 +671,7 @@ def _deface(t1w, mri_landmarks, deface):
                          'degrees. Got %s' % theta)
 
     # x: L/R L+, y: S/I I+, z: A/P A+
-    t1w_data = t1w.get_data().copy()
+    t1w_data = t1w.get_fdata().copy()
     idxs_vox = np.meshgrid(np.arange(t1w_data.shape[0]),
                            np.arange(t1w_data.shape[1]),
                            np.arange(t1w_data.shape[2]),

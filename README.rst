@@ -77,7 +77,7 @@ Dependencies
 * numpy (>=1.14)
 * scipy (>=0.18.1)
 * mne (>=0.19.1)
-* nibabel (optional)
+* nibabel (>=2.2, optional)
 * pybv (optional)
 
 Installation

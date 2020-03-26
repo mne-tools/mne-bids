@@ -943,14 +943,14 @@ def test_write_anat(_bids_validate):
                           session_id, raw=raw, trans=trans_fname,
                           verbose=True, deface=True, overwrite=True)
     t1w = nib.load(op.join(anat_dir, 'sub-01_ses-01_T1w.nii.gz'))
-    vox_sum = t1w.get_data().sum()
+    vox_sum = t1w.get_fdata().sum()
 
     anat_dir2 = write_anat(bids_root, subject_id, t1w_mgh,
                            session_id, raw=raw, trans=trans_fname,
                            verbose=True, deface=dict(inset=25.),
                            overwrite=True)
     t1w2 = nib.load(op.join(anat_dir2, 'sub-01_ses-01_T1w.nii.gz'))
-    vox_sum2 = t1w2.get_data().sum()
+    vox_sum2 = t1w2.get_fdata().sum()
 
     assert vox_sum > vox_sum2
 
@@ -959,7 +959,7 @@ def test_write_anat(_bids_validate):
                            verbose=True, deface=dict(theta=25),
                            overwrite=True)
     t1w3 = nib.load(op.join(anat_dir3, 'sub-01_ses-01_T1w.nii.gz'))
-    vox_sum3 = t1w3.get_data().sum()
+    vox_sum3 = t1w3.get_fdata().sum()
 
     assert vox_sum > vox_sum3
 
@@ -1016,7 +1016,7 @@ def test_write_anat(_bids_validate):
     _bids_validate(bids_root)
 
     t1w1 = nib.load(op.join(anat_dir, 'sub-01_ses-01_acq-01_T1w.nii.gz'))
-    vox1 = t1w1.get_data()
+    vox1 = t1w1.get_fdata()
 
     # test mri landmarks
     anat_dir = write_anat(bids_root, subject_id, t1w_mgh, session_id,
@@ -1026,7 +1026,7 @@ def test_write_anat(_bids_validate):
     _bids_validate(bids_root)
 
     t1w2 = nib.load(op.join(anat_dir, 'sub-01_ses-01_acq-01_T1w.nii.gz'))
-    vox2 = t1w2.get_data()
+    vox2 = t1w2.get_fdata()
 
     # because of significant rounding errors the voxels are fairly different
     # but the deface works in all three cases and was checked
@@ -1056,7 +1056,7 @@ def test_write_anat(_bids_validate):
     _bids_validate(bids_root)
 
     t1w3 = nib.load(op.join(anat_dir, 'sub-01_ses-01_acq-01_T1w.nii.gz'))
-    vox3 = t1w3.get_data()
+    vox3 = t1w3.get_fdata()
 
     assert abs(vox1 - vox3).sum() / abs(vox1).sum() < 0.2
 
