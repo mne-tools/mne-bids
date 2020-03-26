@@ -143,7 +143,7 @@ def test_handle_events_reading():
 
     # Create an arbitrary events.tsv file, to test we can deal with 'n/a'
     # make sure we can deal w/ "#" characters
-    events = {'onset': [11, 12, 13],
+    events = {'onset': [11, 12, 'n/a'],
               'duration': ['n/a', 'n/a', 'n/a'],
               'trial_type': ["rec start", "trial #1", "trial #2!"]
               }
