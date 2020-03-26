@@ -10,7 +10,9 @@ import os.path as op
 from datetime import datetime
 import glob
 import json
+import warnings
 from warnings import warn
+from copy import deepcopy
 
 import numpy as np
 import mne

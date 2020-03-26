@@ -49,6 +49,10 @@ somato_path = somato.data_path()
 somato_raw_fname = op.join(somato_path, 'sub-01', 'meg',
                            'sub-01_task-somato_meg.fif')
 
+# Silence NumPy warnings
+# See https://stackoverflow.com/a/40846742
+pytestmark = pytest.mark.filterwarnings('ignore:numpy.ufunc size changed')
+
 
 def test_read_raw():
     """Test the raw reading."""
@@ -71,6 +75,10 @@ def test_not_implemented():
 
 
 @requires_nibabel()
+@pytest.mark.filterwarnings(r'ignore:The unit for channel\(s\) STI 001, '
+                            'STI 002, STI 003, STI 004, STI 005, STI 006, '
+                            'STI 014, STI 015, STI 016 has changed from V to '
+                            'NA.:RuntimeWarning:mne')
 def test_get_head_mri_trans():
     """Test getting a trans object from BIDS data."""
     import nibabel as nib
@@ -147,6 +155,8 @@ def test_handle_events_reading():
     events, event_id = mne.events_from_annotations(raw)
 
 
+@pytest.mark.filterwarnings(r'ignore:The unit for channel\(s\)'
+                            ':RuntimeWarning:mne')  # meg -> bio
 def test_line_freq_estimation():
     """Test estimating line frequency."""
     bids_root = _TempDir()
@@ -185,8 +195,6 @@ def test_line_freq_estimation():
         somato_raw = mne_bids.read_raw_bids(bids_fname, bids_root)
         assert somato_raw.info['line_freq'] == 50
 
-    # assert that line_freq should be None when
-    # all picks are not meg/eeg/ecog/seeg
     somato_raw.info['line_freq'] = None
     somato_raw.set_channel_types({somato_raw.ch_names[i]: 'bio'
                                   for i in range(len(somato_raw.ch_names))})
@@ -194,6 +202,10 @@ def test_line_freq_estimation():
     assert somato_raw.info['line_freq'] is None
 
 
+@pytest.mark.filterwarnings(r'ignore:The unit for channel\(s\) STI 001, '
+                            'STI 002, STI 003, STI 004, STI 005, STI 006, '
+                            'STI 014, STI 015, STI 016 has changed from V to '
+                            'NA.:RuntimeWarning:mne')
 def test_handle_info_reading():
     """Test reading information from a BIDS sidecar.json file."""
     bids_root = _TempDir()
@@ -253,6 +265,10 @@ def test_handle_info_reading():
         raw = mne_bids.read_raw_bids(bids_fname, bids_root)
 
 
+@pytest.mark.filterwarnings('ignore:Fiducial point nasion not found'
+                            ':RuntimeWarning:mne')
+@pytest.mark.filterwarnings(r'ignore:The unit for channel\(s\) Status has '
+                            'changed from NA to V.:RuntimeWarning:mne')
 def test_handle_coords_reading():
     """Test reading coordinates from BIDS files."""
     bids_root = _TempDir()
@@ -300,6 +316,9 @@ def test_handle_coords_reading():
 
 
 @requires_nibabel()
+@pytest.mark.filterwarnings(r'ignore:The unit for channel\(s\) UDIO001, '
+                            'UPPT001, UPPT002 has changed from V to NA.'
+                            ':RuntimeWarning:mne')
 def test_get_head_mri_trans_ctf():
     """Test getting a trans object from BIDS data in CTF."""
     import nibabel as nib
@@ -332,6 +351,12 @@ def test_get_head_mri_trans_ctf():
     assert_almost_equal(trans['trans'], estimated_trans['trans'])
 
 
+@pytest.mark.filterwarnings("ignore:Input info has 'meas_date' set to None."
+                            ":RuntimeWarning:mne")
+@pytest.mark.filterwarnings(r'ignore:The unit for channel\(s\) STI 001, '
+                            'STI 002, STI 003, STI 004, STI 005, STI 006, '
+                            'STI 014, STI 015, STI 016 has changed from V to '
+                            'NA.:RuntimeWarning:mne')
 def test_get_matched_empty_room():
     """Test reading of empty room data."""
     bids_root = _TempDir()
@@ -402,6 +427,10 @@ def test_get_matched_empty_room():
         get_matched_empty_room(bids_basename + '_meg.fif', bids_root)
 
 
+@pytest.mark.filterwarnings(r'ignore:The unit for channel\(s\) STI 001, '
+                            'STI 002, STI 003, STI 004, STI 005, STI 006, '
+                            'STI 014, STI 015, STI 016 has changed from V to '
+                            'NA.:RuntimeWarning:mne')
 def test_read_raw_bids_pathlike():
     """Test that read_raw_bids() can handle a Path-like bids_root."""
     bids_root = _TempDir()
