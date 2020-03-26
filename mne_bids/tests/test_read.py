@@ -195,6 +195,8 @@ def test_line_freq_estimation():
         somato_raw = mne_bids.read_raw_bids(bids_fname, bids_root)
         assert somato_raw.info['line_freq'] == 50
 
+    # assert that line_freq should be None when
+    # all picks are not meg/eeg/ecog/seeg
     somato_raw.info['line_freq'] = None
     somato_raw.set_channel_types({somato_raw.ch_names[i]: 'bio'
                                   for i in range(len(somato_raw.ch_names))})
