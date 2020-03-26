@@ -143,7 +143,7 @@ def test_get_anonymization_daysback():
 
 @requires_version('pybv', '0.2.0')
 # XXX check next marker if legit!
-@pytest.mark.filterwarnings('ignore:Omitted 50 annotation\(s\) that were '
+@pytest.mark.filterwarnings(r'ignore:Omitted 50 annotation\(s\) that were '
                             'outside data range.:RuntimeWarning:mne')
 @pytest.mark.filterwarnings(r'ignore:The unit for channel\(s\) STI 001, '
                             'STI 002, STI 003, STI 004, STI 005, STI 006, '
@@ -599,10 +599,10 @@ def test_bti(_bids_validate):
 # see: https://github.com/mne-tools/mne-python/pull/6558
 @pytest.mark.skipif(LooseVersion(mne.__version__) < LooseVersion('0.19'),
                     reason='requires mne 0.19.dev0 or higher')
-@pytest.mark.filterwarnings('ignore:The unit for channel\(s\) CP5, CP6, HL, '
+@pytest.mark.filterwarnings(r'ignore:The unit for channel\(s\) CP5, CP6, HL, '
                             'HR, Vb has changed from NA to V.'
                             ':RuntimeWarning:mne')
-@pytest.mark.filterwarnings('ignore:The unit for channel\(s\) ReRef has '
+@pytest.mark.filterwarnings(r'ignore:The unit for channel\(s\) ReRef has '
                             'changed from C to V.:RuntimeWarning:mne')
 def test_vhdr(_bids_validate):
     """Test write_raw_bids conversion for BrainVision data."""
