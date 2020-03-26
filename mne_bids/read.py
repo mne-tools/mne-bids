@@ -149,9 +149,9 @@ def _handle_events_reading(events_fname, raw):
 
     # Keep only events where onset is known
     good_events_idx = ~np.isnan(onsets)
+    onsets = onsets[good_events_idx]
     durations = durations[good_events_idx]
     descriptions = descriptions[good_events_idx]
-    onsets = onsets[good_events_idx]
     del good_events_idx
 
     # Add Events to raw as annotations
