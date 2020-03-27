@@ -6,11 +6,20 @@
 from os import path as op
 
 import pytest
-import mne
+
+# This is here to handle mne-python <0.20
+import warnings
+with warnings.catch_warnings():
+    warnings.filterwarnings(action='ignore',
+                            message="can't resolve package",
+                            category=ImportWarning)
+    import mne
+
 from mne.datasets import testing
 from mne.utils import run_tests_if_main, ArgvSetter
 
 from mne_bids.commands import mne_bids_raw_to_bids, mne_bids_cp
+
 
 base_path = op.join(op.dirname(mne.__file__), 'io')
 subject_id = '01'

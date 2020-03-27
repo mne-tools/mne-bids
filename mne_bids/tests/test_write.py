@@ -23,7 +23,15 @@ from pathlib import Path
 
 import numpy as np
 from numpy.testing import assert_array_equal, assert_array_almost_equal
-import mne
+
+# This is here to handle mne-python <0.20
+import warnings
+with warnings.catch_warnings():
+    warnings.filterwarnings(action='ignore',
+                            message="can't resolve package",
+                            category=ImportWarning)
+    import mne
+
 from mne.datasets import testing
 from mne.utils import (_TempDir, run_subprocess, check_version,
                        requires_nibabel, requires_version)

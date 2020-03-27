@@ -14,7 +14,14 @@ import shutil as sh
 import numpy as np
 from numpy.testing import assert_almost_equal
 
-import mne
+# This is here to handle mne-python <0.20
+import warnings
+with warnings.catch_warnings():
+    warnings.filterwarnings(action='ignore',
+                            message="can't resolve package",
+                            category=ImportWarning)
+    import mne
+
 from mne.io import anonymize_info
 from mne.utils import _TempDir, requires_nibabel, check_version, object_diff
 from mne.datasets import testing, somato

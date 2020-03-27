@@ -11,7 +11,15 @@ from datetime import datetime
 from pathlib import Path
 
 from numpy.random import random
-import mne
+
+# This is here to handle mne-python <0.20
+import warnings
+with warnings.catch_warnings():
+    warnings.filterwarnings(action='ignore',
+                            message="can't resolve package",
+                            category=ImportWarning)
+    import mne
+
 from mne.utils import _TempDir
 from mne.datasets import testing
 
