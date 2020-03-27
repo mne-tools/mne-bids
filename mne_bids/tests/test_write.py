@@ -61,10 +61,6 @@ bids_basename = make_bids_basename(
     task=task)
 bids_basename_minimal = make_bids_basename(subject=subject_id, task=task)
 
-# Silence NumPy warnings
-# See https://stackoverflow.com/a/40846742
-pytestmark = pytest.mark.filterwarnings('ignore:numpy.ufunc size changed')
-
 warning_str = dict(
     channel_unit_changed='ignore:The unit for chann*.:RuntimeWarning:mne',
     meas_date_set_to_none="ignore:.*'meas_date' set to None:RuntimeWarning:"
