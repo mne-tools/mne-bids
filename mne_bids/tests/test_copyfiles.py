@@ -7,6 +7,10 @@
 import os.path as op
 import pytest
 
+# Silence NumPy warnings
+# See https://stackoverflow.com/a/40846742
+pytestmark = pytest.mark.filterwarnings('ignore:numpy.ufunc size changed')
+
 from scipy.io import savemat
 
 # This is here to handle mne-python <0.20

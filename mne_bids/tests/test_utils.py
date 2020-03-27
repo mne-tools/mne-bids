@@ -6,9 +6,14 @@
 # License: BSD (3-clause)
 import os
 import os.path as op
-import pytest
 from datetime import datetime
 from pathlib import Path
+
+import pytest
+
+# Silence NumPy warnings
+# See https://stackoverflow.com/a/40846742
+pytestmark = pytest.mark.filterwarnings('ignore:numpy.ufunc size changed')
 
 from numpy.random import random
 
