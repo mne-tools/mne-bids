@@ -222,17 +222,19 @@ def test_fif(_bids_validate):
     raw = mne.io.read_raw_fif(raw_fname)
     meas_date = raw.info['meas_date']
     if not isinstance(meas_date, datetime):
-        meas_date = datetime.fromtimestamp(meas_date[0])
+        meas_date = datetime.fromtimestamp(meas_date[0], tz=timezone.utc)
     er_date = meas_date.strftime('%Y%m%d')
     er_bids_basename = 'sub-emptyroom_ses-{0}_task-noise'.format(str(er_date))
     write_raw_bids(raw, er_bids_basename, bids_root, overwrite=False)
     assert op.exists(op.join(
         bids_root, 'sub-emptyroom', 'ses-{0}'.format(er_date), 'meg',
         'sub-emptyroom_ses-{0}_task-noise_meg.json'.format(er_date)))
+
     # test that an incorrect date raises an error.
     er_bids_basename_bad = 'sub-emptyroom_ses-19000101_task-noise'
     with pytest.raises(ValueError, match='Date provided'):
         write_raw_bids(raw, er_bids_basename_bad, bids_root, overwrite=False)
+
     # test that the acquisition time was written properly
     scans_tsv = make_bids_basename(
         subject=subject_id, session=session_id, suffix='scans.tsv',
@@ -275,6 +277,7 @@ def test_fif(_bids_validate):
     # check that the overwrite parameters work correctly for the participant
     # data
     # change the gender but don't force overwrite.
+    raw = mne.io.read_raw_fif(raw_fname)
     raw.info['subject_info'] = {'his_id': subject_id2,
                                 'birthday': (1994, 1, 26), 'sex': 2, 'hand': 1}
     with pytest.raises(FileExistsError, match="already exists"):  # noqa: F821
@@ -310,6 +313,43 @@ def test_fif(_bids_validate):
     for ii, FILE in enumerate(files):
         assert 'part' not in FILE
     assert ii < 1
+
+    # check that split files have part key
+    raw = mne.io.read_raw_fif(raw_fname)
+    data_path3 = _TempDir()
+    raw_fname3 = op.join(data_path3, 'sample_audvis_raw.fif')
+    raw.save(raw_fname3, buffer_size_sec=1.0, split_size='10MB',
+             split_naming='neuromag', overwrite=True)
+    raw = mne.io.read_raw_fif(raw_fname3)
+    subject_id3 = '03'
+    bids_basename3 = bids_basename.replace(subject_id, subject_id3)
+    bids_output_path = write_raw_bids(raw, bids_basename3, bids_root,
+                                      overwrite=False)
+    files = glob(op.join(bids_output_path, 'sub-' + subject_id3,
+                         'ses-' + subject_id3, 'meg', '*.fif'))
+    for FILE in files:
+        assert 'part' in FILE
+
+    # test unknown extension
+    raw = mne.io.read_raw_fif(raw_fname)
+    raw._filenames = (raw.filenames[0].replace('.fif', '.foo'),)
+    with pytest.raises(ValueError, match='Unrecognized file format'):
+        write_raw_bids(raw, bids_basename, bids_root)
+
+
+@pytest.mark.skipif(LooseVersion(mne.__version__) < LooseVersion('0.20'),
+                    reason="requires mne 0.20.dev0 or higher")
+def test_fif_anonymize(_bids_validate):
+    """Test write_raw_bids() with anonymization fif."""
+    bids_root = _TempDir()
+    data_path = testing.data_path()
+    raw_fname = op.join(data_path, 'MEG', 'sample',
+                        'sample_audvis_trunc_raw.fif')
+
+    event_id = {'Auditory/Left': 1, 'Auditory/Right': 2, 'Visual/Left': 3,
+                'Visual/Right': 4, 'Smiley': 5, 'Button': 32}
+    events_fname = op.join(data_path, 'MEG', 'sample',
+                           'sample_audvis_trunc_raw-eve.fif')
 
     # test keyword mne-bids anonymize
     raw = mne.io.read_raw_fif(raw_fname)
@@ -349,34 +389,13 @@ def test_fif(_bids_validate):
         subject=subject_id, session=session_id, suffix='scans.tsv',
         prefix=op.join(bids_root, 'sub-01', 'ses-01'))
     data = _from_tsv(scans_tsv)
+
     # anonymize using MNE manually
     anonymized_info = anonymize_info(info=raw.info, daysback=30000,
                                      keep_his=True)
     anon_date = anonymized_info['meas_date'].strftime("%Y-%m-%dT%H:%M:%S")
     assert data['acq_time'][0] == anon_date
     _bids_validate(bids_root)
-
-    # check that split files have part key
-    raw = mne.io.read_raw_fif(raw_fname)
-    data_path3 = _TempDir()
-    raw_fname3 = op.join(data_path3, 'sample_audvis_raw.fif')
-    raw.save(raw_fname3, buffer_size_sec=1.0, split_size='10MB',
-             split_naming='neuromag', overwrite=True)
-    raw = mne.io.read_raw_fif(raw_fname3)
-    subject_id3 = '03'
-    bids_basename3 = bids_basename.replace(subject_id, subject_id3)
-    bids_output_path = write_raw_bids(raw, bids_basename3, bids_root,
-                                      overwrite=False)
-    files = glob(op.join(bids_output_path, 'sub-' + subject_id3,
-                         'ses-' + subject_id3, 'meg', '*.fif'))
-    for FILE in files:
-        assert 'part' in FILE
-
-    # test unknown extention
-    raw = mne.io.read_raw_fif(raw_fname)
-    raw._filenames = (raw.filenames[0].replace('.fif', '.foo'),)
-    with pytest.raises(ValueError, match='Unrecognized file format'):
-        write_raw_bids(raw, bids_basename, bids_root)
 
 
 def test_kit(_bids_validate):

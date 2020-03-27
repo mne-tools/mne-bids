@@ -25,6 +25,13 @@ matrix:
                MNE_VERSION="maint/0.19"
           name: "Linux pip minimal"
 
+        # Linux with timezone = Berlin, i.e. UTC+1 (CET) or UTC+2 (CEST)
+        - os: linux
+          env: CONDA_ENV="environment.yml"
+               MNE_VERSION="master"
+               TZ="Europe/Berlin"
+          name: "Linux conda full, timezone Europe/Berlin"
+
 # Specify version of BIDS-validator to be used, 'master', or 'stable'
 env:
   global:
@@ -89,6 +96,10 @@ install:
 cache:
     - pip
     - yarn
+
+before_script:
+    - echo $TZ
+    - date
 
 script:
     - pytest . --cov=./mne_bids --cov-report=xml --verbose --ignore mne-python
