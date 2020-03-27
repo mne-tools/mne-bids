@@ -53,6 +53,17 @@ bids_basename = make_bids_basename(
     task=task)
 bids_basename_minimal = make_bids_basename(subject=subject_id, task=task)
 
+# Silence NumPy warnings
+# See https://stackoverflow.com/a/40846742
+pytestmark = pytest.mark.filterwarnings('ignore:numpy.ufunc size changed')
+
+warning_str = dict(
+    channel_unit_changed='ignore:The unit for chann*.:RuntimeWarning:mne',
+    meas_date_set_to_none="ignore:.*'meas_date' set to None:RuntimeWarning:"
+                          "mne",
+    nasion_not_found='ignore:.*nasion not found:RuntimeWarning:mne',
+    annotations_omitted='ignore:Omitted .* annot.*:RuntimeWarning:mne',
+)
 
 # WINDOWS issues:
 # the bids-validator development version does not work properly on Windows as
@@ -138,6 +149,8 @@ def test_get_anonymization_daysback():
 
 
 @requires_version('pybv', '0.2.0')
+@pytest.mark.filterwarnings(warning_str['annotations_omitted'])
+@pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_fif(_bids_validate):
     """Test functionality of the write_raw_bids conversion for fif."""
     bids_root = _TempDir()
@@ -507,6 +520,7 @@ def test_kit(_bids_validate):
             overwrite=True)
 
 
+@pytest.mark.filterwarnings(warning_str['meas_date_set_to_none'])
 def test_ctf(_bids_validate):
     """Test functionality of the write_raw_bids conversion for CTF data."""
     bids_root = _TempDir()
@@ -542,6 +556,7 @@ def test_ctf(_bids_validate):
             get_anonymization_daysback(raw)
 
 
+@pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_bti(_bids_validate):
     """Test functionality of the write_raw_bids conversion for BTi data."""
     bids_root = _TempDir()
@@ -579,7 +594,8 @@ def test_bti(_bids_validate):
 # XXX: vhdr test currently passes only on MNE master. Skip until next release.
 # see: https://github.com/mne-tools/mne-python/pull/6558
 @pytest.mark.skipif(LooseVersion(mne.__version__) < LooseVersion('0.19'),
-                    reason="requires mne 0.19.dev0 or higher")
+                    reason='requires mne 0.19.dev0 or higher')
+@pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_vhdr(_bids_validate):
     """Test write_raw_bids conversion for BrainVision data."""
     bids_root = _TempDir()
@@ -643,6 +659,7 @@ def test_vhdr(_bids_validate):
     _bids_validate(bids_root)
 
 
+@pytest.mark.filterwarnings(warning_str['nasion_not_found'])
 def test_edf(_bids_validate):
     """Test write_raw_bids conversion for European Data Format data."""
     bids_root = _TempDir()
@@ -793,6 +810,7 @@ def test_bdf(_bids_validate):
         _bids_validate(output_path)
 
 
+@pytest.mark.filterwarnings(warning_str['meas_date_set_to_none'])
 def test_set(_bids_validate):
     """Test write_raw_bids conversion for EEGLAB data."""
     # standalone .set file

@@ -16,6 +16,10 @@ base_path = op.join(op.dirname(mne.__file__), 'io')
 subject_id = '01'
 task = 'testing'
 
+# Silence NumPy warnings
+# See https://stackoverflow.com/a/40846742
+pytestmark = pytest.mark.filterwarnings('ignore:numpy.ufunc size changed')
+
 
 def check_usage(module, force_help=False):
     """Ensure we print usage."""

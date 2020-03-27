@@ -49,6 +49,17 @@ somato_path = somato.data_path()
 somato_raw_fname = op.join(somato_path, 'sub-01', 'meg',
                            'sub-01_task-somato_meg.fif')
 
+# Silence NumPy warnings
+# See https://stackoverflow.com/a/40846742
+pytestmark = pytest.mark.filterwarnings('ignore:numpy.ufunc size changed')
+
+warning_str = dict(
+    channel_unit_changed='ignore:The unit for chann*.:RuntimeWarning:mne',
+    meas_date_set_to_none="ignore:.*'meas_date' set to None:RuntimeWarning:"
+                          "mne",
+    nasion_not_found='ignore:.*nasion not found:RuntimeWarning:mne',
+)
+
 
 def test_read_raw():
     """Test the raw reading."""
@@ -71,6 +82,7 @@ def test_not_implemented():
 
 
 @requires_nibabel()
+@pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_get_head_mri_trans():
     """Test getting a trans object from BIDS data."""
     import nibabel as nib
@@ -135,7 +147,7 @@ def test_handle_events_reading():
 
     # Create an arbitrary events.tsv file, to test we can deal with 'n/a'
     # make sure we can deal w/ "#" characters
-    events = {'onset': [11, 12, 13],
+    events = {'onset': [11, 12, 'n/a'],
               'duration': ['n/a', 'n/a', 'n/a'],
               'trial_type': ["rec start", "trial #1", "trial #2!"]
               }
@@ -147,6 +159,7 @@ def test_handle_events_reading():
     events, event_id = mne.events_from_annotations(raw)
 
 
+@pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_line_freq_estimation():
     """Test estimating line frequency."""
     bids_root = _TempDir()
@@ -194,6 +207,7 @@ def test_line_freq_estimation():
     assert somato_raw.info['line_freq'] is None
 
 
+@pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_handle_info_reading():
     """Test reading information from a BIDS sidecar.json file."""
     bids_root = _TempDir()
@@ -253,6 +267,8 @@ def test_handle_info_reading():
         raw = mne_bids.read_raw_bids(bids_fname, bids_root)
 
 
+@pytest.mark.filterwarnings(warning_str['nasion_not_found'])
+@pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_handle_coords_reading():
     """Test reading coordinates from BIDS files."""
     bids_root = _TempDir()
@@ -300,6 +316,7 @@ def test_handle_coords_reading():
 
 
 @requires_nibabel()
+@pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_get_head_mri_trans_ctf():
     """Test getting a trans object from BIDS data in CTF."""
     import nibabel as nib
@@ -332,6 +349,8 @@ def test_get_head_mri_trans_ctf():
     assert_almost_equal(trans['trans'], estimated_trans['trans'])
 
 
+@pytest.mark.filterwarnings(warning_str['meas_date_set_to_none'])
+@pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_get_matched_empty_room():
     """Test reading of empty room data."""
     bids_root = _TempDir()
@@ -402,6 +421,7 @@ def test_get_matched_empty_room():
         get_matched_empty_room(bids_basename + '_meg.fif', bids_root)
 
 
+@pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_read_raw_bids_pathlike():
     """Test that read_raw_bids() can handle a Path-like bids_root."""
     bids_root = _TempDir()

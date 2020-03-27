@@ -48,6 +48,7 @@ Bug
 - Fix :func:`read_raw_bids` to properly read in sidecar json even if a similarly named copy lives inside "derivatives/" sub-folder, by `Adam Li`_  (`#350 <https://github.com/mne-tools/mne-bids/pull/350>`_)
 - Fix :func:`read_raw_bids` to properly read in events.tsv sidecar if the 'trial_type' description has a "#" character in it by `Adam Li`_ (`#355 <https://github.com/mne-tools/mne-bids/pull/355>`_)
 - Avoid cases in which NumPy would raise a `FutureWarning` when populating TSV files, by `Richard Höchenberger`_ (`#372 <https://github.com/mne-tools/mne-bids/pull/372>`)
+- Remove events with an unknown onset, and assume unknown event durations to be zero, when reading BIDS data via :func:`read_raw_bids`, by `Richard Höchenberger`_ (`#375 <https://github.com/mne-tools/mne-bids/pull/375>`)
 
 API
 ~~~
