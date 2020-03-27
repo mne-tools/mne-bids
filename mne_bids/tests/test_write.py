@@ -222,17 +222,19 @@ def test_fif(_bids_validate):
     raw = mne.io.read_raw_fif(raw_fname)
     meas_date = raw.info['meas_date']
     if not isinstance(meas_date, datetime):
-        meas_date = datetime.fromtimestamp(meas_date[0])
+        meas_date = datetime.fromtimestamp(meas_date[0], tz=timezone.utc)
     er_date = meas_date.strftime('%Y%m%d')
     er_bids_basename = 'sub-emptyroom_ses-{0}_task-noise'.format(str(er_date))
     write_raw_bids(raw, er_bids_basename, bids_root, overwrite=False)
     assert op.exists(op.join(
         bids_root, 'sub-emptyroom', 'ses-{0}'.format(er_date), 'meg',
         'sub-emptyroom_ses-{0}_task-noise_meg.json'.format(er_date)))
+
     # test that an incorrect date raises an error.
     er_bids_basename_bad = 'sub-emptyroom_ses-19000101_task-noise'
     with pytest.raises(ValueError, match='Date provided'):
         write_raw_bids(raw, er_bids_basename_bad, bids_root, overwrite=False)
+
     # test that the acquisition time was written properly
     scans_tsv = make_bids_basename(
         subject=subject_id, session=session_id, suffix='scans.tsv',
