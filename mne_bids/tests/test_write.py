@@ -149,7 +149,7 @@ def test_get_anonymization_daysback():
 
 
 @requires_version('pybv', '0.2.0')
-@pytest.mark.filterwarnings(warning_str['annotations_omitted'])  # XXX legit??
+@pytest.mark.filterwarnings(warning_str['annotations_omitted'])
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_fif(_bids_validate):
     """Test functionality of the write_raw_bids conversion for fif."""
