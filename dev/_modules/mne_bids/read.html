@@ -249,11 +249,18 @@
 
     <span class="c1"># Deal with &quot;n/a&quot; strings before converting to float</span>
     <span class="n">ons</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span> <span class="k">if</span> <span class="n">on</span> <span class="o">==</span> <span class="s1">&#39;n/a&#39;</span> <span class="k">else</span> <span class="n">on</span> <span class="k">for</span> <span class="n">on</span> <span class="ow">in</span> <span class="n">events_dict</span><span class="p">[</span><span class="s1">&#39;onset&#39;</span><span class="p">]]</span>
-    <span class="n">dus</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span> <span class="k">if</span> <span class="n">du</span> <span class="o">==</span> <span class="s1">&#39;n/a&#39;</span> <span class="k">else</span> <span class="n">du</span> <span class="k">for</span> <span class="n">du</span> <span class="ow">in</span> <span class="n">events_dict</span><span class="p">[</span><span class="s1">&#39;duration&#39;</span><span class="p">]]</span>
-
-    <span class="c1"># Add Events to raw as annotations</span>
+    <span class="n">dus</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span> <span class="k">if</span> <span class="n">du</span> <span class="o">==</span> <span class="s1">&#39;n/a&#39;</span> <span class="k">else</span> <span class="n">du</span> <span class="k">for</span> <span class="n">du</span> <span class="ow">in</span> <span class="n">events_dict</span><span class="p">[</span><span class="s1">&#39;duration&#39;</span><span class="p">]]</span>
     <span class="n">onsets</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">ons</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
     <span class="n">durations</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">dus</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+
+    <span class="c1"># Keep only events where onset is known</span>
+    <span class="n">good_events_idx</span> <span class="o">=</span> <span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">onsets</span><span class="p">)</span>
+    <span class="n">onsets</span> <span class="o">=</span> <span class="n">onsets</span><span class="p">[</span><span class="n">good_events_idx</span><span class="p">]</span>
+    <span class="n">durations</span> <span class="o">=</span> <span class="n">durations</span><span class="p">[</span><span class="n">good_events_idx</span><span class="p">]</span>
+    <span class="n">descriptions</span> <span class="o">=</span> <span class="n">descriptions</span><span class="p">[</span><span class="n">good_events_idx</span><span class="p">]</span>
+    <span class="k">del</span> <span class="n">good_events_idx</span>
+
+    <span class="c1"># Add Events to raw as annotations</span>
     <span class="n">annot_from_events</span> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">Annotations</span><span class="p">(</span><span class="n">onset</span><span class="o">=</span><span class="n">onsets</span><span class="p">,</span>
                                         <span class="n">duration</span><span class="o">=</span><span class="n">durations</span><span class="p">,</span>
                                         <span class="n">description</span><span class="o">=</span><span class="n">descriptions</span><span class="p">,</span>
