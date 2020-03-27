@@ -378,12 +378,12 @@ temporarily save the data to disc before reading it back in.</p>
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Writing /tmp/tmpwhhuvnnl/test_raw.fif
-Closing /tmp/tmpwhhuvnnl/test_raw.fif [done]
-Opening raw data file /tmp/tmpwhhuvnnl/test_raw.fif...
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Writing /tmp/tmppblzp2jc/test_raw.fif
+Closing /tmp/tmppblzp2jc/test_raw.fif [done]
+Opening raw data file /tmp/tmppblzp2jc/test_raw.fif...
     Range : 0 ... 999 =      0.000 ...     0.999 secs
 Ready.
-Opening raw data file /tmp/tmpwhhuvnnl/test_raw.fif...
+Opening raw data file /tmp/tmppblzp2jc/test_raw.fif...
     Range : 0 ... 999 =      0.000 ...     0.999 secs
 Ready.
 Creating folder: /home/circleci/mne_data/ieegmmidb_bids/sub-001/ieeg
@@ -457,7 +457,7 @@ Writing &#39;/home/circleci/mne_data/ieegmmidb_bids/dataset_description.json&#39
     ]
 }
 Effective window size : 0.256 (s)
-/home/circleci/project/mne_bids/write.py:559: UserWarning: No line frequency found, defaulting to 50 Hz estimated from multi-taper FFT on 10 seconds of data.
+/home/circleci/project/mne_bids/write.py:559: UserWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
   &#39;on 10 seconds of data.&#39;.format(powerlinefrequency))
 
 Writing &#39;/home/circleci/mne_data/ieegmmidb_bids/sub-001/ieeg/sub-001_task-testresteyes_acq-ecog_ieeg.json&#39;...
@@ -465,7 +465,7 @@ Writing &#39;/home/circleci/mne_data/ieegmmidb_bids/sub-001/ieeg/sub-001_task-te
 {
     &quot;TaskName&quot;: &quot;testresteyes&quot;,
     &quot;Manufacturer&quot;: &quot;Elekta&quot;,
-    &quot;PowerLineFrequency&quot;: 50,
+    &quot;PowerLineFrequency&quot;: 60,
     &quot;SamplingFrequency&quot;: 1000.0,
     &quot;SoftwareFilters&quot;: &quot;n/a&quot;,
     &quot;RecordingDuration&quot;: 0.999,
@@ -502,19 +502,19 @@ POL LPG5-Ref    ECOG    V       0.0     500.0   Electrocorticography    1000.0  
 </div>
 <p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>|ieegmmidb_bids/
+|--- dataset_description.json
 |--- participants.tsv
 |--- participants.json
-|--- dataset_description.json
 |--- sub-001/
 |------ sub-001_scans.tsv
 |------ ieeg/
-|--------- sub-001_task-testresteyes_acq-ecog_ieeg.vmrk
-|--------- sub-001_task-testresteyes_acq-ecog_ieeg.vhdr
-|--------- sub-001_task-testresteyes_acq-ecog_channels.tsv
-|--------- sub-001_task-testresteyes_acq-ecog_ieeg.eeg
-|--------- sub-001_acq-ecog_electrodes.tsv
-|--------- sub-001_task-testresteyes_acq-ecog_ieeg.json
 |--------- sub-001_acq-ecog_coordsystem.json
+|--------- sub-001_task-testresteyes_acq-ecog_ieeg.json
+|--------- sub-001_task-testresteyes_acq-ecog_ieeg.vhdr
+|--------- sub-001_task-testresteyes_acq-ecog_ieeg.eeg
+|--------- sub-001_task-testresteyes_acq-ecog_ieeg.vmrk
+|--------- sub-001_task-testresteyes_acq-ecog_channels.tsv
+|--------- sub-001_acq-ecog_electrodes.tsv
 </pre></div>
 </div>
 <p>MNE-BIDS has created a suitable directory structure for us, and among other
@@ -605,7 +605,7 @@ The channel coordinates after writing into BIDS:
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-03-26.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-03-27.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.<br/>
     </p>
   </div>
