@@ -4,11 +4,6 @@
 # License: BSD (3-clause)
 import os.path as op
 
-# Silence NumPy warnings
-# See https://stackoverflow.com/a/40846742
-import pytest
-pytestmark = pytest.mark.filterwarnings('ignore:numpy.ufunc size changed')
-
 # This is here to handle mne-python <0.20
 import warnings
 with warnings.catch_warnings():

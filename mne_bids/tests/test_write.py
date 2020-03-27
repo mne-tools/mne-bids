@@ -12,6 +12,7 @@ For each supported file format, implement a test.
 # License: BSD (3-clause)
 import os
 import os.path as op
+import pytest
 from glob import glob
 from datetime import datetime, timezone
 import platform
@@ -19,12 +20,6 @@ import shutil as sh
 import json
 from distutils.version import LooseVersion
 from pathlib import Path
-
-import pytest
-
-# Silence NumPy warnings
-# See https://stackoverflow.com/a/40846742
-pytestmark = pytest.mark.filterwarnings('ignore:numpy.ufunc size changed')
 
 import numpy as np
 from numpy.testing import assert_array_equal, assert_array_almost_equal

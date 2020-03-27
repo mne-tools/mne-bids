@@ -7,13 +7,9 @@ import os
 import os.path as op
 from datetime import datetime, timezone
 from pathlib import Path
-import shutil as sh
 
 import pytest
-# Silence NumPy warnings
-# See https://stackoverflow.com/a/40846742
-pytestmark = pytest.mark.filterwarnings('ignore:numpy.ufunc size changed')
-
+import shutil as sh
 
 import numpy as np
 from numpy.testing import assert_almost_equal
@@ -59,6 +55,10 @@ raw_fname = op.join(data_path, 'MEG', 'sample',
 somato_path = somato.data_path()
 somato_raw_fname = op.join(somato_path, 'sub-01', 'meg',
                            'sub-01_task-somato_meg.fif')
+
+# Silence NumPy warnings
+# See https://stackoverflow.com/a/40846742
+pytestmark = pytest.mark.filterwarnings('ignore:numpy.ufunc size changed')
 
 warning_str = dict(
     channel_unit_changed='ignore:The unit for chann*.:RuntimeWarning:mne',
