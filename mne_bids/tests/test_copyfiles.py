@@ -8,7 +8,15 @@ import os.path as op
 import pytest
 
 from scipy.io import savemat
-import mne
+
+# This is here to handle mne-python <0.20
+import warnings
+with warnings.catch_warnings():
+    warnings.filterwarnings(action='ignore',
+                            message="can't resolve package",
+                            category=ImportWarning)
+    import mne
+
 from mne.datasets import testing
 from mne.utils import _TempDir
 from mne_bids.utils import _handle_kind, _parse_ext

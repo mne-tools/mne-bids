@@ -23,7 +23,15 @@ from pathlib import Path
 
 import numpy as np
 from numpy.testing import assert_array_equal, assert_array_almost_equal
-import mne
+
+# This is here to handle mne-python <0.20
+import warnings
+with warnings.catch_warnings():
+    warnings.filterwarnings(action='ignore',
+                            message="can't resolve package",
+                            category=ImportWarning)
+    import mne
+
 from mne.datasets import testing
 from mne.utils import (_TempDir, run_subprocess, check_version,
                        requires_nibabel, requires_version)
@@ -52,10 +60,6 @@ bids_basename = make_bids_basename(
     subject=subject_id, session=session_id, run=run, acquisition=acq,
     task=task)
 bids_basename_minimal = make_bids_basename(subject=subject_id, task=task)
-
-# Silence NumPy warnings
-# See https://stackoverflow.com/a/40846742
-pytestmark = pytest.mark.filterwarnings('ignore:numpy.ufunc size changed')
 
 warning_str = dict(
     channel_unit_changed='ignore:The unit for chann*.:RuntimeWarning:mne',
