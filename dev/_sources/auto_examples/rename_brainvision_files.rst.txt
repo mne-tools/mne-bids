@@ -1,10 +1,12 @@
-.. note::
-    :class: sphx-glr-download-link-note
+.. only:: html
 
-    Click :ref:`here <sphx_glr_download_auto_examples_rename_brainvision_files.py>` to download the full example code or to run this example in your browser via Binder
-.. rst-class:: sphx-glr-example-title
+    .. note::
+        :class: sphx-glr-download-link-note
 
-.. _sphx_glr_auto_examples_rename_brainvision_files.py:
+        Click :ref:`here <sphx_glr_download_auto_examples_rename_brainvision_files.py>`     to download the full example code or to run this example in your browser via Binder
+    .. rst-class:: sphx-glr-example-title
+
+    .. _sphx_glr_auto_examples_rename_brainvision_files.py:
 
 
 =====================================
@@ -172,7 +174,7 @@ For that, see the `BrainVision Validator <bv-validator_>`_
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  0.030 seconds)
+   **Total running time of the script:** ( 0 minutes  0.022 seconds)
 
 
 .. _sphx_glr_download_auto_examples_rename_brainvision_files.py:
@@ -191,13 +193,13 @@ For that, see the `BrainVision Validator <bv-validator_>`_
       :width: 150 px
 
 
-  .. container:: sphx-glr-download
+  .. container:: sphx-glr-download sphx-glr-download-python
 
      :download:`Download Python source code: rename_brainvision_files.py <rename_brainvision_files.py>`
 
 
 
-  .. container:: sphx-glr-download
+  .. container:: sphx-glr-download sphx-glr-download-jupyter
 
      :download:`Download Jupyter notebook: rename_brainvision_files.ipynb <rename_brainvision_files.ipynb>`
 
