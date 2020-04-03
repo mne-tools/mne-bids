@@ -14,10 +14,10 @@ Here we list a changelog of MNE-BIDS.
 
 .. currentmodule:: mne_bids
 
-.. _current:
+.. _changes_0_4:
 
-Current
--------
+Version 0.4
+-----------
 
 Changelog
 ~~~~~~~~~
@@ -50,8 +50,23 @@ Bug
 - Avoid cases in which NumPy would raise a `FutureWarning` when populating TSV files, by `Richard Höchenberger`_ (`#372 <https://github.com/mne-tools/mne-bids/pull/372>`)
 - Remove events with an unknown onset, and assume unknown event durations to be zero, when reading BIDS data via :func:`read_raw_bids`, by `Richard Höchenberger`_ (`#375 <https://github.com/mne-tools/mne-bids/pull/375>`)
 
-API
-~~~
+Authors
+~~~~~~~
+
+People who contributed to this release (in alphabetical order):
+
+* Adam Li
+* Alex Rockhill
+* Alexandre Gramfort
+* Ariel Rokem
+* Dominik Welke
+* Fu-Te Wong
+* Mainak Jas
+* Maximilien Chaumon
+* Richard Höchenberger
+* Sophie Herbst
+* Stefan Appelhoff
+* Teon Brooks
 
 .. _changes_0_3:
 
@@ -214,3 +229,5 @@ People who contributed to this release (in alphabetical order):
 .. _Adam Li: https://github.com/adam2392
 .. _Fu-Te Wong: https://github.com/zuxfoucault
 .. _Richard Höchenberger: https://github.com/hoechenberger
+.. _Alexandre Gramfort: http://alexandre.gramfort.net
+.. _Ariel Rokem: https://github.com/arokem
