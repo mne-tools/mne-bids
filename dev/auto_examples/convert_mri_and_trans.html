@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>07. Save and load T1-weighted MRI scan along with anatomical landmarks in BIDS &#8212; mne_bids 0.4.dev0 documentation</title>
+    <title>07. Save and load T1-weighted MRI scan along with anatomical landmarks in BIDS &#8212; mne_bids 0.4 documentation</title>
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
@@ -38,7 +38,7 @@
         </button>
         <a class="navbar-brand" href="../index.html">
           MNE-BIDS</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.4.dev0</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.4</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -74,12 +74,13 @@
           
 <div class="navbar-form navbar-right navbar-btn dropdown btn-group-sm" style="margin-left: 20px; margin-top: 5px; margin-bottom: 5px">
   <button type="button" class="btn btn-primary navbar-btn dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown">
-    v0.4.dev0
+    v0.4
     <span class="caret"></span>
   </button>
   <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
     <li><a href="https://mne.tools/mne-bids/dev/index.html">Development</a></li>
     <li><a href="https://mne.tools/mne-bids/stable/index.html">Stable</a></li>
+    <li><a href="https://mne.tools/mne-bids/v0.4/index.html">v0.4</a></li>
     <li><a href="https://mne.tools/mne-bids/v0.3/index.html">v0.3</a></li>
     <li><a href="https://mne.tools/mne-bids/v0.2/index.html">v0.2</a></li>
     <li><a href="https://mne.tools/mne-bids/v0.1/index.html">v0.1</a></li>
@@ -292,7 +293,7 @@ Writing &#39;/home/circleci/mne_data/MNE-sample-data-bids/dataset_description.js
 
 {
     &quot;Name&quot;: &quot; &quot;,
-    &quot;BIDSVersion&quot;: &quot;1.2.0&quot;,
+    &quot;BIDSVersion&quot;: &quot;1.2.2&quot;,
     &quot;Authors&quot;: [
         &quot;MNE-BIDS&quot;
     ]
@@ -346,18 +347,18 @@ Closing /home/circleci/mne_data/MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_se
 </div>
 <p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>|MNE-sample-data-bids/
-|--- participants.json
-|--- participants.tsv
 |--- dataset_description.json
+|--- participants.tsv
+|--- participants.json
 |--- sub-01/
 |------ ses-01/
 |--------- sub-01_ses-01_scans.tsv
 |--------- meg/
-|------------ sub-01_ses-01_task-audiovisual_run-01_meg.fif
-|------------ sub-01_ses-01_task-audiovisual_run-01_events.tsv
 |------------ sub-01_ses-01_task-audiovisual_run-01_channels.tsv
-|------------ sub-01_ses-01_coordsystem.json
+|------------ sub-01_ses-01_task-audiovisual_run-01_meg.fif
 |------------ sub-01_ses-01_task-audiovisual_run-01_meg.json
+|------------ sub-01_ses-01_coordsystem.json
+|------------ sub-01_ses-01_task-audiovisual_run-01_events.tsv
 </pre></div>
 </div>
 <p>Now let’s assume that we have also collected some T1 weighted MRI data for
@@ -426,21 +427,21 @@ retrieve our transformation matrix <code class="code docutils literal notranslat
 </div>
 <p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>|MNE-sample-data-bids/
-|--- participants.json
-|--- participants.tsv
 |--- dataset_description.json
+|--- participants.tsv
+|--- participants.json
 |--- sub-01/
 |------ ses-01/
 |--------- sub-01_ses-01_scans.tsv
-|--------- meg/
-|------------ sub-01_ses-01_task-audiovisual_run-01_meg.fif
-|------------ sub-01_ses-01_task-audiovisual_run-01_events.tsv
-|------------ sub-01_ses-01_task-audiovisual_run-01_channels.tsv
-|------------ sub-01_ses-01_coordsystem.json
-|------------ sub-01_ses-01_task-audiovisual_run-01_meg.json
 |--------- anat/
-|------------ sub-01_ses-01_T1w.nii.gz
 |------------ sub-01_ses-01_T1w.json
+|------------ sub-01_ses-01_T1w.nii.gz
+|--------- meg/
+|------------ sub-01_ses-01_task-audiovisual_run-01_channels.tsv
+|------------ sub-01_ses-01_task-audiovisual_run-01_meg.fif
+|------------ sub-01_ses-01_task-audiovisual_run-01_meg.json
+|------------ sub-01_ses-01_coordsystem.json
+|------------ sub-01_ses-01_task-audiovisual_run-01_events.tsv
 </pre></div>
 </div>
 <p>Our BIDS dataset is now ready to be shared. We can easily estimate the
@@ -553,10 +554,10 @@ plot the results.</p>
 }
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  8.486 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  11.884 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-mri-and-trans-py">
 <div class="binder-badge docutils container">
-<a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/convert_mri_and_trans.ipynb"><img alt="https://mybinder.org/badge_logo.svg" src="https://mybinder.org/badge_logo.svg" width="150px" /></a>
+<a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=v0.4/notebooks/auto_examples/convert_mri_and_trans.ipynb"><img alt="https://mybinder.org/badge_logo.svg" src="https://mybinder.org/badge_logo.svg" width="150px" /></a>
 </div>
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/b143d969421db5e73a9339985e158e7a/convert_mri_and_trans.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">convert_mri_and_trans.py</span></code></a></p>
@@ -580,7 +581,7 @@ plot the results.</p>
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-03-28.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-04-03.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.<br/>
     </p>
   </div>

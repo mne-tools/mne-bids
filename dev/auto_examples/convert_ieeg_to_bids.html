@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>08. Convert iEEG data to BIDS format &#8212; mne_bids 0.4.dev0 documentation</title>
+    <title>08. Convert iEEG data to BIDS format &#8212; mne_bids 0.4 documentation</title>
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
@@ -38,7 +38,7 @@
         </button>
         <a class="navbar-brand" href="../index.html">
           MNE-BIDS</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.4.dev0</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.4</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -74,12 +74,13 @@
           
 <div class="navbar-form navbar-right navbar-btn dropdown btn-group-sm" style="margin-left: 20px; margin-top: 5px; margin-bottom: 5px">
   <button type="button" class="btn btn-primary navbar-btn dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown">
-    v0.4.dev0
+    v0.4
     <span class="caret"></span>
   </button>
   <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
     <li><a href="https://mne.tools/mne-bids/dev/index.html">Development</a></li>
     <li><a href="https://mne.tools/mne-bids/stable/index.html">Stable</a></li>
+    <li><a href="https://mne.tools/mne-bids/v0.4/index.html">v0.4</a></li>
     <li><a href="https://mne.tools/mne-bids/v0.3/index.html">v0.3</a></li>
     <li><a href="https://mne.tools/mne-bids/v0.2/index.html">v0.2</a></li>
     <li><a href="https://mne.tools/mne-bids/v0.1/index.html">v0.1</a></li>
@@ -380,12 +381,12 @@ temporarily save the data to disc before reading it back in.</p>
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Writing /tmp/tmpxbk8e8fh/test_raw.fif
-Closing /tmp/tmpxbk8e8fh/test_raw.fif [done]
-Opening raw data file /tmp/tmpxbk8e8fh/test_raw.fif...
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Writing /tmp/tmpieh3zuqg/test_raw.fif
+Closing /tmp/tmpieh3zuqg/test_raw.fif [done]
+Opening raw data file /tmp/tmpieh3zuqg/test_raw.fif...
     Range : 0 ... 999 =      0.000 ...     0.999 secs
 Ready.
-Opening raw data file /tmp/tmpxbk8e8fh/test_raw.fif...
+Opening raw data file /tmp/tmpieh3zuqg/test_raw.fif...
     Range : 0 ... 999 =      0.000 ...     0.999 secs
 Ready.
 Creating folder: /home/circleci/mne_data/ieegmmidb_bids/sub-001/ieeg
@@ -453,7 +454,7 @@ Writing &#39;/home/circleci/mne_data/ieegmmidb_bids/dataset_description.json&#39
 
 {
     &quot;Name&quot;: &quot; &quot;,
-    &quot;BIDSVersion&quot;: &quot;1.2.0&quot;,
+    &quot;BIDSVersion&quot;: &quot;1.2.2&quot;,
     &quot;Authors&quot;: [
         &quot;MNE-BIDS&quot;
     ]
@@ -504,19 +505,19 @@ POL LPG5-Ref    ECOG    V       0.0     500.0   Electrocorticography    1000.0  
 </div>
 <p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>|ieegmmidb_bids/
-|--- participants.json
-|--- participants.tsv
 |--- dataset_description.json
+|--- participants.tsv
+|--- participants.json
 |--- sub-001/
 |------ sub-001_scans.tsv
 |------ ieeg/
-|--------- sub-001_acq-ecog_coordsystem.json
+|--------- sub-001_task-testresteyes_acq-ecog_ieeg.vhdr
+|--------- sub-001_task-testresteyes_acq-ecog_ieeg.json
+|--------- sub-001_task-testresteyes_acq-ecog_channels.tsv
+|--------- sub-001_task-testresteyes_acq-ecog_ieeg.vmrk
 |--------- sub-001_acq-ecog_electrodes.tsv
 |--------- sub-001_task-testresteyes_acq-ecog_ieeg.eeg
-|--------- sub-001_task-testresteyes_acq-ecog_ieeg.vmrk
-|--------- sub-001_task-testresteyes_acq-ecog_ieeg.json
-|--------- sub-001_task-testresteyes_acq-ecog_ieeg.vhdr
-|--------- sub-001_task-testresteyes_acq-ecog_channels.tsv
+|--------- sub-001_acq-ecog_coordsystem.json
 </pre></div>
 </div>
 <p>MNE-BIDS has created a suitable directory structure for us, and among other
@@ -579,10 +580,10 @@ The channel coordinates after writing into BIDS:
 &lt;Figure size 640x640 with 1 Axes&gt;
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.172 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.169 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-ieeg-to-bids-py">
 <div class="binder-badge docutils container">
-<a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/convert_ieeg_to_bids.ipynb"><img alt="https://mybinder.org/badge_logo.svg" src="https://mybinder.org/badge_logo.svg" width="150px" /></a>
+<a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=v0.4/notebooks/auto_examples/convert_ieeg_to_bids.ipynb"><img alt="https://mybinder.org/badge_logo.svg" src="https://mybinder.org/badge_logo.svg" width="150px" /></a>
 </div>
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/a577037ece7a732b0607a269316e55b8/convert_ieeg_to_bids.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">convert_ieeg_to_bids.py</span></code></a></p>
@@ -607,7 +608,7 @@ The channel coordinates after writing into BIDS:
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-03-28.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-04-03.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.<br/>
     </p>
   </div>

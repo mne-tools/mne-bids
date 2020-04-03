@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>mne_bids.write &#8212; mne_bids 0.4.dev0 documentation</title>
+    <title>mne_bids.write &#8212; mne_bids 0.4 documentation</title>
     <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/gallery.css" />
@@ -38,7 +38,7 @@
         </button>
         <a class="navbar-brand" href="../../index.html">
           MNE-BIDS</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.4.dev0</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.4</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -74,12 +74,13 @@
           
 <div class="navbar-form navbar-right navbar-btn dropdown btn-group-sm" style="margin-left: 20px; margin-top: 5px; margin-bottom: 5px">
   <button type="button" class="btn btn-primary navbar-btn dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown">
-    v0.4.dev0
+    v0.4
     <span class="caret"></span>
   </button>
   <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
     <li><a href="https://mne.tools/mne-bids/dev/index.html">Development</a></li>
     <li><a href="https://mne.tools/mne-bids/stable/index.html">Stable</a></li>
+    <li><a href="https://mne.tools/mne-bids/v0.4/index.html">v0.4</a></li>
     <li><a href="https://mne.tools/mne-bids/v0.3/index.html">v0.3</a></li>
     <li><a href="https://mne.tools/mne-bids/v0.2/index.html">v0.2</a></li>
     <li><a href="https://mne.tools/mne-bids/v0.1/index.html">v0.1</a></li>
@@ -859,10 +860,10 @@
     <span class="n">meas_date</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;meas_date&#39;</span><span class="p">]</span>
     <span class="k">if</span> <span class="n">meas_date</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">meas_date</span> <span class="o">=</span> <span class="n">_stamp_to_dt</span><span class="p">(</span><span class="n">meas_date</span><span class="p">)</span>
-    <span class="n">write_brainvision</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">get_data</span><span class="p">(),</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;sfreq&#39;</span><span class="p">],</span>
-                      <span class="n">raw</span><span class="o">.</span><span class="n">ch_names</span><span class="p">,</span>
-                      <span class="n">op</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">))[</span><span class="mi">0</span><span class="p">],</span>
-                      <span class="n">op</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">),</span>
+    <span class="n">write_brainvision</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">raw</span><span class="o">.</span><span class="n">get_data</span><span class="p">(),</span> <span class="n">sfreq</span><span class="o">=</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;sfreq&#39;</span><span class="p">],</span>
+                      <span class="n">ch_names</span><span class="o">=</span><span class="n">raw</span><span class="o">.</span><span class="n">ch_names</span><span class="p">,</span>
+                      <span class="n">fname_base</span><span class="o">=</span><span class="n">op</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">))[</span><span class="mi">0</span><span class="p">],</span>
+                      <span class="n">folder_out</span><span class="o">=</span><span class="n">op</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">),</span>
                       <span class="n">events</span><span class="o">=</span><span class="n">events</span><span class="p">,</span>
                       <span class="n">resolution</span><span class="o">=</span><span class="mf">1e-9</span><span class="p">,</span>
                       <span class="n">meas_date</span><span class="o">=</span><span class="n">meas_date</span><span class="p">)</span>
@@ -1665,7 +1666,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-03-28.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-04-03.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.<br/>
     </p>
   </div>
