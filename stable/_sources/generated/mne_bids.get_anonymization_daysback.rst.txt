@@ -1,0 +1,6 @@
+mne\_bids.get\_anonymization\_daysback
+======================================
+
+.. currentmodule:: mne_bids
+
+.. autofunction:: get_anonymization_daysback
