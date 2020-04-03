@@ -9,13 +9,13 @@ matrix:
         # Linux
         - os: linux
           env: CONDA_ENV="environment.yml"
-               MNE_VERSION="master"
+               MNE_VERSION="maint/0.20"
           name: "Linux conda full"
 
         # OSX conda
         - os: osx
           env: CONDA_ENV="environment.yml"
-               MNE_VERSION="master"
+               MNE_VERSION="maint/0.20"
           name: "MacOS conda full"
 
         # Minimal
@@ -28,7 +28,7 @@ matrix:
         # Linux with timezone = Berlin, i.e. UTC+1 (CET) or UTC+2 (CEST)
         - os: linux
           env: CONDA_ENV="environment.yml"
-               MNE_VERSION="master"
+               MNE_VERSION="maint/0.20"
                TZ="Europe/Berlin"
           name: "Linux conda full, timezone Europe/Berlin"
 
@@ -36,7 +36,7 @@ matrix:
 env:
   global:
     # can be "stable", or anything that can be used with git checkout
-    - VALIDATOR_VERSION="347117838f2b929e"
+    - VALIDATOR_VERSION="8887074e5f5f48a768842ffcf96fb2952dbe0e38"
     # can be any branch of MNE-Python (e.g., "maint/0.18", "master", ...)
 
 before_install:

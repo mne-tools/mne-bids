@@ -1,9 +1,9 @@
 """
 .. _ex-convert-empty-room:
 
-======================================
-Storing empty room data in BIDS format
-======================================
+==========================================
+09. Storing empty room data in BIDS format
+==========================================
 
 This example demonstrates how to store empty room data in BIDS format
 and how to retrieve them.

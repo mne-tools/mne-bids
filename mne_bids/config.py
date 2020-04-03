@@ -1,6 +1,6 @@
 """Configuration values for MNE-BIDS."""
 
-BIDS_VERSION = "1.2.0"
+BIDS_VERSION = "1.2.2"
 
 ALLOWED_KINDS = ['meg', 'eeg', 'ieeg']
 
