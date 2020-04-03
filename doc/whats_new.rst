@@ -24,7 +24,7 @@ Changelog
 
 - Added automatic conversion of FIF to BrainVision format with warning for EEG only data and conversion to FIF for meg non-FIF data, by `Alex Rockhill`_ (`#237 <https://github.com/mne-tools/mne-bids/pull/237>`_)
 - Add possibility to pass raw readers parameters (e.g. `allow_maxshield`) to :func:`read_raw_bids` to allow reading BIDS-formatted data before applying maxfilter, by  `Sophie Herbst`_
-- New feature in :func`mne_bids.write.write_anat` for shear deface of mri, by `Alex Rockhill`_ (`#271 <https://github.com/mne-tools/mne-bids/pull/271>`_)
+- New feature in :func:`mne_bids.write.write_anat` for shear deface of mri, by `Alex Rockhill`_ (`#271 <https://github.com/mne-tools/mne-bids/pull/271>`_)
 - Added option to anonymize by shifting measurement date with `anonymize` parameter, in accordance with BIDS specifications, by `Alex Rockhill`_ (`#280 <https://github.com/mne-tools/mne-bids/pull/280>`_)
 - Added :func:`mne_bids.get_matched_empty_room` to get empty room filename matching a data file, by `Mainak Jas`_ (`#290 <https://github.com/mne-tools/mne-bids/pull/290>`_)
 - Add ability for :func:`mne_bids.get_head_mri_trans` to read fiducial points from fif data without applying maxfilter, by `Maximilien Chaumon`_ (`#291 <https://github.com/mne-tools/mne-bids/pull/291>`_)
@@ -33,10 +33,10 @@ Changelog
 - Add existence check for :func:`write_raw_bids` before :func:`make_dataset_description` is called, by `Adam Li`_ (`#331 <https://github.com/mne-tools/mne-bids/pull/331>`_)
 - Update scans.tsv writer to adhere to MNE-Python v0.20+ where `meas_date` is stored as a `datetime` object, by `Adam Li`_ (`#344 <https://github.com/mne-tools/mne-bids/pull/344>`_)
 - :func:`read_raw_bids` now reads in sidecar json files to set, or estimate Power Line Frequency, by `Adam Li`_ (`#341 <https://github.com/mne-tools/mne-bids/pull/341>`_)
-- Allow FIF files with multiple parts to be read using :func:`read_raw_bids`, by `Teon Brooks`_ (`#346 <https://github.com/mne-tools/mne-bids/pull/346>`)
+- Allow FIF files with multiple parts to be read using :func:`read_raw_bids`, by `Teon Brooks`_ (`#346 <https://github.com/mne-tools/mne-bids/pull/346>`_)
 - Added handedness to participant files, by `Dominik Welke`_ (`#354 <https://github.com/mne-tools/mne-bids/pull/354>`_)
-- MNE-BIDS can now handle a paths that are `pathlib.Path` objects (in addition to strings), by `Richard Höchenberger`_ (`#362 <https://github.com/mne-tools/mne-bids/pull/362>`)
-- The documentation is now available for all MNE-BIDS versions via a dropdown menu, by `Stefan Appelhoff`_(`#370 <https://github.com/mne-tools/mne-bids/pull/370>`)
+- MNE-BIDS can now handle a paths that are :class:`pathlib.Path` objects (in addition to strings), by `Richard Höchenberger`_ (`#362 <https://github.com/mne-tools/mne-bids/pull/362>`_)
+- The documentation is now available for all MNE-BIDS versions via a dropdown menu, by `Stefan Appelhoff`_ (`#370 <https://github.com/mne-tools/mne-bids/pull/370>`_)
 
 Bug
 ~~~
@@ -47,8 +47,8 @@ Bug
 - Fix writing to scans.tsv file when anonymization is turned on, by `Adam Li`_ (`#352 <https://github.com/mne-tools/mne-bids/pull/352>`_)
 - Fix :func:`read_raw_bids` to properly read in sidecar json even if a similarly named copy lives inside "derivatives/" sub-folder, by `Adam Li`_  (`#350 <https://github.com/mne-tools/mne-bids/pull/350>`_)
 - Fix :func:`read_raw_bids` to properly read in events.tsv sidecar if the 'trial_type' description has a "#" character in it by `Adam Li`_ (`#355 <https://github.com/mne-tools/mne-bids/pull/355>`_)
-- Avoid cases in which NumPy would raise a `FutureWarning` when populating TSV files, by `Richard Höchenberger`_ (`#372 <https://github.com/mne-tools/mne-bids/pull/372>`)
-- Remove events with an unknown onset, and assume unknown event durations to be zero, when reading BIDS data via :func:`read_raw_bids`, by `Richard Höchenberger`_ (`#375 <https://github.com/mne-tools/mne-bids/pull/375>`)
+- Avoid cases in which NumPy would raise a `FutureWarning` when populating TSV files, by `Richard Höchenberger`_ (`#372 <https://github.com/mne-tools/mne-bids/pull/372>`_)
+- Remove events with an unknown onset, and assume unknown event durations to be zero, when reading BIDS data via :func:`read_raw_bids`, by `Richard Höchenberger`_ (`#375 <https://github.com/mne-tools/mne-bids/pull/375>`_)
 
 Authors
 ~~~~~~~

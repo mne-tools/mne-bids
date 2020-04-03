@@ -751,10 +751,10 @@ def _write_raw_brainvision(raw, bids_fname, events):
     meas_date = raw.info['meas_date']
     if meas_date is not None:
         meas_date = _stamp_to_dt(meas_date)
-    write_brainvision(raw.get_data(), raw.info['sfreq'],
-                      raw.ch_names,
-                      op.splitext(op.basename(bids_fname))[0],
-                      op.dirname(bids_fname),
+    write_brainvision(data=raw.get_data(), sfreq=raw.info['sfreq'],
+                      ch_names=raw.ch_names,
+                      fname_base=op.splitext(op.basename(bids_fname))[0],
+                      folder_out=op.dirname(bids_fname),
                       events=events,
                       resolution=1e-9,
                       meas_date=meas_date)
