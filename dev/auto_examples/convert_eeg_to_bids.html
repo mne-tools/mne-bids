@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>04. Convert EEG data to BIDS format &#8212; mne_bids 0.4 documentation</title>
+    <title>04. Convert EEG data to BIDS format &#8212; mne_bids 0.5.dev0 documentation</title>
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
@@ -38,7 +38,7 @@
         </button>
         <a class="navbar-brand" href="../index.html">
           MNE-BIDS</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.4</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.5.dev0</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -74,7 +74,7 @@
           
 <div class="navbar-form navbar-right navbar-btn dropdown btn-group-sm" style="margin-left: 20px; margin-top: 5px; margin-bottom: 5px">
   <button type="button" class="btn btn-primary navbar-btn dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown">
-    v0.4
+    v0.5.dev0
     <span class="caret"></span>
   </button>
   <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
@@ -164,6 +164,72 @@ MNE-Python:</p>
                      <span class="n">update_path</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Downloading https://physionet.org/files/eegmmidb/1.0.0/S001/S001R02.edf (1.2 MB)
+
+  0%|          | Downloading : 0.00/1.22M [00:00&lt;?,        ?B/s]
+  7%|7         | Downloading : 88.0k/1.22M [00:00&lt;00:00,    5.51MB/s]
+ 12%|#2        | Downloading : 152k/1.22M [00:00&lt;00:00,    4.00MB/s]
+ 17%|#7        | Downloading : 216k/1.22M [00:00&lt;00:00,    3.58MB/s]
+ 53%|#####3    | Downloading : 664k/1.22M [00:00&lt;00:00,    13.0MB/s]
+100%|##########| Downloading : 1.22M/1.22M [00:00&lt;00:00,    13.7MB/s]
+Downloading https://physionet.org/files/eegmmidb/1.0.0/S001/S001R04.edf (2.5 MB)
+
+  0%|          | Downloading : 0.00/2.48M [00:00&lt;?,        ?B/s]
+  2%|2         | Downloading : 56.0k/2.48M [00:00&lt;00:00,    3.45MB/s]
+  6%|5         | Downloading : 152k/2.48M [00:00&lt;00:00,    5.22MB/s]
+ 16%|#6        | Downloading : 408k/2.48M [00:00&lt;00:00,    8.44MB/s]
+ 31%|###1      | Downloading : 792k/2.48M [00:00&lt;00:00,    11.8MB/s]
+ 41%|####1     | Downloading : 1.02M/2.48M [00:00&lt;00:00,    12.7MB/s]
+ 51%|#####1    | Downloading : 1.27M/2.48M [00:00&lt;00:00,    14.1MB/s]
+ 62%|######1   | Downloading : 1.52M/2.48M [00:00&lt;00:00,    12.6MB/s]
+ 72%|#######1  | Downloading : 1.77M/2.48M [00:00&lt;00:00,    15.5MB/s]
+ 92%|#########1| Downloading : 2.27M/2.48M [00:00&lt;00:00,    16.4MB/s]
+100%|##########| Downloading : 2.48M/2.48M [00:00&lt;00:00,    12.1MB/s]
+Downloading https://physionet.org/files/eegmmidb/1.0.0/S001/S001R12.edf (2.5 MB)
+
+  0%|          | Downloading : 0.00/2.48M [00:00&lt;?,        ?B/s]
+  3%|3         | Downloading : 88.0k/2.48M [00:00&lt;00:00,    4.90MB/s]
+  9%|8         | Downloading : 216k/2.48M [00:00&lt;00:00,    5.10MB/s]
+ 16%|#6        | Downloading : 408k/2.48M [00:00&lt;00:00,    9.27MB/s]
+ 31%|###1      | Downloading : 792k/2.48M [00:00&lt;00:00,    16.3MB/s]
+ 41%|####1     | Downloading : 1.02M/2.48M [00:00&lt;00:00,    16.2MB/s]
+ 51%|#####1    | Downloading : 1.27M/2.48M [00:00&lt;00:00,    11.3MB/s]
+ 72%|#######1  | Downloading : 1.77M/2.48M [00:00&lt;00:00,    16.2MB/s]
+ 92%|#########1| Downloading : 2.27M/2.48M [00:00&lt;00:00,    14.1MB/s]
+100%|##########| Downloading : 2.48M/2.48M [00:00&lt;00:00,    10.2MB/s]
+100%|##########| Downloading : 2.48M/2.48M [00:00&lt;00:00,    12.0MB/s]
+Downloading https://physionet.org/files/eegmmidb/1.0.0/S002/S002R02.edf (1.2 MB)
+
+  0%|          | Downloading : 0.00/1.22M [00:00&lt;?,        ?B/s]
+  4%|4         | Downloading : 56.0k/1.22M [00:00&lt;00:00,    2.77MB/s]
+  7%|7         | Downloading : 88.0k/1.22M [00:00&lt;00:00,    1.72MB/s]
+ 20%|#9        | Downloading : 248k/1.22M [00:00&lt;00:00,    6.04MB/s]
+ 40%|####      | Downloading : 504k/1.22M [00:00&lt;00:00,    9.11MB/s]
+ 71%|#######1  | Downloading : 888k/1.22M [00:00&lt;00:00,    12.9MB/s]
+ 92%|#########1| Downloading : 1.12M/1.22M [00:00&lt;00:00,    14.0MB/s]
+100%|##########| Downloading : 1.22M/1.22M [00:00&lt;00:00,    9.04MB/s]
+Downloading https://physionet.org/files/eegmmidb/1.0.0/S002/S002R04.edf (2.4 MB)
+
+  0%|          | Downloading : 0.00/2.44M [00:00&lt;?,        ?B/s]
+  4%|3         | Downloading : 88.0k/2.44M [00:00&lt;00:00,    4.79MB/s]
+  9%|8         | Downloading : 216k/2.44M [00:00&lt;00:00,    5.02MB/s]
+ 27%|##6       | Downloading : 664k/2.44M [00:00&lt;00:00,    17.1MB/s]
+ 47%|####7     | Downloading : 1.15M/2.44M [00:00&lt;00:00,    26.2MB/s]
+ 68%|######7   | Downloading : 1.65M/2.44M [00:00&lt;00:00,    25.6MB/s]
+ 88%|########8 | Downloading : 2.15M/2.44M [00:00&lt;00:00,    25.8MB/s]
+100%|##########| Downloading : 2.44M/2.44M [00:00&lt;00:00,    19.1MB/s]
+Downloading https://physionet.org/files/eegmmidb/1.0.0/S002/S002R12.edf (2.4 MB)
+
+  0%|          | Downloading : 0.00/2.44M [00:00&lt;?,        ?B/s]
+  4%|3         | Downloading : 88.0k/2.44M [00:00&lt;00:00,    3.09MB/s]
+ 13%|#2        | Downloading : 312k/2.44M [00:00&lt;00:00,    9.25MB/s]
+ 23%|##2       | Downloading : 568k/2.44M [00:00&lt;00:00,    15.0MB/s]
+ 54%|#####3    | Downloading : 1.30M/2.44M [00:00&lt;00:00,    34.2MB/s]
+ 95%|#########4| Downloading : 2.30M/2.44M [00:00&lt;00:00,    36.6MB/s]
+100%|##########| Downloading : 2.44M/2.44M [00:00&lt;00:00,    21.6MB/s]
+</pre></div>
+</div>
 <p>Let’s see whether the data has been downloaded using a quick visualization
 of the directory tree.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_dir</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/os.path.html#os.path.join" title="os.path.join" class="sphx-glr-backref-module-os-path sphx-glr-backref-type-py-function"><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mne_dir</span></a><span class="p">,</span> <span class="s1">&#39;MNE-eegbci-data&#39;</span><span class="p">)</span>
@@ -176,13 +242,13 @@ of the directory tree.</p>
 |------ eegmmidb/
 |--------- 1.0.0/
 |------------ S001/
-|--------------- S001R04.edf
-|--------------- S001R12.edf
 |--------------- S001R02.edf
+|--------------- S001R12.edf
+|--------------- S001R04.edf
 |------------ S002/
+|--------------- S002R04.edf
 |--------------- S002R02.edf
 |--------------- S002R12.edf
-|--------------- S002R04.edf
 </pre></div>
 </div>
 <p>The data are in the <a class="reference external" href="https://www.edfplus.info/">European Data Format</a>
@@ -364,7 +430,6 @@ Writing &#39;/home/circleci/mne_data/eegmmidb_bids/participants.tsv&#39;...
 
 participant_id  age     sex     hand
 sub-001 n/a     n/a     n/a
-sub-002 n/a     n/a     n/a
 
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids/participants.json&#39;...
 
@@ -396,8 +461,6 @@ Writing &#39;/home/circleci/mne_data/eegmmidb_bids/participants.json&#39;...
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-001/sub-001_scans.tsv&#39;...
 
 filename        acq_time
-eeg/sub-001_task-imaginefists_run-1_eeg.edf     2009-08-12T16:15:00
-eeg/sub-001_task-imaginefists_run-2_eeg.edf     2009-08-12T16:15:00
 eeg/sub-001_task-resteyesclosed_eeg.edf 2009-08-12T16:15:00
 
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_events.tsv&#39;...
@@ -459,39 +522,16 @@ Copying data files to /home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_
 </div>
 <p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>|eegmmidb_bids/
-|--- dataset_description.json
-|--- participants.tsv
 |--- participants.json
+|--- participants.tsv
+|--- dataset_description.json
 |--- sub-001/
 |------ sub-001_scans.tsv
 |------ eeg/
-|--------- sub-001_task-imaginefists_run-2_channels.tsv
-|--------- sub-001_task-resteyesclosed_eeg.edf
-|--------- sub-001_task-resteyesclosed_events.tsv
-|--------- sub-001_task-imaginefists_run-2_eeg.edf
 |--------- sub-001_task-resteyesclosed_eeg.json
-|--------- sub-001_task-imaginefists_run-1_eeg.json
-|--------- sub-001_task-imaginefists_run-1_channels.tsv
-|--------- sub-001_task-imaginefists_run-2_events.tsv
-|--------- sub-001_task-imaginefists_run-1_eeg.edf
+|--------- sub-001_task-resteyesclosed_events.tsv
+|--------- sub-001_task-resteyesclosed_eeg.edf
 |--------- sub-001_task-resteyesclosed_channels.tsv
-|--------- sub-001_task-imaginefists_run-1_events.tsv
-|--------- sub-001_task-imaginefists_run-2_eeg.json
-|--- sub-002/
-|------ sub-002_scans.tsv
-|------ eeg/
-|--------- sub-002_task-resteyesclosed_channels.tsv
-|--------- sub-002_task-imaginefists_run-2_events.tsv
-|--------- sub-002_task-imaginefists_run-2_eeg.json
-|--------- sub-002_task-imaginefists_run-1_channels.tsv
-|--------- sub-002_task-resteyesclosed_events.tsv
-|--------- sub-002_task-resteyesclosed_eeg.json
-|--------- sub-002_task-imaginefists_run-1_eeg.json
-|--------- sub-002_task-imaginefists_run-1_eeg.edf
-|--------- sub-002_task-imaginefists_run-2_eeg.edf
-|--------- sub-002_task-resteyesclosed_eeg.edf
-|--------- sub-002_task-imaginefists_run-2_channels.tsv
-|--------- sub-002_task-imaginefists_run-1_events.tsv
 </pre></div>
 </div>
 <p>Looks good so far, let’s convert the data for all tasks and subjects.</p>
@@ -1136,39 +1176,39 @@ Copying data files to /home/circleci/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_
 </div>
 <p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>|eegmmidb_bids/
-|--- dataset_description.json
-|--- participants.tsv
 |--- participants.json
-|--- sub-001/
-|------ sub-001_scans.tsv
-|------ eeg/
-|--------- sub-001_task-imaginefists_run-2_channels.tsv
-|--------- sub-001_task-resteyesclosed_eeg.edf
-|--------- sub-001_task-resteyesclosed_events.tsv
-|--------- sub-001_task-imaginefists_run-2_eeg.edf
-|--------- sub-001_task-resteyesclosed_eeg.json
-|--------- sub-001_task-imaginefists_run-1_eeg.json
-|--------- sub-001_task-imaginefists_run-1_channels.tsv
-|--------- sub-001_task-imaginefists_run-2_events.tsv
-|--------- sub-001_task-imaginefists_run-1_eeg.edf
-|--------- sub-001_task-resteyesclosed_channels.tsv
-|--------- sub-001_task-imaginefists_run-1_events.tsv
-|--------- sub-001_task-imaginefists_run-2_eeg.json
+|--- participants.tsv
+|--- dataset_description.json
 |--- sub-002/
 |------ sub-002_scans.tsv
 |------ eeg/
-|--------- sub-002_task-resteyesclosed_channels.tsv
-|--------- sub-002_task-imaginefists_run-2_events.tsv
-|--------- sub-002_task-imaginefists_run-2_eeg.json
-|--------- sub-002_task-imaginefists_run-1_channels.tsv
-|--------- sub-002_task-resteyesclosed_events.tsv
-|--------- sub-002_task-resteyesclosed_eeg.json
-|--------- sub-002_task-imaginefists_run-1_eeg.json
-|--------- sub-002_task-imaginefists_run-1_eeg.edf
 |--------- sub-002_task-imaginefists_run-2_eeg.edf
 |--------- sub-002_task-resteyesclosed_eeg.edf
-|--------- sub-002_task-imaginefists_run-2_channels.tsv
+|--------- sub-002_task-resteyesclosed_channels.tsv
+|--------- sub-002_task-resteyesclosed_eeg.json
+|--------- sub-002_task-imaginefists_run-1_eeg.json
 |--------- sub-002_task-imaginefists_run-1_events.tsv
+|--------- sub-002_task-resteyesclosed_events.tsv
+|--------- sub-002_task-imaginefists_run-1_eeg.edf
+|--------- sub-002_task-imaginefists_run-2_channels.tsv
+|--------- sub-002_task-imaginefists_run-1_channels.tsv
+|--------- sub-002_task-imaginefists_run-2_eeg.json
+|--------- sub-002_task-imaginefists_run-2_events.tsv
+|--- sub-001/
+|------ sub-001_scans.tsv
+|------ eeg/
+|--------- sub-001_task-imaginefists_run-2_eeg.edf
+|--------- sub-001_task-imaginefists_run-2_events.tsv
+|--------- sub-001_task-resteyesclosed_eeg.json
+|--------- sub-001_task-resteyesclosed_events.tsv
+|--------- sub-001_task-resteyesclosed_eeg.edf
+|--------- sub-001_task-imaginefists_run-2_eeg.json
+|--------- sub-001_task-imaginefists_run-1_eeg.json
+|--------- sub-001_task-resteyesclosed_channels.tsv
+|--------- sub-001_task-imaginefists_run-1_channels.tsv
+|--------- sub-001_task-imaginefists_run-1_events.tsv
+|--------- sub-001_task-imaginefists_run-2_channels.tsv
+|--------- sub-001_task-imaginefists_run-1_eeg.edf
 </pre></div>
 </div>
 <p>MNE-BIDS has created a suitable directory structure for us, and among other
@@ -1183,10 +1223,10 @@ directories called the “BIDS-validator”, available as a web version and a
 command line tool:</p>
 <p>Web version: <a class="reference external" href="https://bids-standard.github.io/bids-validator/">https://bids-standard.github.io/bids-validator/</a></p>
 <p>Command line tool: <a class="reference external" href="https://www.npmjs.com/package/bids-validator">https://www.npmjs.com/package/bids-validator</a></p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.710 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  2.538 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-eeg-to-bids-py">
 <div class="binder-badge docutils container">
-<a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=v0.4/notebooks/auto_examples/convert_eeg_to_bids.ipynb"><img alt="https://mybinder.org/badge_logo.svg" src="https://mybinder.org/badge_logo.svg" width="150px" /></a>
+<a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/convert_eeg_to_bids.ipynb"><img alt="https://mybinder.org/badge_logo.svg" src="https://mybinder.org/badge_logo.svg" width="150px" /></a>
 </div>
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/b7d549fc992398180d012ad4f3a73e8d/convert_eeg_to_bids.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">convert_eeg_to_bids.py</span></code></a></p>

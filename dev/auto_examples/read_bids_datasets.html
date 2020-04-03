@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>02. Read and load datasets in BIDS format &#8212; mne_bids 0.4 documentation</title>
+    <title>02. Read and load datasets in BIDS format &#8212; mne_bids 0.5.dev0 documentation</title>
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
@@ -38,7 +38,7 @@
         </button>
         <a class="navbar-brand" href="../index.html">
           MNE-BIDS</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.4</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.5.dev0</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -74,7 +74,7 @@
           
 <div class="navbar-form navbar-right navbar-btn dropdown btn-group-sm" style="margin-left: 20px; margin-top: 5px; margin-bottom: 5px">
   <button type="button" class="btn btn-primary navbar-btn dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown">
-    v0.4
+    v0.5.dev0
     <span class="caret"></span>
   </button>
   <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
@@ -166,6 +166,1041 @@ respective <a class="reference internal" href="convert_mne_sample.html#ex-conver
 </div>
 <p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using default location ~/mne_data for somato...
+Creating ~/mne_data
+Downloading archive MNE-somato-data.tar.gz to /home/circleci/mne_data
+Downloading https://files.osf.io/v1/resources/rxvq7/providers/osfstorage/59c0e2849ad5a1025d4b7346?version=6&amp;action=download&amp;direct (558.7 MB)
+
+  0%|          | Downloading : 0.00/559M [00:00&lt;?,        ?B/s]
+  0%|          | Downloading : 120k/559M [00:00&lt;01:41,    5.79MB/s]
+  0%|          | Downloading : 568k/559M [00:00&lt;01:36,    6.08MB/s]
+  0%|          | Downloading : 824k/559M [00:00&lt;04:40,    2.09MB/s]
+  0%|          | Downloading : 952k/559M [00:00&lt;01:42,    5.70MB/s]
+  0%|          | Downloading : 1.18M/559M [00:00&lt;00:44,    13.2MB/s]
+  0%|          | Downloading : 1.93M/559M [00:00&lt;01:00,    9.59MB/s]
+  0%|          | Downloading : 2.43M/559M [00:00&lt;03:47,    2.57MB/s]
+  0%|          | Downloading : 2.68M/559M [00:00&lt;02:14,    4.33MB/s]
+  1%|          | Downloading : 2.93M/559M [00:00&lt;06:23,    1.52MB/s]
+  1%|          | Downloading : 3.30M/559M [00:00&lt;02:28,    3.91MB/s]
+  1%|          | Downloading : 3.55M/559M [00:01&lt;04:09,    2.34MB/s]
+  1%|          | Downloading : 3.68M/559M [00:01&lt;03:12,    3.02MB/s]
+  1%|          | Downloading : 4.05M/559M [00:01&lt;01:32,    6.29MB/s]
+  1%|          | Downloading : 4.30M/559M [00:01&lt;05:45,    1.68MB/s]
+  1%|          | Downloading : 4.43M/559M [00:01&lt;02:25,    3.99MB/s]
+  1%|          | Downloading : 4.80M/559M [00:01&lt;04:10,    2.32MB/s]
+  1%|          | Downloading : 5.43M/559M [00:01&lt;00:42,    13.8MB/s]
+  1%|1         | Downloading : 5.93M/559M [00:01&lt;00:27,    20.9MB/s]
+  1%|1         | Downloading : 6.93M/559M [00:01&lt;00:47,    12.3MB/s]
+  1%|1         | Downloading : 7.43M/559M [00:01&lt;00:52,    11.1MB/s]
+  1%|1         | Downloading : 7.93M/559M [00:01&lt;04:01,    2.39MB/s]
+  2%|1         | Downloading : 8.68M/559M [00:02&lt;02:40,    3.59MB/s]
+  2%|1         | Downloading : 9.43M/559M [00:02&lt;00:31,    18.3MB/s]
+  2%|1         | Downloading : 9.93M/559M [00:02&lt;00:23,    24.6MB/s]
+  2%|1         | Downloading : 10.4M/559M [00:02&lt;00:20,    28.4MB/s]
+  2%|1         | Downloading : 10.9M/559M [00:02&lt;00:27,    20.9MB/s]
+  2%|2         | Downloading : 11.4M/559M [00:02&lt;00:19,    29.6MB/s]
+  2%|2         | Downloading : 12.9M/559M [00:02&lt;00:36,    15.8MB/s]
+  2%|2         | Downloading : 13.9M/559M [00:02&lt;02:39,    3.58MB/s]
+  3%|2         | Downloading : 14.4M/559M [00:02&lt;03:12,    2.97MB/s]
+  3%|2         | Downloading : 14.9M/559M [00:02&lt;00:41,    13.7MB/s]
+  3%|2         | Downloading : 15.4M/559M [00:02&lt;00:27,    20.6MB/s]
+  3%|2         | Downloading : 15.9M/559M [00:02&lt;00:49,    11.6MB/s]
+  3%|2         | Downloading : 16.4M/559M [00:03&lt;06:48,    1.39MB/s]
+  3%|3         | Downloading : 17.2M/559M [00:03&lt;00:54,    10.3MB/s]
+  3%|3         | Downloading : 18.7M/559M [00:03&lt;00:20,    27.2MB/s]
+  4%|3         | Downloading : 19.7M/559M [00:03&lt;00:39,    14.5MB/s]
+  4%|3         | Downloading : 20.7M/559M [00:03&lt;03:26,    2.73MB/s]
+  4%|3         | Downloading : 21.2M/559M [00:04&lt;02:55,    3.22MB/s]
+  4%|3         | Downloading : 21.4M/559M [00:04&lt;03:19,    2.82MB/s]
+  4%|3         | Downloading : 21.9M/559M [00:04&lt;01:29,    6.32MB/s]
+  4%|3         | Downloading : 22.2M/559M [00:04&lt;12:01,     780kB/s]
+  4%|4         | Downloading : 22.6M/559M [00:04&lt;01:38,    5.72MB/s]
+  4%|4         | Downloading : 23.3M/559M [00:04&lt;02:51,    3.27MB/s]
+  4%|4         | Downloading : 23.6M/559M [00:04&lt;01:15,    7.42MB/s]
+  4%|4         | Downloading : 24.1M/559M [00:04&lt;00:23,    23.8MB/s]
+  4%|4         | Downloading : 25.1M/559M [00:04&lt;00:17,    32.5MB/s]
+  5%|4         | Downloading : 25.6M/559M [00:04&lt;00:18,    30.8MB/s]
+  5%|4         | Downloading : 26.1M/559M [00:04&lt;00:39,    14.0MB/s]
+  5%|4         | Downloading : 26.6M/559M [00:05&lt;06:40,    1.39MB/s]
+  5%|4         | Downloading : 27.3M/559M [00:05&lt;00:56,    9.79MB/s]
+  5%|4         | Downloading : 27.8M/559M [00:05&lt;00:23,    23.9MB/s]
+  5%|5         | Downloading : 28.8M/559M [00:05&lt;00:18,    29.8MB/s]
+  5%|5         | Downloading : 29.3M/559M [00:05&lt;00:19,    28.1MB/s]
+  5%|5         | Downloading : 29.8M/559M [00:05&lt;00:53,    10.3MB/s]
+  5%|5         | Downloading : 30.3M/559M [00:05&lt;00:57,    9.72MB/s]
+  6%|5         | Downloading : 30.8M/559M [00:05&lt;04:16,    2.16MB/s]
+  6%|5         | Downloading : 31.1M/559M [00:05&lt;02:22,    3.89MB/s]
+  6%|5         | Downloading : 31.3M/559M [00:05&lt;02:00,    4.58MB/s]
+  6%|5         | Downloading : 31.6M/559M [00:06&lt;03:42,    2.48MB/s]
+  6%|5         | Downloading : 31.7M/559M [00:06&lt;02:45,    3.33MB/s]
+  6%|5         | Downloading : 32.1M/559M [00:06&lt;01:23,    6.59MB/s]
+  6%|5         | Downloading : 32.8M/559M [00:06&lt;02:18,    3.97MB/s]
+  6%|6         | Downloading : 34.1M/559M [00:06&lt;00:24,    22.0MB/s]
+  6%|6         | Downloading : 35.1M/559M [00:06&lt;00:17,    31.8MB/s]
+  6%|6         | Downloading : 35.6M/559M [00:06&lt;00:19,    28.0MB/s]
+  7%|6         | Downloading : 36.6M/559M [00:06&lt;00:16,    33.2MB/s]
+  7%|6         | Downloading : 37.1M/559M [00:06&lt;00:25,    21.7MB/s]
+  7%|6         | Downloading : 37.6M/559M [00:06&lt;03:37,    2.51MB/s]
+  7%|6         | Downloading : 38.3M/559M [00:06&lt;00:37,    14.5MB/s]
+  7%|6         | Downloading : 38.8M/559M [00:06&lt;00:22,    24.1MB/s]
+  7%|7         | Downloading : 39.3M/559M [00:06&lt;00:20,    26.4MB/s]
+  7%|7         | Downloading : 40.3M/559M [00:06&lt;00:16,    32.0MB/s]
+  7%|7         | Downloading : 40.8M/559M [00:06&lt;00:18,    29.7MB/s]
+  7%|7         | Downloading : 41.3M/559M [00:06&lt;00:18,    29.9MB/s]
+  7%|7         | Downloading : 41.8M/559M [00:06&lt;00:28,    18.9MB/s]
+  8%|7         | Downloading : 42.3M/559M [00:07&lt;04:18,    2.09MB/s]
+  8%|7         | Downloading : 42.6M/559M [00:07&lt;01:22,    6.58MB/s]
+  8%|7         | Downloading : 42.8M/559M [00:07&lt;05:56,    1.52MB/s]
+  8%|7         | Downloading : 43.2M/559M [00:07&lt;01:06,    8.14MB/s]
+  8%|7         | Downloading : 43.4M/559M [00:07&lt;00:49,    10.9MB/s]
+  8%|7         | Downloading : 43.7M/559M [00:07&lt;06:29,    1.38MB/s]
+  8%|7         | Downloading : 43.8M/559M [00:07&lt;02:34,    3.50MB/s]
+  8%|7         | Downloading : 44.2M/559M [00:07&lt;04:14,    2.12MB/s]
+  8%|7         | Downloading : 44.3M/559M [00:07&lt;02:10,    4.13MB/s]
+  8%|7         | Downloading : 44.7M/559M [00:08&lt;04:08,    2.17MB/s]
+  8%|8         | Downloading : 44.9M/559M [00:08&lt;00:54,    9.87MB/s]
+  8%|8         | Downloading : 45.2M/559M [00:08&lt;01:16,    7.00MB/s]
+  8%|8         | Downloading : 45.4M/559M [00:08&lt;00:52,    10.2MB/s]
+  8%|8         | Downloading : 45.7M/559M [00:08&lt;12:25,     721kB/s]
+  8%|8         | Downloading : 45.8M/559M [00:08&lt;03:39,    2.46MB/s]
+  8%|8         | Downloading : 46.2M/559M [00:08&lt;03:46,    2.38MB/s]
+  8%|8         | Downloading : 46.6M/559M [00:08&lt;00:53,    10.1MB/s]
+  8%|8         | Downloading : 46.8M/559M [00:08&lt;01:16,    7.04MB/s]
+  8%|8         | Downloading : 47.1M/559M [00:08&lt;01:28,    6.07MB/s]
+  8%|8         | Downloading : 47.3M/559M [00:09&lt;04:30,    1.99MB/s]
+  9%|8         | Downloading : 48.2M/559M [00:09&lt;00:42,    12.5MB/s]
+  9%|8         | Downloading : 48.7M/559M [00:09&lt;00:47,    11.3MB/s]
+  9%|8         | Downloading : 49.2M/559M [00:09&lt;03:21,    2.66MB/s]
+  9%|8         | Downloading : 49.7M/559M [00:09&lt;00:43,    12.2MB/s]
+  9%|8         | Downloading : 50.2M/559M [00:09&lt;00:26,    20.2MB/s]
+  9%|9         | Downloading : 50.4M/559M [00:09&lt;05:41,    1.56MB/s]
+  9%|9         | Downloading : 52.3M/559M [00:09&lt;01:06,    8.04MB/s]
+ 10%|9         | Downloading : 53.3M/559M [00:09&lt;00:37,    14.3MB/s]
+ 10%|9         | Downloading : 53.8M/559M [00:10&lt;05:10,    1.71MB/s]
+ 10%|9         | Downloading : 54.1M/559M [00:10&lt;12:36,     700kB/s]
+ 10%|9         | Downloading : 54.4M/559M [00:10&lt;05:11,    1.70MB/s]
+ 10%|9         | Downloading : 54.8M/559M [00:10&lt;01:31,    5.77MB/s]
+ 10%|9         | Downloading : 55.1M/559M [00:10&lt;04:56,    1.78MB/s]
+ 10%|9         | Downloading : 55.4M/559M [00:10&lt;00:52,    10.1MB/s]
+ 10%|9         | Downloading : 55.7M/559M [00:10&lt;00:48,    10.9MB/s]
+ 10%|#         | Downloading : 55.9M/559M [00:10&lt;00:42,    12.3MB/s]
+ 10%|#         | Downloading : 56.2M/559M [00:11&lt;02:07,    4.14MB/s]
+ 10%|#         | Downloading : 56.4M/559M [00:11&lt;01:10,    7.44MB/s]
+ 10%|#         | Downloading : 56.7M/559M [00:11&lt;03:56,    2.23MB/s]
+ 10%|#         | Downloading : 56.8M/559M [00:11&lt;01:33,    5.62MB/s]
+ 10%|#         | Downloading : 57.7M/559M [00:11&lt;00:23,    22.2MB/s]
+ 10%|#         | Downloading : 58.2M/559M [00:11&lt;00:54,    9.55MB/s]
+ 11%|#         | Downloading : 58.7M/559M [00:11&lt;06:10,    1.41MB/s]
+ 11%|#         | Downloading : 58.9M/559M [00:11&lt;01:41,    5.18MB/s]
+ 11%|#         | Downloading : 59.2M/559M [00:11&lt;01:04,    8.14MB/s]
+ 11%|#         | Downloading : 59.4M/559M [00:11&lt;00:38,    13.6MB/s]
+ 11%|#         | Downloading : 60.2M/559M [00:11&lt;00:15,    34.2MB/s]
+ 11%|#         | Downloading : 61.2M/559M [00:11&lt;00:15,    34.7MB/s]
+ 11%|#1        | Downloading : 62.2M/559M [00:11&lt;00:16,    30.8MB/s]
+ 11%|#1        | Downloading : 62.7M/559M [00:11&lt;00:21,    24.4MB/s]
+ 11%|#1        | Downloading : 63.2M/559M [00:11&lt;00:19,    26.1MB/s]
+ 11%|#1        | Downloading : 63.7M/559M [00:11&lt;00:30,    17.1MB/s]
+ 11%|#1        | Downloading : 64.2M/559M [00:12&lt;00:54,    9.47MB/s]
+ 12%|#1        | Downloading : 64.7M/559M [00:12&lt;03:21,    2.57MB/s]
+ 12%|#1        | Downloading : 64.9M/559M [00:12&lt;01:14,    6.92MB/s]
+ 12%|#1        | Downloading : 65.2M/559M [00:12&lt;00:59,    8.69MB/s]
+ 12%|#1        | Downloading : 65.9M/559M [00:12&lt;02:52,    3.00MB/s]
+ 12%|#1        | Downloading : 66.2M/559M [00:12&lt;01:38,    5.22MB/s]
+ 12%|#1        | Downloading : 66.4M/559M [00:12&lt;03:45,    2.29MB/s]
+ 12%|#1        | Downloading : 66.8M/559M [00:12&lt;00:45,    11.4MB/s]
+ 12%|#2        | Downloading : 67.6M/559M [00:12&lt;00:18,    27.8MB/s]
+ 12%|#2        | Downloading : 68.1M/559M [00:12&lt;00:19,    26.4MB/s]
+ 12%|#2        | Downloading : 68.6M/559M [00:12&lt;00:37,    13.8MB/s]
+ 12%|#2        | Downloading : 69.1M/559M [00:12&lt;00:58,    8.74MB/s]
+ 12%|#2        | Downloading : 69.6M/559M [00:12&lt;00:57,    8.92MB/s]
+ 13%|#2        | Downloading : 70.1M/559M [00:13&lt;00:58,    8.72MB/s]
+ 13%|#2        | Downloading : 70.6M/559M [00:13&lt;06:12,    1.37MB/s]
+ 13%|#2        | Downloading : 71.3M/559M [00:13&lt;01:35,    5.34MB/s]
+ 13%|#2        | Downloading : 71.8M/559M [00:13&lt;03:22,    2.52MB/s]
+ 13%|#2        | Downloading : 72.1M/559M [00:13&lt;01:26,    5.92MB/s]
+ 13%|#2        | Downloading : 72.3M/559M [00:13&lt;05:30,    1.54MB/s]
+ 13%|#3        | Downloading : 72.7M/559M [00:14&lt;01:03,    8.05MB/s]
+ 13%|#3        | Downloading : 73.2M/559M [00:14&lt;01:26,    5.92MB/s]
+ 13%|#3        | Downloading : 73.4M/559M [00:14&lt;04:03,    2.09MB/s]
+ 13%|#3        | Downloading : 73.6M/559M [00:14&lt;01:22,    6.18MB/s]
+ 13%|#3        | Downloading : 73.9M/559M [00:14&lt;02:01,    4.18MB/s]
+ 13%|#3        | Downloading : 74.2M/559M [00:14&lt;01:50,    4.61MB/s]
+ 13%|#3        | Downloading : 74.4M/559M [00:14&lt;04:34,    1.85MB/s]
+ 13%|#3        | Downloading : 74.8M/559M [00:14&lt;01:10,    7.21MB/s]
+ 13%|#3        | Downloading : 75.1M/559M [00:14&lt;04:00,    2.11MB/s]
+ 14%|#3        | Downloading : 75.9M/559M [00:14&lt;00:37,    13.6MB/s]
+ 14%|#3        | Downloading : 76.4M/559M [00:14&lt;00:19,    25.5MB/s]
+ 14%|#3        | Downloading : 76.9M/559M [00:14&lt;00:22,    22.1MB/s]
+ 14%|#3        | Downloading : 77.4M/559M [00:14&lt;00:24,    20.3MB/s]
+ 14%|#3        | Downloading : 77.9M/559M [00:14&lt;00:21,    23.0MB/s]
+ 14%|#4        | Downloading : 78.4M/559M [00:14&lt;00:47,    10.6MB/s]
+ 14%|#4        | Downloading : 78.9M/559M [00:15&lt;03:04,    2.72MB/s]
+ 14%|#4        | Downloading : 79.2M/559M [00:15&lt;01:37,    5.13MB/s]
+ 14%|#4        | Downloading : 79.7M/559M [00:15&lt;00:30,    16.3MB/s]
+ 14%|#4        | Downloading : 80.4M/559M [00:15&lt;00:17,    27.9MB/s]
+ 14%|#4        | Downloading : 80.9M/559M [00:15&lt;00:19,    26.2MB/s]
+ 15%|#4        | Downloading : 81.9M/559M [00:15&lt;00:51,    9.63MB/s]
+ 15%|#4        | Downloading : 82.2M/559M [00:15&lt;00:58,    8.54MB/s]
+ 15%|#4        | Downloading : 82.9M/559M [00:15&lt;02:26,    3.42MB/s]
+ 15%|#4        | Downloading : 83.7M/559M [00:15&lt;00:30,    16.3MB/s]
+ 15%|#5        | Downloading : 84.2M/559M [00:15&lt;00:16,    29.7MB/s]
+ 15%|#5        | Downloading : 84.7M/559M [00:15&lt;00:16,    30.8MB/s]
+ 15%|#5        | Downloading : 85.2M/559M [00:15&lt;00:16,    30.3MB/s]
+ 15%|#5        | Downloading : 85.7M/559M [00:15&lt;00:20,    24.5MB/s]
+ 16%|#5        | Downloading : 86.7M/559M [00:15&lt;00:14,    33.5MB/s]
+ 16%|#5        | Downloading : 87.2M/559M [00:15&lt;00:19,    25.7MB/s]
+ 16%|#5        | Downloading : 87.7M/559M [00:15&lt;00:25,    19.7MB/s]
+ 16%|#5        | Downloading : 88.2M/559M [00:15&lt;00:30,    16.3MB/s]
+ 16%|#5        | Downloading : 88.7M/559M [00:16&lt;03:11,    2.58MB/s]
+ 16%|#5        | Downloading : 88.9M/559M [00:16&lt;01:06,    7.42MB/s]
+ 16%|#5        | Downloading : 89.2M/559M [00:16&lt;01:01,    8.05MB/s]
+ 16%|#6        | Downloading : 89.4M/559M [00:16&lt;01:12,    6.77MB/s]
+ 16%|#6        | Downloading : 89.7M/559M [00:16&lt;00:41,    11.8MB/s]
+ 16%|#6        | Downloading : 89.9M/559M [00:16&lt;05:47,    1.41MB/s]
+ 16%|#6        | Downloading : 90.8M/559M [00:16&lt;00:45,    10.7MB/s]
+ 16%|#6        | Downloading : 91.8M/559M [00:16&lt;00:47,    10.2MB/s]
+ 17%|#6        | Downloading : 92.3M/559M [00:16&lt;01:32,    5.28MB/s]
+ 17%|#6        | Downloading : 92.6M/559M [00:16&lt;04:28,    1.82MB/s]
+ 17%|#6        | Downloading : 92.9M/559M [00:16&lt;01:10,    6.92MB/s]
+ 17%|#6        | Downloading : 93.2M/559M [00:16&lt;00:57,    8.45MB/s]
+ 17%|#6        | Downloading : 93.9M/559M [00:17&lt;02:32,    3.20MB/s]
+ 17%|#6        | Downloading : 94.2M/559M [00:17&lt;01:43,    4.69MB/s]
+ 17%|#6        | Downloading : 94.4M/559M [00:17&lt;02:57,    2.74MB/s]
+ 17%|#6        | Downloading : 94.7M/559M [00:17&lt;00:46,    10.5MB/s]
+ 17%|#6        | Downloading : 94.9M/559M [00:17&lt;02:51,    2.84MB/s]
+ 17%|#7        | Downloading : 95.7M/559M [00:17&lt;02:38,    3.05MB/s]
+ 17%|#7        | Downloading : 96.4M/559M [00:18&lt;04:22,    1.84MB/s]
+ 17%|#7        | Downloading : 96.7M/559M [00:18&lt;01:20,    6.00MB/s]
+ 17%|#7        | Downloading : 96.9M/559M [00:18&lt;04:59,    1.62MB/s]
+ 18%|#7        | Downloading : 97.8M/559M [00:18&lt;00:51,    9.29MB/s]
+ 18%|#7        | Downloading : 98.3M/559M [00:18&lt;00:25,    19.0MB/s]
+ 18%|#7        | Downloading : 98.8M/559M [00:18&lt;01:26,    5.58MB/s]
+ 18%|#7        | Downloading : 99.1M/559M [00:18&lt;01:02,    7.76MB/s]
+ 18%|#7        | Downloading : 99.3M/559M [00:18&lt;00:44,    10.9MB/s]
+ 18%|#7        | Downloading : 100M/559M [00:18&lt;01:56,    4.14MB/s]
+ 18%|#7        | Downloading : 100M/559M [00:18&lt;01:16,    6.27MB/s]
+ 18%|#7        | Downloading : 101M/559M [00:18&lt;04:41,    1.71MB/s]
+ 18%|#8        | Downloading : 101M/559M [00:18&lt;00:45,    10.5MB/s]
+ 18%|#8        | Downloading : 102M/559M [00:18&lt;00:22,    21.5MB/s]
+ 18%|#8        | Downloading : 102M/559M [00:18&lt;00:20,    22.8MB/s]
+ 18%|#8        | Downloading : 103M/559M [00:19&lt;00:35,    13.4MB/s]
+ 19%|#8        | Downloading : 103M/559M [00:19&lt;01:06,    7.14MB/s]
+ 19%|#8        | Downloading : 104M/559M [00:19&lt;02:55,    2.72MB/s]
+ 19%|#8        | Downloading : 104M/559M [00:19&lt;01:01,    7.76MB/s]
+ 19%|#8        | Downloading : 104M/559M [00:19&lt;00:44,    10.7MB/s]
+ 19%|#8        | Downloading : 105M/559M [00:19&lt;00:38,    12.3MB/s]
+ 19%|#8        | Downloading : 105M/559M [00:19&lt;00:21,    22.3MB/s]
+ 19%|#8        | Downloading : 106M/559M [00:19&lt;00:19,    24.7MB/s]
+ 19%|#9        | Downloading : 106M/559M [00:19&lt;00:18,    25.9MB/s]
+ 19%|#9        | Downloading : 107M/559M [00:19&lt;00:20,    23.3MB/s]
+ 19%|#9        | Downloading : 107M/559M [00:19&lt;00:18,    26.0MB/s]
+ 19%|#9        | Downloading : 109M/559M [00:19&lt;00:16,    28.9MB/s]
+ 20%|#9        | Downloading : 110M/559M [00:19&lt;01:42,    4.60MB/s]
+ 20%|##        | Downloading : 113M/559M [00:19&lt;00:17,    27.4MB/s]
+ 21%|##        | Downloading : 115M/559M [00:19&lt;00:16,    28.7MB/s]
+ 21%|##1       | Downloading : 117M/559M [00:20&lt;01:11,    6.49MB/s]
+ 21%|##1       | Downloading : 118M/559M [00:20&lt;00:23,    19.5MB/s]
+ 21%|##1       | Downloading : 119M/559M [00:20&lt;00:16,    28.0MB/s]
+ 22%|##1       | Downloading : 120M/559M [00:20&lt;00:21,    21.2MB/s]
+ 22%|##1       | Downloading : 121M/559M [00:20&lt;01:50,    4.14MB/s]
+ 22%|##2       | Downloading : 123M/559M [00:20&lt;00:23,    19.3MB/s]
+ 22%|##2       | Downloading : 124M/559M [00:20&lt;00:14,    32.4MB/s]
+ 22%|##2       | Downloading : 125M/559M [00:20&lt;00:13,    34.7MB/s]
+ 23%|##2       | Downloading : 126M/559M [00:20&lt;00:13,    33.9MB/s]
+ 23%|##2       | Downloading : 127M/559M [00:20&lt;01:02,    7.20MB/s]
+ 23%|##2       | Downloading : 127M/559M [00:21&lt;04:14,    1.78MB/s]
+ 23%|##2       | Downloading : 128M/559M [00:21&lt;00:37,    11.9MB/s]
+ 23%|##3       | Downloading : 129M/559M [00:21&lt;00:20,    21.9MB/s]
+ 23%|##3       | Downloading : 129M/559M [00:21&lt;00:19,    22.9MB/s]
+ 23%|##3       | Downloading : 130M/559M [00:21&lt;00:24,    18.2MB/s]
+ 23%|##3       | Downloading : 130M/559M [00:21&lt;00:47,    9.48MB/s]
+ 23%|##3       | Downloading : 131M/559M [00:21&lt;03:23,    2.20MB/s]
+ 23%|##3       | Downloading : 131M/559M [00:21&lt;04:08,    1.80MB/s]
+ 24%|##3       | Downloading : 132M/559M [00:21&lt;00:38,    11.5MB/s]
+ 24%|##3       | Downloading : 132M/559M [00:21&lt;00:24,    18.3MB/s]
+ 24%|##3       | Downloading : 133M/559M [00:22&lt;01:01,    7.21MB/s]
+ 24%|##3       | Downloading : 133M/559M [00:22&lt;00:21,    21.0MB/s]
+ 24%|##3       | Downloading : 134M/559M [00:22&lt;02:37,    2.82MB/s]
+ 24%|##4       | Downloading : 134M/559M [00:22&lt;00:47,    9.28MB/s]
+ 24%|##4       | Downloading : 135M/559M [00:22&lt;00:18,    24.0MB/s]
+ 24%|##4       | Downloading : 135M/559M [00:22&lt;00:21,    20.9MB/s]
+ 24%|##4       | Downloading : 137M/559M [00:22&lt;00:55,    8.03MB/s]
+ 25%|##4       | Downloading : 137M/559M [00:22&lt;02:52,    2.56MB/s]
+ 25%|##4       | Downloading : 138M/559M [00:22&lt;00:41,    10.5MB/s]
+ 25%|##4       | Downloading : 138M/559M [00:22&lt;00:51,    8.59MB/s]
+ 25%|##4       | Downloading : 138M/559M [00:22&lt;00:21,    20.6MB/s]
+ 25%|##4       | Downloading : 139M/559M [00:22&lt;00:14,    29.4MB/s]
+ 25%|##5       | Downloading : 140M/559M [00:22&lt;00:10,    40.5MB/s]
+ 25%|##5       | Downloading : 140M/559M [00:22&lt;00:13,    33.1MB/s]
+ 25%|##5       | Downloading : 141M/559M [00:22&lt;00:23,    19.0MB/s]
+ 25%|##5       | Downloading : 141M/559M [00:22&lt;00:49,    8.83MB/s]
+ 25%|##5       | Downloading : 142M/559M [00:23&lt;03:26,    2.12MB/s]
+ 25%|##5       | Downloading : 142M/559M [00:23&lt;01:17,    5.64MB/s]
+ 25%|##5       | Downloading : 142M/559M [00:23&lt;04:05,    1.78MB/s]
+ 26%|##5       | Downloading : 143M/559M [00:23&lt;00:54,    8.01MB/s]
+ 26%|##5       | Downloading : 143M/559M [00:23&lt;00:40,    10.8MB/s]
+ 26%|##5       | Downloading : 143M/559M [00:23&lt;05:45,    1.26MB/s]
+ 26%|##5       | Downloading : 143M/559M [00:23&lt;02:30,    2.90MB/s]
+ 26%|##5       | Downloading : 144M/559M [00:23&lt;03:29,    2.08MB/s]
+ 26%|##5       | Downloading : 144M/559M [00:23&lt;01:43,    4.19MB/s]
+ 26%|##5       | Downloading : 144M/559M [00:24&lt;00:39,    11.0MB/s]
+ 26%|##5       | Downloading : 145M/559M [00:24&lt;02:27,    2.95MB/s]
+ 26%|##5       | Downloading : 145M/559M [00:24&lt;01:00,    7.15MB/s]
+ 26%|##6       | Downloading : 145M/559M [00:24&lt;00:30,    14.2MB/s]
+ 26%|##6       | Downloading : 146M/559M [00:24&lt;03:20,    2.16MB/s]
+ 26%|##6       | Downloading : 146M/559M [00:24&lt;01:31,    4.72MB/s]
+ 26%|##6       | Downloading : 146M/559M [00:24&lt;00:35,    12.3MB/s]
+ 26%|##6       | Downloading : 147M/559M [00:24&lt;02:54,    2.47MB/s]
+ 26%|##6       | Downloading : 147M/559M [00:24&lt;00:45,    9.50MB/s]
+ 26%|##6       | Downloading : 147M/559M [00:24&lt;04:50,    1.48MB/s]
+ 26%|##6       | Downloading : 147M/559M [00:25&lt;02:10,    3.30MB/s]
+ 26%|##6       | Downloading : 148M/559M [00:25&lt;01:26,    5.00MB/s]
+ 27%|##6       | Downloading : 148M/559M [00:25&lt;07:36,     942kB/s]
+ 27%|##6       | Downloading : 149M/559M [00:25&lt;00:57,    7.46MB/s]
+ 27%|##6       | Downloading : 149M/559M [00:25&lt;00:51,    8.30MB/s]
+ 27%|##6       | Downloading : 150M/559M [00:25&lt;00:54,    7.91MB/s]
+ 27%|##6       | Downloading : 150M/559M [00:25&lt;02:43,    2.62MB/s]
+ 27%|##6       | Downloading : 151M/559M [00:25&lt;01:25,    4.99MB/s]
+ 27%|##7       | Downloading : 151M/559M [00:25&lt;01:04,    6.66MB/s]
+ 27%|##7       | Downloading : 151M/559M [00:25&lt;03:21,    2.12MB/s]
+ 27%|##7       | Downloading : 152M/559M [00:26&lt;00:50,    8.44MB/s]
+ 27%|##7       | Downloading : 153M/559M [00:26&lt;01:05,    6.51MB/s]
+ 27%|##7       | Downloading : 153M/559M [00:26&lt;02:42,    2.61MB/s]
+ 27%|##7       | Downloading : 153M/559M [00:26&lt;01:05,    6.47MB/s]
+ 27%|##7       | Downloading : 154M/559M [00:26&lt;03:45,    1.89MB/s]
+ 28%|##7       | Downloading : 154M/559M [00:26&lt;00:37,    11.2MB/s]
+ 28%|##7       | Downloading : 155M/559M [00:26&lt;00:13,    31.6MB/s]
+ 28%|##7       | Downloading : 155M/559M [00:26&lt;00:13,    31.2MB/s]
+ 28%|##7       | Downloading : 156M/559M [00:26&lt;00:16,    26.2MB/s]
+ 28%|##8       | Downloading : 156M/559M [00:26&lt;00:15,    26.6MB/s]
+ 28%|##8       | Downloading : 157M/559M [00:26&lt;00:47,    8.86MB/s]
+ 28%|##8       | Downloading : 157M/559M [00:26&lt;00:50,    8.38MB/s]
+ 28%|##8       | Downloading : 158M/559M [00:26&lt;02:33,    2.74MB/s]
+ 28%|##8       | Downloading : 158M/559M [00:27&lt;02:14,    3.11MB/s]
+ 28%|##8       | Downloading : 158M/559M [00:27&lt;01:51,    3.78MB/s]
+ 28%|##8       | Downloading : 159M/559M [00:27&lt;03:01,    2.31MB/s]
+ 28%|##8       | Downloading : 159M/559M [00:27&lt;01:42,    4.10MB/s]
+ 28%|##8       | Downloading : 159M/559M [00:27&lt;00:40,    10.4MB/s]
+ 29%|##8       | Downloading : 160M/559M [00:27&lt;02:18,    3.02MB/s]
+ 29%|##8       | Downloading : 161M/559M [00:27&lt;01:59,    3.49MB/s]
+ 29%|##8       | Downloading : 161M/559M [00:27&lt;00:25,    16.5MB/s]
+ 29%|##8       | Downloading : 162M/559M [00:27&lt;00:21,    19.7MB/s]
+ 29%|##9       | Downloading : 163M/559M [00:27&lt;00:13,    31.8MB/s]
+ 29%|##9       | Downloading : 164M/559M [00:28&lt;00:34,    11.9MB/s]
+ 30%|##9       | Downloading : 165M/559M [00:28&lt;00:34,    11.9MB/s]
+ 30%|##9       | Downloading : 166M/559M [00:28&lt;00:15,    26.9MB/s]
+ 30%|##9       | Downloading : 167M/559M [00:28&lt;00:13,    30.8MB/s]
+ 30%|###       | Downloading : 168M/559M [00:28&lt;00:23,    17.5MB/s]
+ 30%|###       | Downloading : 169M/559M [00:28&lt;01:25,    4.80MB/s]
+ 30%|###       | Downloading : 170M/559M [00:28&lt;00:25,    15.8MB/s]
+ 30%|###       | Downloading : 170M/559M [00:28&lt;02:25,    2.79MB/s]
+ 31%|###       | Downloading : 171M/559M [00:28&lt;00:27,    14.6MB/s]
+ 31%|###       | Downloading : 171M/559M [00:28&lt;00:23,    17.4MB/s]
+ 31%|###       | Downloading : 172M/559M [00:28&lt;01:30,    4.46MB/s]
+ 31%|###       | Downloading : 172M/559M [00:28&lt;03:00,    2.24MB/s]
+ 31%|###       | Downloading : 172M/559M [00:29&lt;01:14,    5.42MB/s]
+ 31%|###       | Downloading : 173M/559M [00:29&lt;00:56,    7.14MB/s]
+ 31%|###       | Downloading : 173M/559M [00:29&lt;03:54,    1.72MB/s]
+ 31%|###1      | Downloading : 173M/559M [00:29&lt;00:41,    9.62MB/s]
+ 31%|###1      | Downloading : 174M/559M [00:29&lt;00:59,    6.80MB/s]
+ 31%|###1      | Downloading : 174M/559M [00:29&lt;01:25,    4.73MB/s]
+ 31%|###1      | Downloading : 174M/559M [00:29&lt;00:34,    11.7MB/s]
+ 31%|###1      | Downloading : 174M/559M [00:29&lt;04:02,    1.66MB/s]
+ 31%|###1      | Downloading : 175M/559M [00:29&lt;00:44,    9.01MB/s]
+ 31%|###1      | Downloading : 175M/559M [00:29&lt;04:40,    1.44MB/s]
+ 31%|###1      | Downloading : 175M/559M [00:29&lt;00:44,    8.98MB/s]
+ 32%|###1      | Downloading : 176M/559M [00:29&lt;00:14,    28.2MB/s]
+ 32%|###1      | Downloading : 177M/559M [00:29&lt;00:14,    27.4MB/s]
+ 32%|###1      | Downloading : 177M/559M [00:29&lt;00:15,    25.6MB/s]
+ 32%|###1      | Downloading : 178M/559M [00:29&lt;00:18,    21.3MB/s]
+ 32%|###2      | Downloading : 179M/559M [00:29&lt;00:12,    32.5MB/s]
+ 32%|###2      | Downloading : 180M/559M [00:30&lt;01:33,    4.23MB/s]
+ 32%|###2      | Downloading : 181M/559M [00:30&lt;02:48,    2.35MB/s]
+ 33%|###2      | Downloading : 182M/559M [00:30&lt;00:28,    14.0MB/s]
+ 33%|###2      | Downloading : 182M/559M [00:30&lt;00:28,    13.8MB/s]
+ 33%|###2      | Downloading : 183M/559M [00:30&lt;01:04,    6.10MB/s]
+ 33%|###2      | Downloading : 183M/559M [00:30&lt;00:43,    9.12MB/s]
+ 33%|###3      | Downloading : 185M/559M [00:30&lt;00:13,    30.0MB/s]
+ 33%|###3      | Downloading : 186M/559M [00:30&lt;00:12,    30.2MB/s]
+ 33%|###3      | Downloading : 187M/559M [00:30&lt;00:15,    24.7MB/s]
+ 34%|###3      | Downloading : 188M/559M [00:30&lt;00:17,    22.3MB/s]
+ 34%|###3      | Downloading : 189M/559M [00:31&lt;01:19,    4.90MB/s]
+ 34%|###3      | Downloading : 189M/559M [00:31&lt;00:20,    18.5MB/s]
+ 34%|###3      | Downloading : 190M/559M [00:31&lt;00:14,    26.2MB/s]
+ 34%|###4      | Downloading : 191M/559M [00:31&lt;00:11,    34.1MB/s]
+ 34%|###4      | Downloading : 191M/559M [00:31&lt;00:12,    31.9MB/s]
+ 34%|###4      | Downloading : 192M/559M [00:31&lt;00:13,    28.6MB/s]
+ 34%|###4      | Downloading : 192M/559M [00:31&lt;00:12,    30.9MB/s]
+ 35%|###4      | Downloading : 193M/559M [00:31&lt;00:16,    23.4MB/s]
+ 35%|###4      | Downloading : 193M/559M [00:31&lt;00:12,    30.1MB/s]
+ 35%|###4      | Downloading : 194M/559M [00:31&lt;00:11,    34.2MB/s]
+ 35%|###4      | Downloading : 195M/559M [00:31&lt;00:17,    21.4MB/s]
+ 35%|###4      | Downloading : 195M/559M [00:31&lt;00:17,    22.3MB/s]
+ 35%|###5      | Downloading : 196M/559M [00:31&lt;00:15,    23.9MB/s]
+ 35%|###5      | Downloading : 196M/559M [00:31&lt;00:16,    23.1MB/s]
+ 35%|###5      | Downloading : 197M/559M [00:31&lt;00:15,    25.0MB/s]
+ 35%|###5      | Downloading : 198M/559M [00:31&lt;00:10,    37.2MB/s]
+ 36%|###5      | Downloading : 199M/559M [00:31&lt;00:16,    23.0MB/s]
+ 36%|###5      | Downloading : 200M/559M [00:31&lt;00:13,    27.2MB/s]
+ 36%|###6      | Downloading : 201M/559M [00:31&lt;00:13,    27.2MB/s]
+ 36%|###6      | Downloading : 202M/559M [00:31&lt;01:22,    4.56MB/s]
+ 36%|###6      | Downloading : 203M/559M [00:32&lt;04:26,    1.40MB/s]
+ 36%|###6      | Downloading : 203M/559M [00:32&lt;00:59,    6.30MB/s]
+ 36%|###6      | Downloading : 203M/559M [00:32&lt;00:38,    9.78MB/s]
+ 36%|###6      | Downloading : 204M/559M [00:32&lt;00:29,    12.7MB/s]
+ 37%|###6      | Downloading : 204M/559M [00:32&lt;00:12,    29.5MB/s]
+ 37%|###6      | Downloading : 205M/559M [00:32&lt;00:18,    19.8MB/s]
+ 37%|###6      | Downloading : 205M/559M [00:32&lt;02:44,    2.26MB/s]
+ 37%|###6      | Downloading : 206M/559M [00:32&lt;00:48,    7.59MB/s]
+ 37%|###6      | Downloading : 206M/559M [00:32&lt;00:12,    29.0MB/s]
+ 37%|###7      | Downloading : 207M/559M [00:32&lt;00:09,    38.6MB/s]
+ 37%|###7      | Downloading : 208M/559M [00:32&lt;00:12,    30.4MB/s]
+ 37%|###7      | Downloading : 209M/559M [00:32&lt;00:11,    33.3MB/s]
+ 38%|###7      | Downloading : 210M/559M [00:32&lt;01:32,    3.93MB/s]
+ 38%|###7      | Downloading : 211M/559M [00:33&lt;01:15,    4.86MB/s]
+ 38%|###7      | Downloading : 211M/559M [00:33&lt;06:33,     927kB/s]
+ 38%|###7      | Downloading : 211M/559M [00:33&lt;00:53,    6.85MB/s]
+ 38%|###7      | Downloading : 212M/559M [00:33&lt;00:15,    23.1MB/s]
+ 38%|###8      | Downloading : 212M/559M [00:33&lt;00:12,    29.0MB/s]
+ 38%|###8      | Downloading : 213M/559M [00:33&lt;00:24,    14.9MB/s]
+ 38%|###8      | Downloading : 213M/559M [00:33&lt;00:54,    6.68MB/s]
+ 38%|###8      | Downloading : 214M/559M [00:33&lt;01:09,    5.18MB/s]
+ 38%|###8      | Downloading : 214M/559M [00:33&lt;03:56,    1.53MB/s]
+ 38%|###8      | Downloading : 215M/559M [00:33&lt;00:54,    6.63MB/s]
+ 38%|###8      | Downloading : 215M/559M [00:33&lt;00:45,    7.96MB/s]
+ 38%|###8      | Downloading : 215M/559M [00:34&lt;09:53,     607kB/s]
+ 39%|###8      | Downloading : 215M/559M [00:34&lt;01:13,    4.91MB/s]
+ 39%|###8      | Downloading : 216M/559M [00:34&lt;00:19,    18.5MB/s]
+ 39%|###8      | Downloading : 217M/559M [00:34&lt;00:15,    22.7MB/s]
+ 39%|###8      | Downloading : 218M/559M [00:34&lt;00:35,    10.2MB/s]
+ 39%|###9      | Downloading : 218M/559M [00:34&lt;02:25,    2.46MB/s]
+ 39%|###9      | Downloading : 218M/559M [00:34&lt;01:08,    5.20MB/s]
+ 39%|###9      | Downloading : 219M/559M [00:34&lt;00:42,    8.47MB/s]
+ 39%|###9      | Downloading : 219M/559M [00:34&lt;00:18,    19.1MB/s]
+ 40%|###9      | Downloading : 221M/559M [00:34&lt;00:10,    33.4MB/s]
+ 40%|###9      | Downloading : 222M/559M [00:34&lt;00:25,    14.0MB/s]
+ 40%|###9      | Downloading : 223M/559M [00:35&lt;00:18,    19.6MB/s]
+ 40%|####      | Downloading : 224M/559M [00:35&lt;01:17,    4.56MB/s]
+ 40%|####      | Downloading : 224M/559M [00:35&lt;02:07,    2.75MB/s]
+ 40%|####      | Downloading : 224M/559M [00:35&lt;00:53,    6.51MB/s]
+ 40%|####      | Downloading : 225M/559M [00:35&lt;00:42,    8.25MB/s]
+ 40%|####      | Downloading : 225M/559M [00:35&lt;03:40,    1.59MB/s]
+ 40%|####      | Downloading : 225M/559M [00:35&lt;00:52,    6.62MB/s]
+ 40%|####      | Downloading : 226M/559M [00:35&lt;00:40,    8.62MB/s]
+ 41%|####      | Downloading : 227M/559M [00:36&lt;02:09,    2.69MB/s]
+ 41%|####      | Downloading : 227M/559M [00:36&lt;00:54,    6.34MB/s]
+ 41%|####      | Downloading : 227M/559M [00:36&lt;00:58,    5.89MB/s]
+ 41%|####      | Downloading : 227M/559M [00:36&lt;03:13,    1.80MB/s]
+ 41%|####      | Downloading : 227M/559M [00:36&lt;00:59,    5.80MB/s]
+ 41%|####      | Downloading : 228M/559M [00:36&lt;00:36,    9.50MB/s]
+ 41%|####      | Downloading : 228M/559M [00:36&lt;00:59,    5.81MB/s]
+ 41%|####      | Downloading : 228M/559M [00:36&lt;00:39,    8.78MB/s]
+ 41%|####      | Downloading : 229M/559M [00:36&lt;01:07,    5.13MB/s]
+ 41%|####      | Downloading : 229M/559M [00:36&lt;00:39,    8.85MB/s]
+ 41%|####1     | Downloading : 229M/559M [00:36&lt;03:31,    1.64MB/s]
+ 41%|####1     | Downloading : 229M/559M [00:36&lt;01:55,    3.00MB/s]
+ 41%|####1     | Downloading : 230M/559M [00:36&lt;00:45,    7.60MB/s]
+ 41%|####1     | Downloading : 230M/559M [00:36&lt;00:54,    6.33MB/s]
+ 41%|####1     | Downloading : 230M/559M [00:37&lt;04:24,    1.30MB/s]
+ 41%|####1     | Downloading : 230M/559M [00:37&lt;01:15,    4.59MB/s]
+ 41%|####1     | Downloading : 231M/559M [00:37&lt;01:44,    3.30MB/s]
+ 41%|####1     | Downloading : 231M/559M [00:37&lt;00:31,    10.7MB/s]
+ 42%|####1     | Downloading : 232M/559M [00:37&lt;02:07,    2.70MB/s]
+ 42%|####1     | Downloading : 233M/559M [00:37&lt;00:27,    12.5MB/s]
+ 42%|####1     | Downloading : 233M/559M [00:37&lt;00:12,    26.6MB/s]
+ 42%|####1     | Downloading : 234M/559M [00:37&lt;00:31,    10.7MB/s]
+ 42%|####1     | Downloading : 234M/559M [00:37&lt;02:01,    2.80MB/s]
+ 42%|####2     | Downloading : 235M/559M [00:37&lt;00:24,    13.9MB/s]
+ 42%|####2     | Downloading : 236M/559M [00:37&lt;00:16,    20.6MB/s]
+ 42%|####2     | Downloading : 237M/559M [00:38&lt;01:13,    4.61MB/s]
+ 43%|####2     | Downloading : 238M/559M [00:38&lt;00:41,    8.11MB/s]
+ 43%|####2     | Downloading : 239M/559M [00:38&lt;00:15,    21.5MB/s]
+ 43%|####2     | Downloading : 240M/559M [00:38&lt;00:10,    32.6MB/s]
+ 43%|####2     | Downloading : 240M/559M [00:38&lt;00:10,    30.8MB/s]
+ 43%|####3     | Downloading : 241M/559M [00:38&lt;00:10,    30.4MB/s]
+ 43%|####3     | Downloading : 242M/559M [00:38&lt;00:11,    29.9MB/s]
+ 43%|####3     | Downloading : 243M/559M [00:38&lt;00:38,    8.57MB/s]
+ 44%|####3     | Downloading : 243M/559M [00:38&lt;02:07,    2.59MB/s]
+ 44%|####3     | Downloading : 243M/559M [00:38&lt;04:21,    1.26MB/s]
+ 44%|####3     | Downloading : 244M/559M [00:38&lt;00:45,    7.24MB/s]
+ 44%|####3     | Downloading : 244M/559M [00:39&lt;03:07,    1.76MB/s]
+ 44%|####3     | Downloading : 244M/559M [00:39&lt;00:32,    10.1MB/s]
+ 44%|####3     | Downloading : 245M/559M [00:39&lt;00:11,    29.1MB/s]
+ 44%|####4     | Downloading : 246M/559M [00:39&lt;00:28,    11.6MB/s]
+ 44%|####4     | Downloading : 247M/559M [00:39&lt;00:29,    11.1MB/s]
+ 44%|####4     | Downloading : 247M/559M [00:39&lt;00:23,    14.0MB/s]
+ 44%|####4     | Downloading : 248M/559M [00:39&lt;00:11,    27.5MB/s]
+ 44%|####4     | Downloading : 248M/559M [00:39&lt;00:13,    24.3MB/s]
+ 45%|####4     | Downloading : 250M/559M [00:39&lt;00:08,    36.7MB/s]
+ 45%|####4     | Downloading : 251M/559M [00:39&lt;00:16,    20.1MB/s]
+ 45%|####5     | Downloading : 252M/559M [00:39&lt;01:04,    4.97MB/s]
+ 45%|####5     | Downloading : 252M/559M [00:39&lt;00:27,    11.6MB/s]
+ 45%|####5     | Downloading : 253M/559M [00:39&lt;00:12,    26.3MB/s]
+ 45%|####5     | Downloading : 253M/559M [00:39&lt;00:13,    23.0MB/s]
+ 45%|####5     | Downloading : 254M/559M [00:39&lt;01:56,    2.75MB/s]
+ 46%|####5     | Downloading : 254M/559M [00:39&lt;00:31,    10.1MB/s]
+ 46%|####5     | Downloading : 255M/559M [00:40&lt;01:13,    4.32MB/s]
+ 46%|####5     | Downloading : 255M/559M [00:40&lt;06:27,     821kB/s]
+ 46%|####5     | Downloading : 255M/559M [00:40&lt;01:26,    3.69MB/s]
+ 46%|####5     | Downloading : 256M/559M [00:40&lt;01:01,    5.17MB/s]
+ 46%|####5     | Downloading : 256M/559M [00:40&lt;02:45,    1.92MB/s]
+ 46%|####5     | Downloading : 257M/559M [00:40&lt;00:35,    8.99MB/s]
+ 46%|####5     | Downloading : 257M/559M [00:40&lt;00:43,    7.24MB/s]
+ 46%|####6     | Downloading : 257M/559M [00:40&lt;03:14,    1.62MB/s]
+ 46%|####6     | Downloading : 257M/559M [00:40&lt;00:46,    6.81MB/s]
+ 46%|####6     | Downloading : 258M/559M [00:40&lt;01:04,    4.86MB/s]
+ 46%|####6     | Downloading : 258M/559M [00:41&lt;00:49,    6.41MB/s]
+ 46%|####6     | Downloading : 258M/559M [00:41&lt;02:56,    1.78MB/s]
+ 46%|####6     | Downloading : 259M/559M [00:41&lt;00:39,    7.89MB/s]
+ 46%|####6     | Downloading : 259M/559M [00:41&lt;00:26,    12.0MB/s]
+ 46%|####6     | Downloading : 260M/559M [00:41&lt;01:21,    3.84MB/s]
+ 47%|####6     | Downloading : 260M/559M [00:41&lt;00:16,    19.4MB/s]
+ 47%|####6     | Downloading : 261M/559M [00:41&lt;00:11,    28.1MB/s]
+ 47%|####6     | Downloading : 261M/559M [00:41&lt;00:10,    30.6MB/s]
+ 47%|####7     | Downloading : 263M/559M [00:41&lt;00:08,    34.7MB/s]
+ 47%|####7     | Downloading : 264M/559M [00:41&lt;00:12,    25.2MB/s]
+ 47%|####7     | Downloading : 265M/559M [00:41&lt;00:28,    10.8MB/s]
+ 47%|####7     | Downloading : 265M/559M [00:41&lt;02:01,    2.53MB/s]
+ 48%|####7     | Downloading : 266M/559M [00:41&lt;00:42,    7.26MB/s]
+ 48%|####7     | Downloading : 266M/559M [00:41&lt;00:27,    11.0MB/s]
+ 48%|####7     | Downloading : 266M/559M [00:42&lt;03:11,    1.60MB/s]
+ 48%|####7     | Downloading : 266M/559M [00:42&lt;00:46,    6.60MB/s]
+ 48%|####7     | Downloading : 267M/559M [00:42&lt;00:32,    9.48MB/s]
+ 48%|####7     | Downloading : 267M/559M [00:42&lt;00:40,    7.50MB/s]
+ 48%|####7     | Downloading : 267M/559M [00:42&lt;00:41,    7.45MB/s]
+ 48%|####7     | Downloading : 267M/559M [00:42&lt;00:26,    11.7MB/s]
+ 48%|####7     | Downloading : 268M/559M [00:42&lt;00:17,    17.0MB/s]
+ 48%|####8     | Downloading : 269M/559M [00:42&lt;00:10,    28.2MB/s]
+ 48%|####8     | Downloading : 269M/559M [00:42&lt;00:10,    29.1MB/s]
+ 48%|####8     | Downloading : 270M/559M [00:42&lt;00:14,    21.0MB/s]
+ 48%|####8     | Downloading : 270M/559M [00:42&lt;00:14,    20.6MB/s]
+ 49%|####8     | Downloading : 271M/559M [00:42&lt;01:09,    4.32MB/s]
+ 49%|####8     | Downloading : 271M/559M [00:42&lt;00:58,    5.19MB/s]
+ 49%|####8     | Downloading : 272M/559M [00:43&lt;02:49,    1.77MB/s]
+ 49%|####8     | Downloading : 272M/559M [00:43&lt;03:52,    1.29MB/s]
+ 49%|####8     | Downloading : 273M/559M [00:43&lt;01:00,    4.97MB/s]
+ 49%|####8     | Downloading : 273M/559M [00:43&lt;05:50,     855kB/s]
+ 49%|####8     | Downloading : 274M/559M [00:43&lt;00:43,    6.93MB/s]
+ 49%|####9     | Downloading : 274M/559M [00:43&lt;00:14,    20.2MB/s]
+ 49%|####9     | Downloading : 275M/559M [00:43&lt;00:12,    22.9MB/s]
+ 49%|####9     | Downloading : 275M/559M [00:43&lt;00:17,    16.8MB/s]
+ 49%|####9     | Downloading : 276M/559M [00:44&lt;00:58,    5.08MB/s]
+ 49%|####9     | Downloading : 276M/559M [00:44&lt;02:25,    2.03MB/s]
+ 49%|####9     | Downloading : 276M/559M [00:44&lt;00:28,    10.4MB/s]
+ 50%|####9     | Downloading : 277M/559M [00:44&lt;01:52,    2.62MB/s]
+ 50%|####9     | Downloading : 277M/559M [00:44&lt;00:32,    8.98MB/s]
+ 50%|####9     | Downloading : 278M/559M [00:44&lt;01:52,    2.62MB/s]
+ 50%|####9     | Downloading : 278M/559M [00:44&lt;00:32,    9.04MB/s]
+ 50%|####9     | Downloading : 278M/559M [00:44&lt;00:18,    15.8MB/s]
+ 50%|####9     | Downloading : 279M/559M [00:44&lt;00:39,    7.45MB/s]
+ 50%|####9     | Downloading : 279M/559M [00:44&lt;03:12,    1.52MB/s]
+ 50%|####9     | Downloading : 279M/559M [00:44&lt;00:42,    6.86MB/s]
+ 50%|#####     | Downloading : 279M/559M [00:44&lt;00:27,    10.7MB/s]
+ 50%|#####     | Downloading : 280M/559M [00:45&lt;00:37,    7.81MB/s]
+ 50%|#####     | Downloading : 280M/559M [00:45&lt;02:26,    1.99MB/s]
+ 50%|#####     | Downloading : 280M/559M [00:45&lt;00:40,    7.13MB/s]
+ 50%|#####     | Downloading : 281M/559M [00:45&lt;00:35,    8.21MB/s]
+ 50%|#####     | Downloading : 281M/559M [00:45&lt;00:57,    5.11MB/s]
+ 50%|#####     | Downloading : 281M/559M [00:45&lt;00:38,    7.54MB/s]
+ 50%|#####     | Downloading : 281M/559M [00:45&lt;02:59,    1.62MB/s]
+ 50%|#####     | Downloading : 281M/559M [00:45&lt;01:01,    4.76MB/s]
+ 50%|#####     | Downloading : 282M/559M [00:45&lt;00:32,    9.02MB/s]
+ 51%|#####     | Downloading : 283M/559M [00:45&lt;00:10,    28.4MB/s]
+ 51%|#####     | Downloading : 284M/559M [00:45&lt;00:09,    30.9MB/s]
+ 51%|#####1    | Downloading : 285M/559M [00:45&lt;01:00,    4.78MB/s]
+ 51%|#####1    | Downloading : 286M/559M [00:45&lt;00:19,    14.3MB/s]
+ 51%|#####1    | Downloading : 286M/559M [00:45&lt;00:14,    20.0MB/s]
+ 51%|#####1    | Downloading : 287M/559M [00:46&lt;01:52,    2.53MB/s]
+ 51%|#####1    | Downloading : 287M/559M [00:46&lt;00:32,    8.63MB/s]
+ 51%|#####1    | Downloading : 287M/559M [00:46&lt;00:54,    5.22MB/s]
+ 51%|#####1    | Downloading : 288M/559M [00:46&lt;02:57,    1.60MB/s]
+ 51%|#####1    | Downloading : 288M/559M [00:46&lt;01:54,    2.48MB/s]
+ 52%|#####1    | Downloading : 288M/559M [00:46&lt;00:35,    7.94MB/s]
+ 52%|#####1    | Downloading : 288M/559M [00:46&lt;02:33,    1.85MB/s]
+ 52%|#####1    | Downloading : 289M/559M [00:46&lt;00:46,    6.13MB/s]
+ 52%|#####1    | Downloading : 289M/559M [00:46&lt;00:46,    6.05MB/s]
+ 52%|#####1    | Downloading : 289M/559M [00:46&lt;00:46,    6.06MB/s]
+ 52%|#####1    | Downloading : 290M/559M [00:47&lt;01:55,    2.44MB/s]
+ 52%|#####2    | Downloading : 291M/559M [00:47&lt;01:22,    3.40MB/s]
+ 52%|#####2    | Downloading : 291M/559M [00:47&lt;02:55,    1.60MB/s]
+ 52%|#####2    | Downloading : 291M/559M [00:47&lt;00:32,    8.65MB/s]
+ 52%|#####2    | Downloading : 291M/559M [00:47&lt;00:32,    8.52MB/s]
+ 52%|#####2    | Downloading : 292M/559M [00:47&lt;00:40,    6.85MB/s]
+ 52%|#####2    | Downloading : 292M/559M [00:47&lt;02:33,    1.82MB/s]
+ 52%|#####2    | Downloading : 293M/559M [00:47&lt;00:23,    12.1MB/s]
+ 53%|#####2    | Downloading : 293M/559M [00:47&lt;00:10,    26.8MB/s]
+ 53%|#####2    | Downloading : 294M/559M [00:47&lt;00:10,    25.3MB/s]
+ 53%|#####2    | Downloading : 294M/559M [00:47&lt;00:27,    9.91MB/s]
+ 53%|#####2    | Downloading : 295M/559M [00:48&lt;01:39,    2.77MB/s]
+ 53%|#####2    | Downloading : 295M/559M [00:48&lt;00:41,    6.64MB/s]
+ 53%|#####2    | Downloading : 295M/559M [00:48&lt;00:38,    7.24MB/s]
+ 53%|#####2    | Downloading : 296M/559M [00:48&lt;02:46,    1.65MB/s]
+ 53%|#####2    | Downloading : 296M/559M [00:48&lt;00:41,    6.61MB/s]
+ 53%|#####3    | Downloading : 297M/559M [00:48&lt;01:17,    3.56MB/s]
+ 53%|#####3    | Downloading : 297M/559M [00:48&lt;01:29,    3.05MB/s]
+ 53%|#####3    | Downloading : 298M/559M [00:49&lt;03:37,    1.26MB/s]
+ 53%|#####3    | Downloading : 298M/559M [00:49&lt;01:01,    4.46MB/s]
+ 53%|#####3    | Downloading : 299M/559M [00:49&lt;01:16,    3.55MB/s]
+ 54%|#####3    | Downloading : 299M/559M [00:49&lt;02:37,    1.72MB/s]
+ 54%|#####3    | Downloading : 300M/559M [00:49&lt;00:25,    10.5MB/s]
+ 54%|#####3    | Downloading : 300M/559M [00:49&lt;00:10,    26.1MB/s]
+ 54%|#####3    | Downloading : 301M/559M [00:49&lt;00:11,    23.2MB/s]
+ 54%|#####4    | Downloading : 302M/559M [00:49&lt;00:07,    34.5MB/s]
+ 54%|#####4    | Downloading : 302M/559M [00:49&lt;00:23,    11.3MB/s]
+ 54%|#####4    | Downloading : 303M/559M [00:49&lt;01:39,    2.69MB/s]
+ 54%|#####4    | Downloading : 303M/559M [00:49&lt;00:37,    7.17MB/s]
+ 54%|#####4    | Downloading : 303M/559M [00:49&lt;00:25,    10.3MB/s]
+ 54%|#####4    | Downloading : 304M/559M [00:50&lt;02:56,    1.52MB/s]
+ 54%|#####4    | Downloading : 304M/559M [00:50&lt;01:06,    4.01MB/s]
+ 54%|#####4    | Downloading : 304M/559M [00:50&lt;02:14,    1.98MB/s]
+ 54%|#####4    | Downloading : 304M/559M [00:50&lt;00:33,    8.05MB/s]
+ 55%|#####4    | Downloading : 305M/559M [00:50&lt;02:48,    1.58MB/s]
+ 55%|#####4    | Downloading : 305M/559M [00:50&lt;00:28,    9.37MB/s]
+ 55%|#####4    | Downloading : 306M/559M [00:50&lt;00:09,    28.8MB/s]
+ 55%|#####4    | Downloading : 306M/559M [00:50&lt;00:15,    17.0MB/s]
+ 55%|#####5    | Downloading : 307M/559M [00:50&lt;00:10,    25.9MB/s]
+ 55%|#####5    | Downloading : 308M/559M [00:50&lt;00:16,    15.5MB/s]
+ 55%|#####5    | Downloading : 308M/559M [00:50&lt;00:12,    20.8MB/s]
+ 55%|#####5    | Downloading : 309M/559M [00:50&lt;01:25,    3.05MB/s]
+ 56%|#####5    | Downloading : 311M/559M [00:51&lt;00:25,    10.0MB/s]
+ 56%|#####5    | Downloading : 311M/559M [00:51&lt;01:15,    3.42MB/s]
+ 56%|#####5    | Downloading : 311M/559M [00:51&lt;00:23,    11.3MB/s]
+ 56%|#####5    | Downloading : 312M/559M [00:51&lt;00:08,    32.1MB/s]
+ 56%|#####5    | Downloading : 313M/559M [00:51&lt;00:11,    23.3MB/s]
+ 56%|#####6    | Downloading : 314M/559M [00:51&lt;00:08,    29.0MB/s]
+ 56%|#####6    | Downloading : 315M/559M [00:51&lt;00:08,    31.8MB/s]
+ 56%|#####6    | Downloading : 315M/559M [00:51&lt;00:08,    29.4MB/s]
+ 56%|#####6    | Downloading : 316M/559M [00:51&lt;00:07,    32.1MB/s]
+ 57%|#####6    | Downloading : 317M/559M [00:51&lt;00:08,    30.5MB/s]
+ 57%|#####6    | Downloading : 317M/559M [00:51&lt;00:19,    12.8MB/s]
+ 57%|#####6    | Downloading : 318M/559M [00:51&lt;00:21,    11.6MB/s]
+ 57%|#####7    | Downloading : 319M/559M [00:51&lt;00:09,    27.9MB/s]
+ 57%|#####7    | Downloading : 319M/559M [00:51&lt;00:09,    26.6MB/s]
+ 57%|#####7    | Downloading : 320M/559M [00:51&lt;00:09,    26.1MB/s]
+ 57%|#####7    | Downloading : 321M/559M [00:51&lt;00:06,    36.0MB/s]
+ 57%|#####7    | Downloading : 321M/559M [00:51&lt;00:08,    28.7MB/s]
+ 58%|#####7    | Downloading : 322M/559M [00:51&lt;00:09,    27.5MB/s]
+ 58%|#####7    | Downloading : 322M/559M [00:51&lt;00:11,    22.6MB/s]
+ 58%|#####7    | Downloading : 323M/559M [00:51&lt;00:25,    9.72MB/s]
+ 58%|#####7    | Downloading : 323M/559M [00:51&lt;01:43,    2.38MB/s]
+ 58%|#####7    | Downloading : 323M/559M [00:51&lt;00:27,    9.07MB/s]
+ 58%|#####7    | Downloading : 324M/559M [00:51&lt;00:21,    11.4MB/s]
+ 58%|#####7    | Downloading : 324M/559M [00:52&lt;00:26,    9.24MB/s]
+ 58%|#####8    | Downloading : 324M/559M [00:52&lt;00:20,    12.0MB/s]
+ 58%|#####8    | Downloading : 324M/559M [00:52&lt;00:26,    9.15MB/s]
+ 58%|#####8    | Downloading : 325M/559M [00:52&lt;00:19,    12.4MB/s]
+ 58%|#####8    | Downloading : 325M/559M [00:52&lt;00:21,    11.5MB/s]
+ 58%|#####8    | Downloading : 325M/559M [00:52&lt;03:18,    1.23MB/s]
+ 58%|#####8    | Downloading : 325M/559M [00:52&lt;00:47,    5.11MB/s]
+ 58%|#####8    | Downloading : 326M/559M [00:52&lt;01:57,    2.07MB/s]
+ 58%|#####8    | Downloading : 326M/559M [00:52&lt;01:18,    3.10MB/s]
+ 58%|#####8    | Downloading : 326M/559M [00:52&lt;00:31,    7.71MB/s]
+ 58%|#####8    | Downloading : 326M/559M [00:52&lt;02:40,    1.52MB/s]
+ 58%|#####8    | Downloading : 326M/559M [00:52&lt;01:31,    2.66MB/s]
+ 58%|#####8    | Downloading : 327M/559M [00:53&lt;01:32,    2.63MB/s]
+ 59%|#####8    | Downloading : 327M/559M [00:53&lt;00:26,    9.28MB/s]
+ 59%|#####8    | Downloading : 327M/559M [00:53&lt;00:20,    12.1MB/s]
+ 59%|#####8    | Downloading : 328M/559M [00:53&lt;00:16,    15.0MB/s]
+ 59%|#####8    | Downloading : 328M/559M [00:53&lt;00:44,    5.42MB/s]
+ 59%|#####8    | Downloading : 328M/559M [00:53&lt;00:39,    6.13MB/s]
+ 59%|#####8    | Downloading : 328M/559M [00:53&lt;00:34,    7.08MB/s]
+ 59%|#####8    | Downloading : 329M/559M [00:53&lt;02:40,    1.50MB/s]
+ 59%|#####8    | Downloading : 329M/559M [00:53&lt;00:51,    4.64MB/s]
+ 59%|#####8    | Downloading : 329M/559M [00:53&lt;00:24,    9.86MB/s]
+ 59%|#####8    | Downloading : 330M/559M [00:53&lt;04:51,     826kB/s]
+ 59%|#####9    | Downloading : 330M/559M [00:54&lt;02:16,    1.75MB/s]
+ 59%|#####9    | Downloading : 330M/559M [00:54&lt;00:41,    5.79MB/s]
+ 59%|#####9    | Downloading : 330M/559M [00:54&lt;00:30,    7.72MB/s]
+ 59%|#####9    | Downloading : 331M/559M [00:54&lt;00:28,    8.29MB/s]
+ 59%|#####9    | Downloading : 331M/559M [00:54&lt;00:16,    14.7MB/s]
+ 59%|#####9    | Downloading : 332M/559M [00:54&lt;01:08,    3.45MB/s]
+ 60%|#####9    | Downloading : 332M/559M [00:54&lt;00:19,    12.0MB/s]
+ 60%|#####9    | Downloading : 333M/559M [00:54&lt;00:09,    24.8MB/s]
+ 60%|#####9    | Downloading : 333M/559M [00:54&lt;00:08,    26.3MB/s]
+ 60%|#####9    | Downloading : 334M/559M [00:54&lt;00:08,    27.2MB/s]
+ 60%|######    | Downloading : 335M/559M [00:54&lt;00:16,    13.8MB/s]
+ 60%|######    | Downloading : 336M/559M [00:54&lt;01:05,    3.56MB/s]
+ 60%|######    | Downloading : 336M/559M [00:54&lt;00:30,    7.63MB/s]
+ 60%|######    | Downloading : 337M/559M [00:54&lt;00:35,    6.47MB/s]
+ 60%|######    | Downloading : 337M/559M [00:55&lt;01:57,    1.97MB/s]
+ 60%|######    | Downloading : 337M/559M [00:55&lt;00:39,    5.92MB/s]
+ 60%|######    | Downloading : 337M/559M [00:55&lt;00:46,    4.95MB/s]
+ 60%|######    | Downloading : 338M/559M [00:55&lt;00:57,    4.06MB/s]
+ 60%|######    | Downloading : 338M/559M [00:55&lt;01:35,    2.42MB/s]
+ 61%|######    | Downloading : 338M/559M [00:55&lt;01:24,    2.73MB/s]
+ 61%|######    | Downloading : 338M/559M [00:55&lt;00:36,    6.39MB/s]
+ 61%|######    | Downloading : 339M/559M [00:55&lt;02:19,    1.65MB/s]
+ 61%|######    | Downloading : 339M/559M [00:55&lt;02:08,    1.79MB/s]
+ 61%|######    | Downloading : 339M/559M [00:55&lt;00:44,    5.18MB/s]
+ 61%|######    | Downloading : 339M/559M [00:55&lt;01:49,    2.10MB/s]
+ 61%|######    | Downloading : 340M/559M [00:55&lt;00:15,    14.9MB/s]
+ 61%|######1   | Downloading : 342M/559M [00:55&lt;00:08,    28.3MB/s]
+ 61%|######1   | Downloading : 343M/559M [00:55&lt;00:08,    26.6MB/s]
+ 62%|######1   | Downloading : 344M/559M [00:56&lt;00:05,    38.5MB/s]
+ 62%|######1   | Downloading : 345M/559M [00:56&lt;00:15,    14.5MB/s]
+ 62%|######1   | Downloading : 346M/559M [00:56&lt;00:11,    19.7MB/s]
+ 62%|######2   | Downloading : 347M/559M [00:56&lt;00:07,    29.0MB/s]
+ 62%|######2   | Downloading : 348M/559M [00:56&lt;00:06,    33.6MB/s]
+ 62%|######2   | Downloading : 349M/559M [00:56&lt;00:06,    35.9MB/s]
+ 63%|######2   | Downloading : 350M/559M [00:56&lt;00:17,    12.3MB/s]
+ 63%|######2   | Downloading : 351M/559M [00:56&lt;00:36,    5.99MB/s]
+ 63%|######2   | Downloading : 351M/559M [00:56&lt;00:11,    19.4MB/s]
+ 63%|######2   | Downloading : 352M/559M [00:56&lt;00:15,    14.0MB/s]
+ 63%|######3   | Downloading : 352M/559M [00:56&lt;01:16,    2.84MB/s]
+ 63%|######3   | Downloading : 353M/559M [00:56&lt;00:35,    6.11MB/s]
+ 63%|######3   | Downloading : 353M/559M [00:56&lt;00:21,    9.99MB/s]
+ 63%|######3   | Downloading : 353M/559M [00:56&lt;00:20,    10.5MB/s]
+ 63%|######3   | Downloading : 354M/559M [00:56&lt;00:08,    25.1MB/s]
+ 63%|######3   | Downloading : 354M/559M [00:56&lt;00:07,    28.9MB/s]
+ 64%|######3   | Downloading : 355M/559M [00:56&lt;00:07,    30.0MB/s]
+ 64%|######3   | Downloading : 356M/559M [00:56&lt;00:06,    33.0MB/s]
+ 64%|######3   | Downloading : 357M/559M [00:56&lt;00:06,    32.0MB/s]
+ 64%|######4   | Downloading : 358M/559M [00:57&lt;00:14,    14.9MB/s]
+ 64%|######4   | Downloading : 358M/559M [00:57&lt;00:15,    13.2MB/s]
+ 64%|######4   | Downloading : 359M/559M [00:57&lt;00:13,    15.4MB/s]
+ 64%|######4   | Downloading : 359M/559M [00:57&lt;00:12,    17.0MB/s]
+ 65%|######4   | Downloading : 361M/559M [00:57&lt;00:05,    35.9MB/s]
+ 65%|######4   | Downloading : 362M/559M [00:57&lt;00:05,    39.7MB/s]
+ 65%|######4   | Downloading : 363M/559M [00:57&lt;00:05,    34.8MB/s]
+ 65%|######5   | Downloading : 364M/559M [00:57&lt;00:15,    13.4MB/s]
+ 65%|######5   | Downloading : 365M/559M [00:57&lt;01:12,    2.79MB/s]
+ 66%|######5   | Downloading : 366M/559M [00:57&lt;00:13,    14.7MB/s]
+ 66%|######5   | Downloading : 367M/559M [00:58&lt;00:43,    4.65MB/s]
+ 66%|######5   | Downloading : 368M/559M [00:58&lt;00:19,    10.4MB/s]
+ 66%|######5   | Downloading : 368M/559M [00:58&lt;01:11,    2.79MB/s]
+ 66%|######5   | Downloading : 369M/559M [00:58&lt;00:21,    9.31MB/s]
+ 66%|######6   | Downloading : 369M/559M [00:58&lt;00:22,    8.97MB/s]
+ 66%|######6   | Downloading : 370M/559M [00:58&lt;00:14,    13.6MB/s]
+ 66%|######6   | Downloading : 370M/559M [00:58&lt;00:08,    23.0MB/s]
+ 66%|######6   | Downloading : 371M/559M [00:58&lt;00:06,    28.5MB/s]
+ 66%|######6   | Downloading : 371M/559M [00:58&lt;00:07,    25.4MB/s]
+ 67%|######6   | Downloading : 372M/559M [00:58&lt;00:07,    25.1MB/s]
+ 67%|######6   | Downloading : 372M/559M [00:58&lt;00:08,    24.0MB/s]
+ 67%|######6   | Downloading : 373M/559M [00:58&lt;00:07,    27.5MB/s]
+ 67%|######6   | Downloading : 373M/559M [00:58&lt;00:11,    17.1MB/s]
+ 67%|######6   | Downloading : 374M/559M [00:58&lt;00:15,    12.7MB/s]
+ 67%|######6   | Downloading : 374M/559M [00:58&lt;01:15,    2.57MB/s]
+ 67%|######7   | Downloading : 374M/559M [00:58&lt;00:31,    6.17MB/s]
+ 67%|######7   | Downloading : 375M/559M [00:58&lt;00:20,    9.35MB/s]
+ 67%|######7   | Downloading : 375M/559M [00:59&lt;02:25,    1.32MB/s]
+ 67%|######7   | Downloading : 375M/559M [00:59&lt;00:54,    3.53MB/s]
+ 67%|######7   | Downloading : 375M/559M [00:59&lt;01:20,    2.38MB/s]
+ 67%|######7   | Downloading : 375M/559M [00:59&lt;00:40,    4.78MB/s]
+ 67%|######7   | Downloading : 376M/559M [00:59&lt;01:23,    2.30MB/s]
+ 67%|######7   | Downloading : 376M/559M [00:59&lt;00:38,    5.02MB/s]
+ 67%|######7   | Downloading : 376M/559M [00:59&lt;00:34,    5.54MB/s]
+ 67%|######7   | Downloading : 377M/559M [00:59&lt;00:23,    8.26MB/s]
+ 68%|######7   | Downloading : 377M/559M [00:59&lt;00:09,    19.9MB/s]
+ 68%|######7   | Downloading : 378M/559M [00:59&lt;00:05,    37.5MB/s]
+ 68%|######7   | Downloading : 379M/559M [00:59&lt;00:06,    29.2MB/s]
+ 68%|######8   | Downloading : 380M/559M [00:59&lt;00:06,    28.3MB/s]
+ 68%|######8   | Downloading : 381M/559M [00:59&lt;00:34,    5.33MB/s]
+ 68%|######8   | Downloading : 382M/559M [01:00&lt;00:15,    12.1MB/s]
+ 69%|######8   | Downloading : 383M/559M [01:00&lt;00:05,    30.8MB/s]
+ 69%|######8   | Downloading : 384M/559M [01:00&lt;00:05,    32.1MB/s]
+ 69%|######8   | Downloading : 384M/559M [01:00&lt;00:09,    19.6MB/s]
+ 69%|######8   | Downloading : 385M/559M [01:00&lt;00:07,    24.9MB/s]
+ 69%|######9   | Downloading : 386M/559M [01:00&lt;00:07,    23.6MB/s]
+ 69%|######9   | Downloading : 386M/559M [01:00&lt;00:14,    12.2MB/s]
+ 69%|######9   | Downloading : 387M/559M [01:00&lt;00:22,    7.84MB/s]
+ 69%|######9   | Downloading : 387M/559M [01:00&lt;00:17,    10.1MB/s]
+ 69%|######9   | Downloading : 388M/559M [01:00&lt;00:57,    3.13MB/s]
+ 69%|######9   | Downloading : 388M/559M [01:00&lt;00:20,    8.76MB/s]
+ 70%|######9   | Downloading : 388M/559M [01:00&lt;00:13,    13.1MB/s]
+ 70%|######9   | Downloading : 389M/559M [01:00&lt;01:51,    1.60MB/s]
+ 70%|######9   | Downloading : 389M/559M [01:00&lt;00:18,    9.54MB/s]
+ 70%|######9   | Downloading : 389M/559M [01:00&lt;00:11,    15.1MB/s]
+ 70%|######9   | Downloading : 390M/559M [01:00&lt;00:04,    35.8MB/s]
+ 70%|######9   | Downloading : 391M/559M [01:00&lt;00:07,    24.5MB/s]
+ 70%|#######   | Downloading : 392M/559M [01:00&lt;00:07,    22.3MB/s]
+ 70%|#######   | Downloading : 393M/559M [01:01&lt;01:10,    2.45MB/s]
+ 70%|#######   | Downloading : 394M/559M [01:01&lt;00:24,    6.93MB/s]
+ 71%|#######   | Downloading : 394M/559M [01:01&lt;00:07,    23.7MB/s]
+ 71%|#######   | Downloading : 395M/559M [01:01&lt;00:09,    18.1MB/s]
+ 71%|#######   | Downloading : 395M/559M [01:01&lt;00:09,    19.0MB/s]
+ 71%|#######   | Downloading : 396M/559M [01:01&lt;00:03,    43.1MB/s]
+ 71%|#######1  | Downloading : 397M/559M [01:01&lt;00:03,    47.3MB/s]
+ 71%|#######1  | Downloading : 398M/559M [01:01&lt;00:28,    5.99MB/s]
+ 71%|#######1  | Downloading : 399M/559M [01:01&lt;00:25,    6.56MB/s]
+ 71%|#######1  | Downloading : 399M/559M [01:01&lt;00:17,    9.68MB/s]
+ 72%|#######1  | Downloading : 400M/559M [01:01&lt;00:17,    9.66MB/s]
+ 72%|#######1  | Downloading : 400M/559M [01:01&lt;00:17,    9.43MB/s]
+ 72%|#######1  | Downloading : 400M/559M [01:01&lt;00:17,    9.41MB/s]
+ 72%|#######1  | Downloading : 400M/559M [01:01&lt;00:16,    9.99MB/s]
+ 72%|#######1  | Downloading : 401M/559M [01:02&lt;00:15,    10.4MB/s]
+ 72%|#######1  | Downloading : 401M/559M [01:02&lt;00:22,    7.50MB/s]
+ 72%|#######1  | Downloading : 401M/559M [01:02&lt;00:16,    9.97MB/s]
+ 72%|#######1  | Downloading : 401M/559M [01:02&lt;00:20,    8.02MB/s]
+ 72%|#######1  | Downloading : 402M/559M [01:02&lt;00:14,    11.2MB/s]
+ 72%|#######2  | Downloading : 402M/559M [01:02&lt;00:05,    27.7MB/s]
+ 72%|#######2  | Downloading : 403M/559M [01:02&lt;00:04,    37.5MB/s]
+ 72%|#######2  | Downloading : 404M/559M [01:02&lt;00:09,    16.8MB/s]
+ 72%|#######2  | Downloading : 404M/559M [01:02&lt;00:06,    24.7MB/s]
+ 72%|#######2  | Downloading : 405M/559M [01:02&lt;00:06,    26.4MB/s]
+ 73%|#######2  | Downloading : 405M/559M [01:02&lt;00:06,    24.0MB/s]
+ 73%|#######2  | Downloading : 406M/559M [01:02&lt;00:07,    22.6MB/s]
+ 73%|#######2  | Downloading : 407M/559M [01:02&lt;00:35,    4.52MB/s]
+ 73%|#######2  | Downloading : 407M/559M [01:02&lt;00:21,    7.34MB/s]
+ 73%|#######2  | Downloading : 408M/559M [01:02&lt;00:06,    23.7MB/s]
+ 73%|#######3  | Downloading : 408M/559M [01:02&lt;00:06,    26.0MB/s]
+ 73%|#######3  | Downloading : 410M/559M [01:02&lt;00:04,    34.8MB/s]
+ 74%|#######3  | Downloading : 411M/559M [01:02&lt;00:05,    28.2MB/s]
+ 74%|#######3  | Downloading : 412M/559M [01:02&lt;00:12,    12.2MB/s]
+ 74%|#######3  | Downloading : 413M/559M [01:03&lt;00:52,    2.89MB/s]
+ 74%|#######3  | Downloading : 413M/559M [01:03&lt;00:12,    12.3MB/s]
+ 74%|#######4  | Downloading : 414M/559M [01:03&lt;00:16,    9.10MB/s]
+ 74%|#######4  | Downloading : 414M/559M [01:03&lt;00:20,    7.51MB/s]
+ 74%|#######4  | Downloading : 415M/559M [01:03&lt;00:50,    3.00MB/s]
+ 74%|#######4  | Downloading : 415M/559M [01:03&lt;00:21,    6.89MB/s]
+ 74%|#######4  | Downloading : 415M/559M [01:03&lt;00:17,    8.46MB/s]
+ 74%|#######4  | Downloading : 416M/559M [01:03&lt;01:34,    1.58MB/s]
+ 74%|#######4  | Downloading : 416M/559M [01:03&lt;00:45,    3.28MB/s]
+ 74%|#######4  | Downloading : 416M/559M [01:04&lt;02:17,    1.08MB/s]
+ 75%|#######4  | Downloading : 417M/559M [01:04&lt;00:20,    7.24MB/s]
+ 75%|#######4  | Downloading : 418M/559M [01:04&lt;00:04,    30.2MB/s]
+ 75%|#######5  | Downloading : 419M/559M [01:04&lt;00:05,    26.2MB/s]
+ 75%|#######5  | Downloading : 420M/559M [01:04&lt;00:31,    4.60MB/s]
+ 75%|#######5  | Downloading : 421M/559M [01:04&lt;00:08,    16.9MB/s]
+ 76%|#######5  | Downloading : 422M/559M [01:04&lt;00:21,    6.77MB/s]
+ 76%|#######5  | Downloading : 422M/559M [01:04&lt;00:38,    3.73MB/s]
+ 76%|#######5  | Downloading : 423M/559M [01:04&lt;00:20,    6.84MB/s]
+ 76%|#######5  | Downloading : 423M/559M [01:04&lt;00:12,    11.1MB/s]
+ 76%|#######5  | Downloading : 423M/559M [01:05&lt;01:26,    1.65MB/s]
+ 76%|#######5  | Downloading : 424M/559M [01:05&lt;00:18,    7.84MB/s]
+ 76%|#######5  | Downloading : 424M/559M [01:05&lt;00:14,    9.89MB/s]
+ 76%|#######5  | Downloading : 424M/559M [01:05&lt;01:22,    1.70MB/s]
+ 76%|#######6  | Downloading : 425M/559M [01:05&lt;00:14,    9.84MB/s]
+ 76%|#######6  | Downloading : 425M/559M [01:05&lt;00:07,    18.6MB/s]
+ 76%|#######6  | Downloading : 426M/559M [01:05&lt;00:03,    35.1MB/s]
+ 76%|#######6  | Downloading : 427M/559M [01:05&lt;00:04,    31.7MB/s]
+ 77%|#######6  | Downloading : 428M/559M [01:05&lt;00:04,    31.8MB/s]
+ 77%|#######6  | Downloading : 428M/559M [01:05&lt;00:05,    24.7MB/s]
+ 77%|#######6  | Downloading : 429M/559M [01:05&lt;00:05,    26.2MB/s]
+ 77%|#######6  | Downloading : 429M/559M [01:05&lt;00:05,    26.5MB/s]
+ 77%|#######7  | Downloading : 430M/559M [01:05&lt;00:03,    37.7MB/s]
+ 77%|#######7  | Downloading : 431M/559M [01:05&lt;00:11,    11.8MB/s]
+ 77%|#######7  | Downloading : 431M/559M [01:05&lt;00:54,    2.47MB/s]
+ 77%|#######7  | Downloading : 432M/559M [01:05&lt;00:15,    8.66MB/s]
+ 77%|#######7  | Downloading : 432M/559M [01:05&lt;00:12,    10.7MB/s]
+ 77%|#######7  | Downloading : 433M/559M [01:05&lt;00:04,    30.9MB/s]
+ 78%|#######7  | Downloading : 434M/559M [01:05&lt;00:03,    34.2MB/s]
+ 78%|#######7  | Downloading : 435M/559M [01:05&lt;00:05,    25.0MB/s]
+ 78%|#######8  | Downloading : 436M/559M [01:06&lt;00:03,    32.4MB/s]
+ 78%|#######8  | Downloading : 437M/559M [01:06&lt;00:12,    10.5MB/s]
+ 78%|#######8  | Downloading : 438M/559M [01:06&lt;00:51,    2.48MB/s]
+ 78%|#######8  | Downloading : 438M/559M [01:06&lt;00:14,    8.88MB/s]
+ 78%|#######8  | Downloading : 438M/559M [01:06&lt;01:20,    1.57MB/s]
+ 79%|#######8  | Downloading : 439M/559M [01:06&lt;00:37,    3.36MB/s]
+ 79%|#######8  | Downloading : 439M/559M [01:06&lt;00:56,    2.23MB/s]
+ 79%|#######8  | Downloading : 439M/559M [01:06&lt;00:41,    3.04MB/s]
+ 79%|#######8  | Downloading : 439M/559M [01:06&lt;00:49,    2.52MB/s]
+ 79%|#######8  | Downloading : 440M/559M [01:07&lt;00:08,    14.8MB/s]
+ 79%|#######8  | Downloading : 441M/559M [01:07&lt;00:04,    26.7MB/s]
+ 79%|#######8  | Downloading : 441M/559M [01:07&lt;00:04,    29.7MB/s]
+ 79%|#######9  | Downloading : 442M/559M [01:07&lt;00:04,    25.5MB/s]
+ 79%|#######9  | Downloading : 442M/559M [01:07&lt;00:03,    31.7MB/s]
+ 79%|#######9  | Downloading : 443M/559M [01:07&lt;00:04,    29.2MB/s]
+ 79%|#######9  | Downloading : 443M/559M [01:07&lt;00:14,    8.52MB/s]
+ 79%|#######9  | Downloading : 444M/559M [01:07&lt;00:37,    3.24MB/s]
+ 80%|#######9  | Downloading : 445M/559M [01:07&lt;00:08,    14.0MB/s]
+ 80%|#######9  | Downloading : 446M/559M [01:07&lt;00:07,    16.2MB/s]
+ 80%|########  | Downloading : 447M/559M [01:07&lt;00:02,    39.2MB/s]
+ 80%|########  | Downloading : 448M/559M [01:07&lt;00:24,    4.73MB/s]
+ 80%|########  | Downloading : 449M/559M [01:07&lt;00:39,    2.90MB/s]
+ 80%|########  | Downloading : 449M/559M [01:07&lt;00:07,    15.8MB/s]
+ 81%|########  | Downloading : 450M/559M [01:07&lt;00:04,    28.4MB/s]
+ 81%|########  | Downloading : 450M/559M [01:07&lt;00:04,    28.3MB/s]
+ 81%|########  | Downloading : 451M/559M [01:08&lt;00:05,    20.6MB/s]
+ 81%|########  | Downloading : 451M/559M [01:08&lt;00:09,    11.8MB/s]
+ 81%|########  | Downloading : 452M/559M [01:08&lt;00:06,    16.2MB/s]
+ 81%|########  | Downloading : 452M/559M [01:08&lt;00:05,    19.8MB/s]
+ 81%|########1 | Downloading : 453M/559M [01:08&lt;00:02,    38.6MB/s]
+ 81%|########1 | Downloading : 454M/559M [01:08&lt;00:03,    31.3MB/s]
+ 81%|########1 | Downloading : 454M/559M [01:08&lt;00:03,    29.0MB/s]
+ 81%|########1 | Downloading : 455M/559M [01:08&lt;00:03,    32.0MB/s]
+ 81%|########1 | Downloading : 455M/559M [01:08&lt;00:03,    28.9MB/s]
+ 82%|########1 | Downloading : 456M/559M [01:08&lt;00:03,    31.6MB/s]
+ 82%|########1 | Downloading : 456M/559M [01:08&lt;00:11,    9.44MB/s]
+ 82%|########1 | Downloading : 457M/559M [01:08&lt;00:09,    11.1MB/s]
+ 82%|########1 | Downloading : 457M/559M [01:08&lt;00:04,    22.4MB/s]
+ 82%|########1 | Downloading : 458M/559M [01:08&lt;00:03,    26.9MB/s]
+ 82%|########2 | Downloading : 458M/559M [01:08&lt;00:03,    30.8MB/s]
+ 82%|########2 | Downloading : 459M/559M [01:08&lt;00:03,    27.5MB/s]
+ 82%|########2 | Downloading : 459M/559M [01:08&lt;00:03,    31.3MB/s]
+ 82%|########2 | Downloading : 460M/559M [01:08&lt;00:03,    30.8MB/s]
+ 82%|########2 | Downloading : 460M/559M [01:08&lt;00:03,    27.8MB/s]
+ 83%|########2 | Downloading : 461M/559M [01:08&lt;00:05,    17.6MB/s]
+ 83%|########2 | Downloading : 462M/559M [01:08&lt;00:10,    9.60MB/s]
+ 83%|########2 | Downloading : 462M/559M [01:08&lt;00:35,    2.88MB/s]
+ 83%|########2 | Downloading : 463M/559M [01:08&lt;00:12,    8.35MB/s]
+ 83%|########2 | Downloading : 463M/559M [01:08&lt;00:07,    13.6MB/s]
+ 83%|########2 | Downloading : 464M/559M [01:08&lt;00:03,    31.5MB/s]
+ 83%|########3 | Downloading : 464M/559M [01:08&lt;00:03,    29.2MB/s]
+ 83%|########3 | Downloading : 465M/559M [01:08&lt;00:02,    33.0MB/s]
+ 83%|########3 | Downloading : 466M/559M [01:08&lt;00:02,    36.0MB/s]
+ 84%|########3 | Downloading : 468M/559M [01:08&lt;00:03,    26.7MB/s]
+ 84%|########3 | Downloading : 469M/559M [01:09&lt;00:23,    4.03MB/s]
+ 84%|########3 | Downloading : 469M/559M [01:09&lt;00:16,    5.83MB/s]
+ 84%|########4 | Downloading : 470M/559M [01:09&lt;00:07,    12.5MB/s]
+ 84%|########4 | Downloading : 470M/559M [01:09&lt;00:36,    2.55MB/s]
+ 84%|########4 | Downloading : 471M/559M [01:09&lt;00:11,    8.02MB/s]
+ 84%|########4 | Downloading : 471M/559M [01:09&lt;00:04,    19.7MB/s]
+ 84%|########4 | Downloading : 472M/559M [01:09&lt;00:04,    22.4MB/s]
+ 84%|########4 | Downloading : 472M/559M [01:09&lt;00:08,    10.3MB/s]
+ 85%|########4 | Downloading : 473M/559M [01:09&lt;00:28,    3.21MB/s]
+ 85%|########4 | Downloading : 473M/559M [01:09&lt;00:08,    10.1MB/s]
+ 85%|########4 | Downloading : 474M/559M [01:09&lt;00:04,    20.1MB/s]
+ 85%|########4 | Downloading : 474M/559M [01:10&lt;00:03,    22.8MB/s]
+ 85%|########4 | Downloading : 475M/559M [01:10&lt;00:10,    8.11MB/s]
+ 85%|########5 | Downloading : 475M/559M [01:10&lt;00:29,    2.94MB/s]
+ 85%|########5 | Downloading : 475M/559M [01:10&lt;00:10,    8.23MB/s]
+ 85%|########5 | Downloading : 476M/559M [01:10&lt;00:08,    10.0MB/s]
+ 85%|########5 | Downloading : 476M/559M [01:10&lt;00:43,    2.00MB/s]
+ 85%|########5 | Downloading : 476M/559M [01:10&lt;00:08,    10.7MB/s]
+ 85%|########5 | Downloading : 477M/559M [01:10&lt;00:04,    19.4MB/s]
+ 86%|########5 | Downloading : 478M/559M [01:10&lt;00:02,    29.4MB/s]
+ 86%|########5 | Downloading : 479M/559M [01:10&lt;00:03,    22.1MB/s]
+ 86%|########5 | Downloading : 480M/559M [01:10&lt;00:18,    4.45MB/s]
+ 86%|########6 | Downloading : 481M/559M [01:10&lt;00:07,    10.7MB/s]
+ 86%|########6 | Downloading : 482M/559M [01:10&lt;00:02,    27.1MB/s]
+ 86%|########6 | Downloading : 483M/559M [01:10&lt;00:02,    32.2MB/s]
+ 87%|########6 | Downloading : 484M/559M [01:11&lt;00:02,    36.1MB/s]
+ 87%|########6 | Downloading : 485M/559M [01:11&lt;00:16,    4.71MB/s]
+ 87%|########6 | Downloading : 486M/559M [01:11&lt;00:06,    12.3MB/s]
+ 87%|########7 | Downloading : 486M/559M [01:11&lt;00:03,    24.3MB/s]
+ 87%|########7 | Downloading : 487M/559M [01:11&lt;00:07,    10.4MB/s]
+ 87%|########7 | Downloading : 487M/559M [01:11&lt;00:24,    3.08MB/s]
+ 87%|########7 | Downloading : 488M/559M [01:11&lt;00:05,    13.0MB/s]
+ 87%|########7 | Downloading : 488M/559M [01:11&lt;00:04,    15.0MB/s]
+ 87%|########7 | Downloading : 488M/559M [01:11&lt;00:06,    12.1MB/s]
+ 87%|########7 | Downloading : 488M/559M [01:11&lt;00:53,    1.38MB/s]
+ 87%|########7 | Downloading : 489M/559M [01:11&lt;00:15,    4.70MB/s]
+ 88%|########7 | Downloading : 489M/559M [01:11&lt;00:05,    13.7MB/s]
+ 88%|########7 | Downloading : 489M/559M [01:12&lt;00:49,    1.47MB/s]
+ 88%|########7 | Downloading : 489M/559M [01:12&lt;00:13,    5.39MB/s]
+ 88%|########7 | Downloading : 490M/559M [01:12&lt;00:08,    8.39MB/s]
+ 88%|########7 | Downloading : 490M/559M [01:12&lt;00:03,    23.3MB/s]
+ 88%|########7 | Downloading : 491M/559M [01:12&lt;00:02,    25.6MB/s]
+ 88%|########7 | Downloading : 491M/559M [01:12&lt;00:02,    29.0MB/s]
+ 88%|########8 | Downloading : 492M/559M [01:12&lt;00:02,    30.5MB/s]
+ 88%|########8 | Downloading : 493M/559M [01:12&lt;00:02,    31.8MB/s]
+ 88%|########8 | Downloading : 494M/559M [01:12&lt;00:02,    28.7MB/s]
+ 89%|########8 | Downloading : 494M/559M [01:12&lt;00:09,    7.25MB/s]
+ 89%|########8 | Downloading : 495M/559M [01:12&lt;00:20,    3.31MB/s]
+ 89%|########8 | Downloading : 495M/559M [01:12&lt;00:06,    10.8MB/s]
+ 89%|########8 | Downloading : 495M/559M [01:12&lt;00:07,    8.36MB/s]
+ 89%|########8 | Downloading : 496M/559M [01:12&lt;00:09,    7.26MB/s]
+ 89%|########8 | Downloading : 496M/559M [01:12&lt;00:09,    6.77MB/s]
+ 89%|########8 | Downloading : 496M/559M [01:12&lt;00:09,    7.22MB/s]
+ 89%|########8 | Downloading : 496M/559M [01:12&lt;00:06,    9.40MB/s]
+ 89%|########8 | Downloading : 497M/559M [01:12&lt;00:05,    12.5MB/s]
+ 89%|########8 | Downloading : 497M/559M [01:13&lt;01:05,     981kB/s]
+ 89%|########8 | Downloading : 497M/559M [01:13&lt;00:34,    1.85MB/s]
+ 89%|########9 | Downloading : 497M/559M [01:13&lt;00:06,    10.6MB/s]
+ 89%|########9 | Downloading : 498M/559M [01:13&lt;00:18,    3.48MB/s]
+ 89%|########9 | Downloading : 498M/559M [01:13&lt;00:07,    8.09MB/s]
+ 89%|########9 | Downloading : 498M/559M [01:13&lt;00:08,    7.91MB/s]
+ 89%|########9 | Downloading : 498M/559M [01:13&lt;00:41,    1.54MB/s]
+ 89%|########9 | Downloading : 499M/559M [01:13&lt;00:15,    4.20MB/s]
+ 89%|########9 | Downloading : 499M/559M [01:13&lt;00:30,    2.05MB/s]
+ 89%|########9 | Downloading : 500M/559M [01:13&lt;00:04,    12.6MB/s]
+ 90%|########9 | Downloading : 500M/559M [01:13&lt;00:04,    12.5MB/s]
+ 90%|########9 | Downloading : 501M/559M [01:14&lt;00:28,    2.14MB/s]
+ 90%|########9 | Downloading : 501M/559M [01:14&lt;00:08,    7.12MB/s]
+ 90%|########9 | Downloading : 501M/559M [01:14&lt;01:11,     840kB/s]
+ 90%|########9 | Downloading : 502M/559M [01:14&lt;00:09,    6.22MB/s]
+ 90%|########9 | Downloading : 502M/559M [01:14&lt;00:04,    12.9MB/s]
+ 90%|######### | Downloading : 503M/559M [01:14&lt;00:22,    2.60MB/s]
+ 90%|######### | Downloading : 503M/559M [01:14&lt;00:06,    8.54MB/s]
+ 90%|######### | Downloading : 504M/559M [01:14&lt;00:20,    2.83MB/s]
+ 90%|######### | Downloading : 505M/559M [01:15&lt;00:14,    3.99MB/s]
+ 90%|######### | Downloading : 505M/559M [01:15&lt;00:03,    14.2MB/s]
+ 91%|######### | Downloading : 506M/559M [01:15&lt;00:02,    23.0MB/s]
+ 91%|######### | Downloading : 506M/559M [01:15&lt;00:02,    23.0MB/s]
+ 91%|######### | Downloading : 507M/559M [01:15&lt;00:01,    27.2MB/s]
+ 91%|######### | Downloading : 507M/559M [01:15&lt;00:19,    2.81MB/s]
+ 91%|######### | Downloading : 508M/559M [01:15&lt;00:07,    6.84MB/s]
+ 91%|######### | Downloading : 508M/559M [01:15&lt;00:37,    1.39MB/s]
+ 91%|######### | Downloading : 508M/559M [01:15&lt;00:10,    4.93MB/s]
+ 91%|#########1| Downloading : 509M/559M [01:15&lt;00:02,    21.5MB/s]
+ 91%|#########1| Downloading : 510M/559M [01:15&lt;00:01,    43.9MB/s]
+ 92%|#########1| Downloading : 511M/559M [01:16&lt;00:02,    20.8MB/s]
+ 92%|#########1| Downloading : 512M/559M [01:16&lt;00:05,    9.00MB/s]
+ 92%|#########1| Downloading : 513M/559M [01:16&lt;00:06,    7.92MB/s]
+ 92%|#########1| Downloading : 513M/559M [01:16&lt;00:10,    4.46MB/s]
+ 92%|#########1| Downloading : 514M/559M [01:16&lt;00:02,    18.8MB/s]
+ 92%|#########2| Downloading : 515M/559M [01:16&lt;00:01,    31.9MB/s]
+ 92%|#########2| Downloading : 516M/559M [01:16&lt;00:01,    36.2MB/s]
+ 93%|#########2| Downloading : 517M/559M [01:16&lt;00:01,    33.4MB/s]
+ 93%|#########2| Downloading : 517M/559M [01:16&lt;00:02,    14.9MB/s]
+ 93%|#########2| Downloading : 518M/559M [01:16&lt;00:04,    9.86MB/s]
+ 93%|#########2| Downloading : 518M/559M [01:16&lt;00:02,    20.4MB/s]
+ 93%|#########3| Downloading : 520M/559M [01:16&lt;00:01,    34.2MB/s]
+ 93%|#########3| Downloading : 521M/559M [01:16&lt;00:01,    27.1MB/s]
+ 93%|#########3| Downloading : 522M/559M [01:16&lt;00:08,    4.67MB/s]
+ 94%|#########3| Downloading : 523M/559M [01:17&lt;00:03,    11.1MB/s]
+ 94%|#########3| Downloading : 524M/559M [01:17&lt;00:11,    3.11MB/s]
+ 94%|#########3| Downloading : 524M/559M [01:17&lt;00:03,    10.1MB/s]
+ 94%|#########3| Downloading : 525M/559M [01:17&lt;00:12,    2.78MB/s]
+ 94%|#########4| Downloading : 526M/559M [01:17&lt;00:02,    16.3MB/s]
+ 94%|#########4| Downloading : 526M/559M [01:17&lt;00:02,    15.6MB/s]
+ 94%|#########4| Downloading : 528M/559M [01:17&lt;00:01,    24.9MB/s]
+ 95%|#########4| Downloading : 529M/559M [01:17&lt;00:02,    15.7MB/s]
+ 95%|#########4| Downloading : 530M/559M [01:17&lt;00:01,    24.3MB/s]
+ 95%|#########4| Downloading : 531M/559M [01:17&lt;00:01,    23.3MB/s]
+ 95%|#########5| Downloading : 532M/559M [01:17&lt;00:05,    5.21MB/s]
+ 95%|#########5| Downloading : 532M/559M [01:17&lt;00:01,    19.9MB/s]
+ 95%|#########5| Downloading : 533M/559M [01:17&lt;00:00,    30.2MB/s]
+ 95%|#########5| Downloading : 533M/559M [01:18&lt;00:01,    22.3MB/s]
+ 96%|#########5| Downloading : 534M/559M [01:18&lt;00:01,    17.6MB/s]
+ 96%|#########5| Downloading : 535M/559M [01:18&lt;00:02,    12.0MB/s]
+ 96%|#########5| Downloading : 535M/559M [01:18&lt;00:02,    11.8MB/s]
+ 96%|#########5| Downloading : 536M/559M [01:18&lt;00:02,    11.8MB/s]
+ 96%|#########5| Downloading : 536M/559M [01:18&lt;00:07,    3.14MB/s]
+ 96%|#########6| Downloading : 537M/559M [01:18&lt;00:01,    17.2MB/s]
+ 96%|#########6| Downloading : 537M/559M [01:18&lt;00:00,    28.6MB/s]
+ 96%|#########6| Downloading : 538M/559M [01:18&lt;00:00,    32.2MB/s]
+ 96%|#########6| Downloading : 538M/559M [01:18&lt;00:00,    32.7MB/s]
+ 96%|#########6| Downloading : 539M/559M [01:18&lt;00:01,    12.6MB/s]
+ 97%|#########6| Downloading : 539M/559M [01:18&lt;00:01,    13.7MB/s]
+ 97%|#########6| Downloading : 540M/559M [01:18&lt;00:07,    2.78MB/s]
+ 97%|#########6| Downloading : 541M/559M [01:18&lt;00:05,    3.25MB/s]
+ 97%|#########6| Downloading : 541M/559M [01:19&lt;00:14,    1.30MB/s]
+ 97%|#########6| Downloading : 541M/559M [01:19&lt;00:02,    7.11MB/s]
+ 97%|#########6| Downloading : 541M/559M [01:19&lt;00:03,    5.48MB/s]
+ 97%|#########6| Downloading : 542M/559M [01:19&lt;00:11,    1.52MB/s]
+ 97%|#########7| Downloading : 542M/559M [01:19&lt;00:03,    4.82MB/s]
+ 97%|#########7| Downloading : 542M/559M [01:19&lt;00:01,    9.20MB/s]
+ 97%|#########7| Downloading : 543M/559M [01:19&lt;00:00,    17.8MB/s]
+ 97%|#########7| Downloading : 544M/559M [01:19&lt;00:00,    21.7MB/s]
+ 97%|#########7| Downloading : 544M/559M [01:19&lt;00:00,    28.7MB/s]
+ 97%|#########7| Downloading : 545M/559M [01:19&lt;00:00,    20.3MB/s]
+ 98%|#########7| Downloading : 545M/559M [01:19&lt;00:00,    20.5MB/s]
+ 98%|#########7| Downloading : 546M/559M [01:19&lt;00:00,    23.3MB/s]
+ 98%|#########7| Downloading : 546M/559M [01:19&lt;00:00,    21.2MB/s]
+ 98%|#########7| Downloading : 547M/559M [01:19&lt;00:04,    2.83MB/s]
+ 98%|#########7| Downloading : 547M/559M [01:19&lt;00:01,    8.25MB/s]
+ 98%|#########8| Downloading : 548M/559M [01:20&lt;00:01,    11.0MB/s]
+ 98%|#########8| Downloading : 548M/559M [01:20&lt;00:00,    19.7MB/s]
+ 98%|#########8| Downloading : 549M/559M [01:20&lt;00:00,    23.4MB/s]
+ 98%|#########8| Downloading : 549M/559M [01:20&lt;00:00,    25.9MB/s]
+ 98%|#########8| Downloading : 550M/559M [01:20&lt;00:00,    22.9MB/s]
+ 98%|#########8| Downloading : 550M/559M [01:20&lt;00:00,    22.8MB/s]
+ 99%|#########8| Downloading : 551M/559M [01:20&lt;00:00,    20.5MB/s]
+ 99%|#########8| Downloading : 551M/559M [01:20&lt;00:00,    10.4MB/s]
+ 99%|#########8| Downloading : 553M/559M [01:20&lt;00:00,    34.0MB/s]
+ 99%|#########9| Downloading : 554M/559M [01:20&lt;00:00,    27.5MB/s]
+ 99%|#########9| Downloading : 555M/559M [01:20&lt;00:00,    33.4MB/s]
+ 99%|#########9| Downloading : 556M/559M [01:20&lt;00:00,    31.1MB/s]
+100%|#########9| Downloading : 557M/559M [01:20&lt;00:00,    4.19MB/s]
+100%|#########9| Downloading : 557M/559M [01:20&lt;00:00,    2.75MB/s]
+100%|#########9| Downloading : 558M/559M [01:20&lt;00:00,    14.7MB/s]
+100%|#########9| Downloading : 558M/559M [01:20&lt;00:00,    21.1MB/s]
+100%|##########| Downloading : 559M/559M [01:20&lt;00:00,    19.9MB/s]
+100%|##########| Downloading : 559M/559M [01:20&lt;00:00,    7.24MB/s]
+Verifying hash ea825966c0a1e9b2f84e3826c5500161.
+Decompressing the archive: /home/circleci/mne_data/MNE-somato-data.tar.gz
+(please be patient, this can take some time)
+Successfully extracted to: [&#39;/home/circleci/mne_data/MNE-somato-data&#39;]
 Attempting to create new mne-python configuration file:
 /home/circleci/.mne/mne-python.json
 sub-01_task-somato
@@ -177,11 +1212,25 @@ sub-01_task-somato
 </div>
 <p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>|MNE-somato-data/
-|--- dataset_description.json
-|--- participants.tsv
-|--- participants.json
 |--- CHANGES
+|--- participants.json
+|--- participants.tsv
+|--- dataset_description.json
 |--- README
+|--- code/
+|------ convert_somato_data.py
+|------ README
+|--- sub-01/
+|------ sub-01_scans.tsv
+|------ meg/
+|--------- sub-01_task-somato_meg.json
+|--------- sub-01_task-somato_channels.tsv
+|--------- sub-01_task-somato_meg.fif
+|--------- sub-01_task-somato_events.tsv
+|--------- sub-01_coordsystem.json
+|------ anat/
+|--------- sub-01_T1w.json
+|--------- sub-01_T1w.nii.gz
 |--- derivatives/
 |------ sub-01/
 |--------- sub-01_task-somato-fwd.fif
@@ -189,620 +1238,606 @@ sub-01_task-somato
 |--------- subjects/
 |------------ fsaverage
 |------------ 01/
-|--------------- tmp/
+|--------------- stats/
+|------------------ lh.curv.stats
+|------------------ rh.BA_exvivo.thresh.stats
+|------------------ lh.aparc.pial.stats
+|------------------ rh.aparc.a2009s.stats
+|------------------ aseg.stats
+|------------------ lh.aparc.stats
+|------------------ rh.w-g.pct.stats
+|------------------ lh.w-g.pct.stats
+|------------------ rh.aparc.pial.stats
+|------------------ wmparc.stats
+|------------------ lh.BA_exvivo.thresh.stats
+|------------------ lh.aparc.a2009s.stats
+|------------------ rh.curv.stats
+|------------------ lh.aparc.DKTatlas.stats
+|------------------ lh.BA_exvivo.stats
+|------------------ rh.BA_exvivo.stats
+|------------------ rh.aparc.stats
+|------------------ rh.aparc.DKTatlas.stats
 |--------------- touch/
-|------------------ lh.qsphere.touch
-|------------------ rh.inflate2.touch
-|------------------ rh.surfvolume.touch
-|------------------ rusage.mris_fix_topology.rh.dat
-|------------------ inorm2.touch
-|------------------ rh.aparcstats2.touch
-|------------------ lh.tessellate.touch
-|------------------ asegmerge.touch
-|------------------ rusage.mris_fix_topology.lh.dat
-|------------------ lh.inflate1.touch
-|------------------ rusage.mri_em_register.dat
-|------------------ skull_strip.touch
-|------------------ rh.qsphere.touch
-|------------------ rh.inflate.H.K.touch
-|------------------ rusage.mris_sphere.lh.dat
-|------------------ skull.lta.touch
-|------------------ rh.white.H.K.touch
-|------------------ lh.inflate2.touch
-|------------------ cortical_ribbon.touch
-|------------------ rusage.mri_watershed.dat
-|------------------ lh.white.H.K.touch
-|------------------ wmaparc.stats.touch
-|------------------ lh.white_surface.touch
-|------------------ rusage.mris_inflate.rh.dat
-|------------------ rh.pctsurfcon.touch
-|------------------ fill.touch
-|------------------ rusage.mris_sphere.rh.dat
-|------------------ rh.avgcurv.touch
-|------------------ inorm1.touch
-|------------------ aparc.a2009s2aseg.touch
-|------------------ rh.final_surfaces.touch
-|------------------ lh.aparc2.touch
-|------------------ lh.topofix.touch
-|------------------ rh.topofix.touch
-|------------------ lh.aparcstats2.touch
-|------------------ rh.sphmorph.touch
-|------------------ wmsegment.touch
-|------------------ ca_register.touch
-|------------------ lh.sphmorph.touch
-|------------------ relabelhypos.touch
-|------------------ rusage.mris_register.rh.dat
-|------------------ lh.aparcstats.touch
-|------------------ rh.tessellate.touch
-|------------------ rusage.mri_em_register.skull.dat
-|------------------ lh.inflate.H.K.touch
-|------------------ rh.smoothwm1.touch
-|------------------ lh.curvstats.touch
-|------------------ rh.white_surface.touch
-|------------------ segstats.touch
-|------------------ lh.smoothwm2.touch
 |------------------ rusage.mris_inflate.lh.dat
-|------------------ lh.smoothwm1.touch
-|------------------ conform.touch
-|------------------ lh.pctsurfcon.touch
-|------------------ lh.surfvolume.touch
-|------------------ lh.avgcurv.touch
-|------------------ lh.aparcstats3.touch
-|------------------ lh.pial_surface.touch
-|------------------ rh.pial_surface.touch
-|------------------ lh.final_surfaces.touch
-|------------------ rusage.mris_register.lh.dat
-|------------------ rh.curvstats.touch
-|------------------ em_register.touch
-|------------------ rusage.mri_ca_register.dat
-|------------------ rh.aparcstats.touch
-|------------------ rh.smoothwm2.touch
 |------------------ rh.sphreg.touch
-|------------------ rh.aparcstats3.touch
-|------------------ lh.aparc.touch
-|------------------ rh.aparc.touch
 |------------------ wmaparc.touch
-|------------------ ca_normalize.touch
-|------------------ apas2aseg.touch
-|------------------ lh.sphreg.touch
-|------------------ talairach.touch
-|------------------ rh.jacobian_white.touch
-|------------------ rh.aparc2.touch
+|------------------ skull.lta.touch
 |------------------ aparc.DKTatlas2aseg.touch
-|------------------ ca_label.touch
-|------------------ nu.touch
+|------------------ lh.surfvolume.touch
+|------------------ rusage.mris_inflate.rh.dat
+|------------------ conform.touch
+|------------------ segstats.touch
 |------------------ lh.jacobian_white.touch
+|------------------ lh.aparcstats2.touch
+|------------------ nu.touch
+|------------------ rusage.mris_sphere.lh.dat
+|------------------ rh.qsphere.touch
+|------------------ rh.jacobian_white.touch
+|------------------ lh.inflate1.touch
+|------------------ lh.pctsurfcon.touch
+|------------------ lh.sphmorph.touch
+|------------------ rusage.mris_register.rh.dat
+|------------------ lh.aparc.touch
+|------------------ apas2aseg.touch
+|------------------ wmaparc.stats.touch
+|------------------ rusage.mri_em_register.dat
+|------------------ rh.white.H.K.touch
+|------------------ inorm2.touch
+|------------------ ca_label.touch
 |------------------ rh.inflate1.touch
+|------------------ wmsegment.touch
+|------------------ lh.white.H.K.touch
+|------------------ lh.aparc2.touch
+|------------------ rh.inflate.H.K.touch
+|------------------ rusage.mris_register.lh.dat
+|------------------ rusage.mri_ca_register.dat
+|------------------ fill.touch
+|------------------ rh.pctsurfcon.touch
+|------------------ rh.inflate2.touch
+|------------------ lh.tessellate.touch
+|------------------ ca_normalize.touch
+|------------------ rh.tessellate.touch
+|------------------ lh.final_surfaces.touch
+|------------------ lh.avgcurv.touch
+|------------------ asegmerge.touch
+|------------------ rh.final_surfaces.touch
+|------------------ lh.aparcstats.touch
+|------------------ rusage.mris_fix_topology.lh.dat
+|------------------ lh.qsphere.touch
+|------------------ lh.aparcstats3.touch
+|------------------ rh.smoothwm2.touch
+|------------------ lh.topofix.touch
+|------------------ skull_strip.touch
+|------------------ rh.aparc.touch
+|------------------ rh.avgcurv.touch
+|------------------ rusage.mris_fix_topology.rh.dat
+|------------------ rh.aparcstats.touch
+|------------------ rh.aparcstats2.touch
+|------------------ cortical_ribbon.touch
+|------------------ ca_register.touch
+|------------------ rh.pial_surface.touch
+|------------------ lh.smoothwm1.touch
+|------------------ rusage.mris_sphere.rh.dat
+|------------------ relabelhypos.touch
+|------------------ rh.topofix.touch
+|------------------ inorm1.touch
+|------------------ rh.aparcstats3.touch
+|------------------ rh.aparc2.touch
+|------------------ em_register.touch
+|------------------ rh.white_surface.touch
+|------------------ talairach.touch
+|------------------ aparc.a2009s2aseg.touch
+|------------------ lh.pial_surface.touch
+|------------------ lh.white_surface.touch
+|------------------ lh.inflate2.touch
+|------------------ lh.sphreg.touch
+|------------------ rh.sphmorph.touch
+|------------------ rh.smoothwm1.touch
+|------------------ rusage.mri_watershed.dat
+|------------------ lh.inflate.H.K.touch
+|------------------ lh.smoothwm2.touch
+|------------------ rh.curvstats.touch
+|------------------ rh.surfvolume.touch
+|------------------ lh.curvstats.touch
+|------------------ rusage.mri_em_register.skull.dat
 |--------------- trash/
-|--------------- label/
-|------------------ lh.BA1_exvivo.thresh.label
-|------------------ lh.entorhinal_exvivo.thresh.label
-|------------------ lh.BA4a_exvivo.thresh.label
-|------------------ aparc.annot.a2009s.ctab
-|------------------ rh.entorhinal_exvivo.label
-|------------------ rh.BA6_exvivo.thresh.label
-|------------------ rh.MT_exvivo.label
-|------------------ lh.BA6_exvivo.thresh.label
-|------------------ rh.MT_exvivo.thresh.label
-|------------------ lh.BA_exvivo.annot
-|------------------ rh.BA4p_exvivo.thresh.label
-|------------------ lh.BA4p_exvivo.label
-|------------------ lh.V2_exvivo.label
-|------------------ lh.MT_exvivo.label
-|------------------ lh.MT_exvivo.thresh.label
-|------------------ lh.BA6_exvivo.label
-|------------------ lh.BA45_exvivo.thresh.label
-|------------------ lh.BA3a_exvivo.thresh.label
-|------------------ lh.perirhinal_exvivo.thresh.label
-|------------------ lh.V1_exvivo.label
-|------------------ lh.BA_exvivo.thresh.annot
-|------------------ lh.perirhinal_exvivo.label
-|------------------ lh.BA44_exvivo.thresh.label
-|------------------ rh.entorhinal_exvivo.thresh.label
-|------------------ lh.BA3a_exvivo.label
-|------------------ rh.BA44_exvivo.thresh.label
-|------------------ rh.BA6_exvivo.label
-|------------------ lh.V2_exvivo.thresh.label
-|------------------ lh.BA2_exvivo.label
-|------------------ rh.BA45_exvivo.label
-|------------------ lh.BA1_exvivo.label
-|------------------ lh.aparc.DKTatlas.annot
-|------------------ rh.BA4p_exvivo.label
-|------------------ rh.BA1_exvivo.label
-|------------------ lh.V1_exvivo.thresh.label
-|------------------ rh.BA4a_exvivo.thresh.label
-|------------------ rh.BA3a_exvivo.label
-|------------------ lh.BA45_exvivo.label
-|------------------ rh.BA4a_exvivo.label
-|------------------ lh.BA44_exvivo.label
-|------------------ rh.BA2_exvivo.label
-|------------------ rh.BA1_exvivo.thresh.label
-|------------------ rh.BA3b_exvivo.thresh.label
-|------------------ rh.BA_exvivo.annot
-|------------------ lh.BA3b_exvivo.thresh.label
-|------------------ lh.cortex.label
-|------------------ lh.BA2_exvivo.thresh.label
-|------------------ rh.BA3b_exvivo.label
-|------------------ BA_exvivo.ctab
-|------------------ aparc.annot.ctab
-|------------------ aparc.annot.DKTatlas.ctab
-|------------------ rh.perirhinal_exvivo.label
-|------------------ rh.BA2_exvivo.thresh.label
-|------------------ lh.BA4a_exvivo.label
-|------------------ BA_exvivo.thresh.ctab
-|------------------ rh.BA3a_exvivo.thresh.label
-|------------------ rh.V1_exvivo.label
-|------------------ rh.perirhinal_exvivo.thresh.label
-|------------------ rh.V2_exvivo.thresh.label
-|------------------ rh.BA_exvivo.thresh.annot
-|------------------ rh.cortex.label
-|------------------ lh.aparc.annot
-|------------------ rh.BA45_exvivo.thresh.label
-|------------------ rh.BA44_exvivo.label
-|------------------ lh.BA4p_exvivo.thresh.label
-|------------------ rh.aparc.annot
-|------------------ lh.BA3b_exvivo.label
-|------------------ rh.V2_exvivo.label
-|------------------ rh.aparc.DKTatlas.annot
-|------------------ rh.V1_exvivo.thresh.label
-|------------------ rh.aparc.a2009s.annot
-|------------------ lh.entorhinal_exvivo.label
-|------------------ lh.aparc.a2009s.annot
 |--------------- bem/
-|------------------ outer_skull.surf
-|------------------ outer_skin.surf
-|------------------ 01-head.fif
-|------------------ 01-head-sparse.fif
-|------------------ brain.surf
-|------------------ 01-head-medium.fif
 |------------------ 01-head-dense.fif
+|------------------ 01-head.fif
+|------------------ outer_skull.surf
+|------------------ 01-head-medium.fif
+|------------------ 01-head-sparse.fif
 |------------------ inner_skull.surf
+|------------------ brain.surf
+|------------------ outer_skin.surf
 |------------------ watershed/
-|--------------------- 01_outer_skin_surface
-|--------------------- 01_brain_surface
 |--------------------- 01_inner_skull_surface
 |--------------------- 01_outer_skull_surface
+|--------------------- 01_outer_skin_surface
+|--------------------- 01_brain_surface
 |--------------------- ws/
-|------------------------ COR-035
-|------------------------ COR-006
-|------------------------ COR-141
-|------------------------ COR-195
-|------------------------ COR-143
-|------------------------ COR-059
-|------------------------ COR-085
-|------------------------ COR-180
-|------------------------ COR-203
-|------------------------ COR-029
-|------------------------ COR-207
-|------------------------ COR-091
-|------------------------ COR-032
-|------------------------ COR-007
-|------------------------ COR-100
-|------------------------ COR-186
-|------------------------ COR-046
-|------------------------ COR-097
-|------------------------ COR-128
-|------------------------ COR-012
-|------------------------ COR-102
-|------------------------ COR-172
-|------------------------ COR-201
-|------------------------ COR-183
-|------------------------ COR-235
-|------------------------ COR-228
-|------------------------ COR-070
-|------------------------ COR-015
-|------------------------ COR-056
-|------------------------ COR-219
-|------------------------ COR-184
-|------------------------ COR-168
-|------------------------ COR-147
-|------------------------ COR-067
-|------------------------ COR-057
-|------------------------ COR-170
-|------------------------ COR-055
-|------------------------ COR-200
-|------------------------ COR-197
-|------------------------ COR-087
-|------------------------ COR-148
-|------------------------ COR-058
-|------------------------ COR-030
-|------------------------ COR-008
-|------------------------ COR-050
-|------------------------ COR-193
-|------------------------ COR-083
-|------------------------ COR-038
-|------------------------ COR-233
-|------------------------ COR-024
-|------------------------ COR-205
-|------------------------ COR-115
-|------------------------ COR-166
-|------------------------ COR-187
-|------------------------ COR-105
-|------------------------ COR-135
-|------------------------ COR-149
-|------------------------ COR-109
-|------------------------ COR-169
-|------------------------ COR-052
-|------------------------ COR-176
-|------------------------ COR-080
-|------------------------ COR-239
-|------------------------ COR-244
-|------------------------ COR-108
-|------------------------ COR-124
-|------------------------ COR-198
-|------------------------ COR-243
-|------------------------ COR-009
-|------------------------ COR-075
-|------------------------ COR-054
-|------------------------ COR-196
-|------------------------ COR-253
-|------------------------ COR-231
-|------------------------ COR-127
-|------------------------ COR-048
-|------------------------ COR-179
-|------------------------ COR-216
-|------------------------ COR-062
-|------------------------ COR-074
-|------------------------ COR-112
-|------------------------ COR-072
-|------------------------ COR-014
-|------------------------ COR-130
-|------------------------ COR-037
-|------------------------ COR-164
-|------------------------ COR-175
-|------------------------ COR-162
-|------------------------ COR-101
-|------------------------ COR-212
-|------------------------ COR-181
-|------------------------ COR-158
-|------------------------ COR-106
-|------------------------ COR-247
-|------------------------ COR-043
-|------------------------ COR-013
-|------------------------ COR-215
-|------------------------ COR-053
-|------------------------ COR-120
-|------------------------ COR-.info
-|------------------------ COR-245
-|------------------------ COR-114
-|------------------------ COR-146
-|------------------------ COR-065
-|------------------------ COR-154
-|------------------------ COR-252
-|------------------------ COR-236
-|------------------------ COR-229
-|------------------------ COR-190
-|------------------------ COR-230
-|------------------------ COR-078
-|------------------------ COR-063
-|------------------------ COR-113
-|------------------------ COR-144
-|------------------------ COR-118
-|------------------------ COR-049
-|------------------------ COR-036
-|------------------------ COR-027
-|------------------------ COR-044
-|------------------------ COR-034
-|------------------------ COR-211
-|------------------------ COR-047
-|------------------------ COR-119
-|------------------------ COR-250
-|------------------------ COR-042
-|------------------------ COR-107
-|------------------------ COR-237
-|------------------------ COR-110
-|------------------------ COR-221
 |------------------------ COR-151
-|------------------------ COR-240
-|------------------------ COR-156
-|------------------------ COR-004
-|------------------------ COR-088
-|------------------------ COR-155
-|------------------------ COR-045
-|------------------------ COR-139
-|------------------------ COR-092
-|------------------------ COR-001
-|------------------------ COR-189
-|------------------------ COR-174
-|------------------------ COR-232
-|------------------------ COR-152
-|------------------------ COR-185
-|------------------------ COR-099
-|------------------------ COR-142
-|------------------------ COR-234
-|------------------------ COR-103
-|------------------------ COR-077
-|------------------------ COR-188
-|------------------------ COR-095
-|------------------------ COR-157
-|------------------------ COR-214
-|------------------------ COR-020
-|------------------------ COR-206
-|------------------------ COR-028
-|------------------------ COR-150
-|------------------------ COR-122
-|------------------------ COR-140
-|------------------------ COR-194
-|------------------------ COR-204
-|------------------------ COR-192
-|------------------------ COR-064
-|------------------------ COR-167
-|------------------------ COR-051
-|------------------------ COR-217
-|------------------------ COR-010
-|------------------------ COR-121
-|------------------------ COR-002
-|------------------------ COR-005
-|------------------------ COR-177
-|------------------------ COR-241
-|------------------------ COR-060
-|------------------------ COR-123
-|------------------------ COR-023
-|------------------------ COR-071
-|------------------------ COR-255
-|------------------------ COR-033
-|------------------------ COR-225
-|------------------------ COR-019
-|------------------------ COR-025
-|------------------------ COR-136
-|------------------------ COR-082
-|------------------------ COR-039
-|------------------------ COR-191
-|------------------------ COR-011
-|------------------------ COR-208
-|------------------------ COR-086
-|------------------------ COR-076
-|------------------------ COR-089
-|------------------------ COR-066
-|------------------------ COR-129
-|------------------------ COR-090
-|------------------------ COR-079
-|------------------------ COR-238
-|------------------------ COR-031
-|------------------------ COR-159
-|------------------------ COR-117
-|------------------------ COR-153
-|------------------------ COR-256
-|------------------------ COR-132
-|------------------------ COR-213
-|------------------------ COR-222
-|------------------------ COR-178
-|------------------------ COR-226
-|------------------------ COR-061
-|------------------------ COR-022
-|------------------------ COR-137
-|------------------------ COR-138
-|------------------------ COR-104
-|------------------------ COR-003
-|------------------------ COR-126
-|------------------------ COR-173
-|------------------------ COR-224
-|------------------------ COR-145
-|------------------------ COR-160
 |------------------------ COR-040
-|------------------------ COR-218
-|------------------------ COR-017
-|------------------------ COR-202
-|------------------------ COR-220
-|------------------------ COR-098
-|------------------------ COR-165
-|------------------------ COR-210
-|------------------------ COR-163
-|------------------------ COR-069
-|------------------------ COR-182
-|------------------------ COR-073
-|------------------------ COR-131
-|------------------------ COR-041
-|------------------------ COR-254
-|------------------------ COR-171
-|------------------------ COR-246
-|------------------------ COR-068
-|------------------------ COR-016
-|------------------------ COR-199
-|------------------------ COR-249
-|------------------------ COR-084
-|------------------------ COR-111
-|------------------------ COR-026
-|------------------------ COR-248
-|------------------------ COR-209
-|------------------------ COR-161
-|------------------------ COR-251
-|------------------------ COR-094
-|------------------------ COR-081
-|------------------------ COR-242
-|------------------------ COR-116
-|------------------------ COR-227
-|------------------------ COR-096
-|------------------------ COR-093
-|------------------------ COR-223
+|------------------------ COR-027
 |------------------------ COR-125
-|------------------------ COR-021
+|------------------------ COR-043
+|------------------------ COR-256
+|------------------------ COR-110
+|------------------------ COR-100
+|------------------------ COR-193
+|------------------------ COR-244
+|------------------------ COR-241
+|------------------------ COR-090
+|------------------------ COR-051
+|------------------------ COR-128
+|------------------------ COR-024
+|------------------------ COR-124
+|------------------------ COR-006
+|------------------------ COR-002
+|------------------------ COR-235
+|------------------------ COR-222
+|------------------------ COR-160
+|------------------------ COR-251
+|------------------------ COR-007
+|------------------------ COR-162
+|------------------------ COR-086
+|------------------------ COR-.info
+|------------------------ COR-034
+|------------------------ COR-064
+|------------------------ COR-056
+|------------------------ COR-208
+|------------------------ COR-218
+|------------------------ COR-019
+|------------------------ COR-016
+|------------------------ COR-252
+|------------------------ COR-137
+|------------------------ COR-015
+|------------------------ COR-087
+|------------------------ COR-246
+|------------------------ COR-044
+|------------------------ COR-062
+|------------------------ COR-023
+|------------------------ COR-237
+|------------------------ COR-042
+|------------------------ COR-177
+|------------------------ COR-020
+|------------------------ COR-069
+|------------------------ COR-230
+|------------------------ COR-199
+|------------------------ COR-068
+|------------------------ COR-149
+|------------------------ COR-184
+|------------------------ COR-113
+|------------------------ COR-202
+|------------------------ COR-058
 |------------------------ COR-134
-|------------------------ COR-018
+|------------------------ COR-038
+|------------------------ COR-169
+|------------------------ COR-026
+|------------------------ COR-239
+|------------------------ COR-041
+|------------------------ COR-191
+|------------------------ COR-008
+|------------------------ COR-013
+|------------------------ COR-200
+|------------------------ COR-148
+|------------------------ COR-017
+|------------------------ COR-170
+|------------------------ COR-109
+|------------------------ COR-116
+|------------------------ COR-028
+|------------------------ COR-171
+|------------------------ COR-101
+|------------------------ COR-142
+|------------------------ COR-078
+|------------------------ COR-245
+|------------------------ COR-166
+|------------------------ COR-234
+|------------------------ COR-003
+|------------------------ COR-172
+|------------------------ COR-054
+|------------------------ COR-014
+|------------------------ COR-255
+|------------------------ COR-194
+|------------------------ COR-123
+|------------------------ COR-159
 |------------------------ COR-133
+|------------------------ COR-161
+|------------------------ COR-053
+|------------------------ COR-186
+|------------------------ COR-074
+|------------------------ COR-057
+|------------------------ COR-035
+|------------------------ COR-207
+|------------------------ COR-225
+|------------------------ COR-117
+|------------------------ COR-178
+|------------------------ COR-012
+|------------------------ COR-018
+|------------------------ COR-206
+|------------------------ COR-183
+|------------------------ COR-195
+|------------------------ COR-126
+|------------------------ COR-196
+|------------------------ COR-247
+|------------------------ COR-168
+|------------------------ COR-010
+|------------------------ COR-226
+|------------------------ COR-131
+|------------------------ COR-156
+|------------------------ COR-073
+|------------------------ COR-039
+|------------------------ COR-103
+|------------------------ COR-083
+|------------------------ COR-105
+|------------------------ COR-119
+|------------------------ COR-065
+|------------------------ COR-201
+|------------------------ COR-155
+|------------------------ COR-075
+|------------------------ COR-141
+|------------------------ COR-088
+|------------------------ COR-220
+|------------------------ COR-250
+|------------------------ COR-236
+|------------------------ COR-175
+|------------------------ COR-045
+|------------------------ COR-158
+|------------------------ COR-203
+|------------------------ COR-060
+|------------------------ COR-232
+|------------------------ COR-189
+|------------------------ COR-219
+|------------------------ COR-082
+|------------------------ COR-122
+|------------------------ COR-176
+|------------------------ COR-033
+|------------------------ COR-129
+|------------------------ COR-150
+|------------------------ COR-231
+|------------------------ COR-046
+|------------------------ COR-005
+|------------------------ COR-182
+|------------------------ COR-070
+|------------------------ COR-049
+|------------------------ COR-098
+|------------------------ COR-104
+|------------------------ COR-011
+|------------------------ COR-097
+|------------------------ COR-154
+|------------------------ COR-031
+|------------------------ COR-111
+|------------------------ COR-165
+|------------------------ COR-153
+|------------------------ COR-188
+|------------------------ COR-096
+|------------------------ COR-112
+|------------------------ COR-004
+|------------------------ COR-077
+|------------------------ COR-115
+|------------------------ COR-240
+|------------------------ COR-224
+|------------------------ COR-121
+|------------------------ COR-144
+|------------------------ COR-050
+|------------------------ COR-059
+|------------------------ COR-197
+|------------------------ COR-091
+|------------------------ COR-080
+|------------------------ COR-127
+|------------------------ COR-249
+|------------------------ COR-130
+|------------------------ COR-099
+|------------------------ COR-192
+|------------------------ COR-093
+|------------------------ COR-198
+|------------------------ COR-084
+|------------------------ COR-229
+|------------------------ COR-076
+|------------------------ COR-030
+|------------------------ COR-173
+|------------------------ COR-094
+|------------------------ COR-213
+|------------------------ COR-095
+|------------------------ COR-210
+|------------------------ COR-174
+|------------------------ COR-253
+|------------------------ COR-212
+|------------------------ COR-022
+|------------------------ COR-029
+|------------------------ COR-132
+|------------------------ COR-185
+|------------------------ COR-248
+|------------------------ COR-036
+|------------------------ COR-242
+|------------------------ COR-187
+|------------------------ COR-233
+|------------------------ COR-085
+|------------------------ COR-243
+|------------------------ COR-214
+|------------------------ COR-164
+|------------------------ COR-009
+|------------------------ COR-140
+|------------------------ COR-025
+|------------------------ COR-072
+|------------------------ COR-118
+|------------------------ COR-052
+|------------------------ COR-047
+|------------------------ COR-223
+|------------------------ COR-190
+|------------------------ COR-238
+|------------------------ COR-032
+|------------------------ COR-108
+|------------------------ COR-163
+|------------------------ COR-215
+|------------------------ COR-143
+|------------------------ COR-089
+|------------------------ COR-107
+|------------------------ COR-209
+|------------------------ COR-079
+|------------------------ COR-136
+|------------------------ COR-001
+|------------------------ COR-211
+|------------------------ COR-179
+|------------------------ COR-217
+|------------------------ COR-139
+|------------------------ COR-063
+|------------------------ COR-145
+|------------------------ COR-081
+|------------------------ COR-061
+|------------------------ COR-055
+|------------------------ COR-037
+|------------------------ COR-067
+|------------------------ COR-106
+|------------------------ COR-120
+|------------------------ COR-180
+|------------------------ COR-167
+|------------------------ COR-021
+|------------------------ COR-135
+|------------------------ COR-204
+|------------------------ COR-147
+|------------------------ COR-181
+|------------------------ COR-157
+|------------------------ COR-227
+|------------------------ COR-146
+|------------------------ COR-092
+|------------------------ COR-066
+|------------------------ COR-221
+|------------------------ COR-228
+|------------------------ COR-102
+|------------------------ COR-205
+|------------------------ COR-216
+|------------------------ COR-254
+|------------------------ COR-048
+|------------------------ COR-071
+|------------------------ COR-152
+|------------------------ COR-114
+|------------------------ COR-138
 |--------------- mri/
-|------------------ T1.mgz
+|------------------ mri_nu_correct.mni.log
 |------------------ orig_nu.mgz
-|------------------ wmparc.mgz
-|------------------ orig.mgz
+|------------------ ctrl_pts.mgz
+|------------------ talairach.label_intensities.txt
+|------------------ aseg.auto.mgz
 |------------------ norm.mgz
+|------------------ rawavg.mgz
+|------------------ rh.ribbon.mgz
+|------------------ aparc+aseg.mgz
+|------------------ brainmask.mgz
+|------------------ talairach_with_skull.log
 |------------------ mri_nu_correct.mni.log.bak
+|------------------ wm.seg.mgz
+|------------------ T1.mgz
+|------------------ ribbon.mgz
+|------------------ aparc.DKTatlas+aseg.mgz
+|------------------ nu.mgz
+|------------------ aseg.presurf.mgz
+|------------------ seghead.mgz
+|------------------ lh.ribbon.mgz
+|------------------ brain.mgz
+|------------------ talairach.log
+|------------------ wm.asegedit.mgz
+|------------------ orig.mgz
+|------------------ brainmask.auto.mgz
+|------------------ filled.mgz
+|------------------ aseg.auto_noCCseg.label_intensities.txt
+|------------------ aseg.auto_noCCseg.mgz
+|------------------ wm.mgz
+|------------------ wmparc.mgz
+|------------------ aseg.presurf.hypos.mgz
+|------------------ aseg.mgz
+|------------------ brain.finalsurfs.mgz
 |------------------ segment.dat
 |------------------ aparc.a2009s+aseg.mgz
-|------------------ aseg.auto_noCCseg.mgz
-|------------------ wm.asegedit.mgz
-|------------------ brainmask.auto.mgz
-|------------------ aseg.mgz
-|------------------ aparc.DKTatlas+aseg.mgz
-|------------------ brainmask.mgz
-|------------------ filled.mgz
-|------------------ rh.ribbon.mgz
-|------------------ nu.mgz
-|------------------ wm.seg.mgz
-|------------------ aparc+aseg.mgz
-|------------------ ribbon.mgz
-|------------------ talairach_with_skull.log
-|------------------ mri_nu_correct.mni.log
-|------------------ aseg.presurf.mgz
-|------------------ lh.ribbon.mgz
-|------------------ rawavg.mgz
-|------------------ talairach.label_intensities.txt
-|------------------ aseg.auto_noCCseg.label_intensities.txt
-|------------------ aseg.presurf.hypos.mgz
-|------------------ wm.mgz
-|------------------ aseg.auto.mgz
-|------------------ brain.finalsurfs.mgz
-|------------------ brain.mgz
-|------------------ seghead.mgz
-|------------------ ctrl_pts.mgz
-|------------------ talairach.log
 |------------------ orig/
 |--------------------- 001.mgz
 |------------------ transforms/
-|--------------------- talsrcimg_to_711-2C_as_mni_average_305_t4_vox2vox.txt
-|--------------------- talairach_with_skull.lta
-|--------------------- talairach.xfm
-|--------------------- talairach_avi_QA.log
 |--------------------- cc_up.lta
 |--------------------- talairach.auto.xfm
-|--------------------- talairach_avi.log
+|--------------------- talairach.xfm
+|--------------------- talairach_avi_QA.log
+|--------------------- talairach_with_skull.lta
+|--------------------- talairach.lta
 |--------------------- talairach.m3z
 |--------------------- talairach.auto.xfm.lta
-|--------------------- talairach.lta
+|--------------------- talairach_avi.log
+|--------------------- talsrcimg_to_711-2C_as_mni_average_305_t4_vox2vox.txt
 |--------------------- bak/
+|--------------- label/
+|------------------ rh.BA44_exvivo.thresh.label
+|------------------ lh.BA45_exvivo.thresh.label
+|------------------ rh.entorhinal_exvivo.thresh.label
+|------------------ lh.perirhinal_exvivo.thresh.label
+|------------------ rh.aparc.DKTatlas.annot
+|------------------ rh.MT_exvivo.label
+|------------------ rh.BA4p_exvivo.label
+|------------------ lh.BA4a_exvivo.thresh.label
+|------------------ rh.BA4a_exvivo.thresh.label
+|------------------ lh.BA4p_exvivo.label
+|------------------ rh.V2_exvivo.label
+|------------------ lh.BA1_exvivo.thresh.label
+|------------------ aparc.annot.DKTatlas.ctab
+|------------------ lh.BA3b_exvivo.label
+|------------------ lh.V1_exvivo.thresh.label
+|------------------ rh.BA4p_exvivo.thresh.label
+|------------------ rh.aparc.a2009s.annot
+|------------------ rh.BA6_exvivo.label
+|------------------ rh.V2_exvivo.thresh.label
+|------------------ lh.BA6_exvivo.label
+|------------------ rh.BA2_exvivo.label
+|------------------ lh.cortex.label
+|------------------ lh.V1_exvivo.label
+|------------------ rh.BA2_exvivo.thresh.label
+|------------------ lh.MT_exvivo.label
+|------------------ lh.entorhinal_exvivo.label
+|------------------ lh.BA_exvivo.annot
+|------------------ lh.BA6_exvivo.thresh.label
+|------------------ rh.BA4a_exvivo.label
+|------------------ lh.aparc.annot
+|------------------ rh.BA_exvivo.thresh.annot
+|------------------ lh.V2_exvivo.label
+|------------------ lh.aparc.a2009s.annot
+|------------------ lh.BA2_exvivo.thresh.label
+|------------------ rh.perirhinal_exvivo.label
+|------------------ lh.MT_exvivo.thresh.label
+|------------------ rh.perirhinal_exvivo.thresh.label
+|------------------ lh.BA2_exvivo.label
+|------------------ rh.BA44_exvivo.label
+|------------------ lh.BA4p_exvivo.thresh.label
+|------------------ rh.BA1_exvivo.label
+|------------------ rh.BA6_exvivo.thresh.label
+|------------------ lh.aparc.DKTatlas.annot
+|------------------ rh.BA45_exvivo.label
+|------------------ aparc.annot.ctab
+|------------------ rh.V1_exvivo.thresh.label
+|------------------ lh.BA3a_exvivo.label
+|------------------ lh.BA44_exvivo.label
+|------------------ lh.entorhinal_exvivo.thresh.label
+|------------------ rh.BA45_exvivo.thresh.label
+|------------------ lh.BA45_exvivo.label
+|------------------ BA_exvivo.ctab
+|------------------ rh.aparc.annot
+|------------------ lh.BA_exvivo.thresh.annot
+|------------------ rh.BA3a_exvivo.label
+|------------------ rh.BA1_exvivo.thresh.label
+|------------------ rh.cortex.label
+|------------------ lh.BA44_exvivo.thresh.label
+|------------------ rh.BA3a_exvivo.thresh.label
+|------------------ lh.BA3b_exvivo.thresh.label
+|------------------ lh.BA1_exvivo.label
+|------------------ aparc.annot.a2009s.ctab
+|------------------ lh.BA3a_exvivo.thresh.label
+|------------------ lh.BA4a_exvivo.label
+|------------------ rh.MT_exvivo.thresh.label
+|------------------ rh.BA_exvivo.annot
+|------------------ lh.perirhinal_exvivo.label
+|------------------ lh.V2_exvivo.thresh.label
+|------------------ rh.BA3b_exvivo.thresh.label
+|------------------ rh.BA3b_exvivo.label
+|------------------ BA_exvivo.thresh.ctab
+|------------------ rh.entorhinal_exvivo.label
+|------------------ rh.V1_exvivo.label
 |--------------- scripts/
-|------------------ recon-all.local-copy
-|------------------ ponscc.cut.log
-|------------------ patchdir.txt
-|------------------ recon-all.env
-|------------------ build-stamp.txt
-|------------------ pctsurfcon.log
-|------------------ recon-all.done
-|------------------ recon-all-status.log
-|------------------ mkheadsurf.log
 |------------------ recon-all.cmd
-|------------------ lastcall.build-stamp.txt
-|------------------ pctsurfcon.log.old
+|------------------ pctsurfcon.log
+|------------------ build-stamp.txt
+|------------------ recon-all.done
 |------------------ recon-all.log
-|--------------- stats/
-|------------------ rh.aparc.stats
-|------------------ lh.aparc.a2009s.stats
-|------------------ rh.aparc.a2009s.stats
-|------------------ lh.aparc.pial.stats
-|------------------ rh.BA_exvivo.thresh.stats
-|------------------ rh.curv.stats
-|------------------ lh.curv.stats
-|------------------ rh.w-g.pct.stats
-|------------------ wmparc.stats
-|------------------ rh.aparc.pial.stats
-|------------------ lh.w-g.pct.stats
-|------------------ lh.BA_exvivo.stats
-|------------------ lh.aparc.DKTatlas.stats
-|------------------ rh.aparc.DKTatlas.stats
-|------------------ rh.BA_exvivo.stats
-|------------------ lh.BA_exvivo.thresh.stats
-|------------------ lh.aparc.stats
-|------------------ aseg.stats
+|------------------ mkheadsurf.log
+|------------------ recon-all.local-copy
+|------------------ pctsurfcon.log.old
+|------------------ patchdir.txt
+|------------------ ponscc.cut.log
+|------------------ lastcall.build-stamp.txt
+|------------------ recon-all-status.log
+|------------------ recon-all.env
+|--------------- tmp/
 |--------------- surf/
-|------------------ rh.smoothwm.K.crv
-|------------------ rh.qsphere.nofix
-|------------------ rh.pial
-|------------------ rh.area.pial
-|------------------ lh.orig
-|------------------ lh.curv.seghead
-|------------------ rh.smoothwm.C.crv
-|------------------ lh.inflated.nofix
-|------------------ rh.inflated.K
-|------------------ rh.smoothwm.S.crv
-|------------------ rh.smoothwm.K2.crv
-|------------------ rh.inflated.H
-|------------------ rh.defect_chull
-|------------------ rh.orig
+|------------------ lh.sphere
 |------------------ rh.area.mid
-|------------------ lh.defect_chull
+|------------------ rh.jacobian_white
+|------------------ rh.white
+|------------------ lh.smoothwm.K1.crv
+|------------------ lh.smoothwm.S.crv
+|------------------ rh.sphere
+|------------------ rh.inflated.nofix
+|------------------ lh.curv
+|------------------ rh.inflated.H
+|------------------ lh.orig.nofix
+|------------------ rh.defect_labels
+|------------------ lh.seghead
+|------------------ rh.orig.nofix
+|------------------ lh.curv.pial
+|------------------ lh.smoothwm.BE.crv
+|------------------ lh.thickness
+|------------------ lh.smoothwm.FI.crv
+|------------------ rh.volume
+|------------------ rh.smoothwm.BE.crv
+|------------------ rh.qsphere.nofix
+|------------------ lh.volume
+|------------------ lh.area
+|------------------ lh.area.mid
+|------------------ rh.thickness
+|------------------ lh.smoothwm
+|------------------ rh.smoothwm
+|------------------ lh.defect_borders
+|------------------ rh.area
+|------------------ rh.area.pial
+|------------------ rh.smoothwm.K.crv
+|------------------ lh.qsphere.nofix
+|------------------ lh.curv.seghead
+|------------------ lh.jacobian_white
+|------------------ rh.white.H
+|------------------ lh.defect_labels
+|------------------ lh.sphere.reg
+|------------------ rh.pial
+|------------------ lh.smoothwm.C.crv
+|------------------ lh.inflated.nofix
+|------------------ lh.white.preaparc.K
+|------------------ rh.white.K
 |------------------ rh.curv
 |------------------ rh.curv.pial
-|------------------ lh.thickness
-|------------------ lh.area.seghead
-|------------------ rh.smoothwm.BE.crv
-|------------------ lh.defect_labels
-|------------------ lh.smoothwm.K2.crv
-|------------------ lh.smoothwm.K1.crv
-|------------------ lh.inflated.K
-|------------------ lh.sulc
-|------------------ lh.pial
-|------------------ rh.white.preaparc.H
-|------------------ lh.area.mid
-|------------------ lh.sphere
-|------------------ rh.area
+|------------------ lh.inflated.H
 |------------------ rh.sphere.reg
-|------------------ rh.smoothwm
-|------------------ rh.white.K
-|------------------ lh.smoothwm.S.crv
-|------------------ lh.seghead.inflated
-|------------------ lh.smoothwm.C.crv
-|------------------ rh.white
-|------------------ lh.volume
-|------------------ lh.smoothwm.K.crv
-|------------------ lh.smoothwm.BE.crv
+|------------------ rh.white.preaparc.K
+|------------------ rh.avg_curv
+|------------------ rh.smoothwm.nofix
+|------------------ lh.smoothwm.H.crv
+|------------------ rh.smoothwm.H.crv
+|------------------ lh.white.K
+|------------------ lh.orig
+|------------------ lh.inflated
+|------------------ rh.smoothwm.C.crv
+|------------------ lh.area.seghead
+|------------------ lh.white.H
+|------------------ lh.w-g.pct.mgh
+|------------------ lh.smoothwm.K2.crv
+|------------------ lh.white.preaparc.H
+|------------------ rh.defect_borders
 |------------------ rh.smoothwm.K1.crv
 |------------------ rh.w-g.pct.mgh
-|------------------ rh.defect_labels
-|------------------ lh.white
+|------------------ rh.smoothwm.S.crv
+|------------------ rh.defect_chull
 |------------------ rh.sulc
-|------------------ rh.defect_borders
-|------------------ rh.thickness
-|------------------ lh.w-g.pct.mgh
-|------------------ lh.sphere.reg
-|------------------ lh.smoothwm.FI.crv
-|------------------ lh.inflated
-|------------------ lh.smoothwm.H.crv
-|------------------ rh.smoothwm.nofix
-|------------------ lh.seghead
-|------------------ lh.area.pial
-|------------------ rh.white.preaparc
-|------------------ rh.volume
-|------------------ lh.orig.nofix
-|------------------ rh.avg_curv
-|------------------ lh.inflated.H
-|------------------ rh.white.H
-|------------------ rh.white.preaparc.K
-|------------------ lh.curv.pial
-|------------------ lh.avg_curv
-|------------------ rh.inflated
+|------------------ rh.inflated.K
+|------------------ rh.orig
 |------------------ lh.white.preaparc
-|------------------ rh.jacobian_white
+|------------------ lh.inflated.K
+|------------------ lh.white
 |------------------ lh.smoothwm.nofix
-|------------------ lh.curv
-|------------------ lh.qsphere.nofix
-|------------------ lh.white.preaparc.H
+|------------------ lh.area.pial
+|------------------ lh.defect_chull
+|------------------ rh.white.preaparc
+|------------------ lh.sulc
+|------------------ lh.avg_curv
+|------------------ rh.smoothwm.K2.crv
+|------------------ rh.inflated
+|------------------ lh.seghead.inflated
 |------------------ rh.smoothwm.FI.crv
-|------------------ lh.smoothwm
-|------------------ lh.white.K
-|------------------ lh.defect_borders
+|------------------ lh.pial
 |------------------ lh.sulc.seghead
-|------------------ lh.white.preaparc.K
-|------------------ lh.area
-|------------------ lh.white.H
-|------------------ rh.inflated.nofix
-|------------------ rh.orig.nofix
-|------------------ lh.jacobian_white
-|------------------ rh.smoothwm.H.crv
-|------------------ rh.sphere
-|--- sub-01/
-|------ sub-01_scans.tsv
-|------ anat/
-|--------- sub-01_T1w.json
-|--------- sub-01_T1w.nii.gz
-|------ meg/
-|--------- sub-01_task-somato_meg.json
-|--------- sub-01_task-somato_channels.tsv
-|--------- sub-01_coordsystem.json
-|--------- sub-01_task-somato_meg.fif
-|--------- sub-01_task-somato_events.tsv
-|--- code/
-|------ convert_somato_data.py
-|------ README
+|------------------ lh.smoothwm.K.crv
+|------------------ rh.white.preaparc.H
 </pre></div>
 </div>
 </div>
@@ -849,10 +1884,10 @@ The search_str was &quot;/home/circleci/mne_data/MNE-somato-data/sub-01/**/sub-0
 &lt;Annotations | 111 segments: somato_event1 (111)&gt;
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.154 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 1 minutes  33.796 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-read-bids-datasets-py">
 <div class="binder-badge docutils container">
-<a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=v0.4/notebooks/auto_examples/read_bids_datasets.ipynb"><img alt="https://mybinder.org/badge_logo.svg" src="https://mybinder.org/badge_logo.svg" width="150px" /></a>
+<a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/read_bids_datasets.ipynb"><img alt="https://mybinder.org/badge_logo.svg" src="https://mybinder.org/badge_logo.svg" width="150px" /></a>
 </div>
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/5eebd75ee4f8ffd30e34a83e87d0e28b/read_bids_datasets.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">read_bids_datasets.py</span></code></a></p>
