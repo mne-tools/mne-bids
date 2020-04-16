@@ -23,7 +23,7 @@ with warnings.catch_warnings():
     import mne
 
 from mne.io import anonymize_info
-from mne.utils import _TempDir, requires_nibabel, check_version, object_diff
+from mne.utils import _TempDir, requires_nibabel, check_version
 from mne.datasets import testing, somato
 
 import mne_bids
@@ -347,19 +347,37 @@ def test_handle_coords_reading():
     write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
 
     # read in the data and assert montage is the same
+    # regardless of 'm', 'cm', 'mm', or 'pixel'
     bids_fname = bids_basename + "_ieeg.edf"
-    raw_test = read_raw_bids(bids_fname, bids_root)
 
-    # obtain the sensor positions
-    orig_locs = raw.info['dig'][1]
-    test_locs = raw_test.info['dig'][1]
-    assert orig_locs == test_locs
-    assert not object_diff(raw.info['chs'], raw_test.info['chs'])
-
-    # test error message if electrodes don't match
+    coordinate_units = ['m', 'cm', 'mm']
+    scaling_number = [1., 100., 1000.]
+    coordsystem_fname = _find_matching_sidecar(bids_fname, bids_root,
+                                               suffix='coordsystem.json')
     electrodes_fname = _find_matching_sidecar(bids_fname, bids_root,
                                               "electrodes.tsv",
                                               allow_fail=True)
+    orig_electrodes_dict = _from_tsv(electrodes_fname,
+                                     [str, float, float, float, str])
+    for i, coord_unit in enumerate(coordinate_units):
+        # update coordinate units
+        _update_sidecar(coordsystem_fname, 'iEEGCoordinateUnits', coord_unit)
+        electrodes_dict = _from_tsv(electrodes_fname,
+                                    [str, float, float, float, str])
+        for axis in ['x', 'y', 'z']:
+            electrodes_dict[axis] = np.multiply(orig_electrodes_dict[axis],
+                                                scaling_number[i])
+        _to_tsv(electrodes_dict, electrodes_fname)
+
+        # read rawbids
+        raw_test = read_raw_bids(bids_fname, bids_root)
+
+        # obtain the sensor positions and make sure they're the same
+        for j in range(len(raw.info['dig'])):
+            np.testing.assert_array_equal(raw.info['dig'][j],
+                                          raw_test.info['dig'][j])
+
+    # test error message if electrodes don't match
     electrodes_dict = _from_tsv(electrodes_fname)
     # pop off 5 channels
     for key in electrodes_dict.keys():

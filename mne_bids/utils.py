@@ -722,3 +722,13 @@ def _estimate_line_freq(raw, verbose=False):
     else:
         line_freq = 50
     return line_freq
+
+
+def _scale_coord_to_meters(coord, unit):
+    """Scale units to meters (mne-python default)."""
+    if unit == 'cm':
+        return np.divide(coord, 100.)
+    elif unit == 'mm':
+        return np.divide(coord, 1000.)
+    else:
+        return coord

@@ -24,7 +24,7 @@ from mne_bids.config import ALLOWED_EXTENSIONS, \
 from mne_bids.utils import (_parse_bids_filename, _extract_landmarks,
                             _find_matching_sidecar, _parse_ext,
                             _get_ch_type_mapping, make_bids_folders,
-                            _estimate_line_freq)
+                            _estimate_line_freq, _scale_coord_to_meters)
 
 reader = {'.con': io.read_raw_kit, '.sqd': io.read_raw_kit,
           '.fif': io.read_raw_fif, '.pdf': io.read_raw_bti,
@@ -195,7 +195,8 @@ def _handle_events_reading(events_fname, raw):
     return raw
 
 
-def _handle_electrodes_reading(electrodes_fname, coord_frame, raw, verbose):
+def _handle_electrodes_reading(electrodes_fname, coord_frame,
+                               coord_unit, raw, verbose):
     """Read associated electrodes.tsv and populate raw.
 
     Handle xyz coordinates and coordinate frame of each channel.
@@ -241,6 +242,8 @@ def _handle_electrodes_reading(electrodes_fname, coord_frame, raw, verbose):
     electrodes_dict['x'] = [_float_or_nan(x) for x in electrodes_dict['x']]
     electrodes_dict['y'] = [_float_or_nan(x) for x in electrodes_dict['y']]
     electrodes_dict['z'] = [_float_or_nan(x) for x in electrodes_dict['z']]
+    ch_names_raw = [x for i, x in enumerate(ch_names_raw)
+                    if electrodes_dict['x'][i] != "n/a"]
     ch_locs = list(zip(electrodes_dict['x'],
                        electrodes_dict['y'],
                        electrodes_dict['z']))
@@ -253,6 +256,13 @@ def _handle_electrodes_reading(electrodes_fname, coord_frame, raw, verbose):
     if len(nan_chs) > 0:
         warn("There are channels without locations "
              "(n/a) that are not marked as bad: {}".format(nan_chs))
+
+    # convert coordinates to meters if necessary
+    if coord_unit in ['m', 'cm', 'mm']:
+        ch_locs = [_scale_coord_to_meters(coord, coord_unit)
+                   if "n/a" not in coord
+                   else coord
+                   for coord in ch_locs]
 
     # create mne.DigMontage
     ch_pos = dict(zip(ch_names_raw, np.array(ch_locs)))
@@ -422,14 +432,24 @@ def read_raw_bids(bids_fname, bids_root, extra_params=None,
         # Get coordinate frames that electrode coordinates are in
         if kind == "meg":
             coord_frame = coordsystem_json['MEGCoordinateSystem']
+            coord_unit = coordsystem_json['MEGCoordinateUnits']
         elif kind == "ieeg":
-            coord_frame = coordsystem_json['iEEGCoordinateSystem']
-        else:
+            coord_frame = coordsystem_json['iEEGCoordinateSystem'].lower()
+            coord_unit = coordsystem_json['iEEGCoordinateUnits']
+
+            # default coordinate frames to available ones in mne-python
+            if coord_frame not in ['mri', 'ras', 'mni_tal',
+                                   'mri_voxel', 'fs_tal']:
+                warn("Defaulting coordinate frame to MRI "
+                     "from coordinate system input {}".format(coord_frame))
+                coord_frame = 'mri'
+        else:  # noqa
             raise RuntimeError("Kind {} not supported yet for "
                                "coordsystem.json and "
                                "electrodes.tsv.".format(kind))
         # read in electrode coordinates and attach to raw
-        raw = _handle_electrodes_reading(electrodes_fname, coord_frame, raw,
+        raw = _handle_electrodes_reading(electrodes_fname, coord_frame,
+                                         coord_unit, raw,
                                          verbose)
 
     # Try to find an associated sidecar.json to get information about the
