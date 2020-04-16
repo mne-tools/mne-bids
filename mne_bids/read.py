@@ -200,15 +200,16 @@ def _handle_electrodes_reading(electrodes_fname, coord_frame, raw, verbose):
     if verbose:
         print("The read in electrodes file is: \n", electrodes_dict)
 
+    def _float_or_nan(val):
+        if val == "n/a":
+            return np.nan
+        else:
+            return float(val)
+
     # convert coordinates to float and create list of tuples
-    ch_names_raw = [x for i, x in enumerate(ch_names_raw)
-                    if electrodes_dict['x'][i] != "n/a"]
-    electrodes_dict['x'] = [float(x) for x in electrodes_dict['x']
-                            if x != "n/a"]
-    electrodes_dict['y'] = [float(x) for x in electrodes_dict['y']
-                            if x != "n/a"]
-    electrodes_dict['z'] = [float(x) for x in electrodes_dict['z']
-                            if x != "n/a"]
+    electrodes_dict['x'] = [_float_or_nan(x) for x in electrodes_dict['x']]
+    electrodes_dict['y'] = [_float_or_nan(x) for x in electrodes_dict['y']]
+    electrodes_dict['z'] = [_float_or_nan(x) for x in electrodes_dict['z']]
 
     ch_locs = np.array(list(zip(electrodes_dict['x'],
                                 electrodes_dict['y'],
