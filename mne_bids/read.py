@@ -104,11 +104,11 @@ def _handle_participants_reading(participants_fname, raw,
             value = birthday
         else:
             value = participants_tsv[infokey][row_ind]
-        
+
         if raw.info['subject_info'] is None:
             raw.info['subject_info'] = dict()
-
         raw.info['subject_info'][infokey] = value
+        
     return raw
 
 
