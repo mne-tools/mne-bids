@@ -238,15 +238,27 @@ def _handle_electrodes_reading(electrodes_fname, coord_frame, raw, verbose):
     electrodes_dict['z'] = [_float_or_nan(x) for x in electrodes_dict['z']]
 
     ch_locs = np.array(list(zip(electrodes_dict['x'],
-                                electrodes_dict['y'],
-                                electrodes_dict['z'])))
-    ch_pos = dict(zip(ch_names_raw, ch_locs))
+                       electrodes_dict['y'],
+                       electrodes_dict['z'])))
+
+    # determine if there are problematic channels
+    problematic_chs = []
+    for ch_name, ch_coord in zip(ch_names_raw, ch_locs):
+        if any(np.isnan(ch_coord)) and ch_name not in raw.info['bads']:
+            problematic_chs.append(ch_name)
+    if problematic_chs != []:
+        warn("Not setting montage... "
+             "There is a list of problematic channels "
+             "that are not set as 'bad', "
+             "but also the channel location "
+             "is np.nan: {}".format(problematic_chs))
+        return raw
 
     # create mne.DigMontage
+    ch_pos = dict(zip(ch_names_raw, ch_locs))
     montage = mne.channels.make_dig_montage(ch_pos=ch_pos,
                                             coord_frame=coord_frame)
     raw.set_montage(montage)
-
     return raw
 
 
