@@ -379,25 +379,31 @@ def _bday_on_age(age, exp_date):
         # assume bday is wrt today's date
         year = int(datetime.now().year - math.floor(age))
         birthday = (year, 1, 1)
-    elif not age.is_integer():
-        # From:
-        # https://gist.github.com/shahri23/1804a3acb7ffb58a1ec8f1eda304af1a
-        #
-        # compute year, month and day from
-        # a fractional age
-        year = exp_date.year - age
-        yearInt = int(year)
-
-        months = (year - yearInt) * 12
-        monthInt = int(months)
-
-        days = (months - monthInt) * (365.242 / 12)
-        dayInt = int(days)
-
-        birthday = (yearInt, monthInt, dayInt)
     else:
-        # pick the first day of that year to make age work
-        birthday = (int(exp_date.year - age), 1, 1)
+        if isinstance(exp_date, datetime):
+            year = exp_date.year - age
+        else:  # make mne-19 compatible
+            year = exp_date[0] - age
+
+        # either determine full bday, or just year
+        if not age.is_integer():
+            # From:
+            # https://gist.github.com/shahri23/1804a3acb7ffb58a1ec8f1eda304af1a
+            #
+            # compute year, month and day from
+            # a fractional age
+            year_int = int(year)
+
+            month = (year - year_int) * 12
+            month_int = int(month)
+
+            day = (month - month_int) * (365.242 / 12)
+            day_int = int(day)
+
+            birthday = (year_int, month_int, day_int)
+        else:
+            # pick the first day of that year to make age work
+            birthday = (int(year), 1, 1)
 
     if exp_date < datetime(birthday[0],
                            birthday[1],
