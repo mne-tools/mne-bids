@@ -7,7 +7,7 @@
 #
 # License: BSD (3-clause)
 import os.path as op
-from datetime import datetime, timezone
+from datetime import datetime
 import glob
 import json
 from warnings import warn
@@ -89,11 +89,12 @@ def _handle_participants_reading(participants_fname, raw,
     # map age to a random date of that year
     age = participants_tsv['age'][row_ind]
     if age != 'n/a':
-        year = datetime.now().year - age
-        birthday = datetime(year=year, month=1, day=1, tzinfo=timezone.utc)
+        year = datetime.now().year - int(age)
+        birthday = (year, 1, 1)
     else:
         birthday = 'n/a'
 
+    print(participants_tsv)
     # set data from participants tsv into subject_info
     for infokey in participants_tsv.keys():
         if infokey == 'sex':

@@ -304,7 +304,6 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False,
 
         if meas_date is not None and age is not None:
             bday = datetime(age[0], age[1], age[2], tzinfo=timezone.utc)
-            meas_datetime = meas_date
             if isinstance(meas_date, datetime):
                 meas_datetime = meas_date
             else:
