@@ -383,7 +383,8 @@ def _bday_on_age(age, exp_date):
         if isinstance(exp_date, datetime):
             year = exp_date.year - age
         else:  # for mne version < 0.20
-            year = datetime.fromtimestamp(exp_date[0]).year - age
+            exp_date = datetime.fromtimestamp(exp_date[0])
+            year = exp_date.year - age
 
         # either determine full bday, or just year
         if not age.is_integer():
@@ -405,12 +406,12 @@ def _bday_on_age(age, exp_date):
             # pick the first day of that year to make age work
             birthday = (int(year), 1, 1)
 
-    if exp_date < datetime(birthday[0],
-                           birthday[1],
-                           birthday[2],
-                           tzinfo=timezone.utc):
-        raise ValueError("The experimentation date must be after the birth "
-                         "date")
+        if exp_date < datetime(birthday[0],
+                               birthday[1],
+                               birthday[2],
+                               tzinfo=timezone.utc):
+            raise ValueError("The experimentation date must be "
+                             "after the birth date")
     return birthday
 
 
