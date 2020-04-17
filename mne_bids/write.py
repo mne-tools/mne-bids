@@ -285,7 +285,7 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False,
     subject_age = "n/a"
     sex = "n/a"
     hand = 'n/a'
-    subject_info = raw.info['subject_info']
+    subject_info = raw.info.get('subject_info', None)
     if subject_info is not None:
         sexes = {0: 'n/a', 1: 'M', 2: 'F'}
         sex = sexes[subject_info.get('sex', 0)]
