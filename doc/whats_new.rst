@@ -27,7 +27,7 @@ Changelog
 Bug
 ~~~
 
-- no entries yet
+- fix bug in :func:`write_raw_bids` where raw.info['subject_info'] can be None, by `Adam Li`_ (`#392 <https://github.com/mne-tools/mne-bids/pull/392>`_)
 
 API
 ~~~
