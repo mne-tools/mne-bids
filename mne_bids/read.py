@@ -7,7 +7,7 @@
 #
 # License: BSD (3-clause)
 import os.path as op
-from datetime import datetime
+from datetime import datetime, timezone
 import glob
 import json
 from warnings import warn
@@ -73,6 +73,42 @@ def _read_raw(raw_fpath, electrode=None, hsp=None, hpi=None, config=None,
     else:
         raise ValueError('Raw file name extension must be one of {}\n'
                          'Got {}'.format(ALLOWED_EXTENSIONS, ext))
+    return raw
+
+
+def _handle_participants_reading(participants_fname, raw,
+                                 subject, verbose=None):
+    participants_tsv = _from_tsv(participants_fname)
+    subjects = participants_tsv['participant_id']
+    row_ind = subjects.index(subject)
+
+    # mapping subject information back to mne-python
+    sex_options = {'n/a': 0, 'M': 1, 'F': 2}
+    hand_options = {'n/a': 0, 'R': 1, 'L': 2, 'A': 3}
+
+    # map age to a random date of that year
+    age = participants_tsv['age'][row_ind]
+    if age != 'n/a':
+        year = datetime.now().year - age
+        birthday = datetime(year=year, month=1, day=1, tzinfo=timezone.utc)
+    else:
+        birthday = 'n/a'
+
+    # set data from participants tsv into subject_info
+    for infokey in participants_tsv.keys():
+        if infokey == 'sex':
+            value = sex_options[participants_tsv[infokey][row_ind]]
+        elif infokey == 'hand':
+            value = hand_options[participants_tsv[infokey][row_ind]]
+        elif infokey == 'birthday':
+            value = birthday
+        else:
+            value = participants_tsv[infokey][row_ind]
+        
+        if raw.info['subject_info'] is None:
+            raw.info['subject_info'] = dict()
+
+        raw.info['subject_info'][infokey] = value
     return raw
 
 
@@ -400,6 +436,12 @@ def read_raw_bids(bids_fname, bids_root, extra_params=None,
                                            allow_fail=True)
     if sidecar_fname is not None:
         raw = _handle_info_reading(sidecar_fname, raw, verbose=verbose)
+
+    # read in associated subject info from participants.tsv
+    participants_tsv_fpath = op.join(bids_root, 'participants.tsv')
+    subject = "sub-" + params['sub']
+    raw = _handle_participants_reading(participants_tsv_fpath, raw,
+                                       subject, verbose=verbose)
 
     return raw
 
