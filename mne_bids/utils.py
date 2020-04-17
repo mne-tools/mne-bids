@@ -383,7 +383,7 @@ def _bday_on_age(age, exp_date):
         if isinstance(exp_date, datetime):
             year = exp_date.year - age
         else:  # for mne version < 0.20
-            exp_date = datetime.fromtimestamp(exp_date[0])
+            exp_date = datetime.fromtimestamp(exp_date[0], tz=timezone.utc)
             year = exp_date.year - age
 
         # either determine full bday, or just year
