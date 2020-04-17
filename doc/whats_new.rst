@@ -23,7 +23,6 @@ Changelog
 ~~~~~~~~~
 
 - :func:`read_raw_bids` now reads in participants tsv data, by `Adam Li`_ (`#392 <https://github.com/mne-tools/mne-bids/pull/392>`_)
-- :func:`read_raw_bids` to read electrodes.tsv only if all non-bad chs have coords; warns if not-bad ch and 'n/a' coordinate, by `Adam Li`_ (`#393 <https://github.com/mne-tools/mne-bids/pull/393>`_)
 
 Bug
 ~~~

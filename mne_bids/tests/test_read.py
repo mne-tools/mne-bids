@@ -359,6 +359,8 @@ def test_handle_coords_reading():
         electrodes_dict[axis][0] = 'n/a'
         electrodes_dict[axis][3] = 'n/a'
     _to_tsv(electrodes_dict, electrodes_fname)
+
+    # set channel status as 'good' explicitly
     channels_fname = _find_matching_sidecar(bids_fname, bids_root,
                                             "channels.tsv",
                                             allow_fail=True)
@@ -368,6 +370,17 @@ def test_handle_coords_reading():
     with pytest.warns(UserWarning, match='Not setting montage'):
         raw_test = read_raw_bids(bids_fname, bids_root)
     assert raw_test.info['dig'] is None
+
+    # make sure montage is set if channel is bad
+    # set channel status as 'bad' explicitly
+    channels_fname = _find_matching_sidecar(bids_fname, bids_root,
+                                            "channels.tsv",
+                                            allow_fail=True)
+    channels_dict = _from_tsv(channels_fname)
+    channels_dict['status'][0] = 'bad'
+    channels_dict['status'][3] = 'bad'
+    raw_test = read_raw_bids(bids_fname, bids_root)
+    assert raw_test.info['dig'] is not None
 
 
 @requires_nibabel()
