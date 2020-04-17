@@ -18,7 +18,7 @@ from scipy import linalg
 from numpy.testing import assert_array_equal
 from mne.transforms import (_get_trans, apply_trans, get_ras_to_neuromag_trans,
                             rotation, translation)
-from mne import Epochs
+from mne import Epochs, pick_types
 from mne.io.constants import FIFF
 from mne.io.pick import channel_type
 from mne.io import BaseRaw, anonymize_info, read_fiducials
@@ -27,7 +27,8 @@ try:
 except ImportError:
     from mne._digitization._utils import _get_fid_coords
 from mne.channels.channels import _unit2human
-from mne.utils import check_version, has_nibabel, _check_ch_locs, warn
+from mne.channels.montage import transform_to_head, make_dig_montage
+from mne.utils import check_version, has_nibabel, _check_ch_locs, logger, warn
 
 from mne_bids.pick import coil_type
 from mne_bids.utils import (_write_json, _write_tsv, _read_events, _mkdir_p,
@@ -167,6 +168,7 @@ def _electrodes_tsv(raw, fname, kind, overwrite=False, verbose=True):
     verbose : bool
         Set verbose output to true or false.
     """
+    # create list of coordinates, names and
     x, y, z, names = list(), list(), list(), list()
     for ch in raw.info['chs']:
         if _check_ch_locs([ch]):
@@ -179,6 +181,7 @@ def _electrodes_tsv(raw, fname, kind, overwrite=False, verbose=True):
             z.append('n/a')
         names.append(ch['ch_name'])
 
+    # create OrderedDict to write to tsv file
     if kind == "ieeg":
         sizes = ['n/a'] * len(names)
         data = OrderedDict([('name', names),
@@ -187,12 +190,60 @@ def _electrodes_tsv(raw, fname, kind, overwrite=False, verbose=True):
                             ('z', z),
                             ('size', sizes),
                             ])
-    else:
+    elif kind == 'eeg':
+        picks = pick_types(raw.info, eeg=True)
+        ch_locs = []
+        for ind, (name, _x, _y, _z) in enumerate(zip(names, x, y, z)):
+            if ind not in picks:
+                ch_locs.append([np.nan, np.nan, np.nan])
+            elif "n/a" in [_x, _y, _z]:
+                warn("{} electrode has n/a coordinate. "
+                     "MNE-bids is defaulting to np.nan. "
+                     "Please check electrodes.tsv.")
+                ch_locs.append([np.nan, np.nan, np.nan])
+            else:
+                ch_locs.append([_x, _y, _z])
+        ch_pos = dict(zip(names, np.array(ch_locs)))
+
+        # XXX: to be improved,
+        # see https://github.com/mne-tools/mne-bids/issues/264
+        # transform montage to head coordinate frame
+        montage = make_dig_montage(ch_pos=ch_pos,
+                                   coord_frame='unknown')
+        montage = transform_to_head(montage)
+
+        # get the coordinates again from transformed head
+        montage_chs = montage.ch_names
+        montage_dig = montage.dig
+        x, y, z = list(), list(), list()
+        for name in names:
+            if name in montage_chs:
+                ind = montage_chs.index(name)
+                digpoint = montage_dig[ind]
+                x.append(digpoint['r'][0])
+                y.append(digpoint['r'][1])
+                z.append(digpoint['r'][2])
+            else:
+                x.append('n/a')
+                y.append('n/a')
+                z.append('n/a')
         data = OrderedDict([('name', names),
                             ('x', x),
                             ('y', y),
                             ('z', z),
                             ])
+
+        # log messages to warn user of pitfalls of this writing
+        logger.info("EEG coords are converted to "
+                    "CapTrak system (i.e., head).")
+        logger.info("EEG Electrode positions are being written and "
+                    "the user should double check that "
+                    "these are NOT template positions. "
+                    "To remove the montage, one can use: "
+                    "`raw.set_montage(None)` ")
+    else:  # noqa
+        raise RuntimeError("kind {} not supported.".format(kind))
+
     _write_tsv(fname, data, overwrite=overwrite, verbose=verbose)
     return fname
 
@@ -1256,17 +1307,17 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     _participants_json(participants_json_fname, True, verbose)
     _scans_tsv(raw, op.join(kind, bids_fname), scans_fname, overwrite, verbose)
 
-    # TODO: Implement coordystem.json and electrodes.tsv for EEG
-    electrodes_fname = make_bids_basename(
-        subject=subject_id, session=session_id, acquisition=acquisition,
-        suffix='electrodes.tsv', prefix=data_path)
+    # for MEG, we only write coordinate system
     if kind == 'meg' and not emptyroom:
         _coordsystem_json(raw, unit, orient,
                           manufacturer, coordsystem_fname, kind,
                           overwrite, verbose)
-    else:
-        unit = "m"  # defaults to meters
 
+    # write electrodes data for iEEG and EEG
+    electrodes_fname = make_bids_basename(
+        subject=subject_id, session=session_id, acquisition=acquisition,
+        suffix='electrodes.tsv', prefix=data_path)
+    unit = "m"  # defaults to meters
     # We only write electrodes.tsv and accompanying coordsystem.json
     # if we have an available DigMontage
     if raw.info['dig'] is not None:
@@ -1291,8 +1342,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
 
             coords = _extract_landmarks(raw.info['dig'])
 
-            # Rescale to MNE-Python "head" coord system, which is the
-            # "ElektaNeuromag" system (equivalent to "CapTrak" system)
+            # RPA, NAS and LPA shouldn't be set in iEEG
             if set(['RPA', 'NAS', 'LPA']) != set(list(coords.keys())):
                 # Now write the data to the elec coords and the coordsystem
                 _electrodes_tsv(raw, electrodes_fname,
@@ -1305,16 +1355,18 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
             # if we have LPA, RPA, and NAS available to rescale to a known
             # coordinate system frame
             coords = _extract_landmarks(raw.info['dig'])
-            if set(['RPA', 'NAS', 'LPA']) == set(list(coords.keys())):
-                # Rescale to MNE-Python "head" coord system, which is the
-                # "ElektaNeuromag" system, and equivalent to "CapTrak"
+            if set(['RPA', 'NAS', 'LPA']) != set(list(coords.keys())):
+                warn("Writing of EEG electrodes.tsv is skipped here... "
+                     "It only occurs if "
+                     "we have 'RPA', 'NAS', and 'LPA'. Please "
+                     "set these and refer to MNE-Python for more info.")
                 pass
 
             # Now write the data
             _electrodes_tsv(raw, electrodes_fname, kind, overwrite, verbose)
             _coordsystem_json(raw, 'm', 'RAS', 'CapTrak',
                               coordsystem_fname, kind, overwrite, verbose)
-        elif kind != "meg":
+        elif kind != "meg":  # noqa
             warn('Writing of electrodes.tsv is not supported for kind "{}". '
                  'Skipping ...'.format(kind))
 

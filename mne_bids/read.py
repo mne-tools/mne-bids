@@ -438,7 +438,7 @@ def read_raw_bids(bids_fname, bids_root, extra_params=None,
             coord_frame = coordsystem_json['EEGCoordinateSystem']
             coord_unit = coordsystem_json['EEGCoordinateUnits']
 
-            if coord_frame not in ['captrak', 'besa']:
+            if coord_frame.lower() not in ['captrak', 'besa']:
                 warn("Defaulting to 'head' coordinate frame for "
                      "EEG montage because mne-bids does not "
                      "support {} coordinate frame yet.".format(coord_frame))
