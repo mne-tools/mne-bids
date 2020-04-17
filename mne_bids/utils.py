@@ -382,8 +382,8 @@ def _bday_on_age(age, exp_date):
     else:
         if isinstance(exp_date, datetime):
             year = exp_date.year - age
-        else:  # make mne-19 compatible
-            year = exp_date[0] - age
+        else:  # for mne version < 0.20
+            year = datetime.fromtimestamp(exp_date[0]).year - age
 
         # either determine full bday, or just year
         if not age.is_integer():
