@@ -94,7 +94,6 @@ def _handle_participants_reading(participants_fname, raw,
     else:
         birthday = 'n/a'
 
-    print(participants_tsv)
     # set data from participants tsv into subject_info
     for infokey in participants_tsv.keys():
         if infokey == 'sex':
