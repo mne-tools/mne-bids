@@ -20,11 +20,12 @@ from mne.coreg import fit_matched_points
 from mne.transforms import apply_trans
 
 from mne_bids.tsv_handler import _from_tsv, _drop
-from mne_bids.config import ALLOWED_EXTENSIONS
+from mne_bids.config import ALLOWED_EXTENSIONS, \
+    _convert_hand_options, _convert_sex_options
 from mne_bids.utils import (_parse_bids_filename, _extract_landmarks,
                             _find_matching_sidecar, _parse_ext,
                             _get_ch_type_mapping, make_bids_folders,
-                            _estimate_line_freq)
+                            _estimate_line_freq, _bday_on_age)
 
 reader = {'.con': io.read_raw_kit, '.sqd': io.read_raw_kit,
           '.fif': io.read_raw_fif, '.pdf': io.read_raw_bti,
@@ -82,29 +83,29 @@ def _handle_participants_reading(participants_fname, raw,
     subjects = participants_tsv['participant_id']
     row_ind = subjects.index(subject)
 
-    # mapping subject information back to mne-python
-    sex_options = {'n/a': 0, 'M': 1, 'F': 2}
-    hand_options = {'n/a': 0, 'R': 1, 'L': 2, 'A': 3}
-
     # map age to a random date of that year
     age = participants_tsv['age'][row_ind]
-    if age != 'n/a':
-        year = datetime.now().year - int(age)
-        birthday = (year, 1, 1)
+    meas_date = raw.info['meas_date']
+
+    if age == 'n/a':
+        bday = 'n/a'
     else:
-        birthday = 'n/a'
+        bday = _bday_on_age(float(age), meas_date)
 
     # set data from participants tsv into subject_info
     for infokey in participants_tsv.keys():
         if infokey == 'sex':
-            value = sex_options[participants_tsv[infokey][row_ind]]
+            value = _convert_sex_options(participants_tsv[infokey][row_ind],
+                                         fro='bids', to='mne')
         elif infokey == 'hand':
-            value = hand_options[participants_tsv[infokey][row_ind]]
+            value = _convert_hand_options(participants_tsv[infokey][row_ind],
+                                          fro='bids', to='mne')
         elif infokey == 'birthday':
-            value = birthday
+            value = bday
         else:
             value = participants_tsv[infokey][row_ind]
 
+        # add data into raw.Info
         if raw.info['subject_info'] is None:
             raw.info['subject_info'] = dict()
         raw.info['subject_info'][infokey] = value

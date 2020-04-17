@@ -14,7 +14,8 @@ import warnings
 import json
 import shutil as sh
 import re
-from datetime import datetime
+import math
+from datetime import datetime, timezone
 from collections import defaultdict
 from pathlib import Path
 
@@ -361,6 +362,50 @@ def _age_on_date(bday, exp_date):
         if exp_date.day >= bday.day:
             return exp_date.year - bday.year
     return exp_date.year - bday.year - 1
+
+
+def _bday_on_age(age, exp_date):
+    """Calculate birthday from age and experiment date.
+
+    Parameters
+    ----------
+    age : int | float
+        The age of the participant.
+    exp_date : instance of datetime.datetime
+        The date the experiment was performed on.
+
+    """
+    if exp_date is None:
+        # assume bday is wrt today's date
+        year = int(datetime.now().year - math.floor(age))
+        birthday = (year, 1, 1)
+    elif not age.is_integer():
+        # From:
+        # https://gist.github.com/shahri23/1804a3acb7ffb58a1ec8f1eda304af1a
+        #
+        # compute year, month and day from
+        # a fractional age
+        year = exp_date.year - age
+        yearInt = int(year)
+
+        months = (year - yearInt) * 12
+        monthInt = int(months)
+
+        days = (months - monthInt) * (365.242 / 12)
+        dayInt = int(days)
+
+        birthday = (yearInt, monthInt, dayInt)
+    else:
+        # pick the first day of that year to make age work
+        birthday = (int(exp_date.year - age), 1, 1)
+
+    if exp_date < datetime(birthday[0],
+                           birthday[1],
+                           birthday[2],
+                           tzinfo=timezone.utc):
+        raise ValueError("The experimentation date must be after the birth "
+                         "date")
+    return birthday
 
 
 def _check_types(variables):

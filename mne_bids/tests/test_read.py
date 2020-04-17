@@ -104,6 +104,8 @@ def test_read_participants_data():
     assert raw.info['subject_info']['hand'] == 1
     assert raw.info['subject_info']['sex'] == 2
     assert raw.info['subject_info']['birthday'][0] == random_year
+    assert raw.info['subject_info']['birthday'][1] == 5
+    assert raw.info['subject_info']['birthday'][2] == 6
 
     # if modifying participants tsv, then read_raw_bids reflects that
     participants_tsv_fpath = op.join(bids_root, 'participants.tsv')
@@ -114,6 +116,26 @@ def test_read_participants_data():
     assert raw.info['subject_info']['hand'] == 0
     assert raw.info['subject_info']['sex'] == 2
     assert raw.info['subject_info']['birthday'][0] == random_year
+    assert raw.info['subject_info']['birthday'][1] == 5
+    assert raw.info['subject_info']['birthday'][2] == 6
+
+    # check what happens if we anonymize
+    raw = mne.io.read_raw_fif(raw_fname, verbose=False)
+    subject_info = {
+        'hand': 1,
+        'birthday': (random_year, 5, 6),
+        'sex': 2,
+    }
+    raw.info['subject_info'] = subject_info
+    # anonymize_info(raw.info, daysback=365*2)
+    write_raw_bids(raw, bids_basename, bids_root,
+                   anonymize={'daysback': 365 * 2,
+                              'keep_his': False},
+                   overwrite=True, verbose=False)
+    raw = read_raw_bids(bids_fname, Path(bids_root))
+    assert raw.info['subject_info']['hand'] == 1
+    assert raw.info['subject_info']['sex'] == 2
+    assert raw.info['subject_info']['birthday'][0] == random_year - 2
 
 
 @requires_nibabel()
