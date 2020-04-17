@@ -108,7 +108,7 @@ def _handle_participants_reading(participants_fname, raw,
         if raw.info['subject_info'] is None:
             raw.info['subject_info'] = dict()
         raw.info['subject_info'][infokey] = value
-        
+
     return raw
 
 

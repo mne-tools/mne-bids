@@ -22,7 +22,7 @@ Current
 Changelog
 ~~~~~~~~~
 
-- no entries yet
+- :func:`read_raw_bids` now reads in participants tsv data, by `Adam Li`_ (`#341 <https://github.com/mne-tools/mne-bids/pull/341>`_)
 
 Bug
 ~~~
