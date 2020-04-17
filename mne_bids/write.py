@@ -37,7 +37,8 @@ from mne_bids.utils import (_write_json, _write_tsv, _read_events, _mkdir_p,
                             _path_to_str,
                             _extract_landmarks, _parse_ext,
                             _get_ch_type_mapping, make_bids_folders,
-                            _estimate_line_freq)
+                            _estimate_line_freq,
+                            _verbose_ieeg_coordinate_frames)
 from mne_bids.copyfiles import (copyfile_brainvision, copyfile_eeglab,
                                 copyfile_ctf, copyfile_bti, copyfile_kit)
 from mne_bids.read import reader
@@ -421,9 +422,16 @@ def _coordsystem_json(raw, unit, orient, coordsystem_name, fname,
                     'HeadCoilCoordinateSystem': orient,
                     'HeadCoilCoordinateUnits': unit  # XXX validate this
                     }
+    elif kind == 'eeg':
+        fid_json = {'EEGCoordinateSystem': coordsystem_name,
+                    'EEGCoordinateUnits': unit,
+                    'AnatomicalLandmarkCoordinates': coords,
+                    'AnatomicalLandmarkCoordinateSystem': coordsystem_name,
+                    'AnatomicalLandmarkCoordinateUnits': unit,
+                    }
     elif kind == "ieeg":
         fid_json = {
-            'iEEGCoordinateSystem': coordsystem_name,  # MRI, Pixels, or ACPC
+            'iEEGCoordinateSystem': coordsystem_name,  # e.g. MRI, Pixels, ACPC
             'iEEGCoordinateUnits': unit,  # m (MNE), mm, cm , or pixels
         }
 
@@ -1256,17 +1264,31 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
         _coordsystem_json(raw, unit, orient,
                           manufacturer, coordsystem_fname, kind,
                           overwrite, verbose)
-    elif kind == 'ieeg':
-        coord_frame = "mri"  # defaults to MRI coordinates
-        unit = "m"  # defaults to meters
     else:
-        coord_frame = None
-        unit = None
+        unit = "m"  # defaults to meters
 
     # We only write electrodes.tsv and accompanying coordsystem.json
     # if we have an available DigMontage
     if raw.info['dig'] is not None:
         if kind == "ieeg":
+            # get coordinate frame from digMontage
+            digpoint = raw.info['dig'][0]
+            if any(digpoint['coord_frame'] != _digpoint['coord_frame']
+                   for _digpoint in raw.info['dig']):
+                warn("Defaulting coordinate frame of iEEG coords to "
+                     "'mri' since not all digpoints "
+                     "have the same coordinate frame.")
+                coord_frame = "mri"  # defaults to MRI coordinates
+            else:
+                # get the accepted mne-python coordinate frames
+                coord_frame_int = int(digpoint['coord_frame'])
+                coord_frame = _verbose_ieeg_coordinate_frames.\
+                    get(coord_frame_int, None)
+
+                # default coordinate frame to mri if not available
+                if coord_frame is None:
+                    coord_frame = 'mri'
+
             coords = _extract_landmarks(raw.info['dig'])
 
             # Rescale to MNE-Python "head" coord system, which is the
@@ -1278,6 +1300,20 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
                 _coordsystem_json(raw, unit, orient,
                                   coord_frame, coordsystem_fname, kind,
                                   overwrite, verbose)
+        elif kind == 'eeg':
+            # We only write EEG electrodes.tsv and coordsystem.json
+            # if we have LPA, RPA, and NAS available to rescale to a known
+            # coordinate system frame
+            coords = _extract_landmarks(raw.info['dig'])
+            if set(['RPA', 'NAS', 'LPA']) == set(list(coords.keys())):
+                # Rescale to MNE-Python "head" coord system, which is the
+                # "ElektaNeuromag" system, and equivalent to "CapTrak"
+                pass
+
+            # Now write the data
+            _electrodes_tsv(raw, electrodes_fname, kind, overwrite, verbose)
+            _coordsystem_json(raw, 'm', 'RAS', 'CapTrak',
+                              coordsystem_fname, kind, overwrite, verbose)
         elif kind != "meg":
             warn('Writing of electrodes.tsv is not supported for kind "{}". '
                  'Skipping ...'.format(kind))

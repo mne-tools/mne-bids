@@ -24,7 +24,8 @@ from mne_bids.config import ALLOWED_EXTENSIONS, \
 from mne_bids.utils import (_parse_bids_filename, _extract_landmarks,
                             _find_matching_sidecar, _parse_ext,
                             _get_ch_type_mapping, make_bids_folders,
-                            _estimate_line_freq, _scale_coord_to_meters)
+                            _estimate_line_freq, _scale_coord_to_meters,
+                            _ieeg_coordinate_frames_dict)
 
 reader = {'.con': io.read_raw_kit, '.sqd': io.read_raw_kit,
           '.fif': io.read_raw_fif, '.pdf': io.read_raw_bti,
@@ -433,13 +434,21 @@ def read_raw_bids(bids_fname, bids_root, extra_params=None,
         if kind == "meg":
             coord_frame = coordsystem_json['MEGCoordinateSystem']
             coord_unit = coordsystem_json['MEGCoordinateUnits']
+        elif kind == 'eeg':
+            coord_frame = coordsystem_json['EEGCoordinateSystem']
+            coord_unit = coordsystem_json['EEGCoordinateUnits']
+
+            if coord_frame not in ['captrak', 'besa']:
+                warn("Defaulting to 'head' coordinate frame for "
+                     "EEG montage because mne-bids does not "
+                     "support {} coordinate frame yet.".format(coord_frame))
+            coord_frame = 'head'
         elif kind == "ieeg":
             coord_frame = coordsystem_json['iEEGCoordinateSystem'].lower()
             coord_unit = coordsystem_json['iEEGCoordinateUnits']
 
             # default coordinate frames to available ones in mne-python
-            if coord_frame not in ['mri', 'ras', 'mni_tal',
-                                   'mri_voxel', 'fs_tal']:
+            if coord_frame not in _ieeg_coordinate_frames_dict.keys():
                 warn("Defaulting coordinate frame to MRI "
                      "from coordinate system input {}".format(coord_frame))
                 coord_frame = 'mri'

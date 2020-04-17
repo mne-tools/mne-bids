@@ -25,7 +25,6 @@ with warnings.catch_warnings():
 from mne.io import anonymize_info
 from mne.utils import _TempDir, requires_nibabel, check_version
 from mne.datasets import testing, somato
-from mne.io.constants import FIFF
 
 import mne_bids
 from mne_bids import get_matched_empty_room
@@ -34,7 +33,7 @@ from mne_bids.read import (read_raw_bids,
                            _handle_events_reading, _handle_info_reading)
 from mne_bids.tsv_handler import _to_tsv, _from_tsv
 from mne_bids.utils import (_find_matching_sidecar, _update_sidecar,
-                            _write_json)
+                            _write_json, _ieeg_coordinate_frames_dict)
 from mne_bids.write import write_anat, write_raw_bids, make_bids_basename
 
 subject_id = '01'
@@ -62,21 +61,6 @@ warning_str = dict(
     meas_date_set_to_none="ignore:.*'meas_date' set to None:RuntimeWarning:"
                           "mne",
     nasion_not_found='ignore:.*nasion not found:RuntimeWarning:mne',
-)
-
-# these coordinate frames in mne-python are related to scalp/meg
-# 'meg', 'ctf_head', 'ctf_meg', 'head', 'unknown'
-_str_to_frame = dict(
-    mri=FIFF.FIFFV_COORD_MRI,
-    mri_voxel=FIFF.FIFFV_MNE_COORD_MRI_VOXEL,
-    mni_tal=FIFF.FIFFV_MNE_COORD_MNI_TAL,
-    ras=FIFF.FIFFV_MNE_COORD_RAS,
-    fs_tal=FIFF.FIFFV_MNE_COORD_FS_TAL,
-    # head=FIFF.FIFFV_COORD_HEAD,
-    # meg=FIFF.FIFFV_COORD_DEVICE,
-    # ctf_head=FIFF.FIFFV_MNE_COORD_CTF_HEAD,
-    # ctf_meg=FIFF.FIFFV_MNE_COORD_CTF_DEVICE,
-    # unknown=FIFF.FIFFV_COORD_UNKNOWN
 )
 
 
@@ -393,7 +377,7 @@ def test_handle_coords_reading():
 
     # check that coordinate systems can be used and defaults to mri
     coordinate_frames = ['lia', 'ria', 'lip', 'rip', 'las']
-    mri_coord_frame_int = _str_to_frame["mri"]
+    mri_coord_frame_int = _ieeg_coordinate_frames_dict["mri"]
     for coord_frame in coordinate_frames:
         # update coordinate units
         _update_sidecar(coordsystem_fname, 'iEEGCoordinateSystem', coord_frame)
@@ -404,7 +388,7 @@ def test_handle_coords_reading():
             assert digpoint['coord_frame'] == mri_coord_frame_int
 
     # coordinate frames in mne-python should all map correctly
-    coordinate_frames = _str_to_frame.keys()
+    coordinate_frames = _ieeg_coordinate_frames_dict.keys()
     for coord_frame in coordinate_frames:
         # update coordinate units
         _update_sidecar(coordsystem_fname, 'iEEGCoordinateSystem', coord_frame)
@@ -412,7 +396,7 @@ def test_handle_coords_reading():
         # read in raw file w/ updated coordinate frame
         # and make sure all digpoints are correct coordinate frames
         raw_test = read_raw_bids(bids_fname, bids_root)
-        coord_frame_int = _str_to_frame[coord_frame]
+        coord_frame_int = _ieeg_coordinate_frames_dict[coord_frame]
         for digpoint in raw_test.info['dig']:
             assert digpoint['coord_frame'] == coord_frame_int
 

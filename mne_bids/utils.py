@@ -28,6 +28,18 @@ from mne.time_frequency import psd_array_welch
 
 from mne_bids.tsv_handler import _to_tsv, _tsv_to_str
 
+# these coordinate frames in mne-python are related to scalp/meg
+# 'meg', 'ctf_head', 'ctf_meg', 'head', 'unknown'
+_ieeg_coordinate_frames_dict = dict(
+    mri=FIFF.FIFFV_COORD_MRI,
+    mri_voxel=FIFF.FIFFV_MNE_COORD_MRI_VOXEL,
+    mni_tal=FIFF.FIFFV_MNE_COORD_MNI_TAL,
+    ras=FIFF.FIFFV_MNE_COORD_RAS,
+    fs_tal=FIFF.FIFFV_MNE_COORD_FS_TAL,
+)
+_verbose_ieeg_coordinate_frames = {val: key for key, val
+                                   in _ieeg_coordinate_frames_dict.items()}
+
 
 def get_kinds(bids_root):
     """Get list of data types ("kinds") present in a BIDS dataset.
