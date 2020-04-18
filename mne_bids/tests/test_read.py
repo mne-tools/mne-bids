@@ -61,6 +61,7 @@ warning_str = dict(
     meas_date_set_to_none="ignore:.*'meas_date' set to None:RuntimeWarning:"
                           "mne",
     nasion_not_found='ignore:.*nasion not found:RuntimeWarning:mne',
+    input_info="ignore:Input info has 'meas_date' set to None.:RuntimeWarning:mne",
 )
 
 
@@ -84,12 +85,16 @@ def test_not_implemented():
             _read_raw(raw_fname)
 
 
-@pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+@pytest.mark.filterwarnings(warning_str['channel_unit_changed'],
+                            warning_str["input_info"])
 def test_read_participants_data():
     """Test reading information from a BIDS sidecar.json file."""
     bids_root = _TempDir()
     raw = mne.io.read_raw_fif(raw_fname, verbose=False)
     random_year = datetime.now().year - 30
+    bids_fname = bids_basename + '_meg.fif'
+
+    # if subject info was set
     subject_info = {
         'hand': 1,
         'birthday': (random_year, 5, 6),
@@ -98,14 +103,12 @@ def test_read_participants_data():
     raw.info['subject_info'] = subject_info
     write_raw_bids(raw, bids_basename, bids_root, overwrite=True,
                    verbose=False)
-
-    bids_fname = bids_basename + '_meg.fif'
     raw = read_raw_bids(bids_fname, Path(bids_root))
     assert raw.info['subject_info']['hand'] == 1
     assert raw.info['subject_info']['sex'] == 2
     assert raw.info['subject_info']['birthday'][0] == random_year
-    assert raw.info['subject_info']['birthday'][1] == 5
-    assert raw.info['subject_info']['birthday'][2] == 6
+    assert raw.info['subject_info']['birthday'][1] == 1
+    assert raw.info['subject_info']['birthday'][2] == 1
 
     # if modifying participants tsv, then read_raw_bids reflects that
     participants_tsv_fpath = op.join(bids_root, 'participants.tsv')
@@ -116,8 +119,8 @@ def test_read_participants_data():
     assert raw.info['subject_info']['hand'] == 0
     assert raw.info['subject_info']['sex'] == 2
     assert raw.info['subject_info']['birthday'][0] == random_year
-    assert raw.info['subject_info']['birthday'][1] == 5
-    assert raw.info['subject_info']['birthday'][2] == 6
+    assert raw.info['subject_info']['birthday'][1] == 1
+    assert raw.info['subject_info']['birthday'][2] == 1
 
     # check what happens if we anonymize
     if check_version('mne', '0.20'):
@@ -136,6 +139,21 @@ def test_read_participants_data():
         assert raw.info['subject_info']['hand'] == 1
         assert raw.info['subject_info']['sex'] == 2
         assert raw.info['subject_info']['birthday'][0] == random_year - 2
+
+    # if measurement date is none and no subject_info
+    raw = raw.set_meas_date(None)
+    raw.info = mne.io.anonymize_info(raw.info, verbose=False)
+    raw.info['subject_info'] = None
+    write_raw_bids(raw, bids_basename, bids_root, overwrite=True,
+                   verbose=False)
+    participants_tsv_fpath = op.join(bids_root, 'participants.tsv')
+    participants_tsv = _from_tsv(participants_tsv_fpath)
+    participants_tsv['age'][0] = 5
+    _to_tsv(participants_tsv, participants_tsv_fpath)
+    raw = read_raw_bids(bids_fname, Path(bids_root))
+    assert raw.info['subject_info']['hand'] == 0
+    assert raw.info['subject_info']['sex'] == 0
+    assert raw.info['subject_info']['birthday'][0] == datetime.now().year - 5
 
 
 @requires_nibabel()
