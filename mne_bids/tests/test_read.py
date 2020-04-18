@@ -61,7 +61,8 @@ warning_str = dict(
     meas_date_set_to_none="ignore:.*'meas_date' set to None:RuntimeWarning:"
                           "mne",
     nasion_not_found='ignore:.*nasion not found:RuntimeWarning:mne',
-    input_info="ignore:Input info has 'meas_date' set to None.:RuntimeWarning:mne",
+    input_info="ignore:Input info has 'meas_date' "
+               "set to None.:RuntimeWarning:mne",
 )
 
 
