@@ -197,9 +197,9 @@ def _electrodes_tsv(raw, fname, kind, overwrite=False, verbose=True):
             if ind not in picks:
                 ch_locs.append([np.nan, np.nan, np.nan])
             elif "n/a" in [_x, _y, _z]:
-                warn("{} electrode has n/a coordinate. "
-                     "MNE-bids is defaulting to np.nan. "
-                     "Please check electrodes.tsv.")
+                logger.warn("{} electrode has n/a coordinate. "
+                            "MNE-bids is defaulting to np.nan. "
+                            "Please check electrodes.tsv.".format(name))
                 ch_locs.append([np.nan, np.nan, np.nan])
             else:
                 ch_locs.append([_x, _y, _z])
@@ -234,13 +234,15 @@ def _electrodes_tsv(raw, fname, kind, overwrite=False, verbose=True):
                             ])
 
         # log messages to warn user of pitfalls of this writing
-        logger.info("EEG coords are converted to "
-                    "CapTrak system (i.e., head).")
-        logger.info("EEG Electrode positions are being written and "
-                    "the user should double check that "
-                    "these are NOT template positions. "
-                    "To remove the montage, one can use: "
-                    "`raw.set_montage(None)` ")
+        logger.info("Using anatomical landmarks (NAS, LPA, RPA) "
+                    "to transform EEG electrode coordinates "
+                    "to CapTrak (head) coordinate system.")
+        logger.info("Writing EEG electrode coordinates. "
+                    "Please ensure that these are NOT "
+                    "template positions, but truly measured data. "
+                    "To remove template positions, "
+                    "call `raw.set_montage(None)` "
+                    "prior to BIDS conversion.")
     else:  # noqa
         raise RuntimeError("kind {} not supported.".format(kind))
 
@@ -1356,19 +1358,20 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
             # coordinate system frame
             coords = _extract_landmarks(raw.info['dig'])
             if set(['RPA', 'NAS', 'LPA']) != set(list(coords.keys())):
-                warn("Writing of EEG electrodes.tsv is skipped here... "
-                     "It only occurs if "
-                     "we have 'RPA', 'NAS', and 'LPA'. Please "
-                     "set these and refer to MNE-Python for more info.")
-                pass
-
-            # Now write the data
-            _electrodes_tsv(raw, electrodes_fname, kind, overwrite, verbose)
-            _coordsystem_json(raw, 'm', 'RAS', 'CapTrak',
-                              coordsystem_fname, kind, overwrite, verbose)
+                logger.warn("Writing EEG electrodes.tsv is only possible if "
+                            "anatomical landmarks (NAS, LPA, RPA) "
+                            "are present. Skipping ...")
+            else:
+                # Now write the data
+                _electrodes_tsv(raw, electrodes_fname, kind,
+                                overwrite, verbose)
+                _coordsystem_json(raw, 'm', 'RAS', 'CapTrak',
+                                  coordsystem_fname, kind,
+                                  overwrite, verbose)
         elif kind != "meg":  # noqa
-            warn('Writing of electrodes.tsv is not supported for kind "{}". '
-                 'Skipping ...'.format(kind))
+            logger.warn('Writing of electrodes.tsv '
+                        'is not supported for kind "{}". '
+                        'Skipping ...'.format(kind))
 
     events, event_id = _read_events(events_data, event_id, raw, ext)
     if events is not None and len(events) > 0 and not emptyroom:
