@@ -142,19 +142,21 @@ def test_read_participants_data():
         assert raw.info['subject_info']['birthday'][0] == random_year - 2
 
     # if measurement date is none and no subject_info
-    raw = raw.set_meas_date(None)
-    raw.info = mne.io.anonymize_info(raw.info, verbose=False)
-    raw.info['subject_info'] = None
-    write_raw_bids(raw, bids_basename, bids_root, overwrite=True,
-                   verbose=False)
-    participants_tsv_fpath = op.join(bids_root, 'participants.tsv')
-    participants_tsv = _from_tsv(participants_tsv_fpath)
-    participants_tsv['age'][0] = 5
-    _to_tsv(participants_tsv, participants_tsv_fpath)
-    raw = read_raw_bids(bids_fname, Path(bids_root))
-    assert raw.info['subject_info']['hand'] == 0
-    assert raw.info['subject_info']['sex'] == 0
-    assert raw.info['subject_info']['birthday'][0] == datetime.now().year - 5
+    if check_version('mne', '0.20'):
+        raw = raw.set_meas_date(None)
+        raw.info = mne.io.anonymize_info(raw.info, verbose=False)
+        raw.info['subject_info'] = None
+        write_raw_bids(raw, bids_basename, bids_root, overwrite=True,
+                       verbose=False)
+        participants_tsv_fpath = op.join(bids_root, 'participants.tsv')
+        participants_tsv = _from_tsv(participants_tsv_fpath)
+        participants_tsv['age'][0] = 5
+        expected_bday = datetime.now().year - 5
+        _to_tsv(participants_tsv, participants_tsv_fpath)
+        raw = read_raw_bids(bids_fname, Path(bids_root))
+        assert raw.info['subject_info']['hand'] == 0
+        assert raw.info['subject_info']['sex'] == 0
+        assert raw.info['subject_info']['birthday'][0] == expected_bday
 
 
 @requires_nibabel()
