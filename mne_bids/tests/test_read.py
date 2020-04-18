@@ -367,9 +367,8 @@ def test_handle_coords_reading():
     channels_dict = _from_tsv(channels_fname)
     channels_dict['status'][0] = 'good'
     channels_dict['status'][3] = 'good'
-    with pytest.warns(UserWarning, match='Not setting montage'):
-        raw_test = read_raw_bids(bids_fname, bids_root)
-    assert raw_test.info['dig'] is None
+    raw_test = read_raw_bids(bids_fname, bids_root)
+    assert raw_test.info['dig'] is not None
 
     # make sure montage is set if channel is bad
     # set channel status as 'bad' explicitly

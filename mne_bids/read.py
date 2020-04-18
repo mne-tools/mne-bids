@@ -247,12 +247,13 @@ def _handle_electrodes_reading(electrodes_fname, coord_frame, raw, verbose):
         if any(np.isnan(ch_coord)) and ch_name not in raw.info['bads']:
             problematic_chs.append(ch_name)
     if problematic_chs != []:
-        warn("Not setting montage... "
-             "There is a list of problematic channels "
-             "that are not set as 'bad', "
-             "but also the channel location "
-             "is np.nan: {}".format(problematic_chs))
-        return raw
+        logger.warning("There are problematic channels "
+                       "that are not set as 'bad', "
+                       "but also the channel location "
+                       "is np.nan: {}."
+                       "Setting montage without "
+                       "those chs...".format(problematic_chs))
+        raw.info['bads'].extend(problematic_chs)
 
     # create mne.DigMontage
     ch_pos = dict(zip(ch_names_raw, ch_locs))
