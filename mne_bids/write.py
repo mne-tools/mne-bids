@@ -1352,12 +1352,16 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
                 _coordsystem_json(raw, unit, orient,
                                   coord_frame, coordsystem_fname, kind,
                                   overwrite, verbose)
+            else:  # noqa
+                logger.warn("Scalp EEG anatomical landmarks (NAS, LPA, RPA) "
+                            "shouldn't be set in iEEG. "
+                            "Skipping montage setting...")
         elif kind == 'eeg':
             # We only write EEG electrodes.tsv and coordsystem.json
             # if we have LPA, RPA, and NAS available to rescale to a known
             # coordinate system frame
             coords = _extract_landmarks(raw.info['dig'])
-            if set(['RPA', 'NAS', 'LPA']) != set(list(coords.keys())):
+            if set(['RPA', 'NAS', 'LPA']) != set(list(coords.keys())):  # noqa
                 logger.warn("Writing EEG electrodes.tsv is only possible if "
                             "anatomical landmarks (NAS, LPA, RPA) "
                             "are present. Skipping ...")
