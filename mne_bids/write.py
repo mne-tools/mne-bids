@@ -197,9 +197,9 @@ def _electrodes_tsv(raw, fname, kind, overwrite=False, verbose=True):
             if ind not in picks:
                 ch_locs.append([np.nan, np.nan, np.nan])
             elif "n/a" in [_x, _y, _z]:
-                logger.warn("{} electrode has n/a coordinate. "
-                            "MNE-bids is defaulting to np.nan. "
-                            "Please check electrodes.tsv.".format(name))
+                logger.warning("{} electrode has n/a coordinate. "
+                               "MNE-bids is defaulting to np.nan. "
+                               "Please check electrodes.tsv.".format(name))
                 ch_locs.append([np.nan, np.nan, np.nan])
             else:
                 ch_locs.append([_x, _y, _z])
@@ -1353,18 +1353,20 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
                                   coord_frame, coordsystem_fname, kind,
                                   overwrite, verbose)
             else:  # noqa
-                logger.warn("Scalp EEG anatomical landmarks (NAS, LPA, RPA) "
-                            "shouldn't be set in iEEG. "
-                            "Skipping montage setting...")
+                logger.warning("Scalp EEG anatomical landmarks "
+                               "(NAS, LPA, RPA) "
+                               "shouldn't be set in iEEG. "
+                               "Skipping montage setting...")
         elif kind == 'eeg':
             # We only write EEG electrodes.tsv and coordsystem.json
             # if we have LPA, RPA, and NAS available to rescale to a known
             # coordinate system frame
             coords = _extract_landmarks(raw.info['dig'])
             if set(['RPA', 'NAS', 'LPA']) != set(list(coords.keys())):  # noqa
-                logger.warn("Writing EEG electrodes.tsv is only possible if "
-                            "anatomical landmarks (NAS, LPA, RPA) "
-                            "are present. Skipping ...")
+                logger.warning("Writing EEG electrodes.tsv "
+                               "is only possible if "
+                               "anatomical landmarks (NAS, LPA, RPA) "
+                               "are present. Skipping ...")
             else:
                 # Now write the data
                 _electrodes_tsv(raw, electrodes_fname, kind,
@@ -1373,9 +1375,9 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
                                   coordsystem_fname, kind,
                                   overwrite, verbose)
         elif kind != "meg":  # noqa
-            logger.warn('Writing of electrodes.tsv '
-                        'is not supported for kind "{}". '
-                        'Skipping ...'.format(kind))
+            logger.warning('Writing of electrodes.tsv '
+                           'is not supported for kind "{}". '
+                           'Skipping ...'.format(kind))
 
     events, event_id = _read_events(events_data, event_id, raw, ext)
     if events is not None and len(events) > 0 and not emptyroom:
