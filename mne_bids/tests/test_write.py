@@ -707,8 +707,10 @@ def test_edf(_bids_validate):
     bids_fname = bids_basename.replace('run-01', 'run-%s' % run2)
     # add data in as a montage
     ch_names = raw.ch_names
-    elec_locs = np.random.random((len(ch_names), 3)).tolist()
-    ch_pos = dict(zip(ch_names, elec_locs))
+    elec_locs = np.random.random((len(ch_names), 3))
+    # test what happens if there is some nan entries
+    elec_locs[-1, :] = [np.nan, np.nan, np.nan]
+    ch_pos = dict(zip(ch_names, elec_locs.tolist()))
     eeg_montage = mne.channels.make_dig_montage(ch_pos=ch_pos,
                                                 coord_frame='head')
     raw.set_montage(eeg_montage)
