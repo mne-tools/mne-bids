@@ -88,20 +88,20 @@ def _handle_participants_reading(participants_fname, raw,
     meas_date = raw.info['meas_date']
 
     # set data from participants tsv into subject_info
-    for infokey in participants_tsv.keys():
+    for infokey, infovalue in participants_tsv.keys():
         if infokey == 'sex':
-            value = _convert_sex_options(participants_tsv[infokey][row_ind],
+            value = _convert_sex_options(infovalue[row_ind],
                                          fro='bids', to='mne')
         elif infokey == 'hand':
-            value = _convert_hand_options(participants_tsv[infokey][row_ind],
+            value = _convert_hand_options(infovalue[row_ind],
                                           fro='bids', to='mne')
         elif infokey == 'age':
-            if age == 'n/a':
+            if age == 'n/a' or meas_date is None:
                 value = None
             else:
                 value = _bday_on_age(float(age), meas_date)
         else:
-            value = participants_tsv[infokey][row_ind]
+            value = infovalue[row_ind]
 
         # add data into raw.Info
         if raw.info['subject_info'] is None:
