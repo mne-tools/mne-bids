@@ -191,58 +191,11 @@ def _electrodes_tsv(raw, fname, kind, overwrite=False, verbose=True):
                             ('size', sizes),
                             ])
     elif kind == 'eeg':
-        picks = pick_types(raw.info, eeg=True)
-        ch_locs = []
-        for ind, (name, _x, _y, _z) in enumerate(zip(names, x, y, z)):
-            if ind not in picks:
-                ch_locs.append([np.nan, np.nan, np.nan])
-            elif "n/a" in [_x, _y, _z]:
-                logger.warning("{} electrode has n/a coordinate. "
-                               "MNE-bids is defaulting to np.nan. "
-                               "Please check electrodes.tsv.".format(name))
-                ch_locs.append([np.nan, np.nan, np.nan])
-            else:
-                ch_locs.append([_x, _y, _z])
-        ch_pos = dict(zip(names, np.array(ch_locs)))
-
-        # XXX: to be improved,
-        # see https://github.com/mne-tools/mne-bids/issues/264
-        # transform montage to head coordinate frame
-        montage = make_dig_montage(ch_pos=ch_pos,
-                                   coord_frame='unknown')
-        montage = transform_to_head(montage)
-
-        # get the coordinates again from transformed head
-        montage_chs = montage.ch_names
-        montage_dig = montage.dig
-        x, y, z = list(), list(), list()
-        for name in names:
-            if name in montage_chs:
-                ind = montage_chs.index(name)
-                digpoint = montage_dig[ind]
-                x.append(digpoint['r'][0])
-                y.append(digpoint['r'][1])
-                z.append(digpoint['r'][2])
-            else:
-                x.append('n/a')
-                y.append('n/a')
-                z.append('n/a')
         data = OrderedDict([('name', names),
                             ('x', x),
                             ('y', y),
                             ('z', z),
                             ])
-
-        # log messages to warn user of pitfalls of this writing
-        logger.info("Using anatomical landmarks (NAS, LPA, RPA) "
-                    "to transform EEG electrode coordinates "
-                    "to CapTrak (head) coordinate system.")
-        logger.info("Writing EEG electrode coordinates. "
-                    "Please ensure that these are NOT "
-                    "template positions, but truly measured data. "
-                    "To remove template positions, "
-                    "call `raw.set_montage(None)` "
-                    "prior to BIDS conversion.")
     else:  # noqa
         raise RuntimeError("kind {} not supported.".format(kind))
 
@@ -1368,6 +1321,42 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
                                "anatomical landmarks (NAS, LPA, RPA) "
                                "are present. Skipping ...")
             else:
+                # XXX: to be improved,
+                # see https://github.com/mne-tools/mne-bids/issues/264
+                # transform montage to head coordinate frame
+
+                # first get all the EEG electrodes and
+                # create montage
+                picks = pick_types(raw.info, eeg=True)
+                ch_locs = []
+                for ind, ch in enumerate(raw.info['chs']):
+                    if ind not in picks:
+                        ch_locs.append([np.nan, np.nan, np.nan])
+                    elif not _check_ch_locs([ch]):
+                        logger.warning("{} electrode has n/a coordinate. "
+                                       "MNE-bids is defaulting to np.nan. "
+                                       "Please check electrodes.tsv."
+                                       .format(ch['ch_name']))
+                        ch_locs.append([np.nan, np.nan, np.nan])
+                    else:
+                        ch_locs.append(ch['loc'][:3])
+                ch_pos = dict(zip(raw.info['ch_names'], np.array(ch_locs)))
+                montage = make_dig_montage(ch_pos=ch_pos,
+                                           coord_frame='unknown')
+                montage = transform_to_head(montage)
+                raw.set_montage(montage)
+
+                # log messages to warn user of pitfalls of this writing
+                logger.info("Using anatomical landmarks (NAS, LPA, RPA) "
+                            "to transform EEG electrode coordinates "
+                            "to CapTrak (head) coordinate system.")
+                logger.info("Writing EEG electrode coordinates. "
+                            "Please ensure that these are NOT "
+                            "template positions, but truly measured data. "
+                            "To remove template positions, "
+                            "call `raw.set_montage(None)` "
+                            "prior to BIDS conversion.")
+
                 # Now write the data
                 _electrodes_tsv(raw, electrodes_fname, kind,
                                 overwrite, verbose)

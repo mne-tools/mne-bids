@@ -708,6 +708,7 @@ def test_edf(_bids_validate):
     # add data in as a montage
     ch_names = raw.ch_names
     elec_locs = np.random.random((len(ch_names), 3))
+
     # test what happens if there is some nan entries
     elec_locs[-1, :] = [np.nan, np.nan, np.nan]
     ch_pos = dict(zip(ch_names, elec_locs.tolist()))
