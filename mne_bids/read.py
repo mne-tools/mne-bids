@@ -88,7 +88,7 @@ def _handle_participants_reading(participants_fname, raw,
     meas_date = raw.info['meas_date']
 
     # set data from participants tsv into subject_info
-    for infokey, infovalue in participants_tsv.keys():
+    for infokey, infovalue in participants_tsv.items():
         if infokey == 'sex':
             value = _convert_sex_options(infovalue[row_ind],
                                          fro='bids', to='mne')
