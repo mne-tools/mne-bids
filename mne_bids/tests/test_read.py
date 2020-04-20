@@ -351,7 +351,6 @@ def test_handle_coords_reading():
         raw_test = read_raw_bids(bids_fname, bids_root)
 
     # make sure montage is set if there are coordinates w/ 'n/a'
-    # but not set in raw.info['bads'] as well
     raw.info['bads'] = []
     write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
     electrodes_dict = _from_tsv(electrodes_fname)
@@ -365,23 +364,17 @@ def test_handle_coords_reading():
                                             "channels.tsv",
                                             allow_fail=True)
     channels_dict = _from_tsv(channels_fname)
-    bad_chs = [channels_dict['name'][i] for i in [0, 3]]
     channels_dict['status'][0] = 'good'
     channels_dict['status'][3] = 'good'
-    raw_test = read_raw_bids(bids_fname, bids_root)
-    assert raw_test.info['dig'] is not None
-    assert all(ch in raw_test.info['bads'] for ch in bad_chs)
 
-    # make sure montage is set if channel is bad
-    # set channel status as 'bad' explicitly
-    channels_fname = _find_matching_sidecar(bids_fname, bids_root,
-                                            "channels.tsv",
-                                            allow_fail=True)
-    channels_dict = _from_tsv(channels_fname)
-    channels_dict['status'][0] = 'bad'
-    channels_dict['status'][3] = 'bad'
+    # test if montage is correctly set
+    nan_coord_chs = [channels_dict['name'][i] for i in [0, 3]]
     raw_test = read_raw_bids(bids_fname, bids_root)
-    assert raw_test.info['dig'] is not None
+    for i, ch in enumerate(raw_test.info['chs']):
+        if ch['ch_name'] in nan_coord_chs:
+            assert all(np.isnan(ch['loc'][:3]))
+        else:
+            assert not any(np.isnan(ch['loc'][:3]))
 
 
 @requires_nibabel()
