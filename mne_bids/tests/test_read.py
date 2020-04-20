@@ -158,6 +158,21 @@ def test_read_participants_data():
         assert raw.info['subject_info']['sex'] == 0
         assert raw.info['subject_info']['birthday'][0] == expected_bday
 
+    if check_version('mne', '0.20'):
+        # if measurement date is float
+        raw = mne.io.read_raw_fif(raw_fname, verbose=False)
+        raw = raw.set_meas_date(datetime(2000, 1, 1, tzinfo=timezone.utc))
+        write_raw_bids(raw, bids_basename, bids_root, overwrite=True,
+                       verbose=False)
+        participants_tsv_fpath = op.join(bids_root, 'participants.tsv')
+        participants_tsv = _from_tsv(participants_tsv_fpath)
+        participants_tsv['age'][0] = 5.5
+        _to_tsv(participants_tsv, participants_tsv_fpath)
+        raw = read_raw_bids(bids_fname, Path(bids_root))
+        print(raw.info['subject_info'])
+        assert raw.info['subject_info']['birthday'][0] == 1994
+        assert raw.info['subject_info']['birthday'][1] == 6
+
 
 @requires_nibabel()
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])

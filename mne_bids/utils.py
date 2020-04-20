@@ -406,12 +406,6 @@ def _bday_on_age(age, exp_date):
             # pick the first day of that year to make age work
             birthday = (int(year), 1, 1)
 
-        if exp_date < datetime(birthday[0],
-                               birthday[1],
-                               birthday[2],
-                               tzinfo=timezone.utc):
-            raise ValueError("The experimentation date must be "
-                             "after the birth date")
     return birthday
 
 
