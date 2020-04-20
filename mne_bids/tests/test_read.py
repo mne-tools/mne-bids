@@ -136,11 +136,11 @@ def test_read_participants_data():
         assert raw.info['subject_info']['sex'] == 2
         assert raw.info['subject_info']['birthday'][0] == random_year - 2
 
-    # if measurement date is none and no subject_info
+    # if measurement date is none -> no birthday
     if check_version('mne', '0.20'):
         raw = raw.set_meas_date(None)
         raw.info = mne.io.anonymize_info(raw.info, verbose=False)
-        raw.info['subject_info'] = None
+        raw.info['subject_info'] = subject_info
         write_raw_bids(raw, bids_basename, bids_root, overwrite=True,
                        verbose=False)
         participants_tsv_fpath = op.join(bids_root, 'participants.tsv')
@@ -151,7 +151,7 @@ def test_read_participants_data():
         raw = read_raw_bids(bids_fname, Path(bids_root))
         assert raw.info['subject_info']['hand'] == 0
         assert raw.info['subject_info']['sex'] == 0
-        assert raw.info['subject_info']['birthday'][0] == expected_bday
+        assert raw.info['subject_info']['birthday'] is None
 
     if check_version('mne', '0.20'):
         # if measurement date is float
@@ -164,7 +164,6 @@ def test_read_participants_data():
         participants_tsv['age'][0] = 5.5
         _to_tsv(participants_tsv, participants_tsv_fpath)
         raw = read_raw_bids(bids_fname, Path(bids_root))
-        print(raw.info['subject_info'])
         assert raw.info['subject_info']['birthday'][0] == 1994
         assert raw.info['subject_info']['birthday'][1] == 6
 
