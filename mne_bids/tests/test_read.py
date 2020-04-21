@@ -370,7 +370,7 @@ def test_handle_coords_reading():
     # test if montage is correctly set
     nan_chs = [channels_dict['name'][i] for i in [0, 3]]
     raw_test = read_raw_bids(bids_fname, bids_root)
-    for i, ch in enumerate(raw_test.info['chs']):
+    for idx, ch in enumerate(raw_test.info['chs']):
         if ch['ch_name'] in nan_coord_chs:
             assert all(np.isnan(ch['loc'][:3]))
         else:
