@@ -242,7 +242,7 @@ def _handle_electrodes_reading(electrodes_fname, coord_frame, raw, verbose):
                        electrodes_dict['z']))
 
     # determine if there are problematic channels
-    problematic_chs = []
+    nan_chs = []
     for ch_name, ch_coord in zip(ch_names_raw, ch_locs):
         if any(np.isnan(ch_coord)) and ch_name not in raw.info['bads']:
             problematic_chs.append(ch_name)
