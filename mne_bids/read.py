@@ -245,7 +245,7 @@ def _handle_electrodes_reading(electrodes_fname, coord_frame, raw, verbose):
     for ch_name, ch_coord in zip(ch_names_raw, ch_locs):
         if any(np.isnan(ch_coord)) and ch_name not in raw.info['bads']:
             nan_chs.append(ch_name)
-    if nan_chs != []:
+    if len(nan_chs) > 0:
         logger.warning("There are problematic channels "
                        "that are not set as 'bad', "
                        "but also the channel location "
