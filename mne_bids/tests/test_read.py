@@ -368,7 +368,7 @@ def test_handle_coords_reading():
     channels_dict['status'][3] = 'good'
 
     # test if montage is correctly set
-    nan_coord_chs = [channels_dict['name'][i] for i in [0, 3]]
+    nan_chs = [channels_dict['name'][i] for i in [0, 3]]
     raw_test = read_raw_bids(bids_fname, bids_root)
     for i, ch in enumerate(raw_test.info['chs']):
         if ch['ch_name'] in nan_coord_chs:
