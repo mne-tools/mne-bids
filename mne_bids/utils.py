@@ -14,7 +14,7 @@ import warnings
 import json
 import shutil as sh
 import re
-from datetime import datetime, timezone
+from datetime import datetime
 from collections import defaultdict
 from pathlib import Path
 
@@ -361,53 +361,6 @@ def _age_on_date(bday, exp_date):
         if exp_date.day >= bday.day:
             return exp_date.year - bday.year
     return exp_date.year - bday.year - 1
-
-
-def _bday_on_age(age, exp_date):
-    """Calculate birthday from age and experiment date.
-
-    Parameters
-    ----------
-    age : int | float
-        The age of the participant.
-    exp_date : instance of datetime.datetime
-        The date the experiment was performed on.
-
-    Returns
-    -------
-    birthday : tuple of int
-        The (year, month, day) birthday of the subject. If age
-        is fractional age, then the month and day are also
-        calculated. Else the month and day default to (1, 1).
-    """
-    if isinstance(exp_date, datetime):
-        year = exp_date.year - age
-    else:  # for mne version < 0.20
-        exp_date = datetime.fromtimestamp(exp_date[0], tz=timezone.utc)
-        year = exp_date.year - age
-
-    # either determine full bday using fractional age,
-    # or just year
-    if not age.is_integer():
-        # From:
-        # https://gist.github.com/shahri23/1804a3acb7ffb58a1ec8f1eda304af1a
-        #
-        # compute year, month and day from
-        # a fractional age
-        year_int = int(year)
-
-        month = (year - year_int) * 12
-        month_int = int(month)
-
-        day = (month - month_int) * (365.242 / 12)
-        day_int = int(day)
-
-        birthday = (year_int, month_int, day_int)
-    else:
-        # pick the first day of that year to make age work
-        birthday = (int(year), 1, 1)
-
-    return birthday
 
 
 def _check_types(variables):

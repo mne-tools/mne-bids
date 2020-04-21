@@ -25,7 +25,7 @@ from mne_bids.config import ALLOWED_EXTENSIONS, \
 from mne_bids.utils import (_parse_bids_filename, _extract_landmarks,
                             _find_matching_sidecar, _parse_ext,
                             _get_ch_type_mapping, make_bids_folders,
-                            _estimate_line_freq, _bday_on_age)
+                            _estimate_line_freq)
 
 reader = {'.con': io.read_raw_kit, '.sqd': io.read_raw_kit,
           '.fif': io.read_raw_fif, '.pdf': io.read_raw_bti,
@@ -83,10 +83,6 @@ def _handle_participants_reading(participants_fname, raw,
     subjects = participants_tsv['participant_id']
     row_ind = subjects.index(subject)
 
-    # map age to a random date of that year
-    age = participants_tsv['age'][row_ind]
-    meas_date = raw.info['meas_date']
-
     # set data from participants tsv into subject_info
     for infokey, infovalue in participants_tsv.items():
         if infokey == 'sex':
@@ -95,21 +91,13 @@ def _handle_participants_reading(participants_fname, raw,
         elif infokey == 'hand':
             value = _convert_hand_options(infovalue[row_ind],
                                           fro='bids', to='mne')
-        elif infokey == 'age':
-            if age == 'n/a' or meas_date is None:
-                value = None
-            else:
-                value = _bday_on_age(float(age), meas_date)
         else:
             value = infovalue[row_ind]
 
         # add data into raw.Info
         if raw.info['subject_info'] is None:
             raw.info['subject_info'] = dict()
-        if infokey == 'age':
-            raw.info['subject_info']['birthday'] = value
-        else:
-            raw.info['subject_info'][infokey] = value
+        raw.info['subject_info'][infokey] = value
 
     return raw
 
