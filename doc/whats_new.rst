@@ -28,6 +28,7 @@ Bug
 ~~~
 
 - fix bug in :func:`write_raw_bids` where raw.info['subject_info'] can be None, by `Adam Li`_ (`#392 <https://github.com/mne-tools/mne-bids/pull/392>`_)
+- :func:`read_raw_bids` to read electrodes.tsv only if all non-bad channels have coordinates; warns if good channel and 'n/a' coordinate, by `Adam Li`_ (`#393 <https://github.com/mne-tools/mne-bids/pull/393>`_)
 
 API
 ~~~

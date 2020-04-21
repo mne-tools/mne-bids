@@ -366,16 +366,20 @@ def test_handle_coords_reading():
     channels_dict = _from_tsv(channels_fname)
     channels_dict['status'][0] = 'good'
     channels_dict['status'][3] = 'good'
+    _to_tsv(channels_dict, channels_fname)
 
-    # test if montage is correctly set
+    # test if montage is correctly set via mne-bids
+    # electrode coordinates should be nan
+    # when coordinate is 'n/a'
     nan_chs = [channels_dict['name'][i] for i in [0, 3]]
-    raw_test = read_raw_bids(bids_fname, bids_root)
-    for idx, ch in enumerate(raw_test.info['chs']):
-        if ch['ch_name'] in nan_coord_chs:
+    raw = read_raw_bids(bids_fname, bids_root)
+    for idx, ch in enumerate(raw.info['chs']):
+        if ch['ch_name'] in nan_chs:
             assert all(np.isnan(ch['loc'][:3]))
+            assert ch['ch_name'] not in raw.info['bads']
         else:
             assert not any(np.isnan(ch['loc'][:3]))
-            assert ch['name'] not in raw.info['bads']
+            assert ch['ch_name'] not in raw.info['bads']
 
 
 @requires_nibabel()
