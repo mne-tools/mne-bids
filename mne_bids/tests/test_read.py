@@ -375,6 +375,7 @@ def test_handle_coords_reading():
             assert all(np.isnan(ch['loc'][:3]))
         else:
             assert not any(np.isnan(ch['loc'][:3]))
+            assert ch['name'] not in raw.info['bads']
 
 
 @requires_nibabel()
