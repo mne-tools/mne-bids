@@ -363,7 +363,8 @@ def test_handle_coords_reading():
     # electrode coordinates should be nan
     # when coordinate is 'n/a'
     nan_chs = [electrodes_dict['name'][i] for i in [0, 3]]
-    with pytest.warns(UserWarning, match='There are problematic channels'):
+    with pytest.warns(UserWarning, match='There are channels '
+                                         'without locations'):
         raw = read_raw_bids(bids_fname, bids_root)
         for idx, ch in enumerate(raw.info['chs']):
             if ch['ch_name'] in nan_chs:
