@@ -246,10 +246,8 @@ def _handle_electrodes_reading(electrodes_fname, coord_frame, raw, verbose):
         if any(np.isnan(ch_coord)) and ch_name not in raw.info['bads']:
             nan_chs.append(ch_name)
     if len(nan_chs) > 0:
-        warn("There are problematic channels that are not "
-             "set as 'bad', but also the channel location "
-             "is 'n/a' in electrodes.tsv: {}. Setting "
-             "montage without those chs...".format(nan_chs))
+        warn("There are channels without locations "
+             "(n/a) that are not marked as bad: {}".format(nan_chs))
 
     # create mne.DigMontage
     ch_pos = dict(zip(ch_names_raw, np.array(ch_locs)))

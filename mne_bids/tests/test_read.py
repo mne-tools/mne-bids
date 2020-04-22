@@ -368,10 +368,9 @@ def test_handle_coords_reading():
         for idx, ch in enumerate(raw.info['chs']):
             if ch['ch_name'] in nan_chs:
                 assert all(np.isnan(ch['loc'][:3]))
-                assert ch['ch_name'] not in raw.info['bads']
             else:
                 assert not any(np.isnan(ch['loc'][:3]))
-                assert ch['ch_name'] not in raw.info['bads']
+            assert ch['ch_name'] not in raw.info['bads']
 
 
 @requires_nibabel()
