@@ -61,8 +61,6 @@ warning_str = dict(
     meas_date_set_to_none="ignore:.*'meas_date' set to None:RuntimeWarning:"
                           "mne",
     nasion_not_found='ignore:.*nasion not found:RuntimeWarning:mne',
-    input_info="ignore:Input info has 'meas_date' "
-               "set to None.:RuntimeWarning:mne",
 )
 
 
@@ -86,8 +84,7 @@ def test_not_implemented():
             _read_raw(raw_fname)
 
 
-@pytest.mark.filterwarnings(warning_str['channel_unit_changed'],
-                            warning_str["input_info"])
+@pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_read_participants_data():
     """Test reading information from a BIDS sidecar.json file."""
     bids_root = _TempDir()
@@ -118,19 +115,6 @@ def test_read_participants_data():
     assert raw.info['subject_info']['hand'] == 0
     assert raw.info['subject_info']['sex'] == 2
     assert raw.info['subject_info'].get('birthday', None) is None
-
-    # check what happens if we anonymize
-    if check_version('mne', '0.20'):
-        raw = mne.io.read_raw_fif(raw_fname, verbose=False)
-        raw.info['subject_info'] = subject_info
-        write_raw_bids(raw, bids_basename, bids_root,
-                       anonymize={'daysback': 365 * 2,
-                                  'keep_his': False},
-                       overwrite=True, verbose=False)
-        raw = read_raw_bids(bids_fname, Path(bids_root))
-        assert raw.info['subject_info']['hand'] == 1
-        assert raw.info['subject_info']['sex'] == 2
-        assert raw.info['subject_info'].get('birthday', None) is None
 
 
 @requires_nibabel()
