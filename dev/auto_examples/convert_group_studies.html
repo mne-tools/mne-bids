@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
     <title>05. BIDS conversion for group studies &#8212; mne_bids 0.5.dev0 documentation</title>
@@ -183,8 +183,8 @@ human neuroimaging dataset.” Scientific data, 2 (2015): 150001.</p>
     <span class="k">for</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">run</span></a> <span class="ow">in</span> <a href="https://docs.python.org/3/library/stdtypes.html#range" title="builtins.range" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">runs</span></a><span class="p">:</span>
         <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw_fname</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/os.path.html#os.path.join" title="os.path.join" class="sphx-glr-backref-module-os-path sphx-glr-backref-type-py-function"><span class="n">op</span><span class="o">.</span><span class="n">join</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_path</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">repo</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject</span></a><span class="p">,</span> <span class="s1">&#39;MEG&#39;</span><span class="p">,</span>
                             <span class="s1">&#39;run_</span><span class="si">%02d</span><span class="s1">_raw.fif&#39;</span> <span class="o">%</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">run</span></a><span class="p">)</span>
-        <a href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.raw" title="mne.io.Raw" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.io.read_raw_fif.html#mne.io.read_raw_fif" title="mne.io.read_raw_fif" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_raw_fif</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw_fname</span></a><span class="p">)</span>
-        <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw_list</span></a><span class="o">.</span><span class="n">append</span><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.raw" title="mne.io.Raw" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span></a><span class="p">)</span>
+        <a href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw" title="mne.io.Raw" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.io.read_raw_fif.html#mne.io.read_raw_fif" title="mne.io.read_raw_fif" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_raw_fif</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw_fname</span></a><span class="p">)</span>
+        <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw_list</span></a><span class="o">.</span><span class="n">append</span><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw" title="mne.io.Raw" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span></a><span class="p">)</span>
         <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_basename</span></a> <span class="o">=</span> <span class="n">make_bids_basename</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject</span></a><span class="o">=</span><span class="nb">str</span><span class="p">(</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject_id</span></a><span class="p">),</span>
                                            <span class="n">session</span><span class="o">=</span><span class="s1">&#39;01&#39;</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="s1">&#39;VisualFaces&#39;</span><span class="p">,</span>
                                            <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">run</span></a><span class="o">=</span><span class="nb">str</span><span class="p">(</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">run</span></a><span class="p">))</span>
@@ -192,13 +192,13 @@ human neuroimaging dataset.” Scientific data, 2 (2015): 150001.</p>
 
 <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">daysback_min</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">daysback_max</span></a> <span class="o">=</span> <span class="n">get_anonymization_daysback</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw_list</span></a><span class="p">)</span>
 
-<span class="k">for</span> <a href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.raw" title="mne.io.Raw" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_basename</span></a> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw_list</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_list</span></a><span class="p">):</span>
+<span class="k">for</span> <a href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw" title="mne.io.Raw" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_basename</span></a> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw_list</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_list</span></a><span class="p">):</span>
     <span class="c1"># By using the same anonymization `daysback` number we can</span>
     <span class="c1"># preserve the longitudinal structure of multiple sessions for a</span>
     <span class="c1"># single subject and the relation between subjects. Be sure to</span>
     <span class="c1"># change or delete this number before putting code online, you</span>
     <span class="c1"># wouldn&#39;t want to inadvertently de-anonymize your data.</span>
-    <span class="n">write_raw_bids</span><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.raw" title="mne.io.Raw" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_basename</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">output_path</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">event_id</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">event_id</span></a><span class="p">,</span>
+    <span class="n">write_raw_bids</span><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw" title="mne.io.Raw" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_basename</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">output_path</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">event_id</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">event_id</span></a><span class="p">,</span>
                    <span class="n">anonymize</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">daysback</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">daysback_min</span></a> <span class="o">+</span> <span class="mi">2117</span><span class="p">),</span>
                    <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
@@ -1274,41 +1274,41 @@ Closing /home/circleci/mne_data/mne_bids_examples/ds000117-bids/sub-1/ses-01/meg
 </div>
 <p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>|ds000117-bids/
-|--- participants.tsv
 |--- participants.json
 |--- dataset_description.json
+|--- participants.tsv
 |--- sub-1/
 |------ ses-01/
 |--------- sub-1_ses-01_scans.tsv
 |--------- meg/
+|------------ sub-1_ses-01_task-VisualFaces_run-5_meg.fif
+|------------ sub-1_ses-01_task-VisualFaces_run-3_meg.fif
+|------------ sub-1_ses-01_task-VisualFaces_run-4_channels.tsv
+|------------ sub-1_ses-01_task-VisualFaces_run-1_meg.fif
+|------------ sub-1_ses-01_task-VisualFaces_run-5_channels.tsv
 |------------ sub-1_ses-01_task-VisualFaces_run-6_meg.json
-|------------ sub-1_ses-01_task-VisualFaces_run-5_meg.json
-|------------ sub-1_ses-01_task-VisualFaces_run-2_events.tsv
 |------------ sub-1_ses-01_task-VisualFaces_run-6_meg.fif
-|------------ sub-1_ses-01_task-VisualFaces_run-2_channels.tsv
-|------------ sub-1_ses-01_task-VisualFaces_run-3_channels.tsv
+|------------ sub-1_ses-01_task-VisualFaces_run-5_events.tsv
+|------------ sub-1_ses-01_coordsystem.json
+|------------ sub-1_ses-01_task-VisualFaces_run-4_meg.fif
+|------------ sub-1_ses-01_task-VisualFaces_run-3_meg.json
 |------------ sub-1_ses-01_task-VisualFaces_run-1_channels.tsv
 |------------ sub-1_ses-01_task-VisualFaces_run-3_events.tsv
-|------------ sub-1_ses-01_task-VisualFaces_run-2_meg.fif
+|------------ sub-1_ses-01_task-VisualFaces_run-1_events.tsv
+|------------ sub-1_ses-01_task-VisualFaces_run-2_meg.json
+|------------ sub-1_ses-01_task-VisualFaces_run-3_channels.tsv
+|------------ sub-1_ses-01_task-VisualFaces_run-2_channels.tsv
 |------------ sub-1_ses-01_task-VisualFaces_run-4_events.tsv
 |------------ sub-1_ses-01_task-VisualFaces_run-6_events.tsv
-|------------ sub-1_ses-01_task-VisualFaces_run-6_channels.tsv
-|------------ sub-1_ses-01_task-VisualFaces_run-5_events.tsv
-|------------ sub-1_ses-01_task-VisualFaces_run-4_channels.tsv
-|------------ sub-1_ses-01_task-VisualFaces_run-2_meg.json
-|------------ sub-1_ses-01_task-VisualFaces_run-5_meg.fif
 |------------ sub-1_ses-01_task-VisualFaces_run-4_meg.json
-|------------ sub-1_ses-01_task-VisualFaces_run-1_meg.fif
-|------------ sub-1_ses-01_coordsystem.json
+|------------ sub-1_ses-01_task-VisualFaces_run-2_events.tsv
+|------------ sub-1_ses-01_task-VisualFaces_run-6_channels.tsv
 |------------ sub-1_ses-01_task-VisualFaces_run-1_meg.json
-|------------ sub-1_ses-01_task-VisualFaces_run-3_meg.fif
-|------------ sub-1_ses-01_task-VisualFaces_run-5_channels.tsv
-|------------ sub-1_ses-01_task-VisualFaces_run-3_meg.json
-|------------ sub-1_ses-01_task-VisualFaces_run-4_meg.fif
-|------------ sub-1_ses-01_task-VisualFaces_run-1_events.tsv
+|------------ sub-1_ses-01_task-VisualFaces_run-2_meg.fif
+|------------ sub-1_ses-01_task-VisualFaces_run-5_meg.json
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 1 minutes  4.639 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 1 minutes  30.820 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-group-studies-py">
 <div class="binder-badge docutils container">
 <a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/convert_group_studies.ipynb"><img alt="https://mybinder.org/badge_logo.svg" src="https://mybinder.org/badge_logo.svg" width="150px" /></a>
@@ -1336,8 +1336,8 @@ Closing /home/circleci/mne_data/mne_bids_examples/ds000117-bids/sub-1/ses-01/meg
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-04-05.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.0.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-04-23.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.2.<br/>
     </p>
   </div>
 </footer>

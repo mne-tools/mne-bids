@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
     <title>mne_bids.write &#8212; mne_bids 0.5.dev0 documentation</title>
@@ -155,7 +155,8 @@
 
 <span class="kn">from</span> <span class="nn">mne_bids.config</span> <span class="kn">import</span> <span class="p">(</span><span class="n">ORIENTATION</span><span class="p">,</span> <span class="n">UNITS</span><span class="p">,</span> <span class="n">MANUFACTURERS</span><span class="p">,</span>
                              <span class="n">IGNORED_CHANNELS</span><span class="p">,</span> <span class="n">ALLOWED_EXTENSIONS</span><span class="p">,</span>
-                             <span class="n">BIDS_VERSION</span><span class="p">)</span>
+                             <span class="n">BIDS_VERSION</span><span class="p">,</span>
+                             <span class="n">_convert_hand_options</span><span class="p">,</span> <span class="n">_convert_sex_options</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">_is_numeric</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
@@ -394,16 +395,15 @@
     <span class="n">subject_age</span> <span class="o">=</span> <span class="s2">&quot;n/a&quot;</span>
     <span class="n">sex</span> <span class="o">=</span> <span class="s2">&quot;n/a&quot;</span>
     <span class="n">hand</span> <span class="o">=</span> <span class="s1">&#39;n/a&#39;</span>
-    <span class="n">subject_info</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;subject_info&#39;</span><span class="p">]</span>
+    <span class="n">subject_info</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;subject_info&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">subject_info</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">sexes</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="s1">&#39;n/a&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="s1">&#39;M&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="s1">&#39;F&#39;</span><span class="p">}</span>
-        <span class="n">sex</span> <span class="o">=</span> <span class="n">sexes</span><span class="p">[</span><span class="n">subject_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;sex&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)]</span>
+        <span class="c1"># add sex</span>
+        <span class="n">sex</span> <span class="o">=</span> <span class="n">_convert_sex_options</span><span class="p">(</span><span class="n">subject_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;sex&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+                                   <span class="n">fro</span><span class="o">=</span><span class="s1">&#39;mne&#39;</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="s1">&#39;bids&#39;</span><span class="p">)</span>
 
         <span class="c1"># add handedness</span>
-        <span class="c1"># XXX: MNE currently only handles R/L,</span>
-        <span class="c1"># follow https://github.com/mne-tools/mne-python/issues/7347</span>
-        <span class="n">hand_options</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="s1">&#39;n/a&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span> <span class="s1">&#39;R&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="s1">&#39;L&#39;</span><span class="p">,</span> <span class="mi">3</span><span class="p">:</span> <span class="s1">&#39;A&#39;</span><span class="p">}</span>
-        <span class="n">hand</span> <span class="o">=</span> <span class="n">hand_options</span><span class="p">[</span><span class="n">subject_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;hand&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)]</span>
+        <span class="n">hand</span> <span class="o">=</span> <span class="n">_convert_hand_options</span><span class="p">(</span><span class="n">subject_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;hand&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+                                     <span class="n">fro</span><span class="o">=</span><span class="s1">&#39;mne&#39;</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="s1">&#39;bids&#39;</span><span class="p">)</span>
 
         <span class="c1"># determine the age of the participant</span>
         <span class="n">age</span> <span class="o">=</span> <span class="n">subject_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;birthday&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
@@ -413,7 +413,6 @@
 
         <span class="k">if</span> <span class="n">meas_date</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">age</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">bday</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">(</span><span class="n">age</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">age</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">age</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">tzinfo</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span>
-            <span class="n">meas_datetime</span> <span class="o">=</span> <span class="n">meas_date</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">meas_date</span><span class="p">,</span> <span class="n">datetime</span><span class="p">):</span>
                 <span class="n">meas_datetime</span> <span class="o">=</span> <span class="n">meas_date</span>
             <span class="k">else</span><span class="p">:</span>
@@ -1666,8 +1665,8 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-04-05.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.0.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-04-23.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.2.<br/>
     </p>
   </div>
 </footer>

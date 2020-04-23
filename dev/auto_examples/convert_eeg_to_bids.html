@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
     <title>04. Convert EEG data to BIDS format &#8212; mne_bids 0.5.dev0 documentation</title>
@@ -175,14 +175,14 @@ of the directory tree.</p>
 |--- files/
 |------ eegmmidb/
 |--------- 1.0.0/
+|------------ S001/
+|--------------- S001R02.edf
+|--------------- S001R04.edf
+|--------------- S001R12.edf
 |------------ S002/
 |--------------- S002R04.edf
 |--------------- S002R12.edf
 |--------------- S002R02.edf
-|------------ S001/
-|--------------- S001R04.edf
-|--------------- S001R12.edf
-|--------------- S001R02.edf
 </pre></div>
 </div>
 <p>The data are in the <a class="reference external" href="https://www.edfplus.info/">European Data Format</a>
@@ -210,8 +210,8 @@ Creating raw.info structure...
 </div>
 <p>The annotations stored in the file must be read in separately and converted
 into a 2D numpy array of events that is compatible with MNE.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://mne.tools/dev/generated/mne.Annotations.html#mne.annotations" title="mne.Annotations" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">annot</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.read_annotations.html#mne.read_annotations" title="mne.read_annotations" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">read_annotations</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">edf_path</span></a><span class="p">)</span>
-<a href="https://mne.tools/dev/generated/mne.io.BaseRaw.html#mne.io.baseraw.set_annotations" title="mne.io.BaseRaw.set_annotations" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-method"><span class="n">raw</span><span class="o">.</span><span class="n">set_annotations</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.Annotations.html#mne.annotations" title="mne.Annotations" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">annot</span></a><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://mne.tools/dev/generated/mne.Annotations.html#mne.Annotations" title="mne.Annotations" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">annot</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.read_annotations.html#mne.read_annotations" title="mne.read_annotations" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">read_annotations</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">edf_path</span></a><span class="p">)</span>
+<a href="https://mne.tools/dev/generated/mne.io.BaseRaw.html#mne.io.BaseRaw.set_annotations" title="mne.io.BaseRaw.set_annotations" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-method"><span class="n">raw</span><span class="o">.</span><span class="n">set_annotations</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.Annotations.html#mne.Annotations" title="mne.Annotations" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">annot</span></a><span class="p">)</span>
 <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">events</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">event_id</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.events_from_annotations.html#mne.events_from_annotations" title="mne.events_from_annotations" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">events_from_annotations</span></a><span class="p">(</span><span class="n">raw</span><span class="p">)</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span>
@@ -415,7 +415,7 @@ Writing &#39;/home/circleci/mne_data/eegmmidb_bids/dataset_description.json&#39;
     ]
 }
 Effective window size : 1.600 (s)
-/home/circleci/project/mne_bids/write.py:559: UserWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
+/home/circleci/project/mne_bids/write.py:558: UserWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
   &#39;on 10 seconds of data.&#39;.format(powerlinefrequency))
 Reading 0 ... 9759  =      0.000 ...    60.994 secs...
 
@@ -459,39 +459,39 @@ Copying data files to /home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_
 </div>
 <p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>|eegmmidb_bids/
-|--- participants.tsv
 |--- participants.json
 |--- dataset_description.json
-|--- sub-001/
-|------ sub-001_scans.tsv
-|------ eeg/
-|--------- sub-001_task-imaginefists_run-2_channels.tsv
-|--------- sub-001_task-imaginefists_run-2_eeg.edf
-|--------- sub-001_task-resteyesclosed_events.tsv
-|--------- sub-001_task-imaginefists_run-1_events.tsv
-|--------- sub-001_task-imaginefists_run-2_events.tsv
-|--------- sub-001_task-imaginefists_run-1_eeg.edf
-|--------- sub-001_task-imaginefists_run-1_eeg.json
-|--------- sub-001_task-resteyesclosed_eeg.edf
-|--------- sub-001_task-resteyesclosed_channels.tsv
-|--------- sub-001_task-imaginefists_run-1_channels.tsv
-|--------- sub-001_task-imaginefists_run-2_eeg.json
-|--------- sub-001_task-resteyesclosed_eeg.json
+|--- participants.tsv
 |--- sub-002/
 |------ sub-002_scans.tsv
 |------ eeg/
-|--------- sub-002_task-imaginefists_run-2_eeg.json
-|--------- sub-002_task-resteyesclosed_eeg.edf
-|--------- sub-002_task-resteyesclosed_channels.tsv
-|--------- sub-002_task-imaginefists_run-1_events.tsv
-|--------- sub-002_task-imaginefists_run-2_channels.tsv
 |--------- sub-002_task-imaginefists_run-2_eeg.edf
 |--------- sub-002_task-imaginefists_run-1_channels.tsv
-|--------- sub-002_task-resteyesclosed_events.tsv
-|--------- sub-002_task-imaginefists_run-1_eeg.edf
-|--------- sub-002_task-resteyesclosed_eeg.json
 |--------- sub-002_task-imaginefists_run-1_eeg.json
+|--------- sub-002_task-resteyesclosed_events.tsv
+|--------- sub-002_task-resteyesclosed_channels.tsv
+|--------- sub-002_task-imaginefists_run-1_events.tsv
+|--------- sub-002_task-resteyesclosed_eeg.json
+|--------- sub-002_task-resteyesclosed_eeg.edf
+|--------- sub-002_task-imaginefists_run-2_channels.tsv
 |--------- sub-002_task-imaginefists_run-2_events.tsv
+|--------- sub-002_task-imaginefists_run-2_eeg.json
+|--------- sub-002_task-imaginefists_run-1_eeg.edf
+|--- sub-001/
+|------ sub-001_scans.tsv
+|------ eeg/
+|--------- sub-001_task-imaginefists_run-1_events.tsv
+|--------- sub-001_task-imaginefists_run-2_eeg.json
+|--------- sub-001_task-resteyesclosed_channels.tsv
+|--------- sub-001_task-imaginefists_run-2_events.tsv
+|--------- sub-001_task-imaginefists_run-1_eeg.edf
+|--------- sub-001_task-resteyesclosed_eeg.json
+|--------- sub-001_task-resteyesclosed_events.tsv
+|--------- sub-001_task-imaginefists_run-2_eeg.edf
+|--------- sub-001_task-imaginefists_run-1_eeg.json
+|--------- sub-001_task-imaginefists_run-1_channels.tsv
+|--------- sub-001_task-imaginefists_run-2_channels.tsv
+|--------- sub-001_task-resteyesclosed_eeg.edf
 </pre></div>
 </div>
 <p>Looks good so far, let’s convert the data for all tasks and subjects.</p>
@@ -516,8 +516,8 @@ Copying data files to /home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_
         <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">edf_path</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.datasets.eegbci.load_data.html#mne.datasets.eegbci.load_data" title="mne.datasets.eegbci.load_data" class="sphx-glr-backref-module-mne-datasets-eegbci sphx-glr-backref-type-py-function"><span class="n">eegbci</span><span class="o">.</span><span class="n">load_data</span></a><span class="p">(</span><span class="n">subject</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subj_idx</span></a><span class="p">,</span> <span class="n">runs</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">task_idx</span></a><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 
         <span class="n">raw</span> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.io.read_raw_edf.html#mne.io.read_raw_edf" title="mne.io.read_raw_edf" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_raw_edf</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">edf_path</span></a><span class="p">,</span> <span class="n">preload</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">stim_channel</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-        <a href="https://mne.tools/dev/generated/mne.Annotations.html#mne.annotations" title="mne.Annotations" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">annot</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.read_annotations.html#mne.read_annotations" title="mne.read_annotations" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">read_annotations</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">edf_path</span></a><span class="p">)</span>
-        <a href="https://mne.tools/dev/generated/mne.io.BaseRaw.html#mne.io.baseraw.set_annotations" title="mne.io.BaseRaw.set_annotations" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-method"><span class="n">raw</span><span class="o">.</span><span class="n">set_annotations</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.Annotations.html#mne.annotations" title="mne.Annotations" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">annot</span></a><span class="p">)</span>
+        <a href="https://mne.tools/dev/generated/mne.Annotations.html#mne.Annotations" title="mne.Annotations" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">annot</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.read_annotations.html#mne.read_annotations" title="mne.read_annotations" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">read_annotations</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">edf_path</span></a><span class="p">)</span>
+        <a href="https://mne.tools/dev/generated/mne.io.BaseRaw.html#mne.io.BaseRaw.set_annotations" title="mne.io.BaseRaw.set_annotations" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-method"><span class="n">raw</span><span class="o">.</span><span class="n">set_annotations</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.Annotations.html#mne.Annotations" title="mne.Annotations" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">annot</span></a><span class="p">)</span>
         <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">events</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">event_id</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.events_from_annotations.html#mne.events_from_annotations" title="mne.events_from_annotations" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">events_from_annotations</span></a><span class="p">(</span><span class="n">raw</span><span class="p">)</span>
 
         <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_basename</span></a> <span class="o">=</span> <span class="n">make_bids_basename</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">{:03}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subj_idx</span></a><span class="p">),</span>
@@ -888,7 +888,7 @@ Writing &#39;/home/circleci/mne_data/eegmmidb_bids/dataset_description.json&#39;
     ]
 }
 Effective window size : 1.600 (s)
-/home/circleci/project/mne_bids/write.py:559: UserWarning: No line frequency found, defaulting to 50 Hz estimated from multi-taper FFT on 10 seconds of data.
+/home/circleci/project/mne_bids/write.py:558: UserWarning: No line frequency found, defaulting to 50 Hz estimated from multi-taper FFT on 10 seconds of data.
   &#39;on 10 seconds of data.&#39;.format(powerlinefrequency))
 Reading 0 ... 9759  =      0.000 ...    60.994 secs...
 
@@ -1136,39 +1136,39 @@ Copying data files to /home/circleci/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_
 </div>
 <p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>|eegmmidb_bids/
-|--- participants.tsv
 |--- participants.json
 |--- dataset_description.json
-|--- sub-001/
-|------ sub-001_scans.tsv
-|------ eeg/
-|--------- sub-001_task-imaginefists_run-2_channels.tsv
-|--------- sub-001_task-imaginefists_run-2_eeg.edf
-|--------- sub-001_task-resteyesclosed_events.tsv
-|--------- sub-001_task-imaginefists_run-1_events.tsv
-|--------- sub-001_task-imaginefists_run-2_events.tsv
-|--------- sub-001_task-imaginefists_run-1_eeg.edf
-|--------- sub-001_task-imaginefists_run-1_eeg.json
-|--------- sub-001_task-resteyesclosed_eeg.edf
-|--------- sub-001_task-resteyesclosed_channels.tsv
-|--------- sub-001_task-imaginefists_run-1_channels.tsv
-|--------- sub-001_task-imaginefists_run-2_eeg.json
-|--------- sub-001_task-resteyesclosed_eeg.json
+|--- participants.tsv
 |--- sub-002/
 |------ sub-002_scans.tsv
 |------ eeg/
-|--------- sub-002_task-imaginefists_run-2_eeg.json
-|--------- sub-002_task-resteyesclosed_eeg.edf
-|--------- sub-002_task-resteyesclosed_channels.tsv
-|--------- sub-002_task-imaginefists_run-1_events.tsv
-|--------- sub-002_task-imaginefists_run-2_channels.tsv
 |--------- sub-002_task-imaginefists_run-2_eeg.edf
 |--------- sub-002_task-imaginefists_run-1_channels.tsv
-|--------- sub-002_task-resteyesclosed_events.tsv
-|--------- sub-002_task-imaginefists_run-1_eeg.edf
-|--------- sub-002_task-resteyesclosed_eeg.json
 |--------- sub-002_task-imaginefists_run-1_eeg.json
+|--------- sub-002_task-resteyesclosed_events.tsv
+|--------- sub-002_task-resteyesclosed_channels.tsv
+|--------- sub-002_task-imaginefists_run-1_events.tsv
+|--------- sub-002_task-resteyesclosed_eeg.json
+|--------- sub-002_task-resteyesclosed_eeg.edf
+|--------- sub-002_task-imaginefists_run-2_channels.tsv
 |--------- sub-002_task-imaginefists_run-2_events.tsv
+|--------- sub-002_task-imaginefists_run-2_eeg.json
+|--------- sub-002_task-imaginefists_run-1_eeg.edf
+|--- sub-001/
+|------ sub-001_scans.tsv
+|------ eeg/
+|--------- sub-001_task-imaginefists_run-1_events.tsv
+|--------- sub-001_task-imaginefists_run-2_eeg.json
+|--------- sub-001_task-resteyesclosed_channels.tsv
+|--------- sub-001_task-imaginefists_run-2_events.tsv
+|--------- sub-001_task-imaginefists_run-1_eeg.edf
+|--------- sub-001_task-resteyesclosed_eeg.json
+|--------- sub-001_task-resteyesclosed_events.tsv
+|--------- sub-001_task-imaginefists_run-2_eeg.edf
+|--------- sub-001_task-imaginefists_run-1_eeg.json
+|--------- sub-001_task-imaginefists_run-1_channels.tsv
+|--------- sub-001_task-imaginefists_run-2_channels.tsv
+|--------- sub-001_task-resteyesclosed_eeg.edf
 </pre></div>
 </div>
 <p>MNE-BIDS has created a suitable directory structure for us, and among other
@@ -1183,7 +1183,7 @@ directories called the “BIDS-validator”, available as a web version and a
 command line tool:</p>
 <p>Web version: <a class="reference external" href="https://bids-standard.github.io/bids-validator/">https://bids-standard.github.io/bids-validator/</a></p>
 <p>Command line tool: <a class="reference external" href="https://www.npmjs.com/package/bids-validator">https://www.npmjs.com/package/bids-validator</a></p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.663 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  1.198 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-eeg-to-bids-py">
 <div class="binder-badge docutils container">
 <a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/convert_eeg_to_bids.ipynb"><img alt="https://mybinder.org/badge_logo.svg" src="https://mybinder.org/badge_logo.svg" width="150px" /></a>
@@ -1211,8 +1211,8 @@ command line tool:</p>
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-04-05.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.0.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-04-23.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.2.<br/>
     </p>
   </div>
 </footer>

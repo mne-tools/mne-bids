@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
     <title>mne_bids.read &#8212; mne_bids 0.5.dev0 documentation</title>
@@ -129,7 +129,8 @@
 <span class="kn">from</span> <span class="nn">mne.transforms</span> <span class="kn">import</span> <span class="n">apply_trans</span>
 
 <span class="kn">from</span> <span class="nn">mne_bids.tsv_handler</span> <span class="kn">import</span> <span class="n">_from_tsv</span><span class="p">,</span> <span class="n">_drop</span>
-<span class="kn">from</span> <span class="nn">mne_bids.config</span> <span class="kn">import</span> <span class="n">ALLOWED_EXTENSIONS</span>
+<span class="kn">from</span> <span class="nn">mne_bids.config</span> <span class="kn">import</span> <span class="n">ALLOWED_EXTENSIONS</span><span class="p">,</span> \
+    <span class="n">_convert_hand_options</span><span class="p">,</span> <span class="n">_convert_sex_options</span>
 <span class="kn">from</span> <span class="nn">mne_bids.utils</span> <span class="kn">import</span> <span class="p">(</span><span class="n">_parse_bids_filename</span><span class="p">,</span> <span class="n">_extract_landmarks</span><span class="p">,</span>
                             <span class="n">_find_matching_sidecar</span><span class="p">,</span> <span class="n">_parse_ext</span><span class="p">,</span>
                             <span class="n">_get_ch_type_mapping</span><span class="p">,</span> <span class="n">make_bids_folders</span><span class="p">,</span>
@@ -182,6 +183,31 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Raw file name extension must be one of </span><span class="si">{}</span><span class="se">\n</span><span class="s1">&#39;</span>
                          <span class="s1">&#39;Got </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ALLOWED_EXTENSIONS</span><span class="p">,</span> <span class="n">ext</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">raw</span>
+
+
+<span class="k">def</span> <span class="nf">_handle_participants_reading</span><span class="p">(</span><span class="n">participants_fname</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span>
+                                 <span class="n">subject</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="n">participants_tsv</span> <span class="o">=</span> <span class="n">_from_tsv</span><span class="p">(</span><span class="n">participants_fname</span><span class="p">)</span>
+    <span class="n">subjects</span> <span class="o">=</span> <span class="n">participants_tsv</span><span class="p">[</span><span class="s1">&#39;participant_id&#39;</span><span class="p">]</span>
+    <span class="n">row_ind</span> <span class="o">=</span> <span class="n">subjects</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">subject</span><span class="p">)</span>
+
+    <span class="c1"># set data from participants tsv into subject_info</span>
+    <span class="k">for</span> <span class="n">infokey</span><span class="p">,</span> <span class="n">infovalue</span> <span class="ow">in</span> <span class="n">participants_tsv</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">infokey</span> <span class="o">==</span> <span class="s1">&#39;sex&#39;</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">_convert_sex_options</span><span class="p">(</span><span class="n">infovalue</span><span class="p">[</span><span class="n">row_ind</span><span class="p">],</span>
+                                         <span class="n">fro</span><span class="o">=</span><span class="s1">&#39;bids&#39;</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="s1">&#39;mne&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">infokey</span> <span class="o">==</span> <span class="s1">&#39;hand&#39;</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">_convert_hand_options</span><span class="p">(</span><span class="n">infovalue</span><span class="p">[</span><span class="n">row_ind</span><span class="p">],</span>
+                                          <span class="n">fro</span><span class="o">=</span><span class="s1">&#39;bids&#39;</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="s1">&#39;mne&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">infovalue</span><span class="p">[</span><span class="n">row_ind</span><span class="p">]</span>
+
+        <span class="c1"># add data into raw.Info</span>
+        <span class="k">if</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;subject_info&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;subject_info&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;subject_info&#39;</span><span class="p">][</span><span class="n">infokey</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
     <span class="k">return</span> <span class="n">raw</span>
 
 
@@ -510,6 +536,12 @@
     <span class="k">if</span> <span class="n">sidecar_fname</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">raw</span> <span class="o">=</span> <span class="n">_handle_info_reading</span><span class="p">(</span><span class="n">sidecar_fname</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
 
+    <span class="c1"># read in associated subject info from participants.tsv</span>
+    <span class="n">participants_tsv_fpath</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bids_root</span><span class="p">,</span> <span class="s1">&#39;participants.tsv&#39;</span><span class="p">)</span>
+    <span class="n">subject</span> <span class="o">=</span> <span class="s2">&quot;sub-&quot;</span> <span class="o">+</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;sub&#39;</span><span class="p">]</span>
+    <span class="n">raw</span> <span class="o">=</span> <span class="n">_handle_participants_reading</span><span class="p">(</span><span class="n">participants_tsv_fpath</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span>
+                                       <span class="n">subject</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+
     <span class="k">return</span> <span class="n">raw</span></div>
 
 
@@ -653,8 +685,8 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-04-05.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.0.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-04-23.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.2.<br/>
     </p>
   </div>
 </footer>

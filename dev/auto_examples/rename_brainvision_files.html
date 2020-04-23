@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
     <title>06. Rename BrainVision EEG data files &#8212; mne_bids 0.5.dev0 documentation</title>
@@ -184,7 +184,7 @@ as well as the renamed data. They should be the same.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">raw</span> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.io.read_raw_brainvision.html#mne.io.read_raw_brainvision" title="mne.io.read_raw_brainvision" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_raw_brainvision</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">vhdr_file</span></a><span class="p">)</span>
 <span class="n">raw_renamed</span> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.io.read_raw_brainvision.html#mne.io.read_raw_brainvision" title="mne.io.read_raw_brainvision" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_raw_brainvision</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">vhdr_file_renamed</span></a><span class="p">)</span>
 
-<a href="https://numpy.org/devdocs/reference/generated/numpy.testing.assert_array_equal.html#numpy.testing.assert_array_equal" title="numpy.testing.assert_array_equal" class="sphx-glr-backref-module-numpy-testing sphx-glr-backref-type-py-function"><span class="n">assert_array_equal</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.io.BaseRaw.html#mne.io.baseraw.get_data" title="mne.io.BaseRaw.get_data" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-method"><span class="n">raw</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">(),</span> <a href="https://mne.tools/dev/generated/mne.io.BaseRaw.html#mne.io.baseraw.get_data" title="mne.io.BaseRaw.get_data" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-method"><span class="n">raw_renamed</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">())</span>
+<a href="https://numpy.org/devdocs/reference/generated/numpy.testing.assert_array_equal.html#numpy.testing.assert_array_equal" title="numpy.testing.assert_array_equal" class="sphx-glr-backref-module-numpy-testing sphx-glr-backref-type-py-function"><span class="n">assert_array_equal</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.io.BaseRaw.html#mne.io.BaseRaw.get_data" title="mne.io.BaseRaw.get_data" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-method"><span class="n">raw</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">(),</span> <a href="https://mne.tools/dev/generated/mne.io.BaseRaw.html#mne.io.BaseRaw.get_data" title="mne.io.BaseRaw.get_data" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-method"><span class="n">raw_renamed</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">())</span>
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
@@ -203,7 +203,7 @@ for example check out the
 Schinkel.</p>
 <p>Lastly, there is a tool to check the integrity of your BrainVision files.
 For that, see the <a class="reference external" href="https://github.com/sappelhoff/brainvision-validator">BrainVision Validator</a></p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.026 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.031 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-rename-brainvision-files-py">
 <div class="binder-badge docutils container">
 <a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/rename_brainvision_files.ipynb"><img alt="https://mybinder.org/badge_logo.svg" src="https://mybinder.org/badge_logo.svg" width="150px" /></a>
@@ -231,8 +231,8 @@ For that, see the <a class="reference external" href="https://github.com/sappelh
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-04-05.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.0.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-04-23.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.2.<br/>
     </p>
   </div>
 </footer>
