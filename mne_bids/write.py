@@ -168,7 +168,7 @@ def _electrodes_tsv(raw, fname, kind, overwrite=False, verbose=True):
     verbose : bool
         Set verbose output to true or false.
     """
-    # create list of coordinates, names and
+    # create list of channel coordinates and names
     x, y, z, names = list(), list(), list(), list()
     for ch in raw.info['chs']:
         if _check_ch_locs([ch]):
