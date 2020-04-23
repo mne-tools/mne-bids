@@ -1292,17 +1292,17 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
                     get(coord_frame_int, None)
 
                 # default coordinate frame to mri if not available
-                if coord_frame is None:
-                    coord_frame = 'mri'
+                warn("Coordinate frame of iEEG coords missing "
+                     "for {}. Skipping reading "
+                     "in of montage...".format(bids_fname))
 
-            coords = _extract_landmarks(raw.info['dig'])
-
-            # Now write the data to the elec coords and the coordsystem
-            _electrodes_tsv(raw, electrodes_fname,
-                            kind, overwrite, verbose)
-            _coordsystem_json(raw, unit, orient,
-                              coord_frame, coordsystem_fname, kind,
-                              overwrite, verbose)
+            if coord_frame is not None:
+                # Now write the data to the elec coords and the coordsystem
+                _electrodes_tsv(raw, electrodes_fname,
+                                kind, overwrite, verbose)
+                _coordsystem_json(raw, unit, orient,
+                                  coord_frame, coordsystem_fname, kind,
+                                  overwrite, verbose)
         elif kind == 'eeg':
             # We only write EEG electrodes.tsv and coordsystem.json
             # if we have LPA, RPA, and NAS available to rescale to a known
