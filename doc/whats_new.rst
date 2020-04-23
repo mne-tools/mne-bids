@@ -22,12 +22,12 @@ Current
 Changelog
 ~~~~~~~~~
 
-- no entries yet
+- :func:`read_raw_bids` now reads in participants tsv data, by `Adam Li`_ (`#392 <https://github.com/mne-tools/mne-bids/pull/392>`_)
 
 Bug
 ~~~
 
-- no entries yet
+- fix bug in :func:`write_raw_bids` where raw.info['subject_info'] can be None, by `Adam Li`_ (`#392 <https://github.com/mne-tools/mne-bids/pull/392>`_)
 
 API
 ~~~

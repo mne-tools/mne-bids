@@ -20,7 +20,8 @@ from mne.coreg import fit_matched_points
 from mne.transforms import apply_trans
 
 from mne_bids.tsv_handler import _from_tsv, _drop
-from mne_bids.config import ALLOWED_EXTENSIONS
+from mne_bids.config import ALLOWED_EXTENSIONS, \
+    _convert_hand_options, _convert_sex_options
 from mne_bids.utils import (_parse_bids_filename, _extract_landmarks,
                             _find_matching_sidecar, _parse_ext,
                             _get_ch_type_mapping, make_bids_folders,
@@ -73,6 +74,31 @@ def _read_raw(raw_fpath, electrode=None, hsp=None, hpi=None, config=None,
     else:
         raise ValueError('Raw file name extension must be one of {}\n'
                          'Got {}'.format(ALLOWED_EXTENSIONS, ext))
+    return raw
+
+
+def _handle_participants_reading(participants_fname, raw,
+                                 subject, verbose=None):
+    participants_tsv = _from_tsv(participants_fname)
+    subjects = participants_tsv['participant_id']
+    row_ind = subjects.index(subject)
+
+    # set data from participants tsv into subject_info
+    for infokey, infovalue in participants_tsv.items():
+        if infokey == 'sex':
+            value = _convert_sex_options(infovalue[row_ind],
+                                         fro='bids', to='mne')
+        elif infokey == 'hand':
+            value = _convert_hand_options(infovalue[row_ind],
+                                          fro='bids', to='mne')
+        else:
+            value = infovalue[row_ind]
+
+        # add data into raw.Info
+        if raw.info['subject_info'] is None:
+            raw.info['subject_info'] = dict()
+        raw.info['subject_info'][infokey] = value
+
     return raw
 
 
@@ -400,6 +426,12 @@ def read_raw_bids(bids_fname, bids_root, extra_params=None,
                                            allow_fail=True)
     if sidecar_fname is not None:
         raw = _handle_info_reading(sidecar_fname, raw, verbose=verbose)
+
+    # read in associated subject info from participants.tsv
+    participants_tsv_fpath = op.join(bids_root, 'participants.tsv')
+    subject = "sub-" + params['sub']
+    raw = _handle_participants_reading(participants_tsv_fpath, raw,
+                                       subject, verbose=verbose)
 
     return raw
 

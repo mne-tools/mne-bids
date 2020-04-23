@@ -84,6 +84,39 @@ def test_not_implemented():
             _read_raw(raw_fname)
 
 
+@pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+def test_read_participants_data():
+    """Test reading information from a BIDS sidecar.json file."""
+    bids_root = _TempDir()
+    raw = mne.io.read_raw_fif(raw_fname, verbose=False)
+    bids_fname = bids_basename + '_meg.fif'
+
+    # if subject info was set, we don't roundtrip birthday
+    # due to possible anonymization in mne-bids
+    subject_info = {
+        'hand': 1,
+        'sex': 2,
+    }
+    raw.info['subject_info'] = subject_info
+    write_raw_bids(raw, bids_basename, bids_root, overwrite=True,
+                   verbose=False)
+    raw = read_raw_bids(bids_fname, bids_root)
+    print(raw.info['subject_info'])
+    assert raw.info['subject_info']['hand'] == 1
+    assert raw.info['subject_info']['sex'] == 2
+    assert raw.info['subject_info'].get('birthday', None) is None
+
+    # if modifying participants tsv, then read_raw_bids reflects that
+    participants_tsv_fpath = op.join(bids_root, 'participants.tsv')
+    participants_tsv = _from_tsv(participants_tsv_fpath)
+    participants_tsv['hand'][0] = 'n/a'
+    _to_tsv(participants_tsv, participants_tsv_fpath)
+    raw = read_raw_bids(bids_fname, Path(bids_root))
+    assert raw.info['subject_info']['hand'] == 0
+    assert raw.info['subject_info']['sex'] == 2
+    assert raw.info['subject_info'].get('birthday', None) is None
+
+
 @requires_nibabel()
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_get_head_mri_trans():

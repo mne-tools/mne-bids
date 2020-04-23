@@ -46,7 +46,8 @@ from mne_bids.tsv_handler import _from_tsv, _combine, _drop, _contains_row
 
 from mne_bids.config import (ORIENTATION, UNITS, MANUFACTURERS,
                              IGNORED_CHANNELS, ALLOWED_EXTENSIONS,
-                             BIDS_VERSION)
+                             BIDS_VERSION,
+                             _convert_hand_options, _convert_sex_options)
 
 
 def _is_numeric(n):
@@ -285,16 +286,15 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False,
     subject_age = "n/a"
     sex = "n/a"
     hand = 'n/a'
-    subject_info = raw.info['subject_info']
+    subject_info = raw.info.get('subject_info', None)
     if subject_info is not None:
-        sexes = {0: 'n/a', 1: 'M', 2: 'F'}
-        sex = sexes[subject_info.get('sex', 0)]
+        # add sex
+        sex = _convert_sex_options(subject_info.get('sex', 0),
+                                   fro='mne', to='bids')
 
         # add handedness
-        # XXX: MNE currently only handles R/L,
-        # follow https://github.com/mne-tools/mne-python/issues/7347
-        hand_options = {0: 'n/a', 1: 'R', 2: 'L', 3: 'A'}
-        hand = hand_options[subject_info.get('hand', 0)]
+        hand = _convert_hand_options(subject_info.get('hand', 0),
+                                     fro='mne', to='bids')
 
         # determine the age of the participant
         age = subject_info.get('birthday', None)
@@ -304,7 +304,6 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False,
 
         if meas_date is not None and age is not None:
             bday = datetime(age[0], age[1], age[2], tzinfo=timezone.utc)
-            meas_datetime = meas_date
             if isinstance(meas_date, datetime):
                 meas_datetime = meas_date
             else:

@@ -52,3 +52,28 @@ allowed_extensions_ieeg = ['.vhdr',  # BrainVision, accompanied by .vmrk, .eeg
 ALLOWED_EXTENSIONS = {'meg': allowed_extensions_meg,
                       'eeg': allowed_extensions_eeg,
                       'ieeg': allowed_extensions_ieeg}
+
+
+# mapping subject information back to mne-python
+# XXX: MNE currently only handles R/L,
+# follow https://github.com/mne-tools/mne-python/issues/7347
+def _convert_hand_options(key, fro, to):
+    if fro == 'bids' and to == 'mne':
+        hand_options = {'n/a': 0, 'R': 1, 'L': 2, 'A': 3}
+    elif fro == 'mne' and to == 'bids':
+        hand_options = {0: 'n/a', 1: 'R', 2: 'L', 3: 'A'}
+    else:  # noqa
+        raise RuntimeError("fro value {} and to value {} are not "
+                           "accepted. Use 'mne', or 'bids'.".format(fro, to))
+    return hand_options[key]
+
+
+def _convert_sex_options(key, fro, to):
+    if fro == 'bids' and to == 'mne':
+        sex_options = {'n/a': 0, 'M': 1, 'F': 2}
+    elif fro == 'mne' and to == 'bids':
+        sex_options = {0: 'n/a', 1: 'M', 2: 'F'}
+    else:  # noqa
+        raise RuntimeError("fro value {} and to value {} are not "
+                           "accepted. Use 'mne', or 'bids'.".format(fro, to))
+    return sex_options[key]
