@@ -1281,28 +1281,26 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
             digpoint = raw.info['dig'][0]
             if any(digpoint['coord_frame'] != _digpoint['coord_frame']
                    for _digpoint in raw.info['dig']):
-                warn("Defaulting coordinate frame of iEEG coords to "
-                     "'mri' since not all digpoints "
-                     "have the same coordinate frame.")
-                coord_frame = "mri"  # defaults to MRI coordinates
+                warn("Not all digpoints have the same coordinate frame. "
+                     "Skipping electrodes.tsv writing...")
             else:
                 # get the accepted mne-python coordinate frames
                 coord_frame_int = int(digpoint['coord_frame'])
                 coord_frame = _verbose_ieeg_coordinate_frames.\
                     get(coord_frame_int, None)
 
-                # default coordinate frame to mri if not available
-                warn("Coordinate frame of iEEG coords missing "
-                     "for {}. Skipping reading "
-                     "in of montage...".format(bids_fname))
-
-            if coord_frame is not None:
-                # Now write the data to the elec coords and the coordsystem
-                _electrodes_tsv(raw, electrodes_fname,
-                                kind, overwrite, verbose)
-                _coordsystem_json(raw, unit, orient,
-                                  coord_frame, coordsystem_fname, kind,
-                                  overwrite, verbose)
+                if coord_frame is not None:
+                    # Now write the data to the elec coords and the coordsystem
+                    _electrodes_tsv(raw, electrodes_fname,
+                                    kind, overwrite, verbose)
+                    _coordsystem_json(raw, unit, orient,
+                                      coord_frame, coordsystem_fname, kind,
+                                      overwrite, verbose)
+                else:
+                    # default coordinate frame to mri if not available
+                    warn("Coordinate frame of iEEG coords missing/unknown "
+                         "for {}. Skipping reading "
+                         "in of montage...".format(bids_fname))
         elif kind == 'eeg':
             # We only write EEG electrodes.tsv and coordsystem.json
             # if we have LPA, RPA, and NAS available to rescale to a known

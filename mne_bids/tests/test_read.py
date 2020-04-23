@@ -23,7 +23,7 @@ with warnings.catch_warnings():
     import mne
 
 from mne.io import anonymize_info
-from mne.utils import _TempDir, requires_nibabel, check_version
+from mne.utils import _TempDir, requires_nibabel, check_version, object_diff
 from mne.datasets import testing, somato
 
 import mne_bids
@@ -330,6 +330,7 @@ def test_handle_coords_reading():
 
     data_path = op.join(testing.data_path(), 'EDF')
     raw_fname = op.join(data_path, 'test_reduced.edf')
+    bids_fname = bids_basename + "_ieeg.edf"
 
     raw = mne.io.read_raw_edf(raw_fname)
 
@@ -346,9 +347,15 @@ def test_handle_coords_reading():
     raw.set_montage(montage)
     write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
 
+    # obtain the sensor positions and assert ch_coords are same
+    raw_test = read_raw_bids(bids_fname, bids_root)
+    orig_locs = raw.info['dig'][1]
+    test_locs = raw_test.info['dig'][1]
+    assert orig_locs == test_locs
+    assert not object_diff(raw.info['chs'], raw_test.info['chs'])
+
     # read in the data and assert montage is the same
     # regardless of 'm', 'cm', 'mm', or 'pixel'
-    bids_fname = bids_basename + "_ieeg.edf"
     coordinate_units = ['m', 'cm', 'mm']
     scaling_numbers = [1., 100., 1000.]
     coordsystem_fname = _find_matching_sidecar(bids_fname, bids_root,
@@ -373,7 +380,9 @@ def test_handle_coords_reading():
 
         # obtain the sensor positions and make sure they're the same
         for origdig, newdig in zip(raw.info['dig'], raw_test.info['dig']):
-            np.testing.assert_array_equal(origdig, newdig)
+            print(origdig, newdig)
+            print(origdig['r'], newdig['r'])
+            assert not object_diff(origdig, newdig)
 
     # check that coordinate systems can be used and defaults to mri
     # noqa: see https://bids-specification.readthedocs.io/en/stable/99-appendices/08-coordinate-systems.html

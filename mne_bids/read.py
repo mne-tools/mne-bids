@@ -443,8 +443,10 @@ def read_raw_bids(bids_fname, bids_root, extra_params=None,
             if coord_frame.lower() not in ['captrak', 'besa']:
                 warn("Not setting EEG montage because BIDS/mne-bids does not "
                      "support {} coordinate frame yet. "
-                     "Please use 'captrack', or 'besa'.".format(coord_frame))
+                     "Please use 'captrak', or 'besa'.".format(coord_frame))
                 coord_frame = None
+            else:
+                coord_frame = 'head'
         elif kind == "ieeg":
             coord_frame = coordsystem_json['iEEGCoordinateSystem'].lower()
             coord_unit = coordsystem_json['iEEGCoordinateUnits']
