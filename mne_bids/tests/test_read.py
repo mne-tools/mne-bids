@@ -376,7 +376,7 @@ def test_handle_coords_reading():
             np.testing.assert_array_equal(origdig, newdig)
 
     # check that coordinate systems can be used and defaults to mri
-    # see: https://bids-specification.readthedocs.io/en/stable/99-appendices/08-coordinate-systems.html
+    # noqa: see https://bids-specification.readthedocs.io/en/stable/99-appendices/08-coordinate-systems.html
     coordinate_frames = ['lia', 'ria', 'lip', 'rip', 'las']
     mri_coord_frame_int = _ieeg_coordinate_frames_dict["mri"]
     for coord_frame in coordinate_frames:

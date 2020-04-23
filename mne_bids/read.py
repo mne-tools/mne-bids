@@ -431,23 +431,26 @@ def read_raw_bids(bids_fname, bids_root, extra_params=None,
             coordsystem_json = json.load(fin)
 
         # Get coordinate frames that electrode coordinates are in
+        # Note: all coordinate frames should be lower-case
         if kind == "meg":
-            coord_frame = coordsystem_json['MEGCoordinateSystem']
+            coord_frame = coordsystem_json['MEGCoordinateSystem'].lower()
             coord_unit = coordsystem_json['MEGCoordinateUnits']
         elif kind == 'eeg':
-            coord_frame = coordsystem_json['EEGCoordinateSystem']
+            coord_frame = coordsystem_json['EEGCoordinateSystem'].lower()
             coord_unit = coordsystem_json['EEGCoordinateUnits']
 
+            # only accept captrak, or besa
             if coord_frame.lower() not in ['captrak', 'besa']:
-                warn("Defaulting to 'head' coordinate frame for "
-                     "EEG montage because mne-bids does not "
-                     "support {} coordinate frame yet.".format(coord_frame))
-            coord_frame = 'head'
+                warn("Not setting EEG montage because BIDS/mne-bids does not "
+                     "support {} coordinate frame yet. "
+                     "Please use 'captrack', or 'besa'.".format(coord_frame))
+                coord_frame = None
         elif kind == "ieeg":
             coord_frame = coordsystem_json['iEEGCoordinateSystem'].lower()
             coord_unit = coordsystem_json['iEEGCoordinateUnits']
 
             # default coordinate frames to available ones in mne-python
+            # noqa: see https://bids-specification.readthedocs.io/en/stable/99-appendices/08-coordinate-systems.html
             if coord_frame not in _ieeg_coordinate_frames_dict.keys():
                 warn("Defaulting coordinate frame to MRI "
                      "from coordinate system input {}".format(coord_frame))
@@ -456,10 +459,12 @@ def read_raw_bids(bids_fname, bids_root, extra_params=None,
             raise RuntimeError("Kind {} not supported yet for "
                                "coordsystem.json and "
                                "electrodes.tsv.".format(kind))
-        # read in electrode coordinates and attach to raw
-        raw = _handle_electrodes_reading(electrodes_fname, coord_frame,
-                                         coord_unit, raw,
-                                         verbose)
+
+        if coord_frame is not None:
+            # read in electrode coordinates and attach to raw
+            raw = _handle_electrodes_reading(electrodes_fname, coord_frame,
+                                             coord_unit, raw,
+                                             verbose)
 
     # Try to find an associated sidecar.json to get information about the
     # recording snapshot

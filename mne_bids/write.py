@@ -196,7 +196,7 @@ def _electrodes_tsv(raw, fname, kind, overwrite=False, verbose=True):
                             ('y', y),
                             ('z', z),
                             ])
-    else:  # noqa
+    else:  # pragma: no cover
         raise RuntimeError("kind {} not supported.".format(kind))
 
     _write_tsv(fname, data, overwrite=overwrite, verbose=verbose)
@@ -1297,19 +1297,12 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
 
             coords = _extract_landmarks(raw.info['dig'])
 
-            # RPA, NAS and LPA shouldn't be set in iEEG
-            if set(['RPA', 'NAS', 'LPA']) != set(list(coords.keys())):
-                # Now write the data to the elec coords and the coordsystem
-                _electrodes_tsv(raw, electrodes_fname,
-                                kind, overwrite, verbose)
-                _coordsystem_json(raw, unit, orient,
-                                  coord_frame, coordsystem_fname, kind,
-                                  overwrite, verbose)
-            else:  # noqa
-                logger.warning("Scalp EEG anatomical landmarks "
-                               "(NAS, LPA, RPA) "
-                               "shouldn't be set in iEEG. "
-                               "Skipping montage setting...")
+            # Now write the data to the elec coords and the coordsystem
+            _electrodes_tsv(raw, electrodes_fname,
+                            kind, overwrite, verbose)
+            _coordsystem_json(raw, unit, orient,
+                              coord_frame, coordsystem_fname, kind,
+                              overwrite, verbose)
         elif kind == 'eeg':
             # We only write EEG electrodes.tsv and coordsystem.json
             # if we have LPA, RPA, and NAS available to rescale to a known
