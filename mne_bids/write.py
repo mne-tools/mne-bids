@@ -1306,18 +1306,20 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
             # if we have LPA, RPA, and NAS available to rescale to a known
             # coordinate system frame
             coords = _extract_landmarks(raw.info['dig'])
-            if set(['RPA', 'NAS', 'LPA']) != set(list(coords.keys())):  # noqa
-                logger.warning("Writing EEG electrodes.tsv "
-                               "is only possible if "
-                               "anatomical landmarks (NAS, LPA, RPA) "
-                               "are present. Skipping ...")
-            else:
+            if all(digpoint['coord_frame'] == 'head'
+                   for digpoint in raw.info['dig']):
+                # Now write the data
+                _electrodes_tsv(raw, electrodes_fname, kind,
+                                overwrite, verbose)
+                _coordsystem_json(raw, 'm', 'RAS', 'CapTrak',
+                                  coordsystem_fname, kind,
+                                  overwrite, verbose)
+            elif set(['RPA', 'NAS', 'LPA']) == set(list(coords.keys())):
                 # XXX: to be improved,
                 # see https://github.com/mne-tools/mne-bids/issues/264
                 # transform montage to head coordinate frame
 
-                # first get all the EEG electrodes and
-                # create montage
+                # first get all the EEG electrodes
                 picks = pick_types(raw.info, eeg=True)
                 ch_locs = []
                 for ind, ch in enumerate(raw.info['chs']):
@@ -1332,8 +1334,10 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
                     else:
                         ch_locs.append(ch['loc'][:3])
                 ch_pos = dict(zip(raw.info['ch_names'], np.array(ch_locs)))
+
+                # create a transformed head montage and set it to raw
                 montage = make_dig_montage(ch_pos=ch_pos,
-                                           coord_frame='unknown')
+                                           coord_frame='head')
                 montage = transform_to_head(montage)
                 raw.set_montage(montage)
 
@@ -1354,7 +1358,12 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
                 _coordsystem_json(raw, 'm', 'RAS', 'CapTrak',
                                   coordsystem_fname, kind,
                                   overwrite, verbose)
-        elif kind != "meg":  # noqa
+            else:
+                warn("Skipping EEG electrodes.tsv... "
+                     "Setting montage not possible if anatomical "
+                     "landmarks (NAS, LPA, RPA) are missing, "
+                     "and coord_frame is not 'head'.")
+        elif kind != "meg":
             logger.warning('Writing of electrodes.tsv '
                            'is not supported for kind "{}". '
                            'Skipping ...'.format(kind))

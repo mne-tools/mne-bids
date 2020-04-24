@@ -366,7 +366,7 @@ def test_handle_coords_reading():
     orig_electrodes_dict = _from_tsv(electrodes_fname,
                                      [str, float, float, float, str])
     for coord_unit, scaling in zip(coordinate_units, scaling_numbers):
-        # update coordinate units
+        # update coordinate SI units
         _update_sidecar(coordsystem_fname, 'iEEGCoordinateUnits', coord_unit)
         electrodes_dict = _from_tsv(electrodes_fname,
                                     [str, float, float, float, str])
@@ -380,9 +380,11 @@ def test_handle_coords_reading():
 
         # obtain the sensor positions and make sure they're the same
         for origdig, newdig in zip(raw.info['dig'], raw_test.info['dig']):
-            print(origdig, newdig)
-            print(origdig['r'], newdig['r'])
-            assert not object_diff(origdig, newdig)
+            for key in origdig:
+                if key == 'r':
+                    assert_almost_equal(origdig[key], newdig[key])
+                else:
+                    assert not object_diff(origdig[key], newdig[key])
 
     # check that coordinate systems can be used and defaults to mri
     # noqa: see https://bids-specification.readthedocs.io/en/stable/99-appendices/08-coordinate-systems.html

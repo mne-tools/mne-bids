@@ -231,7 +231,10 @@ def _handle_electrodes_reading(electrodes_fname, coord_frame,
             raise RuntimeError(msg)
 
     if verbose:
-        print("The read in electrodes file is: \n", electrodes_dict)
+        summary_str = [(ch, coord) for idx, (ch, coord)
+                       in enumerate(electrodes_dict.items())
+                       if idx < 5]
+        print("The read in electrodes file is: \n", summary_str)
 
     def _float_or_nan(val):
         if val == "n/a":
@@ -261,7 +264,7 @@ def _handle_electrodes_reading(electrodes_fname, coord_frame,
     # convert coordinates to meters if necessary
     if coord_unit in ['m', 'cm', 'mm']:
         ch_locs = [_scale_coord_to_meters(coord, coord_unit)
-                   if "n/a" not in coord
+                   if np.nan not in coord
                    else coord
                    for coord in ch_locs]
 
@@ -440,10 +443,10 @@ def read_raw_bids(bids_fname, bids_root, extra_params=None,
             coord_unit = coordsystem_json['EEGCoordinateUnits']
 
             # only accept captrak, or besa
-            if coord_frame.lower() not in ['captrak', 'besa']:
+            if coord_frame.lower() not in ['captrak']:
                 warn("Not setting EEG montage because BIDS/mne-bids does not "
                      "support {} coordinate frame yet. "
-                     "Please use 'captrak', or 'besa'.".format(coord_frame))
+                     "Please use 'captrak'.".format(coord_frame))
                 coord_frame = None
             else:
                 coord_frame = 'head'
@@ -453,7 +456,7 @@ def read_raw_bids(bids_fname, bids_root, extra_params=None,
 
             # default coordinate frames to available ones in mne-python
             # noqa: see https://bids-specification.readthedocs.io/en/stable/99-appendices/08-coordinate-systems.html
-            if coord_frame not in _ieeg_coordinate_frames_dict.keys():
+            if coord_frame not in _ieeg_coordinate_frames_dict:
                 warn("Defaulting coordinate frame to MRI "
                      "from coordinate system input {}".format(coord_frame))
                 coord_frame = 'mri'
