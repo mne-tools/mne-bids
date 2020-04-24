@@ -1306,8 +1306,10 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
             # if we have LPA, RPA, and NAS available to rescale to a known
             # coordinate system frame
             coords = _extract_landmarks(raw.info['dig'])
-            if all(digpoint['coord_frame'] == 'head'
-                   for digpoint in raw.info['dig']):
+            # XXX: to be improved,
+            # mne-python automatically converts unknown coord frame to head
+            if all([digpoint['coord_frame'] == FIFF.FIFFV_COORD_HEAD
+                   for digpoint in raw.info['dig']]):
                 # Now write the data
                 _electrodes_tsv(raw, electrodes_fname, kind,
                                 overwrite, verbose)

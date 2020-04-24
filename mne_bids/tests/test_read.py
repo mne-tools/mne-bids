@@ -466,20 +466,21 @@ def test_handle_eeg_coords_reading():
     elec_locs = np.random.random((len(ch_names), 3)).astype(float)
     ch_pos = dict(zip(ch_names, elec_locs))
 
-    # create montage in 'unknown' coordinate frame
-    # and assert coordsystem/electrodes sidecar tsv don't exist
+    # # create montage in 'unknown' coordinate frame
+    # # and assert coordsystem/electrodes sidecar tsv don't exist
     montage = mne.channels.make_dig_montage(ch_pos=ch_pos,
-                                            coord_frame="unknown")
+                                            coord_frame="mri")
     raw.set_montage(montage)
-    write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
-    coordsystem_fname = _find_matching_sidecar(bids_fname, bids_root,
-                                               suffix='coordsystem.json',
-                                               allow_fail=True)
-    electrodes_fname = _find_matching_sidecar(bids_fname, bids_root,
-                                              suffix="electrodes.tsv",
-                                              allow_fail=True)
-    assert coordsystem_fname is None
-    assert electrodes_fname is None
+    with pytest.warns(UserWarning, match="Skipping EEG electrodes.tsv"):
+        write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
+        coordsystem_fname = _find_matching_sidecar(bids_fname, bids_root,
+                                                   suffix='coordsystem.json',
+                                                   allow_fail=True)
+        electrodes_fname = _find_matching_sidecar(bids_fname, bids_root,
+                                                  suffix="electrodes.tsv",
+                                                  allow_fail=True)
+        assert coordsystem_fname is None
+        assert electrodes_fname is None
 
     # create montage in head frame
     montage = mne.channels.make_dig_montage(ch_pos=ch_pos,
@@ -499,7 +500,7 @@ def test_handle_eeg_coords_reading():
                                                suffix='coordsystem.json',
                                                allow_fail=True)
     _update_sidecar(coordsystem_fname, 'EEGCoordinateSystem', 'besa')
-    with pytest.warns(UserWarning, 'Not setting EEG montage'):
+    with pytest.warns(UserWarning, match='Not setting EEG montage'):
         raw_test = read_raw_bids(bids_fname, bids_root)
         assert raw_test.info['dig'] is None
 
