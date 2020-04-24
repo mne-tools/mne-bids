@@ -226,26 +226,34 @@ def _handle_electrodes_reading(electrodes_fname, coord_frame, raw, verbose):
     if verbose:
         print("The read in electrodes file is: \n", electrodes_dict)
 
-    # convert coordinates to float and create list of tuples
-    ch_names_raw = [x for i, x in enumerate(ch_names_raw)
-                    if electrodes_dict['x'][i] != "n/a"]
-    electrodes_dict['x'] = [float(x) for x in electrodes_dict['x']
-                            if x != "n/a"]
-    electrodes_dict['y'] = [float(x) for x in electrodes_dict['y']
-                            if x != "n/a"]
-    electrodes_dict['z'] = [float(x) for x in electrodes_dict['z']
-                            if x != "n/a"]
+    def _float_or_nan(val):
+        if val == "n/a":
+            return np.nan
+        else:
+            return float(val)
 
-    ch_locs = np.array(list(zip(electrodes_dict['x'],
-                                electrodes_dict['y'],
-                                electrodes_dict['z'])))
-    ch_pos = dict(zip(ch_names_raw, ch_locs))
+    # convert coordinates to float and create list of tuples
+    electrodes_dict['x'] = [_float_or_nan(x) for x in electrodes_dict['x']]
+    electrodes_dict['y'] = [_float_or_nan(x) for x in electrodes_dict['y']]
+    electrodes_dict['z'] = [_float_or_nan(x) for x in electrodes_dict['z']]
+    ch_locs = list(zip(electrodes_dict['x'],
+                       electrodes_dict['y'],
+                       electrodes_dict['z']))
+
+    # determine if there are problematic channels
+    nan_chs = []
+    for ch_name, ch_coord in zip(ch_names_raw, ch_locs):
+        if any(np.isnan(ch_coord)) and ch_name not in raw.info['bads']:
+            nan_chs.append(ch_name)
+    if len(nan_chs) > 0:
+        warn("There are channels without locations "
+             "(n/a) that are not marked as bad: {}".format(nan_chs))
 
     # create mne.DigMontage
+    ch_pos = dict(zip(ch_names_raw, np.array(ch_locs)))
     montage = mne.channels.make_dig_montage(ch_pos=ch_pos,
                                             coord_frame=coord_frame)
     raw.set_montage(montage)
-
     return raw
 
 
@@ -411,7 +419,7 @@ def read_raw_bids(bids_fname, bids_root, extra_params=None,
             coord_frame = coordsystem_json['MEGCoordinateSystem']
         elif kind == "ieeg":
             coord_frame = coordsystem_json['iEEGCoordinateSystem']
-        else:  # noqa
+        else:
             raise RuntimeError("Kind {} not supported yet for "
                                "coordsystem.json and "
                                "electrodes.tsv.".format(kind))

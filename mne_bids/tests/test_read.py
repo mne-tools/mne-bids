@@ -350,6 +350,29 @@ def test_handle_coords_reading():
     with pytest.raises(RuntimeError, match='Channels do not correspond'):
         raw_test = read_raw_bids(bids_fname, bids_root)
 
+    # make sure montage is set if there are coordinates w/ 'n/a'
+    raw.info['bads'] = []
+    write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
+    electrodes_dict = _from_tsv(electrodes_fname)
+    for axis in ['x', 'y', 'z']:
+        electrodes_dict[axis][0] = 'n/a'
+        electrodes_dict[axis][3] = 'n/a'
+    _to_tsv(electrodes_dict, electrodes_fname)
+
+    # test if montage is correctly set via mne-bids
+    # electrode coordinates should be nan
+    # when coordinate is 'n/a'
+    nan_chs = [electrodes_dict['name'][i] for i in [0, 3]]
+    with pytest.warns(UserWarning, match='There are channels '
+                                         'without locations'):
+        raw = read_raw_bids(bids_fname, bids_root)
+        for idx, ch in enumerate(raw.info['chs']):
+            if ch['ch_name'] in nan_chs:
+                assert all(np.isnan(ch['loc'][:3]))
+            else:
+                assert not any(np.isnan(ch['loc'][:3]))
+            assert ch['ch_name'] not in raw.info['bads']
+
 
 @requires_nibabel()
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
