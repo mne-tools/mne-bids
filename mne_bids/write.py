@@ -18,7 +18,7 @@ from scipy import linalg
 from numpy.testing import assert_array_equal
 from mne.transforms import (_get_trans, apply_trans, get_ras_to_neuromag_trans,
                             rotation, translation)
-from mne import Epochs, pick_types
+from mne import Epochs
 from mne.io.constants import FIFF
 from mne.io.pick import channel_type
 from mne.io import BaseRaw, anonymize_info, read_fiducials
@@ -27,7 +27,6 @@ try:
 except ImportError:
     from mne._digitization._utils import _get_fid_coords
 from mne.channels.channels import _unit2human
-from mne.channels.montage import transform_to_head, make_dig_montage
 from mne.utils import check_version, has_nibabel, _check_ch_locs, logger, warn
 
 from mne_bids.pick import coil_type
@@ -1301,70 +1300,6 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
                     warn("Coordinate frame of iEEG coords missing/unknown "
                          "for {}. Skipping reading "
                          "in of montage...".format(bids_fname))
-        elif kind == 'eeg':
-            # We only write EEG electrodes.tsv and coordsystem.json
-            # if we have LPA, RPA, and NAS available to rescale to a known
-            # coordinate system frame
-            coords = _extract_landmarks(raw.info['dig'])
-            # XXX: to be improved,
-            # mne-python automatically converts unknown coord frame to head
-            if all([digpoint['coord_frame'] == FIFF.FIFFV_COORD_HEAD
-                   for digpoint in raw.info['dig']]):
-                # Now write the data
-                _electrodes_tsv(raw, electrodes_fname, kind,
-                                overwrite, verbose)
-                _coordsystem_json(raw, 'm', 'RAS', 'CapTrak',
-                                  coordsystem_fname, kind,
-                                  overwrite, verbose)
-            elif set(['RPA', 'NAS', 'LPA']) == set(list(coords.keys())):
-                # XXX: to be improved,
-                # see https://github.com/mne-tools/mne-bids/issues/264
-                # transform montage to head coordinate frame
-
-                # first get all the EEG electrodes
-                picks = pick_types(raw.info, eeg=True)
-                ch_locs = []
-                for ind, ch in enumerate(raw.info['chs']):
-                    if ind not in picks:
-                        ch_locs.append([np.nan, np.nan, np.nan])
-                    elif not _check_ch_locs([ch]):
-                        logger.warning("{} electrode has n/a coordinate. "
-                                       "MNE-bids is defaulting to np.nan. "
-                                       "Please check electrodes.tsv."
-                                       .format(ch['ch_name']))
-                        ch_locs.append([np.nan, np.nan, np.nan])
-                    else:
-                        ch_locs.append(ch['loc'][:3])
-                ch_pos = dict(zip(raw.info['ch_names'], np.array(ch_locs)))
-
-                # create a transformed head montage and set it to raw
-                montage = make_dig_montage(ch_pos=ch_pos,
-                                           coord_frame='head')
-                montage = transform_to_head(montage)
-                raw.set_montage(montage)
-
-                # log messages to warn user of pitfalls of this writing
-                logger.info("Using anatomical landmarks (NAS, LPA, RPA) "
-                            "to transform EEG electrode coordinates "
-                            "to CapTrak (head) coordinate system.")
-                logger.info("Writing EEG electrode coordinates. "
-                            "Please ensure that these are NOT "
-                            "template positions, but truly measured data. "
-                            "To remove template positions, "
-                            "call `raw.set_montage(None)` "
-                            "prior to BIDS conversion.")
-
-                # Now write the data
-                _electrodes_tsv(raw, electrodes_fname, kind,
-                                overwrite, verbose)
-                _coordsystem_json(raw, 'm', 'RAS', 'CapTrak',
-                                  coordsystem_fname, kind,
-                                  overwrite, verbose)
-            else:
-                warn("Skipping EEG electrodes.tsv... "
-                     "Setting montage not possible if anatomical "
-                     "landmarks (NAS, LPA, RPA) are missing, "
-                     "and coord_frame is not 'head'.")
         elif kind != "meg":
             logger.warning('Writing of electrodes.tsv '
                            'is not supported for kind "{}". '
