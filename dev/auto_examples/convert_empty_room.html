@@ -757,14 +757,14 @@ Closing /home/circleci/mne_data/MNE-sample-data-bids/sub-emptyroom/ses-20021001/
 <p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>|MNE-sample-data-bids/
 |--- participants.json
-|--- dataset_description.json
 |--- participants.tsv
+|--- dataset_description.json
 |--- sub-01/
 |------ ses-01/
 |--------- sub-01_ses-01_scans.tsv
 |--------- meg/
-|------------ sub-01_ses-01_task-audiovisual_run-01_meg.fif
 |------------ sub-01_ses-01_task-audiovisual_run-01_events.tsv
+|------------ sub-01_ses-01_task-audiovisual_run-01_meg.fif
 |------------ sub-01_ses-01_coordsystem.json
 |------------ sub-01_ses-01_task-audiovisual_run-01_channels.tsv
 |------------ sub-01_ses-01_task-audiovisual_run-01_meg.json
@@ -772,30 +772,30 @@ Closing /home/circleci/mne_data/MNE-sample-data-bids/sub-emptyroom/ses-20021001/
 |------------ sub-01_ses-01_T1w.nii.gz
 |------------ sub-01_ses-01_T1w.json
 |--- sub-emptyroom/
-|------ ses-20021206/
-|--------- sub-emptyroom_ses-20021206_scans.tsv
-|--------- meg/
-|------------ sub-emptyroom_ses-20021206_task-noise_channels.tsv
-|------------ sub-emptyroom_ses-20021206_task-noise_meg.json
-|------------ sub-emptyroom_ses-20021206_task-noise_meg.fif
 |------ ses-20021204/
 |--------- sub-emptyroom_ses-20021204_scans.tsv
 |--------- meg/
-|------------ sub-emptyroom_ses-20021204_task-noise_meg.json
-|------------ sub-emptyroom_ses-20021204_task-noise_channels.tsv
 |------------ sub-emptyroom_ses-20021204_task-noise_meg.fif
+|------------ sub-emptyroom_ses-20021204_task-noise_channels.tsv
+|------------ sub-emptyroom_ses-20021204_task-noise_meg.json
+|------ ses-20021206/
+|--------- sub-emptyroom_ses-20021206_scans.tsv
+|--------- meg/
+|------------ sub-emptyroom_ses-20021206_task-noise_meg.json
+|------------ sub-emptyroom_ses-20021206_task-noise_channels.tsv
+|------------ sub-emptyroom_ses-20021206_task-noise_meg.fif
 |------ ses-20021001/
 |--------- sub-emptyroom_ses-20021001_scans.tsv
 |--------- meg/
-|------------ sub-emptyroom_ses-20021001_task-noise_channels.tsv
 |------------ sub-emptyroom_ses-20021001_task-noise_meg.json
 |------------ sub-emptyroom_ses-20021001_task-noise_meg.fif
+|------------ sub-emptyroom_ses-20021001_task-noise_channels.tsv
 |------ ses-20021201/
 |--------- sub-emptyroom_ses-20021201_scans.tsv
 |--------- meg/
-|------------ sub-emptyroom_ses-20021201_task-noise_channels.tsv
-|------------ sub-emptyroom_ses-20021201_task-noise_meg.fif
 |------------ sub-emptyroom_ses-20021201_task-noise_meg.json
+|------------ sub-emptyroom_ses-20021201_task-noise_meg.fif
+|------------ sub-emptyroom_ses-20021201_task-noise_channels.tsv
 </pre></div>
 </div>
 <p>To get an accurate estimate of the noise, it is important that the empty
@@ -820,7 +820,7 @@ Ready.
 Current compensation grade : 0
 Reading events from /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_events.tsv.
 Reading channel info from /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_channels.tsv.
-/home/circleci/project/mne_bids/read.py:301: RuntimeWarning: The unit for channel(s) STI 001, STI 002, STI 003, STI 004, STI 005, STI 006, STI 014, STI 015, STI 016 has changed from V to NA.
+/home/circleci/project/mne_bids/read.py:309: RuntimeWarning: The unit for channel(s) STI 001, STI 002, STI 003, STI 004, STI 005, STI 006, STI 014, STI 015, STI 016 has changed from V to NA.
   raw.set_channel_types(channel_type_dict)
 /home/circleci/project/mne_bids/utils.py:635: UserWarning: Did not find any electrodes.tsv file associated with sub-01_ses-01_task-audiovisual_run-01_meg.fif.
 
@@ -848,7 +848,7 @@ Current compensation grade : 0
 The search_str was &quot;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-emptyroom/**/sub-emptyroom_ses-20021204*events.tsv&quot;
   warnings.warn(msg)
 Reading channel info from /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-emptyroom/ses-20021204/meg/sub-emptyroom_ses-20021204_task-noise_channels.tsv.
-/home/circleci/project/mne_bids/read.py:301: RuntimeWarning: The unit for channel(s) STI 001, STI 002, STI 003, STI 004, STI 005, STI 006, STI 014, STI 015, STI 016 has changed from V to NA.
+/home/circleci/project/mne_bids/read.py:309: RuntimeWarning: The unit for channel(s) STI 001, STI 002, STI 003, STI 004, STI 005, STI 006, STI 014, STI 015, STI 016 has changed from V to NA.
   raw.set_channel_types(channel_type_dict)
 /home/circleci/project/mne_bids/utils.py:635: UserWarning: Did not find any electrodes.tsv file associated with sub-emptyroom_ses-20021204_task-noise_meg.fif.
 
@@ -860,7 +860,7 @@ The search_str was &quot;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-d
   warnings.warn(msg)
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  5.910 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  5.024 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-empty-room-py">
 <div class="binder-badge docutils container">
 <a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/convert_empty_room.ipynb"><img alt="https://mybinder.org/badge_logo.svg" src="https://mybinder.org/badge_logo.svg" width="150px" /></a>
@@ -887,7 +887,7 @@ The search_str was &quot;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-d
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-04-23.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-04-24.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.2.<br/>
     </p>
   </div>
