@@ -419,7 +419,7 @@ def read_raw_bids(bids_fname, bids_root, extra_params=None,
             coord_frame = coordsystem_json['MEGCoordinateSystem']
         elif kind == "ieeg":
             coord_frame = coordsystem_json['iEEGCoordinateSystem']
-        else:  # noqa
+        else:
             raise RuntimeError("Kind {} not supported yet for "
                                "coordsystem.json and "
                                "electrodes.tsv.".format(kind))
