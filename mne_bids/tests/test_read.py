@@ -116,6 +116,15 @@ def test_read_participants_data():
     assert raw.info['subject_info']['sex'] == 2
     assert raw.info['subject_info'].get('birthday', None) is None
 
+    # make sure things are read even if the entries don't make sense
+    participants_tsv = _from_tsv(participants_tsv_fpath)
+    participants_tsv['hand'][0] = 'righty'
+    participants_tsv['sex'][0] = 'malesy'
+    _to_tsv(participants_tsv, participants_tsv_fpath)
+    raw = read_raw_bids(bids_fname, Path(bids_root))
+    assert raw.info['subject_info']['hand'] == 0
+    assert raw.info['subject_info']['sex'] == 0
+
 
 @requires_nibabel()
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])

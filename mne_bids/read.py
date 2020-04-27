@@ -88,12 +88,15 @@ def _handle_participants_reading(participants_fname, raw,
         if infokey == 'sex':
             value = _convert_sex_options(infovalue[row_ind],
                                          fro='bids', to='mne')
+            if value is None:
+                value = 0
         elif infokey == 'hand':
             value = _convert_hand_options(infovalue[row_ind],
                                           fro='bids', to='mne')
+            if value is None:
+                value = 0
         else:
             value = infovalue[row_ind]
-
         # add data into raw.Info
         if raw.info['subject_info'] is None:
             raw.info['subject_info'] = dict()
