@@ -23,7 +23,6 @@ Changelog
 ~~~~~~~~~
 
 - :func:`read_raw_bids` now reads in participants tsv data, by `Adam Li`_ (`#392 <https://github.com/mne-tools/mne-bids/pull/392>`_)
-- add EEG electrodes reading to :func:`mne_bids.read_raw_bids` and writing to :func:`mne_bids.write_raw_bids` by `Adam Li`_ (`#390 <https://github.com/mne-tools/mne-bids/pull/390>`_)
 
 Bug
 ~~~
