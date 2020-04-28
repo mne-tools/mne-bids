@@ -198,7 +198,7 @@ def _electrodes_tsv(raw, fname, kind, overwrite=False, verbose=True):
         raise RuntimeError("kind {} not supported.".format(kind))
 
     _write_tsv(fname, data, overwrite=overwrite, verbose=verbose)
-    return fname
+    return fname  # XXX why return parameter???
 
 
 def _events_tsv(events, raw, fname, trial_type, overwrite=False,
@@ -1285,8 +1285,8 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
             else:
                 # get the accepted mne-python coordinate frames
                 coord_frame_int = int(digpoint['coord_frame'])
-                coord_frame = _VERBOSE_IEEG_COORDINATE_FRAME.\
-                    get(coord_frame_int, None)
+                coord_frame = \
+                    _VERBOSE_IEEG_COORDINATE_FRAME.get(coord_frame_int, None)
 
                 if coord_frame is not None:
                     # Now write the data to the elec coords and the coordsystem

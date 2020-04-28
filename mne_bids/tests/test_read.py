@@ -24,6 +24,7 @@ with warnings.catch_warnings():
 
 from mne.io import anonymize_info
 from mne.utils import _TempDir, requires_nibabel, check_version, object_diff
+from mne.utils import assert_dig_allclose
 from mne.datasets import testing, somato
 
 import mne_bids
@@ -357,8 +358,7 @@ def test_handle_ieeg_coords_reading():
 
     # read in the data and assert montage is the same
     # regardless of 'm', 'cm', 'mm', or 'pixel'
-    coordinate_units = ['m', 'cm', 'mm']
-    scaling_numbers = [1., 100., 1000.]
+    scalings = {'m': 1., 'cm': 100., 'mm': 1000.}
     coordsystem_fname = _find_matching_sidecar(bids_fname, bids_root,
                                                suffix='coordsystem.json')
     electrodes_fname = _find_matching_sidecar(bids_fname, bids_root,
@@ -366,27 +366,21 @@ def test_handle_ieeg_coords_reading():
                                               allow_fail=True)
     orig_electrodes_dict = _from_tsv(electrodes_fname,
                                      [str, float, float, float, str])
-    for coord_unit, scaling in zip(coordinate_units, scaling_numbers):
+    for coord_unit, scaling in scalings.items():
         # update coordinate SI units
         _update_sidecar(coordsystem_fname, 'iEEGCoordinateUnits', coord_unit)
         electrodes_dict = _from_tsv(electrodes_fname,
                                     [str, float, float, float, str])
         for axis in ['x', 'y', 'z']:
-            electrodes_dict[axis] = np.multiply(orig_electrodes_dict[axis],
-                                                scaling)
+            electrodes_dict[axis] = \
+                np.multiply(orig_electrodes_dict[axis], scaling)
         _to_tsv(electrodes_dict, electrodes_fname)
 
         # read in raw file w/ updated montage
         raw_test = read_raw_bids(bids_fname, bids_root)
 
         # obtain the sensor positions and make sure they're the same
-        for orig_dig, new_dig in zip(raw.info['dig'], raw_test.info['dig']):
-            for key in orig_dig:
-                # off by machine-prec when multiplying by 'scaling_numbers'
-                if key == 'r':
-                    assert_almost_equal(orig_dig[key], new_dig[key])
-                else:
-                    assert not object_diff(orig_dig[key], new_dig[key])
+        assert_dig_allclose(raw.info, raw_test.info)
 
     # check that coordinate systems can be used and defaults to mri
     coordinate_frames = ['lia', 'ria', 'lip', 'rip', 'las']

@@ -248,9 +248,9 @@ def _handle_electrodes_reading(electrodes_fname, coord_frame,
     electrodes_dict['z'] = [_float_or_nan(x) for x in electrodes_dict['z']]
     ch_names_raw = [x for i, x in enumerate(ch_names_raw)
                     if electrodes_dict['x'][i] != "n/a"]
-    ch_locs = list(zip(electrodes_dict['x'],
-                       electrodes_dict['y'],
-                       electrodes_dict['z']))
+    ch_locs = np.c_[electrodes_dict['x'],
+                    electrodes_dict['y'],
+                    electrodes_dict['z']]
 
     # determine if there are problematic channels
     nan_chs = []
@@ -263,13 +263,10 @@ def _handle_electrodes_reading(electrodes_fname, coord_frame,
 
     # convert coordinates to meters if necessary
     if coord_unit in ['m', 'cm', 'mm']:
-        ch_locs = [_scale_coord_to_meters(coord, coord_unit)
-                   if np.nan not in coord
-                   else coord
-                   for coord in ch_locs]
+        ch_locs = _scale_coord_to_meters(ch_locs, coord_unit)
 
     # create mne.DigMontage
-    ch_pos = dict(zip(ch_names_raw, np.array(ch_locs)))
+    ch_pos = dict(zip(ch_names_raw, ch_locs))
     montage = mne.channels.make_dig_montage(ch_pos=ch_pos,
                                             coord_frame=coord_frame)
     raw.set_montage(montage)
@@ -436,10 +433,10 @@ def read_raw_bids(bids_fname, bids_root, extra_params=None,
         # Get coordinate frames that electrode coordinates are in
         # Note: all coordinate frames should be lower-case
         if kind == "meg":
-            coord_frame = coordsystem_json['MEGCoordinateSystem'].lower()
+            coord_frame = coordsystem_json['MEGCoordinateSystem']
             coord_unit = coordsystem_json['MEGCoordinateUnits']
         elif kind == "ieeg":
-            coord_frame = coordsystem_json['iEEGCoordinateSystem'].lower()
+            coord_frame = coordsystem_json['iEEGCoordinateSystem']
             coord_unit = coordsystem_json['iEEGCoordinateUnits']
 
             # XXX: improve reading with a `_write_dig_bids`
@@ -447,17 +444,18 @@ def read_raw_bids(bids_fname, bids_root, extra_params=None,
             if coord_frame not in _IEEG_COORDINATE_FRAME_DICT:
                 warn("Coordinate frame from coordinate system input {} "
                      "is still not supported.".format(coord_frame))
-                coord_frame = None
+                coord_frame = 'unknown'
         else:  # noqa
+            # XXX should add support of coordsystem.json for EEG
             raise RuntimeError("Kind {} not supported yet for "
                                "coordsystem.json and "
                                "electrodes.tsv.".format(kind))
 
-        if coord_frame is not None:
-            # read in electrode coordinates and attach to raw
-            raw = _handle_electrodes_reading(electrodes_fname, coord_frame,
-                                             coord_unit, raw,
-                                             verbose)
+        coord_frame = coord_frame.lower()  # MNE uses lower case
+
+        # read in electrode coordinates and attach to raw
+        raw = _handle_electrodes_reading(electrodes_fname, coord_frame,
+                                         coord_unit, raw, verbose)
 
     # Try to find an associated sidecar.json to get information about the
     # recording snapshot
