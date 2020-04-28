@@ -88,14 +88,18 @@ def _handle_participants_reading(participants_fname, raw,
         if infokey == 'sex':
             value = _convert_sex_options(infovalue[row_ind],
                                          fro='bids', to='mne')
-            if value is None:  # We don't know how to translate to MNE, so skip.
-                warn('Unable to map `sex` value to MNE. Not setting subject sex.')
+            # We don't know how to translate to MNE, so skip.
+            if value is None:
+                warn('Unable to map `sex` value to MNE. '
+                     'Not setting subject sex.')
                 continue
         elif infokey == 'hand':
             value = _convert_hand_options(infovalue[row_ind],
                                           fro='bids', to='mne')
-            if value is None:  # We don't know how to translate to MNE, so skip.
-                warn('Unable to map `hand` value to MNE. Not setting subject handedness.')
+            # We don't know how to translate to MNE, so skip.
+            if value is None:
+                warn('Unable to map `hand` value to MNE. '
+                     'Not setting subject handedness.')
                 continue
         else:
             value = infovalue[row_ind]
