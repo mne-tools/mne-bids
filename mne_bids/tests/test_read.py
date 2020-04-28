@@ -123,8 +123,8 @@ def test_read_participants_data():
     _to_tsv(participants_tsv, participants_tsv_fpath)
     with pytest.warns(UserWarning, match='Unable to map'):
         raw = read_raw_bids(bids_fname, Path(bids_root))
-    assert raw.info['subject_info']['hand'] == 0
-    assert raw.info['subject_info']['sex'] == 0
+        assert raw.info['subject_info']['hand'] is None
+        assert raw.info['subject_info']['sex'] is None
 
 
 @requires_nibabel()

@@ -92,7 +92,6 @@ def _handle_participants_reading(participants_fname, raw,
             if value is None:
                 warn('Unable to map `sex` value to MNE. '
                      'Not setting subject sex.')
-                continue
         elif infokey == 'hand':
             value = _convert_hand_options(infovalue[row_ind],
                                           fro='bids', to='mne')
@@ -100,7 +99,6 @@ def _handle_participants_reading(participants_fname, raw,
             if value is None:
                 warn('Unable to map `hand` value to MNE. '
                      'Not setting subject handedness.')
-                continue
         else:
             value = infovalue[row_ind]
         # add data into raw.Info
