@@ -121,7 +121,8 @@ def test_read_participants_data():
     participants_tsv['hand'][0] = 'righty'
     participants_tsv['sex'][0] = 'malesy'
     _to_tsv(participants_tsv, participants_tsv_fpath)
-    raw = read_raw_bids(bids_fname, Path(bids_root))
+    with pytest.warns(UserWarning, match='Unable to map'):
+        raw = read_raw_bids(bids_fname, Path(bids_root))
     assert raw.info['subject_info']['hand'] == 0
     assert raw.info['subject_info']['sex'] == 0
 
