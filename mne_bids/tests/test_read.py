@@ -379,12 +379,12 @@ def test_handle_ieeg_coords_reading():
         raw_test = read_raw_bids(bids_fname, bids_root)
 
         # obtain the sensor positions and make sure they're the same
-        for origdig, newdig in zip(raw.info['dig'], raw_test.info['dig']):
-            for key in origdig:
+        for orig_dig, new_dig in zip(raw.info['dig'], raw_test.info['dig']):
+            for key in orig_dig:
                 if key == 'r':
-                    assert_almost_equal(origdig[key], newdig[key])
+                    assert_almost_equal(orig_dig[key], new_dig[key])
                 else:
-                    assert not object_diff(origdig[key], newdig[key])
+                    assert not object_diff(orig_dig[key], new_dig[key])
 
     # check that coordinate systems can be used and defaults to mri
     # noqa: see https://bids-specification.readthedocs.io/en/stable/99-appendices/08-coordinate-systems.html

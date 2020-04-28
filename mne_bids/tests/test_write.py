@@ -664,7 +664,7 @@ def test_vhdr(_bids_validate):
 
 
 @pytest.mark.filterwarnings(warning_str['nasion_not_found'])
-def test_edf(_bids_validate, caplog):
+def test_edf(_bids_validate):
     """Test write_raw_bids conversion for European Data Format data."""
     bids_root = _TempDir()
     data_path = op.join(testing.data_path(), 'EDF')

@@ -1,4 +1,6 @@
 """Configuration values for MNE-BIDS."""
+from mne.io.constants import FIFF
+
 
 BIDS_VERSION = "1.2.2"
 
@@ -53,6 +55,18 @@ ALLOWED_EXTENSIONS = {'meg': allowed_extensions_meg,
                       'eeg': allowed_extensions_eeg,
                       'ieeg': allowed_extensions_ieeg}
 
+# these coordinate frames in mne-python are related to scalp/meg
+# 'meg', 'ctf_head', 'ctf_meg', 'head', 'unknown'
+# copied from "mne.transforms._str_to_frame"
+_IEEG_COORDINATE_FRAME_DICT = dict(
+    mri=FIFF.FIFFV_COORD_MRI,
+    mri_voxel=FIFF.FIFFV_MNE_COORD_MRI_VOXEL,
+    mni_tal=FIFF.FIFFV_MNE_COORD_MNI_TAL,
+    ras=FIFF.FIFFV_MNE_COORD_RAS,
+    fs_tal=FIFF.FIFFV_MNE_COORD_FS_TAL,
+)
+_VERBOSE_IEEG_COORDINATE_FRAME = {val: key for key, val
+                                  in _IEEG_COORDINATE_FRAME_DICT.items()}
 
 # mapping subject information back to mne-python
 # XXX: MNE currently only handles R/L,

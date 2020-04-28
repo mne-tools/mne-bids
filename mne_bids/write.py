@@ -37,8 +37,7 @@ from mne_bids.utils import (_write_json, _write_tsv, _read_events, _mkdir_p,
                             _path_to_str,
                             _extract_landmarks, _parse_ext,
                             _get_ch_type_mapping, make_bids_folders,
-                            _estimate_line_freq,
-                            _verbose_ieeg_coordinate_frames)
+                            _estimate_line_freq)
 from mne_bids.copyfiles import (copyfile_brainvision, copyfile_eeglab,
                                 copyfile_ctf, copyfile_bti, copyfile_kit)
 from mne_bids.read import reader
@@ -46,7 +45,7 @@ from mne_bids.tsv_handler import _from_tsv, _combine, _drop, _contains_row
 
 from mne_bids.config import (ORIENTATION, UNITS, MANUFACTURERS,
                              IGNORED_CHANNELS, ALLOWED_EXTENSIONS,
-                             BIDS_VERSION,
+                             BIDS_VERSION, _VERBOSE_IEEG_COORDINATE_FRAME,
                              _convert_hand_options, _convert_sex_options)
 
 
@@ -1275,6 +1274,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     # We only write electrodes.tsv and accompanying coordsystem.json
     # if we have an available DigMontage
     if raw.info['dig'] is not None:
+        # XXX: to improve writing with an encapsulated `_write_dig_bids`
         if kind == "ieeg":
             # get coordinate frame from digMontage
             digpoint = raw.info['dig'][0]
@@ -1285,7 +1285,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
             else:
                 # get the accepted mne-python coordinate frames
                 coord_frame_int = int(digpoint['coord_frame'])
-                coord_frame = _verbose_ieeg_coordinate_frames.\
+                coord_frame = _VERBOSE_IEEG_COORDINATE_FRAME.\
                     get(coord_frame_int, None)
 
                 if coord_frame is not None:

@@ -19,13 +19,13 @@ from mne.coreg import fit_matched_points
 from mne.transforms import apply_trans
 
 from mne_bids.tsv_handler import _from_tsv, _drop
-from mne_bids.config import ALLOWED_EXTENSIONS, \
-    _convert_hand_options, _convert_sex_options
+from mne_bids.config import (ALLOWED_EXTENSIONS, _convert_hand_options,
+                             _convert_sex_options,
+                             _IEEG_COORDINATE_FRAME_DICT)
 from mne_bids.utils import (_parse_bids_filename, _extract_landmarks,
                             _find_matching_sidecar, _parse_ext,
                             _get_ch_type_mapping, make_bids_folders,
-                            _estimate_line_freq, _scale_coord_to_meters,
-                            _ieeg_coordinate_frames_dict)
+                            _estimate_line_freq, _scale_coord_to_meters)
 
 reader = {'.con': io.read_raw_kit, '.sqd': io.read_raw_kit,
           '.fif': io.read_raw_fif, '.pdf': io.read_raw_bti,
@@ -442,12 +442,12 @@ def read_raw_bids(bids_fname, bids_root, extra_params=None,
             coord_frame = coordsystem_json['iEEGCoordinateSystem'].lower()
             coord_unit = coordsystem_json['iEEGCoordinateUnits']
 
+            # XXX: improve reading with a `_write_dig_bids`
             # default coordinate frames to available ones in mne-python
-            # noqa: see https://bids-specification.readthedocs.io/en/stable/99-appendices/08-coordinate-systems.html
-            if coord_frame not in _ieeg_coordinate_frames_dict:
-                warn("Defaulting coordinate frame to MRI "
-                     "from coordinate system input {}".format(coord_frame))
-                coord_frame = 'mri'
+            if coord_frame not in _IEEG_COORDINATE_FRAME_DICT:
+                warn("Coordinate frame from coordinate system input {} "
+                     "is still not supported.".format(coord_frame))
+                coord_frame = None
         else:  # noqa
             raise RuntimeError("Kind {} not supported yet for "
                                "coordsystem.json and "
