@@ -384,6 +384,8 @@ def test_handle_ieeg_coords_reading():
 
     # check that coordinate systems can be used and defaults to mri
     coordinate_frames = ['lia', 'ria', 'lip', 'rip', 'las']
+    unknown_coord_frame = _IEEG_COORDINATE_FRAME_DICT['unknown']
+    head_coord_frame = _IEEG_COORDINATE_FRAME_DICT['head']
     for coord_frame in coordinate_frames:
         # update coordinate units
         _update_sidecar(coordsystem_fname, 'iEEGCoordinateSystem', coord_frame)
@@ -391,10 +393,13 @@ def test_handle_ieeg_coords_reading():
         # and make sure all digpoints are MRI coordinate frame
         with pytest.warns(UserWarning, match="Coordinate frame"):
             raw_test = read_raw_bids(bids_fname, bids_root)
-            assert raw_test.info['dig'] is None
+            # XXX: add test for 'unknown' possibly
+            for digpoint in raw_test.info['dig']:
+                assert digpoint['coord_frame'] in [unknown_coord_frame,
+                                                   head_coord_frame]
 
     # coordinate frames in mne-python should all map correctly
-    coordinate_frames = _IEEG_COORDINATE_FRAME_DICT.keys()
+    coordinate_frames = ['mri', 'mri_voxel', 'mni_tal', 'ras', 'fs_tal']
     for coord_frame in coordinate_frames:
         # update coordinate units
         _update_sidecar(coordsystem_fname, 'iEEGCoordinateSystem', coord_frame)

@@ -438,13 +438,6 @@ def read_raw_bids(bids_fname, bids_root, extra_params=None,
         elif kind == "ieeg":
             coord_frame = coordsystem_json['iEEGCoordinateSystem']
             coord_unit = coordsystem_json['iEEGCoordinateUnits']
-
-            # XXX: improve reading with a `_write_dig_bids`
-            # default coordinate frames to available ones in mne-python
-            if coord_frame not in _IEEG_COORDINATE_FRAME_DICT:
-                warn("Coordinate frame from coordinate system input {} "
-                     "is still not supported.".format(coord_frame))
-                coord_frame = 'unknown'
         else:  # noqa
             # XXX should add support of coordsystem.json for EEG
             raise RuntimeError("Kind {} not supported yet for "
@@ -452,7 +445,14 @@ def read_raw_bids(bids_fname, bids_root, extra_params=None,
                                "electrodes.tsv.".format(kind))
 
         coord_frame = coord_frame.lower()  # MNE uses lower case
-
+        if kind == 'ieeg':
+            # XXX: improve reading with a `_write_dig_bids`
+            # default coordinate frames to available ones in mne-python
+            if coord_frame not in _IEEG_COORDINATE_FRAME_DICT:
+                warn("Coordinate frame from coordinate system input {} "
+                     "is still not supported. Reading in coordinate frame "
+                     "as 'unknown'.".format(coord_frame))
+                coord_frame = 'unknown'
         # read in electrode coordinates and attach to raw
         raw = _handle_electrodes_reading(electrodes_fname, coord_frame,
                                          coord_unit, raw, verbose)

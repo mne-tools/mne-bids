@@ -64,6 +64,8 @@ _IEEG_COORDINATE_FRAME_DICT = dict(
     mni_tal=FIFF.FIFFV_MNE_COORD_MNI_TAL,
     ras=FIFF.FIFFV_MNE_COORD_RAS,
     fs_tal=FIFF.FIFFV_MNE_COORD_FS_TAL,
+    head=FIFF.FIFFV_COORD_HEAD,
+    unknown=FIFF.FIFFV_COORD_UNKNOWN
 )
 _VERBOSE_IEEG_COORDINATE_FRAME = {val: key for key, val
                                   in _IEEG_COORDINATE_FRAME_DICT.items()}
