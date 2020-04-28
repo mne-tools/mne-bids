@@ -94,8 +94,9 @@ def _handle_participants_reading(participants_fname, raw,
         elif infokey == 'hand':
             value = _convert_hand_options(infovalue[row_ind],
                                           fro='bids', to='mne')
-            if value is None:
-                value = 0
+            if value is None:  # We don't know how to translate to MNE, so skip.
+                warn('Unable to map `hand` value to MNE. Not setting subject handedness.')
+                continue
         else:
             value = infovalue[row_ind]
         # add data into raw.Info
