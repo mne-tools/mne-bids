@@ -28,12 +28,13 @@ from mne.datasets import testing, somato
 
 import mne_bids
 from mne_bids import get_matched_empty_room
+from mne_bids.config import _IEEG_COORDINATE_FRAME_DICT
 from mne_bids.read import (read_raw_bids,
                            _read_raw, get_head_mri_trans,
                            _handle_events_reading, _handle_info_reading)
 from mne_bids.tsv_handler import _to_tsv, _from_tsv
 from mne_bids.utils import (_find_matching_sidecar, _update_sidecar,
-                            _write_json, _ieeg_coordinate_frames_dict)
+                            _write_json)
 from mne_bids.write import write_anat, write_raw_bids, make_bids_basename
 
 subject_id = '01'
@@ -381,28 +382,25 @@ def test_handle_ieeg_coords_reading():
         # obtain the sensor positions and make sure they're the same
         for orig_dig, new_dig in zip(raw.info['dig'], raw_test.info['dig']):
             for key in orig_dig:
+                # off by machine-prec when multiplying by 'scaling_numbers'
                 if key == 'r':
                     assert_almost_equal(orig_dig[key], new_dig[key])
                 else:
                     assert not object_diff(orig_dig[key], new_dig[key])
 
     # check that coordinate systems can be used and defaults to mri
-    # noqa: see https://bids-specification.readthedocs.io/en/stable/99-appendices/08-coordinate-systems.html
     coordinate_frames = ['lia', 'ria', 'lip', 'rip', 'las']
-    mri_coord_frame_int = _ieeg_coordinate_frames_dict["mri"]
     for coord_frame in coordinate_frames:
         # update coordinate units
         _update_sidecar(coordsystem_fname, 'iEEGCoordinateSystem', coord_frame)
         # read in raw file w/ updated coordinate frame
         # and make sure all digpoints are MRI coordinate frame
-        with pytest.warns(UserWarning, match="Defaulting coordinate frame "
-                                             "to MRI"):
+        with pytest.warns(UserWarning, match="Coordinate frame"):
             raw_test = read_raw_bids(bids_fname, bids_root)
-        for digpoint in raw_test.info['dig']:
-            assert digpoint['coord_frame'] == mri_coord_frame_int
+            assert raw_test.info['dig'] is None
 
     # coordinate frames in mne-python should all map correctly
-    coordinate_frames = _ieeg_coordinate_frames_dict.keys()
+    coordinate_frames = _IEEG_COORDINATE_FRAME_DICT.keys()
     for coord_frame in coordinate_frames:
         # update coordinate units
         _update_sidecar(coordsystem_fname, 'iEEGCoordinateSystem', coord_frame)
@@ -410,7 +408,7 @@ def test_handle_ieeg_coords_reading():
         # read in raw file w/ updated coordinate frame
         # and make sure all digpoints are correct coordinate frames
         raw_test = read_raw_bids(bids_fname, bids_root)
-        coord_frame_int = _ieeg_coordinate_frames_dict[coord_frame]
+        coord_frame_int = _IEEG_COORDINATE_FRAME_DICT[coord_frame]
         for digpoint in raw_test.info['dig']:
             assert digpoint['coord_frame'] == coord_frame_int
 

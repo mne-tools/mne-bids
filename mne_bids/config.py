@@ -68,6 +68,7 @@ _IEEG_COORDINATE_FRAME_DICT = dict(
 _VERBOSE_IEEG_COORDINATE_FRAME = {val: key for key, val
                                   in _IEEG_COORDINATE_FRAME_DICT.items()}
 
+
 # mapping subject information back to mne-python
 # XXX: MNE currently only handles R/L,
 # follow https://github.com/mne-tools/mne-python/issues/7347
