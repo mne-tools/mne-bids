@@ -754,15 +754,27 @@ def test_edf(_bids_validate):
 
     # test writing electrode coordinates (.tsv)
     # and coordinate system (.json)
-    ch_names = raw.ch_names
+    ch_names = ieeg_raw.ch_names
     elec_locs = np.random.random((len(ch_names), 3)).tolist()
     ch_pos = dict(zip(ch_names, elec_locs))
     ecog_montage = mne.channels.make_dig_montage(ch_pos=ch_pos,
                                                  coord_frame='mri')
-    raw.set_montage(ecog_montage)
+    ieeg_raw.set_montage(ecog_montage)
     bids_root = _TempDir()
-    write_raw_bids(raw, bids_basename, bids_root)
+    write_raw_bids(ieeg_raw, bids_basename, bids_root)
     _bids_validate(bids_root)
+
+    # XXX: Should be improved with additional coordinate system descriptions
+    # iEEG montages written from mne-python end up as "Other"
+    electrodes_fname = _find_matching_sidecar(bids_fname, bids_root,
+                                              suffix='electrodes.tsv')
+    coordsystem_fname = _find_matching_sidecar(bids_fname, bids_root,
+                                              suffix='coordsystem.json')
+    assert 'space-mri' in electrodes_fname
+    assert 'space-mri' in coordsystem_fname
+    with open(coordsystem_fname, 'r') as fin:
+        coordsystem_json = json.load(fin)
+    assert coordsystem_json['iEEGCoordinateSystem'] == 'Other'
 
     # test anonymize and convert
     if check_version('mne', '0.20') and check_version('pybv', '0.2.0'):

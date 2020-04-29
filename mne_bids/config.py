@@ -55,10 +55,12 @@ ALLOWED_EXTENSIONS = {'meg': allowed_extensions_meg,
                       'eeg': allowed_extensions_eeg,
                       'ieeg': allowed_extensions_ieeg}
 
+BIDS_IEEG_COORDINATE_FRAMES = ['acpc', 'pixels', 'other']
+
 # these coordinate frames in mne-python are related to scalp/meg
 # 'meg', 'ctf_head', 'ctf_meg', 'head', 'unknown'
 # copied from "mne.transforms._str_to_frame"
-_IEEG_COORDINATE_FRAME_DICT = dict(
+MNE_IEEG_COORD_FRAME_DICT = dict(
     mri=FIFF.FIFFV_COORD_MRI,
     mri_voxel=FIFF.FIFFV_MNE_COORD_MRI_VOXEL,
     mni_tal=FIFF.FIFFV_MNE_COORD_MNI_TAL,
@@ -67,8 +69,8 @@ _IEEG_COORDINATE_FRAME_DICT = dict(
     head=FIFF.FIFFV_COORD_HEAD,
     unknown=FIFF.FIFFV_COORD_UNKNOWN
 )
-_VERBOSE_IEEG_COORDINATE_FRAME = {val: key for key, val
-                                  in _IEEG_COORDINATE_FRAME_DICT.items()}
+MNE_VERBOSE_IEEG_COORD_FRAME = {val: key for key, val
+                                in MNE_IEEG_COORD_FRAME_DICT.items()}
 
 
 # mapping subject information back to mne-python

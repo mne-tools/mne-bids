@@ -29,13 +29,13 @@ from mne.datasets import testing, somato
 
 import mne_bids
 from mne_bids import get_matched_empty_room
-from mne_bids.config import _IEEG_COORDINATE_FRAME_DICT
+from mne_bids.config import MNE_IEEG_COORD_FRAME_DICT
 from mne_bids.read import (read_raw_bids,
                            _read_raw, get_head_mri_trans,
                            _handle_events_reading, _handle_info_reading)
 from mne_bids.tsv_handler import _to_tsv, _from_tsv
 from mne_bids.utils import (_find_matching_sidecar, _update_sidecar,
-                            _write_json)
+                            _write_json, _parse_ext)
 from mne_bids.write import write_anat, write_raw_bids, make_bids_basename
 
 subject_id = '01'
@@ -339,6 +339,7 @@ def test_handle_ieeg_coords_reading():
     # ensure we are writing 'ecog'/'ieeg' data
     raw.set_channel_types({ch: 'ecog'
                            for ch in raw.ch_names})
+    raw_copy = raw.copy()
 
     # set a `random` montage
     ch_names = raw.ch_names
@@ -358,7 +359,7 @@ def test_handle_ieeg_coords_reading():
 
     # read in the data and assert montage is the same
     # regardless of 'm', 'cm', 'mm', or 'pixel'
-    scalings = {'m': 1., 'cm': 100., 'mm': 1000.}
+    scalings = {'m': 1, 'cm': 100, 'mm': 1000}
     coordsystem_fname = _find_matching_sidecar(bids_fname, bids_root,
                                                suffix='coordsystem.json')
     electrodes_fname = _find_matching_sidecar(bids_fname, bids_root,
@@ -384,32 +385,38 @@ def test_handle_ieeg_coords_reading():
 
     # check that coordinate systems can be used and defaults to mri
     coordinate_frames = ['lia', 'ria', 'lip', 'rip', 'las']
-    unknown_coord_frame = _IEEG_COORDINATE_FRAME_DICT['unknown']
-    head_coord_frame = _IEEG_COORDINATE_FRAME_DICT['head']
     for coord_frame in coordinate_frames:
         # update coordinate units
         _update_sidecar(coordsystem_fname, 'iEEGCoordinateSystem', coord_frame)
         # read in raw file w/ updated coordinate frame
         # and make sure all digpoints are MRI coordinate frame
-        with pytest.warns(UserWarning, match="Coordinate frame"):
+        with pytest.warns(UserWarning, match="Coordinate frame is "
+                                             "not accepted BIDS keyword"):
             raw_test = read_raw_bids(bids_fname, bids_root)
-            # XXX: add test for 'unknown' possibly
-            for digpoint in raw_test.info['dig']:
-                assert digpoint['coord_frame'] in [unknown_coord_frame,
-                                                   head_coord_frame]
 
     # coordinate frames in mne-python should all map correctly
-    coordinate_frames = ['mri', 'mri_voxel', 'mni_tal', 'ras', 'fs_tal']
-    for coord_frame in coordinate_frames:
-        # update coordinate units
-        _update_sidecar(coordsystem_fname, 'iEEGCoordinateSystem', coord_frame)
-
-        # read in raw file w/ updated coordinate frame
-        # and make sure all digpoints are correct coordinate frames
-        raw_test = read_raw_bids(bids_fname, bids_root)
-        coord_frame_int = _IEEG_COORDINATE_FRAME_DICT[coord_frame]
-        for digpoint in raw_test.info['dig']:
-            assert digpoint['coord_frame'] == coord_frame_int
+    # coordinate_frames = ['mri', 'ras']
+    # raw_copy.set_montage(None)
+    # write_raw_bids(raw_copy, bids_basename, bids_root, overwrite=True)
+    # for coord_frame in coordinate_frames:
+    #     # update coordinate units
+    #     old_electrodes_fname, ext = _parse_ext(electrodes_fname, verbose=False)
+    #     old_coordsystem_fname, ext = _parse_ext(coordsystem_fname, verbose=False)
+    #     new_electrodes_fname = old_electrodes_fname + \
+    #                        "space-{}".format(coord_frame) + ext
+    #     new_coordsystem_fname = old_coordsystem_fname + \
+    #                         "space-{}".format(coord_frame) + ext
+    #     os.rename(electrodes_fname, new_electrodes_fname)
+    #     os.rename(coordsystem_fname, new_coordsystem_fname)
+    #
+    #     print("new and old files:")
+    #     print(new_electrodes_fname, coordsystem_fname)
+    #     # read in raw file w/ updated coordinate frame
+    #     # and make sure all digpoints are correct coordinate frames
+    #     raw_test = read_raw_bids(bids_fname, bids_root)
+    #     coord_frame_int = MNE_IEEG_COORD_FRAME_DICT[coord_frame]
+    #     for digpoint in raw_test.info['dig']:
+    #         assert digpoint['coord_frame'] == coord_frame_int
 
     # test error message if electrodes don't match
     electrodes_dict = _from_tsv(electrodes_fname)
