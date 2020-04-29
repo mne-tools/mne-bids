@@ -10,7 +10,6 @@
 import os
 import os.path as op
 import glob
-import warnings
 import json
 import shutil as sh
 import re
@@ -20,7 +19,7 @@ from pathlib import Path
 
 import numpy as np
 from mne import read_events, find_events, events_from_annotations
-from mne.utils import check_version
+from mne.utils import check_version, warn
 from mne.channels import make_standard_montage
 from mne.io.pick import pick_types
 from mne.io.kit.kit import get_kit_info

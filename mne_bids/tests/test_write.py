@@ -197,7 +197,7 @@ def test_fif(_bids_validate):
                            for i in
                            mne.pick_types(raw.info, stim=True, meg=False)})
     bids_root = _TempDir()
-    with pytest.warns(UserWarning, match='No events found or provided.'):
+    with pytest.warns(RuntimeWarning, match='No events found or provided.'):
         write_raw_bids(raw, bids_basename, bids_root, overwrite=False)
 
     _bids_validate(bids_root)
@@ -214,7 +214,7 @@ def test_fif(_bids_validate):
                 'visual/right': 4, 'smiley': 5, 'button': 32}
     epochs = mne.Epochs(raw2, events, event_id=event_id, tmin=-0.2, tmax=0.5,
                         preload=True)
-    with pytest.warns(UserWarning,
+    with pytest.warns(RuntimeWarning,
                       match='Converting data files to BrainVision format'):
         write_raw_bids(raw2, bids_basename, bids_root,
                        events_data=events_fname, event_id=event_id,
@@ -379,7 +379,7 @@ def test_fif_anonymize(_bids_validate):
 
     bids_root = _TempDir()
     raw = mne.io.read_raw_fif(raw_fname)
-    with pytest.warns(UserWarning, match='daysback` is too small'):
+    with pytest.warns(RuntimeWarning, match='daysback` is too small'):
         write_raw_bids(raw, bids_basename, bids_root,
                        events_data=events_fname,
                        event_id=event_id,
@@ -532,11 +532,11 @@ def test_ctf(_bids_validate):
     raw_fname = op.join(data_path, 'testdata_ctf.ds')
 
     raw = mne.io.read_raw_ctf(raw_fname)
-    with pytest.warns(UserWarning, match='No line frequency'):
+    with pytest.warns(RuntimeWarning, match='No line frequency'):
         write_raw_bids(raw, bids_basename, bids_root=bids_root)
 
     _bids_validate(bids_root)
-    with pytest.warns(UserWarning, match='Did not find any events'):
+    with pytest.warns(RuntimeWarning, match='Did not find any events'):
         raw = read_raw_bids(bids_basename + '_meg.ds', bids_root,
                             extra_params=dict(clean_names=False))
 
@@ -549,7 +549,7 @@ def test_ctf(_bids_validate):
     # test anonymize
     if check_version('mne', '0.20'):
         raw = mne.io.read_raw_ctf(raw_fname)
-        with pytest.warns(UserWarning,
+        with pytest.warns(RuntimeWarning,
                           match='Converting to FIF for anonymization'):
             output_path = _test_anonymize(raw, bids_basename)
         _bids_validate(output_path)
@@ -589,7 +589,7 @@ def test_bti(_bids_validate):
         # test anonymize
         raw = mne.io.read_raw_bti(raw_fname, config_fname=config_fname,
                                   head_shape_fname=headshape_fname)
-        with pytest.warns(UserWarning,
+        with pytest.warns(RuntimeWarning,
                           match='Converting to FIF for anonymization'):
             output_path = _test_anonymize(raw, bids_basename)
         _bids_validate(output_path)
@@ -775,7 +775,7 @@ def test_bdf(_bids_validate):
     raw_fname = op.join(data_path, 'test.bdf')
 
     raw = mne.io.read_raw_bdf(raw_fname)
-    with pytest.warns(UserWarning, match='No line frequency found'):
+    with pytest.warns(RuntimeWarning, match='No line frequency found'):
         write_raw_bids(raw, bids_basename, bids_root, overwrite=False)
     _bids_validate(bids_root)
 

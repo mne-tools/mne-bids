@@ -10,7 +10,6 @@
 import os
 import os.path as op
 from datetime import datetime, date, timedelta, timezone
-from warnings import warn
 import shutil as sh
 from collections import defaultdict, OrderedDict
 
@@ -28,7 +27,7 @@ try:
 except ImportError:
     from mne._digitization._utils import _get_fid_coords
 from mne.channels.channels import _unit2human
-from mne.utils import check_version, has_nibabel, _check_ch_locs
+from mne.utils import check_version, has_nibabel, _check_ch_locs, warn
 
 from mne_bids.pick import coil_type
 from mne_bids.utils import (_write_json, _write_tsv, _read_events, _mkdir_p,

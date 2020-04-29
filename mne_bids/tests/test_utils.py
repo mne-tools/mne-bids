@@ -63,7 +63,7 @@ def return_bids_test_dir(tmpdir_factory):
     for name in [bids_basename,
                  bids_basename2,
                  ]:
-        with pytest.warns(UserWarning, match='No line frequency'):
+        with pytest.warns(RuntimeWarning, match='No line frequency'):
             write_raw_bids(raw, name, bids_root,
                            events_data=events_fname, event_id=event_id,
                            overwrite=True)
@@ -347,5 +347,5 @@ def test_find_matching_sidecar(return_bids_test_dir):
         _find_matching_sidecar(bids_basename, bids_root, 'coordsystem.json')
 
     # Find nothing but receive None, because we set `allow_fail` to True
-    with pytest.warns(UserWarning, match='Did not find any'):
+    with pytest.warns(RuntimeWarning, match='Did not find any'):
         _find_matching_sidecar(bids_basename, bids_root, 'foo.bogus', True)
