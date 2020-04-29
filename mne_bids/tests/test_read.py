@@ -126,6 +126,15 @@ def test_read_participants_data():
         assert raw.info['subject_info']['hand'] is None
         assert raw.info['subject_info']['sex'] is None
 
+    # make sure to read in if no participants file
+    raw = mne.io.read_raw_fif(raw_fname, verbose=False)
+    write_raw_bids(raw, bids_basename, bids_root, overwrite=True,
+                   verbose=False)
+    os.remove(participants_tsv_fpath)
+    with pytest.warns(RuntimeWarning, match='Participants file not found'):
+        raw = read_raw_bids(bids_fname, Path(bids_root))
+        assert raw.info['subject_info'] is None
+
 
 @requires_nibabel()
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])

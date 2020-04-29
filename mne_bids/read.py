@@ -444,8 +444,12 @@ def read_raw_bids(bids_fname, bids_root, extra_params=None,
     # read in associated subject info from participants.tsv
     participants_tsv_fpath = op.join(bids_root, 'participants.tsv')
     subject = "sub-" + params['sub']
-    raw = _handle_participants_reading(participants_tsv_fpath, raw,
-                                       subject, verbose=verbose)
+    if op.exists(participants_tsv_fpath):
+        raw = _handle_participants_reading(participants_tsv_fpath, raw,
+                                           subject, verbose=verbose)
+    else:
+        warn("Participants file not found for {}... Not reading "
+             "in any particpants.tsv data.".format(bids_fname))
 
     return raw
 
