@@ -10,7 +10,6 @@ import os.path as op
 from datetime import datetime
 import glob
 import json
-from warnings import warn
 
 import numpy as np
 import mne
@@ -90,15 +89,15 @@ def _handle_participants_reading(participants_fname, raw,
                                          fro='bids', to='mne')
             # We don't know how to translate to MNE, so skip.
             if value is None:
-                warn('Unable to map `sex` value to MNE. '
-                     'Not setting subject sex.')
+                logger.warning('Unable to map `sex` value to MNE. '
+                               'Not setting subject sex.')
         elif infokey == 'hand':
             value = _convert_hand_options(infovalue[row_ind],
                                           fro='bids', to='mne')
             # We don't know how to translate to MNE, so skip.
             if value is None:
-                warn('Unable to map `hand` value to MNE. '
-                     'Not setting subject handedness.')
+                logger.warning('Unable to map `hand` value to MNE. '
+                               'Not setting subject handedness.')
         else:
             value = infovalue[row_ind]
         # add data into raw.Info
@@ -126,9 +125,9 @@ def _handle_info_reading(sidecar_fname, raw, verbose=None):
         # estimate line noise using PSD from multitaper FFT
         powerlinefrequency = _estimate_line_freq(raw, verbose=verbose)
         raw.info["line_freq"] = powerlinefrequency
-        warn('No line frequency found, defaulting to {} Hz '
-             'estimated from multi-taper FFT '
-             'on 10 seconds of data.'.format(powerlinefrequency))
+        logger.warning('No line frequency found, defaulting to {} Hz '
+                       'estimated from multi-taper FFT '
+                       'on 10 seconds of data.'.format(powerlinefrequency))
 
     elif raw.info["line_freq"] is None and line_freq is not None:
         # if the read in frequency is not set inside Raw
@@ -253,8 +252,8 @@ def _handle_electrodes_reading(electrodes_fname, coord_frame, raw, verbose):
         if any(np.isnan(ch_coord)) and ch_name not in raw.info['bads']:
             nan_chs.append(ch_name)
     if len(nan_chs) > 0:
-        warn("There are channels without locations "
-             "(n/a) that are not marked as bad: {}".format(nan_chs))
+        logger.warning("There are channels without locations "
+                       "(n/a) that are not marked as bad: {}".format(nan_chs))
 
     # create mne.DigMontage
     ch_pos = dict(zip(ch_names_raw, np.array(ch_locs)))
