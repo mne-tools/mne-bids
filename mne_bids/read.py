@@ -10,12 +10,11 @@ import os.path as op
 from datetime import datetime
 import glob
 import json
-from warnings import warn
 
 import numpy as np
 import mne
 from mne import io
-from mne.utils import has_nibabel, logger
+from mne.utils import has_nibabel, logger, warn
 from mne.coreg import fit_matched_points
 from mne.transforms import apply_trans
 

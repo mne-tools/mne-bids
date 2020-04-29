@@ -121,7 +121,7 @@ def test_read_participants_data():
     participants_tsv['hand'][0] = 'righty'
     participants_tsv['sex'][0] = 'malesy'
     _to_tsv(participants_tsv, participants_tsv_fpath)
-    with pytest.warns(UserWarning, match='Unable to map'):
+    with pytest.warns(RuntimeWarning, match='Unable to map'):
         raw = read_raw_bids(bids_fname, Path(bids_root))
         assert raw.info['subject_info']['hand'] is None
         assert raw.info['subject_info']['sex'] is None
@@ -373,8 +373,8 @@ def test_handle_coords_reading():
     # electrode coordinates should be nan
     # when coordinate is 'n/a'
     nan_chs = [electrodes_dict['name'][i] for i in [0, 3]]
-    with pytest.warns(UserWarning, match='There are channels '
-                                         'without locations'):
+    with pytest.warns(RuntimeWarning, match='There are channels '
+                                            'without locations'):
         raw = read_raw_bids(bids_fname, bids_root)
         for idx, ch in enumerate(raw.info['chs']):
             if ch['ch_name'] in nan_chs:
