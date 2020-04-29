@@ -410,6 +410,7 @@ def test_handle_ieeg_coords_reading():
         # obtain the sensor positions and make sure they're the same
         assert_dig_allclose(raw.info, raw_test.info)
 
+    # XXX: Improve by changing names to 'unknown' coordframe (needs mne PR)
     # check that coordinate systems other coordinate systems should be named
     # in the file and not the CoordinateSystem, which is reserved for keywords
     coordinate_frames = ['lia', 'ria', 'lip', 'rip', 'las']

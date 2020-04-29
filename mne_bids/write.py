@@ -143,8 +143,6 @@ def _channels_tsv(raw, fname, overwrite=False, verbose=True):
 
     _write_tsv(fname, ch_data, overwrite, verbose)
 
-    return fname
-
 
 def _electrodes_tsv(raw, fname, kind, overwrite=False, verbose=True):
     """
@@ -257,8 +255,6 @@ def _events_tsv(events, raw, fname, trial_type, overwrite=False,
 
     _write_tsv(fname, data, overwrite, verbose)
 
-    return fname
-
 
 def _participants_tsv(raw, subject_id, fname, overwrite=False,
                       verbose=True):
@@ -342,8 +338,6 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False,
     # been handled by this point
     _write_tsv(fname, data, True, verbose)
 
-    return fname
-
 
 def _participants_json(fname, overwrite=False, verbose=True):
     """Create participants.json for non-default columns in accompanying TSV.
@@ -371,8 +365,6 @@ def _participants_json(fname, overwrite=False, verbose=True):
                     'Levels': {'R': 'right', 'L': 'left', 'A': 'ambidextrous'}}
 
     _write_json(fname, cols, overwrite, verbose)
-
-    return fname
 
 
 def _coordsystem_json(raw, unit, orient, coordsystem_name, fname,
@@ -434,7 +426,7 @@ def _coordsystem_json(raw, unit, orient, coordsystem_name, fname,
                     }
     elif kind == "ieeg":
         fid_json = {
-            'iEEGCoordinateSystem': coordsystem_name,  # e.g. MRI, Pixels, ACPC
+            'iEEGCoordinateSystem': coordsystem_name,  # (Other, Pixels, ACPC)
             'iEEGCoordinateUnits': unit,  # m (MNE), mm, cm , or pixels
         }
 
@@ -487,8 +479,6 @@ def _scans_tsv(raw, raw_fname, fname, overwrite=False, verbose=True):
     # overwrite is forced to True as all issues with overwrite == False have
     # been handled by this point
     _write_tsv(fname, data, True, verbose)
-
-    return fname
 
 
 def _meg_landmarks_to_mri_landmarks(meg_landmarks, trans):
