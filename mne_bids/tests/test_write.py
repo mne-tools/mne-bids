@@ -769,7 +769,7 @@ def test_edf(_bids_validate):
     electrodes_fname = _find_matching_sidecar(bids_fname, bids_root,
                                               suffix='electrodes.tsv')
     coordsystem_fname = _find_matching_sidecar(bids_fname, bids_root,
-                                              suffix='coordsystem.json')
+                                               suffix='coordsystem.json')
     assert 'space-mri' in electrodes_fname
     assert 'space-mri' in coordsystem_fname
     with open(coordsystem_fname, 'r') as fin:

@@ -198,7 +198,6 @@ def _electrodes_tsv(raw, fname, kind, overwrite=False, verbose=True):
         raise RuntimeError("kind {} not supported.".format(kind))
 
     _write_tsv(fname, data, overwrite=overwrite, verbose=verbose)
-    return fname
 
 
 def _events_tsv(events, raw, fname, trial_type, overwrite=False,
@@ -440,8 +439,6 @@ def _coordsystem_json(raw, unit, orient, coordsystem_name, fname,
         }
 
     _write_json(fname, fid_json, overwrite, verbose)
-
-    return fname
 
 
 def _scans_tsv(raw, raw_fname, fname, overwrite=False, verbose=True):
@@ -1202,9 +1199,6 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     coordsystem_fname = make_bids_basename(
         subject=subject_id, session=session_id, acquisition=acquisition,
         suffix='coordsystem.json', prefix=data_path)
-    electrodes_fname = make_bids_basename(
-        subject=subject_id, session=session_id, acquisition=acquisition,
-        suffix='electrodes.tsv', prefix=data_path)
     sidecar_fname = make_bids_basename(
         subject=subject_id, session=session_id, task=task, run=run,
         acquisition=acquisition, suffix='%s.json' % kind, prefix=data_path)
@@ -1304,7 +1298,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
             else:
                 # default coordinate frame to mri if not available
                 warn("Coordinate frame of iEEG coords missing/unknown "
-                     "for {}. Skipping reading "
+                     "for {}. Skipping writing "
                      "in of montage...".format(bids_fname))
         elif kind != "meg":
             logger.warning('Writing of electrodes.tsv '

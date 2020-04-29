@@ -22,6 +22,7 @@ from mne_bids.tsv_handler import _from_tsv, _drop
 from mne_bids.config import (ALLOWED_EXTENSIONS, _convert_hand_options,
                              _convert_sex_options,
                              BIDS_IEEG_COORDINATE_FRAMES,
+                             BIDS_IEEG_COORDINATE_UNITS,
                              MNE_IEEG_COORD_FRAME_DICT)
 from mne_bids.utils import (_parse_bids_filename, _extract_landmarks,
                             _find_matching_sidecar, _parse_ext,
@@ -262,9 +263,8 @@ def _handle_electrodes_reading(electrodes_fname, coord_frame,
         warn("There are channels without locations "
              "(n/a) that are not marked as bad: {}".format(nan_chs))
 
-    # convert coordinates to meters if necessary
-    if coord_unit in ['m', 'cm', 'mm']:
-        ch_locs = _scale_coord_to_meters(ch_locs, coord_unit)
+    # convert coordinates to meters
+    ch_locs = _scale_coord_to_meters(ch_locs, coord_unit)
 
     # create mne.DigMontage
     ch_pos = dict(zip(ch_names_raw, ch_locs))
@@ -421,6 +421,8 @@ def read_raw_bids(bids_fname, bids_root, extra_params=None,
     coordsystem_fname = _find_matching_sidecar(bids_fname, bids_root,
                                                'coordsystem.json',
                                                allow_fail=True)
+    print("FOUND ELECTRODES FNAME: ", electrodes_fname)
+
     if electrodes_fname is not None:
         if coordsystem_fname is None:
             raise RuntimeError("BIDS mandates that the coordsystem.json "
@@ -439,13 +441,17 @@ def read_raw_bids(bids_fname, bids_root, extra_params=None,
         elif kind == "ieeg":
             space = coordsystem_json['iEEGCoordinateSystem']
             coord_unit = coordsystem_json['iEEGCoordinateUnits']
-            space = space.lower() # only compare lower-case
+
+            # only compare lower case
+            space = space.lower()
+            coord_unit = coord_unit.lower()
 
             # XXX: improve reading from 'other' systems
             if space not in BIDS_IEEG_COORDINATE_FRAMES:
-                warn("Coordinate frame is not accepted BIDS keyword for {}. "
-                     "Use CoordinateSystem with one of these keywords: "
-                     "{}".format(bids_fname, BIDS_IEEG_COORDINATE_FRAMES))
+                warn("{} Coordinate frame is not accepted BIDS "
+                     "keyword for {}. Use CoordinateSystem with "
+                     "one of these keywords: {}"
+                     .format(space, bids_fname, BIDS_IEEG_COORDINATE_FRAMES))
                 coord_frame = None
             elif space == 'acpc':
                 coord_frame = 'ras'
@@ -459,6 +465,13 @@ def read_raw_bids(bids_fname, bids_root, extra_params=None,
                          "is still not supported. Reading in coordinate frame "
                          "as 'unknown'.".format(coord_frame))
                     coord_frame = 'unknown'
+
+            if coord_unit not in BIDS_IEEG_COORDINATE_UNITS:
+                warn("Coordinate unit is not an accepted BIDS unit for {}. "
+                     "Please specify to be one of {}. Skipping electrodes.tsv "
+                     "reading..."
+                     .format(bids_fname, BIDS_IEEG_COORDINATE_UNITS))
+                coord_frame = None
         else:  # noqa
             # XXX should add support of coordsystem.json for EEG
             raise RuntimeError("Kind {} not supported yet for "
