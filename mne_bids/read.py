@@ -10,12 +10,11 @@ import os.path as op
 from datetime import datetime
 import glob
 import json
-from warnings import warn
 
 import numpy as np
 import mne
 from mne import io
-from mne.utils import has_nibabel, logger
+from mne.utils import has_nibabel, logger, warn
 from mne.coreg import fit_matched_points
 from mne.transforms import apply_trans
 
@@ -88,12 +87,19 @@ def _handle_participants_reading(participants_fname, raw,
         if infokey == 'sex':
             value = _convert_sex_options(infovalue[row_ind],
                                          fro='bids', to='mne')
+            # We don't know how to translate to MNE, so skip.
+            if value is None:
+                warn('Unable to map `sex` value to MNE. '
+                     'Not setting subject sex.')
         elif infokey == 'hand':
             value = _convert_hand_options(infovalue[row_ind],
                                           fro='bids', to='mne')
+            # We don't know how to translate to MNE, so skip.
+            if value is None:
+                warn('Unable to map `hand` value to MNE. '
+                     'Not setting subject handedness.')
         else:
             value = infovalue[row_ind]
-
         # add data into raw.Info
         if raw.info['subject_info'] is None:
             raw.info['subject_info'] = dict()
@@ -438,8 +444,12 @@ def read_raw_bids(bids_fname, bids_root, extra_params=None,
     # read in associated subject info from participants.tsv
     participants_tsv_fpath = op.join(bids_root, 'participants.tsv')
     subject = "sub-" + params['sub']
-    raw = _handle_participants_reading(participants_tsv_fpath, raw,
-                                       subject, verbose=verbose)
+    if op.exists(participants_tsv_fpath):
+        raw = _handle_participants_reading(participants_tsv_fpath, raw,
+                                           subject, verbose=verbose)
+    else:
+        warn("Participants file not found for {}... Not reading "
+             "in any particpants.tsv data.".format(bids_fname))
 
     return raw
 

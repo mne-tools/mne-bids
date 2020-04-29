@@ -116,6 +116,25 @@ def test_read_participants_data():
     assert raw.info['subject_info']['sex'] == 2
     assert raw.info['subject_info'].get('birthday', None) is None
 
+    # make sure things are read even if the entries don't make sense
+    participants_tsv = _from_tsv(participants_tsv_fpath)
+    participants_tsv['hand'][0] = 'righty'
+    participants_tsv['sex'][0] = 'malesy'
+    _to_tsv(participants_tsv, participants_tsv_fpath)
+    with pytest.warns(RuntimeWarning, match='Unable to map'):
+        raw = read_raw_bids(bids_fname, Path(bids_root))
+        assert raw.info['subject_info']['hand'] is None
+        assert raw.info['subject_info']['sex'] is None
+
+    # make sure to read in if no participants file
+    raw = mne.io.read_raw_fif(raw_fname, verbose=False)
+    write_raw_bids(raw, bids_basename, bids_root, overwrite=True,
+                   verbose=False)
+    os.remove(participants_tsv_fpath)
+    with pytest.warns(RuntimeWarning, match='Participants file not found'):
+        raw = read_raw_bids(bids_fname, Path(bids_root))
+        assert raw.info['subject_info'] is None
+
 
 @requires_nibabel()
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
@@ -131,7 +150,7 @@ def test_get_head_mri_trans():
     # Write it to BIDS
     raw = mne.io.read_raw_fif(raw_fname)
     bids_root = _TempDir()
-    with pytest.warns(UserWarning, match='No line frequency'):
+    with pytest.warns(RuntimeWarning, match='No line frequency'):
         write_raw_bids(raw, bids_basename, bids_root,
                        events_data=events_fname, event_id=event_id,
                        overwrite=False)
@@ -218,7 +237,7 @@ def test_line_freq_estimation():
     raw.info['line_freq'] = None
     write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
     _update_sidecar(sidecar_fname, "PowerLineFrequency", "n/a")
-    with pytest.warns(UserWarning, match="No line frequency found"):
+    with pytest.warns(RuntimeWarning, match="No line frequency found"):
         raw = mne_bids.read_raw_bids(bids_fname, bids_root)
         assert raw.info['line_freq'] == 60
 
@@ -230,7 +249,7 @@ def test_line_freq_estimation():
                                            '{}.json'.format(kind),
                                            allow_fail=True)
     _update_sidecar(sidecar_fname, "PowerLineFrequency", "n/a")
-    with pytest.warns(UserWarning, match="No line frequency found"):
+    with pytest.warns(RuntimeWarning, match="No line frequency found"):
         somato_raw = mne_bids.read_raw_bids(bids_fname, bids_root)
         assert somato_raw.info['line_freq'] == 50
 
@@ -363,8 +382,8 @@ def test_handle_coords_reading():
     # electrode coordinates should be nan
     # when coordinate is 'n/a'
     nan_chs = [electrodes_dict['name'][i] for i in [0, 3]]
-    with pytest.warns(UserWarning, match='There are channels '
-                                         'without locations'):
+    with pytest.warns(RuntimeWarning, match='There are channels '
+                                            'without locations'):
         raw = read_raw_bids(bids_fname, bids_root)
         for idx, ch in enumerate(raw.info['chs']):
             if ch['ch_name'] in nan_chs:

@@ -62,10 +62,10 @@ def _convert_hand_options(key, fro, to):
         hand_options = {'n/a': 0, 'R': 1, 'L': 2, 'A': 3}
     elif fro == 'mne' and to == 'bids':
         hand_options = {0: 'n/a', 1: 'R', 2: 'L', 3: 'A'}
-    else:  # noqa
+    else:
         raise RuntimeError("fro value {} and to value {} are not "
                            "accepted. Use 'mne', or 'bids'.".format(fro, to))
-    return hand_options[key]
+    return hand_options.get(key, None)
 
 
 def _convert_sex_options(key, fro, to):
@@ -73,7 +73,7 @@ def _convert_sex_options(key, fro, to):
         sex_options = {'n/a': 0, 'M': 1, 'F': 2}
     elif fro == 'mne' and to == 'bids':
         sex_options = {0: 'n/a', 1: 'M', 2: 'F'}
-    else:  # noqa
+    else:
         raise RuntimeError("fro value {} and to value {} are not "
                            "accepted. Use 'mne', or 'bids'.".format(fro, to))
-    return sex_options[key]
+    return sex_options.get(key, None)
