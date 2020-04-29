@@ -141,7 +141,7 @@ def test_get_head_mri_trans():
     # Write it to BIDS
     raw = mne.io.read_raw_fif(raw_fname)
     bids_root = _TempDir()
-    with pytest.warns(UserWarning, match='No line frequency'):
+    with pytest.warns(RuntimeWarning, match='No line frequency'):
         write_raw_bids(raw, bids_basename, bids_root,
                        events_data=events_fname, event_id=event_id,
                        overwrite=False)
@@ -228,7 +228,7 @@ def test_line_freq_estimation():
     raw.info['line_freq'] = None
     write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
     _update_sidecar(sidecar_fname, "PowerLineFrequency", "n/a")
-    with pytest.warns(UserWarning, match="No line frequency found"):
+    with pytest.warns(RuntimeWarning, match="No line frequency found"):
         raw = mne_bids.read_raw_bids(bids_fname, bids_root)
         assert raw.info['line_freq'] == 60
 
@@ -240,7 +240,7 @@ def test_line_freq_estimation():
                                            '{}.json'.format(kind),
                                            allow_fail=True)
     _update_sidecar(sidecar_fname, "PowerLineFrequency", "n/a")
-    with pytest.warns(UserWarning, match="No line frequency found"):
+    with pytest.warns(RuntimeWarning, match="No line frequency found"):
         somato_raw = mne_bids.read_raw_bids(bids_fname, bids_root)
         assert somato_raw.info['line_freq'] == 50
 
