@@ -456,9 +456,9 @@ def _read_events(events_data, event_id, raw, ext):
     elif ext in ['.vhdr', '.set'] and check_version('mne', '0.18'):
         events, event_id = events_from_annotations(raw, event_id)
     else:
-        warnings.warn('No events found or provided. Please make sure to'
-                      ' set channel type using raw.set_channel_types'
-                      ' or provide events_data.')
+        warn('No events found or provided. Please make sure to'
+             ' set channel type using raw.set_channel_types'
+             ' or provide events_data.')
         events = None
     return events, event_id
 
@@ -631,7 +631,7 @@ def _find_matching_sidecar(bids_fname, bids_root, suffix, allow_fail=False):
                        candidate_list))
     msg += '\n\nThe search_str was "{}"'.format(search_str)
     if allow_fail:
-        warnings.warn(msg)
+        warn(msg)
         return None
     else:
         raise RuntimeError(msg)
@@ -691,8 +691,8 @@ def _estimate_line_freq(raw, verbose=False):
         pick_dict = {"seeg": True}
         picks = pick_types(raw.info, exclude='bads', **pick_dict)
     if len(picks) < 5:
-        warnings.warn("Estimation of line frequency only "
-                      "supports 'meg', 'eeg', 'ecog', or 'seeg'.")
+        warn("Estimation of line frequency only "
+             "supports 'meg', 'eeg', 'ecog', or 'seeg'.")
         return None
 
     # only sample first 10 seconds, or whole time series
