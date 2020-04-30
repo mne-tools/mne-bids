@@ -47,9 +47,6 @@ from mne_bids.utils import print_dir_tree
 # Conveniently, there is already a data loading function available with
 # MNE-Python:
 
-# get MNE directory w/ example data
-mne_data_dir = mne.get_config('MNE_DATA')
-
 # Define which tasks we want to download.
 tasks = [2,  # This is 2 minutes of eyes closed rest
          4,  # This is run #1 of imagining to close left or right fist
@@ -59,13 +56,15 @@ tasks = [2,  # This is 2 minutes of eyes closed rest
 for subj_idx in [1, 2]:
     eegbci.load_data(subject=subj_idx,
                      runs=tasks,
-                     path=mne_data_dir,
                      force_update=True,
                      update_path=True)
 
 ###############################################################################
 # Let's see whether the data has been downloaded using a quick visualization
 # of the directory tree.
+
+# get MNE directory w/ example data
+mne_data_dir = mne.get_config('MNE_DATASETS_EEGBCI_PATH')
 
 data_dir = os.path.join(mne_data_dir, 'MNE-eegbci-data')
 print_dir_tree(data_dir)

@@ -59,9 +59,6 @@ from mne_bids.utils import print_dir_tree
 # Conveniently, there is already a data loading function available with
 # MNE-Python:
 
-# get MNE directory w/ example data
-mne_data_dir = mne.get_config('MNE_DATA')
-
 # The electrode coords data are in the Matlab format: '.mat'.
 # This is easy to read in with :func:`scipy.io.loadmat` function.
 mat = loadmat(mne.datasets.misc.data_path() + '/ecog/sample_ecog.mat')
@@ -130,6 +127,9 @@ print(write_raw_bids.__doc__)
 # There is a subject, and specific task for the dataset.
 subject_id = '001'  # zero padding to account for >100 subjects in this dataset
 task = 'testresteyes'
+
+# get MNE directory w/ example data
+mne_data_dir = mne.get_config('MNE_DATASETS_MISC_PATH')
 
 # There is the root directory for where we will write our data.
 bids_root = os.path.join(mne_data_dir, 'ieegmmidb_bids')
