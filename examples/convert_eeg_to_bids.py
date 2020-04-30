@@ -60,6 +60,7 @@ for subj_idx in [1, 2]:
     eegbci.load_data(subject=subj_idx,
                      runs=tasks,
                      path=mne_dir,
+                     force_update=True,
                      update_path=True)
 
 ###############################################################################
