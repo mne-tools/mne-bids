@@ -60,7 +60,7 @@ from mne_bids.utils import print_dir_tree
 # MNE-Python:
 
 # get MNE directory w/ example data
-mne_dir = mne.get_config('MNE_DATASETS_SAMPLE_PATH')
+mne_data_dir = mne.get_config('MNE_DATA')
 
 # The electrode coords data are in the Matlab format: '.mat'.
 # This is easy to read in with :func:`scipy.io.loadmat` function.
@@ -132,7 +132,7 @@ subject_id = '001'  # zero padding to account for >100 subjects in this dataset
 task = 'testresteyes'
 
 # There is the root directory for where we will write our data.
-bids_root = os.path.join(mne_dir, 'ieegmmidb_bids')
+bids_root = os.path.join(mne_data_dir, 'ieegmmidb_bids')
 
 ###############################################################################
 # Now we just need to specify a few iEEG details to make things work:

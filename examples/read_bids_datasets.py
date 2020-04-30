@@ -26,7 +26,6 @@ and to display the data that is saved within the accompanying sidecars.
 # We are importing everything we need for this example:
 import os
 
-import mne
 from mne.datasets import somato
 
 from mne_bids import make_bids_basename, read_raw_bids
@@ -37,9 +36,6 @@ from mne_bids.utils import print_dir_tree
 # is already stored in BIDS format.
 # For more information, you can checkout the
 # respective :ref:`example <ex-convert-mne-sample>`.
-
-# get MNE directory w/ example data
-mne_dir = mne.get_config('MNE_DATASETS_SAMPLE_PATH')
 
 ###############################################################################
 # Step 1: Download/Get a BIDS dataset

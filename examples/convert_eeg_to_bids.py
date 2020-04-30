@@ -48,7 +48,7 @@ from mne_bids.utils import print_dir_tree
 # MNE-Python:
 
 # get MNE directory w/ example data
-mne_dir = mne.get_config('MNE_DATASETS_SAMPLE_PATH')
+mne_data_dir = mne.get_config('MNE_DATA')
 
 # Define which tasks we want to download.
 tasks = [2,  # This is 2 minutes of eyes closed rest
@@ -59,7 +59,7 @@ tasks = [2,  # This is 2 minutes of eyes closed rest
 for subj_idx in [1, 2]:
     eegbci.load_data(subject=subj_idx,
                      runs=tasks,
-                     path=mne_dir,
+                     path=mne_data_dir,
                      force_update=True,
                      update_path=True)
 
@@ -67,7 +67,7 @@ for subj_idx in [1, 2]:
 # Let's see whether the data has been downloaded using a quick visualization
 # of the directory tree.
 
-data_dir = os.path.join(mne_dir, 'MNE-eegbci-data')
+data_dir = os.path.join(mne_data_dir, 'MNE-eegbci-data')
 print_dir_tree(data_dir)
 
 ###############################################################################
@@ -118,7 +118,7 @@ print(write_raw_bids.__doc__)
 subject_id = '001'  # zero padding to account for >100 subjects in this dataset
 task = 'resteyesclosed'
 raw_file = raw
-bids_root = os.path.join(mne_dir, 'eegmmidb_bids')
+bids_root = os.path.join(mne_data_dir, 'eegmmidb_bids')
 
 ###############################################################################
 # Now we just need to specify a few more EEG details to get something sensible:
