@@ -31,7 +31,7 @@ Bug
 - Fix bug in :func:`write_raw_bids` where raw.info['subject_info'] can be None, by `Adam Li`_ (`#392 <https://github.com/mne-tools/mne-bids/pull/392>`_)
 - :func:`read_raw_bids` will now read all channels from electrodes.tsv. Channels with coordinates 'n/a' will also be included but their location set to `np.nan` in the `raw` object, by `Adam Li`_ (`#393 <https://github.com/mne-tools/mne-bids/pull/393>`_)
 - Do not change an events array passed to :func:`write_raw_bids` via the ``events_data`` keyword argument, by `Alexandre Gramfort`_ (`#402 <https://github.com/mne-tools/mne-bids/pull/402>`_)
-- fix :func:`mne_bids.read_raw_bids` to correctly scale coordinate to meters in electrodes.tsv and also read in possible iEEG coordinate frames by `Adam Li`_ (`#390 <https://github.com/mne-tools/mne-bids/pull/390>`_)
+- fix :func:`mne_bids.read_raw_bids` to correctly scale coordinate to meters in electrodes.tsv, and also read in possible iEEG coordinate frames via the 'space' BIDs-entity by `Adam Li`_ (`#390 <https://github.com/mne-tools/mne-bids/pull/390>`_)
 
 API
 ~~~
