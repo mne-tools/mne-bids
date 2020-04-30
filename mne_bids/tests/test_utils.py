@@ -209,10 +209,12 @@ def test_make_folders():
 
     # Check if bids_root=None creates folders in the current working directory
     bids_root = _TempDir()
+    curr_dir = os.getcwd()
     os.chdir(bids_root)
     make_bids_folders(subject='hi', session='foo', kind='ba',
                       bids_root=None)
     assert op.isdir(op.join(os.getcwd(), 'sub-hi', 'ses-foo', 'ba'))
+    os.chdir(curr_dir)
 
 
 def test_check_types():
