@@ -61,7 +61,8 @@ from mne_bids.utils import print_dir_tree
 
 # The electrode coords data are in the Matlab format: '.mat'.
 # This is easy to read in with :func:`scipy.io.loadmat` function.
-mat = loadmat(mne.datasets.misc.data_path() + '/ecog/sample_ecog.mat')
+mat = loadmat(mne.datasets.misc.data_path(force_update=True) +
+              '/ecog/sample_ecog.mat')
 ch_names = mat['ch_names'].tolist()
 ch_names = [x.strip() for x in ch_names]
 elec = mat['elec']  # electrode positions given in meters
