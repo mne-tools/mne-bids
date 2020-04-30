@@ -1266,7 +1266,6 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
             coord_frame_int = int(digpoint['coord_frame'])
             space = MNE_VERBOSE_IEEG_COORD_FRAME.get(coord_frame_int,
                                                      None)
-
             if space is not None:
                 # append the 'space' BIDs-entity to coordinates
                 coord_frame = "Other"

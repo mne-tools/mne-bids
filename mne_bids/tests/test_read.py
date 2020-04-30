@@ -348,7 +348,6 @@ def test_handle_ieeg_coords_reading():
     coordinate_frames = ['mri', 'ras']
     for coord_frame in coordinate_frames:
         # XXX: Currently mne-bids can't handle two electrodes files
-        sh.rmtree(bids_root)
         montage = mne.channels.make_dig_montage(ch_pos=ch_pos,
                                                 coord_frame=coord_frame)
         raw.set_montage(montage)
@@ -356,10 +355,20 @@ def test_handle_ieeg_coords_reading():
                        overwrite=True, verbose=False)
         # read in raw file w/ updated coordinate frame
         # and make sure all digpoints are correct coordinate frames
-        raw_test = read_raw_bids(bids_fname, bids_root)
+        raw_test = read_raw_bids(bids_fname, bids_root, space=coord_frame)
         coord_frame_int = MNE_IEEG_COORD_FRAME_DICT[coord_frame]
         for digpoint in raw_test.info['dig']:
             assert digpoint['coord_frame'] == coord_frame_int
+
+    # check warning/error and correct reading if space isn't specified
+    with pytest.warns(RuntimeWarning, match='Expected to find a single'):
+        raw_test = read_raw_bids(bids_fname, bids_root)
+        assert raw_test.info['dig'] is None
+
+    # start w/ new bids root
+    sh.rmtree(bids_root)
+    write_raw_bids(raw, bids_basename, bids_root,
+                   overwrite=True, verbose=False)
 
     # obtain the sensor positions and assert ch_coords are same
     raw_test = read_raw_bids(bids_fname, bids_root, verbose=False)
@@ -372,7 +381,8 @@ def test_handle_ieeg_coords_reading():
     # regardless of 'm', 'cm', 'mm', or 'pixel'
     scalings = {'m': 1, 'cm': 100, 'mm': 1000}
     coordsystem_fname = _find_matching_sidecar(bids_fname, bids_root,
-                                               suffix='coordsystem.json')
+                                               suffix='coordsystem.json',
+                                               allow_fail=True)
     electrodes_fname = _find_matching_sidecar(bids_fname, bids_root,
                                               "electrodes.tsv",
                                               allow_fail=True)

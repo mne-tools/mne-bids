@@ -61,8 +61,7 @@ from mne_bids.utils import print_dir_tree
 
 # The electrode coords data are in the Matlab format: '.mat'.
 # This is easy to read in with :func:`scipy.io.loadmat` function.
-mat = loadmat(mne.datasets.misc.data_path(force_update=True) +
-              '/ecog/sample_ecog.mat')
+mat = loadmat(mne.datasets.misc.data_path() + '/ecog/sample_ecog.mat')
 ch_names = mat['ch_names'].tolist()
 ch_names = [x.strip() for x in ch_names]
 elec = mat['elec']  # electrode positions given in meters
@@ -71,7 +70,7 @@ elec = mat['elec']  # electrode positions given in meters
 # Now we make a montage stating that the iEEG contacts are in MRI
 # coordinate system.
 montage = mne.channels.make_dig_montage(ch_pos=dict(zip(ch_names, elec)),
-                                        coord_frame='mri')
+                                        coord_frame='head')
 print('Created %s channel positions' % len(ch_names))
 print(dict(zip(ch_names, elec)))
 
@@ -85,6 +84,7 @@ ieegdata = np.random.rand(len(ch_names), 1000)
 # use the montage we created.
 info = mne.create_info(ch_names, 1000., 'ecog')
 raw = mne.io.RawArray(ieegdata, info)
+raw.set_channel_types({ch: 'ecog' for ch in raw.ch_names})
 raw.set_montage(montage)
 
 ###############################################################################
@@ -193,7 +193,8 @@ print_dir_tree(bids_root)
 
 # read in the BIDS dataset and plot the coordinates
 bids_fname = bids_basename + "_ieeg.vhdr"
-raw = read_raw_bids(bids_fname, bids_root=bids_root)
+raw = read_raw_bids(bids_fname, bids_root=bids_root,
+                    space='head')
 
 # get the first 5 channels and show their locations
 # this should match what was printed earlier.

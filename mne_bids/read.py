@@ -340,7 +340,7 @@ def _handle_channels_reading(channels_fname, bids_fname, raw):
     return raw
 
 
-def read_raw_bids(bids_fname, bids_root, extra_params=None,
+def read_raw_bids(bids_fname, bids_root, extra_params=None, space=None,
                   verbose=True):
     """Read BIDS compatible data.
 
@@ -356,6 +356,11 @@ def read_raw_bids(bids_fname, bids_root, extra_params=None,
     extra_params : None | dict
         Extra parameters to be passed to MNE read_raw_* functions.
         If a dict, for example: ``extra_params=dict(allow_maxshield=True)``.
+    space : None | str
+        The space of electrode coordinates to read in. None (default) assumes
+        there is only one electrodes.tsv file and reads that one in. If a
+        string is passed in, then only electrodes.tsv with specified space
+        BIDs-entity will be read in.
     verbose : bool
         The verbosity level
 
@@ -415,12 +420,20 @@ def read_raw_bids(bids_fname, bids_root, extra_params=None,
 
     # Try to find an associated electrodes.tsv and coordsystem.json
     # to get information about the status and type of present channels
+    acq = params['acq']
+    if space is None:
+        elec_suffix = 'acq-{}*_electrodes.tsv'.format(acq)
+        coord_suffix = 'acq-{}*_coordsystem.json'.format(acq)
+    else:
+        elec_suffix = 'acq-{}_space-{}_electrodes.tsv'.format(acq, space)
+        coord_suffix = 'acq-{}_space-{}_coordsystem.json'.format(acq, space)
     electrodes_fname = _find_matching_sidecar(bids_fname, bids_root,
-                                              'electrodes.tsv',
+                                              suffix=elec_suffix,
                                               allow_fail=True)
     coordsystem_fname = _find_matching_sidecar(bids_fname, bids_root,
-                                               'coordsystem.json',
+                                               suffix=coord_suffix,
                                                allow_fail=True)
+
     if electrodes_fname is not None:
         if coordsystem_fname is None:
             raise RuntimeError("BIDS mandates that the coordsystem.json "
