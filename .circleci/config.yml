@@ -39,7 +39,7 @@ jobs:
               conda update --yes --quiet conda
               conda env create -f environment.yml --name=testenv
               source activate testenv
-              pip install mne==0.20
+              pip install mne
               python setup.py develop
 
         - run:
