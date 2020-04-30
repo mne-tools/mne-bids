@@ -56,7 +56,6 @@ tasks = [2,  # This is 2 minutes of eyes closed rest
 for subj_idx in [1, 2]:
     eegbci.load_data(subject=subj_idx,
                      runs=tasks,
-                     force_update=True,
                      update_path=True)
 
 ###############################################################################
