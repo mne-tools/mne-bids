@@ -1162,6 +1162,7 @@ def test_write_anat_pathlike():
 
 
 def test_write_does_not_alter_events_inplace():
+    """Test that writing does not modify the passed events array."""
     data_path = testing.data_path()
     raw_fname = op.join(data_path, 'MEG', 'sample',
                         'sample_audvis_trunc_raw.fif')
