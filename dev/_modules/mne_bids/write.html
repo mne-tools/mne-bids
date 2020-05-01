@@ -342,6 +342,7 @@
     <span class="c1"># Start by filling all data that we know into an ordered dictionary</span>
     <span class="n">first_samp</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">first_samp</span>
     <span class="n">sfreq</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;sfreq&#39;</span><span class="p">]</span>
+    <span class="n">events</span> <span class="o">=</span> <span class="n">events</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
     <span class="n">events</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-=</span> <span class="n">first_samp</span>
 
     <span class="c1"># Onset column needs to be specified in seconds</span>
@@ -1664,7 +1665,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-04-29.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-05-01.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.3.<br/>
     </p>
   </div>
