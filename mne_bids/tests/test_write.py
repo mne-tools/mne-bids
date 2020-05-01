@@ -1159,3 +1159,21 @@ def test_write_anat_pathlike():
 
     # write_anat() should return a string.
     assert isinstance(anat_dir, str)
+
+
+def test_write_does_not_alter_events_inplace():
+    data_path = testing.data_path()
+    raw_fname = op.join(data_path, 'MEG', 'sample',
+                        'sample_audvis_trunc_raw.fif')
+    events_fname = (Path(data_path) / 'MEG' / 'sample' /
+                    'sample_audvis_trunc_raw-eve.fif')
+
+    raw = mne.io.read_raw_fif(raw_fname)
+    events = mne.read_events(events_fname)
+    events_orig = events.copy()
+
+    bids_root = _TempDir()
+    write_raw_bids(raw=raw, bids_basename=bids_basename, bids_root=bids_root,
+                   events_data=events, overwrite=True)
+
+    assert np.array_equal(events, events_orig)
