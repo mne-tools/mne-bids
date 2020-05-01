@@ -233,6 +233,7 @@ def _events_tsv(events, raw, fname, trial_type, overwrite=False,
     # Start by filling all data that we know into an ordered dictionary
     first_samp = raw.first_samp
     sfreq = raw.info['sfreq']
+    events = events.copy()
     events[:, 0] -= first_samp
 
     # Onset column needs to be specified in seconds
