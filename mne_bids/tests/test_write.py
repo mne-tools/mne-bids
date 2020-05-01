@@ -1166,8 +1166,8 @@ def test_write_does_not_alter_events_inplace():
     data_path = testing.data_path()
     raw_fname = op.join(data_path, 'MEG', 'sample',
                         'sample_audvis_trunc_raw.fif')
-    events_fname = op.join(data_path,
-                           'MEG/sample/sample_audvis_trunc_raw-eve.fif')
+    events_fname = op.join(data_path, 'MEG', 'sample',
+                           'sample_audvis_trunc_raw-eve.fif')
 
     raw = mne.io.read_raw_fif(raw_fname)
     events = mne.read_events(events_fname)
