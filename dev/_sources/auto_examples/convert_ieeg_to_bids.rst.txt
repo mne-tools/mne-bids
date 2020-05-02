@@ -396,12 +396,12 @@ temporarily save the data to disc before reading it back in.
 
  .. code-block:: none
 
-    Writing /tmp/tmpxl5je0n2/test_raw.fif
-    Closing /tmp/tmpxl5je0n2/test_raw.fif [done]
-    Opening raw data file /tmp/tmpxl5je0n2/test_raw.fif...
+    Writing /tmp/tmp45blzfl6/test_raw.fif
+    Closing /tmp/tmp45blzfl6/test_raw.fif [done]
+    Opening raw data file /tmp/tmp45blzfl6/test_raw.fif...
         Range : 0 ... 999 =      0.000 ...     0.999 secs
     Ready.
-    Opening raw data file /tmp/tmpxl5je0n2/test_raw.fif...
+    Opening raw data file /tmp/tmp45blzfl6/test_raw.fif...
         Range : 0 ... 999 =      0.000 ...     0.999 secs
     Ready.
     Creating folder: /home/circleci/mne_data/ieegmmidb_bids/sub-001/ieeg
@@ -534,19 +534,19 @@ Step 3: Check and compare with standard
  .. code-block:: none
 
     |ieegmmidb_bids/
-    |--- dataset_description.json
     |--- participants.json
     |--- participants.tsv
+    |--- dataset_description.json
     |--- sub-001/
     |------ sub-001_scans.tsv
     |------ ieeg/
-    |--------- sub-001_task-testresteyes_acq-ecog_channels.tsv
-    |--------- sub-001_task-testresteyes_acq-ecog_ieeg.json
-    |--------- sub-001_task-testresteyes_acq-ecog_ieeg.vmrk
-    |--------- sub-001_acq-ecog_electrodes.tsv
-    |--------- sub-001_task-testresteyes_acq-ecog_ieeg.vhdr
     |--------- sub-001_task-testresteyes_acq-ecog_ieeg.eeg
+    |--------- sub-001_acq-ecog_electrodes.tsv
+    |--------- sub-001_task-testresteyes_acq-ecog_ieeg.vmrk
     |--------- sub-001_acq-ecog_coordsystem.json
+    |--------- sub-001_task-testresteyes_acq-ecog_ieeg.vhdr
+    |--------- sub-001_task-testresteyes_acq-ecog_ieeg.json
+    |--------- sub-001_task-testresteyes_acq-ecog_channels.tsv
 
 
 
@@ -635,7 +635,7 @@ Now we have written our BIDS directory. We can use
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  0.238 seconds)
+   **Total running time of the script:** ( 0 minutes  0.209 seconds)
 
 
 .. _sphx_glr_download_auto_examples_convert_ieeg_to_bids.py:
