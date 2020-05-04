@@ -360,7 +360,7 @@ def read_raw_bids(bids_fname, bids_root, extra_params=None, space=None,
         The space of electrode coordinates to read in. None (default) assumes
         there is only one electrodes.tsv file and reads that one in. If a
         string is passed in, then only electrodes.tsv with specified space
-        BIDs-entity will be read in.
+        BIDS-entity will be read in.
     verbose : bool
         The verbosity level
 
