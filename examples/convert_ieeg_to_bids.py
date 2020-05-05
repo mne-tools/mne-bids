@@ -193,8 +193,7 @@ print_dir_tree(bids_root)
 
 # read in the BIDS dataset and plot the coordinates
 bids_fname = bids_basename + "_ieeg.vhdr"
-raw = read_raw_bids(bids_fname, bids_root=bids_root,
-                    space='head')
+raw = read_raw_bids(bids_fname, bids_root=bids_root)
 
 # get the first 5 channels and show their locations
 # this should match what was printed earlier.
