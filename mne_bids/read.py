@@ -340,8 +340,7 @@ def _handle_channels_reading(channels_fname, bids_fname, raw):
     return raw
 
 
-def read_raw_bids(bids_fname, bids_root, extra_params=None, space=None,
-                  verbose=True):
+def read_raw_bids(bids_fname, bids_root, extra_params=None, verbose=True):
     """Read BIDS compatible data.
 
     Will attempt to read associated events.tsv and channels.tsv files to
@@ -356,11 +355,6 @@ def read_raw_bids(bids_fname, bids_root, extra_params=None, space=None,
     extra_params : None | dict
         Extra parameters to be passed to MNE read_raw_* functions.
         If a dict, for example: ``extra_params=dict(allow_maxshield=True)``.
-    space : None | str
-        The space of electrode coordinates to read in. None (default) assumes
-        there is only one electrodes.tsv file and reads that one in. If a
-        string is passed in, then only electrodes.tsv with specified space
-        BIDS-entity will be read in.
     verbose : bool
         The verbosity level
 
@@ -421,12 +415,8 @@ def read_raw_bids(bids_fname, bids_root, extra_params=None, space=None,
     # Try to find an associated electrodes.tsv and coordsystem.json
     # to get information about the status and type of present channels
     acq = params['acq']
-    if space is None:
-        elec_suffix = 'acq-{}*_electrodes.tsv'.format(acq)
-        coord_suffix = 'acq-{}*_coordsystem.json'.format(acq)
-    else:
-        elec_suffix = 'acq-{}_space-{}_electrodes.tsv'.format(acq, space)
-        coord_suffix = 'acq-{}_space-{}_coordsystem.json'.format(acq, space)
+    elec_suffix = 'acq-{}*_electrodes.tsv'.format(acq)
+    coord_suffix = 'acq-{}*_coordsystem.json'.format(acq)
     electrodes_fname = _find_matching_sidecar(bids_fname, bids_root,
                                               suffix=elec_suffix,
                                               allow_fail=True)

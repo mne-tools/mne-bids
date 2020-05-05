@@ -347,7 +347,8 @@ def test_handle_ieeg_coords_reading():
     ch_pos = dict(zip(ch_names, elec_locs))
     coordinate_frames = ['mri', 'ras']
     for coord_frame in coordinate_frames:
-        # XXX: Currently mne-bids can't handle two electrodes files
+        # XXX: mne-bids doesn't support multiple electrodes.tsv files
+        sh.rmtree(bids_root)
         montage = mne.channels.make_dig_montage(ch_pos=ch_pos,
                                                 coord_frame=coord_frame)
         raw.set_montage(montage)
@@ -355,15 +356,10 @@ def test_handle_ieeg_coords_reading():
                        overwrite=True, verbose=False)
         # read in raw file w/ updated coordinate frame
         # and make sure all digpoints are correct coordinate frames
-        raw_test = read_raw_bids(bids_fname, bids_root, space=coord_frame)
+        raw_test = read_raw_bids(bids_fname, bids_root)
         coord_frame_int = MNE_IEEG_COORD_FRAME_DICT[coord_frame]
         for digpoint in raw_test.info['dig']:
             assert digpoint['coord_frame'] == coord_frame_int
-
-    # check warning/error and correct reading if space isn't specified
-    with pytest.warns(RuntimeWarning, match='Expected to find a single'):
-        raw_test = read_raw_bids(bids_fname, bids_root)
-        assert raw_test.info['dig'] is None
 
     # start w/ new bids root
     sh.rmtree(bids_root)
@@ -432,6 +428,7 @@ def test_handle_ieeg_coords_reading():
         with pytest.warns(RuntimeWarning, match="Coordinate frame is "
                                                 "not accepted BIDS keyword"):
             raw_test = read_raw_bids(bids_fname, bids_root, verbose=False)
+            assert raw_test.info['dig'] is None
 
     # ACPC should be read in as RAS for iEEG
     _update_sidecar(coordsystem_fname, 'iEEGCoordinateSystem', 'acpc')
