@@ -46,7 +46,7 @@ upload-pipy:
 	python setup.py sdist bdist_egg register upload
 
 check-manifest:
-	check-manifest --ignore .circleci*,doc,.DS_Store
+	check-manifest --ignore .circleci/*,doc,.DS_Store
 
 flake:
 	@if command -v flake8 > /dev/null; then \
