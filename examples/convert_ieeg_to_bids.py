@@ -36,13 +36,13 @@ refer to the iEEG-BIDS specification.
 
 import os
 from pprint import pprint
+from collections import OrderedDict
 
 import numpy as np
 
 import mne
 from mne_bids import write_raw_bids, make_bids_basename, read_raw_bids
 from mne_bids.utils import print_dir_tree
-from mne_bids.tsv_handler import _from_tsv
 
 ###############################################################################
 # Step 1: Download the data
@@ -59,13 +59,23 @@ from mne_bids.tsv_handler import _from_tsv
 misc_path = mne.datasets.misc.data_path()
 
 # The electrode coords data are in the tsv file format
-electrode_tsv = _from_tsv(misc_path + '/ecog/sample_ecog_electrodes.tsv')
-ch_names = electrode_tsv['name']
+# which is easily read in using numpy
+fname = misc_path + '/ecog/sample_ecog_electrodes.tsv'
+data = np.loadtxt(fname, dtype=str, delimiter='\t',
+                  comments=None, encoding='utf-8')
+column_names = data[0, :]
+info = data[1:, :]
+electrode_tsv = OrderedDict()
+for i, name in enumerate(column_names):
+    electrode_tsv[name] = info[:, i].tolist()
 
+# load in channel names
+ch_names = electrode_tsv['name']
 # load in the xyz coordinates as a float
 elec = np.empty(shape=(len(ch_names), 3))
 for ind, axis in enumerate(['x', 'y', 'z']):
     elec[:, ind] = list(map(float, electrode_tsv[axis]))
+
 
 ###############################################################################
 # Now we make a montage stating that the iEEG contacts are in MRI
