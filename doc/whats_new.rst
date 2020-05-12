@@ -24,6 +24,7 @@ Changelog
 
 - :func:`read_raw_bids` now reads in participants tsv data, by `Adam Li`_ (`#392 <https://github.com/mne-tools/mne-bids/pull/392>`_)
 - :func:`mne_bids.write_raw_bids` now uses the 'space' BIDS-entity when writing iEEG electrodes and coordinate frames by `Adam Li`_ (`#390 <https://github.com/mne-tools/mne-bids/pull/390>`_)
+- Fix :code:`convert_ieeg_to_bids` to now use sample ECoG EDF data by `Adam Li`_ (`#390 <https://github.com/mne-tools/mne-bids/pull/390>`_)
 
 Bug
 ~~~

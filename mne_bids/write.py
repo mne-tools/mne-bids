@@ -1278,6 +1278,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
                     acquisition=acquisition, space=space,
                     suffix='electrodes.tsv', prefix=data_path)
 
+                print("Writing to ", electrodes_fname)
                 # Now write the data for coords and the coordsystem
                 _electrodes_tsv(raw, electrodes_fname,
                                 kind, overwrite, verbose)
