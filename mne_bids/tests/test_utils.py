@@ -85,9 +85,13 @@ def test_get_keys(return_bids_test_dir):
                           ('acq', [], None),
                           ('task', [task], None),
                           ('sub', [], dict(ignore_sub=[subject_id])),
+                          ('sub', [], dict(ignore_sub=subject_id)),
                           ('ses', [], dict(ignore_ses=[session_id])),
+                          ('ses', [], dict(ignore_ses=session_id)),
                           ('run', [run], dict(ignore_run=['02'])),
+                          ('run', [run], dict(ignore_run='02')),
                           ('task', [], dict(ignore_task=[task])),
+                          ('task', [], dict(ignore_task=task)),
                           ('run', [run, '02'], dict(ignore_run=['bogus']))])
 def test_get_entity_vals(entity, expected_vals, kwargs, return_bids_test_dir):
     """Test getting a list of entities."""
