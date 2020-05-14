@@ -55,7 +55,7 @@ def get_kinds(bids_root):
     return kinds
 
 
-def get_entity_vals(bids_root, entity_key):
+def get_entity_vals(bids_root, entity_key, include_emptyroom=False):
     """Get list of values associated with an `entity_key` in a BIDS dataset.
 
     BIDS file names are organized by key-value pairs called "entities" [1]_.
@@ -69,6 +69,9 @@ def get_entity_vals(bids_root, entity_key):
     entity_key : str
         The name of the entity key to search for. Can be one of
         ['sub', 'ses', 'run', 'acq'].
+    include_emptyroom : bool
+        Whether to extract the entity values from empty-room recordings in the
+        dataset as well.
 
     Returns
     -------
@@ -97,6 +100,10 @@ def get_entity_vals(bids_root, entity_key):
     p = re.compile(r'{}-(.*?)_'.format(entity_key))
     value_list = list()
     for filename in Path(bids_root).rglob('*{}-*_*'.format(entity_key)):
+        if (filename.stem.startswith('sub-emptyroom_') and
+                not include_emptyroom):
+            continue
+
         match = p.search(filename.stem)
         value = match.group(1)
         if value not in value_list:
