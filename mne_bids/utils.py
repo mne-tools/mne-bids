@@ -65,7 +65,7 @@ def _ensure_tuple(x):
         return tuple(x)
 
 
-def get_entity_vals(bids_root, entity_key, *, ignore_sub=('emptyroom',),
+def get_entity_vals(bids_root, entity_key, *, ignore_sub='emptyroom',
                     ignore_task=None, ignore_ses=None, ignore_run=None,
                     ignore_acq=None):
     """Get list of values associated with an `entity_key` in a BIDS dataset.
