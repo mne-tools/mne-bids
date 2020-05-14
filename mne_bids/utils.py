@@ -56,7 +56,7 @@ def get_kinds(bids_root):
 
 
 def _ensure_tuple(x):
-    """Always return a tuple."""
+    """Return a tuple."""
     if x is None:
         return tuple()
     elif isinstance(x, str):
