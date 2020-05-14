@@ -73,15 +73,15 @@ def get_entity_vals(bids_root, entity_key, *, ignore_sub=('emptyroom',),
         ['sub', 'ses', 'task', 'run', 'acq'].
     ignore_sub : iterable | None
         Subjects to ignore. By default, entities from the ``emptyroom``
-        mock-subject are not returned.
+        mock-subject are not returned. If ``None``, include all subjects.
     ignore_task : iterable | None
-        Tasks to ignore.
+        Tasks to ignore. If ``None``, include all tasks.
     ignore_ses : iterable | None
-        Sessions to ignore.
+        Sessions to ignore. If ``None``, include all sessions.
     ignore_run : iterable | None
-        Runs to ignore.
+        Runs to ignore. If ``None``, include all runs.
     ignore_acq : iterable | None
-        Acquisitions to ignore.
+        Acquisitions to ignore. If ``None``, include all acquisitions.
 
     Returns
     -------
