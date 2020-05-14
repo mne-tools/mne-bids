@@ -23,7 +23,7 @@ Changelog
 ~~~~~~~~~
 
 - :func:`read_raw_bids` now reads in participants tsv data, by `Adam Li`_ (`#392 <https://github.com/mne-tools/mne-bids/pull/392>`_)
-- :func:`mne_bids.utils.get_entity_vals` has gained ``ignore_*`` keyword arguments to exclude specific datasets from the list of results, by `Richard Höchenberger`_ (`#409 <https://github.com/mne-tools/mne-bids/pull/409>`_)
+- :func:`mne_bids.utils.get_entity_vals` has gained ``ignore_*`` keyword arguments to exclude specific values from the list of results, e.g. the entities for a particular subject or task, by `Richard Höchenberger`_ (`#409 <https://github.com/mne-tools/mne-bids/pull/409>`_)
 
 Bug
 ~~~
