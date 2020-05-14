@@ -55,7 +55,9 @@ def get_kinds(bids_root):
     return kinds
 
 
-def get_entity_vals(bids_root, entity_key, include_emptyroom=False):
+def get_entity_vals(bids_root, entity_key, ignore_sub=('emptyroom',),
+                    ignore_task=None, ignore_ses=None, ignore_run=None,
+                    ignore_acq=None):
     """Get list of values associated with an `entity_key` in a BIDS dataset.
 
     BIDS file names are organized by key-value pairs called "entities" [1]_.
@@ -68,10 +70,18 @@ def get_entity_vals(bids_root, entity_key, include_emptyroom=False):
         Path to the root of the BIDS directory.
     entity_key : str
         The name of the entity key to search for. Can be one of
-        ['sub', 'ses', 'run', 'acq'].
-    include_emptyroom : bool
-        Whether to extract the entity values from empty-room recordings in the
-        dataset as well.
+        ['sub', 'ses', 'task', 'run', 'acq'].
+    ignore_sub : iterable | None
+        Subjects to ignore. By default, entities from the ``emptyroom``
+        mock-subject are not returned.
+    ignore_task : iterable | None
+        Tasks to ignore.
+    ignore_ses : iterable | None
+        Sessions to ignore.
+    ignore_run : iterable | None
+        Runs to ignore.
+    ignore_acq : iterable | None
+        Acquisitions to ignore.
 
     Returns
     -------
@@ -100,8 +110,20 @@ def get_entity_vals(bids_root, entity_key, include_emptyroom=False):
     p = re.compile(r'{}-(.*?)_'.format(entity_key))
     value_list = list()
     for filename in Path(bids_root).rglob('*{}-*_*'.format(entity_key)):
-        if (filename.stem.startswith('sub-emptyroom_') and
-                not include_emptyroom):
+        if ignore_sub and any([filename.stem.startswith(f'sub-{s}_')
+                               for s in ignore_sub]):
+            continue
+        if ignore_task and any([f'_task-{t}_' in filename.stem
+                                for t in ignore_task]):
+            continue
+        if ignore_ses and any([f'_ses-{s}_' in filename.stem
+                               for s in ignore_ses]):
+            continue
+        if ignore_run and any([f'_run-{r}_' in filename.stem
+                               for r in ignore_run]):
+            continue
+        if ignore_acq and any([f'_acq-{a}_' in filename.stem
+                               for a in ignore_acq]):
             continue
 
         match = p.search(filename.stem)

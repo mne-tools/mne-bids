@@ -77,17 +77,31 @@ def test_get_keys(return_bids_test_dir):
     assert kinds == ['meg']
 
 
-def test_get_entity_vals(return_bids_test_dir):
+@pytest.mark.parametrize('entity, expected_vals, kwargs',
+                         [('bogus', None, None),
+                          ('sub', [subject_id], None),
+                          ('ses', [session_id], None),
+                          ('run', [run, '02'], None),
+                          ('acq', [], None),
+                          ('task', [task], None),
+                          ('sub', [], dict(ignore_sub=[subject_id])),
+                          ('ses', [], dict(ignore_ses=[session_id])),
+                          ('run', [run], dict(ignore_run=['02'])),
+                          ('task', [], dict(ignore_task=[task])),
+                          ('run', [run, '02'], dict(ignore_run=['bogus']))])
+def test_get_entity_vals(entity, expected_vals, kwargs, return_bids_test_dir):
     """Test getting a list of entities."""
     bids_root = return_bids_test_dir
-    with pytest.raises(ValueError, match='`key` must be one of'):
-        get_entity_vals(bids_root, entity_key='bogus')
+    if kwargs is None:
+        kwargs = dict()
 
-    assert get_entity_vals(bids_root, 'sub') == [subject_id]
-    assert get_entity_vals(bids_root, 'ses') == [session_id]
-    assert get_entity_vals(bids_root, 'run') == [run, '02']
-    assert get_entity_vals(bids_root, 'acq') == []
-    assert get_entity_vals(bids_root, 'task') == [task]
+    if entity == 'bogus':
+        with pytest.raises(ValueError, match='`key` must be one of'):
+            get_entity_vals(bids_root=bids_root, entity_key=entity, **kwargs)
+    else:
+        vals = get_entity_vals(bids_root=bids_root, entity_key=entity,
+                               **kwargs)
+        assert vals == expected_vals
 
 
 def test_get_ch_type_mapping():
