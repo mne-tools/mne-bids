@@ -76,7 +76,6 @@ elec = np.empty(shape=(len(ch_names), 3))
 for ind, axis in enumerate(['x', 'y', 'z']):
     elec[:, ind] = list(map(float, electrode_tsv[axis]))
 
-
 ###############################################################################
 # Now we make a montage stating that the iEEG contacts are in MRI
 # coordinate system.
