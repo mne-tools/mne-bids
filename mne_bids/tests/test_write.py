@@ -69,6 +69,7 @@ warning_str = dict(
     annotations_omitted='ignore:Omitted .* annot.*:RuntimeWarning:mne',
 )
 
+
 # WINDOWS issues:
 # the bids-validator development version does not work properly on Windows as
 # of 2019-06-25 --> https://github.com/bids-standard/bids-validator/issues/790
