@@ -381,12 +381,12 @@ temporarily save the data to disc before reading it back in.</p>
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Writing /tmp/tmpa7apqshz/test_raw.fif
-Closing /tmp/tmpa7apqshz/test_raw.fif [done]
-Opening raw data file /tmp/tmpa7apqshz/test_raw.fif...
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Writing /tmp/tmpsuivugt9/test_raw.fif
+Closing /tmp/tmpsuivugt9/test_raw.fif [done]
+Opening raw data file /tmp/tmpsuivugt9/test_raw.fif...
     Range : 0 ... 999 =      0.000 ...     0.999 secs
 Ready.
-Opening raw data file /tmp/tmpa7apqshz/test_raw.fif...
+Opening raw data file /tmp/tmpsuivugt9/test_raw.fif...
     Range : 0 ... 999 =      0.000 ...     0.999 secs
 Ready.
 Creating folder: /home/circleci/mne_data/ieegmmidb_bids/sub-001/ieeg
@@ -447,7 +447,7 @@ Writing &#39;/home/circleci/mne_data/ieegmmidb_bids/sub-001/ieeg/sub-001_acq-eco
     &quot;iEEGCoordinateSystem&quot;: &quot;mri&quot;,
     &quot;iEEGCoordinateUnits&quot;: &quot;m&quot;
 }
-/home/circleci/project/mne_bids/utils.py:459: RuntimeWarning: No events found or provided. Please make sure to set channel type using raw.set_channel_types or provide events_data.
+/home/circleci/project/mne_bids/utils.py:504: RuntimeWarning: No events found or provided. Please make sure to set channel type using raw.set_channel_types or provide events_data.
   warn(&#39;No events found or provided. Please make sure to&#39;
 
 Writing &#39;/home/circleci/mne_data/ieegmmidb_bids/dataset_description.json&#39;...
@@ -460,7 +460,7 @@ Writing &#39;/home/circleci/mne_data/ieegmmidb_bids/dataset_description.json&#39
     ]
 }
 Effective window size : 0.256 (s)
-/home/circleci/project/mne_bids/write.py:558: RuntimeWarning: No line frequency found, defaulting to 50 Hz estimated from multi-taper FFT on 10 seconds of data.
+/home/circleci/project/mne_bids/write.py:558: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
   &#39;on 10 seconds of data.&#39;.format(powerlinefrequency))
 
 Writing &#39;/home/circleci/mne_data/ieegmmidb_bids/sub-001/ieeg/sub-001_task-testresteyes_acq-ecog_ieeg.json&#39;...
@@ -468,7 +468,7 @@ Writing &#39;/home/circleci/mne_data/ieegmmidb_bids/sub-001/ieeg/sub-001_task-te
 {
     &quot;TaskName&quot;: &quot;testresteyes&quot;,
     &quot;Manufacturer&quot;: &quot;Elekta&quot;,
-    &quot;PowerLineFrequency&quot;: 50,
+    &quot;PowerLineFrequency&quot;: 60,
     &quot;SamplingFrequency&quot;: 1000.0,
     &quot;SoftwareFilters&quot;: &quot;n/a&quot;,
     &quot;RecordingDuration&quot;: 0.999,
@@ -505,18 +505,18 @@ POL LPG5-Ref    ECOG    V       0.0     500.0   Electrocorticography    1000.0  
 </div>
 <p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>|ieegmmidb_bids/
-|--- dataset_description.json
 |--- participants.json
 |--- participants.tsv
+|--- dataset_description.json
 |--- sub-001/
 |------ sub-001_scans.tsv
 |------ ieeg/
-|--------- sub-001_task-testresteyes_acq-ecog_channels.tsv
 |--------- sub-001_acq-ecog_electrodes.tsv
-|--------- sub-001_task-testresteyes_acq-ecog_ieeg.json
-|--------- sub-001_acq-ecog_coordsystem.json
-|--------- sub-001_task-testresteyes_acq-ecog_ieeg.vhdr
+|--------- sub-001_task-testresteyes_acq-ecog_channels.tsv
 |--------- sub-001_task-testresteyes_acq-ecog_ieeg.eeg
+|--------- sub-001_acq-ecog_coordsystem.json
+|--------- sub-001_task-testresteyes_acq-ecog_ieeg.json
+|--------- sub-001_task-testresteyes_acq-ecog_ieeg.vhdr
 |--------- sub-001_task-testresteyes_acq-ecog_ieeg.vmrk
 </pre></div>
 </div>
@@ -560,7 +560,7 @@ command line tool:</p>
 <p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Extracting parameters from /home/circleci/mne_data/ieegmmidb_bids/sub-001/ieeg/sub-001_task-testresteyes_acq-ecog_ieeg.vhdr...
 Setting channel info structure...
-/home/circleci/project/mne_bids/utils.py:634: RuntimeWarning: Did not find any events.tsv file associated with sub-001_task-testresteyes_acq-ecog_ieeg.vhdr.
+/home/circleci/project/mne_bids/utils.py:679: RuntimeWarning: Did not find any events.tsv file associated with sub-001_task-testresteyes_acq-ecog_ieeg.vhdr.
 
 The search_str was &quot;/home/circleci/mne_data/ieegmmidb_bids/sub-001/**/sub-001*events.tsv&quot;
   warn(msg)
@@ -580,7 +580,7 @@ The channel coordinates after writing into BIDS:
 &lt;Figure size 640x640 with 1 Axes&gt;
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.176 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.169 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-ieeg-to-bids-py">
 <div class="binder-badge docutils container">
 <a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/convert_ieeg_to_bids.ipynb"><img alt="https://mybinder.org/badge_logo.svg" src="https://mybinder.org/badge_logo.svg" width="150px" /></a>
@@ -608,7 +608,7 @@ The channel coordinates after writing into BIDS:
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-05-07.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-05-15.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.3.<br/>
     </p>
   </div>

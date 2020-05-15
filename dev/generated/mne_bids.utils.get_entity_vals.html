@@ -110,7 +110,7 @@
 <h1>mne_bids.utils.get_entity_vals<a class="headerlink" href="#mne-bids-utils-get-entity-vals" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt id="mne_bids.utils.get_entity_vals">
-<code class="sig-prename descclassname">mne_bids.utils.</code><code class="sig-name descname">get_entity_vals</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">bids_root</span></em>, <em class="sig-param"><span class="n">entity_key</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/utils.html#get_entity_vals"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.utils.get_entity_vals" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">mne_bids.utils.</code><code class="sig-name descname">get_entity_vals</code><span class="sig-paren">(</span><em class="sig-param">bids_root</em>, <em class="sig-param">entity_key</em>, <em class="sig-param">\*</em>, <em class="sig-param">ignore_sub='emptyroom'</em>, <em class="sig-param">ignore_task=None</em>, <em class="sig-param">ignore_ses=None</em>, <em class="sig-param">ignore_run=None</em>, <em class="sig-param">ignore_acq=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/utils.html#get_entity_vals"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.utils.get_entity_vals" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get list of values associated with an <cite>entity_key</cite> in a BIDS dataset.</p>
 <p>BIDS file names are organized by key-value pairs called “entities” <a class="reference internal" href="#rdefda2db5d7c-1" id="id1">[1]</a>.
 With this function, you can get all values for an entity indexed by its
@@ -121,7 +121,18 @@ key.</p>
 <dt><strong>bids_root</strong><span class="classifier">str | pathlib.Path</span></dt><dd><p>Path to the root of the BIDS directory.</p>
 </dd>
 <dt><strong>entity_key</strong><span class="classifier">str</span></dt><dd><p>The name of the entity key to search for. Can be one of
-[‘sub’, ‘ses’, ‘run’, ‘acq’].</p>
+[‘sub’, ‘ses’, ‘task’, ‘run’, ‘acq’].</p>
+</dd>
+<dt><strong>ignore_sub</strong><span class="classifier">str | iterable | None</span></dt><dd><p>Subject(s) to ignore. By default, entities from the <code class="docutils literal notranslate"><span class="pre">emptyroom</span></code>
+mock-subject are not returned. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, include all subjects.</p>
+</dd>
+<dt><strong>ignore_task</strong><span class="classifier">str | iterable | None</span></dt><dd><p>Task(s) to ignore. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, include all tasks.</p>
+</dd>
+<dt><strong>ignore_ses</strong><span class="classifier">str | iterable | None</span></dt><dd><p>Session(s) to ignore. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, include all sessions.</p>
+</dd>
+<dt><strong>ignore_run</strong><span class="classifier">str | iterable | None</span></dt><dd><p>Run(s) to ignore. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, include all runs.</p>
+</dd>
+<dt><strong>ignore_acq</strong><span class="classifier">str | iterable | None</span></dt><dd><p>Acquisition(s) to ignore. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, include all acquisitions.</p>
 </dd>
 </dl>
 </dd>
@@ -162,7 +173,7 @@ pointed to by <cite>bids_root</cite>.</p>
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-05-07.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-05-15.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.3.<br/>
     </p>
   </div>

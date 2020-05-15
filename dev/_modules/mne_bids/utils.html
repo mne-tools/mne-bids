@@ -164,7 +164,19 @@
     <span class="k">return</span> <span class="n">kinds</span></div>
 
 
-<div class="viewcode-block" id="get_entity_vals"><a class="viewcode-back" href="../../generated/mne_bids.utils.get_entity_vals.html#mne_bids.get_entity_vals">[docs]</a><span class="k">def</span> <span class="nf">get_entity_vals</span><span class="p">(</span><span class="n">bids_root</span><span class="p">,</span> <span class="n">entity_key</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_ensure_tuple</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return a tuple.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">()</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">x</span><span class="p">,)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="get_entity_vals"><a class="viewcode-back" href="../../generated/mne_bids.utils.get_entity_vals.html#mne_bids.get_entity_vals">[docs]</a><span class="k">def</span> <span class="nf">get_entity_vals</span><span class="p">(</span><span class="n">bids_root</span><span class="p">,</span> <span class="n">entity_key</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">ignore_sub</span><span class="o">=</span><span class="s1">&#39;emptyroom&#39;</span><span class="p">,</span>
+                    <span class="n">ignore_task</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ignore_ses</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ignore_run</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                    <span class="n">ignore_acq</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Get list of values associated with an `entity_key` in a BIDS dataset.</span>
 
 <span class="sd">    BIDS file names are organized by key-value pairs called &quot;entities&quot; [1]_.</span>
@@ -177,7 +189,18 @@
 <span class="sd">        Path to the root of the BIDS directory.</span>
 <span class="sd">    entity_key : str</span>
 <span class="sd">        The name of the entity key to search for. Can be one of</span>
-<span class="sd">        [&#39;sub&#39;, &#39;ses&#39;, &#39;run&#39;, &#39;acq&#39;].</span>
+<span class="sd">        [&#39;sub&#39;, &#39;ses&#39;, &#39;task&#39;, &#39;run&#39;, &#39;acq&#39;].</span>
+<span class="sd">    ignore_sub : str | iterable | None</span>
+<span class="sd">        Subject(s) to ignore. By default, entities from the ``emptyroom``</span>
+<span class="sd">        mock-subject are not returned. If ``None``, include all subjects.</span>
+<span class="sd">    ignore_task : str | iterable | None</span>
+<span class="sd">        Task(s) to ignore. If ``None``, include all tasks.</span>
+<span class="sd">    ignore_ses : str | iterable | None</span>
+<span class="sd">        Session(s) to ignore. If ``None``, include all sessions.</span>
+<span class="sd">    ignore_run : str | iterable | None</span>
+<span class="sd">        Run(s) to ignore. If ``None``, include all runs.</span>
+<span class="sd">    ignore_acq : str | iterable | None</span>
+<span class="sd">        Acquisition(s) to ignore. If ``None``, include all acquisitions.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -203,9 +226,31 @@
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;`key` must be one of &quot;</span><span class="si">{}</span><span class="s1">&quot;. Got &quot;</span><span class="si">{}</span><span class="s1">&quot;&#39;</span>
                          <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">entities</span><span class="p">,</span> <span class="n">entity_key</span><span class="p">))</span>
 
+    <span class="n">ignore_sub</span> <span class="o">=</span> <span class="n">_ensure_tuple</span><span class="p">(</span><span class="n">ignore_sub</span><span class="p">)</span>
+    <span class="n">ignore_task</span> <span class="o">=</span> <span class="n">_ensure_tuple</span><span class="p">(</span><span class="n">ignore_task</span><span class="p">)</span>
+    <span class="n">ignore_ses</span> <span class="o">=</span> <span class="n">_ensure_tuple</span><span class="p">(</span><span class="n">ignore_ses</span><span class="p">)</span>
+    <span class="n">ignore_run</span> <span class="o">=</span> <span class="n">_ensure_tuple</span><span class="p">(</span><span class="n">ignore_run</span><span class="p">)</span>
+    <span class="n">ignore_acq</span> <span class="o">=</span> <span class="n">_ensure_tuple</span><span class="p">(</span><span class="n">ignore_acq</span><span class="p">)</span>
+
     <span class="n">p</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">-(.*?)_&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">entity_key</span><span class="p">))</span>
     <span class="n">value_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">Path</span><span class="p">(</span><span class="n">bids_root</span><span class="p">)</span><span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="s1">&#39;*</span><span class="si">{}</span><span class="s1">-*_*&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">entity_key</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="n">ignore_sub</span> <span class="ow">and</span> <span class="nb">any</span><span class="p">([</span><span class="n">filename</span><span class="o">.</span><span class="n">stem</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;sub-</span><span class="si">{</span><span class="n">s</span><span class="si">}</span><span class="s1">_&#39;</span><span class="p">)</span>
+                               <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">ignore_sub</span><span class="p">]):</span>
+            <span class="k">continue</span>
+        <span class="k">if</span> <span class="n">ignore_task</span> <span class="ow">and</span> <span class="nb">any</span><span class="p">([</span><span class="sa">f</span><span class="s1">&#39;_task-</span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s1">_&#39;</span> <span class="ow">in</span> <span class="n">filename</span><span class="o">.</span><span class="n">stem</span>
+                                <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">ignore_task</span><span class="p">]):</span>
+            <span class="k">continue</span>
+        <span class="k">if</span> <span class="n">ignore_ses</span> <span class="ow">and</span> <span class="nb">any</span><span class="p">([</span><span class="sa">f</span><span class="s1">&#39;_ses-</span><span class="si">{</span><span class="n">s</span><span class="si">}</span><span class="s1">_&#39;</span> <span class="ow">in</span> <span class="n">filename</span><span class="o">.</span><span class="n">stem</span>
+                               <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">ignore_ses</span><span class="p">]):</span>
+            <span class="k">continue</span>
+        <span class="k">if</span> <span class="n">ignore_run</span> <span class="ow">and</span> <span class="nb">any</span><span class="p">([</span><span class="sa">f</span><span class="s1">&#39;_run-</span><span class="si">{</span><span class="n">r</span><span class="si">}</span><span class="s1">_&#39;</span> <span class="ow">in</span> <span class="n">filename</span><span class="o">.</span><span class="n">stem</span>
+                               <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">ignore_run</span><span class="p">]):</span>
+            <span class="k">continue</span>
+        <span class="k">if</span> <span class="n">ignore_acq</span> <span class="ow">and</span> <span class="nb">any</span><span class="p">([</span><span class="sa">f</span><span class="s1">&#39;_acq-</span><span class="si">{</span><span class="n">a</span><span class="si">}</span><span class="s1">_&#39;</span> <span class="ow">in</span> <span class="n">filename</span><span class="o">.</span><span class="n">stem</span>
+                               <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">ignore_acq</span><span class="p">]):</span>
+            <span class="k">continue</span>
+
         <span class="n">match</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">filename</span><span class="o">.</span><span class="n">stem</span><span class="p">)</span>
         <span class="n">value</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">value</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">value_list</span><span class="p">:</span>
@@ -844,7 +889,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-05-07.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-05-15.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.3.<br/>
     </p>
   </div>
