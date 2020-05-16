@@ -953,8 +953,8 @@ def test_write_anat(_bids_validate):
 
     # trans has a wrong type
     wrong_type = 1
-    match = 'transform type {} not known, must be'.format(type(wrong_type))
-    with pytest.raises(ValueError, match=match):
+    match = f'trans must be an instance of .*, got {type(wrong_type)} instead'
+    with pytest.raises(TypeError, match=match):
         write_anat(bids_root, subject_id, t1w_mgh, session_id, raw=raw,
                    trans=wrong_type, verbose=True, deface=False,
                    overwrite=True)
