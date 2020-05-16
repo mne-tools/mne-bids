@@ -396,12 +396,12 @@ temporarily save the data to disc before reading it back in.
 
  .. code-block:: none
 
-    Writing /tmp/tmple_lpnnt/test_raw.fif
-    Closing /tmp/tmple_lpnnt/test_raw.fif [done]
-    Opening raw data file /tmp/tmple_lpnnt/test_raw.fif...
+    Writing /tmp/tmpnmd4te4r/test_raw.fif
+    Closing /tmp/tmpnmd4te4r/test_raw.fif [done]
+    Opening raw data file /tmp/tmpnmd4te4r/test_raw.fif...
         Range : 0 ... 999 =      0.000 ...     0.999 secs
     Ready.
-    Opening raw data file /tmp/tmple_lpnnt/test_raw.fif...
+    Opening raw data file /tmp/tmpnmd4te4r/test_raw.fif...
         Range : 0 ... 999 =      0.000 ...     0.999 secs
     Ready.
     Creating folder: /home/circleci/mne_data/ieegmmidb_bids/sub-001/ieeg
@@ -475,7 +475,7 @@ temporarily save the data to disc before reading it back in.
         ]
     }
     Effective window size : 0.256 (s)
-    /home/circleci/project/mne_bids/write.py:558: RuntimeWarning: No line frequency found, defaulting to 50 Hz estimated from multi-taper FFT on 10 seconds of data.
+    /home/circleci/project/mne_bids/write.py:558: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
       'on 10 seconds of data.'.format(powerlinefrequency))
 
     Writing '/home/circleci/mne_data/ieegmmidb_bids/sub-001/ieeg/sub-001_task-testresteyes_acq-ecog_ieeg.json'...
@@ -483,7 +483,7 @@ temporarily save the data to disc before reading it back in.
     {
         "TaskName": "testresteyes",
         "Manufacturer": "Elekta",
-        "PowerLineFrequency": 50,
+        "PowerLineFrequency": 60,
         "SamplingFrequency": 1000.0,
         "SoftwareFilters": "n/a",
         "RecordingDuration": 0.999,
@@ -534,18 +534,18 @@ Step 3: Check and compare with standard
  .. code-block:: none
 
     |ieegmmidb_bids/
-    |--- participants.tsv
     |--- dataset_description.json
     |--- participants.json
+    |--- participants.tsv
     |--- sub-001/
     |------ sub-001_scans.tsv
     |------ ieeg/
+    |--------- sub-001_task-testresteyes_acq-ecog_ieeg.vmrk
+    |--------- sub-001_task-testresteyes_acq-ecog_ieeg.vhdr
     |--------- sub-001_task-testresteyes_acq-ecog_channels.tsv
     |--------- sub-001_task-testresteyes_acq-ecog_ieeg.eeg
-    |--------- sub-001_acq-ecog_electrodes.tsv
-    |--------- sub-001_task-testresteyes_acq-ecog_ieeg.vmrk
     |--------- sub-001_task-testresteyes_acq-ecog_ieeg.json
-    |--------- sub-001_task-testresteyes_acq-ecog_ieeg.vhdr
+    |--------- sub-001_acq-ecog_electrodes.tsv
     |--------- sub-001_acq-ecog_coordsystem.json
 
 
@@ -635,7 +635,7 @@ Now we have written our BIDS directory. We can use
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  0.186 seconds)
+   **Total running time of the script:** ( 0 minutes  0.163 seconds)
 
 
 .. _sphx_glr_download_auto_examples_convert_ieeg_to_bids.py:
