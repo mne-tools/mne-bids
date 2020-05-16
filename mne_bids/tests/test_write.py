@@ -81,17 +81,18 @@ warning_str = dict(
 @pytest.fixture(scope="session")
 def _bids_validate():
     """Fixture to run BIDS validator."""
-    shell = False
-    bids_validator_exe = ['bids-validator', '--config.error=41',
-                          '--config.error=41']
+    vadlidator_args = ['--config.error=41']
+    exe = os.getenv('VALIDATOR_EXECUTABLE', 'bids-validator')
+
     if platform.system() == 'Windows':
         shell = True
-        exe = os.getenv('VALIDATOR_EXECUTABLE', 'n/a')
-        if 'VALIDATOR_EXECUTABLE' != 'n/a':
-            bids_validator_exe = ['node', exe]
+        bids_validator_exe = ['node', exe, *vadlidator_args]
+    else:
+        shell = False
+        bids_validator_exe = [exe, *vadlidator_args]
 
     def _validate(bids_root):
-        cmd = bids_validator_exe + [bids_root]
+        cmd = [*bids_validator_exe, bids_root]
         run_subprocess(cmd, shell=shell)
 
     return _validate
