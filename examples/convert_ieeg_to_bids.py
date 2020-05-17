@@ -57,7 +57,7 @@ from mne_bids.utils import print_dir_tree
 # Conveniently, there is already a data loading function available with
 # MNE-Python:
 
-misc_path = mne.datasets.misc.data_path()
+misc_path = mne.datasets.misc.data_path(force_update=True)
 
 
 # The electrode coords data are in the tsv file format
