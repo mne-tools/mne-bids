@@ -1,5 +1,4 @@
-Contributions
-=============
+# Contributions
 
 Contributions are welcome in the form of pull requests.
 
@@ -10,8 +9,7 @@ it can be incorporated into the master branch.
 To help developing `mne-bids`, you will need a few adjustments to your
 installation as shown below.
 
-Running tests
--------------
+## Running tests
 
 ### (Optional) Install development version of MNE-Python
 If you want to run the tests with a development version of MNE-Python,
@@ -83,8 +81,8 @@ on a per-user basis, set the environment variable `VALIDATOR_EXECUTABLE` to poin
 
     $ VALIDATOR_EXECUTABLE=../bids-validator/bids-validator/bin/bids-validator pytest
 
-Building the documentation
---------------------------
+## Building the documentation
+
 The documentation can be built using sphinx. For that, please additionally
 install the following:
 
