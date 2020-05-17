@@ -37,6 +37,7 @@ refer to the iEEG-BIDS specification.
 import os
 from pprint import pprint
 from collections import OrderedDict
+import shutil
 
 import numpy as np
 
@@ -56,7 +57,8 @@ from mne_bids.utils import print_dir_tree
 # Conveniently, there is already a data loading function available with
 # MNE-Python:
 
-misc_path = mne.datasets.misc.data_path(force_update=True)
+misc_path = mne.datasets.misc.data_path()
+
 
 # The electrode coords data are in the tsv file format
 # which is easily read in using numpy
@@ -146,6 +148,9 @@ mne_data_dir = mne.get_config('MNE_DATASETS_MISC_PATH')
 
 # There is the root directory for where we will write our data.
 bids_root = os.path.join(mne_data_dir, 'ieegmmidb_bids')
+
+# make sure we start w/ an empty bids root
+shutil.rmtree(bids_root, ignore_errors=True)
 
 ###############################################################################
 # Now we just need to specify a few iEEG details to make things work:
