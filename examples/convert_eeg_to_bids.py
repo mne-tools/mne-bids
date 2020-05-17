@@ -54,9 +54,7 @@ tasks = [2,  # This is 2 minutes of eyes closed rest
 
 # Download the data for subjects 1 and 2
 for subj_idx in [1, 2]:
-    eegbci.load_data(subject=subj_idx,
-                     runs=tasks,
-                     update_path=True)
+    eegbci.load_data(subject=subj_idx, runs=tasks, update_path=True)
 
 ###############################################################################
 # Let's see whether the data has been downloaded using a quick visualization
