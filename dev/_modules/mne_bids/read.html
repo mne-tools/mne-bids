@@ -128,12 +128,15 @@
 <span class="kn">from</span> <span class="nn">mne.transforms</span> <span class="kn">import</span> <span class="n">apply_trans</span>
 
 <span class="kn">from</span> <span class="nn">mne_bids.tsv_handler</span> <span class="kn">import</span> <span class="n">_from_tsv</span><span class="p">,</span> <span class="n">_drop</span>
-<span class="kn">from</span> <span class="nn">mne_bids.config</span> <span class="kn">import</span> <span class="n">ALLOWED_EXTENSIONS</span><span class="p">,</span> \
-    <span class="n">_convert_hand_options</span><span class="p">,</span> <span class="n">_convert_sex_options</span>
+<span class="kn">from</span> <span class="nn">mne_bids.config</span> <span class="kn">import</span> <span class="p">(</span><span class="n">ALLOWED_EXTENSIONS</span><span class="p">,</span> <span class="n">_convert_hand_options</span><span class="p">,</span>
+                             <span class="n">_convert_sex_options</span><span class="p">,</span>
+                             <span class="n">BIDS_IEEG_COORDINATE_FRAMES</span><span class="p">,</span>
+                             <span class="n">BIDS_IEEG_COORDINATE_UNITS</span><span class="p">,</span>
+                             <span class="n">MNE_IEEG_COORD_FRAME_DICT</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">mne_bids.utils</span> <span class="kn">import</span> <span class="p">(</span><span class="n">_parse_bids_filename</span><span class="p">,</span> <span class="n">_extract_landmarks</span><span class="p">,</span>
                             <span class="n">_find_matching_sidecar</span><span class="p">,</span> <span class="n">_parse_ext</span><span class="p">,</span>
                             <span class="n">_get_ch_type_mapping</span><span class="p">,</span> <span class="n">make_bids_folders</span><span class="p">,</span>
-                            <span class="n">_estimate_line_freq</span><span class="p">)</span>
+                            <span class="n">_estimate_line_freq</span><span class="p">,</span> <span class="n">_scale_coord_to_meters</span><span class="p">)</span>
 
 <span class="n">reader</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;.con&#39;</span><span class="p">:</span> <span class="n">io</span><span class="o">.</span><span class="n">read_raw_kit</span><span class="p">,</span> <span class="s1">&#39;.sqd&#39;</span><span class="p">:</span> <span class="n">io</span><span class="o">.</span><span class="n">read_raw_kit</span><span class="p">,</span>
           <span class="s1">&#39;.fif&#39;</span><span class="p">:</span> <span class="n">io</span><span class="o">.</span><span class="n">read_raw_fif</span><span class="p">,</span> <span class="s1">&#39;.pdf&#39;</span><span class="p">:</span> <span class="n">io</span><span class="o">.</span><span class="n">read_raw_bti</span><span class="p">,</span>
@@ -304,7 +307,8 @@
     <span class="k">return</span> <span class="n">raw</span>
 
 
-<span class="k">def</span> <span class="nf">_handle_electrodes_reading</span><span class="p">(</span><span class="n">electrodes_fname</span><span class="p">,</span> <span class="n">coord_frame</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">verbose</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_handle_electrodes_reading</span><span class="p">(</span><span class="n">electrodes_fname</span><span class="p">,</span> <span class="n">coord_frame</span><span class="p">,</span>
+                               <span class="n">coord_unit</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">verbose</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Read associated electrodes.tsv and populate raw.</span>
 
 <span class="sd">    Handle xyz coordinates and coordinate frame of each channel.</span>
@@ -338,7 +342,10 @@
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The read in electrodes file is: </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">electrodes_dict</span><span class="p">)</span>
+        <span class="n">summary_str</span> <span class="o">=</span> <span class="p">[(</span><span class="n">ch</span><span class="p">,</span> <span class="n">coord</span><span class="p">)</span> <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="p">(</span><span class="n">ch</span><span class="p">,</span> <span class="n">coord</span><span class="p">)</span>
+                       <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">electrodes_dict</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+                       <span class="k">if</span> <span class="n">idx</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="p">]</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The read in electrodes file is: </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">summary_str</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_float_or_nan</span><span class="p">(</span><span class="n">val</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">val</span> <span class="o">==</span> <span class="s2">&quot;n/a&quot;</span><span class="p">:</span>
@@ -350,9 +357,11 @@
     <span class="n">electrodes_dict</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">_float_or_nan</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">electrodes_dict</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]]</span>
     <span class="n">electrodes_dict</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">_float_or_nan</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">electrodes_dict</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">]]</span>
     <span class="n">electrodes_dict</span><span class="p">[</span><span class="s1">&#39;z&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">_float_or_nan</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">electrodes_dict</span><span class="p">[</span><span class="s1">&#39;z&#39;</span><span class="p">]]</span>
-    <span class="n">ch_locs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">electrodes_dict</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">],</span>
-                       <span class="n">electrodes_dict</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">],</span>
-                       <span class="n">electrodes_dict</span><span class="p">[</span><span class="s1">&#39;z&#39;</span><span class="p">]))</span>
+    <span class="n">ch_names_raw</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">ch_names_raw</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">electrodes_dict</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;n/a&quot;</span><span class="p">]</span>
+    <span class="n">ch_locs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">c_</span><span class="p">[</span><span class="n">electrodes_dict</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">],</span>
+                    <span class="n">electrodes_dict</span><span class="p">[</span><span class="s1">&#39;y&#39;</span><span class="p">],</span>
+                    <span class="n">electrodes_dict</span><span class="p">[</span><span class="s1">&#39;z&#39;</span><span class="p">]]</span>
 
     <span class="c1"># determine if there are problematic channels</span>
     <span class="n">nan_chs</span> <span class="o">=</span> <span class="p">[]</span>
@@ -363,8 +372,11 @@
         <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;There are channels without locations &quot;</span>
              <span class="s2">&quot;(n/a) that are not marked as bad: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nan_chs</span><span class="p">))</span>
 
+    <span class="c1"># convert coordinates to meters</span>
+    <span class="n">ch_locs</span> <span class="o">=</span> <span class="n">_scale_coord_to_meters</span><span class="p">(</span><span class="n">ch_locs</span><span class="p">,</span> <span class="n">coord_unit</span><span class="p">)</span>
+
     <span class="c1"># create mne.DigMontage</span>
-    <span class="n">ch_pos</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">ch_names_raw</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ch_locs</span><span class="p">)))</span>
+    <span class="n">ch_pos</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">ch_names_raw</span><span class="p">,</span> <span class="n">ch_locs</span><span class="p">))</span>
     <span class="n">montage</span> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">channels</span><span class="o">.</span><span class="n">make_dig_montage</span><span class="p">(</span><span class="n">ch_pos</span><span class="o">=</span><span class="n">ch_pos</span><span class="p">,</span>
                                             <span class="n">coord_frame</span><span class="o">=</span><span class="n">coord_frame</span><span class="p">)</span>
     <span class="n">raw</span><span class="o">.</span><span class="n">set_montage</span><span class="p">(</span><span class="n">montage</span><span class="p">)</span>
@@ -437,8 +449,7 @@
     <span class="k">return</span> <span class="n">raw</span>
 
 
-<div class="viewcode-block" id="read_raw_bids"><a class="viewcode-back" href="../../generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids">[docs]</a><span class="k">def</span> <span class="nf">read_raw_bids</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">,</span> <span class="n">bids_root</span><span class="p">,</span> <span class="n">extra_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                  <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="read_raw_bids"><a class="viewcode-back" href="../../generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids">[docs]</a><span class="k">def</span> <span class="nf">read_raw_bids</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">,</span> <span class="n">bids_root</span><span class="p">,</span> <span class="n">extra_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Read BIDS compatible data.</span>
 
 <span class="sd">    Will attempt to read associated events.tsv and channels.tsv files to</span>
@@ -512,12 +523,16 @@
 
     <span class="c1"># Try to find an associated electrodes.tsv and coordsystem.json</span>
     <span class="c1"># to get information about the status and type of present channels</span>
+    <span class="n">acq</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;acq&#39;</span><span class="p">]</span>
+    <span class="n">elec_suffix</span> <span class="o">=</span> <span class="s1">&#39;acq-</span><span class="si">{}</span><span class="s1">*_electrodes.tsv&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">acq</span><span class="p">)</span>
+    <span class="n">coord_suffix</span> <span class="o">=</span> <span class="s1">&#39;acq-</span><span class="si">{}</span><span class="s1">*_coordsystem.json&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">acq</span><span class="p">)</span>
     <span class="n">electrodes_fname</span> <span class="o">=</span> <span class="n">_find_matching_sidecar</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">,</span> <span class="n">bids_root</span><span class="p">,</span>
-                                              <span class="s1">&#39;electrodes.tsv&#39;</span><span class="p">,</span>
+                                              <span class="n">suffix</span><span class="o">=</span><span class="n">elec_suffix</span><span class="p">,</span>
                                               <span class="n">allow_fail</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">coordsystem_fname</span> <span class="o">=</span> <span class="n">_find_matching_sidecar</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">,</span> <span class="n">bids_root</span><span class="p">,</span>
-                                               <span class="s1">&#39;coordsystem.json&#39;</span><span class="p">,</span>
+                                               <span class="n">suffix</span><span class="o">=</span><span class="n">coord_suffix</span><span class="p">,</span>
                                                <span class="n">allow_fail</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
     <span class="k">if</span> <span class="n">electrodes_fname</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">coordsystem_fname</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;BIDS mandates that the coordsystem.json &quot;</span>
@@ -529,17 +544,56 @@
             <span class="n">coordsystem_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fin</span><span class="p">)</span>
 
         <span class="c1"># Get coordinate frames that electrode coordinates are in</span>
+        <span class="c1"># Note: all coordinate frames should be lower-case</span>
         <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;meg&quot;</span><span class="p">:</span>
             <span class="n">coord_frame</span> <span class="o">=</span> <span class="n">coordsystem_json</span><span class="p">[</span><span class="s1">&#39;MEGCoordinateSystem&#39;</span><span class="p">]</span>
+            <span class="n">coord_unit</span> <span class="o">=</span> <span class="n">coordsystem_json</span><span class="p">[</span><span class="s1">&#39;MEGCoordinateUnits&#39;</span><span class="p">]</span>
         <span class="k">elif</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;ieeg&quot;</span><span class="p">:</span>
-            <span class="n">coord_frame</span> <span class="o">=</span> <span class="n">coordsystem_json</span><span class="p">[</span><span class="s1">&#39;iEEGCoordinateSystem&#39;</span><span class="p">]</span>
-        <span class="k">else</span><span class="p">:</span>
+            <span class="n">space</span> <span class="o">=</span> <span class="n">coordsystem_json</span><span class="p">[</span><span class="s1">&#39;iEEGCoordinateSystem&#39;</span><span class="p">]</span>
+            <span class="n">coord_unit</span> <span class="o">=</span> <span class="n">coordsystem_json</span><span class="p">[</span><span class="s1">&#39;iEEGCoordinateUnits&#39;</span><span class="p">]</span>
+
+            <span class="c1"># only compare lower case</span>
+            <span class="n">space</span> <span class="o">=</span> <span class="n">space</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+            <span class="n">coord_unit</span> <span class="o">=</span> <span class="n">coord_unit</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
+            <span class="c1"># XXX: improve reading from &#39;other&#39; systems</span>
+            <span class="k">if</span> <span class="n">space</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">BIDS_IEEG_COORDINATE_FRAMES</span><span class="p">:</span>
+                <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{}</span><span class="s2"> Coordinate frame is not accepted BIDS &quot;</span>
+                     <span class="s2">&quot;keyword for </span><span class="si">{}</span><span class="s2">. Use CoordinateSystem with &quot;</span>
+                     <span class="s2">&quot;one of these keywords: </span><span class="si">{}</span><span class="s2">&quot;</span>
+                     <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">space</span><span class="p">,</span> <span class="n">bids_fname</span><span class="p">,</span> <span class="n">BIDS_IEEG_COORDINATE_FRAMES</span><span class="p">))</span>
+                <span class="n">coord_frame</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">elif</span> <span class="n">space</span> <span class="o">==</span> <span class="s1">&#39;acpc&#39;</span><span class="p">:</span>
+                <span class="n">coord_frame</span> <span class="o">=</span> <span class="s1">&#39;ras&#39;</span>
+            <span class="k">elif</span> <span class="n">space</span> <span class="o">==</span> <span class="s1">&#39;other&#39;</span><span class="p">:</span>
+                <span class="n">elec_params</span> <span class="o">=</span> <span class="n">_parse_bids_filename</span><span class="p">(</span><span class="n">electrodes_fname</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
+                <span class="n">coord_frame</span> <span class="o">=</span> <span class="n">elec_params</span><span class="p">[</span><span class="s1">&#39;space&#39;</span><span class="p">]</span>
+
+                <span class="c1"># default coordinate frames to available ones in mne-python</span>
+                <span class="k">if</span> <span class="n">coord_frame</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">MNE_IEEG_COORD_FRAME_DICT</span><span class="p">:</span>
+                    <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Coordinate frame from coordinate system input </span><span class="si">{}</span><span class="s2"> &quot;</span>
+                         <span class="s2">&quot;is still not supported. Reading in coordinate frame &quot;</span>
+                         <span class="s2">&quot;as &#39;unknown&#39;.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">coord_frame</span><span class="p">))</span>
+                    <span class="n">coord_frame</span> <span class="o">=</span> <span class="s1">&#39;unknown&#39;</span>
+
+            <span class="k">if</span> <span class="n">coord_unit</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">BIDS_IEEG_COORDINATE_UNITS</span><span class="p">:</span>
+                <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Coordinate unit is not an accepted BIDS unit for </span><span class="si">{}</span><span class="s2">. &quot;</span>
+                     <span class="s2">&quot;Please specify to be one of </span><span class="si">{}</span><span class="s2">. Skipping electrodes.tsv &quot;</span>
+                     <span class="s2">&quot;reading...&quot;</span>
+                     <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">,</span> <span class="n">BIDS_IEEG_COORDINATE_UNITS</span><span class="p">))</span>
+                <span class="n">coord_frame</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># noqa</span>
+            <span class="c1"># XXX should add support of coordsystem.json for EEG</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Kind </span><span class="si">{}</span><span class="s2"> not supported yet for &quot;</span>
                                <span class="s2">&quot;coordsystem.json and &quot;</span>
                                <span class="s2">&quot;electrodes.tsv.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">kind</span><span class="p">))</span>
-        <span class="c1"># read in electrode coordinates and attach to raw</span>
-        <span class="n">raw</span> <span class="o">=</span> <span class="n">_handle_electrodes_reading</span><span class="p">(</span><span class="n">electrodes_fname</span><span class="p">,</span> <span class="n">coord_frame</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span>
-                                         <span class="n">verbose</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">coord_frame</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">coord_frame</span> <span class="o">=</span> <span class="n">coord_frame</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>  <span class="c1"># MNE uses lower case</span>
+
+            <span class="c1"># read in electrode coordinates and attach to raw</span>
+            <span class="n">raw</span> <span class="o">=</span> <span class="n">_handle_electrodes_reading</span><span class="p">(</span><span class="n">electrodes_fname</span><span class="p">,</span> <span class="n">coord_frame</span><span class="p">,</span>
+                                             <span class="n">coord_unit</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
 
     <span class="c1"># Try to find an associated sidecar.json to get information about the</span>
     <span class="c1"># recording snapshot</span>
