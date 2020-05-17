@@ -56,6 +56,12 @@ Test your installation by running:
 
 #### Local (per-user) development installation
 
+Install [Node.js](https://nodejs.org/en/). If you're use `conda`, you can
+install the `nodejs` package from `conda-forge` by running
+`conda install -c conda-forge nodejs`.
+
+Then, retrieve the validator and install all its dependencies via `npm`.
+
     $ git clone git@github.com:bids-standard bids-validator.git
     $ cd bids-validator/bids-validator
     $ npm i
