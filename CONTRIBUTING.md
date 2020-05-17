@@ -13,12 +13,9 @@ installation as shown below.
 
 ### (Optional) Install development version of MNE-Python
 If you want to run the tests with a development version of MNE-Python,
-you need to clone the `mne-python` repository and install it in "editable" mode
-locally.
+you can install it by running
 
-    $ pip uninstall mne  # First, uninstall PyPI-based mne-python
-    $ git clone https://github.com/mne-tools/mne-python --depth 1
-    $ pip install -e ./mne-python  # install from the cloned repository
+    $ pip install -U https://github.com/mne-tools/mne-python/archive/master.zip
 
 ### Install development version of MNE-BIDS 
 First, you should [fork](https://help.github.com/en/github/getting-started-with-github/fork-a-repo) the `mne-bids` repository. Then, clone the fork and install it in
