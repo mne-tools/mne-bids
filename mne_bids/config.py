@@ -1,4 +1,6 @@
 """Configuration values for MNE-BIDS."""
+from mne.io.constants import FIFF
+
 
 BIDS_VERSION = "1.2.2"
 
@@ -52,6 +54,27 @@ allowed_extensions_ieeg = ['.vhdr',  # BrainVision, accompanied by .vmrk, .eeg
 ALLOWED_EXTENSIONS = {'meg': allowed_extensions_meg,
                       'eeg': allowed_extensions_eeg,
                       'ieeg': allowed_extensions_ieeg}
+
+# accepted BIDS formats, which may be subject to change
+# depending on the specification
+# XXX: Add support for MEG and EEG
+BIDS_IEEG_COORDINATE_FRAMES = ['acpc', 'pixels', 'other']
+BIDS_IEEG_COORDINATE_UNITS = ['m', 'cm', 'mm']
+
+# these coordinate frames in mne-python are related to scalp/meg
+# 'meg', 'ctf_head', 'ctf_meg', 'head', 'unknown'
+# copied from "mne.transforms._str_to_frame"
+MNE_IEEG_COORD_FRAME_DICT = dict(
+    mri=FIFF.FIFFV_COORD_MRI,
+    mri_voxel=FIFF.FIFFV_MNE_COORD_MRI_VOXEL,
+    mni_tal=FIFF.FIFFV_MNE_COORD_MNI_TAL,
+    ras=FIFF.FIFFV_MNE_COORD_RAS,
+    fs_tal=FIFF.FIFFV_MNE_COORD_FS_TAL,
+    head=FIFF.FIFFV_COORD_HEAD,
+    unknown=FIFF.FIFFV_COORD_UNKNOWN
+)
+MNE_VERBOSE_IEEG_COORD_FRAME = {val: key for key, val
+                                in MNE_IEEG_COORD_FRAME_DICT.items()}
 
 
 # mapping subject information back to mne-python

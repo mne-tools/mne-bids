@@ -27,7 +27,7 @@ try:
 except ImportError:
     from mne._digitization._utils import _get_fid_coords
 from mne.channels.channels import _unit2human
-from mne.utils import check_version, has_nibabel, _check_ch_locs, warn
+from mne.utils import check_version, has_nibabel, _check_ch_locs, logger, warn
 
 from mne_bids.pick import coil_type
 from mne_bids.utils import (_write_json, _write_tsv, _read_events, _mkdir_p,
@@ -45,7 +45,7 @@ from mne_bids.tsv_handler import _from_tsv, _combine, _drop, _contains_row
 
 from mne_bids.config import (ORIENTATION, UNITS, MANUFACTURERS,
                              IGNORED_CHANNELS, ALLOWED_EXTENSIONS,
-                             BIDS_VERSION,
+                             BIDS_VERSION, MNE_VERBOSE_IEEG_COORD_FRAME,
                              _convert_hand_options, _convert_sex_options)
 
 
@@ -143,8 +143,6 @@ def _channels_tsv(raw, fname, overwrite=False, verbose=True):
 
     _write_tsv(fname, ch_data, overwrite, verbose)
 
-    return fname
-
 
 def _electrodes_tsv(raw, fname, kind, overwrite=False, verbose=True):
     """
@@ -166,6 +164,7 @@ def _electrodes_tsv(raw, fname, kind, overwrite=False, verbose=True):
     verbose : bool
         Set verbose output to true or false.
     """
+    # create list of channel coordinates and names
     x, y, z, names = list(), list(), list(), list()
     for ch in raw.info['chs']:
         if _check_ch_locs([ch]):
@@ -178,6 +177,7 @@ def _electrodes_tsv(raw, fname, kind, overwrite=False, verbose=True):
             z.append('n/a')
         names.append(ch['ch_name'])
 
+    # create OrderedDict to write to tsv file
     if kind == "ieeg":
         sizes = ['n/a'] * len(names)
         data = OrderedDict([('name', names),
@@ -186,14 +186,16 @@ def _electrodes_tsv(raw, fname, kind, overwrite=False, verbose=True):
                             ('z', z),
                             ('size', sizes),
                             ])
-    else:
+    elif kind == 'eeg':
         data = OrderedDict([('name', names),
                             ('x', x),
                             ('y', y),
                             ('z', z),
                             ])
+    else:  # pragma: no cover
+        raise RuntimeError("kind {} not supported.".format(kind))
+
     _write_tsv(fname, data, overwrite=overwrite, verbose=verbose)
-    return fname
 
 
 def _events_tsv(events, raw, fname, trial_type, overwrite=False,
@@ -252,8 +254,6 @@ def _events_tsv(events, raw, fname, trial_type, overwrite=False,
         del data['trial_type']
 
     _write_tsv(fname, data, overwrite, verbose)
-
-    return fname
 
 
 def _participants_tsv(raw, subject_id, fname, overwrite=False,
@@ -338,8 +338,6 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False,
     # been handled by this point
     _write_tsv(fname, data, True, verbose)
 
-    return fname
-
 
 def _participants_json(fname, overwrite=False, verbose=True):
     """Create participants.json for non-default columns in accompanying TSV.
@@ -367,8 +365,6 @@ def _participants_json(fname, overwrite=False, verbose=True):
                     'Levels': {'R': 'right', 'L': 'left', 'A': 'ambidextrous'}}
 
     _write_json(fname, cols, overwrite, verbose)
-
-    return fname
 
 
 def _coordsystem_json(raw, unit, orient, coordsystem_name, fname,
@@ -421,15 +417,20 @@ def _coordsystem_json(raw, unit, orient, coordsystem_name, fname,
                     'HeadCoilCoordinateSystem': orient,
                     'HeadCoilCoordinateUnits': unit  # XXX validate this
                     }
+    elif kind == 'eeg':
+        fid_json = {'EEGCoordinateSystem': coordsystem_name,
+                    'EEGCoordinateUnits': unit,
+                    'AnatomicalLandmarkCoordinates': coords,
+                    'AnatomicalLandmarkCoordinateSystem': coordsystem_name,
+                    'AnatomicalLandmarkCoordinateUnits': unit,
+                    }
     elif kind == "ieeg":
         fid_json = {
-            'iEEGCoordinateSystem': coordsystem_name,  # MRI, Pixels, or ACPC
+            'iEEGCoordinateSystem': coordsystem_name,  # (Other, Pixels, ACPC)
             'iEEGCoordinateUnits': unit,  # m (MNE), mm, cm , or pixels
         }
 
     _write_json(fname, fid_json, overwrite, verbose)
-
-    return fname
 
 
 def _scans_tsv(raw, raw_fname, fname, overwrite=False, verbose=True):
@@ -478,8 +479,6 @@ def _scans_tsv(raw, raw_fname, fname, overwrite=False, verbose=True):
     # overwrite is forced to True as all issues with overwrite == False have
     # been handled by this point
     _write_tsv(fname, data, True, verbose)
-
-    return fname
 
 
 def _meg_landmarks_to_mri_landmarks(meg_landmarks, trans):
@@ -1248,39 +1247,53 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     _participants_json(participants_json_fname, True, verbose)
     _scans_tsv(raw, op.join(kind, bids_fname), scans_fname, overwrite, verbose)
 
-    # TODO: Implement coordystem.json and electrodes.tsv for EEG
-    electrodes_fname = make_bids_basename(
-        subject=subject_id, session=session_id, acquisition=acquisition,
-        suffix='electrodes.tsv', prefix=data_path)
+    # for MEG, we only write coordinate system
     if kind == 'meg' and not emptyroom:
         _coordsystem_json(raw, unit, orient,
                           manufacturer, coordsystem_fname, kind,
                           overwrite, verbose)
-    elif kind == 'ieeg':
-        coord_frame = "mri"  # defaults to MRI coordinates
-        unit = "m"  # defaults to meters
-    else:
-        coord_frame = None
-        unit = None
 
+    # write electrodes data for iEEG and EEG
+    unit = "m"  # defaults to meters
     # We only write electrodes.tsv and accompanying coordsystem.json
     # if we have an available DigMontage
     if raw.info['dig'] is not None:
+        # XXX: to improve writing with an encapsulated `_write_dig_bids`
         if kind == "ieeg":
-            coords = _extract_landmarks(raw.info['dig'])
+            # get coordinate frame from digMontage
+            digpoint = raw.info['dig'][0]
+            # get the accepted mne-python coordinate frames
+            coord_frame_int = int(digpoint['coord_frame'])
+            space = MNE_VERBOSE_IEEG_COORD_FRAME.get(coord_frame_int,
+                                                     None)
+            if space is not None:
+                # append the 'space' BIDs-entity to coordinates
+                coord_frame = "Other"
+                coordsystem_fname = make_bids_basename(
+                    subject=subject_id, session=session_id,
+                    acquisition=acquisition, space=space,
+                    suffix='coordsystem.json', prefix=data_path)
+                electrodes_fname = make_bids_basename(
+                    subject=subject_id, session=session_id,
+                    acquisition=acquisition, space=space,
+                    suffix='electrodes.tsv', prefix=data_path)
 
-            # Rescale to MNE-Python "head" coord system, which is the
-            # "ElektaNeuromag" system (equivalent to "CapTrak" system)
-            if set(['RPA', 'NAS', 'LPA']) != set(list(coords.keys())):
-                # Now write the data to the elec coords and the coordsystem
+                print("Writing to ", electrodes_fname)
+                # Now write the data for coords and the coordsystem
                 _electrodes_tsv(raw, electrodes_fname,
                                 kind, overwrite, verbose)
                 _coordsystem_json(raw, unit, orient,
                                   coord_frame, coordsystem_fname, kind,
                                   overwrite, verbose)
+            else:
+                # default coordinate frame to mri if not available
+                warn("Coordinate frame of iEEG coords missing/unknown "
+                     "for {}. Skipping writing "
+                     "in of montage...".format(bids_fname))
         elif kind != "meg":
-            warn('Writing of electrodes.tsv is not supported for kind "{}". '
-                 'Skipping ...'.format(kind))
+            logger.warning('Writing of electrodes.tsv '
+                           'is not supported for kind "{}". '
+                           'Skipping ...'.format(kind))
 
     events, event_id = _read_events(events_data, event_id, raw, ext)
     if events is not None and len(events) > 0 and not emptyroom:

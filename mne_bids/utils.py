@@ -662,11 +662,17 @@ def _find_matching_sidecar(bids_fname, bids_root, suffix, allow_fail=False):
         # Success
         return best_candidates[0]
 
+    # map suffix to make warning message readable
+    if 'electrodes.tsv' in suffix:
+        suffix = 'electrodes.tsv'
+    if 'coordsystem.json' in suffix:
+        suffix = 'coordsystem.json'
+
     # We failed. Construct a helpful error message.
     # If this was expected, simply return None, otherwise, raise an exception.
     msg = None
     if len(best_candidates) == 0:
-        msg = ('Did not find any {} file associated with {}.'
+        msg = ('Did not find any {} associated with {}.'
                .format(suffix, bids_fname))
     elif len(best_candidates) > 1:
         # More than one candidates were tied for best match
@@ -767,3 +773,13 @@ def _estimate_line_freq(raw, verbose=False):
     else:
         line_freq = 50
     return line_freq
+
+
+def _scale_coord_to_meters(coord, unit):
+    """Scale units to meters (mne-python default)."""
+    if unit == 'cm':
+        return np.divide(coord, 100.)
+    elif unit == 'mm':
+        return np.divide(coord, 1000.)
+    else:
+        return coord
