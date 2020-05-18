@@ -402,8 +402,8 @@ def _get_bids_fname_from_filesystem(*, bids_basename, bids_root, sub, ses,
     return bids_fname
 
 
-def make_bids_fname(bids_basename, bids_root=None, kind=None, extension=None,
-                    verbose=False):
+def _make_bids_fname(bids_basename, bids_root=None, kind=None, extension=None,
+                     verbose=False):
     """
     Construct the filename of a BIDS data file.
 
@@ -515,8 +515,8 @@ def read_raw_bids(bids_basename, bids_root, kind=None, extra_params=None,
 
     data_dir = make_bids_folders(subject=sub, session=ses, kind=kind,
                                  make_dir=False)
-    bids_fname = make_bids_fname(bids_basename=bids_basename,
-                                 bids_root=bids_root, kind=kind)
+    bids_fname = _make_bids_fname(bids_basename=bids_basename,
+                                  bids_root=bids_root, kind=kind)
 
     if op.splitext(bids_fname)[1] == '.pdf':
         bids_raw_folder = op.join(bids_root, data_dir,
@@ -660,8 +660,8 @@ def get_matched_empty_room(bids_basename, bids_root):
         Returns None if no file found.
     """
     kind = 'meg'
-    bids_fname = make_bids_fname(bids_basename=bids_basename,
-                                 bids_root=bids_root, kind=kind)
+    bids_fname = _make_bids_fname(bids_basename=bids_basename,
+                                  bids_root=bids_root, kind=kind)
     _, ext = _parse_ext(bids_fname)
 
     raw = read_raw_bids(bids_basename=bids_basename, bids_root=bids_root,
@@ -720,8 +720,8 @@ def get_head_mri_trans(bids_basename, bids_root):
     import nibabel as nib
 
     # Get the sidecar file for MRI landmarks
-    bids_fname = make_bids_fname(bids_basename=bids_basename,
-                                 bids_root=bids_root, kind='meg')
+    bids_fname = _make_bids_fname(bids_basename=bids_basename,
+                                  bids_root=bids_root, kind='meg')
     t1w_json_path = _find_matching_sidecar(bids_fname, bids_root, 'T1w.json')
 
     # Get MRI landmarks from the JSON sidecar
