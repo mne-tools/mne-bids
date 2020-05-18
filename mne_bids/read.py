@@ -350,7 +350,7 @@ def _infer_kind(*, bids_basename, bids_root, sub, ses):
 
     # We only want to handle electrophysiological data here.
     allowed_kinds = ['meg', 'eeg', 'ieeg']
-    kinds = set(kinds) & set(allowed_kinds)
+    kinds = list(set(kinds) & set(allowed_kinds))
     if not kinds:
         raise ValueError('No electrophysiological data found.')
     elif len(kinds) >= 2:
@@ -358,10 +358,9 @@ def _infer_kind(*, bids_basename, bids_root, sub, ses):
                f'pass the `kind` parameter to specify which data to load. '
                f'Found the following kinds: {kinds}')
         raise RuntimeError(msg)
-    elif len(kinds) == 1:
-        kind = kinds[0]
 
-    return kind
+    assert len(kinds) == 1
+    return kinds[0]
 
 
 def _get_bids_fname_from_filesystem(*, bids_basename, bids_root, sub, ses,
@@ -504,17 +503,8 @@ def read_raw_bids(bids_basename, bids_root, kind=None, extra_params=None,
     ses = params['ses']
 
     if kind is None:
-        kinds = _get_kinds_for_sub(bids_basename=bids_basename,
-                                   bids_root=bids_root, sub=sub, ses=ses)
-        if not kinds:
-            raise ValueError('No data found.')
-        elif kind is None and len(kinds) == 1:
-            kind = kinds[0]
-        elif kind is None and len(kinds) >= 2:
-            msg = (f'Found data of more than one recording modality. Please '
-                   f'pass the `kind` parameter to specify which data to load. '
-                   f'Found the following kinds: {kinds}')
-            raise RuntimeError(msg)
+        kind = _infer_kind(bids_basename=bids_basename, bids_root=bids_root,
+                           sub=sub, ses=ses)
 
     data_dir = make_bids_folders(subject=sub, session=ses, kind=kind,
                                  make_dir=False)
