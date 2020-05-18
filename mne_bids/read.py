@@ -369,8 +369,8 @@ def _get_bids_fname_from_filesystem(*, bids_basename, bids_root, sub, ses,
     data_dir = make_bids_folders(subject=sub, session=ses, kind=kind,
                                  make_dir=False)
 
-    if op.isdir(op.join(bids_root, data_dir, f'{bids_basename}_{kind}')):
-        bti_dir = op.join(bids_root, data_dir, f'{bids_basename}_{kind}')
+     bti_dir = op.join(bids_root, data_dir, f'{bids_basename}_{kind}')
+     if op.isdir(bti_dir):
         logger.info(f'Assuming BTi data in {bti_dir}')
         bids_fname = f'{bti_dir}.pdf'
     else:
