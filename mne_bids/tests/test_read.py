@@ -361,7 +361,8 @@ def test_handle_ieeg_coords_reading():
                        overwrite=True, verbose=False)
         # read in raw file w/ updated coordinate frame
         # and make sure all digpoints are correct coordinate frames
-        raw_test = read_raw_bids(bids_fname, bids_root)
+        raw_test = read_raw_bids(bids_basename=bids_basename,
+                                 bids_root=bids_root, verbose=False)
         coord_frame_int = MNE_IEEG_COORD_FRAME_DICT[coord_frame]
         for digpoint in raw_test.info['dig']:
             assert digpoint['coord_frame'] == coord_frame_int
@@ -403,7 +404,8 @@ def test_handle_ieeg_coords_reading():
     _to_tsv(electrodes_dict, electrodes_fname)
     with pytest.warns(RuntimeWarning, match='Coordinate unit '
                                             'is not an accepted BIDS'):
-        raw_test = read_raw_bids(bids_fname, bids_root, verbose=False)
+        raw_test = read_raw_bids(bids_basename=bids_basename,
+                                 bids_root=bids_root, verbose=False)
 
     # correct BIDS units should scale to meters properly
     for coord_unit, scaling in scalings.items():
@@ -417,7 +419,8 @@ def test_handle_ieeg_coords_reading():
         _to_tsv(electrodes_dict, electrodes_fname)
 
         # read in raw file w/ updated montage
-        raw_test = read_raw_bids(bids_fname, bids_root, verbose=False)
+        raw_test = read_raw_bids(bids_basename=bids_basename,
+                                 bids_root=bids_root, verbose=False)
 
         # obtain the sensor positions and make sure they're the same
         assert_dig_allclose(raw.info, raw_test.info)
@@ -433,12 +436,14 @@ def test_handle_ieeg_coords_reading():
         # and make sure all digpoints are MRI coordinate frame
         with pytest.warns(RuntimeWarning, match="Coordinate frame is "
                                                 "not accepted BIDS keyword"):
-            raw_test = read_raw_bids(bids_fname, bids_root, verbose=False)
+            raw_test = read_raw_bids(bids_basename=bids_basename,
+                                     bids_root=bids_root, verbose=False)
             assert raw_test.info['dig'] is None
 
     # ACPC should be read in as RAS for iEEG
     _update_sidecar(coordsystem_fname, 'iEEGCoordinateSystem', 'acpc')
-    raw_test = read_raw_bids(bids_fname, bids_root, verbose=False)
+    raw_test = read_raw_bids(bids_basename=bids_basename, bids_root=bids_root,
+                             verbose=False)
     coord_frame_int = MNE_IEEG_COORD_FRAME_DICT['ras']
     for digpoint in raw_test.info['dig']:
         assert digpoint['coord_frame'] == coord_frame_int
@@ -453,7 +458,7 @@ def test_handle_ieeg_coords_reading():
     _to_tsv(electrodes_dict, electrodes_fname)
     with pytest.raises(RuntimeError, match='Channels do not correspond'):
         raw_test = read_raw_bids(bids_basename=bids_basename,
-                                 bids_root=bids_root)
+                                 bids_root=bids_root, verbose=False)
 
     # make sure montage is set if there are coordinates w/ 'n/a'
     raw.info['bads'] = []
@@ -471,7 +476,8 @@ def test_handle_ieeg_coords_reading():
     nan_chs = [electrodes_dict['name'][i] for i in [0, 3]]
     with pytest.warns(RuntimeWarning, match='There are channels '
                                             'without locations'):
-        raw = read_raw_bids(bids_basename=bids_basename, bids_root=bids_root)
+        raw = read_raw_bids(bids_basename=bids_basename, bids_root=bids_root,
+                            verbose=False)
         for idx, ch in enumerate(raw.info['chs']):
             if ch['ch_name'] in nan_chs:
                 assert all(np.isnan(ch['loc'][:3]))
