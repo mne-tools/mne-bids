@@ -24,8 +24,6 @@ and to display the data that is saved within the accompanying sidecars.
 
 ###############################################################################
 # We are importing everything we need for this example:
-import os
-
 from mne.datasets import somato
 
 from mne_bids import make_bids_basename, read_raw_bids

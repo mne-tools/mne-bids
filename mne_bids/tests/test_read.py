@@ -616,4 +616,3 @@ def test_read_raw_kind():
 
     assert raw_1 == raw_2
     assert raw_1 == raw_3
-
