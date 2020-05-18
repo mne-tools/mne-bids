@@ -26,7 +26,6 @@ Changelog
 - :func:`mne_bids.utils.get_entity_vals` has gained ``ignore_*`` keyword arguments to exclude specific values from the list of results, e.g. the entities for a particular subject or task, by `Richard Höchenberger`_ (`#409 <https://github.com/mne-tools/mne-bids/pull/409>`_)
 - :func:`mne_bids.write_raw_bids` now uses the 'space' BIDS-entity when writing iEEG electrodes and coordinate frames by `Adam Li`_ (`#390 <https://github.com/mne-tools/mne-bids/pull/390>`_)
 - :code:`convert_ieeg_to_bids` to now use sample ECoG EDF data by `Adam Li`_ (`#390 <https://github.com/mne-tools/mne-bids/pull/390>`_)
-- BIDS conformity: The ``_part-%d`` entity is now called ``_split-`` throughout BIDS, MNE, and MNE-BIDS, by `Stefan Appelhoff`_ (`#417 <https://github.com/mne-tools/mne-bids/pull/417>`_)
 
 Bug
 ~~~
@@ -42,6 +41,7 @@ API
 - :func:`read_raw_bids` now expects `bids_basename` as the first argument and gains a `kind` parameter. The name of the file to read will be inferred automatically, and can no longer be passed to the function directly. This ensures better API consistency with :func:`write_raw_bids`, by `Richard Höchenberger`_ (`#410 <https://github.com/mne-tools/mne-bids/pull/410>`_)
 - :func:`get_matched_empty_room` now expects `bids_basename` as the first argument and returns the `bids_basename` of the best-matching empty-room recording (instead of its filename before). The `bids_fname` argument has been dropped, by `Richard Höchenberger`_ (`#410 <https://github.com/mne-tools/mne-bids/pull/410>`_)
 - :func:`get_head_mri_trans` now expects `bids_basename` as the first argument. The `bids_fname` argument has been dropped, by `Richard Höchenberger`_ (`#410 <https://github.com/mne-tools/mne-bids/pull/410>`_)
+- BIDS conformity: The ``_part-%d`` entity is now called ``_split-`` throughout BIDS, MNE, and MNE-BIDS, by `Stefan Appelhoff`_ (`#417 <https://github.com/mne-tools/mne-bids/pull/417>`_)
 
 .. _changes_0_4:
 
