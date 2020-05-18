@@ -404,8 +404,7 @@ def _get_bids_fname_from_filesystem(*, bids_basename, bids_root, sub, ses,
 
 def _make_bids_fname(bids_basename, bids_root=None, kind=None, extension=None,
                      verbose=False):
-    """
-    Construct the filename of a BIDS data file.
+    """Construct the filename of a BIDS data file.
 
     Parameters
     ----------
