@@ -110,27 +110,45 @@
 <h1>mne_bids.read_raw_bids<a class="headerlink" href="#mne-bids-read-raw-bids" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt id="mne_bids.read_raw_bids">
-<code class="sig-prename descclassname">mne_bids.</code><code class="sig-name descname">read_raw_bids</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">bids_fname</span></em>, <em class="sig-param"><span class="n">bids_root</span></em>, <em class="sig-param"><span class="n">extra_params</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/read.html#read_raw_bids"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.read_raw_bids" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">mne_bids.</code><code class="sig-name descname">read_raw_bids</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">bids_basename</span></em>, <em class="sig-param"><span class="n">bids_root</span></em>, <em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">extra_params</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/read.html#read_raw_bids"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.read_raw_bids" title="Permalink to this definition">¶</a></dt>
 <dd><p>Read BIDS compatible data.</p>
 <p>Will attempt to read associated events.tsv and channels.tsv files to
 populate the returned raw object with raw.annotations and raw.info[‘bads’].</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>bids_fname</strong><span class="classifier">str</span></dt><dd><p>Full name of the data file</p>
+<dt><strong>bids_basename</strong><span class="classifier">str</span></dt><dd><p>The base filename of the BIDS compatible files. Typically, this can be
+generated using <a class="reference internal" href="mne_bids.make_bids_basename.html#mne_bids.make_bids_basename" title="mne_bids.make_bids_basename"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.make_bids_basename()</span></code></a>.</p>
 </dd>
 <dt><strong>bids_root</strong><span class="classifier">str | pathlib.Path</span></dt><dd><p>Path to root of the BIDS folder</p>
+</dd>
+<dt><strong>kind</strong><span class="classifier">str | None</span></dt><dd><p>The kind of recording to read. If <code class="docutils literal notranslate"><span class="pre">None</span></code> and only one kind (e.g.,
+only EEG or only MEG data) is present in the dataset, it will be
+selected automatically.</p>
 </dd>
 <dt><strong>extra_params</strong><span class="classifier">None | dict</span></dt><dd><p>Extra parameters to be passed to MNE read_raw_* functions.
 If a dict, for example: <code class="docutils literal notranslate"><span class="pre">extra_params=dict(allow_maxshield=True)</span></code>.</p>
 </dd>
-<dt><strong>verbose</strong><span class="classifier">bool</span></dt><dd><p>The verbosity level</p>
+<dt><strong>verbose</strong><span class="classifier">bool</span></dt><dd><p>The verbosity level.</p>
 </dd>
 </dl>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
 <dt><strong>raw</strong><span class="classifier">instance of Raw</span></dt><dd><p>The data as MNE-Python Raw object.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><dl class="simple">
+<dt>RuntimeError</dt><dd><p>If multiple recording kinds are present in the dataset, but
+<code class="docutils literal notranslate"><span class="pre">kind=None</span></code>.</p>
+</dd>
+<dt>RuntimeError</dt><dd><p>If more than one data files exist for the specified recording.</p>
+</dd>
+<dt>RuntimeError</dt><dd><p>If no data file in a supported format can be located.</p>
+</dd>
+<dt>ValueError</dt><dd><p>If the specified <code class="docutils literal notranslate"><span class="pre">kind</span></code> cannot be found in the dataset.</p>
 </dd>
 </dl>
 </dd>
@@ -151,7 +169,7 @@ If a dict, for example: <code class="docutils literal notranslate"><span class="
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-05-17.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-05-18.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.3.<br/>
     </p>
   </div>

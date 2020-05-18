@@ -38,7 +38,9 @@ Bug
 API
 ~~~
 
-- no entries yet
+- :func:`read_raw_bids` now expects `bids_basename` as the first argument and gains a `kind` parameter. The name of the file to read will be inferred automatically, and can no longer be passed to the function directly. This ensures better API consistency with :func:`write_raw_bids`, by `Richard Höchenberger`_ (`#410 <https://github.com/mne-tools/mne-bids/pull/410>`_)
+- :func:`get_matched_empty_room` now expects `bids_basename` as the first argument and returns the `bids_basename` of the best-matching empty-room recording (instead of its filename before). The `bids_fname` argument has been dropped, by `Richard Höchenberger`_ (`#410 <https://github.com/mne-tools/mne-bids/pull/410>`_)
+- :func:`get_head_mri_trans` now expects `bids_basename` as the first argument. The `bids_fname` argument has been dropped, by `Richard Höchenberger`_ (`#410 <https://github.com/mne-tools/mne-bids/pull/410>`_)
 
 .. _changes_0_4:
 

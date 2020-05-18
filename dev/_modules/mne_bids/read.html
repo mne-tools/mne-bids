@@ -136,7 +136,8 @@
 <span class="kn">from</span> <span class="nn">mne_bids.utils</span> <span class="kn">import</span> <span class="p">(</span><span class="n">_parse_bids_filename</span><span class="p">,</span> <span class="n">_extract_landmarks</span><span class="p">,</span>
                             <span class="n">_find_matching_sidecar</span><span class="p">,</span> <span class="n">_parse_ext</span><span class="p">,</span>
                             <span class="n">_get_ch_type_mapping</span><span class="p">,</span> <span class="n">make_bids_folders</span><span class="p">,</span>
-                            <span class="n">_estimate_line_freq</span><span class="p">,</span> <span class="n">_scale_coord_to_meters</span><span class="p">)</span>
+                            <span class="n">_estimate_line_freq</span><span class="p">,</span> <span class="n">_scale_coord_to_meters</span><span class="p">,</span>
+                            <span class="n">_get_kinds_for_sub</span><span class="p">)</span>
 
 <span class="n">reader</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;.con&#39;</span><span class="p">:</span> <span class="n">io</span><span class="o">.</span><span class="n">read_raw_kit</span><span class="p">,</span> <span class="s1">&#39;.sqd&#39;</span><span class="p">:</span> <span class="n">io</span><span class="o">.</span><span class="n">read_raw_kit</span><span class="p">,</span>
           <span class="s1">&#39;.fif&#39;</span><span class="p">:</span> <span class="n">io</span><span class="o">.</span><span class="n">read_raw_fif</span><span class="p">,</span> <span class="s1">&#39;.pdf&#39;</span><span class="p">:</span> <span class="n">io</span><span class="o">.</span><span class="n">read_raw_bti</span><span class="p">,</span>
@@ -449,7 +450,120 @@
     <span class="k">return</span> <span class="n">raw</span>
 
 
-<div class="viewcode-block" id="read_raw_bids"><a class="viewcode-back" href="../../generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids">[docs]</a><span class="k">def</span> <span class="nf">read_raw_bids</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">,</span> <span class="n">bids_root</span><span class="p">,</span> <span class="n">extra_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_infer_kind</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">bids_basename</span><span class="p">,</span> <span class="n">bids_root</span><span class="p">,</span> <span class="n">sub</span><span class="p">,</span> <span class="n">ses</span><span class="p">):</span>
+    <span class="c1"># Check which kind is available for this particular</span>
+    <span class="c1"># subject &amp; session. If we get no or multiple hits, throw an error.</span>
+
+    <span class="n">kinds</span> <span class="o">=</span> <span class="n">_get_kinds_for_sub</span><span class="p">(</span><span class="n">bids_basename</span><span class="o">=</span><span class="n">bids_basename</span><span class="p">,</span>
+                               <span class="n">bids_root</span><span class="o">=</span><span class="n">bids_root</span><span class="p">,</span> <span class="n">sub</span><span class="o">=</span><span class="n">sub</span><span class="p">,</span> <span class="n">ses</span><span class="o">=</span><span class="n">ses</span><span class="p">)</span>
+
+    <span class="c1"># We only want to handle electrophysiological data here.</span>
+    <span class="n">allowed_kinds</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;meg&#39;</span><span class="p">,</span> <span class="s1">&#39;eeg&#39;</span><span class="p">,</span> <span class="s1">&#39;ieeg&#39;</span><span class="p">]</span>
+    <span class="n">kinds</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">kinds</span><span class="p">)</span> <span class="o">&amp;</span> <span class="nb">set</span><span class="p">(</span><span class="n">allowed_kinds</span><span class="p">))</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">kinds</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;No electrophysiological data found.&#39;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">kinds</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Found data of more than one recording modality. Please &#39;</span>
+               <span class="sa">f</span><span class="s1">&#39;pass the `kind` parameter to specify which data to load. &#39;</span>
+               <span class="sa">f</span><span class="s1">&#39;Found the following kinds: </span><span class="si">{</span><span class="n">kinds</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">kinds</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">kinds</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">_get_bids_fname_from_filesystem</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">bids_basename</span><span class="p">,</span> <span class="n">bids_root</span><span class="p">,</span> <span class="n">sub</span><span class="p">,</span> <span class="n">ses</span><span class="p">,</span>
+                                    <span class="n">kind</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">kind</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">kind</span> <span class="o">=</span> <span class="n">_infer_kind</span><span class="p">(</span><span class="n">bids_basename</span><span class="o">=</span><span class="n">bids_basename</span><span class="p">,</span> <span class="n">bids_root</span><span class="o">=</span><span class="n">bids_root</span><span class="p">,</span>
+                           <span class="n">sub</span><span class="o">=</span><span class="n">sub</span><span class="p">,</span> <span class="n">ses</span><span class="o">=</span><span class="n">ses</span><span class="p">)</span>
+
+    <span class="n">data_dir</span> <span class="o">=</span> <span class="n">make_bids_folders</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="n">sub</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">ses</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="n">kind</span><span class="p">,</span>
+                                 <span class="n">make_dir</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="n">bti_dir</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bids_root</span><span class="p">,</span> <span class="n">data_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">bids_basename</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">kind</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">op</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">bti_dir</span><span class="p">):</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Assuming BTi data in </span><span class="si">{</span><span class="n">bti_dir</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">bids_fname</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">bti_dir</span><span class="si">}</span><span class="s1">.pdf&#39;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Find all matching files in all supported formats.</span>
+        <span class="n">valid_exts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">reader</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="n">matching_paths</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bids_root</span><span class="p">,</span> <span class="n">data_dir</span><span class="p">,</span>
+                                           <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">bids_basename</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">kind</span><span class="si">}</span><span class="s1">.*&#39;</span><span class="p">))</span>
+        <span class="n">matching_paths</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">matching_paths</span>
+                          <span class="k">if</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">p</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="n">valid_exts</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">matching_paths</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;Could not locate a data file of a supported format. This &#39;</span>
+                   <span class="s1">&#39;is likely a problem with your BIDS dataset. Please run &#39;</span>
+                   <span class="s1">&#39;the BIDS validator on your data.&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+        <span class="c1"># FIXME This will break e.g. with FIFF data split across multiple</span>
+        <span class="c1"># FIXME files.</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">matching_paths</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;Found more than one matching data file for the requested &#39;</span>
+                   <span class="s1">&#39;recording. Cannot proceed due to the ambiguity. This is &#39;</span>
+                   <span class="s1">&#39;likely a problem with your BIDS dataset. Please run the &#39;</span>
+                   <span class="s1">&#39;BIDS validator on your data.&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+        <span class="n">matching_path</span> <span class="o">=</span> <span class="n">matching_paths</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">bids_fname</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">matching_path</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">bids_fname</span>
+
+
+<span class="k">def</span> <span class="nf">_make_bids_fname</span><span class="p">(</span><span class="n">bids_basename</span><span class="p">,</span> <span class="n">bids_root</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                     <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Construct the filename of a BIDS data file.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    bids_basename : str</span>
+<span class="sd">        The base filename of the BIDS-compatible files. Typically, this can be</span>
+<span class="sd">        generated using :func:`mne_bids.make_bids_basename`.</span>
+<span class="sd">    bids_root : str | pathlib.Path | None</span>
+<span class="sd">        Path to root of the BIDS folder</span>
+<span class="sd">    kind : str | None</span>
+<span class="sd">        The kind of recording to read. If ``None`` and only one kind (e.g.,</span>
+<span class="sd">        only EEG or only MEG data) is present in the dataset, it will be</span>
+<span class="sd">        selected automatically.</span>
+<span class="sd">    extra_params : None | dict</span>
+<span class="sd">        Extra parameters to be passed to MNE read_raw_* functions.</span>
+<span class="sd">        If a dict, for example: ``extra_params=dict(allow_maxshield=True)``.</span>
+<span class="sd">    extension : None | str</span>
+<span class="sd">        If ``None``, try to infer the filename extension by searching for the</span>
+<span class="sd">        file on disk. If the file cannot be found, an error will be raised. To</span>
+<span class="sd">        disable this automatic inference attempt, pass a string (like</span>
+<span class="sd">        ``&#39;.fif&#39;`` or ``&#39;.vhdr&#39;``). If an empty string is passed, no extension</span>
+<span class="sd">        will be added to the filename.</span>
+<span class="sd">    verbose : bool</span>
+<span class="sd">        The verbosity level.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Get the BIDS parameters (=entities)</span>
+    <span class="n">params</span> <span class="o">=</span> <span class="n">_parse_bids_filename</span><span class="p">(</span><span class="n">bids_basename</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
+    <span class="n">sub</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;sub&#39;</span><span class="p">]</span>
+    <span class="n">ses</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;ses&#39;</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">extension</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">bids_root</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;No filename extension was provided, and it cannot be &#39;</span>
+               <span class="s1">&#39;automatically inferred because no bids_root was passed.&#39;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">extension</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">bids_fname</span> <span class="o">=</span> <span class="n">_get_bids_fname_from_filesystem</span><span class="p">(</span>
+            <span class="n">bids_basename</span><span class="o">=</span><span class="n">bids_basename</span><span class="p">,</span> <span class="n">bids_root</span><span class="o">=</span><span class="n">bids_root</span><span class="p">,</span> <span class="n">sub</span><span class="o">=</span><span class="n">sub</span><span class="p">,</span> <span class="n">ses</span><span class="o">=</span><span class="n">ses</span><span class="p">,</span>
+            <span class="n">kind</span><span class="o">=</span><span class="n">kind</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">bids_fname</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">bids_basename</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">kind</span><span class="si">}</span><span class="s1">.</span><span class="si">{</span><span class="n">extension</span><span class="si">}</span><span class="s1">&#39;</span>
+
+    <span class="k">return</span> <span class="n">bids_fname</span>
+
+
+<div class="viewcode-block" id="read_raw_bids"><a class="viewcode-back" href="../../generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids">[docs]</a><span class="k">def</span> <span class="nf">read_raw_bids</span><span class="p">(</span><span class="n">bids_basename</span><span class="p">,</span> <span class="n">bids_root</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">extra_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                  <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Read BIDS compatible data.</span>
 
 <span class="sd">    Will attempt to read associated events.tsv and channels.tsv files to</span>
@@ -457,50 +571,63 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    bids_fname : str</span>
-<span class="sd">        Full name of the data file</span>
+<span class="sd">    bids_basename : str</span>
+<span class="sd">        The base filename of the BIDS compatible files. Typically, this can be</span>
+<span class="sd">        generated using :func:`mne_bids.make_bids_basename`.</span>
 <span class="sd">    bids_root : str | pathlib.Path</span>
 <span class="sd">        Path to root of the BIDS folder</span>
+<span class="sd">    kind : str | None</span>
+<span class="sd">        The kind of recording to read. If ``None`` and only one kind (e.g.,</span>
+<span class="sd">        only EEG or only MEG data) is present in the dataset, it will be</span>
+<span class="sd">        selected automatically.</span>
 <span class="sd">    extra_params : None | dict</span>
 <span class="sd">        Extra parameters to be passed to MNE read_raw_* functions.</span>
 <span class="sd">        If a dict, for example: ``extra_params=dict(allow_maxshield=True)``.</span>
 <span class="sd">    verbose : bool</span>
-<span class="sd">        The verbosity level</span>
+<span class="sd">        The verbosity level.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    raw : instance of Raw</span>
 <span class="sd">        The data as MNE-Python Raw object.</span>
 
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    RuntimeError</span>
+<span class="sd">        If multiple recording kinds are present in the dataset, but</span>
+<span class="sd">        ``kind=None``.</span>
+
+<span class="sd">    RuntimeError</span>
+<span class="sd">        If more than one data files exist for the specified recording.</span>
+
+<span class="sd">    RuntimeError</span>
+<span class="sd">        If no data file in a supported format can be located.</span>
+
+<span class="sd">    ValueError</span>
+<span class="sd">        If the specified ``kind`` cannot be found in the dataset.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># Full path to data file is needed so that mne-bids knows</span>
-    <span class="c1"># what is the modality -- meg, eeg, ieeg to read</span>
-    <span class="n">bids_fname</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">)</span>
-    <span class="n">bids_basename</span> <span class="o">=</span> <span class="s1">&#39;_&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bids_fname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
-    <span class="n">kind</span> <span class="o">=</span> <span class="n">bids_fname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">_</span><span class="p">,</span> <span class="n">ext</span> <span class="o">=</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">)</span>
+    <span class="n">params</span> <span class="o">=</span> <span class="n">_parse_bids_filename</span><span class="p">(</span><span class="n">bids_basename</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="s1">&#39;warning&#39;</span><span class="p">)</span>
+    <span class="n">sub</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;sub&#39;</span><span class="p">]</span>
+    <span class="n">ses</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;ses&#39;</span><span class="p">]</span>
 
-    <span class="c1"># Get the BIDS parameters (=entities)</span>
-    <span class="n">params</span> <span class="o">=</span> <span class="n">_parse_bids_filename</span><span class="p">(</span><span class="n">bids_basename</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">kind</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">kind</span> <span class="o">=</span> <span class="n">_infer_kind</span><span class="p">(</span><span class="n">bids_basename</span><span class="o">=</span><span class="n">bids_basename</span><span class="p">,</span> <span class="n">bids_root</span><span class="o">=</span><span class="n">bids_root</span><span class="p">,</span>
+                           <span class="n">sub</span><span class="o">=</span><span class="n">sub</span><span class="p">,</span> <span class="n">ses</span><span class="o">=</span><span class="n">ses</span><span class="p">)</span>
 
-    <span class="c1"># Construct the path to the &quot;kind&quot; where the data is stored</span>
-    <span class="c1"># Subject is mandatory ...</span>
-    <span class="n">kind_dir</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bids_root</span><span class="p">,</span> <span class="s1">&#39;sub-</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;sub&#39;</span><span class="p">]))</span>
-    <span class="c1"># Session is optional ...</span>
-    <span class="k">if</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;ses&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">kind_dir</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">kind_dir</span><span class="p">,</span> <span class="s1">&#39;ses-</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;ses&#39;</span><span class="p">]))</span>
-    <span class="c1"># Kind is mandatory</span>
-    <span class="n">kind_dir</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">kind_dir</span><span class="p">,</span> <span class="n">kind</span><span class="p">)</span>
+    <span class="n">data_dir</span> <span class="o">=</span> <span class="n">make_bids_folders</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="n">sub</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">ses</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="n">kind</span><span class="p">,</span>
+                                 <span class="n">make_dir</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">bids_fname</span> <span class="o">=</span> <span class="n">_make_bids_fname</span><span class="p">(</span><span class="n">bids_basename</span><span class="o">=</span><span class="n">bids_basename</span><span class="p">,</span>
+                                  <span class="n">bids_root</span><span class="o">=</span><span class="n">bids_root</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="n">kind</span><span class="p">)</span>
 
-    <span class="n">config</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="k">if</span> <span class="n">ext</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;.fif&#39;</span><span class="p">,</span> <span class="s1">&#39;.ds&#39;</span><span class="p">,</span> <span class="s1">&#39;.vhdr&#39;</span><span class="p">,</span> <span class="s1">&#39;.edf&#39;</span><span class="p">,</span> <span class="s1">&#39;.bdf&#39;</span><span class="p">,</span> <span class="s1">&#39;.set&#39;</span><span class="p">,</span> <span class="s1">&#39;.sqd&#39;</span><span class="p">,</span> <span class="s1">&#39;.con&#39;</span><span class="p">):</span>
-        <span class="n">bids_fpath</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">kind_dir</span><span class="p">,</span>
-                             <span class="n">bids_basename</span> <span class="o">+</span> <span class="s1">&#39;_</span><span class="si">{}{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">kind</span><span class="p">,</span> <span class="n">ext</span><span class="p">))</span>
-
-    <span class="k">elif</span> <span class="n">ext</span> <span class="o">==</span> <span class="s1">&#39;.pdf&#39;</span><span class="p">:</span>
-        <span class="n">bids_raw_folder</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">kind_dir</span><span class="p">,</span> <span class="n">bids_basename</span> <span class="o">+</span> <span class="s1">&#39;_</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">kind</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">op</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;.pdf&#39;</span><span class="p">:</span>
+        <span class="n">bids_raw_folder</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bids_root</span><span class="p">,</span> <span class="n">data_dir</span><span class="p">,</span>
+                                  <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">bids_basename</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">kind</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="n">bids_fpath</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bids_raw_folder</span><span class="p">,</span> <span class="s1">&#39;c,rf*&#39;</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">config</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bids_raw_folder</span><span class="p">,</span> <span class="s1">&#39;config&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">bids_fpath</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bids_root</span><span class="p">,</span> <span class="n">data_dir</span><span class="p">,</span> <span class="n">bids_fname</span><span class="p">)</span>
+        <span class="n">config</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="k">if</span> <span class="n">extra_params</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">extra_params</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
@@ -605,7 +732,8 @@
 
     <span class="c1"># read in associated subject info from participants.tsv</span>
     <span class="n">participants_tsv_fpath</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bids_root</span><span class="p">,</span> <span class="s1">&#39;participants.tsv&#39;</span><span class="p">)</span>
-    <span class="n">subject</span> <span class="o">=</span> <span class="s2">&quot;sub-&quot;</span> <span class="o">+</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;sub&#39;</span><span class="p">]</span>
+    <span class="n">params</span> <span class="o">=</span> <span class="n">_parse_bids_filename</span><span class="p">(</span><span class="n">bids_basename</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="s1">&#39;warning&#39;</span><span class="p">)</span>
+    <span class="n">subject</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;sub-</span><span class="si">{</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;sub&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
     <span class="k">if</span> <span class="n">op</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">participants_tsv_fpath</span><span class="p">):</span>
         <span class="n">raw</span> <span class="o">=</span> <span class="n">_handle_participants_reading</span><span class="p">(</span><span class="n">participants_tsv_fpath</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span>
                                            <span class="n">subject</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
@@ -616,26 +744,30 @@
     <span class="k">return</span> <span class="n">raw</span></div>
 
 
-<div class="viewcode-block" id="get_matched_empty_room"><a class="viewcode-back" href="../../generated/mne_bids.get_matched_empty_room.html#mne_bids.get_matched_empty_room">[docs]</a><span class="k">def</span> <span class="nf">get_matched_empty_room</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">,</span> <span class="n">bids_root</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Get matching empty room file.</span>
+<div class="viewcode-block" id="get_matched_empty_room"><a class="viewcode-back" href="../../generated/mne_bids.get_matched_empty_room.html#mne_bids.get_matched_empty_room">[docs]</a><span class="k">def</span> <span class="nf">get_matched_empty_room</span><span class="p">(</span><span class="n">bids_basename</span><span class="p">,</span> <span class="n">bids_root</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Get matching empty-room file for an MEG recording.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    bids_fname : str</span>
-<span class="sd">        The filename for which to find the matching empty room file.</span>
+<span class="sd">    bids_basename : str</span>
+<span class="sd">        The base filename of the BIDS-compatible file. Typically, this can be</span>
+<span class="sd">        generated using :func:`mne_bids.make_bids_basename`.</span>
 <span class="sd">    bids_root : str | pathlib.Path</span>
 <span class="sd">        Path to the BIDS root folder.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    er_fname : str | None.</span>
-<span class="sd">        The filename corresponding to the empty room.</span>
-<span class="sd">        Returns None if no file found.</span>
+<span class="sd">    er_basename : str | None.</span>
+<span class="sd">        The basename corresponding to the best-matching empty-room measurement.</span>
+<span class="sd">        Returns None if none was found.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">bids_fname</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">)</span>
+    <span class="n">kind</span> <span class="o">=</span> <span class="s1">&#39;meg&#39;</span>
+    <span class="n">bids_fname</span> <span class="o">=</span> <span class="n">_make_bids_fname</span><span class="p">(</span><span class="n">bids_basename</span><span class="o">=</span><span class="n">bids_basename</span><span class="p">,</span>
+                                  <span class="n">bids_root</span><span class="o">=</span><span class="n">bids_root</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="n">kind</span><span class="p">)</span>
     <span class="n">_</span><span class="p">,</span> <span class="n">ext</span> <span class="o">=</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">)</span>
 
-    <span class="n">raw</span> <span class="o">=</span> <span class="n">read_raw_bids</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">,</span> <span class="n">bids_root</span><span class="p">)</span>
+    <span class="n">raw</span> <span class="o">=</span> <span class="n">read_raw_bids</span><span class="p">(</span><span class="n">bids_basename</span><span class="o">=</span><span class="n">bids_basename</span><span class="p">,</span> <span class="n">bids_root</span><span class="o">=</span><span class="n">bids_root</span><span class="p">,</span>
+                        <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;meg&#39;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;meas_date&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Measurement date not available. Cannot get matching&#39;</span>
                          <span class="s1">&#39; empty room file&#39;</span><span class="p">)</span>
@@ -660,10 +792,27 @@
             <span class="n">min_seconds</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">delta_t</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">())</span>
             <span class="n">best_er_fname</span> <span class="o">=</span> <span class="n">er_fname</span>
 
-    <span class="k">return</span> <span class="n">best_er_fname</span></div>
+    <span class="k">if</span> <span class="n">best_er_fname</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">er_basename</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">mne_bids</span> <span class="kn">import</span> <span class="n">make_bids_basename</span>  <span class="c1"># Avoid circular import.</span>
+
+        <span class="n">params</span> <span class="o">=</span> <span class="n">_parse_bids_filename</span><span class="p">(</span><span class="n">best_er_fname</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="s1">&#39;warning&#39;</span><span class="p">)</span>
+        <span class="n">er_basename</span> <span class="o">=</span> <span class="n">make_bids_basename</span><span class="p">(</span>
+            <span class="n">subject</span><span class="o">=</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;sub&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="n">session</span><span class="o">=</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;ses&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="n">task</span><span class="o">=</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;task&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="n">acquisition</span><span class="o">=</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;acq&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="n">run</span><span class="o">=</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;run&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="n">processing</span><span class="o">=</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;proc&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="n">recording</span><span class="o">=</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;recording&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+            <span class="n">space</span><span class="o">=</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;space&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">er_basename</span></div>
 
 
-<div class="viewcode-block" id="get_head_mri_trans"><a class="viewcode-back" href="../../generated/mne_bids.get_head_mri_trans.html#mne_bids.get_head_mri_trans">[docs]</a><span class="k">def</span> <span class="nf">get_head_mri_trans</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">,</span> <span class="n">bids_root</span><span class="p">):</span>
+<div class="viewcode-block" id="get_head_mri_trans"><a class="viewcode-back" href="../../generated/mne_bids.get_head_mri_trans.html#mne_bids.get_head_mri_trans">[docs]</a><span class="k">def</span> <span class="nf">get_head_mri_trans</span><span class="p">(</span><span class="n">bids_basename</span><span class="p">,</span> <span class="n">bids_root</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Produce transformation matrix from MEG and MRI landmark points.</span>
 
 <span class="sd">    Will attempt to read the landmarks of Nasion, LPA, and RPA from the sidecar</span>
@@ -673,8 +822,9 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    bids_fname : str</span>
-<span class="sd">        Full name of the MEG data file</span>
+<span class="sd">    bids_basename : str</span>
+<span class="sd">        The base filename of the BIDS-compatible file. Typically, this can be</span>
+<span class="sd">        generated using :func:`mne_bids.make_bids_basename`.</span>
 <span class="sd">    bids_root : str | pathlib.Path</span>
 <span class="sd">        Path to root of the BIDS folder</span>
 
@@ -689,7 +839,8 @@
     <span class="kn">import</span> <span class="nn">nibabel</span> <span class="k">as</span> <span class="nn">nib</span>
 
     <span class="c1"># Get the sidecar file for MRI landmarks</span>
-    <span class="n">bids_fname</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">)</span>
+    <span class="n">bids_fname</span> <span class="o">=</span> <span class="n">_make_bids_fname</span><span class="p">(</span><span class="n">bids_basename</span><span class="o">=</span><span class="n">bids_basename</span><span class="p">,</span>
+                                  <span class="n">bids_root</span><span class="o">=</span><span class="n">bids_root</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;meg&#39;</span><span class="p">)</span>
     <span class="n">t1w_json_path</span> <span class="o">=</span> <span class="n">_find_matching_sidecar</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">,</span> <span class="n">bids_root</span><span class="p">,</span> <span class="s1">&#39;T1w.json&#39;</span><span class="p">)</span>
 
     <span class="c1"># Get MRI landmarks from the JSON sidecar</span>
@@ -732,7 +883,8 @@
     <span class="k">if</span> <span class="n">ext</span> <span class="o">==</span> <span class="s1">&#39;.fif&#39;</span><span class="p">:</span>
         <span class="n">extra_params</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">allow_maxshield</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-    <span class="n">raw</span> <span class="o">=</span> <span class="n">read_raw_bids</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">,</span> <span class="n">bids_root</span><span class="p">,</span> <span class="n">extra_params</span><span class="o">=</span><span class="n">extra_params</span><span class="p">)</span>
+    <span class="n">raw</span> <span class="o">=</span> <span class="n">read_raw_bids</span><span class="p">(</span><span class="n">bids_basename</span><span class="o">=</span><span class="n">bids_basename</span><span class="p">,</span> <span class="n">bids_root</span><span class="o">=</span><span class="n">bids_root</span><span class="p">,</span>
+                        <span class="n">extra_params</span><span class="o">=</span><span class="n">extra_params</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;meg&#39;</span><span class="p">)</span>
     <span class="n">meg_coords_dict</span> <span class="o">=</span> <span class="n">_extract_landmarks</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;dig&#39;</span><span class="p">])</span>
     <span class="n">meg_landmarks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">((</span><span class="n">meg_coords_dict</span><span class="p">[</span><span class="s1">&#39;LPA&#39;</span><span class="p">],</span>
                                 <span class="n">meg_coords_dict</span><span class="p">[</span><span class="s1">&#39;NAS&#39;</span><span class="p">],</span>
@@ -756,7 +908,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-05-17.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-05-18.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.3.<br/>
     </p>
   </div>

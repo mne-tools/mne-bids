@@ -110,12 +110,13 @@
 <h1>mne_bids.get_matched_empty_room<a class="headerlink" href="#mne-bids-get-matched-empty-room" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt id="mne_bids.get_matched_empty_room">
-<code class="sig-prename descclassname">mne_bids.</code><code class="sig-name descname">get_matched_empty_room</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">bids_fname</span></em>, <em class="sig-param"><span class="n">bids_root</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/read.html#get_matched_empty_room"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.get_matched_empty_room" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get matching empty room file.</p>
+<code class="sig-prename descclassname">mne_bids.</code><code class="sig-name descname">get_matched_empty_room</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">bids_basename</span></em>, <em class="sig-param"><span class="n">bids_root</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/read.html#get_matched_empty_room"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.get_matched_empty_room" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get matching empty-room file for an MEG recording.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>bids_fname</strong><span class="classifier">str</span></dt><dd><p>The filename for which to find the matching empty room file.</p>
+<dt><strong>bids_basename</strong><span class="classifier">str</span></dt><dd><p>The base filename of the BIDS-compatible file. Typically, this can be
+generated using <a class="reference internal" href="mne_bids.make_bids_basename.html#mne_bids.make_bids_basename" title="mne_bids.make_bids_basename"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.make_bids_basename()</span></code></a>.</p>
 </dd>
 <dt><strong>bids_root</strong><span class="classifier">str | pathlib.Path</span></dt><dd><p>Path to the BIDS root folder.</p>
 </dd>
@@ -123,8 +124,8 @@
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt><strong>er_fname</strong><span class="classifier">str | None.</span></dt><dd><p>The filename corresponding to the empty room.
-Returns None if no file found.</p>
+<dt><strong>er_basename</strong><span class="classifier">str | None.</span></dt><dd><p>The basename corresponding to the best-matching empty-room measurement.
+Returns None if none was found.</p>
 </dd>
 </dl>
 </dd>
@@ -145,7 +146,7 @@ Returns None if no file found.</p>
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-05-17.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-05-18.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.3.<br/>
     </p>
   </div>

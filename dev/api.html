@@ -129,7 +129,7 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_raw_bids</span></code></a>(raw, bids_basename, bids_root)</p></td>
 <td><p>Save raw data to a BIDS-compliant folder structure.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_raw_bids</span></code></a>(bids_fname, bids_root[, …])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_raw_bids</span></code></a>(bids_basename, bids_root[, …])</p></td>
 <td><p>Read BIDS compatible data.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/mne_bids.make_bids_folders.html#mne_bids.make_bids_folders" title="mne_bids.make_bids_folders"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_bids_folders</span></code></a>(subject[, session, kind, …])</p></td>
@@ -144,11 +144,11 @@
 <tr class="row-even"><td><p><a class="reference internal" href="generated/mne_bids.write_anat.html#mne_bids.write_anat" title="mne_bids.write_anat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_anat</span></code></a>(bids_root, subject, t1w[, …])</p></td>
 <td><p>Put anatomical MRI data into a BIDS format.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/mne_bids.get_head_mri_trans.html#mne_bids.get_head_mri_trans" title="mne_bids.get_head_mri_trans"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_head_mri_trans</span></code></a>(bids_fname, bids_root)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/mne_bids.get_head_mri_trans.html#mne_bids.get_head_mri_trans" title="mne_bids.get_head_mri_trans"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_head_mri_trans</span></code></a>(bids_basename, bids_root)</p></td>
 <td><p>Produce transformation matrix from MEG and MRI landmark points.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/mne_bids.get_matched_empty_room.html#mne_bids.get_matched_empty_room" title="mne_bids.get_matched_empty_room"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_matched_empty_room</span></code></a>(bids_fname, bids_root)</p></td>
-<td><p>Get matching empty room file.</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/mne_bids.get_matched_empty_room.html#mne_bids.get_matched_empty_room" title="mne_bids.get_matched_empty_room"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_matched_empty_room</span></code></a>(bids_basename, bids_root)</p></td>
+<td><p>Get matching empty-room file for an MEG recording.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/mne_bids.get_anonymization_daysback.html#mne_bids.get_anonymization_daysback" title="mne_bids.get_anonymization_daysback"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_anonymization_daysback</span></code></a>(raws)</p></td>
 <td><p>Get the group min and max number of daysback necessary for BIDS specs.</p></td>
@@ -233,7 +233,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-05-17.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-05-18.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.3.<br/>
     </p>
   </div>

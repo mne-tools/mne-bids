@@ -771,9 +771,34 @@ Let us look at the directory structure
  .. code-block:: none
 
     |MNE-sample-data-bids/
-    |--- dataset_description.json
-    |--- participants.tsv
     |--- participants.json
+    |--- participants.tsv
+    |--- dataset_description.json
+    |--- sub-emptyroom/
+    |------ ses-20021204/
+    |--------- sub-emptyroom_ses-20021204_scans.tsv
+    |--------- meg/
+    |------------ sub-emptyroom_ses-20021204_task-noise_meg.json
+    |------------ sub-emptyroom_ses-20021204_task-noise_meg.fif
+    |------------ sub-emptyroom_ses-20021204_task-noise_channels.tsv
+    |------ ses-20021001/
+    |--------- sub-emptyroom_ses-20021001_scans.tsv
+    |--------- meg/
+    |------------ sub-emptyroom_ses-20021001_task-noise_channels.tsv
+    |------------ sub-emptyroom_ses-20021001_task-noise_meg.json
+    |------------ sub-emptyroom_ses-20021001_task-noise_meg.fif
+    |------ ses-20021201/
+    |--------- sub-emptyroom_ses-20021201_scans.tsv
+    |--------- meg/
+    |------------ sub-emptyroom_ses-20021201_task-noise_meg.json
+    |------------ sub-emptyroom_ses-20021201_task-noise_meg.fif
+    |------------ sub-emptyroom_ses-20021201_task-noise_channels.tsv
+    |------ ses-20021206/
+    |--------- sub-emptyroom_ses-20021206_scans.tsv
+    |--------- meg/
+    |------------ sub-emptyroom_ses-20021206_task-noise_meg.fif
+    |------------ sub-emptyroom_ses-20021206_task-noise_channels.tsv
+    |------------ sub-emptyroom_ses-20021206_task-noise_meg.json
     |--- sub-01/
     |------ ses-01/
     |--------- sub-01_ses-01_scans.tsv
@@ -782,52 +807,27 @@ Let us look at the directory structure
     |------------ sub-01_ses-01_T1w.nii.gz
     |--------- meg/
     |------------ sub-01_ses-01_task-audiovisual_run-01_events.tsv
-    |------------ sub-01_ses-01_task-audiovisual_run-01_meg.json
     |------------ sub-01_ses-01_coordsystem.json
-    |------------ sub-01_ses-01_task-audiovisual_run-01_channels.tsv
+    |------------ sub-01_ses-01_task-audiovisual_run-01_meg.json
     |------------ sub-01_ses-01_task-audiovisual_run-01_meg.fif
-    |--- sub-emptyroom/
-    |------ ses-20021206/
-    |--------- sub-emptyroom_ses-20021206_scans.tsv
-    |--------- meg/
-    |------------ sub-emptyroom_ses-20021206_task-noise_meg.fif
-    |------------ sub-emptyroom_ses-20021206_task-noise_meg.json
-    |------------ sub-emptyroom_ses-20021206_task-noise_channels.tsv
-    |------ ses-20021201/
-    |--------- sub-emptyroom_ses-20021201_scans.tsv
-    |--------- meg/
-    |------------ sub-emptyroom_ses-20021201_task-noise_meg.fif
-    |------------ sub-emptyroom_ses-20021201_task-noise_channels.tsv
-    |------------ sub-emptyroom_ses-20021201_task-noise_meg.json
-    |------ ses-20021204/
-    |--------- sub-emptyroom_ses-20021204_scans.tsv
-    |--------- meg/
-    |------------ sub-emptyroom_ses-20021204_task-noise_channels.tsv
-    |------------ sub-emptyroom_ses-20021204_task-noise_meg.fif
-    |------------ sub-emptyroom_ses-20021204_task-noise_meg.json
-    |------ ses-20021001/
-    |--------- sub-emptyroom_ses-20021001_scans.tsv
-    |--------- meg/
-    |------------ sub-emptyroom_ses-20021001_task-noise_meg.fif
-    |------------ sub-emptyroom_ses-20021001_task-noise_meg.json
-    |------------ sub-emptyroom_ses-20021001_task-noise_channels.tsv
+    |------------ sub-01_ses-01_task-audiovisual_run-01_channels.tsv
 
 
 
 
 To get an accurate estimate of the noise, it is important that the empty
 room recording be as close in date as the raw data.
-We can retrieve the filename corresponding to the empty room
-file that is closest in time to the measurement file using MNE-BIDS.
+We can retrieve the basename corresponding to the empty room
+recording that is closest in time to the experimental measurement.
 
 
 .. code-block:: default
 
     from mne_bids import get_matched_empty_room # noqa
 
-    bids_fname = bids_basename + '_meg.fif'
-    best_er_fname = get_matched_empty_room(bids_fname, bids_path)
-    print(best_er_fname)
+    best_er_basename = get_matched_empty_room(bids_basename=bids_basename,
+                                              bids_root=bids_path)
+    print(best_er_basename)
 
 
 
@@ -849,17 +849,17 @@ file that is closest in time to the measurement file using MNE-BIDS.
     Current compensation grade : 0
     Reading events from /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_events.tsv.
     Reading channel info from /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_channels.tsv.
-    /home/circleci/project/mne_bids/read.py:326: RuntimeWarning: The unit for channel(s) STI 001, STI 002, STI 003, STI 004, STI 005, STI 006, STI 014, STI 015, STI 016 has changed from V to NA.
+    /home/circleci/project/mne_bids/read.py:327: RuntimeWarning: The unit for channel(s) STI 001, STI 002, STI 003, STI 004, STI 005, STI 006, STI 014, STI 015, STI 016 has changed from V to NA.
       raw.set_channel_types(channel_type_dict)
-    /home/circleci/project/mne_bids/utils.py:685: RuntimeWarning: Did not find any electrodes.tsv associated with sub-01_ses-01_task-audiovisual_run-01_meg.fif.
+    /home/circleci/project/mne_bids/utils.py:699: RuntimeWarning: Did not find any electrodes.tsv associated with sub-01_ses-01_task-audiovisual_run-01_meg.fif.
 
     The search_str was "/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/**/sub-01_ses-01*acq-None*_electrodes.tsv"
       warn(msg)
-    /home/circleci/project/mne_bids/utils.py:685: RuntimeWarning: Did not find any coordsystem.json associated with sub-01_ses-01_task-audiovisual_run-01_meg.fif.
+    /home/circleci/project/mne_bids/utils.py:699: RuntimeWarning: Did not find any coordsystem.json associated with sub-01_ses-01_task-audiovisual_run-01_meg.fif.
 
     The search_str was "/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/**/sub-01_ses-01*acq-None*_coordsystem.json"
       warn(msg)
-    /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-emptyroom/ses-20021204/meg/sub-emptyroom_ses-20021204_task-noise_meg.fif
+    sub-emptyroom_ses-20021204_task-noise
 
 
 
@@ -869,7 +869,7 @@ Finally, we can read the empty room file using
 
 .. code-block:: default
 
-    raw = read_raw_bids(best_er_fname, bids_path)
+    raw = read_raw_bids(bids_basename=best_er_basename, bids_root=bids_path)
 
 
 
@@ -889,18 +889,18 @@ Finally, we can read the empty room file using
         Range : 19800 ... 85867 =     32.966 ...   142.965 secs
     Ready.
     Current compensation grade : 0
-    /home/circleci/project/mne_bids/utils.py:685: RuntimeWarning: Did not find any events.tsv associated with sub-emptyroom_ses-20021204_task-noise_meg.fif.
+    /home/circleci/project/mne_bids/utils.py:699: RuntimeWarning: Did not find any events.tsv associated with sub-emptyroom_ses-20021204_task-noise_meg.fif.
 
     The search_str was "/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-emptyroom/**/sub-emptyroom_ses-20021204*events.tsv"
       warn(msg)
     Reading channel info from /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-emptyroom/ses-20021204/meg/sub-emptyroom_ses-20021204_task-noise_channels.tsv.
-    /home/circleci/project/mne_bids/read.py:326: RuntimeWarning: The unit for channel(s) STI 001, STI 002, STI 003, STI 004, STI 005, STI 006, STI 014, STI 015, STI 016 has changed from V to NA.
+    /home/circleci/project/mne_bids/read.py:327: RuntimeWarning: The unit for channel(s) STI 001, STI 002, STI 003, STI 004, STI 005, STI 006, STI 014, STI 015, STI 016 has changed from V to NA.
       raw.set_channel_types(channel_type_dict)
-    /home/circleci/project/mne_bids/utils.py:685: RuntimeWarning: Did not find any electrodes.tsv associated with sub-emptyroom_ses-20021204_task-noise_meg.fif.
+    /home/circleci/project/mne_bids/utils.py:699: RuntimeWarning: Did not find any electrodes.tsv associated with sub-emptyroom_ses-20021204_task-noise_meg.fif.
 
     The search_str was "/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-emptyroom/**/sub-emptyroom_ses-20021204*acq-None*_electrodes.tsv"
       warn(msg)
-    /home/circleci/project/mne_bids/utils.py:685: RuntimeWarning: Did not find any coordsystem.json associated with sub-emptyroom_ses-20021204_task-noise_meg.fif.
+    /home/circleci/project/mne_bids/utils.py:699: RuntimeWarning: Did not find any coordsystem.json associated with sub-emptyroom_ses-20021204_task-noise_meg.fif.
 
     The search_str was "/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-emptyroom/**/sub-emptyroom_ses-20021204*acq-None*_coordsystem.json"
       warn(msg)
@@ -911,7 +911,7 @@ Finally, we can read the empty room file using
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  5.670 seconds)
+   **Total running time of the script:** ( 0 minutes  6.596 seconds)
 
 
 .. _sphx_glr_download_auto_examples_convert_empty_room.py:
