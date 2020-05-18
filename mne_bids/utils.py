@@ -363,7 +363,7 @@ param_regex = re.compile(r'([^-_\.\\\/]+)-([^-_\.\\\/]+)')
 def _parse_bids_filename(fname, verbose):
     """Get dict from BIDS fname."""
     keys = ['sub', 'ses', 'task', 'acq', 'run', 'proc', 'run', 'space',
-            'recording', 'part', 'kind']
+            'recording', 'split', 'kind']
     params = {key: None for key in keys}
     idx_key = 0
     for match in re.finditer(param_regex, op.basename(fname)):

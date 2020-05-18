@@ -331,7 +331,7 @@ def test_fif(_bids_validate):
     files = glob(op.join(bids_output_path, 'sub-' + subject_id2,
                          'ses-' + subject_id2, 'meg', '*.fif'))
     for ii, FILE in enumerate(files):
-        assert 'part' not in FILE
+        assert 'split' not in FILE
     assert ii < 1
 
     # check that split files have part key
@@ -348,7 +348,7 @@ def test_fif(_bids_validate):
     files = glob(op.join(bids_output_path, 'sub-' + subject_id3,
                          'ses-' + subject_id3, 'meg', '*.fif'))
     for FILE in files:
-        assert 'part' in FILE
+        assert 'split' in FILE
 
     # test unknown extension
     raw = mne.io.read_raw_fif(raw_fname)
