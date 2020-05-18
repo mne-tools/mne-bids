@@ -91,8 +91,8 @@ print_dir_tree(bids_path)
 # file that is closest in time to the measurement file using MNE-BIDS.
 from mne_bids import get_matched_empty_room # noqa
 
-bids_fname = bids_basename + '_meg.fif'
-best_er_fname = get_matched_empty_room(bids_fname, bids_path)
+best_er_fname = get_matched_empty_room(bids_basename=bids_basename,
+                                       bids_root=bids_path)
 print(best_er_fname)
 
 ###############################################################################

@@ -43,12 +43,9 @@ from mne_bids.utils import print_dir_tree
 #
 # Get the MNE somato data
 bids_root = somato.data_path()
-somato_raw_fname = os.path.join(bids_root, 'sub-01', 'meg',
-                                'sub-01_task-somato_meg.fif')
-
 subject_id = '01'
 task = 'somato'
-kind = "meg"
+kind = 'meg'
 
 bids_basename = make_bids_basename(subject=subject_id, task=task)
 
@@ -65,8 +62,8 @@ print_dir_tree(bids_root)
 #
 # Let's read in the dataset and show off a few features of the
 # loading function `read_raw_bids`. Note, this is just one line of code.
-bids_fname = bids_basename + "_{}.fif".format(kind)
-raw = read_raw_bids(bids_fname, bids_root, verbose=True)
+raw = read_raw_bids(bids_basename=bids_basename, bids_root=bids_root,
+                    kind=kind, verbose=True)
 
 ###############################################################################
 # `raw.info` has the basic subject metadata
