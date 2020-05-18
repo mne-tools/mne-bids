@@ -28,7 +28,7 @@ from mne_bids.utils import (_parse_bids_filename, _extract_landmarks,
                             _find_matching_sidecar, _parse_ext,
                             _get_ch_type_mapping, make_bids_folders,
                             _estimate_line_freq, _scale_coord_to_meters,
-                            _get_kinds_for_sub)
+                            _get_kinds_for_sub, make_bids_basename)
 
 reader = {'.con': io.read_raw_kit, '.sqd': io.read_raw_kit,
           '.fif': io.read_raw_fif, '.pdf': io.read_raw_bti,
@@ -658,9 +658,9 @@ def get_matched_empty_room(bids_basename, bids_root):
 
     Returns
     -------
-    er_fname : str | None.
-        The filename corresponding to the empty-room measurement.
-        Returns None if no file found.
+    er_basename : str | None.
+        The basename corresponding to the best-matching empty-room measurement.
+        Returns None if none was found.
     """
     kind = 'meg'
     bids_fname = _make_bids_fname(bids_basename=bids_basename,
@@ -693,7 +693,22 @@ def get_matched_empty_room(bids_basename, bids_root):
             min_seconds = abs(delta_t.total_seconds())
             best_er_fname = er_fname
 
-    return best_er_fname
+    if best_er_fname is None:
+        er_basename = None
+    else:
+        params = _parse_bids_filename(best_er_fname)
+        er_basename = make_bids_basename(
+            subject=params.get('sub', None),
+            session=params.get('ses', None),
+            task=params.get('task', None),
+            acquisition=params.get('acq', None),
+            run=params.get('run', None),
+            processing=params.get('proc', None),
+            recording=params.get('recording', None),
+            space=params.get('space', None)
+        )
+
+    return er_basename
 
 
 def get_head_mri_trans(bids_basename, bids_root):
