@@ -349,8 +349,8 @@ def _infer_kind(*, bids_basename, bids_root, sub, ses):
                                bids_root=bids_root, sub=sub, ses=ses)
 
     # We only want to handle electrophysiological data here.
-    allowed_kinds = set(['meg', 'eeg', 'ieeg'])
-    kinds = list(set(kinds) & allowed_kinds)
+    allowed_kinds = ['meg', 'eeg', 'ieeg']
+    kinds = set(kinds) & set(allowed_kinds)
     if not kinds:
         raise ValueError('No electrophysiological data found.')
     elif len(kinds) >= 2:
