@@ -588,3 +588,26 @@ def test_read_raw_bids_pathlike():
                    verbose=False)
     raw = read_raw_bids(bids_basename=bids_basename, bids_root=Path(bids_root),
                         kind='meg')
+
+
+@pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+def test_read_raw_kind():
+    """Test that read_raw_bids() can infer the kind if need be."""
+    bids_root = _TempDir()
+    raw = mne.io.read_raw_fif(raw_fname, verbose=False)
+    write_raw_bids(raw, bids_basename, bids_root, overwrite=True,
+                   verbose=False)
+
+    raw_1 = read_raw_bids(bids_basename=bids_basename, bids_root=bids_root,
+                          kind='meg')
+    raw_2 = read_raw_bids(bids_basename=bids_basename, bids_root=bids_root,
+                          kind=None)
+    raw_3 = read_raw_bids(bids_basename=bids_basename, bids_root=bids_root)
+
+    raw_1.crop(0, 2).load_data()
+    raw_2.crop(0, 2).load_data()
+    raw_3.crop(0, 2).load_data()
+
+    assert raw_1 == raw_2
+    assert raw_1 == raw_3
+
