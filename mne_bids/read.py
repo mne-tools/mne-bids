@@ -347,8 +347,12 @@ def _infer_kind(*, bids_basename, bids_root, sub, ses):
 
     kinds = _get_kinds_for_sub(bids_basename=bids_basename,
                                bids_root=bids_root, sub=sub, ses=ses)
+
+    # We only want to handle electrophysiological data here.
+    allowed_kinds = set(['meg', 'eeg', 'ieeg'])
+    kinds = list(set(kinds) & allowed_kinds)
     if not kinds:
-        raise ValueError('No data found.')
+        raise ValueError('No electrophysiological data found.')
     elif len(kinds) >= 2:
         msg = (f'Found data of more than one recording modality. Please '
                f'pass the `kind` parameter to specify which data to load. '
