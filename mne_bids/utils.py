@@ -55,6 +55,20 @@ def get_kinds(bids_root):
     return kinds
 
 
+def _get_kinds_for_sub(*, bids_basename, bids_root, sub, ses=None):
+    """Retrieve available data kinds for a specific subject and session."""
+    subject_dir = op.join(bids_root, f'sub-{sub}')
+    if ses is not None:
+        subject_dir = op.join(subject_dir, f'ses-{ses}')
+
+    # TODO We do this to ensure we don't accidentally pick up any "spurious"
+    # TODO sub-directories. But is that really necessary with valid BIDS data?
+    kinds_in_dataset = get_kinds(bids_root=bids_root)
+    subdirs = [f.name for f in os.scandir(subject_dir) if f.is_dir()]
+    available_kinds = [s for s in subdirs if s in kinds_in_dataset]
+    return available_kinds
+
+
 def _ensure_tuple(x):
     """Return a tuple."""
     if x is None:

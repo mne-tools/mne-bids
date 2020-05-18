@@ -87,14 +87,14 @@ print_dir_tree(bids_path)
 ###############################################################################
 # To get an accurate estimate of the noise, it is important that the empty
 # room recording be as close in date as the raw data.
-# We can retrieve the filename corresponding to the empty room
-# file that is closest in time to the measurement file using MNE-BIDS.
+# We can retrieve the basename corresponding to the empty room
+# recording that is closest in time to the experimental measurement.
 from mne_bids import get_matched_empty_room # noqa
 
-bids_fname = bids_basename + '_meg.fif'
-best_er_fname = get_matched_empty_room(bids_fname, bids_path)
-print(best_er_fname)
+best_er_basename = get_matched_empty_room(bids_basename=bids_basename,
+                                          bids_root=bids_path)
+print(best_er_basename)
 
 ###############################################################################
 # Finally, we can read the empty room file using
-raw = read_raw_bids(best_er_fname, bids_path)
+raw = read_raw_bids(bids_basename=best_er_basename, bids_root=bids_path)

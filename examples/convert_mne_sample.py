@@ -75,8 +75,7 @@ print_dir_tree(output_path)
 # packages can automate your workflow. For example, reading the data back
 # into MNE-Python can easily be done using :func:`read_raw_bids`.
 
-bids_fname = bids_basename + '_meg.fif'
-raw = read_raw_bids(bids_fname, output_path)
+raw = read_raw_bids(bids_basename=bids_basename, bids_root=output_path)
 
 ###############################################################################
 # The resulting data is already in a convenient form to create epochs and
