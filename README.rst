@@ -210,7 +210,8 @@ Please see our `contributing guide <https://github.com/mne-tools/mne-bids/blob/m
 Cite
 ----
 
-If you use ``mne-bids`` in your work, please cite:
+If you use ``mne-bids`` in your work, please cite our
+`publication in JOSS <https://doi.org/10.21105/joss.01896>`_.
 
 .. code-block:: Text
 
@@ -218,9 +219,10 @@ If you use ``mne-bids`` in your work, please cite:
     Chaumon, M., Mikulan, E., Tavabi, K., Höchenberger, R., Welke, D., Brunner, C.,
     Rockhill, A., Larson, E., Gramfort, A. and Jas, M. (2019). MNE-BIDS: Organizing
     electrophysiological data into the BIDS format and facilitating their analysis.
-    Journal of Open Source Software 4: (1896).
+    Journal of Open Source Software 4: (1896). https://doi.org/10.21105/joss.01896
 
-and one of the following papers, depending on which modality you used:
+and one of the following papers to credit BIDS, depending on which modality you
+used:
 
 `MEG <http://doi.org/10.1038/sdata.2018.110>`_
 ##############################################
@@ -231,7 +233,7 @@ and one of the following papers, depending on which modality you used:
    Henson, R. N., Jas, M., Litvak, V., Moreau, J., Oostenveld, R., Schoffelen, J.,
    Tadel, F., Wexler, J., Baillet, S. (2018). MEG-BIDS, the brain imaging data
    structure extended to magnetoencephalography. Scientific Data, 5, 180110.
-   http://doi.org/10.1038/sdata.2018.110
+   https://doi.org/10.1038/sdata.2018.110
 
 
 `EEG <https://doi.org/10.1038/s41597-019-0104-8>`_

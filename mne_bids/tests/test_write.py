@@ -327,14 +327,14 @@ def test_fif(_bids_validate):
 
     assert op.exists(op.join(bids_root, 'participants.tsv'))
 
-    # asserting that single fif files do not include the part key
+    # asserting that single fif files do not include the split key
     files = glob(op.join(bids_output_path, 'sub-' + subject_id2,
                          'ses-' + subject_id2, 'meg', '*.fif'))
     for ii, FILE in enumerate(files):
-        assert 'part' not in FILE
+        assert 'split' not in FILE
     assert ii < 1
 
-    # check that split files have part key
+    # check that split files have split key
     raw = mne.io.read_raw_fif(raw_fname)
     data_path3 = _TempDir()
     raw_fname3 = op.join(data_path3, 'sample_audvis_raw.fif')
@@ -348,7 +348,7 @@ def test_fif(_bids_validate):
     files = glob(op.join(bids_output_path, 'sub-' + subject_id3,
                          'ses-' + subject_id3, 'meg', '*.fif'))
     for FILE in files:
-        assert 'part' in FILE
+        assert 'split' in FILE
 
     # test unknown extension
     raw = mne.io.read_raw_fif(raw_fname)

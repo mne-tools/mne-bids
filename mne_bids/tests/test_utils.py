@@ -273,11 +273,11 @@ def test_parse_ext():
 
 
 @pytest.mark.parametrize('fname', [
-    'sub-01_ses-02_task-test_run-3_part-01_meg.fif',
-    'sub-01_ses-02_task-test_run-3_part-01.fif',
-    'sub-01_ses-02_task-test_run-3_part-01',
+    'sub-01_ses-02_task-test_run-3_split-01_meg.fif',
+    'sub-01_ses-02_task-test_run-3_split-01.fif',
+    'sub-01_ses-02_task-test_run-3_split-01',
     ('/bids_root/sub-01/ses-02/meg/' +
-     'sub-01_ses-02_task-test_run-3_part-01_meg.fif'),
+     'sub-01_ses-02_task-test_run-3_split-01_meg.fif'),
 ])
 def test_parse_bids_filename(fname):
     """Test parsing entities from a bids filename."""
@@ -286,9 +286,9 @@ def test_parse_bids_filename(fname):
     assert params['ses'] == '02'
     assert params['run'] == '3'
     assert params['task'] == 'test'
-    assert params['part'] == '01'
+    assert params['split'] == '01'
     assert list(params.keys()) == ['sub', 'ses', 'task', 'acq', 'run', 'proc',
-                                   'space', 'recording', 'part', 'kind']
+                                   'space', 'recording', 'split', 'kind']
 
 
 def test_age_on_date():
