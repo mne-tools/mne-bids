@@ -722,7 +722,26 @@ def test_edf(_bids_validate):
     eeg_montage = mne.channels.make_dig_montage(ch_pos=ch_pos,
                                                 coord_frame='head')
     raw.set_montage(eeg_montage)
+    # electrodes are not written w/o landmarks
+    with pytest.warns(RuntimeWarning, match='Skipping EEG electrodes.tsv... '
+                                            'Setting montage not possible'):
+        write_raw_bids(raw, bids_fname, bids_root, overwrite=True)
+        electrodes_fpath = _find_matching_sidecar(bids_fname, bids_root,
+                                                  suffix='electrodes.tsv',
+                                                  allow_fail=True)
+        assert electrodes_fpath is None
+
+    # with landmarks, eeg montage is written
+    eeg_montage = mne.channels.make_dig_montage(ch_pos=ch_pos,
+                                                coord_frame='head',
+                                                nasion=[1, 0, 0],
+                                                lpa=[0, 1, 0],
+                                                rpa=[0, 0, 1])
+    raw.set_montage(eeg_montage)
     write_raw_bids(raw, bids_fname, bids_root, overwrite=True)
+    electrodes_fpath = _find_matching_sidecar(bids_fname, bids_root,
+                                              suffix='electrodes.tsv')
+    assert op.exists(electrodes_fpath)
     _bids_validate(bids_root)
 
     # ensure there is an EMG channel in the channels.tsv:
@@ -752,6 +771,7 @@ def test_edf(_bids_validate):
     # Also cover iEEG
     # We use the same data and pretend that eeg channels are ecog
     ieeg_raw = raw.copy()
+    ieeg_raw.set_montage(None)
     eeg_picks = mne.pick_types(ieeg_raw.info, eeg=True)
     ieeg_raw.set_channel_types({raw.ch_names[i]: 'ecog'
                                 for i in eeg_picks})
@@ -781,7 +801,7 @@ def test_edf(_bids_validate):
     assert 'space-mri' in coordsystem_fname
     with open(coordsystem_fname, 'r') as fin:
         coordsystem_json = json.load(fin)
-    assert coordsystem_json['iEEGCoordinateSystem'] == 'Other'
+    assert coordsystem_json['iEEGCoordinateSystem'] == 'other'
 
     # test anonymize and convert
     if check_version('mne', '0.20') and check_version('pybv', '0.2.0'):

@@ -2,6 +2,7 @@
 # Authors: Adam Li <adam2392@gmail.com>
 #
 # License: BSD (3-clause)
+import json
 from collections import OrderedDict
 
 import mne

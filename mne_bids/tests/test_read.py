@@ -331,6 +331,73 @@ def test_handle_info_reading():
 
 @pytest.mark.filterwarnings(warning_str['nasion_not_found'])
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+def test_handle_eeg_coords_reading():
+    """Test reading iEEG coordinates from BIDS files."""
+    bids_root = _TempDir()
+
+    data_path = op.join(testing.data_path(), 'EDF')
+    raw_fname = op.join(data_path, 'test_reduced.edf')
+    raw = mne.io.read_raw_edf(raw_fname)
+
+    # ensure we are writing 'eeg' data
+    raw.set_channel_types({ch: 'eeg'
+                           for ch in raw.ch_names})
+
+    # set a `random` montage
+    ch_names = raw.ch_names
+    elec_locs = np.random.random((len(ch_names), 3)).astype(float)
+    ch_pos = dict(zip(ch_names, elec_locs))
+
+    # # create montage in 'unknown' coordinate frame
+    # # and assert coordsystem/electrodes sidecar tsv don't exist
+    montage = mne.channels.make_dig_montage(ch_pos=ch_pos,
+                                            coord_frame="unknown")
+    raw.set_montage(montage)
+    with pytest.warns(RuntimeWarning, match="Skipping EEG electrodes.tsv"):
+        write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
+        coordsystem_fname = _find_matching_sidecar(bids_basename, bids_root,
+                                                   suffix='coordsystem.json',
+                                                   allow_fail=True)
+        electrodes_fname = _find_matching_sidecar(bids_basename, bids_root,
+                                                  suffix="electrodes.tsv",
+                                                  allow_fail=True)
+        assert coordsystem_fname is None
+        assert electrodes_fname is None
+
+    # create montage in head frame and set should result in
+    # warning if landmarks not set
+    montage = mne.channels.make_dig_montage(ch_pos=ch_pos,
+                                            coord_frame="head")
+    raw.set_montage(montage)
+    with pytest.warns(RuntimeWarning, match='Setting montage not possible '
+                                            'if anatomical landmarks'):
+        write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
+
+    montage = mne.channels.make_dig_montage(ch_pos=ch_pos,
+                                            coord_frame="head",
+                                            nasion=[1, 0, 0],
+                                            lpa=[0, 1, 0],
+                                            rpa=[0, 0, 1])
+    raw.set_montage(montage)
+    write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
+
+    # obtain the sensor positions and assert ch_coords are same
+    raw_test = read_raw_bids(bids_basename, bids_root)
+    assert not object_diff(raw.info['chs'], raw_test.info['chs'])
+
+    # modify coordinate frame to not-captrak
+    coordsystem_fname = _find_matching_sidecar(bids_basename, bids_root,
+                                               suffix='coordsystem.json',
+                                               allow_fail=True)
+    _update_sidecar(coordsystem_fname, 'EEGCoordinateSystem', 'besa')
+    with pytest.warns(RuntimeWarning, match='EEG Coordinate frame is not '
+                                            'accepted BIDS keyword'):
+        raw_test = read_raw_bids(bids_basename, bids_root)
+        assert raw_test.info['dig'] is None
+
+
+@pytest.mark.filterwarnings(warning_str['nasion_not_found'])
+@pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_handle_ieeg_coords_reading():
     """Test reading iEEG coordinates from BIDS files."""
     bids_root = _TempDir()
@@ -402,8 +469,8 @@ def test_handle_ieeg_coords_reading():
         electrodes_dict[axis] = \
             np.multiply(orig_electrodes_dict[axis], scaling)
     _to_tsv(electrodes_dict, electrodes_fname)
-    with pytest.warns(RuntimeWarning, match='Coordinate unit '
-                                            'is not an accepted BIDS'):
+    with pytest.warns(RuntimeWarning, match='Coordinate unit is not '
+                                            'an accepted BIDS unit'):
         raw_test = read_raw_bids(bids_basename=bids_basename,
                                  bids_root=bids_root, verbose=False)
 
@@ -434,7 +501,7 @@ def test_handle_ieeg_coords_reading():
         _update_sidecar(coordsystem_fname, 'iEEGCoordinateSystem', coord_frame)
         # read in raw file w/ updated coordinate frame
         # and make sure all digpoints are MRI coordinate frame
-        with pytest.warns(RuntimeWarning, match="Coordinate frame is "
+        with pytest.warns(RuntimeWarning, match="iEEG Coordinate frame is "
                                                 "not accepted BIDS keyword"):
             raw_test = read_raw_bids(bids_basename=bids_basename,
                                      bids_root=bids_root, verbose=False)
