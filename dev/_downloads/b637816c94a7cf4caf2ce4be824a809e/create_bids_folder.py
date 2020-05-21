@@ -31,7 +31,7 @@ from mne_bids import make_bids_folders, make_bids_basename
 # final file path. Omitted keys will not be included in the file path.
 
 bids_basename = make_bids_basename(subject='test', session='two',
-                                   task='mytask', suffix='data.csv')
+                                   task='mytask', suffix='events.tsv')
 print(bids_basename)
 
 ###############################################################################
@@ -47,10 +47,13 @@ print(bids_basename)
 #
 # You can also use MNE-BIDS to create folder hierarchies.
 
-path_folder = make_bids_folders('sub_01', session='mysession',
+path_folder = make_bids_folders(subject='01', session='mysession',
                                 kind='meg', bids_root='path/to/project',
                                 make_dir=False)
 print(path_folder)
 
-# Note that passing `make_dir=True` will create the folder hierarchy, ignoring
-# errors if the folder already exists.
+# Note that passing `make_dir=True` will create the folder hierarchy. If that
+# path already exists, you can make use of the `overwrite` parameter.
+# If `overwrite=False` then no existing folders will be removed, however
+# if `overwrite=True` then any existing folders at the session level
+# or lower will be removed, including any contained data.

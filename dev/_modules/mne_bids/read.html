@@ -137,7 +137,8 @@
                             <span class="n">_find_matching_sidecar</span><span class="p">,</span> <span class="n">_parse_ext</span><span class="p">,</span>
                             <span class="n">_get_ch_type_mapping</span><span class="p">,</span> <span class="n">make_bids_folders</span><span class="p">,</span>
                             <span class="n">_estimate_line_freq</span><span class="p">,</span> <span class="n">_scale_coord_to_meters</span><span class="p">,</span>
-                            <span class="n">_get_kinds_for_sub</span><span class="p">)</span>
+                            <span class="n">_get_kinds_for_sub</span><span class="p">,</span> <span class="n">make_bids_basename</span><span class="p">)</span>
+
 
 <span class="n">reader</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;.con&#39;</span><span class="p">:</span> <span class="n">io</span><span class="o">.</span><span class="n">read_raw_kit</span><span class="p">,</span> <span class="s1">&#39;.sqd&#39;</span><span class="p">:</span> <span class="n">io</span><span class="o">.</span><span class="n">read_raw_kit</span><span class="p">,</span>
           <span class="s1">&#39;.fif&#39;</span><span class="p">:</span> <span class="n">io</span><span class="o">.</span><span class="n">read_raw_fif</span><span class="p">,</span> <span class="s1">&#39;.pdf&#39;</span><span class="p">:</span> <span class="n">io</span><span class="o">.</span><span class="n">read_raw_bti</span><span class="p">,</span>
@@ -795,8 +796,6 @@
     <span class="k">if</span> <span class="n">best_er_fname</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">er_basename</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">mne_bids</span> <span class="kn">import</span> <span class="n">make_bids_basename</span>  <span class="c1"># Avoid circular import.</span>
-
         <span class="n">params</span> <span class="o">=</span> <span class="n">_parse_bids_filename</span><span class="p">(</span><span class="n">best_er_fname</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="s1">&#39;warning&#39;</span><span class="p">)</span>
         <span class="n">er_basename</span> <span class="o">=</span> <span class="n">make_bids_basename</span><span class="p">(</span>
             <span class="n">subject</span><span class="o">=</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;sub&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
@@ -908,7 +907,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-05-18.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-05-21.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.3.<br/>
     </p>
   </div>

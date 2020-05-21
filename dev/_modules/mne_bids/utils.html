@@ -123,7 +123,7 @@
 <span class="kn">import</span> <span class="nn">shutil</span> <span class="k">as</span> <span class="nn">sh</span>
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span><span class="p">,</span> <span class="n">OrderedDict</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -472,7 +472,7 @@
 <span class="k">def</span> <span class="nf">_parse_bids_filename</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">verbose</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Get dict from BIDS fname.&quot;&quot;&quot;</span>
     <span class="n">keys</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;sub&#39;</span><span class="p">,</span> <span class="s1">&#39;ses&#39;</span><span class="p">,</span> <span class="s1">&#39;task&#39;</span><span class="p">,</span> <span class="s1">&#39;acq&#39;</span><span class="p">,</span> <span class="s1">&#39;run&#39;</span><span class="p">,</span> <span class="s1">&#39;proc&#39;</span><span class="p">,</span> <span class="s1">&#39;run&#39;</span><span class="p">,</span> <span class="s1">&#39;space&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;recording&#39;</span><span class="p">,</span> <span class="s1">&#39;part&#39;</span><span class="p">,</span> <span class="s1">&#39;kind&#39;</span><span class="p">]</span>
+            <span class="s1">&#39;recording&#39;</span><span class="p">,</span> <span class="s1">&#39;split&#39;</span><span class="p">,</span> <span class="s1">&#39;kind&#39;</span><span class="p">]</span>
     <span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">}</span>
     <span class="n">idx_key</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">re</span><span class="o">.</span><span class="n">finditer</span><span class="p">(</span><span class="n">param_regex</span><span class="p">,</span> <span class="n">op</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">fname</span><span class="p">)):</span>
@@ -906,6 +906,99 @@
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span><span class="n">coord</span><span class="p">,</span> <span class="mf">1000.</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">coord</span>
+
+
+<div class="viewcode-block" id="make_bids_basename"><a class="viewcode-back" href="../../generated/mne_bids.make_bids_basename.html#mne_bids.make_bids_basename">[docs]</a><span class="k">def</span> <span class="nf">make_bids_basename</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                       <span class="n">acquisition</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">run</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">processing</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                       <span class="n">recording</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">space</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create a partial/full BIDS filename from its component parts.</span>
+
+<span class="sd">    BIDS filename prefixes have one or more pieces of metadata in them. They</span>
+<span class="sd">    must follow a particular order, which is followed by this function. This</span>
+<span class="sd">    will generate the *prefix* for a BIDS filename that can be used with many</span>
+<span class="sd">    subsequent files, or you may also give a suffix that will then complete</span>
+<span class="sd">    the file name.</span>
+
+<span class="sd">    Note that all parameters are not applicable to each kind of data. For</span>
+<span class="sd">    example, electrode location TSV files do not need a task field.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    subject : str | None</span>
+<span class="sd">        The subject ID. Corresponds to &quot;sub&quot;.</span>
+<span class="sd">    session : str | None</span>
+<span class="sd">        The session identifier. Corresponds to &quot;ses&quot;. Must be a date in</span>
+<span class="sd">        format &quot;YYYYMMDD&quot; if subject is &quot;emptyroom&quot;.</span>
+<span class="sd">    task : str | None</span>
+<span class="sd">        The task identifier. Corresponds to &quot;task&quot;. Must be &quot;noise&quot; if</span>
+<span class="sd">        subject is &quot;emptyroom&quot;.</span>
+<span class="sd">    acquisition: str | None</span>
+<span class="sd">        The acquisition parameters. Corresponds to &quot;acq&quot;.</span>
+<span class="sd">    run : int | None</span>
+<span class="sd">        The run number. Corresponds to &quot;run&quot;.</span>
+<span class="sd">    processing : str | None</span>
+<span class="sd">        The processing label. Corresponds to &quot;proc&quot;.</span>
+<span class="sd">    recording : str | None</span>
+<span class="sd">        The recording name. Corresponds to &quot;recording&quot;.</span>
+<span class="sd">    space : str | None</span>
+<span class="sd">        The coordinate space for an anatomical file. Corresponds to &quot;space&quot;.</span>
+<span class="sd">    prefix : str | None</span>
+<span class="sd">        The prefix for the filename to be created. E.g., a path to the folder</span>
+<span class="sd">        in which you wish to create a file with this name.</span>
+<span class="sd">    suffix : str | None</span>
+<span class="sd">        The suffix for the filename to be created. E.g., &#39;audio.wav&#39;.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    filename : str</span>
+<span class="sd">        The BIDS filename you wish to create.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; print(make_bids_basename(subject=&#39;test&#39;, session=&#39;two&#39;, task=&#39;mytask&#39;, suffix=&#39;data.csv&#39;)) # noqa: E501</span>
+<span class="sd">    sub-test_ses-two_task-mytask_data.csv</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">order</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">([(</span><span class="s1">&#39;sub&#39;</span><span class="p">,</span> <span class="n">subject</span><span class="p">),</span>
+                         <span class="p">(</span><span class="s1">&#39;ses&#39;</span><span class="p">,</span> <span class="n">session</span><span class="p">),</span>
+                         <span class="p">(</span><span class="s1">&#39;task&#39;</span><span class="p">,</span> <span class="n">task</span><span class="p">),</span>
+                         <span class="p">(</span><span class="s1">&#39;acq&#39;</span><span class="p">,</span> <span class="n">acquisition</span><span class="p">),</span>
+                         <span class="p">(</span><span class="s1">&#39;run&#39;</span><span class="p">,</span> <span class="n">run</span><span class="p">),</span>
+                         <span class="p">(</span><span class="s1">&#39;proc&#39;</span><span class="p">,</span> <span class="n">processing</span><span class="p">),</span>
+                         <span class="p">(</span><span class="s1">&#39;space&#39;</span><span class="p">,</span> <span class="n">space</span><span class="p">),</span>
+                         <span class="p">(</span><span class="s1">&#39;recording&#39;</span><span class="p">,</span> <span class="n">recording</span><span class="p">)])</span>
+    <span class="k">if</span> <span class="n">order</span><span class="p">[</span><span class="s1">&#39;run&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">order</span><span class="p">[</span><span class="s1">&#39;run&#39;</span><span class="p">],</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="c1"># Ensure that run is a string</span>
+        <span class="n">order</span><span class="p">[</span><span class="s1">&#39;run&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{:02}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">order</span><span class="p">[</span><span class="s1">&#39;run&#39;</span><span class="p">])</span>
+
+    <span class="n">_check_types</span><span class="p">(</span><span class="n">order</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="nb">all</span><span class="p">(</span><span class="n">ii</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="n">order</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="ow">and</span> <span class="n">suffix</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span>
+            <span class="n">prefix</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;At least one parameter must be given.&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">subject</span> <span class="o">==</span> <span class="s1">&#39;emptyroom&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">suffix</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">task</span> <span class="o">!=</span> <span class="s1">&#39;noise&#39;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;task must be &#39;&#39;noise&#39;&#39; if subject is&#39;</span>
+                             <span class="s1">&#39; &#39;&#39;emptyroom&#39;&#39;&#39;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;session must be string of format YYYYMMDD&quot;</span><span class="p">)</span>
+
+    <span class="n">filename</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">order</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">val</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">_check_key_val</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
+            <span class="n">filename</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">-</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">val</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">suffix</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">filename</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">suffix</span><span class="p">)</span>
+
+    <span class="n">filename</span> <span class="o">=</span> <span class="s1">&#39;_&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">filename</span></div>
 </pre></div>
 
     </div>
@@ -919,7 +1012,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-05-18.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-05-21.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.3.<br/>
     </p>
   </div>
