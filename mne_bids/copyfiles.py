@@ -176,7 +176,7 @@ def copyfile_kit(src, dest, subject_id, session_id,
         Extract information of marker and headpoints
 
     """
-    from mne_bids.write import make_bids_basename
+    from mne_bids.utils import make_bids_basename
     # KIT data requires the marker file to be copied over too
     sh.copyfile(src, dest)
     data_path = op.split(dest)[0]

@@ -37,7 +37,7 @@ from mne_bids.utils import (_write_json, _write_tsv, _read_events, _mkdir_p,
                             _path_to_str,
                             _extract_landmarks, _parse_ext,
                             _get_ch_type_mapping, make_bids_folders,
-                            _estimate_line_freq)
+                            _estimate_line_freq, make_bids_basename)
 from mne_bids.copyfiles import (copyfile_brainvision, copyfile_eeglab,
                                 copyfile_ctf, copyfile_bti, copyfile_kit)
 from mne_bids.read import reader
@@ -839,99 +839,6 @@ def get_anonymization_daysback(raws):
                          'not follow BIDS recommendations and use' +
                          'anonymized dates after 1925')
     return daysback_min, daysback_max
-
-
-def make_bids_basename(subject=None, session=None, task=None,
-                       acquisition=None, run=None, processing=None,
-                       recording=None, space=None, prefix=None, suffix=None):
-    """Create a partial/full BIDS filename from its component parts.
-
-    BIDS filename prefixes have one or more pieces of metadata in them. They
-    must follow a particular order, which is followed by this function. This
-    will generate the *prefix* for a BIDS filename that can be used with many
-    subsequent files, or you may also give a suffix that will then complete
-    the file name.
-
-    Note that all parameters are not applicable to each kind of data. For
-    example, electrode location TSV files do not need a task field.
-
-    Parameters
-    ----------
-    subject : str | None
-        The subject ID. Corresponds to "sub".
-    session : str | None
-        The session identifier. Corresponds to "ses". Must be a date in
-        format "YYYYMMDD" if subject is "emptyroom".
-    task : str | None
-        The task identifier. Corresponds to "task". Must be "noise" if
-        subject is "emptyroom".
-    acquisition: str | None
-        The acquisition parameters. Corresponds to "acq".
-    run : int | None
-        The run number. Corresponds to "run".
-    processing : str | None
-        The processing label. Corresponds to "proc".
-    recording : str | None
-        The recording name. Corresponds to "recording".
-    space : str | None
-        The coordinate space for an anatomical file. Corresponds to "space".
-    prefix : str | None
-        The prefix for the filename to be created. E.g., a path to the folder
-        in which you wish to create a file with this name.
-    suffix : str | None
-        The suffix for the filename to be created. E.g., 'audio.wav'.
-
-    Returns
-    -------
-    filename : str
-        The BIDS filename you wish to create.
-
-    Examples
-    --------
-    >>> print(make_bids_basename(subject='test', session='two', task='mytask', suffix='data.csv')) # noqa: E501
-    sub-test_ses-two_task-mytask_data.csv
-
-    """
-    order = OrderedDict([('sub', subject),
-                         ('ses', session),
-                         ('task', task),
-                         ('acq', acquisition),
-                         ('run', run),
-                         ('proc', processing),
-                         ('space', space),
-                         ('recording', recording)])
-    if order['run'] is not None and not isinstance(order['run'], str):
-        # Ensure that run is a string
-        order['run'] = '{:02}'.format(order['run'])
-
-    _check_types(order.values())
-
-    if (all(ii is None for ii in order.values()) and suffix is None and
-            prefix is None):
-        raise ValueError("At least one parameter must be given.")
-
-    if subject == 'emptyroom':
-        if suffix is None and task != 'noise':
-            raise ValueError('task must be ''noise'' if subject is'
-                             ' ''emptyroom''')
-        try:
-            datetime.strptime(session, '%Y%m%d')
-        except ValueError:
-            raise ValueError("session must be string of format YYYYMMDD")
-
-    filename = []
-    for key, val in order.items():
-        if val is not None:
-            _check_key_val(key, val)
-            filename.append('%s-%s' % (key, val))
-
-    if isinstance(suffix, str):
-        filename.append(suffix)
-
-    filename = '_'.join(filename)
-    if isinstance(prefix, str):
-        filename = op.join(prefix, filename)
-    return filename
 
 
 def make_dataset_description(path, name, data_license=None,
