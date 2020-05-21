@@ -99,6 +99,28 @@ def _handle_electrodes_reading(electrodes_fname, coord_frame,
     return raw
 
 
+def _handle_coordsystem_reading(coordsystem_fpath, kind):
+    """Read associated coordsystem.json.
+
+    Handle reading the coordinate frame and coordinate unit
+    of each electrode.
+    """
+    # open coordinate system sidecar json
+    with open(coordsystem_fpath, 'r') as fin:
+        coordsystem_json = json.load(fin)
+
+    if kind == 'meg':
+        coord_frame = coordsystem_json['MEGCoordinateSystem'].lower()
+        coord_unit = coordsystem_json['MEGCoordinateUnits']
+    elif kind == 'eeg':
+        coord_frame = coordsystem_json['EEGCoordinateSystem'].lower()
+        coord_unit = coordsystem_json['EEGCoordinateUnits']
+    elif kind == 'ieeg':
+        coord_frame = coordsystem_json['iEEGCoordinateSystem'].lower()
+        coord_unit = coordsystem_json['iEEGCoordinateUnits']
+    return coord_frame, coord_unit
+
+
 def _electrodes_tsv(raw, fname, kind, overwrite=False, verbose=True):
     """Create an electrodes.tsv file and save it.
 
@@ -197,19 +219,21 @@ def _coordsystem_json(raw, unit, orient, coordsystem_name, fname,
             for ident in hpi.keys():
                 coords['coil%d' % ident] = hpi[ident]['r'].tolist()
 
-        fid_json = {'MEGCoordinateSystem': coordsystem_name,
-                    'MEGCoordinateUnits': unit,  # XXX validate this
-                    'HeadCoilCoordinates': coords,
-                    'HeadCoilCoordinateSystem': orient,
-                    'HeadCoilCoordinateUnits': unit  # XXX validate this
-                    }
+        fid_json = {
+            'MEGCoordinateSystem': coordsystem_name,
+            'MEGCoordinateUnits': unit,  # XXX validate this
+            'HeadCoilCoordinates': coords,
+            'HeadCoilCoordinateSystem': orient,
+            'HeadCoilCoordinateUnits': unit  # XXX validate this
+        }
     elif kind == 'eeg':
-        fid_json = {'EEGCoordinateSystem': coordsystem_name,
-                    'EEGCoordinateUnits': unit,
-                    'AnatomicalLandmarkCoordinates': coords,
-                    'AnatomicalLandmarkCoordinateSystem': coordsystem_name,
-                    'AnatomicalLandmarkCoordinateUnits': unit,
-                    }
+        fid_json = {
+            'EEGCoordinateSystem': coordsystem_name,
+            'EEGCoordinateUnits': unit,
+            'AnatomicalLandmarkCoordinates': coords,
+            'AnatomicalLandmarkCoordinateSystem': coordsystem_name,
+            'AnatomicalLandmarkCoordinateUnits': unit,
+        }
     elif kind == "ieeg":
         fid_json = {
             'iEEGCoordinateSystem': coordsystem_name,  # (Other, Pixels, ACPC)
@@ -270,7 +294,7 @@ def _write_dig_bids(electrodes_fname, coordsystem_fname, data_path,
 
         if kind == "ieeg":
             if coord_frame is not None:
-                # XXX: To improve when mne-python allows coord_frame='other'
+                # XXX: To improve when mne-python allows coord_frame='unknown'
                 if coord_frame not in BIDS_IEEG_COORDINATE_FRAMES:
                     coordsystem_fname = make_bids_basename(
                         subject=subject_id, session=session_id,
@@ -348,14 +372,11 @@ def _read_dig_bids(electrodes_fpath, coordsystem_fpath,
         space = ''
     space = space.lower()
 
-    # open coordinate system sidecar json
-    with open(coordsystem_fpath, 'r') as fin:
-        coordsystem_json = json.load(fin)
+    # read in coordinate information
+    coord_frame, coord_unit = _handle_coordsystem_reading(coordsystem_fpath,
+                                                          kind)
 
     if kind == 'meg':
-        coord_frame = coordsystem_json['MEGCoordinateSystem'].lower()
-        coord_unit = coordsystem_json['MEGCoordinateUnits']
-
         if coord_frame not in BIDS_MEG_COORDINATE_FRAMES:
             warn("MEG Coordinate frame is not accepted "
                  "BIDS keyword. The allowed keywords are: "
@@ -369,9 +390,6 @@ def _read_dig_bids(electrodes_fpath, coordsystem_fpath,
         else:
             coord_frame = BIDS_TO_MNE_FRAMES.get(coord_frame, None)
     elif kind == 'ieeg':
-        coord_frame = coordsystem_json['iEEGCoordinateSystem'].lower()
-        coord_unit = coordsystem_json['iEEGCoordinateUnits']
-
         if coord_frame not in BIDS_IEEG_COORDINATE_FRAMES:
             warn("iEEG Coordinate frame is not accepted "
                  "BIDS keyword. The allowed keywords are: "
@@ -393,9 +411,6 @@ def _read_dig_bids(electrodes_fpath, coordsystem_fpath,
                      "from coordinate system input {}".format(coord_frame))
             coord_frame = BIDS_TO_MNE_FRAMES.get(space, None)
     elif kind == 'eeg':
-        coord_frame = coordsystem_json['EEGCoordinateSystem'].lower()
-        coord_unit = coordsystem_json['EEGCoordinateUnits']
-
         # only accept captrak
         if coord_frame not in BIDS_EEG_COORDINATE_FRAMES:
             warn("EEG Coordinate frame is not accepted "
