@@ -24,7 +24,7 @@ from mne_bids.config import (ALLOWED_EXTENSIONS, _convert_hand_options,
                              _convert_sex_options,
                              BIDS_IEEG_COORDINATE_FRAMES,
                              BIDS_COORDINATE_UNITS,
-                             MNE_IEEG_COORD_FRAME_DICT)
+                             MNE_STR_TO_FRAME)
 from mne_bids.utils import (_parse_bids_filename, _extract_landmarks,
                             _find_matching_sidecar, _parse_ext,
                             _get_ch_type_mapping, make_bids_folders,
@@ -513,7 +513,7 @@ def read_raw_bids(bids_basename, bids_root, kind=None, extra_params=None,
                 coord_frame = elec_params['space']
 
                 # default coordinate frames to available ones in mne-python
-                if coord_frame not in MNE_IEEG_COORD_FRAME_DICT:
+                if coord_frame not in MNE_STR_TO_FRAME:
                     warn("Coordinate frame from coordinate system input {} "
                          "is still not supported. Reading in coordinate frame "
                          "as 'unknown'.".format(coord_frame))

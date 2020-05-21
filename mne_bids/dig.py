@@ -14,7 +14,7 @@ from mne_bids.config import (BIDS_IEEG_COORDINATE_FRAMES,
                              BIDS_EEG_COORDINATE_FRAMES,
                              BIDS_COORDINATE_UNITS,
                              MNE_TO_BIDS_FRAMES, BIDS_TO_MNE_FRAMES,
-                             _frame_to_str)
+                             MNE_FRAME_TO_STR)
 from mne_bids.tsv_handler import _from_tsv
 from mne_bids.utils import (_extract_landmarks, _parse_bids_filename,
                             _scale_coord_to_meters, _write_json, _write_tsv,
@@ -260,7 +260,7 @@ def _write_dig_bids(electrodes_fname, coordsystem_fname, data_path,
     else:
         # get the accepted mne-python coordinate frames
         coord_frame_int = int(digpoint['coord_frame'])
-        mne_coord_frame = _frame_to_str.get(coord_frame_int, None)
+        mne_coord_frame = MNE_FRAME_TO_STR.get(coord_frame_int, None)
         coord_frame = MNE_TO_BIDS_FRAMES.get(mne_coord_frame, None)
 
         if verbose:

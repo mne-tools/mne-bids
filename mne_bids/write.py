@@ -44,7 +44,7 @@ from mne_bids.tsv_handler import _from_tsv, _combine, _drop, _contains_row
 
 from mne_bids.config import (ORIENTATION, UNITS, MANUFACTURERS,
                              IGNORED_CHANNELS, ALLOWED_EXTENSIONS,
-                             BIDS_VERSION, MNE_VERBOSE_IEEG_COORD_FRAME,
+                             BIDS_VERSION, MNE_FRAME_TO_STR,
                              _convert_hand_options, _convert_sex_options)
 
 
@@ -1050,8 +1050,8 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
             digpoint = raw.info['dig'][0]
             # get the accepted mne-python coordinate frames
             coord_frame_int = int(digpoint['coord_frame'])
-            space = MNE_VERBOSE_IEEG_COORD_FRAME.get(coord_frame_int,
-                                                     None)
+            space = MNE_FRAME_TO_STR.get(coord_frame_int,
+                                         None)
             if space is not None:
                 # append the 'space' BIDs-entity to coordinates
                 coord_frame = "Other"

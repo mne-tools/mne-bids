@@ -28,7 +28,7 @@ from mne.utils import assert_dig_allclose
 from mne.datasets import testing, somato
 
 from mne_bids import get_matched_empty_room, make_bids_basename
-from mne_bids.config import MNE_IEEG_COORD_FRAME_DICT
+from mne_bids.config import MNE_STR_TO_FRAME
 from mne_bids.read import (read_raw_bids,
                            _read_raw, get_head_mri_trans,
                            _handle_events_reading, _handle_info_reading)
@@ -363,7 +363,7 @@ def test_handle_ieeg_coords_reading():
         # and make sure all digpoints are correct coordinate frames
         raw_test = read_raw_bids(bids_basename=bids_basename,
                                  bids_root=bids_root, verbose=False)
-        coord_frame_int = MNE_IEEG_COORD_FRAME_DICT[coord_frame]
+        coord_frame_int = MNE_STR_TO_FRAME[coord_frame]
         for digpoint in raw_test.info['dig']:
             assert digpoint['coord_frame'] == coord_frame_int
 
@@ -444,7 +444,7 @@ def test_handle_ieeg_coords_reading():
     _update_sidecar(coordsystem_fname, 'iEEGCoordinateSystem', 'acpc')
     raw_test = read_raw_bids(bids_basename=bids_basename, bids_root=bids_root,
                              verbose=False)
-    coord_frame_int = MNE_IEEG_COORD_FRAME_DICT['ras']
+    coord_frame_int = MNE_STR_TO_FRAME['ras']
     for digpoint in raw_test.info['dig']:
         assert digpoint['coord_frame'] == coord_frame_int
 
