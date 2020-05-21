@@ -2,83 +2,103 @@
 # Authors: Adam Li <adam2392@gmail.com>
 #
 # License: BSD (3-clause)
+import collections
+import json
+from pathlib import Path
 import os
-import os.path as op
-from datetime import datetime, date, timedelta, timezone
-import shutil as sh
-from collections import defaultdict, OrderedDict
+from pprint import pprint
 
-import numpy as np
-from scipy import linalg
-from numpy.testing import assert_array_equal
-from mne.transforms import (_get_trans, apply_trans, get_ras_to_neuromag_trans,
-                            rotation, translation)
-from mne import Epochs
-from mne.io.constants import FIFF
-from mne.io.pick import channel_type
-from mne.io import BaseRaw, anonymize_info, read_fiducials
-try:
-    from mne.io._digitization import _get_fid_coords
-except ImportError:
-    from mne._digitization._utils import _get_fid_coords
-from mne.channels.channels import _unit2human
-from mne.utils import check_version, has_nibabel, _check_ch_locs, logger, warn
+from mne_bids import make_bids_basename
+from mne_bids.utils import get_kinds, get_entity_vals, _find_matching_sidecar
+from mne_bids.tsv_handler import _from_tsv
 
-from mne_bids.pick import coil_type
-from mne_bids.utils import (_write_json, _write_tsv, _read_events, _mkdir_p,
-                            _age_on_date, _infer_eeg_placement_scheme,
-                            _check_key_val,
-                            _parse_bids_filename, _handle_kind, _check_types,
-                            _path_to_str,
-                            _extract_landmarks, _parse_ext,
-                            _get_ch_type_mapping, make_bids_folders,
-                            _estimate_line_freq)
-from mne_bids.copyfiles import (copyfile_brainvision, copyfile_eeglab,
-                                copyfile_ctf, copyfile_bti, copyfile_kit)
-from mne_bids.read import reader
-from mne_bids.tsv_handler import _from_tsv, _combine, _drop, _contains_row
-
-from mne_bids.config import (ORIENTATION, UNITS, MANUFACTURERS,
-                             IGNORED_CHANNELS, ALLOWED_EXTENSIONS,
-                             BIDS_VERSION, MNE_VERBOSE_IEEG_COORD_FRAME,
-                             _convert_hand_options, _convert_sex_options)
-
-def create_methods_paragraph(bids_root, template, verbose=True):
-    params = _parse_bids_filename(bids_basename, verbose='warning')
-    sub = params['sub']
-    ses = params['ses']
-
-    if kind is None:
-        kind = _infer_kind(bids_basename=bids_basename, bids_root=bids_root,
-                           sub=sub, ses=ses)
-
-    data_dir = make_bids_folders(subject=sub, session=ses, kind=kind,
-                                 make_dir=False)
-
-    # read in associated subject info from participants.tsv
-    participants_tsv_fpath = op.join(bids_root, 'participants.tsv')
-    if op.exists(participants_tsv_fpath):
-        participants_dict = _parse_participants_file(participants_tsv_fpath, verbose=verbose)
+PARTICIPANTS_TEMPLATE = "The dataset consists of {n_patients} patients " \
+                        "({patient_count_summary})."
+SCAN_TEMPLATE = "The session {session} consists of {n_scans} " \
+                "with {scan_summary}."
+DATASET_TEMPLATE = "The data was acquired using a {{system}} system ({{manufacturer}}) " \
+                   "consisting of {{channel_summary}}."
 
 
-def _generate_session_report():
-    pass
+def _create_subject_tree(bids_root, verbose=True):
+    # create a tree for the patient summaries in the form of a nested dictionary
+    patient_summaries = dict()
 
-def _generate_subject_report():
-    pass
+    # loop through each subject
+    subjects = get_entity_vals(bids_root, entity_key='sub')
 
-def _parse_sidecars(session_path, verbose=True):
-    pass
+    for subject in subjects:
+        ignore_sub = [sub for sub in subjects if sub != subject]
+        sessions = get_entity_vals(bids_root, entity_key='ses', ignore_sub=ignore_sub)
+        tasks = get_entity_vals(bids_root, entity_key='task', ignore_sub=ignore_sub)
+        acquisitions = get_entity_vals(bids_root, entity_key='acq', ignore_sub=ignore_sub)
 
-def _parse_sidecar_run(sidecar_fpath, verbose=True):
-    pass
+        # if subject not in patient_summaries:
+        #     patient_summaries[subject] = dict()
+        # patient_summaries[subject]['ses'] = sessions
 
-def _parse_channels_run(channels_fpath, verbose=True):
-    pass
+        for session in sessions:
+            # if session not in patient_summaries[subject]['ses']:
+            scans_fpath = make_bids_basename(subject, session, suffix='scans.tsv')
+            scans_tsv = _from_tsv(scans_fpath, verbose)
+            scans = scans_tsv['filename']
+
+            # for scan in scans:
+
+            # patient_summaries[subject][session]['task'] = tasks
+            # patient_summaries[subject][session]['acq'] = acquisitions
+            # patient_summaries[subject][session]['scans'] = scans
+
+def create_methods_paragraph(bids_root, verbose=True):
+    # summarizing statistics
+    n_kinds = 0
+    kinds = get_kinds(bids_root)
+    n_kinds += len(kinds)
+    n_sessions = 0
+    n_patients = 0
 
 
-def _parse_scans_file(scans_tsv_fpath, verbose=True):
-    pass
 
-def _parse_participants_file(participants_tsv_fpath, verbose=True):
-    pass
+    # loop through each subject
+    subjects = get_entity_vals(bids_root, entity_key='sub')
+    sessions = get_entity_vals(bids_root, entity_key='ses')
+
+    for subject in subjects:
+        ignore_sub = [sub for sub in subjects if sub != subject]
+        sessions = get_entity_vals(bids_root, entity_key='ses', ignore_sub=ignore_sub)
+        tasks = get_entity_vals(bids_root, entity_key='task', ignore_sub=ignore_sub)
+        acquisitions = get_entity_vals(bids_root, entity_key='acq', ignore_sub=ignore_sub)
+
+        patient_summaries[subject]['ses'] = sessions
+
+        for session in sessions:
+            scans_fpath = make_bids_basename(subject, session, suffix='scans.tsv')
+            scans_tsv = _from_tsv(scans_fpath, verbose)
+            scans = scans_tsv['filename']
+
+            patient_summaries[subject][session]['task'] = tasks
+            patient_summaries[subject][session]['acq'] = acquisitions
+            patient_summaries[subject][session]['scans'] = scans
+
+    kind_summary = ', '.join(kinds)
+    PARTICIPANTS_TEMPLATE = f"The dataset consists of {n_patients} patients " \
+                            f"with {n_sessions} sessions consisting of {kind_summary} data."
+
+    paragraph = PARTICIPANTS_TEMPLATE
+    return paragraph
+
+def _scan_summary(bids_basename, bids_root, kind):
+    # XXX: to improve with separate summary dictionary for each kind
+    scan_dict = dict()
+
+    sidecar_fpath = _find_matching_sidecar(bids_basename, bids_root,
+                                           suffix=f'{kind}.json')
+    with open(sidecar_fpath, 'r') as fin:
+        sidecarjson = json.load(fin)
+
+    scan_dict['RecordingDuration'] = sidecarjson['RecordingDuration']
+    scan_dict['PowerLineFrequeency'] = sidecarjson['PowerLineFrequency']
+    scan_dict['SamplingFrequency'] = sidecarjson['SamplingFrequency']
+    scan_dict['Manufacturer'] = sidecarjson['Manufacturer']
+
+    return scan_dict
