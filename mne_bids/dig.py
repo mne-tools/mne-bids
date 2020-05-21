@@ -152,7 +152,8 @@ def _coordsystem_json(raw, unit, orient, coordsystem_name, fname,
     raw : instance of Raw
         The data as MNE-Python Raw object.
     unit : str
-        Units to be used in the coordsystem specification.
+        Units to be used in the coordsystem specification,
+        as in BIDS_COORDINATE_UNITS.
     orient : str
         Used to define the coordinate system for the head coils.
     coordsystem_name : str

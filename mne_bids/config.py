@@ -59,7 +59,7 @@ ALLOWED_EXTENSIONS = {'meg': allowed_extensions_meg,
 # depending on the specification
 # XXX: Add support for MEG and EEG
 BIDS_IEEG_COORDINATE_FRAMES = ['acpc', 'pixels', 'other']
-BIDS_IEEG_COORDINATE_UNITS = ['m', 'cm', 'mm']
+BIDS_COORDINATE_UNITS = ['m', 'cm', 'mm']
 
 # these coordinate frames in mne-python are related to scalp/meg
 # 'meg', 'ctf_head', 'ctf_meg', 'head', 'unknown'

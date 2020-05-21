@@ -23,7 +23,7 @@ from mne_bids.tsv_handler import _from_tsv, _drop
 from mne_bids.config import (ALLOWED_EXTENSIONS, _convert_hand_options,
                              _convert_sex_options,
                              BIDS_IEEG_COORDINATE_FRAMES,
-                             BIDS_IEEG_COORDINATE_UNITS,
+                             BIDS_COORDINATE_UNITS,
                              MNE_IEEG_COORD_FRAME_DICT)
 from mne_bids.utils import (_parse_bids_filename, _extract_landmarks,
                             _find_matching_sidecar, _parse_ext,
@@ -518,11 +518,11 @@ def read_raw_bids(bids_basename, bids_root, kind=None, extra_params=None,
                          "as 'unknown'.".format(coord_frame))
                     coord_frame = 'unknown'
 
-            if coord_unit not in BIDS_IEEG_COORDINATE_UNITS:
+            if coord_unit not in BIDS_COORDINATE_UNITS:
                 warn("Coordinate unit is not an accepted BIDS unit for {}. "
                      "Please specify to be one of {}. Skipping electrodes.tsv "
                      "reading..."
-                     .format(bids_fname, BIDS_IEEG_COORDINATE_UNITS))
+                     .format(bids_fname, BIDS_COORDINATE_UNITS))
                 coord_frame = None
         else:  # noqa
             # XXX should add support of coordsystem.json for EEG
