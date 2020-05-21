@@ -155,6 +155,7 @@ def _electrodes_tsv(raw, fname, kind, overwrite=False, verbose=True):
 
     # create OrderedDict to write to tsv file
     if kind == "ieeg":
+        # XXX: size should be included in the future
         sizes = ['n/a'] * len(names)
         data = OrderedDict([('name', names),
                             ('x', x),
