@@ -25,7 +25,8 @@ from mne_bids.config import (ALLOWED_EXTENSIONS, _convert_hand_options,
                              BIDS_IEEG_COORDINATE_FRAMES,
                              BIDS_COORDINATE_UNITS,
                              MNE_IEEG_COORD_FRAME_DICT)
-from mne_bids.utils import (_parse_bids_filename, _extract_landmarks,
+from mne_bids.utils import (make_bids_basename,
+                            _parse_bids_filename, _extract_landmarks,
                             _find_matching_sidecar, _parse_ext,
                             _get_ch_type_mapping, make_bids_folders,
                             _estimate_line_freq, _get_kinds_for_sub)
