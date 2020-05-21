@@ -9,9 +9,17 @@ import numpy as np
 from mne.io.constants import FIFF
 from mne.utils import _check_ch_locs, logger, warn
 
+from mne_bids.config import (BIDS_IEEG_COORDINATE_FRAMES,
+                             BIDS_MEG_COORDINATE_FRAMES,
+                             BIDS_EEG_COORDINATE_FRAMES,
+                             BIDS_COORDINATE_UNITS,
+                             MNE_TO_BIDS_FRAMES, BIDS_TO_MNE_FRAMES,
+                             _frame_to_str)
 from mne_bids.tsv_handler import _from_tsv
-from mne_bids.utils import (_scale_coord_to_meters)
-from mne_bids.utils import (_write_json, _write_tsv, _extract_landmarks)
+from mne_bids.utils import (_extract_landmarks, _parse_bids_filename,
+                            _scale_coord_to_meters, _write_json, _write_tsv,
+                            make_bids_basename
+                            )
 
 
 def _handle_electrodes_reading(electrodes_fname, coord_frame,
