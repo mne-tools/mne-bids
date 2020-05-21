@@ -32,9 +32,7 @@ from mne.utils import check_version, has_nibabel, _check_ch_locs, logger, warn
 from mne_bids.pick import coil_type
 from mne_bids.utils import (_write_json, _write_tsv, _read_events, _mkdir_p,
                             _age_on_date, _infer_eeg_placement_scheme,
-                            _check_key_val,
-                            _parse_bids_filename, _handle_kind, _check_types,
-                            _path_to_str,
+                            _parse_bids_filename, _handle_kind, _path_to_str,
                             _extract_landmarks, _parse_ext,
                             _get_ch_type_mapping, make_bids_folders,
                             _estimate_line_freq, make_bids_basename)
