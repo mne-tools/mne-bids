@@ -27,7 +27,7 @@ from mne.utils import _TempDir, requires_nibabel, check_version, object_diff
 from mne.utils import assert_dig_allclose
 from mne.datasets import testing, somato
 
-from mne_bids import get_matched_empty_room
+from mne_bids import get_matched_empty_room, make_bids_basename
 from mne_bids.config import MNE_IEEG_COORD_FRAME_DICT
 from mne_bids.read import (read_raw_bids,
                            _read_raw, get_head_mri_trans,
@@ -35,7 +35,7 @@ from mne_bids.read import (read_raw_bids,
 from mne_bids.tsv_handler import _to_tsv, _from_tsv
 from mne_bids.utils import (_find_matching_sidecar, _update_sidecar,
                             _write_json)
-from mne_bids.write import write_anat, write_raw_bids, make_bids_basename
+from mne_bids.write import write_anat, write_raw_bids
 
 subject_id = '01'
 session_id = '01'
