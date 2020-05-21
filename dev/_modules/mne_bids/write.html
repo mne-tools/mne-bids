@@ -136,13 +136,14 @@
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">mne._digitization._utils</span> <span class="kn">import</span> <span class="n">_get_fid_coords</span>
 <span class="kn">from</span> <span class="nn">mne.channels.channels</span> <span class="kn">import</span> <span class="n">_unit2human</span>
-<span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="n">check_version</span><span class="p">,</span> <span class="n">has_nibabel</span><span class="p">,</span> <span class="n">_check_ch_locs</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">warn</span>
+<span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="n">check_version</span><span class="p">,</span> <span class="n">has_nibabel</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">warn</span>
 
 <span class="kn">from</span> <span class="nn">mne_bids.pick</span> <span class="kn">import</span> <span class="n">coil_type</span>
+<span class="kn">from</span> <span class="nn">mne_bids.dig</span> <span class="kn">import</span> <span class="n">_electrodes_tsv</span><span class="p">,</span> <span class="n">_coordsystem_json</span>
 <span class="kn">from</span> <span class="nn">mne_bids.utils</span> <span class="kn">import</span> <span class="p">(</span><span class="n">_write_json</span><span class="p">,</span> <span class="n">_write_tsv</span><span class="p">,</span> <span class="n">_read_events</span><span class="p">,</span> <span class="n">_mkdir_p</span><span class="p">,</span>
                             <span class="n">_age_on_date</span><span class="p">,</span> <span class="n">_infer_eeg_placement_scheme</span><span class="p">,</span>
-                            <span class="n">_parse_bids_filename</span><span class="p">,</span> <span class="n">_handle_kind</span><span class="p">,</span> <span class="n">_path_to_str</span><span class="p">,</span>
-                            <span class="n">_extract_landmarks</span><span class="p">,</span> <span class="n">_parse_ext</span><span class="p">,</span>
+                            <span class="n">_parse_bids_filename</span><span class="p">,</span> <span class="n">_handle_kind</span><span class="p">,</span>
+                            <span class="n">_path_to_str</span><span class="p">,</span> <span class="n">_parse_ext</span><span class="p">,</span>
                             <span class="n">_get_ch_type_mapping</span><span class="p">,</span> <span class="n">make_bids_folders</span><span class="p">,</span>
                             <span class="n">_estimate_line_freq</span><span class="p">,</span> <span class="n">make_bids_basename</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">mne_bids.copyfiles</span> <span class="kn">import</span> <span class="p">(</span><span class="n">copyfile_brainvision</span><span class="p">,</span> <span class="n">copyfile_eeglab</span><span class="p">,</span>
@@ -249,60 +250,6 @@
     <span class="n">ch_data</span> <span class="o">=</span> <span class="n">_drop</span><span class="p">(</span><span class="n">ch_data</span><span class="p">,</span> <span class="n">ignored_channels</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">)</span>
 
     <span class="n">_write_tsv</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">ch_data</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
-
-
-<span class="k">def</span> <span class="nf">_electrodes_tsv</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">kind</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Create an electrodes.tsv file and save it.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    raw : instance of Raw</span>
-<span class="sd">        The data as MNE-Python Raw object.</span>
-<span class="sd">    fname : str</span>
-<span class="sd">        Filename to save the electrodes.tsv to.</span>
-<span class="sd">    kind : str</span>
-<span class="sd">        Acquisition type to save electrodes in. For iEEG, requires size.</span>
-<span class="sd">    overwrite : bool</span>
-<span class="sd">        Defaults to False.</span>
-<span class="sd">        Whether to overwrite the existing data in the file.</span>
-<span class="sd">        If there is already data for the given `fname` and overwrite is False,</span>
-<span class="sd">        an error will be raised.</span>
-<span class="sd">    verbose : bool</span>
-<span class="sd">        Set verbose output to true or false.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># create list of channel coordinates and names</span>
-    <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(),</span> <span class="nb">list</span><span class="p">(),</span> <span class="nb">list</span><span class="p">(),</span> <span class="nb">list</span><span class="p">()</span>
-    <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;chs&#39;</span><span class="p">]:</span>
-        <span class="k">if</span> <span class="n">_check_ch_locs</span><span class="p">([</span><span class="n">ch</span><span class="p">]):</span>
-            <span class="n">x</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ch</span><span class="p">[</span><span class="s1">&#39;loc&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
-            <span class="n">y</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ch</span><span class="p">[</span><span class="s1">&#39;loc&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
-            <span class="n">z</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ch</span><span class="p">[</span><span class="s1">&#39;loc&#39;</span><span class="p">][</span><span class="mi">2</span><span class="p">])</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">x</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;n/a&#39;</span><span class="p">)</span>
-            <span class="n">y</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;n/a&#39;</span><span class="p">)</span>
-            <span class="n">z</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;n/a&#39;</span><span class="p">)</span>
-        <span class="n">names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ch</span><span class="p">[</span><span class="s1">&#39;ch_name&#39;</span><span class="p">])</span>
-
-    <span class="c1"># create OrderedDict to write to tsv file</span>
-    <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;ieeg&quot;</span><span class="p">:</span>
-        <span class="n">sizes</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;n/a&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">names</span><span class="p">)</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">([(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="n">names</span><span class="p">),</span>
-                            <span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">x</span><span class="p">),</span>
-                            <span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span>
-                            <span class="p">(</span><span class="s1">&#39;z&#39;</span><span class="p">,</span> <span class="n">z</span><span class="p">),</span>
-                            <span class="p">(</span><span class="s1">&#39;size&#39;</span><span class="p">,</span> <span class="n">sizes</span><span class="p">),</span>
-                            <span class="p">])</span>
-    <span class="k">elif</span> <span class="n">kind</span> <span class="o">==</span> <span class="s1">&#39;eeg&#39;</span><span class="p">:</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">([(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="n">names</span><span class="p">),</span>
-                            <span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">,</span> <span class="n">x</span><span class="p">),</span>
-                            <span class="p">(</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span>
-                            <span class="p">(</span><span class="s1">&#39;z&#39;</span><span class="p">,</span> <span class="n">z</span><span class="p">),</span>
-                            <span class="p">])</span>
-    <span class="k">else</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
-        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;kind </span><span class="si">{}</span><span class="s2"> not supported.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">kind</span><span class="p">))</span>
-
-    <span class="n">_write_tsv</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">_events_tsv</span><span class="p">(</span><span class="n">events</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">trial_type</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -472,72 +419,6 @@
                     <span class="s1">&#39;Levels&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;R&#39;</span><span class="p">:</span> <span class="s1">&#39;right&#39;</span><span class="p">,</span> <span class="s1">&#39;L&#39;</span><span class="p">:</span> <span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="s1">&#39;A&#39;</span><span class="p">:</span> <span class="s1">&#39;ambidextrous&#39;</span><span class="p">}}</span>
 
     <span class="n">_write_json</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">cols</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
-
-
-<span class="k">def</span> <span class="nf">_coordsystem_json</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">unit</span><span class="p">,</span> <span class="n">orient</span><span class="p">,</span> <span class="n">coordsystem_name</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span>
-                      <span class="n">kind</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Create a coordsystem.json file and save it.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    raw : instance of Raw</span>
-<span class="sd">        The data as MNE-Python Raw object.</span>
-<span class="sd">    unit : str</span>
-<span class="sd">        Units to be used in the coordsystem specification.</span>
-<span class="sd">    orient : str</span>
-<span class="sd">        Used to define the coordinate system for the head coils.</span>
-<span class="sd">    coordsystem_name : str</span>
-<span class="sd">        Name of the coordinate system for the sensor positions.</span>
-<span class="sd">    fname : str</span>
-<span class="sd">        Filename to save the coordsystem.json to.</span>
-<span class="sd">    kind : str</span>
-<span class="sd">        Type of the data as in ALLOWED_KINDS.</span>
-<span class="sd">    overwrite : bool</span>
-<span class="sd">        Whether to overwrite the existing file.</span>
-<span class="sd">        Defaults to False.</span>
-<span class="sd">    verbose : bool</span>
-<span class="sd">        Set verbose output to true or false.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">dig</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;dig&#39;</span><span class="p">]</span>
-    <span class="n">coords</span> <span class="o">=</span> <span class="n">_extract_landmarks</span><span class="p">(</span><span class="n">dig</span><span class="p">)</span>
-    <span class="n">hpi</span> <span class="o">=</span> <span class="p">{</span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;ident&#39;</span><span class="p">]:</span> <span class="n">d</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">dig</span> <span class="k">if</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;kind&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_POINT_HPI</span><span class="p">}</span>
-    <span class="k">if</span> <span class="n">hpi</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">ident</span> <span class="ow">in</span> <span class="n">hpi</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-            <span class="n">coords</span><span class="p">[</span><span class="s1">&#39;coil</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">ident</span><span class="p">]</span> <span class="o">=</span> <span class="n">hpi</span><span class="p">[</span><span class="n">ident</span><span class="p">][</span><span class="s1">&#39;r&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
-
-    <span class="n">coord_frame</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="n">dig</span><span class="p">[</span><span class="n">ii</span><span class="p">][</span><span class="s1">&#39;coord_frame&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dig</span><span class="p">))])</span>
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">coord_frame</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>  <span class="c1"># noqa E501</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;All HPI, electrodes, and fiducials must be in the &#39;</span>
-                         <span class="s1">&#39;same coordinate frame. Found: &quot;</span><span class="si">{}</span><span class="s1">&quot;&#39;</span>
-                         <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">coord_frame</span><span class="p">))</span>
-
-    <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s1">&#39;meg&#39;</span><span class="p">:</span>
-        <span class="n">hpi</span> <span class="o">=</span> <span class="p">{</span><span class="n">d</span><span class="p">[</span><span class="s1">&#39;ident&#39;</span><span class="p">]:</span> <span class="n">d</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">dig</span> <span class="k">if</span> <span class="n">d</span><span class="p">[</span><span class="s1">&#39;kind&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_POINT_HPI</span><span class="p">}</span>
-        <span class="k">if</span> <span class="n">hpi</span><span class="p">:</span>
-            <span class="k">for</span> <span class="n">ident</span> <span class="ow">in</span> <span class="n">hpi</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-                <span class="n">coords</span><span class="p">[</span><span class="s1">&#39;coil</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">ident</span><span class="p">]</span> <span class="o">=</span> <span class="n">hpi</span><span class="p">[</span><span class="n">ident</span><span class="p">][</span><span class="s1">&#39;r&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
-
-        <span class="n">fid_json</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;MEGCoordinateSystem&#39;</span><span class="p">:</span> <span class="n">coordsystem_name</span><span class="p">,</span>
-                    <span class="s1">&#39;MEGCoordinateUnits&#39;</span><span class="p">:</span> <span class="n">unit</span><span class="p">,</span>  <span class="c1"># XXX validate this</span>
-                    <span class="s1">&#39;HeadCoilCoordinates&#39;</span><span class="p">:</span> <span class="n">coords</span><span class="p">,</span>
-                    <span class="s1">&#39;HeadCoilCoordinateSystem&#39;</span><span class="p">:</span> <span class="n">orient</span><span class="p">,</span>
-                    <span class="s1">&#39;HeadCoilCoordinateUnits&#39;</span><span class="p">:</span> <span class="n">unit</span>  <span class="c1"># XXX validate this</span>
-                    <span class="p">}</span>
-    <span class="k">elif</span> <span class="n">kind</span> <span class="o">==</span> <span class="s1">&#39;eeg&#39;</span><span class="p">:</span>
-        <span class="n">fid_json</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;EEGCoordinateSystem&#39;</span><span class="p">:</span> <span class="n">coordsystem_name</span><span class="p">,</span>
-                    <span class="s1">&#39;EEGCoordinateUnits&#39;</span><span class="p">:</span> <span class="n">unit</span><span class="p">,</span>
-                    <span class="s1">&#39;AnatomicalLandmarkCoordinates&#39;</span><span class="p">:</span> <span class="n">coords</span><span class="p">,</span>
-                    <span class="s1">&#39;AnatomicalLandmarkCoordinateSystem&#39;</span><span class="p">:</span> <span class="n">coordsystem_name</span><span class="p">,</span>
-                    <span class="s1">&#39;AnatomicalLandmarkCoordinateUnits&#39;</span><span class="p">:</span> <span class="n">unit</span><span class="p">,</span>
-                    <span class="p">}</span>
-    <span class="k">elif</span> <span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;ieeg&quot;</span><span class="p">:</span>
-        <span class="n">fid_json</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s1">&#39;iEEGCoordinateSystem&#39;</span><span class="p">:</span> <span class="n">coordsystem_name</span><span class="p">,</span>  <span class="c1"># (Other, Pixels, ACPC)</span>
-            <span class="s1">&#39;iEEGCoordinateUnits&#39;</span><span class="p">:</span> <span class="n">unit</span><span class="p">,</span>  <span class="c1"># m (MNE), mm, cm , or pixels</span>
-        <span class="p">}</span>
-
-    <span class="n">_write_json</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">fid_json</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">_scans_tsv</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">raw_fname</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>

@@ -28,6 +28,7 @@ The examples are loosely ordered from more general to more advanced use cases.
 .. only:: html
 
  .. figure:: /auto_examples/images/thumb/sphx_glr_create_bids_folder_thumb.png
+     :alt: 01. Creating BIDS-compatible folder names and filenames
 
      :ref:`sphx_glr_auto_examples_create_bids_folder.py`
 
@@ -48,6 +49,7 @@ The examples are loosely ordered from more general to more advanced use cases.
 .. only:: html
 
  .. figure:: /auto_examples/images/thumb/sphx_glr_read_bids_datasets_thumb.png
+     :alt: 02. Read and load datasets in BIDS format
 
      :ref:`sphx_glr_auto_examples_read_bids_datasets.py`
 
@@ -68,6 +70,7 @@ The examples are loosely ordered from more general to more advanced use cases.
 .. only:: html
 
  .. figure:: /auto_examples/images/thumb/sphx_glr_convert_mne_sample_thumb.png
+     :alt: 03. Convert MNE sample data to BIDS format
 
      :ref:`sphx_glr_auto_examples_convert_mne_sample.py`
 
@@ -88,6 +91,7 @@ The examples are loosely ordered from more general to more advanced use cases.
 .. only:: html
 
  .. figure:: /auto_examples/images/thumb/sphx_glr_convert_eeg_to_bids_thumb.png
+     :alt: 04. Convert EEG data to BIDS format
 
      :ref:`sphx_glr_auto_examples_convert_eeg_to_bids.py`
 
@@ -108,6 +112,7 @@ The examples are loosely ordered from more general to more advanced use cases.
 .. only:: html
 
  .. figure:: /auto_examples/images/thumb/sphx_glr_convert_group_studies_thumb.png
+     :alt: 05. BIDS conversion for group studies
 
      :ref:`sphx_glr_auto_examples_convert_group_studies.py`
 
@@ -128,6 +133,7 @@ The examples are loosely ordered from more general to more advanced use cases.
 .. only:: html
 
  .. figure:: /auto_examples/images/thumb/sphx_glr_rename_brainvision_files_thumb.png
+     :alt: 06. Rename BrainVision EEG data files
 
      :ref:`sphx_glr_auto_examples_rename_brainvision_files.py`
 
@@ -148,6 +154,7 @@ The examples are loosely ordered from more general to more advanced use cases.
 .. only:: html
 
  .. figure:: /auto_examples/images/thumb/sphx_glr_convert_mri_and_trans_thumb.png
+     :alt: 07. Save and load T1-weighted MRI scan along with anatomical landmarks in BIDS
 
      :ref:`sphx_glr_auto_examples_convert_mri_and_trans.py`
 
@@ -168,6 +175,7 @@ The examples are loosely ordered from more general to more advanced use cases.
 .. only:: html
 
  .. figure:: /auto_examples/images/thumb/sphx_glr_convert_ieeg_to_bids_thumb.png
+     :alt: 08. Convert iEEG data to BIDS format
 
      :ref:`sphx_glr_auto_examples_convert_ieeg_to_bids.py`
 
@@ -188,6 +196,7 @@ The examples are loosely ordered from more general to more advanced use cases.
 .. only:: html
 
  .. figure:: /auto_examples/images/thumb/sphx_glr_convert_empty_room_thumb.png
+     :alt: 09. Storing empty room data in BIDS format
 
      :ref:`sphx_glr_auto_examples_convert_empty_room.py`
 
