@@ -108,13 +108,6 @@ COORD_FRAME_DESCRIPTIONS = {
     '4dbti': 'ALS orientation and the origin between the ears',
     'kityokogawa': 'ALS orientation and the origin between the ears',
     'chietiitab': 'RAS orientation and the origin between the ears',
-    'besa': 'Although natively this is a spherical coordinate system, '
-            'the electrode positions should be expressed in '
-            'Cartesian coordinates, with a RAS orientation. '
-            'The X axis is the T8-T7 line, positive at T8. '
-            'The Y axis is the Oz-Fpz line, positive at Fpz. '
-            'The origin of the sphere fitted to the electrodes '
-            'is approximately 4 cm above the point between the ears.',
     'captrak': 'RAS orientation and the origin between the ears',
     'mri': 'Defined by Freesurfer, the MRI (surface RAS) origin is at the '
            'center of a 256×256×256 1mm anisotropic volume '
