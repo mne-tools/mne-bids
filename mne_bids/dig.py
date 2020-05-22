@@ -126,8 +126,8 @@ def _handle_coordsystem_reading(coordsystem_fpath, kind, verbose=True):
                                                 None)
 
     if verbose:
-        print(f"Reading in coordinate system frame {coord_frame} "
-              f"- {coord_frame_desc}.")
+        print(f"Reading in coordinate system frame {coord_frame}: "
+              f"{coord_frame_desc}.")
 
     return coord_frame, coord_unit
 
@@ -226,7 +226,7 @@ def _coordsystem_json(raw, unit, orient, coordsystem_name, fname,
                          .format(coord_frame))
 
     # get the coordinate frame description
-    coordsystem_description = COORD_FRAME_DESCRIPTIONS.get(coord_frame, "n/a")
+    coordsystem_desc = COORD_FRAME_DESCRIPTIONS.get(coordsystem_name, "n/a")
 
     # create the coordinate json data structure based on 'kind'
     if kind == 'meg':
@@ -238,7 +238,7 @@ def _coordsystem_json(raw, unit, orient, coordsystem_name, fname,
         fid_json = {
             'MEGCoordinateSystem': coordsystem_name,
             'MEGCoordinateUnits': unit,  # XXX validate this
-            'MEGCoordinateSystemDescription': coordsystem_description,
+            'MEGCoordinateSystemDescription': coordsystem_desc,
             'HeadCoilCoordinates': coords,
             'HeadCoilCoordinateSystem': orient,
             'HeadCoilCoordinateUnits': unit  # XXX validate this
@@ -247,7 +247,7 @@ def _coordsystem_json(raw, unit, orient, coordsystem_name, fname,
         fid_json = {
             'EEGCoordinateSystem': coordsystem_name,
             'EEGCoordinateUnits': unit,
-            'EEGCoordinateSystemDescription': coordsystem_description,
+            'EEGCoordinateSystemDescription': coordsystem_desc,
             'AnatomicalLandmarkCoordinates': coords,
             'AnatomicalLandmarkCoordinateSystem': coordsystem_name,
             'AnatomicalLandmarkCoordinateUnits': unit,
@@ -255,7 +255,7 @@ def _coordsystem_json(raw, unit, orient, coordsystem_name, fname,
     elif kind == "ieeg":
         fid_json = {
             'iEEGCoordinateSystem': coordsystem_name,  # (Other, Pixels, ACPC)
-            'iEEGCoordinateSystemDescription': coordsystem_description,
+            'iEEGCoordinateSystemDescription': coordsystem_desc,
             'iEEGCoordinateUnits': unit,  # m (MNE), mm, cm , or pixels
         }
 
