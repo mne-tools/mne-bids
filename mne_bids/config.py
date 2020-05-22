@@ -61,7 +61,7 @@ BIDS_IEEG_COORDINATE_FRAMES = ['acpc', 'pixels', 'other']
 BIDS_MEG_COORDINATE_FRAMES = ['ctf', 'elektaneuromag',
                               '4dbti', 'kityokogawa',
                               'chietiitab', 'other']
-BIDS_EEG_COORDINATE_FRAMES = ['captrak']  # XXX: We don't include BESA
+BIDS_EEG_COORDINATE_FRAMES = ['captrak']
 
 # accepted coordinate SI units
 BIDS_COORDINATE_UNITS = ['m', 'cm', 'mm']

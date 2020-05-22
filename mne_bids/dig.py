@@ -15,7 +15,7 @@ from mne_bids.config import (BIDS_IEEG_COORDINATE_FRAMES,
                              BIDS_EEG_COORDINATE_FRAMES,
                              BIDS_COORDINATE_UNITS,
                              MNE_TO_BIDS_FRAMES, BIDS_TO_MNE_FRAMES,
-                             MNE_FRAME_TO_STR)
+                             MNE_FRAME_TO_STR, COORD_FRAME_DESCRIPTIONS)
 from mne_bids.tsv_handler import _from_tsv
 from mne_bids.utils import (_extract_landmarks, _parse_bids_filename,
                             _scale_coord_to_meters, _write_json, _write_tsv,
@@ -99,7 +99,7 @@ def _handle_electrodes_reading(electrodes_fname, coord_frame,
     return raw
 
 
-def _handle_coordsystem_reading(coordsystem_fpath, kind):
+def _handle_coordsystem_reading(coordsystem_fpath, kind, verbose=True):
     """Read associated coordsystem.json.
 
     Handle reading the coordinate frame and coordinate unit
@@ -214,6 +214,9 @@ def _coordsystem_json(raw, unit, orient, coordsystem_name, fname,
                          'same coordinate frame. Found: "{}"'
                          .format(coord_frame))
 
+    # get the coordinate frame description
+    coordsystem_description = COORD_FRAME_DESCRIPTIONS.get(coord_frame, "n/a")
+
     if kind == 'meg':
         hpi = {d['ident']: d for d in dig if d['kind'] == FIFF.FIFFV_POINT_HPI}
         if hpi:
@@ -223,6 +226,7 @@ def _coordsystem_json(raw, unit, orient, coordsystem_name, fname,
         fid_json = {
             'MEGCoordinateSystem': coordsystem_name,
             'MEGCoordinateUnits': unit,  # XXX validate this
+            'MEGCoordinateSystemDescription': coordsystem_description,
             'HeadCoilCoordinates': coords,
             'HeadCoilCoordinateSystem': orient,
             'HeadCoilCoordinateUnits': unit  # XXX validate this
@@ -231,6 +235,7 @@ def _coordsystem_json(raw, unit, orient, coordsystem_name, fname,
         fid_json = {
             'EEGCoordinateSystem': coordsystem_name,
             'EEGCoordinateUnits': unit,
+            'EEGCoordinateSystemDescription': coordsystem_description,
             'AnatomicalLandmarkCoordinates': coords,
             'AnatomicalLandmarkCoordinateSystem': coordsystem_name,
             'AnatomicalLandmarkCoordinateUnits': unit,
@@ -238,6 +243,7 @@ def _coordsystem_json(raw, unit, orient, coordsystem_name, fname,
     elif kind == "ieeg":
         fid_json = {
             'iEEGCoordinateSystem': coordsystem_name,  # (Other, Pixels, ACPC)
+            'iEEGCoordinateSystemDescription': coordsystem_description,
             'iEEGCoordinateUnits': unit,  # m (MNE), mm, cm , or pixels
         }
 
@@ -257,7 +263,7 @@ def _write_dig_bids(electrodes_fname, coordsystem_fname, data_path,
         Filename to save the electrodes.tsv to.
     coordsystem_fname : str
         Filename to save the coordsystem.json to.
-    data_path : str | | pathlib.Path
+    data_path : str | pathlib.Path
         Path to the data directory
     raw : instance of Raw
         The data as MNE-Python Raw object.
