@@ -771,7 +771,11 @@ def test_edf(_bids_validate):
     # Also cover iEEG
     # We use the same data and pretend that eeg channels are ecog
     ieeg_raw = raw.copy()
+
+    # remove the old "EEG" montage, to test iEEG functionality
     ieeg_raw.set_montage(None)
+
+    # convert channel types to ECoG and write BIDS
     eeg_picks = mne.pick_types(ieeg_raw.info, eeg=True)
     ieeg_raw.set_channel_types({raw.ch_names[i]: 'ecog'
                                 for i in eeg_picks})
