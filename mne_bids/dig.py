@@ -291,7 +291,7 @@ def _write_dig_bids(electrodes_fname, coordsystem_fname, data_path,
 
         if verbose:
             print("Writing electrodes file to... ", electrodes_fname)
-            print("Writing coordsytem file to... ", coordsystem_fname)
+            print("Writing coordsystem file to... ", coordsystem_fname)
 
         if kind == "ieeg":
             if coord_frame is not None:
