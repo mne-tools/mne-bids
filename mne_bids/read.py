@@ -18,13 +18,10 @@ from mne.utils import has_nibabel, logger, warn
 from mne.coreg import fit_matched_points
 from mne.transforms import apply_trans
 
-from mne_bids.dig import _handle_electrodes_reading
+from mne_bids.dig import _read_dig_bids
 from mne_bids.tsv_handler import _from_tsv, _drop
 from mne_bids.config import (ALLOWED_EXTENSIONS, _convert_hand_options,
-                             _convert_sex_options,
-                             BIDS_IEEG_COORDINATE_FRAMES,
-                             BIDS_COORDINATE_UNITS,
-                             MNE_IEEG_COORD_FRAME_DICT)
+                             _convert_sex_options)
 from mne_bids.utils import (_parse_bids_filename, _extract_landmarks,
                             _find_matching_sidecar, _parse_ext,
                             _get_ch_type_mapping, make_bids_folders,
@@ -482,61 +479,9 @@ def read_raw_bids(bids_basename, bids_root, kind=None, extra_params=None,
                                "should exist if electrodes.tsv does. "
                                "Please create coordsystem.json for"
                                "{}".format(bids_basename))
-        # Get MRI landmarks from the JSON sidecar
-        with open(coordsystem_fname, 'r') as fin:
-            coordsystem_json = json.load(fin)
-
-        # Get coordinate frames that electrode coordinates are in
-        # Note: all coordinate frames should be lower-case
-        if kind == "meg":
-            coord_frame = coordsystem_json['MEGCoordinateSystem']
-            coord_unit = coordsystem_json['MEGCoordinateUnits']
-        elif kind == "ieeg":
-            space = coordsystem_json['iEEGCoordinateSystem']
-            coord_unit = coordsystem_json['iEEGCoordinateUnits']
-
-            # only compare lower case
-            space = space.lower()
-            coord_unit = coord_unit.lower()
-
-            # XXX: improve reading from 'other' systems
-            if space not in BIDS_IEEG_COORDINATE_FRAMES:
-                warn("{} Coordinate frame is not accepted BIDS "
-                     "keyword for {}. Use CoordinateSystem with "
-                     "one of these keywords: {}"
-                     .format(space, bids_fname, BIDS_IEEG_COORDINATE_FRAMES))
-                coord_frame = None
-            elif space == 'acpc':
-                coord_frame = 'ras'
-            elif space == 'other':
-                elec_params = _parse_bids_filename(electrodes_fname, verbose)
-                coord_frame = elec_params['space']
-
-                # default coordinate frames to available ones in mne-python
-                if coord_frame not in MNE_IEEG_COORD_FRAME_DICT:
-                    warn("Coordinate frame from coordinate system input {} "
-                         "is still not supported. Reading in coordinate frame "
-                         "as 'unknown'.".format(coord_frame))
-                    coord_frame = 'unknown'
-
-            if coord_unit not in BIDS_COORDINATE_UNITS:
-                warn("Coordinate unit is not an accepted BIDS unit for {}. "
-                     "Please specify to be one of {}. Skipping electrodes.tsv "
-                     "reading..."
-                     .format(bids_fname, BIDS_COORDINATE_UNITS))
-                coord_frame = None
-        else:  # noqa
-            # XXX should add support of coordsystem.json for EEG
-            raise RuntimeError("Kind {} not supported yet for "
-                               "coordsystem.json and "
-                               "electrodes.tsv.".format(kind))
-
-        if coord_frame is not None:
-            coord_frame = coord_frame.lower()  # MNE uses lower case
-
-            # read in electrode coordinates and attach to raw
-            raw = _handle_electrodes_reading(electrodes_fname, coord_frame,
-                                             coord_unit, raw, verbose)
+        if kind in ['meg', 'eeg', 'ieeg']:
+            raw = _read_dig_bids(electrodes_fname, coordsystem_fname,
+                                 raw, kind, verbose)
 
     # Try to find an associated sidecar.json to get information about the
     # recording snapshot
