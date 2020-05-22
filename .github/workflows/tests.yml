@@ -2,17 +2,20 @@ name: MNE-BIDS
 
 on:
   push:
-    branches: [ master ]
+    branches: ['**']
   pull_request:
-    branches: [ master ]
+    branches: ['**']
+  create:
+    branches: [master]
+    tags: ['**']
 
 jobs:
   build:
-
-    runs-on: [ubuntu-latest, macos-latest, windows-latest]
-#     strategy:
-#       matrix:
-#         python-version: [3.5, 3.6, 3.7, 3.8]
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        # python-version: [3.5, 3.6, 3.7, 3.8]
 
     env:
       TZ: Europe/Berlin
@@ -50,4 +53,3 @@ jobs:
       run: make pep
     - name: Upload coverage stats to codecov
       run: bash <(curl -s https://codecov.io/bash)
-
