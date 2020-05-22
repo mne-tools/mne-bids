@@ -1,0 +1,53 @@
+name: MNE-BIDS
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: [ubuntu-latest, macos-latest, windows-latest]
+#     strategy:
+#       matrix:
+#         python-version: [3.5, 3.6, 3.7, 3.8]
+
+    env:
+      TZ: Europe/Berlin
+    steps:
+    - uses: actions/checkout
+    - name: Set up Node.js
+      uses: actions/setup-node
+      with:
+        node-version: 12
+    - name: Set up Python environment${{ matrix.python-version }}
+      uses: goanpeca/setup-miniconda
+      with:
+        environment-file: mne-bids/environment.yml
+        activate-environment: mne_bids
+        auto-update-conda: true
+        channel-priority: strict
+        channels: conda-forge, defaults
+    - name: Install BIDS validator
+      run: npm install -g bids-validator
+    - name: Display versions and environment information
+      run: |
+        echo $TZ
+        date
+        npm --version
+        node --version
+        python --version
+        which python
+        mne sys_info
+        bids-validator --version
+    - name: Install MNE-BIDS
+      run: pip install --no-deps .
+    - name: Run pytest
+      run: pytest . --cov=./mne_bids --cov-report=xml --verbose --ignore mne-python
+    - name: Run style & documentation tests
+      run: make pep
+    - name: Upload coverage stats to codecov
+      run: bash <(curl -s https://codecov.io/bash)
+
