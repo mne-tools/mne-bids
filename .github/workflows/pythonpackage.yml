@@ -50,3 +50,4 @@ jobs:
       run: make pep
     - name: Upload coverage stats to codecov
       run: bash <(curl -s https://codecov.io/bash)
+
