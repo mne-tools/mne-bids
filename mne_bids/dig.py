@@ -347,7 +347,7 @@ def _write_dig_bids(electrodes_fname, coordsystem_fname, data_path,
         coords = _extract_landmarks(raw.info['dig'])
         landmarks = set(['RPA', 'NAS', 'LPA']) == set(list(coords.keys()))
 
-        # XXX: to be improved to allow rescaling if landmarks
+        # XXX: to be improved to allow rescaling if landmarks are present
         # mne-python automatically converts unknown coord frame to head
         if coord_frame_int == FIFF.FIFFV_COORD_HEAD and landmarks:
             # Now write the data
