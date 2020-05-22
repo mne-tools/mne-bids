@@ -19,7 +19,7 @@ from pathlib import Path
 
 import numpy as np
 from mne import read_events, find_events, events_from_annotations
-from mne.utils import check_version, warn
+from mne.utils import check_version, warn, logger
 from mne.channels import make_standard_montage
 from mne.io.pick import pick_types
 from mne.io.kit.kit import get_kit_info
@@ -799,10 +799,81 @@ def _scale_coord_to_meters(coord, unit):
         return coord
 
 
+def _gen_bids_basename(*, subject=None, session=None, task=None,
+                       acquisition=None, run=None, processing=None,
+                       recording=None, space=None, prefix=None, suffix=None,
+                       on_invalid_er_session='raise',
+                       on_invalid_er_task='raise'):
+    if on_invalid_er_session not in ['raise', 'warn']:
+        msg = (f'on_invalid_er_session must be raise or warn, '
+               f'but received: {on_invalid_er_session}')
+        raise ValueError(msg)
+
+    if on_invalid_er_task not in ['raise', 'warn', 'continue']:
+        msg = (f'on_invalid_er_task must be raise, warn, or ignore, '
+               f'but received: {on_invalid_er_task}')
+        raise ValueError(msg)
+
+    order = OrderedDict([('sub', subject),
+                         ('ses', session),
+                         ('task', task),
+                         ('acq', acquisition),
+                         ('run', run),
+                         ('proc', processing),
+                         ('space', space),
+                         ('recording', recording)])
+
+    if order['run'] is not None and not isinstance(order['run'], str):
+        # Ensure that run is a string
+        order['run'] = '{:02}'.format(order['run'])
+
+    _check_types(order.values())
+
+    if (all(ii is None for ii in order.values()) and suffix is None and
+            prefix is None):
+        raise ValueError("At least one parameter must be given.")
+
+    if subject == 'emptyroom':
+        if task != 'noise' and on_invalid_er_task != 'continue':
+            msg = (f'task must be "noise" if subject is "emptyroom", but '
+                   f'received: {task}')
+            if on_invalid_er_task == 'raise':
+                raise ValueError(msg)
+            else:
+                logger.critical(msg)
+
+        try:
+            datetime.strptime(session, '%Y%m%d')
+        except (ValueError, TypeError):
+            msg = (f'empty-room session should be a string of format '
+                   f'YYYYMMDD, but received: {session}')
+            if on_invalid_er_session == 'raise':
+                raise ValueError(msg)
+            else:
+                msg = (f'{msg}. Will proceed anyway, but you should consider '
+                       f'fixing your dataset.')
+                logger.critical(msg)
+
+    basename = []
+    for key, val in order.items():
+        if val is not None:
+            _check_key_val(key, val)
+            basename.append('%s-%s' % (key, val))
+
+    if suffix is not None:
+        basename.append(suffix)
+
+    basename = '_'.join(basename)
+    if prefix is not None:
+        basename = op.join(prefix, basename)
+
+    return basename
+
+
 def make_bids_basename(subject=None, session=None, task=None,
                        acquisition=None, run=None, processing=None,
                        recording=None, space=None, prefix=None, suffix=None):
-    """Create a partial/full BIDS filename from its component parts.
+    """Create a partial/full BIDS basename from its component parts.
 
     BIDS filename prefixes have one or more pieces of metadata in them. They
     must follow a particular order, which is followed by this function. This
@@ -841,52 +912,18 @@ def make_bids_basename(subject=None, session=None, task=None,
 
     Returns
     -------
-    filename : str
-        The BIDS filename you wish to create.
+    basename : str
+        The BIDS basename you wish to create.
 
     Examples
     --------
     >>> print(make_bids_basename(subject='test', session='two', task='mytask', suffix='data.csv')) # noqa: E501
     sub-test_ses-two_task-mytask_data.csv
-
     """
-    order = OrderedDict([('sub', subject),
-                         ('ses', session),
-                         ('task', task),
-                         ('acq', acquisition),
-                         ('run', run),
-                         ('proc', processing),
-                         ('space', space),
-                         ('recording', recording)])
-    if order['run'] is not None and not isinstance(order['run'], str):
-        # Ensure that run is a string
-        order['run'] = '{:02}'.format(order['run'])
+    kwargs = dict(subject=subject, session=session, task=task,
+                  acquisition=acquisition, run=run, processing=processing,
+                  recording=recording, space=space, prefix=prefix,
+                  suffix=suffix)
 
-    _check_types(order.values())
-
-    if (all(ii is None for ii in order.values()) and suffix is None and
-            prefix is None):
-        raise ValueError("At least one parameter must be given.")
-
-    if subject == 'emptyroom':
-        if suffix is None and task != 'noise':
-            raise ValueError('task must be ''noise'' if subject is'
-                             ' ''emptyroom''')
-        try:
-            datetime.strptime(session, '%Y%m%d')
-        except ValueError:
-            raise ValueError("session must be string of format YYYYMMDD")
-
-    filename = []
-    for key, val in order.items():
-        if val is not None:
-            _check_key_val(key, val)
-            filename.append('%s-%s' % (key, val))
-
-    if isinstance(suffix, str):
-        filename.append(suffix)
-
-    filename = '_'.join(filename)
-    if isinstance(prefix, str):
-        filename = op.join(prefix, filename)
-    return filename
+    basename = _gen_bids_basename(**kwargs)
+    return basename
