@@ -112,12 +112,23 @@ def _handle_coordsystem_reading(coordsystem_fpath, kind, verbose=True):
     if kind == 'meg':
         coord_frame = coordsystem_json['MEGCoordinateSystem'].lower()
         coord_unit = coordsystem_json['MEGCoordinateUnits']
+        coord_frame_desc = coordsystem_json.get('MEGCoordinateDescription',
+                                                None)
     elif kind == 'eeg':
         coord_frame = coordsystem_json['EEGCoordinateSystem'].lower()
         coord_unit = coordsystem_json['EEGCoordinateUnits']
+        coord_frame_desc = coordsystem_json.get('EEGCoordinateDescription',
+                                                None)
     elif kind == 'ieeg':
         coord_frame = coordsystem_json['iEEGCoordinateSystem'].lower()
         coord_unit = coordsystem_json['iEEGCoordinateUnits']
+        coord_frame_desc = coordsystem_json.get('iEEGCoordinateDescription',
+                                                None)
+
+    if verbose:
+        print(f"Reading in coordinate system frame {coord_frame} "
+              f"- {coord_frame_desc}.")
+
     return coord_frame, coord_unit
 
 
@@ -217,6 +228,7 @@ def _coordsystem_json(raw, unit, orient, coordsystem_name, fname,
     # get the coordinate frame description
     coordsystem_description = COORD_FRAME_DESCRIPTIONS.get(coord_frame, "n/a")
 
+    # create the coordinate json data structure based on 'kind'
     if kind == 'meg':
         hpi = {d['ident']: d for d in dig if d['kind'] == FIFF.FIFFV_POINT_HPI}
         if hpi:
@@ -382,7 +394,7 @@ def _read_dig_bids(electrodes_fpath, coordsystem_fpath,
 
     # read in coordinate information
     coord_frame, coord_unit = _handle_coordsystem_reading(coordsystem_fpath,
-                                                          kind)
+                                                          kind, verbose)
 
     if kind == 'meg':
         if coord_frame not in BIDS_MEG_COORDINATE_FRAMES:
