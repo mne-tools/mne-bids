@@ -801,7 +801,7 @@ def test_edf(_bids_validate):
     assert 'space-mri' in coordsystem_fname
     with open(coordsystem_fname, 'r') as fin:
         coordsystem_json = json.load(fin)
-    assert coordsystem_json['iEEGCoordinateSystem'] == 'other'
+    assert coordsystem_json['iEEGCoordinateSystem'] == 'Other'
 
     # test anonymize and convert
     if check_version('mne', '0.20') and check_version('pybv', '0.2.0'):

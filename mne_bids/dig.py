@@ -283,62 +283,63 @@ def _write_dig_bids(electrodes_fname, coordsystem_fname, data_path,
            for _digpoint in raw.info['dig']):
         warn("Not all digpoints have the same coordinate frame. "
              "Skipping electrodes.tsv writing...")
-    else:
-        # get the accepted mne-python coordinate frames
-        coord_frame_int = int(digpoint['coord_frame'])
-        mne_coord_frame = MNE_FRAME_TO_STR.get(coord_frame_int, None)
-        coord_frame = MNE_TO_BIDS_FRAMES.get(mne_coord_frame, None)
+        return
 
-        if verbose:
-            print("Writing electrodes file to... ", electrodes_fname)
-            print("Writing coordsytem file to... ", coordsystem_fname)
+    # get the accepted mne-python coordinate frames
+    coord_frame_int = int(digpoint['coord_frame'])
+    mne_coord_frame = MNE_FRAME_TO_STR.get(coord_frame_int, None)
+    coord_frame = MNE_TO_BIDS_FRAMES.get(mne_coord_frame, None)
 
-        if kind == "ieeg":
-            if coord_frame is not None:
-                # XXX: To improve when mne-python allows coord_frame='unknown'
-                if coord_frame not in BIDS_IEEG_COORDINATE_FRAMES:
-                    coordsystem_fname = make_bids_basename(
-                        subject=subject_id, session=session_id,
-                        acquisition=acquisition, space=coord_frame,
-                        suffix='coordsystem.json', prefix=data_path)
-                    electrodes_fname = make_bids_basename(
-                        subject=subject_id, session=session_id,
-                        acquisition=acquisition, space=coord_frame,
-                        suffix='electrodes.tsv', prefix=data_path)
-                    coord_frame = 'other'
+    if verbose:
+        print("Writing electrodes file to... ", electrodes_fname)
+        print("Writing coordsytem file to... ", coordsystem_fname)
 
-                # Now write the data to the elec coords and the coordsystem
-                _electrodes_tsv(raw, electrodes_fname,
-                                kind, overwrite, verbose)
-                _coordsystem_json(raw, unit, 'n/a',
-                                  coord_frame, coordsystem_fname, kind,
-                                  overwrite, verbose)
-            else:
-                # default coordinate frame to mri if not available
-                warn("Coordinate frame of iEEG coords missing/unknown "
-                     "for {}. Skipping reading "
-                     "in of montage...".format(electrodes_fname))
-        elif kind == 'eeg':
-            # We only write EEG electrodes.tsv and coordsystem.json
-            # if we have LPA, RPA, and NAS available to rescale to a known
-            # coordinate system frame
-            coords = _extract_landmarks(raw.info['dig'])
-            landmarks = set(['RPA', 'NAS', 'LPA']) == set(list(coords.keys()))
+    if kind == "ieeg":
+        if coord_frame is not None:
+            # XXX: To improve when mne-python allows coord_frame='unknown'
+            if coord_frame not in BIDS_IEEG_COORDINATE_FRAMES:
+                coordsystem_fname = make_bids_basename(
+                    subject=subject_id, session=session_id,
+                    acquisition=acquisition, space=coord_frame,
+                    suffix='coordsystem.json', prefix=data_path)
+                electrodes_fname = make_bids_basename(
+                    subject=subject_id, session=session_id,
+                    acquisition=acquisition, space=coord_frame,
+                    suffix='electrodes.tsv', prefix=data_path)
+                coord_frame = 'Other'
 
-            # XXX: to be improved,
-            # mne-python automatically converts unknown coord frame to head
-            if coord_frame_int == FIFF.FIFFV_COORD_HEAD and landmarks:
-                # Now write the data
-                _electrodes_tsv(raw, electrodes_fname, kind,
-                                overwrite, verbose)
-                _coordsystem_json(raw, 'm', 'RAS', 'CapTrak',
-                                  coordsystem_fname, kind,
-                                  overwrite, verbose)
-            else:
-                warn("Skipping EEG electrodes.tsv... "
-                     "Setting montage not possible if anatomical "
-                     "landmarks (NAS, LPA, RPA) are missing, "
-                     "and coord_frame is not 'head'.")
+            # Now write the data to the elec coords and the coordsystem
+            _electrodes_tsv(raw, electrodes_fname,
+                            kind, overwrite, verbose)
+            _coordsystem_json(raw, unit, 'n/a',
+                              coord_frame, coordsystem_fname, kind,
+                              overwrite, verbose)
+        else:
+            # default coordinate frame to mri if not available
+            warn("Coordinate frame of iEEG coords missing/unknown "
+                 "for {}. Skipping reading "
+                 "in of montage...".format(electrodes_fname))
+    elif kind == 'eeg':
+        # We only write EEG electrodes.tsv and coordsystem.json
+        # if we have LPA, RPA, and NAS available to rescale to a known
+        # coordinate system frame
+        coords = _extract_landmarks(raw.info['dig'])
+        landmarks = set(['RPA', 'NAS', 'LPA']) == set(list(coords.keys()))
+
+        # XXX: to be improved to allow rescaling if landmarks
+        # mne-python automatically converts unknown coord frame to head
+        if coord_frame_int == FIFF.FIFFV_COORD_HEAD and landmarks:
+            # Now write the data
+            _electrodes_tsv(raw, electrodes_fname, kind,
+                            overwrite, verbose)
+            _coordsystem_json(raw, 'm', 'RAS', 'CapTrak',
+                              coordsystem_fname, kind,
+                              overwrite, verbose)
+        else:
+            warn("Skipping EEG electrodes.tsv... "
+                 "Setting montage not possible if anatomical "
+                 "landmarks (NAS, LPA, RPA) are missing, "
+                 "and coord_frame is not 'head'.")
 
 
 def _read_dig_bids(electrodes_fpath, coordsystem_fpath,
