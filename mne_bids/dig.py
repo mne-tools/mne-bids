@@ -227,7 +227,10 @@ def _coordsystem_json(raw, unit, orient, coordsystem_name, fname,
 
     # get the coordinate frame description
     coordsystem_desc = COORD_FRAME_DESCRIPTIONS.get(coordsystem_name, "n/a")
-
+    if coordsystem_name == 'Other' and verbose:
+        print('Using the `Other` keyword for the CoordinateSystem field. '
+              'Please specify the CoordinateSystemDescription field manually.')
+    
     # create the coordinate json data structure based on 'kind'
     if kind == 'meg':
         hpi = {d['ident']: d for d in dig if d['kind'] == FIFF.FIFFV_POINT_HPI}
