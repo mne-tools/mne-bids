@@ -257,7 +257,7 @@ def _write_dig_bids(electrodes_fname, coordsystem_fname, data_path,
         Filename to save the electrodes.tsv to.
     coordsystem_fname : str
         Filename to save the coordsystem.json to.
-    data_path : str | | pathlib.Path
+    data_path : str | pathlib.Path
         Path to the data directory
     raw : instance of Raw
         The data as MNE-Python Raw object.
