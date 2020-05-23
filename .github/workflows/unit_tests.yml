@@ -42,15 +42,18 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies using pip
+      shell: bash
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
         git clone --depth 1 https://github.com/mne-tools/mne-python.git
         pip install --no-deps -e ./mne-python
     - name: Install BIDS validator (stable)
+      shell: bash
       if: "matrix.validator-version == 'stable'"
       run: npm install -g bids-validator
     - name: Install BIDS validator (master)
+      shell: bash
       if: "matrix.validator-version == 'master'"
       run: |
         cd ..
@@ -61,6 +64,7 @@ jobs:
         echo "::add-path::$(pwd)/bids-validator/bin"
         cd ../mne-bids
     - name: Display versions and environment information
+      shell: bash
       run: |
         echo $TZ
         date
@@ -71,12 +75,14 @@ jobs:
         which python
         mne sys_info
     - name: Install MNE-BIDS
+      shell: bash
       run: pip install --no-deps .
     - name: Run pytest
+      shell: bash
       run: |
         echo "bids-validator"; bids-validator --version
         which bids-validator
-        pytest . --cov=./mne_bids --cov-report=xml --verbose --ignore mne-python
+        pytest . --cov=./mne_bids --cov-report=xml --verbose --ignore mne-python -k test_set
     - name: Run style & documentation tests
       if: "matrix.os == 'ubuntu-latest'"
       run: make pep
