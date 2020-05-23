@@ -36,6 +36,7 @@ jobs:
     - name: Install BIDS validator
       run: npm install -g bids-validator
     - name: Display versions and environment information
+      shell: bash -l {0}
       run: |
         echo $TZ
         date
@@ -46,10 +47,13 @@ jobs:
         mne sys_info
         bids-validator --version
     - name: Install MNE-BIDS
+      shell: bash -l {0}
       run: pip install --no-deps .
     - name: Run pytest
+      shell: bash -l {0}
       run: pytest . --cov=./mne_bids --cov-report=xml --verbose --ignore mne-python
     - name: Run style & documentation tests
+      shell: bash -l {0}
       run: make pep
     - name: Upload coverage stats to codecov
       run: bash <(curl -s https://codecov.io/bash)
