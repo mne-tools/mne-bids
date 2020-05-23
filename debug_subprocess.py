@@ -4,6 +4,7 @@ from contextlib import contextmanager
 import subprocess
 import inspect
 from threading import Thread
+import platform
 # import os
 
 
@@ -173,4 +174,7 @@ def run_subprocess(command, return_code=False, verbose=None, *args, **kwargs):
 
 
 if __name__ == '__main__':
-    run_subprocess(['node', 'bids-validator', '--version'])
+    if platform.system() == 'Windows':
+        run_subprocess(['node', 'bids-validator', '--version'])
+    else:
+        run_subprocess(['bids-validator', '--version'])
