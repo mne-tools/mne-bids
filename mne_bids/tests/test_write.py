@@ -92,8 +92,7 @@ def _bids_validate():
         bids_validator_exe = [exe, *vadlidator_args]
 
     def _validate(bids_root):
-        cmd = [*bids_validator_exe, ' --version']
-        # cmd = [*bids_validator_exe, bids_root]
+        cmd = [*bids_validator_exe, bids_root]
         run_subprocess(cmd, shell=shell)
 
     return _validate
