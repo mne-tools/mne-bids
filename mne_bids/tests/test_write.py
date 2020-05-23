@@ -84,12 +84,12 @@ def _bids_validate():
     vadlidator_args = ['--config.error=41']
     exe = os.getenv('VALIDATOR_EXECUTABLE', 'bids-validator')
 
-    if platform.system() == 'Windows':
-        shell = True
-        bids_validator_exe = ['node', exe, *vadlidator_args]
-    else:
-        shell = False
-        bids_validator_exe = [exe, *vadlidator_args]
+    # if platform.system() == 'Windows':
+    #     shell = True
+    #     bids_validator_exe = ['node', exe, *vadlidator_args]
+    # else:
+    shell = False
+    bids_validator_exe = [exe, *vadlidator_args]
 
     def _validate(bids_root):
         cmd = [*bids_validator_exe, bids_root]
