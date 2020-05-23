@@ -47,7 +47,7 @@ jobs:
       run: |
         git clone --depth 1 https://github.com/bids-standard/bids-validator
         cd bids-validator
-        git checkout e457907ca9af4c32aede828117ea5a43737b4597
+        git checkout master
         yarn
         cd ..
         export PATH=$PWD/bids-validator/bin:$PATH
