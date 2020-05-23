@@ -86,10 +86,10 @@ def _bids_validate():
 
     if platform.system() == 'Windows':
         shell = True
-        bids_validator_exe = [exe, *vadlidator_args]
     else:
         shell = False
-        bids_validator_exe = [exe, *vadlidator_args]
+
+    bids_validator_exe = [exe, *vadlidator_args]
 
     def _validate(bids_root):
         cmd = [*bids_validator_exe, bids_root]
