@@ -175,6 +175,6 @@ def run_subprocess(command, return_code=False, verbose=None, *args, **kwargs):
 
 if __name__ == '__main__':
     if platform.system() == 'Windows':
-        run_subprocess(['node', 'bids-validator', '--version'])
+        run_subprocess(['node', 'bids-validator', '--version'], shell=True)
     else:
-        run_subprocess(['bids-validator', '--version'])
+        run_subprocess(['bids-validator', '--version'], shell=False)
