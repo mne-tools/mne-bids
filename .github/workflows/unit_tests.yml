@@ -21,7 +21,8 @@ jobs:
         os: [windows-latest]
         python-version: [3.8]
         # validator-version: [stable, master]
-        validator-version: [master]
+        # validator-version: [master]
+        validator-version: [stable]
         # mne-version: [maint/0.19, maint/0.20, master]
         # exclude:
         #   - os: macos-latest
