@@ -30,7 +30,7 @@ from mne.channels.channels import _unit2human
 from mne.utils import check_version, has_nibabel, logger, warn
 
 from mne_bids.pick import coil_type
-from mne_bids.dig import _electrodes_tsv, _coordsystem_json
+from mne_bids.dig import _write_dig_bids, _coordsystem_json
 from mne_bids.utils import (_write_json, _write_tsv, _read_events, _mkdir_p,
                             _age_on_date, _infer_eeg_placement_scheme,
                             _parse_bids_filename, _handle_kind,
@@ -44,8 +44,8 @@ from mne_bids.tsv_handler import _from_tsv, _combine, _drop, _contains_row
 
 from mne_bids.config import (ORIENTATION, UNITS, MANUFACTURERS,
                              IGNORED_CHANNELS, ALLOWED_EXTENSIONS,
-                             BIDS_VERSION, MNE_VERBOSE_IEEG_COORD_FRAME,
-                             _convert_hand_options, _convert_sex_options)
+                             BIDS_VERSION, _convert_hand_options,
+                             _convert_sex_options)
 
 
 def _is_numeric(n):
@@ -975,6 +975,9 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     coordsystem_fname = make_bids_basename(
         subject=subject_id, session=session_id, acquisition=acquisition,
         suffix='coordsystem.json', prefix=data_path)
+    electrodes_fname = make_bids_basename(
+        subject=subject_id, session=session_id, acquisition=acquisition,
+        suffix='electrodes.tsv', prefix=data_path)
     sidecar_fname = make_bids_basename(
         subject=subject_id, session=session_id, task=task, run=run,
         acquisition=acquisition, suffix='%s.json' % kind, prefix=data_path)
@@ -1038,48 +1041,16 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
         _coordsystem_json(raw, unit, orient,
                           manufacturer, coordsystem_fname, kind,
                           overwrite, verbose)
-
-    # write electrodes data for iEEG and EEG
-    unit = "m"  # defaults to meters
-    # We only write electrodes.tsv and accompanying coordsystem.json
-    # if we have an available DigMontage
-    if raw.info['dig'] is not None:
-        # XXX: to improve writing with an encapsulated `_write_dig_bids`
-        if kind == "ieeg":
-            # get coordinate frame from digMontage
-            digpoint = raw.info['dig'][0]
-            # get the accepted mne-python coordinate frames
-            coord_frame_int = int(digpoint['coord_frame'])
-            space = MNE_VERBOSE_IEEG_COORD_FRAME.get(coord_frame_int,
-                                                     None)
-            if space is not None:
-                # append the 'space' BIDs-entity to coordinates
-                coord_frame = "Other"
-                coordsystem_fname = make_bids_basename(
-                    subject=subject_id, session=session_id,
-                    acquisition=acquisition, space=space,
-                    suffix='coordsystem.json', prefix=data_path)
-                electrodes_fname = make_bids_basename(
-                    subject=subject_id, session=session_id,
-                    acquisition=acquisition, space=space,
-                    suffix='electrodes.tsv', prefix=data_path)
-
-                print("Writing to ", electrodes_fname)
-                # Now write the data for coords and the coordsystem
-                _electrodes_tsv(raw, electrodes_fname,
-                                kind, overwrite, verbose)
-                _coordsystem_json(raw, unit, orient,
-                                  coord_frame, coordsystem_fname, kind,
-                                  overwrite, verbose)
-            else:
-                # default coordinate frame to mri if not available
-                warn("Coordinate frame of iEEG coords missing/unknown "
-                     "for {}. Skipping writing "
-                     "in of montage...".format(bids_fname))
-        elif kind != "meg":
-            logger.warning('Writing of electrodes.tsv '
-                           'is not supported for kind "{}". '
-                           'Skipping ...'.format(kind))
+    elif kind in ['eeg', 'ieeg']:
+        # We only write electrodes.tsv and accompanying coordsystem.json
+        # if we have an available DigMontage
+        if raw.info['dig'] is not None:
+            _write_dig_bids(electrodes_fname, coordsystem_fname, data_path,
+                            raw, kind, overwrite, verbose)
+    else:
+        logger.warning('Writing of electrodes.tsv '
+                       'is not supported for kind "{}". '
+                       'Skipping ...'.format(kind))
 
     events, event_id = _read_events(events_data, event_id, raw, ext)
     if events is not None and len(events) > 0 and not emptyroom:

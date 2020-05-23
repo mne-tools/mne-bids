@@ -57,24 +57,71 @@ ALLOWED_EXTENSIONS = {'meg': allowed_extensions_meg,
 
 # accepted BIDS formats, which may be subject to change
 # depending on the specification
-# XXX: Add support for MEG and EEG
 BIDS_IEEG_COORDINATE_FRAMES = ['acpc', 'pixels', 'other']
+BIDS_MEG_COORDINATE_FRAMES = ['ctf', 'elektaneuromag',
+                              '4dbti', 'kityokogawa',
+                              'chietiitab', 'other']
+BIDS_EEG_COORDINATE_FRAMES = ['captrak']
+
+# accepted coordinate SI units
 BIDS_COORDINATE_UNITS = ['m', 'cm', 'mm']
+
+# mapping from BIDs coordinate frames -> MNE
+BIDS_TO_MNE_FRAMES = {
+    'ctf': 'ctf_head',
+    '4dbti': 'ctf_head',
+    'kityokogawa': 'ctf_head',
+    'elektaneuromag': 'head',
+    'chietiitab': 'head',
+    'captrak': 'head',
+    'acpc': 'ras',
+    'mni': 'mni_tal',
+    'fs': 'fs_tal',
+    'ras': 'ras',
+    'voxel': 'mri_voxels',
+    'mri': 'mri',
+    'unknown': 'unknown'
+}
+MNE_TO_BIDS_FRAMES = {val: key for key, val in BIDS_TO_MNE_FRAMES.items()}
 
 # these coordinate frames in mne-python are related to scalp/meg
 # 'meg', 'ctf_head', 'ctf_meg', 'head', 'unknown'
-# copied from "mne.transforms._str_to_frame"
-MNE_IEEG_COORD_FRAME_DICT = dict(
+# copied from "mne.transforms.MNE_STR_TO_FRAME"
+MNE_STR_TO_FRAME = dict(
+    meg=FIFF.FIFFV_COORD_DEVICE,
     mri=FIFF.FIFFV_COORD_MRI,
     mri_voxel=FIFF.FIFFV_MNE_COORD_MRI_VOXEL,
+    head=FIFF.FIFFV_COORD_HEAD,
     mni_tal=FIFF.FIFFV_MNE_COORD_MNI_TAL,
     ras=FIFF.FIFFV_MNE_COORD_RAS,
     fs_tal=FIFF.FIFFV_MNE_COORD_FS_TAL,
-    head=FIFF.FIFFV_COORD_HEAD,
+    ctf_head=FIFF.FIFFV_MNE_COORD_CTF_HEAD,
+    ctf_meg=FIFF.FIFFV_MNE_COORD_CTF_DEVICE,
     unknown=FIFF.FIFFV_COORD_UNKNOWN
 )
-MNE_VERBOSE_IEEG_COORD_FRAME = {val: key for key, val
-                                in MNE_IEEG_COORD_FRAME_DICT.items()}
+MNE_FRAME_TO_STR = {val: key for key, val in MNE_STR_TO_FRAME.items()}
+
+# see BIDS specification for description we copied over from each
+COORD_FRAME_DESCRIPTIONS = {
+    'ctf': 'ALS orientation and the origin between the ears',
+    'elektaneuromag': 'RAS orientation and the origin between the ears',
+    '4dbti': 'ALS orientation and the origin between the ears',
+    'kityokogawa': 'ALS orientation and the origin between the ears',
+    'chietiitab': 'RAS orientation and the origin between the ears',
+    'captrak': 'RAS orientation and the origin between the ears',
+    'mri': 'Defined by Freesurfer, the MRI (surface RAS) origin is at the '
+           'center of a 256×256×256 1mm anisotropic volume '
+           '(may not be in the center of the head).',
+    'mri_voxel': 'Defined by Freesurfer, the MRI (surface RAS) origin '
+                 'is at the center of a 256×256×256 voxel anisotropic '
+                 'volume (may not be in the center of the head).',
+    'mni_tal': 'MNI template in Talairach coordinates',
+    'fs_tal': 'Freesurfer template in Talairach coordinates',
+    'ras': 'RAS means that the first dimension (X) points towards '
+           'the right hand side of the head, the second dimension (Y) '
+           'points towards the Anterior aspect of the head, and the '
+           'third dimension (Z) points towards the top of the head.',
+}
 
 
 # mapping subject information back to mne-python
