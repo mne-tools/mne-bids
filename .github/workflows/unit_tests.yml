@@ -53,8 +53,11 @@ jobs:
       shell: bash
       if: "matrix.validator-version == 'stable'"
       run: |
-        npm install -g bids-validator
-        npm install -g core-util-is
+        rm -rf node_modules
+        npm install -g npm@latest
+        npm i core-util-is
+        npm install bids-validator
+        # npm install -g bids-validator
     - name: Install BIDS validator (master)
       shell: bash
       if: "matrix.validator-version == 'master'"
