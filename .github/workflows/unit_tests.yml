@@ -62,7 +62,6 @@ jobs:
         cd ../mne-bids
 
     - name: Display versions and environment information
-      shell: bash
       run: |
         echo $TZ
         date
@@ -73,10 +72,8 @@ jobs:
         which python
         mne sys_info
     - name: Install MNE-BIDS
-      shell: bash
       run: pip install --no-deps .
     - name: Run pytest
-      shell: bash
       run: |
         echo "bids-validator"; bids-validator --version
         pytest . --cov=./mne_bids --cov-report=xml --verbose --ignore mne-python
