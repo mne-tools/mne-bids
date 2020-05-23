@@ -50,7 +50,7 @@ jobs:
     #     git clone --depth 1 https://github.com/mne-tools/mne-python.git
     #     pip install --no-deps -e ./mne-python
     - name: Install BIDS validator (stable)
-      shell: bash
+      # shell: bash
       if: "matrix.validator-version == 'stable'"
       run: |
         # rm -rf node_modules
@@ -58,7 +58,7 @@ jobs:
         # npm install -g core-util-is
         npm install -g bids-validator
     - name: Install BIDS validator (master)
-      shell: bash
+      # shell: bash
       if: "matrix.validator-version == 'master'"
       run: |
         cd ..
@@ -69,8 +69,10 @@ jobs:
         echo "::add-path::$(pwd)/bids-validator/bin"
         cd ../mne-bids
     - name: Debug
-      shell: bash
+      # shell: bash
       run: |
+        echo "bids-validator"; bids-validator --version
+        python --version
         python debug_subprocess.py
     # - name: Display versions and environment information
     #   shell: bash
