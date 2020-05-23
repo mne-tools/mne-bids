@@ -22,6 +22,7 @@ jobs:
         python-version: [3.8]
         # validator-version: [stable, master]
         validator-version: [master]
+        # mne-version: [maint/0.19, maint/0.20, master]
         # exclude:
         #   - os: macos-latest
         #     validator-version: master
@@ -63,16 +64,19 @@ jobs:
       run: |
         echo $TZ
         date
-        npm --version
-        node --version
-        bids-validator --version
+        echo "npm"; npm --version
+        echo "node"; node --version
+        echo "bids-validator"; bids-validator --version
         python --version
         which python
         mne sys_info
     - name: Install MNE-BIDS
       run: pip install --no-deps .
     - name: Run pytest
-      run: pytest . --cov=./mne_bids --cov-report=xml --verbose --ignore mne-python
+      run: |
+        echo "bids-validator"; bids-validator --version
+        which bids-validator
+        pytest . --cov=./mne_bids --cov-report=xml --verbose --ignore mne-python
     - name: Run style & documentation tests
       if: "matrix.os == 'ubuntu-latest'"
       run: make pep
