@@ -3,12 +3,11 @@ channels:
 - defaults
 - conda-forge
 dependencies:
-- python<3.7
+- python<3.8
 - pip<=20
 - mkl
 - numpy>=1.14
 - scipy>=0.18.1
-- scikit-learn
 - matplotlib
 - pip:
   - mne_bids>=0.4,<0.5

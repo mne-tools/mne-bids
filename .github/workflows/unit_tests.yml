@@ -16,7 +16,7 @@ jobs:
       matrix:
         # os: [ubuntu-latest, macos-latest, windows-latest]
         os: [ubuntu-latest, macos-latest]
-        # python-version: [3.5, 3.6, 3.7, 3.8]
+        python-version: [3.8]
 
     env:
       TZ: Europe/Berlin
@@ -26,21 +26,26 @@ jobs:
       uses: actions/setup-node@v1.4.2
       with:
         node-version: 12
-    - name: Set up Miniconda Python environment
-      uses: goanpeca/setup-miniconda@v1.4.1
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v1
       with:
-        environment-file: environment.yml
-        activate-environment: mne_bids
-        auto-update-conda: true
-        channel-priority: strict
-        channels: conda-forge, defaults
-    - name: Install mne-python
+        python-version: ${{ matrix.python-version }}
+    # - name: Set up Miniconda Python environment
+    #   uses: goanpeca/setup-miniconda@v1.4.1
+    #   with:
+    #     environment-file: environment.yml
+    #     activate-environment: mne_bids
+    #     auto-update-conda: true
+    #     channel-priority: strict
+    #     channels: conda-forge, defaults
+    - name: Install dependencies using pip
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    - name: Install latest mne-python
       shell: bash -l {0}
       run: |
-        # git clone --depth 1 https://github.com/mne-tools/mne-python.git
-        # pip install --no-deps -e ./mne-python
         pip install -U https://github.com/mne-tools/mne-python/archive/master.zip
-
     - name: Install BIDS validator
       run: npm install -g bids-validator
     - name: Display versions and environment information
