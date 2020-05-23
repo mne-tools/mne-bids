@@ -237,7 +237,7 @@ BIDS dataset. For more information, you can checkout the respective
         ]
     }
     Effective window size : 0.426 (s)
-    /home/circleci/project/mne_bids/write.py:436: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
+    /home/circleci/project/mne_bids/write.py:437: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
       'on 10 seconds of data.'.format(powerlinefrequency))
     Reading 0 ... 166799  =      0.000 ...   277.714 secs...
 
@@ -298,18 +298,18 @@ Print the directory tree
  .. code-block:: none
 
     |MNE-sample-data-bids/
-    |--- dataset_description.json
     |--- participants.json
     |--- participants.tsv
+    |--- dataset_description.json
     |--- sub-01/
     |------ ses-01/
     |--------- sub-01_ses-01_scans.tsv
     |--------- meg/
     |------------ sub-01_ses-01_task-audiovisual_run-01_events.tsv
     |------------ sub-01_ses-01_task-audiovisual_run-01_meg.json
-    |------------ sub-01_ses-01_task-audiovisual_run-01_channels.tsv
     |------------ sub-01_ses-01_task-audiovisual_run-01_meg.fif
     |------------ sub-01_ses-01_coordsystem.json
+    |------------ sub-01_ses-01_task-audiovisual_run-01_channels.tsv
 
 
 
@@ -423,21 +423,21 @@ Let's have another look at our BIDS directory
  .. code-block:: none
 
     |MNE-sample-data-bids/
-    |--- dataset_description.json
     |--- participants.json
     |--- participants.tsv
+    |--- dataset_description.json
     |--- sub-01/
     |------ ses-01/
     |--------- sub-01_ses-01_scans.tsv
     |--------- anat/
-    |------------ sub-01_ses-01_T1w.nii.gz
     |------------ sub-01_ses-01_T1w.json
+    |------------ sub-01_ses-01_T1w.nii.gz
     |--------- meg/
     |------------ sub-01_ses-01_task-audiovisual_run-01_events.tsv
     |------------ sub-01_ses-01_task-audiovisual_run-01_meg.json
-    |------------ sub-01_ses-01_task-audiovisual_run-01_channels.tsv
     |------------ sub-01_ses-01_task-audiovisual_run-01_meg.fif
     |------------ sub-01_ses-01_coordsystem.json
+    |------------ sub-01_ses-01_task-audiovisual_run-01_channels.tsv
 
 
 
@@ -612,7 +612,7 @@ We can deface the MRI for anonymization
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  7.409 seconds)
+   **Total running time of the script:** ( 0 minutes  13.797 seconds)
 
 
 .. _sphx_glr_download_auto_examples_convert_mri_and_trans.py:

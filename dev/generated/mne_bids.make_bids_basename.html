@@ -111,7 +111,7 @@
 <dl class="py function">
 <dt id="mne_bids.make_bids_basename">
 <code class="sig-prename descclassname">mne_bids.</code><code class="sig-name descname">make_bids_basename</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">subject</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">task</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">acquisition</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">run</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">processing</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">recording</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">space</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">prefix</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">suffix</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/utils.html#make_bids_basename"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.make_bids_basename" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a partial/full BIDS filename from its component parts.</p>
+<dd><p>Create a partial/full BIDS basename from its component parts.</p>
 <p>BIDS filename prefixes have one or more pieces of metadata in them. They
 must follow a particular order, which is followed by this function. This
 will generate the <em>prefix</em> for a BIDS filename that can be used with many
@@ -149,7 +149,7 @@ in which you wish to create a file with this name.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt><strong>filename</strong><span class="classifier">str</span></dt><dd><p>The BIDS filename you wish to create.</p>
+<dt><strong>basename</strong><span class="classifier">str</span></dt><dd><p>The BIDS basename you wish to create.</p>
 </dd>
 </dl>
 </dd>

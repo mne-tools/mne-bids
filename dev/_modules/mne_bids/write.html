@@ -145,7 +145,8 @@
                             <span class="n">_parse_bids_filename</span><span class="p">,</span> <span class="n">_handle_kind</span><span class="p">,</span>
                             <span class="n">_path_to_str</span><span class="p">,</span> <span class="n">_parse_ext</span><span class="p">,</span>
                             <span class="n">_get_ch_type_mapping</span><span class="p">,</span> <span class="n">make_bids_folders</span><span class="p">,</span>
-                            <span class="n">_estimate_line_freq</span><span class="p">,</span> <span class="n">make_bids_basename</span><span class="p">)</span>
+                            <span class="n">_estimate_line_freq</span><span class="p">,</span> <span class="n">make_bids_basename</span><span class="p">,</span>
+                            <span class="n">_gen_bids_basename</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">mne_bids.copyfiles</span> <span class="kn">import</span> <span class="p">(</span><span class="n">copyfile_brainvision</span><span class="p">,</span> <span class="n">copyfile_eeglab</span><span class="p">,</span>
                                 <span class="n">copyfile_ctf</span><span class="p">,</span> <span class="n">copyfile_bti</span><span class="p">,</span> <span class="n">copyfile_kit</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">mne_bids.read</span> <span class="kn">import</span> <span class="n">reader</span>
@@ -1074,19 +1075,33 @@
                                      <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
 
     <span class="c1"># create filenames</span>
-    <span class="n">scans_fname</span> <span class="o">=</span> <span class="n">make_bids_basename</span><span class="p">(</span>
+
+    <span class="c1"># In case of an &quot;emptyroom&quot; subject, make_bids_basename() will raise</span>
+    <span class="c1"># an exception if we don&#39;t provide a valid task (&quot;noise&quot;). Now,</span>
+    <span class="c1"># scans_fname, electrodes_fname, and coordsystem_fname must NOT include</span>
+    <span class="c1"># the task entity. Therefore, we cannot generate them with</span>
+    <span class="c1"># make_bids_basename() directly. Instead, we call _gen_bids_basename()</span>
+    <span class="c1"># with the parameter on_invalid_er_task, which allows us to create an</span>
+    <span class="c1"># &quot;invalid&quot; basename for an emptyroom subject.</span>
+    <span class="n">on_invalid_er_task</span> <span class="o">=</span> <span class="s1">&#39;continue&#39;</span>
+
+    <span class="n">scans_fname</span> <span class="o">=</span> <span class="n">_gen_bids_basename</span><span class="p">(</span>
         <span class="n">subject</span><span class="o">=</span><span class="n">subject_id</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session_id</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;scans.tsv&#39;</span><span class="p">,</span>
-        <span class="n">prefix</span><span class="o">=</span><span class="n">ses_path</span><span class="p">)</span>
+        <span class="n">prefix</span><span class="o">=</span><span class="n">ses_path</span><span class="p">,</span> <span class="n">on_invalid_er_task</span><span class="o">=</span><span class="n">on_invalid_er_task</span><span class="p">)</span>
+    <span class="n">coordsystem_fname</span> <span class="o">=</span> <span class="n">_gen_bids_basename</span><span class="p">(</span>
+        <span class="n">subject</span><span class="o">=</span><span class="n">subject_id</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session_id</span><span class="p">,</span> <span class="n">acquisition</span><span class="o">=</span><span class="n">acquisition</span><span class="p">,</span>
+        <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;coordsystem.json&#39;</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="n">data_path</span><span class="p">,</span>
+        <span class="n">on_invalid_er_task</span><span class="o">=</span><span class="n">on_invalid_er_task</span><span class="p">)</span>
+    <span class="n">electrodes_fname</span> <span class="o">=</span> <span class="n">_gen_bids_basename</span><span class="p">(</span>
+        <span class="n">subject</span><span class="o">=</span><span class="n">subject_id</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session_id</span><span class="p">,</span> <span class="n">acquisition</span><span class="o">=</span><span class="n">acquisition</span><span class="p">,</span>
+        <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;electrodes.tsv&#39;</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="n">data_path</span><span class="p">,</span>
+        <span class="n">on_invalid_er_task</span><span class="o">=</span><span class="n">on_invalid_er_task</span><span class="p">)</span>
+    <span class="c1"># For the remaining files, we can use make_bids_basename() as usual.</span>
     <span class="n">participants_tsv_fname</span> <span class="o">=</span> <span class="n">make_bids_basename</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="n">bids_root</span><span class="p">,</span>
                                                 <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;participants.tsv&#39;</span><span class="p">)</span>
     <span class="n">participants_json_fname</span> <span class="o">=</span> <span class="n">make_bids_basename</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="n">bids_root</span><span class="p">,</span>
                                                  <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;participants.json&#39;</span><span class="p">)</span>
-    <span class="n">coordsystem_fname</span> <span class="o">=</span> <span class="n">make_bids_basename</span><span class="p">(</span>
-        <span class="n">subject</span><span class="o">=</span><span class="n">subject_id</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session_id</span><span class="p">,</span> <span class="n">acquisition</span><span class="o">=</span><span class="n">acquisition</span><span class="p">,</span>
-        <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;coordsystem.json&#39;</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="n">data_path</span><span class="p">)</span>
-    <span class="n">electrodes_fname</span> <span class="o">=</span> <span class="n">make_bids_basename</span><span class="p">(</span>
-        <span class="n">subject</span><span class="o">=</span><span class="n">subject_id</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session_id</span><span class="p">,</span> <span class="n">acquisition</span><span class="o">=</span><span class="n">acquisition</span><span class="p">,</span>
-        <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;electrodes.tsv&#39;</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="n">data_path</span><span class="p">)</span>
+
     <span class="n">sidecar_fname</span> <span class="o">=</span> <span class="n">make_bids_basename</span><span class="p">(</span>
         <span class="n">subject</span><span class="o">=</span><span class="n">subject_id</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session_id</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="n">task</span><span class="p">,</span> <span class="n">run</span><span class="o">=</span><span class="n">run</span><span class="p">,</span>
         <span class="n">acquisition</span><span class="o">=</span><span class="n">acquisition</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">.json&#39;</span> <span class="o">%</span> <span class="n">kind</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="n">data_path</span><span class="p">)</span>
