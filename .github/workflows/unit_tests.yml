@@ -50,7 +50,7 @@ jobs:
         git checkout master
         yarn
         cd ..
-        export PATH=$PWD/bids-validator/bin:$PATH
+        echo "::add-path::$(pwd)/bids-validator/bin"
     - name: Display versions and environment information
       run: |
         echo $TZ
