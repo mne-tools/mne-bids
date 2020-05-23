@@ -19,7 +19,8 @@ jobs:
         # os: [ubuntu-latest, macos-latest]
         os: [ubuntu-latest]
         python-version: [3.8]
-        validator-version: [stable, master]
+        # validator-version: [stable, master]
+        validator-version: [master]
 
     env:
       TZ: Europe/Berlin
@@ -50,6 +51,7 @@ jobs:
         git checkout master
         yarn
         cd ..
+        ls $(pwd)/bids-validator/bin
         echo "::add-path::$(pwd)/bids-validator/bin"
     - name: Display versions and environment information
       run: |
