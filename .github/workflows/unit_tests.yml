@@ -46,12 +46,13 @@ jobs:
     - name: Install BIDS validator (master)
       if: "matrix.validator-version == 'master'"
       run: |
+        cd ..
         git clone --depth 1 https://github.com/bids-standard/bids-validator
         cd bids-validator
         git checkout master
         yarn
-        cd ..
-        echo "::add-path::$(pwd)/bids-validator/bids-validator/bin"
+        echo "::add-path::$(pwd)/bids-validator/bin"
+        cd mne_bids
     - name: Display versions and environment information
       run: |
         echo $TZ
