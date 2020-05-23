@@ -8,3 +8,4 @@ pytest-cov
 pytest-sugar
 check-manifest
 pydocstyle
+flake8
