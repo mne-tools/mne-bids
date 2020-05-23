@@ -26,6 +26,8 @@ Changelog
 - :func:`mne_bids.utils.get_entity_vals` has gained ``ignore_*`` keyword arguments to exclude specific values from the list of results, e.g. the entities for a particular subject or task, by `Richard Höchenberger`_ (`#409 <https://github.com/mne-tools/mne-bids/pull/409>`_)
 - :func:`mne_bids.write_raw_bids` now uses the 'space' BIDS-entity when writing iEEG electrodes and coordinate frames by `Adam Li`_ (`#390 <https://github.com/mne-tools/mne-bids/pull/390>`_)
 - :code:`convert_ieeg_to_bids` to now use sample ECoG EDF data by `Adam Li`_ (`#390 <https://github.com/mne-tools/mne-bids/pull/390>`_)
+- :func:`mne_bids.write_raw_bids` now writes CoordinateSystemDescription as specified in BIDS Specification if CoordinateSystem is MNE-compatible by `Adam Li`_ (`#416 <https://github.com/mne-tools/mne-bids/pull/416>`_)
+- :func:`mne_bids.write_raw_bids` and :func:`mne_bids.read_raw_bids` now handles scalp EEG if Captrak coordinate system and NAS/LPA/RPA landmarks are present by `Adam Li`_ (`#416 <https://github.com/mne-tools/mne-bids/pull/416>`_)
 
 Bug
 ~~~
