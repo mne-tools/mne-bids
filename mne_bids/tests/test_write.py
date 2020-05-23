@@ -86,7 +86,7 @@ def _bids_validate():
 
     if platform.system() == 'Windows':
         shell = True
-        bids_validator_exe = ['node', exe, *vadlidator_args]
+        bids_validator_exe = [exe, *vadlidator_args]
     else:
         shell = False
         bids_validator_exe = [exe, *vadlidator_args]
