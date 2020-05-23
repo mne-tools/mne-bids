@@ -12,16 +12,17 @@
    :target: https://ci.appveyor.com/project/mne-tools/mne-bids/branch/master
    :alt: Appveyor
 
-
 .. image:: https://codecov.io/gh/mne-tools/mne-bids/branch/master/graph/badge.svg
    :target: https://codecov.io/gh/mne-tools/mne-bids
    :alt: codecov
 
+.. image:: https://github.com/mne-tools/mne-bids/workflows/build/badge.svg
+   :target: https://github.com/mne-tools/mne-bids/actions
+   :alt: gh-actions
 
 .. image:: https://circleci.com/gh/mne-tools/mne-bids.svg?style=svg
    :target: https://circleci.com/gh/mne-tools/mne-bids
    :alt: CircleCi
-
 
 .. image:: https://pepy.tech/badge/mne-bids
    :target: https://pepy.tech/project/mne-bids
