@@ -16,13 +16,10 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        # os: [ubuntu-latest, macos-latest]
-        # os: [ubuntu-latest]
-        # os: [windows-latest]
         python-version: [3.8]
-        # validator-version: [stable, master]
+        validator-version: [stable, master]
         # validator-version: [master]
-        validator-version: [stable]
+        # validator-version: [stable]
         # mne-version: [maint/0.19, maint/0.20, master]
         # exclude:
         #   - os: macos-latest
