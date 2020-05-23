@@ -17,10 +17,16 @@ jobs:
       matrix:
         # os: [ubuntu-latest, macos-latest, windows-latest]
         # os: [ubuntu-latest, macos-latest]
-        os: [ubuntu-latest]
+        # os: [ubuntu-latest]
+        os: [windows-latest]
         python-version: [3.8]
         # validator-version: [stable, master]
         validator-version: [master]
+        # exclude:
+        #   - os: macos-latest
+        #     validator-version: master
+        #   - os: windows-latest
+        #     validator-version: master
 
     env:
       TZ: Europe/Berlin
