@@ -14,7 +14,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        # os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [ubuntu-latest, macos-latest]
         # python-version: [3.5, 3.6, 3.7, 3.8]
 
     env:
@@ -36,8 +37,9 @@ jobs:
     - name: Install mne-python
       shell: bash -l {0}
       run: |
-        git clone --depth 1 https://github.com/mne-tools/mne-python.git
-        pip install --no-deps -e ./mne-python
+        # git clone --depth 1 https://github.com/mne-tools/mne-python.git
+        # pip install --no-deps -e ./mne-python
+        pip install -U https://github.com/mne-tools/mne-python/archive/master.zip
 
     - name: Install BIDS validator
       run: npm install -g bids-validator
