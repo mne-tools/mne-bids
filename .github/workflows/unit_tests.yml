@@ -20,13 +20,13 @@ jobs:
     env:
       TZ: Europe/Berlin
     steps:
-    - uses: actions/checkout
+    - uses: actions/checkout@v2
     - name: Set up Node.js
-      uses: actions/setup-node
+      uses: actions/setup-node@v1.4.2
       with:
         node-version: 12
     - name: Set up Python environment${{ matrix.python-version }}
-      uses: goanpeca/setup-miniconda
+      uses: goanpeca/setup-miniconda@v1.4.1
       with:
         environment-file: mne-bids/environment.yml
         activate-environment: mne_bids
