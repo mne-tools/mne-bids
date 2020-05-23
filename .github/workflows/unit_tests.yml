@@ -16,8 +16,10 @@ jobs:
       fail-fast: false
       matrix:
         # os: [ubuntu-latest, macos-latest, windows-latest]
-        os: [ubuntu-latest, macos-latest]
+        # os: [ubuntu-latest, macos-latest]
+        os: [ubuntu-latest]
         python-version: [3.8]
+        validator-version: [stable, master]
 
     env:
       TZ: Europe/Berlin
@@ -37,8 +39,18 @@ jobs:
         pip install -r requirements.txt
         git clone --depth 1 https://github.com/mne-tools/mne-python.git
         pip install --no-deps -e ./mne-python
-    - name: Install BIDS validator
+    - name: Install BIDS validator (stable)
+      if: "matrix.validator-version == 'stable'"
       run: npm install -g bids-validator
+    - name: Install BIDS validator (master)
+      if: "matrix.validator-version == 'master'"
+      run: |
+        git clone --depth 1 https://github.com/bids-standard/bids-validator
+        cd bids-validator
+        git checkout e457907ca9af4c32aede828117ea5a43737b4597
+        yarn
+        cd ..
+        export PATH=$PWD/bids-validator/bin:$PATH
     - name: Display versions and environment information
       run: |
         echo $TZ
