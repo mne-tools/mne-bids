@@ -36,7 +36,6 @@ jobs:
     - name: Install mne-python
       shell: bash -l {0}
       run: |
-        pip uninstall --yes mne-python
         git clone --depth 1 https://github.com/mne-tools/mne-python.git
         pip install --no-deps -e ./mne-python
 
