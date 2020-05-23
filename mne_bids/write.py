@@ -36,7 +36,8 @@ from mne_bids.utils import (_write_json, _write_tsv, _read_events, _mkdir_p,
                             _parse_bids_filename, _handle_kind,
                             _path_to_str, _parse_ext,
                             _get_ch_type_mapping, make_bids_folders,
-                            _estimate_line_freq, make_bids_basename)
+                            _estimate_line_freq, make_bids_basename,
+                            _gen_bids_basename)
 from mne_bids.copyfiles import (copyfile_brainvision, copyfile_eeglab,
                                 copyfile_ctf, copyfile_bti, copyfile_kit)
 from mne_bids.read import reader
@@ -965,19 +966,33 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
                                      overwrite=False, verbose=verbose)
 
     # create filenames
-    scans_fname = make_bids_basename(
+
+    # In case of an "emptyroom" subject, make_bids_basename() will raise
+    # an exception if we don't provide a valid task ("noise"). Now,
+    # scans_fname, electrodes_fname, and coordsystem_fname must NOT include
+    # the task entity. Therefore, we cannot generate them with
+    # make_bids_basename() directly. Instead, we call _gen_bids_basename()
+    # with the parameter on_invalid_er_task, which allows us to create an
+    # "invalid" basename for an emptyroom subject.
+    on_invalid_er_task = 'continue'
+
+    scans_fname = _gen_bids_basename(
         subject=subject_id, session=session_id, suffix='scans.tsv',
-        prefix=ses_path)
+        prefix=ses_path, on_invalid_er_task=on_invalid_er_task)
+    coordsystem_fname = _gen_bids_basename(
+        subject=subject_id, session=session_id, acquisition=acquisition,
+        suffix='coordsystem.json', prefix=data_path,
+        on_invalid_er_task=on_invalid_er_task)
+    electrodes_fname = _gen_bids_basename(
+        subject=subject_id, session=session_id, acquisition=acquisition,
+        suffix='electrodes.tsv', prefix=data_path,
+        on_invalid_er_task=on_invalid_er_task)
+    # For the remaining files, we can use make_bids_basename() as usual.
     participants_tsv_fname = make_bids_basename(prefix=bids_root,
                                                 suffix='participants.tsv')
     participants_json_fname = make_bids_basename(prefix=bids_root,
                                                  suffix='participants.json')
-    coordsystem_fname = make_bids_basename(
-        subject=subject_id, session=session_id, acquisition=acquisition,
-        suffix='coordsystem.json', prefix=data_path)
-    electrodes_fname = make_bids_basename(
-        subject=subject_id, session=session_id, acquisition=acquisition,
-        suffix='electrodes.tsv', prefix=data_path)
+
     sidecar_fname = make_bids_basename(
         subject=subject_id, session=session_id, task=task, run=run,
         acquisition=acquisition, suffix='%s.json' % kind, prefix=data_path)

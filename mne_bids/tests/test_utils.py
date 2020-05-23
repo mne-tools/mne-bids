@@ -193,11 +193,10 @@ def test_make_filenames():
         make_bids_basename()
 
     # emptyroom checks
-    with pytest.raises(ValueError, match='session must be string of format'
-                                         ' YYYYMMDD'):
+    with pytest.raises(ValueError, match='empty-room session should be a '
+                                         'string of format YYYYMMDD'):
         make_bids_basename(subject='emptyroom', session='12345', task='noise')
-    with pytest.raises(ValueError, match='task must be ''noise'' if subject is'
-                                         ' ''emptyroom'''):
+    with pytest.raises(ValueError, match='task must be'):
         make_bids_basename(subject='emptyroom', session='20131201',
                            task='blah')
 
