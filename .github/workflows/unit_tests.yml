@@ -52,7 +52,7 @@ jobs:
         git checkout master
         yarn
         echo "::add-path::$(pwd)/bids-validator/bin"
-        cd mne_bids
+        cd mne-bids
     - name: Display versions and environment information
       run: |
         echo $TZ
