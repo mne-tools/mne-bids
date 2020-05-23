@@ -33,6 +33,13 @@ jobs:
         auto-update-conda: true
         channel-priority: strict
         channels: conda-forge, defaults
+    - name: Install mne-python
+      shell: bash -l {0}
+      run: |
+        pip uninstall --yes mne-python
+        git clone --depth 1 https://github.com/mne-tools/mne-python.git
+        pip install --no-deps -e ./mne-python
+
     - name: Install BIDS validator
       run: npm install -g bids-validator
     - name: Display versions and environment information
