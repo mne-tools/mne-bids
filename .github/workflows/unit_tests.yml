@@ -59,10 +59,10 @@ jobs:
         date
         npm --version
         node --version
+        bids-validator --version
         python --version
         which python
         mne sys_info
-        bids-validator --version
     - name: Install MNE-BIDS
       run: pip install --no-deps .
     - name: Run pytest
