@@ -38,7 +38,7 @@ jobs:
 
         - store_artifacts:
             path: doc/_build/html/
-            destination: html
+            destination: dev
 
         # Store the data cache
         - save_cache:
