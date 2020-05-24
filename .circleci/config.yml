@@ -4,15 +4,9 @@ version: 2.1
 jobs:
   docs-build:
     docker:
-      - image: circleci/python:3.7.3-stretch
+      - image: circleci/python:3.8.1-buster
     steps:
         - checkout
-
-        - run:
-            name: Check environment.yml and doc/environment.yml syncing
-            # doc/environment.yml must be a perfect copy of environment.yml
-            # with a single line "  - mne_bids>=0.X,<0.Y" added in the pip section
-            command: diff <(grep -v '^  - mne_bids>=0.*,<0.*$' doc/environment.yml) <(cat environment.yml)
 
         # restore cache from last build. Unless __init__.py has changed since then
         - restore_cache:
@@ -22,31 +16,21 @@ jobs:
         # Also restore pip cache to speed up installations
         - restore_cache:
             keys:
-              - pip-cache-0-{{ checksum "./environment.yml" }}
+              - pip-cache-0-{{ checksum "./requirements.txt" }}
 
         - run:
-            name: Install miniconda
+            name: Get Python running
             command: |
-              wget -q https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh;
-              chmod +x ~/miniconda.sh;
-              ~/miniconda.sh -b -p ~/miniconda;
-              echo "export PATH=~/miniconda/bin:$PATH" >> $BASH_ENV;
-
-        - run:
-            name: Setup Python environment
-            # ... but use latest version of MNE
-            command: |
-              conda update --yes --quiet conda
-              conda env create -f environment.yml --name=testenv
-              source activate testenv
+              python -m pip install --user --upgrade --progress-bar off pip
+              python -m pip install --user --upgrade --progress-bar off -r requirements.txt
+              python -m pip install --user --upgrade --progress-bar off -r doc/requirements.txt
               pip install --upgrade --no-deps https://api.github.com/repos/mne-tools/mne-python/zipball/master
-              python setup.py develop
+              python -m pip install --user -e .
 
         - run:
             name: Build the documentation
             command: |
-                source activate testenv
-                make build-doc
+              make build-doc
 
         - persist_to_workspace:
             root: doc/_build
@@ -64,7 +48,7 @@ jobs:
 
         # Store pip cache
         - save_cache:
-            key: pip-cache-0-{{ checksum "./environment.yml" }}
+            key: pip-cache-0-{{ checksum "./requirements.txt" }}
             paths:
               - ~/.cache/pip
 
