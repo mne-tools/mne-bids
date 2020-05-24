@@ -191,7 +191,7 @@ The examples are loosely ordered from more general to more advanced use cases.
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates how to store empty room data in BIDS format and how to retrieve them....">
+    <div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates how to store empty room data in BIDS format and how to retrieve them.">
 
 .. only:: html
 

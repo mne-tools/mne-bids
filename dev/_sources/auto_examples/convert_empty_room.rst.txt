@@ -776,34 +776,22 @@ Let us look at the directory structure
  .. code-block:: none
 
     |MNE-sample-data-bids/
+    |--- dataset_description.json
     |--- participants.json
     |--- participants.tsv
-    |--- dataset_description.json
-    |--- sub-01/
-    |------ ses-01/
-    |--------- sub-01_ses-01_scans.tsv
-    |--------- anat/
-    |------------ sub-01_ses-01_T1w.json
-    |------------ sub-01_ses-01_T1w.nii.gz
-    |--------- meg/
-    |------------ sub-01_ses-01_task-audiovisual_run-01_events.tsv
-    |------------ sub-01_ses-01_task-audiovisual_run-01_meg.json
-    |------------ sub-01_ses-01_task-audiovisual_run-01_meg.fif
-    |------------ sub-01_ses-01_coordsystem.json
-    |------------ sub-01_ses-01_task-audiovisual_run-01_channels.tsv
     |--- sub-emptyroom/
     |------ ses-20021204/
     |--------- sub-emptyroom_ses-20021204_scans.tsv
     |--------- meg/
-    |------------ sub-emptyroom_ses-20021204_task-noise_meg.fif
     |------------ sub-emptyroom_ses-20021204_task-noise_channels.tsv
     |------------ sub-emptyroom_ses-20021204_task-noise_meg.json
+    |------------ sub-emptyroom_ses-20021204_task-noise_meg.fif
     |------ ses-20021001/
     |--------- sub-emptyroom_ses-20021001_scans.tsv
     |--------- meg/
+    |------------ sub-emptyroom_ses-20021001_task-noise_meg.json
     |------------ sub-emptyroom_ses-20021001_task-noise_channels.tsv
     |------------ sub-emptyroom_ses-20021001_task-noise_meg.fif
-    |------------ sub-emptyroom_ses-20021001_task-noise_meg.json
     |------ ses-20021206/
     |--------- sub-emptyroom_ses-20021206_scans.tsv
     |--------- meg/
@@ -813,9 +801,21 @@ Let us look at the directory structure
     |------ ses-20021201/
     |--------- sub-emptyroom_ses-20021201_scans.tsv
     |--------- meg/
-    |------------ sub-emptyroom_ses-20021201_task-noise_meg.json
     |------------ sub-emptyroom_ses-20021201_task-noise_meg.fif
+    |------------ sub-emptyroom_ses-20021201_task-noise_meg.json
     |------------ sub-emptyroom_ses-20021201_task-noise_channels.tsv
+    |--- sub-01/
+    |------ ses-01/
+    |--------- sub-01_ses-01_scans.tsv
+    |--------- anat/
+    |------------ sub-01_ses-01_T1w.nii.gz
+    |------------ sub-01_ses-01_T1w.json
+    |--------- meg/
+    |------------ sub-01_ses-01_task-audiovisual_run-01_channels.tsv
+    |------------ sub-01_ses-01_task-audiovisual_run-01_meg.fif
+    |------------ sub-01_ses-01_task-audiovisual_run-01_meg.json
+    |------------ sub-01_ses-01_coordsystem.json
+    |------------ sub-01_ses-01_task-audiovisual_run-01_events.tsv
 
 
 
@@ -916,7 +916,7 @@ Finally, we can read the empty room file using
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  4.730 seconds)
+   **Total running time of the script:** ( 0 minutes  5.868 seconds)
 
 
 .. _sphx_glr_download_auto_examples_convert_empty_room.py:
