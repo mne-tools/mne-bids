@@ -246,8 +246,8 @@ a new BIDS name for it, and then run the automatic BIDS conversion.
         ]
     }
     Effective window size : 0.426 (s)
-    /home/circleci/project/mne_bids/write.py:437: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
-      'on 10 seconds of data.'.format(powerlinefrequency))
+    /home/circleci/project/mne_bids/write.py:435: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
+      warn('No line frequency found, defaulting to {} Hz '
     Reading 0 ... 166799  =      0.000 ...   277.714 secs...
 
     Writing '/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.json'...
@@ -312,31 +312,6 @@ Now let's see the structure of the BIDS folder we created.
     |--- dataset_description.json
     |--- participants.json
     |--- participants.tsv
-    |--- sub-emptyroom/
-    |------ ses-20021204/
-    |--------- sub-emptyroom_ses-20021204_scans.tsv
-    |--------- meg/
-    |------------ sub-emptyroom_ses-20021204_task-noise_channels.tsv
-    |------------ sub-emptyroom_ses-20021204_task-noise_meg.json
-    |------------ sub-emptyroom_ses-20021204_task-noise_meg.fif
-    |------ ses-20021001/
-    |--------- sub-emptyroom_ses-20021001_scans.tsv
-    |--------- meg/
-    |------------ sub-emptyroom_ses-20021001_task-noise_meg.json
-    |------------ sub-emptyroom_ses-20021001_task-noise_channels.tsv
-    |------------ sub-emptyroom_ses-20021001_task-noise_meg.fif
-    |------ ses-20021206/
-    |--------- sub-emptyroom_ses-20021206_scans.tsv
-    |--------- meg/
-    |------------ sub-emptyroom_ses-20021206_task-noise_meg.json
-    |------------ sub-emptyroom_ses-20021206_task-noise_meg.fif
-    |------------ sub-emptyroom_ses-20021206_task-noise_channels.tsv
-    |------ ses-20021201/
-    |--------- sub-emptyroom_ses-20021201_scans.tsv
-    |--------- meg/
-    |------------ sub-emptyroom_ses-20021201_task-noise_meg.fif
-    |------------ sub-emptyroom_ses-20021201_task-noise_meg.json
-    |------------ sub-emptyroom_ses-20021201_task-noise_channels.tsv
     |--- sub-01/
     |------ ses-01/
     |--------- sub-01_ses-01_scans.tsv
@@ -344,11 +319,36 @@ Now let's see the structure of the BIDS folder we created.
     |------------ sub-01_ses-01_T1w.nii.gz
     |------------ sub-01_ses-01_T1w.json
     |--------- meg/
-    |------------ sub-01_ses-01_task-audiovisual_run-01_channels.tsv
     |------------ sub-01_ses-01_task-audiovisual_run-01_meg.fif
     |------------ sub-01_ses-01_task-audiovisual_run-01_meg.json
+    |------------ sub-01_ses-01_task-audiovisual_run-01_channels.tsv
     |------------ sub-01_ses-01_coordsystem.json
     |------------ sub-01_ses-01_task-audiovisual_run-01_events.tsv
+    |--- sub-emptyroom/
+    |------ ses-20021201/
+    |--------- sub-emptyroom_ses-20021201_scans.tsv
+    |--------- meg/
+    |------------ sub-emptyroom_ses-20021201_task-noise_meg.fif
+    |------------ sub-emptyroom_ses-20021201_task-noise_meg.json
+    |------------ sub-emptyroom_ses-20021201_task-noise_channels.tsv
+    |------ ses-20021204/
+    |--------- sub-emptyroom_ses-20021204_scans.tsv
+    |--------- meg/
+    |------------ sub-emptyroom_ses-20021204_task-noise_meg.json
+    |------------ sub-emptyroom_ses-20021204_task-noise_meg.fif
+    |------------ sub-emptyroom_ses-20021204_task-noise_channels.tsv
+    |------ ses-20021206/
+    |--------- sub-emptyroom_ses-20021206_scans.tsv
+    |--------- meg/
+    |------------ sub-emptyroom_ses-20021206_task-noise_meg.fif
+    |------------ sub-emptyroom_ses-20021206_task-noise_meg.json
+    |------------ sub-emptyroom_ses-20021206_task-noise_channels.tsv
+    |------ ses-20021001/
+    |--------- sub-emptyroom_ses-20021001_scans.tsv
+    |--------- meg/
+    |------------ sub-emptyroom_ses-20021001_task-noise_channels.tsv
+    |------------ sub-emptyroom_ses-20021001_task-noise_meg.json
+    |------------ sub-emptyroom_ses-20021001_task-noise_meg.fif
 
 
 
@@ -435,7 +435,7 @@ evoked data.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  4.935 seconds)
+   **Total running time of the script:** ( 0 minutes  9.264 seconds)
 
 
 .. _sphx_glr_download_auto_examples_convert_mne_sample.py:
