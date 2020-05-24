@@ -1,0 +1,11 @@
+numpy>=1.14
+scipy>=0.18.1
+mne>=0.19.1
+nibabel>=2.2
+pybv
+pytest<5.4
+pytest-cov
+pytest-sugar
+check-manifest
+pydocstyle
+flake8

@@ -1,27 +1,19 @@
 
+.. image:: https://github.com/mne-tools/mne-bids/workflows/build/badge.svg
+   :target: https://github.com/mne-tools/mne-bids/actions
+   :alt: gh-actions
 
 .. image:: https://badges.gitter.im/mne-tools/mne-bids.svg
    :target: https://gitter.im/mne-tools/mne-bids?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
    :alt: Gitter
 
-.. image:: https://travis-ci.org/mne-tools/mne-bids.svg?branch=master
-   :target: https://travis-ci.org/mne-tools/mne-bids
-   :alt: Travis
-
-.. image:: https://ci.appveyor.com/api/projects/status/d4u70pht341cwqxb/branch/master?svg=true
-   :target: https://ci.appveyor.com/project/mne-tools/mne-bids/branch/master
-   :alt: Appveyor
-
-
 .. image:: https://codecov.io/gh/mne-tools/mne-bids/branch/master/graph/badge.svg
    :target: https://codecov.io/gh/mne-tools/mne-bids
    :alt: codecov
 
-
 .. image:: https://circleci.com/gh/mne-tools/mne-bids.svg?style=svg
    :target: https://circleci.com/gh/mne-tools/mne-bids
    :alt: CircleCi
-
 
 .. image:: https://pepy.tech/badge/mne-bids
    :target: https://pepy.tech/project/mne-bids
