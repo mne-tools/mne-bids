@@ -1096,12 +1096,12 @@
         <span class="n">subject</span><span class="o">=</span><span class="n">subject_id</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session_id</span><span class="p">,</span> <span class="n">acquisition</span><span class="o">=</span><span class="n">acquisition</span><span class="p">,</span>
         <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;electrodes.tsv&#39;</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="n">data_path</span><span class="p">,</span>
         <span class="n">on_invalid_er_task</span><span class="o">=</span><span class="n">on_invalid_er_task</span><span class="p">)</span>
+
     <span class="c1"># For the remaining files, we can use make_bids_basename() as usual.</span>
     <span class="n">participants_tsv_fname</span> <span class="o">=</span> <span class="n">make_bids_basename</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="n">bids_root</span><span class="p">,</span>
                                                 <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;participants.tsv&#39;</span><span class="p">)</span>
     <span class="n">participants_json_fname</span> <span class="o">=</span> <span class="n">make_bids_basename</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="n">bids_root</span><span class="p">,</span>
                                                  <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;participants.json&#39;</span><span class="p">)</span>
-
     <span class="n">sidecar_fname</span> <span class="o">=</span> <span class="n">make_bids_basename</span><span class="p">(</span>
         <span class="n">subject</span><span class="o">=</span><span class="n">subject_id</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session_id</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="n">task</span><span class="p">,</span> <span class="n">run</span><span class="o">=</span><span class="n">run</span><span class="p">,</span>
         <span class="n">acquisition</span><span class="o">=</span><span class="n">acquisition</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">.json&#39;</span> <span class="o">%</span> <span class="n">kind</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="n">data_path</span><span class="p">)</span>
@@ -1112,6 +1112,7 @@
     <span class="n">channels_fname</span> <span class="o">=</span> <span class="n">make_bids_basename</span><span class="p">(</span>
         <span class="n">subject</span><span class="o">=</span><span class="n">subject_id</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session_id</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="n">task</span><span class="p">,</span> <span class="n">run</span><span class="o">=</span><span class="n">run</span><span class="p">,</span>
         <span class="n">acquisition</span><span class="o">=</span><span class="n">acquisition</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;channels.tsv&#39;</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="n">data_path</span><span class="p">)</span>
+
     <span class="k">if</span> <span class="n">ext</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;.fif&#39;</span><span class="p">,</span> <span class="s1">&#39;.ds&#39;</span><span class="p">,</span> <span class="s1">&#39;.vhdr&#39;</span><span class="p">,</span> <span class="s1">&#39;.edf&#39;</span><span class="p">,</span> <span class="s1">&#39;.bdf&#39;</span><span class="p">,</span> <span class="s1">&#39;.set&#39;</span><span class="p">,</span> <span class="s1">&#39;.con&#39;</span><span class="p">,</span>
                    <span class="s1">&#39;.sqd&#39;</span><span class="p">]:</span>
         <span class="n">bids_raw_folder</span> <span class="o">=</span> <span class="n">bids_fname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
@@ -1450,7 +1451,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-05-24.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-05-25.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.3.<br/>
     </p>
   </div>

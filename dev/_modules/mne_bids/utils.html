@@ -913,8 +913,8 @@
                        <span class="n">recording</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">space</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                        <span class="n">on_invalid_er_session</span><span class="o">=</span><span class="s1">&#39;raise&#39;</span><span class="p">,</span>
                        <span class="n">on_invalid_er_task</span><span class="o">=</span><span class="s1">&#39;raise&#39;</span><span class="p">):</span>
-    <span class="k">if</span> <span class="n">on_invalid_er_session</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;raise&#39;</span><span class="p">,</span> <span class="s1">&#39;warn&#39;</span><span class="p">]:</span>
-        <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="sa">f</span><span class="s1">&#39;on_invalid_er_session must be raise or warn, &#39;</span>
+    <span class="k">if</span> <span class="n">on_invalid_er_session</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;raise&#39;</span><span class="p">,</span> <span class="s1">&#39;warn&#39;</span><span class="p">,</span> <span class="s1">&#39;continue&#39;</span><span class="p">]:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="sa">f</span><span class="s1">&#39;on_invalid_er_session must be raise, warn, or continue, &#39;</span>
                <span class="sa">f</span><span class="s1">&#39;but received: </span><span class="si">{</span><span class="n">on_invalid_er_session</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
@@ -943,14 +943,15 @@
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;At least one parameter must be given.&quot;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">subject</span> <span class="o">==</span> <span class="s1">&#39;emptyroom&#39;</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">task</span> <span class="o">!=</span> <span class="s1">&#39;noise&#39;</span> <span class="ow">and</span> <span class="n">on_invalid_er_task</span> <span class="o">!=</span> <span class="s1">&#39;continue&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">task</span> <span class="o">!=</span> <span class="s1">&#39;noise&#39;</span><span class="p">:</span>
             <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="sa">f</span><span class="s1">&#39;task must be &quot;noise&quot; if subject is &quot;emptyroom&quot;, but &#39;</span>
                    <span class="sa">f</span><span class="s1">&#39;received: </span><span class="si">{</span><span class="n">task</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">on_invalid_er_task</span> <span class="o">==</span> <span class="s1">&#39;raise&#39;</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
+            <span class="k">elif</span> <span class="n">on_invalid_er_task</span> <span class="o">==</span> <span class="s1">&#39;warn&#39;</span><span class="p">:</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">pass</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
@@ -958,10 +959,12 @@
                    <span class="sa">f</span><span class="s1">&#39;YYYYMMDD, but received: </span><span class="si">{</span><span class="n">session</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">on_invalid_er_session</span> <span class="o">==</span> <span class="s1">&#39;raise&#39;</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
+            <span class="k">elif</span> <span class="n">on_invalid_er_session</span> <span class="o">==</span> <span class="s1">&#39;warn&#39;</span><span class="p">:</span>
                 <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">msg</span><span class="si">}</span><span class="s1">. Will proceed anyway, but you should consider &#39;</span>
                        <span class="sa">f</span><span class="s1">&#39;fixing your dataset.&#39;</span><span class="p">)</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">pass</span>
 
     <span class="n">basename</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">order</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -1049,7 +1052,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-05-24.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-05-25.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.3.<br/>
     </p>
   </div>
