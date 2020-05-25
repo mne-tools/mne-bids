@@ -657,7 +657,7 @@ def test_get_matched_empty_room():
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_get_matched_emptyroom_ties():
-    """Test we receive a warning on a date tie."""
+    """Test that we receive a warning on a date tie."""
     bids_root = _TempDir()
     session = '20010101'
     er_dir = make_bids_folders(subject='emptyroom', session=session,
@@ -697,7 +697,7 @@ def test_get_matched_emptyroom_ties():
                     reason="requires mne 0.21.dev0 or higher")
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_get_matched_emptyroom_no_meas_date():
-    """Test that we warn ifmeasurement date can be read or inferred."""
+    """Test that we warn if measurement date can be read or inferred."""
     bids_root = _TempDir()
     er_session = 'mysession'
     er_meas_date = None
