@@ -804,8 +804,8 @@ def _gen_bids_basename(*, subject=None, session=None, task=None,
                        recording=None, space=None, prefix=None, suffix=None,
                        on_invalid_er_session='raise',
                        on_invalid_er_task='raise'):
-    if on_invalid_er_session not in ['raise', 'warn']:
-        msg = (f'on_invalid_er_session must be raise or warn, '
+    if on_invalid_er_session not in ['raise', 'warn', 'continue']:
+        msg = (f'on_invalid_er_session must be raise, warn, or continue, '
                f'but received: {on_invalid_er_session}')
         raise ValueError(msg)
 
@@ -834,14 +834,15 @@ def _gen_bids_basename(*, subject=None, session=None, task=None,
         raise ValueError("At least one parameter must be given.")
 
     if subject == 'emptyroom':
-        if task != 'noise' and on_invalid_er_task != 'continue':
+        if task != 'noise':
             msg = (f'task must be "noise" if subject is "emptyroom", but '
                    f'received: {task}')
             if on_invalid_er_task == 'raise':
                 raise ValueError(msg)
-            else:
+            elif on_invalid_er_task == 'warn':
                 logger.critical(msg)
-
+            else:
+                pass
         try:
             datetime.strptime(session, '%Y%m%d')
         except (ValueError, TypeError):
@@ -849,10 +850,12 @@ def _gen_bids_basename(*, subject=None, session=None, task=None,
                    f'YYYYMMDD, but received: {session}')
             if on_invalid_er_session == 'raise':
                 raise ValueError(msg)
-            else:
+            elif on_invalid_er_session == 'warn':
                 msg = (f'{msg}. Will proceed anyway, but you should consider '
                        f'fixing your dataset.')
                 logger.critical(msg)
+            else:
+                pass
 
     basename = []
     for key, val in order.items():

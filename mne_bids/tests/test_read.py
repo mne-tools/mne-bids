@@ -7,6 +7,7 @@ import os
 import os.path as op
 from datetime import datetime, timezone
 from pathlib import Path
+from distutils.version import LooseVersion
 
 import pytest
 import shutil as sh
@@ -27,14 +28,15 @@ from mne.utils import _TempDir, requires_nibabel, check_version, object_diff
 from mne.utils import assert_dig_allclose
 from mne.datasets import testing, somato
 
-from mne_bids import get_matched_empty_room, make_bids_basename
+from mne_bids import (get_matched_empty_room, make_bids_basename,
+                      make_bids_folders)
 from mne_bids.config import MNE_STR_TO_FRAME
 from mne_bids.read import (read_raw_bids,
                            _read_raw, get_head_mri_trans,
                            _handle_events_reading, _handle_info_reading)
 from mne_bids.tsv_handler import _to_tsv, _from_tsv
 from mne_bids.utils import (_find_matching_sidecar, _update_sidecar,
-                            _write_json)
+                            _write_json, _gen_bids_basename)
 from mne_bids.write import write_anat, write_raw_bids
 
 subject_id = '01'
@@ -647,7 +649,80 @@ def test_get_matched_empty_room():
         raw.annotations.orig_time = None
     anonymize_info(raw.info)
     write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
-    with pytest.raises(ValueError, match='Measurement date not available'):
+    with pytest.raises(ValueError, match='The provided recording does not '
+                                         'have a measurement date set'):
+        get_matched_empty_room(bids_basename=bids_basename,
+                               bids_root=bids_root)
+
+
+@pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+def test_get_matched_emptyroom_ties():
+    """Test that we receive a warning on a date tie."""
+    bids_root = _TempDir()
+    session = '20010101'
+    er_dir = make_bids_folders(subject='emptyroom', session=session,
+                               kind='meg', bids_root=bids_root)
+
+    meas_date = (datetime
+                 .strptime(session, '%Y%m%d')
+                 .replace(tzinfo=timezone.utc))
+
+    raw = mne.io.read_raw_fif(raw_fname)
+    er_raw_fname = op.join(data_path, 'MEG', 'sample', 'ernoise_raw.fif')
+    raw.copy().crop(0, 10).save(er_raw_fname, overwrite=True)
+    er_raw = mne.io.read_raw_fif(er_raw_fname)
+
+    if check_version('mne', '0.20'):
+        raw.set_meas_date(meas_date)
+        er_raw.set_meas_date(meas_date)
+    else:
+        raw.info['meas_date'] = (meas_date.timestamp(), 0)
+        er_raw.info['meas_date'] = (meas_date.timestamp(), 0)
+
+    write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
+    er_basename_1 = _gen_bids_basename(subject='emptyroom', session=session,
+                                       task=None,
+                                       on_invalid_er_task='continue')
+    er_basename_2 = make_bids_basename(subject='emptyroom', session=session,
+                                       task='noise')
+    er_raw.save(op.join(er_dir, f'{er_basename_1}_meg.fif'))
+    er_raw.save(op.join(er_dir, f'{er_basename_2}_meg.fif'))
+
+    with pytest.warns(RuntimeWarning, match='Found more than one'):
+        get_matched_empty_room(bids_basename=bids_basename,
+                               bids_root=bids_root)
+
+
+@pytest.mark.skipif(LooseVersion(mne.__version__) < LooseVersion('0.21'),
+                    reason="requires mne 0.21.dev0 or higher")
+@pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+def test_get_matched_emptyroom_no_meas_date():
+    """Test that we warn if measurement date can be read or inferred."""
+    bids_root = _TempDir()
+    er_session = 'mysession'
+    er_meas_date = None
+
+    er_dir = make_bids_folders(subject='emptyroom', session=er_session,
+                               kind='meg', bids_root=bids_root)
+    er_basename = _gen_bids_basename(subject='emptyroom',
+                                     session=er_session,
+                                     task='noise',
+                                     on_invalid_er_session='continue')
+    raw = mne.io.read_raw_fif(raw_fname)
+    er_raw_fname = op.join(data_path, 'MEG', 'sample', 'ernoise_raw.fif')
+    raw.copy().crop(0, 10).save(er_raw_fname, overwrite=True)
+    er_raw = mne.io.read_raw_fif(er_raw_fname)
+    er_raw.set_meas_date(er_meas_date)
+    er_raw.save(op.join(er_dir, f'{er_basename}_meg.fif'), overwrite=True)
+
+    # Write raw file data using mne-bids, and remove participants.tsv
+    # as it's incomplete (doesn't contain the emptyroom subject we wrote
+    # manually using MNE's Raw.save() above)
+    raw = mne.io.read_raw_fif(raw_fname)
+    write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
+    os.remove(op.join(bids_root, 'participants.tsv'))
+
+    with pytest.warns(RuntimeWarning, match='Could not retrieve .* date'):
         get_matched_empty_room(bids_basename=bids_basename,
                                bids_root=bids_root)
 
