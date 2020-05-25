@@ -872,8 +872,6 @@ def _gen_bids_basename(*, subject=None, session=None, task=None,
 
     return basename
 
-    return basename
-
 
 def make_bids_basename(subject=None, session=None, task=None,
                        acquisition=None, run=None, processing=None,
