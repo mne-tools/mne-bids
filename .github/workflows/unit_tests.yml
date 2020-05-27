@@ -76,10 +76,12 @@ jobs:
     - name: Run pytest
       run: |
         echo "bids-validator"; bids-validator --version
-        pytest . --cov=./mne_bids --cov-report=xml --verbose --ignore mne-python
+        python -m pytest . --cov=mne_bids mne_bids/tests/ mne_bids/commands/tests/ --cov-report=xml --verbose --ignore mne-python
     - name: Run style & documentation tests
       if: "matrix.os == 'ubuntu-latest'"
       run: make pep
     - name: Upload coverage stats to codecov
       if: "matrix.os == 'ubuntu-latest'"
-      run: bash <(curl -s https://codecov.io/bash)
+      uses: codecov/codecov-action@v1
+      with:
+        file: ./coverage.xml
