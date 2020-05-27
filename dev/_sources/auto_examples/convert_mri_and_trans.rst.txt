@@ -305,10 +305,10 @@ Print the directory tree
     |--------- sub-01_ses-01_scans.tsv
     |--------- meg/
     |------------ sub-01_ses-01_task-audiovisual_run-01_meg.json
-    |------------ sub-01_ses-01_task-audiovisual_run-01_channels.tsv
     |------------ sub-01_ses-01_task-audiovisual_run-01_meg.fif
-    |------------ sub-01_ses-01_task-audiovisual_run-01_events.tsv
+    |------------ sub-01_ses-01_task-audiovisual_run-01_channels.tsv
     |------------ sub-01_ses-01_coordsystem.json
+    |------------ sub-01_ses-01_task-audiovisual_run-01_events.tsv
 
 
 
@@ -341,7 +341,7 @@ matrix :code:`trans`.
 
  .. code-block:: none
 
-    <Transform  |  head->MRI (surface RAS)>
+    <Transform | head->MRI (surface RAS)>
     [[ 0.99930954  0.01275934  0.0348942   0.00206991]
      [ 0.00998479  0.81240475 -0.58300853  0.01130214]
      [-0.03578702  0.58295429  0.81171638 -0.02755522]
@@ -428,15 +428,15 @@ Let's have another look at our BIDS directory
     |--- sub-01/
     |------ ses-01/
     |--------- sub-01_ses-01_scans.tsv
-    |--------- anat/
-    |------------ sub-01_ses-01_T1w.json
-    |------------ sub-01_ses-01_T1w.nii.gz
     |--------- meg/
     |------------ sub-01_ses-01_task-audiovisual_run-01_meg.json
-    |------------ sub-01_ses-01_task-audiovisual_run-01_channels.tsv
     |------------ sub-01_ses-01_task-audiovisual_run-01_meg.fif
-    |------------ sub-01_ses-01_task-audiovisual_run-01_events.tsv
+    |------------ sub-01_ses-01_task-audiovisual_run-01_channels.tsv
     |------------ sub-01_ses-01_coordsystem.json
+    |------------ sub-01_ses-01_task-audiovisual_run-01_events.tsv
+    |--------- anat/
+    |------------ sub-01_ses-01_T1w.nii.gz
+    |------------ sub-01_ses-01_T1w.json
 
 
 
@@ -611,7 +611,7 @@ We can deface the MRI for anonymization
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  37.225 seconds)
+   **Total running time of the script:** ( 0 minutes  14.951 seconds)
 
 
 .. _sphx_glr_download_auto_examples_convert_mri_and_trans.py:
