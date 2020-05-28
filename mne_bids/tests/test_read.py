@@ -49,6 +49,8 @@ bids_basename = make_bids_basename(
     subject=subject_id, session=session_id, run=run, acquisition=acq,
     task=task)
 
+bids_basename_minimal = make_bids_basename(subject=subject_id, task=task)
+
 # Get the MNE testing sample data - USA
 data_path = testing.data_path()
 raw_fname = op.join(data_path, 'MEG', 'sample',
@@ -398,9 +400,11 @@ def test_handle_eeg_coords_reading():
         assert raw_test.info['dig'] is None
 
 
+@pytest.mark.parametrize('bids_basename', [bids_basename,
+                                           bids_basename_minimal])
 @pytest.mark.filterwarnings(warning_str['nasion_not_found'])
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
-def test_handle_ieeg_coords_reading():
+def test_handle_ieeg_coords_reading(bids_basename):
     """Test reading iEEG coordinates from BIDS files."""
     bids_root = _TempDir()
 
