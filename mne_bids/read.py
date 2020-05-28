@@ -599,7 +599,8 @@ def get_matched_empty_room(bids_basename, bids_root):
             on_invalid_er_task='continue'
         )
 
-        if 'ses' in params:  # Try to extract date from filename.
+        # Try to extract date from filename.
+        if params['ses'] is not None:
             try:
                 er_meas_date = datetime.strptime(params['ses'], '%Y%m%d')
             except (ValueError, TypeError):
