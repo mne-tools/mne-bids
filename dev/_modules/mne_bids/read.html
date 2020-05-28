@@ -708,7 +708,8 @@
             <span class="n">on_invalid_er_task</span><span class="o">=</span><span class="s1">&#39;continue&#39;</span>
         <span class="p">)</span>
 
-        <span class="k">if</span> <span class="s1">&#39;ses&#39;</span> <span class="ow">in</span> <span class="n">params</span><span class="p">:</span>  <span class="c1"># Try to extract date from filename.</span>
+        <span class="c1"># Try to extract date from filename.</span>
+        <span class="k">if</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;ses&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">er_meas_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;ses&#39;</span><span class="p">],</span> <span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span>
             <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
@@ -852,7 +853,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-05-27.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-05-28.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.4.<br/>
     </p>
   </div>
