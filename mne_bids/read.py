@@ -465,8 +465,9 @@ def read_raw_bids(bids_basename, bids_root, kind=None, extra_params=None,
     # Try to find an associated electrodes.tsv and coordsystem.json
     # to get information about the status and type of present channels
     acq = params['acq']
-    elec_suffix = 'acq-{}*_electrodes.tsv'.format(acq)
-    coord_suffix = 'acq-{}*_coordsystem.json'.format(acq)
+    search_modifier = f'acq-{acq}' if acq else ''
+    elec_suffix = f'{search_modifier}*_electrodes.tsv'
+    coord_suffix = f'{search_modifier}*_coordsystem.json'
     electrodes_fname = _find_matching_sidecar(bids_fname, bids_root,
                                               suffix=elec_suffix,
                                               allow_fail=True)
