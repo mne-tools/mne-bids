@@ -280,7 +280,6 @@ def test_fif(_bids_validate):
     data['subject_test_col1'] = ['n/a'] * len(data['participant_id'])
     data['subject_test_col1'][participant_ind] = 'S'
     _to_tsv(data, participants_tsv)
-    _old_data = data
     # crate corresponding json entry
     participants_json_fpath = op.join(bids_root, 'participants.json')
     json_field = {
@@ -297,11 +296,9 @@ def test_fif(_bids_validate):
     data = _from_tsv(participants_tsv)
     with open(participants_json_fpath, 'r') as fin:
         participants_json = json.load(fin)
-    print(data)
-    print(_old_data)
+    assert 'subject_test_col1' in participants_json
     assert data['age'][data['participant_id'].index('sub-01')] == '9'
     assert data['subject_test_col1'][participant_ind] == 'S'
-    assert 'subject_test_col1' in participants_json
 
     # try and write preloaded data
     raw = mne.io.read_raw_fif(raw_fname, preload=True)

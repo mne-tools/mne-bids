@@ -27,6 +27,7 @@ def _combine(data1, data2, drop_column=None):
     data = deepcopy(data1)
     for key, value in data2.items():
         data[key].extend(value)
+
     # Make sure that if there are any columns in data1 that didn't get new
     # data they are populated with "n/a"'s.
     for key in set(data1.keys()) - set(data2.keys()):

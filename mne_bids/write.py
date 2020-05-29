@@ -7,6 +7,7 @@
 #          Matt Sanderson <matt.sanderson@mq.edu.au>
 #
 # License: BSD (3-clause)
+import json
 import os
 import os.path as op
 from datetime import datetime, date, timedelta, timezone
@@ -278,7 +279,21 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False,
                                   'list. Please set overwrite to '
                                   'True.' % subject_id)
         # otherwise add the new data
+        _old_keys = data.keys()
         data = _combine(orig_data, data, 'participant_id')
+
+        # get the keys that were new
+        for key in set(orig_data.keys()) - set(_old_keys):
+            # add them back per participant id
+            for p_id, val in zip(data['participant_id'], data[key]):
+                if p_id in orig_data['participant_id']:
+                    # get the participant row from orig and new data
+                    orig_p_idx = orig_data['participant_id'].index(p_id)
+                    p_idx = data['participant_id'].index(p_id)
+
+                    # assign original value to new data
+                    orig_val = orig_data[key][orig_p_idx]
+                    data[key][p_idx] = orig_val
 
     # overwrite is forced to True as all issues with overwrite == False have
     # been handled by this point
@@ -309,6 +324,15 @@ def _participants_json(fname, overwrite=False, verbose=True):
                    'Levels': {'F': 'female', 'M': 'male'}}
     cols['hand'] = {'Description': 'Handedness of the participant',
                     'Levels': {'R': 'right', 'L': 'left', 'A': 'ambidextrous'}}
+
+    # make sure to append any JSON fields added by the user
+    # Note: mne-bids will overwrite age, sex and hand fields by default
+    if op.exists(fname):
+        with open(fname, 'r') as fin:
+            orig_cols = json.load(fin, object_pairs_hook=OrderedDict)
+        for key, val in orig_cols.items():
+            if key not in cols:
+                cols[key] = val
 
     _write_json(fname, cols, overwrite, verbose)
 
