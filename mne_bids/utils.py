@@ -8,6 +8,11 @@
 #
 # License: BSD (3-clause)
 import os
+<<<<<<< HEAD
+=======
+import os.path as op
+from pathlib import Path
+>>>>>>> Updating sidecar.
 import glob
 import json
 import shutil as sh
@@ -28,7 +33,64 @@ from mne.io.constants import FIFF
 from mne.time_frequency import psd_array_welch
 
 from mne_bids.config import BIDS_PATH_ENTITIES, reader
-from mne_bids.tsv_handler import _to_tsv, _tsv_to_str
+from mne_bids.tsv_handler import _to_tsv, _tsv_to_str, _from_tsv
+
+
+def update_scans_tsv(bids_root, subject=None, session=None, verbose=True):
+    """Update the scans tsv files inside bids root.
+
+    If there are extra rows in the tsv file
+    that are not present in the BIDs dataset, then it will
+    remove those rows.
+
+    Parameters
+    ----------
+    bids_root : str | pathlib.Path
+        Path to the root of the BIDS directory.
+    subject : str | optional
+    session :  str | optional
+    verbose : bool
+    """
+    if subject is None:
+        # get all subjects unless a specific subject is given
+        subjects = get_entity_vals(bids_root, entity_key='sub')
+    else:
+        subjects = [subject]
+
+    if session is None:
+        sessions = get_entity_vals(bids_root, entity_key='ses')
+    else:
+        sessions = [session]
+
+    # XXX: Improve w/ pybids in the future.
+    # XXX: If there are missing scans inside the tsv file, then update.
+    # loop through subject and sessions and update scans accordingly
+    for subject in subjects:
+        for session in sessions:
+            ses_path = op.join(bids_root, f'sub-{subject}', f'ses-{session}')
+            scans_fpath = _gen_bids_basename(
+                subject=subject, session=session, suffix='scans.tsv',
+                prefix=ses_path, on_invalid_er_task='continue')
+
+            # check existence of each file
+            scans_tsv = _from_tsv(scans_fpath)
+            new_scans_tsv = OrderedDict.fromkeys(scans_tsv.keys(), value=[])
+
+            fnames = scans_tsv['filename']
+            if verbose:
+                print("Found filenames: ",  fnames)
+
+            for fidx, fname in enumerate(fnames):
+                fpath = op.join(ses_path, fname)
+
+                if op.exists(fpath):
+                    for key, vals in scans_tsv.items():
+                        new_scans_tsv[key].append(vals[fidx])
+                else:
+                    if verbose:
+                        print("Removing filepath: ", fpath)
+            _to_tsv(new_scans_tsv, scans_fpath)
+>>>>>>> Updating sidecar.
 
 
 class BIDSPath(object):
@@ -1038,6 +1100,7 @@ def _scale_coord_to_meters(coord, unit):
         return coord
 
 
+<<<<<<< HEAD
 def _check_empty_room_basename(bids_path, on_invalid_er_session='raise',
                                on_invalid_er_task='raise'):
     if bids_path.task != 'noise':
@@ -1062,6 +1125,80 @@ def _check_empty_room_basename(bids_path, on_invalid_er_session='raise',
             logger.critical(msg)
         else:
             pass
+=======
+def  _gen_bids_basename(*, subject=None, session=None, task=None,
+                       acquisition=None, run=None, processing=None,
+                       recording=None, space=None, prefix=None, suffix=None,
+                       on_invalid_er_session='raise',
+                       on_invalid_er_task='raise'):
+    if on_invalid_er_session not in ['raise', 'warn', 'continue']:
+        msg = (f'on_invalid_er_session must be raise, warn, or continue, '
+               f'but received: {on_invalid_er_session}')
+        raise ValueError(msg)
+
+    if on_invalid_er_task not in ['raise', 'warn', 'continue']:
+        msg = (f'on_invalid_er_task must be raise, warn, or ignore, '
+               f'but received: {on_invalid_er_task}')
+        raise ValueError(msg)
+
+    order = OrderedDict([('sub', subject),
+                         ('ses', session),
+                         ('task', task),
+                         ('acq', acquisition),
+                         ('run', run),
+                         ('proc', processing),
+                         ('space', space),
+                         ('recording', recording)])
+
+    if order['run'] is not None and not isinstance(order['run'], str):
+        # Ensure that run is a string
+        order['run'] = '{:02}'.format(order['run'])
+
+    _check_types(order.values())
+
+    if (all(ii is None for ii in order.values()) and suffix is None and
+            prefix is None):
+        raise ValueError("At least one parameter must be given.")
+
+    if subject == 'emptyroom':
+        if task != 'noise':
+            msg = (f'task must be "noise" if subject is "emptyroom", but '
+                   f'received: {task}')
+            if on_invalid_er_task == 'raise':
+                raise ValueError(msg)
+            elif on_invalid_er_task == 'warn':
+                logger.critical(msg)
+            else:
+                pass
+        try:
+            datetime.strptime(session, '%Y%m%d')
+        except (ValueError, TypeError):
+            msg = (f'empty-room session should be a string of format '
+                   f'YYYYMMDD, but received: {session}')
+            if on_invalid_er_session == 'raise':
+                raise ValueError(msg)
+            elif on_invalid_er_session == 'warn':
+                msg = (f'{msg}. Will proceed anyway, but you should consider '
+                       f'fixing your dataset.')
+                logger.critical(msg)
+            else:
+                pass
+
+    basename = []
+    for key, val in order.items():
+        if val is not None:
+            _check_key_val(key, val)
+            basename.append('%s-%s' % (key, val))
+
+    if suffix is not None:
+        basename.append(suffix)
+
+    basename = '_'.join(basename)
+    if prefix is not None:
+        basename = op.join(prefix, basename)
+
+    return basename
+>>>>>>> Updating sidecar.
 
 
 def make_bids_basename(subject=None, session=None, task=None,

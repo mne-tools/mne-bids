@@ -29,8 +29,8 @@ from mne_bids.utils import (_check_types, print_dir_tree, _age_on_date,
                             _find_matching_sidecar, _parse_ext,
                             _get_ch_type_mapping, _parse_bids_filename,
                             _find_best_candidates, get_entity_vals,
-                            _path_to_str, get_kinds)
-
+                            _path_to_str, get_kinds, update_scans_tsv)
+from mne_bids.tsv_handler import _from_tsv, _to_tsv
 
 base_path = op.join(op.dirname(mne.__file__), 'io')
 subject_id = '01'
@@ -426,3 +426,21 @@ def test_bids_path(return_bids_test_dir):
     bids_path = make_bids_basename(subject='01', session='02',
                                    task='03', suffix='ieeg.edf')
     assert repr(bids_path) == 'BIDSPath(sub-01_ses-02_task-03_ieeg.edf)'
+
+
+def test_update_scans(return_bids_test_dir):
+    """Test update scans in a dir."""
+    # delete some data from the session
+    ses_path = op.join(return_bids_test_dir, f'sub-{subject_id}', f'ses-{session_id}')
+    for fpath in Path(ses_path).rglob(f'{bids_basename}*'):
+        os.remove(fpath)
+
+    scans_fpath = make_bids_basename(
+        subject=subject_id, session=session_id, suffix='scans.tsv',
+        prefix=ses_path)
+    scans_tsv = _from_tsv(scans_fpath)
+    assert any([bids_basename in fname for fname in scans_tsv['filename']])
+
+    update_scans_tsv(return_bids_test_dir, subject=subject_id, session=session_id)
+    scans_tsv = _from_tsv(scans_fpath)
+    assert all([bids_basename not in fname for fname in scans_tsv['filename']])
