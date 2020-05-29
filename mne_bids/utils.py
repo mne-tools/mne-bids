@@ -8,11 +8,8 @@
 #
 # License: BSD (3-clause)
 import os
-<<<<<<< HEAD
-=======
 import os.path as op
 from pathlib import Path
->>>>>>> Updating sidecar.
 import glob
 import json
 import shutil as sh
@@ -48,8 +45,12 @@ def update_scans_tsv(bids_root, subject=None, session=None, verbose=True):
     bids_root : str | pathlib.Path
         Path to the root of the BIDS directory.
     subject : str | optional
+        Subject label as in 'sub-<label>', for example: '01'.
+        Corresponds to "sub".
     session :  str | optional
+        Session label as in 'ses-<label'. Corresponds to "ses"
     verbose : bool
+        If verbose is True, this will print which files were removed.
     """
     if subject is None:
         # get all subjects unless a specific subject is given
@@ -78,7 +79,7 @@ def update_scans_tsv(bids_root, subject=None, session=None, verbose=True):
 
             fnames = scans_tsv['filename']
             if verbose:
-                print("Found filenames: ",  fnames)
+                print("Found filenames: ", fnames)
 
             for fidx, fname in enumerate(fnames):
                 fpath = op.join(ses_path, fname)
@@ -90,7 +91,6 @@ def update_scans_tsv(bids_root, subject=None, session=None, verbose=True):
                     if verbose:
                         print("Removing filepath: ", fpath)
             _to_tsv(new_scans_tsv, scans_fpath)
->>>>>>> Updating sidecar.
 
 
 class BIDSPath(object):
@@ -1100,7 +1100,6 @@ def _scale_coord_to_meters(coord, unit):
         return coord
 
 
-<<<<<<< HEAD
 def _check_empty_room_basename(bids_path, on_invalid_er_session='raise',
                                on_invalid_er_task='raise'):
     if bids_path.task != 'noise':
@@ -1125,8 +1124,9 @@ def _check_empty_room_basename(bids_path, on_invalid_er_session='raise',
             logger.critical(msg)
         else:
             pass
-=======
-def  _gen_bids_basename(*, subject=None, session=None, task=None,
+
+
+def _gen_bids_basename(*, subject=None, session=None, task=None,
                        acquisition=None, run=None, processing=None,
                        recording=None, space=None, prefix=None, suffix=None,
                        on_invalid_er_session='raise',
@@ -1198,7 +1198,6 @@ def  _gen_bids_basename(*, subject=None, session=None, task=None,
         basename = op.join(prefix, basename)
 
     return basename
->>>>>>> Updating sidecar.
 
 
 def make_bids_basename(subject=None, session=None, task=None,

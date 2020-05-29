@@ -61,6 +61,7 @@ Copyfiles
 =========
 
 :py:mod:`mne_bids.copyfiles`:
+=======
 
 .. automodule:: mne_bids.copyfiles
    :no-members:
