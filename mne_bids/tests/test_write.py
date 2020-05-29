@@ -44,7 +44,7 @@ from mne_bids import (write_raw_bids, read_raw_bids, make_bids_basename,
 from mne_bids.write import (_stamp_to_dt, _get_anonymization_daysback,
                             get_anonymization_daysback)
 from mne_bids.tsv_handler import _from_tsv, _to_tsv
-from mne_bids.utils import _find_matching_sidecar
+from mne_bids.utils import _find_matching_sidecar, _update_sidecar
 from mne_bids.pick import coil_type
 
 base_path = op.join(op.dirname(mne.__file__), 'io')
@@ -272,6 +272,36 @@ def test_fif(_bids_validate):
     participants_tsv = op.join(bids_root, 'participants.tsv')
     data = _from_tsv(participants_tsv)
     assert data['age'][data['participant_id'].index('sub-01')] == '9'
+
+    # check to make sure participant data is overwritten, but keeps the fields
+    data = _from_tsv(participants_tsv)
+    participant_ind = data['participant_id'].index(f'sub-{subject_id}')
+    # create a new test column in participants file tsv
+    data['subject_test_col1'] = ['n/a'] * len(data['participant_id'])
+    data['subject_test_col1'][participant_ind] = 'S'
+    _to_tsv(data, participants_tsv)
+    _old_data = data
+    # crate corresponding json entry
+    participants_json_fpath = op.join(bids_root, 'participants.json')
+    json_field = {
+        'Description': 'trial-outcome',
+        'Levels': {
+            'S': 'success',
+            'F': 'failure'
+        }
+    }
+    _update_sidecar(participants_json_fpath, 'subject_test_col1', json_field)
+    # bids root should still be valid because json reflects changes in tsv
+    _bids_validate(bids_root)
+    write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
+    data = _from_tsv(participants_tsv)
+    with open(participants_json_fpath, 'r') as fin:
+        participants_json = json.load(fin)
+    print(data)
+    print(_old_data)
+    assert data['age'][data['participant_id'].index('sub-01')] == '9'
+    assert data['subject_test_col1'][participant_ind] == 'S'
+    assert 'subject_test_col1' in participants_json
 
     # try and write preloaded data
     raw = mne.io.read_raw_fif(raw_fname, preload=True)
