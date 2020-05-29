@@ -38,6 +38,7 @@ Bug
 - Do not change an events array passed to :func:`write_raw_bids` via the ``events_data`` keyword argument, by `Alexandre Gramfort`_ (`#402 <https://github.com/mne-tools/mne-bids/pull/402>`_)
 - fix :func:`mne_bids.read_raw_bids` to correctly scale coordinate to meters in electrodes.tsv, and also read in possible iEEG coordinate frames via the 'space' BIDs-entity by `Adam Li`_ (`#390 <https://github.com/mne-tools/mne-bids/pull/390>`_)
 - fix coordystem reading in :func:`mne_bids.read_raw_bids` for cases where the ``acq`` is undefined, by `Stefan Appelhoff`_ (`#440 <https://github.com/mne-tools/mne-bids/pull/440>`_)
+- allow participants tsv and json files to persist data when calling :func:`write_raw_bids` by `Adam Li`_ (`#442 <https://github.com/mne-tools/mne-bids/pull/442>`_)
 
 API
 ~~~
