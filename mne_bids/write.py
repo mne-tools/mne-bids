@@ -894,10 +894,15 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     overwrite : bool
         Whether to overwrite existing files or data in files.
         Defaults to False.
+
         If overwrite is True, any existing files with the same BIDS parameters
         will be overwritten with the exception of the `participants.tsv` and
         `scans.tsv` files. For these files, parts of pre-existing data that
-        match the current data will be replaced.
+        match the current data will be replaced. For the participants file,
+        specifically, age, sex and hand fields will be overwritten, while
+        any added fields in the `participants.json` and `participants.tsv`
+        by a user will be kept.
+
         If overwrite is False, no existing data will be overwritten or
         replaced.
     verbose : bool
