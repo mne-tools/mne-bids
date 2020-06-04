@@ -282,8 +282,13 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False,
         _old_keys = data.keys()
         data = _combine(orig_data, data, 'participant_id')
 
-        # get the keys that were new
-        for key in set(orig_data.keys()) - set(_old_keys):
+        # loop through the keys in the original data to
+        # keep the original order, and add back
+        # the data in participants files that user added
+        for key in orig_data.keys():
+            # skip this key if mne-bids handles it
+            if key in _old_keys:
+                continue
             # add them back per participant id
             for p_id, val in zip(data['participant_id'], data[key]):
                 if p_id in orig_data['participant_id']:
