@@ -297,18 +297,18 @@ Print the directory tree
  .. code-block:: none
 
     |MNE-sample-data-bids/
-    |--- participants.tsv
     |--- participants.json
+    |--- participants.tsv
     |--- dataset_description.json
     |--- sub-01/
     |------ ses-01/
     |--------- sub-01_ses-01_scans.tsv
     |--------- meg/
+    |------------ sub-01_ses-01_task-audiovisual_run-01_meg.json
     |------------ sub-01_ses-01_task-audiovisual_run-01_events.tsv
-    |------------ sub-01_ses-01_coordsystem.json
     |------------ sub-01_ses-01_task-audiovisual_run-01_meg.fif
     |------------ sub-01_ses-01_task-audiovisual_run-01_channels.tsv
-    |------------ sub-01_ses-01_task-audiovisual_run-01_meg.json
+    |------------ sub-01_ses-01_coordsystem.json
 
 
 
@@ -422,18 +422,18 @@ Let's have another look at our BIDS directory
  .. code-block:: none
 
     |MNE-sample-data-bids/
-    |--- participants.tsv
     |--- participants.json
+    |--- participants.tsv
     |--- dataset_description.json
     |--- sub-01/
     |------ ses-01/
     |--------- sub-01_ses-01_scans.tsv
     |--------- meg/
+    |------------ sub-01_ses-01_task-audiovisual_run-01_meg.json
     |------------ sub-01_ses-01_task-audiovisual_run-01_events.tsv
-    |------------ sub-01_ses-01_coordsystem.json
     |------------ sub-01_ses-01_task-audiovisual_run-01_meg.fif
     |------------ sub-01_ses-01_task-audiovisual_run-01_channels.tsv
-    |------------ sub-01_ses-01_task-audiovisual_run-01_meg.json
+    |------------ sub-01_ses-01_coordsystem.json
     |--------- anat/
     |------------ sub-01_ses-01_T1w.json
     |------------ sub-01_ses-01_T1w.nii.gz
@@ -607,7 +607,7 @@ We can deface the MRI for anonymization
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  16.276 seconds)
+   **Total running time of the script:** ( 0 minutes  12.051 seconds)
 
 
 .. _sphx_glr_download_auto_examples_convert_mri_and_trans.py:
