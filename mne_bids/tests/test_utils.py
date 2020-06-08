@@ -29,7 +29,7 @@ from mne_bids.utils import (_check_types, print_dir_tree, _age_on_date,
                             _find_matching_sidecar, _parse_ext,
                             _get_ch_type_mapping, _parse_bids_filename,
                             _find_best_candidates, get_entity_vals,
-                            _path_to_str, get_kinds)
+                            _path_to_str, get_kinds, update_bids_basename)
 
 
 base_path = op.join(op.dirname(mne.__file__), 'io')
@@ -370,3 +370,14 @@ def test_find_matching_sidecar(return_bids_test_dir):
     # Find nothing but receive None, because we set `allow_fail` to True
     with pytest.warns(RuntimeWarning, match='Did not find any'):
         _find_matching_sidecar(bids_basename, bids_root, 'foo.bogus', True)
+
+
+def test_update_bids_basename():
+    """Test updating a bids basename."""
+    # if nothing changes, then the new basename should be the same
+    new_bids_basename = update_bids_basename(bids_basename)
+    assert bids_basename == new_bids_basename
+
+    new_bids_basename = update_bids_basename(bids_basename, subject='test')
+    params = _parse_bids_filename(new_bids_basename, verbose=False)
+    assert params['sub'] == 'test'
