@@ -286,7 +286,6 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False,
         # order, and insert the data that user has added to their
         # participants files.
         for key in orig_data.keys():
-            # skip this key if mne-bids handles it
             if key in _old_keys:
                 continue
             # add them back per participant id
