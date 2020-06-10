@@ -4,7 +4,7 @@ from collections import OrderedDict
 from copy import deepcopy
 
 
-def _combine(data1, data2, drop_column=None):
+def _combine_rows(data1, data2, drop_column=None):
     """Add two OrderedDict's together and optionally drop repeated data.
 
     Parameters
@@ -40,6 +40,51 @@ def _combine(data1, data2, drop_column=None):
     _, idxs = np.unique(data[drop_column][::-1], return_index=True)
     for key in data:
         data[key] = [data[key][n_rows - 1 - idx] for idx in idxs]
+
+    return data
+
+
+def _combine_cols(data1, data2, key_order, col_name):
+    """Add two OrderedDict's together and optionally drop repeated data.
+
+    Parameters
+    ----------
+    data1 : collections.OrderedDict
+        Original OrderedDict.
+    data2 : collections.OrderedDict
+        New OrderedDict to be added to the original.
+    key_order : list
+        List of original dictionary keys to maintain the
+        original ordering.
+    col_name : str
+        Name of the column to index over (e.g. `participant_id`
+        in participants.tsv file).
+
+    Returns
+    -------
+    data : collections.OrderedDict
+        The new combined data.
+
+    """
+    data = deepcopy(data2)
+
+    # keep the original order, and add back
+    # the data in participants files that user added
+    for key in data1.keys():
+        # skip this key if mne-bids handles it
+        if key in key_order:
+            continue
+
+        # add them back per participant id
+        for p_id, val in zip(data2[col_name], data2[key]):
+            if p_id in data1[col_name]:
+                # get the participant row from orig and new data
+                orig_p_idx = data1[col_name].index(p_id)
+                p_idx = data2[col_name].index(p_id)
+
+                # assign original value to new data
+                orig_val = data1[key][orig_p_idx]
+                data[key][p_idx] = orig_val
 
     return data
 

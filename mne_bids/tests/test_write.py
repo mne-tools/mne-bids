@@ -275,10 +275,10 @@ def test_fif(_bids_validate):
 
     # check to make sure participant data is overwritten, but keeps the fields
     data = _from_tsv(participants_tsv)
-    participant_ind = data['participant_id'].index(f'sub-{subject_id}')
+    participant_idx = data['participant_id'].index(f'sub-{subject_id}')
     # create a new test column in participants file tsv
     data['subject_test_col1'] = ['n/a'] * len(data['participant_id'])
-    data['subject_test_col1'][participant_ind] = 'S'
+    data['subject_test_col1'][participant_idx] = 'S'
     data['test_col2'] = ['n/a'] * len(data['participant_id'])
     orig_key_order = list(data.keys())
     _to_tsv(data, participants_tsv)
@@ -300,7 +300,20 @@ def test_fif(_bids_validate):
         participants_json = json.load(fin)
     assert 'subject_test_col1' in participants_json
     assert data['age'][data['participant_id'].index('sub-01')] == '9'
-    assert data['subject_test_col1'][participant_ind] == 'S'
+    assert data['subject_test_col1'][participant_idx] == 'S'
+    # in addition assert the original ordering of the new overwritten file
+    assert list(data.keys()) == orig_key_order
+
+    # if overwrite is False, then nothing should change from the above
+    with pytest.raises(FileExistsError, match='already exists'):
+        raw.info['subject_info'] = None
+        write_raw_bids(raw, bids_basename, bids_root, overwrite=False)
+    data = _from_tsv(participants_tsv)
+    with open(participants_json_fpath, 'r') as fin:
+        participants_json = json.load(fin)
+    assert 'subject_test_col1' in participants_json
+    assert data['age'][data['participant_id'].index('sub-01')] == '9'
+    assert data['subject_test_col1'][participant_idx] == 'S'
     # in addition assert the original ordering of the new overwritten file
     assert list(data.keys()) == orig_key_order
 

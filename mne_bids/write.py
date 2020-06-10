@@ -42,7 +42,8 @@ from mne_bids.utils import (_write_json, _write_tsv, _read_events, _mkdir_p,
 from mne_bids.copyfiles import (copyfile_brainvision, copyfile_eeglab,
                                 copyfile_ctf, copyfile_bti, copyfile_kit)
 from mne_bids.read import reader
-from mne_bids.tsv_handler import _from_tsv, _combine, _drop, _contains_row
+from mne_bids.tsv_handler import (_from_tsv, _drop, _contains_row,
+                                  _combine_rows, _combine_cols)
 
 from mne_bids.config import (ORIENTATION, UNITS, MANUFACTURERS,
                              IGNORED_CHANNELS, ALLOWED_EXTENSIONS,
@@ -280,25 +281,11 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False,
                                   'True.' % subject_id)
         # otherwise add the new data
         _old_keys = data.keys()
-        data = _combine(orig_data, data, 'participant_id')
+        data = _combine_rows(orig_data, data, 'participant_id')
 
         # loop through the keys in the original data to
-        # keep the original order, and add back
-        # the data in participants files that user added
-        for key in orig_data.keys():
-            # skip this key if mne-bids handles it
-            if key in _old_keys:
-                continue
-            # add them back per participant id
-            for p_id, val in zip(data['participant_id'], data[key]):
-                if p_id in orig_data['participant_id']:
-                    # get the participant row from orig and new data
-                    orig_p_idx = orig_data['participant_id'].index(p_id)
-                    p_idx = data['participant_id'].index(p_id)
-
-                    # assign original value to new data
-                    orig_val = orig_data[key][orig_p_idx]
-                    data[key][p_idx] = orig_val
+        data = _combine_cols(orig_data, data, key_order=_old_keys,
+                             col_name='participant_id')
 
     # overwrite is forced to True as all issues with overwrite == False have
     # been handled by this point
@@ -331,7 +318,8 @@ def _participants_json(fname, overwrite=False, verbose=True):
                     'Levels': {'R': 'right', 'L': 'left', 'A': 'ambidextrous'}}
 
     # make sure to append any JSON fields added by the user
-    # Note: mne-bids will overwrite age, sex and hand fields by default
+    # Note: mne-bids will overwrite age, sex and hand fields
+    # if `overwrite` is True
     if op.exists(fname):
         with open(fname, 'r') as fin:
             orig_cols = json.load(fin, object_pairs_hook=OrderedDict)
@@ -383,7 +371,7 @@ def _scans_tsv(raw, raw_fname, fname, overwrite=False, verbose=True):
             raise FileExistsError('"%s" already exists in the scans list. '  # noqa: E501 F821
                                   'Please set overwrite to True.' % raw_fname)
         # otherwise add the new data
-        data = _combine(orig_data, data, 'filename')
+        data = _combine_rows(orig_data, data, 'filename')
 
     # overwrite is forced to True as all issues with overwrite == False have
     # been handled by this point
