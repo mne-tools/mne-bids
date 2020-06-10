@@ -38,7 +38,7 @@ from mne_bids.utils import (_write_json, _write_tsv, _read_events, _mkdir_p,
                             _path_to_str, _parse_ext,
                             _get_ch_type_mapping, make_bids_folders,
                             _estimate_line_freq, make_bids_basename,
-                            _gen_bids_basename)
+                            _gen_bids_basename, BIDSPath)
 from mne_bids.copyfiles import (copyfile_brainvision, copyfile_eeglab,
                                 copyfile_ctf, copyfile_bti, copyfile_kit)
 from mne_bids.read import reader
@@ -844,7 +844,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     raw : instance of mne.io.Raw
         The raw data. It must be an instance of mne.Raw. The data should not be
         loaded from disk, i.e., raw.preload must be False.
-    bids_basename : str
+    bids_basename : str | BIDSPath
         The base filename of the BIDS compatible files. Typically, this can be
         generated using make_bids_basename.
         Example: `sub-01_ses-01_task-testing_acq-01_run-01`.
@@ -965,6 +965,10 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
                        "raw.times should not have changed since reading"
                        " in from the file. It may have been cropped.")
 
+    # obtain the string representation of the BIDS Path
+    if isinstance(bids_basename, BIDSPath):
+        bids_basename = bids_basename.as_str()
+
     params = _parse_bids_filename(bids_basename, verbose)
     subject_id, session_id = params['sub'], params['ses']
     acquisition, task, run = params['acq'], params['task'], params['run']
@@ -1009,17 +1013,17 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     # "invalid" basename for an emptyroom subject.
     on_invalid_er_task = 'continue'
 
-    scans_fname = _gen_bids_basename(
-        subject=subject_id, session=session_id, suffix='scans.tsv',
-        prefix=ses_path, on_invalid_er_task=on_invalid_er_task)
-    coordsystem_fname = _gen_bids_basename(
-        subject=subject_id, session=session_id, acquisition=acquisition,
-        suffix='coordsystem.json', prefix=data_path,
-        on_invalid_er_task=on_invalid_er_task)
-    electrodes_fname = _gen_bids_basename(
-        subject=subject_id, session=session_id, acquisition=acquisition,
-        suffix='electrodes.tsv', prefix=data_path,
-        on_invalid_er_task=on_invalid_er_task)
+    scans_fname = _gen_bids_basename(sub=subject_id, ses=session_id,
+                                     prefix=ses_path, suffix='scans.tsv',
+                                     on_invalid_er_task=on_invalid_er_task)
+    coordsystem_fname = _gen_bids_basename(sub=subject_id, ses=session_id,
+                                           acq=acquisition, prefix=data_path,
+                                           suffix='coordsystem.json',
+                                           on_invalid_er_task=on_invalid_er_task)  # noqa: E501
+    electrodes_fname = _gen_bids_basename(sub=subject_id, ses=session_id,
+                                          acq=acquisition, prefix=data_path,
+                                          suffix='electrodes.tsv',
+                                          on_invalid_er_task=on_invalid_er_task)  # noqa: E501
 
     # For the remaining files, we can use make_bids_basename() as usual.
     participants_tsv_fname = make_bids_basename(prefix=bids_root,
@@ -1275,7 +1279,7 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
     # Now give the NIfTI file a BIDS name and write it to the BIDS location
     t1w_basename = make_bids_basename(subject=subject, session=session,
                                       acquisition=acquisition, prefix=anat_dir,
-                                      suffix='T1w.nii.gz')
+                                      suffix='T1w.nii.gz').as_str()
 
     # Check if we have necessary conditions for writing a sidecar JSON
     if trans is not None or landmarks is not None:

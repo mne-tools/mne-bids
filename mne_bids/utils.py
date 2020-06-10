@@ -16,6 +16,7 @@ import re
 from datetime import datetime
 from collections import defaultdict, OrderedDict
 from pathlib import Path
+from copy import deepcopy
 
 import numpy as np
 from mne import read_events, find_events, events_from_annotations
@@ -27,7 +28,6 @@ from mne.io.constants import FIFF
 from mne.time_frequency import psd_array_welch
 
 from mne_bids.tsv_handler import _to_tsv, _tsv_to_str
-
 
 
 class BIDSPath(dict):
@@ -65,50 +65,90 @@ class BIDSPath(dict):
         in which you wish to create a file with this name.
     suffix : str | None
         The suffix for the filename to be created. E.g., 'audio.wav'.
+
     Returns
     -------
     filename : str
         The BIDS filename you wish to create.
+
     Examples
     --------
-    >>> print(make_bids_basename(subject='test', session='two', task='mytask', suffix='data.csv')) # noqa: E501
+    >>> bids_basename = make_bids_basename(subject='test', session='two', task='mytask', suffix='data.csv')  # noqa: E501
+    >>> print(bids_basename)
     sub-test_ses-two_task-mytask_data.csv
+    >>> print(bids_basename.__repr__())
+    BIDSPath (sub-test_ses-two_task-mytask_data.csv)
     """
+
+    def __init__(self, *args, **kwargs):
+        super(BIDSPath, self).__init__(*args, **kwargs)
+        self.as_str()
+
     def __setitem__(self, key, value):
+        """Set item as a dictionary, and perform validation checks."""
         if key not in ('sub', 'ses', 'task', 'acq',
                        'proc', 'acq', 'run', 'rec',
                        'space', 'suffix', 'prefix'):
             raise ValueError('Key must be one of blah, got %s' % key)
+
         return dict.__setitem__(self, key, value)
 
-    def _get_name(self):
-        keys = ('sub', 'ses', 'task', 'acq', 'proc', 'acq',
-                'run', 'rec', 'space', 'suffix', 'prefix')
-        filename = []
-        for key in keys[:-2]:
-            if key in self:
-                filename.append('%s-%s' % (key, self[key]))
-        filename = '_'.join(filename)
-
-        if 'suffix' in self:
-            filename += '_' + self['suffix']
-
-        if 'data_path' in self:
-            filename = op.join(self['prefix'], filename)
-        return filename
-
-    def as_str(self):
-        """Return the string representation of the bids path."""
-        return self._get_name()
-
     def __str__(self):
-        """Return the string representation of the path, suitable for
-        passing to system calls."""
+        """Return the string representation of the path."""
         return self._get_name()
 
     def __repr__(self):
         """Representation in the style of `pathlib.Path`."""
         return "{}({!r})".format(self.__class__.__name__, self._get_name())
+
+    def __add__(self, value):
+        """Return self+value."""
+        return self.as_str() + value
+
+    def __fspath__(self):
+        """Return the string representation for any fs functions."""
+        return str(self)
+
+    def __bytes__(self):
+        """Return the bytes representation of the path.
+
+        This is only recommended to use under Unix.
+        """
+        return os.fsencode(str(self))
+
+    def __eq__(self, other):
+        """Compare str representations."""
+        return self.as_str() == str(other)
+
+    def startswith(self, prefix, start=None, end=None):
+        """Return True/False for the str startswith."""
+        return self.as_str().startswith(prefix, start=start, end=end)
+
+    def endswith(self, suffix, start=None, end=None):
+        """Return True/False for the str endswith."""
+        return self.as_str().lower().endswith(suffix, start=start, end=end)
+
+    def copy(self):
+        """Copy the instance.
+
+        Returns
+        -------
+        info : instance of Info
+            The copied info.
+        """
+        return deepcopy(self)
+
+    def replace(self, old, new, *args) -> str:
+        """Provide replace."""
+        return self.as_str().replace(old, new, *args)
+
+    def _get_name(self):
+        basename = _gen_bids_basename(**self)
+        return basename
+
+    def as_str(self) -> str:
+        """Return the string representation of the bids path."""
+        return self._get_name()
 
 
 def get_kinds(bids_root):
@@ -881,10 +921,10 @@ def _scale_coord_to_meters(coord, unit):
         return coord
 
 
-def _gen_bids_basename(*, subject=None, session=None, task=None,
-                       acquisition=None, run=None, processing=None,
-                       recording=None, space=None, prefix=None, suffix=None,
-                       on_invalid_er_session='raise',
+def _gen_bids_basename(*, sub=None, ses=None, task=None,
+                       acq=None, run=None, proc=None,
+                       rec=None, space=None, prefix=None,
+                       suffix=None, on_invalid_er_session='raise',
                        on_invalid_er_task='raise'):
     if on_invalid_er_session not in ['raise', 'warn', 'continue']:
         msg = (f'on_invalid_er_session must be raise, warn, or continue, '
@@ -896,14 +936,14 @@ def _gen_bids_basename(*, subject=None, session=None, task=None,
                f'but received: {on_invalid_er_task}')
         raise ValueError(msg)
 
-    order = OrderedDict([('sub', subject),
-                         ('ses', session),
+    order = OrderedDict([('sub', sub),
+                         ('ses', ses),
                          ('task', task),
-                         ('acq', acquisition),
+                         ('acq', acq),
                          ('run', run),
-                         ('proc', processing),
+                         ('proc', proc),
                          ('space', space),
-                         ('recording', recording)])
+                         ('recording', rec)])
 
     if order['run'] is not None and not isinstance(order['run'], str):
         # Ensure that run is a string
@@ -915,7 +955,7 @@ def _gen_bids_basename(*, subject=None, session=None, task=None,
             prefix is None):
         raise ValueError("At least one parameter must be given.")
 
-    if subject == 'emptyroom':
+    if sub == 'emptyroom':
         if task != 'noise':
             msg = (f'task must be "noise" if subject is "emptyroom", but '
                    f'received: {task}')
@@ -926,10 +966,10 @@ def _gen_bids_basename(*, subject=None, session=None, task=None,
             else:
                 pass
         try:
-            datetime.strptime(session, '%Y%m%d')
+            datetime.strptime(ses, '%Y%m%d')
         except (ValueError, TypeError):
             msg = (f'empty-room session should be a string of format '
-                   f'YYYYMMDD, but received: {session}')
+                   f'YYYYMMDD, but received: {ses}')
             if on_invalid_er_session == 'raise':
                 raise ValueError(msg)
             elif on_invalid_er_session == 'warn':
@@ -957,8 +997,8 @@ def _gen_bids_basename(*, subject=None, session=None, task=None,
 
 def make_bids_basename(subject=None, session=None, task=None,
                        acquisition=None, run=None, processing=None,
-                       recording=None, space=None, prefix=None, suffix=None,
-                       as_str=True):
+                       recording=None, space=None,
+                       prefix=None, suffix=None) -> BIDSPath:
     """Create a partial/full BIDS basename from its component parts.
 
     BIDS filename prefixes have one or more pieces of metadata in them. They
@@ -998,7 +1038,7 @@ def make_bids_basename(subject=None, session=None, task=None,
 
     Returns
     -------
-    basename : str
+    basename : BIDSPath
         The BIDS basename you wish to create.
 
     Examples
@@ -1006,97 +1046,17 @@ def make_bids_basename(subject=None, session=None, task=None,
     >>> print(make_bids_basename(subject='test', session='two', task='mytask', suffix='data.csv')) # noqa: E501
     sub-test_ses-two_task-mytask_data.csv
     """
-    kwargs = dict(subject=subject, session=session, task=task,
-                  acquisition=acquisition, run=run, processing=processing,
-                  recording=recording, space=space, prefix=prefix,
+    # kwargs = dict(subject=subject, session=session, task=task,
+    #               acquisition=acquisition, run=run, processing=processing,
+    #               recording=recording, space=space, prefix=prefix,
+    #               suffix=suffix)
+
+    # if as_str:
+    #     basename = _gen_bids_basename(**kwargs)
+    # else:
+    kwargs = dict(sub=subject, ses=session, task=task,
+                  acq=acquisition, run=run, proc=processing,
+                  rec=recording, space=space, prefix=prefix,
                   suffix=suffix)
-
-    if as_str:
-        basename = _gen_bids_basename(**kwargs)
-    else:
-        kwargs = dict(sub=subject, ses=session, task=task,
-                      acq=acquisition, run=run, proc=processing,
-                      rec=recording, space=space, prefix=prefix,
-                      suffix=suffix)
-        basename = BIDSPath(**kwargs)
+    basename = BIDSPath(**kwargs)
     return basename
-
-def update_bids_basename(bids_basename, subject=None, session=None, task=None,
-                         acquisition=None, run=None, processing=None,
-                         recording=None, space=None, prefix=None, suffix=None):
-    """Update a partial/full BIDS basename from its component parts.
-
-    BIDS filename prefixes have one or more pieces of metadata in them. They
-    must follow a particular order, which is followed by this function. This
-    will generate the *prefix* for a BIDS filename that can be used with many
-    subsequent files, or you may also give a suffix that will then complete
-    the file name.
-
-    Note that all parameters are not applicable to each kind of data. For
-    example, electrode location TSV files do not need a task field.
-
-    Parameters
-    ----------
-    bids_basename : str
-        The BIDS basename you wish to update.
-    subject : str | None
-        The subject ID. Corresponds to "sub".
-    session : str | None
-        The session identifier. Corresponds to "ses". Must be a date in
-        format "YYYYMMDD" if subject is "emptyroom".
-    task : str | None
-        The task identifier. Corresponds to "task". Must be "noise" if
-        subject is "emptyroom".
-    acquisition: str | None
-        The acquisition parameters. Corresponds to "acq".
-    run : int | None
-        The run number. Corresponds to "run".
-    processing : str | None
-        The processing label. Corresponds to "proc".
-    recording : str | None
-        The recording name. Corresponds to "recording".
-    space : str | None
-        The coordinate space for an anatomical file. Corresponds to "space".
-    prefix : str | None
-        The prefix for the filename to be created. E.g., a path to the folder
-        in which you wish to create a file with this name.
-    suffix : str | None
-        The suffix for the filename to be created. E.g., 'audio.wav'.
-
-    Returns
-    -------
-    new_basename : str
-        The BIDS basename you wish to create.
-
-    Examples
-    --------
-    >>> bids_basename = make_bids_basename(subject='test', session='two', task='mytask', suffix='data.csv') # noqa: E501
-    >>> print(bids_basename)
-    sub-test_ses-two_task-mytask_data.csv
-    >>> bids_basename = update_bids_basename(bids_basename, subject='new')
-    >>> print(bids_basename)
-    sub-new_ses-two_task-mytask_data.csv
-    """
-    # obtain the prefix
-    prefix = op.basename(bids_basename)
-
-    # parse the bids entities of the basename
-    params = _parse_bids_filename(bids_basename, verbose=False)
-
-    # obtain the suffix
-    kwargs = dict(subject=params['sub'], session=params['ses'], task=params['task'],
-                  acquisition=params['acq'], run=params['run'], processing=params['proc'],
-                  recording=params['recording'], space=params['space'], prefix=prefix)
-    basename = _gen_bids_basename(**kwargs)
-    suffix = bids_basename.split(basename)[-1]
-    kwargs['suffix'] = suffix
-
-    # create new basename based on input
-    entities = ['subject', 'session', 'task', 'acquisition', 'task', 'run', 'processing',
-                'recording', 'space', 'prefix', 'suffix']
-    new_kwargs = dict()
-    for entity in entities:
-        new_kwargs[entity] = eval(entity) if eval(entity) else kwargs[entity]
-
-    new_basename = _gen_bids_basename(**kwargs)
-    return new_basename

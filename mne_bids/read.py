@@ -585,20 +585,16 @@ def get_matched_empty_room(bids_basename, bids_root):
         params = _parse_bids_filename(er_fname, verbose=False)
         er_meas_date = None
 
-        er_basename = _gen_bids_basename(
-            subject='emptyroom',
-            session=params.get('ses', None),
-            task=params.get('task', None),
-            acquisition=params.get('acq', None),
-            run=params.get('run', None),
-            processing=params.get('proc', None),
-            recording=params.get('recording', None),
-            space=params.get('space', None),
-            # BIDS specification does not enforce use of ses-YYYYMMDD and
-            # task-emptyroom entities.
-            on_invalid_er_session='continue',
-            on_invalid_er_task='continue'
-        )
+        er_basename = _gen_bids_basename(sub='emptyroom',
+                                         ses=params.get('ses', None),
+                                         task=params.get('task', None),
+                                         acq=params.get('acq', None),
+                                         run=params.get('run', None),
+                                         proc=params.get('proc', None),
+                                         rec=params.get('recording', None),
+                                         space=params.get('space', None),
+                                         on_invalid_er_session='continue',
+                                         on_invalid_er_task='continue')
 
         # Try to extract date from filename.
         if params['ses'] is not None:
