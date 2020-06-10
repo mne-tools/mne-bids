@@ -372,12 +372,12 @@ def test_find_matching_sidecar(return_bids_test_dir):
         _find_matching_sidecar(bids_basename, bids_root, 'foo.bogus', True)
 
 
-def test_update_bids_basename():
-    """Test updating a bids basename."""
-    # if nothing changes, then the new basename should be the same
-    new_bids_basename = update_bids_basename(bids_basename)
-    assert bids_basename == new_bids_basename
-
-    new_bids_basename = update_bids_basename(bids_basename, subject='test')
-    params = _parse_bids_filename(new_bids_basename, verbose=False)
-    assert params['sub'] == 'test'
+# def test_update_bids_basename():
+#     """Test updating a bids basename."""
+#     # if nothing changes, then the new basename should be the same
+#     new_bids_basename = update_bids_basename(bids_basename)
+#     assert bids_basename == new_bids_basename
+#
+#     new_bids_basename = update_bids_basename(bids_basename, subject='test')
+#     params = _parse_bids_filename(new_bids_basename, verbose=False)
+#     assert params['sub'] == 'test'
