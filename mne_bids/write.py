@@ -1074,11 +1074,11 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
         if kind == 'meg' and ext != '.fif':
             if verbose:
                 warn('Converting to FIF for anonymization')
-            bids_fname = bids_fname.replace(ext, '.fif')
+            bids_fname = str(bids_fname).replace(ext, '.fif')
         elif kind in ['eeg', 'ieeg']:
             if verbose:
                 warn('Converting to BV for anonymization')
-            bids_fname = bids_fname.replace(ext, '.vhdr')
+            bids_fname = str(bids_fname).replace(ext, '.vhdr')
 
     # Read in Raw object and extract metadata from Raw object if needed
     orient = ORIENTATION.get(ext, 'n/a')
