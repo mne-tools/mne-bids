@@ -80,23 +80,35 @@ class BIDSPath(object):
     BIDSPath (sub-test_ses-two_task-mytask_data.csv)
     """
 
-    def __init__(self, sub=None, ses=None, task=None,
-                 acq=None, run=None, proc=None,
-                 rec=None, space=None,
-                 prefix=None, suffix=None):
-        self.sub = sub
-        self.ses = ses
+    def __init__(self, subject=None, session=None,
+                 task=None, acquisition=None, run=None, processing=None,
+                 recording=None, space=None, prefix=None, suffix=None,
+                 **kwargs):
+        # allows shortened aliases for some entity values
+        if subject is None:
+            subject = kwargs.get('sub', None)
+        if session is None:
+            session = kwargs.get('ses', None)
+        if acquisition is None:
+            acquisition = kwargs.get('acq', None)
+        if processing is None:
+            processing = kwargs.get('proc', None)
+        if recording is None:
+            recording = kwargs.get('rec', None)
+
+        self.sub = subject
+        self.ses = session
         self.task = task
-        self.acq = acq
+        self.acq = acquisition
         self.run = run
-        self.proc = proc
-        self.rec = rec
+        self.proc = processing
+        self.rec = recording
         self.space = space
         self.prefix = prefix
         self.suffix = suffix
 
         # run string representation to check validity of arguments
-        self._get_name()
+        str(self)
 
     @property
     def entities(self):
@@ -122,7 +134,8 @@ class BIDSPath(object):
 
     def __str__(self):
         """Return the string representation of the path."""
-        return self._get_name()
+        basename = _gen_bids_basename(**self.entities)
+        return basename
 
     def __repr__(self):
         """Representation in the style of `pathlib.Path`."""
@@ -143,14 +156,6 @@ class BIDSPath(object):
         """Compare str representations."""
         return str(self) == str(other)
 
-    def startswith(self, prefix, start=None, end=None):
-        """Return True/False for the str startswith."""
-        return str(self).startswith(prefix, start=start, end=end)
-
-    def endswith(self, suffix, start=None, end=None):
-        """Return True/False for the str endswith."""
-        return str(self).endswith(suffix, start=start, end=end)
-
     def copy(self):
         """Copy the instance.
 
@@ -160,10 +165,6 @@ class BIDSPath(object):
             The copied bidspath.
         """
         return deepcopy(self)
-
-    def _get_name(self):
-        basename = _gen_bids_basename(**self.entities)
-        return basename
 
 
 def get_kinds(bids_root):

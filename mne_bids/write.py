@@ -965,16 +965,18 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
                        "raw.times should not have changed since reading"
                        " in from the file. It may have been cropped.")
 
-    # obtain the string representation of the BIDS Path
-    if isinstance(bids_basename, BIDSPath):
-        bids_basename = str(bids_basename)
+    # convert to BIDS Path
+    if isinstance(bids_basename, str):
+        params = _parse_bids_filename(bids_basename, verbose)
+        bids_basename = BIDSPath(**params)
 
     params = _parse_bids_filename(bids_basename, verbose)
     subject_id, session_id = params['sub'], params['ses']
     acquisition, task, run = params['acq'], params['task'], params['run']
     kind = _handle_kind(raw)
 
-    bids_fname = bids_basename + '_%s%s' % (kind, ext)
+    bids_fname = bids_basename.copy()
+    bids_fname.suffix = f'{kind}{ext}'
 
     # check whether the info provided indicates that the data is emptyroom
     # data
@@ -1014,6 +1016,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     scans_fname = _gen_bids_basename(sub=subject_id, ses=session_id,
                                      prefix=ses_path, suffix='scans.tsv',
                                      on_invalid_er_task=on_invalid_er_task)
+
     coordsystem_fname = _gen_bids_basename(
         sub=subject_id, ses=session_id,
         acq=acquisition, prefix=data_path,
@@ -1028,18 +1031,17 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     # For the remaining files, we can use make_bids_basename() as usual.
     participants_tsv_fname = make_bids_basename(prefix=bids_root,
                                                 suffix='participants.tsv')
-    participants_json_fname = make_bids_basename(prefix=bids_root,
-                                                 suffix='participants.json')
-    sidecar_fname = make_bids_basename(
-        subject=subject_id, session=session_id, task=task, run=run,
-        acquisition=acquisition, suffix='%s.json' % kind, prefix=data_path)
-    events_fname = make_bids_basename(
-        subject=subject_id, session=session_id, task=task,
-        acquisition=acquisition, run=run, suffix='events.tsv',
-        prefix=data_path)
-    channels_fname = make_bids_basename(
-        subject=subject_id, session=session_id, task=task, run=run,
-        acquisition=acquisition, suffix='channels.tsv', prefix=data_path)
+    participants_json_fname = participants_tsv_fname.copy()
+    participants_json_fname.suffix = 'participants.json'
+
+    sidecar_fname = bids_fname.copy()
+    sidecar_fname.prefix = data_path
+    sidecar_fname.suffix = f'{kind}.json'
+
+    events_fname = sidecar_fname.copy()
+    events_fname.suffix = 'events.tsv'
+    channels_fname = sidecar_fname.copy()
+    channels_fname.suffix = 'channels.tsv'
 
     if ext not in ['.fif', '.ds', '.vhdr', '.edf', '.bdf', '.set', '.con',
                    '.sqd']:

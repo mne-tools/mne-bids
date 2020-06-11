@@ -421,6 +421,7 @@ def read_raw_bids(bids_basename, bids_root, kind=None, extra_params=None,
         If the specified ``kind`` cannot be found in the dataset.
 
     """
+    # convert to string representation for downstream usage
     if isinstance(bids_basename, BIDSPath):
         bids_basename = str(bids_basename)
 
