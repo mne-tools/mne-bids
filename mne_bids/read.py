@@ -26,8 +26,8 @@ from mne_bids.config import (ALLOWED_EXTENSIONS, _convert_hand_options,
 from mne_bids.utils import (_parse_bids_filename, _extract_landmarks,
                             _find_matching_sidecar, _parse_ext,
                             _get_ch_type_mapping, make_bids_folders,
-                            _gen_bids_basename,
-                            _estimate_line_freq, _get_kinds_for_sub)
+                            _gen_bids_basename, _estimate_line_freq,
+                            _get_kinds_for_sub, BIDSPath)
 
 reader = {'.con': io.read_raw_kit, '.sqd': io.read_raw_kit,
           '.fif': io.read_raw_fif, '.pdf': io.read_raw_bti,
@@ -385,7 +385,7 @@ def read_raw_bids(bids_basename, bids_root, kind=None, extra_params=None,
 
     Parameters
     ----------
-    bids_basename : str
+    bids_basename : str | BIDSPath
         The base filename of the BIDS compatible files. Typically, this can be
         generated using :func:`mne_bids.make_bids_basename`.
     bids_root : str | pathlib.Path
@@ -421,6 +421,9 @@ def read_raw_bids(bids_basename, bids_root, kind=None, extra_params=None,
         If the specified ``kind`` cannot be found in the dataset.
 
     """
+    if isinstance(bids_basename, BIDSPath):
+        bids_basename = str(bids_basename)
+
     params = _parse_bids_filename(bids_basename, verbose='warning')
     sub = params['sub']
     ses = params['ses']
@@ -512,7 +515,7 @@ def get_matched_empty_room(bids_basename, bids_root):
 
     Parameters
     ----------
-    bids_basename : str
+    bids_basename : str | BIDSPath
         The base filename of the BIDS-compatible file. Typically, this can be
         generated using :func:`mne_bids.make_bids_basename`.
     bids_root : str | pathlib.Path
@@ -524,6 +527,9 @@ def get_matched_empty_room(bids_basename, bids_root):
         The basename corresponding to the best-matching empty-room measurement.
         Returns None if none was found.
     """
+    if isinstance(bids_basename, BIDSPath):
+        bids_basename = str(bids_basename)
+
     kind = 'meg'  # We're only concerned about MEG data here
     bids_fname = _make_bids_fname(bids_basename=bids_basename,
                                   bids_root=bids_root, kind=kind)

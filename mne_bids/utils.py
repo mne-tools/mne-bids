@@ -30,7 +30,7 @@ from mne.time_frequency import psd_array_welch
 from mne_bids.tsv_handler import _to_tsv, _tsv_to_str
 
 
-class BIDSPath(dict):
+class BIDSPath(object):
     """Create a partial/full BIDS filename from its component parts.
 
     BIDS filename prefixes have one or more pieces of metadata in them. They
@@ -80,10 +80,37 @@ class BIDSPath(dict):
     BIDSPath (sub-test_ses-two_task-mytask_data.csv)
     """
 
-    def __init__(self, *args, **kwargs):
-        super(BIDSPath, self).__init__(*args, **kwargs)
+    def __init__(self, sub=None, ses=None, task=None,
+                 acq=None, run=None, proc=None,
+                 rec=None, space=None,
+                 prefix=None, suffix=None):
+        self.sub = sub
+        self.ses = ses
+        self.task = task
+        self.acq = acq
+        self.run = run
+        self.proc = proc
+        self.rec = rec
+        self.space = space
+        self.prefix = prefix
+        self.suffix = suffix
+
         # run string representation to check validity of arguments
-        self.as_str()
+        self._get_name()
+
+    @property
+    def entities(self):
+        """Return dictionary of the BIDS entities."""
+        keys = ('sub', 'ses', 'task', 'acq',
+                'proc', 'acq', 'run', 'rec',
+                'space', 'suffix', 'prefix')
+        entities = OrderedDict()
+
+        for key in keys:
+            value = getattr(self, key, None)
+            if value is not None:
+                entities[key] = value
+        return entities
 
     def __setitem__(self, key, value):
         """Set item as a dictionary, and perform validation checks."""
@@ -91,8 +118,7 @@ class BIDSPath(dict):
                        'proc', 'acq', 'run', 'rec',
                        'space', 'suffix', 'prefix'):
             raise ValueError('Key must be one of blah, got %s' % key)
-
-        return dict.__setitem__(self, key, value)
+        setattr(self, key, value)
 
     def __str__(self):
         """Return the string representation of the path."""
@@ -101,10 +127,6 @@ class BIDSPath(dict):
     def __repr__(self):
         """Representation in the style of `pathlib.Path`."""
         return "{}({!r})".format(self.__class__.__name__, self._get_name())
-
-    def __add__(self, value):
-        """Return self+value."""
-        return self.as_str() + value
 
     def __fspath__(self):
         """Return the string representation for any fs functions."""
@@ -119,15 +141,15 @@ class BIDSPath(dict):
 
     def __eq__(self, other):
         """Compare str representations."""
-        return self.as_str() == str(other)
+        return str(self) == str(other)
 
     def startswith(self, prefix, start=None, end=None):
         """Return True/False for the str startswith."""
-        return self.as_str().startswith(prefix, start=start, end=end)
+        return str(self).startswith(prefix, start=start, end=end)
 
     def endswith(self, suffix, start=None, end=None):
         """Return True/False for the str endswith."""
-        return self.as_str().lower().endswith(suffix, start=start, end=end)
+        return str(self).lower().endswith(suffix, start=start, end=end)
 
     def copy(self):
         """Copy the instance.
@@ -139,17 +161,9 @@ class BIDSPath(dict):
         """
         return deepcopy(self)
 
-    def replace(self, old, new, *args) -> str:
-        """Provide replace."""
-        return self.as_str().replace(old, new, *args)
-
     def _get_name(self):
-        basename = _gen_bids_basename(**self)
+        basename = _gen_bids_basename(**self.entities)
         return basename
-
-    def as_str(self) -> str:
-        """Return the string representation of the bids path."""
-        return self._get_name()
 
 
 def get_kinds(bids_root):

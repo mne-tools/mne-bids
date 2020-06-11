@@ -967,7 +967,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
 
     # obtain the string representation of the BIDS Path
     if isinstance(bids_basename, BIDSPath):
-        bids_basename = bids_basename.as_str()
+        bids_basename = str(bids_basename)
 
     params = _parse_bids_filename(bids_basename, verbose)
     subject_id, session_id = params['sub'], params['ses']
@@ -1002,8 +1002,6 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
                                      bids_root=bids_root, make_dir=False,
                                      overwrite=False, verbose=verbose)
 
-    # create filenames
-
     # In case of an "emptyroom" subject, make_bids_basename() will raise
     # an exception if we don't provide a valid task ("noise"). Now,
     # scans_fname, electrodes_fname, and coordsystem_fname must NOT include
@@ -1016,14 +1014,16 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     scans_fname = _gen_bids_basename(sub=subject_id, ses=session_id,
                                      prefix=ses_path, suffix='scans.tsv',
                                      on_invalid_er_task=on_invalid_er_task)
-    coordsystem_fname = _gen_bids_basename(sub=subject_id, ses=session_id,
-                                           acq=acquisition, prefix=data_path,
-                                           suffix='coordsystem.json',
-                                           on_invalid_er_task=on_invalid_er_task)  # noqa: E501
-    electrodes_fname = _gen_bids_basename(sub=subject_id, ses=session_id,
-                                          acq=acquisition, prefix=data_path,
-                                          suffix='electrodes.tsv',
-                                          on_invalid_er_task=on_invalid_er_task)  # noqa: E501
+    coordsystem_fname = _gen_bids_basename(
+        sub=subject_id, ses=session_id,
+        acq=acquisition, prefix=data_path,
+        suffix='coordsystem.json',
+        on_invalid_er_task=on_invalid_er_task)
+    electrodes_fname = _gen_bids_basename(
+        sub=subject_id, ses=session_id,
+        acq=acquisition, prefix=data_path,
+        suffix='electrodes.tsv',
+        on_invalid_er_task=on_invalid_er_task)
 
     # For the remaining files, we can use make_bids_basename() as usual.
     participants_tsv_fname = make_bids_basename(prefix=bids_root,
@@ -1277,9 +1277,10 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
         t1w.header['xyzt_units'] = np.array(10, dtype='uint8')
 
     # Now give the NIfTI file a BIDS name and write it to the BIDS location
-    t1w_basename = make_bids_basename(subject=subject, session=session,
-                                      acquisition=acquisition, prefix=anat_dir,
-                                      suffix='T1w.nii.gz').as_str()
+    t1w_basename = str(make_bids_basename(subject=subject, session=session,
+                                          acquisition=acquisition,
+                                          prefix=anat_dir,
+                                          suffix='T1w.nii.gz'))
 
     # Check if we have necessary conditions for writing a sidecar JSON
     if trans is not None or landmarks is not None:

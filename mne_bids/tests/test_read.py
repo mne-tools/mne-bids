@@ -228,7 +228,7 @@ def test_line_freq_estimation():
     kind = "meg"
 
     # assert that we get the same line frequency set
-    bids_fname = bids_basename + '_{}.fif'.format(kind)
+    bids_fname = str(bids_basename) + f'_{kind}.fif'
 
     # find sidecar JSON fname
     write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
@@ -282,7 +282,7 @@ def test_handle_info_reading():
     bids_basename = make_bids_basename(subject='01', session='01',
                                        task='audiovisual', run='01')
     kind = "meg"
-    bids_fname = bids_basename + '_{}.fif'.format(kind)
+    bids_fname = str(bids_basename) + '_{}.fif'.format(kind)
     write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
 
     # find sidecar JSON fname
@@ -410,7 +410,7 @@ def test_handle_ieeg_coords_reading(bids_basename):
 
     data_path = op.join(testing.data_path(), 'EDF')
     raw_fname = op.join(data_path, 'test_reduced.edf')
-    bids_fname = bids_basename + "_ieeg.edf"
+    bids_fname = str(bids_basename) + "_ieeg.edf"
 
     raw = mne.io.read_raw_edf(raw_fname)
 

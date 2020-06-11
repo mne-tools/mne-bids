@@ -223,9 +223,11 @@ def test_fif(_bids_validate):
                        verbose=True, overwrite=False)
     bids_dir = op.join(bids_root, 'sub-%s' % subject_id,
                        'ses-%s' % session_id, 'eeg')
+    sidecar_basename = bids_basename.copy()
     for sidecar in ['channels.tsv', 'eeg.eeg', 'eeg.json', 'eeg.vhdr',
                     'eeg.vmrk', 'events.tsv']:
-        assert op.isfile(op.join(bids_dir, bids_basename + '_' + sidecar))
+        sidecar_basename.suffix = sidecar
+        assert op.isfile(op.join(bids_dir, sidecar_basename))
 
     raw2 = read_raw_bids(bids_basename=bids_basename, bids_root=bids_root,
                          kind='eeg')
@@ -332,7 +334,8 @@ def test_fif(_bids_validate):
     raw_fname2 = op.join(data_path2, 'sample_audvis_raw.fif')
     raw.save(raw_fname2)
 
-    bids_basename2 = bids_basename.replace(subject_id, subject_id2)
+    bids_basename2 = bids_basename.copy()
+    bids_basename2.sub = subject_id2
     raw = mne.io.read_raw_fif(raw_fname2)
     bids_output_path = write_raw_bids(raw, bids_basename2, bids_root,
                                       events_data=events_fname,
@@ -374,6 +377,7 @@ def test_fif(_bids_validate):
     # asserting that single fif files do not include the split key
     files = glob(op.join(bids_output_path, 'sub-' + subject_id2,
                          'ses-' + subject_id2, 'meg', '*.fif'))
+    ii = 0
     for ii, FILE in enumerate(files):
         assert 'split' not in FILE
     assert ii < 1
@@ -386,7 +390,8 @@ def test_fif(_bids_validate):
              split_naming='neuromag', overwrite=True)
     raw = mne.io.read_raw_fif(raw_fname3)
     subject_id3 = '03'
-    bids_basename3 = bids_basename.replace(subject_id, subject_id3)
+    bids_basename3 = bids_basename.copy()
+    bids_basename3.sub = subject_id3
     bids_output_path = write_raw_bids(raw, bids_basename3, bids_root,
                                       overwrite=False)
     files = glob(op.join(bids_output_path, 'sub-' + subject_id3,
@@ -475,7 +480,7 @@ def test_kit(_bids_validate):
     headshape_fname = op.join(data_path, 'test.hsp')
     event_id = dict(cond=1)
 
-    kit_bids_basename = bids_basename.replace('_acq-01', '')
+    kit_bids_basename = str(bids_basename).replace('_acq-01', '')
 
     raw = mne.io.read_raw_kit(
         raw_fname, mrk=hpi_fname, elp=electrode_fname,
@@ -538,16 +543,16 @@ def test_kit(_bids_validate):
         raw_fname, mrk=[hpi_pre_fname, hpi_post_fname], elp=electrode_fname,
         hsp=headshape_fname)
     write_raw_bids(raw,
-                   kit_bids_basename.replace('sub-01', 'sub-%s' % subject_id2),
+                   kit_bids_basename.replace('sub-01', f'sub-{subject_id2}'),
                    bids_root, events_data=events_fname, event_id=event_id,
                    overwrite=False)
 
     _bids_validate(bids_root)
     # ensure the marker files are renamed correctly
     marker_fname = marker_fname.copy()
-    marker_fname.update({'acq': 'pre', 'sub': subject_id2,
-                         'prefix': op.join(bids_root, 'sub-02',
-                                           'ses-01', 'meg')})
+    marker_fname.acq = 'pre'
+    marker_fname.sub = subject_id2
+    marker_fname.prefix = op.join(bids_root, 'sub-02', 'ses-01', 'meg')
     # marker_fname = make_bids_basename(
     #     subject=subject_id2, session=session_id, task=task, run=run,
     #     suffix='markers.sqd', acquisition='pre',
@@ -555,7 +560,7 @@ def test_kit(_bids_validate):
     info = get_kit_info(marker_fname, False)[0]
     assert info['meas_date'] == get_kit_info(hpi_pre_fname,
                                              False)[0]['meas_date']
-    marker_fname = marker_fname.replace('acq-pre', 'acq-post')
+    marker_fname.acq = 'post'
     info = get_kit_info(marker_fname, False)[0]
     assert info['meas_date'] == get_kit_info(hpi_post_fname,
                                              False)[0]['meas_date']
@@ -680,8 +685,11 @@ def test_vhdr(_bids_validate):
 
     # Test that correct channel units are written ... and that bad channel
     # is in channels.tsv
-    channels_tsv_name = op.join(bids_root, 'sub-{}'.format(subject_id),
-                                'eeg', bids_basename_minimal + '_channels.tsv')
+    channels_tsv_name = bids_basename_minimal.copy()
+    channels_tsv_name.prefix = op.join(bids_root,
+                                       'sub-{}'.format(subject_id), 'eeg')
+    channels_tsv_name.suffix = 'channels.tsv'
+
     data = _from_tsv(channels_tsv_name)
     assert data['units'][data['name'].index('FP1')] == 'µV'
     assert data['units'][data['name'].index('CP5')] == 'n/a'
@@ -755,7 +763,8 @@ def test_edf(_bids_validate):
         read_raw_bids(bids_basename=bids_basename, bids_root=bids_root,
                       kind='eeg', extra_params=dict(foo='bar'))
 
-    bids_fname = bids_basename.replace('run-01', 'run-%s' % run2)
+    bids_fname = bids_basename.copy()
+    bids_fname.run = run2
     # add data in as a montage
     ch_names = raw.ch_names
     elec_locs = np.random.random((len(ch_names), 3))
@@ -809,7 +818,7 @@ def test_edf(_bids_validate):
                        anonymize=dict(daysback=33000),
                        overwrite=True)
         data = _from_tsv(scans_tsv)
-        bids_fname = bids_basename + "_eeg.vhdr"
+        bids_fname = str(bids_basename) + "_eeg.vhdr"
         assert any([bids_fname in fname for fname in data['filename']])
 
     # Also cover iEEG
@@ -875,7 +884,7 @@ def test_bdf(_bids_validate):
     assert coil_type(raw.info, test_ch_idx) != 'misc'
 
     # we will change the channel type to MISC and overwrite the channels file
-    bids_fname = bids_basename + '_eeg.bdf'
+    bids_fname = str(bids_basename) + '_eeg.bdf'
     channels_fname = _find_matching_sidecar(bids_fname, bids_root,
                                             'channels.tsv')
     channels_dict = _from_tsv(channels_fname)
@@ -909,11 +918,7 @@ def test_bdf(_bids_validate):
 @pytest.mark.filterwarnings(warning_str['meas_date_set_to_none'])
 def test_set(_bids_validate):
     """Test write_raw_bids conversion for EEGLAB data."""
-    # standalone .set file
-    bids_root = _TempDir()
-    data_path = op.join(testing.data_path(), 'EEGLAB')
-
-    # .set with associated .fdt
+    # standalone .set file with associated .fdt
     bids_root = _TempDir()
     data_path = op.join(testing.data_path(), 'EEGLAB')
     raw_fname = op.join(data_path, 'test_raw.set')
@@ -945,7 +950,7 @@ def test_set(_bids_validate):
     # is broken for earlier versions
     events_tsv_fname = op.join(bids_root, 'sub-' + subject_id,
                                'ses-' + session_id, 'eeg',
-                               bids_basename + '_events.tsv')
+                               str(bids_basename) + '_events.tsv')
     if check_version('mne', '0.18'):
         assert op.exists(events_tsv_fname)
 
