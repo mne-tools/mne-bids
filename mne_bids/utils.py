@@ -82,6 +82,7 @@ class BIDSPath(dict):
 
     def __init__(self, *args, **kwargs):
         super(BIDSPath, self).__init__(*args, **kwargs)
+        # run string representation to check validity of arguments
         self.as_str()
 
     def __setitem__(self, key, value):
@@ -1046,14 +1047,6 @@ def make_bids_basename(subject=None, session=None, task=None,
     >>> print(make_bids_basename(subject='test', session='two', task='mytask', suffix='data.csv')) # noqa: E501
     sub-test_ses-two_task-mytask_data.csv
     """
-    # kwargs = dict(subject=subject, session=session, task=task,
-    #               acquisition=acquisition, run=run, processing=processing,
-    #               recording=recording, space=space, prefix=prefix,
-    #               suffix=suffix)
-
-    # if as_str:
-    #     basename = _gen_bids_basename(**kwargs)
-    # else:
     kwargs = dict(sub=subject, ses=session, task=task,
                   acq=acquisition, run=run, proc=processing,
                   rec=recording, space=space, prefix=prefix,
