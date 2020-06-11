@@ -143,7 +143,7 @@ def test_copyfile_kit():
         subject=subject_id, session=session_id, run=run, acquisition=acq,
         task=task)
 
-    kit_bids_basename = bids_basename.as_str().replace('_acq-01', '')
+    kit_bids_basename = bids_basename.replace('_acq-01', '')
 
     raw = mne.io.read_raw_kit(
         raw_fname, mrk=hpi_fname, elp=electrode_fname,

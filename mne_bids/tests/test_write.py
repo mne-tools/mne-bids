@@ -516,10 +516,6 @@ def test_kit(_bids_validate):
     assert 'STI 014' not in data['name']
 
     # ensure the marker file is produced in the right place
-    marker_fname = make_bids_basename(
-        subject=subject_id, session=session_id, task=task, run=run,
-        suffix='markers.sqd',
-        prefix=op.join(bids_root, 'sub-01', 'ses-01', 'meg'))
     assert op.exists(marker_fname)
 
     # test attempts at writing invalid event data
@@ -548,10 +544,14 @@ def test_kit(_bids_validate):
 
     _bids_validate(bids_root)
     # ensure the marker files are renamed correctly
-    marker_fname = make_bids_basename(
-        subject=subject_id2, session=session_id, task=task, run=run,
-        suffix='markers.sqd', acquisition='pre',
-        prefix=os.path.join(bids_root, 'sub-02', 'ses-01', 'meg'))
+    marker_fname = marker_fname.copy()
+    marker_fname.update({'acq': 'pre', 'sub': subject_id2,
+                         'prefix': op.join(bids_root, 'sub-02',
+                                           'ses-01', 'meg')})
+    # marker_fname = make_bids_basename(
+    #     subject=subject_id2, session=session_id, task=task, run=run,
+    #     suffix='markers.sqd', acquisition='pre',
+    #     prefix=os.path.join(bids_root, 'sub-02', 'ses-01', 'meg'))
     info = get_kit_info(marker_fname, False)[0]
     assert info['meas_date'] == get_kit_info(hpi_pre_fname,
                                              False)[0]['meas_date']
