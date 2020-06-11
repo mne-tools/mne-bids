@@ -149,7 +149,7 @@ class BIDSPath(object):
 
     def endswith(self, suffix, start=None, end=None):
         """Return True/False for the str endswith."""
-        return str(self).lower().endswith(suffix, start=start, end=end)
+        return str(self).endswith(suffix, start=start, end=end)
 
     def copy(self):
         """Copy the instance.

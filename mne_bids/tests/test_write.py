@@ -696,7 +696,7 @@ def test_vhdr(_bids_validate):
     assert data['status'][data['name'].index(injected_bad[0])] == 'bad'
 
     # check events.tsv is written
-    events_tsv_fname = channels_tsv_name.replace('channels', 'events')
+    events_tsv_fname = str(channels_tsv_name).replace('channels', 'events')
     assert op.exists(events_tsv_fname)
 
     # create another bids folder with the overwrite command and check
