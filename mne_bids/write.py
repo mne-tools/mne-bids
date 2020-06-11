@@ -1121,7 +1121,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
 
     # set the raw file name to now be the absolute path to ensure the files
     # are placed in the right location
-    bids_fname = op.join(data_path, bids_fname)
+    bids_fname.prefix = data_path
     if os.path.exists(bids_fname) and not overwrite:
         raise FileExistsError('"%s" already exists. Please set '  # noqa: F821
                               'overwrite to True.' % bids_fname)
