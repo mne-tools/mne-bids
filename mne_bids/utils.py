@@ -156,8 +156,8 @@ class BIDSPath(object):
 
         Returns
         -------
-        info : instance of Info
-            The copied info.
+        bidspath : instance of BIDSPath
+            The copied bidspath.
         """
         return deepcopy(self)
 
