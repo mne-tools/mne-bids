@@ -968,15 +968,21 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     # convert to BIDS Path
     if isinstance(bids_basename, str):
         params = _parse_bids_filename(bids_basename, verbose)
-        bids_basename = BIDSPath(**params)
+        bids_basename = BIDSPath(subject=params.get('sub'),
+                                 session=params.get('ses'),
+                                 recording=params.get('rec'),
+                                 acquisition=params.get('acq'),
+                                 processing=params.get('proc'),
+                                 space=params.get('space'),
+                                 run=params.get('run'),
+                                 task=params.get('task'))
 
-    params = _parse_bids_filename(bids_basename, verbose)
-    subject_id, session_id = params['sub'], params['ses']
-    acquisition, task, run = params['acq'], params['task'], params['run']
+    subject_id, session_id = bids_basename.subject, bids_basename.session
+    acquisition, task = bids_basename.acquisition, bids_basename.task
+    run = bids_basename.run
     kind = _handle_kind(raw)
 
-    bids_fname = bids_basename.copy()
-    bids_fname.suffix = f'{kind}{ext}'
+    bids_fname = bids_basename.copy().update(suffix=f'{kind}{ext}')
 
     # check whether the info provided indicates that the data is emptyroom
     # data
@@ -1029,24 +1035,21 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
         prefix=data_path, suffix='electrodes.tsv',
         on_invalid_er_task=on_invalid_er_task)
 
-    # For the remaining files, we can use make_bids_basename() as usual.
+    # For the remaining files, we can use BIDSPath to alter.
     participants_tsv_fname = make_bids_basename(prefix=bids_root,
                                                 suffix='participants.tsv')
     participants_json_fname = participants_tsv_fname.copy()
     participants_json_fname.suffix = 'participants.json'
 
-    sidecar_fname = bids_fname.copy()
-    sidecar_fname.prefix = data_path
-    sidecar_fname.suffix = f'{kind}.json'
+    sidecar_fname = bids_fname.copy().update(prefix=data_path,
+                                             suffix=f'{kind}.json')
 
-    events_fname = sidecar_fname.copy()
-    events_fname.suffix = 'events.tsv'
-    channels_fname = sidecar_fname.copy()
-    channels_fname.suffix = 'channels.tsv'
+    events_fname = sidecar_fname.copy().update(suffix='events.tsv')
+    channels_fname = sidecar_fname.copy().update(suffix='channels.tsv')
 
     if ext not in ['.fif', '.ds', '.vhdr', '.edf', '.bdf', '.set', '.con',
                    '.sqd']:
-        bids_raw_folder = bids_fname.split('.')[0]
+        bids_raw_folder = str(bids_fname).split('.')[0]
         bids_fname.prefix = bids_raw_folder
 
     # Anonymize

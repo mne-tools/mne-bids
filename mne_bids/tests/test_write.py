@@ -334,7 +334,7 @@ def test_fif(_bids_validate):
     raw_fname2 = op.join(data_path2, 'sample_audvis_raw.fif')
     raw.save(raw_fname2)
 
-    bids_basename2 = bids_basename.copy().update(sub=subject_id2)
+    bids_basename2 = bids_basename.copy().update(subject=subject_id2)
     raw = mne.io.read_raw_fif(raw_fname2)
     bids_output_path = write_raw_bids(raw, bids_basename2, bids_root,
                                       events_data=events_fname,
@@ -389,7 +389,7 @@ def test_fif(_bids_validate):
              split_naming='neuromag', overwrite=True)
     raw = mne.io.read_raw_fif(raw_fname3)
     subject_id3 = '03'
-    bids_basename3 = bids_basename.copy().update(sub=subject_id3)
+    bids_basename3 = bids_basename.copy().update(subject=subject_id3)
     bids_output_path = write_raw_bids(raw, bids_basename3, bids_root,
                                       overwrite=False)
     files = glob(op.join(bids_output_path, 'sub-' + subject_id3,
@@ -478,7 +478,7 @@ def test_kit(_bids_validate):
     headshape_fname = op.join(data_path, 'test.hsp')
     event_id = dict(cond=1)
 
-    kit_bids_basename = bids_basename.copy().update(acq=None)
+    kit_bids_basename = bids_basename.copy().update(acquisition=None)
 
     raw = mne.io.read_raw_kit(
         raw_fname, mrk=hpi_fname, elp=electrode_fname,
@@ -537,19 +537,18 @@ def test_kit(_bids_validate):
     raw = mne.io.read_raw_kit(
         raw_fname, mrk=[hpi_pre_fname, hpi_post_fname], elp=electrode_fname,
         hsp=headshape_fname)
-    write_raw_bids(raw, kit_bids_basename.update(sub=subject_id2),
+    write_raw_bids(raw, kit_bids_basename.update(subject=subject_id2),
                    bids_root, events_data=events_fname, event_id=event_id,
                    overwrite=False)
 
     _bids_validate(bids_root)
     # ensure the marker files are renamed correctly
     prefix = op.join(bids_root, 'sub-02', 'ses-01', 'meg')
-    marker_fname = marker_fname.copy().update(acq='pre', sub=subject_id2,
-                                              prefix=prefix)
+    marker_fname.update(acquisition='pre', subject=subject_id2, prefix=prefix)
     info = get_kit_info(marker_fname, False)[0]
     assert info['meas_date'] == get_kit_info(hpi_pre_fname,
                                              False)[0]['meas_date']
-    marker_fname.acq = 'post'
+    marker_fname.acquisition = 'post'
     info = get_kit_info(marker_fname, False)[0]
     assert info['meas_date'] == get_kit_info(hpi_post_fname,
                                              False)[0]['meas_date']
@@ -560,7 +559,7 @@ def test_kit(_bids_validate):
         hsp=headshape_fname)
     with pytest.raises(ValueError, match='Markers'):
         write_raw_bids(
-            raw, kit_bids_basename.update(sub=subject_id2),
+            raw, kit_bids_basename.update(subject=subject_id2),
             bids_root, events_data=events_fname, event_id=event_id,
             overwrite=True)
 

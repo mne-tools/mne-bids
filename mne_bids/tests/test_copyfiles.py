@@ -143,7 +143,7 @@ def test_copyfile_kit():
         subject=subject_id, session=session_id, run=run, acquisition=acq,
         task=task)
 
-    kit_bids_basename = bids_basename.copy().update(acq=None,
+    kit_bids_basename = bids_basename.copy().update(acquisition=None,
                                                     prefix=output_path)
 
     raw = mne.io.read_raw_kit(

@@ -83,21 +83,7 @@ class BIDSPath(object):
 
     def __init__(self, subject=None, session=None,
                  task=None, acquisition=None, run=None, processing=None,
-                 recording=None, space=None, prefix=None, suffix=None,
-                 **kwargs):
-
-        # allows shortened aliases for some entity values
-        if subject is None:
-            subject = kwargs.get('sub', None)
-        if session is None:
-            session = kwargs.get('ses', None)
-        if acquisition is None:
-            acquisition = kwargs.get('acq', None)
-        if processing is None:
-            processing = kwargs.get('proc', None)
-        if recording is None:
-            recording = kwargs.get('rec', None)
-
+                 recording=None, space=None, prefix=None, suffix=None):
         self.update(subject=subject, session=session, task=task,
                     acquisition=acquisition, run=run, processing=processing,
                     recording=recording, space=space, prefix=prefix,
@@ -158,29 +144,17 @@ class BIDSPath(object):
         Parameters
         ----------
         kwargs :
-            Allowed BIDS entities: see `BIDS_ENTITIES`, or an alias
-            for subject (sub), session (ses), acquisition (acq),
-            processing (proc), and recording (rec).
+            Allowed BIDS entities: see `BIDS_ENTITIES`.
 
         Returns
         -------
         bidspath : instance of BIDSPath
             The copied bidspath.
         """
-        # allowed alias for BIDS entities
-        alias = {'sub': 'subject',
-                 'ses': 'session',
-                 'acq': 'acquisition',
-                 'proc': 'processing',
-                 'rec': 'recording'}
-
         # error check kwargs
         for key, value in kwargs.items():
-            # allows shortened aliases for some entity values
-            if key in alias:
-                setattr(self, alias[key], value)
             # error check allowed BIDS entity keywords
-            elif key not in BIDS_ENTITIES:
+            if key not in BIDS_ENTITIES:
                 raise ValueError('Key must be one of {BIDS_ENTITIES}, '
                                  'got %s' % key)
 
