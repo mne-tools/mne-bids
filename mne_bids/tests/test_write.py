@@ -511,10 +511,7 @@ def test_kit(_bids_validate):
                                           events_fname, event_id)
 
     # ensure the channels file has no STI 014 channel:
-    channels_tsv = make_bids_basename(
-        subject=subject_id, session=session_id, task=task, run=run,
-        suffix='channels.tsv',
-        prefix=op.join(bids_root, 'sub-01', 'ses-01', 'meg'))
+    channels_tsv = marker_fname.copy().update(suffix='channels.tsv')
     data = _from_tsv(channels_tsv)
     assert 'STI 014' not in data['name']
 
@@ -540,8 +537,7 @@ def test_kit(_bids_validate):
     raw = mne.io.read_raw_kit(
         raw_fname, mrk=[hpi_pre_fname, hpi_post_fname], elp=electrode_fname,
         hsp=headshape_fname)
-    write_raw_bids(raw,
-                   kit_bids_basename.replace('sub-01', f'sub-{subject_id2}'),
+    write_raw_bids(raw, kit_bids_basename.update(sub=subject_id2),
                    bids_root, events_data=events_fname, event_id=event_id,
                    overwrite=False)
 
@@ -564,8 +560,7 @@ def test_kit(_bids_validate):
         hsp=headshape_fname)
     with pytest.raises(ValueError, match='Markers'):
         write_raw_bids(
-            raw,
-            kit_bids_basename.replace('sub-01', 'sub-%s' % subject_id2),
+            raw, kit_bids_basename.update(sub=subject_id2),
             bids_root, events_data=events_fname, event_id=event_id,
             overwrite=True)
 
@@ -678,11 +673,10 @@ def test_vhdr(_bids_validate):
 
     # Test that correct channel units are written ... and that bad channel
     # is in channels.tsv
-    channels_tsv_name = bids_basename_minimal.copy()
-    channels_tsv_name.prefix = op.join(bids_root,
-                                       'sub-{}'.format(subject_id), 'eeg')
-    channels_tsv_name.suffix = 'channels.tsv'
-
+    prefix = op.join(bids_root, 'sub-{}'.format(subject_id), 'eeg')
+    suffix = 'channels.tsv'
+    channels_tsv_name = bids_basename_minimal.copy().update(prefix=prefix,
+                                                            suffix=suffix)
     data = _from_tsv(channels_tsv_name)
     assert data['units'][data['name'].index('FP1')] == 'µV'
     assert data['units'][data['name'].index('CP5')] == 'n/a'
@@ -999,7 +993,7 @@ def test_write_anat(_bids_validate):
     assert op.exists(op.join(anat_dir, 'sub-01_ses-01_acq-01_T1w.nii.gz'))
     with open(t1w_json_path, 'r') as f:
         t1w_json = json.load(f)
-    print(t1w_json)
+
     # We only should have AnatomicalLandmarkCoordinates as key
     np.testing.assert_array_equal(list(t1w_json.keys()),
                                   ['AnatomicalLandmarkCoordinates'])
