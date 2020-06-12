@@ -334,8 +334,7 @@ def test_fif(_bids_validate):
     raw_fname2 = op.join(data_path2, 'sample_audvis_raw.fif')
     raw.save(raw_fname2)
 
-    bids_basename2 = bids_basename.copy()
-    bids_basename2.sub = subject_id2
+    bids_basename2 = bids_basename.copy().update(sub=subject_id2)
     raw = mne.io.read_raw_fif(raw_fname2)
     bids_output_path = write_raw_bids(raw, bids_basename2, bids_root,
                                       events_data=events_fname,
@@ -390,8 +389,7 @@ def test_fif(_bids_validate):
              split_naming='neuromag', overwrite=True)
     raw = mne.io.read_raw_fif(raw_fname3)
     subject_id3 = '03'
-    bids_basename3 = bids_basename.copy()
-    bids_basename3.sub = subject_id3
+    bids_basename3 = bids_basename.copy().update(sub=subject_id3)
     bids_output_path = write_raw_bids(raw, bids_basename3, bids_root,
                                       overwrite=False)
     files = glob(op.join(bids_output_path, 'sub-' + subject_id3,
@@ -480,7 +478,7 @@ def test_kit(_bids_validate):
     headshape_fname = op.join(data_path, 'test.hsp')
     event_id = dict(cond=1)
 
-    kit_bids_basename = str(bids_basename).replace('_acq-01', '')
+    kit_bids_basename = bids_basename.copy().update(acq=None)
 
     raw = mne.io.read_raw_kit(
         raw_fname, mrk=hpi_fname, elp=electrode_fname,

@@ -108,7 +108,7 @@ class BIDSPath(object):
         """Return dictionary of the BIDS entities."""
         keys = ('subject', 'session', 'task', 'acquisition',
                 'processing', 'acquisition', 'run',
-                'recorcing', 'space', 'suffix', 'prefix')
+                'recording', 'space', 'suffix', 'prefix')
         entities = OrderedDict()
 
         for key in keys:
@@ -141,6 +141,10 @@ class BIDSPath(object):
         """Compare str representations."""
         return str(self) == str(other)
 
+    def __ne__(self, other):
+        """Compare str representations."""
+        return str(self) == str(other)
+
     def copy(self):
         """Copy the instance.
 
@@ -156,7 +160,7 @@ class BIDSPath(object):
 
         Parameters
         ----------
-        kwargs : dict
+        kwargs :
             Allowed BIDS entities: see `BIDS_ENTITIES`, or an alias
             for subject (sub), session (ses), acquisition (acq),
             processing (proc), and recording (rec).

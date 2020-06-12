@@ -606,7 +606,6 @@ def get_matched_empty_room(bids_basename, bids_root):
             on_invalid_er_session='continue',
             on_invalid_er_task='continue'
         )
-        
         # Try to extract date from filename.
         if params['ses'] is not None:
             try:
