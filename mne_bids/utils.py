@@ -106,12 +106,9 @@ class BIDSPath(object):
     @property
     def entities(self):
         """Return dictionary of the BIDS entities."""
-        keys = ('subject', 'session', 'task', 'acquisition',
-                'processing', 'acquisition', 'run',
-                'recording', 'space', 'suffix', 'prefix')
+        # create an ordered dictionary of all the bids entities
         entities = OrderedDict()
-
-        for key in keys:
+        for key in BIDS_ENTITIES:
             value = getattr(self, key, None)
             if value is not None:
                 entities[key] = value
