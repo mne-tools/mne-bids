@@ -1041,8 +1041,7 @@ def _gen_bids_basename(*, subject=None, session=None, task=None,
 
 def make_bids_basename(subject=None, session=None, task=None,
                        acquisition=None, run=None, processing=None,
-                       recording=None, space=None,
-                       prefix=None, suffix=None) -> BIDSPath:
+                       recording=None, space=None, prefix=None, suffix=None):
     """Create a partial/full BIDS basename from its component parts.
 
     BIDS filename prefixes have one or more pieces of metadata in them. They
@@ -1090,9 +1089,9 @@ def make_bids_basename(subject=None, session=None, task=None,
     >>> print(make_bids_basename(subject='test', session='two', task='mytask', suffix='data.csv')) # noqa: E501
     sub-test_ses-two_task-mytask_data.csv
     """
-    kwargs = dict(sub=subject, ses=session, task=task,
-                  acq=acquisition, run=run, proc=processing,
-                  rec=recording, space=space, prefix=prefix,
+    kwargs = dict(subject=subject, session=session, task=task,
+                  acquisition=acquisition, run=run, processing=processing,
+                  recording=recording, space=space, prefix=prefix,
                   suffix=suffix)
     basename = BIDSPath(**kwargs)
     return basename
