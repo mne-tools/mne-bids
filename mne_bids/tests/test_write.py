@@ -749,8 +749,7 @@ def test_edf(_bids_validate):
         read_raw_bids(bids_basename=bids_basename, bids_root=bids_root,
                       kind='eeg', extra_params=dict(foo='bar'))
 
-    bids_fname = bids_basename.copy()
-    bids_fname.run = run2
+    bids_fname = bids_basename.copy().update(run=run2)
     # add data in as a montage
     ch_names = raw.ch_names
     elec_locs = np.random.random((len(ch_names), 3))

@@ -60,8 +60,7 @@ def return_bids_test_dir(tmpdir_factory):
     raw = mne.io.read_raw_fif(raw_fname)
     # Write multiple runs for test_purposes
     for run_idx in [run, '02']:
-        name = bids_basename.copy()
-        name.run = run_idx
+        name = bids_basename.copy().update(run=run_idx)
         with pytest.warns(RuntimeWarning, match='No line frequency'):
             write_raw_bids(raw, name, bids_root,
                            events_data=events_fname, event_id=event_id,
