@@ -975,7 +975,8 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
                                  processing=params.get('proc'),
                                  space=params.get('space'),
                                  run=params.get('run'),
-                                 task=params.get('task'))
+                                 task=params.get('task'),
+                                 prefix=bids_root)
 
     subject_id, session_id = bids_basename.subject, bids_basename.session
     acquisition, task = bids_basename.acquisition, bids_basename.task
@@ -1049,7 +1050,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
 
     if ext not in ['.fif', '.ds', '.vhdr', '.edf', '.bdf', '.set', '.con',
                    '.sqd']:
-        bids_raw_folder = str(bids_fname).split('.')[0]
+        bids_raw_folder = str(bids_fname).split(".")[0]
         bids_fname.prefix = bids_raw_folder
 
     # Anonymize
@@ -1125,7 +1126,8 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
 
     # set the raw file name to now be the absolute path to ensure the files
     # are placed in the right location
-    bids_fname.prefix = data_path
+    bids_fname = op.join(data_path, bids_fname)
+
     if os.path.exists(bids_fname) and not overwrite:
         raise FileExistsError('"%s" already exists. Please set '  # noqa: F821
                               'overwrite to True.' % bids_fname)
