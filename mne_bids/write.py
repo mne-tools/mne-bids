@@ -1046,7 +1046,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     if ext not in ['.fif', '.ds', '.vhdr', '.edf', '.bdf', '.set', '.con',
                    '.sqd']:
         bids_raw_folder = bids_fname.split('.')[0]
-        bids_fname = op.join(bids_raw_folder, bids_fname)
+        bids_fname.prefix = bids_raw_folder
 
     # Anonymize
     if anonymize is not None:
@@ -1074,11 +1074,11 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
         if kind == 'meg' and ext != '.fif':
             if verbose:
                 warn('Converting to FIF for anonymization')
-            bids_fname = str(bids_fname).replace(ext, '.fif')
+            bids_fname.suffix = bids_fname.suffix.replace(ext, '.fif')
         elif kind in ['eeg', 'ieeg']:
             if verbose:
                 warn('Converting to BV for anonymization')
-            bids_fname = str(bids_fname).replace(ext, '.vhdr')
+            bids_fname.suffix = bids_fname.suffix.replace(ext, '.vhdr')
 
     # Read in Raw object and extract metadata from Raw object if needed
     orient = ORIENTATION.get(ext, 'n/a')
