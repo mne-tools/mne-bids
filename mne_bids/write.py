@@ -1013,20 +1013,15 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     # "invalid" basename for an emptyroom subject.
     on_invalid_er_task = 'continue'
 
-    scans_fname = _gen_bids_basename(sub=subject_id, ses=session_id,
-                                     prefix=ses_path, suffix='scans.tsv',
+    scans_fname = _gen_bids_basename(subject=subject_id, session=session_id, prefix=ses_path, suffix='scans.tsv',
                                      on_invalid_er_task=on_invalid_er_task)
 
-    coordsystem_fname = _gen_bids_basename(
-        sub=subject_id, ses=session_id,
-        acq=acquisition, prefix=data_path,
-        suffix='coordsystem.json',
-        on_invalid_er_task=on_invalid_er_task)
-    electrodes_fname = _gen_bids_basename(
-        sub=subject_id, ses=session_id,
-        acq=acquisition, prefix=data_path,
-        suffix='electrodes.tsv',
-        on_invalid_er_task=on_invalid_er_task)
+    coordsystem_fname = _gen_bids_basename(subject=subject_id, session=session_id, acquisition=acquisition,
+                                           prefix=data_path, suffix='coordsystem.json',
+                                           on_invalid_er_task=on_invalid_er_task)
+    electrodes_fname = _gen_bids_basename(subject=subject_id, session=session_id, acquisition=acquisition,
+                                          prefix=data_path, suffix='electrodes.tsv',
+                                          on_invalid_er_task=on_invalid_er_task)
 
     # For the remaining files, we can use make_bids_basename() as usual.
     participants_tsv_fname = make_bids_basename(prefix=bids_root,

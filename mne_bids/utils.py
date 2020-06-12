@@ -27,6 +27,7 @@ from mne.io.kit.kit import get_kit_info
 from mne.io.constants import FIFF
 from mne.time_frequency import psd_array_welch
 
+from mne_bids.config import BIDS_ENTITIES
 from mne_bids.tsv_handler import _to_tsv, _tsv_to_str
 
 
@@ -84,6 +85,7 @@ class BIDSPath(object):
                  task=None, acquisition=None, run=None, processing=None,
                  recording=None, space=None, prefix=None, suffix=None,
                  **kwargs):
+
         # allows shortened aliases for some entity values
         if subject is None:
             subject = kwargs.get('sub', None)
@@ -96,26 +98,17 @@ class BIDSPath(object):
         if recording is None:
             recording = kwargs.get('rec', None)
 
-        self.sub = subject
-        self.ses = session
-        self.task = task
-        self.acq = acquisition
-        self.run = run
-        self.proc = processing
-        self.rec = recording
-        self.space = space
-        self.prefix = prefix
-        self.suffix = suffix
-
-        # run string representation to check validity of arguments
-        str(self)
+        self.update(subject=subject, session=session, task=task,
+                    acquisition=acquisition, run=run, processing=processing,
+                    recording=recording, space=space, prefix=prefix,
+                    suffix=suffix)
 
     @property
     def entities(self):
         """Return dictionary of the BIDS entities."""
-        keys = ('sub', 'ses', 'task', 'acq',
-                'proc', 'acq', 'run', 'rec',
-                'space', 'suffix', 'prefix')
+        keys = ('subject', 'session', 'task', 'acquisition',
+                'processing', 'acquisition', 'run',
+                'recorcing', 'space', 'suffix', 'prefix')
         entities = OrderedDict()
 
         for key in keys:
@@ -124,14 +117,6 @@ class BIDSPath(object):
                 entities[key] = value
         return entities
 
-    def __setitem__(self, key, value):
-        """Set item as a dictionary, and perform validation checks."""
-        if key not in ('sub', 'ses', 'task', 'acq',
-                       'proc', 'acq', 'run', 'rec',
-                       'space', 'suffix', 'prefix'):
-            raise ValueError('Key must be one of blah, got %s' % key)
-        setattr(self, key, value)
-
     def __str__(self):
         """Return the string representation of the path."""
         basename = _gen_bids_basename(**self.entities)
@@ -139,7 +124,7 @@ class BIDSPath(object):
 
     def __repr__(self):
         """Representation in the style of `pathlib.Path`."""
-        return "{}({!r})".format(self.__class__.__name__, self._get_name())
+        return "{}({!r})".format(self.__class__.__name__, str(self))
 
     def __fspath__(self):
         """Return the string representation for any fs functions."""
@@ -165,6 +150,45 @@ class BIDSPath(object):
             The copied bidspath.
         """
         return deepcopy(self)
+
+    def update(self, **kwargs):
+        """Update inplace many BIDS entity key/value pairs in object.
+
+        Parameters
+        ----------
+        kwargs : dict
+            Allowed BIDS entities: see `BIDS_ENTITIES`, or an alias
+            for subject (sub), session (ses), acquisition (acq),
+            processing (proc), and recording (rec).
+
+        Returns
+        -------
+        bidspath : instance of BIDSPath
+            The copied bidspath.
+        """
+        # allowed alias for BIDS entities
+        alias = {'sub': 'subject',
+                 'ses': 'session',
+                 'acq': 'acquisition',
+                 'proc': 'processing',
+                 'rec': 'recording'}
+
+        # error check kwargs
+        for key, value in kwargs.items():
+            # allows shortened aliases for some entity values
+            if key in alias:
+                setattr(self, alias[key], value)
+            # error check allowed BIDS entity keywords
+            elif key not in BIDS_ENTITIES:
+                raise ValueError('Key must be one of {BIDS_ENTITIES}, '
+                                 'got %s' % key)
+
+            # set entity value
+            setattr(self, key, value)
+
+        # run string representation to check validity of arguments
+        str(self)
+        return self
 
 
 def get_kinds(bids_root):
@@ -937,10 +961,10 @@ def _scale_coord_to_meters(coord, unit):
         return coord
 
 
-def _gen_bids_basename(*, sub=None, ses=None, task=None,
-                       acq=None, run=None, proc=None,
-                       rec=None, space=None, prefix=None,
-                       suffix=None, on_invalid_er_session='raise',
+def _gen_bids_basename(*, subject=None, session=None, task=None,
+                       acquisition=None, run=None, processing=None,
+                       recording=None, space=None, prefix=None, suffix=None,
+                       on_invalid_er_session='raise',
                        on_invalid_er_task='raise'):
     if on_invalid_er_session not in ['raise', 'warn', 'continue']:
         msg = (f'on_invalid_er_session must be raise, warn, or continue, '
@@ -952,14 +976,14 @@ def _gen_bids_basename(*, sub=None, ses=None, task=None,
                f'but received: {on_invalid_er_task}')
         raise ValueError(msg)
 
-    order = OrderedDict([('sub', sub),
-                         ('ses', ses),
+    order = OrderedDict([('sub', subject),
+                         ('ses', session),
                          ('task', task),
-                         ('acq', acq),
+                         ('acq', acquisition),
                          ('run', run),
-                         ('proc', proc),
+                         ('proc', processing),
                          ('space', space),
-                         ('recording', rec)])
+                         ('recording', recording)])
 
     if order['run'] is not None and not isinstance(order['run'], str):
         # Ensure that run is a string
@@ -971,7 +995,7 @@ def _gen_bids_basename(*, sub=None, ses=None, task=None,
             prefix is None):
         raise ValueError("At least one parameter must be given.")
 
-    if sub == 'emptyroom':
+    if subject == 'emptyroom':
         if task != 'noise':
             msg = (f'task must be "noise" if subject is "emptyroom", but '
                    f'received: {task}')
@@ -982,10 +1006,10 @@ def _gen_bids_basename(*, sub=None, ses=None, task=None,
             else:
                 pass
         try:
-            datetime.strptime(ses, '%Y%m%d')
+            datetime.strptime(session, '%Y%m%d')
         except (ValueError, TypeError):
             msg = (f'empty-room session should be a string of format '
-                   f'YYYYMMDD, but received: {ses}')
+                   f'YYYYMMDD, but received: {session}')
             if on_invalid_er_session == 'raise':
                 raise ValueError(msg)
             elif on_invalid_er_session == 'warn':

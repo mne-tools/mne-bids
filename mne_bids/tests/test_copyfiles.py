@@ -143,16 +143,16 @@ def test_copyfile_kit():
         subject=subject_id, session=session_id, run=run, acquisition=acq,
         task=task)
 
-    kit_bids_basename = bids_basename.copy()
-    kit_bids_basename.acq = None
+    kit_bids_basename = bids_basename.copy().update(acq=None,
+                                                    prefix=output_path)
 
     raw = mne.io.read_raw_kit(
         raw_fname, mrk=hpi_fname, elp=electrode_fname,
         hsp=headshape_fname)
     _, ext = _parse_ext(raw_fname, verbose=True)
     kind = _handle_kind(raw)
-    bids_fname = str(bids_basename) + '_%s%s' % (kind, ext)
-    bids_fname = op.join(output_path, bids_fname)
+    bids_fname = str(bids_basename.copy().update(suffix=f'{kind}{ext}',
+                                                 prefix=output_path))
 
     copyfile_kit(raw_fname, bids_fname, subject_id, session_id,
                  task, run, raw._init_kwargs)
@@ -160,12 +160,10 @@ def test_copyfile_kit():
     _, ext = _parse_ext(hpi_fname, verbose=True)
     if ext == '.sqd':
         kit_bids_basename.suffix = 'markers.sqd'
-        assert op.exists(op.join(
-            output_path, kit_bids_basename))
+        assert op.exists(kit_bids_basename)
     elif ext == '.mrk':
         kit_bids_basename.suffix = 'markers.mrk'
-        assert op.exists(op.join(
-            output_path, kit_bids_basename))
+        assert op.exists(kit_bids_basename)
 
     if op.exists(electrode_fname):
         task, run, key = None, None, 'ELP'

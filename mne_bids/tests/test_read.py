@@ -684,8 +684,7 @@ def test_get_matched_emptyroom_ties():
         er_raw.info['meas_date'] = (meas_date.timestamp(), 0)
 
     write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
-    er_basename_1 = _gen_bids_basename(sub='emptyroom', ses=session, task=None,
-                                       on_invalid_er_task='continue')
+    er_basename_1 = _gen_bids_basename(subject='emptyroom', session=session, task=None, on_invalid_er_task='continue')
     er_basename_2 = make_bids_basename(subject='emptyroom', session=session,
                                        task='noise')
     er_raw.save(op.join(er_dir, f'{er_basename_1}_meg.fif'))
@@ -707,8 +706,7 @@ def test_get_matched_emptyroom_no_meas_date():
 
     er_dir = make_bids_folders(subject='emptyroom', session=er_session,
                                kind='meg', bids_root=bids_root)
-    er_basename = _gen_bids_basename(sub='emptyroom', ses=er_session,
-                                     task='noise',
+    er_basename = _gen_bids_basename(subject='emptyroom', session=er_session, task='noise',
                                      on_invalid_er_session='continue')
     raw = mne.io.read_raw_fif(raw_fname)
     er_raw_fname = op.join(data_path, 'MEG', 'sample', 'ernoise_raw.fif')

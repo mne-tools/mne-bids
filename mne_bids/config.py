@@ -55,6 +55,11 @@ ALLOWED_EXTENSIONS = {'meg': allowed_extensions_meg,
                       'eeg': allowed_extensions_eeg,
                       'ieeg': allowed_extensions_ieeg}
 
+# allowed BIDS entities
+BIDS_ENTITIES = ('subject', 'session', 'task', 'acquisition',
+                 'processing', 'acquisition', 'run', 'recording',
+                 'space', 'suffix', 'prefix')
+
 # accepted BIDS formats, which may be subject to change
 # depending on the specification
 BIDS_IEEG_COORDINATE_FRAMES = ['acpc', 'pixels', 'other']
