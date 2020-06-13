@@ -67,11 +67,6 @@ class BIDSPath(object):
     suffix : str | None
         The suffix for the filename to be created. E.g., 'audio.wav'.
 
-    Returns
-    -------
-    filename : str
-        The BIDS filename you wish to create.
-
     Examples
     --------
     >>> bids_basename = make_bids_basename(subject='test', session='two', task='mytask', suffix='data.csv')  # noqa: E501
@@ -79,6 +74,10 @@ class BIDSPath(object):
     sub-test_ses-two_task-mytask_data.csv
     >>> print(bids_basename.__repr__())
     BIDSPath (sub-test_ses-two_task-mytask_data.csv)
+    >>> # copy and update multiple entities at once
+    >>> new_basename = bids_basename.copy().update(subject='test2', session='one')
+    >>> print(new_basename)
+    sub-test2_ses-one_task-mytask_data.csv
     """
 
     def __init__(self, subject=None, session=None,
