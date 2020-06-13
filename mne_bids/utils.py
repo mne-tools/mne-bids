@@ -776,7 +776,7 @@ def _find_matching_sidecar(bids_fname, bids_root, suffix, allow_fail=False):
 
     Parameters
     ----------
-    bids_fname : str
+    bids_fname : str | BIDSPath
         Full name of the data file
     bids_root : str | pathlib.Path
         Path to root of the BIDS folder
@@ -793,6 +793,8 @@ def _find_matching_sidecar(bids_fname, bids_root, suffix, allow_fail=False):
         and no sidecar_fname was found
 
     """
+    # ensure that string representation is used
+    bids_fname = str(bids_fname)
     params = _parse_bids_filename(bids_fname, verbose=False)
 
     # We only use subject and session as identifier, because all other
