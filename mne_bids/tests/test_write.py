@@ -252,6 +252,8 @@ def test_fif(_bids_validate):
         bids_root, 'sub-emptyroom', 'ses-{0}'.format(er_date), 'meg',
         'sub-emptyroom_ses-{0}_task-noise_meg.json'.format(er_date)))
 
+    _bids_validate(bids_root)
+
     # test that an incorrect date raises an error.
     er_bids_basename_bad = 'sub-emptyroom_ses-19000101_task-noise'
     with pytest.raises(ValueError, match='Date provided'):

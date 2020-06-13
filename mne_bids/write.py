@@ -975,8 +975,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
                                  processing=params.get('proc'),
                                  space=params.get('space'),
                                  run=params.get('run'),
-                                 task=params.get('task'),
-                                 prefix=bids_root)
+                                 task=params.get('task'))
 
     subject_id, session_id = bids_basename.subject, bids_basename.session
     acquisition, task = bids_basename.acquisition, bids_basename.task
