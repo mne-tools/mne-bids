@@ -674,7 +674,7 @@ def test_vhdr(_bids_validate):
 
     # Test that correct channel units are written ... and that bad channel
     # is in channels.tsv
-    prefix = op.join(bids_root, 'sub-{}'.format(subject_id), 'eeg')
+    prefix = op.join(bids_root, f'sub-{subject_id}', 'eeg')
     suffix = 'channels.tsv'
     channels_tsv_name = bids_basename_minimal.copy().update(prefix=prefix,
                                                             suffix=suffix)
