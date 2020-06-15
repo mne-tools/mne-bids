@@ -22,7 +22,6 @@ def _combine_rows(data1, data2, drop_column=None):
     -------
     data : collections.OrderedDict
         The new combined data.
-
     """
     data = deepcopy(data1)
     for key, value in data2.items():
@@ -44,8 +43,8 @@ def _combine_rows(data1, data2, drop_column=None):
     return data
 
 
-def _combine_cols(data1, data2, key_order, col_name):
-    """Add two OrderedDict's together and optionally drop repeated data.
+def _combine_cols(data1, data2, col_name, skip_keys=None):
+    """Add two OrderedDict's together and optionally skip certain keys.
 
     Parameters
     ----------
@@ -53,38 +52,63 @@ def _combine_cols(data1, data2, key_order, col_name):
         Original OrderedDict.
     data2 : collections.OrderedDict
         New OrderedDict to be added to the original.
-    key_order : list
-        List of original dictionary keys to maintain the
-        original ordering.
     col_name : str
         Name of the column to index over (e.g. `participant_id`
         in participants.tsv file).
+    skip_keys : list, optional
+        List of column keys to skip writing data on.
 
     Returns
     -------
     data : collections.OrderedDict
         The new combined data.
 
+    Examples
+    --------
+    Consider `data1` with a table that looks like::
+
+        participant_id | age | sex | test-column
+                    01 | n/a | M | n/a
+                    02 | 23 | n/a | n/a
+
+    and `data2` with a table that looks like::
+
+        participant_id | age | sex | test-column
+                    01 | n/a | n/a | n/a
+                    02 | n/a | n/a | 43
+
+    Then if skip_keys is None, then the output would be::
+
+        participant_id | age | sex | test-column
+                    01 | n/a | n/a | n/a
+                    02 | n/a | n/a | 43
+
+    If skip_keys=`['age', 'sex']`, then the output would be::
+
+        participant_id | age | sex | test-column
+                    01 | n/a | M | n/a
+                    02 | 23 | n/a | 43
     """
+    if skip_keys is None:
+        skip_keys = []
     data = deepcopy(data2)
 
-    # keep the original order, and add back
-    # the data in participants files that user added
+    # keep the original order of the data
+    # by looping over the original OrderedDict keys
     for key in data1.keys():
-        # skip this key if mne-bids handles it
-        if key in key_order:
+        if key in skip_keys:
             continue
 
-        # add them back per participant id
-        for p_id, val in zip(data2[col_name], data2[key]):
-            if p_id in data1[col_name]:
-                # get the participant row from orig and new data
-                orig_p_idx = data1[col_name].index(p_id)
-                p_idx = data2[col_name].index(p_id)
+        # overwrite the columns in the new OrderedDict
+        # from values that were in the original OrderedDict
+        for row_id, val in zip(data1[col_name], data1[key]):
+            # get the row index from original and new data
+            orig_idx = data1[col_name].index(row_id)
+            new_idx = data2[col_name].index(row_id)
 
-                # assign original value to new data
-                orig_val = data1[key][orig_p_idx]
-                data[key][p_idx] = orig_val
+            # assign original value to new data
+            orig_val = data1[key][orig_idx]
+            data[key][new_idx] = orig_val
 
     return data
 

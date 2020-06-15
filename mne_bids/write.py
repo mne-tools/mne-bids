@@ -279,12 +279,14 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False,
             raise FileExistsError('"%s" already exists in the participant '  # noqa: E501 F821
                                   'list. Please set overwrite to '
                                   'True.' % subject_id)
-        # otherwise add the new data
-        _old_keys = data.keys()
+        # store the original keys
+        skip_keys = data.keys()
+
+        # otherwise add the new data as new row
         data = _combine_rows(orig_data, data, 'participant_id')
 
-        # loop through the keys in the original data to
-        data = _combine_cols(orig_data, data, key_order=_old_keys,
+        # add back extra columns that were added by the user manually
+        data = _combine_cols(orig_data, data, skip_keys=skip_keys,
                              col_name='participant_id')
 
     # overwrite is forced to True as all issues with overwrite == False have
