@@ -286,7 +286,7 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False,
         data = _combine_rows(orig_data, data, 'participant_id')
 
         # add back extra columns that were added by the user manually
-        data = _combine_cols(orig_data, data, skip_keys=skip_keys,
+        data = _combine_cols(data, orig_data, skip_keys=skip_keys,
                              col_name='participant_id')
 
     # overwrite is forced to True as all issues with overwrite == False have

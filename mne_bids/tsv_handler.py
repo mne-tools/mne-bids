@@ -91,7 +91,7 @@ def _combine_cols(data1, data2, col_name, skip_keys=None):
     """
     if skip_keys is None:
         skip_keys = []
-    data = deepcopy(data2)
+    data = deepcopy(data1)
 
     # keep the original order of the data
     # by looping over the original OrderedDict keys
@@ -101,13 +101,13 @@ def _combine_cols(data1, data2, col_name, skip_keys=None):
 
         # overwrite the columns in the new OrderedDict
         # from values that were in the original OrderedDict
-        for row_id, val in zip(data1[col_name], data1[key]):
+        for row_id, val in zip(data2[col_name], data2[key]):
             # get the row index from original and new data
-            orig_idx = data1[col_name].index(row_id)
-            new_idx = data2[col_name].index(row_id)
+            orig_idx = data2[col_name].index(row_id)
+            new_idx = data1[col_name].index(row_id)
 
             # assign original value to new data
-            orig_val = data1[key][orig_idx]
+            orig_val = data2[key][orig_idx]
             data[key][new_idx] = orig_val
 
     return data
