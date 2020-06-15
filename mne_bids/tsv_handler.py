@@ -99,16 +99,16 @@ def _combine_cols(data1, data2, col_name, skip_keys=None):
         if key in skip_keys:
             continue
 
-        # overwrite the columns in the new OrderedDict
-        # from values that were in the original OrderedDict
+        # overwrite the columns in the original OrderedDict
+        # from values that were in the new OrderedDict
         for row_id, val in zip(data2[col_name], data2[key]):
-            # get the row index from original and new data
-            orig_idx = data2[col_name].index(row_id)
-            new_idx = data1[col_name].index(row_id)
+            # get the row index from new and original data
+            new_idx = data2[col_name].index(row_id)
+            orig_idx = data1[col_name].index(row_id)
 
-            # assign original value to new data
-            orig_val = data2[key][orig_idx]
-            data[key][new_idx] = orig_val
+            # assign new value to data
+            new_val = data2[key][new_idx]
+            data[key][orig_idx] = new_val
 
     return data
 
