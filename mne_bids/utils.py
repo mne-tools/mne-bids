@@ -125,7 +125,7 @@ class BIDSPath(object):
 
     def __ne__(self, other):
         """Compare str representations."""
-        return str(self) == str(other)
+        return str(self) != str(other)
 
     def copy(self):
         """Copy the instance.
