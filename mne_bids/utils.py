@@ -40,8 +40,8 @@ class BIDSPath(object):
     subsequent files, or you may also give a suffix that will then complete
     the file name.
 
-    Note that all parameters are not applicable to each kind of data. For
-    example, electrode location TSV files do not need a task field.
+    Note that not all parameters are applicable to each kind of data. For
+    example, electrode location TSV files do not need a "task" field.
 
     Parameters
     ----------
