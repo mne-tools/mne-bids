@@ -138,7 +138,7 @@ class BIDSPath(object):
         return deepcopy(self)
 
     def update(self, **kwargs):
-        """Update inplace many BIDS entity key/value pairs in object.
+        """Update inplace BIDS entity key/value pairs in object.
 
         Parameters
         ----------
@@ -148,7 +148,7 @@ class BIDSPath(object):
         Returns
         -------
         bidspath : instance of BIDSPath
-            The copied bidspath.
+            The bidspath.
         """
         # error check kwargs
         for key, value in kwargs.items():

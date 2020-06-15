@@ -368,3 +368,7 @@ def test_find_matching_sidecar(return_bids_test_dir):
     # Find nothing but receive None, because we set `allow_fail` to True
     with pytest.warns(RuntimeWarning, match='Did not find any'):
         _find_matching_sidecar(bids_basename, bids_root, 'foo.bogus', True)
+
+
+def test_bids_path():
+    pass

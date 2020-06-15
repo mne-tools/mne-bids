@@ -550,7 +550,7 @@ def test_kit(_bids_validate):
     info = get_kit_info(marker_fname, False)[0]
     assert info['meas_date'] == get_kit_info(hpi_pre_fname,
                                              False)[0]['meas_date']
-    marker_fname.acquisition = 'post'
+    marker_fname.update(acquisition='post')
     info = get_kit_info(marker_fname, False)[0]
     assert info['meas_date'] == get_kit_info(hpi_post_fname,
                                              False)[0]['meas_date']
