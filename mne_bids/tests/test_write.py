@@ -805,7 +805,7 @@ def test_edf(_bids_validate):
                        anonymize=dict(daysback=33000),
                        overwrite=True)
         data = _from_tsv(scans_tsv)
-        bids_fname = str(bids_basename) + "_eeg.vhdr"
+        bids_fname = str(bids_basename) + '_eeg.vhdr'
         assert any([bids_fname in fname for fname in data['filename']])
 
     # Also cover iEEG
