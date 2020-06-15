@@ -69,7 +69,8 @@ class BIDSPath(object):
 
     Examples
     --------
-    >>> bids_basename = make_bids_basename(subject='test', session='two', task='mytask', suffix='data.csv')  # noqa: E501
+    >>> bids_basename = make_bids_basename(subject='test', session='two',
+                                           task='mytask', suffix='data.csv')
     >>> print(bids_basename)
     sub-test_ses-two_task-mytask_data.csv
     >>> print(bids_basename.__repr__())
