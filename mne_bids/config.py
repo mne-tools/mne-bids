@@ -56,9 +56,9 @@ ALLOWED_EXTENSIONS = {'meg': allowed_extensions_meg,
                       'ieeg': allowed_extensions_ieeg}
 
 # allowed BIDS entities
-BIDS_ENTITIES = ('subject', 'session', 'task', 'acquisition',
-                 'processing', 'run', 'recording',
-                 'space', 'suffix', 'prefix')
+BIDS_PATH_ENTITIES = ('subject', 'session', 'task', 'acquisition',
+                      'processing', 'run', 'recording',
+                      'space', 'suffix', 'prefix')
 
 # accepted BIDS formats, which may be subject to change
 # depending on the specification

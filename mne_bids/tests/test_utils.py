@@ -371,4 +371,29 @@ def test_find_matching_sidecar(return_bids_test_dir):
 
 
 def test_bids_path():
-    pass
+    subject = '01'
+    session = '01'
+
+    # confirm BIDSPath assigns properties correctly
+    bids_basename = make_bids_basename(subject=subject, session=session)
+    assert bids_basename.subject == subject
+    assert bids_basename.session == session
+    assert all(entity is None for entity in bids_basename.entities
+               if entity not in ['subject', 'session'])
+
+    # test updating functionality
+    bids_basename.update(acquisition='03', run='2', session='02',
+                         task=None)
+    assert bids_basename.subject == subject and bids_basename.session == '02'
+    assert bids_basename.acquisition == '03' and bids_basename.run == '2'
+    assert bids_basename.task is None
+
+    new_bids_basename = bids_basename.copy().update(task='02',
+                                                    acquisition=None)
+    assert new_bids_basename.task == '02'
+    assert new_bids_basename.acquisition is None
+
+    # equality of bids basenames
+    assert new_bids_basename != bids_basename
+    assert new_bids_basename == bids_basename.copy().update(task='02',
+                                                            acquisition=None)

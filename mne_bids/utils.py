@@ -27,7 +27,7 @@ from mne.io.kit.kit import get_kit_info
 from mne.io.constants import FIFF
 from mne.time_frequency import psd_array_welch
 
-from mne_bids.config import BIDS_ENTITIES
+from mne_bids.config import BIDS_PATH_ENTITIES
 from mne_bids.tsv_handler import _to_tsv, _tsv_to_str
 
 
@@ -76,7 +76,8 @@ class BIDSPath(object):
     >>> print(bids_basename.__repr__())
     BIDSPath (sub-test_ses-two_task-mytask_data.csv)
     >>> # copy and update multiple entities at once
-    >>> new_basename = bids_basename.copy().update(subject='test2', session='one')
+    >>> new_basename = bids_basename.copy().update(subject='test2',
+                                                   session='one')
     >>> print(new_basename)
     sub-test2_ses-one_task-mytask_data.csv
     """
@@ -94,7 +95,7 @@ class BIDSPath(object):
         """Return dictionary of the BIDS entities."""
         # create an ordered dictionary of all the bids entities
         entities = OrderedDict()
-        for key in BIDS_ENTITIES:
+        for key in BIDS_PATH_ENTITIES:
             value = getattr(self, key, None)
             if value is not None:
                 entities[key] = value
@@ -107,7 +108,17 @@ class BIDSPath(object):
 
     def __repr__(self):
         """Representation in the style of `pathlib.Path`."""
-        return "{}({!r})".format(self.__class__.__name__, str(self))
+        return f"{self.__class__.__name__}({str(self)}) | \n" \
+               f"prefix={self.prefix}, \n" \
+               f"subject={self.subject}, \n" \
+               f"session={self.session}, \n" \
+               f"task={self.task}, \n" \
+               f"run={self.run}, \n" \
+               f"acquisition={self.acquisition}, \n" \
+               f"processing={self.processing}, \n" \
+               f"recording={self.recording}, \n" \
+               f"space={self.space}, \n" \
+               f"suffix={self.suffix}"
 
     def __fspath__(self):
         """Return the string representation for any fs functions."""
@@ -138,24 +149,43 @@ class BIDSPath(object):
         """
         return deepcopy(self)
 
-    def update(self, **kwargs):
+    def update(self, **entities):
         """Update inplace BIDS entity key/value pairs in object.
 
         Parameters
         ----------
-        kwargs :
-            Allowed BIDS entities: see `BIDS_ENTITIES`.
+        entities : dict
+            Allowed BIDS path entities:
+                - 'subject', 'session', 'task', 'acquisition',
+                  'processing', 'run', 'recording',
+                  'space', 'suffix', 'prefix'
 
         Returns
         -------
         bidspath : instance of BIDSPath
-            The bidspath.
+            The current instance of BIDSPath.
+
+        Examples
+        --------
+        If one creates a bids basename using `make_bids_basename`::
+
+        >>> bids_basename = make_bids_basename(subject='test', session='two',
+                                           task='mytask', suffix='data.csv')
+        >>> print(bids_basename)
+        sub-test_ses-two_task-mytask_data.csv
+
+        Then, one can update this `BIDSPath` object in place::
+
+        >>> bids_basename.update(acquisition='test', suffix='ieeg.vhdr',
+                                 task=None)
+        >>> print(bids_basename)
+        sub-test_ses-two_acq-test_ieeg.vhdr
         """
-        # error check kwargs
-        for key, value in kwargs.items():
+        # error check entities
+        for key, value in entities.items():
             # error check allowed BIDS entity keywords
-            if key not in BIDS_ENTITIES:
-                raise ValueError('Key must be one of {BIDS_ENTITIES}, '
+            if key not in BIDS_PATH_ENTITIES:
+                raise ValueError('Key must be one of {BIDS_PATH_ENTITIES}, '
                                  'got %s' % key)
 
             # set entity value
