@@ -371,6 +371,7 @@ def test_find_matching_sidecar(return_bids_test_dir):
 
 
 def test_bids_path():
+    """Test usage of BIDSPath object."""
     subject = '01'
     session = '01'
 
@@ -380,6 +381,12 @@ def test_bids_path():
     assert bids_basename.session == session
     assert all(entity is None for entity in bids_basename.entities
                if entity not in ['subject', 'session'])
+    assert 'subject' in bids_basename.entities
+    assert 'session' in bids_basename.entities
+    assert all(entity not in bids_basename.entities
+               for entity in ['task', 'run', 'recording', 'acquisition',
+                              'space', 'processing',
+                              'prefix', 'suffix'])
 
     # test updating functionality
     bids_basename.update(acquisition='03', run='2', session='02',
@@ -397,3 +404,7 @@ def test_bids_path():
     assert new_bids_basename != bids_basename
     assert new_bids_basename == bids_basename.copy().update(task='02',
                                                             acquisition=None)
+
+    # error check
+    with pytest.raises(ValueError, match='Key must be one of*'):
+        bids_basename.update(sub=subject, session=session)
