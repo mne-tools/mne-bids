@@ -131,13 +131,13 @@ of the directory tree.
     |------ eegmmidb/
     |--------- 1.0.0/
     |------------ S002/
-    |--------------- S002R12.edf
     |--------------- S002R02.edf
+    |--------------- S002R12.edf
     |--------------- S002R04.edf
     |------------ S001/
     |--------------- S001R02.edf
-    |--------------- S001R04.edf
     |--------------- S001R12.edf
+    |--------------- S001R04.edf
 
 
 
@@ -309,10 +309,15 @@ which are however optional. The required inputs are:
         overwrite : bool
             Whether to overwrite existing files or data in files.
             Defaults to False.
+
             If overwrite is True, any existing files with the same BIDS parameters
             will be overwritten with the exception of the `participants.tsv` and
             `scans.tsv` files. For these files, parts of pre-existing data that
-            match the current data will be replaced.
+            match the current data will be replaced. For `participants.tsv`,
+            specifically, age, sex and hand fields will be overwritten, while
+            any added fields in the `participants.json` and `participants.tsv`
+            by a user will be kept.
+
             If overwrite is False, no existing data will be overwritten or
             replaced.
         verbose : bool
@@ -439,7 +444,7 @@ Now we just need to specify a few more EEG details to get something sensible:
         ]
     }
     Effective window size : 1.600 (s)
-    /home/circleci/project/mne_bids/write.py:435: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
+    /home/circleci/project/mne_bids/write.py:463: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
       warn('No line frequency found, defaulting to {} Hz '
     Reading 0 ... 9759  =      0.000 ...    60.994 secs...
 
@@ -496,39 +501,39 @@ What does our fresh BIDS directory look like?
  .. code-block:: none
 
     |eegmmidb_bids/
+    |--- dataset_description.json
     |--- participants.json
     |--- participants.tsv
-    |--- dataset_description.json
-    |--- sub-001/
-    |------ sub-001_scans.tsv
-    |------ eeg/
-    |--------- sub-001_task-resteyesclosed_events.tsv
-    |--------- sub-001_task-imaginefists_run-1_eeg.edf
-    |--------- sub-001_task-resteyesclosed_eeg.edf
-    |--------- sub-001_task-imaginefists_run-2_eeg.edf
-    |--------- sub-001_task-imaginefists_run-2_channels.tsv
-    |--------- sub-001_task-imaginefists_run-1_events.tsv
-    |--------- sub-001_task-resteyesclosed_eeg.json
-    |--------- sub-001_task-imaginefists_run-1_eeg.json
-    |--------- sub-001_task-imaginefists_run-2_events.tsv
-    |--------- sub-001_task-imaginefists_run-1_channels.tsv
-    |--------- sub-001_task-resteyesclosed_channels.tsv
-    |--------- sub-001_task-imaginefists_run-2_eeg.json
     |--- sub-002/
     |------ sub-002_scans.tsv
     |------ eeg/
     |--------- sub-002_task-imaginefists_run-1_channels.tsv
-    |--------- sub-002_task-imaginefists_run-1_events.tsv
-    |--------- sub-002_task-imaginefists_run-1_eeg.edf
-    |--------- sub-002_task-resteyesclosed_channels.tsv
     |--------- sub-002_task-resteyesclosed_events.tsv
-    |--------- sub-002_task-imaginefists_run-2_events.tsv
-    |--------- sub-002_task-imaginefists_run-2_channels.tsv
-    |--------- sub-002_task-resteyesclosed_eeg.json
-    |--------- sub-002_task-imaginefists_run-2_eeg.edf
     |--------- sub-002_task-imaginefists_run-2_eeg.json
-    |--------- sub-002_task-imaginefists_run-1_eeg.json
     |--------- sub-002_task-resteyesclosed_eeg.edf
+    |--------- sub-002_task-resteyesclosed_channels.tsv
+    |--------- sub-002_task-imaginefists_run-2_channels.tsv
+    |--------- sub-002_task-imaginefists_run-1_eeg.edf
+    |--------- sub-002_task-imaginefists_run-2_eeg.edf
+    |--------- sub-002_task-imaginefists_run-1_eeg.json
+    |--------- sub-002_task-imaginefists_run-1_events.tsv
+    |--------- sub-002_task-imaginefists_run-2_events.tsv
+    |--------- sub-002_task-resteyesclosed_eeg.json
+    |--- sub-001/
+    |------ sub-001_scans.tsv
+    |------ eeg/
+    |--------- sub-001_task-imaginefists_run-2_eeg.edf
+    |--------- sub-001_task-imaginefists_run-1_events.tsv
+    |--------- sub-001_task-imaginefists_run-1_channels.tsv
+    |--------- sub-001_task-imaginefists_run-2_channels.tsv
+    |--------- sub-001_task-imaginefists_run-1_eeg.json
+    |--------- sub-001_task-resteyesclosed_eeg.edf
+    |--------- sub-001_task-resteyesclosed_eeg.json
+    |--------- sub-001_task-imaginefists_run-2_events.tsv
+    |--------- sub-001_task-resteyesclosed_channels.tsv
+    |--------- sub-001_task-imaginefists_run-2_eeg.json
+    |--------- sub-001_task-imaginefists_run-1_eeg.edf
+    |--------- sub-001_task-resteyesclosed_events.tsv
 
 
 
@@ -643,7 +648,7 @@ Looks good so far, let's convert the data for all tasks and subjects.
         ]
     }
     Effective window size : 1.600 (s)
-    /home/circleci/project/mne_bids/write.py:435: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
+    /home/circleci/project/mne_bids/write.py:463: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
       warn('No line frequency found, defaulting to {} Hz '
     Reading 0 ... 9759  =      0.000 ...    60.994 secs...
 
@@ -745,7 +750,7 @@ Looks good so far, let's convert the data for all tasks and subjects.
         ]
     }
     Effective window size : 1.600 (s)
-    /home/circleci/project/mne_bids/write.py:435: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
+    /home/circleci/project/mne_bids/write.py:463: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
       warn('No line frequency found, defaulting to {} Hz '
     Reading 0 ... 19999  =      0.000 ...   124.994 secs...
 
@@ -848,7 +853,7 @@ Looks good so far, let's convert the data for all tasks and subjects.
         ]
     }
     Effective window size : 1.600 (s)
-    /home/circleci/project/mne_bids/write.py:435: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
+    /home/circleci/project/mne_bids/write.py:463: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
       warn('No line frequency found, defaulting to {} Hz '
     Reading 0 ... 19999  =      0.000 ...   124.994 secs...
 
@@ -946,7 +951,7 @@ Looks good so far, let's convert the data for all tasks and subjects.
         ]
     }
     Effective window size : 1.600 (s)
-    /home/circleci/project/mne_bids/write.py:435: RuntimeWarning: No line frequency found, defaulting to 50 Hz estimated from multi-taper FFT on 10 seconds of data.
+    /home/circleci/project/mne_bids/write.py:463: RuntimeWarning: No line frequency found, defaulting to 50 Hz estimated from multi-taper FFT on 10 seconds of data.
       warn('No line frequency found, defaulting to {} Hz '
     Reading 0 ... 9759  =      0.000 ...    60.994 secs...
 
@@ -1049,7 +1054,7 @@ Looks good so far, let's convert the data for all tasks and subjects.
         ]
     }
     Effective window size : 1.600 (s)
-    /home/circleci/project/mne_bids/write.py:435: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
+    /home/circleci/project/mne_bids/write.py:463: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
       warn('No line frequency found, defaulting to {} Hz '
     Reading 0 ... 19679  =      0.000 ...   122.994 secs...
 
@@ -1153,7 +1158,7 @@ Looks good so far, let's convert the data for all tasks and subjects.
         ]
     }
     Effective window size : 1.600 (s)
-    /home/circleci/project/mne_bids/write.py:435: RuntimeWarning: No line frequency found, defaulting to 50 Hz estimated from multi-taper FFT on 10 seconds of data.
+    /home/circleci/project/mne_bids/write.py:463: RuntimeWarning: No line frequency found, defaulting to 50 Hz estimated from multi-taper FFT on 10 seconds of data.
       warn('No line frequency found, defaulting to {} Hz '
     Reading 0 ... 19679  =      0.000 ...   122.994 secs...
 
@@ -1211,39 +1216,39 @@ Now we have written our BIDS directory.
  .. code-block:: none
 
     |eegmmidb_bids/
+    |--- dataset_description.json
     |--- participants.json
     |--- participants.tsv
-    |--- dataset_description.json
-    |--- sub-001/
-    |------ sub-001_scans.tsv
-    |------ eeg/
-    |--------- sub-001_task-resteyesclosed_events.tsv
-    |--------- sub-001_task-imaginefists_run-1_eeg.edf
-    |--------- sub-001_task-resteyesclosed_eeg.edf
-    |--------- sub-001_task-imaginefists_run-2_eeg.edf
-    |--------- sub-001_task-imaginefists_run-2_channels.tsv
-    |--------- sub-001_task-imaginefists_run-1_events.tsv
-    |--------- sub-001_task-resteyesclosed_eeg.json
-    |--------- sub-001_task-imaginefists_run-1_eeg.json
-    |--------- sub-001_task-imaginefists_run-2_events.tsv
-    |--------- sub-001_task-imaginefists_run-1_channels.tsv
-    |--------- sub-001_task-resteyesclosed_channels.tsv
-    |--------- sub-001_task-imaginefists_run-2_eeg.json
     |--- sub-002/
     |------ sub-002_scans.tsv
     |------ eeg/
     |--------- sub-002_task-imaginefists_run-1_channels.tsv
-    |--------- sub-002_task-imaginefists_run-1_events.tsv
-    |--------- sub-002_task-imaginefists_run-1_eeg.edf
-    |--------- sub-002_task-resteyesclosed_channels.tsv
     |--------- sub-002_task-resteyesclosed_events.tsv
-    |--------- sub-002_task-imaginefists_run-2_events.tsv
-    |--------- sub-002_task-imaginefists_run-2_channels.tsv
-    |--------- sub-002_task-resteyesclosed_eeg.json
-    |--------- sub-002_task-imaginefists_run-2_eeg.edf
     |--------- sub-002_task-imaginefists_run-2_eeg.json
-    |--------- sub-002_task-imaginefists_run-1_eeg.json
     |--------- sub-002_task-resteyesclosed_eeg.edf
+    |--------- sub-002_task-resteyesclosed_channels.tsv
+    |--------- sub-002_task-imaginefists_run-2_channels.tsv
+    |--------- sub-002_task-imaginefists_run-1_eeg.edf
+    |--------- sub-002_task-imaginefists_run-2_eeg.edf
+    |--------- sub-002_task-imaginefists_run-1_eeg.json
+    |--------- sub-002_task-imaginefists_run-1_events.tsv
+    |--------- sub-002_task-imaginefists_run-2_events.tsv
+    |--------- sub-002_task-resteyesclosed_eeg.json
+    |--- sub-001/
+    |------ sub-001_scans.tsv
+    |------ eeg/
+    |--------- sub-001_task-imaginefists_run-2_eeg.edf
+    |--------- sub-001_task-imaginefists_run-1_events.tsv
+    |--------- sub-001_task-imaginefists_run-1_channels.tsv
+    |--------- sub-001_task-imaginefists_run-2_channels.tsv
+    |--------- sub-001_task-imaginefists_run-1_eeg.json
+    |--------- sub-001_task-resteyesclosed_eeg.edf
+    |--------- sub-001_task-resteyesclosed_eeg.json
+    |--------- sub-001_task-imaginefists_run-2_events.tsv
+    |--------- sub-001_task-resteyesclosed_channels.tsv
+    |--------- sub-001_task-imaginefists_run-2_eeg.json
+    |--------- sub-001_task-imaginefists_run-1_eeg.edf
+    |--------- sub-001_task-resteyesclosed_events.tsv
 
 
 
@@ -1268,7 +1273,7 @@ Command line tool: https://www.npmjs.com/package/bids-validator
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  0.746 seconds)
+   **Total running time of the script:** ( 0 minutes  0.784 seconds)
 
 
 .. _sphx_glr_download_auto_examples_convert_eeg_to_bids.py:

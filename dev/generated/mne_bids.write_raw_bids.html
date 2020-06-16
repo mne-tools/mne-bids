@@ -3,6 +3,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>mne_bids.write_raw_bids &#8212; mne_bids 0.5.dev0 documentation</title>
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -184,12 +185,15 @@ overwritten. Defaults to False.</p>
 </dl>
 </dd>
 <dt><strong>overwrite</strong><span class="classifier">bool</span></dt><dd><p>Whether to overwrite existing files or data in files.
-Defaults to False.
-If overwrite is True, any existing files with the same BIDS parameters
+Defaults to False.</p>
+<p>If overwrite is True, any existing files with the same BIDS parameters
 will be overwritten with the exception of the <cite>participants.tsv</cite> and
 <cite>scans.tsv</cite> files. For these files, parts of pre-existing data that
-match the current data will be replaced.
-If overwrite is False, no existing data will be overwritten or
+match the current data will be replaced. For <cite>participants.tsv</cite>,
+specifically, age, sex and hand fields will be overwritten, while
+any added fields in the <cite>participants.json</cite> and <cite>participants.tsv</cite>
+by a user will be kept.</p>
+<p>If overwrite is False, no existing data will be overwritten or
 replaced.</p>
 </dd>
 <dt><strong>verbose</strong><span class="classifier">bool</span></dt><dd><p>If verbose is True, this will print a snippet of the sidecar files. If
@@ -224,8 +228,8 @@ of the participant correctly.</p>
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-06-04.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.0.4.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-06-16.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.1.1.<br/>
     </p>
   </div>
 </footer>
