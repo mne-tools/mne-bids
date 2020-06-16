@@ -43,7 +43,7 @@ from mne_bids.copyfiles import (copyfile_brainvision, copyfile_eeglab,
                                 copyfile_ctf, copyfile_bti, copyfile_kit)
 from mne_bids.read import reader
 from mne_bids.tsv_handler import (_from_tsv, _drop, _contains_row,
-                                  _combine_rows, _combine_cols)
+                                  _combine_rows)
 
 from mne_bids.config import (ORIENTATION, UNITS, MANUFACTURERS,
                              IGNORED_CHANNELS, ALLOWED_EXTENSIONS,
@@ -279,15 +279,28 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False,
             raise FileExistsError('"%s" already exists in the participant '  # noqa: E501 F821
                                   'list. Please set overwrite to '
                                   'True.' % subject_id)
-        # store the original keys
-        skip_keys = data.keys()
+
+        # Append any additional columns that original data had.
+        # Keep the original order of the data by looping over
+        # the original OrderedDict keys
+        col_name = 'participant_id'
+        for key in orig_data.keys():
+            if key in data:
+                continue
+
+            # overwrite the columns in the original OrderedDict
+            # from values that were in the new OrderedDict
+            for row_id, val in zip(orig_data[col_name], orig_data[key]):
+                # get the row index from new and original data
+                new_idx = orig_data[col_name].index(row_id)
+                orig_idx = data[col_name].index(row_id)
+
+                # assign new value to data
+                new_val = orig_data[key][new_idx]
+                data[key][orig_idx] = new_val
 
         # otherwise add the new data as new row
         data = _combine_rows(orig_data, data, 'participant_id')
-
-        # add back extra columns that were added by the user manually
-        data = _combine_cols(data, orig_data, skip_keys=skip_keys,
-                             col_name='participant_id')
 
     # overwrite is forced to True as all issues with overwrite == False have
     # been handled by this point
