@@ -355,9 +355,8 @@ def test_find_matching_sidecar(return_bids_test_dir):
     # Now find a sidecar
     sidecar_fname = _find_matching_sidecar(bids_basename, bids_root,
                                            'coordsystem.json')
-    expected_file = op.join(
-        'sub-01', 'ses-01', 'meg',
-        'sub-01_ses-01_task-testing_run-01_coordsystem.json')
+    expected_file = op.join('sub-01', 'ses-01', 'meg',
+                            'sub-01_ses-01_coordsystem.json')
     assert sidecar_fname.endswith(expected_file)
 
     # Find multiple sidecars, tied in score, triggering an error

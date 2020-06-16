@@ -1018,19 +1018,21 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     # "invalid" basename for an emptyroom subject.
     on_invalid_er_task = 'continue'
 
+    # create *_scans.tsv
+    bids_path = make_bids_basename(subject=subject_id, session=session_id,
+                                   prefix=ses_path, suffix='scans.tsv')
     scans_fname = _gen_bids_basename(
-        subject=subject_id, session=session_id,
-        prefix=ses_path, suffix='scans.tsv',
-        on_invalid_er_task=on_invalid_er_task)
+        **bids_path.entities, on_invalid_er_task=on_invalid_er_task)
 
+    # create *_coordsystem.json
+    bids_path.update(prefix=data_path, suffix='coordsystem.json')
     coordsystem_fname = _gen_bids_basename(
-        **bids_basename.entities,
-        prefix=data_path, suffix='coordsystem.json',
-        on_invalid_er_task=on_invalid_er_task)
+        **bids_path.entities, on_invalid_er_task=on_invalid_er_task)
+
+    # create *_electrodes.tsv
+    bids_path.update(suffix='electrodes.tsv')
     electrodes_fname = _gen_bids_basename(
-        **bids_basename.entities,
-        prefix=data_path, suffix='electrodes.tsv',
-        on_invalid_er_task=on_invalid_er_task)
+        **bids_path.entities, on_invalid_er_task=on_invalid_er_task)
 
     # For the remaining files, we can use BIDSPath to alter.
     participants_tsv_fname = make_bids_basename(prefix=bids_root,

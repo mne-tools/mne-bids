@@ -108,17 +108,8 @@ class BIDSPath(object):
 
     def __repr__(self):
         """Representation in the style of `pathlib.Path`."""
-        return f"{self.__class__.__name__}({str(self)}) | \n" \
-               f"prefix={self.prefix}, \n" \
-               f"subject={self.subject}, \n" \
-               f"session={self.session}, \n" \
-               f"task={self.task}, \n" \
-               f"run={self.run}, \n" \
-               f"acquisition={self.acquisition}, \n" \
-               f"processing={self.processing}, \n" \
-               f"recording={self.recording}, \n" \
-               f"space={self.space}, \n" \
-               f"suffix={self.suffix}"
+        return f'{self.__class__.__name__}({str(self)}) | \n' + \
+               '\n'.join(f'{key}={val}' for key, val in self.entities.items())
 
     def __fspath__(self):
         """Return the string representation for any fs functions."""
