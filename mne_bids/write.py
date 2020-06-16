@@ -1023,17 +1023,6 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
         prefix=ses_path, suffix='scans.tsv',
         on_invalid_er_task=on_invalid_er_task)
 
-    # coordsystem_fname = _gen_bids_basename(
-    #     subject=subject_id, session=session_id,
-    #     acquisition=acquisition, space=space,
-    #     prefix=data_path, suffix='coordsystem.json',
-    #     on_invalid_er_task=on_invalid_er_task)
-    # electrodes_fname = _gen_bids_basename(
-    #     subject=subject_id, session=session_id,
-    #     acquisition=acquisition, space=space,
-    #     prefix=data_path, suffix='electrodes.tsv',
-    #     on_invalid_er_task=on_invalid_er_task)
-
     coordsystem_fname = _gen_bids_basename(
         **bids_basename.entities,
         prefix=data_path, suffix='coordsystem.json',
