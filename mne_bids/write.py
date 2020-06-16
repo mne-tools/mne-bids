@@ -288,16 +288,12 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False,
             if key in data:
                 continue
 
-            # overwrite the columns in the original OrderedDict
-            # from values that were in the new OrderedDict
-            for row_id, val in zip(orig_data[col_name], orig_data[key]):
-                # get the row index from new and original data
-                new_idx = orig_data[col_name].index(row_id)
-                orig_idx = data[col_name].index(row_id)
-
-                # assign new value to data
-                new_val = orig_data[key][new_idx]
-                data[key][orig_idx] = new_val
+            # add original value for any user-appended columns
+            # that were not handled by mne-bids
+            p_id = data[col_name][0]
+            if p_id in orig_data[col_name]:
+                row_idx = orig_data[col_name].index(p_id)
+                data[key] = [orig_data[key][row_idx]]
 
         # otherwise add the new data as new row
         data = _combine_rows(orig_data, data, 'participant_id')
