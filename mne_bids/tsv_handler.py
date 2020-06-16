@@ -4,7 +4,7 @@ from collections import OrderedDict
 from copy import deepcopy
 
 
-def _combine(data1, data2, drop_column=None):
+def _combine_rows(data1, data2, drop_column=None):
     """Add two OrderedDict's together and optionally drop repeated data.
 
     Parameters
@@ -22,7 +22,6 @@ def _combine(data1, data2, drop_column=None):
     -------
     data : collections.OrderedDict
         The new combined data.
-
     """
     data = deepcopy(data1)
     for key, value in data2.items():

@@ -15,7 +15,7 @@ with warnings.catch_warnings():
                             category=ImportWarning)
     import mne  # noqa: F401
 
-from mne_bids.tsv_handler import (_from_tsv, _to_tsv, _combine, _drop,
+from mne_bids.tsv_handler import (_from_tsv, _to_tsv, _combine_rows, _drop,
                                   _contains_row, _tsv_to_str)
 import pytest
 
@@ -28,13 +28,13 @@ def test_tsv_handler():
     d = odict(a=[1, 2, 3, 4], b=['five', 'six', 'seven', 'eight'])
     assert _contains_row(d, {'a': 1, 'b': 'five'})
     d2 = odict(a=[5], b=['nine'])
-    d = _combine(d, d2)
+    d = _combine_rows(d, d2)
     assert 5 in d['a']
     d2 = odict(a=[5])
-    d = _combine(d, d2)
+    d = _combine_rows(d, d2)
     assert 'n/a' in d['b']
     d2 = odict(a=[5], b=['ten'])
-    d = _combine(d, d2, drop_column='a')
+    d = _combine_rows(d, d2, drop_column='a')
     # make sure that the repeated data was dropped
     assert 'nine' not in d['b']
     print(_tsv_to_str(d))
@@ -63,9 +63,9 @@ def test_tsv_handler():
     d2 = odict(a=[4], b=['five'], c=[3.1415])
     # raise error if a new column is tried to be added
     with pytest.raises(KeyError):
-        d = _combine(d, d2)
+        d = _combine_rows(d, d2)
     d2 = odict(a=[5])
-    d = _combine(d, d2)
+    d = _combine_rows(d, d2)
     assert d['b'] == ['three', 'four', 'n/a']
     assert _contains_row(d, {'a': 5})
 

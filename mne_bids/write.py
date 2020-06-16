@@ -7,6 +7,7 @@
 #          Matt Sanderson <matt.sanderson@mq.edu.au>
 #
 # License: BSD (3-clause)
+import json
 import os
 import os.path as op
 from datetime import datetime, date, timedelta, timezone
@@ -41,7 +42,8 @@ from mne_bids.utils import (_write_json, _write_tsv, _read_events, _mkdir_p,
 from mne_bids.copyfiles import (copyfile_brainvision, copyfile_eeglab,
                                 copyfile_ctf, copyfile_bti, copyfile_kit)
 from mne_bids.read import reader
-from mne_bids.tsv_handler import _from_tsv, _combine, _drop, _contains_row
+from mne_bids.tsv_handler import (_from_tsv, _drop, _contains_row,
+                                  _combine_rows)
 
 from mne_bids.config import (ORIENTATION, UNITS, MANUFACTURERS,
                              IGNORED_CHANNELS, ALLOWED_EXTENSIONS,
@@ -277,8 +279,24 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False,
             raise FileExistsError('"%s" already exists in the participant '  # noqa: E501 F821
                                   'list. Please set overwrite to '
                                   'True.' % subject_id)
-        # otherwise add the new data
-        data = _combine(orig_data, data, 'participant_id')
+
+        # Append any additional columns that original data had.
+        # Keep the original order of the data by looping over
+        # the original OrderedDict keys
+        col_name = 'participant_id'
+        for key in orig_data.keys():
+            if key in data:
+                continue
+
+            # add original value for any user-appended columns
+            # that were not handled by mne-bids
+            p_id = data[col_name][0]
+            if p_id in orig_data[col_name]:
+                row_idx = orig_data[col_name].index(p_id)
+                data[key] = [orig_data[key][row_idx]]
+
+        # otherwise add the new data as new row
+        data = _combine_rows(orig_data, data, 'participant_id')
 
     # overwrite is forced to True as all issues with overwrite == False have
     # been handled by this point
@@ -309,6 +327,16 @@ def _participants_json(fname, overwrite=False, verbose=True):
                    'Levels': {'F': 'female', 'M': 'male'}}
     cols['hand'] = {'Description': 'Handedness of the participant',
                     'Levels': {'R': 'right', 'L': 'left', 'A': 'ambidextrous'}}
+
+    # make sure to append any JSON fields added by the user
+    # Note: mne-bids will overwrite age, sex and hand fields
+    # if `overwrite` is True
+    if op.exists(fname):
+        with open(fname, 'r') as fin:
+            orig_cols = json.load(fin, object_pairs_hook=OrderedDict)
+        for key, val in orig_cols.items():
+            if key not in cols:
+                cols[key] = val
 
     _write_json(fname, cols, overwrite, verbose)
 
@@ -354,7 +382,7 @@ def _scans_tsv(raw, raw_fname, fname, overwrite=False, verbose=True):
             raise FileExistsError('"%s" already exists in the scans list. '  # noqa: E501 F821
                                   'Please set overwrite to True.' % raw_fname)
         # otherwise add the new data
-        data = _combine(orig_data, data, 'filename')
+        data = _combine_rows(orig_data, data, 'filename')
 
     # overwrite is forced to True as all issues with overwrite == False have
     # been handled by this point
@@ -870,10 +898,15 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     overwrite : bool
         Whether to overwrite existing files or data in files.
         Defaults to False.
+
         If overwrite is True, any existing files with the same BIDS parameters
         will be overwritten with the exception of the `participants.tsv` and
         `scans.tsv` files. For these files, parts of pre-existing data that
-        match the current data will be replaced.
+        match the current data will be replaced. For `participants.tsv`,
+        specifically, age, sex and hand fields will be overwritten, while
+        any added fields in the `participants.json` and `participants.tsv`
+        by a user will be kept.
+
         If overwrite is False, no existing data will be overwritten or
         replaced.
     verbose : bool
