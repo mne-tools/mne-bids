@@ -85,21 +85,30 @@ class BIDSPath(object):
     def __init__(self, subject=None, session=None,
                  task=None, acquisition=None, run=None, processing=None,
                  recording=None, space=None, prefix=None, suffix=None):
+        if all(ii is None for ii in [subject, session, task,
+                                     acquisition, run, processing,
+                                     recording, space, prefix, suffix]):
+            raise ValueError("At least one parameter must be given.")
+
         self.update(subject=subject, session=session, task=task,
                     acquisition=acquisition, run=run, processing=processing,
                     recording=recording, space=space, prefix=prefix,
                     suffix=suffix)
 
+        # check the task/session of er basename
+        if subject == 'emptyroom':
+            _check_empty_room_basename(self)
+
     @property
     def entities(self):
         """Return dictionary of the BIDS entities."""
         return OrderedDict([
-            ('sub', self.subject),
-            ('ses', self.session),
+            ('subject', self.subject),
+            ('session', self.session),
             ('task', self.task),
-            ('acq', self.acquisition),
+            ('acquisition', self.acquisition),
             ('run', self.run),
-            ('proc', self.processing),
+            ('processing', self.processing),
             ('recording', self.recording),
             ('space', self.space),
             ('prefix', self.prefix),
@@ -113,6 +122,16 @@ class BIDSPath(object):
             if key not in ('prefix', 'suffix') and \
                     val is not None:
                 _check_key_val(key, val)
+                if key == 'subject':
+                    key = 'sub'
+                if key == 'session':
+                    key = 'ses'
+                if key == 'acquisition':
+                    key = 'acq'
+                if key == 'processing':
+                    key = 'proc'
+                if key == 'recording':
+                    key = 'rec'
                 basename.append('%s-%s' % (key, val))
 
         if self.suffix is not None:
@@ -126,8 +145,7 @@ class BIDSPath(object):
 
     def __repr__(self):
         """Representation in the style of `pathlib.Path`."""
-        return f'{self.__class__.__name__}({str(self)}) | \n' + \
-               '\n'.join(f'{key}={val}' for key, val in self.entities.items())
+        return f'{self.__class__.__name__}({str(self)})'
 
     def __fspath__(self):
         """Return the string representation for any fs functions."""
@@ -163,7 +181,7 @@ class BIDSPath(object):
 
         Parameters
         ----------
-        entities : dict
+        entities : dict | kwarg
             Allowed BIDS path entities:
                 - 'subject', 'session', 'task', 'acquisition',
                   'processing', 'run', 'recording',
@@ -190,10 +208,17 @@ class BIDSPath(object):
         >>> print(bids_basename)
         sub-test_ses-two_acq-test_ieeg.vhdr
         """
+        run = entities.get('run')
+        if run is not None and not isinstance(run, str):
+            # Ensure that run is a string
+            entities['run'] = '{:02}'.format(run)
+
         # error check entities
         for key, val in entities.items():
             # error check allowed BIDS entity keywords
-            if key not in BIDS_PATH_ENTITIES:
+            if key not in BIDS_PATH_ENTITIES and key not in [
+                'on_invalid_er_session', 'on_invalid_er_task',
+            ]:
                 raise ValueError('Key must be one of {BIDS_PATH_ENTITIES}, '
                                  'got %s' % key)
 
@@ -539,7 +564,7 @@ param_regex = re.compile(r'([^-_\.\\\/]+)-([^-_\.\\\/]+)')
 def _parse_bids_filename(fname, verbose):
     """Get dict from BIDS fname."""
     keys = ['sub', 'ses', 'task', 'acq', 'run', 'proc', 'run', 'space',
-            'recording', 'split', 'kind']
+            'rec', 'split', 'kind']
     params = {key: None for key in keys}
     idx_key = 0
     for match in re.finditer(param_regex, op.basename(fname)):
@@ -549,7 +574,7 @@ def _parse_bids_filename(fname, verbose):
                            % (key, fname))
         if keys.index(key) < idx_key:
             raise ValueError('Entities in filename not ordered correctly.'
-                             ' "%s" should have occured earlier in the '
+                             ' "%s" should have occurred earlier in the '
                              'filename "%s"' % (key, fname))
         idx_key = keys.index(key)
         params[key] = value
@@ -977,6 +1002,32 @@ def _scale_coord_to_meters(coord, unit):
         return coord
 
 
+def _check_empty_room_basename(bids_path, on_invalid_er_session='raise',
+                               on_invalid_er_task='raise'):
+    if bids_path.task != 'noise':
+        msg = (f'task must be "noise" if subject is "emptyroom", but '
+               f'received: {bids_path.task}')
+        if on_invalid_er_task == 'raise':
+            raise ValueError(msg)
+        elif on_invalid_er_task == 'warn':
+            logger.critical(msg)
+        else:
+            pass
+    try:
+        datetime.strptime(bids_path.session, '%Y%m%d')
+    except (ValueError, TypeError):
+        msg = (f'empty-room session should be a string of format '
+               f'YYYYMMDD, but received: {bids_path.session}')
+        if on_invalid_er_session == 'raise':
+            raise ValueError(msg)
+        elif on_invalid_er_session == 'warn':
+            msg = (f'{msg}. Will proceed anyway, but you should consider '
+                   f'fixing your dataset.')
+            logger.critical(msg)
+        else:
+            pass
+
+
 def _gen_bids_basename(*, bids_path, on_invalid_er_session='raise',
                        on_invalid_er_task='raise'):
     if on_invalid_er_session not in ['raise', 'warn', 'continue']:
@@ -1004,35 +1055,16 @@ def _gen_bids_basename(*, bids_path, on_invalid_er_session='raise',
 
     _check_types(order.values())
 
-    if (all(ii is None for ii in order.values()) and suffix is None and
-            prefix is None):
+    if (all(ii is None for ii in order.values()) and
+            bids_path.suffix is None and bids_path.prefix is None):
         raise ValueError("At least one parameter must be given.")
 
+    # check the task/session of er basename
     if bids_path.subject == 'emptyroom':
-        if bids_path.task != 'noise':
-            msg = (f'task must be "noise" if subject is "emptyroom", but '
-                   f'received: {task}')
-            if on_invalid_er_task == 'raise':
-                raise ValueError(msg)
-            elif on_invalid_er_task == 'warn':
-                logger.critical(msg)
-            else:
-                pass
-        try:
-            datetime.strptime(session, '%Y%m%d')
-        except (ValueError, TypeError):
-            msg = (f'empty-room session should be a string of format '
-                   f'YYYYMMDD, but received: {session}')
-            if on_invalid_er_session == 'raise':
-                raise ValueError(msg)
-            elif on_invalid_er_session == 'warn':
-                msg = (f'{msg}. Will proceed anyway, but you should consider '
-                       f'fixing your dataset.')
-                logger.critical(msg)
-            else:
-                pass
+        _check_empty_room_basename(bids_path, on_invalid_er_session,
+                                   on_invalid_er_task)
 
-    return str(bids_path.update(suffix=None))
+    return str(bids_path)
 
 
 def make_bids_basename(subject=None, session=None, task=None,

@@ -979,7 +979,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
 
     subject_id, session_id = bids_basename.subject, bids_basename.session
     task, run = bids_basename.task, bids_basename.run
-    space, acquisition = bids_basename.space, bids_basename.acquisition
+    acquisition = bids_basename.acquisition
     kind = _handle_kind(raw)
 
     bids_fname = bids_basename.copy().update(suffix=f'{kind}{ext}')
@@ -1021,18 +1021,20 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
 
     # create *_scans.tsv
     bids_path = make_bids_basename(subject=subject_id, session=session_id,
+                                   task='noise',
                                    prefix=ses_path, suffix='scans.tsv')
     scans_fname = _gen_bids_basename(
-        bids_path=bids_path, on_invalid_er_task=on_invalid_er_task)
+        bids_path=bids_path.update(task=None),
+        on_invalid_er_task=on_invalid_er_task)
 
     # create *_coordsystem.json
-    bids_path.update(space=space, acquisition=acquisition,
+    bids_path.update(acquisition=acquisition,
                      prefix=data_path, suffix='coordsystem.json')
     coordsystem_fname = _gen_bids_basename(
         bids_path=bids_path, on_invalid_er_task=on_invalid_er_task)
 
     # create *_electrodes.tsv
-    bids_path.update(suffix='electrodes.tsv')
+    bids_path = bids_path.update(suffix='electrodes.tsv')
     electrodes_fname = _gen_bids_basename(
         bids_path=bids_path, on_invalid_er_task=on_invalid_er_task)
 

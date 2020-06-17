@@ -26,8 +26,8 @@ from mne_bids.config import (ALLOWED_EXTENSIONS, _convert_hand_options,
 from mne_bids.utils import (_parse_bids_filename, _extract_landmarks,
                             _find_matching_sidecar, _parse_ext,
                             _get_ch_type_mapping, make_bids_folders,
-                            _gen_bids_basename, _estimate_line_freq,
-                            _get_kinds_for_sub)
+                            _gen_bids_basename, BIDSPath,
+                            _estimate_line_freq, _get_kinds_for_sub)
 
 reader = {'.con': io.read_raw_kit, '.sqd': io.read_raw_kit,
           '.fif': io.read_raw_fif, '.pdf': io.read_raw_bti,
@@ -334,7 +334,7 @@ def _make_bids_fname(bids_basename, bids_root=None, kind=None, extension=None,
 
     Parameters
     ----------
-    bids_basename : str
+    bids_basename : BIDSPath
         The base filename of the BIDS-compatible files. Typically, this can be
         generated using :func:`mne_bids.make_bids_basename`.
     bids_root : str | pathlib.Path | None
@@ -357,9 +357,8 @@ def _make_bids_fname(bids_basename, bids_root=None, kind=None, extension=None,
 
     """
     # Get the BIDS parameters (=entities)
-    params = _parse_bids_filename(bids_basename, verbose)
-    sub = params['sub']
-    ses = params['ses']
+    sub = bids_basename.subject
+    ses = bids_basename.session
 
     if extension is None and bids_root is None:
         msg = ('No filename extension was provided, and it cannot be '
@@ -421,12 +420,20 @@ def read_raw_bids(bids_basename, bids_root, kind=None, extra_params=None,
         If the specified ``kind`` cannot be found in the dataset.
 
     """
-    # convert to string representation for downstream usage
-    bids_basename = str(bids_basename)
-
-    params = _parse_bids_filename(bids_basename, verbose='warning')
-    sub = params['sub']
-    ses = params['ses']
+    # convert to BIDS Path
+    if isinstance(bids_basename, str):
+        params = _parse_bids_filename(bids_basename, verbose)
+        bids_basename = BIDSPath(subject=params.get('sub'),
+                                 session=params.get('ses'),
+                                 recording=params.get('rec'),
+                                 acquisition=params.get('acq'),
+                                 processing=params.get('proc'),
+                                 space=params.get('space'),
+                                 run=params.get('run'),
+                                 task=params.get('task'))
+    sub = bids_basename.subject
+    ses = bids_basename.session
+    acq = bids_basename.acquisition
 
     if kind is None:
         kind = _infer_kind(bids_basename=bids_basename, bids_root=bids_root,
@@ -467,7 +474,6 @@ def read_raw_bids(bids_basename, bids_root, kind=None, extra_params=None,
 
     # Try to find an associated electrodes.tsv and coordsystem.json
     # to get information about the status and type of present channels
-    acq = params['acq']
     search_modifier = f'acq-{acq}' if acq else ''
     elec_suffix = f'{search_modifier}*_electrodes.tsv'
     coord_suffix = f'{search_modifier}*_coordsystem.json'
@@ -477,7 +483,6 @@ def read_raw_bids(bids_basename, bids_root, kind=None, extra_params=None,
     coordsystem_fname = _find_matching_sidecar(bids_fname, bids_root,
                                                suffix=coord_suffix,
                                                allow_fail=True)
-
     if electrodes_fname is not None:
         if coordsystem_fname is None:
             raise RuntimeError("BIDS mandates that the coordsystem.json "
@@ -527,8 +532,17 @@ def get_matched_empty_room(bids_basename, bids_root):
         The basename corresponding to the best-matching empty-room measurement.
         Returns None if none was found.
     """
-    # convert to string representation for downstream usage
-    bids_basename = str(bids_basename)
+    # convert to BIDS Path
+    if isinstance(bids_basename, str):
+        params = _parse_bids_filename(bids_basename, False)
+        bids_basename = BIDSPath(subject=params.get('sub'),
+                                 session=params.get('ses'),
+                                 recording=params.get('rec'),
+                                 acquisition=params.get('acq'),
+                                 processing=params.get('proc'),
+                                 space=params.get('space'),
+                                 run=params.get('run'),
+                                 task=params.get('task'))
 
     kind = 'meg'  # We're only concerned about MEG data here
     bids_fname = _make_bids_fname(bids_basename=bids_basename,
@@ -591,15 +605,17 @@ def get_matched_empty_room(bids_basename, bids_root):
         params = _parse_bids_filename(er_fname, verbose=False)
         er_meas_date = None
 
+        er_bids_path = BIDSPath(subject='emptyroom',
+                                session=params.get('ses', None),
+                                task=params.get('task', None),
+                                acquisition=params.get('acq', None),
+                                run=params.get('run', None),
+                                processing=params.get('proc', None),
+                                recording=params.get('recording', None),
+                                space=params.get('space', None))
+
         er_basename = _gen_bids_basename(
-            subject='emptyroom',
-            session=params.get('ses', None),
-            task=params.get('task', None),
-            acquisition=params.get('acq', None),
-            run=params.get('run', None),
-            processing=params.get('proc', None),
-            recording=params.get('recording', None),
-            space=params.get('space', None),
+            bids_path=er_bids_path,
             # BIDS specification does not enforce use of ses-YYYYMMDD and
             # task-emptyroom entities.
             on_invalid_er_session='continue',
@@ -664,7 +680,7 @@ def get_head_mri_trans(bids_basename, bids_root):
 
     Parameters
     ----------
-    bids_basename : str
+    bids_basename : BIDSPath
         The base filename of the BIDS-compatible file. Typically, this can be
         generated using :func:`mne_bids.make_bids_basename`.
     bids_root : str | pathlib.Path

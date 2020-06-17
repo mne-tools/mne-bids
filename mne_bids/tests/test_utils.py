@@ -178,7 +178,7 @@ def test_make_filenames():
     prefix_data = dict(subject='one', session='two', task='three',
                        acquisition='four', run='five', processing='six',
                        recording='seven', suffix='suffix.csv')
-    assert make_bids_basename(**prefix_data) == 'sub-one_ses-two_task-three_acq-four_run-five_proc-six_recording-seven_suffix.csv'  # noqa
+    assert str(make_bids_basename(**prefix_data)) == 'sub-one_ses-two_task-three_acq-four_run-five_proc-six_rec-seven_suffix.csv'  # noqa
 
     # subsets of keys works
     assert make_bids_basename(subject='one', task='three', run=4) == 'sub-one_task-three_run-04'  # noqa
@@ -285,7 +285,7 @@ def test_parse_bids_filename(fname):
     assert params['task'] == 'test'
     assert params['split'] == '01'
     assert list(params.keys()) == ['sub', 'ses', 'task', 'acq', 'run', 'proc',
-                                   'space', 'recording', 'split', 'kind']
+                                   'space', 'rec', 'split', 'kind']
 
 
 def test_age_on_date():
@@ -379,11 +379,10 @@ def test_bids_path():
     bids_basename = make_bids_basename(subject=subject, session=session)
     assert bids_basename.subject == subject
     assert bids_basename.session == session
-    assert all(entity is None for entity in bids_basename.entities
-               if entity not in ['subject', 'session'])
     assert 'subject' in bids_basename.entities
     assert 'session' in bids_basename.entities
-    assert all(entity not in bids_basename.entities
+    print(bids_basename.entities)
+    assert all(bids_basename.entities.get(entity) is None
                for entity in ['task', 'run', 'recording', 'acquisition',
                               'space', 'processing',
                               'prefix', 'suffix'])
@@ -400,7 +399,7 @@ def test_bids_path():
     assert new_bids_basename.task == '02'
     assert new_bids_basename.acquisition is None
 
-    # equality of bids basenames
+    # equality of bids basename
     assert new_bids_basename != bids_basename
     assert new_bids_basename == bids_basename.copy().update(task='02',
                                                             acquisition=None)
