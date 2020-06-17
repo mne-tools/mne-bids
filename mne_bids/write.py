@@ -979,6 +979,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
 
     subject_id, session_id = bids_basename.subject, bids_basename.session
     task, run = bids_basename.task, bids_basename.run
+    space, acquisition = bids_basename.space, bids_basename.acquisition
     kind = _handle_kind(raw)
 
     bids_fname = bids_basename.copy().update(suffix=f'{kind}{ext}')
@@ -1025,7 +1026,8 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
         **bids_path.entities, on_invalid_er_task=on_invalid_er_task)
 
     # create *_coordsystem.json
-    bids_path.update(prefix=data_path, suffix='coordsystem.json')
+    bids_path.update(space=space, acquisition=acquisition,
+                     prefix=data_path, suffix='coordsystem.json')
     coordsystem_fname = _gen_bids_basename(
         **bids_path.entities, on_invalid_er_task=on_invalid_er_task)
 
