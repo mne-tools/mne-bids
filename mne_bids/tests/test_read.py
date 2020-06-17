@@ -36,7 +36,7 @@ from mne_bids.read import (read_raw_bids,
                            _handle_events_reading, _handle_info_reading)
 from mne_bids.tsv_handler import _to_tsv, _from_tsv
 from mne_bids.utils import (_find_matching_sidecar, _update_sidecar,
-                            _write_json, _gen_bids_basename)
+                            _write_json, _gen_bids_basename, BIDSPath)
 from mne_bids.write import write_anat, write_raw_bids
 
 subject_id = '01'
@@ -683,7 +683,8 @@ def test_get_matched_emptyroom_ties():
         er_raw.info['meas_date'] = (meas_date.timestamp(), 0)
 
     write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
-    er_bids_path = make_bids_basename(subject='emptyroom', session=session)
+    er_bids_path = BIDSPath(subject='emptyroom', session=session,
+                            check_empty_room=False)
     er_basename_1 = _gen_bids_basename(bids_path=er_bids_path,
                                        on_invalid_er_task='continue')
     er_basename_2 = make_bids_basename(subject='emptyroom', session=session,
@@ -707,8 +708,8 @@ def test_get_matched_emptyroom_no_meas_date():
 
     er_dir = make_bids_folders(subject='emptyroom', session=er_session,
                                kind='meg', bids_root=bids_root)
-    er_bids_path = make_bids_basename(subject='emptyroom',
-                                      session=er_session, task='noise')
+    er_bids_path = BIDSPath(subject='emptyroom', session=er_session,
+                            task='noise', check_empty_room=False)
     er_basename = _gen_bids_basename(bids_path=er_bids_path,
                                      on_invalid_er_session='continue')
     raw = mne.io.read_raw_fif(raw_fname)

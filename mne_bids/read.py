@@ -430,7 +430,8 @@ def read_raw_bids(bids_basename, bids_root, kind=None, extra_params=None,
                                  processing=params.get('proc'),
                                  space=params.get('space'),
                                  run=params.get('run'),
-                                 task=params.get('task'))
+                                 task=params.get('task'),
+                                 check_empty_room=False)
     sub = bids_basename.subject
     ses = bids_basename.session
     acq = bids_basename.acquisition
@@ -542,7 +543,8 @@ def get_matched_empty_room(bids_basename, bids_root):
                                  processing=params.get('proc'),
                                  space=params.get('space'),
                                  run=params.get('run'),
-                                 task=params.get('task'))
+                                 task=params.get('task'),
+                                 check_empty_room=False)
 
     kind = 'meg'  # We're only concerned about MEG data here
     bids_fname = _make_bids_fname(bids_basename=bids_basename,
@@ -611,8 +613,9 @@ def get_matched_empty_room(bids_basename, bids_root):
                                 acquisition=params.get('acq', None),
                                 run=params.get('run', None),
                                 processing=params.get('proc', None),
-                                recording=params.get('recording', None),
-                                space=params.get('space', None))
+                                recording=params.get('rec', None),
+                                space=params.get('space', None),
+                                check_empty_room=False)
 
         er_basename = _gen_bids_basename(
             bids_path=er_bids_path,

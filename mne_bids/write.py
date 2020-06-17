@@ -975,7 +975,8 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
                                  processing=params.get('proc'),
                                  space=params.get('space'),
                                  run=params.get('run'),
-                                 task=params.get('task'))
+                                 task=params.get('task'),
+                                 check_empty_room=False)
 
     subject_id, session_id = bids_basename.subject, bids_basename.session
     task, run = bids_basename.task, bids_basename.run
@@ -1020,11 +1021,11 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     on_invalid_er_task = 'continue'
 
     # create *_scans.tsv
-    bids_path = make_bids_basename(subject=subject_id, session=session_id,
-                                   task='noise',
-                                   prefix=ses_path, suffix='scans.tsv')
+    bids_path = BIDSPath(subject=subject_id, session=session_id,
+                         prefix=ses_path, suffix='scans.tsv',
+                         check_empty_room=False)
     scans_fname = _gen_bids_basename(
-        bids_path=bids_path.update(task=None),
+        bids_path=bids_path,
         on_invalid_er_task=on_invalid_er_task)
 
     # create *_coordsystem.json
@@ -1287,6 +1288,7 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
         t1w.header['xyzt_units'] = np.array(10, dtype='uint8')
 
     # Now give the NIfTI file a BIDS name and write it to the BIDS location
+    # this needs to be a string, since nibabel assumes a string input
     t1w_basename = str(make_bids_basename(subject=subject, session=session,
                                           acquisition=acquisition,
                                           prefix=anat_dir,

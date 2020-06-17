@@ -66,6 +66,8 @@ class BIDSPath(object):
         in which you wish to create a file with this name.
     suffix : str | None
         The suffix for the filename to be created. E.g., 'audio.wav'.
+    check_empty_room : bool
+        Whether to check emptyroom bids basename or not. Default is True.
 
     Examples
     --------
@@ -84,7 +86,8 @@ class BIDSPath(object):
 
     def __init__(self, subject=None, session=None,
                  task=None, acquisition=None, run=None, processing=None,
-                 recording=None, space=None, prefix=None, suffix=None):
+                 recording=None, space=None, prefix=None, suffix=None,
+                 check_empty_room=True):
         if all(ii is None for ii in [subject, session, task,
                                      acquisition, run, processing,
                                      recording, space, prefix, suffix]):
@@ -96,7 +99,7 @@ class BIDSPath(object):
                     suffix=suffix)
 
         # check the task/session of er basename
-        if subject == 'emptyroom':
+        if subject == 'emptyroom' and check_empty_room:
             _check_empty_room_basename(self)
 
     @property
