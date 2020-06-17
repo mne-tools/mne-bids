@@ -93,17 +93,35 @@ class BIDSPath(object):
     @property
     def entities(self):
         """Return dictionary of the BIDS entities."""
-        # create an ordered dictionary of all the bids entities
-        entities = OrderedDict()
-        for key in BIDS_PATH_ENTITIES:
-            value = getattr(self, key, None)
-            if value is not None:
-                entities[key] = value
-        return entities
+        return OrderedDict([
+            ('sub', self.subject),
+            ('ses', self.session),
+            ('task', self.task),
+            ('acq', self.acquisition),
+            ('run', self.run),
+            ('proc', self.processing),
+            ('recording', self.recording),
+            ('space', self.space),
+            ('prefix', self.prefix),
+            ('suffix', self.suffix)
+        ])
 
     def __str__(self):
         """Return the string representation of the path."""
-        basename = _gen_bids_basename(**self.entities)
+        basename = []
+        for key, val in self.entities.items():
+            if key not in ('prefix', 'suffix') and \
+                    val is not None:
+                _check_key_val(key, val)
+                basename.append('%s-%s' % (key, val))
+
+        if self.suffix is not None:
+            basename.append(self.suffix)
+
+        basename = '_'.join(basename)
+        if self.prefix is not None:
+            basename = op.join(self.prefix, basename)
+
         return basename
 
     def __repr__(self):
@@ -173,14 +191,14 @@ class BIDSPath(object):
         sub-test_ses-two_acq-test_ieeg.vhdr
         """
         # error check entities
-        for key, value in entities.items():
+        for key, val in entities.items():
             # error check allowed BIDS entity keywords
             if key not in BIDS_PATH_ENTITIES:
                 raise ValueError('Key must be one of {BIDS_PATH_ENTITIES}, '
                                  'got %s' % key)
 
             # set entity value
-            setattr(self, key, value)
+            setattr(self, key, val)
 
         # run string representation to check validity of arguments
         str(self)
@@ -959,10 +977,7 @@ def _scale_coord_to_meters(coord, unit):
         return coord
 
 
-def _gen_bids_basename(*, subject=None, session=None, task=None,
-                       acquisition=None, run=None, processing=None,
-                       recording=None, space=None, prefix=None, suffix=None,
-                       on_invalid_er_session='raise',
+def _gen_bids_basename(*, bids_path, on_invalid_er_session='raise',
                        on_invalid_er_task='raise'):
     if on_invalid_er_session not in ['raise', 'warn', 'continue']:
         msg = (f'on_invalid_er_session must be raise, warn, or continue, '
@@ -974,14 +989,14 @@ def _gen_bids_basename(*, subject=None, session=None, task=None,
                f'but received: {on_invalid_er_task}')
         raise ValueError(msg)
 
-    order = OrderedDict([('sub', subject),
-                         ('ses', session),
-                         ('task', task),
-                         ('acq', acquisition),
-                         ('run', run),
-                         ('proc', processing),
-                         ('space', space),
-                         ('recording', recording)])
+    order = OrderedDict([('sub', bids_path.subject),
+                         ('ses', bids_path.session),
+                         ('task', bids_path.task),
+                         ('acq', bids_path.acquisition),
+                         ('run', bids_path.run),
+                         ('proc', bids_path.processing),
+                         ('space', bids_path.space),
+                         ('recording', bids_path.recording)])
 
     if order['run'] is not None and not isinstance(order['run'], str):
         # Ensure that run is a string
@@ -993,8 +1008,8 @@ def _gen_bids_basename(*, subject=None, session=None, task=None,
             prefix is None):
         raise ValueError("At least one parameter must be given.")
 
-    if subject == 'emptyroom':
-        if task != 'noise':
+    if bids_path.subject == 'emptyroom':
+        if bids_path.task != 'noise':
             msg = (f'task must be "noise" if subject is "emptyroom", but '
                    f'received: {task}')
             if on_invalid_er_task == 'raise':
@@ -1017,20 +1032,7 @@ def _gen_bids_basename(*, subject=None, session=None, task=None,
             else:
                 pass
 
-    basename = []
-    for key, val in order.items():
-        if val is not None:
-            _check_key_val(key, val)
-            basename.append('%s-%s' % (key, val))
-
-    if suffix is not None:
-        basename.append(suffix)
-
-    basename = '_'.join(basename)
-    if prefix is not None:
-        basename = op.join(prefix, basename)
-
-    return basename
+    return str(bids_path.update(suffix=None))
 
 
 def make_bids_basename(subject=None, session=None, task=None,
@@ -1083,9 +1085,7 @@ def make_bids_basename(subject=None, session=None, task=None,
     >>> print(make_bids_basename(subject='test', session='two', task='mytask', suffix='data.csv')) # noqa: E501
     sub-test_ses-two_task-mytask_data.csv
     """
-    kwargs = dict(subject=subject, session=session, task=task,
-                  acquisition=acquisition, run=run, processing=processing,
-                  recording=recording, space=space, prefix=prefix,
-                  suffix=suffix)
-    basename = BIDSPath(**kwargs)
-    return basename
+    return BIDSPath(subject=subject, session=session, task=task,
+                    acquisition=acquisition, run=run, processing=processing,
+                    recording=recording, space=space, prefix=prefix,
+                    suffix=suffix)
