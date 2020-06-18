@@ -22,18 +22,12 @@ from mne.transforms import apply_trans
 from mne_bids.dig import _read_dig_bids
 from mne_bids.tsv_handler import _from_tsv, _drop
 from mne_bids.config import (ALLOWED_EXTENSIONS, _convert_hand_options,
-                             _convert_sex_options)
+                             _convert_sex_options, reader)
 from mne_bids.utils import (_parse_bids_filename, _extract_landmarks,
                             _find_matching_sidecar, _parse_ext,
                             _get_ch_type_mapping, make_bids_folders,
                             _gen_bids_basename, BIDSPath,
-                            _estimate_line_freq, _get_kinds_for_sub)
-
-reader = {'.con': io.read_raw_kit, '.sqd': io.read_raw_kit,
-          '.fif': io.read_raw_fif, '.pdf': io.read_raw_bti,
-          '.ds': io.read_raw_ctf, '.vhdr': io.read_raw_brainvision,
-          '.edf': io.read_raw_edf, '.bdf': io.read_raw_bdf,
-          '.set': io.read_raw_eeglab}
+                            _estimate_line_freq, _infer_kind)
 
 
 def _read_raw(raw_fpath, electrode=None, hsp=None, hpi=None, config=None,
@@ -264,117 +258,6 @@ def _handle_channels_reading(channels_fname, bids_fname, raw):
     return raw
 
 
-def _infer_kind(*, bids_basename, bids_root, sub, ses):
-    # Check which kind is available for this particular
-    # subject & session. If we get no or multiple hits, throw an error.
-
-    kinds = _get_kinds_for_sub(bids_basename=bids_basename,
-                               bids_root=bids_root, sub=sub, ses=ses)
-
-    # We only want to handle electrophysiological data here.
-    allowed_kinds = ['meg', 'eeg', 'ieeg']
-    kinds = list(set(kinds) & set(allowed_kinds))
-    if not kinds:
-        raise ValueError('No electrophysiological data found.')
-    elif len(kinds) >= 2:
-        msg = (f'Found data of more than one recording modality. Please '
-               f'pass the `kind` parameter to specify which data to load. '
-               f'Found the following kinds: {kinds}')
-        raise RuntimeError(msg)
-
-    assert len(kinds) == 1
-    return kinds[0]
-
-
-def _get_bids_fname_from_filesystem(*, bids_basename, bids_root, sub, ses,
-                                    kind):
-    if kind is None:
-        kind = _infer_kind(bids_basename=bids_basename, bids_root=bids_root,
-                           sub=sub, ses=ses)
-
-    data_dir = make_bids_folders(subject=sub, session=ses, kind=kind,
-                                 make_dir=False)
-
-    bti_dir = op.join(bids_root, data_dir, f'{bids_basename}_{kind}')
-    if op.isdir(bti_dir):
-        logger.info(f'Assuming BTi data in {bti_dir}')
-        bids_fname = f'{bti_dir}.pdf'
-    else:
-        # Find all matching files in all supported formats.
-        valid_exts = list(reader.keys())
-        matching_paths = glob.glob(op.join(bids_root, data_dir,
-                                           f'{bids_basename}_{kind}.*'))
-        matching_paths = [p for p in matching_paths
-                          if _parse_ext(p)[1] in valid_exts]
-
-        if not matching_paths:
-            msg = ('Could not locate a data file of a supported format. This '
-                   'is likely a problem with your BIDS dataset. Please run '
-                   'the BIDS validator on your data.')
-            raise RuntimeError(msg)
-
-        # FIXME This will break e.g. with FIFF data split across multiple
-        # FIXME files.
-        if len(matching_paths) > 1:
-            msg = ('Found more than one matching data file for the requested '
-                   'recording. Cannot proceed due to the ambiguity. This is '
-                   'likely a problem with your BIDS dataset. Please run the '
-                   'BIDS validator on your data.')
-            raise RuntimeError(msg)
-
-        matching_path = matching_paths[0]
-        bids_fname = op.basename(matching_path)
-
-    return bids_fname
-
-
-def _make_bids_fname(bids_basename, bids_root=None, kind=None, extension=None,
-                     verbose=False):
-    """Construct the filename of a BIDS data file.
-
-    Parameters
-    ----------
-    bids_basename : BIDSPath
-        The base filename of the BIDS-compatible files. Typically, this can be
-        generated using :func:`mne_bids.make_bids_basename`.
-    bids_root : str | pathlib.Path | None
-        Path to root of the BIDS folder
-    kind : str | None
-        The kind of recording to read. If ``None`` and only one kind (e.g.,
-        only EEG or only MEG data) is present in the dataset, it will be
-        selected automatically.
-    extra_params : None | dict
-        Extra parameters to be passed to MNE read_raw_* functions.
-        If a dict, for example: ``extra_params=dict(allow_maxshield=True)``.
-    extension : None | str
-        If ``None``, try to infer the filename extension by searching for the
-        file on disk. If the file cannot be found, an error will be raised. To
-        disable this automatic inference attempt, pass a string (like
-        ``'.fif'`` or ``'.vhdr'``). If an empty string is passed, no extension
-        will be added to the filename.
-    verbose : bool
-        The verbosity level.
-
-    """
-    # Get the BIDS parameters (=entities)
-    sub = bids_basename.subject
-    ses = bids_basename.session
-
-    if extension is None and bids_root is None:
-        msg = ('No filename extension was provided, and it cannot be '
-               'automatically inferred because no bids_root was passed.')
-        raise ValueError(msg)
-
-    if extension is None:
-        bids_fname = _get_bids_fname_from_filesystem(
-            bids_basename=bids_basename, bids_root=bids_root, sub=sub, ses=ses,
-            kind=kind)
-    else:
-        bids_fname = f'{bids_basename}_{kind}.{extension}'
-
-    return bids_fname
-
-
 def read_raw_bids(bids_basename, bids_root, kind=None, extra_params=None,
                   verbose=True):
     """Read BIDS compatible data.
@@ -442,8 +325,7 @@ def read_raw_bids(bids_basename, bids_root, kind=None, extra_params=None,
 
     data_dir = make_bids_folders(subject=sub, session=ses, kind=kind,
                                  make_dir=False)
-    bids_fname = _make_bids_fname(bids_basename=bids_basename,
-                                  bids_root=bids_root, kind=kind)
+    bids_fname = bids_basename.get_bids_fname(kind=kind, bids_root=bids_root)
 
     if op.splitext(bids_fname)[1] == '.pdf':
         bids_raw_folder = op.join(bids_root, data_dir,
@@ -546,8 +428,7 @@ def get_matched_empty_room(bids_basename, bids_root):
                                  check_empty_room=False)
 
     kind = 'meg'  # We're only concerned about MEG data here
-    bids_fname = _make_bids_fname(bids_basename=bids_basename,
-                                  bids_root=bids_root, kind=kind)
+    bids_fname = bids_basename.get_bids_fname(kind=kind, bids_root=bids_root)
     _, ext = _parse_ext(bids_fname)
     if ext == '.fif':
         extra_params = dict(allow_maxshield=True)
@@ -699,8 +580,7 @@ def get_head_mri_trans(bids_basename, bids_root):
     import nibabel as nib
 
     # Get the sidecar file for MRI landmarks
-    bids_fname = _make_bids_fname(bids_basename=bids_basename,
-                                  bids_root=bids_root, kind='meg')
+    bids_fname = bids_basename.get_bids_fname(kind='meg', bids_root=bids_root)
     t1w_json_path = _find_matching_sidecar(bids_fname, bids_root, 'T1w.json')
 
     # Get MRI landmarks from the JSON sidecar
@@ -738,7 +618,7 @@ def get_head_mri_trans(bids_basename, bids_root):
     mri_landmarks = mri_landmarks * 1e-3
 
     # Get MEG landmarks from the raw file
-    _, ext = _parse_ext(bids_fname)
+    _, ext = _parse_ext(bids_basename)
     extra_params = None
     if ext == '.fif':
         extra_params = dict(allow_maxshield=True)

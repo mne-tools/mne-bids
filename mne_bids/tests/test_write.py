@@ -805,8 +805,8 @@ def test_edf(_bids_validate):
                        anonymize=dict(daysback=33000),
                        overwrite=True)
         data = _from_tsv(scans_tsv)
-        bids_fname = str(bids_basename) + '_eeg.vhdr'
-        assert any([bids_fname in fname for fname in data['filename']])
+        bids_fname = bids_basename.copy().update(suffix='eeg.vhdr')
+        assert any([str(bids_fname) in fname for fname in data['filename']])
 
     # Also cover iEEG
     # We use the same data and pretend that eeg channels are ecog
@@ -871,7 +871,7 @@ def test_bdf(_bids_validate):
     assert coil_type(raw.info, test_ch_idx) != 'misc'
 
     # we will change the channel type to MISC and overwrite the channels file
-    bids_fname = str(bids_basename) + '_eeg.bdf'
+    bids_fname = bids_basename.copy().update(suffix='eeg.bdf')
     channels_fname = _find_matching_sidecar(bids_fname, bids_root,
                                             'channels.tsv')
     channels_dict = _from_tsv(channels_fname)
@@ -1002,14 +1002,17 @@ def test_write_anat(_bids_validate):
     point_list = ['LPA', 'NAS', 'RPA']
     np.testing.assert_array_equal(list(anat_dict.keys()),
                                   point_list)
+    sidecar_basename = make_bids_basename(subject='01', session='01',
+                                          acquisition='01',
+                                          suffix='T1w.nii.gz')
     # test the actual values of the voxels (no floating points)
     for i, point in enumerate([(66, 51, 46), (41, 32, 74), (17, 53, 47)]):
         coords = anat_dict[point_list[i]]
         np.testing.assert_array_equal(np.asarray(coords, dtype=int),
                                       point)
 
-    # BONUS: test also that we can find the matching sidecar
-        side_fname = _find_matching_sidecar('sub-01_ses-01_acq-01_T1w.nii.gz',
+        # BONUS: test also that we can find the matching sidecar
+        side_fname = _find_matching_sidecar(sidecar_basename,
                                             bids_root, 'T1w.json')
         assert op.split(side_fname)[-1] == 'sub-01_ses-01_acq-01_T1w.json'
 
@@ -1030,7 +1033,7 @@ def test_write_anat(_bids_validate):
     write_anat(bids_root, subject_id, t1w_mgh, session_id)
     # Assert that we truly cannot find a sidecar
     with pytest.raises(RuntimeError, match='Did not find any'):
-        _find_matching_sidecar('sub-01_ses-01_acq-01_T1w.nii.gz',
+        _find_matching_sidecar(sidecar_basename,
                                bids_root, 'T1w.json')
 
     # trans has a wrong type

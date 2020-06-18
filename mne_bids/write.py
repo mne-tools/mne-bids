@@ -41,14 +41,13 @@ from mne_bids.utils import (_write_json, _write_tsv, _read_events, _mkdir_p,
                             _gen_bids_basename, BIDSPath)
 from mne_bids.copyfiles import (copyfile_brainvision, copyfile_eeglab,
                                 copyfile_ctf, copyfile_bti, copyfile_kit)
-from mne_bids.read import reader
 from mne_bids.tsv_handler import (_from_tsv, _drop, _contains_row,
                                   _combine_rows)
 
 from mne_bids.config import (ORIENTATION, UNITS, MANUFACTURERS,
                              IGNORED_CHANNELS, ALLOWED_EXTENSIONS,
                              BIDS_VERSION, _convert_hand_options,
-                             _convert_sex_options)
+                             _convert_sex_options, reader)
 
 
 def _is_numeric(n):
@@ -1289,10 +1288,10 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
 
     # Now give the NIfTI file a BIDS name and write it to the BIDS location
     # this needs to be a string, since nibabel assumes a string input
-    t1w_basename = str(make_bids_basename(subject=subject, session=session,
-                                          acquisition=acquisition,
-                                          prefix=anat_dir,
-                                          suffix='T1w.nii.gz'))
+    t1w_basename = make_bids_basename(subject=subject, session=session,
+                                      acquisition=acquisition,
+                                      prefix=anat_dir,
+                                      suffix='T1w.nii.gz')
 
     # Check if we have necessary conditions for writing a sidecar JSON
     if trans is not None or landmarks is not None:
@@ -1357,7 +1356,7 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
             {'LPA': list(mri_landmarks[0, :]),
              'NAS': list(mri_landmarks[1, :]),
              'RPA': list(mri_landmarks[2, :])}
-        fname = t1w_basename.replace('.nii.gz', '.json')
+        fname = str(t1w_basename).replace('.nii.gz', '.json')
         if op.isfile(fname) and not overwrite:
             raise IOError('Wanted to write a file but it already exists and '
                           '`overwrite` is set to False. File: "{}"'

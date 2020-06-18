@@ -8,13 +8,13 @@
 #
 # License: BSD (3-clause)
 import os
-import os.path as op
 import glob
 import json
 import shutil as sh
 import re
 from datetime import datetime
 from collections import defaultdict, OrderedDict
+from os import path as op
 from pathlib import Path
 from copy import deepcopy
 
@@ -27,7 +27,7 @@ from mne.io.kit.kit import get_kit_info
 from mne.io.constants import FIFF
 from mne.time_frequency import psd_array_welch
 
-from mne_bids.config import BIDS_PATH_ENTITIES
+from mne_bids.config import BIDS_PATH_ENTITIES, reader
 from mne_bids.tsv_handler import _to_tsv, _tsv_to_str
 
 
@@ -58,7 +58,7 @@ class BIDSPath(object):
     processing : str | None
         The processing label for this item. Corresponds to "proc".
     recording : str | None
-        The recording name for this item. Corresponds to "recording".
+        The recording name for this item. Corresponds to "rec".
     space : str | None
         The coordinate space for an anatomical file. Corresponds to "space".
     prefix : str | None
@@ -154,13 +154,6 @@ class BIDSPath(object):
         """Return the string representation for any fs functions."""
         return str(self)
 
-    def __bytes__(self):
-        """Return the bytes representation of the path.
-
-        This is only recommended to use under Unix.
-        """
-        return os.fsencode(str(self))
-
     def __eq__(self, other):
         """Compare str representations."""
         return str(self) == str(other)
@@ -178,6 +171,50 @@ class BIDSPath(object):
             The copied bidspath.
         """
         return deepcopy(self)
+
+    def get_bids_fname(self, kind=None, bids_root=None, extension=None):
+        """Get the BIDS filename, by inferring kind and extension.
+
+        Parameters
+        ----------
+        kind : str, optional
+            The kind of recording to read. If ``None`` and only one
+            kind (e.g., only EEG or only MEG data) is present in the
+            dataset, it will be selected automatically.
+        bids_root : str | os.PathLike, optional
+            Path to root of the BIDS folder
+        extension : str, optional
+            If ``None``, try to infer the filename extension by searching
+            for the file on disk. If the file cannot be found, an error
+            will be raised. To disable this automatic inference attempt,
+            pass a string (like ``'.fif'`` or ``'.vhdr'``).
+            If an empty string is passed, no extension
+            will be added to the filename.
+
+        Returns
+        -------
+        bids_fname : BIDSPath
+            A BIDSPath with a full filename.
+        """
+        # Get the BIDS parameters (=entities)
+        sub = self.subject
+        ses = self.session
+
+        if extension is None and bids_root is None:
+            msg = ('No filename extension was provided, and it cannot be '
+                   'automatically inferred because no bids_root was passed.')
+            raise ValueError(msg)
+
+        if extension is None:
+            bids_fname = _get_bids_fname_from_filesystem(
+                bids_basename=self, bids_root=bids_root, sub=sub, ses=ses,
+                kind=kind)
+            new_suffix = bids_fname.split("_")[-1]
+            bids_fname = self.copy().update(suffix=new_suffix)
+        else:
+            bids_fname = self.copy().update(suffix='{kind}.{extension}')
+
+        return bids_fname
 
     def update(self, **entities):
         """Update inplace BIDS entity key/value pairs in object.
@@ -844,7 +881,7 @@ def _find_matching_sidecar(bids_fname, bids_root, suffix, allow_fail=False):
 
     Parameters
     ----------
-    bids_fname : str | BIDSPath
+    bids_fname : BIDSPath
         Full name of the data file
     bids_root : str | pathlib.Path
         Path to root of the BIDS folder
@@ -861,22 +898,19 @@ def _find_matching_sidecar(bids_fname, bids_root, suffix, allow_fail=False):
         and no sidecar_fname was found
 
     """
-    # ensure that string representation is used
-    bids_fname = str(bids_fname)
-    params = _parse_bids_filename(bids_fname, verbose=False)
-
     # We only use subject and session as identifier, because all other
     # parameters are potentially not binding for metadata sidecar files
-    search_str = 'sub-' + params['sub']
-    if params['ses'] is not None:
-        search_str += '_ses-' + params['ses']
+    search_str = f'sub-{bids_fname.subject}'
+    if bids_fname.session is not None:
+        search_str += f'_ses-{bids_fname.session}'
 
     # Find all potential sidecar files, doing a recursive glob
     # from bids_root/sub_id/
-    search_str = op.join(bids_root, 'sub-' + params['sub'],
+    search_str = op.join(bids_root, f'sub-{bids_fname.subject}',
                          '**', search_str + '*' + suffix)
     candidate_list = glob.glob(search_str, recursive=True)
-    best_candidates = _find_best_candidates(params, candidate_list)
+    best_candidates = _find_best_candidates(bids_fname.entities,
+                                            candidate_list)
 
     if len(best_candidates) == 1:
         # Success
@@ -913,7 +947,7 @@ def _update_sidecar(sidecar_fname, key, val):
 
     Parameters
     ----------
-    sidecar_fname : str
+    sidecar_fname : str | os.PathLike
         Full name of the data file
     key : str
         The key in the sidecar JSON file. E.g. "PowerLineFrequency"
@@ -1101,7 +1135,7 @@ def make_bids_basename(subject=None, session=None, task=None,
     processing : str | None
         The processing label. Corresponds to "proc".
     recording : str | None
-        The recording name. Corresponds to "recording".
+        The recording name. Corresponds to "rec".
     space : str | None
         The coordinate space for an anatomical file. Corresponds to "space".
     prefix : str | None
@@ -1124,3 +1158,67 @@ def make_bids_basename(subject=None, session=None, task=None,
                     acquisition=acquisition, run=run, processing=processing,
                     recording=recording, space=space, prefix=prefix,
                     suffix=suffix)
+
+
+def _get_bids_fname_from_filesystem(*, bids_basename, bids_root, sub, ses,
+                                    kind):
+    if kind is None:
+        kind = _infer_kind(bids_basename=bids_basename, bids_root=bids_root,
+                           sub=sub, ses=ses)
+
+    data_dir = make_bids_folders(subject=sub, session=ses, kind=kind,
+                                 make_dir=False)
+
+    bti_dir = op.join(bids_root, data_dir, f'{bids_basename}_{kind}')
+    if op.isdir(bti_dir):
+        logger.info(f'Assuming BTi data in {bti_dir}')
+        bids_fname = f'{bti_dir}.pdf'
+    else:
+        # Find all matching files in all supported formats.
+        valid_exts = list(reader.keys())
+        matching_paths = glob.glob(op.join(bids_root, data_dir,
+                                           f'{bids_basename}_{kind}.*'))
+        matching_paths = [p for p in matching_paths
+                          if _parse_ext(p)[1] in valid_exts]
+
+        if not matching_paths:
+            msg = ('Could not locate a data file of a supported format. This '
+                   'is likely a problem with your BIDS dataset. Please run '
+                   'the BIDS validator on your data.')
+            raise RuntimeError(msg)
+
+        # FIXME This will break e.g. with FIFF data split across multiple
+        # FIXME files.
+        if len(matching_paths) > 1:
+            msg = ('Found more than one matching data file for the requested '
+                   'recording. Cannot proceed due to the ambiguity. This is '
+                   'likely a problem with your BIDS dataset. Please run the '
+                   'BIDS validator on your data.')
+            raise RuntimeError(msg)
+
+        matching_path = matching_paths[0]
+        bids_fname = op.basename(matching_path)
+
+    return bids_fname
+
+
+def _infer_kind(*, bids_basename, bids_root, sub, ses):
+    # Check which kind is available for this particular
+    # subject & session. If we get no or multiple hits, throw an error.
+
+    kinds = _get_kinds_for_sub(bids_basename=bids_basename,
+                               bids_root=bids_root, sub=sub, ses=ses)
+
+    # We only want to handle electrophysiological data here.
+    allowed_kinds = ['meg', 'eeg', 'ieeg']
+    kinds = list(set(kinds) & set(allowed_kinds))
+    if not kinds:
+        raise ValueError('No electrophysiological data found.')
+    elif len(kinds) >= 2:
+        msg = (f'Found data of more than one recording modality. Please '
+               f'pass the `kind` parameter to specify which data to load. '
+               f'Found the following kinds: {kinds}')
+        raise RuntimeError(msg)
+
+    assert len(kinds) == 1
+    return kinds[0]
