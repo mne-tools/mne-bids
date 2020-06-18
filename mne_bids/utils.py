@@ -125,6 +125,7 @@ class BIDSPath(object):
             if key not in ('prefix', 'suffix') and \
                     val is not None:
                 _check_key_val(key, val)
+                # convert certain keys to shorthand
                 if key == 'subject':
                     key = 'sub'
                 if key == 'session':

@@ -370,15 +370,27 @@ def test_find_matching_sidecar(return_bids_test_dir):
         _find_matching_sidecar(bids_basename, bids_root, 'foo.bogus', True)
 
 
-def test_bids_path():
+def test_bids_path(return_bids_test_dir):
     """Test usage of BIDSPath object."""
-    subject = '01'
-    session = '01'
+    bids_root = return_bids_test_dir
+
+    bids_basename = make_bids_basename(
+        subject=subject_id, session=session_id, run=run, acquisition=acq,
+        task=task)
+
+    # get_bids_fname should fire warning
+    with pytest.raises(ValueError, match='No filename extension was provided'):
+        bids_fname = bids_basename.get_bids_fname()
+
+    # should find the correct filename if bids_root was passed
+    bids_fname = bids_basename.get_bids_fname(bids_root=bids_root)
+    assert bids_fname == bids_basename.update(suffix='meg.fif')
 
     # confirm BIDSPath assigns properties correctly
-    bids_basename = make_bids_basename(subject=subject, session=session)
-    assert bids_basename.subject == subject
-    assert bids_basename.session == session
+    bids_basename = make_bids_basename(subject=subject_id,
+                                       session=session_id)
+    assert bids_basename.subject == subject_id
+    assert bids_basename.session == session_id
     assert 'subject' in bids_basename.entities
     assert 'session' in bids_basename.entities
     print(bids_basename.entities)
@@ -390,8 +402,10 @@ def test_bids_path():
     # test updating functionality
     bids_basename.update(acquisition='03', run='2', session='02',
                          task=None)
-    assert bids_basename.subject == subject and bids_basename.session == '02'
-    assert bids_basename.acquisition == '03' and bids_basename.run == '2'
+    assert bids_basename.subject == subject_id
+    assert bids_basename.session == '02'
+    assert bids_basename.acquisition == '03'
+    assert bids_basename.run == '2'
     assert bids_basename.task is None
 
     new_bids_basename = bids_basename.copy().update(task='02',
@@ -406,4 +420,9 @@ def test_bids_path():
 
     # error check
     with pytest.raises(ValueError, match='Key must be one of*'):
-        bids_basename.update(sub=subject, session=session)
+        bids_basename.update(sub=subject_id, session=session_id)
+
+    # test repr
+    bids_path = make_bids_basename(subject='01', session='02',
+                                   task='03', suffix='ieeg.edf')
+    assert repr(bids_path) == 'BIDSPath(sub-01_ses-02_task-03_ieeg.edf)'
