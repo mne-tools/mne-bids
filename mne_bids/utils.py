@@ -32,13 +32,16 @@ from mne_bids.tsv_handler import _to_tsv, _tsv_to_str
 
 
 class BIDSPath(object):
-    """Create a partial/full BIDS filename from its component parts.
+    """Create a partial/full BIDS filepath from its component parts.
 
     BIDS filename prefixes have one or more pieces of metadata in them. They
     must follow a particular order, which is followed by this function. This
     will generate the *prefix* for a BIDS filename that can be used with many
     subsequent files, or you may also give a suffix that will then complete
     the file name.
+    
+    BIDSPath allows dynamic updating of its entities in place, and operates
+    similar to `pathlib.Path`.
 
     Note that not all parameters are applicable to each kind of data. For
     example, electrode location TSV files do not need a "task" field.
@@ -66,8 +69,6 @@ class BIDSPath(object):
         in which you wish to create a file with this name.
     suffix : str | None
         The suffix for the filename to be created. E.g., 'audio.wav'.
-    check_empty_room : bool
-        Whether to check emptyroom bids basename or not. Default is True.
 
     Examples
     --------
