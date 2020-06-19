@@ -126,11 +126,15 @@ else:
     filepath_prefix = 'v{}'.format(version)
 
 sphinx_gallery_conf = {
+    'doc_module': 'mne_bids',
+    'reference_url': {
+        'mne_bids': None,
+    },
+    'backreferences_dir': 'generated',
     'examples_dirs': '../examples',
     'within_subsection_order': ExampleTitleSortKey,
     'gallery_dirs': 'auto_examples',
     'filename_pattern': '^((?!sgskip).)*$',
-    'backreferences_dir': 'generated',
     'binder': {
         # Required keys
         'org': 'mne-tools',
