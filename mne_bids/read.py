@@ -554,7 +554,7 @@ def get_head_mri_trans(bids_basename, bids_root):
 
     Parameters
     ----------
-    bids_basename : BIDSPath
+    bids_basename : str | BIDSPath
         The base filename of the BIDS-compatible file. Typically, this can be
         generated using :func:`mne_bids.make_bids_basename`.
     bids_root : str | pathlib.Path
@@ -569,6 +569,18 @@ def get_head_mri_trans(bids_basename, bids_root):
     if not has_nibabel():  # pragma: no cover
         raise ImportError('This function requires nibabel.')
     import nibabel as nib
+
+    # convert to BIDS Path
+    if isinstance(bids_basename, str):
+        params = _parse_bids_filename(bids_basename, False)
+        bids_basename = BIDSPath(subject=params.get('sub'),
+                                 session=params.get('ses'),
+                                 recording=params.get('rec'),
+                                 acquisition=params.get('acq'),
+                                 processing=params.get('proc'),
+                                 space=params.get('space'),
+                                 run=params.get('run'),
+                                 task=params.get('task'))
 
     # Get the sidecar file for MRI landmarks
     bids_fname = bids_basename.get_bids_fname(kind='meg', bids_root=bids_root)

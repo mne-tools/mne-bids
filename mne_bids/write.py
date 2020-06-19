@@ -76,7 +76,7 @@ def _channels_tsv(raw, fname, overwrite=False, verbose=True):
     ----------
     raw : instance of Raw
         The data as MNE-Python Raw object.
-    fname : str
+    fname : str | BIDSPath
         Filename to save the channels.tsv to.
     overwrite : bool
         Whether to overwrite the existing file.
@@ -163,7 +163,7 @@ def _events_tsv(events, raw, fname, trial_type, overwrite=False,
         before the event or immediately after.
     raw : instance of Raw
         The data as MNE-Python Raw object.
-    fname : str
+    fname : str | BIDSPath
         Filename to save the events.tsv to.
     trial_type : dict | None
         Dictionary mapping a brief description key to an event id (value). For
@@ -216,7 +216,7 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False,
         The data as MNE-Python Raw object.
     subject_id : str
         The subject name in BIDS compatible format ('01', '02', etc.)
-    fname : str
+    fname : str | BIDSPath
         Filename to save the participants.tsv to.
     overwrite : bool
         Whether to overwrite the existing file.
@@ -307,7 +307,7 @@ def _participants_json(fname, overwrite=False, verbose=True):
 
     Parameters
     ----------
-    fname : str
+    fname : str | BIDSPath
         Filename to save the scans.tsv to.
     overwrite : bool
         Defaults to False.
@@ -347,7 +347,7 @@ def _scans_tsv(raw, raw_fname, fname, overwrite=False, verbose=True):
     ----------
     raw : instance of Raw
         The data as MNE-Python Raw object.
-    raw_fname : str
+    raw_fname : str | BIDSPath
         Relative path to the raw data file.
     fname : str
         Filename to save the scans.tsv to.
@@ -444,7 +444,7 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, overwrite=False,
     manufacturer : str
         Manufacturer of the acquisition system. For MEG also used to define the
         coordinate system for the MEG sensors.
-    fname : str
+    fname : str | BIDSPath
         Filename to save the sidecar json to.
     kind : str
         Type of the data as in ALLOWED_KINDS.
@@ -618,7 +618,7 @@ def _write_raw_fif(raw, bids_fname):
     ----------
     raw : mne.io.Raw
         Raw file to save out.
-    bids_fname : str
+    bids_fname : str | BIDSPath
         The name of the BIDS-specified file where the raw object
         should be saved.
 
@@ -978,7 +978,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
 
     subject_id, session_id = bids_basename.subject, bids_basename.session
     task, run = bids_basename.task, bids_basename.run
-    acquisition = bids_basename.acquisition
+    acquisition, space = bids_basename.acquisition, bids_basename.space
     kind = _handle_kind(raw)
 
     bids_fname = bids_basename.copy().update(suffix=f'{kind}{ext}')
@@ -1023,7 +1023,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     scans_fname = str(bids_path)
 
     # create *_coordsystem.json
-    bids_path.update(acquisition=acquisition,
+    bids_path.update(acquisition=acquisition, space=space,
                      prefix=data_path, suffix='coordsystem.json')
     coordsystem_fname = str(bids_path)
 
