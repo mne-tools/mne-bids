@@ -38,7 +38,7 @@ from mne_bids.utils import (_write_json, _write_tsv, _read_events, _mkdir_p,
                             _path_to_str, _parse_ext,
                             _get_ch_type_mapping, make_bids_folders,
                             _estimate_line_freq, make_bids_basename,
-                            _gen_bids_basename, BIDSPath)
+                            BIDSPath)
 from mne_bids.copyfiles import (copyfile_brainvision, copyfile_eeglab,
                                 copyfile_ctf, copyfile_bti, copyfile_kit)
 from mne_bids.tsv_handler import (_from_tsv, _drop, _contains_row,
@@ -974,8 +974,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
                                  processing=params.get('proc'),
                                  space=params.get('space'),
                                  run=params.get('run'),
-                                 task=params.get('task'),
-                                 check_empty_room=False)
+                                 task=params.get('task'))
 
     subject_id, session_id = bids_basename.subject, bids_basename.session
     task, run = bids_basename.task, bids_basename.run
@@ -1014,29 +1013,23 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     # an exception if we don't provide a valid task ("noise"). Now,
     # scans_fname, electrodes_fname, and coordsystem_fname must NOT include
     # the task entity. Therefore, we cannot generate them with
-    # make_bids_basename() directly. Instead, we call _gen_bids_basename()
-    # with the parameter on_invalid_er_task, which allows us to create an
-    # "invalid" basename for an emptyroom subject.
-    on_invalid_er_task = 'continue'
+    # make_bids_basename() directly. Instead, we use BIDSPath() directly
+    # as it does not make any advanced check.
 
     # create *_scans.tsv
     bids_path = BIDSPath(subject=subject_id, session=session_id,
                          prefix=ses_path, suffix='scans.tsv',
-                         check_empty_room=False)
-    scans_fname = _gen_bids_basename(
-        bids_path=bids_path,
-        on_invalid_er_task=on_invalid_er_task)
+                         task=None)
+    scans_fname = str(bids_path)
 
     # create *_coordsystem.json
     bids_path.update(acquisition=acquisition,
                      prefix=data_path, suffix='coordsystem.json')
-    coordsystem_fname = _gen_bids_basename(
-        bids_path=bids_path, on_invalid_er_task=on_invalid_er_task)
+    coordsystem_fname = str(bids_path)
 
     # create *_electrodes.tsv
     bids_path = bids_path.update(suffix='electrodes.tsv')
-    electrodes_fname = _gen_bids_basename(
-        bids_path=bids_path, on_invalid_er_task=on_invalid_er_task)
+    electrodes_fname = str(bids_path)
 
     # For the remaining files, we can use BIDSPath to alter.
     participants_tsv_fname = make_bids_basename(prefix=bids_root,

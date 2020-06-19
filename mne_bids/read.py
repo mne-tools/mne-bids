@@ -26,7 +26,7 @@ from mne_bids.config import (ALLOWED_EXTENSIONS, _convert_hand_options,
 from mne_bids.utils import (_parse_bids_filename, _extract_landmarks,
                             _find_matching_sidecar, _parse_ext,
                             _get_ch_type_mapping, make_bids_folders,
-                            _gen_bids_basename, BIDSPath,
+                            BIDSPath,
                             _estimate_line_freq, _infer_kind)
 
 
@@ -313,8 +313,7 @@ def read_raw_bids(bids_basename, bids_root, kind=None, extra_params=None,
                                  processing=params.get('proc'),
                                  space=params.get('space'),
                                  run=params.get('run'),
-                                 task=params.get('task'),
-                                 check_empty_room=False)
+                                 task=params.get('task'))
     sub = bids_basename.subject
     ses = bids_basename.session
     acq = bids_basename.acquisition
@@ -424,8 +423,7 @@ def get_matched_empty_room(bids_basename, bids_root):
                                  processing=params.get('proc'),
                                  space=params.get('space'),
                                  run=params.get('run'),
-                                 task=params.get('task'),
-                                 check_empty_room=False)
+                                 task=params.get('task'))
 
     kind = 'meg'  # We're only concerned about MEG data here
     bids_fname = bids_basename.get_bids_fname(kind=kind, bids_root=bids_root)
@@ -494,16 +492,9 @@ def get_matched_empty_room(bids_basename, bids_root):
                                 run=params.get('run', None),
                                 processing=params.get('proc', None),
                                 recording=params.get('rec', None),
-                                space=params.get('space', None),
-                                check_empty_room=False)
+                                space=params.get('space', None))
+        er_basename = str(er_bids_path)
 
-        er_basename = _gen_bids_basename(
-            bids_path=er_bids_path,
-            # BIDS specification does not enforce use of ses-YYYYMMDD and
-            # task-emptyroom entities.
-            on_invalid_er_session='continue',
-            on_invalid_er_task='continue'
-        )
         # Try to extract date from filename.
         if params['ses'] is not None:
             try:

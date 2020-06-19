@@ -86,8 +86,7 @@ class BIDSPath(object):
 
     def __init__(self, subject=None, session=None,
                  task=None, acquisition=None, run=None, processing=None,
-                 recording=None, space=None, prefix=None, suffix=None,
-                 check_empty_room=True):
+                 recording=None, space=None, prefix=None, suffix=None):
         if all(ii is None for ii in [subject, session, task,
                                      acquisition, run, processing,
                                      recording, space, prefix, suffix]):
@@ -97,10 +96,6 @@ class BIDSPath(object):
                     acquisition=acquisition, run=run, processing=processing,
                     recording=recording, space=space, prefix=prefix,
                     suffix=suffix)
-
-        # check the task/session of er basename
-        if subject == 'emptyroom' and check_empty_room:
-            _check_empty_room_basename(self)
 
     @property
     def entities(self):
@@ -269,6 +264,12 @@ class BIDSPath(object):
         # run string representation to check validity of arguments
         str(self)
         return self
+
+    def _check(self):
+        # check the task/session of er basename
+        if self.subject == 'emptyroom':
+            _check_empty_room_basename(self)
+
 
 
 def get_kinds(bids_root):
@@ -1066,45 +1067,6 @@ def _check_empty_room_basename(bids_path, on_invalid_er_session='raise',
             pass
 
 
-def _gen_bids_basename(*, bids_path, on_invalid_er_session='raise',
-                       on_invalid_er_task='raise'):
-    if on_invalid_er_session not in ['raise', 'warn', 'continue']:
-        msg = (f'on_invalid_er_session must be raise, warn, or continue, '
-               f'but received: {on_invalid_er_session}')
-        raise ValueError(msg)
-
-    if on_invalid_er_task not in ['raise', 'warn', 'continue']:
-        msg = (f'on_invalid_er_task must be raise, warn, or ignore, '
-               f'but received: {on_invalid_er_task}')
-        raise ValueError(msg)
-
-    order = OrderedDict([('sub', bids_path.subject),
-                         ('ses', bids_path.session),
-                         ('task', bids_path.task),
-                         ('acq', bids_path.acquisition),
-                         ('run', bids_path.run),
-                         ('proc', bids_path.processing),
-                         ('space', bids_path.space),
-                         ('recording', bids_path.recording)])
-
-    if order['run'] is not None and not isinstance(order['run'], str):
-        # Ensure that run is a string
-        order['run'] = '{:02}'.format(order['run'])
-
-    _check_types(order.values())
-
-    if (all(ii is None for ii in order.values()) and
-            bids_path.suffix is None and bids_path.prefix is None):
-        raise ValueError("At least one parameter must be given.")
-
-    # check the task/session of er basename
-    if bids_path.subject == 'emptyroom':
-        _check_empty_room_basename(bids_path, on_invalid_er_session,
-                                   on_invalid_er_task)
-
-    return str(bids_path)
-
-
 def make_bids_basename(subject=None, session=None, task=None,
                        acquisition=None, run=None, processing=None,
                        recording=None, space=None, prefix=None, suffix=None):
@@ -1155,10 +1117,12 @@ def make_bids_basename(subject=None, session=None, task=None,
     >>> print(make_bids_basename(subject='test', session='two', task='mytask', suffix='data.csv')) # noqa: E501
     sub-test_ses-two_task-mytask_data.csv
     """
-    return BIDSPath(subject=subject, session=session, task=task,
-                    acquisition=acquisition, run=run, processing=processing,
-                    recording=recording, space=space, prefix=prefix,
-                    suffix=suffix)
+    bids_path = BIDSPath(subject=subject, session=session, task=task,
+                         acquisition=acquisition, run=run, processing=processing,
+                         recording=recording, space=space, prefix=prefix,
+                         suffix=suffix)
+    bids_path._check()
+    return bids_path
 
 
 def _get_bids_fname_from_filesystem(*, bids_basename, bids_root, sub, ses,
