@@ -152,7 +152,7 @@ pointed to by <cite>bids_root</cite>.</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">bids_root</span> <span class="o">=</span> <span class="s1">&#39;~/bids_datasets/eeg_matchingpennies&#39;</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">bids_root</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s1">&#39;~/mne_data/eeg_matchingpennies&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">entity_key</span> <span class="o">=</span> <span class="s1">&#39;sub&#39;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">get_entity_vals</span><span class="p">(</span><span class="n">bids_root</span><span class="p">,</span> <span class="n">entity_key</span><span class="p">)</span>
 <span class="go">[&#39;05&#39;, &#39;06&#39;, &#39;07&#39;, &#39;08&#39;, &#39;09&#39;, &#39;10&#39;, &#39;11&#39;]</span>
@@ -174,7 +174,7 @@ pointed to by <cite>bids_root</cite>.</p>
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-06-16.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-06-19.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.1.1.<br/>
     </p>
   </div>

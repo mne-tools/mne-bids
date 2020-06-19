@@ -178,9 +178,9 @@ of the directory tree.</p>
 |------ eegmmidb/
 |--------- 1.0.0/
 |------------ S002/
+|--------------- S002R04.edf
 |--------------- S002R02.edf
 |--------------- S002R12.edf
-|--------------- S002R04.edf
 |------------ S001/
 |--------------- S001R02.edf
 |--------------- S001R12.edf
@@ -221,7 +221,7 @@ into a 2D numpy array of events that is compatible with MNE.</p>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Used Annotations descriptions: [&#39;T0&#39;]
-&lt;RawEDF | S001R02.edf, 64 x 9760 (61.0 s), ~125 kB, data not loaded&gt;
+&lt;RawEDF | S001R02.edf, 64 x 9760 (61.0 s), ~126 kB, data not loaded&gt;
 </pre></div>
 </div>
 <p>With this step, we have everything to start a new BIDS directory using
@@ -259,7 +259,7 @@ which are however optional. The required inputs are:</p>
     raw : instance of mne.io.Raw
         The raw data. It must be an instance of mne.Raw. The data should not be
         loaded from disk, i.e., raw.preload must be False.
-    bids_basename : str
+    bids_basename : str | BIDSPath
         The base filename of the BIDS compatible files. Typically, this can be
         generated using make_bids_basename.
         Example: `sub-01_ses-01_task-testing_acq-01_run-01`.
@@ -355,8 +355,8 @@ The second task was to rest with closed eyes.</p>
 <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">trial_type</span></a> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;rest&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;imagine left fist&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;imagine right fist&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">}</span>
 
 <span class="c1"># Now convert our data to be in a new BIDS dataset.</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_basename</span></a> <span class="o">=</span> <span class="n">make_bids_basename</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject_id</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">task</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">task</span></a><span class="p">)</span>
-<span class="n">write_raw_bids</span><span class="p">(</span><span class="n">raw_file</span><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_basename</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">event_id</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">trial_type</span></a><span class="p">,</span>
+<span class="n">bids_basename</span> <span class="o">=</span> <span class="n">make_bids_basename</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject_id</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">task</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">task</span></a><span class="p">)</span>
+<span class="n">write_raw_bids</span><span class="p">(</span><span class="n">raw_file</span><span class="p">,</span> <span class="n">bids_basename</span><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">event_id</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">trial_type</span></a><span class="p">,</span>
                <span class="n">events_data</span><span class="o">=</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">events</span></a><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -422,7 +422,7 @@ Writing &#39;/home/circleci/mne_data/eegmmidb_bids/dataset_description.json&#39;
     ]
 }
 Effective window size : 1.600 (s)
-/home/circleci/project/mne_bids/write.py:463: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
+/home/circleci/project/mne_bids/write.py:462: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
   warn(&#39;No line frequency found, defaulting to {} Hz &#39;
 Reading 0 ... 9759  =      0.000 ...    60.994 secs...
 
@@ -469,36 +469,36 @@ Copying data files to /home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_
 |--- dataset_description.json
 |--- participants.json
 |--- participants.tsv
-|--- sub-002/
-|------ sub-002_scans.tsv
-|------ eeg/
-|--------- sub-002_task-imaginefists_run-1_channels.tsv
-|--------- sub-002_task-resteyesclosed_events.tsv
-|--------- sub-002_task-imaginefists_run-2_eeg.json
-|--------- sub-002_task-resteyesclosed_eeg.edf
-|--------- sub-002_task-resteyesclosed_channels.tsv
-|--------- sub-002_task-imaginefists_run-2_channels.tsv
-|--------- sub-002_task-imaginefists_run-1_eeg.edf
-|--------- sub-002_task-imaginefists_run-2_eeg.edf
-|--------- sub-002_task-imaginefists_run-1_eeg.json
-|--------- sub-002_task-imaginefists_run-1_events.tsv
-|--------- sub-002_task-imaginefists_run-2_events.tsv
-|--------- sub-002_task-resteyesclosed_eeg.json
 |--- sub-001/
 |------ sub-001_scans.tsv
 |------ eeg/
 |--------- sub-001_task-imaginefists_run-2_eeg.edf
-|--------- sub-001_task-imaginefists_run-1_events.tsv
-|--------- sub-001_task-imaginefists_run-1_channels.tsv
-|--------- sub-001_task-imaginefists_run-2_channels.tsv
-|--------- sub-001_task-imaginefists_run-1_eeg.json
-|--------- sub-001_task-resteyesclosed_eeg.edf
-|--------- sub-001_task-resteyesclosed_eeg.json
-|--------- sub-001_task-imaginefists_run-2_events.tsv
-|--------- sub-001_task-resteyesclosed_channels.tsv
-|--------- sub-001_task-imaginefists_run-2_eeg.json
-|--------- sub-001_task-imaginefists_run-1_eeg.edf
 |--------- sub-001_task-resteyesclosed_events.tsv
+|--------- sub-001_task-resteyesclosed_eeg.edf
+|--------- sub-001_task-imaginefists_run-2_events.tsv
+|--------- sub-001_task-imaginefists_run-2_eeg.json
+|--------- sub-001_task-imaginefists_run-1_channels.tsv
+|--------- sub-001_task-resteyesclosed_channels.tsv
+|--------- sub-001_task-imaginefists_run-1_eeg.edf
+|--------- sub-001_task-imaginefists_run-1_events.tsv
+|--------- sub-001_task-imaginefists_run-1_eeg.json
+|--------- sub-001_task-resteyesclosed_eeg.json
+|--------- sub-001_task-imaginefists_run-2_channels.tsv
+|--- sub-002/
+|------ sub-002_scans.tsv
+|------ eeg/
+|--------- sub-002_task-resteyesclosed_events.tsv
+|--------- sub-002_task-resteyesclosed_eeg.edf
+|--------- sub-002_task-imaginefists_run-1_channels.tsv
+|--------- sub-002_task-imaginefists_run-2_events.tsv
+|--------- sub-002_task-imaginefists_run-2_channels.tsv
+|--------- sub-002_task-imaginefists_run-1_eeg.json
+|--------- sub-002_task-imaginefists_run-2_eeg.json
+|--------- sub-002_task-imaginefists_run-1_events.tsv
+|--------- sub-002_task-resteyesclosed_eeg.json
+|--------- sub-002_task-imaginefists_run-2_eeg.edf
+|--------- sub-002_task-resteyesclosed_channels.tsv
+|--------- sub-002_task-imaginefists_run-1_eeg.edf
 </pre></div>
 </div>
 <p>Looks good so far, let’s convert the data for all tasks and subjects.</p>
@@ -527,10 +527,10 @@ Copying data files to /home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_
         <a href="https://mne.tools/dev/generated/mne.io.BaseRaw.html#mne.io.BaseRaw.set_annotations" title="mne.io.BaseRaw.set_annotations" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-method"><span class="n">raw</span><span class="o">.</span><span class="n">set_annotations</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.Annotations.html#mne.Annotations" title="mne.Annotations" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">annot</span></a><span class="p">)</span>
         <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">events</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">event_id</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.events_from_annotations.html#mne.events_from_annotations" title="mne.events_from_annotations" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">events_from_annotations</span></a><span class="p">(</span><span class="n">raw</span><span class="p">)</span>
 
-        <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_basename</span></a> <span class="o">=</span> <span class="n">make_bids_basename</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">{:03}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subj_idx</span></a><span class="p">),</span>
+        <span class="n">bids_basename</span> <span class="o">=</span> <span class="n">make_bids_basename</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">{:03}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subj_idx</span></a><span class="p">),</span>
                                            <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">task</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">task_names</span></a><span class="p">[</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">task_idx</span></a><span class="p">],</span>
                                            <span class="n">run</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">run_mapping</span></a><span class="p">[</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">task_idx</span></a><span class="p">])</span>
-        <span class="n">write_raw_bids</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_basename</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">event_id</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">trial_type</span></a><span class="p">,</span>
+        <span class="n">write_raw_bids</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_basename</span><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">event_id</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">trial_type</span></a><span class="p">,</span>
                        <span class="n">events_data</span><span class="o">=</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">events</span></a><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -598,7 +598,7 @@ Writing &#39;/home/circleci/mne_data/eegmmidb_bids/dataset_description.json&#39;
     ]
 }
 Effective window size : 1.600 (s)
-/home/circleci/project/mne_bids/write.py:463: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
+/home/circleci/project/mne_bids/write.py:462: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
   warn(&#39;No line frequency found, defaulting to {} Hz &#39;
 Reading 0 ... 9759  =      0.000 ...    60.994 secs...
 
@@ -700,7 +700,7 @@ Writing &#39;/home/circleci/mne_data/eegmmidb_bids/dataset_description.json&#39;
     ]
 }
 Effective window size : 1.600 (s)
-/home/circleci/project/mne_bids/write.py:463: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
+/home/circleci/project/mne_bids/write.py:462: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
   warn(&#39;No line frequency found, defaulting to {} Hz &#39;
 Reading 0 ... 19999  =      0.000 ...   124.994 secs...
 
@@ -803,7 +803,7 @@ Writing &#39;/home/circleci/mne_data/eegmmidb_bids/dataset_description.json&#39;
     ]
 }
 Effective window size : 1.600 (s)
-/home/circleci/project/mne_bids/write.py:463: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
+/home/circleci/project/mne_bids/write.py:462: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
   warn(&#39;No line frequency found, defaulting to {} Hz &#39;
 Reading 0 ... 19999  =      0.000 ...   124.994 secs...
 
@@ -901,7 +901,7 @@ Writing &#39;/home/circleci/mne_data/eegmmidb_bids/dataset_description.json&#39;
     ]
 }
 Effective window size : 1.600 (s)
-/home/circleci/project/mne_bids/write.py:463: RuntimeWarning: No line frequency found, defaulting to 50 Hz estimated from multi-taper FFT on 10 seconds of data.
+/home/circleci/project/mne_bids/write.py:462: RuntimeWarning: No line frequency found, defaulting to 50 Hz estimated from multi-taper FFT on 10 seconds of data.
   warn(&#39;No line frequency found, defaulting to {} Hz &#39;
 Reading 0 ... 9759  =      0.000 ...    60.994 secs...
 
@@ -1004,7 +1004,7 @@ Writing &#39;/home/circleci/mne_data/eegmmidb_bids/dataset_description.json&#39;
     ]
 }
 Effective window size : 1.600 (s)
-/home/circleci/project/mne_bids/write.py:463: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
+/home/circleci/project/mne_bids/write.py:462: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
   warn(&#39;No line frequency found, defaulting to {} Hz &#39;
 Reading 0 ... 19679  =      0.000 ...   122.994 secs...
 
@@ -1108,7 +1108,7 @@ Writing &#39;/home/circleci/mne_data/eegmmidb_bids/dataset_description.json&#39;
     ]
 }
 Effective window size : 1.600 (s)
-/home/circleci/project/mne_bids/write.py:463: RuntimeWarning: No line frequency found, defaulting to 50 Hz estimated from multi-taper FFT on 10 seconds of data.
+/home/circleci/project/mne_bids/write.py:462: RuntimeWarning: No line frequency found, defaulting to 50 Hz estimated from multi-taper FFT on 10 seconds of data.
   warn(&#39;No line frequency found, defaulting to {} Hz &#39;
 Reading 0 ... 19679  =      0.000 ...   122.994 secs...
 
@@ -1156,36 +1156,36 @@ Copying data files to /home/circleci/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_
 |--- dataset_description.json
 |--- participants.json
 |--- participants.tsv
-|--- sub-002/
-|------ sub-002_scans.tsv
-|------ eeg/
-|--------- sub-002_task-imaginefists_run-1_channels.tsv
-|--------- sub-002_task-resteyesclosed_events.tsv
-|--------- sub-002_task-imaginefists_run-2_eeg.json
-|--------- sub-002_task-resteyesclosed_eeg.edf
-|--------- sub-002_task-resteyesclosed_channels.tsv
-|--------- sub-002_task-imaginefists_run-2_channels.tsv
-|--------- sub-002_task-imaginefists_run-1_eeg.edf
-|--------- sub-002_task-imaginefists_run-2_eeg.edf
-|--------- sub-002_task-imaginefists_run-1_eeg.json
-|--------- sub-002_task-imaginefists_run-1_events.tsv
-|--------- sub-002_task-imaginefists_run-2_events.tsv
-|--------- sub-002_task-resteyesclosed_eeg.json
 |--- sub-001/
 |------ sub-001_scans.tsv
 |------ eeg/
 |--------- sub-001_task-imaginefists_run-2_eeg.edf
-|--------- sub-001_task-imaginefists_run-1_events.tsv
-|--------- sub-001_task-imaginefists_run-1_channels.tsv
-|--------- sub-001_task-imaginefists_run-2_channels.tsv
-|--------- sub-001_task-imaginefists_run-1_eeg.json
-|--------- sub-001_task-resteyesclosed_eeg.edf
-|--------- sub-001_task-resteyesclosed_eeg.json
-|--------- sub-001_task-imaginefists_run-2_events.tsv
-|--------- sub-001_task-resteyesclosed_channels.tsv
-|--------- sub-001_task-imaginefists_run-2_eeg.json
-|--------- sub-001_task-imaginefists_run-1_eeg.edf
 |--------- sub-001_task-resteyesclosed_events.tsv
+|--------- sub-001_task-resteyesclosed_eeg.edf
+|--------- sub-001_task-imaginefists_run-2_events.tsv
+|--------- sub-001_task-imaginefists_run-2_eeg.json
+|--------- sub-001_task-imaginefists_run-1_channels.tsv
+|--------- sub-001_task-resteyesclosed_channels.tsv
+|--------- sub-001_task-imaginefists_run-1_eeg.edf
+|--------- sub-001_task-imaginefists_run-1_events.tsv
+|--------- sub-001_task-imaginefists_run-1_eeg.json
+|--------- sub-001_task-resteyesclosed_eeg.json
+|--------- sub-001_task-imaginefists_run-2_channels.tsv
+|--- sub-002/
+|------ sub-002_scans.tsv
+|------ eeg/
+|--------- sub-002_task-resteyesclosed_events.tsv
+|--------- sub-002_task-resteyesclosed_eeg.edf
+|--------- sub-002_task-imaginefists_run-1_channels.tsv
+|--------- sub-002_task-imaginefists_run-2_events.tsv
+|--------- sub-002_task-imaginefists_run-2_channels.tsv
+|--------- sub-002_task-imaginefists_run-1_eeg.json
+|--------- sub-002_task-imaginefists_run-2_eeg.json
+|--------- sub-002_task-imaginefists_run-1_events.tsv
+|--------- sub-002_task-resteyesclosed_eeg.json
+|--------- sub-002_task-imaginefists_run-2_eeg.edf
+|--------- sub-002_task-resteyesclosed_channels.tsv
+|--------- sub-002_task-imaginefists_run-1_eeg.edf
 </pre></div>
 </div>
 <p>MNE-BIDS has created a suitable directory structure for us, and among other
@@ -1200,7 +1200,7 @@ directories called the “BIDS-validator”, available as a web version and a
 command line tool:</p>
 <p>Web version: <a class="reference external" href="https://bids-standard.github.io/bids-validator/">https://bids-standard.github.io/bids-validator/</a></p>
 <p>Command line tool: <a class="reference external" href="https://www.npmjs.com/package/bids-validator">https://www.npmjs.com/package/bids-validator</a></p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.784 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  1.102 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-eeg-to-bids-py">
 <div class="binder-badge docutils container">
 <a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/convert_eeg_to_bids.ipynb"><img alt="https://mybinder.org/badge_logo.svg" src="https://mybinder.org/badge_logo.svg" width="150px" /></a>
@@ -1228,7 +1228,7 @@ command line tool:</p>
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-06-16.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-06-19.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.1.1.<br/>
     </p>
   </div>
