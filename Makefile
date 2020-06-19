@@ -33,7 +33,7 @@ test: inplace check-manifest
 	$(PYTESTS) mne_bids
 
 test-doc:
-	$(PYTESTS) --doctest-modules --doctest-ignore-import-errors
+	$(PYTESTS) --doctest-modules --doctest-ignore-import-errors mne_bids
 
 test-coverage:
 	rm -rf coverage .coverage

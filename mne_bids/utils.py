@@ -71,18 +71,16 @@ class BIDSPath(object):
 
     Examples
     --------
-    >>> bids_basename = make_bids_basename(subject='test', session='two',
-                                           task='mytask', suffix='data.csv')
+    >>> bids_basename = make_bids_basename(subject='test', session='two', task='mytask', suffix='data.csv')
     >>> print(bids_basename)
     sub-test_ses-two_task-mytask_data.csv
-    >>> print(bids_basename.__repr__())
-    BIDSPath (sub-test_ses-two_task-mytask_data.csv)
+    >>> bids_basename
+    BIDSPath(sub-test_ses-two_task-mytask_data.csv)
     >>> # copy and update multiple entities at once
-    >>> new_basename = bids_basename.copy().update(subject='test2',
-                                                   session='one')
+    >>> new_basename = bids_basename.copy().update(subject='test2', session='one')
     >>> print(new_basename)
     sub-test2_ses-one_task-mytask_data.csv
-    """
+    """  # noqa
 
     def __init__(self, subject=None, session=None,
                  task=None, acquisition=None, run=None, processing=None,
@@ -232,18 +230,15 @@ class BIDSPath(object):
         --------
         If one creates a bids basename using `make_bids_basename`::
 
-        >>> bids_basename = make_bids_basename(subject='test', session='two',
-                                           task='mytask', suffix='data.csv')
+        >>> bids_basename = make_bids_basename(subject='test', session='two', task='mytask', suffix='data.csv')
         >>> print(bids_basename)
         sub-test_ses-two_task-mytask_data.csv
-
-        Then, one can update this `BIDSPath` object in place::
-
-        >>> bids_basename.update(acquisition='test', suffix='ieeg.vhdr',
-                                 task=None)
+        >>> # Then, one can update this `BIDSPath` object in place
+        >>> bids_basename.update(acquisition='test', suffix='ieeg.vhdr', task=None)
+        BIDSPath(sub-test_ses-two_acq-test_ieeg.vhdr)
         >>> print(bids_basename)
         sub-test_ses-two_acq-test_ieeg.vhdr
-        """
+        """  # noqa
         run = entities.get('run')
         if run is not None and not isinstance(run, str):
             # Ensure that run is a string
@@ -357,7 +352,7 @@ def get_entity_vals(bids_root, entity_key, *, ignore_sub='emptyroom',
 
     Examples
     --------
-    >>> bids_root = '~/bids_datasets/eeg_matchingpennies'
+    >>> bids_root = os.path.expanduser('~/mne_data/eeg_matchingpennies')
     >>> entity_key = 'sub'
     >>> get_entity_vals(bids_root, entity_key)
     ['05', '06', '07', '08', '09', '10', '11']
@@ -536,12 +531,10 @@ def make_bids_folders(subject, session=None, kind=None, bids_root=None,
 
     Examples
     --------
-    >>> print(make_bids_folders('sub_01', session='my_session',
-                                kind='meg', bids_root='path/to/project',
-                                make_dir=False))  # noqa
-    path/to/project/sub-sub_01/ses-my_session/meg
+    >>> make_bids_folders('sub_01', session='mysession', kind='meg', bids_root='/path/to/project', make_dir=False)  # noqa
+    '/path/to/project/sub-sub_01/ses-mysession/meg'
 
-    """
+    """  # noqa
     _check_types((subject, kind, session))
     if bids_root is not None:
         bids_root = _path_to_str(bids_root)
