@@ -271,7 +271,6 @@ class BIDSPath(object):
             _check_empty_room_basename(self)
 
 
-
 def get_kinds(bids_root):
     """Get list of data types ("kinds") present in a BIDS dataset.
 
@@ -1118,9 +1117,9 @@ def make_bids_basename(subject=None, session=None, task=None,
     sub-test_ses-two_task-mytask_data.csv
     """
     bids_path = BIDSPath(subject=subject, session=session, task=task,
-                         acquisition=acquisition, run=run, processing=processing,
-                         recording=recording, space=space, prefix=prefix,
-                         suffix=suffix)
+                         acquisition=acquisition, run=run,
+                         processing=processing, recording=recording,
+                         space=space, prefix=prefix, suffix=suffix)
     bids_path._check()
     return bids_path
 
