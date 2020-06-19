@@ -256,13 +256,13 @@ class BIDSPath(object):
             # set entity value
             setattr(self, key, val)
 
-        # run string representation to check validity of arguments
-        str(self)
+        self._check(with_emptyroom=False)
         return self
 
-    def _check(self):
+    def _check(self, with_emptyroom=True):
         # check the task/session of er basename
-        if self.subject == 'emptyroom':
+        str(self)  # run string representation to check validity of arguments
+        if with_emptyroom and self.subject == 'emptyroom':
             _check_empty_room_basename(self)
 
 
