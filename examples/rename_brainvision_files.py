@@ -22,7 +22,6 @@ repair of the internal file pointers.
 
 For the command line version of this tool, see the :code:`cp` tool in the docs
 for the :ref:`Python Command Line Interface <python_cli>`.
-
 """
 
 # Authors: Stefan Appelhoff <stefan.appelhoff@mailbox.org>
@@ -53,13 +52,13 @@ examples_dir = op.join(data_path, 'Brainvision')
 # Step 2: Rename the recording
 # ----------------------------------
 # Above, at the top of the example, we imported
-# :func:`mne_bids.utils.copyfile_brainvision` from
+# :func:`mne_bids.copyfiles.copyfile_brainvision` from
 # the MNE-BIDS ``utils.py`` module. This function takes two arguments as
 # input: First, the path to the existing .vhdr file. And second, the path to
 # the future .vhdr file.
 #
-# :func:`mne_bids.utils.copyfile_brainvision` will then create three new files
-# (.vhdr, .vmrk, and .eeg) with the new names as provided with the second
+# :func:`mne_bids.copyfiles.copyfile_brainvision` will then create three new
+# files (.vhdr, .vmrk, and .eeg) with the new names as provided with the second
 # argument.
 #
 # Here, we rename a test file name:

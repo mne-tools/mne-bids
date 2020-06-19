@@ -42,6 +42,10 @@ extensions = [
 
 # generate autosummary even if no references
 autosummary_generate = True
+autodoc_default_options = {'inherited-members': None}
+numpydoc_class_members_toctree = False
+numpydoc_attributes_as_param_list = True
+default_role = 'autolink'  # XXX silently allows bad syntax, someone should fix
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
@@ -84,6 +88,8 @@ html_theme_path = sphinx_bootstrap_theme.get_html_theme_path()
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
+html_static_path = ['_static']
+html_css_files = ['style.css']
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the

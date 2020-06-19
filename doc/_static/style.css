@@ -1,0 +1,4 @@
+a[class^="sphx-glr-backref-module-mne_bids"] {
+    /* make all MNE-BIDS backrefs bold */
+    font-weight: 800;
+}
