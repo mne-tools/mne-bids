@@ -1,4 +1,5 @@
 """Configuration values for MNE-BIDS."""
+from mne import io
 from mne.io.constants import FIFF
 
 
@@ -23,6 +24,13 @@ eeg_manufacturers = {'.vhdr': 'BrainProducts', '.eeg': 'BrainProducts',
 ieeg_manufacturers = {'.vhdr': 'BrainProducts', '.eeg': 'BrainProducts',
                       '.edf': 'n/a', '.set': 'n/a', '.fdt': 'n/a',
                       '.mef': 'n/a', '.nwb': 'n/a'}
+
+# file-extension map to mne-python readers
+reader = {'.con': io.read_raw_kit, '.sqd': io.read_raw_kit,
+          '.fif': io.read_raw_fif, '.pdf': io.read_raw_bti,
+          '.ds': io.read_raw_ctf, '.vhdr': io.read_raw_brainvision,
+          '.edf': io.read_raw_edf, '.bdf': io.read_raw_bdf,
+          '.set': io.read_raw_eeglab}
 
 # Merge the manufacturer dictionaries in a python2 / python3 compatible way
 MANUFACTURERS = dict()
@@ -54,6 +62,11 @@ allowed_extensions_ieeg = ['.vhdr',  # BrainVision, accompanied by .vmrk, .eeg
 ALLOWED_EXTENSIONS = {'meg': allowed_extensions_meg,
                       'eeg': allowed_extensions_eeg,
                       'ieeg': allowed_extensions_ieeg}
+
+# allowed BIDS entities
+BIDS_PATH_ENTITIES = ('subject', 'session', 'task', 'acquisition',
+                      'processing', 'run', 'recording',
+                      'space', 'suffix', 'prefix')
 
 # accepted BIDS formats, which may be subject to change
 # depending on the specification

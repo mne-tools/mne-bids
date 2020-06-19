@@ -39,6 +39,7 @@ Bug
 - fix :func:`mne_bids.read_raw_bids` to correctly scale coordinate to meters in electrodes.tsv, and also read in possible iEEG coordinate frames via the 'space' BIDs-entity by `Adam Li`_ (`#390 <https://github.com/mne-tools/mne-bids/pull/390>`_)
 - fix coordystem reading in :func:`mne_bids.read_raw_bids` for cases where the ``acq`` is undefined, by `Stefan Appelhoff`_ (`#440 <https://github.com/mne-tools/mne-bids/pull/440>`_)
 - Calling :func:`write_raw_bids` with `overwrite==True` will preserve existing entries in ``participants.tsv`` and ``participants.json`` if the **new** dataset does not contain these entries, by `Adam Li`_ (`#442 <https://github.com/mne-tools/mne-bids/pull/442>`_)
+- Fix BIDS entity using 'recording' to be 'rec' in filenames, as in specification by `Adam Li`_ (`#446 <https://github.com/mne-tools/mne-bids/pull/446>`_)
 
 API
 ~~~
@@ -47,7 +48,8 @@ API
 - :func:`get_matched_empty_room` now expects `bids_basename` as the first argument and returns the `bids_basename` of the best-matching empty-room recording (instead of its filename before). The `bids_fname` argument has been dropped, by `Richard Höchenberger`_ (`#410 <https://github.com/mne-tools/mne-bids/pull/410>`_)
 - :func:`get_head_mri_trans` now expects `bids_basename` as the first argument. The `bids_fname` argument has been dropped, by `Richard Höchenberger`_ (`#410 <https://github.com/mne-tools/mne-bids/pull/410>`_)
 - BIDS conformity: The ``_part-%d`` entity is now called ``_split-`` throughout BIDS, MNE, and MNE-BIDS, by `Stefan Appelhoff`_ (`#417 <https://github.com/mne-tools/mne-bids/pull/417>`_)
-- The :code:`mne_bids.wite.make_bids_basename` function has been moved to :func:`mne_bids.utils.make_bids_basename`. Like before, it can also be accessed via `mne_bids.make_bids_basename`, by `Richard Höchenberger`_ (`#424 <https://github.com/mne-tools/mne-bids/pull/424>`_)
+- The :code:`mne_bids.write.make_bids_basename` function has been moved to :func:`mne_bids.utils.make_bids_basename`. Like before, it can also be accessed via `mne_bids.make_bids_basename`, by `Richard Höchenberger`_ (`#424 <https://github.com/mne-tools/mne-bids/pull/424>`_)
+- The :func:`mne_bids.make_bids_basename` function has been updated to create a :code:`mne_bids.utils.BIDSPath` object, which operates like a path object and allows dynamic updating of BIDs entities, by `Adam Li`_ (`#446 <https://github.com/mne-tools/mne-bids/pull/446>`_)
 
 .. _changes_0_4:
 

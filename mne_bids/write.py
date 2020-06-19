@@ -38,17 +38,16 @@ from mne_bids.utils import (_write_json, _write_tsv, _read_events, _mkdir_p,
                             _path_to_str, _parse_ext,
                             _get_ch_type_mapping, make_bids_folders,
                             _estimate_line_freq, make_bids_basename,
-                            _gen_bids_basename)
+                            BIDSPath)
 from mne_bids.copyfiles import (copyfile_brainvision, copyfile_eeglab,
                                 copyfile_ctf, copyfile_bti, copyfile_kit)
-from mne_bids.read import reader
 from mne_bids.tsv_handler import (_from_tsv, _drop, _contains_row,
                                   _combine_rows)
 
 from mne_bids.config import (ORIENTATION, UNITS, MANUFACTURERS,
                              IGNORED_CHANNELS, ALLOWED_EXTENSIONS,
                              BIDS_VERSION, _convert_hand_options,
-                             _convert_sex_options)
+                             _convert_sex_options, reader)
 
 
 def _is_numeric(n):
@@ -77,7 +76,7 @@ def _channels_tsv(raw, fname, overwrite=False, verbose=True):
     ----------
     raw : instance of Raw
         The data as MNE-Python Raw object.
-    fname : str
+    fname : str | BIDSPath
         Filename to save the channels.tsv to.
     overwrite : bool
         Whether to overwrite the existing file.
@@ -164,7 +163,7 @@ def _events_tsv(events, raw, fname, trial_type, overwrite=False,
         before the event or immediately after.
     raw : instance of Raw
         The data as MNE-Python Raw object.
-    fname : str
+    fname : str | BIDSPath
         Filename to save the events.tsv to.
     trial_type : dict | None
         Dictionary mapping a brief description key to an event id (value). For
@@ -217,7 +216,7 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False,
         The data as MNE-Python Raw object.
     subject_id : str
         The subject name in BIDS compatible format ('01', '02', etc.)
-    fname : str
+    fname : str | BIDSPath
         Filename to save the participants.tsv to.
     overwrite : bool
         Whether to overwrite the existing file.
@@ -308,7 +307,7 @@ def _participants_json(fname, overwrite=False, verbose=True):
 
     Parameters
     ----------
-    fname : str
+    fname : str | BIDSPath
         Filename to save the scans.tsv to.
     overwrite : bool
         Defaults to False.
@@ -348,7 +347,7 @@ def _scans_tsv(raw, raw_fname, fname, overwrite=False, verbose=True):
     ----------
     raw : instance of Raw
         The data as MNE-Python Raw object.
-    raw_fname : str
+    raw_fname : str | BIDSPath
         Relative path to the raw data file.
     fname : str
         Filename to save the scans.tsv to.
@@ -445,7 +444,7 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, overwrite=False,
     manufacturer : str
         Manufacturer of the acquisition system. For MEG also used to define the
         coordinate system for the MEG sensors.
-    fname : str
+    fname : str | BIDSPath
         Filename to save the sidecar json to.
     kind : str
         Type of the data as in ALLOWED_KINDS.
@@ -619,7 +618,7 @@ def _write_raw_fif(raw, bids_fname):
     ----------
     raw : mne.io.Raw
         Raw file to save out.
-    bids_fname : str
+    bids_fname : str | BIDSPath
         The name of the BIDS-specified file where the raw object
         should be saved.
 
@@ -844,7 +843,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     raw : instance of mne.io.Raw
         The raw data. It must be an instance of mne.Raw. The data should not be
         loaded from disk, i.e., raw.preload must be False.
-    bids_basename : str
+    bids_basename : str | BIDSPath
         The base filename of the BIDS compatible files. Typically, this can be
         generated using make_bids_basename.
         Example: `sub-01_ses-01_task-testing_acq-01_run-01`.
@@ -965,12 +964,24 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
                        "raw.times should not have changed since reading"
                        " in from the file. It may have been cropped.")
 
-    params = _parse_bids_filename(bids_basename, verbose)
-    subject_id, session_id = params['sub'], params['ses']
-    acquisition, task, run = params['acq'], params['task'], params['run']
+    # convert to BIDS Path
+    if isinstance(bids_basename, str):
+        params = _parse_bids_filename(bids_basename, verbose)
+        bids_basename = BIDSPath(subject=params.get('sub'),
+                                 session=params.get('ses'),
+                                 recording=params.get('rec'),
+                                 acquisition=params.get('acq'),
+                                 processing=params.get('proc'),
+                                 space=params.get('space'),
+                                 run=params.get('run'),
+                                 task=params.get('task'))
+
+    subject_id, session_id = bids_basename.subject, bids_basename.session
+    task, run = bids_basename.task, bids_basename.run
+    acquisition, space = bids_basename.acquisition, bids_basename.space
     kind = _handle_kind(raw)
 
-    bids_fname = bids_basename + '_%s%s' % (kind, ext)
+    bids_fname = bids_basename.copy().update(suffix=f'{kind}{ext}')
 
     # check whether the info provided indicates that the data is emptyroom
     # data
@@ -998,49 +1009,44 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
                                      bids_root=bids_root, make_dir=False,
                                      overwrite=False, verbose=verbose)
 
-    # create filenames
-
     # In case of an "emptyroom" subject, make_bids_basename() will raise
     # an exception if we don't provide a valid task ("noise"). Now,
     # scans_fname, electrodes_fname, and coordsystem_fname must NOT include
     # the task entity. Therefore, we cannot generate them with
-    # make_bids_basename() directly. Instead, we call _gen_bids_basename()
-    # with the parameter on_invalid_er_task, which allows us to create an
-    # "invalid" basename for an emptyroom subject.
-    on_invalid_er_task = 'continue'
+    # make_bids_basename() directly. Instead, we use BIDSPath() directly
+    # as it does not make any advanced check.
 
-    scans_fname = _gen_bids_basename(
-        subject=subject_id, session=session_id, suffix='scans.tsv',
-        prefix=ses_path, on_invalid_er_task=on_invalid_er_task)
-    coordsystem_fname = _gen_bids_basename(
-        subject=subject_id, session=session_id, acquisition=acquisition,
-        suffix='coordsystem.json', prefix=data_path,
-        on_invalid_er_task=on_invalid_er_task)
-    electrodes_fname = _gen_bids_basename(
-        subject=subject_id, session=session_id, acquisition=acquisition,
-        suffix='electrodes.tsv', prefix=data_path,
-        on_invalid_er_task=on_invalid_er_task)
+    # create *_scans.tsv
+    bids_path = BIDSPath(subject=subject_id, session=session_id,
+                         prefix=ses_path, suffix='scans.tsv',
+                         task=None)
+    scans_fname = str(bids_path)
 
-    # For the remaining files, we can use make_bids_basename() as usual.
+    # create *_coordsystem.json
+    bids_path.update(acquisition=acquisition, space=space,
+                     prefix=data_path, suffix='coordsystem.json')
+    coordsystem_fname = str(bids_path)
+
+    # create *_electrodes.tsv
+    bids_path = bids_path.update(suffix='electrodes.tsv')
+    electrodes_fname = str(bids_path)
+
+    # For the remaining files, we can use BIDSPath to alter.
     participants_tsv_fname = make_bids_basename(prefix=bids_root,
                                                 suffix='participants.tsv')
-    participants_json_fname = make_bids_basename(prefix=bids_root,
-                                                 suffix='participants.json')
-    sidecar_fname = make_bids_basename(
-        subject=subject_id, session=session_id, task=task, run=run,
-        acquisition=acquisition, suffix='%s.json' % kind, prefix=data_path)
-    events_fname = make_bids_basename(
-        subject=subject_id, session=session_id, task=task,
-        acquisition=acquisition, run=run, suffix='events.tsv',
-        prefix=data_path)
-    channels_fname = make_bids_basename(
-        subject=subject_id, session=session_id, task=task, run=run,
-        acquisition=acquisition, suffix='channels.tsv', prefix=data_path)
+    participants_json_fname = participants_tsv_fname.copy()
+    participants_json_fname.suffix = 'participants.json'
+
+    sidecar_fname = bids_fname.copy().update(prefix=data_path,
+                                             suffix=f'{kind}.json')
+
+    events_fname = sidecar_fname.copy().update(suffix='events.tsv')
+    channels_fname = sidecar_fname.copy().update(suffix='channels.tsv')
 
     if ext not in ['.fif', '.ds', '.vhdr', '.edf', '.bdf', '.set', '.con',
                    '.sqd']:
-        bids_raw_folder = bids_fname.split('.')[0]
-        bids_fname = op.join(bids_raw_folder, bids_fname)
+        bids_raw_folder = str(bids_fname).split(".")[0]
+        bids_fname.prefix = bids_raw_folder
 
     # Anonymize
     if anonymize is not None:
@@ -1068,11 +1074,11 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
         if kind == 'meg' and ext != '.fif':
             if verbose:
                 warn('Converting to FIF for anonymization')
-            bids_fname = bids_fname.replace(ext, '.fif')
+            bids_fname.suffix = bids_fname.suffix.replace(ext, '.fif')
         elif kind in ['eeg', 'ieeg']:
             if verbose:
                 warn('Converting to BV for anonymization')
-            bids_fname = bids_fname.replace(ext, '.vhdr')
+            bids_fname.suffix = bids_fname.suffix.replace(ext, '.vhdr')
 
     # Read in Raw object and extract metadata from Raw object if needed
     orient = ORIENTATION.get(ext, 'n/a')
@@ -1116,6 +1122,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     # set the raw file name to now be the absolute path to ensure the files
     # are placed in the right location
     bids_fname = op.join(data_path, bids_fname)
+
     if os.path.exists(bids_fname) and not overwrite:
         raise FileExistsError('"%s" already exists. Please set '  # noqa: F821
                               'overwrite to True.' % bids_fname)
@@ -1273,8 +1280,10 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
         t1w.header['xyzt_units'] = np.array(10, dtype='uint8')
 
     # Now give the NIfTI file a BIDS name and write it to the BIDS location
+    # this needs to be a string, since nibabel assumes a string input
     t1w_basename = make_bids_basename(subject=subject, session=session,
-                                      acquisition=acquisition, prefix=anat_dir,
+                                      acquisition=acquisition,
+                                      prefix=anat_dir,
                                       suffix='T1w.nii.gz')
 
     # Check if we have necessary conditions for writing a sidecar JSON
@@ -1340,7 +1349,7 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
             {'LPA': list(mri_landmarks[0, :]),
              'NAS': list(mri_landmarks[1, :]),
              'RPA': list(mri_landmarks[2, :])}
-        fname = t1w_basename.replace('.nii.gz', '.json')
+        fname = str(t1w_basename).replace('.nii.gz', '.json')
         if op.isfile(fname) and not overwrite:
             raise IOError('Wanted to write a file but it already exists and '
                           '`overwrite` is set to False. File: "{}"'

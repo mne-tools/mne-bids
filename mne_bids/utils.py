@@ -8,14 +8,15 @@
 #
 # License: BSD (3-clause)
 import os
-import os.path as op
 import glob
 import json
 import shutil as sh
 import re
 from datetime import datetime
 from collections import defaultdict, OrderedDict
+from os import path as op
 from pathlib import Path
+from copy import deepcopy
 
 import numpy as np
 from mne import read_events, find_events, events_from_annotations
@@ -26,7 +27,244 @@ from mne.io.kit.kit import get_kit_info
 from mne.io.constants import FIFF
 from mne.time_frequency import psd_array_welch
 
+from mne_bids.config import BIDS_PATH_ENTITIES, reader
 from mne_bids.tsv_handler import _to_tsv, _tsv_to_str
+
+
+class BIDSPath(object):
+    """Create a partial/full BIDS filepath from its component parts.
+
+    BIDS filename prefixes have one or more pieces of metadata in them. They
+    must follow a particular order, which is followed by this function. This
+    will generate the *prefix* for a BIDS filename that can be used with many
+    subsequent files, or you may also give a suffix that will then complete
+    the file name.
+    
+    BIDSPath allows dynamic updating of its entities in place, and operates
+    similar to `pathlib.Path`.
+
+    Note that not all parameters are applicable to each kind of data. For
+    example, electrode location TSV files do not need a "task" field.
+
+    Parameters
+    ----------
+    subject : str | None
+        The subject ID. Corresponds to "sub".
+    session : str | None
+        The session for a item. Corresponds to "ses".
+    task : str | None
+        The task for a item. Corresponds to "task".
+    acquisition: str | None
+        The acquisition parameters for the item. Corresponds to "acq".
+    run : int | None
+        The run number for this item. Corresponds to "run".
+    processing : str | None
+        The processing label for this item. Corresponds to "proc".
+    recording : str | None
+        The recording name for this item. Corresponds to "rec".
+    space : str | None
+        The coordinate space for an anatomical file. Corresponds to "space".
+    prefix : str | None
+        The prefix for the filename to be created. E.g., a path to the folder
+        in which you wish to create a file with this name.
+    suffix : str | None
+        The suffix for the filename to be created. E.g., 'audio.wav'.
+
+    Examples
+    --------
+    >>> bids_basename = make_bids_basename(subject='test', session='two', task='mytask', suffix='data.csv')
+    >>> print(bids_basename)
+    sub-test_ses-two_task-mytask_data.csv
+    >>> bids_basename
+    BIDSPath(sub-test_ses-two_task-mytask_data.csv)
+    >>> # copy and update multiple entities at once
+    >>> new_basename = bids_basename.copy().update(subject='test2', session='one')
+    >>> print(new_basename)
+    sub-test2_ses-one_task-mytask_data.csv
+    """  # noqa
+
+    def __init__(self, subject=None, session=None,
+                 task=None, acquisition=None, run=None, processing=None,
+                 recording=None, space=None, prefix=None, suffix=None):
+        if all(ii is None for ii in [subject, session, task,
+                                     acquisition, run, processing,
+                                     recording, space, prefix, suffix]):
+            raise ValueError("At least one parameter must be given.")
+
+        self.update(subject=subject, session=session, task=task,
+                    acquisition=acquisition, run=run, processing=processing,
+                    recording=recording, space=space, prefix=prefix,
+                    suffix=suffix)
+
+    @property
+    def entities(self):
+        """Return dictionary of the BIDS entities."""
+        return OrderedDict([
+            ('subject', self.subject),
+            ('session', self.session),
+            ('task', self.task),
+            ('acquisition', self.acquisition),
+            ('run', self.run),
+            ('processing', self.processing),
+            ('recording', self.recording),
+            ('space', self.space),
+            ('prefix', self.prefix),
+            ('suffix', self.suffix)
+        ])
+
+    def __str__(self):
+        """Return the string representation of the path."""
+        basename = []
+        for key, val in self.entities.items():
+            if key not in ('prefix', 'suffix') and \
+                    val is not None:
+                _check_key_val(key, val)
+                # convert certain keys to shorthand
+                if key == 'subject':
+                    key = 'sub'
+                if key == 'session':
+                    key = 'ses'
+                if key == 'acquisition':
+                    key = 'acq'
+                if key == 'processing':
+                    key = 'proc'
+                if key == 'recording':
+                    key = 'rec'
+                basename.append('%s-%s' % (key, val))
+
+        if self.suffix is not None:
+            basename.append(self.suffix)
+
+        basename = '_'.join(basename)
+        if self.prefix is not None:
+            basename = op.join(self.prefix, basename)
+
+        return basename
+
+    def __repr__(self):
+        """Representation in the style of `pathlib.Path`."""
+        return f'{self.__class__.__name__}({str(self)})'
+
+    def __fspath__(self):
+        """Return the string representation for any fs functions."""
+        return str(self)
+
+    def __eq__(self, other):
+        """Compare str representations."""
+        return str(self) == str(other)
+
+    def __ne__(self, other):
+        """Compare str representations."""
+        return str(self) != str(other)
+
+    def copy(self):
+        """Copy the instance.
+
+        Returns
+        -------
+        bidspath : instance of BIDSPath
+            The copied bidspath.
+        """
+        return deepcopy(self)
+
+    def get_bids_fname(self, kind=None, bids_root=None, extension=None):
+        """Get the BIDS filename, by inferring kind and extension.
+
+        Parameters
+        ----------
+        kind : str, optional
+            The kind of recording to read. If ``None`` and only one
+            kind (e.g., only EEG or only MEG data) is present in the
+            dataset, it will be selected automatically.
+        bids_root : str | os.PathLike, optional
+            Path to root of the BIDS folder
+        extension : str, optional
+            If ``None``, try to infer the filename extension by searching
+            for the file on disk. If the file cannot be found, an error
+            will be raised. To disable this automatic inference attempt,
+            pass a string (like ``'.fif'`` or ``'.vhdr'``).
+            If an empty string is passed, no extension
+            will be added to the filename.
+
+        Returns
+        -------
+        bids_fname : BIDSPath
+            A BIDSPath with a full filename.
+        """
+        # Get the BIDS parameters (=entities)
+        sub = self.subject
+        ses = self.session
+
+        if extension is None and bids_root is None:
+            msg = ('No filename extension was provided, and it cannot be '
+                   'automatically inferred because no bids_root was passed.')
+            raise ValueError(msg)
+
+        if extension is None:
+            bids_fname = _get_bids_fname_from_filesystem(
+                bids_basename=self, bids_root=bids_root, sub=sub, ses=ses,
+                kind=kind)
+            new_suffix = bids_fname.split("_")[-1]
+            bids_fname = self.copy().update(suffix=new_suffix)
+        else:
+            bids_fname = self.copy().update(suffix='{kind}.{extension}')
+
+        return bids_fname
+
+    def update(self, **entities):
+        """Update inplace BIDS entity key/value pairs in object.
+
+        Parameters
+        ----------
+        entities : dict | kwarg
+            Allowed BIDS path entities:
+                - 'subject', 'session', 'task', 'acquisition',
+                  'processing', 'run', 'recording',
+                  'space', 'suffix', 'prefix'
+
+        Returns
+        -------
+        bidspath : instance of BIDSPath
+            The current instance of BIDSPath.
+
+        Examples
+        --------
+        If one creates a bids basename using `make_bids_basename`::
+
+        >>> bids_basename = make_bids_basename(subject='test', session='two', task='mytask', suffix='data.csv')
+        >>> print(bids_basename)
+        sub-test_ses-two_task-mytask_data.csv
+        >>> # Then, one can update this `BIDSPath` object in place
+        >>> bids_basename.update(acquisition='test', suffix='ieeg.vhdr', task=None)
+        BIDSPath(sub-test_ses-two_acq-test_ieeg.vhdr)
+        >>> print(bids_basename)
+        sub-test_ses-two_acq-test_ieeg.vhdr
+        """  # noqa
+        run = entities.get('run')
+        if run is not None and not isinstance(run, str):
+            # Ensure that run is a string
+            entities['run'] = '{:02}'.format(run)
+
+        # error check entities
+        for key, val in entities.items():
+            # error check allowed BIDS entity keywords
+            if key not in BIDS_PATH_ENTITIES and key not in [
+                'on_invalid_er_session', 'on_invalid_er_task',
+            ]:
+                raise ValueError('Key must be one of {BIDS_PATH_ENTITIES}, '
+                                 'got %s' % key)
+
+            # set entity value
+            setattr(self, key, val)
+
+        self._check(with_emptyroom=False)
+        return self
+
+    def _check(self, with_emptyroom=True):
+        # check the task/session of er basename
+        str(self)  # run string representation to check validity of arguments
+        if with_emptyroom and self.subject == 'emptyroom':
+            _check_empty_room_basename(self)
 
 
 def get_kinds(bids_root):
@@ -115,7 +353,7 @@ def get_entity_vals(bids_root, entity_key, *, ignore_sub='emptyroom',
 
     Examples
     --------
-    >>> bids_root = '~/bids_datasets/eeg_matchingpennies'
+    >>> bids_root = os.path.expanduser('~/mne_data/eeg_matchingpennies')
     >>> entity_key = 'sub'
     >>> get_entity_vals(bids_root, entity_key)
     ['05', '06', '07', '08', '09', '10', '11']
@@ -294,12 +532,10 @@ def make_bids_folders(subject, session=None, kind=None, bids_root=None,
 
     Examples
     --------
-    >>> print(make_bids_folders('sub_01', session='my_session',
-                                kind='meg', bids_root='path/to/project',
-                                make_dir=False))  # noqa
-    path/to/project/sub-sub_01/ses-my_session/meg
+    >>> make_bids_folders('sub_01', session='mysession', kind='meg', bids_root='/path/to/project', make_dir=False)  # noqa
+    '/path/to/project/sub-sub_01/ses-mysession/meg'
 
-    """
+    """  # noqa
     _check_types((subject, kind, session))
     if bids_root is not None:
         bids_root = _path_to_str(bids_root)
@@ -363,7 +599,7 @@ param_regex = re.compile(r'([^-_\.\\\/]+)-([^-_\.\\\/]+)')
 def _parse_bids_filename(fname, verbose):
     """Get dict from BIDS fname."""
     keys = ['sub', 'ses', 'task', 'acq', 'run', 'proc', 'run', 'space',
-            'recording', 'split', 'kind']
+            'rec', 'split', 'kind']
     params = {key: None for key in keys}
     idx_key = 0
     for match in re.finditer(param_regex, op.basename(fname)):
@@ -373,7 +609,7 @@ def _parse_bids_filename(fname, verbose):
                            % (key, fname))
         if keys.index(key) < idx_key:
             raise ValueError('Entities in filename not ordered correctly.'
-                             ' "%s" should have occured earlier in the '
+                             ' "%s" should have occurred earlier in the '
                              'filename "%s"' % (key, fname))
         idx_key = keys.index(key)
         params[key] = value
@@ -640,7 +876,7 @@ def _find_matching_sidecar(bids_fname, bids_root, suffix, allow_fail=False):
 
     Parameters
     ----------
-    bids_fname : str
+    bids_fname : BIDSPath
         Full name of the data file
     bids_root : str | pathlib.Path
         Path to root of the BIDS folder
@@ -657,20 +893,19 @@ def _find_matching_sidecar(bids_fname, bids_root, suffix, allow_fail=False):
         and no sidecar_fname was found
 
     """
-    params = _parse_bids_filename(bids_fname, verbose=False)
-
     # We only use subject and session as identifier, because all other
     # parameters are potentially not binding for metadata sidecar files
-    search_str = 'sub-' + params['sub']
-    if params['ses'] is not None:
-        search_str += '_ses-' + params['ses']
+    search_str = f'sub-{bids_fname.subject}'
+    if bids_fname.session is not None:
+        search_str += f'_ses-{bids_fname.session}'
 
     # Find all potential sidecar files, doing a recursive glob
     # from bids_root/sub_id/
-    search_str = op.join(bids_root, 'sub-' + params['sub'],
+    search_str = op.join(bids_root, f'sub-{bids_fname.subject}',
                          '**', search_str + '*' + suffix)
     candidate_list = glob.glob(search_str, recursive=True)
-    best_candidates = _find_best_candidates(params, candidate_list)
+    best_candidates = _find_best_candidates(bids_fname.entities,
+                                            candidate_list)
 
     if len(best_candidates) == 1:
         # Success
@@ -707,7 +942,7 @@ def _update_sidecar(sidecar_fname, key, val):
 
     Parameters
     ----------
-    sidecar_fname : str
+    sidecar_fname : str | os.PathLike
         Full name of the data file
     key : str
         The key in the sidecar JSON file. E.g. "PowerLineFrequency"
@@ -799,78 +1034,30 @@ def _scale_coord_to_meters(coord, unit):
         return coord
 
 
-def _gen_bids_basename(*, subject=None, session=None, task=None,
-                       acquisition=None, run=None, processing=None,
-                       recording=None, space=None, prefix=None, suffix=None,
-                       on_invalid_er_session='raise',
-                       on_invalid_er_task='raise'):
-    if on_invalid_er_session not in ['raise', 'warn', 'continue']:
-        msg = (f'on_invalid_er_session must be raise, warn, or continue, '
-               f'but received: {on_invalid_er_session}')
-        raise ValueError(msg)
-
-    if on_invalid_er_task not in ['raise', 'warn', 'continue']:
-        msg = (f'on_invalid_er_task must be raise, warn, or ignore, '
-               f'but received: {on_invalid_er_task}')
-        raise ValueError(msg)
-
-    order = OrderedDict([('sub', subject),
-                         ('ses', session),
-                         ('task', task),
-                         ('acq', acquisition),
-                         ('run', run),
-                         ('proc', processing),
-                         ('space', space),
-                         ('recording', recording)])
-
-    if order['run'] is not None and not isinstance(order['run'], str):
-        # Ensure that run is a string
-        order['run'] = '{:02}'.format(order['run'])
-
-    _check_types(order.values())
-
-    if (all(ii is None for ii in order.values()) and suffix is None and
-            prefix is None):
-        raise ValueError("At least one parameter must be given.")
-
-    if subject == 'emptyroom':
-        if task != 'noise':
-            msg = (f'task must be "noise" if subject is "emptyroom", but '
-                   f'received: {task}')
-            if on_invalid_er_task == 'raise':
-                raise ValueError(msg)
-            elif on_invalid_er_task == 'warn':
-                logger.critical(msg)
-            else:
-                pass
-        try:
-            datetime.strptime(session, '%Y%m%d')
-        except (ValueError, TypeError):
-            msg = (f'empty-room session should be a string of format '
-                   f'YYYYMMDD, but received: {session}')
-            if on_invalid_er_session == 'raise':
-                raise ValueError(msg)
-            elif on_invalid_er_session == 'warn':
-                msg = (f'{msg}. Will proceed anyway, but you should consider '
-                       f'fixing your dataset.')
-                logger.critical(msg)
-            else:
-                pass
-
-    basename = []
-    for key, val in order.items():
-        if val is not None:
-            _check_key_val(key, val)
-            basename.append('%s-%s' % (key, val))
-
-    if suffix is not None:
-        basename.append(suffix)
-
-    basename = '_'.join(basename)
-    if prefix is not None:
-        basename = op.join(prefix, basename)
-
-    return basename
+def _check_empty_room_basename(bids_path, on_invalid_er_session='raise',
+                               on_invalid_er_task='raise'):
+    if bids_path.task != 'noise':
+        msg = (f'task must be "noise" if subject is "emptyroom", but '
+               f'received: {bids_path.task}')
+        if on_invalid_er_task == 'raise':
+            raise ValueError(msg)
+        elif on_invalid_er_task == 'warn':
+            logger.critical(msg)
+        else:
+            pass
+    try:
+        datetime.strptime(bids_path.session, '%Y%m%d')
+    except (ValueError, TypeError):
+        msg = (f'empty-room session should be a string of format '
+               f'YYYYMMDD, but received: {bids_path.session}')
+        if on_invalid_er_session == 'raise':
+            raise ValueError(msg)
+        elif on_invalid_er_session == 'warn':
+            msg = (f'{msg}. Will proceed anyway, but you should consider '
+                   f'fixing your dataset.')
+            logger.critical(msg)
+        else:
+            pass
 
 
 def make_bids_basename(subject=None, session=None, task=None,
@@ -904,7 +1091,7 @@ def make_bids_basename(subject=None, session=None, task=None,
     processing : str | None
         The processing label. Corresponds to "proc".
     recording : str | None
-        The recording name. Corresponds to "recording".
+        The recording name. Corresponds to "rec".
     space : str | None
         The coordinate space for an anatomical file. Corresponds to "space".
     prefix : str | None
@@ -915,7 +1102,7 @@ def make_bids_basename(subject=None, session=None, task=None,
 
     Returns
     -------
-    basename : str
+    basename : BIDSPath
         The BIDS basename you wish to create.
 
     Examples
@@ -923,10 +1110,73 @@ def make_bids_basename(subject=None, session=None, task=None,
     >>> print(make_bids_basename(subject='test', session='two', task='mytask', suffix='data.csv')) # noqa: E501
     sub-test_ses-two_task-mytask_data.csv
     """
-    kwargs = dict(subject=subject, session=session, task=task,
-                  acquisition=acquisition, run=run, processing=processing,
-                  recording=recording, space=space, prefix=prefix,
-                  suffix=suffix)
+    bids_path = BIDSPath(subject=subject, session=session, task=task,
+                         acquisition=acquisition, run=run,
+                         processing=processing, recording=recording,
+                         space=space, prefix=prefix, suffix=suffix)
+    bids_path._check()
+    return bids_path
 
-    basename = _gen_bids_basename(**kwargs)
-    return basename
+
+def _get_bids_fname_from_filesystem(*, bids_basename, bids_root, sub, ses,
+                                    kind):
+    if kind is None:
+        kind = _infer_kind(bids_basename=bids_basename, bids_root=bids_root,
+                           sub=sub, ses=ses)
+
+    data_dir = make_bids_folders(subject=sub, session=ses, kind=kind,
+                                 make_dir=False)
+
+    bti_dir = op.join(bids_root, data_dir, f'{bids_basename}_{kind}')
+    if op.isdir(bti_dir):
+        logger.info(f'Assuming BTi data in {bti_dir}')
+        bids_fname = f'{bti_dir}.pdf'
+    else:
+        # Find all matching files in all supported formats.
+        valid_exts = list(reader.keys())
+        matching_paths = glob.glob(op.join(bids_root, data_dir,
+                                           f'{bids_basename}_{kind}.*'))
+        matching_paths = [p for p in matching_paths
+                          if _parse_ext(p)[1] in valid_exts]
+
+        if not matching_paths:
+            msg = ('Could not locate a data file of a supported format. This '
+                   'is likely a problem with your BIDS dataset. Please run '
+                   'the BIDS validator on your data.')
+            raise RuntimeError(msg)
+
+        # FIXME This will break e.g. with FIFF data split across multiple
+        # FIXME files.
+        if len(matching_paths) > 1:
+            msg = ('Found more than one matching data file for the requested '
+                   'recording. Cannot proceed due to the ambiguity. This is '
+                   'likely a problem with your BIDS dataset. Please run the '
+                   'BIDS validator on your data.')
+            raise RuntimeError(msg)
+
+        matching_path = matching_paths[0]
+        bids_fname = op.basename(matching_path)
+
+    return bids_fname
+
+
+def _infer_kind(*, bids_basename, bids_root, sub, ses):
+    # Check which kind is available for this particular
+    # subject & session. If we get no or multiple hits, throw an error.
+
+    kinds = _get_kinds_for_sub(bids_basename=bids_basename,
+                               bids_root=bids_root, sub=sub, ses=ses)
+
+    # We only want to handle electrophysiological data here.
+    allowed_kinds = ['meg', 'eeg', 'ieeg']
+    kinds = list(set(kinds) & set(allowed_kinds))
+    if not kinds:
+        raise ValueError('No electrophysiological data found.')
+    elif len(kinds) >= 2:
+        msg = (f'Found data of more than one recording modality. Please '
+               f'pass the `kind` parameter to specify which data to load. '
+               f'Found the following kinds: {kinds}')
+        raise RuntimeError(msg)
+
+    assert len(kinds) == 1
+    return kinds[0]

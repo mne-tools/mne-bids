@@ -36,7 +36,7 @@ from mne_bids.read import (read_raw_bids,
                            _handle_events_reading, _handle_info_reading)
 from mne_bids.tsv_handler import _to_tsv, _from_tsv
 from mne_bids.utils import (_find_matching_sidecar, _update_sidecar,
-                            _write_json, _gen_bids_basename)
+                            _write_json, BIDSPath)
 from mne_bids.write import write_anat, write_raw_bids
 
 subject_id = '01'
@@ -228,7 +228,7 @@ def test_line_freq_estimation():
     kind = "meg"
 
     # assert that we get the same line frequency set
-    bids_fname = bids_basename + '_{}.fif'.format(kind)
+    bids_fname = bids_basename.copy().update(suffix=f'{kind}.fif')
 
     # find sidecar JSON fname
     write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
@@ -282,7 +282,7 @@ def test_handle_info_reading():
     bids_basename = make_bids_basename(subject='01', session='01',
                                        task='audiovisual', run='01')
     kind = "meg"
-    bids_fname = bids_basename + '_{}.fif'.format(kind)
+    bids_fname = bids_basename.copy().update(suffix=f'{kind}.fif')
     write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
 
     # find sidecar JSON fname
@@ -386,7 +386,7 @@ def test_handle_eeg_coords_reading():
     write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
 
     # obtain the sensor positions and assert ch_coords are same
-    raw_test = read_raw_bids(bids_basename, bids_root)
+    raw_test = read_raw_bids(bids_basename, bids_root, verbose=True)
     assert not object_diff(raw.info['chs'], raw_test.info['chs'])
 
     # modify coordinate frame to not-captrak
@@ -410,7 +410,7 @@ def test_handle_ieeg_coords_reading(bids_basename):
 
     data_path = op.join(testing.data_path(), 'EDF')
     raw_fname = op.join(data_path, 'test_reduced.edf')
-    bids_fname = bids_basename + "_ieeg.edf"
+    bids_fname = bids_basename.copy().update(suffix='ieeg.edf')
 
     raw = mne.io.read_raw_edf(raw_fname)
 
@@ -628,8 +628,7 @@ def test_get_matched_empty_room():
     sh.rmtree(op.join(bids_root, 'sub-emptyroom'))
     dates = ['20021204', '20021201', '20021001']
     for date in dates:
-        er_bids_basename = make_bids_basename(subject='emptyroom',
-                                              task='noise', session=date)
+        er_bids_basename.update(session=date)
         er_meas_date = datetime.strptime(date, '%Y%m%d')
         er_meas_date = er_meas_date.replace(tzinfo=timezone.utc)
 
@@ -684,9 +683,8 @@ def test_get_matched_emptyroom_ties():
         er_raw.info['meas_date'] = (meas_date.timestamp(), 0)
 
     write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
-    er_basename_1 = _gen_bids_basename(subject='emptyroom', session=session,
-                                       task=None,
-                                       on_invalid_er_task='continue')
+    er_bids_path = BIDSPath(subject='emptyroom', session=session)
+    er_basename_1 = str(er_bids_path)
     er_basename_2 = make_bids_basename(subject='emptyroom', session=session,
                                        task='noise')
     er_raw.save(op.join(er_dir, f'{er_basename_1}_meg.fif'))
@@ -708,10 +706,9 @@ def test_get_matched_emptyroom_no_meas_date():
 
     er_dir = make_bids_folders(subject='emptyroom', session=er_session,
                                kind='meg', bids_root=bids_root)
-    er_basename = _gen_bids_basename(subject='emptyroom',
-                                     session=er_session,
-                                     task='noise',
-                                     on_invalid_er_session='continue')
+    er_bids_path = BIDSPath(subject='emptyroom', session=er_session,
+                            task='noise')
+    er_basename = str(er_bids_path)
     raw = mne.io.read_raw_fif(raw_fname)
     er_raw_fname = op.join(data_path, 'MEG', 'sample', 'ernoise_raw.fif')
     raw.copy().crop(0, 10).save(er_raw_fname, overwrite=True)

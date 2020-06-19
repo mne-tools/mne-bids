@@ -41,6 +41,7 @@ Utils (:py:mod:`mne_bids.utils`)
    print_dir_tree
    get_entity_vals
    get_kinds
+   BIDSPath
 
 Copyfiles (:py:mod:`mne_bids.copyfiles`)
 ========================================
