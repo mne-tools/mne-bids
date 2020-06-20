@@ -4,3 +4,8 @@ mne\_bids.datasets.fetch\_faces\_data
 .. currentmodule:: mne_bids.datasets
 
 .. autofunction:: fetch_faces_data
+
+.. _sphx_glr_backreferences_mne_bids.datasets.fetch_faces_data:
+
+.. minigallery:: mne_bids.datasets.fetch_faces_data
+    :add-heading:

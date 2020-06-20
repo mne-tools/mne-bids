@@ -7,6 +7,7 @@
     <title>mne_bids.write_raw_bids &#8212; mne_bids 0.5.dev0 documentation</title>
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/style.css" />
     <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
     <link rel="stylesheet" type="text/css" href="../_static/gallery-binder.css" />
     <link rel="stylesheet" type="text/css" href="../_static/gallery-dataframe.css" />
@@ -136,7 +137,7 @@ loaded from disk, i.e., raw.preload must be False.</p>
 </dd>
 <dt><strong>bids_basename</strong><span class="classifier">str | BIDSPath</span></dt><dd><p>The base filename of the BIDS compatible files. Typically, this can be
 generated using make_bids_basename.
-Example: <cite>sub-01_ses-01_task-testing_acq-01_run-01</cite>.
+Example: <em class="xref py py-obj">sub-01_ses-01_task-testing_acq-01_run-01</em>.
 This will write the following files in the correct subfolder of the
 bids_root:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sub</span><span class="o">-</span><span class="mi">01</span><span class="n">_ses</span><span class="o">-</span><span class="mi">01</span><span class="n">_task</span><span class="o">-</span><span class="n">testing_acq</span><span class="o">-</span><span class="mi">01</span><span class="n">_run</span><span class="o">-</span><span class="mi">01</span><span class="n">_meg</span><span class="o">.</span><span class="n">fif</span>
@@ -164,22 +165,22 @@ bids_basename.</p>
 <dt><strong>events_data</strong><span class="classifier">str | pathlib.Path | array | None</span></dt><dd><p>The events file. If a string or a Path object, specifies the path of
 the events file. If an array, the MNE events array (shape n_events, 3).
 If None, events will be inferred from the stim channel using
-<cite>mne.find_events</cite>.</p>
+<a class="reference external" href="https://mne.tools/dev/generated/mne.find_events.html#mne.find_events" title="(in MNE v0.21.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.find_events</span></code></a>.</p>
 </dd>
 <dt><strong>event_id</strong><span class="classifier">dict | None</span></dt><dd><p>The event id dict used to create a ‘trial_type’ column in events.tsv</p>
 </dd>
 <dt><strong>anonymize</strong><span class="classifier">dict | None</span></dt><dd><p>If None is provided (default) no anonymization is performed.
 If a dictionary is passed, data will be anonymized; identifying data
 structures such as study date and time will be changed.
-<cite>daysback</cite> is a required argument and <cite>keep_his</cite> is optional, these
+<em class="xref py py-obj">daysback</em> is a required argument and <em class="xref py py-obj">keep_his</em> is optional, these
 arguments are passed to <a class="reference external" href="https://mne.tools/dev/generated/mne.io.anonymize_info.html#mne.io.anonymize_info" title="(in MNE v0.21.dev0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.io.anonymize_info()</span></code></a>.</p>
 <dl class="simple">
-<dt><cite>daysback</cite><span class="classifier">int</span></dt><dd><p>Number of days to move back the date. To keep relative dates for
-a subject use the same <cite>daysback</cite>. According to BIDS
+<dt><em class="xref py py-obj">daysback</em><span class="classifier">int</span></dt><dd><p>Number of days to move back the date. To keep relative dates for
+a subject use the same <em class="xref py py-obj">daysback</em>. According to BIDS
 specifications, the number of days back must be great enough
 that the date is before 1925.</p>
 </dd>
-<dt><cite>keep_his</cite><span class="classifier">bool</span></dt><dd><p>If True info[‘subject_info’][‘his_id’] of subject_info will NOT be
+<dt><em class="xref py py-obj">keep_his</em><span class="classifier">bool</span></dt><dd><p>If True info[‘subject_info’][‘his_id’] of subject_info will NOT be
 overwritten. Defaults to False.</p>
 </dd>
 </dl>
@@ -187,11 +188,11 @@ overwritten. Defaults to False.</p>
 <dt><strong>overwrite</strong><span class="classifier">bool</span></dt><dd><p>Whether to overwrite existing files or data in files.
 Defaults to False.</p>
 <p>If overwrite is True, any existing files with the same BIDS parameters
-will be overwritten with the exception of the <cite>participants.tsv</cite> and
-<cite>scans.tsv</cite> files. For these files, parts of pre-existing data that
-match the current data will be replaced. For <cite>participants.tsv</cite>,
+will be overwritten with the exception of the <em class="xref py py-obj">participants.tsv</em> and
+<em class="xref py py-obj">scans.tsv</em> files. For these files, parts of pre-existing data that
+match the current data will be replaced. For <em class="xref py py-obj">participants.tsv</em>,
 specifically, age, sex and hand fields will be overwritten, while
-any added fields in the <cite>participants.json</cite> and <cite>participants.tsv</cite>
+any added fields in the <em class="xref py py-obj">participants.json</em> and <em class="xref py py-obj">participants.tsv</em>
 by a user will be kept.</p>
 <p>If overwrite is False, no existing data will be overwritten or
 replaced.</p>
@@ -214,6 +215,33 @@ updated and raw.info[‘meas_date’] should not be None to compute the age
 of the participant correctly.</p>
 </dd></dl>
 
+<div class="section" id="examples-using-mne-bids-write-raw-bids">
+<span id="sphx-glr-backreferences-mne-bids-write-raw-bids"></span><h2>Examples using <code class="docutils literal notranslate"><span class="pre">mne_bids.write_raw_bids</span></code><a class="headerlink" href="#examples-using-mne-bids-write-raw-bids" title="Permalink to this headline">¶</a></h2>
+<div class="sphx-glr-thumbcontainer" tooltip="In this example we will use MNE-BIDS to organize the MNE sample data according to the BIDS stan..."><div class="figure align-default" id="id1">
+<img alt="03. Convert MNE sample data to BIDS format" src="../_images/sphx_glr_convert_mne_sample_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/convert_mne_sample.html#sphx-glr-auto-examples-convert-mne-sample-py"><span class="std std-ref">03. Convert MNE sample data to BIDS format</span></a></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="In this example, we use MNE-BIDS to create a BIDS-compatible directory of EEG data. Specificall..."><div class="figure align-default" id="id2">
+<img alt="04. Convert EEG data to BIDS format" src="../_images/sphx_glr_convert_eeg_to_bids_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/convert_eeg_to_bids.html#sphx-glr-auto-examples-convert-eeg-to-bids-py"><span class="std std-ref">04. Convert EEG data to BIDS format</span></a></span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="Here, we show how to do BIDS conversion for group studies. The data from Wakeman et al. [1]_ is..."><div class="figure align-default" id="id3">
+<img alt="05. BIDS conversion for group studies" src="../_images/sphx_glr_convert_group_studies_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/convert_group_studies.html#sphx-glr-auto-examples-convert-group-studies-py"><span class="std std-ref">05. BIDS conversion for group studies</span></a></span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="When working with MEEG data in the domain of source localization, we usually have to deal with ..."><div class="figure align-default" id="id4">
+<img alt="07. Save and load T1-weighted MRI scan along with anatomical landmarks in BIDS" src="../_images/sphx_glr_convert_mri_and_trans_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/convert_mri_and_trans.html#sphx-glr-auto-examples-convert-mri-and-trans-py"><span class="std std-ref">07. Save and load T1-weighted MRI scan along with anatomical landmarks in BIDS</span></a></span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="In this example, we use MNE-BIDS to create a BIDS-compatible directory of iEEG data. Specifical..."><div class="figure align-default" id="id5">
+<img alt="08. Convert iEEG data to BIDS format" src="../_images/sphx_glr_convert_ieeg_to_bids_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/convert_ieeg_to_bids.html#sphx-glr-auto-examples-convert-ieeg-to-bids-py"><span class="std std-ref">08. Convert iEEG data to BIDS format</span></a></span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates how to store empty room data in BIDS format and how to retrieve them."><div class="figure align-default" id="id6">
+<img alt="09. Storing empty room data in BIDS format" src="../_images/sphx_glr_convert_empty_room_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/convert_empty_room.html#sphx-glr-auto-examples-convert-empty-room-py"><span class="std std-ref">09. Storing empty room data in BIDS format</span></a></span><a class="headerlink" href="#id6" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-clear"></div></div>
 </div>
 
 
@@ -228,7 +256,7 @@ of the participant correctly.</p>
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-06-19.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-06-20.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.1.1.<br/>
     </p>
   </div>

@@ -4,3 +4,8 @@ mne\_bids.get\_head\_mri\_trans
 .. currentmodule:: mne_bids
 
 .. autofunction:: get_head_mri_trans
+
+.. _sphx_glr_backreferences_mne_bids.get_head_mri_trans:
+
+.. minigallery:: mne_bids.get_head_mri_trans
+    :add-heading:

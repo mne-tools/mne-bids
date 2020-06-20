@@ -1,4 +1,6 @@
 """
+.. currentmodule:: mne_bids
+
 .. _ex-convert-mne-sample:
 
 ==========================================

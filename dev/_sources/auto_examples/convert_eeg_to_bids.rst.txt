@@ -23,6 +23,8 @@ data. Specifically, we will follow these steps:
 
 3. Check the result and compare it with the standard
 
+.. currentmodule:: mne_bids
+
 
 .. code-block:: default
 
@@ -99,6 +101,18 @@ MNE-Python:
  .. code-block:: none
 
     Using default location ~/mne_data for EEGBCI...
+    Downloading https://physionet.org/files/eegmmidb/1.0.0/S001/S001R02.edf (1.2 MB)
+      0%|          | Downloading : 0.00/1.22M [00:00<?,        ?B/s]      7%|7         | Downloading : 88.0k/1.22M [00:00<00:00,    2.96MB/s]     15%|#4        | Downloading : 184k/1.22M [00:00<00:00,    3.03MB/s]      30%|###       | Downloading : 376k/1.22M [00:00<00:00,    3.14MB/s]     51%|#####     | Downloading : 632k/1.22M [00:00<00:00,    3.26MB/s]     71%|#######1  | Downloading : 888k/1.22M [00:00<00:00,    3.40MB/s]     92%|#########1| Downloading : 1.12M/1.22M [00:00<00:00,    3.54MB/s]    100%|##########| Downloading : 1.22M/1.22M [00:00<00:00,    10.1MB/s]
+    Downloading https://physionet.org/files/eegmmidb/1.0.0/S001/S001R04.edf (2.5 MB)
+      0%|          | Downloading : 0.00/2.48M [00:00<?,        ?B/s]      3%|3         | Downloading : 88.0k/2.48M [00:00<00:00,    4.35MB/s]      9%|8         | Downloading : 216k/2.48M [00:00<00:00,    4.40MB/s]      26%|##6       | Downloading : 664k/2.48M [00:00<00:00,    4.57MB/s]     36%|###6      | Downloading : 920k/2.48M [00:00<00:00,    4.71MB/s]     56%|#####6    | Downloading : 1.40M/2.48M [00:00<00:00,    4.91MB/s]     87%|########6 | Downloading : 2.15M/2.48M [00:00<00:00,    5.11MB/s]    100%|##########| Downloading : 2.48M/2.48M [00:00<00:00,    16.1MB/s]
+    Downloading https://physionet.org/files/eegmmidb/1.0.0/S001/S001R12.edf (2.5 MB)
+      0%|          | Downloading : 0.00/2.48M [00:00<?,        ?B/s]      2%|2         | Downloading : 56.0k/2.48M [00:00<00:01,    1.70MB/s]      9%|8         | Downloading : 216k/2.48M [00:00<00:01,    1.76MB/s]      19%|#8        | Downloading : 472k/2.48M [00:00<00:01,    1.85MB/s]     39%|###8      | Downloading : 984k/2.48M [00:00<00:00,    1.93MB/s]     69%|######9   | Downloading : 1.71M/2.48M [00:00<00:00,    2.03MB/s]     89%|########9 | Downloading : 2.21M/2.48M [00:00<00:00,    2.12MB/s]    100%|##########| Downloading : 2.48M/2.48M [00:00<00:00,    15.9MB/s]
+    Downloading https://physionet.org/files/eegmmidb/1.0.0/S002/S002R02.edf (1.2 MB)
+      0%|          | Downloading : 0.00/1.22M [00:00<?,        ?B/s]      7%|7         | Downloading : 88.0k/1.22M [00:00<00:00,    3.08MB/s]     15%|#4        | Downloading : 184k/1.22M [00:00<00:00,    3.16MB/s]      40%|####      | Downloading : 504k/1.22M [00:00<00:00,    3.29MB/s]     82%|########1 | Downloading : 0.99M/1.22M [00:00<00:00,    3.44MB/s]    100%|##########| Downloading : 1.22M/1.22M [00:00<00:00,    13.1MB/s]
+    Downloading https://physionet.org/files/eegmmidb/1.0.0/S002/S002R04.edf (2.4 MB)
+      0%|          | Downloading : 0.00/2.44M [00:00<?,        ?B/s]      2%|2         | Downloading : 56.0k/2.44M [00:00<00:00,    3.32MB/s]      4%|3         | Downloading : 88.0k/2.44M [00:00<00:00,    3.19MB/s]     10%|9         | Downloading : 248k/2.44M [00:00<00:00,    3.31MB/s]      20%|##        | Downloading : 504k/2.44M [00:00<00:00,    3.44MB/s]     41%|####      | Downloading : 0.99M/2.44M [00:00<00:00,    3.60MB/s]     82%|########1 | Downloading : 1.99M/2.44M [00:00<00:00,    3.78MB/s]    100%|##########| Downloading : 2.44M/2.44M [00:00<00:00,    21.2MB/s]
+    Downloading https://physionet.org/files/eegmmidb/1.0.0/S002/S002R12.edf (2.4 MB)
+      0%|          | Downloading : 0.00/2.44M [00:00<?,        ?B/s]      6%|6         | Downloading : 152k/2.44M [00:00<00:00,    4.82MB/s]     16%|#6        | Downloading : 408k/2.44M [00:00<00:00,    4.95MB/s]     32%|###1      | Downloading : 792k/2.44M [00:00<00:00,    5.11MB/s]     63%|######2   | Downloading : 1.52M/2.44M [00:00<00:00,    5.30MB/s]     83%|########3 | Downloading : 2.02M/2.44M [00:00<00:00,    5.52MB/s]    100%|##########| Downloading : 2.44M/2.44M [00:00<00:00,    15.5MB/s]
 
 
 
@@ -130,14 +144,14 @@ of the directory tree.
     |--- files/
     |------ eegmmidb/
     |--------- 1.0.0/
-    |------------ S002/
-    |--------------- S002R04.edf
-    |--------------- S002R02.edf
-    |--------------- S002R12.edf
     |------------ S001/
-    |--------------- S001R02.edf
     |--------------- S001R12.edf
     |--------------- S001R04.edf
+    |--------------- S001R02.edf
+    |------------ S002/
+    |--------------- S002R04.edf
+    |--------------- S002R12.edf
+    |--------------- S002R02.edf
 
 
 
@@ -152,9 +166,9 @@ Step 2: Formatting as BIDS
 --------------------------
 
 Let's start by formatting a single subject. We are reading the data using
-MNE-Python's io module and the :func:`read_raw_edf` function. Note that we
-must use `preload=False`, the default in MNE-Python. It prevents the data
-from being loaded and modified when converting to BIDS.
+MNE-Python's io module and the :func:`mne.io.read_raw_edf` function. Note
+that we must use `preload=False`, the default in MNE-Python. It prevents the
+data from being loaded and modified when converting to BIDS.
 
 
 .. code-block:: default
@@ -393,7 +407,6 @@ Now we just need to specify a few more EEG details to get something sensible:
 
     participant_id  age     sex     hand
     sub-001 n/a     n/a     n/a
-    sub-002 n/a     n/a     n/a
 
     Writing '/home/circleci/mne_data/eegmmidb_bids/participants.json'...
 
@@ -425,8 +438,6 @@ Now we just need to specify a few more EEG details to get something sensible:
     Writing '/home/circleci/mne_data/eegmmidb_bids/sub-001/sub-001_scans.tsv'...
 
     filename        acq_time
-    eeg/sub-001_task-imaginefists_run-1_eeg.edf     2009-08-12T16:15:00
-    eeg/sub-001_task-imaginefists_run-2_eeg.edf     2009-08-12T16:15:00
     eeg/sub-001_task-resteyesclosed_eeg.edf 2009-08-12T16:15:00
 
     Writing '/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_events.tsv'...
@@ -501,39 +512,16 @@ What does our fresh BIDS directory look like?
  .. code-block:: none
 
     |eegmmidb_bids/
-    |--- dataset_description.json
     |--- participants.json
     |--- participants.tsv
+    |--- dataset_description.json
     |--- sub-001/
     |------ sub-001_scans.tsv
     |------ eeg/
-    |--------- sub-001_task-imaginefists_run-2_eeg.edf
-    |--------- sub-001_task-resteyesclosed_events.tsv
     |--------- sub-001_task-resteyesclosed_eeg.edf
-    |--------- sub-001_task-imaginefists_run-2_events.tsv
-    |--------- sub-001_task-imaginefists_run-2_eeg.json
-    |--------- sub-001_task-imaginefists_run-1_channels.tsv
-    |--------- sub-001_task-resteyesclosed_channels.tsv
-    |--------- sub-001_task-imaginefists_run-1_eeg.edf
-    |--------- sub-001_task-imaginefists_run-1_events.tsv
-    |--------- sub-001_task-imaginefists_run-1_eeg.json
     |--------- sub-001_task-resteyesclosed_eeg.json
-    |--------- sub-001_task-imaginefists_run-2_channels.tsv
-    |--- sub-002/
-    |------ sub-002_scans.tsv
-    |------ eeg/
-    |--------- sub-002_task-resteyesclosed_events.tsv
-    |--------- sub-002_task-resteyesclosed_eeg.edf
-    |--------- sub-002_task-imaginefists_run-1_channels.tsv
-    |--------- sub-002_task-imaginefists_run-2_events.tsv
-    |--------- sub-002_task-imaginefists_run-2_channels.tsv
-    |--------- sub-002_task-imaginefists_run-1_eeg.json
-    |--------- sub-002_task-imaginefists_run-2_eeg.json
-    |--------- sub-002_task-imaginefists_run-1_events.tsv
-    |--------- sub-002_task-resteyesclosed_eeg.json
-    |--------- sub-002_task-imaginefists_run-2_eeg.edf
-    |--------- sub-002_task-resteyesclosed_channels.tsv
-    |--------- sub-002_task-imaginefists_run-1_eeg.edf
+    |--------- sub-001_task-resteyesclosed_channels.tsv
+    |--------- sub-001_task-resteyesclosed_events.tsv
 
 
 
@@ -1216,39 +1204,39 @@ Now we have written our BIDS directory.
  .. code-block:: none
 
     |eegmmidb_bids/
-    |--- dataset_description.json
     |--- participants.json
     |--- participants.tsv
-    |--- sub-001/
-    |------ sub-001_scans.tsv
-    |------ eeg/
-    |--------- sub-001_task-imaginefists_run-2_eeg.edf
-    |--------- sub-001_task-resteyesclosed_events.tsv
-    |--------- sub-001_task-resteyesclosed_eeg.edf
-    |--------- sub-001_task-imaginefists_run-2_events.tsv
-    |--------- sub-001_task-imaginefists_run-2_eeg.json
-    |--------- sub-001_task-imaginefists_run-1_channels.tsv
-    |--------- sub-001_task-resteyesclosed_channels.tsv
-    |--------- sub-001_task-imaginefists_run-1_eeg.edf
-    |--------- sub-001_task-imaginefists_run-1_events.tsv
-    |--------- sub-001_task-imaginefists_run-1_eeg.json
-    |--------- sub-001_task-resteyesclosed_eeg.json
-    |--------- sub-001_task-imaginefists_run-2_channels.tsv
+    |--- dataset_description.json
     |--- sub-002/
     |------ sub-002_scans.tsv
     |------ eeg/
+    |--------- sub-002_task-imaginefists_run-1_events.tsv
+    |--------- sub-002_task-imaginefists_run-1_channels.tsv
+    |--------- sub-002_task-resteyesclosed_eeg.json
+    |--------- sub-002_task-imaginefists_run-2_events.tsv
+    |--------- sub-002_task-imaginefists_run-2_eeg.edf
+    |--------- sub-002_task-imaginefists_run-1_eeg.json
+    |--------- sub-002_task-imaginefists_run-2_channels.tsv
     |--------- sub-002_task-resteyesclosed_events.tsv
     |--------- sub-002_task-resteyesclosed_eeg.edf
-    |--------- sub-002_task-imaginefists_run-1_channels.tsv
-    |--------- sub-002_task-imaginefists_run-2_events.tsv
-    |--------- sub-002_task-imaginefists_run-2_channels.tsv
-    |--------- sub-002_task-imaginefists_run-1_eeg.json
     |--------- sub-002_task-imaginefists_run-2_eeg.json
-    |--------- sub-002_task-imaginefists_run-1_events.tsv
-    |--------- sub-002_task-resteyesclosed_eeg.json
-    |--------- sub-002_task-imaginefists_run-2_eeg.edf
-    |--------- sub-002_task-resteyesclosed_channels.tsv
     |--------- sub-002_task-imaginefists_run-1_eeg.edf
+    |--------- sub-002_task-resteyesclosed_channels.tsv
+    |--- sub-001/
+    |------ sub-001_scans.tsv
+    |------ eeg/
+    |--------- sub-001_task-resteyesclosed_eeg.edf
+    |--------- sub-001_task-imaginefists_run-2_eeg.json
+    |--------- sub-001_task-imaginefists_run-1_eeg.edf
+    |--------- sub-001_task-imaginefists_run-2_eeg.edf
+    |--------- sub-001_task-resteyesclosed_eeg.json
+    |--------- sub-001_task-resteyesclosed_channels.tsv
+    |--------- sub-001_task-imaginefists_run-1_events.tsv
+    |--------- sub-001_task-imaginefists_run-1_eeg.json
+    |--------- sub-001_task-imaginefists_run-1_channels.tsv
+    |--------- sub-001_task-resteyesclosed_events.tsv
+    |--------- sub-001_task-imaginefists_run-2_events.tsv
+    |--------- sub-001_task-imaginefists_run-2_channels.tsv
 
 
 
@@ -1273,7 +1261,7 @@ Command line tool: https://www.npmjs.com/package/bids-validator
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  1.102 seconds)
+   **Total running time of the script:** ( 0 minutes  2.869 seconds)
 
 
 .. _sphx_glr_download_auto_examples_convert_eeg_to_bids.py:

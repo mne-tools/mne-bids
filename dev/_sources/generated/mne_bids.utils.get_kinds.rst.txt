@@ -4,3 +4,8 @@ mne\_bids.utils.get\_kinds
 .. currentmodule:: mne_bids.utils
 
 .. autofunction:: get_kinds
+
+.. _sphx_glr_backreferences_mne_bids.utils.get_kinds:
+
+.. minigallery:: mne_bids.utils.get_kinds
+    :add-heading:

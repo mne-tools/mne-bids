@@ -7,6 +7,7 @@
     <title>mne_bids.utils &#8212; mne_bids 0.5.dev0 documentation</title>
     <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/style.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/gallery.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/gallery-binder.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/gallery-dataframe.css" />
@@ -149,7 +150,7 @@
 <span class="sd">    will generate the *prefix* for a BIDS filename that can be used with many</span>
 <span class="sd">    subsequent files, or you may also give a suffix that will then complete</span>
 <span class="sd">    the file name.</span>
-<span class="sd">    </span>
+
 <span class="sd">    BIDSPath allows dynamic updating of its entities in place, and operates</span>
 <span class="sd">    similar to `pathlib.Path`.</span>
 
@@ -193,7 +194,7 @@
 <span class="sd">    sub-test2_ses-one_task-mytask_data.csv</span>
 <span class="sd">    &quot;&quot;&quot;</span>  <span class="c1"># noqa</span>
 
-<div class="viewcode-block" id="BIDSPath.__init__"><a class="viewcode-back" href="../../generated/mne_bids.utils.BIDSPath.html#mne_bids.BIDSPath.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">task</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">acquisition</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">run</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">processing</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">recording</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">space</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">ii</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="p">[</span><span class="n">subject</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="n">task</span><span class="p">,</span>
@@ -204,7 +205,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="n">subject</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="n">task</span><span class="p">,</span>
                     <span class="n">acquisition</span><span class="o">=</span><span class="n">acquisition</span><span class="p">,</span> <span class="n">run</span><span class="o">=</span><span class="n">run</span><span class="p">,</span> <span class="n">processing</span><span class="o">=</span><span class="n">processing</span><span class="p">,</span>
                     <span class="n">recording</span><span class="o">=</span><span class="n">recording</span><span class="p">,</span> <span class="n">space</span><span class="o">=</span><span class="n">space</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="n">prefix</span><span class="p">,</span>
-                    <span class="n">suffix</span><span class="o">=</span><span class="n">suffix</span><span class="p">)</span></div>
+                    <span class="n">suffix</span><span class="o">=</span><span class="n">suffix</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">entities</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -267,7 +268,7 @@
         <span class="sd">&quot;&quot;&quot;Compare str representations.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">str</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="BIDSPath.copy"><a class="viewcode-back" href="../../generated/mne_bids.utils.BIDSPath.html#mne_bids.BIDSPath.copy">[docs]</a>    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Copy the instance.</span>
 
 <span class="sd">        Returns</span>
@@ -275,9 +276,9 @@
 <span class="sd">        bidspath : instance of BIDSPath</span>
 <span class="sd">            The copied bidspath.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">get_bids_fname</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bids_root</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="BIDSPath.get_bids_fname"><a class="viewcode-back" href="../../generated/mne_bids.utils.BIDSPath.html#mne_bids.BIDSPath.get_bids_fname">[docs]</a>    <span class="k">def</span> <span class="nf">get_bids_fname</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bids_root</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Get the BIDS filename, by inferring kind and extension.</span>
 
 <span class="sd">        Parameters</span>
@@ -319,18 +320,17 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">bids_fname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">{kind}</span><span class="s1">.</span><span class="si">{extension}</span><span class="s1">&#39;</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">bids_fname</span>
+        <span class="k">return</span> <span class="n">bids_fname</span></div>
 
-    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">entities</span><span class="p">):</span>
+<div class="viewcode-block" id="BIDSPath.update"><a class="viewcode-back" href="../../generated/mne_bids.utils.BIDSPath.html#mne_bids.BIDSPath.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">entities</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Update inplace BIDS entity key/value pairs in object.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        entities : dict | kwarg</span>
 <span class="sd">            Allowed BIDS path entities:</span>
-<span class="sd">                - &#39;subject&#39;, &#39;session&#39;, &#39;task&#39;, &#39;acquisition&#39;,</span>
-<span class="sd">                  &#39;processing&#39;, &#39;run&#39;, &#39;recording&#39;,</span>
-<span class="sd">                  &#39;space&#39;, &#39;suffix&#39;, &#39;prefix&#39;</span>
+<span class="sd">            &#39;subject&#39;, &#39;session&#39;, &#39;task&#39;, &#39;acquisition&#39;,</span>
+<span class="sd">            &#39;processing&#39;, &#39;run&#39;, &#39;recording&#39;, &#39;space&#39;, &#39;suffix&#39;, &#39;prefix&#39;</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -339,7 +339,8 @@
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
-<span class="sd">        If one creates a bids basename using `make_bids_basename`::</span>
+<span class="sd">        If one creates a bids basename using</span>
+<span class="sd">        :func:`mne_bids.make_bids_basename`:</span>
 
 <span class="sd">        &gt;&gt;&gt; bids_basename = make_bids_basename(subject=&#39;test&#39;, session=&#39;two&#39;, task=&#39;mytask&#39;, suffix=&#39;data.csv&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; print(bids_basename)</span>
@@ -368,7 +369,7 @@
             <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_check</span><span class="p">(</span><span class="n">with_emptyroom</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
 
     <span class="k">def</span> <span class="nf">_check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">with_emptyroom</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="c1"># check the task/session of er basename</span>
@@ -1303,7 +1304,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-06-19.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-06-20.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.1.1.<br/>
     </p>
   </div>

@@ -4,3 +4,8 @@ mne\_bids.make\_bids\_folders
 .. currentmodule:: mne_bids
 
 .. autofunction:: make_bids_folders
+
+.. _sphx_glr_backreferences_mne_bids.make_bids_folders:
+
+.. minigallery:: mne_bids.make_bids_folders
+    :add-heading:

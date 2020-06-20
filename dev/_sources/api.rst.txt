@@ -12,8 +12,15 @@ Here we list the Application Programming Interface (API) for MNE-BIDS.
    :local:
    :depth: 2
 
-MNE BIDS (:py:mod:`mne_bids`)
-=============================
+
+MNE BIDS
+========
+
+:py:mod:`mne_bids`:
+
+.. automodule:: mne_bids
+   :no-members:
+   :no-inherited-members:
 
 .. currentmodule:: mne_bids
 
@@ -30,8 +37,15 @@ MNE BIDS (:py:mod:`mne_bids`)
    get_matched_empty_room
    get_anonymization_daysback
 
-Utils (:py:mod:`mne_bids.utils`)
-================================
+
+Utils
+=====
+
+:py:mod:`mne_bids.utils`:
+
+.. automodule:: mne_bids.utils
+   :no-members:
+   :no-inherited-members:
 
 .. currentmodule:: mne_bids.utils
 
@@ -43,8 +57,14 @@ Utils (:py:mod:`mne_bids.utils`)
    get_kinds
    BIDSPath
 
-Copyfiles (:py:mod:`mne_bids.copyfiles`)
-========================================
+Copyfiles
+=========
+
+:py:mod:`mne_bids.copyfiles`:
+
+.. automodule:: mne_bids.copyfiles
+   :no-members:
+   :no-inherited-members:
 
 .. currentmodule:: mne_bids.copyfiles
 
@@ -57,8 +77,14 @@ Copyfiles (:py:mod:`mne_bids.copyfiles`)
    copyfile_bti
    copyfile_kit
 
-Datasets (:py:mod:`mne_bids.datasets`)
-======================================
+Datasets
+========
+
+:py:mod:`mne_bids.datasets`:
+
+.. automodule:: mne_bids.datasets
+   :no-members:
+   :no-inherited-members:
 
 .. currentmodule:: mne_bids.datasets
 

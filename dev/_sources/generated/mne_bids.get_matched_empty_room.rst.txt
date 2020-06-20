@@ -4,3 +4,8 @@ mne\_bids.get\_matched\_empty\_room
 .. currentmodule:: mne_bids
 
 .. autofunction:: get_matched_empty_room
+
+.. _sphx_glr_backreferences_mne_bids.get_matched_empty_room:
+
+.. minigallery:: mne_bids.get_matched_empty_room
+    :add-heading:

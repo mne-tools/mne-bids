@@ -7,6 +7,7 @@
     <title>mne_bids.write_anat &#8212; mne_bids 0.5.dev0 documentation</title>
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/style.css" />
     <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
     <link rel="stylesheet" type="text/css" href="../_static/gallery-binder.css" />
     <link rel="stylesheet" type="text/css" href="../_static/gallery-dataframe.css" />
@@ -128,40 +129,40 @@ sidecar JSON file will be written for the T1 weighted data.</p>
 readable by nibabel. Can also be a nibabel image object of a T1
 weighted MRI scan. Will be written as a .nii.gz file.</p>
 </dd>
-<dt><strong>session</strong><span class="classifier">str | None</span></dt><dd><p>The session for <cite>t1w</cite>. Corresponds to “ses”</p>
+<dt><strong>session</strong><span class="classifier">str | None</span></dt><dd><p>The session for <em class="xref py py-obj">t1w</em>. Corresponds to “ses”</p>
 </dd>
-<dt><strong>acquisition: str | None</strong></dt><dd><p>The acquisition parameters for <cite>t1w</cite>. Corresponds to “acq”</p>
+<dt><strong>acquisition: str | None</strong></dt><dd><p>The acquisition parameters for <em class="xref py py-obj">t1w</em>. Corresponds to “acq”</p>
 </dd>
-<dt><strong>raw</strong><span class="classifier">instance of Raw | None</span></dt><dd><p>The raw data of <cite>subject</cite> corresponding to <cite>t1w</cite>. If <cite>raw</cite> is None,
-<cite>trans</cite> has to be None as well</p>
+<dt><strong>raw</strong><span class="classifier">instance of Raw | None</span></dt><dd><p>The raw data of <em class="xref py py-obj">subject</em> corresponding to <em class="xref py py-obj">t1w</em>. If <em class="xref py py-obj">raw</em> is None,
+<em class="xref py py-obj">trans</em> has to be None as well</p>
 </dd>
 <dt><strong>trans</strong><span class="classifier">instance of mne.transforms.Transform | str | None</span></dt><dd><p>The transformation matrix from head coordinates to MRI coordinates. Can
 also be a string pointing to a .trans file containing the
 transformation matrix. If None, no sidecar JSON file will be written
-for <cite>t1w</cite></p>
+for <em class="xref py py-obj">t1w</em></p>
 </dd>
 <dt><strong>deface</strong><span class="classifier">bool | dict</span></dt><dd><p>If False, no defacing is performed.
 If True, deface with default parameters.
-<cite>trans</cite> and <cite>raw</cite> must not be <cite>None</cite> if True.
+<em class="xref py py-obj">trans</em> and <em class="xref py py-obj">raw</em> must not be <em class="xref py py-obj">None</em> if True.
 If dict, accepts the following keys:</p>
 <ul class="simple">
-<li><p><cite>inset</cite>: how far back in millimeters to start defacing
+<li><p><em class="xref py py-obj">inset</em>: how far back in millimeters to start defacing
 relative to the nasion (default 20)</p></li>
-<li><p><cite>theta</cite>: is the angle of the defacing shear in degrees relative
+<li><p><em class="xref py py-obj">theta</em>: is the angle of the defacing shear in degrees relative
 to the normal to the plane passing through the anatomical
 landmarks (default 35).</p></li>
 </ul>
 </dd>
 <dt><strong>landmarks: instance of DigMontage | str</strong></dt><dd><p>The DigMontage or filepath to a DigMontage with landmarks that can be
 passed to provide information for defacing. Landmarks can be determined
-from the head model using <cite>mne coreg</cite> GUI, or they can be determined
-from the MRI using <cite>freeview</cite>.</p>
+from the head model using <em class="xref py py-obj">mne coreg</em> GUI, or they can be determined
+from the MRI using <em class="xref py py-obj">freeview</em>.</p>
 </dd>
 <dt><strong>overwrite</strong><span class="classifier">bool</span></dt><dd><p>Whether to overwrite existing files or data in files.
 Defaults to False.
 If overwrite is True, any existing files with the same BIDS parameters
-will be overwritten with the exception of the <cite>participants.tsv</cite> and
-<cite>scans.tsv</cite> files. For these files, parts of pre-existing data that
+will be overwritten with the exception of the <em class="xref py py-obj">participants.tsv</em> and
+<em class="xref py py-obj">scans.tsv</em> files. For these files, parts of pre-existing data that
 match the current data will be replaced.
 If overwrite is False, no existing data will be overwritten or
 replaced.</p>
@@ -173,13 +174,20 @@ False, no content will be printed.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt><strong>anat_dir</strong><span class="classifier">str</span></dt><dd><p>Path to the anatomical scan in the <cite>bids_dir</cite></p>
+<dt><strong>anat_dir</strong><span class="classifier">str</span></dt><dd><p>Path to the anatomical scan in the <em class="xref py py-obj">bids_dir</em></p>
 </dd>
 </dl>
 </dd>
 </dl>
 </dd></dl>
 
+<div class="section" id="examples-using-mne-bids-write-anat">
+<span id="sphx-glr-backreferences-mne-bids-write-anat"></span><h2>Examples using <code class="docutils literal notranslate"><span class="pre">mne_bids.write_anat</span></code><a class="headerlink" href="#examples-using-mne-bids-write-anat" title="Permalink to this headline">¶</a></h2>
+<div class="sphx-glr-thumbcontainer" tooltip="When working with MEEG data in the domain of source localization, we usually have to deal with ..."><div class="figure align-default" id="id1">
+<img alt="07. Save and load T1-weighted MRI scan along with anatomical landmarks in BIDS" src="../_images/sphx_glr_convert_mri_and_trans_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/convert_mri_and_trans.html#sphx-glr-auto-examples-convert-mri-and-trans-py"><span class="std std-ref">07. Save and load T1-weighted MRI scan along with anatomical landmarks in BIDS</span></a></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-clear"></div></div>
 </div>
 
 
@@ -194,7 +202,7 @@ False, no content will be printed.</p>
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-06-19.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-06-20.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.1.1.<br/>
     </p>
   </div>
