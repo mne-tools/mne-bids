@@ -41,6 +41,7 @@ Bug
 - fix coordystem reading in :func:`mne_bids.read_raw_bids` for cases where the ``acq`` is undefined, by `Stefan Appelhoff`_ (`#440 <https://github.com/mne-tools/mne-bids/pull/440>`_)
 - Calling :func:`write_raw_bids` with `overwrite==True` will preserve existing entries in ``participants.tsv`` and ``participants.json`` if the **new** dataset does not contain these entries, by `Adam Li`_ (`#442 <https://github.com/mne-tools/mne-bids/pull/442>`_)
 - Fix BIDS entity using 'recording' to be 'rec' in filenames, as in specification by `Adam Li`_ (`#446 <https://github.com/mne-tools/mne-bids/pull/446>`_)
+- Fix :func:`write_raw_bids` when `info['dig']` is `None` by `Alexandre Gramfort`_ (`#452 <https://github.com/mne-tools/mne-bids/pull/452>`_)
 
 API
 ~~~
