@@ -39,7 +39,7 @@ class BIDSPath(object):
     will generate the *prefix* for a BIDS filename that can be used with many
     subsequent files, or you may also give a suffix that will then complete
     the file name.
-    
+
     BIDSPath allows dynamic updating of its entities in place, and operates
     similar to `pathlib.Path`.
 
@@ -218,9 +218,8 @@ class BIDSPath(object):
         ----------
         entities : dict | kwarg
             Allowed BIDS path entities:
-                - 'subject', 'session', 'task', 'acquisition',
-                  'processing', 'run', 'recording',
-                  'space', 'suffix', 'prefix'
+            'subject', 'session', 'task', 'acquisition',
+            'processing', 'run', 'recording', 'space', 'suffix', 'prefix'
 
         Returns
         -------
@@ -229,7 +228,8 @@ class BIDSPath(object):
 
         Examples
         --------
-        If one creates a bids basename using `make_bids_basename`::
+        If one creates a bids basename using
+        :func:`mne_bids.make_bids_basename`:
 
         >>> bids_basename = make_bids_basename(subject='test', session='two', task='mytask', suffix='data.csv')
         >>> print(bids_basename)

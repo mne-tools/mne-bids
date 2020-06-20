@@ -1,4 +1,6 @@
 """
+.. currentmodule:: mne_bids
+
 ====================================
 08. Convert iEEG data to BIDS format
 ====================================
@@ -87,7 +89,7 @@ print('Created %s channel positions' % len(ch_names))
 print(dict(zip(ch_names, elec)))
 
 ###############################################################################
-# We will load a :func:`mne.io.Raw` object and
+# We will load a :class:`mne.io.Raw` object and
 # use the montage we created.
 info = mne.create_info(ch_names, 1000., 'ecog')
 raw = mne.io.read_raw_edf(misc_path + '/ecog/sample_ecog.edf')

@@ -13,6 +13,7 @@ data. Specifically, we will follow these steps:
 
 3. Check the result and compare it with the standard
 
+.. currentmodule:: mne_bids
 """
 
 # Authors: Stefan Appelhoff <stefan.appelhoff@mailbox.org>
@@ -78,9 +79,9 @@ print_dir_tree(data_dir)
 # --------------------------
 #
 # Let's start by formatting a single subject. We are reading the data using
-# MNE-Python's io module and the :func:`read_raw_edf` function. Note that we
-# must use `preload=False`, the default in MNE-Python. It prevents the data
-# from being loaded and modified when converting to BIDS.
+# MNE-Python's io module and the :func:`mne.io.read_raw_edf` function. Note
+# that we must use `preload=False`, the default in MNE-Python. It prevents the
+# data from being loaded and modified when converting to BIDS.
 edf_path = eegbci.load_data(subject=1, runs=2)[0]
 raw = mne.io.read_raw_edf(edf_path, preload=False)
 
