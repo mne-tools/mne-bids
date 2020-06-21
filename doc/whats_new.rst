@@ -30,7 +30,6 @@ Changelog
 - :func:`mne_bids.write_raw_bids` now writes CoordinateSystemDescription as specified in BIDS Specification if CoordinateSystem is MNE-compatible, by `Adam Li`_ (`#416 <https://github.com/mne-tools/mne-bids/pull/416>`_)
 - :func:`mne_bids.write_raw_bids` and :func:`mne_bids.read_raw_bids` now handle scalp EEG if Captrak coordinate system and NAS/LPA/RPA landmarks are present, by `Adam Li`_ (`#416 <https://github.com/mne-tools/mne-bids/pull/416>`_)
 - :func:`mne_bids.get_matched_empty_room` now implements an algorithm for discovering empty-room recordings that do not have the recording date set as their session, by `Richard Höchenberger`_ (`#421 <https://github.com/mne-tools/mne-bids/pull/421>`_)
-- :func:`mne_bids.write_raw_bids` now applies `verbose` to the functions that read events, by `Evgenii Kalenkovich`_ (`#453 <https://github.com/mne-tools/mne-bids/pull/453>`_)
 
 Bug
 ~~~
@@ -42,6 +41,7 @@ Bug
 - fix coordystem reading in :func:`mne_bids.read_raw_bids` for cases where the ``acq`` is undefined, by `Stefan Appelhoff`_ (`#440 <https://github.com/mne-tools/mne-bids/pull/440>`_)
 - Calling :func:`write_raw_bids` with `overwrite==True` will preserve existing entries in ``participants.tsv`` and ``participants.json`` if the **new** dataset does not contain these entries, by `Adam Li`_ (`#442 <https://github.com/mne-tools/mne-bids/pull/442>`_)
 - Fix BIDS entity using 'recording' to be 'rec' in filenames, as in specification by `Adam Li`_ (`#446 <https://github.com/mne-tools/mne-bids/pull/446>`_)
+- :func:`mne_bids.write_raw_bids` now applies `verbose` to the functions that read events, by `Evgenii Kalenkovich`_ (`#453 <https://github.com/mne-tools/mne-bids/pull/453>`_)
 
 API
 ~~~
