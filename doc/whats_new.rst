@@ -270,3 +270,4 @@ People who contributed to this release (in alphabetical order):
 .. _Richard Höchenberger: https://github.com/hoechenberger
 .. _Alexandre Gramfort: http://alexandre.gramfort.net
 .. _Ariel Rokem: https://github.com/arokem
+.. _Evgenii Kalenkovich: https://github.com/kalenkovich
