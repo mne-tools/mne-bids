@@ -749,9 +749,11 @@ def _read_events(events_data, event_id, raw, ext, verbose=False):
                              'found %s' % events_data.shape[1])
         events = events_data
     elif 'stim' in raw:
-        events = find_events(raw, min_duration=0.001, initial_event=True, verbose=verbose)
+        events = find_events(raw, min_duration=0.001, initial_event=True,
+                             verbose=verbose)
     elif ext in ['.vhdr', '.set'] and check_version('mne', '0.18'):
-        events, event_id = events_from_annotations(raw, event_id, verbose=verbose)
+        events, event_id = events_from_annotations(raw, event_id,
+                                                   verbose=verbose)
     else:
         warn('No events found or provided. Please make sure to'
              ' set channel type using raw.set_channel_types'
