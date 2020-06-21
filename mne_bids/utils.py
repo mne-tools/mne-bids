@@ -710,7 +710,6 @@ def _check_key_val(key, val):
     return key, val
 
 
-@verbose
 def _read_events(events_data, event_id, raw, ext, verbose=False):
     """Read in events data.
 
@@ -727,7 +726,9 @@ def _read_events(events_data, event_id, raw, ext, verbose=False):
         The data as MNE-Python Raw object.
     ext : str
         The extension of the original data file.
-    %(verbose)s
+    verbose : bool | str | int | None
+        If not None, override default verbose level (see :func:`mne.verbose`
+        and :ref:`Logging documentation <tut_logging>` for more).
 
     Returns
     -------
