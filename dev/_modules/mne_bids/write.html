@@ -1218,7 +1218,8 @@
                        <span class="s1">&#39;is not supported for kind &quot;</span><span class="si">{}</span><span class="s1">&quot;. &#39;</span>
                        <span class="s1">&#39;Skipping ...&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">kind</span><span class="p">))</span>
 
-    <span class="n">events</span><span class="p">,</span> <span class="n">event_id</span> <span class="o">=</span> <span class="n">_read_events</span><span class="p">(</span><span class="n">events_data</span><span class="p">,</span> <span class="n">event_id</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">ext</span><span class="p">)</span>
+    <span class="n">events</span><span class="p">,</span> <span class="n">event_id</span> <span class="o">=</span> <span class="n">_read_events</span><span class="p">(</span><span class="n">events_data</span><span class="p">,</span> <span class="n">event_id</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">ext</span><span class="p">,</span>
+                                    <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">events</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">events</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">emptyroom</span><span class="p">:</span>
         <span class="n">_events_tsv</span><span class="p">(</span><span class="n">events</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">events_fname</span><span class="p">,</span> <span class="n">event_id</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
 
@@ -1495,7 +1496,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-06-20.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-06-22.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.1.1.<br/>
     </p>
   </div>
