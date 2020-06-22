@@ -76,3 +76,13 @@ Copyfiles
    copyfile_ctf
    copyfile_bti
    copyfile_kit
+
+Reports (:py:mod:`mne_bids.report`)
+======================================
+
+.. currentmodule:: mne_bids.report
+
+.. autosummary::
+    :toctree: generated/
+
+    create_methods_paragraph

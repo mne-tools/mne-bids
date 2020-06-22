@@ -152,7 +152,7 @@ def create_methods_paragraph(bids_root, session=None, verbose=True):
 
     Returns
     -------
-
+    paragraph : str
     """
     # high level summary
     subjects = get_entity_vals(bids_root, entity_key='sub')
