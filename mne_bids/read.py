@@ -31,7 +31,7 @@ from mne_bids.utils import (_parse_bids_filename, _extract_landmarks,
 
 
 def _read_raw(raw_fpath, electrode=None, hsp=None, hpi=None, config=None,
-              verbose=None, **kwargs):
+              verbose=None, allow_maxshield=False, **kwargs):
     """Read a raw file into MNE, making inferences based on extension."""
     _, ext = _parse_ext(raw_fpath)
 
@@ -48,7 +48,7 @@ def _read_raw(raw_fpath, electrode=None, hsp=None, hpi=None, config=None,
                               **kwargs)
 
     elif ext == '.fif':
-        raw = reader[ext](raw_fpath, **kwargs)
+        raw = reader[ext](raw_fpath, allow_maxshield, **kwargs)
 
     elif ext in ['.ds', '.vhdr', '.set']:
         raw = reader[ext](raw_fpath, **kwargs)
