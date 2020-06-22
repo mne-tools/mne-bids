@@ -42,6 +42,7 @@ Bug
 - Calling :func:`write_raw_bids` with `overwrite==True` will preserve existing entries in ``participants.tsv`` and ``participants.json`` if the **new** dataset does not contain these entries, by `Adam Li`_ (`#442 <https://github.com/mne-tools/mne-bids/pull/442>`_)
 - Fix BIDS entity using 'recording' to be 'rec' in filenames, as in specification by `Adam Li`_ (`#446 <https://github.com/mne-tools/mne-bids/pull/446>`_)
 - Fix :func:`write_raw_bids` when `info['dig']` is `None` by `Alexandre Gramfort`_ (`#452 <https://github.com/mne-tools/mne-bids/pull/452>`_)
+- :func:`mne_bids.write_raw_bids` now applies `verbose` to the functions that read events, by `Evgenii Kalenkovich`_ (`#453 <https://github.com/mne-tools/mne-bids/pull/453>`_)
 
 API
 ~~~
@@ -270,3 +271,4 @@ People who contributed to this release (in alphabetical order):
 .. _Richard Höchenberger: https://github.com/hoechenberger
 .. _Alexandre Gramfort: http://alexandre.gramfort.net
 .. _Ariel Rokem: https://github.com/arokem
+.. _Evgenii Kalenkovich: https://github.com/kalenkovich

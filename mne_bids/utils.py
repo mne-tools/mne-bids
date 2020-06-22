@@ -710,7 +710,7 @@ def _check_key_val(key, val):
     return key, val
 
 
-def _read_events(events_data, event_id, raw, ext):
+def _read_events(events_data, event_id, raw, ext, verbose=None):
     """Read in events data.
 
     Parameters
@@ -726,6 +726,8 @@ def _read_events(events_data, event_id, raw, ext):
         The data as MNE-Python Raw object.
     ext : str
         The extension of the original data file.
+    verbose : bool | str | int | None
+        If not None, override default verbose level (see :func:`mne.verbose`).
 
     Returns
     -------
@@ -737,7 +739,7 @@ def _read_events(events_data, event_id, raw, ext):
 
     """
     if isinstance(events_data, str):
-        events = read_events(events_data).astype(int)
+        events = read_events(events_data, verbose=verbose).astype(int)
     elif isinstance(events_data, np.ndarray):
         if events_data.ndim != 2:
             raise ValueError('Events must have two dimensions, '
@@ -747,9 +749,11 @@ def _read_events(events_data, event_id, raw, ext):
                              'found %s' % events_data.shape[1])
         events = events_data
     elif 'stim' in raw:
-        events = find_events(raw, min_duration=0.001, initial_event=True)
+        events = find_events(raw, min_duration=0.001, initial_event=True,
+                             verbose=verbose)
     elif ext in ['.vhdr', '.set'] and check_version('mne', '0.18'):
-        events, event_id = events_from_annotations(raw, event_id)
+        events, event_id = events_from_annotations(raw, event_id,
+                                                   verbose=verbose)
     else:
         warn('No events found or provided. Please make sure to'
              ' set channel type using raw.set_channel_types'

@@ -1107,7 +1107,8 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
                        'is not supported for kind "{}". '
                        'Skipping ...'.format(kind))
 
-    events, event_id = _read_events(events_data, event_id, raw, ext)
+    events, event_id = _read_events(events_data, event_id, raw, ext,
+                                    verbose=verbose)
     if events is not None and len(events) > 0 and not emptyroom:
         _events_tsv(events, raw, events_fname, event_id, overwrite, verbose)
 
