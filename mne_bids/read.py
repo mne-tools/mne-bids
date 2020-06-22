@@ -50,14 +50,8 @@ def _read_raw(raw_fpath, electrode=None, hsp=None, hpi=None, config=None,
     elif ext == '.fif':
         raw = reader[ext](raw_fpath, allow_maxshield, **kwargs)
 
-    elif ext in ['.ds', '.vhdr', '.set']:
+    elif ext in ['.ds', '.vhdr', '.set', '.edf', '.bdf']:
         raw = reader[ext](raw_fpath, **kwargs)
-
-    # EDF (european data format) or BDF (biosemi) format
-    # TODO: integrate with lines above once MNE can read
-    # annotations with preload=False
-    elif ext in ['.edf', '.bdf']:
-        raw = reader[ext](raw_fpath, preload=True, **kwargs)
 
     # MEF and NWB are allowed, but not yet implemented
     elif ext in ['.mef', '.nwb']:
