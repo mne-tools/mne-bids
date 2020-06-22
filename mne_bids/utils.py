@@ -20,7 +20,7 @@ from copy import deepcopy
 
 import numpy as np
 from mne import read_events, find_events, events_from_annotations
-from mne.utils import check_version, warn, logger, verbose
+from mne.utils import check_version, warn, logger
 from mne.channels import make_standard_montage
 from mne.io.pick import pick_types
 from mne.io.kit.kit import get_kit_info
