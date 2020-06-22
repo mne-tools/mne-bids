@@ -213,6 +213,8 @@ def _coordsystem_json(raw, unit, orient, coordsystem_name, fname,
 
     """
     dig = raw.info['dig']
+    if dig is None:
+        dig = []
     coords = _extract_landmarks(dig)
     hpi = {d['ident']: d for d in dig if d['kind'] == FIFF.FIFFV_POINT_HPI}
     if hpi:
