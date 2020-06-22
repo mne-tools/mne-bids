@@ -1240,11 +1240,13 @@ def test_write_raw_no_dig():
     bids_root = Path(_TempDir())
     bids_root_ = write_raw_bids(raw=raw, bids_basename=bids_basename,
                                 bids_root=bids_root, overwrite=True)
+    assert bids_root_ == str(bids_root)
     raw.info['dig'] = None
     raw.save(str(bids_root / 'tmp_raw.fif'))
     raw = mne.io.read_raw_fif(bids_root / 'tmp_raw.fif')
     bids_root_ = write_raw_bids(raw=raw, bids_basename=bids_basename,
                                 bids_root=bids_root, overwrite=True)
+    assert bids_root_ == str(bids_root)
 
 
 @requires_nibabel()
