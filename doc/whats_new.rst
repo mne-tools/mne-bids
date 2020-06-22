@@ -43,6 +43,8 @@ Bug
 - Fix BIDS entity using 'recording' to be 'rec' in filenames, as in specification by `Adam Li`_ (`#446 <https://github.com/mne-tools/mne-bids/pull/446>`_)
 - Fix :func:`write_raw_bids` when `info['dig']` is `None` by `Alexandre Gramfort`_ (`#452 <https://github.com/mne-tools/mne-bids/pull/452>`_)
 - :func:`mne_bids.write_raw_bids` now applies `verbose` to the functions that read events, by `Evgenii Kalenkovich`_ (`#453 <https://github.com/mne-tools/mne-bids/pull/453>`_)
+- Fix `raw_to_bids` CLI tool to work with non-FIF files, by `Austin Hurst`_ (`#456 <https://github.com/mne-tools/mne-bids/pull/456>`_)
+
 
 API
 ~~~
@@ -272,3 +274,4 @@ People who contributed to this release (in alphabetical order):
 .. _Alexandre Gramfort: http://alexandre.gramfort.net
 .. _Ariel Rokem: https://github.com/arokem
 .. _Evgenii Kalenkovich: https://github.com/kalenkovich
+.. _Austin Hurst: https://github.com/a-hurst
