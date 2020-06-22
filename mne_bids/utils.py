@@ -727,8 +727,7 @@ def _read_events(events_data, event_id, raw, ext, verbose=None):
     ext : str
         The extension of the original data file.
     verbose : bool | str | int | None
-        If not None, override default verbose level (see :func:`mne.verbose`
-        and :ref:`Logging documentation <tut_logging>` for more).
+        If not None, override default verbose level (see :func:`mne.verbose`).
 
     Returns
     -------
