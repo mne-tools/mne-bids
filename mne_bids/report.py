@@ -16,30 +16,30 @@ from mne_bids.utils import (make_bids_basename, get_kinds,
                             _find_matching_sidecar, _parse_bids_filename,
                             BIDSPath)
 
-BIDS_DATASET_TEMPLATE = 'Dataset {name} was created ' \
+BIDS_DATASET_TEMPLATE = 'The {name} dataset was created ' \
                         'with BIDS version {bids_version} using ' \
-                        'MNE-BIDS ({doi}).'
+                        'MNE-BIDS ({doi}). '
 
 PARTICIPANTS_TEMPLATE = \
-    'We had {n_subjects} subjects amongst whom there were ' \
+    'There are {n_subjects} subjects amongst whom there are ' \
     '{n_males} males and {n_females} females ({n_sex_unknown} unknown). ' \
-    'There were {n_rhand} right hand, {n_lhand} left hand ' \
+    'There are {n_rhand} right hand, {n_lhand} left hand ' \
     'and {n_ambidex} ambidextrous subjects. ' \
-    'Their ages were {min_age}-{max_age} ({mean_age} +/- {std_age} ' \
-    'with {n_age_unknown} unknown).'
+    'Their ages are {min_age}-{max_age} ({mean_age} +/- {std_age} ' \
+    'with {n_age_unknown} unknown). '
 
 MODALITY_AGNOSTIC_TEMPLATE = \
     'Data was acquired using a {system} system ({manufacturer} manufacturer ' \
     'with line noise at {powerlinefreq} Hz) using ' \
-    'filters ({software_filters}).' \
-    'Each dataset was {min_record_length} to {max_record_length} seconds, ' \
+    'filters ({software_filters}). ' \
+    'Each dataset is {min_record_length} to {max_record_length} seconds, ' \
     'for a total of {total_record_length} seconds of data recorded ' \
     '({mean_record_length} +/- {std_record_length}). ' \
-    'The dataset consisted of {n_sessions} recording sessions ({sessions}), ' \
-    '{n_chs} channels ({n_good} were used and ' \
-    '{n_bad} were removed from analysis). '
+    'The dataset consists of {n_sessions} recording sessions ({sessions}), ' \
+    '{n_chs} channels ({n_good} are used and ' \
+    '{n_bad} are removed from analysis). '
 
-IEEG_TEMPLATE = 'There were {n_ecog_chs} ECoG and {n_seeg_chs} SEEG channels.'
+IEEG_TEMPLATE = 'There are {n_ecog_chs} ECoG and {n_seeg_chs} SEEG channels. '
 
 
 def _summarize_dataset(bids_root):
@@ -97,32 +97,35 @@ def _summarize_subs(bids_root):
     # summarize sex count statistics
     n_males, n_females, n_sex_unknown = 0, 0, 0
     keys = {'M': n_males, 'F': n_females, 'n/a': n_sex_unknown}
-    for key in keys:
-        n_sex_ct = len([sex for sex in participants_tsv['sex']
-                        if sex == key])
-        if key == 'M':
-            n_males = n_sex_ct
-        elif key == 'F':
-            n_females = n_sex_ct
-        else:
-            n_sex_unknown = n_sex_ct
+    if 'sex' in participants_tsv:
+        for key in keys:
+            n_sex_ct = len([sex for sex in participants_tsv['sex']
+                            if sex.upper() == key])
+            if key == 'M':
+                n_males = n_sex_ct
+            elif key == 'F':
+                n_females = n_sex_ct
+            else:
+                n_sex_unknown = n_sex_ct
 
     # summarize hand count statistics
     n_rhand, n_lhand, n_ambidex = 0, 0, 0
     n_hand_unknown = 0
     keys = {'R': n_rhand, 'L': n_lhand,
             'A': n_ambidex, 'n/a': n_hand_unknown}
-    for key, str_val in keys.items():
-        n_hand_ct = len([hand for hand in participants_tsv['hand']
-                         if hand == key])
-        if key == 'R':
-            n_rhand = n_hand_ct
-        elif key == 'L':
-            n_lhand = n_hand_ct
-        elif key == 'A':
-            n_ambidex = n_hand_ct
-        else:
-            n_hand_unknown = n_hand_ct
+    if 'hand' in participants_tsv:
+        for key, str_val in keys.items():
+            n_hand_ct = len([row for row in
+                             participants_tsv['hand']
+                             if row.upper() == key])
+            if key == 'R':
+                n_rhand = n_hand_ct
+            elif key == 'L':
+                n_lhand = n_hand_ct
+            elif key == 'A':
+                n_ambidex = n_hand_ct
+            else:
+                n_hand_unknown = n_hand_ct
 
     # summarize age statistics: mean, std, min, max
     age_list = [float(age) for age in participants_tsv['age'] if age != 'n/a']
@@ -172,10 +175,6 @@ def _summarize_scans(bids_root, session=None, kind=None, verbose=True):
     else:
         search_str = f'*ses-{session}*_scans.tsv'
     scans_fpaths = list(bids_root.rglob(search_str))
-
-    if kind is not None:
-        scans_fpaths = [fpath for fpath in scans_fpaths
-                        if not fpath.as_posix().endswith(f'*_{kind}.*')]
     if len(scans_fpaths) == 0:
         return dict()
 
@@ -225,6 +224,10 @@ def _summarize_sidecar_json(bids_root, scans_fpaths, verbose=True):
             # summarize metadata of recordings
             bids_basename, _ = _parse_ext(scan)
             kind = op.dirname(scan)
+
+            if kind not in ['meg', 'eeg', 'ieeg']:
+                continue
+
             # convert to BIDS Path
             params = _parse_bids_filename(bids_basename, verbose)
             bids_basename = BIDSPath(subject=params.get('sub'),
@@ -308,11 +311,12 @@ def _summarize_channels_tsv(bids_root, scans_fpaths, verbose=True):
         scans_tsv = _from_tsv(scan_fpath)
         scans = scans_tsv['filename']
         for scan in scans:
-            if not scan.startswith('ieeg'):
-                continue
-
             # summarize metadata of recordings
             bids_basename, _ = _parse_ext(scan)
+            kind = op.dirname(scan)
+            if kind not in ['meg', 'eeg', 'ieeg']:
+                continue
+
             # convert to BIDS Path
             params = _parse_bids_filename(bids_basename, verbose)
             bids_basename = BIDSPath(subject=params.get('sub'),
@@ -345,13 +349,15 @@ def _summarize_channels_tsv(bids_root, scans_fpaths, verbose=True):
     return template_dict
 
 
-def create_methods_paragraph(bids_root, session=None, verbose=True):
+def create_methods_paragraph(bids_root, session=None,
+                             summarize_participants=True, verbose=True):
     """Create a methods paragraph string from BIDS dataset.
 
     Parameters
     ----------
     bids_root : str | pathlib.Path
     session : str , optional
+    summarize_participants : bool
     verbose : bool
 
     Returns
@@ -365,9 +371,6 @@ def create_methods_paragraph(bids_root, session=None, verbose=True):
     # dataset_description.json summary
     dataset_template = _summarize_dataset(bids_root)
 
-    # participants summary
-    participants_template = _summarize_subs(bids_root)
-
     # scans summary
     scans_template = _summarize_scans(bids_root, session=session,
                                       verbose=verbose)
@@ -375,10 +378,14 @@ def create_methods_paragraph(bids_root, session=None, verbose=True):
                            'n_sessions': len(sessions),
                            'sessions': ','.join(sessions)})
 
-    paragraph = \
-        BIDS_DATASET_TEMPLATE.format(**dataset_template) + \
-        PARTICIPANTS_TEMPLATE.format(**participants_template) + \
-        MODALITY_AGNOSTIC_TEMPLATE.format(**scans_template)
+    paragraph = BIDS_DATASET_TEMPLATE.format(**dataset_template)
+
+    if summarize_participants:
+        # participants summary
+        participants_template = _summarize_subs(bids_root)
+        paragraph += PARTICIPANTS_TEMPLATE.format(**participants_template)
+
+    paragraph = paragraph + MODALITY_AGNOSTIC_TEMPLATE.format(**scans_template)
 
     if 'ieeg' in kinds:
         paragraph = paragraph + IEEG_TEMPLATE.format(**scans_template)
@@ -390,7 +397,7 @@ if __name__ == '__main__':
     import textwrap
 
     bids_root = fetch_brainvision_testing_data()
-    bids_root = "/Users/adam2392/Downloads/tngpipeline"
-
-    methods_paragraph = create_methods_paragraph(bids_root)
+    bids_root = "/Users/adam2392/Downloads/ds002904-1.0.0"
+    methods_paragraph = create_methods_paragraph(bids_root,
+                                                 summarize_participants=True)
     print('\n'.join(textwrap.wrap(methods_paragraph, width=50)))
