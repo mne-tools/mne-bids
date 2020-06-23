@@ -3,18 +3,11 @@
 #
 # License: BSD (3-clause)
 import os.path as op
-import warnings
 
+import mne
 import pytest
-
-with warnings.catch_warnings():
-    warnings.filterwarnings(action='ignore',
-                            message="can't resolve package",
-                            category=ImportWarning)
-    import mne
-
-from mne.utils import _TempDir
 from mne.datasets import testing
+from mne.utils import _TempDir
 
 from mne_bids import (make_bids_basename,
                       create_methods_paragraph)
