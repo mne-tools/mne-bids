@@ -30,7 +30,7 @@ from mne_bids.utils import (_parse_bids_filename, _extract_landmarks,
                             _estimate_line_freq, _infer_kind)
 
 
-def _read_raw(raw_fpath, electrode=None, hsp=None, hpi=None, 
+def _read_raw(raw_fpath, electrode=None, hsp=None, hpi=None,
               allow_maxshield=False, config=None, verbose=None, **kwargs):
     """Read a raw file into MNE, making inferences based on extension."""
     _, ext = _parse_ext(raw_fpath)
