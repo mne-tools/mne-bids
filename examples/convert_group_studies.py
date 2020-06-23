@@ -20,6 +20,7 @@ checking out this group conversion example: :ref:`ex-convert-mne-sample`
 # Let us import ``mne_bids``
 
 import os.path as op
+from textwrap import wrap
 
 import mne
 from mne.datasets import eegbci
