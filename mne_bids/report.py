@@ -5,14 +5,47 @@
 import collections
 import json
 import os
+import os.path as op
 from pathlib import Path
 
 import numpy as np
 
+from mne_bids.config import DOI
 from mne_bids.datasets import fetch_brainvision_testing_data
 from mne_bids.tsv_handler import _from_tsv
 from mne_bids.utils import (make_bids_basename, get_kinds,
-                            get_entity_vals, _parse_ext)
+                            get_entity_vals, _parse_ext,
+                            _find_matching_sidecar, _parse_bids_filename,
+                            BIDSPath)
+
+
+def _summarize_dataset(bids_root) -> str:
+    """Summarize the dataset_desecription.json file.
+
+    Parameters
+    ----------
+    bids_root : str | pathlib.Path
+
+    Returns
+    -------
+    template : str
+    """
+    dataset_descrip_fpath = make_bids_basename(
+        prefix=bids_root, suffix='dataset_description.json')
+    if not op.exists(dataset_descrip_fpath):
+        return ''
+
+    # read file and 'REQUIRED' components of it
+    with open(dataset_descrip_fpath, 'r') as fin:
+        dataset_description = json.load(fin)
+
+    name = dataset_description['Name']
+    bids_version = dataset_description['BIDSVersion']
+
+    template = f'Dataset {name} was created ' \
+               f'with BIDS version {bids_version} using ' \
+               f'MNE-BIDS ({DOI}).'
+    return template
 
 
 def _summarize_subs(bids_root) -> str:
@@ -28,6 +61,9 @@ def _summarize_subs(bids_root) -> str:
     """
     participants_tsv_fpath = make_bids_basename(prefix=bids_root,
                                                 suffix='participants.tsv')
+    if not op.exists(participants_tsv_fpath):
+        return ''
+
     participants_tsv = _from_tsv(participants_tsv_fpath)
     n_subjects = len(participants_tsv['participant_id'])
 
@@ -95,6 +131,7 @@ def _summarize_scans(bids_root, session=None, kind=None) -> str:
     n_files = 0
     length_recordings = []
     sampling_frequency = collections.defaultdict(int)
+    powerline_frequency = dict()
 
     # loop through each scan
     for scan_fpath in scans_fpaths:
@@ -121,13 +158,17 @@ def _summarize_scans(bids_root, session=None, kind=None) -> str:
 
             # aggregate metadata from each scan
             length_recordings.append(sidecar_json['RecordingDuration'])
-            sfreq = np.round(sidecar_json['SamplingFrequency'])
+            sfreq = sidecar_json['SamplingFrequency']
+            powerlinefreq = str(sidecar_json['PowerLineFrequency'])
+            powerline_frequency[powerlinefreq] = 1
             sampling_frequency[sfreq] += 1
 
+    # length summary
     avg_length = np.mean(length_recordings)
     std_length = np.std(length_recordings)
     length_summary = f'{avg_length:.2f} +/- {std_length:.2f} seconds'
 
+    # sampling frequency summary
     sfreq_summary = ''
     for idx, (sfreq, count) in enumerate(sampling_frequency.items()):
         if sfreq_summary == '':
@@ -136,8 +177,99 @@ def _summarize_scans(bids_root, session=None, kind=None) -> str:
             sfreq_summary = sfreq_summary + ', '
         sfreq_summary = sfreq_summary + f'{sfreq} (n={count})'
 
+    # power line frequency summary
+    powerlinefreq_summary = ','.join(powerline_frequency.keys())
+
+    # report template
     template = f'There are {n_files} datasets ({length_summary}) ' \
-               f'{sfreq_summary}.'
+               f'{sfreq_summary} with ' \
+               f'power line frequency {powerlinefreq_summary}.'
+    return template
+
+
+def _summarize_ieeg(bids_root, session=None, verbose=True) -> str:
+    """Summarize ieeg data in BIDS root directory.
+
+    Currently, summarizes all REQUIRED components of iEEG
+    data, and some RECOMMENDED and OPTIONAL components.
+
+    Parameters
+    ----------
+    bids_root : str | pathlib.Path
+    session : str, optional
+
+    Returns
+    -------
+    template : str
+    """
+    bids_root = Path(bids_root)
+    if session is None:
+        search_str = '*_scans.tsv'
+    else:
+        search_str = f'*ses-{session}*_scans.tsv'
+    scans_fpaths = list(bids_root.rglob(search_str))
+
+    if len(scans_fpaths) == 0:
+        return ''
+
+    # keep track of channel type, status
+    ch_type_count = collections.defaultdict(int)
+    ch_status_count = {'bad': 0, 'good': 0}
+
+    # loop through each scan
+    for scan_fpath in scans_fpaths:
+        # load in the scans.tsv file
+        # and read metadata for each scan
+        scans_tsv = _from_tsv(scan_fpath)
+        scans = scans_tsv['filename']
+        for scan in scans:
+            if not scan.startswith('ieeg'):
+                continue
+
+            # summarize metadata of recordings
+            bids_basename, _ = _parse_ext(scan)
+            # convert to BIDS Path
+            params = _parse_bids_filename(bids_basename, verbose)
+            bids_basename = BIDSPath(subject=params.get('sub'),
+                                     session=params.get('ses'),
+                                     recording=params.get('rec'),
+                                     acquisition=params.get('acq'),
+                                     processing=params.get('proc'),
+                                     space=params.get('space'),
+                                     run=params.get('run'),
+                                     task=params.get('task'),
+                                     prefix=bids_root)
+
+            sidecar_fname = _find_matching_sidecar(bids_fname=bids_basename,
+                                                   bids_root=bids_root,
+                                                   suffix='ieeg.json')
+            channels_fname = _find_matching_sidecar(bids_fname=bids_basename,
+                                                    bids_root=bids_root,
+                                                    suffix='channels.tsv')
+
+            # summarize sidecar json
+            with open(sidecar_fname, 'r') as fin:
+                sidecar_json = json.load(fin)
+            # aggregate metadata from each scan
+            for key in ['SEEGChannelCount', 'ECOGChannelCount']:
+                ch_type_count[key] += sidecar_json[key]
+
+            # summarize channels.tsv
+            channels_tsv = _from_tsv(channels_fname)
+            for status in channels_tsv['status']:
+                ch_status_count[status] += 1
+
+    # create summary template strings for type
+    ch_type_summary = f','.join([f'{key} (n={value})'
+                                 for key, value in ch_type_count.items()])
+
+    # create summary template strings for status
+    n_good = ch_status_count['good']
+    n_bad = ch_status_count['bad']
+    ch_status_summary = f'used {n_good} channels and ' \
+                        f'removed {n_bad} channels from analysis.'
+
+    template = f'There were {ch_type_summary} ({ch_status_summary}).'
     return template
 
 
@@ -170,11 +302,19 @@ def create_methods_paragraph(bids_root, session=None, verbose=True):
                f"with {n_sessions} sessions ({session_summary}) " \
                f"consisting of {n_kinds} kinds of data ({kind_summary})."
 
+    # dataset_description.json summary
+    dataset_template = _summarize_dataset(bids_root)
+
     # subject and scans summary
     sub_template = _summarize_subs(bids_root)
     scan_template = _summarize_scans(bids_root, session=session)
 
-    paragraph = f'{template} {sub_template} {scan_template}'
+    paragraph = f'{dataset_template} {template} {sub_template} {scan_template}'
+
+    if 'ieeg' in kinds:
+        ieeg_summary = _summarize_ieeg(bids_root, session=session)
+        paragraph = paragraph + f' {ieeg_summary}'
+
     return paragraph
 
 

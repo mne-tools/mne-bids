@@ -5,6 +5,8 @@ from mne.io.constants import FIFF
 
 BIDS_VERSION = "1.2.2"
 
+DOI = 'https://doi.org/10.21105/joss.01896'
+
 ALLOWED_KINDS = ['meg', 'eeg', 'ieeg']
 
 # Orientation of the coordinate system dependent on manufacturer
