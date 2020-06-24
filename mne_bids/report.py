@@ -8,7 +8,7 @@ from pathlib import Path
 
 import numpy as np
 
-from mne_bids.config import DOI
+from mne_bids.config import DOI, ALLOWED_KINDS
 from mne_bids.datasets import fetch_brainvision_testing_data
 from mne_bids.tsv_handler import _from_tsv
 from mne_bids.utils import (make_bids_basename, get_kinds,
@@ -17,8 +17,8 @@ from mne_bids.utils import (make_bids_basename, get_kinds,
                             BIDSPath)
 
 BIDS_DATASET_TEMPLATE = 'The {name} dataset was created ' \
-                        'with BIDS version {bids_version} using ' \
-                        'MNE-BIDS ({doi}). '
+                        'with BIDS version {bids_version} ' \
+                        'by {authors} ({doi}). '
 
 PARTICIPANTS_TEMPLATE = \
     'There are {n_subjects} subjects amongst whom there are ' \
@@ -32,18 +32,45 @@ MODALITY_AGNOSTIC_TEMPLATE = \
     'Data was acquired using a {system} system ({manufacturer} manufacturer ' \
     'with line noise at {powerlinefreq} Hz) using ' \
     'filters ({software_filters}). ' \
-    'Each dataset is {min_record_length} to {max_record_length} seconds, ' \
-    'for a total of {total_record_length} seconds of data recorded ' \
-    '({mean_record_length} +/- {std_record_length}). ' \
+    'Each dataset is {min_record_length:.2f} to ' \
+    '{max_record_length:.2f} seconds, ' \
+    'for a total of {total_record_length:.2f} seconds of data recorded ' \
+    '({mean_record_length:.2f} +/- {std_record_length:.2f}). ' \
     'The dataset consists of {n_sessions} recording sessions ({sessions}), ' \
-    '{n_chs} channels ({n_good} are used and ' \
+    '{n_scans} total scans, {n_chs} channels ({n_good} are used and ' \
     '{n_bad} are removed from analysis). '
 
 IEEG_TEMPLATE = 'There are {n_ecog_chs} ECoG and {n_seeg_chs} SEEG channels. '
 
 
+def _pretty_str(listed):
+    """Pretty format a list of strings joined with ',' and 'and'."""
+    if not isinstance(listed, list):
+        listed = list(listed)
+
+    if len(listed) == 1:
+        return ','.join(listed)
+
+    return '{}, and {}'.format(', '.join(listed[:-1]), listed[-1])
+
+
+def _pretty_dict(template_dict):
+    """Remove problematic blank spaces."""
+    for key, val in template_dict.items():
+        if val == ' ':
+            template_dict[key] = 'n/a'
+
+
 def _summarize_dataset(bids_root):
     """Summarize the dataset_desecription.json file.
+
+    Required dataset descriptors include:
+        - Name
+        - BIDSVersion
+
+    Added descriptors include:
+        - Authors
+        - DOI
 
     Parameters
     ----------
@@ -66,21 +93,26 @@ def _summarize_dataset(bids_root):
     # create dictionary to pass into template string
     name = dataset_description['Name']
     bids_version = dataset_description['BIDSVersion']
+    authors = dataset_description['Authors']
     template_dict = {
         'name': name,
         'bids_version': bids_version,
         'doi': DOI,
+        'authors': _pretty_str(authors)
     }
+    _pretty_dict(template_dict)
     return template_dict
 
 
-def _summarize_subs(bids_root):
+def _summarize_subs(bids_root, verbose=True):
     """Summarize subjects in BIDS root directory.
 
     Parameters
     ----------
     bids_root : str | pathlib.Path
         The path of the root of the BIDS compatible folder.
+    verbose: bool
+        Set verbose output to true or false.
 
     Returns
     -------
@@ -93,6 +125,9 @@ def _summarize_subs(bids_root):
 
     participants_tsv = _from_tsv(str(participants_tsv_fpath))
     n_subjects = len(participants_tsv['participant_id'])
+
+    if verbose:
+        print('Trying to summarize {n_subjects} participants...')
 
     # summarize sex count statistics
     n_males, n_females, n_sex_unknown = 0, 0, 0
@@ -154,7 +189,7 @@ def _summarize_subs(bids_root):
     return template_dict
 
 
-def _summarize_scans(bids_root, session=None, kind=None, verbose=True):
+def _summarize_scans(bids_root, session=None, verbose=True):
     """Summarize scans in BIDS root directory.
 
     Parameters
@@ -162,8 +197,9 @@ def _summarize_scans(bids_root, session=None, kind=None, verbose=True):
     bids_root : str | pathlib.Path
         The path of the root of the BIDS compatible folder.
     session : str, optional
-    kind : str, optional
+        The session for a item. Corresponds to "ses".
     verbose : bool
+        Set verbose output to true or false.
 
     Returns
     -------
@@ -204,6 +240,7 @@ def _summarize_sidecar_json(bids_root, scans_fpaths, verbose=True):
         The path of the root of the BIDS compatible folder.
     scans_fpaths : list
     verbose : bool
+        Set verbose output to true or false.
 
     Returns
     -------
@@ -225,7 +262,7 @@ def _summarize_sidecar_json(bids_root, scans_fpaths, verbose=True):
             bids_basename, _ = _parse_ext(scan)
             kind = op.dirname(scan)
 
-            if kind not in ['meg', 'eeg', 'ieeg']:
+            if kind not in ALLOWED_KINDS:
                 continue
 
             # convert to BIDS Path
@@ -254,8 +291,8 @@ def _summarize_sidecar_json(bids_root, scans_fpaths, verbose=True):
             n_seeg_chs += sidecar_json.get('SEEGChannelCount', 0)
 
             software_filters = sidecar_json.get('SoftwareFilters')
-            sfreqs.add(sfreq)
-            powerlinefreqs.add(powerlinefreq)
+            sfreqs.add(str(sfreq))
+            powerlinefreqs.add(str(powerlinefreq))
             manufacturers.add(manufacturer)
             length_recordings.append(sidecar_json['RecordingDuration'])
 
@@ -266,9 +303,9 @@ def _summarize_sidecar_json(bids_root, scans_fpaths, verbose=True):
     std_record_length = np.std(length_recordings)
 
     template_dict = {
-        'manufacturer': ','.join(manufacturers),
-        'sfreq': ','.join(map(str, sfreqs)),
-        'powerlinefreq': ','.join(map(str, powerlinefreqs)),
+        'manufacturer': _pretty_str(manufacturers),
+        'sfreq': _pretty_str(sfreqs),
+        'powerlinefreq': _pretty_str(powerlinefreqs),
         'software_filters': software_filters,
         'n_ecog_chs': n_ecog_chs,
         'n_seeg_chs': n_seeg_chs,
@@ -368,6 +405,9 @@ def create_methods_paragraph(bids_root, session=None,
     sessions = get_entity_vals(bids_root, entity_key='ses')
     kinds = get_kinds(bids_root)
 
+    # only summarize allowed kinds (MEEG data)
+    kinds = [kind.upper() for kind in kinds if kind in ALLOWED_KINDS]
+
     # dataset_description.json summary
     dataset_template = _summarize_dataset(bids_root)
 
@@ -376,7 +416,8 @@ def create_methods_paragraph(bids_root, session=None,
                                       verbose=verbose)
     scans_template.update({'system': ','.join(kinds),
                            'n_sessions': len(sessions),
-                           'sessions': ','.join(sessions)})
+                           'sessions': ','.join(sessions),
+                           })
 
     paragraph = BIDS_DATASET_TEMPLATE.format(**dataset_template)
 

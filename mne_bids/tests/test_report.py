@@ -11,6 +11,7 @@ from mne.utils import _TempDir
 
 from mne_bids import (make_bids_basename,
                       create_methods_paragraph)
+from mne_bids.config import DOI, BIDS_VERSION
 from mne_bids.write import write_raw_bids
 
 subject_id = '01'
@@ -42,12 +43,44 @@ def test_read_raw_kind():
                    verbose=False)
 
     methods_summ = create_methods_paragraph(bids_root)
+    dataset_descrip = 'The n/a dataset was created with BIDS version ' \
+                      f'{BIDS_VERSION} by MNE-BIDS ' \
+                      f'({DOI}).'
+    assert methods_summ.startswith(dataset_descrip)
+    participants_descrip = 'There are 1 subjects amongst whom there are ' \
+                           '0 males and 0 females (0 unknown). ' \
+                           'There are 0 right hand, 0 left hand and ' \
+                           '0 ambidextrous subjects. Their ages ' \
+                           'are n/a-n/a (n/a +/- n/a with 1 unknown).'
+    assert participants_descrip in methods_summ
 
-    assert methods_summ == 'The dataset consists of 1 patients ' \
-                           'with 1 sessions (01) ' \
-                           'consisting of 1 kinds of data (meg). ' \
-                           'The dataset consists of 1 subjects ' \
-                           '(ages  with 1 unknown age; ' \
-                           '1 unknown hand ; 1 unknown sex ). ' \
-                           'There are 1 datasets (20.00 +/- 0.00 seconds) ' \
-                           'with sampling rates 300.0 (n=1).'
+    agnostic_descrip = 'Data was acquired using a MEG system ' \
+                       '(Elekta manufacturer with line noise at 60 Hz) ' \
+                       'using filters (n/a). Each dataset is ' \
+                       '20.00 to 20.00 seconds, for a ' \
+                       'total of 20.00 seconds of data recorded ' \
+                       '(20.00 +/- 0.00). The dataset consists ' \
+                       'of 1 recording sessions (01), 1 total scans, ' \
+                       '376 channels (374 are used and ' \
+                       '2 are removed from analysis).'
+    assert agnostic_descrip in methods_summ
+
+
+if __name__ == '__main__':
+    import textwrap
+
+    bids_root = _TempDir()
+    raw = mne.io.read_raw_fif(raw_fname, verbose=False)
+    write_raw_bids(raw, bids_basename, bids_root, overwrite=True,
+                   verbose=False)
+
+    methods_summ = create_methods_paragraph(bids_root)
+    print('\n'.join(textwrap.wrap(methods_summ, width=50)))
+    # assert methods_summ == 'The dataset consists of 1 patients ' \
+    #                        'with 1 sessions (01) ' \
+    #                        'consisting of 1 kinds of data (meg). ' \
+    #                        'The dataset consists of 1 subjects ' \
+    #                        '(ages  with 1 unknown age; ' \
+    #                        '1 unknown hand ; 1 unknown sex ). ' \
+    #                        'There are 1 datasets (20.00 +/- 0.00 seconds) ' \
+    #                        'with sampling rates 300.0 (n=1).'
