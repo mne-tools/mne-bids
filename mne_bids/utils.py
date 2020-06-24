@@ -35,15 +35,17 @@ from mne_bids.tsv_handler import (_to_tsv, _tsv_to_str,
 def delete_scan(bids_basename, bids_root, verbose=True):
     """Safely delete a scan inside bids root.
 
-    Deleting a scan that conforms to the bids-validator, requires
-    one to delete both the row in the `scans.tsv` file, but also
+    Deleting a scan that conforms to the bids-validator, will
+    delete both the row in the `scans.tsv` file, and also
     the corresponding sidecar files and the data file itself.
 
     Parameters
     ----------
     bids_basename : str | BIDSPath
         The base filename of the BIDS compatible files. Typically, this can be
-        generated using :func:`mne_bids.make_bids_basename`.
+        generated using :func:`mne_bids.make_bids_basename`. The basename
+        requires at least the subject and session entity to work, and
+        needs to uniquely identify the scan inside the scans.tsv file.
     bids_root : str | pathlib.Path
         Path to the root of the BIDS directory.
     verbose : bool
