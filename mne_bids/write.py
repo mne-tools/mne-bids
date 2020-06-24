@@ -1089,7 +1089,13 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     _participants_tsv(raw, subject_id, participants_tsv_fname, overwrite,
                       verbose)
     _participants_json(participants_json_fname, True, verbose)
-    _scans_tsv(raw, op.join(kind, bids_fname), scans_fname, overwrite, verbose)
+
+    # BTI data does not have a suffix in the fname
+    if ext == '.pdf':
+        scan_relative_fpath = op.join(kind, bids_raw_folder)
+    else:
+        scan_relative_fpath = op.join(kind, bids_fname)
+    _scans_tsv(raw, scan_relative_fpath, scans_fname, overwrite, verbose)
 
     # for MEG, we only write coordinate system
     if kind == 'meg' and not emptyroom:
