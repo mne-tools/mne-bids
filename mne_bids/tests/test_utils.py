@@ -9,6 +9,7 @@ import os.path as op
 import pytest
 from datetime import datetime
 from pathlib import Path
+import platform
 
 from numpy.random import random
 
@@ -20,7 +21,7 @@ with warnings.catch_warnings():
                             category=ImportWarning)
     import mne
 
-from mne.utils import _TempDir
+from mne.utils import _TempDir, run_subprocess
 from mne.datasets import testing
 
 from mne_bids import make_bids_folders, make_bids_basename, write_raw_bids
@@ -29,7 +30,7 @@ from mne_bids.utils import (_check_types, print_dir_tree, _age_on_date,
                             _find_matching_sidecar, _parse_ext,
                             _get_ch_type_mapping, _parse_bids_filename,
                             _find_best_candidates, get_entity_vals,
-                            _path_to_str, get_kinds, update_scans_tsv)
+                            _path_to_str, get_kinds, delete_scan)
 from mne_bids.tsv_handler import _from_tsv
 
 base_path = op.join(op.dirname(mne.__file__), 'io')
@@ -44,7 +45,35 @@ bids_basename = make_bids_basename(
     task=task)
 
 
-@pytest.fixture(scope='session')
+# WINDOWS issues:
+# the bids-validator development version does not work properly on Windows as
+# of 2019-06-25 --> https://github.com/bids-standard/bids-validator/issues/790
+# As a workaround, we try to get the path to the executable from an environment
+# variable VALIDATOR_EXECUTABLE ... if this is not possible we assume to be
+# using the stable bids-validator and make a direct call of bids-validator
+# also: for windows, shell = True is needed to call npm, bids-validator etc.
+# see: https://stackoverflow.com/q/28891053/5201771
+@pytest.fixture(scope="session")
+def _bids_validate():
+    """Fixture to run BIDS validator."""
+    vadlidator_args = ['--config.error=41']
+    exe = os.getenv('VALIDATOR_EXECUTABLE', 'bids-validator')
+
+    if platform.system() == 'Windows':
+        shell = True
+    else:
+        shell = False
+
+    bids_validator_exe = [exe, *vadlidator_args]
+
+    def _validate(bids_root):
+        cmd = [*bids_validator_exe, bids_root]
+        run_subprocess(cmd, shell=shell)
+
+    return _validate
+
+
+@pytest.fixture(scope='function')
 def return_bids_test_dir(tmpdir_factory):
     """Return path to a written test BIDS dir."""
     bids_root = str(tmpdir_factory.mktemp('mnebids_utils_test_bids_ds'))
@@ -428,22 +457,24 @@ def test_bids_path(return_bids_test_dir):
     assert repr(bids_path) == 'BIDSPath(sub-01_ses-02_task-03_ieeg.edf)'
 
 
-def test_update_scans(return_bids_test_dir):
+def test_delete_scans(return_bids_test_dir, _bids_validate):
     """Test update scans in a dir."""
-    # delete some data from the session
+    # deleting scan should conform to bids-validator
+    delete_scan(bids_basename, bids_root=return_bids_test_dir)
+    _bids_validate(return_bids_test_dir)
+
     ses_path = op.join(return_bids_test_dir,
                        f'sub-{subject_id}',
                        f'ses-{session_id}')
-    for fpath in Path(ses_path).rglob(f'{bids_basename}*'):
-        os.remove(fpath)
-
     scans_fpath = make_bids_basename(
-        subject=subject_id, session=session_id, suffix='scans.tsv',
-        prefix=ses_path)
-    scans_tsv = _from_tsv(scans_fpath)
-    assert any([bids_basename in fname for fname in scans_tsv['filename']])
+        subject=subject_id, session=session_id,
+        suffix='scans.tsv', prefix=ses_path)
 
-    update_scans_tsv(return_bids_test_dir, subject=subject_id,
-                     session=session_id)
+    # the scan for bids_basename should be gone inside
+    # scans.tsv and inside the actual session path
     scans_tsv = _from_tsv(scans_fpath)
-    assert all([bids_basename not in fname for fname in scans_tsv['filename']])
+    fnames = scans_tsv['filename']
+    assert all([str(bids_basename) not in fname for fname in fnames])
+
+    found_scans_fpaths = list(Path(ses_path).rglob(f'*{bids_basename}*'))
+    assert found_scans_fpaths == []

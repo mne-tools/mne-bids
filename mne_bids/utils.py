@@ -8,8 +8,6 @@
 #
 # License: BSD (3-clause)
 import os
-import os.path as op
-from pathlib import Path
 import glob
 import json
 import shutil as sh
@@ -30,7 +28,8 @@ from mne.io.constants import FIFF
 from mne.time_frequency import psd_array_welch
 
 from mne_bids.config import BIDS_PATH_ENTITIES, reader
-from mne_bids.tsv_handler import _to_tsv, _tsv_to_str, _from_tsv
+from mne_bids.tsv_handler import (_to_tsv, _tsv_to_str,
+                                  _from_tsv, _drop)
 
 
 def delete_scan(bids_basename, bids_root, verbose=True):
@@ -48,45 +47,46 @@ def delete_scan(bids_basename, bids_root, verbose=True):
     verbose : bool
         If verbose is True, this will print which files were removed.
     """
-    if subject is None:
-        # get all subjects unless a specific subject is given
-        subjects = get_entity_vals(bids_root, entity_key='sub')
+    if isinstance(bids_basename, str):
+        params = _parse_bids_filename(bids_basename, verbose)
+        bids_basename = BIDSPath(subject=params.get('sub'),
+                                 session=params.get('ses'),
+                                 recording=params.get('rec'),
+                                 acquisition=params.get('acq'),
+                                 processing=params.get('proc'),
+                                 space=params.get('space'),
+                                 run=params.get('run'),
+                                 task=params.get('task'))
+
+    if bids_basename.subject is None or bids_basename.session is None:
+        raise RuntimeError(f'Deleting a scan requires the bids_basename '
+                           f'to have a subject and session defined. '
+                           f'You passed in {bids_basename}')
+
+    scans_fpath = _find_matching_sidecar(bids_basename, bids_root,
+                                         suffix='scans.tsv',
+                                         allow_fail=False)
+    scans_tsv = _from_tsv(scans_fpath)
+    scans_fnames = scans_tsv['filename']
+
+    # find the full filename to delete
+    matching_basenames = [fname for fname in scans_fnames
+                          if str(bids_basename) in fname]
+    if len(matching_basenames) > 1:
+        raise RuntimeError(f'Deleting scan requires a unique bids_basename '
+                           f'to parse in the scans.tsv file. '
+                           f'Found more than 1 ({matching_basenames})...')
     else:
-        subjects = [subject]
+        bids_fname = matching_basenames[0]
 
-    if session is None:
-        sessions = get_entity_vals(bids_root, entity_key='ses')
-    else:
-        sessions = [session]
+    # delete the file and its sidecar files
+    ses_path = Path(op.dirname(scans_fpath)).rglob(f'*{bids_basename}*')
+    for fpath in ses_path:
+        os.remove(fpath)
 
-    # XXX: Improve w/ pybids in the future.
-    # XXX: If there are missing scans inside the tsv file, then update.
-    # loop through subject and sessions and update scans accordingly
-    for subject in subjects:
-        for session in sessions:
-            ses_path = op.join(bids_root, f'sub-{subject}', f'ses-{session}')
-            scans_fpath = _gen_bids_basename(
-                subject=subject, session=session, suffix='scans.tsv',
-                prefix=ses_path, on_invalid_er_task='continue')
-
-            # check existence of each file
-            scans_tsv = _from_tsv(scans_fpath)
-            new_scans_tsv = OrderedDict.fromkeys(scans_tsv.keys(), value=[])
-
-            fnames = scans_tsv['filename']
-            if verbose:
-                print("Found filenames: ", fnames)
-
-            for fidx, fname in enumerate(fnames):
-                fpath = op.join(ses_path, fname)
-
-                if op.exists(fpath):
-                    for key, vals in scans_tsv.items():
-                        new_scans_tsv[key].append(vals[fidx])
-                else:
-                    if verbose:
-                        print("Removing filepath: ", fpath)
-            _to_tsv(new_scans_tsv, scans_fpath)
+    # resave the scans.tsv file
+    scans_tsv = _drop(scans_tsv, bids_fname, 'filename')
+    _to_tsv(scans_tsv, scans_fpath)
 
 
 class BIDSPath(object):
