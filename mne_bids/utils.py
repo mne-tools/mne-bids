@@ -42,6 +42,8 @@ def delete_scan(bids_basename, bids_root, verbose=True):
     Parameters
     ----------
     bids_basename : str | BIDSPath
+        The base filename of the BIDS compatible files. Typically, this can be
+        generated using :func:`mne_bids.make_bids_basename`.
     bids_root : str | pathlib.Path
         Path to the root of the BIDS directory.
     verbose : bool

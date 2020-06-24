@@ -459,6 +459,21 @@ def test_bids_path(return_bids_test_dir):
 
 def test_delete_scans(return_bids_test_dir, _bids_validate):
     """Test update scans in a dir."""
+    # deleting without subject, or session results in an error
+    bad_basename = make_bids_basename(subject=subject_id, task=task,
+                                      run=run)
+    expected_err_msg = 'Deleting a scan requires the bids_basename '\
+                       'to have a subject and session defined'
+    with pytest.raises(RuntimeError, match=expected_err_msg):
+        delete_scan(bad_basename, return_bids_test_dir)
+
+    # deleting without unique identifier results in an error
+    expected_err_msg = 'Deleting scan requires a unique bids_basename ' \
+                       'to parse in the scans.tsv file. '
+    with pytest.raises(RuntimeError, match=expected_err_msg):
+        delete_scan(bids_basename.copy().update(run=None),
+                    return_bids_test_dir)
+
     # deleting scan should conform to bids-validator
     delete_scan(bids_basename, bids_root=return_bids_test_dir)
     _bids_validate(return_bids_test_dir)
