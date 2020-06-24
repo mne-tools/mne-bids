@@ -478,6 +478,10 @@ def test_delete_scans(return_bids_test_dir, _bids_validate):
     delete_scan(bids_basename, bids_root=return_bids_test_dir)
     _bids_validate(return_bids_test_dir)
 
+    # trying  to delete again would result in an error
+    with pytest.raises(RuntimeError, match='no files were found...'):
+        delete_scan(bids_basename, bids_root=return_bids_test_dir)
+
     ses_path = op.join(return_bids_test_dir,
                        f'sub-{subject_id}',
                        f'ses-{session_id}')
@@ -493,3 +497,5 @@ def test_delete_scans(return_bids_test_dir, _bids_validate):
 
     found_scans_fpaths = list(Path(ses_path).rglob(f'*{bids_basename}*'))
     assert found_scans_fpaths == []
+
+

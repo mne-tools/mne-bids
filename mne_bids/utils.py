@@ -80,6 +80,9 @@ def delete_scan(bids_basename, bids_root, verbose=True):
         raise RuntimeError(f'Deleting scan requires a unique bids_basename '
                            f'to parse in the scans.tsv file. '
                            f'Found more than 1 ({matching_basenames})...')
+    elif len(matching_basenames) == 0:
+        raise RuntimeError(f'Trying to delete {bids_basename} '
+                           f'from scans.tsv, but no files were found...')
     else:
         bids_fname = matching_basenames[0]
 

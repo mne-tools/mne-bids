@@ -9,5 +9,6 @@ from mne_bids.write import (write_raw_bids,  # noqa: E501 F401
                             _stamp_to_dt, _get_anonymization_daysback)
 from mne_bids.read import (read_raw_bids, get_head_mri_trans,  # noqa: F401
                            get_matched_empty_room)  # noqa: F401
-from mne_bids.utils import make_bids_folders, make_bids_basename  # noqa: F401
+from mne_bids.utils import (make_bids_folders, make_bids_basename, # noqa: F401
+                            delete_scan)  # noqa: F401
 from mne_bids import commands  # noqa: F401
