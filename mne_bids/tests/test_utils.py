@@ -497,5 +497,3 @@ def test_delete_scans(return_bids_test_dir, _bids_validate):
 
     found_scans_fpaths = list(Path(ses_path).rglob(f'*{bids_basename}*'))
     assert found_scans_fpaths == []
-
-

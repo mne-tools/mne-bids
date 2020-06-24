@@ -1085,17 +1085,10 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     unit = UNITS.get(ext, 'n/a')
     manufacturer = MANUFACTURERS.get(ext, 'n/a')
 
-    # save all meta data
+    # save all participants meta data
     _participants_tsv(raw, subject_id, participants_tsv_fname, overwrite,
                       verbose)
     _participants_json(participants_json_fname, True, verbose)
-
-    # BTI data does not have a suffix in the fname
-    if ext == '.pdf':
-        scan_relative_fpath = op.join(kind, bids_raw_folder)
-    else:
-        scan_relative_fpath = op.join(kind, bids_fname)
-    _scans_tsv(raw, scan_relative_fpath, scans_fname, overwrite, verbose)
 
     # for MEG, we only write coordinate system
     if kind == 'meg' and not emptyroom:
@@ -1126,15 +1119,16 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
                   verbose)
     _channels_tsv(raw, channels_fname, overwrite, verbose)
 
-    # set the raw file name to now be the absolute path to ensure the files
-    # are placed in the right location
-    bids_fname = op.join(data_path, bids_fname)
-
     if os.path.exists(bids_fname) and not overwrite:
         raise FileExistsError('"%s" already exists. Please set '  # noqa: F821
                               'overwrite to True.' % bids_fname)
-    _mkdir_p(os.path.dirname(bids_fname))
+    _mkdir_p(os.path.dirname(op.join(data_path, bids_fname)))
 
+    # set the raw file name to now be the absolute path to ensure the files
+    # are placed in the right location
+    bids_fname.prefix = data_path
+
+    # whether or not to convert to RECOMMENDED file formats
     convert = ext not in ALLOWED_EXTENSIONS[kind]
 
     if kind == 'meg' and convert and not anonymize:
@@ -1154,6 +1148,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
         else:
             if verbose:
                 warn('Converting data files to BrainVision format')
+            bids_fname.suffix = f'{kind}.vhdr'
             _write_raw_brainvision(raw, bids_fname, events)
     elif ext == '.fif':
         _write_raw_fif(raw, bids_fname)
@@ -1167,12 +1162,17 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     elif ext == '.set':
         copyfile_eeglab(raw_fname, bids_fname)
     elif ext == '.pdf':
-        copyfile_bti(raw_orig, op.join(data_path, bids_raw_folder))
+        bids_fname = op.join(data_path, bids_raw_folder)
+        copyfile_bti(raw_orig, bids_fname)
     elif ext in ['.con', '.sqd']:
         copyfile_kit(raw_fname, bids_fname, subject_id, session_id,
                      task, run, raw._init_kwargs)
     else:
         sh.copyfile(raw_fname, bids_fname)
+
+    # write to the scans.tsv file the output file written
+    scan_relative_fpath = op.join(kind, op.basename(bids_fname))
+    _scans_tsv(raw, scan_relative_fpath, scans_fname, overwrite, verbose)
 
     return bids_root
 
