@@ -56,12 +56,12 @@ Utils
    get_entity_vals
    get_kinds
    BIDSPath
+   delete_scan
 
 Copyfiles
 =========
 
 :py:mod:`mne_bids.copyfiles`:
-=======
 
 .. automodule:: mne_bids.copyfiles
    :no-members:

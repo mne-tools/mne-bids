@@ -33,22 +33,18 @@ from mne_bids.config import BIDS_PATH_ENTITIES, reader
 from mne_bids.tsv_handler import _to_tsv, _tsv_to_str, _from_tsv
 
 
-def update_scans_tsv(bids_root, subject=None, session=None, verbose=True):
-    """Update the scans tsv files inside bids root.
+def delete_scan(bids_basename, bids_root, verbose=True):
+    """Safely delete a scan inside bids root.
 
-    If there are extra rows in the tsv file
-    that are not present in the BIDs dataset, then it will
-    remove those rows.
+    Deleting a scan that conforms to the bids-validator, requires
+    one to delete both the row in the `scans.tsv` file, but also
+    the corresponding sidecar files and the data file itself.
 
     Parameters
     ----------
+    bids_basename : str | BIDSPath
     bids_root : str | pathlib.Path
         Path to the root of the BIDS directory.
-    subject : str | optional
-        Subject label as in 'sub-<label>', for example: '01'.
-        Corresponds to "sub".
-    session :  str | optional
-        Session label as in 'ses-<label'. Corresponds to "ses"
     verbose : bool
         If verbose is True, this will print which files were removed.
     """
