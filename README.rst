@@ -31,9 +31,6 @@
   :target: https://joss.theoj.org/papers/5b9024503f7bea324d5e738a12b0a108
   :alt: JOSS publication
 
-.. image:: https://zenodo.org/badge/DOI/10.5281/zenodo.3739558.svg
-  :target: https://zenodo.org/badge/DOI/10.5281/zenodo.3739558.svg
-  :alt: DOI
 
 MNE-BIDS
 ========
