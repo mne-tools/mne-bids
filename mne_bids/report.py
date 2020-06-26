@@ -8,6 +8,8 @@ from pathlib import Path
 
 import numpy as np
 
+from mne.externals.tempita import Template, sub
+
 from mne_bids.config import DOI, ALLOWED_KINDS
 from mne_bids.datasets import fetch_brainvision_testing_data
 from mne_bids.tsv_handler import _from_tsv
@@ -16,31 +18,31 @@ from mne_bids.utils import (make_bids_basename, get_kinds,
                             _find_matching_sidecar, _parse_bids_filename,
                             BIDSPath)
 
-BIDS_DATASET_TEMPLATE = 'The {name} dataset was created ' \
-                        'with BIDS version {bids_version} ' \
-                        'by {authors} ({doi}). '
+BIDS_DATASET_TEMPLATE = "The {{name}} dataset was created " \
+                        "with BIDS version {{bids_version}} " \
+                        "by {{authors}} ({{doi}}). "
 
 PARTICIPANTS_TEMPLATE = \
-    'There are {n_subjects} subjects amongst whom there are ' \
-    '{n_males} males and {n_females} females ({n_sex_unknown} unknown). ' \
-    'There are {n_rhand} right hand, {n_lhand} left hand ' \
-    'and {n_ambidex} ambidextrous subjects. ' \
-    'Their ages are {min_age}-{max_age} ({mean_age} +/- {std_age} ' \
-    'with {n_age_unknown} unknown). '
+    'There are {{n_subjects}} subjects amongst whom there are ' \
+    '{{n_males}} males and {{n_females}} females ({{n_sex_unknown}} unknown). ' \
+    'There are {{n_rhand}} right hand, {{n_lhand}} left hand ' \
+    'and {{n_ambidex}} ambidextrous subjects. ' \
+    'Their ages are {{min_age}}-{{max_age}} ({{mean_age}} +/- {{std_age}} ' \
+    'with {{n_age_unknown}} unknown). '
 
 MODALITY_AGNOSTIC_TEMPLATE = \
-    'Data was acquired using a {system} system ({manufacturer} manufacturer ' \
-    'with line noise at {powerlinefreq} Hz) using ' \
-    'filters ({software_filters}). ' \
-    'Each dataset is {min_record_length:.2f} to ' \
-    '{max_record_length:.2f} seconds, ' \
-    'for a total of {total_record_length:.2f} seconds of data recorded ' \
-    '({mean_record_length:.2f} +/- {std_record_length:.2f}). ' \
-    'The dataset consists of {n_sessions} recording sessions ({sessions}), ' \
-    '{n_scans} total scans, {n_chs} channels ({n_good} are used and ' \
-    '{n_bad} are removed from analysis). '
+    'Data was acquired using a {{system}} system ({{manufacturer}} manufacturer ' \
+    'with line noise at {{powerlinefreq}} Hz) using ' \
+    'filters ({{software_filters}}). ' \
+    'Each dataset is {{min_record_length}} to ' \
+    '{{max_record_length}} seconds, ' \
+    'for a total of {{py:round(total_record_length, 2)}} seconds of data recorded ' \
+    '({{mean_record_length}} +/- {{std_record_length}}). ' \
+    'The dataset consists of {{n_sessions}} recording sessions ({{sessions}}), ' \
+    '{{n_scans}} total scans, {{n_chs}} channels ({{n_good}} are used and ' \
+    '{{n_bad}} are removed from analysis). '
 
-IEEG_TEMPLATE = 'There are {n_ecog_chs} ECoG and {n_seeg_chs} SEEG channels. '
+IEEG_TEMPLATE = 'There are {{n_ecog_chs}} ECoG and {{n_seeg_chs}} SEEG channels. '
 
 
 def _pretty_str(listed):
@@ -127,7 +129,7 @@ def _summarize_subs(bids_root, verbose=True):
     n_subjects = len(participants_tsv['participant_id'])
 
     if verbose:
-        print('Trying to summarize {n_subjects} participants...')
+        print(f'Trying to summarize {n_subjects} participants...')
 
     # summarize sex count statistics
     n_males, n_females, n_sex_unknown = 0, 0, 0
@@ -209,7 +211,8 @@ def _summarize_scans(bids_root, session=None, verbose=True):
     if session is None:
         search_str = '*_scans.tsv'
     else:
-        search_str = f'*ses-{session}*_scans.tsv'
+        search_str = f'*ses-{session}' \
+                     f'*_scans.tsv'
     scans_fpaths = list(bids_root.rglob(search_str))
     if len(scans_fpaths) == 0:
         return dict()
@@ -386,8 +389,7 @@ def _summarize_channels_tsv(bids_root, scans_fpaths, verbose=True):
     return template_dict
 
 
-def create_methods_paragraph(bids_root, session=None,
-                             summarize_participants=True, verbose=True):
+def create_methods_paragraph(bids_root, session=None, verbose=True):
     """Create a methods paragraph string from BIDS dataset.
 
     Parameters
@@ -411,6 +413,9 @@ def create_methods_paragraph(bids_root, session=None,
     # dataset_description.json summary
     dataset_template = _summarize_dataset(bids_root)
 
+    # participants summary
+    participants_template = _summarize_subs(bids_root)
+
     # scans summary
     scans_template = _summarize_scans(bids_root, session=session,
                                       verbose=verbose)
@@ -419,17 +424,17 @@ def create_methods_paragraph(bids_root, session=None,
                            'sessions': ','.join(sessions),
                            })
 
-    paragraph = BIDS_DATASET_TEMPLATE.format(**dataset_template)
+    # create the content and mne Template
+    content = BIDS_DATASET_TEMPLATE + PARTICIPANTS_TEMPLATE + \
+              MODALITY_AGNOSTIC_TEMPLATE
+    paragraph = Template(content=content)
+    paragraph = paragraph.substitute(**dataset_template,
+                                     **participants_template,
+                                     **scans_template)
 
-    if summarize_participants:
-        # participants summary
-        participants_template = _summarize_subs(bids_root)
-        paragraph += PARTICIPANTS_TEMPLATE.format(**participants_template)
-
-    paragraph = paragraph + MODALITY_AGNOSTIC_TEMPLATE.format(**scans_template)
-
+    # add channel summary for kinds
     if 'ieeg' in kinds:
-        paragraph = paragraph + IEEG_TEMPLATE.format(**scans_template)
+        paragraph = paragraph + sub(IEEG_TEMPLATE, **scans_template)
 
     return paragraph
 
@@ -439,6 +444,5 @@ if __name__ == '__main__':
 
     bids_root = fetch_brainvision_testing_data()
     bids_root = "/Users/adam2392/Downloads/ds002904-1.0.0"
-    methods_paragraph = create_methods_paragraph(bids_root,
-                                                 summarize_participants=True)
+    methods_paragraph = create_methods_paragraph(bids_root)
     print('\n'.join(textwrap.wrap(methods_paragraph, width=50)))
