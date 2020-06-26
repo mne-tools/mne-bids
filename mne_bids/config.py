@@ -5,7 +5,8 @@ from mne.io.constants import FIFF
 
 BIDS_VERSION = "1.4.0"
 
-DOI = 'https://doi.org/10.21105/joss.01896'
+DOI = """https://doi.org/10.21105/joss.01896,
+https://doi.org/10.5281/zenodo.3739558"""
 
 ALLOWED_KINDS = ['meg', 'eeg', 'ieeg']
 

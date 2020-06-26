@@ -7,7 +7,6 @@ import os.path as op
 from pathlib import Path
 
 import numpy as np
-
 from mne.externals.tempita import Template, sub
 
 from mne_bids.config import DOI, ALLOWED_KINDS
@@ -18,31 +17,45 @@ from mne_bids.utils import (make_bids_basename, get_kinds,
                             _find_matching_sidecar, _parse_bids_filename,
                             BIDSPath)
 
-BIDS_DATASET_TEMPLATE = "The {{name}} dataset was created " \
-                        "with BIDS version {{bids_version}} " \
-                        "by {{authors}} ({{doi}}). "
+# functions to be used inside Template strings
+FUNCTION_TEMPLATE = """{{py:
+def _pretty_str(listed):
+    if not isinstance(listed, list):
+        listed = list(listed)
 
-PARTICIPANTS_TEMPLATE = \
-    'There are {{n_subjects}} subjects amongst whom there are ' \
-    '{{n_males}} males and {{n_females}} females ({{n_sex_unknown}} unknown). ' \
-    'There are {{n_rhand}} right hand, {{n_lhand}} left hand ' \
-    'and {{n_ambidex}} ambidextrous subjects. ' \
-    'Their ages are {{min_age}}-{{max_age}} ({{mean_age}} +/- {{std_age}} ' \
-    'with {{n_age_unknown}} unknown). '
+    if len(listed) == 1:
+        return ','.join(listed)
 
-MODALITY_AGNOSTIC_TEMPLATE = \
-    'Data was acquired using a {{system}} system ({{manufacturer}} manufacturer ' \
-    'with line noise at {{powerlinefreq}} Hz) using ' \
-    'filters ({{software_filters}}). ' \
-    'Each dataset is {{min_record_length}} to ' \
-    '{{max_record_length}} seconds, ' \
-    'for a total of {{py:round(total_record_length, 2)}} seconds of data recorded ' \
-    '({{mean_record_length}} +/- {{std_record_length}}). ' \
-    'The dataset consists of {{n_sessions}} recording sessions ({{sessions}}), ' \
-    '{{n_scans}} total scans, {{n_chs}} channels ({{n_good}} are used and ' \
-    '{{n_bad}} are removed from analysis). '
+    return '{}, and {}'.format(', '.join(listed[:-1]), listed[-1])
+}}"""
 
-IEEG_TEMPLATE = 'There are {{n_ecog_chs}} ECoG and {{n_seeg_chs}} SEEG channels. '
+BIDS_DATASET_TEMPLATE = """{{if name == 'n/a'}}This{{else}}The{{name}}{{endif}}
+dataset was created with BIDS version {{bids_version}}
+by {{_pretty_str(authors)}}. This report was generated with
+MNE-BIDS ({{mne_bids_doi}}). """
+
+PARTICIPANTS_TEMPLATE = """There are {{n_subjects}} subjects amongst whom there are
+{{n_males}} males and {{n_females}} females ({{n_sex_unknown}} unknown).
+There are {{n_rhand}} right hand, {{n_lhand}} left hand
+and {{n_ambidex}} ambidextrous subjects.
+Their ages are {{min_age}}-{{max_age}} ({{mean_age}} +/- {{std_age}}
+with {{n_age_unknown}} unknown). """
+
+MODALITY_AGNOSTIC_TEMPLATE = """
+Data was acquired using a {{_pretty_str(system)}} system
+({{_pretty_str(manufacturer)}} manufacturer with line noise at
+{{_pretty_str(powerlinefreq)}} Hz{{if software_filters != 'n/a'}} using filters
+({{software_filters}}).{{else}}.{{endif}}
+Each dataset is {{min_record_length}} to {{max_record_length}} seconds,
+for a total of {{py:round(total_record_length, 2)}} seconds of data recorded
+({{mean_record_length}} +/- {{std_record_length}}).
+The dataset consists of {{n_sessions}} recording sessions
+({{_pretty_str(sessions)}}),
+{{n_scans}} total scans, {{n_chs}} channels ({{n_good}} are used and
+{{n_bad}} are removed from analysis). """
+
+IEEG_TEMPLATE = """There are {{n_ecog_chs}} ECoG and
+{{n_seeg_chs}} SEEG channels. """
 
 
 def _pretty_str(listed):
@@ -99,8 +112,8 @@ def _summarize_dataset(bids_root):
     template_dict = {
         'name': name,
         'bids_version': bids_version,
-        'doi': DOI,
-        'authors': _pretty_str(authors)
+        'mne_bids_doi': DOI,
+        'authors': authors,
     }
     _pretty_dict(template_dict)
     return template_dict
@@ -306,9 +319,9 @@ def _summarize_sidecar_json(bids_root, scans_fpaths, verbose=True):
     std_record_length = np.std(length_recordings)
 
     template_dict = {
-        'manufacturer': _pretty_str(manufacturers),
-        'sfreq': _pretty_str(sfreqs),
-        'powerlinefreq': _pretty_str(powerlinefreqs),
+        'manufacturer': manufacturers,
+        'sfreq': sfreqs,
+        'powerlinefreq': powerlinefreqs,
         'software_filters': software_filters,
         'n_ecog_chs': n_ecog_chs,
         'n_seeg_chs': n_seeg_chs,
@@ -419,14 +432,14 @@ def create_methods_paragraph(bids_root, session=None, verbose=True):
     # scans summary
     scans_template = _summarize_scans(bids_root, session=session,
                                       verbose=verbose)
-    scans_template.update({'system': ','.join(kinds),
+    scans_template.update({'system': kinds,
                            'n_sessions': len(sessions),
-                           'sessions': ','.join(sessions),
+                           'sessions': sessions,
                            })
 
     # create the content and mne Template
-    content = BIDS_DATASET_TEMPLATE + PARTICIPANTS_TEMPLATE + \
-              MODALITY_AGNOSTIC_TEMPLATE
+    content = f'{FUNCTION_TEMPLATE}{BIDS_DATASET_TEMPLATE}' \
+              f'{PARTICIPANTS_TEMPLATE}{MODALITY_AGNOSTIC_TEMPLATE}'
     paragraph = Template(content=content)
     paragraph = paragraph.substitute(**dataset_template,
                                      **participants_template,
