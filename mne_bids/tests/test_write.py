@@ -578,6 +578,7 @@ def test_ctf(_bids_validate):
         write_raw_bids(raw, bids_basename, bids_root=bids_root)
 
     _bids_validate(bids_root)
+
     with pytest.warns(RuntimeWarning, match='Did not find any events'):
         raw = read_raw_bids(bids_basename=bids_basename, bids_root=bids_root,
                             kind='meg', extra_params=dict(clean_names=False))

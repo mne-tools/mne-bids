@@ -1045,7 +1045,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
 
     if ext not in ['.fif', '.ds', '.vhdr', '.edf', '.bdf', '.set', '.con',
                    '.sqd']:
-        bids_raw_folder = str(bids_fname).split(".")[0]
+        bids_raw_folder = str(bids_fname).split(".")[0] + '.bti'
         bids_fname.prefix = bids_raw_folder
 
     # Anonymize
@@ -1174,6 +1174,9 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     scan_relative_fpath = op.join(kind, op.basename(bids_fname))
     _scans_tsv(raw, scan_relative_fpath, scans_fname, overwrite, verbose)
 
+    print('\n\n inside write')
+    print(scans_fname)
+    print(scan_relative_fpath)
     return bids_root
 
 
