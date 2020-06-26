@@ -13,6 +13,8 @@ import os.path as op
 from datetime import datetime, date, timedelta, timezone
 import shutil as sh
 from collections import defaultdict, OrderedDict
+from pathlib import Path
+import shutil
 
 import numpy as np
 from scipy import linalg
@@ -38,11 +40,11 @@ from mne_bids.utils import (_write_json, _write_tsv, _read_events, _mkdir_p,
                             _path_to_str, _parse_ext,
                             _get_ch_type_mapping, make_bids_folders,
                             _estimate_line_freq, make_bids_basename,
-                            BIDSPath)
+                            BIDSPath, _find_matching_sidecar)
 from mne_bids.copyfiles import (copyfile_brainvision, copyfile_eeglab,
                                 copyfile_ctf, copyfile_bti, copyfile_kit)
 from mne_bids.tsv_handler import (_from_tsv, _drop, _contains_row,
-                                  _combine_rows)
+                                  _combine_rows, _to_tsv)
 
 from mne_bids.config import (ORIENTATION, UNITS, MANUFACTURERS,
                              IGNORED_CHANNELS, ALLOWED_EXTENSIONS,
@@ -1380,3 +1382,109 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
     nib.save(t1w, t1w_basename)
 
     return anat_dir
+
+
+def delete_scan(bids_basename, bids_root, verbose=True):
+    """Safely delete a scan inside bids root.
+
+    Deleting a scan that conforms to the bids-validator, will
+    delete both the row in the `*scans.tsv` file, and also
+    the corresponding sidecar files and the data file itself.
+
+    Parameters
+    ----------
+    bids_basename : str | BIDSPath
+        The base filename of the BIDS compatible files. Typically, this can be
+        generated using :func:`mne_bids.make_bids_basename`. The basename
+        requires at least the subject entity to work, and
+        needs to uniquely identify the scan inside the scans.tsv file.
+    bids_root : str | pathlib.Path
+        Path to the root of the BIDS directory.
+    verbose : bool
+        If verbose is True, this will print which files were removed.
+    """
+    if isinstance(bids_basename, str):
+        params = _parse_bids_filename(bids_basename, verbose)
+        bids_basename = BIDSPath(subject=params.get('sub'),
+                                 session=params.get('ses'),
+                                 recording=params.get('rec'),
+                                 acquisition=params.get('acq'),
+                                 processing=params.get('proc'),
+                                 space=params.get('space'),
+                                 run=params.get('run'),
+                                 task=params.get('task'))
+
+    if bids_basename.subject is None:
+        raise RuntimeError(f'Deleting a scan requires the bids_basename '
+                           f'to have at least subject defined. '
+                           f'You passed in {bids_basename}')
+
+    scans_fpath = _find_matching_sidecar(bids_basename, bids_root,
+                                         suffix='scans.tsv',
+                                         allow_fail=False)
+    scans_tsv = _from_tsv(scans_fpath)
+    scans_fnames = scans_tsv['filename']
+
+    # find the full filename to delete
+    matching_basenames = [fname for fname in scans_fnames
+                          if str(bids_basename) in fname]
+    if len(matching_basenames) > 1:
+        raise RuntimeError(f'Deleting scan requires a unique bids_basename '
+                           f'to parse in the scans.tsv file. '
+                           f'Found more than 1 ({matching_basenames})...')
+    elif len(matching_basenames) == 0:
+        raise RuntimeError(f'Trying to delete {bids_basename} '
+                           f'from scans.tsv, but no files were found...')
+    else:
+        bids_fname = matching_basenames[0]
+
+    # delete the file and its sidecar files
+    parent_path = Path(op.dirname(scans_fpath))
+    scans_fpaths = parent_path.rglob(f'*{bids_basename}*')
+    for fpath in scans_fpaths:
+        os.remove(fpath)
+
+    if [fpath for fpath in parent_path.rglob('*')] == []:
+        # remove the entire subject if there is nothing there
+        delete_participant(bids_basename.subject,
+                           bids_root=bids_root,
+                           verbose=verbose)
+    else:
+        # resave the scans.tsv file
+        scans_tsv = _drop(scans_tsv, bids_fname, 'filename')
+        _to_tsv(scans_tsv, scans_fpath)
+
+
+def delete_participant(subject, bids_root, verbose=True):
+    """Safely delete a participant inside bids root.
+
+    Deleting a participant that conforms to the bids-validator, will
+    delete both the row in the `participants.tsv` file, and also
+    the corresponding `sub-*/` directory.
+
+    Parameters
+    ----------
+    subject : str
+        Subject label as in 'sub-<label>', for example: '01'
+    bids_root : str | pathlib.Path
+        Path to the root of the BIDS directory.
+    verbose : bool
+        If verbose is True, this will print some debugging output.
+    """
+    if not subject.startswith('sub-'):
+        subject = f'sub-{subject}'
+
+    participants_tsv_fpath = make_bids_basename(prefix=bids_root,
+                                                suffix='participants.tsv')
+    participants_tsv = _from_tsv(participants_tsv_fpath)
+
+    # delete the subject data directory
+    sub_path = Path(bids_root) / subject
+    shutil.rmtree(sub_path)
+
+    # resave the participants.tsv file
+    participants_tsv = _drop(participants_tsv, subject, 'participant_id')
+    _to_tsv(participants_tsv, participants_tsv_fpath)
+
+    if verbose:
+        print(f'Deleted {subject} from participants.tsv.')

@@ -28,72 +28,7 @@ from mne.io.constants import FIFF
 from mne.time_frequency import psd_array_welch
 
 from mne_bids.config import BIDS_PATH_ENTITIES, reader
-from mne_bids.tsv_handler import (_to_tsv, _tsv_to_str,
-                                  _from_tsv, _drop)
-
-
-def delete_scan(bids_basename, bids_root, verbose=True):
-    """Safely delete a scan inside bids root.
-
-    Deleting a scan that conforms to the bids-validator, will
-    delete both the row in the `scans.tsv` file, and also
-    the corresponding sidecar files and the data file itself.
-
-    Parameters
-    ----------
-    bids_basename : str | BIDSPath
-        The base filename of the BIDS compatible files. Typically, this can be
-        generated using :func:`mne_bids.make_bids_basename`. The basename
-        requires at least the subject and session entity to work, and
-        needs to uniquely identify the scan inside the scans.tsv file.
-    bids_root : str | pathlib.Path
-        Path to the root of the BIDS directory.
-    verbose : bool
-        If verbose is True, this will print which files were removed.
-    """
-    if isinstance(bids_basename, str):
-        params = _parse_bids_filename(bids_basename, verbose)
-        bids_basename = BIDSPath(subject=params.get('sub'),
-                                 session=params.get('ses'),
-                                 recording=params.get('rec'),
-                                 acquisition=params.get('acq'),
-                                 processing=params.get('proc'),
-                                 space=params.get('space'),
-                                 run=params.get('run'),
-                                 task=params.get('task'))
-
-    if bids_basename.subject is None or bids_basename.session is None:
-        raise RuntimeError(f'Deleting a scan requires the bids_basename '
-                           f'to have a subject and session defined. '
-                           f'You passed in {bids_basename}')
-
-    scans_fpath = _find_matching_sidecar(bids_basename, bids_root,
-                                         suffix='scans.tsv',
-                                         allow_fail=False)
-    scans_tsv = _from_tsv(scans_fpath)
-    scans_fnames = scans_tsv['filename']
-
-    # find the full filename to delete
-    matching_basenames = [fname for fname in scans_fnames
-                          if str(bids_basename) in fname]
-    if len(matching_basenames) > 1:
-        raise RuntimeError(f'Deleting scan requires a unique bids_basename '
-                           f'to parse in the scans.tsv file. '
-                           f'Found more than 1 ({matching_basenames})...')
-    elif len(matching_basenames) == 0:
-        raise RuntimeError(f'Trying to delete {bids_basename} '
-                           f'from scans.tsv, but no files were found...')
-    else:
-        bids_fname = matching_basenames[0]
-
-    # delete the file and its sidecar files
-    ses_path = Path(op.dirname(scans_fpath)).rglob(f'*{bids_basename}*')
-    for fpath in ses_path:
-        os.remove(fpath)
-
-    # resave the scans.tsv file
-    scans_tsv = _drop(scans_tsv, bids_fname, 'filename')
-    _to_tsv(scans_tsv, scans_fpath)
+from mne_bids.tsv_handler import (_to_tsv, _tsv_to_str)
 
 
 class BIDSPath(object):

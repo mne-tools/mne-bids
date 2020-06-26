@@ -42,7 +42,8 @@ from mne.io.kit.kit import get_kit_info
 from mne_bids import (write_raw_bids, read_raw_bids, make_bids_basename,
                       make_bids_folders, write_anat, make_dataset_description)
 from mne_bids.write import (_stamp_to_dt, _get_anonymization_daysback,
-                            get_anonymization_daysback)
+                            get_anonymization_daysback, delete_participant,
+                            delete_scan)
 from mne_bids.tsv_handler import _from_tsv, _to_tsv
 from mne_bids.utils import _find_matching_sidecar, _update_sidecar
 from mne_bids.pick import coil_type
@@ -68,6 +69,37 @@ warning_str = dict(
     nasion_not_found='ignore:.*nasion not found:RuntimeWarning:mne',
     annotations_omitted='ignore:Omitted .* annot.*:RuntimeWarning:mne',
 )
+
+
+@pytest.fixture(scope='function')
+def return_bids_test_dir(tmpdir_factory):
+    """Return path to a written test BIDS dir."""
+    bids_root = str(tmpdir_factory.mktemp('mnebids_utils_test_bids_ds'))
+    data_path = testing.data_path()
+    raw_fname = op.join(data_path, 'MEG', 'sample',
+                        'sample_audvis_trunc_raw.fif')
+
+    event_id = {'Auditory/Left': 1, 'Auditory/Right': 2, 'Visual/Left': 3,
+                'Visual/Right': 4, 'Smiley': 5, 'Button': 32}
+    events_fname = op.join(data_path, 'MEG', 'sample',
+                           'sample_audvis_trunc_raw-eve.fif')
+
+    raw = mne.io.read_raw_fif(raw_fname)
+    # Write multiple runs for test_purposes
+    for run_idx in [run, '02']:
+        name = bids_basename.copy().update(run=run_idx)
+        with pytest.warns(RuntimeWarning, match='No line frequency'):
+            write_raw_bids(raw, name, bids_root,
+                           events_data=events_fname, event_id=event_id,
+                           overwrite=True)
+
+    # write another subject too
+    name = bids_basename.copy().update(subject=subject_id2)
+    write_raw_bids(raw, name, bids_root,
+                   events_data=events_fname, event_id=event_id,
+                   overwrite=True)
+
+    return bids_root
 
 
 # WINDOWS issues:
@@ -1289,3 +1321,52 @@ def test_write_does_not_alter_events_inplace():
                    events_data=events, overwrite=True)
 
     assert np.array_equal(events, events_orig)
+
+
+def test_delete_scans(return_bids_test_dir, _bids_validate):
+    """Test delete scans in a dir."""
+    # deleting without subject, or session results in an error
+    bad_basename = make_bids_basename(task=task, run=run)
+    expected_err_msg = 'Deleting a scan requires the bids_basename '\
+                       'to have at least subject defined'
+    with pytest.raises(RuntimeError, match=expected_err_msg):
+        delete_scan(bad_basename, return_bids_test_dir)
+
+    # deleting without unique identifier results in an error
+    expected_err_msg = 'Deleting scan requires a unique bids_basename ' \
+                       'to parse in the scans.tsv file. '
+    with pytest.raises(RuntimeError, match=expected_err_msg):
+        delete_scan(bids_basename.copy().update(run=None),
+                    return_bids_test_dir)
+
+    # deleting scan should conform to bids-validator
+    delete_scan(bids_basename, bids_root=return_bids_test_dir)
+    _bids_validate(return_bids_test_dir)
+
+    # trying  to delete again would result in an error
+    with pytest.raises(RuntimeError, match='no files were found...'):
+        delete_scan(bids_basename, bids_root=return_bids_test_dir)
+
+    ses_path = op.join(return_bids_test_dir,
+                       f'sub-{subject_id}',
+                       f'ses-{session_id}')
+    scans_fpath = make_bids_basename(
+        subject=subject_id, session=session_id,
+        suffix='scans.tsv', prefix=ses_path)
+
+    # the scan for bids_basename should be gone inside
+    # scans.tsv and inside the actual session path
+    scans_tsv = _from_tsv(scans_fpath)
+    fnames = scans_tsv['filename']
+    assert all([str(bids_basename) not in fname for fname in fnames])
+
+    found_scans_fpaths = list(Path(ses_path).rglob(f'*{bids_basename}*'))
+    assert found_scans_fpaths == []
+
+
+def test_delete_participant(return_bids_test_dir, _bids_validate):
+    """Test delete participants."""
+    # deleting participant should conform to bids-validator
+    delete_participant(subject=subject_id, bids_root=return_bids_test_dir)
+    _bids_validate(return_bids_test_dir)
+    assert not op.exists(op.join(return_bids_test_dir, f'sub-{subject_id}'))

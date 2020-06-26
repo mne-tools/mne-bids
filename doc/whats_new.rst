@@ -56,6 +56,8 @@ API
 - The :code:`mne_bids.write.make_bids_basename` function has been moved to :code:`mne_bids.utils.make_bids_basename`. Like before, it can also be accessed via `mne_bids.make_bids_basename`, by `Richard Höchenberger`_ (`#424 <https://github.com/mne-tools/mne-bids/pull/424>`_)
 - The :func:`mne_bids.make_bids_basename` function has been updated to create a :code:`mne_bids.utils.BIDSPath` object, which operates like a path object and allows dynamic updating of BIDs entities, by `Adam Li`_ (`#446 <https://github.com/mne-tools/mne-bids/pull/446>`_)
 - The :func:`mne_bids.delete_scan` function will safely delete a scan from the BIDS dataset, by `Adam Li`_ (`#443 <https://github.com/mne-tools/mne-bids/pull/443>`_)
+- The :func:`mne_bids.delete_participant` function will safely delete a participant from the BIDS dataset, by `Adam Li`_ (`#443 <https://github.com/mne-tools/mne-bids/pull/443>`_)
+
 
 .. _changes_0_4:
 

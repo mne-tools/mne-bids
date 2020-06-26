@@ -36,6 +36,8 @@ MNE BIDS
    get_head_mri_trans
    get_matched_empty_room
    get_anonymization_daysback
+   delete_scan
+   delete_participant
 
 
 Utils
@@ -56,7 +58,6 @@ Utils
    get_entity_vals
    get_kinds
    BIDSPath
-   delete_scan
 
 Copyfiles
 =========

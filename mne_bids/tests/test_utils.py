@@ -30,8 +30,7 @@ from mne_bids.utils import (_check_types, print_dir_tree, _age_on_date,
                             _find_matching_sidecar, _parse_ext,
                             _get_ch_type_mapping, _parse_bids_filename,
                             _find_best_candidates, get_entity_vals,
-                            _path_to_str, get_kinds, delete_scan)
-from mne_bids.tsv_handler import _from_tsv
+                            _path_to_str, get_kinds)
 
 base_path = op.join(op.dirname(mne.__file__), 'io')
 subject_id = '01'
@@ -455,45 +454,3 @@ def test_bids_path(return_bids_test_dir):
     bids_path = make_bids_basename(subject='01', session='02',
                                    task='03', suffix='ieeg.edf')
     assert repr(bids_path) == 'BIDSPath(sub-01_ses-02_task-03_ieeg.edf)'
-
-
-def test_delete_scans(return_bids_test_dir, _bids_validate):
-    """Test update scans in a dir."""
-    # deleting without subject, or session results in an error
-    bad_basename = make_bids_basename(subject=subject_id, task=task,
-                                      run=run)
-    expected_err_msg = 'Deleting a scan requires the bids_basename '\
-                       'to have a subject and session defined'
-    with pytest.raises(RuntimeError, match=expected_err_msg):
-        delete_scan(bad_basename, return_bids_test_dir)
-
-    # deleting without unique identifier results in an error
-    expected_err_msg = 'Deleting scan requires a unique bids_basename ' \
-                       'to parse in the scans.tsv file. '
-    with pytest.raises(RuntimeError, match=expected_err_msg):
-        delete_scan(bids_basename.copy().update(run=None),
-                    return_bids_test_dir)
-
-    # deleting scan should conform to bids-validator
-    delete_scan(bids_basename, bids_root=return_bids_test_dir)
-    _bids_validate(return_bids_test_dir)
-
-    # trying  to delete again would result in an error
-    with pytest.raises(RuntimeError, match='no files were found...'):
-        delete_scan(bids_basename, bids_root=return_bids_test_dir)
-
-    ses_path = op.join(return_bids_test_dir,
-                       f'sub-{subject_id}',
-                       f'ses-{session_id}')
-    scans_fpath = make_bids_basename(
-        subject=subject_id, session=session_id,
-        suffix='scans.tsv', prefix=ses_path)
-
-    # the scan for bids_basename should be gone inside
-    # scans.tsv and inside the actual session path
-    scans_tsv = _from_tsv(scans_fpath)
-    fnames = scans_tsv['filename']
-    assert all([str(bids_basename) not in fname for fname in fnames])
-
-    found_scans_fpaths = list(Path(ses_path).rglob(f'*{bids_basename}*'))
-    assert found_scans_fpaths == []
