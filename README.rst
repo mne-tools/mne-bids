@@ -32,8 +32,8 @@
   :alt: JOSS publication
 
 .. image:: https://zenodo.org/badge/DOI/10.5281/zenodo.3739558.svg
-  :target: https://zenodo.org/badge/DOI/10.5281/zenodo.3739558.svg
-  :alt: DOI
+   :target: https://doi.org/10.5281/zenodo.3739558
+   :alt: DOI
 
 MNE-BIDS
 ========
