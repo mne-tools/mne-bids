@@ -90,8 +90,7 @@ The handedness of the subjects are {{_summarize_participant_hand(hands)}}.
 The ages of the subjects are
 {{_range_str(min_age, max_age, mean_age, std_age, n_age_unknown, 'age')}}. """
 
-MODALITY_AGNOSTIC_TEMPLATE = """
-Data was acquired using a {{_pretty_str(system)}} system
+MODALITY_AGNOSTIC_TEMPLATE = """Data was acquired using a {{_pretty_str(system)}} system
 {{if manufacturer}}({{_pretty_str(manufacturer)}} manufacturer){{endif}}
 with line noise at {{_pretty_str(powerlinefreq)}}
 Hz{{if software_filters not in [{}, 'n/a']}} using filters
