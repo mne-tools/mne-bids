@@ -9,7 +9,7 @@ from pathlib import Path
 
 import mne
 import numpy as np
-from mne.externals.tempita import Template, sub
+from mne.externals.tempita import Template
 
 from mne_bids.config import DOI, ALLOWED_KINDS
 from mne_bids.tsv_handler import _from_tsv
@@ -50,7 +50,7 @@ def _summarize_participant_hand(hands):
     n_ambidex = len([hand for hand in hands if hand == 'A'])
 
     return f'{n_rhand} right hand, {n_lhand} left hand ' \
-           f'and {n_ambidex} ambidextrous subjects'
+           f'and {n_ambidex} ambidextrous'
 
 def _summarize_participant_sex(sexs):
     n_unknown = len([sex for sex in sexs if sex == 'n/a'])
@@ -73,34 +73,34 @@ def _length_recording_str(length_recordings):
     std_record_length = round(np.std(length_recordings), 2)
     total_record_length = round(sum(length_recordings), 2)
     
-    return f'Each dataset is {min_record_length} to {max_record_length} seconds, '\
+    return f'The dataset lengths range from {min_record_length} to {max_record_length} seconds, '\
            f'for a total of {total_record_length} seconds of data recorded '\
-           f'({mean_record_length} +/- {std_record_length}).' 
+           f'over all scans ({mean_record_length} +/- {std_record_length}).' 
 }}"""  # noqa
 
 BIDS_DATASET_TEMPLATE = """{{if name == 'n/a'}}This{{else}}The {{name}}{{endif}}
 dataset was created with BIDS version {{bids_version}}
 by {{_pretty_str(authors)}}. This report was generated with
 MNE-BIDS ({{mne_bids_doi}}). There are {{n_subjects}} subjects.
-The dataset consists of {{n_sessions}} recording sessions
-{{(_pretty_str(sessions))}}. """
+{{if n_sessions}}The dataset consists of {{n_sessions}} recording sessions
+{{(_pretty_str(sessions))}}.{{endif}} """
 
-PARTICIPANTS_TEMPLATE = """Sex of the subjects are {{_summarize_participant_sex(sexs)}}.
-Handedness of the subjects are {{_summarize_participant_hand(hands)}}.
-Ages of the subjects are
+PARTICIPANTS_TEMPLATE = """The sex of the subjects are {{_summarize_participant_sex(sexs)}}.
+The handedness of the subjects are {{_summarize_participant_hand(hands)}}.
+The ages of the subjects are
 {{_range_str(min_age, max_age, mean_age, std_age, n_age_unknown, 'age')}}. """
 
 MODALITY_AGNOSTIC_TEMPLATE = """
 Data was acquired using a {{_pretty_str(system)}} system
-({{_pretty_str(manufacturer)}} manufacturer) with line noise at
-{{_pretty_str(powerlinefreq)}} Hz{{if software_filters != 'n/a'}} using filters
+{{if manufacturer}}({{_pretty_str(manufacturer)}} manufacturer){{endif}}
+with line noise at {{_pretty_str(powerlinefreq)}}
+Hz{{if software_filters not in [{}, 'n/a']}} using filters
 ({{software_filters}}).{{else}}.{{endif}}
-There are {{n_scans}} total scans, {{n_chs}} channels ({{n_good}} are used and
-{{n_bad}} are removed from analysis).
+There are {{n_scans}} total scans, {{mean_chs}} +/- {{std_chs}}
+total recording channels per scan
+({{mean_good_chs}} +/- {{std_good_chs}} are used and
+{{mean_bad_chs}} +/- {{std_bad_chs}} are removed from analysis).
 {{_length_recording_str(length_recordings)}} """
-
-IEEG_TEMPLATE = """There are {{n_ecog_chs}} ECoG and
-{{n_seeg_chs}} SEEG channels. """
 
 
 def _pretty_dict(template_dict):
@@ -287,9 +287,8 @@ def _summarize_sidecar_json(bids_root, scans_fpaths, verbose=True):
         A dictionary of values for various template strings.
     """
     n_scans = 0
-    n_ecog_chs, n_seeg_chs, n_eeg_chs = 0, 0, 0
     powerlinefreqs, sfreqs = set(), set()
-    manufacturers = set('n/a')
+    manufacturers = set()
     length_recordings = []
 
     # loop through each scan
@@ -340,13 +339,11 @@ def _summarize_sidecar_json(bids_root, scans_fpaths, verbose=True):
             # RECOMMENDED kwargs
             manufacturer = sidecar_json.get('Manufacturer', 'n/a')
             record_duration = sidecar_json.get('RecordingDuration', 'n/a')
-            n_eeg_chs += sidecar_json.get('EEGChannelCount', 0)
-            n_ecog_chs += sidecar_json.get('ECOGChannelCount', 0)
-            n_seeg_chs += sidecar_json.get('SEEGChannelCount', 0)
 
             sfreqs.add(str(sfreq))
             powerlinefreqs.add(str(powerlinefreq))
-            manufacturers.add(manufacturer)
+            if manufacturer != 'n/a':
+                manufacturers.add(manufacturer)
             length_recordings.append(record_duration)
 
     # XXX: length summary is only allowed, if no 'n/a' was found
@@ -355,14 +352,11 @@ def _summarize_sidecar_json(bids_root, scans_fpaths, verbose=True):
 
     template_dict = {
         'n_scans': n_scans,
-        'manufacturer': manufacturers,
+        'manufacturer': list(manufacturers),
         'sfreq': sfreqs,
         'powerlinefreq': powerlinefreqs,
         'software_filters': software_filters,
-        'n_ecog_chs': n_ecog_chs,
-        'n_seeg_chs': n_seeg_chs,
-        'n_eeg_chs': n_eeg_chs,
-        'length_recordings': length_recordings
+        'length_recordings': length_recordings,
     }
     return template_dict
 
@@ -390,7 +384,8 @@ def _summarize_channels_tsv(bids_root, scans_fpaths, verbose=True):
     bids_root = Path(bids_root)
 
     # keep track of channel type, status
-    ch_status_count = {'bad': 0, 'good': 0}
+    ch_status_count = {'bad': [], 'good': []}
+    ch_count = []
 
     # loop through each scan
     for scan_fpath in scans_fpaths:
@@ -427,17 +422,23 @@ def _summarize_channels_tsv(bids_root, scans_fpaths, verbose=True):
 
             # summarize channels.tsv
             channels_tsv = _from_tsv(channels_fname)
-            for status in channels_tsv['status']:
-                ch_status_count[status] += 1
+            for status in ch_status_count.keys():
+                ch_status = [ch for ch in channels_tsv['status']
+                             if ch == status]
+                ch_status_count[status].append(len(ch_status))
+            ch_count.append(len(channels_tsv['name']))
 
     # create summary template strings for status
-    n_good = ch_status_count['good']
-    n_bad = ch_status_count['bad']
     template_dict = {
-        'n_chs': n_good + n_bad,
-        'n_good': n_good,
-        'n_bad': n_bad
+        'mean_chs': np.mean(ch_count),
+        'std_chs': np.std(ch_count),
+        'mean_good_chs': np.mean(ch_status_count['good']),
+        'std_good_chs': np.std(ch_status_count['good']),
+        'mean_bad_chs': np.mean(ch_status_count['bad']),
+        'std_bad_chs': np.std(ch_status_count['bad']),
     }
+    for key, val in template_dict.items():
+        template_dict[key] = round(val, 2)
     return template_dict
 
 
@@ -463,13 +464,13 @@ def create_methods_paragraph(bids_root, session=None, verbose=True):
     # only summarize allowed kinds (MEEG data)
     kinds = [kind.upper() for kind in kinds if kind in ALLOWED_KINDS]
 
-    # dataset_description.json summary
+    # REQUIRED: dataset_description.json summary
     dataset_template = _summarize_dataset(bids_root)
 
-    # participants summary
+    # RECOMMENDED: participants summary
     participants_template = _summarize_participants_tsv(bids_root)
 
-    # scans summary
+    # RECOMMENDED: scans summary
     scans_template = _summarize_scans(bids_root, session=session,
                                       verbose=verbose)
 
@@ -479,7 +480,6 @@ def create_methods_paragraph(bids_root, session=None, verbose=True):
         participant_template = ''
     else:
         participant_template = PARTICIPANTS_TEMPLATE
-
     if not scans_template:
         modality_agnostic_template = ''
     else:
@@ -492,6 +492,7 @@ def create_methods_paragraph(bids_root, session=None, verbose=True):
         'sessions': sessions,
     })
 
+    # XXX: add channel summary for kinds (ieeg, meg, eeg)
     # create the content and mne Template
     # lower-case templates are "Recommended",
     # while upper-case templates are "Required".
@@ -502,23 +503,26 @@ def create_methods_paragraph(bids_root, session=None, verbose=True):
                                      **participants_template,
                                      **scans_template)
 
-    # add channel summary for kinds
-    if 'IEEG' in kinds:
-        paragraph = paragraph + sub(IEEG_TEMPLATE, **scans_template)
-
     return '\n'.join(textwrap.wrap(paragraph, width=80))
 
 
 if __name__ == '__main__':
-    bids_root = mne.datasets.somato.data_path()
-    bids_root = '/Users/adam2392/Dropbox/epilepsy_bids/'
-    # bids_root = '/Users/adam2392/Downloads/ds001779-1.0.2'
-    # bids_root = '/Users/adam2392/Downloads/ds002778-1.0.1'
-    # bids_root = "/Users/adam2392/Downloads/ds002904-1.0.0"
-    # bids_root = "/Users/adam2392/Downloads/ds000117-master"
-    # bids_root = "/Users/adam2392/Downloads/ds000246-master"
-    # bids_root = "/Users/adam2392/Downloads/ds000248-master"
-    # bids_root = "/Users/adam2392/Downloads/ds001810-master"
-    # bids_root = "/Users/adam2392/Downloads/ds001971-master"
-    methods_paragraph = create_methods_paragraph(bids_root)
-    print(methods_paragraph)
+    output_path = '/Users/adam2392/Dropbox/mne-bids-report'
+
+    fpaths = {'somato': mne.datasets.somato.data_path(),
+              'epilepsy': '/Users/adam2392/Dropbox/epilepsy_bids/',
+              'ds001779-1.0.2': '/Users/adam2392/Downloads/ds001779-1.0.2',
+              'ds002778-1.0.1': '/Users/adam2392/Downloads/ds002778-1.0.1',
+              'ds002904-1.0.0': "/Users/adam2392/Downloads/ds002904-1.0.0",
+              'ds000117-master': "/Users/adam2392/Downloads/ds000117-master",
+              'ds000246-master': "/Users/adam2392/Downloads/ds000246-master",
+              'ds000248-master': "/Users/adam2392/Downloads/ds000248-master",
+              'ds001810-master': "/Users/adam2392/Downloads/ds001810-master",
+              'ds001971-master': "/Users/adam2392/Downloads/ds001971-master",
+              }
+    for name, bids_root in fpaths.items():
+        output_fpath = op.join(output_path, name + '.txt')
+        methods_paragraph = create_methods_paragraph(bids_root)
+
+        with open(output_fpath, 'w') as fout:
+            fout.write(methods_paragraph)
