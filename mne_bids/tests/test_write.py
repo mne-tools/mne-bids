@@ -46,6 +46,7 @@ from mne_bids.write import (_stamp_to_dt, _get_anonymization_daysback,
 from mne_bids.tsv_handler import _from_tsv, _to_tsv
 from mne_bids.utils import _find_matching_sidecar, _update_sidecar
 from mne_bids.pick import coil_type
+from mne_bids.config import REFERENCES
 
 base_path = op.join(op.dirname(mne.__file__), 'io')
 subject_id = '01'
@@ -336,6 +337,11 @@ def test_fif(_bids_validate):
     raw_fname2 = op.join(data_path2, 'sample_audvis_raw.fif')
     raw.save(raw_fname2)
 
+    # add some readme text
+    readme = op.join(bids_root, 'README')
+    with open(readme, 'w') as fid:
+        fid.write('Welcome to my dataset\n')
+
     bids_basename2 = bids_basename.copy().update(subject=subject_id2)
     raw = mne.io.read_raw_fif(raw_fname2)
     bids_output_path = write_raw_bids(raw, bids_basename2, bids_root,
@@ -352,9 +358,23 @@ def test_fif(_bids_validate):
         write_raw_bids(raw, bids_basename2, bids_root,
                        events_data=events_fname, event_id=event_id,
                        overwrite=False)
+
+    # assert README has references in it
+    with open(readme, 'r') as fid:
+        text = fid.read()
+    assert 'Welcome to my dataset\n' in text
+    assert REFERENCES['mne-bids'] in text
+    assert REFERENCES['meg'] in text
+
     # now force the overwrite
     write_raw_bids(raw, bids_basename2, bids_root, events_data=events_fname,
                    event_id=event_id, overwrite=True)
+
+    with open(readme, 'r') as fid:
+        text = fid.read()
+    assert 'Welcome to my dataset\n' not in text
+    assert REFERENCES['mne-bids'] in text
+    assert REFERENCES['meg'] in text
 
     with pytest.raises(ValueError, match='raw_file must be'):
         write_raw_bids('blah', bids_basename, bids_root)

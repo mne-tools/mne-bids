@@ -32,8 +32,9 @@ from mne.utils import check_version, has_nibabel, logger, warn
 
 from mne_bids.pick import coil_type
 from mne_bids.dig import _write_dig_bids, _coordsystem_json
-from mne_bids.utils import (_write_json, _write_tsv, _read_events, _mkdir_p,
-                            _age_on_date, _infer_eeg_placement_scheme,
+from mne_bids.utils import (_write_json, _write_tsv, _write_text,
+                            _read_events, _mkdir_p, _age_on_date,
+                            _infer_eeg_placement_scheme,
                             _parse_bids_filename, _handle_kind,
                             _path_to_str, _parse_ext,
                             _get_ch_type_mapping, make_bids_folders,
@@ -46,7 +47,7 @@ from mne_bids.tsv_handler import (_from_tsv, _drop, _contains_row,
 
 from mne_bids.config import (ORIENTATION, UNITS, MANUFACTURERS,
                              IGNORED_CHANNELS, ALLOWED_EXTENSIONS,
-                             BIDS_VERSION, _convert_hand_options,
+                             BIDS_VERSION, REFERENCES, _convert_hand_options,
                              _convert_sex_options, reader)
 
 
@@ -201,6 +202,48 @@ def _events_tsv(events, raw, fname, trial_type, overwrite=False,
         del data['trial_type']
 
     _write_tsv(fname, data, overwrite, verbose)
+
+
+def _readme(kind, fname, overwrite=False, verbose=True):
+    """Create a README file and save it.
+
+    This will append a citation for mne bids if the README exists and does
+    not have a citation. Otherwise a new file will be created with the
+    appropriate citations and methods paragraph.
+
+    Parameters
+    ----------
+    kind : string
+        The type of data contained in the raw file ('meg', 'eeg', 'ieeg')
+    fname : str | BIDSPath
+        Filename to save the README to.
+    overwrite : bool
+        Whether to overwrite the existing file.
+        Defaults to False.
+        If there is already text in the README and overwrite is
+        False, if the citation already exists nothing will happen, if not
+        it will be appended.
+    verbose : bool
+        Set verbose output to true or false.
+
+    """
+
+    text = 'References\n----------\n'
+
+    if overwrite or not os.path.isfile(fname):
+        text += REFERENCES['mne-bids'] + '\n' + REFERENCES[kind] + '\n'
+    else:
+        with open(fname, 'r') as fid:
+            orig_data = fid.read()
+        if REFERENCES['mne-bids'] not in orig_data:
+            text += REFERENCES['mne-bids'] + '\n'
+        if REFERENCES[kind] not in orig_data:
+            text += REFERENCES[kind] + '\n'
+        if text == 'References\n----------\n':  # no references to add
+            return
+        text = orig_data + '\n' + text
+
+    _write_text(fname, text, overwrite=True, verbose=verbose)
 
 
 def _participants_tsv(raw, subject_id, fname, overwrite=False,
@@ -1032,6 +1075,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     electrodes_fname = str(bids_path)
 
     # For the remaining files, we can use BIDSPath to alter.
+    readme_fname = make_bids_basename(prefix=bids_root, suffix='README')
     participants_tsv_fname = make_bids_basename(prefix=bids_root,
                                                 suffix='participants.tsv')
     participants_json_fname = participants_tsv_fname.copy()
@@ -1086,6 +1130,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     manufacturer = MANUFACTURERS.get(ext, 'n/a')
 
     # save all meta data
+    _readme(kind, readme_fname, overwrite, verbose)
     _participants_tsv(raw, subject_id, participants_tsv_fname, overwrite,
                       verbose)
     _participants_json(participants_json_fname, True, verbose)

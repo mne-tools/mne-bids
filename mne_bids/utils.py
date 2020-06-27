@@ -702,6 +702,20 @@ def _write_tsv(fname, dictionary, overwrite=False, verbose=False):
         print(_tsv_to_str(dictionary))
 
 
+def _write_text(fname, text, overwrite=False, verbose=True):
+    """Write text to a file."""
+    if op.exists(fname) and not overwrite:
+        raise FileExistsError('"%s" already exists. Please set '  # noqa: F821
+                              'overwrite to True.' % fname)
+    with open(fname, 'w') as fid:
+        fid.write(text)
+        fid.write('\n')
+
+    if verbose:
+        print(os.linesep + "Writing '%s'..." % fname + os.linesep)
+        print(text)
+
+
 def _check_key_val(key, val):
     """Perform checks on a value to make sure it adheres to the spec."""
     if any(ii in val for ii in ['-', '_', '/']):
