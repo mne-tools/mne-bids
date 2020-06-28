@@ -23,7 +23,6 @@ Current
 Changelog
 ~~~~~~~~~
 
-- :func:`write_raw_bids` now adds citations and a methods paragraph to the README, by `Alex Rockhill`_ (`#463 <https://github.com/mne-tools/mne-bids/pull/463>`_)
 - :func:`read_raw_bids` now reads in participants tsv data, by `Adam Li`_ (`#392 <https://github.com/mne-tools/mne-bids/pull/392>`_)
 - :func:`mne_bids.utils.get_entity_vals` has gained ``ignore_*`` keyword arguments to exclude specific values from the list of results, e.g. the entities for a particular subject or task, by `Richard Höchenberger`_ (`#409 <https://github.com/mne-tools/mne-bids/pull/409>`_)
 - :func:`mne_bids.write_raw_bids` now uses the 'space' BIDS-entity when writing iEEG electrodes and coordinate frames, by `Adam Li`_ (`#390 <https://github.com/mne-tools/mne-bids/pull/390>`_)
@@ -31,6 +30,7 @@ Changelog
 - :func:`mne_bids.write_raw_bids` now writes CoordinateSystemDescription as specified in BIDS Specification if CoordinateSystem is MNE-compatible, by `Adam Li`_ (`#416 <https://github.com/mne-tools/mne-bids/pull/416>`_)
 - :func:`mne_bids.write_raw_bids` and :func:`mne_bids.read_raw_bids` now handle scalp EEG if Captrak coordinate system and NAS/LPA/RPA landmarks are present, by `Adam Li`_ (`#416 <https://github.com/mne-tools/mne-bids/pull/416>`_)
 - :func:`mne_bids.get_matched_empty_room` now implements an algorithm for discovering empty-room recordings that do not have the recording date set as their session, by `Richard Höchenberger`_ (`#421 <https://github.com/mne-tools/mne-bids/pull/421>`_)
+- :func:`write_raw_bids` now adds citations and a methods paragraph to the README, by `Alex Rockhill`_ (`#463 <https://github.com/mne-tools/mne-bids/pull/463>`_)
 
 Bug
 ~~~
