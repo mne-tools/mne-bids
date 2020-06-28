@@ -143,7 +143,8 @@ REFERENCES = {'mne-bids':
               'Rockhill, A., Larson, E., Gramfort, A. and Jas, M. (2019). '
               'MNE-BIDS: Organizing electrophysiological data into the '
               'BIDS format and facilitating their analysis. Journal of '
-              'Open Source Software 4: (1896).',
+              'Open Source Software 4: (1896). '
+              'https://doi.org/10.21105/joss.01896',
               'meg':
               'Niso, G., Gorgolewski, K. J., Bock, E., Brooks, T. L., '
               'Flandin, G., Gramfort, A., Henson, R. N., Jas, M., Litvak, '

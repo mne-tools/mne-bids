@@ -174,6 +174,15 @@ for subj_idx in [1, 2]:
 print_dir_tree(bids_root)
 
 ###############################################################################
+# Step 4: Cite mne-bids
+# ---------------------
+# We can see that the appropriate citations are already written in the README.
+readme = os.path.join(bids_root, 'README')
+with open(readme, 'r') as fid:
+    text = fid.read()
+print(text)
+
+###############################################################################
 # MNE-BIDS has created a suitable directory structure for us, and among other
 # meta data files, it started an `events.tsv` and `channels.tsv` and made an
 # initial `dataset_description` on top!

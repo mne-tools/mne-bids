@@ -86,3 +86,11 @@ raw = read_raw_bids(bids_basename=bids_basename, bids_root=output_path)
 events, event_id = mne.events_from_annotations(raw)
 epochs = mne.Epochs(raw, events, event_id)
 epochs['Auditory'].average().plot()
+
+###############################################################################
+# The README created by :func:`write_raw_bids` also takes care of the citation
+# for mne-bids.
+readme = op.join(output_path, 'README')
+with open(readme, 'r') as fid:
+    text = fid.read()
+print(text)

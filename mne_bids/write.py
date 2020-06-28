@@ -207,9 +207,9 @@ def _events_tsv(events, raw, fname, trial_type, overwrite=False,
 def _readme(kind, fname, overwrite=False, verbose=True):
     """Create a README file and save it.
 
-    This will append a citation for mne bids if the README exists and does
-    not have a citation. Otherwise a new file will be created with the
-    appropriate citations and methods paragraph.
+    This will write a README file containing an MNE-BIDS citation.
+    If a README already exists, the behavior depends on the
+    `overwrite` parameter, as described below.
 
     Parameters
     ----------
@@ -218,14 +218,13 @@ def _readme(kind, fname, overwrite=False, verbose=True):
     fname : str | BIDSPath
         Filename to save the README to.
     overwrite : bool
-        Whether to overwrite the existing file.
-        Defaults to False.
-        If there is already text in the README and overwrite is
-        False, if the citation already exists nothing will happen, if not
-        it will be appended.
+        Whether to overwrite the existing file (defaults to False).
+        If overwrite is True, create a new README containing an
+        MNE-BIDS citation. If overwrite is False, append an
+        MNE-BIDS citation to the existing README, unless it
+        already contains that citation.
     verbose : bool
         Set verbose output to true or false.
-
     """
 
     if os.path.isfile(fname) and not overwrite:

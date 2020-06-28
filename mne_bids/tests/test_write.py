@@ -365,6 +365,8 @@ def test_fif(_bids_validate):
     assert 'Welcome to my dataset\n' in text
     assert REFERENCES['mne-bids'] in text
     assert REFERENCES['meg'] in text
+    assert REFERENCES['eeg'] not in text
+    assert REFERENCES['ieeg'] not in text
 
     # now force the overwrite
     write_raw_bids(raw, bids_basename2, bids_root, events_data=events_fname,
@@ -843,6 +845,14 @@ def test_edf(_bids_validate):
     write_raw_bids(ieeg_raw, bids_basename, bids_root)
     _bids_validate(bids_root)
 
+    # assert README has references in it
+    readme = op.join(bids_root, 'README')
+    with open(readme, 'r') as fid:
+        text = fid.read()
+    assert REFERENCES['ieeg'] in text
+    assert REFERENCES['meg'] not in text
+    assert REFERENCES['eeg'] not in text
+
     # test writing electrode coordinates (.tsv)
     # and coordinate system (.json)
     ch_names = ieeg_raw.ch_names
@@ -884,6 +894,14 @@ def test_bdf(_bids_validate):
     with pytest.warns(RuntimeWarning, match='No line frequency found'):
         write_raw_bids(raw, bids_basename, bids_root, overwrite=False)
     _bids_validate(bids_root)
+
+    # assert README has references in it
+    readme = op.join(bids_root, 'README')
+    with open(readme, 'r') as fid:
+        text = fid.read()
+    assert REFERENCES['eeg'] in text
+    assert REFERENCES['meg'] not in text
+    assert REFERENCES['ieeg'] not in text
 
     # Test also the reading of channel types from channels.tsv
     # the first channel in the raw data is not MISC right now
