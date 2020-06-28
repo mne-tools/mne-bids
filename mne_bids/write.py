@@ -83,7 +83,7 @@ def _channels_tsv(raw, fname, overwrite=False, verbose=True):
         Whether to overwrite the existing file.
         Defaults to False.
     verbose : bool
-        Set verbose output to true or false.
+        Set verbose output to True or False.
 
     """
     # Get channel type mappings between BIDS and MNE nomenclatures
@@ -173,7 +173,7 @@ def _events_tsv(events, raw, fname, trial_type, overwrite=False,
         Whether to overwrite the existing file.
         Defaults to False.
     verbose : bool
-        Set verbose output to true or false.
+        Set verbose output to True or False.
 
     Notes
     -----
@@ -224,7 +224,7 @@ def _readme(kind, fname, overwrite=False, verbose=True):
         MNE-BIDS citation to the existing README, unless it
         already contains that citation.
     verbose : bool
-        Set verbose output to true or false.
+        Set verbose output to True or False.
     """
 
     if os.path.isfile(fname) and not overwrite:
@@ -266,7 +266,7 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False,
         If there is already data for the given `subject_id` and overwrite is
         False, an error will be raised.
     verbose : bool
-        Set verbose output to true or false.
+        Set verbose output to True or False.
 
     """
     subject_id = 'sub-' + subject_id
@@ -357,7 +357,7 @@ def _participants_json(fname, overwrite=False, verbose=True):
         If there is already data for the given `fname` and overwrite is False,
         an error will be raised.
     verbose : bool
-        Set verbose output to true or false.
+        Set verbose output to True or False.
 
     """
     cols = OrderedDict()
@@ -399,7 +399,7 @@ def _scans_tsv(raw, raw_fname, fname, overwrite=False, verbose=True):
         If there is already data for the given `fname` and overwrite is False,
         an error will be raised.
     verbose : bool
-        Set verbose output to true or false.
+        Set verbose output to True or False.
 
     """
     # get measurement date from the data info
@@ -494,7 +494,7 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, overwrite=False,
         Whether to overwrite the existing file.
         Defaults to False.
     verbose : bool
-        Set verbose output to true or false. Defaults to true.
+        Set verbose output to True or False. Defaults to True.
 
     """
     sfreq = raw.info['sfreq']
