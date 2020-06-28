@@ -228,20 +228,20 @@ def _readme(kind, fname, overwrite=False, verbose=True):
 
     """
 
-    text = 'References\n----------\n'
-
-    if overwrite or not os.path.isfile(fname):
-        text += REFERENCES['mne-bids'] + '\n' + REFERENCES[kind] + '\n'
-    else:
+    if os.path.isfile(fname) and not overwrite:
         with open(fname, 'r') as fid:
             orig_data = fid.read()
-        if REFERENCES['mne-bids'] not in orig_data:
-            text += REFERENCES['mne-bids'] + '\n'
-        if REFERENCES[kind] not in orig_data:
-            text += REFERENCES[kind] + '\n'
-        if text == 'References\n----------\n':  # no references to add
+        mne_bids_ref = REFERENCES['mne-bids'] in orig_data
+        kind_ref = REFERENCES[kind] in orig_data
+        if mne_bids_ref and kind_ref:
             return
-        text = orig_data + '\n' + text
+        text = '{}References\n----------\n{}{}'.format(
+            orig_data + '\n\n',
+            '' if mne_bids_ref else REFERENCES['mne-bids'] + '\n',
+            '' if kind_ref else REFERENCES[kind] + '\n')
+    else:
+        text = 'References\n----------\n{}{}'.format(
+            REFERENCES['mne-bids'] + '\n', REFERENCES[kind] + '\n')
 
     _write_text(fname, text, overwrite=True, verbose=verbose)
 
