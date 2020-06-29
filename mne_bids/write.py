@@ -226,7 +226,6 @@ def _readme(kind, fname, overwrite=False, verbose=True):
     verbose : bool
         Set verbose output to True or False.
     """
-
     if os.path.isfile(fname) and not overwrite:
         with open(fname, 'r') as fid:
             orig_data = fid.read()
