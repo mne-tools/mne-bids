@@ -28,7 +28,7 @@ from mne.io.constants import FIFF
 from mne.time_frequency import psd_array_welch
 
 from mne_bids.config import BIDS_PATH_ENTITIES, reader
-from mne_bids.tsv_handler import (_to_tsv, _tsv_to_str)
+from mne_bids.tsv_handler import _to_tsv, _tsv_to_str
 
 
 class BIDSPath(object):
