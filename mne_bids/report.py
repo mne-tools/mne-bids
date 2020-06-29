@@ -506,7 +506,7 @@ def create_methods_paragraph(bids_root, session=None, verbose=True):
 
 
 if __name__ == '__main__':
-    output_path = '/Users/adam2392/Dropbox/mne-bids-report'
+    output_fpath = './report.txt'
 
     fpaths = {'somato': mne.datasets.somato.data_path(),
               'epilepsy': '/Users/adam2392/Dropbox/epilepsy_bids/',
@@ -519,9 +519,8 @@ if __name__ == '__main__':
               'ds001810-master': "/Users/adam2392/Downloads/ds001810-master",
               'ds001971-master': "/Users/adam2392/Downloads/ds001971-master",
               }
-    for name, bids_root in fpaths.items():
-        output_fpath = op.join(output_path, name + '.txt')
-        methods_paragraph = create_methods_paragraph(bids_root)
-
-        with open(output_fpath, 'w') as fout:
+    with open(output_fpath, 'w') as fout:
+        for name, bids_root in fpaths.items():
+            methods_paragraph = create_methods_paragraph(bids_root)
+            fout.write(f'\n\n{name}\n')
             fout.write(methods_paragraph)
