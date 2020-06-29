@@ -836,8 +836,8 @@ def make_dataset_description(path, name, data_license=None,
     """
     # default author to make dataset description BIDS compliant
     if authors is None:
-        authors = "For publications, please add the MNE-BIDS citations in "
-        "the README to your manuscript before removing this"
+        authors = ("For publications please add the MNE-BIDS citations in "
+                   "the README to your manuscript before removing this")
 
     # Put potential string input into list of strings
     if isinstance(authors, str):
