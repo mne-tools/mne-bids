@@ -235,11 +235,11 @@ def _readme(kind, fname, overwrite=False, verbose=True):
             return
         text = '{}References\n----------\n{}{}'.format(
             orig_data + '\n\n',
-            '' if mne_bids_ref else REFERENCES['mne-bids'] + '\n',
+            '' if mne_bids_ref else REFERENCES['mne-bids'] + '\n\n',
             '' if kind_ref else REFERENCES[kind] + '\n')
     else:
         text = 'References\n----------\n{}{}'.format(
-            REFERENCES['mne-bids'] + '\n', REFERENCES[kind] + '\n')
+            REFERENCES['mne-bids'] + '\n\n', REFERENCES[kind] + '\n')
 
     _write_text(fname, text, overwrite=True, verbose=verbose)
 
