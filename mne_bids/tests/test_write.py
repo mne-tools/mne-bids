@@ -362,11 +362,11 @@ def test_fif(_bids_validate):
     # assert README has references in it
     with open(readme, 'r') as fid:
         text = fid.read()
-    assert 'Welcome to my dataset\n' in text
-    assert REFERENCES['mne-bids'] in text
-    assert REFERENCES['meg'] in text
-    assert REFERENCES['eeg'] not in text
-    assert REFERENCES['ieeg'] not in text
+        assert 'Welcome to my dataset\n' in text
+        assert REFERENCES['mne-bids'] in text
+        assert REFERENCES['meg'] in text
+        assert REFERENCES['eeg'] not in text
+        assert REFERENCES['ieeg'] not in text
 
     # now force the overwrite
     write_raw_bids(raw, bids_basename2, bids_root, events_data=events_fname,
@@ -374,9 +374,9 @@ def test_fif(_bids_validate):
 
     with open(readme, 'r') as fid:
         text = fid.read()
-    assert 'Welcome to my dataset\n' not in text
-    assert REFERENCES['mne-bids'] in text
-    assert REFERENCES['meg'] in text
+        assert 'Welcome to my dataset\n' not in text
+        assert REFERENCES['mne-bids'] in text
+        assert REFERENCES['meg'] in text
 
     with pytest.raises(ValueError, match='raw_file must be'):
         write_raw_bids('blah', bids_basename, bids_root)
@@ -850,9 +850,9 @@ def test_edf(_bids_validate):
     readme = op.join(bids_root, 'README')
     with open(readme, 'r') as fid:
         text = fid.read()
-    assert REFERENCES['ieeg'] in text
-    assert REFERENCES['meg'] not in text
-    assert REFERENCES['eeg'] not in text
+        assert REFERENCES['ieeg'] in text
+        assert REFERENCES['meg'] not in text
+        assert REFERENCES['eeg'] not in text
 
     # test writing electrode coordinates (.tsv)
     # and coordinate system (.json)
@@ -900,9 +900,9 @@ def test_bdf(_bids_validate):
     readme = op.join(bids_root, 'README')
     with open(readme, 'r') as fid:
         text = fid.read()
-    assert REFERENCES['eeg'] in text
-    assert REFERENCES['meg'] not in text
-    assert REFERENCES['ieeg'] not in text
+        assert REFERENCES['eeg'] in text
+        assert REFERENCES['meg'] not in text
+        assert REFERENCES['ieeg'] not in text
 
     # Test also the reading of channel types from channels.tsv
     # the first channel in the raw data is not MISC right now
