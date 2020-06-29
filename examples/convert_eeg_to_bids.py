@@ -177,6 +177,8 @@ print_dir_tree(bids_root)
 # Step 4: Cite mne-bids
 # ---------------------
 # We can see that the appropriate citations are already written in the README.
+# If you are preparing a manuscript, please make sure to also cite MNE-BIDS
+# there.
 readme = os.path.join(bids_root, 'README')
 with open(readme, 'r') as fid:
     text = fid.read()

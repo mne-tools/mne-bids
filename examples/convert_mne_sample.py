@@ -89,7 +89,8 @@ epochs['Auditory'].average().plot()
 
 ###############################################################################
 # The README created by :func:`write_raw_bids` also takes care of the citation
-# for mne-bids.
+# for mne-bids. If you are preparing a manuscript, please make sure to also
+# cite MNE-BIDS there.
 readme = op.join(output_path, 'README')
 with open(readme, 'r') as fid:
     text = fid.read()
