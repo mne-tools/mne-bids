@@ -759,8 +759,9 @@ def test_edf(_bids_validate):
     # after overwrite, the dataset description if defaulted to MNE-BIDS
     with open(dataset_description_fpath, 'r') as f:
         dataset_description_json = json.load(f)
-        assert dataset_description_json["Authors"] == ["MNE-BIDS (Please cite "
-                                                       "before removing this)"]
+        assert dataset_description_json["Authors"] == \
+            ["For publications, please add the MNE-BIDS citations in "
+             "the README to your manuscript before removing this"]
 
     # Reading the file back should raise an error, because we renamed channels
     # in `raw` and used that information to write a channels.tsv. Yet, we
