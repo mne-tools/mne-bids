@@ -444,16 +444,29 @@ def _summarize_channels_tsv(bids_root, scans_fpaths, verbose=True):
 def create_methods_paragraph(bids_root, session=None, verbose=True):
     """Create a methods paragraph string from BIDS dataset.
 
+    Summarizes the REQUIRED components in the BIDS specification
+    and also some RECOMMENDED components. Currently, the methods
+    paragraph summarize the:
+
+        * dataset_description.json file
+        * (optional) participants.tsv file
+        * (optional) modality-agnostic files for MEEG data,
+        which reads files from the *scans.tsv file.
+
     Parameters
     ----------
     bids_root : str | pathlib.Path
+        The path of the root of the BIDS compatible folder.
     session : str , optional
-    summarize_participants : bool
+            The session for a item. Corresponds to "ses".
     verbose : bool
+        Set verbose output to true or false.
 
     Returns
     -------
     paragraph : str
+        The paragraph wrapped with 80 characters per line
+        describing the summary of the subjects.
     """
     # high level summary
     subjects = get_entity_vals(bids_root, entity_key='sub')
