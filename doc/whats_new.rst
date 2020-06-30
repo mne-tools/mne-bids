@@ -45,6 +45,7 @@ Bug
 - Fix :func:`write_raw_bids` when `info['dig']` is `None` by `Alexandre Gramfort`_ (`#452 <https://github.com/mne-tools/mne-bids/pull/452>`_)
 - :func:`mne_bids.write_raw_bids` now applies `verbose` to the functions that read events, by `Evgenii Kalenkovich`_ (`#453 <https://github.com/mne-tools/mne-bids/pull/453>`_)
 - Fix `raw_to_bids` CLI tool to work with non-FIF files, by `Austin Hurst`_ (`#456 <https://github.com/mne-tools/mne-bids/pull/456>`_)
+- Fix :func:`mne_bids.write_raw_bids` to output BTI and CTF data in the *scans.tsv according to the BIDS specification by `Adam Li`_ (`#465 <https://github.com/mne-tools/mne-bids/pull/465>`_)
 
 
 API
