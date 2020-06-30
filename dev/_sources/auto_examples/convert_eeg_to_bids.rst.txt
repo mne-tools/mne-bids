@@ -134,12 +134,12 @@ of the directory tree.
     |--------- 1.0.0/
     |------------ S002/
     |--------------- S002R04.edf
-    |--------------- S002R02.edf
     |--------------- S002R12.edf
+    |--------------- S002R02.edf
     |------------ S001/
     |--------------- S001R04.edf
-    |--------------- S001R12.edf
     |--------------- S001R02.edf
+    |--------------- S001R12.edf
 
 
 
@@ -433,13 +433,6 @@ Now we just need to specify a few more EEG details to get something sensible:
         }
     }
 
-    Writing '/home/circleci/mne_data/eegmmidb_bids/sub-001/sub-001_scans.tsv'...
-
-    filename        acq_time
-    eeg/sub-001_task-imaginefists_run-1_eeg.edf     2009-08-12T16:15:00
-    eeg/sub-001_task-imaginefists_run-2_eeg.edf     2009-08-12T16:15:00
-    eeg/sub-001_task-resteyesclosed_eeg.edf 2009-08-12T16:15:00
-
     Writing '/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_events.tsv'...
 
     onset   duration        trial_type      value   sample
@@ -490,6 +483,14 @@ Now we just need to specify a few more EEG details to get something sensible:
     Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
     Copying data files to /home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_eeg
 
+    Writing '/home/circleci/mne_data/eegmmidb_bids/sub-001/sub-001_scans.tsv'...
+
+    filename        acq_time
+    eeg/sub-001_task-imaginefists_run-1_eeg.edf     2009-08-12T16:15:00
+    eeg/sub-001_task-imaginefists_run-2_eeg.edf     2009-08-12T16:15:00
+    eeg/sub-001_task-resteyesclosed_eeg.edf 2009-08-12T16:15:00
+    Wrote /home/circleci/mne_data/eegmmidb_bids/sub-001/sub-001_scans.tsv entry with eeg/sub-001_task-resteyesclosed_eeg.edf.
+
     '/home/circleci/mne_data/eegmmidb_bids'
 
 
@@ -512,40 +513,40 @@ What does our fresh BIDS directory look like?
  .. code-block:: none
 
     |eegmmidb_bids/
-    |--- participants.tsv
     |--- README
-    |--- participants.json
     |--- dataset_description.json
-    |--- sub-002/
-    |------ sub-002_scans.tsv
-    |------ eeg/
-    |--------- sub-002_task-imaginefists_run-1_eeg.edf
-    |--------- sub-002_task-imaginefists_run-1_channels.tsv
-    |--------- sub-002_task-resteyesclosed_events.tsv
-    |--------- sub-002_task-resteyesclosed_channels.tsv
-    |--------- sub-002_task-imaginefists_run-1_events.tsv
-    |--------- sub-002_task-imaginefists_run-2_events.tsv
-    |--------- sub-002_task-imaginefists_run-2_eeg.json
-    |--------- sub-002_task-imaginefists_run-2_eeg.edf
-    |--------- sub-002_task-resteyesclosed_eeg.json
-    |--------- sub-002_task-resteyesclosed_eeg.edf
-    |--------- sub-002_task-imaginefists_run-2_channels.tsv
-    |--------- sub-002_task-imaginefists_run-1_eeg.json
+    |--- participants.tsv
+    |--- participants.json
     |--- sub-001/
     |------ sub-001_scans.tsv
     |------ eeg/
-    |--------- sub-001_task-resteyesclosed_eeg.json
-    |--------- sub-001_task-imaginefists_run-2_eeg.edf
-    |--------- sub-001_task-resteyesclosed_channels.tsv
-    |--------- sub-001_task-imaginefists_run-1_events.tsv
     |--------- sub-001_task-imaginefists_run-1_channels.tsv
-    |--------- sub-001_task-imaginefists_run-2_eeg.json
-    |--------- sub-001_task-resteyesclosed_eeg.edf
-    |--------- sub-001_task-imaginefists_run-2_events.tsv
-    |--------- sub-001_task-imaginefists_run-2_channels.tsv
     |--------- sub-001_task-resteyesclosed_events.tsv
     |--------- sub-001_task-imaginefists_run-1_eeg.edf
+    |--------- sub-001_task-imaginefists_run-2_channels.tsv
+    |--------- sub-001_task-imaginefists_run-2_eeg.edf
+    |--------- sub-001_task-imaginefists_run-1_events.tsv
+    |--------- sub-001_task-imaginefists_run-2_events.tsv
+    |--------- sub-001_task-resteyesclosed_eeg.json
+    |--------- sub-001_task-resteyesclosed_eeg.edf
+    |--------- sub-001_task-imaginefists_run-2_eeg.json
     |--------- sub-001_task-imaginefists_run-1_eeg.json
+    |--------- sub-001_task-resteyesclosed_channels.tsv
+    |--- sub-002/
+    |------ sub-002_scans.tsv
+    |------ eeg/
+    |--------- sub-002_task-resteyesclosed_events.tsv
+    |--------- sub-002_task-imaginefists_run-2_eeg.json
+    |--------- sub-002_task-resteyesclosed_channels.tsv
+    |--------- sub-002_task-imaginefists_run-1_channels.tsv
+    |--------- sub-002_task-imaginefists_run-2_eeg.edf
+    |--------- sub-002_task-imaginefists_run-2_events.tsv
+    |--------- sub-002_task-imaginefists_run-1_events.tsv
+    |--------- sub-002_task-imaginefists_run-2_channels.tsv
+    |--------- sub-002_task-resteyesclosed_eeg.json
+    |--------- sub-002_task-resteyesclosed_eeg.edf
+    |--------- sub-002_task-imaginefists_run-1_eeg.json
+    |--------- sub-002_task-imaginefists_run-1_eeg.edf
 
 
 
@@ -649,11 +650,6 @@ Looks good so far, let's convert the data for all tasks and subjects.
         }
     }
 
-    Writing '/home/circleci/mne_data/eegmmidb_bids/sub-001/sub-001_scans.tsv'...
-
-    filename        acq_time
-    eeg/sub-001_task-resteyesclosed_eeg.edf 2009-08-12T16:15:00
-
     Writing '/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_events.tsv'...
 
     onset   duration        trial_type      value   sample
@@ -703,6 +699,12 @@ Looks good so far, let's convert the data for all tasks and subjects.
     Fcz.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
     Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
     Copying data files to /home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_eeg
+
+    Writing '/home/circleci/mne_data/eegmmidb_bids/sub-001/sub-001_scans.tsv'...
+
+    filename        acq_time
+    eeg/sub-001_task-resteyesclosed_eeg.edf 2009-08-12T16:15:00
+    Wrote /home/circleci/mne_data/eegmmidb_bids/sub-001/sub-001_scans.tsv entry with eeg/sub-001_task-resteyesclosed_eeg.edf.
     Extracting EDF parameters from /home/circleci/mne_data/MNE-eegbci-data/files/eegmmidb/1.0.0/S001/S001R04.edf...
     EDF file detected
     Setting channel info structure...
@@ -754,12 +756,6 @@ Looks good so far, let's convert the data for all tasks and subjects.
             }
         }
     }
-
-    Writing '/home/circleci/mne_data/eegmmidb_bids/sub-001/sub-001_scans.tsv'...
-
-    filename        acq_time
-    eeg/sub-001_task-imaginefists_run-1_eeg.edf     2009-08-12T16:15:00
-    eeg/sub-001_task-resteyesclosed_eeg.edf 2009-08-12T16:15:00
 
     Writing '/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-imaginefists_run-1_events.tsv'...
 
@@ -814,6 +810,13 @@ Looks good so far, let's convert the data for all tasks and subjects.
     Fcz.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
     Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
     Copying data files to /home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-imaginefists_run-1_eeg
+
+    Writing '/home/circleci/mne_data/eegmmidb_bids/sub-001/sub-001_scans.tsv'...
+
+    filename        acq_time
+    eeg/sub-001_task-imaginefists_run-1_eeg.edf     2009-08-12T16:15:00
+    eeg/sub-001_task-resteyesclosed_eeg.edf 2009-08-12T16:15:00
+    Wrote /home/circleci/mne_data/eegmmidb_bids/sub-001/sub-001_scans.tsv entry with eeg/sub-001_task-imaginefists_run-1_eeg.edf.
     Extracting EDF parameters from /home/circleci/mne_data/MNE-eegbci-data/files/eegmmidb/1.0.0/S001/S001R12.edf...
     EDF file detected
     Setting channel info structure...
@@ -865,13 +868,6 @@ Looks good so far, let's convert the data for all tasks and subjects.
             }
         }
     }
-
-    Writing '/home/circleci/mne_data/eegmmidb_bids/sub-001/sub-001_scans.tsv'...
-
-    filename        acq_time
-    eeg/sub-001_task-imaginefists_run-1_eeg.edf     2009-08-12T16:15:00
-    eeg/sub-001_task-imaginefists_run-2_eeg.edf     2009-08-12T16:15:00
-    eeg/sub-001_task-resteyesclosed_eeg.edf 2009-08-12T16:15:00
 
     Writing '/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-imaginefists_run-2_events.tsv'...
 
@@ -926,6 +922,14 @@ Looks good so far, let's convert the data for all tasks and subjects.
     Fcz.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
     Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
     Copying data files to /home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-imaginefists_run-2_eeg
+
+    Writing '/home/circleci/mne_data/eegmmidb_bids/sub-001/sub-001_scans.tsv'...
+
+    filename        acq_time
+    eeg/sub-001_task-imaginefists_run-1_eeg.edf     2009-08-12T16:15:00
+    eeg/sub-001_task-imaginefists_run-2_eeg.edf     2009-08-12T16:15:00
+    eeg/sub-001_task-resteyesclosed_eeg.edf 2009-08-12T16:15:00
+    Wrote /home/circleci/mne_data/eegmmidb_bids/sub-001/sub-001_scans.tsv entry with eeg/sub-001_task-imaginefists_run-2_eeg.edf.
     Extracting EDF parameters from /home/circleci/mne_data/MNE-eegbci-data/files/eegmmidb/1.0.0/S002/S002R02.edf...
     EDF file detected
     Setting channel info structure...
@@ -979,11 +983,6 @@ Looks good so far, let's convert the data for all tasks and subjects.
         }
     }
 
-    Writing '/home/circleci/mne_data/eegmmidb_bids/sub-002/sub-002_scans.tsv'...
-
-    filename        acq_time
-    eeg/sub-002_task-resteyesclosed_eeg.edf 2009-08-12T16:15:00
-
     Writing '/home/circleci/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-resteyesclosed_events.tsv'...
 
     onset   duration        trial_type      value   sample
@@ -1033,6 +1032,12 @@ Looks good so far, let's convert the data for all tasks and subjects.
     Fcz.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
     Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
     Copying data files to /home/circleci/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-resteyesclosed_eeg
+
+    Writing '/home/circleci/mne_data/eegmmidb_bids/sub-002/sub-002_scans.tsv'...
+
+    filename        acq_time
+    eeg/sub-002_task-resteyesclosed_eeg.edf 2009-08-12T16:15:00
+    Wrote /home/circleci/mne_data/eegmmidb_bids/sub-002/sub-002_scans.tsv entry with eeg/sub-002_task-resteyesclosed_eeg.edf.
     Extracting EDF parameters from /home/circleci/mne_data/MNE-eegbci-data/files/eegmmidb/1.0.0/S002/S002R04.edf...
     EDF file detected
     Setting channel info structure...
@@ -1085,12 +1090,6 @@ Looks good so far, let's convert the data for all tasks and subjects.
             }
         }
     }
-
-    Writing '/home/circleci/mne_data/eegmmidb_bids/sub-002/sub-002_scans.tsv'...
-
-    filename        acq_time
-    eeg/sub-002_task-imaginefists_run-1_eeg.edf     2009-08-12T16:15:00
-    eeg/sub-002_task-resteyesclosed_eeg.edf 2009-08-12T16:15:00
 
     Writing '/home/circleci/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-imaginefists_run-1_events.tsv'...
 
@@ -1145,6 +1144,13 @@ Looks good so far, let's convert the data for all tasks and subjects.
     Fcz.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
     Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
     Copying data files to /home/circleci/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-imaginefists_run-1_eeg
+
+    Writing '/home/circleci/mne_data/eegmmidb_bids/sub-002/sub-002_scans.tsv'...
+
+    filename        acq_time
+    eeg/sub-002_task-imaginefists_run-1_eeg.edf     2009-08-12T16:15:00
+    eeg/sub-002_task-resteyesclosed_eeg.edf 2009-08-12T16:15:00
+    Wrote /home/circleci/mne_data/eegmmidb_bids/sub-002/sub-002_scans.tsv entry with eeg/sub-002_task-imaginefists_run-1_eeg.edf.
     Extracting EDF parameters from /home/circleci/mne_data/MNE-eegbci-data/files/eegmmidb/1.0.0/S002/S002R12.edf...
     EDF file detected
     Setting channel info structure...
@@ -1197,13 +1203,6 @@ Looks good so far, let's convert the data for all tasks and subjects.
             }
         }
     }
-
-    Writing '/home/circleci/mne_data/eegmmidb_bids/sub-002/sub-002_scans.tsv'...
-
-    filename        acq_time
-    eeg/sub-002_task-imaginefists_run-1_eeg.edf     2009-08-12T16:15:00
-    eeg/sub-002_task-imaginefists_run-2_eeg.edf     2009-08-12T16:15:00
-    eeg/sub-002_task-resteyesclosed_eeg.edf 2009-08-12T16:15:00
 
     Writing '/home/circleci/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-imaginefists_run-2_events.tsv'...
 
@@ -1259,6 +1258,14 @@ Looks good so far, let's convert the data for all tasks and subjects.
     Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
     Copying data files to /home/circleci/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-imaginefists_run-2_eeg
 
+    Writing '/home/circleci/mne_data/eegmmidb_bids/sub-002/sub-002_scans.tsv'...
+
+    filename        acq_time
+    eeg/sub-002_task-imaginefists_run-1_eeg.edf     2009-08-12T16:15:00
+    eeg/sub-002_task-imaginefists_run-2_eeg.edf     2009-08-12T16:15:00
+    eeg/sub-002_task-resteyesclosed_eeg.edf 2009-08-12T16:15:00
+    Wrote /home/circleci/mne_data/eegmmidb_bids/sub-002/sub-002_scans.tsv entry with eeg/sub-002_task-imaginefists_run-2_eeg.edf.
+
 
 
 
@@ -1282,40 +1289,40 @@ Now we have written our BIDS directory.
  .. code-block:: none
 
     |eegmmidb_bids/
-    |--- participants.tsv
     |--- README
-    |--- participants.json
     |--- dataset_description.json
-    |--- sub-002/
-    |------ sub-002_scans.tsv
-    |------ eeg/
-    |--------- sub-002_task-imaginefists_run-1_eeg.edf
-    |--------- sub-002_task-imaginefists_run-1_channels.tsv
-    |--------- sub-002_task-resteyesclosed_events.tsv
-    |--------- sub-002_task-resteyesclosed_channels.tsv
-    |--------- sub-002_task-imaginefists_run-1_events.tsv
-    |--------- sub-002_task-imaginefists_run-2_events.tsv
-    |--------- sub-002_task-imaginefists_run-2_eeg.json
-    |--------- sub-002_task-imaginefists_run-2_eeg.edf
-    |--------- sub-002_task-resteyesclosed_eeg.json
-    |--------- sub-002_task-resteyesclosed_eeg.edf
-    |--------- sub-002_task-imaginefists_run-2_channels.tsv
-    |--------- sub-002_task-imaginefists_run-1_eeg.json
+    |--- participants.tsv
+    |--- participants.json
     |--- sub-001/
     |------ sub-001_scans.tsv
     |------ eeg/
-    |--------- sub-001_task-resteyesclosed_eeg.json
-    |--------- sub-001_task-imaginefists_run-2_eeg.edf
-    |--------- sub-001_task-resteyesclosed_channels.tsv
-    |--------- sub-001_task-imaginefists_run-1_events.tsv
     |--------- sub-001_task-imaginefists_run-1_channels.tsv
-    |--------- sub-001_task-imaginefists_run-2_eeg.json
-    |--------- sub-001_task-resteyesclosed_eeg.edf
-    |--------- sub-001_task-imaginefists_run-2_events.tsv
-    |--------- sub-001_task-imaginefists_run-2_channels.tsv
     |--------- sub-001_task-resteyesclosed_events.tsv
     |--------- sub-001_task-imaginefists_run-1_eeg.edf
+    |--------- sub-001_task-imaginefists_run-2_channels.tsv
+    |--------- sub-001_task-imaginefists_run-2_eeg.edf
+    |--------- sub-001_task-imaginefists_run-1_events.tsv
+    |--------- sub-001_task-imaginefists_run-2_events.tsv
+    |--------- sub-001_task-resteyesclosed_eeg.json
+    |--------- sub-001_task-resteyesclosed_eeg.edf
+    |--------- sub-001_task-imaginefists_run-2_eeg.json
     |--------- sub-001_task-imaginefists_run-1_eeg.json
+    |--------- sub-001_task-resteyesclosed_channels.tsv
+    |--- sub-002/
+    |------ sub-002_scans.tsv
+    |------ eeg/
+    |--------- sub-002_task-resteyesclosed_events.tsv
+    |--------- sub-002_task-imaginefists_run-2_eeg.json
+    |--------- sub-002_task-resteyesclosed_channels.tsv
+    |--------- sub-002_task-imaginefists_run-1_channels.tsv
+    |--------- sub-002_task-imaginefists_run-2_eeg.edf
+    |--------- sub-002_task-imaginefists_run-2_events.tsv
+    |--------- sub-002_task-imaginefists_run-1_events.tsv
+    |--------- sub-002_task-imaginefists_run-2_channels.tsv
+    |--------- sub-002_task-resteyesclosed_eeg.json
+    |--------- sub-002_task-resteyesclosed_eeg.edf
+    |--------- sub-002_task-imaginefists_run-1_eeg.json
+    |--------- sub-002_task-imaginefists_run-1_eeg.edf
 
 
 
@@ -1375,7 +1382,7 @@ Command line tool: https://www.npmjs.com/package/bids-validator
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  0.660 seconds)
+   **Total running time of the script:** ( 0 minutes  1.064 seconds)
 
 
 .. _sphx_glr_download_auto_examples_convert_eeg_to_bids.py:

@@ -1239,12 +1239,11 @@
     <span class="n">unit</span> <span class="o">=</span> <span class="n">UNITS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ext</span><span class="p">,</span> <span class="s1">&#39;n/a&#39;</span><span class="p">)</span>
     <span class="n">manufacturer</span> <span class="o">=</span> <span class="n">MANUFACTURERS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ext</span><span class="p">,</span> <span class="s1">&#39;n/a&#39;</span><span class="p">)</span>
 
-    <span class="c1"># save all meta data</span>
+    <span class="c1"># save all participants meta data and readme file</span>
     <span class="n">_readme</span><span class="p">(</span><span class="n">kind</span><span class="p">,</span> <span class="n">readme_fname</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
     <span class="n">_participants_tsv</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">subject_id</span><span class="p">,</span> <span class="n">participants_tsv_fname</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">,</span>
                       <span class="n">verbose</span><span class="p">)</span>
     <span class="n">_participants_json</span><span class="p">(</span><span class="n">participants_json_fname</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
-    <span class="n">_scans_tsv</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">kind</span><span class="p">,</span> <span class="n">bids_fname</span><span class="p">),</span> <span class="n">scans_fname</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
 
     <span class="c1"># for MEG, we only write coordinate system</span>
     <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s1">&#39;meg&#39;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">emptyroom</span><span class="p">:</span>
@@ -1275,15 +1274,17 @@
                   <span class="n">verbose</span><span class="p">)</span>
     <span class="n">_channels_tsv</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">channels_fname</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
 
+    <span class="n">_mkdir_p</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="n">bids_fname</span><span class="p">)))</span>
+
     <span class="c1"># set the raw file name to now be the absolute path to ensure the files</span>
     <span class="c1"># are placed in the right location</span>
-    <span class="n">bids_fname</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="n">bids_fname</span><span class="p">)</span>
+    <span class="n">bids_fname</span><span class="o">.</span><span class="n">prefix</span> <span class="o">=</span> <span class="n">data_path</span>
 
     <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">overwrite</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">FileExistsError</span><span class="p">(</span><span class="s1">&#39;&quot;</span><span class="si">%s</span><span class="s1">&quot; already exists. Please set &#39;</span>  <span class="c1"># noqa: F821</span>
                               <span class="s1">&#39;overwrite to True.&#39;</span> <span class="o">%</span> <span class="n">bids_fname</span><span class="p">)</span>
-    <span class="n">_mkdir_p</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">))</span>
 
+    <span class="c1"># whether or not to convert to RECOMMENDED file formats</span>
     <span class="n">convert</span> <span class="o">=</span> <span class="n">ext</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ALLOWED_EXTENSIONS</span><span class="p">[</span><span class="n">kind</span><span class="p">]</span>
 
     <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s1">&#39;meg&#39;</span> <span class="ow">and</span> <span class="n">convert</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">anonymize</span><span class="p">:</span>
@@ -1303,6 +1304,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
                 <span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Converting data files to BrainVision format&#39;</span><span class="p">)</span>
+            <span class="n">bids_fname</span><span class="o">.</span><span class="n">suffix</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">kind</span><span class="si">}</span><span class="s1">.vhdr&#39;</span>
             <span class="n">_write_raw_brainvision</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_fname</span><span class="p">,</span> <span class="n">events</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">ext</span> <span class="o">==</span> <span class="s1">&#39;.fif&#39;</span><span class="p">:</span>
         <span class="n">_write_raw_fif</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_fname</span><span class="p">)</span>
@@ -1316,12 +1318,19 @@
     <span class="k">elif</span> <span class="n">ext</span> <span class="o">==</span> <span class="s1">&#39;.set&#39;</span><span class="p">:</span>
         <span class="n">copyfile_eeglab</span><span class="p">(</span><span class="n">raw_fname</span><span class="p">,</span> <span class="n">bids_fname</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">ext</span> <span class="o">==</span> <span class="s1">&#39;.pdf&#39;</span><span class="p">:</span>
-        <span class="n">copyfile_bti</span><span class="p">(</span><span class="n">raw_orig</span><span class="p">,</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="n">bids_raw_folder</span><span class="p">))</span>
+        <span class="n">bids_fname</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="n">bids_raw_folder</span><span class="p">)</span>
+        <span class="n">copyfile_bti</span><span class="p">(</span><span class="n">raw_orig</span><span class="p">,</span> <span class="n">bids_fname</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">ext</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;.con&#39;</span><span class="p">,</span> <span class="s1">&#39;.sqd&#39;</span><span class="p">]:</span>
         <span class="n">copyfile_kit</span><span class="p">(</span><span class="n">raw_fname</span><span class="p">,</span> <span class="n">bids_fname</span><span class="p">,</span> <span class="n">subject_id</span><span class="p">,</span> <span class="n">session_id</span><span class="p">,</span>
                      <span class="n">task</span><span class="p">,</span> <span class="n">run</span><span class="p">,</span> <span class="n">raw</span><span class="o">.</span><span class="n">_init_kwargs</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">sh</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">raw_fname</span><span class="p">,</span> <span class="n">bids_fname</span><span class="p">)</span>
+
+    <span class="c1"># write to the scans.tsv file the output file written</span>
+    <span class="n">scan_relative_fpath</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">kind</span><span class="p">,</span> <span class="n">op</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">))</span>
+    <span class="n">_scans_tsv</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">scan_relative_fpath</span><span class="p">,</span> <span class="n">scans_fname</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Wrote </span><span class="si">{</span><span class="n">scans_fname</span><span class="si">}</span><span class="s1"> entry with </span><span class="si">{</span><span class="n">scan_relative_fpath</span><span class="si">}</span><span class="s1">.&#39;</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">bids_root</span></div>
 
