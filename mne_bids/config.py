@@ -136,6 +136,36 @@ COORD_FRAME_DESCRIPTIONS = {
            'third dimension (Z) points towards the top of the head.',
 }
 
+REFERENCES = {'mne-bids':
+              'Appelhoff, S., Sanderson, M., Brooks, T., Vliet, M., '
+              'Quentin, R., Holdgraf, C., Chaumon, M., Mikulan, E., '
+              'Tavabi, K., Höchenberger, R., Welke, D., Brunner, C., '
+              'Rockhill, A., Larson, E., Gramfort, A. and Jas, M. (2019). '
+              'MNE-BIDS: Organizing electrophysiological data into the '
+              'BIDS format and facilitating their analysis. Journal of '
+              'Open Source Software 4: (1896). '
+              'https://doi.org/10.21105/joss.01896',
+              'meg':
+              'Niso, G., Gorgolewski, K. J., Bock, E., Brooks, T. L., '
+              'Flandin, G., Gramfort, A., Henson, R. N., Jas, M., Litvak, '
+              'V., Moreau, J., Oostenveld, R., Schoffelen, J., Tadel, F., '
+              'Wexler, J., Baillet, S. (2018). MEG-BIDS, the brain '
+              'imaging data structure extended to magnetoencephalography. '
+              'Scientific Data, 5, 180110. '
+              'http://doi.org/10.1038/sdata.2018.110',
+              'eeg':
+              'Pernet, C. R., Appelhoff, S., Gorgolewski, K. J., '
+              'Flandin, G., Phillips, C., Delorme, A., Oostenveld, R. (2019). '
+              'EEG-BIDS, an extension to the brain imaging data structure '
+              'for electroencephalography. Scientific Data, 6, 103. '
+              'https://doi.org/10.1038/s41597-019-0104-8',
+              'ieeg':
+              'Holdgraf, C., Appelhoff, S., Bickel, S., Bouchard, K., '
+              'D\'Ambrosio, S., David, O., … Hermes, D. (2019). iEEG-BIDS, '
+              'extending the Brain Imaging Data Structure specification '
+              'to human intracranial electrophysiology. Scientific Data, '
+              '6, 102. https://doi.org/10.1038/s41597-019-0105-7'}
+
 
 # mapping subject information back to mne-python
 # XXX: MNE currently only handles R/L,

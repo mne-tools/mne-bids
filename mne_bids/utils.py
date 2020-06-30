@@ -677,8 +677,8 @@ def _path_to_str(var):
 def _write_json(fname, dictionary, overwrite=False, verbose=False):
     """Write JSON to a file."""
     if op.exists(fname) and not overwrite:
-        raise FileExistsError('"%s" already exists. Please set '  # noqa: F821
-                              'overwrite to True.' % fname)
+        raise FileExistsError(f'"{fname}" already exists. '
+                              'Please set overwrite to True.')
 
     json_output = json.dumps(dictionary, indent=4)
     with open(fname, 'w') as fid:
@@ -686,20 +686,34 @@ def _write_json(fname, dictionary, overwrite=False, verbose=False):
         fid.write('\n')
 
     if verbose is True:
-        print(os.linesep + "Writing '%s'..." % fname + os.linesep)
+        print(os.linesep + f"Writing '{fname}'..." + os.linesep)
         print(json_output)
 
 
 def _write_tsv(fname, dictionary, overwrite=False, verbose=False):
     """Write an ordered dictionary to a .tsv file."""
     if op.exists(fname) and not overwrite:
-        raise FileExistsError('"%s" already exists. Please set '  # noqa: F821
-                              'overwrite to True.' % fname)
+        raise FileExistsError(f'"{fname}" already exists. '
+                              'Please set overwrite to True.')
     _to_tsv(dictionary, fname)
 
     if verbose:
-        print(os.linesep + "Writing '%s'..." % fname + os.linesep)
+        print(os.linesep + f"Writing '{fname}'..." + os.linesep)
         print(_tsv_to_str(dictionary))
+
+
+def _write_text(fname, text, overwrite=False, verbose=True):
+    """Write text to a file."""
+    if op.exists(fname) and not overwrite:
+        raise FileExistsError(f'"{fname}" already exists. '
+                              'Please set overwrite to True.')
+    with open(fname, 'w') as fid:
+        fid.write(text)
+        fid.write('\n')
+
+    if verbose:
+        print(os.linesep + f"Writing '{fname}'..." + os.linesep)
+        print(text)
 
 
 def _check_key_val(key, val):

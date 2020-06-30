@@ -32,8 +32,9 @@ from mne.utils import check_version, has_nibabel, logger, warn
 
 from mne_bids.pick import coil_type
 from mne_bids.dig import _write_dig_bids, _coordsystem_json
-from mne_bids.utils import (_write_json, _write_tsv, _read_events, _mkdir_p,
-                            _age_on_date, _infer_eeg_placement_scheme,
+from mne_bids.utils import (_write_json, _write_tsv, _write_text,
+                            _read_events, _mkdir_p, _age_on_date,
+                            _infer_eeg_placement_scheme,
                             _parse_bids_filename, _handle_kind,
                             _path_to_str, _parse_ext,
                             _get_ch_type_mapping, make_bids_folders,
@@ -46,7 +47,7 @@ from mne_bids.tsv_handler import (_from_tsv, _drop, _contains_row,
 
 from mne_bids.config import (ORIENTATION, UNITS, MANUFACTURERS,
                              IGNORED_CHANNELS, ALLOWED_EXTENSIONS,
-                             BIDS_VERSION, _convert_hand_options,
+                             BIDS_VERSION, REFERENCES, _convert_hand_options,
                              _convert_sex_options, reader)
 
 
@@ -82,7 +83,7 @@ def _channels_tsv(raw, fname, overwrite=False, verbose=True):
         Whether to overwrite the existing file.
         Defaults to False.
     verbose : bool
-        Set verbose output to true or false.
+        Set verbose output to True or False.
 
     """
     # Get channel type mappings between BIDS and MNE nomenclatures
@@ -172,7 +173,7 @@ def _events_tsv(events, raw, fname, trial_type, overwrite=False,
         Whether to overwrite the existing file.
         Defaults to False.
     verbose : bool
-        Set verbose output to true or false.
+        Set verbose output to True or False.
 
     Notes
     -----
@@ -203,6 +204,46 @@ def _events_tsv(events, raw, fname, trial_type, overwrite=False,
     _write_tsv(fname, data, overwrite, verbose)
 
 
+def _readme(kind, fname, overwrite=False, verbose=True):
+    """Create a README file and save it.
+
+    This will write a README file containing an MNE-BIDS citation.
+    If a README already exists, the behavior depends on the
+    `overwrite` parameter, as described below.
+
+    Parameters
+    ----------
+    kind : string
+        The type of data contained in the raw file ('meg', 'eeg', 'ieeg')
+    fname : str | BIDSPath
+        Filename to save the README to.
+    overwrite : bool
+        Whether to overwrite the existing file (defaults to False).
+        If overwrite is True, create a new README containing an
+        MNE-BIDS citation. If overwrite is False, append an
+        MNE-BIDS citation to the existing README, unless it
+        already contains that citation.
+    verbose : bool
+        Set verbose output to True or False.
+    """
+    if os.path.isfile(fname) and not overwrite:
+        with open(fname, 'r') as fid:
+            orig_data = fid.read()
+        mne_bids_ref = REFERENCES['mne-bids'] in orig_data
+        kind_ref = REFERENCES[kind] in orig_data
+        if mne_bids_ref and kind_ref:
+            return
+        text = '{}References\n----------\n{}{}'.format(
+            orig_data + '\n\n',
+            '' if mne_bids_ref else REFERENCES['mne-bids'] + '\n\n',
+            '' if kind_ref else REFERENCES[kind] + '\n')
+    else:
+        text = 'References\n----------\n{}{}'.format(
+            REFERENCES['mne-bids'] + '\n\n', REFERENCES[kind] + '\n')
+
+    _write_text(fname, text, overwrite=True, verbose=verbose)
+
+
 def _participants_tsv(raw, subject_id, fname, overwrite=False,
                       verbose=True):
     """Create a participants.tsv file and save it.
@@ -224,7 +265,7 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False,
         If there is already data for the given `subject_id` and overwrite is
         False, an error will be raised.
     verbose : bool
-        Set verbose output to true or false.
+        Set verbose output to True or False.
 
     """
     subject_id = 'sub-' + subject_id
@@ -315,7 +356,7 @@ def _participants_json(fname, overwrite=False, verbose=True):
         If there is already data for the given `fname` and overwrite is False,
         an error will be raised.
     verbose : bool
-        Set verbose output to true or false.
+        Set verbose output to True or False.
 
     """
     cols = OrderedDict()
@@ -357,7 +398,7 @@ def _scans_tsv(raw, raw_fname, fname, overwrite=False, verbose=True):
         If there is already data for the given `fname` and overwrite is False,
         an error will be raised.
     verbose : bool
-        Set verbose output to true or false.
+        Set verbose output to True or False.
 
     """
     # get measurement date from the data info
@@ -452,7 +493,7 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, overwrite=False,
         Whether to overwrite the existing file.
         Defaults to False.
     verbose : bool
-        Set verbose output to true or false. Defaults to true.
+        Set verbose output to True or False. Defaults to True.
 
     """
     sfreq = raw.info['sfreq']
@@ -795,7 +836,8 @@ def make_dataset_description(path, name, data_license=None,
     """
     # default author to make dataset description BIDS compliant
     if authors is None:
-        authors = "MNE-BIDS"
+        authors = ("Please cite MNE-BIDS in your publication before removing "
+                   "this (citations in README)")
 
     # Put potential string input into list of strings
     if isinstance(authors, str):
@@ -1032,6 +1074,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     electrodes_fname = str(bids_path)
 
     # For the remaining files, we can use BIDSPath to alter.
+    readme_fname = make_bids_basename(prefix=bids_root, suffix='README')
     participants_tsv_fname = make_bids_basename(prefix=bids_root,
                                                 suffix='participants.tsv')
     participants_json_fname = participants_tsv_fname.copy()
@@ -1086,6 +1129,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     manufacturer = MANUFACTURERS.get(ext, 'n/a')
 
     # save all meta data
+    _readme(kind, readme_fname, overwrite, verbose)
     _participants_tsv(raw, subject_id, participants_tsv_fname, overwrite,
                       verbose)
     _participants_json(participants_json_fname, True, verbose)
