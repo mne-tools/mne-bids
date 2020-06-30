@@ -251,6 +251,15 @@ Let us loop over the subjects and create BIDS-compatible folder
     Current compensation grade : 0
     Creating folder: /home/circleci/mne_data/mne_bids_examples/ds000117-bids/sub-1/ses-01/meg
 
+    Writing '/home/circleci/mne_data/mne_bids_examples/ds000117-bids/README'...
+
+    References
+    ----------
+    Appelhoff, S., Sanderson, M., Brooks, T., Vliet, M., Quentin, R., Holdgraf, C., Chaumon, M., Mikulan, E., Tavabi, K., Höchenberger, R., Welke, D., Brunner, C., Rockhill, A., Larson, E., Gramfort, A. and Jas, M. (2019). MNE-BIDS: Organizing electrophysiological data into the BIDS format and facilitating their analysis. Journal of Open Source Software 4: (1896). https://doi.org/10.21105/joss.01896
+
+    Niso, G., Gorgolewski, K. J., Bock, E., Brooks, T. L., Flandin, G., Gramfort, A., Henson, R. N., Jas, M., Litvak, V., Moreau, J., Oostenveld, R., Schoffelen, J., Tadel, F., Wexler, J., Baillet, S. (2018). MEG-BIDS, the brain imaging data structure extended to magnetoencephalography. Scientific Data, 5, 180110. http://doi.org/10.1038/sdata.2018.110
+
+
     Writing '/home/circleci/mne_data/mne_bids_examples/ds000117-bids/participants.tsv'...
 
     participant_id  age     sex     hand
@@ -362,7 +371,7 @@ Let us loop over the subjects and create BIDS-compatible folder
         "Name": " ",
         "BIDSVersion": "1.2.2",
         "Authors": [
-            "MNE-BIDS"
+            "Please cite MNE-BIDS in your publication before removing this (citations in README)"
         ]
     }
     Reading 0 ... 546699  =      0.000 ...   496.999 secs...
@@ -415,6 +424,15 @@ Let us loop over the subjects and create BIDS-compatible folder
     Ready.
     Current compensation grade : 0
     Creating folder: /home/circleci/mne_data/mne_bids_examples/ds000117-bids/sub-1/ses-01/meg
+
+    Writing '/home/circleci/mne_data/mne_bids_examples/ds000117-bids/README'...
+
+    References
+    ----------
+    Appelhoff, S., Sanderson, M., Brooks, T., Vliet, M., Quentin, R., Holdgraf, C., Chaumon, M., Mikulan, E., Tavabi, K., Höchenberger, R., Welke, D., Brunner, C., Rockhill, A., Larson, E., Gramfort, A. and Jas, M. (2019). MNE-BIDS: Organizing electrophysiological data into the BIDS format and facilitating their analysis. Journal of Open Source Software 4: (1896). https://doi.org/10.21105/joss.01896
+
+    Niso, G., Gorgolewski, K. J., Bock, E., Brooks, T. L., Flandin, G., Gramfort, A., Henson, R. N., Jas, M., Litvak, V., Moreau, J., Oostenveld, R., Schoffelen, J., Tadel, F., Wexler, J., Baillet, S. (2018). MEG-BIDS, the brain imaging data structure extended to magnetoencephalography. Scientific Data, 5, 180110. http://doi.org/10.1038/sdata.2018.110
+
 
     Writing '/home/circleci/mne_data/mne_bids_examples/ds000117-bids/participants.tsv'...
 
@@ -527,7 +545,7 @@ Let us loop over the subjects and create BIDS-compatible folder
         "Name": " ",
         "BIDSVersion": "1.2.2",
         "Authors": [
-            "MNE-BIDS"
+            "Please cite MNE-BIDS in your publication before removing this (citations in README)"
         ]
     }
     Reading 0 ... 549999  =      0.000 ...   499.999 secs...
@@ -580,6 +598,15 @@ Let us loop over the subjects and create BIDS-compatible folder
     Ready.
     Current compensation grade : 0
     Creating folder: /home/circleci/mne_data/mne_bids_examples/ds000117-bids/sub-1/ses-01/meg
+
+    Writing '/home/circleci/mne_data/mne_bids_examples/ds000117-bids/README'...
+
+    References
+    ----------
+    Appelhoff, S., Sanderson, M., Brooks, T., Vliet, M., Quentin, R., Holdgraf, C., Chaumon, M., Mikulan, E., Tavabi, K., Höchenberger, R., Welke, D., Brunner, C., Rockhill, A., Larson, E., Gramfort, A. and Jas, M. (2019). MNE-BIDS: Organizing electrophysiological data into the BIDS format and facilitating their analysis. Journal of Open Source Software 4: (1896). https://doi.org/10.21105/joss.01896
+
+    Niso, G., Gorgolewski, K. J., Bock, E., Brooks, T. L., Flandin, G., Gramfort, A., Henson, R. N., Jas, M., Litvak, V., Moreau, J., Oostenveld, R., Schoffelen, J., Tadel, F., Wexler, J., Baillet, S. (2018). MEG-BIDS, the brain imaging data structure extended to magnetoencephalography. Scientific Data, 5, 180110. http://doi.org/10.1038/sdata.2018.110
+
 
     Writing '/home/circleci/mne_data/mne_bids_examples/ds000117-bids/participants.tsv'...
 
@@ -692,7 +719,7 @@ Let us loop over the subjects and create BIDS-compatible folder
         "Name": " ",
         "BIDSVersion": "1.2.2",
         "Authors": [
-            "MNE-BIDS"
+            "Please cite MNE-BIDS in your publication before removing this (citations in README)"
         ]
     }
     Reading 0 ... 230999  =      0.000 ...   209.999 secs...
@@ -745,6 +772,15 @@ Let us loop over the subjects and create BIDS-compatible folder
     Ready.
     Current compensation grade : 0
     Creating folder: /home/circleci/mne_data/mne_bids_examples/ds000117-bids/sub-1/ses-01/meg
+
+    Writing '/home/circleci/mne_data/mne_bids_examples/ds000117-bids/README'...
+
+    References
+    ----------
+    Appelhoff, S., Sanderson, M., Brooks, T., Vliet, M., Quentin, R., Holdgraf, C., Chaumon, M., Mikulan, E., Tavabi, K., Höchenberger, R., Welke, D., Brunner, C., Rockhill, A., Larson, E., Gramfort, A. and Jas, M. (2019). MNE-BIDS: Organizing electrophysiological data into the BIDS format and facilitating their analysis. Journal of Open Source Software 4: (1896). https://doi.org/10.21105/joss.01896
+
+    Niso, G., Gorgolewski, K. J., Bock, E., Brooks, T. L., Flandin, G., Gramfort, A., Henson, R. N., Jas, M., Litvak, V., Moreau, J., Oostenveld, R., Schoffelen, J., Tadel, F., Wexler, J., Baillet, S. (2018). MEG-BIDS, the brain imaging data structure extended to magnetoencephalography. Scientific Data, 5, 180110. http://doi.org/10.1038/sdata.2018.110
+
 
     Writing '/home/circleci/mne_data/mne_bids_examples/ds000117-bids/participants.tsv'...
 
@@ -857,7 +893,7 @@ Let us loop over the subjects and create BIDS-compatible folder
         "Name": " ",
         "BIDSVersion": "1.2.2",
         "Authors": [
-            "MNE-BIDS"
+            "Please cite MNE-BIDS in your publication before removing this (citations in README)"
         ]
     }
     Reading 0 ... 543399  =      0.000 ...   493.999 secs...
@@ -910,6 +946,15 @@ Let us loop over the subjects and create BIDS-compatible folder
     Ready.
     Current compensation grade : 0
     Creating folder: /home/circleci/mne_data/mne_bids_examples/ds000117-bids/sub-1/ses-01/meg
+
+    Writing '/home/circleci/mne_data/mne_bids_examples/ds000117-bids/README'...
+
+    References
+    ----------
+    Appelhoff, S., Sanderson, M., Brooks, T., Vliet, M., Quentin, R., Holdgraf, C., Chaumon, M., Mikulan, E., Tavabi, K., Höchenberger, R., Welke, D., Brunner, C., Rockhill, A., Larson, E., Gramfort, A. and Jas, M. (2019). MNE-BIDS: Organizing electrophysiological data into the BIDS format and facilitating their analysis. Journal of Open Source Software 4: (1896). https://doi.org/10.21105/joss.01896
+
+    Niso, G., Gorgolewski, K. J., Bock, E., Brooks, T. L., Flandin, G., Gramfort, A., Henson, R. N., Jas, M., Litvak, V., Moreau, J., Oostenveld, R., Schoffelen, J., Tadel, F., Wexler, J., Baillet, S. (2018). MEG-BIDS, the brain imaging data structure extended to magnetoencephalography. Scientific Data, 5, 180110. http://doi.org/10.1038/sdata.2018.110
+
 
     Writing '/home/circleci/mne_data/mne_bids_examples/ds000117-bids/participants.tsv'...
 
@@ -1022,7 +1067,7 @@ Let us loop over the subjects and create BIDS-compatible folder
         "Name": " ",
         "BIDSVersion": "1.2.2",
         "Authors": [
-            "MNE-BIDS"
+            "Please cite MNE-BIDS in your publication before removing this (citations in README)"
         ]
     }
     Reading 0 ... 536799  =      0.000 ...   487.999 secs...
@@ -1075,6 +1120,15 @@ Let us loop over the subjects and create BIDS-compatible folder
     Ready.
     Current compensation grade : 0
     Creating folder: /home/circleci/mne_data/mne_bids_examples/ds000117-bids/sub-1/ses-01/meg
+
+    Writing '/home/circleci/mne_data/mne_bids_examples/ds000117-bids/README'...
+
+    References
+    ----------
+    Appelhoff, S., Sanderson, M., Brooks, T., Vliet, M., Quentin, R., Holdgraf, C., Chaumon, M., Mikulan, E., Tavabi, K., Höchenberger, R., Welke, D., Brunner, C., Rockhill, A., Larson, E., Gramfort, A. and Jas, M. (2019). MNE-BIDS: Organizing electrophysiological data into the BIDS format and facilitating their analysis. Journal of Open Source Software 4: (1896). https://doi.org/10.21105/joss.01896
+
+    Niso, G., Gorgolewski, K. J., Bock, E., Brooks, T. L., Flandin, G., Gramfort, A., Henson, R. N., Jas, M., Litvak, V., Moreau, J., Oostenveld, R., Schoffelen, J., Tadel, F., Wexler, J., Baillet, S. (2018). MEG-BIDS, the brain imaging data structure extended to magnetoencephalography. Scientific Data, 5, 180110. http://doi.org/10.1038/sdata.2018.110
+
 
     Writing '/home/circleci/mne_data/mne_bids_examples/ds000117-bids/participants.tsv'...
 
@@ -1187,7 +1241,7 @@ Let us loop over the subjects and create BIDS-compatible folder
         "Name": " ",
         "BIDSVersion": "1.2.2",
         "Authors": [
-            "MNE-BIDS"
+            "Please cite MNE-BIDS in your publication before removing this (citations in README)"
         ]
     }
     Reading 0 ... 544499  =      0.000 ...   494.999 secs...
@@ -1248,38 +1302,39 @@ Now let's see the structure of the BIDS folder we created.
  .. code-block:: none
 
     |ds000117-bids/
-    |--- dataset_description.json
-    |--- participants.json
     |--- participants.tsv
+    |--- README
+    |--- participants.json
+    |--- dataset_description.json
     |--- sub-1/
     |------ ses-01/
     |--------- sub-1_ses-01_scans.tsv
     |--------- meg/
-    |------------ sub-1_ses-01_task-VisualFaces_run-5_channels.tsv
-    |------------ sub-1_ses-01_task-VisualFaces_run-4_meg.json
-    |------------ sub-1_ses-01_task-VisualFaces_run-3_meg.json
-    |------------ sub-1_ses-01_task-VisualFaces_run-2_events.tsv
-    |------------ sub-1_ses-01_task-VisualFaces_run-6_meg.json
-    |------------ sub-1_ses-01_task-VisualFaces_run-1_channels.tsv
-    |------------ sub-1_ses-01_task-VisualFaces_run-3_meg.fif
-    |------------ sub-1_ses-01_task-VisualFaces_run-1_meg.fif
     |------------ sub-1_ses-01_task-VisualFaces_run-2_meg.json
     |------------ sub-1_ses-01_task-VisualFaces_run-4_channels.tsv
+    |------------ sub-1_ses-01_task-VisualFaces_run-2_events.tsv
+    |------------ sub-1_ses-01_task-VisualFaces_run-2_channels.tsv
+    |------------ sub-1_ses-01_task-VisualFaces_run-2_meg.fif
+    |------------ sub-1_ses-01_task-VisualFaces_run-5_meg.fif
+    |------------ sub-1_ses-01_task-VisualFaces_run-6_channels.tsv
+    |------------ sub-1_ses-01_task-VisualFaces_run-3_channels.tsv
+    |------------ sub-1_ses-01_task-VisualFaces_run-5_events.tsv
+    |------------ sub-1_ses-01_task-VisualFaces_run-5_channels.tsv
     |------------ sub-1_ses-01_task-VisualFaces_run-4_events.tsv
+    |------------ sub-1_ses-01_task-VisualFaces_run-3_events.tsv
+    |------------ sub-1_ses-01_task-VisualFaces_run-6_events.tsv
+    |------------ sub-1_ses-01_task-VisualFaces_run-1_meg.fif
+    |------------ sub-1_ses-01_task-VisualFaces_run-4_meg.json
     |------------ sub-1_ses-01_coordsystem.json
     |------------ sub-1_ses-01_task-VisualFaces_run-4_meg.fif
-    |------------ sub-1_ses-01_task-VisualFaces_run-5_events.tsv
-    |------------ sub-1_ses-01_task-VisualFaces_run-3_events.tsv
-    |------------ sub-1_ses-01_task-VisualFaces_run-6_channels.tsv
-    |------------ sub-1_ses-01_task-VisualFaces_run-1_meg.json
-    |------------ sub-1_ses-01_task-VisualFaces_run-3_channels.tsv
-    |------------ sub-1_ses-01_task-VisualFaces_run-6_meg.fif
-    |------------ sub-1_ses-01_task-VisualFaces_run-5_meg.fif
-    |------------ sub-1_ses-01_task-VisualFaces_run-2_meg.fif
-    |------------ sub-1_ses-01_task-VisualFaces_run-1_events.tsv
-    |------------ sub-1_ses-01_task-VisualFaces_run-2_channels.tsv
-    |------------ sub-1_ses-01_task-VisualFaces_run-6_events.tsv
+    |------------ sub-1_ses-01_task-VisualFaces_run-3_meg.json
     |------------ sub-1_ses-01_task-VisualFaces_run-5_meg.json
+    |------------ sub-1_ses-01_task-VisualFaces_run-6_meg.json
+    |------------ sub-1_ses-01_task-VisualFaces_run-1_channels.tsv
+    |------------ sub-1_ses-01_task-VisualFaces_run-6_meg.fif
+    |------------ sub-1_ses-01_task-VisualFaces_run-1_meg.json
+    |------------ sub-1_ses-01_task-VisualFaces_run-1_events.tsv
+    |------------ sub-1_ses-01_task-VisualFaces_run-3_meg.fif
 
 
 
@@ -1287,7 +1342,7 @@ Now let's see the structure of the BIDS folder we created.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 1 minutes  1.359 seconds)
+   **Total running time of the script:** ( 1 minutes  10.447 seconds)
 
 
 .. _sphx_glr_download_auto_examples_convert_group_studies.py:

@@ -788,8 +788,8 @@
 <span class="k">def</span> <span class="nf">_write_json</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">dictionary</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Write JSON to a file.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">op</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">overwrite</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">FileExistsError</span><span class="p">(</span><span class="s1">&#39;&quot;</span><span class="si">%s</span><span class="s1">&quot; already exists. Please set &#39;</span>  <span class="c1"># noqa: F821</span>
-                              <span class="s1">&#39;overwrite to True.&#39;</span> <span class="o">%</span> <span class="n">fname</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">FileExistsError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">fname</span><span class="si">}</span><span class="s1">&quot; already exists. &#39;</span>
+                              <span class="s1">&#39;Please set overwrite to True.&#39;</span><span class="p">)</span>
 
     <span class="n">json_output</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">dictionary</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fid</span><span class="p">:</span>
@@ -797,20 +797,34 @@
         <span class="n">fid</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">verbose</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">linesep</span> <span class="o">+</span> <span class="s2">&quot;Writing &#39;</span><span class="si">%s</span><span class="s2">&#39;...&quot;</span> <span class="o">%</span> <span class="n">fname</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">linesep</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">linesep</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;Writing &#39;</span><span class="si">{</span><span class="n">fname</span><span class="si">}</span><span class="s2">&#39;...&quot;</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">linesep</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">json_output</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">_write_tsv</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">dictionary</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Write an ordered dictionary to a .tsv file.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">op</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">overwrite</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">FileExistsError</span><span class="p">(</span><span class="s1">&#39;&quot;</span><span class="si">%s</span><span class="s1">&quot; already exists. Please set &#39;</span>  <span class="c1"># noqa: F821</span>
-                              <span class="s1">&#39;overwrite to True.&#39;</span> <span class="o">%</span> <span class="n">fname</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">FileExistsError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">fname</span><span class="si">}</span><span class="s1">&quot; already exists. &#39;</span>
+                              <span class="s1">&#39;Please set overwrite to True.&#39;</span><span class="p">)</span>
     <span class="n">_to_tsv</span><span class="p">(</span><span class="n">dictionary</span><span class="p">,</span> <span class="n">fname</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">linesep</span> <span class="o">+</span> <span class="s2">&quot;Writing &#39;</span><span class="si">%s</span><span class="s2">&#39;...&quot;</span> <span class="o">%</span> <span class="n">fname</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">linesep</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">linesep</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;Writing &#39;</span><span class="si">{</span><span class="n">fname</span><span class="si">}</span><span class="s2">&#39;...&quot;</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">linesep</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="n">_tsv_to_str</span><span class="p">(</span><span class="n">dictionary</span><span class="p">))</span>
+
+
+<span class="k">def</span> <span class="nf">_write_text</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Write text to a file.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">op</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">overwrite</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">FileExistsError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">fname</span><span class="si">}</span><span class="s1">&quot; already exists. &#39;</span>
+                              <span class="s1">&#39;Please set overwrite to True.&#39;</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fid</span><span class="p">:</span>
+        <span class="n">fid</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+        <span class="n">fid</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">linesep</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;Writing &#39;</span><span class="si">{</span><span class="n">fname</span><span class="si">}</span><span class="s2">&#39;...&quot;</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">linesep</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">_check_key_val</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
@@ -1308,7 +1322,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-06-26.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-06-30.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.1.1.<br/>
     </p>
   </div>

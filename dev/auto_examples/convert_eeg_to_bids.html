@@ -178,14 +178,14 @@ of the directory tree.</p>
 |--- files/
 |------ eegmmidb/
 |--------- 1.0.0/
-|------------ S001/
-|--------------- S001R02.edf
-|--------------- S001R04.edf
-|--------------- S001R12.edf
 |------------ S002/
-|--------------- S002R12.edf
 |--------------- S002R04.edf
 |--------------- S002R02.edf
+|--------------- S002R12.edf
+|------------ S001/
+|--------------- S001R04.edf
+|--------------- S001R12.edf
+|--------------- S001R02.edf
 </pre></div>
 </div>
 <p>The data are in the <a class="reference external" href="https://www.edfplus.info/">European Data Format</a>
@@ -368,6 +368,15 @@ Setting channel info structure...
 Creating raw.info structure...
 Creating folder: /home/circleci/mne_data/eegmmidb_bids/sub-001/eeg
 
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids/README&#39;...
+
+References
+----------
+Appelhoff, S., Sanderson, M., Brooks, T., Vliet, M., Quentin, R., Holdgraf, C., Chaumon, M., Mikulan, E., Tavabi, K., Höchenberger, R., Welke, D., Brunner, C., Rockhill, A., Larson, E., Gramfort, A. and Jas, M. (2019). MNE-BIDS: Organizing electrophysiological data into the BIDS format and facilitating their analysis. Journal of Open Source Software 4: (1896). https://doi.org/10.21105/joss.01896
+
+Pernet, C. R., Appelhoff, S., Gorgolewski, K. J., Flandin, G., Phillips, C., Delorme, A., Oostenveld, R. (2019). EEG-BIDS, an extension to the brain imaging data structure for electroencephalography. Scientific Data, 6, 103. https://doi.org/10.1038/s41597-019-0104-8
+
+
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids/participants.tsv&#39;...
 
 participant_id  age     sex     hand
@@ -419,11 +428,11 @@ Writing &#39;/home/circleci/mne_data/eegmmidb_bids/dataset_description.json&#39;
     &quot;Name&quot;: &quot; &quot;,
     &quot;BIDSVersion&quot;: &quot;1.2.2&quot;,
     &quot;Authors&quot;: [
-        &quot;MNE-BIDS&quot;
+        &quot;Please cite MNE-BIDS in your publication before removing this (citations in README)&quot;
     ]
 }
 Effective window size : 1.600 (s)
-/home/circleci/project/mne_bids/write.py:462: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
+/home/circleci/project/mne_bids/write.py:503: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
   warn(&#39;No line frequency found, defaulting to {} Hz &#39;
 Reading 0 ... 9759  =      0.000 ...    60.994 secs...
 
@@ -467,39 +476,40 @@ Copying data files to /home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_
 </div>
 <p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>|eegmmidb_bids/
-|--- dataset_description.json
-|--- participants.json
 |--- participants.tsv
+|--- README
+|--- participants.json
+|--- dataset_description.json
 |--- sub-002/
 |------ sub-002_scans.tsv
 |------ eeg/
 |--------- sub-002_task-imaginefists_run-1_eeg.edf
-|--------- sub-002_task-resteyesclosed_channels.tsv
-|--------- sub-002_task-imaginefists_run-2_events.tsv
-|--------- sub-002_task-imaginefists_run-1_eeg.json
 |--------- sub-002_task-imaginefists_run-1_channels.tsv
+|--------- sub-002_task-resteyesclosed_events.tsv
+|--------- sub-002_task-resteyesclosed_channels.tsv
+|--------- sub-002_task-imaginefists_run-1_events.tsv
+|--------- sub-002_task-imaginefists_run-2_events.tsv
+|--------- sub-002_task-imaginefists_run-2_eeg.json
+|--------- sub-002_task-imaginefists_run-2_eeg.edf
+|--------- sub-002_task-resteyesclosed_eeg.json
 |--------- sub-002_task-resteyesclosed_eeg.edf
 |--------- sub-002_task-imaginefists_run-2_channels.tsv
-|--------- sub-002_task-resteyesclosed_events.tsv
-|--------- sub-002_task-resteyesclosed_eeg.json
-|--------- sub-002_task-imaginefists_run-2_eeg.edf
-|--------- sub-002_task-imaginefists_run-1_events.tsv
-|--------- sub-002_task-imaginefists_run-2_eeg.json
+|--------- sub-002_task-imaginefists_run-1_eeg.json
 |--- sub-001/
 |------ sub-001_scans.tsv
 |------ eeg/
-|--------- sub-001_task-imaginefists_run-2_events.tsv
-|--------- sub-001_task-imaginefists_run-1_channels.tsv
-|--------- sub-001_task-resteyesclosed_eeg.edf
-|--------- sub-001_task-imaginefists_run-2_eeg.edf
-|--------- sub-001_task-imaginefists_run-2_channels.tsv
-|--------- sub-001_task-resteyesclosed_channels.tsv
 |--------- sub-001_task-resteyesclosed_eeg.json
-|--------- sub-001_task-imaginefists_run-1_eeg.edf
+|--------- sub-001_task-imaginefists_run-2_eeg.edf
+|--------- sub-001_task-resteyesclosed_channels.tsv
 |--------- sub-001_task-imaginefists_run-1_events.tsv
+|--------- sub-001_task-imaginefists_run-1_channels.tsv
 |--------- sub-001_task-imaginefists_run-2_eeg.json
-|--------- sub-001_task-imaginefists_run-1_eeg.json
+|--------- sub-001_task-resteyesclosed_eeg.edf
+|--------- sub-001_task-imaginefists_run-2_events.tsv
+|--------- sub-001_task-imaginefists_run-2_channels.tsv
 |--------- sub-001_task-resteyesclosed_events.tsv
+|--------- sub-001_task-imaginefists_run-1_eeg.edf
+|--------- sub-001_task-imaginefists_run-1_eeg.json
 </pre></div>
 </div>
 <p>Looks good so far, let’s convert the data for all tasks and subjects.</p>
@@ -546,6 +556,15 @@ EDF file detected
 Setting channel info structure...
 Creating raw.info structure...
 Creating folder: /home/circleci/mne_data/eegmmidb_bids/sub-001/eeg
+
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids/README&#39;...
+
+References
+----------
+Appelhoff, S., Sanderson, M., Brooks, T., Vliet, M., Quentin, R., Holdgraf, C., Chaumon, M., Mikulan, E., Tavabi, K., Höchenberger, R., Welke, D., Brunner, C., Rockhill, A., Larson, E., Gramfort, A. and Jas, M. (2019). MNE-BIDS: Organizing electrophysiological data into the BIDS format and facilitating their analysis. Journal of Open Source Software 4: (1896). https://doi.org/10.21105/joss.01896
+
+Pernet, C. R., Appelhoff, S., Gorgolewski, K. J., Flandin, G., Phillips, C., Delorme, A., Oostenveld, R. (2019). EEG-BIDS, an extension to the brain imaging data structure for electroencephalography. Scientific Data, 6, 103. https://doi.org/10.1038/s41597-019-0104-8
+
 
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids/participants.tsv&#39;...
 
@@ -595,11 +614,11 @@ Writing &#39;/home/circleci/mne_data/eegmmidb_bids/dataset_description.json&#39;
     &quot;Name&quot;: &quot; &quot;,
     &quot;BIDSVersion&quot;: &quot;1.2.2&quot;,
     &quot;Authors&quot;: [
-        &quot;MNE-BIDS&quot;
+        &quot;Please cite MNE-BIDS in your publication before removing this (citations in README)&quot;
     ]
 }
 Effective window size : 1.600 (s)
-/home/circleci/project/mne_bids/write.py:462: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
+/home/circleci/project/mne_bids/write.py:503: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
   warn(&#39;No line frequency found, defaulting to {} Hz &#39;
 Reading 0 ... 9759  =      0.000 ...    60.994 secs...
 
@@ -643,6 +662,15 @@ EDF file detected
 Setting channel info structure...
 Creating raw.info structure...
 Creating folder: /home/circleci/mne_data/eegmmidb_bids/sub-001/eeg
+
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids/README&#39;...
+
+References
+----------
+Appelhoff, S., Sanderson, M., Brooks, T., Vliet, M., Quentin, R., Holdgraf, C., Chaumon, M., Mikulan, E., Tavabi, K., Höchenberger, R., Welke, D., Brunner, C., Rockhill, A., Larson, E., Gramfort, A. and Jas, M. (2019). MNE-BIDS: Organizing electrophysiological data into the BIDS format and facilitating their analysis. Journal of Open Source Software 4: (1896). https://doi.org/10.21105/joss.01896
+
+Pernet, C. R., Appelhoff, S., Gorgolewski, K. J., Flandin, G., Phillips, C., Delorme, A., Oostenveld, R. (2019). EEG-BIDS, an extension to the brain imaging data structure for electroencephalography. Scientific Data, 6, 103. https://doi.org/10.1038/s41597-019-0104-8
+
 
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids/participants.tsv&#39;...
 
@@ -697,11 +725,11 @@ Writing &#39;/home/circleci/mne_data/eegmmidb_bids/dataset_description.json&#39;
     &quot;Name&quot;: &quot; &quot;,
     &quot;BIDSVersion&quot;: &quot;1.2.2&quot;,
     &quot;Authors&quot;: [
-        &quot;MNE-BIDS&quot;
+        &quot;Please cite MNE-BIDS in your publication before removing this (citations in README)&quot;
     ]
 }
 Effective window size : 1.600 (s)
-/home/circleci/project/mne_bids/write.py:462: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
+/home/circleci/project/mne_bids/write.py:503: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
   warn(&#39;No line frequency found, defaulting to {} Hz &#39;
 Reading 0 ... 19999  =      0.000 ...   124.994 secs...
 
@@ -745,6 +773,15 @@ EDF file detected
 Setting channel info structure...
 Creating raw.info structure...
 Creating folder: /home/circleci/mne_data/eegmmidb_bids/sub-001/eeg
+
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids/README&#39;...
+
+References
+----------
+Appelhoff, S., Sanderson, M., Brooks, T., Vliet, M., Quentin, R., Holdgraf, C., Chaumon, M., Mikulan, E., Tavabi, K., Höchenberger, R., Welke, D., Brunner, C., Rockhill, A., Larson, E., Gramfort, A. and Jas, M. (2019). MNE-BIDS: Organizing electrophysiological data into the BIDS format and facilitating their analysis. Journal of Open Source Software 4: (1896). https://doi.org/10.21105/joss.01896
+
+Pernet, C. R., Appelhoff, S., Gorgolewski, K. J., Flandin, G., Phillips, C., Delorme, A., Oostenveld, R. (2019). EEG-BIDS, an extension to the brain imaging data structure for electroencephalography. Scientific Data, 6, 103. https://doi.org/10.1038/s41597-019-0104-8
+
 
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids/participants.tsv&#39;...
 
@@ -800,11 +837,11 @@ Writing &#39;/home/circleci/mne_data/eegmmidb_bids/dataset_description.json&#39;
     &quot;Name&quot;: &quot; &quot;,
     &quot;BIDSVersion&quot;: &quot;1.2.2&quot;,
     &quot;Authors&quot;: [
-        &quot;MNE-BIDS&quot;
+        &quot;Please cite MNE-BIDS in your publication before removing this (citations in README)&quot;
     ]
 }
 Effective window size : 1.600 (s)
-/home/circleci/project/mne_bids/write.py:462: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
+/home/circleci/project/mne_bids/write.py:503: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
   warn(&#39;No line frequency found, defaulting to {} Hz &#39;
 Reading 0 ... 19999  =      0.000 ...   124.994 secs...
 
@@ -848,6 +885,15 @@ EDF file detected
 Setting channel info structure...
 Creating raw.info structure...
 Creating folder: /home/circleci/mne_data/eegmmidb_bids/sub-002/eeg
+
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids/README&#39;...
+
+References
+----------
+Appelhoff, S., Sanderson, M., Brooks, T., Vliet, M., Quentin, R., Holdgraf, C., Chaumon, M., Mikulan, E., Tavabi, K., Höchenberger, R., Welke, D., Brunner, C., Rockhill, A., Larson, E., Gramfort, A. and Jas, M. (2019). MNE-BIDS: Organizing electrophysiological data into the BIDS format and facilitating their analysis. Journal of Open Source Software 4: (1896). https://doi.org/10.21105/joss.01896
+
+Pernet, C. R., Appelhoff, S., Gorgolewski, K. J., Flandin, G., Phillips, C., Delorme, A., Oostenveld, R. (2019). EEG-BIDS, an extension to the brain imaging data structure for electroencephalography. Scientific Data, 6, 103. https://doi.org/10.1038/s41597-019-0104-8
+
 
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids/participants.tsv&#39;...
 
@@ -898,11 +944,11 @@ Writing &#39;/home/circleci/mne_data/eegmmidb_bids/dataset_description.json&#39;
     &quot;Name&quot;: &quot; &quot;,
     &quot;BIDSVersion&quot;: &quot;1.2.2&quot;,
     &quot;Authors&quot;: [
-        &quot;MNE-BIDS&quot;
+        &quot;Please cite MNE-BIDS in your publication before removing this (citations in README)&quot;
     ]
 }
 Effective window size : 1.600 (s)
-/home/circleci/project/mne_bids/write.py:462: RuntimeWarning: No line frequency found, defaulting to 50 Hz estimated from multi-taper FFT on 10 seconds of data.
+/home/circleci/project/mne_bids/write.py:503: RuntimeWarning: No line frequency found, defaulting to 50 Hz estimated from multi-taper FFT on 10 seconds of data.
   warn(&#39;No line frequency found, defaulting to {} Hz &#39;
 Reading 0 ... 9759  =      0.000 ...    60.994 secs...
 
@@ -946,6 +992,15 @@ EDF file detected
 Setting channel info structure...
 Creating raw.info structure...
 Creating folder: /home/circleci/mne_data/eegmmidb_bids/sub-002/eeg
+
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids/README&#39;...
+
+References
+----------
+Appelhoff, S., Sanderson, M., Brooks, T., Vliet, M., Quentin, R., Holdgraf, C., Chaumon, M., Mikulan, E., Tavabi, K., Höchenberger, R., Welke, D., Brunner, C., Rockhill, A., Larson, E., Gramfort, A. and Jas, M. (2019). MNE-BIDS: Organizing electrophysiological data into the BIDS format and facilitating their analysis. Journal of Open Source Software 4: (1896). https://doi.org/10.21105/joss.01896
+
+Pernet, C. R., Appelhoff, S., Gorgolewski, K. J., Flandin, G., Phillips, C., Delorme, A., Oostenveld, R. (2019). EEG-BIDS, an extension to the brain imaging data structure for electroencephalography. Scientific Data, 6, 103. https://doi.org/10.1038/s41597-019-0104-8
+
 
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids/participants.tsv&#39;...
 
@@ -1001,11 +1056,11 @@ Writing &#39;/home/circleci/mne_data/eegmmidb_bids/dataset_description.json&#39;
     &quot;Name&quot;: &quot; &quot;,
     &quot;BIDSVersion&quot;: &quot;1.2.2&quot;,
     &quot;Authors&quot;: [
-        &quot;MNE-BIDS&quot;
+        &quot;Please cite MNE-BIDS in your publication before removing this (citations in README)&quot;
     ]
 }
 Effective window size : 1.600 (s)
-/home/circleci/project/mne_bids/write.py:462: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
+/home/circleci/project/mne_bids/write.py:503: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
   warn(&#39;No line frequency found, defaulting to {} Hz &#39;
 Reading 0 ... 19679  =      0.000 ...   122.994 secs...
 
@@ -1049,6 +1104,15 @@ EDF file detected
 Setting channel info structure...
 Creating raw.info structure...
 Creating folder: /home/circleci/mne_data/eegmmidb_bids/sub-002/eeg
+
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids/README&#39;...
+
+References
+----------
+Appelhoff, S., Sanderson, M., Brooks, T., Vliet, M., Quentin, R., Holdgraf, C., Chaumon, M., Mikulan, E., Tavabi, K., Höchenberger, R., Welke, D., Brunner, C., Rockhill, A., Larson, E., Gramfort, A. and Jas, M. (2019). MNE-BIDS: Organizing electrophysiological data into the BIDS format and facilitating their analysis. Journal of Open Source Software 4: (1896). https://doi.org/10.21105/joss.01896
+
+Pernet, C. R., Appelhoff, S., Gorgolewski, K. J., Flandin, G., Phillips, C., Delorme, A., Oostenveld, R. (2019). EEG-BIDS, an extension to the brain imaging data structure for electroencephalography. Scientific Data, 6, 103. https://doi.org/10.1038/s41597-019-0104-8
+
 
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids/participants.tsv&#39;...
 
@@ -1105,11 +1169,11 @@ Writing &#39;/home/circleci/mne_data/eegmmidb_bids/dataset_description.json&#39;
     &quot;Name&quot;: &quot; &quot;,
     &quot;BIDSVersion&quot;: &quot;1.2.2&quot;,
     &quot;Authors&quot;: [
-        &quot;MNE-BIDS&quot;
+        &quot;Please cite MNE-BIDS in your publication before removing this (citations in README)&quot;
     ]
 }
 Effective window size : 1.600 (s)
-/home/circleci/project/mne_bids/write.py:462: RuntimeWarning: No line frequency found, defaulting to 50 Hz estimated from multi-taper FFT on 10 seconds of data.
+/home/circleci/project/mne_bids/write.py:503: RuntimeWarning: No line frequency found, defaulting to 50 Hz estimated from multi-taper FFT on 10 seconds of data.
   warn(&#39;No line frequency found, defaulting to {} Hz &#39;
 Reading 0 ... 19679  =      0.000 ...   122.994 secs...
 
@@ -1154,39 +1218,60 @@ Copying data files to /home/circleci/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_
 </div>
 <p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>|eegmmidb_bids/
-|--- dataset_description.json
-|--- participants.json
 |--- participants.tsv
+|--- README
+|--- participants.json
+|--- dataset_description.json
 |--- sub-002/
 |------ sub-002_scans.tsv
 |------ eeg/
 |--------- sub-002_task-imaginefists_run-1_eeg.edf
-|--------- sub-002_task-resteyesclosed_channels.tsv
-|--------- sub-002_task-imaginefists_run-2_events.tsv
-|--------- sub-002_task-imaginefists_run-1_eeg.json
 |--------- sub-002_task-imaginefists_run-1_channels.tsv
+|--------- sub-002_task-resteyesclosed_events.tsv
+|--------- sub-002_task-resteyesclosed_channels.tsv
+|--------- sub-002_task-imaginefists_run-1_events.tsv
+|--------- sub-002_task-imaginefists_run-2_events.tsv
+|--------- sub-002_task-imaginefists_run-2_eeg.json
+|--------- sub-002_task-imaginefists_run-2_eeg.edf
+|--------- sub-002_task-resteyesclosed_eeg.json
 |--------- sub-002_task-resteyesclosed_eeg.edf
 |--------- sub-002_task-imaginefists_run-2_channels.tsv
-|--------- sub-002_task-resteyesclosed_events.tsv
-|--------- sub-002_task-resteyesclosed_eeg.json
-|--------- sub-002_task-imaginefists_run-2_eeg.edf
-|--------- sub-002_task-imaginefists_run-1_events.tsv
-|--------- sub-002_task-imaginefists_run-2_eeg.json
+|--------- sub-002_task-imaginefists_run-1_eeg.json
 |--- sub-001/
 |------ sub-001_scans.tsv
 |------ eeg/
-|--------- sub-001_task-imaginefists_run-2_events.tsv
-|--------- sub-001_task-imaginefists_run-1_channels.tsv
-|--------- sub-001_task-resteyesclosed_eeg.edf
-|--------- sub-001_task-imaginefists_run-2_eeg.edf
-|--------- sub-001_task-imaginefists_run-2_channels.tsv
-|--------- sub-001_task-resteyesclosed_channels.tsv
 |--------- sub-001_task-resteyesclosed_eeg.json
-|--------- sub-001_task-imaginefists_run-1_eeg.edf
+|--------- sub-001_task-imaginefists_run-2_eeg.edf
+|--------- sub-001_task-resteyesclosed_channels.tsv
 |--------- sub-001_task-imaginefists_run-1_events.tsv
+|--------- sub-001_task-imaginefists_run-1_channels.tsv
 |--------- sub-001_task-imaginefists_run-2_eeg.json
-|--------- sub-001_task-imaginefists_run-1_eeg.json
+|--------- sub-001_task-resteyesclosed_eeg.edf
+|--------- sub-001_task-imaginefists_run-2_events.tsv
+|--------- sub-001_task-imaginefists_run-2_channels.tsv
 |--------- sub-001_task-resteyesclosed_events.tsv
+|--------- sub-001_task-imaginefists_run-1_eeg.edf
+|--------- sub-001_task-imaginefists_run-1_eeg.json
+</pre></div>
+</div>
+</div>
+<div class="section" id="step-4-cite-mne-bids">
+<h2>Step 4: Cite mne-bids<a class="headerlink" href="#step-4-cite-mne-bids" title="Permalink to this headline">¶</a></h2>
+<p>We can see that the appropriate citations are already written in the README.
+If you are preparing a manuscript, please make sure to also cite MNE-BIDS
+there.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">readme</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/os.path.html#os.path.join" title="os.path.join" class="sphx-glr-backref-module-os-path sphx-glr-backref-type-py-function"><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">,</span> <span class="s1">&#39;README&#39;</span><span class="p">)</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">readme</span></a><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <a href="https://docs.python.org/3/library/io.html#io.TextIOWrapper" title="io.TextIOWrapper" class="sphx-glr-backref-module-io sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fid</span></a><span class="p">:</span>
+    <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">text</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/io.html#io.TextIOWrapper" title="io.TextIOWrapper" class="sphx-glr-backref-module-io sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fid</span></a><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">text</span></a><span class="p">)</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>References
+----------
+Appelhoff, S., Sanderson, M., Brooks, T., Vliet, M., Quentin, R., Holdgraf, C., Chaumon, M., Mikulan, E., Tavabi, K., Höchenberger, R., Welke, D., Brunner, C., Rockhill, A., Larson, E., Gramfort, A. and Jas, M. (2019). MNE-BIDS: Organizing electrophysiological data into the BIDS format and facilitating their analysis. Journal of Open Source Software 4: (1896). https://doi.org/10.21105/joss.01896
+
+Pernet, C. R., Appelhoff, S., Gorgolewski, K. J., Flandin, G., Phillips, C., Delorme, A., Oostenveld, R. (2019). EEG-BIDS, an extension to the brain imaging data structure for electroencephalography. Scientific Data, 6, 103. https://doi.org/10.1038/s41597-019-0104-8
 </pre></div>
 </div>
 <p>MNE-BIDS has created a suitable directory structure for us, and among other
@@ -1201,7 +1286,7 @@ directories called the “BIDS-validator”, available as a web version and a
 command line tool:</p>
 <p>Web version: <a class="reference external" href="https://bids-standard.github.io/bids-validator/">https://bids-standard.github.io/bids-validator/</a></p>
 <p>Command line tool: <a class="reference external" href="https://www.npmjs.com/package/bids-validator">https://www.npmjs.com/package/bids-validator</a></p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.739 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.660 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-eeg-to-bids-py">
 <div class="binder-badge docutils container">
 <a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/convert_eeg_to_bids.ipynb"><img alt="https://mybinder.org/badge_logo.svg" src="https://mybinder.org/badge_logo.svg" width="150px" /></a>
@@ -1229,7 +1314,7 @@ command line tool:</p>
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-06-26.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-06-30.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.1.1.<br/>
     </p>
   </div>

@@ -178,6 +178,17 @@ write_raw_bids(raw, bids_basename, bids_root=bids_root,
 print_dir_tree(bids_root)
 
 ###############################################################################
+# Step 4: Cite mne-bids
+# ---------------------
+# We can see that the appropriate citations are already written in the README.
+# If you are preparing a manuscript, please make sure to also cite MNE-BIDS
+# there.
+readme = os.path.join(bids_root, 'README')
+with open(readme, 'r') as fid:
+    text = fid.read()
+print(text)
+
+###############################################################################
 # MNE-BIDS has created a suitable directory structure for us, and among other
 # meta data files, it started an `events.tsv` and `channels.tsv` and made an
 # initial `dataset_description.json` on top!
@@ -198,7 +209,7 @@ print_dir_tree(bids_root)
 # Command line tool: https://www.npmjs.com/package/bids-validator
 
 ###############################################################################
-# Step 4: Plot output channels and check that they match!
+# Step 5: Plot output channels and check that they match!
 # -------------------------------------------------------
 #
 # Now we have written our BIDS directory. We can use

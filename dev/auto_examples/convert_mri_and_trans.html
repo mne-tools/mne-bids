@@ -199,6 +199,15 @@ Ready.
 Current compensation grade : 0
 Creating folder: /home/circleci/mne_data/MNE-sample-data-bids/sub-01/ses-01/meg
 
+Writing &#39;/home/circleci/mne_data/MNE-sample-data-bids/README&#39;...
+
+References
+----------
+Appelhoff, S., Sanderson, M., Brooks, T., Vliet, M., Quentin, R., Holdgraf, C., Chaumon, M., Mikulan, E., Tavabi, K., Höchenberger, R., Welke, D., Brunner, C., Rockhill, A., Larson, E., Gramfort, A. and Jas, M. (2019). MNE-BIDS: Organizing electrophysiological data into the BIDS format and facilitating their analysis. Journal of Open Source Software 4: (1896). https://doi.org/10.21105/joss.01896
+
+Niso, G., Gorgolewski, K. J., Bock, E., Brooks, T. L., Flandin, G., Gramfort, A., Henson, R. N., Jas, M., Litvak, V., Moreau, J., Oostenveld, R., Schoffelen, J., Tadel, F., Wexler, J., Baillet, S. (2018). MEG-BIDS, the brain imaging data structure extended to magnetoencephalography. Scientific Data, 5, 180110. http://doi.org/10.1038/sdata.2018.110
+
+
 Writing &#39;/home/circleci/mne_data/MNE-sample-data-bids/participants.tsv&#39;...
 
 participant_id  age     sex     hand
@@ -298,11 +307,11 @@ Writing &#39;/home/circleci/mne_data/MNE-sample-data-bids/dataset_description.js
     &quot;Name&quot;: &quot; &quot;,
     &quot;BIDSVersion&quot;: &quot;1.2.2&quot;,
     &quot;Authors&quot;: [
-        &quot;MNE-BIDS&quot;
+        &quot;Please cite MNE-BIDS in your publication before removing this (citations in README)&quot;
     ]
 }
 Effective window size : 0.426 (s)
-/home/circleci/project/mne_bids/write.py:462: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
+/home/circleci/project/mne_bids/write.py:503: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
   warn(&#39;No line frequency found, defaulting to {} Hz &#39;
 Reading 0 ... 166799  =      0.000 ...   277.714 secs...
 
@@ -350,18 +359,19 @@ Closing /home/circleci/mne_data/MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_se
 </div>
 <p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>|MNE-sample-data-bids/
-|--- dataset_description.json
-|--- participants.json
 |--- participants.tsv
+|--- README
+|--- participants.json
+|--- dataset_description.json
 |--- sub-01/
 |------ ses-01/
 |--------- sub-01_ses-01_scans.tsv
 |--------- meg/
-|------------ sub-01_ses-01_task-audiovisual_run-01_meg.fif
 |------------ sub-01_ses-01_coordsystem.json
+|------------ sub-01_ses-01_task-audiovisual_run-01_meg.fif
 |------------ sub-01_ses-01_task-audiovisual_run-01_events.tsv
-|------------ sub-01_ses-01_task-audiovisual_run-01_channels.tsv
 |------------ sub-01_ses-01_task-audiovisual_run-01_meg.json
+|------------ sub-01_ses-01_task-audiovisual_run-01_channels.tsv
 </pre></div>
 </div>
 <p>Now let’s assume that we have also collected some T1 weighted MRI data for
@@ -430,21 +440,22 @@ retrieve our transformation matrix <code class="code docutils literal notranslat
 </div>
 <p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>|MNE-sample-data-bids/
-|--- dataset_description.json
-|--- participants.json
 |--- participants.tsv
+|--- README
+|--- participants.json
+|--- dataset_description.json
 |--- sub-01/
 |------ ses-01/
 |--------- sub-01_ses-01_scans.tsv
-|--------- meg/
-|------------ sub-01_ses-01_task-audiovisual_run-01_meg.fif
-|------------ sub-01_ses-01_coordsystem.json
-|------------ sub-01_ses-01_task-audiovisual_run-01_events.tsv
-|------------ sub-01_ses-01_task-audiovisual_run-01_channels.tsv
-|------------ sub-01_ses-01_task-audiovisual_run-01_meg.json
 |--------- anat/
 |------------ sub-01_ses-01_T1w.nii.gz
 |------------ sub-01_ses-01_T1w.json
+|--------- meg/
+|------------ sub-01_ses-01_coordsystem.json
+|------------ sub-01_ses-01_task-audiovisual_run-01_meg.fif
+|------------ sub-01_ses-01_task-audiovisual_run-01_events.tsv
+|------------ sub-01_ses-01_task-audiovisual_run-01_meg.json
+|------------ sub-01_ses-01_task-audiovisual_run-01_channels.tsv
 </pre></div>
 </div>
 <p>Our BIDS dataset is now ready to be shared. We can easily estimate the
@@ -467,7 +478,7 @@ Reading events from /home/circleci/mne_data/MNE-sample-data-bids/sub-01/ses-01/m
 Reading channel info from /home/circleci/mne_data/MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_channels.tsv.
 /home/circleci/project/mne_bids/read.py:238: RuntimeWarning: The unit for channel(s) STI 001, STI 002, STI 003, STI 004, STI 005, STI 006, STI 014, STI 015, STI 016 has changed from V to NA.
   raw.set_channel_types(channel_type_dict)
-/home/circleci/project/mne_bids/utils.py:938: RuntimeWarning: Did not find any electrodes.tsv associated with sub-01_ses-01_task-audiovisual_run-01_meg.fif.
+/home/circleci/project/mne_bids/utils.py:952: RuntimeWarning: Did not find any electrodes.tsv associated with sub-01_ses-01_task-audiovisual_run-01_meg.fif.
 
 The search_str was &quot;/home/circleci/mne_data/MNE-sample-data-bids/sub-01/**/sub-01_ses-01**_electrodes.tsv&quot;
   warn(msg)
@@ -554,7 +565,7 @@ plot the results.</p>
 }
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  14.516 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  36.409 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-mri-and-trans-py">
 <div class="binder-badge docutils container">
 <a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/convert_mri_and_trans.ipynb"><img alt="https://mybinder.org/badge_logo.svg" src="https://mybinder.org/badge_logo.svg" width="150px" /></a>
@@ -581,7 +592,7 @@ plot the results.</p>
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-06-26.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-06-30.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.1.1.<br/>
     </p>
   </div>
