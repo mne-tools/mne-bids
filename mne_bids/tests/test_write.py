@@ -760,8 +760,8 @@ def test_edf(_bids_validate):
     with open(dataset_description_fpath, 'r') as f:
         dataset_description_json = json.load(f)
         assert dataset_description_json["Authors"] == \
-            [("For publications please add the MNE-BIDS citations in "
-              "the README to your manuscript before removing this")]
+            [("Please cite MNE-BIDS in your publication before removing this "
+              "(citations in README)")]
 
     # Reading the file back should raise an error, because we renamed channels
     # in `raw` and used that information to write a channels.tsv. Yet, we
