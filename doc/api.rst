@@ -77,8 +77,10 @@ Copyfiles
    copyfile_bti
    copyfile_kit
 
-Reports (:py:mod:`mne_bids.report`)
-======================================
+Reports
+=======
+
+:py:mod:`mne_bids.report`:
 
 .. currentmodule:: mne_bids.report
 
