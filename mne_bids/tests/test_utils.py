@@ -426,3 +426,8 @@ def test_bids_path(return_bids_test_dir):
     bids_path = make_bids_basename(subject='01', session='02',
                                    task='03', suffix='ieeg.edf')
     assert repr(bids_path) == 'BIDSPath(sub-01_ses-02_task-03_ieeg.edf)'
+
+    # test string concatenation
+    bids_path = make_bids_basename(subject='01', session='A')
+    other_string = 'foo'
+    assert bids_path + other_string == str(bids_path) + other_string

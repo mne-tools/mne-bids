@@ -157,6 +157,9 @@ class BIDSPath(object):
         """Compare str representations."""
         return str(self) != str(other)
 
+    def __add__(self, other):
+        return str(self) + other
+
     def copy(self):
         """Copy the instance.
 
