@@ -832,6 +832,7 @@ def make_dataset_description(path, name, data_license=None,
     Notes
     -----
     The required field BIDSVersion will be automatically filled by mne_bids.
+    The recommended field DatasetType will be automatically filled to be "raw".
 
     """
     # default author to make dataset description BIDS compliant
@@ -850,6 +851,7 @@ def make_dataset_description(path, name, data_license=None,
     fname = op.join(path, 'dataset_description.json')
     description = OrderedDict([('Name', name),
                                ('BIDSVersion', BIDS_VERSION),
+                               ('DatasetType', 'raw'),
                                ('License', data_license),
                                ('Authors', authors),
                                ('Acknowledgements', acknowledgements),
