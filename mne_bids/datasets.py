@@ -10,7 +10,6 @@ import os
 import os.path as op
 import shutil
 import tarfile
-import urllib.request
 
 from mne.utils import _fetch_file
 
@@ -67,41 +66,5 @@ def fetch_faces_data(data_path=None, repo='ds000117', subject_ids=[1]):
         # Clean up to get ready to download next subject
         shutil.rmtree(op.join(data_path, 'ds117'))
         os.remove(tar_fname)
-
-    return data_path
-
-
-def fetch_brainvision_testing_data(data_path=None):
-    """Download the MNE-Python testing data for the BrainVision format.
-
-    Parameters
-    ----------
-    data_path : str | None
-        Path to the folder where data is stored. Defaults to
-        '~/mne_data/mne_bids_examples/testing_data_BrainVision'
-
-    Returns
-    -------
-    data_path : str
-        Path to the folder containing the data.
-
-    """
-    if not data_path:
-        home = os.path.expanduser('~')
-        data_path = os.path.join(home, 'mne_data', 'mne_bids_examples',
-                                 'testing_data_BrainVision')
-        if not os.path.exists(data_path):
-            os.makedirs(data_path)
-
-    base_url = 'https://github.com/mne-tools/mne-python/'
-    base_url += 'raw/master/mne/io/brainvision/tests/data/test'
-    file_endings = ['.vhdr', '.vmrk', '.eeg', ]
-    for f_ending in file_endings:
-        url = base_url + f_ending
-        response = urllib.request.urlopen(url)
-
-        fname = os.path.join(data_path, 'test' + f_ending)
-        with open(fname, 'wb') as fout:
-            fout.write(response.read())
 
     return data_path

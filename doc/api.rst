@@ -92,4 +92,3 @@ Datasets
     :toctree: generated/
 
     fetch_faces_data
-    fetch_brainvision_testing_data
