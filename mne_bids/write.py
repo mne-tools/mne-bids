@@ -793,7 +793,7 @@ def make_dataset_description(path, name, data_license=None,
                              authors=None, acknowledgements=None,
                              how_to_acknowledge=None, funding=None,
                              references_and_links=None, doi=None,
-                             datasettype='raw',
+                             dataset_type='raw',
                              verbose=False):
     """Create json for a dataset description.
 
