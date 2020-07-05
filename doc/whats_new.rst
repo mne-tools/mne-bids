@@ -31,8 +31,7 @@ Changelog
 - :func:`mne_bids.write_raw_bids` and :func:`mne_bids.read_raw_bids` now handle scalp EEG if Captrak coordinate system and NAS/LPA/RPA landmarks are present, by `Adam Li`_ (`#416 <https://github.com/mne-tools/mne-bids/pull/416>`_)
 - :func:`mne_bids.get_matched_empty_room` now implements an algorithm for discovering empty-room recordings that do not have the recording date set as their session, by `Richard Höchenberger`_ (`#421 <https://github.com/mne-tools/mne-bids/pull/421>`_)
 - :func:`write_raw_bids` now adds citations to the README, by `Alex Rockhill`_ (`#463 <https://github.com/mne-tools/mne-bids/pull/463>`_)
-- :func:`write_raw_bids` now adds citations to the README, by `Alex Rockhill`_ (`#463 <https://github.com/mne-tools/mne-bids/pull/463>`_)
-- :func:`make_dataset_description` now adds the recommended field DatasetType with a defauls value "raw" automatically, by `Stefan Appelhoff`_ (`#472 <https://github.com/mne-tools/mne-bids/pull/472>`_)
+- :func:`make_dataset_description` now has an additional parameter ``datasettype`` to set the recommended field ``DatasetType`` (defaults to ``"raw"``), by `Stefan Appelhoff`_ (`#472 <https://github.com/mne-tools/mne-bids/pull/472>`_)
 
 Bug
 ~~~

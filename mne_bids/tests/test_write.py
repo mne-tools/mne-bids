@@ -116,6 +116,16 @@ def _test_anonymize(raw, bids_basename, events_fname=None, event_id=None):
     return bids_root
 
 
+def test_make_dataset_description():
+    """Test making a dataset_description.json."""
+    tmp_dir = _TempDir()
+    with pytest.raises(ValueError, match='`datasettype` must be either "raw"'):
+        make_dataset_description(path=tmp_dir, name='thing', datasettype='src')
+
+    make_dataset_description(path=tmp_dir, name='thing',
+                             datasettype='derivative', verbose=True)
+
+
 def test_stamp_to_dt():
     """Test conversions of meas_date to datetime objects."""
     meas_date = (1346981585, 835782)
