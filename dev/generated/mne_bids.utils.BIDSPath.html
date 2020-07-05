@@ -177,20 +177,20 @@ in which you wish to create a file with this name.</p>
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#mne_bids.utils.BIDSPath.copy" title="mne_bids.utils.BIDSPath.copy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy</span></code></a>(self)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mne_bids.utils.BIDSPath.copy" title="mne_bids.utils.BIDSPath.copy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy</span></code></a>()</p></td>
 <td><p>Copy the instance.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#mne_bids.utils.BIDSPath.get_bids_fname" title="mne_bids.utils.BIDSPath.get_bids_fname"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_bids_fname</span></code></a>(self[, kind, bids_root, …])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#mne_bids.utils.BIDSPath.get_bids_fname" title="mne_bids.utils.BIDSPath.get_bids_fname"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_bids_fname</span></code></a>([kind, bids_root, extension])</p></td>
 <td><p>Get the BIDS filename, by inferring kind and extension.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#mne_bids.utils.BIDSPath.update" title="mne_bids.utils.BIDSPath.update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code></a>(self, **entities)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mne_bids.utils.BIDSPath.update" title="mne_bids.utils.BIDSPath.update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code></a>(**entities)</p></td>
 <td><p>Update inplace BIDS entity key/value pairs in object.</p></td>
 </tr>
 </tbody>
 </table>
 <dl class="py method">
 <dt id="mne_bids.utils.BIDSPath.copy">
-<code class="sig-name descname">copy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/utils.html#BIDSPath.copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.utils.BIDSPath.copy" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">copy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/utils.html#BIDSPath.copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.utils.BIDSPath.copy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Copy the instance.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -210,7 +210,7 @@ in which you wish to create a file with this name.</p>
 
 <dl class="py method">
 <dt id="mne_bids.utils.BIDSPath.get_bids_fname">
-<code class="sig-name descname">get_bids_fname</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">bids_root</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">extension</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/utils.html#BIDSPath.get_bids_fname"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.utils.BIDSPath.get_bids_fname" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_bids_fname</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">bids_root</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">extension</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/utils.html#BIDSPath.get_bids_fname"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.utils.BIDSPath.get_bids_fname" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the BIDS filename, by inferring kind and extension.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -241,7 +241,7 @@ will be added to the filename.</p>
 
 <dl class="py method">
 <dt id="mne_bids.utils.BIDSPath.update">
-<code class="sig-name descname">update</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">entities</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/utils.html#BIDSPath.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.utils.BIDSPath.update" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">update</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">entities</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/utils.html#BIDSPath.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.utils.BIDSPath.update" title="Permalink to this definition">¶</a></dt>
 <dd><p>Update inplace BIDS entity key/value pairs in object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -325,8 +325,8 @@ will be added to the filename.</p>
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-06-30.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.1.1.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-07-05.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.1.2.<br/>
     </p>
   </div>
 </footer>

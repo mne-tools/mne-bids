@@ -5,24 +5,24 @@
 
 Computation times
 =================
-**03:14.549** total execution time for **auto_examples** files:
+**02:55.468** total execution time for **auto_examples** files:
 
 +---------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_auto_examples_convert_group_studies.py` (``convert_group_studies.py``)       | 01:49.194 | 0.0 MB |
+| :ref:`sphx_glr_auto_examples_convert_group_studies.py` (``convert_group_studies.py``)       | 01:54.405 | 0.0 MB |
 +---------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_auto_examples_convert_mri_and_trans.py` (``convert_mri_and_trans.py``)       | 00:58.895 | 0.0 MB |
+| :ref:`sphx_glr_auto_examples_convert_mri_and_trans.py` (``convert_mri_and_trans.py``)       | 00:33.112 | 0.0 MB |
 +---------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_auto_examples_convert_mne_sample.py` (``convert_mne_sample.py``)             | 00:14.556 | 0.0 MB |
+| :ref:`sphx_glr_auto_examples_convert_mne_sample.py` (``convert_mne_sample.py``)             | 00:14.756 | 0.0 MB |
 +---------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_auto_examples_convert_empty_room.py` (``convert_empty_room.py``)             | 00:06.775 | 0.0 MB |
+| :ref:`sphx_glr_auto_examples_convert_empty_room.py` (``convert_empty_room.py``)             | 00:07.890 | 0.0 MB |
 +---------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_auto_examples_convert_ieeg_to_bids.py` (``convert_ieeg_to_bids.py``)         | 00:03.885 | 0.0 MB |
+| :ref:`sphx_glr_auto_examples_convert_ieeg_to_bids.py` (``convert_ieeg_to_bids.py``)         | 00:03.721 | 0.0 MB |
 +---------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_auto_examples_convert_eeg_to_bids.py` (``convert_eeg_to_bids.py``)           | 00:01.064 | 0.0 MB |
+| :ref:`sphx_glr_auto_examples_convert_eeg_to_bids.py` (``convert_eeg_to_bids.py``)           | 00:01.371 | 0.0 MB |
 +---------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_auto_examples_read_bids_datasets.py` (``read_bids_datasets.py``)             | 00:00.149 | 0.0 MB |
+| :ref:`sphx_glr_auto_examples_read_bids_datasets.py` (``read_bids_datasets.py``)             | 00:00.161 | 0.0 MB |
 +---------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_auto_examples_rename_brainvision_files.py` (``rename_brainvision_files.py``) | 00:00.023 | 0.0 MB |
+| :ref:`sphx_glr_auto_examples_rename_brainvision_files.py` (``rename_brainvision_files.py``) | 00:00.046 | 0.0 MB |
 +---------------------------------------------------------------------------------------------+-----------+--------+
-| :ref:`sphx_glr_auto_examples_create_bids_folder.py` (``create_bids_folder.py``)             | 00:00.008 | 0.0 MB |
+| :ref:`sphx_glr_auto_examples_create_bids_folder.py` (``create_bids_folder.py``)             | 00:00.005 | 0.0 MB |
 +---------------------------------------------------------------------------------------------+-----------+--------+

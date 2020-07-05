@@ -132,14 +132,14 @@ of the directory tree.
     |--- files/
     |------ eegmmidb/
     |--------- 1.0.0/
-    |------------ S002/
-    |--------------- S002R04.edf
-    |--------------- S002R12.edf
-    |--------------- S002R02.edf
     |------------ S001/
-    |--------------- S001R04.edf
     |--------------- S001R02.edf
     |--------------- S001R12.edf
+    |--------------- S001R04.edf
+    |------------ S002/
+    |--------------- S002R12.edf
+    |--------------- S002R02.edf
+    |--------------- S002R04.edf
 
 
 
@@ -513,40 +513,40 @@ What does our fresh BIDS directory look like?
  .. code-block:: none
 
     |eegmmidb_bids/
-    |--- README
     |--- dataset_description.json
     |--- participants.tsv
     |--- participants.json
-    |--- sub-001/
-    |------ sub-001_scans.tsv
-    |------ eeg/
-    |--------- sub-001_task-imaginefists_run-1_channels.tsv
-    |--------- sub-001_task-resteyesclosed_events.tsv
-    |--------- sub-001_task-imaginefists_run-1_eeg.edf
-    |--------- sub-001_task-imaginefists_run-2_channels.tsv
-    |--------- sub-001_task-imaginefists_run-2_eeg.edf
-    |--------- sub-001_task-imaginefists_run-1_events.tsv
-    |--------- sub-001_task-imaginefists_run-2_events.tsv
-    |--------- sub-001_task-resteyesclosed_eeg.json
-    |--------- sub-001_task-resteyesclosed_eeg.edf
-    |--------- sub-001_task-imaginefists_run-2_eeg.json
-    |--------- sub-001_task-imaginefists_run-1_eeg.json
-    |--------- sub-001_task-resteyesclosed_channels.tsv
+    |--- README
     |--- sub-002/
     |------ sub-002_scans.tsv
     |------ eeg/
-    |--------- sub-002_task-resteyesclosed_events.tsv
+    |--------- sub-002_task-resteyesclosed_eeg.json
+    |--------- sub-002_task-imaginefists_run-2_channels.tsv
+    |--------- sub-002_task-imaginefists_run-2_eeg.edf
+    |--------- sub-002_task-imaginefists_run-1_eeg.edf
+    |--------- sub-002_task-imaginefists_run-2_events.tsv
+    |--------- sub-002_task-imaginefists_run-1_channels.tsv
     |--------- sub-002_task-imaginefists_run-2_eeg.json
     |--------- sub-002_task-resteyesclosed_channels.tsv
-    |--------- sub-002_task-imaginefists_run-1_channels.tsv
-    |--------- sub-002_task-imaginefists_run-2_eeg.edf
-    |--------- sub-002_task-imaginefists_run-2_events.tsv
     |--------- sub-002_task-imaginefists_run-1_events.tsv
-    |--------- sub-002_task-imaginefists_run-2_channels.tsv
-    |--------- sub-002_task-resteyesclosed_eeg.json
     |--------- sub-002_task-resteyesclosed_eeg.edf
     |--------- sub-002_task-imaginefists_run-1_eeg.json
-    |--------- sub-002_task-imaginefists_run-1_eeg.edf
+    |--------- sub-002_task-resteyesclosed_events.tsv
+    |--- sub-001/
+    |------ sub-001_scans.tsv
+    |------ eeg/
+    |--------- sub-001_task-resteyesclosed_channels.tsv
+    |--------- sub-001_task-imaginefists_run-1_channels.tsv
+    |--------- sub-001_task-imaginefists_run-1_eeg.edf
+    |--------- sub-001_task-imaginefists_run-2_channels.tsv
+    |--------- sub-001_task-imaginefists_run-1_eeg.json
+    |--------- sub-001_task-resteyesclosed_eeg.edf
+    |--------- sub-001_task-imaginefists_run-1_events.tsv
+    |--------- sub-001_task-imaginefists_run-2_eeg.edf
+    |--------- sub-001_task-imaginefists_run-2_eeg.json
+    |--------- sub-001_task-imaginefists_run-2_events.tsv
+    |--------- sub-001_task-resteyesclosed_events.tsv
+    |--------- sub-001_task-resteyesclosed_eeg.json
 
 
 
@@ -1289,40 +1289,40 @@ Now we have written our BIDS directory.
  .. code-block:: none
 
     |eegmmidb_bids/
-    |--- README
     |--- dataset_description.json
     |--- participants.tsv
     |--- participants.json
-    |--- sub-001/
-    |------ sub-001_scans.tsv
-    |------ eeg/
-    |--------- sub-001_task-imaginefists_run-1_channels.tsv
-    |--------- sub-001_task-resteyesclosed_events.tsv
-    |--------- sub-001_task-imaginefists_run-1_eeg.edf
-    |--------- sub-001_task-imaginefists_run-2_channels.tsv
-    |--------- sub-001_task-imaginefists_run-2_eeg.edf
-    |--------- sub-001_task-imaginefists_run-1_events.tsv
-    |--------- sub-001_task-imaginefists_run-2_events.tsv
-    |--------- sub-001_task-resteyesclosed_eeg.json
-    |--------- sub-001_task-resteyesclosed_eeg.edf
-    |--------- sub-001_task-imaginefists_run-2_eeg.json
-    |--------- sub-001_task-imaginefists_run-1_eeg.json
-    |--------- sub-001_task-resteyesclosed_channels.tsv
+    |--- README
     |--- sub-002/
     |------ sub-002_scans.tsv
     |------ eeg/
-    |--------- sub-002_task-resteyesclosed_events.tsv
+    |--------- sub-002_task-resteyesclosed_eeg.json
+    |--------- sub-002_task-imaginefists_run-2_channels.tsv
+    |--------- sub-002_task-imaginefists_run-2_eeg.edf
+    |--------- sub-002_task-imaginefists_run-1_eeg.edf
+    |--------- sub-002_task-imaginefists_run-2_events.tsv
+    |--------- sub-002_task-imaginefists_run-1_channels.tsv
     |--------- sub-002_task-imaginefists_run-2_eeg.json
     |--------- sub-002_task-resteyesclosed_channels.tsv
-    |--------- sub-002_task-imaginefists_run-1_channels.tsv
-    |--------- sub-002_task-imaginefists_run-2_eeg.edf
-    |--------- sub-002_task-imaginefists_run-2_events.tsv
     |--------- sub-002_task-imaginefists_run-1_events.tsv
-    |--------- sub-002_task-imaginefists_run-2_channels.tsv
-    |--------- sub-002_task-resteyesclosed_eeg.json
     |--------- sub-002_task-resteyesclosed_eeg.edf
     |--------- sub-002_task-imaginefists_run-1_eeg.json
-    |--------- sub-002_task-imaginefists_run-1_eeg.edf
+    |--------- sub-002_task-resteyesclosed_events.tsv
+    |--- sub-001/
+    |------ sub-001_scans.tsv
+    |------ eeg/
+    |--------- sub-001_task-resteyesclosed_channels.tsv
+    |--------- sub-001_task-imaginefists_run-1_channels.tsv
+    |--------- sub-001_task-imaginefists_run-1_eeg.edf
+    |--------- sub-001_task-imaginefists_run-2_channels.tsv
+    |--------- sub-001_task-imaginefists_run-1_eeg.json
+    |--------- sub-001_task-resteyesclosed_eeg.edf
+    |--------- sub-001_task-imaginefists_run-1_events.tsv
+    |--------- sub-001_task-imaginefists_run-2_eeg.edf
+    |--------- sub-001_task-imaginefists_run-2_eeg.json
+    |--------- sub-001_task-imaginefists_run-2_events.tsv
+    |--------- sub-001_task-resteyesclosed_events.tsv
+    |--------- sub-001_task-resteyesclosed_eeg.json
 
 
 
@@ -1382,7 +1382,7 @@ Command line tool: https://www.npmjs.com/package/bids-validator
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  1.064 seconds)
+   **Total running time of the script:** ( 0 minutes  1.371 seconds)
 
 
 .. _sphx_glr_download_auto_examples_convert_eeg_to_bids.py:

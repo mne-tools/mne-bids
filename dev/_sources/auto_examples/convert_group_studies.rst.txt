@@ -1308,39 +1308,39 @@ Now let's see the structure of the BIDS folder we created.
  .. code-block:: none
 
     |ds000117-bids/
-    |--- README
     |--- dataset_description.json
     |--- participants.tsv
     |--- participants.json
+    |--- README
     |--- sub-1/
     |------ ses-01/
     |--------- sub-1_ses-01_scans.tsv
     |--------- meg/
-    |------------ sub-1_ses-01_task-VisualFaces_run-6_channels.tsv
-    |------------ sub-1_ses-01_task-VisualFaces_run-2_meg.fif
-    |------------ sub-1_ses-01_task-VisualFaces_run-1_events.tsv
-    |------------ sub-1_ses-01_task-VisualFaces_run-4_meg.fif
-    |------------ sub-1_ses-01_task-VisualFaces_run-4_events.tsv
-    |------------ sub-1_ses-01_task-VisualFaces_run-1_channels.tsv
-    |------------ sub-1_ses-01_task-VisualFaces_run-6_meg.fif
-    |------------ sub-1_ses-01_task-VisualFaces_run-5_meg.json
-    |------------ sub-1_ses-01_task-VisualFaces_run-6_events.tsv
-    |------------ sub-1_ses-01_task-VisualFaces_run-5_channels.tsv
-    |------------ sub-1_ses-01_task-VisualFaces_run-2_events.tsv
-    |------------ sub-1_ses-01_task-VisualFaces_run-1_meg.fif
-    |------------ sub-1_ses-01_task-VisualFaces_run-3_meg.json
     |------------ sub-1_ses-01_task-VisualFaces_run-5_events.tsv
-    |------------ sub-1_ses-01_task-VisualFaces_run-2_channels.tsv
+    |------------ sub-1_ses-01_task-VisualFaces_run-4_events.tsv
+    |------------ sub-1_ses-01_task-VisualFaces_run-6_events.tsv
+    |------------ sub-1_ses-01_task-VisualFaces_run-6_channels.tsv
     |------------ sub-1_ses-01_task-VisualFaces_run-3_channels.tsv
+    |------------ sub-1_ses-01_task-VisualFaces_run-5_channels.tsv
+    |------------ sub-1_ses-01_task-VisualFaces_run-5_meg.json
+    |------------ sub-1_ses-01_task-VisualFaces_run-1_events.tsv
+    |------------ sub-1_ses-01_task-VisualFaces_run-2_events.tsv
+    |------------ sub-1_ses-01_task-VisualFaces_run-4_meg.fif
     |------------ sub-1_ses-01_task-VisualFaces_run-4_meg.json
+    |------------ sub-1_ses-01_task-VisualFaces_run-5_meg.fif
+    |------------ sub-1_ses-01_task-VisualFaces_run-1_meg.json
+    |------------ sub-1_ses-01_task-VisualFaces_run-6_meg.json
+    |------------ sub-1_ses-01_task-VisualFaces_run-3_events.tsv
     |------------ sub-1_ses-01_task-VisualFaces_run-4_channels.tsv
     |------------ sub-1_ses-01_coordsystem.json
-    |------------ sub-1_ses-01_task-VisualFaces_run-6_meg.json
+    |------------ sub-1_ses-01_task-VisualFaces_run-2_meg.fif
     |------------ sub-1_ses-01_task-VisualFaces_run-3_meg.fif
-    |------------ sub-1_ses-01_task-VisualFaces_run-5_meg.fif
-    |------------ sub-1_ses-01_task-VisualFaces_run-3_events.tsv
+    |------------ sub-1_ses-01_task-VisualFaces_run-3_meg.json
     |------------ sub-1_ses-01_task-VisualFaces_run-2_meg.json
-    |------------ sub-1_ses-01_task-VisualFaces_run-1_meg.json
+    |------------ sub-1_ses-01_task-VisualFaces_run-1_channels.tsv
+    |------------ sub-1_ses-01_task-VisualFaces_run-2_channels.tsv
+    |------------ sub-1_ses-01_task-VisualFaces_run-1_meg.fif
+    |------------ sub-1_ses-01_task-VisualFaces_run-6_meg.fif
 
 
 
@@ -1348,7 +1348,7 @@ Now let's see the structure of the BIDS folder we created.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 1 minutes  49.194 seconds)
+   **Total running time of the script:** ( 1 minutes  54.405 seconds)
 
 
 .. _sphx_glr_download_auto_examples_convert_group_studies.py:

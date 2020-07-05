@@ -469,6 +469,10 @@
 <span class="sd">    &gt;&gt;&gt; get_entity_vals(bids_root, entity_key)</span>
 <span class="sd">    [&#39;05&#39;, &#39;06&#39;, &#39;07&#39;, &#39;08&#39;, &#39;09&#39;, &#39;10&#39;, &#39;11&#39;]</span>
 
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function will scan the entire ``bids_root``, except for a</span>
+<span class="sd">    ``derivatives`` subfolder placed directly under ``bids_root``.</span>
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
@@ -489,6 +493,10 @@
     <span class="n">p</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">-(.*?)_&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">entity_key</span><span class="p">))</span>
     <span class="n">value_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">Path</span><span class="p">(</span><span class="n">bids_root</span><span class="p">)</span><span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="s1">&#39;*</span><span class="si">{}</span><span class="s1">-*_*&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">entity_key</span><span class="p">)):</span>
+        <span class="c1"># Ignore `derivatives` folder.</span>
+        <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bids_root</span><span class="p">,</span> <span class="s1">&#39;derivatives&#39;</span><span class="p">)):</span>
+            <span class="k">continue</span>
+
         <span class="k">if</span> <span class="n">ignore_sub</span> <span class="ow">and</span> <span class="nb">any</span><span class="p">([</span><span class="n">filename</span><span class="o">.</span><span class="n">stem</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;sub-</span><span class="si">{</span><span class="n">s</span><span class="si">}</span><span class="s1">_&#39;</span><span class="p">)</span>
                                <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">ignore_sub</span><span class="p">]):</span>
             <span class="k">continue</span>
@@ -1322,8 +1330,8 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-06-30.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.1.1.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-07-05.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.1.2.<br/>
     </p>
   </div>
 </footer>
