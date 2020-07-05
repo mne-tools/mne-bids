@@ -683,6 +683,8 @@ def _write_raw_brainvision(raw, bids_fname, events):
     bids_fname : str
         The name of the BIDS-specified file where the raw object
         should be saved.
+    events : ndarray
+        The events as MNE-Python format ndaray.
 
     """
     if not check_version('pybv', '0.2'):
