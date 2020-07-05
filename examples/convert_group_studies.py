@@ -68,7 +68,7 @@ event_id = {
 # Let us loop over the subjects and create BIDS-compatible folder
 
 # Make a path where we can save the data to
-bids_root = os.path.join(mne_data_dir, 'eegmmidb_bids_group_conversion')
+bids_root = op.join(mne_data_dir, 'eegmmidb_bids_group_conversion')
 
 # Get a list of the raw objects for this dataset to use their dates
 # to determine the number of daysback to use to anonymize.
@@ -101,4 +101,4 @@ for raw, bids_basename in zip(raw_list, bids_list):
 ###############################################################################
 # Now let's see the structure of the BIDS folder we created.
 
-print_dir_tree(output_path)
+print_dir_tree(bids_root)
