@@ -358,6 +358,10 @@ def get_entity_vals(bids_root, entity_key, *, ignore_sub='emptyroom',
     >>> get_entity_vals(bids_root, entity_key)
     ['05', '06', '07', '08', '09', '10', '11']
 
+    Notes
+    -----
+    This function will scan the entire ``bids_root``, except for a
+    ``derivatives`` subfolder placed directly under ``bids_root``.
 
     References
     ----------
@@ -378,6 +382,10 @@ def get_entity_vals(bids_root, entity_key, *, ignore_sub='emptyroom',
     p = re.compile(r'{}-(.*?)_'.format(entity_key))
     value_list = list()
     for filename in Path(bids_root).rglob('*{}-*_*'.format(entity_key)):
+        # Ignore `derivatives` folder.
+        if str(filename).startswith(op.join(bids_root, 'derivatives')):
+            continue
+
         if ignore_sub and any([filename.stem.startswith(f'sub-{s}_')
                                for s in ignore_sub]):
             continue
