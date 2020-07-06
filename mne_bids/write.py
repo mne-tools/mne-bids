@@ -852,7 +852,8 @@ def make_dataset_description(path, name, data_license=None,
     if isinstance(references_and_links, str):
         references_and_links = references_and_links.split(', ')
     if dataset_type not in ['raw', 'derivative']:
-        raise ValueError('`dataset_type` must be either "raw" or "derivative."')
+        raise ValueError('`dataset_type` must be either "raw" or '
+                         '"derivative."')
 
     fname = op.join(path, 'dataset_description.json')
     description = OrderedDict([('Name', name),

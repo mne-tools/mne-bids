@@ -119,11 +119,16 @@ def _test_anonymize(raw, bids_basename, events_fname=None, event_id=None):
 def test_make_dataset_description():
     """Test making a dataset_description.json."""
     tmp_dir = _TempDir()
-    with pytest.raises(ValueError, match='`dataset_type` must be either "raw"'):
-        make_dataset_description(path=tmp_dir, name='thing', dataset_type='src')
+    with pytest.raises(ValueError, match='`dataset_type` must be either "raw" '
+                                         'or "derivative."'):
+        make_dataset_description(path=tmp_dir, name='tst', dataset_type='src')
 
-    make_dataset_description(path=tmp_dir, name='thing',
-                             dataset_type='derivative', verbose=True)
+    make_dataset_description(
+        path=tmp_dir, name='tst', authors='MNE B., MNE P.',
+        funding='GSOC2019, GSOC2021',
+        references_and_links='https://doi.org/10.21105/joss.01896',
+        dataset_type='derivative', verbose=True
+    )
 
 
 def test_stamp_to_dt():
