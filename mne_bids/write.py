@@ -1127,7 +1127,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
             if verbose:
                 warn('Converting to FIF for anonymization')
             bids_fname.suffix = bids_fname.suffix.replace(ext, '.fif')
-        elif kind in ['eeg', 'ieeg']:
+        elif kind in ['eeg', 'ieeg'] and ext != '.vhdr':
             if verbose:
                 warn('Converting to BV for anonymization')
             bids_fname.suffix = bids_fname.suffix.replace(ext, '.vhdr')
@@ -1199,6 +1199,9 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
             if ext == '.pdf':
                 bids_fname = op.join(data_path, op.basename(bids_fname))
             _write_raw_fif(raw, bids_fname)
+        elif kind is in ['eeg', 'ieeg'] and ext == '.vhdr':
+            copyfile_brainvision(raw_fname, bids_fname,
+                                 anonymize=raw.info['meas_date'])
         else:
             if verbose:
                 warn('Converting data files to BrainVision format')
