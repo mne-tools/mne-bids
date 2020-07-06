@@ -312,9 +312,11 @@ def copyfile_brainvision(vhdr_src, vhdr_dest, anonymize=False, date=None,
 
     if verbose:
         for ext in ['.eeg', '.vhdr', '.vmrk']:
-            print('Created "{}" in "{}"'
-                  .format(fname_dest + ext,
-                          op.dirname(op.realpath(vhdr_dest))))
+            _, fname = os.path.split(fname_dest + ext)
+            dirname = op.dirname(op.realpath(vhdr_dest))
+            print(f'Created "{fname}" in "{dirname}".')
+        if anonymize:
+            print('Anonymized all dates in VHDR and VMRK.')
 
 
 def copyfile_eeglab(src, dest):
