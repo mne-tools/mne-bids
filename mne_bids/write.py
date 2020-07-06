@@ -793,6 +793,7 @@ def make_dataset_description(path, name, data_license=None,
                              authors=None, acknowledgements=None,
                              how_to_acknowledge=None, funding=None,
                              references_and_links=None, doi=None,
+                             dataset_type='raw',
                              verbose=False):
     """Create json for a dataset description.
 
@@ -828,6 +829,10 @@ def make_dataset_description(path, name, data_license=None,
         separated str like ['a', 'b', 'c'].
     doi : str | None
         The DOI for the dataset.
+    dataset_type : str
+        Must be either "raw" or "derivative". Defaults to "raw".
+    verbose : bool
+        Set verbose output to True or False.
 
     Notes
     -----
@@ -846,10 +851,14 @@ def make_dataset_description(path, name, data_license=None,
         funding = funding.split(', ')
     if isinstance(references_and_links, str):
         references_and_links = references_and_links.split(', ')
+    if dataset_type not in ['raw', 'derivative']:
+        raise ValueError('`dataset_type` must be either "raw" or '
+                         '"derivative."')
 
     fname = op.join(path, 'dataset_description.json')
     description = OrderedDict([('Name', name),
                                ('BIDSVersion', BIDS_VERSION),
+                               ('DatasetType', dataset_type),
                                ('License', data_license),
                                ('Authors', authors),
                                ('Acknowledgements', acknowledgements),
