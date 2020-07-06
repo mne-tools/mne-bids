@@ -4,23 +4,24 @@
 ======================================================
 
 According to the EEG extension to BIDS [1]_, the `BrainVision data format`_ is
-one of the recommended formats to store EEG data within a BIDS directory.
+one of the recommended formats to store EEG data within a BIDS dataset.
 
 To organize EEG data in BIDS format, it is often necessary to rename the files.
 In the case of BrainVision files, we would have to rename multiple files for
-each dataset instance (i.e., once per recording):
+each recording:
 
 1. A text header file (``.vhdr``) containing meta data
 2. A text marker file (``.vmrk``) containing information about events in the
    data
 3. A binary data file (``.eeg``) containing the voltage values of the EEG
 
-.. Note:: The three files contain internal links that guide the data reading
-          software. Renaming the three files without adjusting the internal
-          links will corrupt the file format! But relax, MNE-BIDS can take care
+.. Note:: The three files contain references that guide the data reading
+          software. Simply *renaming* the files without adjusting these
+          references will corrupt the dataset! But relax, MNE-BIDS can take
+          care
           of this for you.
 
-Next to renaming files for BIDS, we often will also have to anonymize the data.
+We may also wish to *anonymize* the data. MNE-BIDS can automate this task, too.
 
 In this example, we use MNE-BIDS to:
 
