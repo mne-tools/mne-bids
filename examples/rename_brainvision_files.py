@@ -48,7 +48,6 @@ References
 import os.path as op
 import datetime
 
-from numpy.testing import assert_array_equal
 import mne
 
 from mne_bids.copyfiles import copyfile_brainvision
@@ -90,12 +89,9 @@ vhdr_file_renamed = op.join(examples_dir, 'test_renamed.vhdr')
 copyfile_brainvision(vhdr_file, vhdr_file_renamed, verbose=True)
 
 # Check that MNE-Python can read in both, the original as well as the renamed
-# data. They should be the same.
+# data (two files: their contents are the same apart from the name)
 raw = mne.io.read_raw_brainvision(vhdr_file)
 raw_renamed = mne.io.read_raw_brainvision(vhdr_file_renamed)
-
-# If we can run the following without error, everything is fine
-assert_array_equal(raw.get_data(), raw_renamed.get_data())
 
 ###############################################################################
 # Anonymize the recording
