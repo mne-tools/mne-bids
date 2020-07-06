@@ -209,12 +209,13 @@ def copyfile_kit(src, dest, subject_id, session_id,
             sh.copyfile(position_file, position_fname)
 
 
-def _anonymize_brainvision(vmrk_file):
+def _anonymize_brainvision(vmrk_file, date=None):
     """Operates in place."""
     pass
 
 
-def copyfile_brainvision(vhdr_src, vhdr_dest, anonymize=False, verbose=False):
+def copyfile_brainvision(vhdr_src, vhdr_dest, anonymize=False, date=None,
+                         verbose=False):
     """Copy a BrainVision file triplet to a new location and repair links.
 
     The BrainVision file format consists of three files: .vhdr, .eeg, and .vmrk
@@ -228,9 +229,12 @@ def copyfile_brainvision(vhdr_src, vhdr_dest, anonymize=False, verbose=False):
         The src path of the .vhdr file to be copied.
     vhdr_dest : str
         The destination path of the .vhdr file.
-    anonymize : bool | datetime
-        If True, zero out all date strings in the copied .vmrk file. If a
-        datetime is supplied, all existing date strings will be replaced.
+    anonymize : bool
+        If False, leave dates in .vmrk file as they are. If True, replace all
+        date strings with zeros.
+    date : datetime | None
+        If `anonymize` is True, `date` will be used to replace all date strings
+        in the .vmrk file.
 
     """
     # Get extenstion of the brainvision file
@@ -273,7 +277,7 @@ def copyfile_brainvision(vhdr_src, vhdr_dest, anonymize=False, verbose=False):
                 fout.write(line)
 
     if anonymize:
-        _anonymize_brainvision(fname_dest + '.vmrk')
+        _anonymize_brainvision(fname_dest + '.vmrk', date)
 
     if verbose:
         for ext in ['.eeg', '.vhdr', '.vmrk']:

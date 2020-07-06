@@ -1194,14 +1194,11 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
         print('Copying data files to %s' % op.splitext(bids_fname)[0])
 
     # File saving branching logic
-    if convert or (anonymize is not None):
+    if (convert or (anonymize is not None)) and ext != '.vhdr':
         if kind == 'meg':
             if ext == '.pdf':
                 bids_fname = op.join(data_path, op.basename(bids_fname))
             _write_raw_fif(raw, bids_fname)
-        elif kind is in ['eeg', 'ieeg'] and ext == '.vhdr':
-            copyfile_brainvision(raw_fname, bids_fname,
-                                 anonymize=raw.info['meas_date'])
         else:
             if verbose:
                 warn('Converting data files to BrainVision format')
@@ -1214,7 +1211,8 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
         copyfile_ctf(raw_fname, bids_fname)
     # BrainVision is multifile, copy over all of them and fix pointers
     elif ext == '.vhdr':
-        copyfile_brainvision(raw_fname, bids_fname)
+        copyfile_brainvision(raw_fname, bids_fname, anonymize=anonymize,
+                             date=raw.info['meas_date'])
     # EEGLAB .set might be accompanied by a .fdt - find out and copy it too
     elif ext == '.set':
         copyfile_eeglab(raw_fname, bids_fname)
