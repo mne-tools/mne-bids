@@ -220,7 +220,7 @@ def _replace_file(fname, pattern, replace):
         new_content.append(line)
 
     with open(fname, 'w') as fout:
-        fout.write_lines(new_content)
+        fout.writelines(new_content)
 
 
 def _anonymize_brainvision(vhdr_file, date=None):
@@ -239,7 +239,7 @@ def _anonymize_brainvision(vhdr_file, date=None):
 
     # Go through VHDR
     pattern = re.compile(r'^Impedance \[kOhm\] at \d\d:\d\d:\d\d :$')
-    replace = f'at {date.strftime('%H:%M:%S')} :'
+    replace = f'at {date.strftime("%H:%M:%S")} :'
     _replace_file(vhdr_file, pattern, replace)
 
 

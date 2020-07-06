@@ -1101,6 +1101,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
         bids_fname.prefix = bids_raw_folder
 
     # Anonymize
+    convert = False
     if anonymize is not None:
         # if info['meas_date'] None, then the dates are not stored
         if raw.info['meas_date'] is None:
@@ -1123,7 +1124,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
         keep_his = anonymize['keep_his'] if 'keep_his' in anonymize else False
         raw.info = anonymize_info(raw.info, daysback=daysback,
                                   keep_his=keep_his)
-        convert = False
+
         if kind == 'meg' and ext != '.fif':
             if verbose:
                 warn('Converting to FIF for anonymization')
