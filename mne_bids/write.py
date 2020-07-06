@@ -1123,13 +1123,16 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
         keep_his = anonymize['keep_his'] if 'keep_his' in anonymize else False
         raw.info = anonymize_info(raw.info, daysback=daysback,
                                   keep_his=keep_his)
+        convert = False
         if kind == 'meg' and ext != '.fif':
             if verbose:
                 warn('Converting to FIF for anonymization')
+            convert = True
             bids_fname.suffix = bids_fname.suffix.replace(ext, '.fif')
         elif kind in ['eeg', 'ieeg'] and ext != '.vhdr':
             if verbose:
                 warn('Converting to BV for anonymization')
+            convert = True
             bids_fname.suffix = bids_fname.suffix.replace(ext, '.vhdr')
 
     # Read in Raw object and extract metadata from Raw object if needed
@@ -1182,19 +1185,21 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
         raise FileExistsError('"%s" already exists. Please set '  # noqa: F821
                               'overwrite to True.' % bids_fname)
 
-    # whether or not to convert to RECOMMENDED file formats
-    convert = ext not in ALLOWED_EXTENSIONS[kind]
+    # If not already converting for anonymization, we may still need to do it
+    # if current format not BIDS compliant
+    if not convert:
+        convert = ext not in ALLOWED_EXTENSIONS[kind]
 
     if kind == 'meg' and convert and not anonymize:
         raise ValueError('Got file extension %s for MEG data, ' +
                          'expected one of %s' %
                          ALLOWED_EXTENSIONS['meg'])
 
-    if not (convert or anonymize) and verbose:
+    if not convert and verbose:
         print('Copying data files to %s' % op.splitext(bids_fname)[0])
 
     # File saving branching logic
-    if (convert or (anonymize is not None)) and ext != '.vhdr':
+    if convert:
         if kind == 'meg':
             if ext == '.pdf':
                 bids_fname = op.join(data_path, op.basename(bids_fname))
