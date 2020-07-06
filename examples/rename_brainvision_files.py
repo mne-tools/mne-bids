@@ -70,7 +70,8 @@ examples_dir = op.join(data_path, 'Brainvision')
 # --------------------
 # Above, at the top of the example, we imported
 # :func:`mne_bids.copyfiles.copyfile_brainvision` from
-# the MNE-BIDS :mod:`copyfiles.py` module. This function takes two main inputs:
+# the MNE-BIDS ``mne_bids.copyfiles.py`` module. This function takes two
+# main inputs:
 # First, the path to the existing ``.vhdr`` file. And second, the path to
 # the future ``.vhdr`` file.
 #
