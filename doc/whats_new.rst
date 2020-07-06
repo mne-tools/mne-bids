@@ -32,7 +32,7 @@ Changelog
 - :func:`mne_bids.get_matched_empty_room` now implements an algorithm for discovering empty-room recordings that do not have the recording date set as their session, by `Richard Höchenberger`_ (`#421 <https://github.com/mne-tools/mne-bids/pull/421>`_)
 - :func:`write_raw_bids` now adds citations to the README, by `Alex Rockhill`_ (`#463 <https://github.com/mne-tools/mne-bids/pull/463>`_)
 - :func:`make_dataset_description` now has an additional parameter ``dataset_type`` to set the recommended field ``DatasetType`` (defaults to ``"raw"``), by `Stefan Appelhoff`_ (`#472 <https://github.com/mne-tools/mne-bids/pull/472>`_)
-- :func:`mne_bids.copyfiles.copyfile_brainvison` now has ``anonymize`` and ``date`` parameters to control anonymization, by `Stefan Appelhoff`_ (`#475 <https://github.com/mne-tools/mne-bids/pull/475>`_)
+- :func:`mne_bids.copyfiles.copyfile_brainvision` now has ``anonymize`` and ``date`` parameters to control anonymization, by `Stefan Appelhoff`_ (`#475 <https://github.com/mne-tools/mne-bids/pull/475>`_)
 
 Bug
 ~~~

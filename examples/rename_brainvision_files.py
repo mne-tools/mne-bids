@@ -37,7 +37,7 @@ References
        electroencephalography. Sci Data 6, 103 (2019).
        https://doi.org/10.1038/s41597-019-0104-8
 .. _BrainVision data format: https://www.brainproducts.com/productdetails.php?id=21&tab=5
-"""
+"""  # noqa:E501
 
 # Authors: Stefan Appelhoff <stefan.appelhoff@mailbox.org>
 #
