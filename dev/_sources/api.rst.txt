@@ -76,20 +76,3 @@ Copyfiles
    copyfile_ctf
    copyfile_bti
    copyfile_kit
-
-Datasets
-========
-
-:py:mod:`mne_bids.datasets`:
-
-.. automodule:: mne_bids.datasets
-   :no-members:
-   :no-inherited-members:
-
-.. currentmodule:: mne_bids.datasets
-
-.. autosummary::
-    :toctree: generated/
-
-    fetch_faces_data
-    fetch_brainvision_testing_data

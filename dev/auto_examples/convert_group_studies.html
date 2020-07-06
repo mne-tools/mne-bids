@@ -115,21 +115,15 @@
 <div class="sphx-glr-example-title section" id="bids-conversion-for-group-studies">
 <span id="sphx-glr-auto-examples-convert-group-studies-py"></span><h1>05. BIDS conversion for group studies<a class="headerlink" href="#bids-conversion-for-group-studies" title="Permalink to this headline">¶</a></h1>
 <p>Here, we show how to do BIDS conversion for group studies.
-The data from Wakeman et al. <a class="footnote-reference brackets" href="#id2" id="id1">1</a> is available here:
-<a class="reference external" href="https://openneuro.org/datasets/ds000117">https://openneuro.org/datasets/ds000117</a></p>
+We will use the
+<a class="reference external" href="https://doi.org/10.13026/C28G6P">EEG Motor Movement/Imagery Dataset</a>
+available on the PhysioBank database.</p>
 <p>We recommend that you go through the more basic BIDS conversion example before
 checking out this group conversion example: <a class="reference internal" href="convert_mne_sample.html#ex-convert-mne-sample"><span class="std std-ref">03. Convert MNE sample data to BIDS format</span></a></p>
-<div class="section" id="references">
-<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
-<dl class="footnote brackets">
-<dt class="label" id="id2"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
-<dd><p>Wakeman, Daniel G., and Richard N. Henson. “A multi-subject, multi-modal
-human neuroimaging dataset.” Scientific data, 2 (2015): 150001.</p>
-</dd>
-</dl>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Authors: Mainak Jas &lt;mainak.jas@telecom-paristech.fr&gt;</span>
 <span class="c1">#          Teon Brooks &lt;teon.brooks@gmail.com&gt;</span>
-
+<span class="c1">#          Stefan Appelhoff &lt;stefan.appelhoff@mailbox.org&gt;</span>
+<span class="c1">#</span>
 <span class="c1"># License: BSD (3-clause)</span>
 </pre></div>
 </div>
@@ -137,183 +131,146 @@ human neuroimaging dataset.” Scientific data, 2 (2015): 150001.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os.path</span> <span class="k">as</span> <span class="nn">op</span>
 
 <span class="kn">import</span> <span class="nn">mne</span>
+<span class="kn">from</span> <span class="nn">mne.datasets</span> <span class="kn">import</span> <span class="n">eegbci</span>
+
 <span class="kn">from</span> <span class="nn">mne_bids</span> <span class="kn">import</span> <span class="p">(</span><a href="../generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">write_raw_bids</span></a><span class="p">,</span> <a href="../generated/mne_bids.make_bids_basename.html#mne_bids.make_bids_basename" title="mne_bids.make_bids_basename" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">make_bids_basename</span></a><span class="p">,</span>
                       <a href="../generated/mne_bids.get_anonymization_daysback.html#mne_bids.get_anonymization_daysback" title="mne_bids.get_anonymization_daysback" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">get_anonymization_daysback</span></a><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">mne_bids.datasets</span> <span class="kn">import</span> <a href="../generated/mne_bids.datasets.fetch_faces_data.html#mne_bids.datasets.fetch_faces_data" title="mne_bids.datasets.fetch_faces_data" class="sphx-glr-backref-module-mne_bids-datasets sphx-glr-backref-type-py-function"><span class="n">fetch_faces_data</span></a>
 <span class="kn">from</span> <span class="nn">mne_bids.utils</span> <span class="kn">import</span> <a href="../generated/mne_bids.utils.print_dir_tree.html#mne_bids.utils.print_dir_tree" title="mne_bids.utils.print_dir_tree" class="sphx-glr-backref-module-mne_bids-utils sphx-glr-backref-type-py-function"><span class="n">print_dir_tree</span></a>
 </pre></div>
 </div>
-<p>And fetch the data.</p>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>This will download 7.9 GB of data for one subject!</p>
-</div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject_ids</span></a> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#range" title="builtins.range" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">runs</span></a> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">7</span><span class="p">)</span>
+<p>And fetch the data for several subjects and runs of a single task.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject_ids</span></a> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
 
-<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">home</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/os.path.html#os.path.expanduser" title="os.path.expanduser" class="sphx-glr-backref-module-os-path sphx-glr-backref-type-py-function"><span class="n">op</span><span class="o">.</span><span class="n">expanduser</span></a><span class="p">(</span><span class="s1">&#39;~&#39;</span><span class="p">)</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_path</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/os.path.html#os.path.join" title="os.path.join" class="sphx-glr-backref-module-os-path sphx-glr-backref-type-py-function"><span class="n">op</span><span class="o">.</span><span class="n">join</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">home</span></a><span class="p">,</span> <span class="s1">&#39;mne_data&#39;</span><span class="p">,</span> <span class="s1">&#39;mne_bids_examples&#39;</span><span class="p">)</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">repo</span></a> <span class="o">=</span> <span class="s1">&#39;ds000117&#39;</span>
-<a href="../generated/mne_bids.datasets.fetch_faces_data.html#mne_bids.datasets.fetch_faces_data" title="mne_bids.datasets.fetch_faces_data" class="sphx-glr-backref-module-mne_bids-datasets sphx-glr-backref-type-py-function"><span class="n">fetch_faces_data</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_path</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">repo</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject_ids</span></a><span class="p">)</span>
+<span class="c1"># The run numbers in the eegbci are not consecutive ... we follow the online</span>
+<span class="c1"># documentation to get the 1st, 2nd, and 3rd run of one of the the motor</span>
+<span class="c1"># imagery task</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">runs</span></a> <span class="o">=</span> <span class="p">[</span>
+    <span class="mi">4</span><span class="p">,</span>   <span class="c1"># This is run #1 of imagining to open/close left or right fist</span>
+    <span class="mi">8</span><span class="p">,</span>   <span class="c1"># ... run #2</span>
+    <span class="mi">12</span><span class="p">,</span>  <span class="c1"># ... run #3</span>
+<span class="p">]</span>
 
-<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">output_path</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/os.path.html#os.path.join" title="os.path.join" class="sphx-glr-backref-module-os-path sphx-glr-backref-type-py-function"><span class="n">op</span><span class="o">.</span><span class="n">join</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_path</span></a><span class="p">,</span> <span class="s1">&#39;ds000117-bids&#39;</span><span class="p">)</span>
+<span class="c1"># map the eegbci run numbers to the number of the run in the motor imagery task</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">run_map</span></a> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">runs</span></a><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">)))</span>
+
+<span class="k">for</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject_id</span></a> <span class="ow">in</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject_ids</span></a><span class="p">:</span>
+    <a href="https://mne.tools/dev/generated/mne.datasets.eegbci.load_data.html#mne.datasets.eegbci.load_data" title="mne.datasets.eegbci.load_data" class="sphx-glr-backref-module-mne-datasets-eegbci sphx-glr-backref-type-py-function"><span class="n">eegbci</span><span class="o">.</span><span class="n">load_data</span></a><span class="p">(</span><span class="n">subject</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject_id</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">runs</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">runs</span></a><span class="p">,</span> <span class="n">update_path</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># get path to MNE directory with the downloaded example data</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mne_data_dir</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.get_config.html#mne.get_config" title="mne.get_config" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">get_config</span></a><span class="p">(</span><span class="s1">&#39;MNE_DATASETS_EEGBCI_PATH&#39;</span><span class="p">)</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_dir</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/os.path.html#os.path.join" title="os.path.join" class="sphx-glr-backref-module-os-path sphx-glr-backref-type-py-function"><span class="n">op</span><span class="o">.</span><span class="n">join</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mne_data_dir</span></a><span class="p">,</span> <span class="s1">&#39;MNE-eegbci-data&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Define event_ids.</p>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Downloading https://physionet.org/files/eegmmidb/1.0.0/S001/S001R08.edf (2.5 MB)
+
+  0%|          | Downloading : 0.00/2.48M [00:00&lt;?,        ?B/s]
+  3%|3         | Downloading : 88.0k/2.48M [00:00&lt;00:00,    3.22MB/s]
+ 15%|#4        | Downloading : 376k/2.48M [00:00&lt;00:00,    3.34MB/s]
+ 45%|####5     | Downloading : 1.12M/2.48M [00:00&lt;00:00,    3.50MB/s]
+ 65%|######5   | Downloading : 1.62M/2.48M [00:00&lt;00:00,    3.66MB/s]
+100%|##########| Downloading : 2.48M/2.48M [00:00&lt;00:00,    3.83MB/s]
+100%|##########| Downloading : 2.48M/2.48M [00:00&lt;00:00,    21.7MB/s]
+Downloading https://physionet.org/files/eegmmidb/1.0.0/S002/S002R08.edf (2.4 MB)
+
+  0%|          | Downloading : 0.00/2.44M [00:00&lt;?,        ?B/s]
+  6%|6         | Downloading : 152k/2.44M [00:00&lt;00:00,    4.77MB/s]
+ 11%|#1        | Downloading : 280k/2.44M [00:00&lt;00:00,    4.86MB/s]
+ 27%|##6       | Downloading : 664k/2.44M [00:00&lt;00:00,    5.06MB/s]
+ 68%|######7   | Downloading : 1.65M/2.44M [00:00&lt;00:00,    5.28MB/s]
+100%|##########| Downloading : 2.44M/2.44M [00:00&lt;00:00,    5.52MB/s]
+100%|##########| Downloading : 2.44M/2.44M [00:00&lt;00:00,    21.2MB/s]
+</pre></div>
+</div>
+<p>Define event_ids, this is knowledge we get from the online documentation of
+the data as well.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">event_id</span></a> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;face/famous/first&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
-    <span class="s1">&#39;face/famous/immediate&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span>
-    <span class="s1">&#39;face/famous/long&#39;</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span>
-    <span class="s1">&#39;face/unfamiliar/first&#39;</span><span class="p">:</span> <span class="mi">13</span><span class="p">,</span>
-    <span class="s1">&#39;face/unfamiliar/immediate&#39;</span><span class="p">:</span> <span class="mi">14</span><span class="p">,</span>
-    <span class="s1">&#39;face/unfamiliar/long&#39;</span><span class="p">:</span> <span class="mi">15</span><span class="p">,</span>
-    <span class="s1">&#39;scrambled/first&#39;</span><span class="p">:</span> <span class="mi">17</span><span class="p">,</span>
-    <span class="s1">&#39;scrambled/immediate&#39;</span><span class="p">:</span> <span class="mi">18</span><span class="p">,</span>
-    <span class="s1">&#39;scrambled/long&#39;</span><span class="p">:</span> <span class="mi">19</span><span class="p">,</span>
+    <span class="s1">&#39;imagine_motion_fist/left&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="s1">&#39;imagine_motion_fist/right&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
 <span class="p">}</span>
 </pre></div>
 </div>
 <p>Let us loop over the subjects and create BIDS-compatible folder</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Get a list of the raw objects for this dataset to use their dates</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Make a path where we can save the data to</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/os.path.html#os.path.join" title="os.path.join" class="sphx-glr-backref-module-os-path sphx-glr-backref-type-py-function"><span class="n">op</span><span class="o">.</span><span class="n">join</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mne_data_dir</span></a><span class="p">,</span> <span class="s1">&#39;eegmmidb_bids_group_conversion&#39;</span><span class="p">)</span>
+
+<span class="c1"># Get a list of the raw objects for this dataset to use their dates</span>
 <span class="c1"># to determine the number of daysback to use to anonymize.</span>
 <span class="c1"># While we&#39;re looping through the files, also generate the</span>
 <span class="c1"># BIDS-compatible names that will be used to save the files in BIDS.</span>
 <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw_list</span></a> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
 <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_list</span></a> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
 <span class="k">for</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject_id</span></a> <span class="ow">in</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject_ids</span></a><span class="p">:</span>
-    <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject</span></a> <span class="o">=</span> <span class="s1">&#39;sub</span><span class="si">%03d</span><span class="s1">&#39;</span> <span class="o">%</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject_id</span></a>
-    <span class="k">for</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">run</span></a> <span class="ow">in</span> <a href="https://docs.python.org/3/library/stdtypes.html#range" title="builtins.range" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">runs</span></a><span class="p">:</span>
-        <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw_fname</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/os.path.html#os.path.join" title="os.path.join" class="sphx-glr-backref-module-os-path sphx-glr-backref-type-py-function"><span class="n">op</span><span class="o">.</span><span class="n">join</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_path</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">repo</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject</span></a><span class="p">,</span> <span class="s1">&#39;MEG&#39;</span><span class="p">,</span>
-                            <span class="s1">&#39;run_</span><span class="si">%02d</span><span class="s1">_raw.fif&#39;</span> <span class="o">%</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">run</span></a><span class="p">)</span>
-        <a href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw" title="mne.io.Raw" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.io.read_raw_fif.html#mne.io.read_raw_fif" title="mne.io.read_raw_fif" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_raw_fif</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw_fname</span></a><span class="p">)</span>
-        <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw_list</span></a><span class="o">.</span><span class="n">append</span><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw" title="mne.io.Raw" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span></a><span class="p">)</span>
-        <a href="../generated/mne_bids.utils.BIDSPath.html#mne_bids.utils.BIDSPath" title="mne_bids.utils.BIDSPath" class="sphx-glr-backref-module-mne_bids-utils sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_basename</span></a> <span class="o">=</span> <a href="../generated/mne_bids.make_bids_basename.html#mne_bids.make_bids_basename" title="mne_bids.make_bids_basename" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">make_bids_basename</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject</span></a><span class="o">=</span><span class="nb">str</span><span class="p">(</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject_id</span></a><span class="p">),</span>
-                                           <span class="n">session</span><span class="o">=</span><span class="s1">&#39;01&#39;</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="s1">&#39;VisualFaces&#39;</span><span class="p">,</span>
-                                           <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">run</span></a><span class="o">=</span><span class="nb">str</span><span class="p">(</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">run</span></a><span class="p">))</span>
+    <span class="k">for</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">run</span></a> <span class="ow">in</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">runs</span></a><span class="p">:</span>
+        <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw_fname</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.datasets.eegbci.load_data.html#mne.datasets.eegbci.load_data" title="mne.datasets.eegbci.load_data" class="sphx-glr-backref-module-mne-datasets-eegbci sphx-glr-backref-type-py-function"><span class="n">eegbci</span><span class="o">.</span><span class="n">load_data</span></a><span class="p">(</span><span class="n">subject</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject_id</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">runs</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">run</span></a><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">raw</span> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.io.read_raw_edf.html#mne.io.read_raw_edf" title="mne.io.read_raw_edf" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_raw_edf</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw_fname</span></a><span class="p">)</span>
+        <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw_list</span></a><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span>
+        <a href="../generated/mne_bids.utils.BIDSPath.html#mne_bids.utils.BIDSPath" title="mne_bids.utils.BIDSPath" class="sphx-glr-backref-module-mne_bids-utils sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_basename</span></a> <span class="o">=</span> <a href="../generated/mne_bids.make_bids_basename.html#mne_bids.make_bids_basename" title="mne_bids.make_bids_basename" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">make_bids_basename</span></a><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject_id</span></a><span class="si">:</span><span class="s1">03</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+                                           <span class="n">session</span><span class="o">=</span><span class="s1">&#39;01&#39;</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="s1">&#39;MotorImagery&#39;</span><span class="p">,</span>
+                                           <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">run</span></a><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">run_map</span></a><span class="p">[</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">run</span></a><span class="p">]</span><span class="si">:</span><span class="s1">02</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
         <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_list</span></a><span class="o">.</span><span class="n">append</span><span class="p">(</span><a href="../generated/mne_bids.utils.BIDSPath.html#mne_bids.utils.BIDSPath" title="mne_bids.utils.BIDSPath" class="sphx-glr-backref-module-mne_bids-utils sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_basename</span></a><span class="p">)</span>
 
 <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">daysback_min</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">daysback_max</span></a> <span class="o">=</span> <a href="../generated/mne_bids.get_anonymization_daysback.html#mne_bids.get_anonymization_daysback" title="mne_bids.get_anonymization_daysback" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">get_anonymization_daysback</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw_list</span></a><span class="p">)</span>
 
-<span class="k">for</span> <a href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw" title="mne.io.Raw" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span></a><span class="p">,</span> <a href="../generated/mne_bids.utils.BIDSPath.html#mne_bids.utils.BIDSPath" title="mne_bids.utils.BIDSPath" class="sphx-glr-backref-module-mne_bids-utils sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_basename</span></a> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw_list</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_list</span></a><span class="p">):</span>
+<span class="k">for</span> <span class="n">raw</span><span class="p">,</span> <a href="../generated/mne_bids.utils.BIDSPath.html#mne_bids.utils.BIDSPath" title="mne_bids.utils.BIDSPath" class="sphx-glr-backref-module-mne_bids-utils sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_basename</span></a> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw_list</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_list</span></a><span class="p">):</span>
     <span class="c1"># By using the same anonymization `daysback` number we can</span>
     <span class="c1"># preserve the longitudinal structure of multiple sessions for a</span>
     <span class="c1"># single subject and the relation between subjects. Be sure to</span>
     <span class="c1"># change or delete this number before putting code online, you</span>
     <span class="c1"># wouldn&#39;t want to inadvertently de-anonymize your data.</span>
-    <a href="../generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">write_raw_bids</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw" title="mne.io.Raw" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span></a><span class="p">,</span> <a href="../generated/mne_bids.utils.BIDSPath.html#mne_bids.utils.BIDSPath" title="mne_bids.utils.BIDSPath" class="sphx-glr-backref-module-mne_bids-utils sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_basename</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">output_path</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">event_id</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">event_id</span></a><span class="p">,</span>
+    <a href="../generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">write_raw_bids</span></a><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <a href="../generated/mne_bids.utils.BIDSPath.html#mne_bids.utils.BIDSPath" title="mne_bids.utils.BIDSPath" class="sphx-glr-backref-module-mne_bids-utils sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_basename</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">event_id</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">event_id</span></a><span class="p">,</span>
                    <span class="n">anonymize</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">daysback</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">daysback_min</span></a> <span class="o">+</span> <span class="mi">2117</span><span class="p">),</span>
                    <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Opening raw data file /home/circleci/mne_data/mne_bids_examples/ds000117/sub001/MEG/run_01_raw.fif...
-    Read a total of 8 projection items:
-        mag_ssp_upright.fif : PCA-mags-v1 (1 x 306)  idle
-        mag_ssp_upright.fif : PCA-mags-v2 (1 x 306)  idle
-        mag_ssp_upright.fif : PCA-mags-v3 (1 x 306)  idle
-        mag_ssp_upright.fif : PCA-mags-v4 (1 x 306)  idle
-        mag_ssp_upright.fif : PCA-mags-v5 (1 x 306)  idle
-        grad_ssp_upright.fif : PCA-grad-v1 (1 x 306)  idle
-        grad_ssp_upright.fif : PCA-grad-v2 (1 x 306)  idle
-        grad_ssp_upright.fif : PCA-grad-v3 (1 x 306)  idle
-    Range : 268400 ... 815099 =    244.000 ...   740.999 secs
-Ready.
-Current compensation grade : 0
-Opening raw data file /home/circleci/mne_data/mne_bids_examples/ds000117/sub001/MEG/run_02_raw.fif...
-    Read a total of 8 projection items:
-        mag_ssp_upright.fif : PCA-mags-v1 (1 x 306)  idle
-        mag_ssp_upright.fif : PCA-mags-v2 (1 x 306)  idle
-        mag_ssp_upright.fif : PCA-mags-v3 (1 x 306)  idle
-        mag_ssp_upright.fif : PCA-mags-v4 (1 x 306)  idle
-        mag_ssp_upright.fif : PCA-mags-v5 (1 x 306)  idle
-        grad_ssp_upright.fif : PCA-grad-v1 (1 x 306)  idle
-        grad_ssp_upright.fif : PCA-grad-v2 (1 x 306)  idle
-        grad_ssp_upright.fif : PCA-grad-v3 (1 x 306)  idle
-    Range : 30800 ... 580799 =     28.000 ...   527.999 secs
-Ready.
-Current compensation grade : 0
-Opening raw data file /home/circleci/mne_data/mne_bids_examples/ds000117/sub001/MEG/run_03_raw.fif...
-    Read a total of 8 projection items:
-        mag_ssp_upright.fif : PCA-mags-v1 (1 x 306)  idle
-        mag_ssp_upright.fif : PCA-mags-v2 (1 x 306)  idle
-        mag_ssp_upright.fif : PCA-mags-v3 (1 x 306)  idle
-        mag_ssp_upright.fif : PCA-mags-v4 (1 x 306)  idle
-        mag_ssp_upright.fif : PCA-mags-v5 (1 x 306)  idle
-        grad_ssp_upright.fif : PCA-grad-v1 (1 x 306)  idle
-        grad_ssp_upright.fif : PCA-grad-v2 (1 x 306)  idle
-        grad_ssp_upright.fif : PCA-grad-v3 (1 x 306)  idle
-    Range : 187000 ... 417999 =    170.000 ...   379.999 secs
-Ready.
-Current compensation grade : 0
-Opening raw data file /home/circleci/mne_data/mne_bids_examples/ds000117/sub001/MEG/run_04_raw.fif...
-    Read a total of 8 projection items:
-        mag_ssp_upright.fif : PCA-mags-v1 (1 x 306)  idle
-        mag_ssp_upright.fif : PCA-mags-v2 (1 x 306)  idle
-        mag_ssp_upright.fif : PCA-mags-v3 (1 x 306)  idle
-        mag_ssp_upright.fif : PCA-mags-v4 (1 x 306)  idle
-        mag_ssp_upright.fif : PCA-mags-v5 (1 x 306)  idle
-        grad_ssp_upright.fif : PCA-grad-v1 (1 x 306)  idle
-        grad_ssp_upright.fif : PCA-grad-v2 (1 x 306)  idle
-        grad_ssp_upright.fif : PCA-grad-v3 (1 x 306)  idle
-    Range : 47300 ... 590699 =     43.000 ...   536.999 secs
-Ready.
-Current compensation grade : 0
-Opening raw data file /home/circleci/mne_data/mne_bids_examples/ds000117/sub001/MEG/run_05_raw.fif...
-    Read a total of 8 projection items:
-        mag_ssp_upright.fif : PCA-mags-v1 (1 x 306)  idle
-        mag_ssp_upright.fif : PCA-mags-v2 (1 x 306)  idle
-        mag_ssp_upright.fif : PCA-mags-v3 (1 x 306)  idle
-        mag_ssp_upright.fif : PCA-mags-v4 (1 x 306)  idle
-        mag_ssp_upright.fif : PCA-mags-v5 (1 x 306)  idle
-        grad_ssp_upright.fif : PCA-grad-v1 (1 x 306)  idle
-        grad_ssp_upright.fif : PCA-grad-v2 (1 x 306)  idle
-        grad_ssp_upright.fif : PCA-grad-v3 (1 x 306)  idle
-    Range : 283800 ... 820599 =    258.000 ...   745.999 secs
-Ready.
-Current compensation grade : 0
-Opening raw data file /home/circleci/mne_data/mne_bids_examples/ds000117/sub001/MEG/run_06_raw.fif...
-    Read a total of 8 projection items:
-        mag_ssp_upright.fif : PCA-mags-v1 (1 x 306)  idle
-        mag_ssp_upright.fif : PCA-mags-v2 (1 x 306)  idle
-        mag_ssp_upright.fif : PCA-mags-v3 (1 x 306)  idle
-        mag_ssp_upright.fif : PCA-mags-v4 (1 x 306)  idle
-        mag_ssp_upright.fif : PCA-mags-v5 (1 x 306)  idle
-        grad_ssp_upright.fif : PCA-grad-v1 (1 x 306)  idle
-        grad_ssp_upright.fif : PCA-grad-v2 (1 x 306)  idle
-        grad_ssp_upright.fif : PCA-grad-v3 (1 x 306)  idle
-    Range : 28600 ... 573099 =     26.000 ...   520.999 secs
-Ready.
-Current compensation grade : 0
-Opening raw data file /home/circleci/mne_data/mne_bids_examples/ds000117/sub001/MEG/run_01_raw.fif...
-    Read a total of 8 projection items:
-        mag_ssp_upright.fif : PCA-mags-v1 (1 x 306)  idle
-        mag_ssp_upright.fif : PCA-mags-v2 (1 x 306)  idle
-        mag_ssp_upright.fif : PCA-mags-v3 (1 x 306)  idle
-        mag_ssp_upright.fif : PCA-mags-v4 (1 x 306)  idle
-        mag_ssp_upright.fif : PCA-mags-v5 (1 x 306)  idle
-        grad_ssp_upright.fif : PCA-grad-v1 (1 x 306)  idle
-        grad_ssp_upright.fif : PCA-grad-v2 (1 x 306)  idle
-        grad_ssp_upright.fif : PCA-grad-v3 (1 x 306)  idle
-    Range : 268400 ... 815099 =    244.000 ...   740.999 secs
-Ready.
-Current compensation grade : 0
-Creating folder: /home/circleci/mne_data/mne_bids_examples/ds000117-bids/sub-1/ses-01/meg
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Extracting EDF parameters from /home/circleci/mne_data/MNE-eegbci-data/files/eegmmidb/1.0.0/S001/S001R04.edf...
+EDF file detected
+Setting channel info structure...
+Creating raw.info structure...
+Extracting EDF parameters from /home/circleci/mne_data/MNE-eegbci-data/files/eegmmidb/1.0.0/S001/S001R08.edf...
+EDF file detected
+Setting channel info structure...
+Creating raw.info structure...
+Extracting EDF parameters from /home/circleci/mne_data/MNE-eegbci-data/files/eegmmidb/1.0.0/S001/S001R12.edf...
+EDF file detected
+Setting channel info structure...
+Creating raw.info structure...
+Extracting EDF parameters from /home/circleci/mne_data/MNE-eegbci-data/files/eegmmidb/1.0.0/S002/S002R04.edf...
+EDF file detected
+Setting channel info structure...
+Creating raw.info structure...
+Extracting EDF parameters from /home/circleci/mne_data/MNE-eegbci-data/files/eegmmidb/1.0.0/S002/S002R08.edf...
+EDF file detected
+Setting channel info structure...
+Creating raw.info structure...
+Extracting EDF parameters from /home/circleci/mne_data/MNE-eegbci-data/files/eegmmidb/1.0.0/S002/S002R12.edf...
+EDF file detected
+Setting channel info structure...
+Creating raw.info structure...
+Extracting EDF parameters from /home/circleci/mne_data/MNE-eegbci-data/files/eegmmidb/1.0.0/S001/S001R04.edf...
+EDF file detected
+Setting channel info structure...
+Creating raw.info structure...
+Creating folder: /home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-01/eeg
+/home/circleci/project/mne_bids/write.py:1123: RuntimeWarning: Converting to BV for anonymization
+  warn(&#39;Converting to BV for anonymization&#39;)
 
-Writing &#39;/home/circleci/mne_data/mne_bids_examples/ds000117-bids/README&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/README&#39;...
 
 References
 ----------
 Appelhoff, S., Sanderson, M., Brooks, T., Vliet, M., Quentin, R., Holdgraf, C., Chaumon, M., Mikulan, E., Tavabi, K., Höchenberger, R., Welke, D., Brunner, C., Rockhill, A., Larson, E., Gramfort, A. and Jas, M. (2019). MNE-BIDS: Organizing electrophysiological data into the BIDS format and facilitating their analysis. Journal of Open Source Software 4: (1896). https://doi.org/10.21105/joss.01896
 
-Niso, G., Gorgolewski, K. J., Bock, E., Brooks, T. L., Flandin, G., Gramfort, A., Henson, R. N., Jas, M., Litvak, V., Moreau, J., Oostenveld, R., Schoffelen, J., Tadel, F., Wexler, J., Baillet, S. (2018). MEG-BIDS, the brain imaging data structure extended to magnetoencephalography. Scientific Data, 5, 180110. http://doi.org/10.1038/sdata.2018.110
+Pernet, C. R., Appelhoff, S., Gorgolewski, K. J., Flandin, G., Phillips, C., Delorme, A., Oostenveld, R. (2019). EEG-BIDS, an extension to the brain imaging data structure for electroencephalography. Scientific Data, 6, 103. https://doi.org/10.1038/s41597-019-0104-8
 
 
-Writing &#39;/home/circleci/mne_data/mne_bids_examples/ds000117-bids/participants.tsv&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/participants.tsv&#39;...
 
 participant_id  age     sex     hand
-sub-1   10      M       R
+sub-001 n/a     n/a     n/a
 
-Writing &#39;/home/circleci/mne_data/mne_bids_examples/ds000117-bids/participants.json&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/participants.json&#39;...
 
 {
     &quot;participant_id&quot;: {
@@ -339,72 +296,10 @@ Writing &#39;/home/circleci/mne_data/mne_bids_examples/ds000117-bids/participant
         }
     }
 }
+/home/circleci/project/mne_bids/utils.py:780: RuntimeWarning: No events found or provided. Please make sure to set channel type using raw.set_channel_types or provide events_data.
+  warn(&#39;No events found or provided. Please make sure to&#39;
 
-Writing &#39;/home/circleci/mne_data/mne_bids_examples/ds000117-bids/sub-1/ses-01/meg/sub-1_ses-01_coordsystem.json&#39;...
-
-{
-    &quot;MEGCoordinateSystem&quot;: &quot;Elekta&quot;,
-    &quot;MEGCoordinateUnits&quot;: &quot;m&quot;,
-    &quot;MEGCoordinateSystemDescription&quot;: &quot;n/a&quot;,
-    &quot;HeadCoilCoordinates&quot;: {
-        &quot;NAS&quot;: [
-            6.350555636913668e-10,
-            0.10185277462005615,
-            -1.2766878665360082e-09
-        ],
-        &quot;LPA&quot;: [
-            -0.07355359941720963,
-            -5.226810984026997e-09,
-            -6.564203847148065e-09
-        ],
-        &quot;RPA&quot;: [
-            0.07877404987812042,
-            -2.563174561487358e-08,
-            -5.883831200037548e-09
-        ],
-        &quot;coil1&quot;: [
-            0.020418334752321243,
-            0.09947940707206726,
-            0.06992102414369583
-        ],
-        &quot;coil2&quot;: [
-            0.07411128282546997,
-            0.0064362590201199055,
-            0.09744320064783096
-        ],
-        &quot;coil3&quot;: [
-            0.018864190205931664,
-            -0.020370930433273315,
-            0.1332322508096695
-        ],
-        &quot;coil4&quot;: [
-            0.014254843816161156,
-            -0.0912255346775055,
-            0.08386014401912689
-        ],
-        &quot;coil5&quot;: [
-            -0.07725043594837189,
-            -0.009882151149213314,
-            0.07862507551908493
-        ]
-    },
-    &quot;HeadCoilCoordinateSystem&quot;: &quot;RAS&quot;,
-    &quot;HeadCoilCoordinateUnits&quot;: &quot;m&quot;
-}
-296 events found
-Event IDs: [   5    6    7   13   14   15   17   18   19  256  261  262  263  269
-  270  271  273  274  275 4096 4101 4102 4103 4109 4110 4111 4114]
-
-Writing &#39;/home/circleci/mne_data/mne_bids_examples/ds000117-bids/sub-1/ses-01/meg/sub-1_ses-01_task-VisualFaces_run-1_events.tsv&#39;...
-
-onset   duration        trial_type      value   sample
-22.958181818181817      0.0     scrambled/first 17      25254
-23.73181818181818       0.0     n/a     273     26105
-26.04909090909091       0.0     scrambled/first 17      28654
-26.92818181818182       0.0     n/a     273     29621
-29.222727272727273      0.0     face/unfamiliar/first   13      32145
-
-Writing &#39;/home/circleci/mne_data/mne_bids_examples/ds000117-bids/dataset_description.json&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/dataset_description.json&#39;...
 
 {
     &quot;Name&quot;: &quot; &quot;,
@@ -413,82 +308,71 @@ Writing &#39;/home/circleci/mne_data/mne_bids_examples/ds000117-bids/dataset_des
         &quot;Please cite MNE-BIDS in your publication before removing this (citations in README)&quot;
     ]
 }
-Reading 0 ... 546699  =      0.000 ...   496.999 secs...
+Effective window size : 1.600 (s)
+/home/circleci/project/mne_bids/write.py:503: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
+  warn(&#39;No line frequency found, defaulting to {} Hz &#39;
+Reading 0 ... 19999  =      0.000 ...   124.994 secs...
 
-Writing &#39;/home/circleci/mne_data/mne_bids_examples/ds000117-bids/sub-1/ses-01/meg/sub-1_ses-01_task-VisualFaces_run-1_meg.json&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-01/eeg/sub-001_ses-01_task-MotorImagery_run-01_eeg.json&#39;...
 
 {
-    &quot;TaskName&quot;: &quot;VisualFaces&quot;,
-    &quot;Manufacturer&quot;: &quot;Elekta&quot;,
-    &quot;PowerLineFrequency&quot;: 50.0,
-    &quot;SamplingFrequency&quot;: 1100.0,
+    &quot;TaskName&quot;: &quot;MotorImagery&quot;,
+    &quot;Manufacturer&quot;: &quot;n/a&quot;,
+    &quot;PowerLineFrequency&quot;: 60,
+    &quot;SamplingFrequency&quot;: 160.0,
     &quot;SoftwareFilters&quot;: &quot;n/a&quot;,
-    &quot;RecordingDuration&quot;: 496.9990909090909,
+    &quot;RecordingDuration&quot;: 124.99375,
     &quot;RecordingType&quot;: &quot;continuous&quot;,
-    &quot;DewarPosition&quot;: &quot;n/a&quot;,
-    &quot;DigitizedLandmarks&quot;: false,
-    &quot;DigitizedHeadPoints&quot;: false,
-    &quot;MEGChannelCount&quot;: 306,
-    &quot;MEGREFChannelCount&quot;: 0,
-    &quot;EEGChannelCount&quot;: 74,
+    &quot;EEGReference&quot;: &quot;n/a&quot;,
+    &quot;EEGGround&quot;: &quot;n/a&quot;,
+    &quot;EEGPlacementScheme&quot;: &quot;n/a&quot;,
+    &quot;EEGChannelCount&quot;: 64,
     &quot;EOGChannelCount&quot;: 0,
     &quot;ECGChannelCount&quot;: 0,
     &quot;EMGChannelCount&quot;: 0,
-    &quot;MiscChannelCount&quot;: 12,
-    &quot;TriggerChannelCount&quot;: 3
+    &quot;MiscChannelCount&quot;: 0,
+    &quot;TriggerChannelCount&quot;: 0
 }
 
-Writing &#39;/home/circleci/mne_data/mne_bids_examples/ds000117-bids/sub-1/ses-01/meg/sub-1_ses-01_task-VisualFaces_run-1_channels.tsv&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-01/eeg/sub-001_ses-01_task-MotorImagery_run-01_channels.tsv&#39;...
 
 name    type    units   low_cutoff      high_cutoff     description     sampling_frequency      status
-MEG0113 MEGGRADPLANAR   T/m     0.0     356.3999938964844       Planar Gradiometer      1100.0  good
-MEG0112 MEGGRADPLANAR   T/m     0.0     356.3999938964844       Planar Gradiometer      1100.0  good
-MEG0111 MEGMAG  T       0.0     356.3999938964844       Magnetometer    1100.0  good
-MEG0122 MEGGRADPLANAR   T/m     0.0     356.3999938964844       Planar Gradiometer      1100.0  good
-MEG0123 MEGGRADPLANAR   T/m     0.0     356.3999938964844       Planar Gradiometer      1100.0  good
-Overwriting existing file.
-Writing /home/circleci/mne_data/mne_bids_examples/ds000117-bids/sub-1/ses-01/meg/sub-1_ses-01_task-VisualFaces_run-1_meg.fif
-Closing /home/circleci/mne_data/mne_bids_examples/ds000117-bids/sub-1/ses-01/meg/sub-1_ses-01_task-VisualFaces_run-1_meg.fif [done]
+Fc5.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+Fc3.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+Fc1.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+Fcz.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+/home/circleci/project/mne_bids/write.py:1195: RuntimeWarning: Converting data files to BrainVision format
+  warn(&#39;Converting data files to BrainVision format&#39;)
 
-Writing &#39;/home/circleci/mne_data/mne_bids_examples/ds000117-bids/sub-1/ses-01/sub-1_ses-01_scans.tsv&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-01/sub-001_ses-01_scans.tsv&#39;...
 
 filename        acq_time
-meg/sub-1_ses-01_task-VisualFaces_run-1_meg.fif 1919-03-16T14:39:35
-meg/sub-1_ses-01_task-VisualFaces_run-2_meg.fif 1919-03-16T14:52:59
-meg/sub-1_ses-01_task-VisualFaces_run-3_meg.fif 1919-03-16T15:02:25
-meg/sub-1_ses-01_task-VisualFaces_run-4_meg.fif 1919-03-16T15:17:45
-meg/sub-1_ses-01_task-VisualFaces_run-5_meg.fif 1919-03-16T15:27:38
-Wrote /home/circleci/mne_data/mne_bids_examples/ds000117-bids/sub-1/ses-01/sub-1_ses-01_scans.tsv entry with meg/sub-1_ses-01_task-VisualFaces_run-1_meg.fif.
-Opening raw data file /home/circleci/mne_data/mne_bids_examples/ds000117/sub001/MEG/run_02_raw.fif...
-    Read a total of 8 projection items:
-        mag_ssp_upright.fif : PCA-mags-v1 (1 x 306)  idle
-        mag_ssp_upright.fif : PCA-mags-v2 (1 x 306)  idle
-        mag_ssp_upright.fif : PCA-mags-v3 (1 x 306)  idle
-        mag_ssp_upright.fif : PCA-mags-v4 (1 x 306)  idle
-        mag_ssp_upright.fif : PCA-mags-v5 (1 x 306)  idle
-        grad_ssp_upright.fif : PCA-grad-v1 (1 x 306)  idle
-        grad_ssp_upright.fif : PCA-grad-v2 (1 x 306)  idle
-        grad_ssp_upright.fif : PCA-grad-v3 (1 x 306)  idle
-    Range : 30800 ... 580799 =     28.000 ...   527.999 secs
-Ready.
-Current compensation grade : 0
-Creating folder: /home/circleci/mne_data/mne_bids_examples/ds000117-bids/sub-1/ses-01/meg
+eeg/sub-001_ses-01_task-MotorImagery_run-01_eeg.vhdr    1919-03-16T16:15:00
+Wrote /home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-01/sub-001_ses-01_scans.tsv entry with eeg/sub-001_ses-01_task-MotorImagery_run-01_eeg.vhdr.
+Extracting EDF parameters from /home/circleci/mne_data/MNE-eegbci-data/files/eegmmidb/1.0.0/S001/S001R08.edf...
+EDF file detected
+Setting channel info structure...
+Creating raw.info structure...
+Creating folder: /home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-01/eeg
+/home/circleci/project/mne_bids/write.py:1123: RuntimeWarning: Converting to BV for anonymization
+  warn(&#39;Converting to BV for anonymization&#39;)
 
-Writing &#39;/home/circleci/mne_data/mne_bids_examples/ds000117-bids/README&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/README&#39;...
 
 References
 ----------
 Appelhoff, S., Sanderson, M., Brooks, T., Vliet, M., Quentin, R., Holdgraf, C., Chaumon, M., Mikulan, E., Tavabi, K., Höchenberger, R., Welke, D., Brunner, C., Rockhill, A., Larson, E., Gramfort, A. and Jas, M. (2019). MNE-BIDS: Organizing electrophysiological data into the BIDS format and facilitating their analysis. Journal of Open Source Software 4: (1896). https://doi.org/10.21105/joss.01896
 
-Niso, G., Gorgolewski, K. J., Bock, E., Brooks, T. L., Flandin, G., Gramfort, A., Henson, R. N., Jas, M., Litvak, V., Moreau, J., Oostenveld, R., Schoffelen, J., Tadel, F., Wexler, J., Baillet, S. (2018). MEG-BIDS, the brain imaging data structure extended to magnetoencephalography. Scientific Data, 5, 180110. http://doi.org/10.1038/sdata.2018.110
+Pernet, C. R., Appelhoff, S., Gorgolewski, K. J., Flandin, G., Phillips, C., Delorme, A., Oostenveld, R. (2019). EEG-BIDS, an extension to the brain imaging data structure for electroencephalography. Scientific Data, 6, 103. https://doi.org/10.1038/s41597-019-0104-8
 
 
-Writing &#39;/home/circleci/mne_data/mne_bids_examples/ds000117-bids/participants.tsv&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/participants.tsv&#39;...
 
 participant_id  age     sex     hand
-sub-1   10      M       R
+sub-001 n/a     n/a     n/a
 
-Writing &#39;/home/circleci/mne_data/mne_bids_examples/ds000117-bids/participants.json&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/participants.json&#39;...
 
 {
     &quot;participant_id&quot;: {
@@ -514,72 +398,10 @@ Writing &#39;/home/circleci/mne_data/mne_bids_examples/ds000117-bids/participant
         }
     }
 }
+/home/circleci/project/mne_bids/utils.py:780: RuntimeWarning: No events found or provided. Please make sure to set channel type using raw.set_channel_types or provide events_data.
+  warn(&#39;No events found or provided. Please make sure to&#39;
 
-Writing &#39;/home/circleci/mne_data/mne_bids_examples/ds000117-bids/sub-1/ses-01/meg/sub-1_ses-01_coordsystem.json&#39;...
-
-{
-    &quot;MEGCoordinateSystem&quot;: &quot;Elekta&quot;,
-    &quot;MEGCoordinateUnits&quot;: &quot;m&quot;,
-    &quot;MEGCoordinateSystemDescription&quot;: &quot;n/a&quot;,
-    &quot;HeadCoilCoordinates&quot;: {
-        &quot;NAS&quot;: [
-            6.350555636913668e-10,
-            0.10185277462005615,
-            -1.2766878665360082e-09
-        ],
-        &quot;LPA&quot;: [
-            -0.07355359941720963,
-            -5.226810984026997e-09,
-            -6.564203847148065e-09
-        ],
-        &quot;RPA&quot;: [
-            0.07877404987812042,
-            -2.563174561487358e-08,
-            -5.883831200037548e-09
-        ],
-        &quot;coil1&quot;: [
-            0.020418334752321243,
-            0.09947940707206726,
-            0.06992102414369583
-        ],
-        &quot;coil2&quot;: [
-            0.07411128282546997,
-            0.0064362590201199055,
-            0.09744320064783096
-        ],
-        &quot;coil3&quot;: [
-            0.018864190205931664,
-            -0.020370930433273315,
-            0.1332322508096695
-        ],
-        &quot;coil4&quot;: [
-            0.014254843816161156,
-            -0.0912255346775055,
-            0.08386014401912689
-        ],
-        &quot;coil5&quot;: [
-            -0.07725043594837189,
-            -0.009882151149213314,
-            0.07862507551908493
-        ]
-    },
-    &quot;HeadCoilCoordinateSystem&quot;: &quot;RAS&quot;,
-    &quot;HeadCoilCoordinateUnits&quot;: &quot;m&quot;
-}
-296 events found
-Event IDs: [   5    6    7   13   14   15   17   18   19  256  261  262  263  269
-  270  271  273  274  275 4096 4109 4110 4111]
-
-Writing &#39;/home/circleci/mne_data/mne_bids_examples/ds000117-bids/sub-1/ses-01/meg/sub-1_ses-01_task-VisualFaces_run-2_events.tsv&#39;...
-
-onset   duration        trial_type      value   sample
-28.03272727272727       0.0     scrambled/first 17      30836
-28.837272727272726      0.0     n/a     273     31721
-31.156363636363636      0.0     face/unfamiliar/first   13      34272
-32.13181818181818       0.0     n/a     256     35345
-34.21363636363636       0.0     face/famous/first       5       37635
-
-Writing &#39;/home/circleci/mne_data/mne_bids_examples/ds000117-bids/dataset_description.json&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/dataset_description.json&#39;...
 
 {
     &quot;Name&quot;: &quot; &quot;,
@@ -588,82 +410,72 @@ Writing &#39;/home/circleci/mne_data/mne_bids_examples/ds000117-bids/dataset_des
         &quot;Please cite MNE-BIDS in your publication before removing this (citations in README)&quot;
     ]
 }
-Reading 0 ... 549999  =      0.000 ...   499.999 secs...
+Effective window size : 1.600 (s)
+/home/circleci/project/mne_bids/write.py:503: RuntimeWarning: No line frequency found, defaulting to 50 Hz estimated from multi-taper FFT on 10 seconds of data.
+  warn(&#39;No line frequency found, defaulting to {} Hz &#39;
+Reading 0 ... 19999  =      0.000 ...   124.994 secs...
 
-Writing &#39;/home/circleci/mne_data/mne_bids_examples/ds000117-bids/sub-1/ses-01/meg/sub-1_ses-01_task-VisualFaces_run-2_meg.json&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-01/eeg/sub-001_ses-01_task-MotorImagery_run-02_eeg.json&#39;...
 
 {
-    &quot;TaskName&quot;: &quot;VisualFaces&quot;,
-    &quot;Manufacturer&quot;: &quot;Elekta&quot;,
-    &quot;PowerLineFrequency&quot;: 50.0,
-    &quot;SamplingFrequency&quot;: 1100.0,
+    &quot;TaskName&quot;: &quot;MotorImagery&quot;,
+    &quot;Manufacturer&quot;: &quot;n/a&quot;,
+    &quot;PowerLineFrequency&quot;: 50,
+    &quot;SamplingFrequency&quot;: 160.0,
     &quot;SoftwareFilters&quot;: &quot;n/a&quot;,
-    &quot;RecordingDuration&quot;: 499.9990909090909,
+    &quot;RecordingDuration&quot;: 124.99375,
     &quot;RecordingType&quot;: &quot;continuous&quot;,
-    &quot;DewarPosition&quot;: &quot;n/a&quot;,
-    &quot;DigitizedLandmarks&quot;: false,
-    &quot;DigitizedHeadPoints&quot;: false,
-    &quot;MEGChannelCount&quot;: 306,
-    &quot;MEGREFChannelCount&quot;: 0,
-    &quot;EEGChannelCount&quot;: 74,
+    &quot;EEGReference&quot;: &quot;n/a&quot;,
+    &quot;EEGGround&quot;: &quot;n/a&quot;,
+    &quot;EEGPlacementScheme&quot;: &quot;n/a&quot;,
+    &quot;EEGChannelCount&quot;: 64,
     &quot;EOGChannelCount&quot;: 0,
     &quot;ECGChannelCount&quot;: 0,
     &quot;EMGChannelCount&quot;: 0,
-    &quot;MiscChannelCount&quot;: 12,
-    &quot;TriggerChannelCount&quot;: 3
+    &quot;MiscChannelCount&quot;: 0,
+    &quot;TriggerChannelCount&quot;: 0
 }
 
-Writing &#39;/home/circleci/mne_data/mne_bids_examples/ds000117-bids/sub-1/ses-01/meg/sub-1_ses-01_task-VisualFaces_run-2_channels.tsv&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-01/eeg/sub-001_ses-01_task-MotorImagery_run-02_channels.tsv&#39;...
 
 name    type    units   low_cutoff      high_cutoff     description     sampling_frequency      status
-MEG0113 MEGGRADPLANAR   T/m     0.0     356.3999938964844       Planar Gradiometer      1100.0  good
-MEG0112 MEGGRADPLANAR   T/m     0.0     356.3999938964844       Planar Gradiometer      1100.0  good
-MEG0111 MEGMAG  T       0.0     356.3999938964844       Magnetometer    1100.0  good
-MEG0122 MEGGRADPLANAR   T/m     0.0     356.3999938964844       Planar Gradiometer      1100.0  good
-MEG0123 MEGGRADPLANAR   T/m     0.0     356.3999938964844       Planar Gradiometer      1100.0  good
-Overwriting existing file.
-Writing /home/circleci/mne_data/mne_bids_examples/ds000117-bids/sub-1/ses-01/meg/sub-1_ses-01_task-VisualFaces_run-2_meg.fif
-Closing /home/circleci/mne_data/mne_bids_examples/ds000117-bids/sub-1/ses-01/meg/sub-1_ses-01_task-VisualFaces_run-2_meg.fif [done]
+Fc5.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+Fc3.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+Fc1.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+Fcz.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+/home/circleci/project/mne_bids/write.py:1195: RuntimeWarning: Converting data files to BrainVision format
+  warn(&#39;Converting data files to BrainVision format&#39;)
 
-Writing &#39;/home/circleci/mne_data/mne_bids_examples/ds000117-bids/sub-1/ses-01/sub-1_ses-01_scans.tsv&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-01/sub-001_ses-01_scans.tsv&#39;...
 
 filename        acq_time
-meg/sub-1_ses-01_task-VisualFaces_run-1_meg.fif 1919-03-16T14:39:35
-meg/sub-1_ses-01_task-VisualFaces_run-2_meg.fif 1919-03-16T14:52:59
-meg/sub-1_ses-01_task-VisualFaces_run-3_meg.fif 1919-03-16T15:02:25
-meg/sub-1_ses-01_task-VisualFaces_run-4_meg.fif 1919-03-16T15:17:45
-meg/sub-1_ses-01_task-VisualFaces_run-5_meg.fif 1919-03-16T15:27:38
-Wrote /home/circleci/mne_data/mne_bids_examples/ds000117-bids/sub-1/ses-01/sub-1_ses-01_scans.tsv entry with meg/sub-1_ses-01_task-VisualFaces_run-2_meg.fif.
-Opening raw data file /home/circleci/mne_data/mne_bids_examples/ds000117/sub001/MEG/run_03_raw.fif...
-    Read a total of 8 projection items:
-        mag_ssp_upright.fif : PCA-mags-v1 (1 x 306)  idle
-        mag_ssp_upright.fif : PCA-mags-v2 (1 x 306)  idle
-        mag_ssp_upright.fif : PCA-mags-v3 (1 x 306)  idle
-        mag_ssp_upright.fif : PCA-mags-v4 (1 x 306)  idle
-        mag_ssp_upright.fif : PCA-mags-v5 (1 x 306)  idle
-        grad_ssp_upright.fif : PCA-grad-v1 (1 x 306)  idle
-        grad_ssp_upright.fif : PCA-grad-v2 (1 x 306)  idle
-        grad_ssp_upright.fif : PCA-grad-v3 (1 x 306)  idle
-    Range : 187000 ... 417999 =    170.000 ...   379.999 secs
-Ready.
-Current compensation grade : 0
-Creating folder: /home/circleci/mne_data/mne_bids_examples/ds000117-bids/sub-1/ses-01/meg
+eeg/sub-001_ses-01_task-MotorImagery_run-01_eeg.vhdr    1919-03-16T16:15:00
+eeg/sub-001_ses-01_task-MotorImagery_run-02_eeg.vhdr    1919-03-16T16:15:00
+Wrote /home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-01/sub-001_ses-01_scans.tsv entry with eeg/sub-001_ses-01_task-MotorImagery_run-02_eeg.vhdr.
+Extracting EDF parameters from /home/circleci/mne_data/MNE-eegbci-data/files/eegmmidb/1.0.0/S001/S001R12.edf...
+EDF file detected
+Setting channel info structure...
+Creating raw.info structure...
+Creating folder: /home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-01/eeg
+/home/circleci/project/mne_bids/write.py:1123: RuntimeWarning: Converting to BV for anonymization
+  warn(&#39;Converting to BV for anonymization&#39;)
 
-Writing &#39;/home/circleci/mne_data/mne_bids_examples/ds000117-bids/README&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/README&#39;...
 
 References
 ----------
 Appelhoff, S., Sanderson, M., Brooks, T., Vliet, M., Quentin, R., Holdgraf, C., Chaumon, M., Mikulan, E., Tavabi, K., Höchenberger, R., Welke, D., Brunner, C., Rockhill, A., Larson, E., Gramfort, A. and Jas, M. (2019). MNE-BIDS: Organizing electrophysiological data into the BIDS format and facilitating their analysis. Journal of Open Source Software 4: (1896). https://doi.org/10.21105/joss.01896
 
-Niso, G., Gorgolewski, K. J., Bock, E., Brooks, T. L., Flandin, G., Gramfort, A., Henson, R. N., Jas, M., Litvak, V., Moreau, J., Oostenveld, R., Schoffelen, J., Tadel, F., Wexler, J., Baillet, S. (2018). MEG-BIDS, the brain imaging data structure extended to magnetoencephalography. Scientific Data, 5, 180110. http://doi.org/10.1038/sdata.2018.110
+Pernet, C. R., Appelhoff, S., Gorgolewski, K. J., Flandin, G., Phillips, C., Delorme, A., Oostenveld, R. (2019). EEG-BIDS, an extension to the brain imaging data structure for electroencephalography. Scientific Data, 6, 103. https://doi.org/10.1038/s41597-019-0104-8
 
 
-Writing &#39;/home/circleci/mne_data/mne_bids_examples/ds000117-bids/participants.tsv&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/participants.tsv&#39;...
 
 participant_id  age     sex     hand
-sub-1   10      M       R
+sub-001 n/a     n/a     n/a
 
-Writing &#39;/home/circleci/mne_data/mne_bids_examples/ds000117-bids/participants.json&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/participants.json&#39;...
 
 {
     &quot;participant_id&quot;: {
@@ -689,72 +501,10 @@ Writing &#39;/home/circleci/mne_data/mne_bids_examples/ds000117-bids/participant
         }
     }
 }
+/home/circleci/project/mne_bids/utils.py:780: RuntimeWarning: No events found or provided. Please make sure to set channel type using raw.set_channel_types or provide events_data.
+  warn(&#39;No events found or provided. Please make sure to&#39;
 
-Writing &#39;/home/circleci/mne_data/mne_bids_examples/ds000117-bids/sub-1/ses-01/meg/sub-1_ses-01_coordsystem.json&#39;...
-
-{
-    &quot;MEGCoordinateSystem&quot;: &quot;Elekta&quot;,
-    &quot;MEGCoordinateUnits&quot;: &quot;m&quot;,
-    &quot;MEGCoordinateSystemDescription&quot;: &quot;n/a&quot;,
-    &quot;HeadCoilCoordinates&quot;: {
-        &quot;NAS&quot;: [
-            6.350555636913668e-10,
-            0.10185277462005615,
-            -1.2766878665360082e-09
-        ],
-        &quot;LPA&quot;: [
-            -0.07355359941720963,
-            -5.226810984026997e-09,
-            -6.564203847148065e-09
-        ],
-        &quot;RPA&quot;: [
-            0.07877404987812042,
-            -2.563174561487358e-08,
-            -5.883831200037548e-09
-        ],
-        &quot;coil1&quot;: [
-            0.020418334752321243,
-            0.09947940707206726,
-            0.06992102414369583
-        ],
-        &quot;coil2&quot;: [
-            0.07411128282546997,
-            0.0064362590201199055,
-            0.09744320064783096
-        ],
-        &quot;coil3&quot;: [
-            0.018864190205931664,
-            -0.020370930433273315,
-            0.1332322508096695
-        ],
-        &quot;coil4&quot;: [
-            0.014254843816161156,
-            -0.0912255346775055,
-            0.08386014401912689
-        ],
-        &quot;coil5&quot;: [
-            -0.07725043594837189,
-            -0.009882151149213314,
-            0.07862507551908493
-        ]
-    },
-    &quot;HeadCoilCoordinateSystem&quot;: &quot;RAS&quot;,
-    &quot;HeadCoilCoordinateUnits&quot;: &quot;m&quot;
-}
-119 events found
-Event IDs: [   5    6    7   13   14   15   17   18   19  256  261  262  263  269
-  270  271  273  274  275 4096 4103 4110 4352]
-
-Writing &#39;/home/circleci/mne_data/mne_bids_examples/ds000117-bids/sub-1/ses-01/meg/sub-1_ses-01_task-VisualFaces_run-3_events.tsv&#39;...
-
-onset   duration        trial_type      value   sample
-24.56   0.0     scrambled/first 17      27016
-25.27090909090909       0.0     n/a     273     27798
-27.7    0.0     scrambled/immediate     18      30470
-28.55   0.0     n/a     256     31405
-30.740909090909092      0.0     scrambled/first 17      33815
-
-Writing &#39;/home/circleci/mne_data/mne_bids_examples/ds000117-bids/dataset_description.json&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/dataset_description.json&#39;...
 
 {
     &quot;Name&quot;: &quot; &quot;,
@@ -763,82 +513,74 @@ Writing &#39;/home/circleci/mne_data/mne_bids_examples/ds000117-bids/dataset_des
         &quot;Please cite MNE-BIDS in your publication before removing this (citations in README)&quot;
     ]
 }
-Reading 0 ... 230999  =      0.000 ...   209.999 secs...
+Effective window size : 1.600 (s)
+/home/circleci/project/mne_bids/write.py:503: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
+  warn(&#39;No line frequency found, defaulting to {} Hz &#39;
+Reading 0 ... 19999  =      0.000 ...   124.994 secs...
 
-Writing &#39;/home/circleci/mne_data/mne_bids_examples/ds000117-bids/sub-1/ses-01/meg/sub-1_ses-01_task-VisualFaces_run-3_meg.json&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-01/eeg/sub-001_ses-01_task-MotorImagery_run-03_eeg.json&#39;...
 
 {
-    &quot;TaskName&quot;: &quot;VisualFaces&quot;,
-    &quot;Manufacturer&quot;: &quot;Elekta&quot;,
-    &quot;PowerLineFrequency&quot;: 50.0,
-    &quot;SamplingFrequency&quot;: 1100.0,
+    &quot;TaskName&quot;: &quot;MotorImagery&quot;,
+    &quot;Manufacturer&quot;: &quot;n/a&quot;,
+    &quot;PowerLineFrequency&quot;: 60,
+    &quot;SamplingFrequency&quot;: 160.0,
     &quot;SoftwareFilters&quot;: &quot;n/a&quot;,
-    &quot;RecordingDuration&quot;: 209.9990909090909,
+    &quot;RecordingDuration&quot;: 124.99375,
     &quot;RecordingType&quot;: &quot;continuous&quot;,
-    &quot;DewarPosition&quot;: &quot;n/a&quot;,
-    &quot;DigitizedLandmarks&quot;: false,
-    &quot;DigitizedHeadPoints&quot;: false,
-    &quot;MEGChannelCount&quot;: 306,
-    &quot;MEGREFChannelCount&quot;: 0,
-    &quot;EEGChannelCount&quot;: 74,
+    &quot;EEGReference&quot;: &quot;n/a&quot;,
+    &quot;EEGGround&quot;: &quot;n/a&quot;,
+    &quot;EEGPlacementScheme&quot;: &quot;n/a&quot;,
+    &quot;EEGChannelCount&quot;: 64,
     &quot;EOGChannelCount&quot;: 0,
     &quot;ECGChannelCount&quot;: 0,
     &quot;EMGChannelCount&quot;: 0,
-    &quot;MiscChannelCount&quot;: 12,
-    &quot;TriggerChannelCount&quot;: 3
+    &quot;MiscChannelCount&quot;: 0,
+    &quot;TriggerChannelCount&quot;: 0
 }
 
-Writing &#39;/home/circleci/mne_data/mne_bids_examples/ds000117-bids/sub-1/ses-01/meg/sub-1_ses-01_task-VisualFaces_run-3_channels.tsv&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-01/eeg/sub-001_ses-01_task-MotorImagery_run-03_channels.tsv&#39;...
 
 name    type    units   low_cutoff      high_cutoff     description     sampling_frequency      status
-MEG0113 MEGGRADPLANAR   T/m     0.0     356.3999938964844       Planar Gradiometer      1100.0  good
-MEG0112 MEGGRADPLANAR   T/m     0.0     356.3999938964844       Planar Gradiometer      1100.0  good
-MEG0111 MEGMAG  T       0.0     356.3999938964844       Magnetometer    1100.0  good
-MEG0122 MEGGRADPLANAR   T/m     0.0     356.3999938964844       Planar Gradiometer      1100.0  good
-MEG0123 MEGGRADPLANAR   T/m     0.0     356.3999938964844       Planar Gradiometer      1100.0  good
-Overwriting existing file.
-Writing /home/circleci/mne_data/mne_bids_examples/ds000117-bids/sub-1/ses-01/meg/sub-1_ses-01_task-VisualFaces_run-3_meg.fif
-Closing /home/circleci/mne_data/mne_bids_examples/ds000117-bids/sub-1/ses-01/meg/sub-1_ses-01_task-VisualFaces_run-3_meg.fif [done]
+Fc5.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+Fc3.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+Fc1.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+Fcz.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+/home/circleci/project/mne_bids/write.py:1195: RuntimeWarning: Converting data files to BrainVision format
+  warn(&#39;Converting data files to BrainVision format&#39;)
 
-Writing &#39;/home/circleci/mne_data/mne_bids_examples/ds000117-bids/sub-1/ses-01/sub-1_ses-01_scans.tsv&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-01/sub-001_ses-01_scans.tsv&#39;...
 
 filename        acq_time
-meg/sub-1_ses-01_task-VisualFaces_run-1_meg.fif 1919-03-16T14:39:35
-meg/sub-1_ses-01_task-VisualFaces_run-2_meg.fif 1919-03-16T14:52:59
-meg/sub-1_ses-01_task-VisualFaces_run-3_meg.fif 1919-03-16T15:02:25
-meg/sub-1_ses-01_task-VisualFaces_run-4_meg.fif 1919-03-16T15:17:45
-meg/sub-1_ses-01_task-VisualFaces_run-5_meg.fif 1919-03-16T15:27:38
-Wrote /home/circleci/mne_data/mne_bids_examples/ds000117-bids/sub-1/ses-01/sub-1_ses-01_scans.tsv entry with meg/sub-1_ses-01_task-VisualFaces_run-3_meg.fif.
-Opening raw data file /home/circleci/mne_data/mne_bids_examples/ds000117/sub001/MEG/run_04_raw.fif...
-    Read a total of 8 projection items:
-        mag_ssp_upright.fif : PCA-mags-v1 (1 x 306)  idle
-        mag_ssp_upright.fif : PCA-mags-v2 (1 x 306)  idle
-        mag_ssp_upright.fif : PCA-mags-v3 (1 x 306)  idle
-        mag_ssp_upright.fif : PCA-mags-v4 (1 x 306)  idle
-        mag_ssp_upright.fif : PCA-mags-v5 (1 x 306)  idle
-        grad_ssp_upright.fif : PCA-grad-v1 (1 x 306)  idle
-        grad_ssp_upright.fif : PCA-grad-v2 (1 x 306)  idle
-        grad_ssp_upright.fif : PCA-grad-v3 (1 x 306)  idle
-    Range : 47300 ... 590699 =     43.000 ...   536.999 secs
-Ready.
-Current compensation grade : 0
-Creating folder: /home/circleci/mne_data/mne_bids_examples/ds000117-bids/sub-1/ses-01/meg
+eeg/sub-001_ses-01_task-MotorImagery_run-01_eeg.vhdr    1919-03-16T16:15:00
+eeg/sub-001_ses-01_task-MotorImagery_run-02_eeg.vhdr    1919-03-16T16:15:00
+eeg/sub-001_ses-01_task-MotorImagery_run-03_eeg.vhdr    1919-03-16T16:15:00
+Wrote /home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-01/sub-001_ses-01_scans.tsv entry with eeg/sub-001_ses-01_task-MotorImagery_run-03_eeg.vhdr.
+Extracting EDF parameters from /home/circleci/mne_data/MNE-eegbci-data/files/eegmmidb/1.0.0/S002/S002R04.edf...
+EDF file detected
+Setting channel info structure...
+Creating raw.info structure...
+Creating folder: /home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/eeg
+/home/circleci/project/mne_bids/write.py:1123: RuntimeWarning: Converting to BV for anonymization
+  warn(&#39;Converting to BV for anonymization&#39;)
 
-Writing &#39;/home/circleci/mne_data/mne_bids_examples/ds000117-bids/README&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/README&#39;...
 
 References
 ----------
 Appelhoff, S., Sanderson, M., Brooks, T., Vliet, M., Quentin, R., Holdgraf, C., Chaumon, M., Mikulan, E., Tavabi, K., Höchenberger, R., Welke, D., Brunner, C., Rockhill, A., Larson, E., Gramfort, A. and Jas, M. (2019). MNE-BIDS: Organizing electrophysiological data into the BIDS format and facilitating their analysis. Journal of Open Source Software 4: (1896). https://doi.org/10.21105/joss.01896
 
-Niso, G., Gorgolewski, K. J., Bock, E., Brooks, T. L., Flandin, G., Gramfort, A., Henson, R. N., Jas, M., Litvak, V., Moreau, J., Oostenveld, R., Schoffelen, J., Tadel, F., Wexler, J., Baillet, S. (2018). MEG-BIDS, the brain imaging data structure extended to magnetoencephalography. Scientific Data, 5, 180110. http://doi.org/10.1038/sdata.2018.110
+Pernet, C. R., Appelhoff, S., Gorgolewski, K. J., Flandin, G., Phillips, C., Delorme, A., Oostenveld, R. (2019). EEG-BIDS, an extension to the brain imaging data structure for electroencephalography. Scientific Data, 6, 103. https://doi.org/10.1038/s41597-019-0104-8
 
 
-Writing &#39;/home/circleci/mne_data/mne_bids_examples/ds000117-bids/participants.tsv&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/participants.tsv&#39;...
 
 participant_id  age     sex     hand
-sub-1   10      M       R
+sub-001 n/a     n/a     n/a
+sub-002 n/a     n/a     n/a
 
-Writing &#39;/home/circleci/mne_data/mne_bids_examples/ds000117-bids/participants.json&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/participants.json&#39;...
 
 {
     &quot;participant_id&quot;: {
@@ -864,72 +606,10 @@ Writing &#39;/home/circleci/mne_data/mne_bids_examples/ds000117-bids/participant
         }
     }
 }
+/home/circleci/project/mne_bids/utils.py:780: RuntimeWarning: No events found or provided. Please make sure to set channel type using raw.set_channel_types or provide events_data.
+  warn(&#39;No events found or provided. Please make sure to&#39;
 
-Writing &#39;/home/circleci/mne_data/mne_bids_examples/ds000117-bids/sub-1/ses-01/meg/sub-1_ses-01_coordsystem.json&#39;...
-
-{
-    &quot;MEGCoordinateSystem&quot;: &quot;Elekta&quot;,
-    &quot;MEGCoordinateUnits&quot;: &quot;m&quot;,
-    &quot;MEGCoordinateSystemDescription&quot;: &quot;n/a&quot;,
-    &quot;HeadCoilCoordinates&quot;: {
-        &quot;NAS&quot;: [
-            6.350555636913668e-10,
-            0.10185277462005615,
-            -1.2766878665360082e-09
-        ],
-        &quot;LPA&quot;: [
-            -0.07355359941720963,
-            -5.226810984026997e-09,
-            -6.564203847148065e-09
-        ],
-        &quot;RPA&quot;: [
-            0.07877404987812042,
-            -2.563174561487358e-08,
-            -5.883831200037548e-09
-        ],
-        &quot;coil1&quot;: [
-            0.020418334752321243,
-            0.09947940707206726,
-            0.06992102414369583
-        ],
-        &quot;coil2&quot;: [
-            0.07411128282546997,
-            0.0064362590201199055,
-            0.09744320064783096
-        ],
-        &quot;coil3&quot;: [
-            0.018864190205931664,
-            -0.020370930433273315,
-            0.1332322508096695
-        ],
-        &quot;coil4&quot;: [
-            0.014254843816161156,
-            -0.0912255346775055,
-            0.08386014401912689
-        ],
-        &quot;coil5&quot;: [
-            -0.07725043594837189,
-            -0.009882151149213314,
-            0.07862507551908493
-        ]
-    },
-    &quot;HeadCoilCoordinateSystem&quot;: &quot;RAS&quot;,
-    &quot;HeadCoilCoordinateUnits&quot;: &quot;m&quot;
-}
-294 events found
-Event IDs: [   5    6    7   13   14   15   17   18   19  256  261  262  263  269
-  270  271  273  274  275 4096 4109 4110]
-
-Writing &#39;/home/circleci/mne_data/mne_bids_examples/ds000117-bids/sub-1/ses-01/meg/sub-1_ses-01_task-VisualFaces_run-4_events.tsv&#39;...
-
-onset   duration        trial_type      value   sample
-25.407272727272726      0.0     face/unfamiliar/first   13      27948
-26.21909090909091       0.0     n/a     269     28841
-28.49818181818182       0.0     face/unfamiliar/immediate       14      31348
-29.337272727272726      0.0     n/a     270     32271
-31.78909090909091       0.0     face/unfamiliar/first   13      34968
-
-Writing &#39;/home/circleci/mne_data/mne_bids_examples/ds000117-bids/dataset_description.json&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/dataset_description.json&#39;...
 
 {
     &quot;Name&quot;: &quot; &quot;,
@@ -938,82 +618,72 @@ Writing &#39;/home/circleci/mne_data/mne_bids_examples/ds000117-bids/dataset_des
         &quot;Please cite MNE-BIDS in your publication before removing this (citations in README)&quot;
     ]
 }
-Reading 0 ... 543399  =      0.000 ...   493.999 secs...
+Effective window size : 1.600 (s)
+/home/circleci/project/mne_bids/write.py:503: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
+  warn(&#39;No line frequency found, defaulting to {} Hz &#39;
+Reading 0 ... 19679  =      0.000 ...   122.994 secs...
 
-Writing &#39;/home/circleci/mne_data/mne_bids_examples/ds000117-bids/sub-1/ses-01/meg/sub-1_ses-01_task-VisualFaces_run-4_meg.json&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/eeg/sub-002_ses-01_task-MotorImagery_run-01_eeg.json&#39;...
 
 {
-    &quot;TaskName&quot;: &quot;VisualFaces&quot;,
-    &quot;Manufacturer&quot;: &quot;Elekta&quot;,
-    &quot;PowerLineFrequency&quot;: 50.0,
-    &quot;SamplingFrequency&quot;: 1100.0,
+    &quot;TaskName&quot;: &quot;MotorImagery&quot;,
+    &quot;Manufacturer&quot;: &quot;n/a&quot;,
+    &quot;PowerLineFrequency&quot;: 60,
+    &quot;SamplingFrequency&quot;: 160.0,
     &quot;SoftwareFilters&quot;: &quot;n/a&quot;,
-    &quot;RecordingDuration&quot;: 493.9990909090909,
+    &quot;RecordingDuration&quot;: 122.99375,
     &quot;RecordingType&quot;: &quot;continuous&quot;,
-    &quot;DewarPosition&quot;: &quot;n/a&quot;,
-    &quot;DigitizedLandmarks&quot;: false,
-    &quot;DigitizedHeadPoints&quot;: false,
-    &quot;MEGChannelCount&quot;: 306,
-    &quot;MEGREFChannelCount&quot;: 0,
-    &quot;EEGChannelCount&quot;: 74,
+    &quot;EEGReference&quot;: &quot;n/a&quot;,
+    &quot;EEGGround&quot;: &quot;n/a&quot;,
+    &quot;EEGPlacementScheme&quot;: &quot;n/a&quot;,
+    &quot;EEGChannelCount&quot;: 64,
     &quot;EOGChannelCount&quot;: 0,
     &quot;ECGChannelCount&quot;: 0,
     &quot;EMGChannelCount&quot;: 0,
-    &quot;MiscChannelCount&quot;: 12,
-    &quot;TriggerChannelCount&quot;: 3
+    &quot;MiscChannelCount&quot;: 0,
+    &quot;TriggerChannelCount&quot;: 0
 }
 
-Writing &#39;/home/circleci/mne_data/mne_bids_examples/ds000117-bids/sub-1/ses-01/meg/sub-1_ses-01_task-VisualFaces_run-4_channels.tsv&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/eeg/sub-002_ses-01_task-MotorImagery_run-01_channels.tsv&#39;...
 
 name    type    units   low_cutoff      high_cutoff     description     sampling_frequency      status
-MEG0113 MEGGRADPLANAR   T/m     0.0     356.3999938964844       Planar Gradiometer      1100.0  good
-MEG0112 MEGGRADPLANAR   T/m     0.0     356.3999938964844       Planar Gradiometer      1100.0  good
-MEG0111 MEGMAG  T       0.0     356.3999938964844       Magnetometer    1100.0  good
-MEG0122 MEGGRADPLANAR   T/m     0.0     356.3999938964844       Planar Gradiometer      1100.0  good
-MEG0123 MEGGRADPLANAR   T/m     0.0     356.3999938964844       Planar Gradiometer      1100.0  good
-Overwriting existing file.
-Writing /home/circleci/mne_data/mne_bids_examples/ds000117-bids/sub-1/ses-01/meg/sub-1_ses-01_task-VisualFaces_run-4_meg.fif
-Closing /home/circleci/mne_data/mne_bids_examples/ds000117-bids/sub-1/ses-01/meg/sub-1_ses-01_task-VisualFaces_run-4_meg.fif [done]
+Fc5.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+Fc3.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+Fc1.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+Fcz.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+/home/circleci/project/mne_bids/write.py:1195: RuntimeWarning: Converting data files to BrainVision format
+  warn(&#39;Converting data files to BrainVision format&#39;)
 
-Writing &#39;/home/circleci/mne_data/mne_bids_examples/ds000117-bids/sub-1/ses-01/sub-1_ses-01_scans.tsv&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/sub-002_ses-01_scans.tsv&#39;...
 
 filename        acq_time
-meg/sub-1_ses-01_task-VisualFaces_run-1_meg.fif 1919-03-16T14:39:35
-meg/sub-1_ses-01_task-VisualFaces_run-2_meg.fif 1919-03-16T14:52:59
-meg/sub-1_ses-01_task-VisualFaces_run-3_meg.fif 1919-03-16T15:02:25
-meg/sub-1_ses-01_task-VisualFaces_run-4_meg.fif 1919-03-16T15:17:45
-meg/sub-1_ses-01_task-VisualFaces_run-5_meg.fif 1919-03-16T15:27:38
-Wrote /home/circleci/mne_data/mne_bids_examples/ds000117-bids/sub-1/ses-01/sub-1_ses-01_scans.tsv entry with meg/sub-1_ses-01_task-VisualFaces_run-4_meg.fif.
-Opening raw data file /home/circleci/mne_data/mne_bids_examples/ds000117/sub001/MEG/run_05_raw.fif...
-    Read a total of 8 projection items:
-        mag_ssp_upright.fif : PCA-mags-v1 (1 x 306)  idle
-        mag_ssp_upright.fif : PCA-mags-v2 (1 x 306)  idle
-        mag_ssp_upright.fif : PCA-mags-v3 (1 x 306)  idle
-        mag_ssp_upright.fif : PCA-mags-v4 (1 x 306)  idle
-        mag_ssp_upright.fif : PCA-mags-v5 (1 x 306)  idle
-        grad_ssp_upright.fif : PCA-grad-v1 (1 x 306)  idle
-        grad_ssp_upright.fif : PCA-grad-v2 (1 x 306)  idle
-        grad_ssp_upright.fif : PCA-grad-v3 (1 x 306)  idle
-    Range : 283800 ... 820599 =    258.000 ...   745.999 secs
-Ready.
-Current compensation grade : 0
-Creating folder: /home/circleci/mne_data/mne_bids_examples/ds000117-bids/sub-1/ses-01/meg
+eeg/sub-002_ses-01_task-MotorImagery_run-01_eeg.vhdr    1919-03-16T16:15:00
+Wrote /home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/sub-002_ses-01_scans.tsv entry with eeg/sub-002_ses-01_task-MotorImagery_run-01_eeg.vhdr.
+Extracting EDF parameters from /home/circleci/mne_data/MNE-eegbci-data/files/eegmmidb/1.0.0/S002/S002R08.edf...
+EDF file detected
+Setting channel info structure...
+Creating raw.info structure...
+Creating folder: /home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/eeg
+/home/circleci/project/mne_bids/write.py:1123: RuntimeWarning: Converting to BV for anonymization
+  warn(&#39;Converting to BV for anonymization&#39;)
 
-Writing &#39;/home/circleci/mne_data/mne_bids_examples/ds000117-bids/README&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/README&#39;...
 
 References
 ----------
 Appelhoff, S., Sanderson, M., Brooks, T., Vliet, M., Quentin, R., Holdgraf, C., Chaumon, M., Mikulan, E., Tavabi, K., Höchenberger, R., Welke, D., Brunner, C., Rockhill, A., Larson, E., Gramfort, A. and Jas, M. (2019). MNE-BIDS: Organizing electrophysiological data into the BIDS format and facilitating their analysis. Journal of Open Source Software 4: (1896). https://doi.org/10.21105/joss.01896
 
-Niso, G., Gorgolewski, K. J., Bock, E., Brooks, T. L., Flandin, G., Gramfort, A., Henson, R. N., Jas, M., Litvak, V., Moreau, J., Oostenveld, R., Schoffelen, J., Tadel, F., Wexler, J., Baillet, S. (2018). MEG-BIDS, the brain imaging data structure extended to magnetoencephalography. Scientific Data, 5, 180110. http://doi.org/10.1038/sdata.2018.110
+Pernet, C. R., Appelhoff, S., Gorgolewski, K. J., Flandin, G., Phillips, C., Delorme, A., Oostenveld, R. (2019). EEG-BIDS, an extension to the brain imaging data structure for electroencephalography. Scientific Data, 6, 103. https://doi.org/10.1038/s41597-019-0104-8
 
 
-Writing &#39;/home/circleci/mne_data/mne_bids_examples/ds000117-bids/participants.tsv&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/participants.tsv&#39;...
 
 participant_id  age     sex     hand
-sub-1   10      M       R
+sub-001 n/a     n/a     n/a
+sub-002 n/a     n/a     n/a
 
-Writing &#39;/home/circleci/mne_data/mne_bids_examples/ds000117-bids/participants.json&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/participants.json&#39;...
 
 {
     &quot;participant_id&quot;: {
@@ -1039,72 +709,10 @@ Writing &#39;/home/circleci/mne_data/mne_bids_examples/ds000117-bids/participant
         }
     }
 }
+/home/circleci/project/mne_bids/utils.py:780: RuntimeWarning: No events found or provided. Please make sure to set channel type using raw.set_channel_types or provide events_data.
+  warn(&#39;No events found or provided. Please make sure to&#39;
 
-Writing &#39;/home/circleci/mne_data/mne_bids_examples/ds000117-bids/sub-1/ses-01/meg/sub-1_ses-01_coordsystem.json&#39;...
-
-{
-    &quot;MEGCoordinateSystem&quot;: &quot;Elekta&quot;,
-    &quot;MEGCoordinateUnits&quot;: &quot;m&quot;,
-    &quot;MEGCoordinateSystemDescription&quot;: &quot;n/a&quot;,
-    &quot;HeadCoilCoordinates&quot;: {
-        &quot;NAS&quot;: [
-            6.350555636913668e-10,
-            0.10185277462005615,
-            -1.2766878665360082e-09
-        ],
-        &quot;LPA&quot;: [
-            -0.07355359941720963,
-            -5.226810984026997e-09,
-            -6.564203847148065e-09
-        ],
-        &quot;RPA&quot;: [
-            0.07877404987812042,
-            -2.563174561487358e-08,
-            -5.883831200037548e-09
-        ],
-        &quot;coil1&quot;: [
-            0.020418334752321243,
-            0.09947940707206726,
-            0.06992102414369583
-        ],
-        &quot;coil2&quot;: [
-            0.07411128282546997,
-            0.0064362590201199055,
-            0.09744320064783096
-        ],
-        &quot;coil3&quot;: [
-            0.018864190205931664,
-            -0.020370930433273315,
-            0.1332322508096695
-        ],
-        &quot;coil4&quot;: [
-            0.014254843816161156,
-            -0.0912255346775055,
-            0.08386014401912689
-        ],
-        &quot;coil5&quot;: [
-            -0.07725043594837189,
-            -0.009882151149213314,
-            0.07862507551908493
-        ]
-    },
-    &quot;HeadCoilCoordinateSystem&quot;: &quot;RAS&quot;,
-    &quot;HeadCoilCoordinateUnits&quot;: &quot;m&quot;
-}
-292 events found
-Event IDs: [   5    6    7   13   14   15   17   18   19  256  261  262  263  269
-  270  271  273  274  275 4096 4103 4110 4111]
-
-Writing &#39;/home/circleci/mne_data/mne_bids_examples/ds000117-bids/sub-1/ses-01/meg/sub-1_ses-01_task-VisualFaces_run-5_events.tsv&#39;...
-
-onset   duration        trial_type      value   sample
-25.71727272727273       0.0     face/famous/first       5       28289
-26.46909090909091       0.0     n/a     261     29116
-29.023636363636363      0.0     scrambled/first 17      31926
-29.599090909090908      0.0     n/a     273     32559
-32.13090909090909       0.0     scrambled/immediate     18      35344
-
-Writing &#39;/home/circleci/mne_data/mne_bids_examples/ds000117-bids/dataset_description.json&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/dataset_description.json&#39;...
 
 {
     &quot;Name&quot;: &quot; &quot;,
@@ -1113,82 +721,73 @@ Writing &#39;/home/circleci/mne_data/mne_bids_examples/ds000117-bids/dataset_des
         &quot;Please cite MNE-BIDS in your publication before removing this (citations in README)&quot;
     ]
 }
-Reading 0 ... 536799  =      0.000 ...   487.999 secs...
+Effective window size : 1.600 (s)
+/home/circleci/project/mne_bids/write.py:503: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
+  warn(&#39;No line frequency found, defaulting to {} Hz &#39;
+Reading 0 ... 19679  =      0.000 ...   122.994 secs...
 
-Writing &#39;/home/circleci/mne_data/mne_bids_examples/ds000117-bids/sub-1/ses-01/meg/sub-1_ses-01_task-VisualFaces_run-5_meg.json&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/eeg/sub-002_ses-01_task-MotorImagery_run-02_eeg.json&#39;...
 
 {
-    &quot;TaskName&quot;: &quot;VisualFaces&quot;,
-    &quot;Manufacturer&quot;: &quot;Elekta&quot;,
-    &quot;PowerLineFrequency&quot;: 50.0,
-    &quot;SamplingFrequency&quot;: 1100.0,
+    &quot;TaskName&quot;: &quot;MotorImagery&quot;,
+    &quot;Manufacturer&quot;: &quot;n/a&quot;,
+    &quot;PowerLineFrequency&quot;: 60,
+    &quot;SamplingFrequency&quot;: 160.0,
     &quot;SoftwareFilters&quot;: &quot;n/a&quot;,
-    &quot;RecordingDuration&quot;: 487.9990909090909,
+    &quot;RecordingDuration&quot;: 122.99375,
     &quot;RecordingType&quot;: &quot;continuous&quot;,
-    &quot;DewarPosition&quot;: &quot;n/a&quot;,
-    &quot;DigitizedLandmarks&quot;: false,
-    &quot;DigitizedHeadPoints&quot;: false,
-    &quot;MEGChannelCount&quot;: 306,
-    &quot;MEGREFChannelCount&quot;: 0,
-    &quot;EEGChannelCount&quot;: 74,
+    &quot;EEGReference&quot;: &quot;n/a&quot;,
+    &quot;EEGGround&quot;: &quot;n/a&quot;,
+    &quot;EEGPlacementScheme&quot;: &quot;n/a&quot;,
+    &quot;EEGChannelCount&quot;: 64,
     &quot;EOGChannelCount&quot;: 0,
     &quot;ECGChannelCount&quot;: 0,
     &quot;EMGChannelCount&quot;: 0,
-    &quot;MiscChannelCount&quot;: 12,
-    &quot;TriggerChannelCount&quot;: 3
+    &quot;MiscChannelCount&quot;: 0,
+    &quot;TriggerChannelCount&quot;: 0
 }
 
-Writing &#39;/home/circleci/mne_data/mne_bids_examples/ds000117-bids/sub-1/ses-01/meg/sub-1_ses-01_task-VisualFaces_run-5_channels.tsv&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/eeg/sub-002_ses-01_task-MotorImagery_run-02_channels.tsv&#39;...
 
 name    type    units   low_cutoff      high_cutoff     description     sampling_frequency      status
-MEG0113 MEGGRADPLANAR   T/m     0.0     356.3999938964844       Planar Gradiometer      1100.0  good
-MEG0112 MEGGRADPLANAR   T/m     0.0     356.3999938964844       Planar Gradiometer      1100.0  good
-MEG0111 MEGMAG  T       0.0     356.3999938964844       Magnetometer    1100.0  good
-MEG0122 MEGGRADPLANAR   T/m     0.0     356.3999938964844       Planar Gradiometer      1100.0  good
-MEG0123 MEGGRADPLANAR   T/m     0.0     356.3999938964844       Planar Gradiometer      1100.0  good
-Overwriting existing file.
-Writing /home/circleci/mne_data/mne_bids_examples/ds000117-bids/sub-1/ses-01/meg/sub-1_ses-01_task-VisualFaces_run-5_meg.fif
-Closing /home/circleci/mne_data/mne_bids_examples/ds000117-bids/sub-1/ses-01/meg/sub-1_ses-01_task-VisualFaces_run-5_meg.fif [done]
+Fc5.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+Fc3.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+Fc1.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+Fcz.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+/home/circleci/project/mne_bids/write.py:1195: RuntimeWarning: Converting data files to BrainVision format
+  warn(&#39;Converting data files to BrainVision format&#39;)
 
-Writing &#39;/home/circleci/mne_data/mne_bids_examples/ds000117-bids/sub-1/ses-01/sub-1_ses-01_scans.tsv&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/sub-002_ses-01_scans.tsv&#39;...
 
 filename        acq_time
-meg/sub-1_ses-01_task-VisualFaces_run-1_meg.fif 1919-03-16T14:39:35
-meg/sub-1_ses-01_task-VisualFaces_run-2_meg.fif 1919-03-16T14:52:59
-meg/sub-1_ses-01_task-VisualFaces_run-3_meg.fif 1919-03-16T15:02:25
-meg/sub-1_ses-01_task-VisualFaces_run-4_meg.fif 1919-03-16T15:17:45
-meg/sub-1_ses-01_task-VisualFaces_run-5_meg.fif 1919-03-16T15:27:38
-Wrote /home/circleci/mne_data/mne_bids_examples/ds000117-bids/sub-1/ses-01/sub-1_ses-01_scans.tsv entry with meg/sub-1_ses-01_task-VisualFaces_run-5_meg.fif.
-Opening raw data file /home/circleci/mne_data/mne_bids_examples/ds000117/sub001/MEG/run_06_raw.fif...
-    Read a total of 8 projection items:
-        mag_ssp_upright.fif : PCA-mags-v1 (1 x 306)  idle
-        mag_ssp_upright.fif : PCA-mags-v2 (1 x 306)  idle
-        mag_ssp_upright.fif : PCA-mags-v3 (1 x 306)  idle
-        mag_ssp_upright.fif : PCA-mags-v4 (1 x 306)  idle
-        mag_ssp_upright.fif : PCA-mags-v5 (1 x 306)  idle
-        grad_ssp_upright.fif : PCA-grad-v1 (1 x 306)  idle
-        grad_ssp_upright.fif : PCA-grad-v2 (1 x 306)  idle
-        grad_ssp_upright.fif : PCA-grad-v3 (1 x 306)  idle
-    Range : 28600 ... 573099 =     26.000 ...   520.999 secs
-Ready.
-Current compensation grade : 0
-Creating folder: /home/circleci/mne_data/mne_bids_examples/ds000117-bids/sub-1/ses-01/meg
+eeg/sub-002_ses-01_task-MotorImagery_run-01_eeg.vhdr    1919-03-16T16:15:00
+eeg/sub-002_ses-01_task-MotorImagery_run-02_eeg.vhdr    1919-03-16T16:15:00
+Wrote /home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/sub-002_ses-01_scans.tsv entry with eeg/sub-002_ses-01_task-MotorImagery_run-02_eeg.vhdr.
+Extracting EDF parameters from /home/circleci/mne_data/MNE-eegbci-data/files/eegmmidb/1.0.0/S002/S002R12.edf...
+EDF file detected
+Setting channel info structure...
+Creating raw.info structure...
+Creating folder: /home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/eeg
+/home/circleci/project/mne_bids/write.py:1123: RuntimeWarning: Converting to BV for anonymization
+  warn(&#39;Converting to BV for anonymization&#39;)
 
-Writing &#39;/home/circleci/mne_data/mne_bids_examples/ds000117-bids/README&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/README&#39;...
 
 References
 ----------
 Appelhoff, S., Sanderson, M., Brooks, T., Vliet, M., Quentin, R., Holdgraf, C., Chaumon, M., Mikulan, E., Tavabi, K., Höchenberger, R., Welke, D., Brunner, C., Rockhill, A., Larson, E., Gramfort, A. and Jas, M. (2019). MNE-BIDS: Organizing electrophysiological data into the BIDS format and facilitating their analysis. Journal of Open Source Software 4: (1896). https://doi.org/10.21105/joss.01896
 
-Niso, G., Gorgolewski, K. J., Bock, E., Brooks, T. L., Flandin, G., Gramfort, A., Henson, R. N., Jas, M., Litvak, V., Moreau, J., Oostenveld, R., Schoffelen, J., Tadel, F., Wexler, J., Baillet, S. (2018). MEG-BIDS, the brain imaging data structure extended to magnetoencephalography. Scientific Data, 5, 180110. http://doi.org/10.1038/sdata.2018.110
+Pernet, C. R., Appelhoff, S., Gorgolewski, K. J., Flandin, G., Phillips, C., Delorme, A., Oostenveld, R. (2019). EEG-BIDS, an extension to the brain imaging data structure for electroencephalography. Scientific Data, 6, 103. https://doi.org/10.1038/s41597-019-0104-8
 
 
-Writing &#39;/home/circleci/mne_data/mne_bids_examples/ds000117-bids/participants.tsv&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/participants.tsv&#39;...
 
 participant_id  age     sex     hand
-sub-1   10      M       R
+sub-001 n/a     n/a     n/a
+sub-002 n/a     n/a     n/a
 
-Writing &#39;/home/circleci/mne_data/mne_bids_examples/ds000117-bids/participants.json&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/participants.json&#39;...
 
 {
     &quot;participant_id&quot;: {
@@ -1214,72 +813,10 @@ Writing &#39;/home/circleci/mne_data/mne_bids_examples/ds000117-bids/participant
         }
     }
 }
+/home/circleci/project/mne_bids/utils.py:780: RuntimeWarning: No events found or provided. Please make sure to set channel type using raw.set_channel_types or provide events_data.
+  warn(&#39;No events found or provided. Please make sure to&#39;
 
-Writing &#39;/home/circleci/mne_data/mne_bids_examples/ds000117-bids/sub-1/ses-01/meg/sub-1_ses-01_coordsystem.json&#39;...
-
-{
-    &quot;MEGCoordinateSystem&quot;: &quot;Elekta&quot;,
-    &quot;MEGCoordinateUnits&quot;: &quot;m&quot;,
-    &quot;MEGCoordinateSystemDescription&quot;: &quot;n/a&quot;,
-    &quot;HeadCoilCoordinates&quot;: {
-        &quot;NAS&quot;: [
-            6.350555636913668e-10,
-            0.10185277462005615,
-            -1.2766878665360082e-09
-        ],
-        &quot;LPA&quot;: [
-            -0.07355359941720963,
-            -5.226810984026997e-09,
-            -6.564203847148065e-09
-        ],
-        &quot;RPA&quot;: [
-            0.07877404987812042,
-            -2.563174561487358e-08,
-            -5.883831200037548e-09
-        ],
-        &quot;coil1&quot;: [
-            0.020418334752321243,
-            0.09947940707206726,
-            0.06992102414369583
-        ],
-        &quot;coil2&quot;: [
-            0.07411128282546997,
-            0.0064362590201199055,
-            0.09744320064783096
-        ],
-        &quot;coil3&quot;: [
-            0.018864190205931664,
-            -0.020370930433273315,
-            0.1332322508096695
-        ],
-        &quot;coil4&quot;: [
-            0.014254843816161156,
-            -0.0912255346775055,
-            0.08386014401912689
-        ],
-        &quot;coil5&quot;: [
-            -0.07725043594837189,
-            -0.009882151149213314,
-            0.07862507551908493
-        ]
-    },
-    &quot;HeadCoilCoordinateSystem&quot;: &quot;RAS&quot;,
-    &quot;HeadCoilCoordinateUnits&quot;: &quot;m&quot;
-}
-296 events found
-Event IDs: [   5    6    7   13   14   15   17   18   19  256  261  262  263  269
-  270  271  273  274  275 4096 4110]
-
-Writing &#39;/home/circleci/mne_data/mne_bids_examples/ds000117-bids/sub-1/ses-01/meg/sub-1_ses-01_task-VisualFaces_run-6_events.tsv&#39;...
-
-onset   duration        trial_type      value   sample
-25.204545454545453      0.0     face/famous/first       5       27725
-25.85   0.0     n/a     261     28435
-28.345454545454544      0.0     scrambled/first 17      31180
-29.024545454545454      0.0     n/a     273     31927
-31.47   0.0     face/famous/first       5       34617
-
-Writing &#39;/home/circleci/mne_data/mne_bids_examples/ds000117-bids/dataset_description.json&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/dataset_description.json&#39;...
 
 {
     &quot;Name&quot;: &quot; &quot;,
@@ -1288,96 +825,103 @@ Writing &#39;/home/circleci/mne_data/mne_bids_examples/ds000117-bids/dataset_des
         &quot;Please cite MNE-BIDS in your publication before removing this (citations in README)&quot;
     ]
 }
-Reading 0 ... 544499  =      0.000 ...   494.999 secs...
+Effective window size : 1.600 (s)
+/home/circleci/project/mne_bids/write.py:503: RuntimeWarning: No line frequency found, defaulting to 50 Hz estimated from multi-taper FFT on 10 seconds of data.
+  warn(&#39;No line frequency found, defaulting to {} Hz &#39;
+Reading 0 ... 19679  =      0.000 ...   122.994 secs...
 
-Writing &#39;/home/circleci/mne_data/mne_bids_examples/ds000117-bids/sub-1/ses-01/meg/sub-1_ses-01_task-VisualFaces_run-6_meg.json&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/eeg/sub-002_ses-01_task-MotorImagery_run-03_eeg.json&#39;...
 
 {
-    &quot;TaskName&quot;: &quot;VisualFaces&quot;,
-    &quot;Manufacturer&quot;: &quot;Elekta&quot;,
-    &quot;PowerLineFrequency&quot;: 50.0,
-    &quot;SamplingFrequency&quot;: 1100.0,
+    &quot;TaskName&quot;: &quot;MotorImagery&quot;,
+    &quot;Manufacturer&quot;: &quot;n/a&quot;,
+    &quot;PowerLineFrequency&quot;: 50,
+    &quot;SamplingFrequency&quot;: 160.0,
     &quot;SoftwareFilters&quot;: &quot;n/a&quot;,
-    &quot;RecordingDuration&quot;: 494.9990909090909,
+    &quot;RecordingDuration&quot;: 122.99375,
     &quot;RecordingType&quot;: &quot;continuous&quot;,
-    &quot;DewarPosition&quot;: &quot;n/a&quot;,
-    &quot;DigitizedLandmarks&quot;: false,
-    &quot;DigitizedHeadPoints&quot;: false,
-    &quot;MEGChannelCount&quot;: 306,
-    &quot;MEGREFChannelCount&quot;: 0,
-    &quot;EEGChannelCount&quot;: 74,
+    &quot;EEGReference&quot;: &quot;n/a&quot;,
+    &quot;EEGGround&quot;: &quot;n/a&quot;,
+    &quot;EEGPlacementScheme&quot;: &quot;n/a&quot;,
+    &quot;EEGChannelCount&quot;: 64,
     &quot;EOGChannelCount&quot;: 0,
     &quot;ECGChannelCount&quot;: 0,
     &quot;EMGChannelCount&quot;: 0,
-    &quot;MiscChannelCount&quot;: 12,
-    &quot;TriggerChannelCount&quot;: 3
+    &quot;MiscChannelCount&quot;: 0,
+    &quot;TriggerChannelCount&quot;: 0
 }
 
-Writing &#39;/home/circleci/mne_data/mne_bids_examples/ds000117-bids/sub-1/ses-01/meg/sub-1_ses-01_task-VisualFaces_run-6_channels.tsv&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/eeg/sub-002_ses-01_task-MotorImagery_run-03_channels.tsv&#39;...
 
 name    type    units   low_cutoff      high_cutoff     description     sampling_frequency      status
-MEG0113 MEGGRADPLANAR   T/m     0.0     356.3999938964844       Planar Gradiometer      1100.0  good
-MEG0112 MEGGRADPLANAR   T/m     0.0     356.3999938964844       Planar Gradiometer      1100.0  good
-MEG0111 MEGMAG  T       0.0     356.3999938964844       Magnetometer    1100.0  good
-MEG0122 MEGGRADPLANAR   T/m     0.0     356.3999938964844       Planar Gradiometer      1100.0  good
-MEG0123 MEGGRADPLANAR   T/m     0.0     356.3999938964844       Planar Gradiometer      1100.0  good
-Overwriting existing file.
-Writing /home/circleci/mne_data/mne_bids_examples/ds000117-bids/sub-1/ses-01/meg/sub-1_ses-01_task-VisualFaces_run-6_meg.fif
-Closing /home/circleci/mne_data/mne_bids_examples/ds000117-bids/sub-1/ses-01/meg/sub-1_ses-01_task-VisualFaces_run-6_meg.fif [done]
+Fc5.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+Fc3.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+Fc1.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+Fcz.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
+/home/circleci/project/mne_bids/write.py:1195: RuntimeWarning: Converting data files to BrainVision format
+  warn(&#39;Converting data files to BrainVision format&#39;)
 
-Writing &#39;/home/circleci/mne_data/mne_bids_examples/ds000117-bids/sub-1/ses-01/sub-1_ses-01_scans.tsv&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/sub-002_ses-01_scans.tsv&#39;...
 
 filename        acq_time
-meg/sub-1_ses-01_task-VisualFaces_run-1_meg.fif 1919-03-16T14:39:35
-meg/sub-1_ses-01_task-VisualFaces_run-2_meg.fif 1919-03-16T14:52:59
-meg/sub-1_ses-01_task-VisualFaces_run-3_meg.fif 1919-03-16T15:02:25
-meg/sub-1_ses-01_task-VisualFaces_run-4_meg.fif 1919-03-16T15:17:45
-meg/sub-1_ses-01_task-VisualFaces_run-5_meg.fif 1919-03-16T15:27:38
-Wrote /home/circleci/mne_data/mne_bids_examples/ds000117-bids/sub-1/ses-01/sub-1_ses-01_scans.tsv entry with meg/sub-1_ses-01_task-VisualFaces_run-6_meg.fif.
+eeg/sub-002_ses-01_task-MotorImagery_run-01_eeg.vhdr    1919-03-16T16:15:00
+eeg/sub-002_ses-01_task-MotorImagery_run-02_eeg.vhdr    1919-03-16T16:15:00
+eeg/sub-002_ses-01_task-MotorImagery_run-03_eeg.vhdr    1919-03-16T16:15:00
+Wrote /home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/sub-002_ses-01_scans.tsv entry with eeg/sub-002_ses-01_task-MotorImagery_run-03_eeg.vhdr.
 </pre></div>
 </div>
 <p>Now let’s see the structure of the BIDS folder we created.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="../generated/mne_bids.utils.print_dir_tree.html#mne_bids.utils.print_dir_tree" title="mne_bids.utils.print_dir_tree" class="sphx-glr-backref-module-mne_bids-utils sphx-glr-backref-type-py-function"><span class="n">print_dir_tree</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">output_path</span></a><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="../generated/mne_bids.utils.print_dir_tree.html#mne_bids.utils.print_dir_tree" title="mne_bids.utils.print_dir_tree" class="sphx-glr-backref-module-mne_bids-utils sphx-glr-backref-type-py-function"><span class="n">print_dir_tree</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">)</span>
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>|ds000117-bids/
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>|eegmmidb_bids_group_conversion/
+|--- participants.json
 |--- dataset_description.json
 |--- participants.tsv
-|--- participants.json
 |--- README
-|--- sub-1/
+|--- sub-001/
 |------ ses-01/
-|--------- sub-1_ses-01_scans.tsv
-|--------- meg/
-|------------ sub-1_ses-01_task-VisualFaces_run-5_events.tsv
-|------------ sub-1_ses-01_task-VisualFaces_run-4_events.tsv
-|------------ sub-1_ses-01_task-VisualFaces_run-6_events.tsv
-|------------ sub-1_ses-01_task-VisualFaces_run-6_channels.tsv
-|------------ sub-1_ses-01_task-VisualFaces_run-3_channels.tsv
-|------------ sub-1_ses-01_task-VisualFaces_run-5_channels.tsv
-|------------ sub-1_ses-01_task-VisualFaces_run-5_meg.json
-|------------ sub-1_ses-01_task-VisualFaces_run-1_events.tsv
-|------------ sub-1_ses-01_task-VisualFaces_run-2_events.tsv
-|------------ sub-1_ses-01_task-VisualFaces_run-4_meg.fif
-|------------ sub-1_ses-01_task-VisualFaces_run-4_meg.json
-|------------ sub-1_ses-01_task-VisualFaces_run-5_meg.fif
-|------------ sub-1_ses-01_task-VisualFaces_run-1_meg.json
-|------------ sub-1_ses-01_task-VisualFaces_run-6_meg.json
-|------------ sub-1_ses-01_task-VisualFaces_run-3_events.tsv
-|------------ sub-1_ses-01_task-VisualFaces_run-4_channels.tsv
-|------------ sub-1_ses-01_coordsystem.json
-|------------ sub-1_ses-01_task-VisualFaces_run-2_meg.fif
-|------------ sub-1_ses-01_task-VisualFaces_run-3_meg.fif
-|------------ sub-1_ses-01_task-VisualFaces_run-3_meg.json
-|------------ sub-1_ses-01_task-VisualFaces_run-2_meg.json
-|------------ sub-1_ses-01_task-VisualFaces_run-1_channels.tsv
-|------------ sub-1_ses-01_task-VisualFaces_run-2_channels.tsv
-|------------ sub-1_ses-01_task-VisualFaces_run-1_meg.fif
-|------------ sub-1_ses-01_task-VisualFaces_run-6_meg.fif
+|--------- sub-001_ses-01_scans.tsv
+|--------- eeg/
+|------------ sub-001_ses-01_task-MotorImagery_run-01_eeg.eeg
+|------------ sub-001_ses-01_task-MotorImagery_run-02_channels.tsv
+|------------ sub-001_ses-01_task-MotorImagery_run-01_eeg.vmrk
+|------------ sub-001_ses-01_task-MotorImagery_run-02_eeg.eeg
+|------------ sub-001_ses-01_task-MotorImagery_run-03_eeg.vmrk
+|------------ sub-001_ses-01_task-MotorImagery_run-02_eeg.vhdr
+|------------ sub-001_ses-01_task-MotorImagery_run-03_eeg.eeg
+|------------ sub-001_ses-01_task-MotorImagery_run-03_channels.tsv
+|------------ sub-001_ses-01_task-MotorImagery_run-01_channels.tsv
+|------------ sub-001_ses-01_task-MotorImagery_run-03_eeg.json
+|------------ sub-001_ses-01_task-MotorImagery_run-01_eeg.json
+|------------ sub-001_ses-01_task-MotorImagery_run-01_eeg.vhdr
+|------------ sub-001_ses-01_task-MotorImagery_run-02_eeg.vmrk
+|------------ sub-001_ses-01_task-MotorImagery_run-02_eeg.json
+|------------ sub-001_ses-01_task-MotorImagery_run-03_eeg.vhdr
+|--- sub-002/
+|------ ses-01/
+|--------- sub-002_ses-01_scans.tsv
+|--------- eeg/
+|------------ sub-002_ses-01_task-MotorImagery_run-03_eeg.eeg
+|------------ sub-002_ses-01_task-MotorImagery_run-03_eeg.vmrk
+|------------ sub-002_ses-01_task-MotorImagery_run-01_eeg.eeg
+|------------ sub-002_ses-01_task-MotorImagery_run-02_eeg.vhdr
+|------------ sub-002_ses-01_task-MotorImagery_run-02_eeg.vmrk
+|------------ sub-002_ses-01_task-MotorImagery_run-01_eeg.vhdr
+|------------ sub-002_ses-01_task-MotorImagery_run-01_eeg.json
+|------------ sub-002_ses-01_task-MotorImagery_run-02_eeg.json
+|------------ sub-002_ses-01_task-MotorImagery_run-01_channels.tsv
+|------------ sub-002_ses-01_task-MotorImagery_run-01_eeg.vmrk
+|------------ sub-002_ses-01_task-MotorImagery_run-03_eeg.json
+|------------ sub-002_ses-01_task-MotorImagery_run-02_eeg.eeg
+|------------ sub-002_ses-01_task-MotorImagery_run-03_eeg.vhdr
+|------------ sub-002_ses-01_task-MotorImagery_run-02_channels.tsv
+|------------ sub-002_ses-01_task-MotorImagery_run-03_channels.tsv
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 1 minutes  54.405 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  1.648 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-group-studies-py">
 <div class="binder-badge docutils container">
 <a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/convert_group_studies.ipynb"><img alt="https://mybinder.org/badge_logo.svg" src="https://mybinder.org/badge_logo.svg" width="150px" /></a>
@@ -1390,7 +934,6 @@ Wrote /home/circleci/mne_data/mne_bids_examples/ds000117-bids/sub-1/ses-01/sub-1
 </div>
 </div>
 <p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
-</div>
 </div>
 
 
@@ -1405,7 +948,7 @@ Wrote /home/circleci/mne_data/mne_bids_examples/ds000117-bids/sub-1/ses-01/sub-1
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-07-05.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-07-06.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.1.2.<br/>
     </p>
   </div>
