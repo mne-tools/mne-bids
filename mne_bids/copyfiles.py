@@ -17,6 +17,7 @@ due to internal pointers that are not being updated.
 import os
 import os.path as op
 import re
+import datetime
 import shutil as sh
 
 from scipy.io import loadmat, savemat
@@ -209,9 +210,37 @@ def copyfile_kit(src, dest, subject_id, session_id,
             sh.copyfile(position_file, position_fname)
 
 
-def _anonymize_brainvision(vmrk_file, date=None):
-    """Operates in place."""
-    pass
+def _replace_file(fname, pattern, replace):
+    """Overwrite file, replacing end of lines matching pattern with replace."""
+    new_content = []
+    for line in open(fname, 'r'):
+        match = re.match(pattern, line)
+        if match:
+            line = match.group()[:-len(replace)] + replace + '\n'
+        new_content.append(line)
+
+    with open(fname, 'w') as fout:
+        fout.write_lines(new_content)
+
+
+def _anonymize_brainvision(vhdr_file, date=None):
+    """Anonymize a vmrk and vhdr file in place."""
+    if date is None:
+        date = datetime.datetime(1924, 1, 1)
+    if not isinstance(date, datetime.datetime):
+        raise ValueError('`date` must be None or datetime.datetime.')
+
+    _, vmrk_file = _get_brainvision_paths(vhdr_file)
+
+    # Go through VMRK
+    pattern = re.compile(r'^Mk\d+=New Segment,.*,\d+,\d+,\d+,\d{20}$')
+    replace = date.strftime('%Y%m%d%H%M%S%f')
+    _replace_file(vmrk_file, pattern, replace)
+
+    # Go through VHDR
+    pattern = re.compile(r'^Impedance \[kOhm\] at \d\d:\d\d:\d\d :$')
+    replace = f'at {date.strftime('%H:%M:%S')} :'
+    _replace_file(vhdr_file, pattern, replace)
 
 
 def copyfile_brainvision(vhdr_src, vhdr_dest, anonymize=False, date=None,
@@ -230,11 +259,13 @@ def copyfile_brainvision(vhdr_src, vhdr_dest, anonymize=False, date=None,
     vhdr_dest : str
         The destination path of the .vhdr file.
     anonymize : bool
-        If False, leave dates in .vmrk file as they are. If True, replace all
-        date strings with zeros.
-    date : datetime | None
+        If False, leave dates in data files as they are. If True, replace all
+        date strings with 1924-01-01T00:00:00.
+    date : datetime.datetime | None
         If `anonymize` is True, `date` will be used to replace all date strings
-        in the .vmrk file.
+        in the data files instead of the default 1924-01-01T00:00:00.
+    verbose : bool
+        Determine whether results should be logged. Defaults to False.
 
     """
     # Get extenstion of the brainvision file
@@ -277,7 +308,7 @@ def copyfile_brainvision(vhdr_src, vhdr_dest, anonymize=False, date=None,
                 fout.write(line)
 
     if anonymize:
-        _anonymize_brainvision(fname_dest + '.vmrk', date)
+        _anonymize_brainvision(fname_dest + '.vhdr', date)
 
     if verbose:
         for ext in ['.eeg', '.vhdr', '.vmrk']:
