@@ -9,12 +9,11 @@ data. Specifically, we will follow these steps:
 1. Download some EEG data from the
    `PhysioBank database <https://physionet.org/physiobank/database>`_.
 
-2. Load the data, extract information, and save in a new BIDS directory ...
-   once for a single subject, and then while looping over different subjects.
+2. Load the data, extract information, and save it in a new BIDS directory.
 
-3. Check the result and compare it with the standard
+3. Check the result and compare it with the standard.
 
-4. Cite ``mne-bids``
+4. Cite ``mne-bids``.
 
 .. currentmodule:: mne_bids
 
