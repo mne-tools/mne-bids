@@ -85,7 +85,7 @@ print_dir_tree(data_dir)
 # We will do exactly that in the next step.
 
 ###############################################################################
-# Formatting to BIDS
+# Converting to BIDS
 # ------------------
 #
 # Let's start with loading the data and extracting the events.
