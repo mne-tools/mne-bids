@@ -18,8 +18,7 @@ each recording:
 .. Note:: The three files contain references that guide the data reading
           software. Simply *renaming* the files without adjusting these
           references will corrupt the dataset! But relax, MNE-BIDS can take
-          care
-          of this for you.
+          care of this for you.
 
 We may also wish to *anonymize* the data. MNE-BIDS can automate this task, too.
 
