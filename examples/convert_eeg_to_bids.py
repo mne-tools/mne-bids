@@ -85,8 +85,8 @@ print_dir_tree(data_dir)
 # We will do exactly that in the next step.
 
 ###############################################################################
-# Converting to BIDS
-# ------------------
+# Convert to BIDS
+# ---------------
 #
 # Let's start with loading the data and extracting the events.
 # We are reading the data using MNE-Python's ``io`` module and the
