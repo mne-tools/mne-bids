@@ -20,13 +20,12 @@ checking out this group conversion example: :ref:`ex-convert-mne-sample`
 # Let us import ``mne_bids``
 
 import os.path as op
-from textwrap import wrap
 
 import mne
 from mne.datasets import eegbci
 
 from mne_bids import (write_raw_bids, make_bids_basename,
-                      get_anonymization_daysback, create_methods_paragraph)
+                      get_anonymization_daysback, make_report)
 from mne_bids.utils import print_dir_tree
 
 ###############################################################################
@@ -103,5 +102,5 @@ print_dir_tree(bids_root)
 
 ###############################################################################
 # Now let's generate a report on the dataset.
-dataset_summary = create_methods_paragraph(bids_root=bids_root)
-print(dataset_summary)
+dataset_report = make_report(bids_root=bids_root)
+print(dataset_report)

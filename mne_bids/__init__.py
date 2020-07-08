@@ -8,4 +8,4 @@ from mne_bids.utils import (get_anonymization_daysback,
                             make_bids_basename, make_bids_folders)
 from mne_bids.write import (make_dataset_description, write_anat,
                             write_raw_bids)
-from mne_bids.report import create_methods_paragraph
+from mne_bids.report import make_report

@@ -10,6 +10,7 @@ from pathlib import Path
 import mne
 import numpy as np
 from mne.externals.tempita import Template
+from mne.utils import warn
 
 from mne_bids.config import DOI, ALLOWED_KINDS
 from mne_bids.tsv_handler import _from_tsv
@@ -78,25 +79,32 @@ def _length_recording_str(length_recordings):
            f'over all scans ({mean_record_length} +/- {std_record_length}).' 
 }}"""  # noqa
 
-BIDS_DATASET_TEMPLATE = """{{if name == 'n/a'}}This{{else}}The {{name}}{{endif}}
+BIDS_DATASET_TEMPLATE = \
+    """{{if name == 'n/a'}}This{{else}}The {{name}}{{endif}}
 dataset was created with BIDS version {{bids_version}}
 by {{_pretty_str(authors)}}. This report was generated with
-MNE-BIDS ({{mne_bids_doi}}). There are {{n_subjects}} subjects.
-{{if n_sessions}}The dataset consists of {{n_sessions}} recording sessions
-{{(_pretty_str(sessions))}}.{{endif}} """
+MNE-BIDS ({{mne_bids_doi}}). {{if n_subjects > 1}}There are
+{{n_subjects}} subjects. {{else}}There is {{n_subjects}}
+subject.{{endif}} """
+BIDS_DATASET_TEMPLATE += \
+    """{{if n_sessions}}The dataset consists of {{n_sessions}}
+recording sessions {{(_pretty_str(sessions))}}.{{endif}}"""
 
-PARTICIPANTS_TEMPLATE = """The sex of the subjects are {{_summarize_participant_sex(sexs)}}.
+PARTICIPANTS_TEMPLATE = \
+    """The sex of the subjects are {{_summarize_participant_sex(sexs)}}.
 The handedness of the subjects are {{_summarize_participant_hand(hands)}}.
 The ages of the subjects are
 {{_range_str(min_age, max_age, mean_age, std_age, n_age_unknown, 'age')}}. """
 
-MODALITY_AGNOSTIC_TEMPLATE = """Data was acquired using a {{_pretty_str(system)}} system
+MODALITY_AGNOSTIC_TEMPLATE = \
+"""Data was acquired using a {{_pretty_str(system)}} system
 {{if manufacturer}}({{_pretty_str(manufacturer)}} manufacturer){{endif}}
-with line noise at {{_pretty_str(powerlinefreq)}}
-Hz{{if software_filters not in [{}, 'n/a']}} using filters
+with line noise at {{_pretty_str(powerlinefreq)}} Hz
+{{if software_filters not in [{}, 'n/a']}} using filters
 ({{software_filters}}).{{else}}.{{endif}}
-There are {{n_scans}} total scans, {{mean_chs}} +/- {{std_chs}}
-total recording channels per scan
+{{if n_scans > 1}}There are {{n_scans}} scans in total,
+{{else}}There is {{n_scans}} scan in total,{{endif}}
+{{mean_chs}} +/- {{std_chs}} total recording channels per scan
 ({{mean_good_chs}} +/- {{std_good_chs}} are used and
 {{mean_bad_chs}} +/- {{std_bad_chs}} are removed from analysis).
 {{_length_recording_str(length_recordings)}} """
@@ -176,7 +184,7 @@ def _summarize_participants_tsv(bids_root, verbose=True):
     participants_tsv = _from_tsv(str(participants_tsv_fpath))
     p_ids = participants_tsv['participant_id']
     if verbose:
-        print(f'Trying to summarize participants.tsv...')
+        print(f'Summarizing participants.tsv ...')
 
     # summarize sex count statistics
     keys = ['M', 'F', 'n/a']
@@ -251,9 +259,12 @@ def _summarize_scans(bids_root, session=None, verbose=True):
                      f'*_scans.tsv'
     scans_fpaths = list(bids_root.rglob(search_str))
     if len(scans_fpaths) == 0:
-        print('No *scans.tsv files found. Currently, '
-              'we do not generate a report without the scans.tsv files.')
+        warn('No *scans.tsv files found. Currently, '
+             'we do not generate a report without the scans.tsv files.')
         return dict()
+
+    if verbose:
+        print(f'Summarizing scans.tsv files...')
 
     # summarize sidecar.json, channels.tsv template
     sidecar_dict = _summarize_sidecar_json(bids_root, scans_fpaths,
@@ -441,7 +452,7 @@ def _summarize_channels_tsv(bids_root, scans_fpaths, verbose=True):
     return template_dict
 
 
-def create_methods_paragraph(bids_root, session=None, verbose=True):
+def make_report(bids_root, session=None, verbose=True):
     """Create a methods paragraph string from BIDS dataset.
 
     Summarizes the REQUIRED components in the BIDS specification
@@ -515,25 +526,8 @@ def create_methods_paragraph(bids_root, session=None, verbose=True):
                                      **participants_template,
                                      **scans_template)
 
+    # Clean paragraph
+    paragraph = paragraph.replace('\n', ' ')
+    paragraph = paragraph.replace('  ', ' ')
+
     return '\n'.join(textwrap.wrap(paragraph, width=80))
-
-
-if __name__ == '__main__':
-    output_fpath = './report.txt'
-
-    fpaths = {'somato': mne.datasets.somato.data_path(),
-              'epilepsy': '/Users/adam2392/Dropbox/epilepsy_bids/',
-              'ds001779-1.0.2': '/Users/adam2392/Downloads/ds001779-1.0.2',
-              'ds002778-1.0.1': '/Users/adam2392/Downloads/ds002778-1.0.1',
-              'ds002904-1.0.0': "/Users/adam2392/Downloads/ds002904-1.0.0",
-              'ds000117-master': "/Users/adam2392/Downloads/ds000117-master",
-              'ds000246-master': "/Users/adam2392/Downloads/ds000246-master",
-              'ds000248-master': "/Users/adam2392/Downloads/ds000248-master",
-              'ds001810-master': "/Users/adam2392/Downloads/ds001810-master",
-              'ds001971-master': "/Users/adam2392/Downloads/ds001971-master",
-              }
-    with open(output_fpath, 'w') as fout:
-        for name, bids_root in fpaths.items():
-            methods_paragraph = create_methods_paragraph(bids_root)
-            fout.write(f'\n\n{name}\n')
-            fout.write(methods_paragraph)

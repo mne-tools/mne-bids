@@ -87,4 +87,4 @@ Reports
 .. autosummary::
     :toctree: generated/
 
-    create_methods_paragraph
+    make_report
