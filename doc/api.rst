@@ -32,6 +32,7 @@ MNE BIDS
    make_bids_folders
    make_bids_basename
    make_dataset_description
+   make_report
    write_anat
    get_head_mri_trans
    get_matched_empty_room
@@ -81,6 +82,10 @@ Reports
 =======
 
 :py:mod:`mne_bids.report`:
+
+.. automodule:: mne_bids.report
+   :no-members:
+   :no-inherited-members:
 
 .. currentmodule:: mne_bids.report
 
