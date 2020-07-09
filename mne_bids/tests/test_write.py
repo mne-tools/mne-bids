@@ -41,7 +41,7 @@ from mne.io.kit.kit import get_kit_info
 
 from mne_bids import (write_raw_bids, read_raw_bids, make_bids_basename,
                       make_bids_folders, write_anat, make_dataset_description)
-from mne_bids.write import (_stamp_to_dt, _get_anonymization_daysback,
+from mne_bids.utils import (_stamp_to_dt, _get_anonymization_daysback,
                             get_anonymization_daysback)
 from mne_bids.tsv_handler import _from_tsv, _to_tsv
 from mne_bids.utils import _find_matching_sidecar, _update_sidecar

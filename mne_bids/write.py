@@ -10,7 +10,7 @@
 import json
 import os
 import os.path as op
-from datetime import datetime, date, timedelta, timezone
+from datetime import datetime, timezone
 import shutil as sh
 from collections import defaultdict, OrderedDict
 
@@ -39,7 +39,7 @@ from mne_bids.utils import (_write_json, _write_tsv, _write_text,
                             _path_to_str, _parse_ext,
                             _get_ch_type_mapping, make_bids_folders,
                             _estimate_line_freq, make_bids_basename,
-                            BIDSPath)
+                            BIDSPath, _check_anonymize, _stamp_to_dt)
 from mne_bids.copyfiles import (copyfile_brainvision, copyfile_eeglab,
                                 copyfile_ctf, copyfile_bti, copyfile_kit)
 from mne_bids.tsv_handler import (_from_tsv, _drop, _contains_row,
@@ -51,47 +51,8 @@ from mne_bids.config import (ORIENTATION, UNITS, MANUFACTURERS,
                              _convert_sex_options, reader)
 
 
-def _check_anonymize(anonymize, raw, ext):
-    """Check the `anonymize` dict."""
-    # if info['meas_date'] None, then the dates are not stored
-    if raw.info['meas_date'] is None:
-        daysback = None
-    else:
-        if 'daysback' not in anonymize or anonymize['daysback'] is None:
-            raise ValueError('`daysback` argument required to anonymize.')
-            daysback = anonymize['daysback']
-            daysback_min, daysback_max = _get_anonymization_daysback(raw)
-            if daysback < daysback_min:
-                warn('`daysback` is too small; the measurement date '
-                     'is after 1925, which is not recommended by BIDS.'
-                     'The minimum `daysback` value for changing the '
-                     'measurement date of this data to before this date '
-                     'is ' % daysback_min)
-        if ext == '.fif' and daysback > daysback_max:
-            raise ValueError('`daysback` exceeds maximum value MNE '
-                             'is able to store in FIF format, must '
-                             'be less than %i' % daysback_max)
-    keep_his = anonymize['keep_his'] if 'keep_his' in anonymize else False
-    return daysback, keep_his
-
-
 def _is_numeric(n):
     return isinstance(n, (np.integer, np.floating, int, float))
-
-
-def _stamp_to_dt(utc_stamp):
-    """Convert POSIX timestamp to datetime object in Windows-friendly way."""
-    # This is a windows datetime bug for timestamp < 0. A negative value
-    # is needed for anonymization which requires the date to be moved back
-    # to before 1925. This then requires a negative value of daysback
-    # compared the 1970 reference date.
-    if isinstance(utc_stamp, datetime):
-        return utc_stamp
-    stamp = [int(s) for s in utc_stamp]
-    if len(stamp) == 1:  # In case there is no microseconds information
-        stamp.append(0)
-    return (datetime.fromtimestamp(0, tz=timezone.utc) +
-            timedelta(0, stamp[0], stamp[1]))  # day, sec, μs
 
 
 def _channels_tsv(raw, fname, overwrite=False, verbose=True):
@@ -728,89 +689,6 @@ def _write_raw_brainvision(raw, bids_fname, events):
                       events=events,
                       resolution=1e-9,
                       meas_date=meas_date)
-
-
-def _get_anonymization_daysback(raw):
-    """Get the min and max number of daysback necessary to satisfy BIDS specs.
-
-    .. warning:: It is important that you remember the anonymization
-                 number if you would ever like to de-anonymize but
-                 that it is not included in the code publication
-                 as that would break the anonymization.
-
-    BIDS requires that anonymized dates be before 1925. In order to
-    preserve the longitudinal structure and ensure anonymization, the
-    user is asked to provide the same `daysback` argument to each call
-    of `write_raw_bids`. To determine the miniumum number of daysback
-    necessary, this function will calculate the minimum number based on
-    the most recent measurement date of raw objects.
-
-    Parameters
-    ----------
-    raw : instance of mne.io.Raw
-        The raw data. It must be an instance or list of instances of mne.Raw.
-
-    Returns
-    -------
-    daysback_min : int
-        The minimum number of daysback necessary to be compatible with BIDS.
-    daysback_max : int
-        The maximum number of daysback that MNE can store.
-    """
-    this_date = _stamp_to_dt(raw.info['meas_date']).date()
-    daysback_min = (this_date - date(year=1924, month=12, day=31)).days
-    daysback_max = (this_date - datetime.fromtimestamp(0).date() +
-                    timedelta(seconds=np.iinfo('>i4').max)).days
-    return daysback_min, daysback_max
-
-
-def get_anonymization_daysback(raws):
-    """Get the group min and max number of daysback necessary for BIDS specs.
-
-    .. warning:: It is important that you remember the anonymization
-                 number if you would ever like to de-anonymize but
-                 that it is not included in the code publication
-                 as that would break the anonymization.
-
-    BIDS requires that anonymized dates be before 1925. In order to
-    preserve the longitudinal structure and ensure anonymization, the
-    user is asked to provide the same `daysback` argument to each call
-    of `write_raw_bids`. To determine the miniumum number of daysback
-    necessary, this function will calculate the minimum number based on
-    the most recent measurement date of raw objects.
-
-    Parameters
-    ----------
-    raw : mne.io.Raw | list of Raw
-        The group raw data. It must be a list of instances of mne.Raw.
-
-    Returns
-    -------
-    daysback_min : int
-        The minimum number of daysback necessary to be compatible with BIDS.
-    daysback_max : int
-        The maximum number of daysback that MNE can store.
-    """
-    if not isinstance(raws, list):
-        raws = list([raws])
-    daysback_min_list = list()
-    daysback_max_list = list()
-    for raw in raws:
-        if raw.info['meas_date'] is not None:
-            daysback_min, daysback_max = _get_anonymization_daysback(raw)
-            daysback_min_list.append(daysback_min)
-            daysback_max_list.append(daysback_max)
-    if not daysback_min_list or not daysback_max_list:
-        raise ValueError('All measurement dates are None, ' +
-                         'pass any `daysback` value to anonymize.')
-    daysback_min = max(daysback_min_list)
-    daysback_max = min(daysback_max_list)
-    if daysback_min > daysback_max:
-        raise ValueError('The dataset spans more time than can be ' +
-                         'accomodated by MNE, you may have to ' +
-                         'not follow BIDS recommendations and use' +
-                         'anonymized dates after 1925')
-    return daysback_min, daysback_max
 
 
 def make_dataset_description(path, name, data_license=None,

@@ -106,27 +106,13 @@ def test_copyfile_brainvision():
     assert date == '20131113161403794232'
 
     # Test with anonymization
-    copyfile_brainvision(raw_fname, new_name, anonymize=True, verbose=True)
+    raw = mne.io.read_raw_brainvision(raw_fname)
+    prev_date = raw.info['meas_date']
+    anonymize = {'daysback': 32459}
+    copyfile_brainvision(raw_fname, new_name, anonymize, verbose=True)
     raw = mne.io.read_raw_brainvision(new_name)
-    date = raw.info['meas_date'].strftime('%Y%m%d%H%M%S%f')
-    assert date == '19240101000000000000'
-
-    with pytest.raises(ValueError, match='`date` must be None or datetime'):
-        copyfile_brainvision(raw_fname, new_name, anonymize=True, date='12.02')
-
-    newdate = datetime.datetime(1955, 5, 6, 12, 23, 11)
-    copyfile_brainvision(raw_fname, new_name, anonymize=True, date=newdate)
-    raw = mne.io.read_raw_brainvision(new_name)
-    date = raw.info['meas_date'].strftime('%Y%m%d%H%M%S%f')
-    assert date == newdate.strftime('%Y%m%d%H%M%S%f')
-
-    for line in open(new_name):
-        # The original time should no longer be in the file
-        if 'Impedance [kOhm] at 16:12:27 :' in line:
-            raise AssertionError()
-        # if we find the new time, we're good
-        if 'Impedance [kOhm] at 12:23:11 :' in line:
-            break
+    new_date = raw.info['meas_date']
+    assert new_date == (prev_date - datetime.timedelta(days=32459))
 
 
 def test_copyfile_eeglab():
