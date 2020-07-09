@@ -20,10 +20,12 @@ import re
 import datetime
 import shutil as sh
 
+from mne.io import read_raw_brainvision, anonymize_info
 from scipy.io import loadmat, savemat
 
 from mne_bids.read import _parse_ext
 from mne_bids.utils import _get_mrk_meas_date
+from mne_bids.write import _check_anonymize
 
 
 def _copytree(src, dst, **kwargs):
@@ -243,8 +245,7 @@ def _anonymize_brainvision(vhdr_file, date=None):
     _replace_file(vhdr_file, pattern, replace)
 
 
-def copyfile_brainvision(vhdr_src, vhdr_dest, anonymize=False, date=None,
-                         verbose=False):
+def copyfile_brainvision(vhdr_src, vhdr_dest, anonymize=None, verbose=False):
     """Copy a BrainVision file triplet to a new location and repair links.
 
     The BrainVision file format consists of three files: .vhdr, .eeg, and .vmrk
@@ -258,12 +259,22 @@ def copyfile_brainvision(vhdr_src, vhdr_dest, anonymize=False, date=None,
         The src path of the .vhdr file to be copied.
     vhdr_dest : str
         The destination path of the .vhdr file.
-    anonymize : bool
-        If False, leave dates in data files as they are. If True, replace all
-        date strings with 1924-01-01T00:00:00.
-    date : datetime.datetime | None
-        If `anonymize` is True, `date` will be used to replace all date strings
-        in the data files instead of the default 1924-01-01T00:00:00.
+    anonymize : dict | None
+        If None is provided (default) no anonymization is performed.
+        If a dictionary is passed, data will be anonymized; identifying data
+        structures such as study date and time will be changed.
+        `daysback` is a required argument and `keep_his` is optional, these
+        arguments are passed to :func:`mne.io.anonymize_info`.
+
+        `daysback` : int
+            Number of days to move back the date. To keep relative dates for
+            a subject use the same `daysback`. According to BIDS
+            specifications, the number of days back must be great enough
+            that the date is before 1925.
+
+        `keep_his` : bool
+            If True info['subject_info']['his_id'] of subject_info will NOT be
+            overwritten. Defaults to False.
     verbose : bool
         Determine whether results should be logged. Defaults to False.
 
@@ -307,8 +318,13 @@ def copyfile_brainvision(vhdr_src, vhdr_dest, anonymize=False, date=None,
                     line = line.replace(basename_src, basename_dest)
                 fout.write(line)
 
-    if anonymize:
-        _anonymize_brainvision(fname_dest + '.vhdr', date)
+    if anonymize is not None:
+        raw = read_raw_brainvision(vhdr_src, preload=False, verbose=0)
+        daysback, keep_his = _check_anonymize(anonymize, raw, '.vhdr')
+        raw.info = anonymize_info(raw.info, daysback=daysback,
+                                  keep_his=keep_his)
+        _anonymize_brainvision(fname_dest + '.vhdr',
+                               date=raw.info['meas_date'])
 
     if verbose:
         for ext in ['.eeg', '.vhdr', '.vmrk']:

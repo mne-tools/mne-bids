@@ -51,6 +51,30 @@ from mne_bids.config import (ORIENTATION, UNITS, MANUFACTURERS,
                              _convert_sex_options, reader)
 
 
+def _check_anonymize(anonymize, raw, ext):
+    """Check the `anonymize` dict."""
+    # if info['meas_date'] None, then the dates are not stored
+    if raw.info['meas_date'] is None:
+        daysback = None
+    else:
+        if 'daysback' not in anonymize or anonymize['daysback'] is None:
+            raise ValueError('`daysback` argument required to anonymize.')
+            daysback = anonymize['daysback']
+            daysback_min, daysback_max = _get_anonymization_daysback(raw)
+            if daysback < daysback_min:
+                warn('`daysback` is too small; the measurement date '
+                     'is after 1925, which is not recommended by BIDS.'
+                     'The minimum `daysback` value for changing the '
+                     'measurement date of this data to before this date '
+                     'is ' % daysback_min)
+        if ext == '.fif' and daysback > daysback_max:
+            raise ValueError('`daysback` exceeds maximum value MNE '
+                             'is able to store in FIF format, must '
+                             'be less than %i' % daysback_max)
+    keep_his = anonymize['keep_his'] if 'keep_his' in anonymize else False
+    return daysback, keep_his
+
+
 def _is_numeric(n):
     return isinstance(n, (np.integer, np.floating, int, float))
 
@@ -1103,25 +1127,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     # Anonymize
     convert = False
     if anonymize is not None:
-        # if info['meas_date'] None, then the dates are not stored
-        if raw.info['meas_date'] is None:
-            daysback = None
-        else:
-            if 'daysback' not in anonymize or anonymize['daysback'] is None:
-                raise ValueError('`daysback` argument required to anonymize.')
-            daysback = anonymize['daysback']
-            daysback_min, daysback_max = _get_anonymization_daysback(raw)
-            if daysback < daysback_min:
-                warn('`daysback` is too small; the measurement date '
-                     'is after 1925, which is not recommended by BIDS.'
-                     'The minimum `daysback` value for changing the '
-                     'measurement date of this data to before this date '
-                     'is %i' % daysback_min)
-            if ext == '.fif' and daysback > daysback_max:
-                raise ValueError('`daysback` exceeds maximum value MNE '
-                                 'is able to store in FIF format, must '
-                                 'be less than %i' % daysback_max)
-        keep_his = anonymize['keep_his'] if 'keep_his' in anonymize else False
+        daysback, keep_his = _check_anonymize(anonymize, raw, ext)
         raw.info = anonymize_info(raw.info, daysback=daysback,
                                   keep_his=keep_his)
 
@@ -1217,8 +1223,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
         copyfile_ctf(raw_fname, bids_fname)
     # BrainVision is multifile, copy over all of them and fix pointers
     elif ext == '.vhdr':
-        copyfile_brainvision(raw_fname, bids_fname, anonymize=anonymize,
-                             date=raw.info['meas_date'])
+        copyfile_brainvision(raw_fname, bids_fname, anonymize=anonymize)
     # EEGLAB .set might be accompanied by a .fdt - find out and copy it too
     elif ext == '.set':
         copyfile_eeglab(raw_fname, bids_fname)
