@@ -1,7 +1,7 @@
 """
-======================================================
-06. Rename and/or anonymize BrainVision EEG data files
-======================================================
+=====================================
+06. Rename BrainVision EEG data files
+=====================================
 
 According to the EEG extension to BIDS [1]_, the `BrainVision data format`_ is
 one of the recommended formats to store EEG data within a BIDS dataset.
@@ -20,12 +20,8 @@ each recording:
           references will corrupt the dataset! But relax, MNE-BIDS can take
           care of this for you.
 
-We may also wish to *anonymize* the data. MNE-BIDS can automate this task, too.
-
-In this example, we use MNE-BIDS to:
-
-1. Rename BrainVision data files including a repair of the internal file links
-2. Anonymize (overwrite) all recording dates
+In this example, we use MNE-BIDS to rename BrainVision data files including a
+repair of the internal file links
 
 For the command line version of this tool, see the :code:`cp` tool in the docs
 for the :ref:`Python Command Line Interface <python_cli>`.
@@ -46,7 +42,6 @@ References
 ###############################################################################
 # We are importing everything we need for this example:
 import os.path as op
-import datetime
 
 import mne
 
@@ -94,39 +89,8 @@ raw = mne.io.read_raw_brainvision(vhdr_file)
 raw_renamed = mne.io.read_raw_brainvision(vhdr_file_renamed)
 
 ###############################################################################
-# Anonymize the recording
-# -----------------------
-# We successfully renamed our file. But we can use
-# :func:`mne_bids.copyfiles.copyfile_brainvision` also to anonymize the
-# recording.
-#
-# In the example below, we overwrite our previously renamed file. But this time
-# we specify the ``anonymize`` and ``date`` parameters, to overwrite the
-# existing dates with our new one.
-
-# Get the original recording date
-original_date = raw.info['meas_date']
-print(f'The original date was {original_date}\n')
-
-# Make up a new date to anonymize the original one. 1900-05-06 at 00:00:00
-# seems fine
-new_date = datetime.datetime(1924, 5, 6)
-
-# Now anonymize using `new_date`
-copyfile_brainvision(vhdr_file, vhdr_file_renamed, anonymize=True,
-                     date=new_date, verbose=True)
-
-# Check that the freshly renamed and anonymized file has the new date
-raw_renamed = mne.io.read_raw_brainvision(vhdr_file_renamed)
-anonymized_date = raw_renamed.info['meas_date']
-print(f'After anonymization, the date is now {anonymized_date}.\n')
-
-###############################################################################
 # Further information
 # -------------------
-# You can also anonymize BrainVision files without specifying the ``date``
-# parameter. If you just specify ``anonymize=True``, MNE-BIDS will overwrite
-# all dates with a default datetime of 1924-01-01T00:00:00.
 #
 # For converting data files, or writing new data to the BrainVision format, you
 # can use the `pybv`_ Python package.
