@@ -59,6 +59,7 @@ API
 - The :code:`mne_bids.write.make_bids_basename` function has been moved to :code:`mne_bids.utils.make_bids_basename`. Like before, it can also be accessed via `mne_bids.make_bids_basename`, by `Richard Höchenberger`_ (`#424 <https://github.com/mne-tools/mne-bids/pull/424>`_)
 - The :func:`mne_bids.make_bids_basename` function has been updated to create a :code:`mne_bids.utils.BIDSPath` object, which operates like a path object and allows dynamic updating of BIDs entities, by `Adam Li`_ (`#446 <https://github.com/mne-tools/mne-bids/pull/446>`_)
 - The ``datasets.py`` module was removed from ``MNE-BIDS`` and its utility was replaced by ``mne.datasets``, by `Stefan Appelhoff`_ (`#471 <https://github.com/mne-tools/mne-bids/pull/471>`_)
+- :func:`mne_bids.make_dataset_description` now takes the argument `overwrite` which will reset all fields if `True`. If `False`, user-provided fields will no longer be overwritten by :func:`mne_bids.write_raw_bids` when its `overwrite` argument is `True` unless new values are supplied, by `Alex Rockhill`_ (`#478 <https://github.com/mne-tools/mne-bids/pull/478>`_)
 
 .. _changes_0_4:
 
