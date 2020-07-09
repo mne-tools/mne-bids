@@ -119,10 +119,12 @@ data. Specifically, we will follow these steps:</p>
 <ol class="arabic simple">
 <li><p>Download some EEG data from the
 <a class="reference external" href="https://physionet.org/physiobank/database">PhysioBank database</a>.</p></li>
-<li><p>Load the data, extract information, and save in a new BIDS directory</p></li>
-<li><p>Check the result and compare it with the standard</p></li>
+<li><p>Load the data, extract information, and save it in a new BIDS directory.</p></li>
+<li><p>Check the result and compare it with the standard.</p></li>
+<li><p>Cite <code class="docutils literal notranslate"><span class="pre">mne-bids</span></code>.</p></li>
 </ol>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Authors: Stefan Appelhoff &lt;stefan.appelhoff@mailbox.org&gt;</span>
+<span class="c1">#</span>
 <span class="c1"># License: BSD (3-clause)</span>
 </pre></div>
 </div>
@@ -137,39 +139,39 @@ data. Specifically, we will follow these steps:</p>
 <span class="kn">from</span> <span class="nn">mne_bids.utils</span> <span class="kn">import</span> <a href="../generated/mne_bids.utils.print_dir_tree.html#mne_bids.utils.print_dir_tree" title="mne_bids.utils.print_dir_tree" class="sphx-glr-backref-module-mne_bids-utils sphx-glr-backref-type-py-function"><span class="n">print_dir_tree</span></a>
 </pre></div>
 </div>
-<div class="section" id="step-1-download-the-data">
-<h2>Step 1: Download the data<a class="headerlink" href="#step-1-download-the-data" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="download-the-data">
+<h2>Download the data<a class="headerlink" href="#download-the-data" title="Permalink to this headline">¶</a></h2>
 <p>First, we need some data to work with. We will use the
 <a class="reference external" href="https://doi.org/10.13026/C28G6P">EEG Motor Movement/Imagery Dataset</a>
 available on the PhysioBank database.</p>
-<p>The data consists of 109 volunteers performing 14 experimental runs each. For
-each subject, there were two baseline tasks (1. eyes open, 2. eyes closed) as
-well as four different motor imagery tasks. For the present example, we will
-show how to format the data for two subjects and selected tasks to comply
-with the Brain Imaging Data Structure
+<p>The data consists of 109 volunteers performing 14 experimental runs each.
+For each subject, there were two baseline tasks (i) eyes open, (ii) eyes
+closed, as well as four different motor imagery tasks.</p>
+<p>In this example, we will download the data for a single subject doing the
+baseline task “eyes closed” and format it to the Brain Imaging Data Structure
 (<a class="reference external" href="http://bids.neuroimaging.io/">BIDS</a>).</p>
 <p>Conveniently, there is already a data loading function available with
 MNE-Python:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Define which tasks we want to download.</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tasks</span></a> <span class="o">=</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span>  <span class="c1"># This is 2 minutes of eyes closed rest</span>
-         <span class="mi">4</span><span class="p">,</span>  <span class="c1"># This is run #1 of imagining to close left or right fist</span>
-         <span class="mi">12</span><span class="p">]</span>  <span class="c1"># This is run #2 of imagining to close left or right fist</span>
-
-<span class="c1"># Download the data for subjects 1 and 2</span>
-<span class="k">for</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subj_idx</span></a> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]:</span>
-    <a href="https://mne.tools/dev/generated/mne.datasets.eegbci.load_data.html#mne.datasets.eegbci.load_data" title="mne.datasets.eegbci.load_data" class="sphx-glr-backref-module-mne-datasets-eegbci sphx-glr-backref-type-py-function"><span class="n">eegbci</span><span class="o">.</span><span class="n">load_data</span></a><span class="p">(</span><span class="n">subject</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subj_idx</span></a><span class="p">,</span> <span class="n">runs</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">tasks</span></a><span class="p">,</span> <span class="n">update_path</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Download the data for subject 1, for the 2 minutes of eyes closed rest task.</span>
+<span class="c1"># From the online documentation of the data we know that run &quot;2&quot; corresponds</span>
+<span class="c1"># to the &quot;eyes closed&quot; task.</span>
+<a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject</span></a> <span class="o">=</span> <span class="mi">1</span>
+<a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">run</span></a> <span class="o">=</span> <span class="mi">2</span>
+<a href="https://mne.tools/dev/generated/mne.datasets.eegbci.load_data.html#mne.datasets.eegbci.load_data" title="mne.datasets.eegbci.load_data" class="sphx-glr-backref-module-mne-datasets-eegbci sphx-glr-backref-type-py-function"><span class="n">eegbci</span><span class="o">.</span><span class="n">load_data</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject</span></a><span class="p">,</span> <span class="n">runs</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">run</span></a><span class="p">,</span> <span class="n">update_path</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using default location ~/mne_data for EEGBCI...
+
+[&#39;/home/circleci/mne_data/MNE-eegbci-data/files/eegmmidb/1.0.0/S001/S001R02.edf&#39;]
 </pre></div>
 </div>
 <p>Let’s see whether the data has been downloaded using a quick visualization
 of the directory tree.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># get MNE directory w/ example data</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># get MNE directory with example data</span>
 <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mne_data_dir</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.get_config.html#mne.get_config" title="mne.get_config" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">get_config</span></a><span class="p">(</span><span class="s1">&#39;MNE_DATASETS_EEGBCI_PATH&#39;</span><span class="p">)</span>
-
 <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_dir</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/os.path.html#os.path.join" title="os.path.join" class="sphx-glr-backref-module-os-path sphx-glr-backref-type-py-function"><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mne_data_dir</span></a><span class="p">,</span> <span class="s1">&#39;MNE-eegbci-data&#39;</span><span class="p">)</span>
+
 <a href="../generated/mne_bids.utils.print_dir_tree.html#mne_bids.utils.print_dir_tree" title="mne_bids.utils.print_dir_tree" class="sphx-glr-backref-module-mne_bids-utils sphx-glr-backref-type-py-function"><span class="n">print_dir_tree</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_dir</span></a><span class="p">)</span>
 </pre></div>
 </div>
@@ -178,32 +180,41 @@ of the directory tree.</p>
 |--- files/
 |------ eegmmidb/
 |--------- 1.0.0/
-|------------ S002/
-|--------------- S002R12.edf
-|--------------- S002R08.edf
-|--------------- S002R04.edf
-|--------------- S002R02.edf
 |------------ S001/
-|--------------- S001R08.edf
 |--------------- S001R12.edf
-|--------------- S001R02.edf
+|--------------- S001R08.edf
 |--------------- S001R04.edf
+|--------------- S001R02.edf
+|------------ S002/
+|--------------- S002R04.edf
+|--------------- S002R08.edf
+|--------------- S002R02.edf
+|--------------- S002R12.edf
 </pre></div>
 </div>
-<p>The data are in the <a class="reference external" href="https://www.edfplus.info/">European Data Format</a>
-‘.edf’, which is good for us because next to the BrainVision format, EDF is
-one of the recommended file formats for EEG BIDS. However, apart from the
-data format, we need to build a directory structure and supply meta data
-files to properly <em>bidsify</em> this data.</p>
+<p>The data are in the <a class="reference external" href="https://www.edfplus.info/">European Data Format</a> with
+the <code class="docutils literal notranslate"><span class="pre">.edf</span></code> extension, which is good for us because next to the
+<a class="reference external" href="https://www.brainproducts.com/productdetails.php?id=21&amp;tab=5">BrainVision format</a>, EDF is one of the recommended file formats for EEG
+data in BIDS format.</p>
+<p>However, apart from the data format, we need to build a directory structure
+and supply meta data files to properly <em>bidsify</em> this data.</p>
+<p>We will do exactly that in the next step.</p>
 </div>
-<div class="section" id="step-2-formatting-as-bids">
-<h2>Step 2: Formatting as BIDS<a class="headerlink" href="#step-2-formatting-as-bids" title="Permalink to this headline">¶</a></h2>
-<p>Let’s start by formatting a single subject. We are reading the data using
-MNE-Python’s io module and the <a class="reference external" href="https://mne.tools/dev/generated/mne.io.read_raw_edf.html#mne.io.read_raw_edf" title="(in MNE v0.21.dev0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.io.read_raw_edf()</span></code></a> function. Note
-that we must use <em class="xref py py-obj">preload=False</em>, the default in MNE-Python. It prevents the
-data from being loaded and modified when converting to BIDS.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">edf_path</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.datasets.eegbci.load_data.html#mne.datasets.eegbci.load_data" title="mne.datasets.eegbci.load_data" class="sphx-glr-backref-module-mne-datasets-eegbci sphx-glr-backref-type-py-function"><span class="n">eegbci</span><span class="o">.</span><span class="n">load_data</span></a><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">runs</span><span class="o">=</span><span class="mi">2</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<div class="section" id="convert-to-bids">
+<h2>Convert to BIDS<a class="headerlink" href="#convert-to-bids" title="Permalink to this headline">¶</a></h2>
+<p>Let’s start with loading the data and extracting the events.
+We are reading the data using MNE-Python’s <code class="docutils literal notranslate"><span class="pre">io</span></code> module and the
+<a class="reference external" href="https://mne.tools/dev/generated/mne.io.read_raw_edf.html#mne.io.read_raw_edf" title="(in MNE v0.21.dev0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.io.read_raw_edf()</span></code></a> function.
+Note that we must use the <code class="docutils literal notranslate"><span class="pre">preload=False</span></code> parameter, which is the default
+in MNE-Python.
+It prevents the data from being loaded and modified when converting to BIDS.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Load the data from &quot;2 minutes eyes closed rest&quot;</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">edf_path</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.datasets.eegbci.load_data.html#mne.datasets.eegbci.load_data" title="mne.datasets.eegbci.load_data" class="sphx-glr-backref-module-mne-datasets-eegbci sphx-glr-backref-type-py-function"><span class="n">eegbci</span><span class="o">.</span><span class="n">load_data</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject</span></a><span class="p">,</span> <span class="n">runs</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">run</span></a><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 <span class="n">raw</span> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.io.read_raw_edf.html#mne.io.read_raw_edf" title="mne.io.read_raw_edf" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_raw_edf</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">edf_path</span></a><span class="p">,</span> <span class="n">preload</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="c1"># For converting the data to BIDS, we need to convert the the annotations</span>
+<span class="c1"># stored in the file to a 2D numpy array of events.</span>
+<a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">events</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">event_id</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.events_from_annotations.html#mne.events_from_annotations" title="mne.events_from_annotations" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">events_from_annotations</span></a><span class="p">(</span><span class="n">raw</span><span class="p">)</span>
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
@@ -211,25 +222,50 @@ data from being loaded and modified when converting to BIDS.</p>
 EDF file detected
 Setting channel info structure...
 Creating raw.info structure...
+Used Annotations descriptions: [&#39;T0&#39;]
 </pre></div>
 </div>
-<p>The annotations stored in the file must be read in separately and converted
-into a 2D numpy array of events that is compatible with MNE.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://mne.tools/dev/generated/mne.Annotations.html#mne.Annotations" title="mne.Annotations" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">annot</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.read_annotations.html#mne.read_annotations" title="mne.read_annotations" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">read_annotations</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">edf_path</span></a><span class="p">)</span>
-<a href="https://mne.tools/dev/generated/mne.io.BaseRaw.html#mne.io.BaseRaw.set_annotations" title="mne.io.BaseRaw.set_annotations" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-method"><span class="n">raw</span><span class="o">.</span><span class="n">set_annotations</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.Annotations.html#mne.Annotations" title="mne.Annotations" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">annot</span></a><span class="p">)</span>
-<a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">events</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">event_id</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.events_from_annotations.html#mne.events_from_annotations" title="mne.events_from_annotations" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">events_from_annotations</span></a><span class="p">(</span><span class="n">raw</span><span class="p">)</span>
+<p>For the sake of the example we will also pretend that we have the electrode
+coordinates for the data recordings.
+We will use a coordinates file from the MNE testing data in <a class="reference external" href="http://www.fieldtriptoolbox.org/faq/how_are_the_different_head_and_mri_coordinate_systems_defined/#details-of-the-captrak-coordinate-system">CapTrak</a>
+format.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">*electrodes.tsv</span></code> and <code class="docutils literal notranslate"><span class="pre">*coordsystem.json</span></code> files in BIDS are
+intended to carry information about digitized (i.e., <em>measured</em>)
+electrode positions on the scalp of the research subject. Do <em>not</em>
+(!) use these files to store “template” or “idealized” electrode
+positions, like those that can be obtained from
+<a class="reference external" href="https://mne.tools/dev/generated/mne.channels.make_standard_montage.html#mne.channels.make_standard_montage" title="(in MNE v0.21.dev0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne.channels.make_standard_montage()</span></code></a>!</p>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Get the electrode coordinates</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">testing_data</span></a> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">data_path</span><span class="p">()</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">captrak_path</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/os.path.html#os.path.join" title="os.path.join" class="sphx-glr-backref-module-os-path sphx-glr-backref-type-py-function"><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">testing_data</span></a><span class="p">,</span> <span class="s1">&#39;montage&#39;</span><span class="p">,</span> <span class="s1">&#39;captrak_coords.bvct&#39;</span><span class="p">)</span>
+<a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="mne.channels.DigMontage" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">montage</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.channels.read_dig_captrak.html#mne.channels.read_dig_captrak" title="mne.channels.read_dig_captrak" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">channels</span><span class="o">.</span><span class="n">read_dig_captrak</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">captrak_path</span></a><span class="p">)</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span>
+<span class="c1"># Rename the montage channel names only for this example, because as said</span>
+<span class="c1"># before, coordinate and EEG data were not actually collected together</span>
+<span class="c1"># Do *not* do this for your own data.</span>
+<a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage.rename_channels" title="mne.channels.DigMontage.rename_channels" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-method"><span class="n">montage</span><span class="o">.</span><span class="n">rename_channels</span></a><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#list" title="builtins.list" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">montage</span><span class="o">.</span><span class="n">ch_names</span></a><span class="p">,</span> <a href="https://mne.tools/dev/generated/mne.io.BaseRaw.html#mne.io.BaseRaw.ch_names" title="mne.io.BaseRaw.ch_names" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-method"><span class="n">raw</span><span class="o">.</span><span class="n">ch_names</span></a><span class="p">)))</span>
+
+<span class="c1"># &quot;attach&quot; the electrode coordinates to the `raw` object</span>
+<a href="https://mne.tools/dev/generated/mne.io.BaseRaw.html#mne.io.BaseRaw.set_montage" title="mne.io.BaseRaw.set_montage" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-method"><span class="n">raw</span><span class="o">.</span><span class="n">set_montage</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.channels.DigMontage.html#mne.channels.DigMontage" title="mne.channels.DigMontage" class="sphx-glr-backref-module-mne-channels sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">montage</span></a><span class="p">)</span>
+
+<span class="c1"># show the electrode positions</span>
+<a href="https://mne.tools/dev/generated/mne.io.BaseRaw.html#mne.io.BaseRaw.plot_sensors" title="mne.io.BaseRaw.plot_sensors" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-method"><span class="n">raw</span><span class="o">.</span><span class="n">plot_sensors</span></a><span class="p">()</span>
 </pre></div>
 </div>
+<img alt="Sensor positions (eeg)" class="sphx-glr-single-img" src="../_images/sphx_glr_convert_eeg_to_bids_001.png" />
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Used Annotations descriptions: [&#39;T0&#39;]
-&lt;RawEDF | S001R02.edf, 64 x 9760 (61.0 s), ~123 kB, data not loaded&gt;
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using default location ~/mne_data for testing...
+
+&lt;Figure size 640x640 with 1 Axes&gt;
 </pre></div>
 </div>
-<p>With this step, we have everything to start a new BIDS directory using
-our data. To do that, we can use <a class="reference internal" href="../generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">write_raw_bids()</span></code></a>
-Generally, <a class="reference internal" href="../generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">write_raw_bids()</span></code></a> tries to extract as much
+<p>With these steps, we have everything to start a new BIDS directory using
+our data.</p>
+<p>To do that, we can use <a class="reference internal" href="../generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">write_raw_bids()</span></code></a></p>
+<p>Generally, <a class="reference internal" href="../generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">write_raw_bids()</span></code></a> tries to extract as much
 meta data as possible from the raw data and then formats it in a BIDS
 compatible way. <a class="reference internal" href="../generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">write_raw_bids()</span></code></a> takes a bunch of inputs, most of
 which are however optional. The required inputs are:</p>
@@ -343,23 +379,29 @@ which are however optional. The required inputs are:</p>
     of the participant correctly.
 </pre></div>
 </div>
-<p>We loaded ‘S001R02.edf’, which corresponds to subject 1 in the second task.
-The second task was to rest with closed eyes.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject_id</span></a> <span class="o">=</span> <span class="s1">&#39;001&#39;</span>  <span class="c1"># zero padding to account for &gt;100 subjects in this dataset</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">task</span></a> <span class="o">=</span> <span class="s1">&#39;resteyesclosed&#39;</span>
-<span class="n">raw_file</span> <span class="o">=</span> <span class="n">raw</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/os.path.html#os.path.join" title="os.path.join" class="sphx-glr-backref-module-os-path sphx-glr-backref-type-py-function"><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mne_data_dir</span></a><span class="p">,</span> <span class="s1">&#39;eegmmidb_bids&#39;</span><span class="p">)</span>
+<p>We loaded <code class="docutils literal notranslate"><span class="pre">S001R02.edf</span></code>, which corresponds to subject 1 in the second run.
+In the second run of the experiment, the task was to rest with closed eyes.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># zero padding to account for &gt;100 subjects in this dataset</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject_id</span></a> <span class="o">=</span> <span class="s1">&#39;001&#39;</span>
+
+<span class="c1"># define a task name and a directory where to save the data to</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">task</span></a> <span class="o">=</span> <span class="s1">&#39;RestEyesClosed&#39;</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/os.path.html#os.path.join" title="os.path.join" class="sphx-glr-backref-module-os-path sphx-glr-backref-type-py-function"><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mne_data_dir</span></a><span class="p">,</span> <span class="s1">&#39;eegmmidb_bids_eeg_example&#39;</span><span class="p">)</span>
+
+<span class="c1"># Start with a clean directory in case the directory existed beforehand</span>
+<a href="https://docs.python.org/3/library/shutil.html#shutil.rmtree" title="shutil.rmtree" class="sphx-glr-backref-module-shutil sphx-glr-backref-type-py-function"><span class="n">sh</span><span class="o">.</span><span class="n">rmtree</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">,</span> <span class="n">ignore_errors</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Now we just need to specify a few more EEG details to get something sensible:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Brief description of the event markers present in the data. This will become</span>
-<span class="c1"># the `trial_type` column in our BIDS `events.tsv`. We know about the event</span>
-<span class="c1"># meaning from the documentation on PhysioBank</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">trial_type</span></a> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;rest&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;imagine left fist&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;imagine right fist&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">}</span>
+<span class="c1"># the ``trial_type`` column in our BIDS ```events.tsv``.</span>
+<span class="c1"># From the online documentation of our downloaded data we know that in the</span>
+<span class="c1"># rest &quot;eyes closed&quot; task, there is only a single event marker: &quot;0&quot;</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">event_id</span></a> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;rest&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
 
 <span class="c1"># Now convert our data to be in a new BIDS dataset.</span>
-<a href="../generated/mne_bids.utils.BIDSPath.html#mne_bids.utils.BIDSPath" title="mne_bids.utils.BIDSPath" class="sphx-glr-backref-module-mne_bids-utils sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_basename</span></a> <span class="o">=</span> <a href="../generated/mne_bids.make_bids_basename.html#mne_bids.make_bids_basename" title="mne_bids.make_bids_basename" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">make_bids_basename</span></a><span class="p">(</span><span class="n">subject</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject_id</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">task</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">task</span></a><span class="p">)</span>
-<a href="../generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">write_raw_bids</span></a><span class="p">(</span><span class="n">raw_file</span><span class="p">,</span> <a href="../generated/mne_bids.utils.BIDSPath.html#mne_bids.utils.BIDSPath" title="mne_bids.utils.BIDSPath" class="sphx-glr-backref-module-mne_bids-utils sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_basename</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">event_id</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">trial_type</span></a><span class="p">,</span>
+<a href="../generated/mne_bids.utils.BIDSPath.html#mne_bids.utils.BIDSPath" title="mne_bids.utils.BIDSPath" class="sphx-glr-backref-module-mne_bids-utils sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_basename</span></a> <span class="o">=</span> <a href="../generated/mne_bids.make_bids_basename.html#mne_bids.make_bids_basename" title="mne_bids.make_bids_basename" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">make_bids_basename</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject_id</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">task</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">task</span></a><span class="p">)</span>
+<a href="../generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">write_raw_bids</span></a><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <a href="../generated/mne_bids.utils.BIDSPath.html#mne_bids.utils.BIDSPath" title="mne_bids.utils.BIDSPath" class="sphx-glr-backref-module-mne_bids-utils sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_basename</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">event_id</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">event_id</span></a><span class="p">,</span>
                <span class="n">events_data</span><span class="o">=</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">events</span></a><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -368,9 +410,9 @@ The second task was to rest with closed eyes.</p>
 EDF file detected
 Setting channel info structure...
 Creating raw.info structure...
-Creating folder: /home/circleci/mne_data/eegmmidb_bids/sub-001/eeg
+Creating folder: /home/circleci/mne_data/eegmmidb_bids_eeg_example/sub-001/eeg
 
-Writing &#39;/home/circleci/mne_data/eegmmidb_bids/README&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids_eeg_example/README&#39;...
 
 References
 ----------
@@ -379,13 +421,12 @@ Appelhoff, S., Sanderson, M., Brooks, T., Vliet, M., Quentin, R., Holdgraf, C., 
 Pernet, C. R., Appelhoff, S., Gorgolewski, K. J., Flandin, G., Phillips, C., Delorme, A., Oostenveld, R. (2019). EEG-BIDS, an extension to the brain imaging data structure for electroencephalography. Scientific Data, 6, 103. https://doi.org/10.1038/s41597-019-0104-8
 
 
-Writing &#39;/home/circleci/mne_data/eegmmidb_bids/participants.tsv&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids_eeg_example/participants.tsv&#39;...
 
 participant_id  age     sex     hand
 sub-001 n/a     n/a     n/a
-sub-002 n/a     n/a     n/a
 
-Writing &#39;/home/circleci/mne_data/eegmmidb_bids/participants.json&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids_eeg_example/participants.json&#39;...
 
 {
     &quot;participant_id&quot;: {
@@ -411,13 +452,51 @@ Writing &#39;/home/circleci/mne_data/eegmmidb_bids/participants.json&#39;...
         }
     }
 }
+Writing electrodes file to...  /home/circleci/mne_data/eegmmidb_bids_eeg_example/sub-001/eeg/sub-001_electrodes.tsv
+Writing coordsytem file to...  /home/circleci/mne_data/eegmmidb_bids_eeg_example/sub-001/eeg/sub-001_coordsystem.json
 
-Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_events.tsv&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids_eeg_example/sub-001/eeg/sub-001_electrodes.tsv&#39;...
+
+name    x       y       z
+Fc5.    -0.09731968723468239    -0.0021423686071579805  0.050226741225281264
+Fc3.    -0.08856262271830136    0.03656538257252212     0.08223925927400842
+Fc1.    -0.08409763256980056    0.0651383327975854      0.04885693263757247
+Fcz.    -0.09271418986954857    -0.0008204160816824106  0.08669305289548136
+Fc2.    -0.09514340411749506    0.033122249460160715    0.046783546930167653
+
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids_eeg_example/sub-001/eeg/sub-001_coordsystem.json&#39;...
+
+{
+    &quot;EEGCoordinateSystem&quot;: &quot;CapTrak&quot;,
+    &quot;EEGCoordinateUnits&quot;: &quot;m&quot;,
+    &quot;EEGCoordinateSystemDescription&quot;: &quot;n/a&quot;,
+    &quot;AnatomicalLandmarkCoordinates&quot;: {
+        &quot;NAS&quot;: [
+            -3.788238398497924e-18,
+            0.11309931478694205,
+            -3.0814879110195774e-33
+        ],
+        &quot;LPA&quot;: [
+            -0.09189697162389295,
+            3.078070254157709e-18,
+            0.0
+        ],
+        &quot;RPA&quot;: [
+            0.09240077493980713,
+            -3.094945043100789e-18,
+            -6.162975822039155e-33
+        ]
+    },
+    &quot;AnatomicalLandmarkCoordinateSystem&quot;: &quot;CapTrak&quot;,
+    &quot;AnatomicalLandmarkCoordinateUnits&quot;: &quot;m&quot;
+}
+
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids_eeg_example/sub-001/eeg/sub-001_task-RestEyesClosed_events.tsv&#39;...
 
 onset   duration        trial_type      value   sample
-0.0     0.0     imagine left fist       1       0
+0.0     0.0     n/a     1       0
 
-Writing &#39;/home/circleci/mne_data/eegmmidb_bids/dataset_description.json&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids_eeg_example/dataset_description.json&#39;...
 
 {
     &quot;Name&quot;: &quot; &quot;,
@@ -432,10 +511,10 @@ Effective window size : 1.600 (s)
   warn(&#39;No line frequency found, defaulting to {} Hz &#39;
 Reading 0 ... 9759  =      0.000 ...    60.994 secs...
 
-Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_eeg.json&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids_eeg_example/sub-001/eeg/sub-001_task-RestEyesClosed_eeg.json&#39;...
 
 {
-    &quot;TaskName&quot;: &quot;resteyesclosed&quot;,
+    &quot;TaskName&quot;: &quot;RestEyesClosed&quot;,
     &quot;Manufacturer&quot;: &quot;n/a&quot;,
     &quot;PowerLineFrequency&quot;: 60,
     &quot;SamplingFrequency&quot;: 160.0,
@@ -453,7 +532,7 @@ Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-rest
     &quot;TriggerChannelCount&quot;: 0
 }
 
-Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_channels.tsv&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids_eeg_example/sub-001/eeg/sub-001_task-RestEyesClosed_channels.tsv&#39;...
 
 name    type    units   low_cutoff      high_cutoff     description     sampling_frequency      status
 Fc5.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
@@ -461,17 +540,15 @@ Fc3.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
 Fc1.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
 Fcz.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
 Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
-Copying data files to /home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_eeg
+Copying data files to /home/circleci/mne_data/eegmmidb_bids_eeg_example/sub-001/eeg/sub-001_task-RestEyesClosed_eeg
 
-Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-001/sub-001_scans.tsv&#39;...
+Writing &#39;/home/circleci/mne_data/eegmmidb_bids_eeg_example/sub-001/sub-001_scans.tsv&#39;...
 
 filename        acq_time
-eeg/sub-001_task-imaginefists_run-1_eeg.edf     2009-08-12T16:15:00
-eeg/sub-001_task-imaginefists_run-2_eeg.edf     2009-08-12T16:15:00
-eeg/sub-001_task-resteyesclosed_eeg.edf 2009-08-12T16:15:00
-Wrote /home/circleci/mne_data/eegmmidb_bids/sub-001/sub-001_scans.tsv entry with eeg/sub-001_task-resteyesclosed_eeg.edf.
+eeg/sub-001_task-RestEyesClosed_eeg.edf 2009-08-12T16:15:00
+Wrote /home/circleci/mne_data/eegmmidb_bids_eeg_example/sub-001/sub-001_scans.tsv entry with eeg/sub-001_task-RestEyesClosed_eeg.edf.
 
-&#39;/home/circleci/mne_data/eegmmidb_bids&#39;
+&#39;/home/circleci/mne_data/eegmmidb_bids_eeg_example&#39;
 </pre></div>
 </div>
 <p>What does our fresh BIDS directory look like?</p>
@@ -479,802 +556,46 @@ Wrote /home/circleci/mne_data/eegmmidb_bids/sub-001/sub-001_scans.tsv entry with
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>|eegmmidb_bids/
-|--- participants.tsv
-|--- dataset_description.json
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>|eegmmidb_bids_eeg_example/
 |--- README
+|--- dataset_description.json
+|--- participants.tsv
 |--- participants.json
-|--- sub-002/
-|------ sub-002_scans.tsv
-|------ eeg/
-|--------- sub-002_task-imaginefists_run-1_eeg.edf
-|--------- sub-002_task-imaginefists_run-2_events.tsv
-|--------- sub-002_task-resteyesclosed_eeg.json
-|--------- sub-002_task-imaginefists_run-2_eeg.json
-|--------- sub-002_task-imaginefists_run-2_channels.tsv
-|--------- sub-002_task-resteyesclosed_channels.tsv
-|--------- sub-002_task-imaginefists_run-2_eeg.edf
-|--------- sub-002_task-imaginefists_run-1_eeg.json
-|--------- sub-002_task-resteyesclosed_eeg.edf
-|--------- sub-002_task-resteyesclosed_events.tsv
-|--------- sub-002_task-imaginefists_run-1_events.tsv
-|--------- sub-002_task-imaginefists_run-1_channels.tsv
 |--- sub-001/
 |------ sub-001_scans.tsv
 |------ eeg/
-|--------- sub-001_task-imaginefists_run-2_eeg.edf
-|--------- sub-001_task-imaginefists_run-1_channels.tsv
-|--------- sub-001_task-imaginefists_run-2_channels.tsv
-|--------- sub-001_task-resteyesclosed_eeg.edf
-|--------- sub-001_task-imaginefists_run-2_events.tsv
-|--------- sub-001_task-resteyesclosed_events.tsv
-|--------- sub-001_task-imaginefists_run-2_eeg.json
-|--------- sub-001_task-imaginefists_run-1_events.tsv
-|--------- sub-001_task-resteyesclosed_eeg.json
-|--------- sub-001_task-imaginefists_run-1_eeg.json
-|--------- sub-001_task-resteyesclosed_channels.tsv
-|--------- sub-001_task-imaginefists_run-1_eeg.edf
+|--------- sub-001_task-RestEyesClosed_eeg.edf
+|--------- sub-001_task-RestEyesClosed_eeg.json
+|--------- sub-001_electrodes.tsv
+|--------- sub-001_coordsystem.json
+|--------- sub-001_task-RestEyesClosed_events.tsv
+|--------- sub-001_task-RestEyesClosed_channels.tsv
 </pre></div>
 </div>
-<p>Looks good so far, let’s convert the data for all tasks and subjects.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Start with a clean directory</span>
-<a href="https://docs.python.org/3/library/shutil.html#shutil.rmtree" title="shutil.rmtree" class="sphx-glr-backref-module-shutil sphx-glr-backref-type-py-function"><span class="n">sh</span><span class="o">.</span><span class="n">rmtree</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">)</span>
-
-<span class="c1"># Some initial information that we found in the PhysioBank documentation</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">task_names</span></a> <span class="o">=</span> <span class="p">{</span><span class="mi">2</span><span class="p">:</span> <span class="s1">&#39;resteyesclosed&#39;</span><span class="p">,</span>
-              <span class="mi">4</span><span class="p">:</span> <span class="s1">&#39;imaginefists&#39;</span><span class="p">,</span>  <span class="c1"># run 1</span>
-              <span class="mi">12</span><span class="p">:</span> <span class="s1">&#39;imaginefists&#39;</span>  <span class="c1"># run 2</span>
-              <span class="p">}</span>
-
-<a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">run_mapping</span></a> <span class="o">=</span> <span class="p">{</span><span class="mi">2</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># for resting eyes closed task, there was only one run</span>
-               <span class="mi">4</span><span class="p">:</span> <span class="s1">&#39;1&#39;</span><span class="p">,</span>
-               <span class="mi">12</span><span class="p">:</span> <span class="s1">&#39;2&#39;</span>
-               <span class="p">}</span>
-
-<span class="c1"># Now go over subjects and *bidsify*</span>
-<span class="k">for</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subj_idx</span></a> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]:</span>
-    <span class="k">for</span> <a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">task_idx</span></a> <span class="ow">in</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">12</span><span class="p">]:</span>
-        <span class="c1"># Load the data</span>
-        <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">edf_path</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.datasets.eegbci.load_data.html#mne.datasets.eegbci.load_data" title="mne.datasets.eegbci.load_data" class="sphx-glr-backref-module-mne-datasets-eegbci sphx-glr-backref-type-py-function"><span class="n">eegbci</span><span class="o">.</span><span class="n">load_data</span></a><span class="p">(</span><span class="n">subject</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subj_idx</span></a><span class="p">,</span> <span class="n">runs</span><span class="o">=</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">task_idx</span></a><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-
-        <span class="n">raw</span> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.io.read_raw_edf.html#mne.io.read_raw_edf" title="mne.io.read_raw_edf" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_raw_edf</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">edf_path</span></a><span class="p">,</span> <span class="n">preload</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">stim_channel</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
-        <a href="https://mne.tools/dev/generated/mne.Annotations.html#mne.Annotations" title="mne.Annotations" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">annot</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.read_annotations.html#mne.read_annotations" title="mne.read_annotations" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">read_annotations</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">edf_path</span></a><span class="p">)</span>
-        <a href="https://mne.tools/dev/generated/mne.io.BaseRaw.html#mne.io.BaseRaw.set_annotations" title="mne.io.BaseRaw.set_annotations" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-method"><span class="n">raw</span><span class="o">.</span><span class="n">set_annotations</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.Annotations.html#mne.Annotations" title="mne.Annotations" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">annot</span></a><span class="p">)</span>
-        <a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">events</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">event_id</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.events_from_annotations.html#mne.events_from_annotations" title="mne.events_from_annotations" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">events_from_annotations</span></a><span class="p">(</span><span class="n">raw</span><span class="p">)</span>
-
-        <a href="../generated/mne_bids.utils.BIDSPath.html#mne_bids.utils.BIDSPath" title="mne_bids.utils.BIDSPath" class="sphx-glr-backref-module-mne_bids-utils sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_basename</span></a> <span class="o">=</span> <a href="../generated/mne_bids.make_bids_basename.html#mne_bids.make_bids_basename" title="mne_bids.make_bids_basename" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">make_bids_basename</span></a><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">{:03}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subj_idx</span></a><span class="p">),</span>
-                                           <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">task</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">task_names</span></a><span class="p">[</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">task_idx</span></a><span class="p">],</span>
-                                           <span class="n">run</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">run_mapping</span></a><span class="p">[</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">task_idx</span></a><span class="p">])</span>
-        <a href="../generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">write_raw_bids</span></a><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <a href="../generated/mne_bids.utils.BIDSPath.html#mne_bids.utils.BIDSPath" title="mne_bids.utils.BIDSPath" class="sphx-glr-backref-module-mne_bids-utils sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_basename</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">event_id</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">trial_type</span></a><span class="p">,</span>
-                       <span class="n">events_data</span><span class="o">=</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">events</span></a><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</pre></div>
+<p>We can see that MNE-BIDS wrote several important files related to subject 1
+for us:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">electrodes.tsv</span></code> containing the electrode coordinates and
+<code class="docutils literal notranslate"><span class="pre">coordsystem.json</span></code>, which contains the metadata about the electrode
+coordinates.</p></li>
+<li><p>The actual EDF data file (now with a proper BIDS name) and an accompanying
+<code class="docutils literal notranslate"><span class="pre">*_eeg.json</span></code> file that contains metadata about the EEG recording.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">*scans.json</span></code> file lists all data recordings with their acquisition
+date. This file becomes more handy once there are multiple sessions and
+recordings to keep track of.</p></li>
+<li><p>And finally, <code class="docutils literal notranslate"><span class="pre">channels.tsv</span></code> and <code class="docutils literal notranslate"><span class="pre">events.tsv</span></code> which contain even further
+metadata.</p></li>
+</ul>
+<p>Next to the subject specific files, MNE-BIDS also created several experiment
+specific files. However, we will not go into detail for them in this example.</p>
 </div>
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Extracting EDF parameters from /home/circleci/mne_data/MNE-eegbci-data/files/eegmmidb/1.0.0/S001/S001R02.edf...
-EDF file detected
-Setting channel info structure...
-Creating raw.info structure...
-Used Annotations descriptions: [&#39;T0&#39;]
-Extracting EDF parameters from /home/circleci/mne_data/MNE-eegbci-data/files/eegmmidb/1.0.0/S001/S001R02.edf...
-EDF file detected
-Setting channel info structure...
-Creating raw.info structure...
-Creating folder: /home/circleci/mne_data/eegmmidb_bids/sub-001/eeg
-
-Writing &#39;/home/circleci/mne_data/eegmmidb_bids/README&#39;...
-
-References
-----------
-Appelhoff, S., Sanderson, M., Brooks, T., Vliet, M., Quentin, R., Holdgraf, C., Chaumon, M., Mikulan, E., Tavabi, K., Höchenberger, R., Welke, D., Brunner, C., Rockhill, A., Larson, E., Gramfort, A. and Jas, M. (2019). MNE-BIDS: Organizing electrophysiological data into the BIDS format and facilitating their analysis. Journal of Open Source Software 4: (1896). https://doi.org/10.21105/joss.01896
-
-Pernet, C. R., Appelhoff, S., Gorgolewski, K. J., Flandin, G., Phillips, C., Delorme, A., Oostenveld, R. (2019). EEG-BIDS, an extension to the brain imaging data structure for electroencephalography. Scientific Data, 6, 103. https://doi.org/10.1038/s41597-019-0104-8
-
-
-Writing &#39;/home/circleci/mne_data/eegmmidb_bids/participants.tsv&#39;...
-
-participant_id  age     sex     hand
-sub-001 n/a     n/a     n/a
-
-Writing &#39;/home/circleci/mne_data/eegmmidb_bids/participants.json&#39;...
-
-{
-    &quot;participant_id&quot;: {
-        &quot;Description&quot;: &quot;Unique participant identifier&quot;
-    },
-    &quot;age&quot;: {
-        &quot;Description&quot;: &quot;Age of the participant at time of testing&quot;,
-        &quot;Units&quot;: &quot;years&quot;
-    },
-    &quot;sex&quot;: {
-        &quot;Description&quot;: &quot;Biological sex of the participant&quot;,
-        &quot;Levels&quot;: {
-            &quot;F&quot;: &quot;female&quot;,
-            &quot;M&quot;: &quot;male&quot;
-        }
-    },
-    &quot;hand&quot;: {
-        &quot;Description&quot;: &quot;Handedness of the participant&quot;,
-        &quot;Levels&quot;: {
-            &quot;R&quot;: &quot;right&quot;,
-            &quot;L&quot;: &quot;left&quot;,
-            &quot;A&quot;: &quot;ambidextrous&quot;
-        }
-    }
-}
-
-Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_events.tsv&#39;...
-
-onset   duration        trial_type      value   sample
-0.0     0.0     imagine left fist       1       0
-
-Writing &#39;/home/circleci/mne_data/eegmmidb_bids/dataset_description.json&#39;...
-
-{
-    &quot;Name&quot;: &quot; &quot;,
-    &quot;BIDSVersion&quot;: &quot;1.2.2&quot;,
-    &quot;DatasetType&quot;: &quot;raw&quot;,
-    &quot;Authors&quot;: [
-        &quot;Please cite MNE-BIDS in your publication before removing this (citations in README)&quot;
-    ]
-}
-Effective window size : 1.600 (s)
-/home/circleci/project/mne_bids/write.py:503: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
-  warn(&#39;No line frequency found, defaulting to {} Hz &#39;
-Reading 0 ... 9759  =      0.000 ...    60.994 secs...
-
-Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_eeg.json&#39;...
-
-{
-    &quot;TaskName&quot;: &quot;resteyesclosed&quot;,
-    &quot;Manufacturer&quot;: &quot;n/a&quot;,
-    &quot;PowerLineFrequency&quot;: 60,
-    &quot;SamplingFrequency&quot;: 160.0,
-    &quot;SoftwareFilters&quot;: &quot;n/a&quot;,
-    &quot;RecordingDuration&quot;: 60.99375,
-    &quot;RecordingType&quot;: &quot;continuous&quot;,
-    &quot;EEGReference&quot;: &quot;n/a&quot;,
-    &quot;EEGGround&quot;: &quot;n/a&quot;,
-    &quot;EEGPlacementScheme&quot;: &quot;n/a&quot;,
-    &quot;EEGChannelCount&quot;: 64,
-    &quot;EOGChannelCount&quot;: 0,
-    &quot;ECGChannelCount&quot;: 0,
-    &quot;EMGChannelCount&quot;: 0,
-    &quot;MiscChannelCount&quot;: 0,
-    &quot;TriggerChannelCount&quot;: 0
-}
-
-Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_channels.tsv&#39;...
-
-name    type    units   low_cutoff      high_cutoff     description     sampling_frequency      status
-Fc5.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
-Fc3.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
-Fc1.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
-Fcz.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
-Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
-Copying data files to /home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-resteyesclosed_eeg
-
-Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-001/sub-001_scans.tsv&#39;...
-
-filename        acq_time
-eeg/sub-001_task-resteyesclosed_eeg.edf 2009-08-12T16:15:00
-Wrote /home/circleci/mne_data/eegmmidb_bids/sub-001/sub-001_scans.tsv entry with eeg/sub-001_task-resteyesclosed_eeg.edf.
-Extracting EDF parameters from /home/circleci/mne_data/MNE-eegbci-data/files/eegmmidb/1.0.0/S001/S001R04.edf...
-EDF file detected
-Setting channel info structure...
-Creating raw.info structure...
-Used Annotations descriptions: [&#39;T0&#39;, &#39;T1&#39;, &#39;T2&#39;]
-Extracting EDF parameters from /home/circleci/mne_data/MNE-eegbci-data/files/eegmmidb/1.0.0/S001/S001R04.edf...
-EDF file detected
-Setting channel info structure...
-Creating raw.info structure...
-Creating folder: /home/circleci/mne_data/eegmmidb_bids/sub-001/eeg
-
-Writing &#39;/home/circleci/mne_data/eegmmidb_bids/README&#39;...
-
-References
-----------
-Appelhoff, S., Sanderson, M., Brooks, T., Vliet, M., Quentin, R., Holdgraf, C., Chaumon, M., Mikulan, E., Tavabi, K., Höchenberger, R., Welke, D., Brunner, C., Rockhill, A., Larson, E., Gramfort, A. and Jas, M. (2019). MNE-BIDS: Organizing electrophysiological data into the BIDS format and facilitating their analysis. Journal of Open Source Software 4: (1896). https://doi.org/10.21105/joss.01896
-
-Pernet, C. R., Appelhoff, S., Gorgolewski, K. J., Flandin, G., Phillips, C., Delorme, A., Oostenveld, R. (2019). EEG-BIDS, an extension to the brain imaging data structure for electroencephalography. Scientific Data, 6, 103. https://doi.org/10.1038/s41597-019-0104-8
-
-
-Writing &#39;/home/circleci/mne_data/eegmmidb_bids/participants.tsv&#39;...
-
-participant_id  age     sex     hand
-sub-001 n/a     n/a     n/a
-
-Writing &#39;/home/circleci/mne_data/eegmmidb_bids/participants.json&#39;...
-
-{
-    &quot;participant_id&quot;: {
-        &quot;Description&quot;: &quot;Unique participant identifier&quot;
-    },
-    &quot;age&quot;: {
-        &quot;Description&quot;: &quot;Age of the participant at time of testing&quot;,
-        &quot;Units&quot;: &quot;years&quot;
-    },
-    &quot;sex&quot;: {
-        &quot;Description&quot;: &quot;Biological sex of the participant&quot;,
-        &quot;Levels&quot;: {
-            &quot;F&quot;: &quot;female&quot;,
-            &quot;M&quot;: &quot;male&quot;
-        }
-    },
-    &quot;hand&quot;: {
-        &quot;Description&quot;: &quot;Handedness of the participant&quot;,
-        &quot;Levels&quot;: {
-            &quot;R&quot;: &quot;right&quot;,
-            &quot;L&quot;: &quot;left&quot;,
-            &quot;A&quot;: &quot;ambidextrous&quot;
-        }
-    }
-}
-
-Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-imaginefists_run-1_events.tsv&#39;...
-
-onset   duration        trial_type      value   sample
-0.0     0.0     imagine left fist       1       0
-4.2     0.0     n/a     3       672
-8.3     0.0     imagine left fist       1       1328
-12.5    0.0     imagine right fist      2       2000
-16.6    0.0     imagine left fist       1       2656
-
-Writing &#39;/home/circleci/mne_data/eegmmidb_bids/dataset_description.json&#39;...
-
-{
-    &quot;Name&quot;: &quot; &quot;,
-    &quot;BIDSVersion&quot;: &quot;1.2.2&quot;,
-    &quot;DatasetType&quot;: &quot;raw&quot;,
-    &quot;Authors&quot;: [
-        &quot;Please cite MNE-BIDS in your publication before removing this (citations in README)&quot;
-    ]
-}
-Effective window size : 1.600 (s)
-/home/circleci/project/mne_bids/write.py:503: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
-  warn(&#39;No line frequency found, defaulting to {} Hz &#39;
-Reading 0 ... 19999  =      0.000 ...   124.994 secs...
-
-Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-imaginefists_run-1_eeg.json&#39;...
-
-{
-    &quot;TaskName&quot;: &quot;imaginefists&quot;,
-    &quot;Manufacturer&quot;: &quot;n/a&quot;,
-    &quot;PowerLineFrequency&quot;: 60,
-    &quot;SamplingFrequency&quot;: 160.0,
-    &quot;SoftwareFilters&quot;: &quot;n/a&quot;,
-    &quot;RecordingDuration&quot;: 124.99375,
-    &quot;RecordingType&quot;: &quot;continuous&quot;,
-    &quot;EEGReference&quot;: &quot;n/a&quot;,
-    &quot;EEGGround&quot;: &quot;n/a&quot;,
-    &quot;EEGPlacementScheme&quot;: &quot;n/a&quot;,
-    &quot;EEGChannelCount&quot;: 64,
-    &quot;EOGChannelCount&quot;: 0,
-    &quot;ECGChannelCount&quot;: 0,
-    &quot;EMGChannelCount&quot;: 0,
-    &quot;MiscChannelCount&quot;: 0,
-    &quot;TriggerChannelCount&quot;: 0
-}
-
-Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-imaginefists_run-1_channels.tsv&#39;...
-
-name    type    units   low_cutoff      high_cutoff     description     sampling_frequency      status
-Fc5.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
-Fc3.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
-Fc1.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
-Fcz.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
-Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
-Copying data files to /home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-imaginefists_run-1_eeg
-
-Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-001/sub-001_scans.tsv&#39;...
-
-filename        acq_time
-eeg/sub-001_task-imaginefists_run-1_eeg.edf     2009-08-12T16:15:00
-eeg/sub-001_task-resteyesclosed_eeg.edf 2009-08-12T16:15:00
-Wrote /home/circleci/mne_data/eegmmidb_bids/sub-001/sub-001_scans.tsv entry with eeg/sub-001_task-imaginefists_run-1_eeg.edf.
-Extracting EDF parameters from /home/circleci/mne_data/MNE-eegbci-data/files/eegmmidb/1.0.0/S001/S001R12.edf...
-EDF file detected
-Setting channel info structure...
-Creating raw.info structure...
-Used Annotations descriptions: [&#39;T0&#39;, &#39;T1&#39;, &#39;T2&#39;]
-Extracting EDF parameters from /home/circleci/mne_data/MNE-eegbci-data/files/eegmmidb/1.0.0/S001/S001R12.edf...
-EDF file detected
-Setting channel info structure...
-Creating raw.info structure...
-Creating folder: /home/circleci/mne_data/eegmmidb_bids/sub-001/eeg
-
-Writing &#39;/home/circleci/mne_data/eegmmidb_bids/README&#39;...
-
-References
-----------
-Appelhoff, S., Sanderson, M., Brooks, T., Vliet, M., Quentin, R., Holdgraf, C., Chaumon, M., Mikulan, E., Tavabi, K., Höchenberger, R., Welke, D., Brunner, C., Rockhill, A., Larson, E., Gramfort, A. and Jas, M. (2019). MNE-BIDS: Organizing electrophysiological data into the BIDS format and facilitating their analysis. Journal of Open Source Software 4: (1896). https://doi.org/10.21105/joss.01896
-
-Pernet, C. R., Appelhoff, S., Gorgolewski, K. J., Flandin, G., Phillips, C., Delorme, A., Oostenveld, R. (2019). EEG-BIDS, an extension to the brain imaging data structure for electroencephalography. Scientific Data, 6, 103. https://doi.org/10.1038/s41597-019-0104-8
-
-
-Writing &#39;/home/circleci/mne_data/eegmmidb_bids/participants.tsv&#39;...
-
-participant_id  age     sex     hand
-sub-001 n/a     n/a     n/a
-
-Writing &#39;/home/circleci/mne_data/eegmmidb_bids/participants.json&#39;...
-
-{
-    &quot;participant_id&quot;: {
-        &quot;Description&quot;: &quot;Unique participant identifier&quot;
-    },
-    &quot;age&quot;: {
-        &quot;Description&quot;: &quot;Age of the participant at time of testing&quot;,
-        &quot;Units&quot;: &quot;years&quot;
-    },
-    &quot;sex&quot;: {
-        &quot;Description&quot;: &quot;Biological sex of the participant&quot;,
-        &quot;Levels&quot;: {
-            &quot;F&quot;: &quot;female&quot;,
-            &quot;M&quot;: &quot;male&quot;
-        }
-    },
-    &quot;hand&quot;: {
-        &quot;Description&quot;: &quot;Handedness of the participant&quot;,
-        &quot;Levels&quot;: {
-            &quot;R&quot;: &quot;right&quot;,
-            &quot;L&quot;: &quot;left&quot;,
-            &quot;A&quot;: &quot;ambidextrous&quot;
-        }
-    }
-}
-
-Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-imaginefists_run-2_events.tsv&#39;...
-
-onset   duration        trial_type      value   sample
-0.0     0.0     imagine left fist       1       0
-4.2     0.0     n/a     3       672
-8.3     0.0     imagine left fist       1       1328
-12.5    0.0     imagine right fist      2       2000
-16.6    0.0     imagine left fist       1       2656
-
-Writing &#39;/home/circleci/mne_data/eegmmidb_bids/dataset_description.json&#39;...
-
-{
-    &quot;Name&quot;: &quot; &quot;,
-    &quot;BIDSVersion&quot;: &quot;1.2.2&quot;,
-    &quot;DatasetType&quot;: &quot;raw&quot;,
-    &quot;Authors&quot;: [
-        &quot;Please cite MNE-BIDS in your publication before removing this (citations in README)&quot;
-    ]
-}
-Effective window size : 1.600 (s)
-/home/circleci/project/mne_bids/write.py:503: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
-  warn(&#39;No line frequency found, defaulting to {} Hz &#39;
-Reading 0 ... 19999  =      0.000 ...   124.994 secs...
-
-Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-imaginefists_run-2_eeg.json&#39;...
-
-{
-    &quot;TaskName&quot;: &quot;imaginefists&quot;,
-    &quot;Manufacturer&quot;: &quot;n/a&quot;,
-    &quot;PowerLineFrequency&quot;: 60,
-    &quot;SamplingFrequency&quot;: 160.0,
-    &quot;SoftwareFilters&quot;: &quot;n/a&quot;,
-    &quot;RecordingDuration&quot;: 124.99375,
-    &quot;RecordingType&quot;: &quot;continuous&quot;,
-    &quot;EEGReference&quot;: &quot;n/a&quot;,
-    &quot;EEGGround&quot;: &quot;n/a&quot;,
-    &quot;EEGPlacementScheme&quot;: &quot;n/a&quot;,
-    &quot;EEGChannelCount&quot;: 64,
-    &quot;EOGChannelCount&quot;: 0,
-    &quot;ECGChannelCount&quot;: 0,
-    &quot;EMGChannelCount&quot;: 0,
-    &quot;MiscChannelCount&quot;: 0,
-    &quot;TriggerChannelCount&quot;: 0
-}
-
-Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-imaginefists_run-2_channels.tsv&#39;...
-
-name    type    units   low_cutoff      high_cutoff     description     sampling_frequency      status
-Fc5.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
-Fc3.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
-Fc1.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
-Fcz.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
-Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
-Copying data files to /home/circleci/mne_data/eegmmidb_bids/sub-001/eeg/sub-001_task-imaginefists_run-2_eeg
-
-Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-001/sub-001_scans.tsv&#39;...
-
-filename        acq_time
-eeg/sub-001_task-imaginefists_run-1_eeg.edf     2009-08-12T16:15:00
-eeg/sub-001_task-imaginefists_run-2_eeg.edf     2009-08-12T16:15:00
-eeg/sub-001_task-resteyesclosed_eeg.edf 2009-08-12T16:15:00
-Wrote /home/circleci/mne_data/eegmmidb_bids/sub-001/sub-001_scans.tsv entry with eeg/sub-001_task-imaginefists_run-2_eeg.edf.
-Extracting EDF parameters from /home/circleci/mne_data/MNE-eegbci-data/files/eegmmidb/1.0.0/S002/S002R02.edf...
-EDF file detected
-Setting channel info structure...
-Creating raw.info structure...
-Used Annotations descriptions: [&#39;T0&#39;]
-Extracting EDF parameters from /home/circleci/mne_data/MNE-eegbci-data/files/eegmmidb/1.0.0/S002/S002R02.edf...
-EDF file detected
-Setting channel info structure...
-Creating raw.info structure...
-Creating folder: /home/circleci/mne_data/eegmmidb_bids/sub-002/eeg
-
-Writing &#39;/home/circleci/mne_data/eegmmidb_bids/README&#39;...
-
-References
-----------
-Appelhoff, S., Sanderson, M., Brooks, T., Vliet, M., Quentin, R., Holdgraf, C., Chaumon, M., Mikulan, E., Tavabi, K., Höchenberger, R., Welke, D., Brunner, C., Rockhill, A., Larson, E., Gramfort, A. and Jas, M. (2019). MNE-BIDS: Organizing electrophysiological data into the BIDS format and facilitating their analysis. Journal of Open Source Software 4: (1896). https://doi.org/10.21105/joss.01896
-
-Pernet, C. R., Appelhoff, S., Gorgolewski, K. J., Flandin, G., Phillips, C., Delorme, A., Oostenveld, R. (2019). EEG-BIDS, an extension to the brain imaging data structure for electroencephalography. Scientific Data, 6, 103. https://doi.org/10.1038/s41597-019-0104-8
-
-
-Writing &#39;/home/circleci/mne_data/eegmmidb_bids/participants.tsv&#39;...
-
-participant_id  age     sex     hand
-sub-001 n/a     n/a     n/a
-sub-002 n/a     n/a     n/a
-
-Writing &#39;/home/circleci/mne_data/eegmmidb_bids/participants.json&#39;...
-
-{
-    &quot;participant_id&quot;: {
-        &quot;Description&quot;: &quot;Unique participant identifier&quot;
-    },
-    &quot;age&quot;: {
-        &quot;Description&quot;: &quot;Age of the participant at time of testing&quot;,
-        &quot;Units&quot;: &quot;years&quot;
-    },
-    &quot;sex&quot;: {
-        &quot;Description&quot;: &quot;Biological sex of the participant&quot;,
-        &quot;Levels&quot;: {
-            &quot;F&quot;: &quot;female&quot;,
-            &quot;M&quot;: &quot;male&quot;
-        }
-    },
-    &quot;hand&quot;: {
-        &quot;Description&quot;: &quot;Handedness of the participant&quot;,
-        &quot;Levels&quot;: {
-            &quot;R&quot;: &quot;right&quot;,
-            &quot;L&quot;: &quot;left&quot;,
-            &quot;A&quot;: &quot;ambidextrous&quot;
-        }
-    }
-}
-
-Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-resteyesclosed_events.tsv&#39;...
-
-onset   duration        trial_type      value   sample
-0.0     0.0     imagine left fist       1       0
-
-Writing &#39;/home/circleci/mne_data/eegmmidb_bids/dataset_description.json&#39;...
-
-{
-    &quot;Name&quot;: &quot; &quot;,
-    &quot;BIDSVersion&quot;: &quot;1.2.2&quot;,
-    &quot;DatasetType&quot;: &quot;raw&quot;,
-    &quot;Authors&quot;: [
-        &quot;Please cite MNE-BIDS in your publication before removing this (citations in README)&quot;
-    ]
-}
-Effective window size : 1.600 (s)
-/home/circleci/project/mne_bids/write.py:503: RuntimeWarning: No line frequency found, defaulting to 50 Hz estimated from multi-taper FFT on 10 seconds of data.
-  warn(&#39;No line frequency found, defaulting to {} Hz &#39;
-Reading 0 ... 9759  =      0.000 ...    60.994 secs...
-
-Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-resteyesclosed_eeg.json&#39;...
-
-{
-    &quot;TaskName&quot;: &quot;resteyesclosed&quot;,
-    &quot;Manufacturer&quot;: &quot;n/a&quot;,
-    &quot;PowerLineFrequency&quot;: 50,
-    &quot;SamplingFrequency&quot;: 160.0,
-    &quot;SoftwareFilters&quot;: &quot;n/a&quot;,
-    &quot;RecordingDuration&quot;: 60.99375,
-    &quot;RecordingType&quot;: &quot;continuous&quot;,
-    &quot;EEGReference&quot;: &quot;n/a&quot;,
-    &quot;EEGGround&quot;: &quot;n/a&quot;,
-    &quot;EEGPlacementScheme&quot;: &quot;n/a&quot;,
-    &quot;EEGChannelCount&quot;: 64,
-    &quot;EOGChannelCount&quot;: 0,
-    &quot;ECGChannelCount&quot;: 0,
-    &quot;EMGChannelCount&quot;: 0,
-    &quot;MiscChannelCount&quot;: 0,
-    &quot;TriggerChannelCount&quot;: 0
-}
-
-Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-resteyesclosed_channels.tsv&#39;...
-
-name    type    units   low_cutoff      high_cutoff     description     sampling_frequency      status
-Fc5.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
-Fc3.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
-Fc1.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
-Fcz.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
-Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
-Copying data files to /home/circleci/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-resteyesclosed_eeg
-
-Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-002/sub-002_scans.tsv&#39;...
-
-filename        acq_time
-eeg/sub-002_task-resteyesclosed_eeg.edf 2009-08-12T16:15:00
-Wrote /home/circleci/mne_data/eegmmidb_bids/sub-002/sub-002_scans.tsv entry with eeg/sub-002_task-resteyesclosed_eeg.edf.
-Extracting EDF parameters from /home/circleci/mne_data/MNE-eegbci-data/files/eegmmidb/1.0.0/S002/S002R04.edf...
-EDF file detected
-Setting channel info structure...
-Creating raw.info structure...
-Used Annotations descriptions: [&#39;T0&#39;, &#39;T1&#39;, &#39;T2&#39;]
-Extracting EDF parameters from /home/circleci/mne_data/MNE-eegbci-data/files/eegmmidb/1.0.0/S002/S002R04.edf...
-EDF file detected
-Setting channel info structure...
-Creating raw.info structure...
-Creating folder: /home/circleci/mne_data/eegmmidb_bids/sub-002/eeg
-
-Writing &#39;/home/circleci/mne_data/eegmmidb_bids/README&#39;...
-
-References
-----------
-Appelhoff, S., Sanderson, M., Brooks, T., Vliet, M., Quentin, R., Holdgraf, C., Chaumon, M., Mikulan, E., Tavabi, K., Höchenberger, R., Welke, D., Brunner, C., Rockhill, A., Larson, E., Gramfort, A. and Jas, M. (2019). MNE-BIDS: Organizing electrophysiological data into the BIDS format and facilitating their analysis. Journal of Open Source Software 4: (1896). https://doi.org/10.21105/joss.01896
-
-Pernet, C. R., Appelhoff, S., Gorgolewski, K. J., Flandin, G., Phillips, C., Delorme, A., Oostenveld, R. (2019). EEG-BIDS, an extension to the brain imaging data structure for electroencephalography. Scientific Data, 6, 103. https://doi.org/10.1038/s41597-019-0104-8
-
-
-Writing &#39;/home/circleci/mne_data/eegmmidb_bids/participants.tsv&#39;...
-
-participant_id  age     sex     hand
-sub-001 n/a     n/a     n/a
-sub-002 n/a     n/a     n/a
-
-Writing &#39;/home/circleci/mne_data/eegmmidb_bids/participants.json&#39;...
-
-{
-    &quot;participant_id&quot;: {
-        &quot;Description&quot;: &quot;Unique participant identifier&quot;
-    },
-    &quot;age&quot;: {
-        &quot;Description&quot;: &quot;Age of the participant at time of testing&quot;,
-        &quot;Units&quot;: &quot;years&quot;
-    },
-    &quot;sex&quot;: {
-        &quot;Description&quot;: &quot;Biological sex of the participant&quot;,
-        &quot;Levels&quot;: {
-            &quot;F&quot;: &quot;female&quot;,
-            &quot;M&quot;: &quot;male&quot;
-        }
-    },
-    &quot;hand&quot;: {
-        &quot;Description&quot;: &quot;Handedness of the participant&quot;,
-        &quot;Levels&quot;: {
-            &quot;R&quot;: &quot;right&quot;,
-            &quot;L&quot;: &quot;left&quot;,
-            &quot;A&quot;: &quot;ambidextrous&quot;
-        }
-    }
-}
-
-Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-imaginefists_run-1_events.tsv&#39;...
-
-onset   duration        trial_type      value   sample
-0.0     0.0     imagine left fist       1       0
-4.1     0.0     imagine right fist      2       656
-8.2     0.0     imagine left fist       1       1312
-12.3    0.0     n/a     3       1968
-16.4    0.0     imagine left fist       1       2624
-
-Writing &#39;/home/circleci/mne_data/eegmmidb_bids/dataset_description.json&#39;...
-
-{
-    &quot;Name&quot;: &quot; &quot;,
-    &quot;BIDSVersion&quot;: &quot;1.2.2&quot;,
-    &quot;DatasetType&quot;: &quot;raw&quot;,
-    &quot;Authors&quot;: [
-        &quot;Please cite MNE-BIDS in your publication before removing this (citations in README)&quot;
-    ]
-}
-Effective window size : 1.600 (s)
-/home/circleci/project/mne_bids/write.py:503: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
-  warn(&#39;No line frequency found, defaulting to {} Hz &#39;
-Reading 0 ... 19679  =      0.000 ...   122.994 secs...
-
-Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-imaginefists_run-1_eeg.json&#39;...
-
-{
-    &quot;TaskName&quot;: &quot;imaginefists&quot;,
-    &quot;Manufacturer&quot;: &quot;n/a&quot;,
-    &quot;PowerLineFrequency&quot;: 60,
-    &quot;SamplingFrequency&quot;: 160.0,
-    &quot;SoftwareFilters&quot;: &quot;n/a&quot;,
-    &quot;RecordingDuration&quot;: 122.99375,
-    &quot;RecordingType&quot;: &quot;continuous&quot;,
-    &quot;EEGReference&quot;: &quot;n/a&quot;,
-    &quot;EEGGround&quot;: &quot;n/a&quot;,
-    &quot;EEGPlacementScheme&quot;: &quot;n/a&quot;,
-    &quot;EEGChannelCount&quot;: 64,
-    &quot;EOGChannelCount&quot;: 0,
-    &quot;ECGChannelCount&quot;: 0,
-    &quot;EMGChannelCount&quot;: 0,
-    &quot;MiscChannelCount&quot;: 0,
-    &quot;TriggerChannelCount&quot;: 0
-}
-
-Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-imaginefists_run-1_channels.tsv&#39;...
-
-name    type    units   low_cutoff      high_cutoff     description     sampling_frequency      status
-Fc5.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
-Fc3.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
-Fc1.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
-Fcz.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
-Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
-Copying data files to /home/circleci/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-imaginefists_run-1_eeg
-
-Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-002/sub-002_scans.tsv&#39;...
-
-filename        acq_time
-eeg/sub-002_task-imaginefists_run-1_eeg.edf     2009-08-12T16:15:00
-eeg/sub-002_task-resteyesclosed_eeg.edf 2009-08-12T16:15:00
-Wrote /home/circleci/mne_data/eegmmidb_bids/sub-002/sub-002_scans.tsv entry with eeg/sub-002_task-imaginefists_run-1_eeg.edf.
-Extracting EDF parameters from /home/circleci/mne_data/MNE-eegbci-data/files/eegmmidb/1.0.0/S002/S002R12.edf...
-EDF file detected
-Setting channel info structure...
-Creating raw.info structure...
-Used Annotations descriptions: [&#39;T0&#39;, &#39;T1&#39;, &#39;T2&#39;]
-Extracting EDF parameters from /home/circleci/mne_data/MNE-eegbci-data/files/eegmmidb/1.0.0/S002/S002R12.edf...
-EDF file detected
-Setting channel info structure...
-Creating raw.info structure...
-Creating folder: /home/circleci/mne_data/eegmmidb_bids/sub-002/eeg
-
-Writing &#39;/home/circleci/mne_data/eegmmidb_bids/README&#39;...
-
-References
-----------
-Appelhoff, S., Sanderson, M., Brooks, T., Vliet, M., Quentin, R., Holdgraf, C., Chaumon, M., Mikulan, E., Tavabi, K., Höchenberger, R., Welke, D., Brunner, C., Rockhill, A., Larson, E., Gramfort, A. and Jas, M. (2019). MNE-BIDS: Organizing electrophysiological data into the BIDS format and facilitating their analysis. Journal of Open Source Software 4: (1896). https://doi.org/10.21105/joss.01896
-
-Pernet, C. R., Appelhoff, S., Gorgolewski, K. J., Flandin, G., Phillips, C., Delorme, A., Oostenveld, R. (2019). EEG-BIDS, an extension to the brain imaging data structure for electroencephalography. Scientific Data, 6, 103. https://doi.org/10.1038/s41597-019-0104-8
-
-
-Writing &#39;/home/circleci/mne_data/eegmmidb_bids/participants.tsv&#39;...
-
-participant_id  age     sex     hand
-sub-001 n/a     n/a     n/a
-sub-002 n/a     n/a     n/a
-
-Writing &#39;/home/circleci/mne_data/eegmmidb_bids/participants.json&#39;...
-
-{
-    &quot;participant_id&quot;: {
-        &quot;Description&quot;: &quot;Unique participant identifier&quot;
-    },
-    &quot;age&quot;: {
-        &quot;Description&quot;: &quot;Age of the participant at time of testing&quot;,
-        &quot;Units&quot;: &quot;years&quot;
-    },
-    &quot;sex&quot;: {
-        &quot;Description&quot;: &quot;Biological sex of the participant&quot;,
-        &quot;Levels&quot;: {
-            &quot;F&quot;: &quot;female&quot;,
-            &quot;M&quot;: &quot;male&quot;
-        }
-    },
-    &quot;hand&quot;: {
-        &quot;Description&quot;: &quot;Handedness of the participant&quot;,
-        &quot;Levels&quot;: {
-            &quot;R&quot;: &quot;right&quot;,
-            &quot;L&quot;: &quot;left&quot;,
-            &quot;A&quot;: &quot;ambidextrous&quot;
-        }
-    }
-}
-
-Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-imaginefists_run-2_events.tsv&#39;...
-
-onset   duration        trial_type      value   sample
-0.0     0.0     imagine left fist       1       0
-4.1     0.0     imagine right fist      2       656
-8.2     0.0     imagine left fist       1       1312
-12.3    0.0     n/a     3       1968
-16.4    0.0     imagine left fist       1       2624
-
-Writing &#39;/home/circleci/mne_data/eegmmidb_bids/dataset_description.json&#39;...
-
-{
-    &quot;Name&quot;: &quot; &quot;,
-    &quot;BIDSVersion&quot;: &quot;1.2.2&quot;,
-    &quot;DatasetType&quot;: &quot;raw&quot;,
-    &quot;Authors&quot;: [
-        &quot;Please cite MNE-BIDS in your publication before removing this (citations in README)&quot;
-    ]
-}
-Effective window size : 1.600 (s)
-/home/circleci/project/mne_bids/write.py:503: RuntimeWarning: No line frequency found, defaulting to 50 Hz estimated from multi-taper FFT on 10 seconds of data.
-  warn(&#39;No line frequency found, defaulting to {} Hz &#39;
-Reading 0 ... 19679  =      0.000 ...   122.994 secs...
-
-Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-imaginefists_run-2_eeg.json&#39;...
-
-{
-    &quot;TaskName&quot;: &quot;imaginefists&quot;,
-    &quot;Manufacturer&quot;: &quot;n/a&quot;,
-    &quot;PowerLineFrequency&quot;: 50,
-    &quot;SamplingFrequency&quot;: 160.0,
-    &quot;SoftwareFilters&quot;: &quot;n/a&quot;,
-    &quot;RecordingDuration&quot;: 122.99375,
-    &quot;RecordingType&quot;: &quot;continuous&quot;,
-    &quot;EEGReference&quot;: &quot;n/a&quot;,
-    &quot;EEGGround&quot;: &quot;n/a&quot;,
-    &quot;EEGPlacementScheme&quot;: &quot;n/a&quot;,
-    &quot;EEGChannelCount&quot;: 64,
-    &quot;EOGChannelCount&quot;: 0,
-    &quot;ECGChannelCount&quot;: 0,
-    &quot;EMGChannelCount&quot;: 0,
-    &quot;MiscChannelCount&quot;: 0,
-    &quot;TriggerChannelCount&quot;: 0
-}
-
-Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-imaginefists_run-2_channels.tsv&#39;...
-
-name    type    units   low_cutoff      high_cutoff     description     sampling_frequency      status
-Fc5.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
-Fc3.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
-Fc1.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
-Fcz.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
-Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
-Copying data files to /home/circleci/mne_data/eegmmidb_bids/sub-002/eeg/sub-002_task-imaginefists_run-2_eeg
-
-Writing &#39;/home/circleci/mne_data/eegmmidb_bids/sub-002/sub-002_scans.tsv&#39;...
-
-filename        acq_time
-eeg/sub-002_task-imaginefists_run-1_eeg.edf     2009-08-12T16:15:00
-eeg/sub-002_task-imaginefists_run-2_eeg.edf     2009-08-12T16:15:00
-eeg/sub-002_task-resteyesclosed_eeg.edf 2009-08-12T16:15:00
-Wrote /home/circleci/mne_data/eegmmidb_bids/sub-002/sub-002_scans.tsv entry with eeg/sub-002_task-imaginefists_run-2_eeg.edf.
-</pre></div>
-</div>
-</div>
-<div class="section" id="step-3-check-and-compare-with-standard">
-<h2>Step 3: Check and compare with standard<a class="headerlink" href="#step-3-check-and-compare-with-standard" title="Permalink to this headline">¶</a></h2>
-<p>Now we have written our BIDS directory.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="../generated/mne_bids.utils.print_dir_tree.html#mne_bids.utils.print_dir_tree" title="mne_bids.utils.print_dir_tree" class="sphx-glr-backref-module-mne_bids-utils sphx-glr-backref-type-py-function"><span class="n">print_dir_tree</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">)</span>
-</pre></div>
-</div>
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>|eegmmidb_bids/
-|--- participants.tsv
-|--- dataset_description.json
-|--- README
-|--- participants.json
-|--- sub-002/
-|------ sub-002_scans.tsv
-|------ eeg/
-|--------- sub-002_task-imaginefists_run-1_eeg.edf
-|--------- sub-002_task-imaginefists_run-2_events.tsv
-|--------- sub-002_task-resteyesclosed_eeg.json
-|--------- sub-002_task-imaginefists_run-2_eeg.json
-|--------- sub-002_task-imaginefists_run-2_channels.tsv
-|--------- sub-002_task-resteyesclosed_channels.tsv
-|--------- sub-002_task-imaginefists_run-2_eeg.edf
-|--------- sub-002_task-imaginefists_run-1_eeg.json
-|--------- sub-002_task-resteyesclosed_eeg.edf
-|--------- sub-002_task-resteyesclosed_events.tsv
-|--------- sub-002_task-imaginefists_run-1_events.tsv
-|--------- sub-002_task-imaginefists_run-1_channels.tsv
-|--- sub-001/
-|------ sub-001_scans.tsv
-|------ eeg/
-|--------- sub-001_task-imaginefists_run-2_eeg.edf
-|--------- sub-001_task-imaginefists_run-1_channels.tsv
-|--------- sub-001_task-imaginefists_run-2_channels.tsv
-|--------- sub-001_task-resteyesclosed_eeg.edf
-|--------- sub-001_task-imaginefists_run-2_events.tsv
-|--------- sub-001_task-resteyesclosed_events.tsv
-|--------- sub-001_task-imaginefists_run-2_eeg.json
-|--------- sub-001_task-imaginefists_run-1_events.tsv
-|--------- sub-001_task-resteyesclosed_eeg.json
-|--------- sub-001_task-imaginefists_run-1_eeg.json
-|--------- sub-001_task-resteyesclosed_channels.tsv
-|--------- sub-001_task-imaginefists_run-1_eeg.edf
-</pre></div>
-</div>
-</div>
-<div class="section" id="step-4-cite-mne-bids">
-<h2>Step 4: Cite mne-bids<a class="headerlink" href="#step-4-cite-mne-bids" title="Permalink to this headline">¶</a></h2>
-<p>We can see that the appropriate citations are already written in the README.
-If you are preparing a manuscript, please make sure to also cite MNE-BIDS
+<div class="section" id="cite-mne-bids">
+<h2>Cite mne-bids<a class="headerlink" href="#cite-mne-bids" title="Permalink to this headline">¶</a></h2>
+<p>After a lot of work was done by MNE-BIDS, it’s fair to cite the software
+when preparing a manuscript and/or a dataset publication.</p>
+<p>We can see that the appropriate citations are already written in the
+<code class="docutils literal notranslate"><span class="pre">README</span></code> file.</p>
+<p>If you are preparing a manuscript, please make sure to also cite MNE-BIDS
 there.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">readme</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/os.path.html#os.path.join" title="os.path.join" class="sphx-glr-backref-module-os-path sphx-glr-backref-type-py-function"><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">,</span> <span class="s1">&#39;README&#39;</span><span class="p">)</span>
 <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">readme</span></a><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <a href="https://docs.python.org/3/library/io.html#io.TextIOWrapper" title="io.TextIOWrapper" class="sphx-glr-backref-module-io sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fid</span></a><span class="p">:</span>
@@ -1290,9 +611,6 @@ Appelhoff, S., Sanderson, M., Brooks, T., Vliet, M., Quentin, R., Holdgraf, C., 
 Pernet, C. R., Appelhoff, S., Gorgolewski, K. J., Flandin, G., Phillips, C., Delorme, A., Oostenveld, R. (2019). EEG-BIDS, an extension to the brain imaging data structure for electroencephalography. Scientific Data, 6, 103. https://doi.org/10.1038/s41597-019-0104-8
 </pre></div>
 </div>
-<p>MNE-BIDS has created a suitable directory structure for us, and among other
-meta data files, it started an <em class="xref py py-obj">events.tsv</em> and <em class="xref py py-obj">channels.tsv</em> and made an
-initial <em class="xref py py-obj">dataset_description</em> on top!</p>
 <p>Now it’s time to manually check the BIDS directory and the meta files to add
 all the information that MNE-BIDS could not infer. For instance, you must
 describe EEGReference and EEGGround yourself. It’s easy to find these by
@@ -1302,7 +620,7 @@ directories called the “BIDS-validator”, available as a web version and a
 command line tool:</p>
 <p>Web version: <a class="reference external" href="https://bids-standard.github.io/bids-validator/">https://bids-standard.github.io/bids-validator/</a></p>
 <p>Command line tool: <a class="reference external" href="https://www.npmjs.com/package/bids-validator">https://www.npmjs.com/package/bids-validator</a></p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.646 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.140 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-eeg-to-bids-py">
 <div class="binder-badge docutils container">
 <a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/convert_eeg_to_bids.ipynb"><img alt="https://mybinder.org/badge_logo.svg" src="https://mybinder.org/badge_logo.svg" width="150px" /></a>
@@ -1330,7 +648,7 @@ command line tool:</p>
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-07-06.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-07-09.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.1.2.<br/>
     </p>
   </div>
