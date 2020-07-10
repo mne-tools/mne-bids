@@ -831,21 +831,22 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     event_id : dict | None
         The event id dict used to create a 'trial_type' column in events.tsv
     anonymize : dict | None
-        If None is provided (default) no anonymization is performed.
-        If a dictionary is passed, data will be anonymized; identifying data
-        structures such as study date and time will be changed.
-        `daysback` is a required argument and `keep_his` is optional, these
-        arguments are passed to :func:`mne.io.anonymize_info`.
+        If None (default), no anonymization is performed.
+        If dict, data will be anonymized depending on the keys provided with
+        the dict: `daysback` is a required key, `keep_his` is an optional key.
 
         `daysback` : int
-            Number of days to move back the date. To keep relative dates for
-            a subject use the same `daysback`. According to BIDS
-            specifications, the number of days back must be great enough
-            that the date is before 1925.
+            Number of days by which to move back the recording date in time.
+            In studies with multiple subjects the relative recording date
+            differences between subjects can be kept by using the same number
+            of `daysback` for all subject anonymizations. `daysback` must be
+            great enough to shift the date prior to 1925 to conform with BIDS
+            anonymization rules.
 
         `keep_his` : bool
-            If True info['subject_info']['his_id'] of subject_info will NOT be
-            overwritten. Defaults to False.
+            By default (False), all subject information next to the recording
+            date will be overwritten as well. If True, keep subject information
+            apart from the recording date.
 
     overwrite : bool
         Whether to overwrite existing files or data in files.
