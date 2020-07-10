@@ -839,7 +839,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
             Number of days by which to move back the recording date in time.
             In studies with multiple subjects the relative recording date
             differences between subjects can be kept by using the same number
-            of `daysback` for all subject anonymizations. `daysback` must be
+            of `daysback` for all subject anonymizations. `daysback` should be
             great enough to shift the date prior to 1925 to conform with BIDS
             anonymization rules.
 
@@ -877,7 +877,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     updated and raw.info['meas_date'] should not be None to compute the age
     of the participant correctly.
 
-    See also
+    See Also
     --------
     mne.io.anonymize_info
 

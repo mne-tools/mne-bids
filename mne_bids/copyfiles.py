@@ -224,13 +224,8 @@ def _replace_file(fname, pattern, replace):
         fout.writelines(new_content)
 
 
-def _anonymize_brainvision(vhdr_file, date=None):
-    """Anonymize a vmrk and vhdr file in place."""
-    if date is None:
-        date = datetime.datetime(1924, 1, 1)
-    if not isinstance(date, datetime.datetime):
-        raise ValueError('`date` must be None or datetime.datetime.')
-
+def _anonymize_brainvision(vhdr_file, date):
+    """Anonymize vmrk and vhdr files in place using `date` datetime object."""
     _, vmrk_file = _get_brainvision_paths(vhdr_file)
 
     # Go through VMRK
@@ -267,7 +262,7 @@ def copyfile_brainvision(vhdr_src, vhdr_dest, anonymize=None, verbose=False):
             Number of days by which to move back the recording date in time.
             In studies with multiple subjects the relative recording date
             differences between subjects can be kept by using the same number
-            of `daysback` for all subject anonymizations. `daysback` must be
+            of `daysback` for all subject anonymizations. `daysback` should be
             great enough to shift the date prior to 1925 to conform with BIDS
             anonymization rules.
 
@@ -279,7 +274,7 @@ def copyfile_brainvision(vhdr_src, vhdr_dest, anonymize=None, verbose=False):
     verbose : bool
         Determine whether results should be logged. Defaults to False.
 
-    See also
+    See Also
     --------
     mne.io.anonymize_info
 

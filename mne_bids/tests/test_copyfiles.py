@@ -101,10 +101,6 @@ def test_copyfile_brainvision():
     raw = mne.io.read_raw_brainvision(new_name)
     assert raw.filenames[0] == (op.join(head, 'tested_conversion.eeg'))
 
-    # Date should not have changed from original
-    date = raw.info['meas_date'].strftime('%Y%m%d%H%M%S%f')
-    assert date == '20131113161403794232'
-
     # Test with anonymization
     raw = mne.io.read_raw_brainvision(raw_fname)
     prev_date = raw.info['meas_date']
