@@ -877,6 +877,10 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     updated and raw.info['meas_date'] should not be None to compute the age
     of the participant correctly.
 
+    See also
+    --------
+    mne.io.anonymize_info
+
     """
     if not check_version('mne', '0.17'):
         raise ValueError('Your version of MNE is too old. '

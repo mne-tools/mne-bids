@@ -1235,22 +1235,10 @@ def _check_anonymize(anonymize, raw, ext):
 def _get_anonymization_daysback(raw):
     """Get the min and max number of daysback necessary to satisfy BIDS specs.
 
-    .. warning:: It is important that you remember the anonymization
-                 number if you would ever like to de-anonymize but
-                 that it is not included in the code publication
-                 as that would break the anonymization.
-
-    BIDS requires that anonymized dates be before 1925. In order to
-    preserve the longitudinal structure and ensure anonymization, the
-    user is asked to provide the same `daysback` argument to each call
-    of `write_raw_bids`. To determine the miniumum number of daysback
-    necessary, this function will calculate the minimum number based on
-    the most recent measurement date of raw objects.
-
     Parameters
     ----------
-    raw : instance of mne.io.Raw
-        The raw data. It must be an instance or list of instances of mne.Raw.
+    raw : mne.io.Raw
+        Subject raw data.
 
     Returns
     -------
@@ -1284,7 +1272,7 @@ def get_anonymization_daysback(raws):
     Parameters
     ----------
     raw : mne.io.Raw | list of Raw
-        The group raw data. It must be a list of instances of mne.Raw.
+        Subject raw data or list of raw data from several subjects.
 
     Returns
     -------
