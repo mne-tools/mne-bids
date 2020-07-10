@@ -17,7 +17,7 @@ due to internal pointers that are not being updated.
 import os
 import os.path as op
 import re
-import datetime
+
 import shutil as sh
 
 from mne.io import read_raw_brainvision, anonymize_info
