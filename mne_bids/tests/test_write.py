@@ -123,12 +123,44 @@ def test_make_dataset_description():
                                          'or "derivative."'):
         make_dataset_description(path=tmp_dir, name='tst', dataset_type='src')
 
+    make_dataset_description(path=tmp_dir, name='tst')
+
+    with open(op.join(tmp_dir, 'dataset_description.json'), 'r') as fid:
+        dataset_description_json = json.load(fid)
+        assert dataset_description_json["Authors"] == \
+            ["Please cite MNE-BIDS in your publication before removing this "
+             "(citations in README)"]
+
     make_dataset_description(
         path=tmp_dir, name='tst', authors='MNE B., MNE P.',
         funding='GSOC2019, GSOC2021',
         references_and_links='https://doi.org/10.21105/joss.01896',
-        dataset_type='derivative', verbose=True
+        dataset_type='derivative', overwrite=False, verbose=True
     )
+
+    with open(op.join(tmp_dir, 'dataset_description.json'), 'r') as fid:
+        dataset_description_json = json.load(fid)
+        assert dataset_description_json["Authors"] == \
+            ["Please cite MNE-BIDS in your publication before removing this "
+             "(citations in README)"]
+
+    make_dataset_description(
+        path=tmp_dir, name='tst2', authors='MNE B., MNE P.',
+        funding='GSOC2019, GSOC2021',
+        references_and_links='https://doi.org/10.21105/joss.01896',
+        dataset_type='derivative', overwrite=True, verbose=True
+    )
+
+    with open(op.join(tmp_dir, 'dataset_description.json'), 'r') as fid:
+        dataset_description_json = json.load(fid)
+        assert dataset_description_json["Authors"] == ['MNE B.', 'MNE P.']
+
+    with pytest.raises(ValueError, match='Previous BIDS version used'):
+        version = make_dataset_description.__globals__['BIDS_VERSION']
+        make_dataset_description.__globals__['BIDS_VERSION'] = 'old'
+        make_dataset_description(path=tmp_dir, name='tst')
+        # put version back so that it doesn't cause issues down the road
+        make_dataset_description.__globals__['BIDS_VERSION'] = version
 
 
 def test_stamp_to_dt():
@@ -775,8 +807,8 @@ def test_edf(_bids_validate):
     with open(dataset_description_fpath, 'r') as f:
         dataset_description_json = json.load(f)
         assert dataset_description_json["Authors"] == \
-            [("Please cite MNE-BIDS in your publication before removing this "
-              "(citations in README)")]
+            ["Please cite MNE-BIDS in your publication before removing this "
+             "(citations in README)"]
 
     # Reading the file back should raise an error, because we renamed channels
     # in `raw` and used that information to write a channels.tsv. Yet, we

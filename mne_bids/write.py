@@ -668,6 +668,8 @@ def _write_raw_brainvision(raw, bids_fname, events):
     bids_fname : str
         The name of the BIDS-specified file where the raw object
         should be saved.
+    events : ndarray
+        The events as MNE-Python format ndaray.
 
     """
     if not check_version('pybv', '0.2'):
@@ -696,7 +698,7 @@ def make_dataset_description(path, name, data_license=None,
                              how_to_acknowledge=None, funding=None,
                              references_and_links=None, doi=None,
                              dataset_type='raw',
-                             verbose=False):
+                             overwrite=False, verbose=False):
     """Create json for a dataset description.
 
     BIDS datasets may have one or more fields, this function allows you to
@@ -733,6 +735,12 @@ def make_dataset_description(path, name, data_license=None,
         The DOI for the dataset.
     dataset_type : str
         Must be either "raw" or "derivative". Defaults to "raw".
+    overwrite : bool
+        Whether to overwrite existing files or data in files.
+        Defaults to False.
+        If overwrite is True, provided fields will overwrite previous data.
+        If overwrite is False, no existing data will be overwritten or
+        replaced.
     verbose : bool
         Set verbose output to True or False.
 
@@ -741,11 +749,6 @@ def make_dataset_description(path, name, data_license=None,
     The required field BIDSVersion will be automatically filled by mne_bids.
 
     """
-    # default author to make dataset description BIDS compliant
-    if authors is None:
-        authors = ("Please cite MNE-BIDS in your publication before removing "
-                   "this (citations in README)")
-
     # Put potential string input into list of strings
     if isinstance(authors, str):
         authors = authors.split(', ')
@@ -768,6 +771,24 @@ def make_dataset_description(path, name, data_license=None,
                                ('Funding', funding),
                                ('ReferencesAndLinks', references_and_links),
                                ('DatasetDOI', doi)])
+    if op.isfile(fname):
+        with open(fname, 'r') as fin:
+            orig_cols = json.load(fin)
+        if 'BIDSVersion' in orig_cols and \
+                orig_cols['BIDSVersion'] != BIDS_VERSION:
+            raise ValueError('Previous BIDS version used, please redo the '
+                             'conversion to BIDS in a new directory '
+                             'after ensuring all software is updated')
+        for key, val in description.items():
+            if description[key] is None or not overwrite:
+                description[key] = orig_cols.get(key, None)
+    # default author to make dataset description BIDS compliant
+    # if the user passed an author don't overwrite,
+    # if there was an author there, only overwrite if `overwrite=True`
+    if authors is None and (description['Authors'] is None or overwrite):
+        description['Authors'] = ["Please cite MNE-BIDS in your publication "
+                                  "before removing this (citations in README)"]
+
     pop_keys = [key for key, val in description.items() if val is None]
     for key in pop_keys:
         description.pop(key)
@@ -1057,9 +1078,8 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     if events is not None and len(events) > 0 and not emptyroom:
         _events_tsv(events, raw, events_fname, event_id, overwrite, verbose)
 
-    dataset_description_fpath = op.join(bids_root, "dataset_description.json")
-    if not op.exists(dataset_description_fpath) or overwrite:
-        make_dataset_description(bids_root, name=" ", verbose=verbose)
+    make_dataset_description(bids_root, name=" ", overwrite=overwrite,
+                             verbose=verbose)
 
     _sidecar_json(raw, task, manufacturer, sidecar_fname, kind, overwrite,
                   verbose)
@@ -1081,7 +1101,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
         convert = ext not in ALLOWED_EXTENSIONS[kind]
 
     if kind == 'meg' and convert and not anonymize:
-        raise ValueError('Got file extension %s for MEG data, ' +
+        raise ValueError('Got file extension %s for MEG data, '
                          'expected one of %s' %
                          ALLOWED_EXTENSIONS['meg'])
 

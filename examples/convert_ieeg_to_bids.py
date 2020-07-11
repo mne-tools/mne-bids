@@ -15,7 +15,9 @@ data. Specifically, we will follow these steps:
 
 3. Check the result and compare it with the standard.
 
-4. Confirm that written iEEG coordinates are the
+4. Cite MNE-BIDS
+
+5. Confirm that written iEEG coordinates are the
    same before :func:`write_raw_bids` was called.
 
 The iEEG data will be written by :func:`write_raw_bids` with
