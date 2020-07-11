@@ -10,7 +10,7 @@
 import json
 import os
 import os.path as op
-from datetime import datetime, date, timedelta, timezone
+from datetime import datetime, timezone
 import shutil as sh
 from collections import defaultdict, OrderedDict
 
@@ -39,7 +39,7 @@ from mne_bids.utils import (_write_json, _write_tsv, _write_text,
                             _path_to_str, _parse_ext,
                             _get_ch_type_mapping, make_bids_folders,
                             _estimate_line_freq, make_bids_basename,
-                            BIDSPath)
+                            BIDSPath, _check_anonymize, _stamp_to_dt)
 from mne_bids.copyfiles import (copyfile_brainvision, copyfile_eeglab,
                                 copyfile_ctf, copyfile_bti, copyfile_kit)
 from mne_bids.tsv_handler import (_from_tsv, _drop, _contains_row,
@@ -53,21 +53,6 @@ from mne_bids.config import (ORIENTATION, UNITS, MANUFACTURERS,
 
 def _is_numeric(n):
     return isinstance(n, (np.integer, np.floating, int, float))
-
-
-def _stamp_to_dt(utc_stamp):
-    """Convert POSIX timestamp to datetime object in Windows-friendly way."""
-    # This is a windows datetime bug for timestamp < 0. A negative value
-    # is needed for anonymization which requires the date to be moved back
-    # to before 1925. This then requires a negative value of daysback
-    # compared the 1970 reference date.
-    if isinstance(utc_stamp, datetime):
-        return utc_stamp
-    stamp = [int(s) for s in utc_stamp]
-    if len(stamp) == 1:  # In case there is no microseconds information
-        stamp.append(0)
-    return (datetime.fromtimestamp(0, tz=timezone.utc) +
-            timedelta(0, stamp[0], stamp[1]))  # day, sec, μs
 
 
 def _channels_tsv(raw, fname, overwrite=False, verbose=True):
@@ -708,89 +693,6 @@ def _write_raw_brainvision(raw, bids_fname, events):
                       meas_date=meas_date)
 
 
-def _get_anonymization_daysback(raw):
-    """Get the min and max number of daysback necessary to satisfy BIDS specs.
-
-    .. warning:: It is important that you remember the anonymization
-                 number if you would ever like to de-anonymize but
-                 that it is not included in the code publication
-                 as that would break the anonymization.
-
-    BIDS requires that anonymized dates be before 1925. In order to
-    preserve the longitudinal structure and ensure anonymization, the
-    user is asked to provide the same `daysback` argument to each call
-    of `write_raw_bids`. To determine the miniumum number of daysback
-    necessary, this function will calculate the minimum number based on
-    the most recent measurement date of raw objects.
-
-    Parameters
-    ----------
-    raw : instance of mne.io.Raw
-        The raw data. It must be an instance or list of instances of mne.Raw.
-
-    Returns
-    -------
-    daysback_min : int
-        The minimum number of daysback necessary to be compatible with BIDS.
-    daysback_max : int
-        The maximum number of daysback that MNE can store.
-    """
-    this_date = _stamp_to_dt(raw.info['meas_date']).date()
-    daysback_min = (this_date - date(year=1924, month=12, day=31)).days
-    daysback_max = (this_date - datetime.fromtimestamp(0).date() +
-                    timedelta(seconds=np.iinfo('>i4').max)).days
-    return daysback_min, daysback_max
-
-
-def get_anonymization_daysback(raws):
-    """Get the group min and max number of daysback necessary for BIDS specs.
-
-    .. warning:: It is important that you remember the anonymization
-                 number if you would ever like to de-anonymize but
-                 that it is not included in the code publication
-                 as that would break the anonymization.
-
-    BIDS requires that anonymized dates be before 1925. In order to
-    preserve the longitudinal structure and ensure anonymization, the
-    user is asked to provide the same `daysback` argument to each call
-    of `write_raw_bids`. To determine the miniumum number of daysback
-    necessary, this function will calculate the minimum number based on
-    the most recent measurement date of raw objects.
-
-    Parameters
-    ----------
-    raw : mne.io.Raw | list of Raw
-        The group raw data. It must be a list of instances of mne.Raw.
-
-    Returns
-    -------
-    daysback_min : int
-        The minimum number of daysback necessary to be compatible with BIDS.
-    daysback_max : int
-        The maximum number of daysback that MNE can store.
-    """
-    if not isinstance(raws, list):
-        raws = list([raws])
-    daysback_min_list = list()
-    daysback_max_list = list()
-    for raw in raws:
-        if raw.info['meas_date'] is not None:
-            daysback_min, daysback_max = _get_anonymization_daysback(raw)
-            daysback_min_list.append(daysback_min)
-            daysback_max_list.append(daysback_max)
-    if not daysback_min_list or not daysback_max_list:
-        raise ValueError('All measurement dates are None, '
-                         'pass any `daysback` value to anonymize.')
-    daysback_min = max(daysback_min_list)
-    daysback_max = min(daysback_max_list)
-    if daysback_min > daysback_max:
-        raise ValueError('The dataset spans more time than can be '
-                         'accomodated by MNE, you may have to '
-                         'not follow BIDS recommendations and use'
-                         'anonymized dates after 1925')
-    return daysback_min, daysback_max
-
-
 def make_dataset_description(path, name, data_license=None,
                              authors=None, acknowledgements=None,
                              how_to_acknowledge=None, funding=None,
@@ -950,21 +852,22 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     event_id : dict | None
         The event id dict used to create a 'trial_type' column in events.tsv
     anonymize : dict | None
-        If None is provided (default) no anonymization is performed.
-        If a dictionary is passed, data will be anonymized; identifying data
-        structures such as study date and time will be changed.
-        `daysback` is a required argument and `keep_his` is optional, these
-        arguments are passed to :func:`mne.io.anonymize_info`.
+        If None (default), no anonymization is performed.
+        If dict, data will be anonymized depending on the keys provided with
+        the dict: `daysback` is a required key, `keep_his` is an optional key.
 
         `daysback` : int
-            Number of days to move back the date. To keep relative dates for
-            a subject use the same `daysback`. According to BIDS
-            specifications, the number of days back must be great enough
-            that the date is before 1925.
+            Number of days by which to move back the recording date in time.
+            In studies with multiple subjects the relative recording date
+            differences between subjects can be kept by using the same number
+            of `daysback` for all subject anonymizations. `daysback` should be
+            great enough to shift the date prior to 1925 to conform with BIDS
+            anonymization rules.
 
         `keep_his` : bool
-            If True info['subject_info']['his_id'] of subject_info will NOT be
-            overwritten. Defaults to False.
+            By default (False), all subject information next to the recording
+            date will be overwritten as well. If True, keep subject information
+            apart from the recording date.
 
     overwrite : bool
         Whether to overwrite existing files or data in files.
@@ -994,6 +897,10 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     For the participants.tsv file, the raw.info['subject_info'] should be
     updated and raw.info['meas_date'] should not be None to compute the age
     of the participant correctly.
+
+    See Also
+    --------
+    mne.io.anonymize_info
 
     """
     if not check_version('mne', '0.17'):
@@ -1122,35 +1029,21 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
         bids_fname.prefix = bids_raw_folder
 
     # Anonymize
+    convert = False
     if anonymize is not None:
-        # if info['meas_date'] None, then the dates are not stored
-        if raw.info['meas_date'] is None:
-            daysback = None
-        else:
-            if 'daysback' not in anonymize or anonymize['daysback'] is None:
-                raise ValueError('`daysback` argument required to anonymize.')
-            daysback = anonymize['daysback']
-            daysback_min, daysback_max = _get_anonymization_daysback(raw)
-            if daysback < daysback_min:
-                warn('`daysback` is too small; the measurement date '
-                     'is after 1925, which is not recommended by BIDS.'
-                     'The minimum `daysback` value for changing the '
-                     'measurement date of this data to before this date '
-                     'is %i' % daysback_min)
-            if ext == '.fif' and daysback > daysback_max:
-                raise ValueError('`daysback` exceeds maximum value MNE '
-                                 'is able to store in FIF format, must '
-                                 'be less than %i' % daysback_max)
-        keep_his = anonymize['keep_his'] if 'keep_his' in anonymize else False
+        daysback, keep_his = _check_anonymize(anonymize, raw, ext)
         raw.info = anonymize_info(raw.info, daysback=daysback,
                                   keep_his=keep_his)
+
         if kind == 'meg' and ext != '.fif':
             if verbose:
                 warn('Converting to FIF for anonymization')
+            convert = True
             bids_fname.suffix = bids_fname.suffix.replace(ext, '.fif')
-        elif kind in ['eeg', 'ieeg']:
+        elif kind in ['eeg', 'ieeg'] and ext != '.vhdr':
             if verbose:
                 warn('Converting to BV for anonymization')
+            convert = True
             bids_fname.suffix = bids_fname.suffix.replace(ext, '.vhdr')
 
     # Read in Raw object and extract metadata from Raw object if needed
@@ -1202,19 +1095,21 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
         raise FileExistsError('"%s" already exists. Please set '  # noqa: F821
                               'overwrite to True.' % bids_fname)
 
-    # whether or not to convert to RECOMMENDED file formats
-    convert = ext not in ALLOWED_EXTENSIONS[kind]
+    # If not already converting for anonymization, we may still need to do it
+    # if current format not BIDS compliant
+    if not convert:
+        convert = ext not in ALLOWED_EXTENSIONS[kind]
 
     if kind == 'meg' and convert and not anonymize:
         raise ValueError('Got file extension %s for MEG data, '
                          'expected one of %s' %
                          ALLOWED_EXTENSIONS['meg'])
 
-    if not (convert or anonymize) and verbose:
+    if not convert and verbose:
         print('Copying data files to %s' % op.splitext(bids_fname)[0])
 
     # File saving branching logic
-    if convert or (anonymize is not None):
+    if convert:
         if kind == 'meg':
             if ext == '.pdf':
                 bids_fname = op.join(data_path, op.basename(bids_fname))
@@ -1231,7 +1126,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
         copyfile_ctf(raw_fname, bids_fname)
     # BrainVision is multifile, copy over all of them and fix pointers
     elif ext == '.vhdr':
-        copyfile_brainvision(raw_fname, bids_fname)
+        copyfile_brainvision(raw_fname, bids_fname, anonymize=anonymize)
     # EEGLAB .set might be accompanied by a .fdt - find out and copy it too
     elif ext == '.set':
         copyfile_eeglab(raw_fname, bids_fname)

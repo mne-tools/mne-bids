@@ -5,6 +5,7 @@
 #
 # License: BSD (3-clause)
 import os.path as op
+import datetime
 import pytest
 
 from scipy.io import savemat
@@ -99,6 +100,15 @@ def test_copyfile_brainvision():
     # Try to read with MNE - if this works, the links are correct
     raw = mne.io.read_raw_brainvision(new_name)
     assert raw.filenames[0] == (op.join(head, 'tested_conversion.eeg'))
+
+    # Test with anonymization
+    raw = mne.io.read_raw_brainvision(raw_fname)
+    prev_date = raw.info['meas_date']
+    anonymize = {'daysback': 32459}
+    copyfile_brainvision(raw_fname, new_name, anonymize, verbose=True)
+    raw = mne.io.read_raw_brainvision(new_name)
+    new_date = raw.info['meas_date']
+    assert new_date == (prev_date - datetime.timedelta(days=32459))
 
 
 def test_copyfile_eeglab():

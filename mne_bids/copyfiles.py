@@ -17,12 +17,14 @@ due to internal pointers that are not being updated.
 import os
 import os.path as op
 import re
+
 import shutil as sh
 
+from mne.io import read_raw_brainvision, anonymize_info
 from scipy.io import loadmat, savemat
 
 from mne_bids.read import _parse_ext
-from mne_bids.utils import _get_mrk_meas_date
+from mne_bids.utils import _get_mrk_meas_date, _check_anonymize
 
 
 def _copytree(src, dst, **kwargs):
@@ -209,7 +211,35 @@ def copyfile_kit(src, dest, subject_id, session_id,
             sh.copyfile(position_file, position_fname)
 
 
-def copyfile_brainvision(vhdr_src, vhdr_dest, verbose=False):
+def _replace_file(fname, pattern, replace):
+    """Overwrite file, replacing end of lines matching pattern with replace."""
+    new_content = []
+    for line in open(fname, 'r'):
+        match = re.match(pattern, line)
+        if match:
+            line = match.group()[:-len(replace)] + replace + '\n'
+        new_content.append(line)
+
+    with open(fname, 'w') as fout:
+        fout.writelines(new_content)
+
+
+def _anonymize_brainvision(vhdr_file, date):
+    """Anonymize vmrk and vhdr files in place using `date` datetime object."""
+    _, vmrk_file = _get_brainvision_paths(vhdr_file)
+
+    # Go through VMRK
+    pattern = re.compile(r'^Mk\d+=New Segment,.*,\d+,\d+,\d+,\d{20}$')
+    replace = date.strftime('%Y%m%d%H%M%S%f')
+    _replace_file(vmrk_file, pattern, replace)
+
+    # Go through VHDR
+    pattern = re.compile(r'^Impedance \[kOhm\] at \d\d:\d\d:\d\d :$')
+    replace = f'at {date.strftime("%H:%M:%S")} :'
+    _replace_file(vhdr_file, pattern, replace)
+
+
+def copyfile_brainvision(vhdr_src, vhdr_dest, anonymize=None, verbose=False):
     """Copy a BrainVision file triplet to a new location and repair links.
 
     The BrainVision file format consists of three files: .vhdr, .eeg, and .vmrk
@@ -223,6 +253,30 @@ def copyfile_brainvision(vhdr_src, vhdr_dest, verbose=False):
         The src path of the .vhdr file to be copied.
     vhdr_dest : str
         The destination path of the .vhdr file.
+    anonymize : dict | None
+        If None (default), no anonymization is performed.
+        If dict, data will be anonymized depending on the keys provided with
+        the dict: `daysback` is a required key, `keep_his` is an optional key.
+
+        `daysback` : int
+            Number of days by which to move back the recording date in time.
+            In studies with multiple subjects the relative recording date
+            differences between subjects can be kept by using the same number
+            of `daysback` for all subject anonymizations. `daysback` should be
+            great enough to shift the date prior to 1925 to conform with BIDS
+            anonymization rules.
+
+        `keep_his` : bool
+            By default (False), all subject information next to the recording
+            date will be overwritten as well. If True, keep subject information
+            apart from the recording date.
+
+    verbose : bool
+        Determine whether results should be logged. Defaults to False.
+
+    See Also
+    --------
+    mne.io.anonymize_info
 
     """
     # Get extenstion of the brainvision file
@@ -264,11 +318,21 @@ def copyfile_brainvision(vhdr_src, vhdr_dest, verbose=False):
                     line = line.replace(basename_src, basename_dest)
                 fout.write(line)
 
+    if anonymize is not None:
+        raw = read_raw_brainvision(vhdr_src, preload=False, verbose=0)
+        daysback, keep_his = _check_anonymize(anonymize, raw, '.vhdr')
+        raw.info = anonymize_info(raw.info, daysback=daysback,
+                                  keep_his=keep_his)
+        _anonymize_brainvision(fname_dest + '.vhdr',
+                               date=raw.info['meas_date'])
+
     if verbose:
         for ext in ['.eeg', '.vhdr', '.vmrk']:
-            print('Created "{}" in "{}"'
-                  .format(fname_dest + ext,
-                          op.dirname(op.realpath(vhdr_dest))))
+            _, fname = os.path.split(fname_dest + ext)
+            dirname = op.dirname(op.realpath(vhdr_dest))
+            print(f'Created "{fname}" in "{dirname}".')
+        if anonymize:
+            print('Anonymized all dates in VHDR and VMRK.')
 
 
 def copyfile_eeglab(src, dest):
