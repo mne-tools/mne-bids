@@ -128,7 +128,7 @@ The examples are loosely ordered from more general to more advanced use cases.
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="The BrainVision file format is one of the recommended formats to store EEG data within a BIDS d...">
+    <div class="sphx-glr-thumbcontainer" tooltip="According to the EEG extension to BIDS [1]_, the `BrainVision data format`_ is one of the recom...">
 
 .. only:: html
 

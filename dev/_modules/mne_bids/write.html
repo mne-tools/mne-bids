@@ -121,7 +121,7 @@
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">os.path</span> <span class="k">as</span> <span class="nn">op</span>
-<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">timedelta</span><span class="p">,</span> <span class="n">timezone</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timezone</span>
 <span class="kn">import</span> <span class="nn">shutil</span> <span class="k">as</span> <span class="nn">sh</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span><span class="p">,</span> <span class="n">OrderedDict</span>
 
@@ -150,7 +150,7 @@
                             <span class="n">_path_to_str</span><span class="p">,</span> <span class="n">_parse_ext</span><span class="p">,</span>
                             <span class="n">_get_ch_type_mapping</span><span class="p">,</span> <span class="n">make_bids_folders</span><span class="p">,</span>
                             <span class="n">_estimate_line_freq</span><span class="p">,</span> <span class="n">make_bids_basename</span><span class="p">,</span>
-                            <span class="n">BIDSPath</span><span class="p">)</span>
+                            <span class="n">BIDSPath</span><span class="p">,</span> <span class="n">_check_anonymize</span><span class="p">,</span> <span class="n">_stamp_to_dt</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">mne_bids.copyfiles</span> <span class="kn">import</span> <span class="p">(</span><span class="n">copyfile_brainvision</span><span class="p">,</span> <span class="n">copyfile_eeglab</span><span class="p">,</span>
                                 <span class="n">copyfile_ctf</span><span class="p">,</span> <span class="n">copyfile_bti</span><span class="p">,</span> <span class="n">copyfile_kit</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">mne_bids.tsv_handler</span> <span class="kn">import</span> <span class="p">(</span><span class="n">_from_tsv</span><span class="p">,</span> <span class="n">_drop</span><span class="p">,</span> <span class="n">_contains_row</span><span class="p">,</span>
@@ -164,21 +164,6 @@
 
 <span class="k">def</span> <span class="nf">_is_numeric</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
     <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">integer</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">))</span>
-
-
-<span class="k">def</span> <span class="nf">_stamp_to_dt</span><span class="p">(</span><span class="n">utc_stamp</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Convert POSIX timestamp to datetime object in Windows-friendly way.&quot;&quot;&quot;</span>
-    <span class="c1"># This is a windows datetime bug for timestamp &lt; 0. A negative value</span>
-    <span class="c1"># is needed for anonymization which requires the date to be moved back</span>
-    <span class="c1"># to before 1925. This then requires a negative value of daysback</span>
-    <span class="c1"># compared the 1970 reference date.</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">utc_stamp</span><span class="p">,</span> <span class="n">datetime</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">utc_stamp</span>
-    <span class="n">stamp</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">utc_stamp</span><span class="p">]</span>
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">stamp</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>  <span class="c1"># In case there is no microseconds information</span>
-        <span class="n">stamp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-    <span class="k">return</span> <span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">tz</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span> <span class="o">+</span>
-            <span class="n">timedelta</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">stamp</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">stamp</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>  <span class="c1"># day, sec, μs</span>
 
 
 <span class="k">def</span> <span class="nf">_channels_tsv</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
@@ -819,89 +804,6 @@
                       <span class="n">meas_date</span><span class="o">=</span><span class="n">meas_date</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_get_anonymization_daysback</span><span class="p">(</span><span class="n">raw</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Get the min and max number of daysback necessary to satisfy BIDS specs.</span>
-
-<span class="sd">    .. warning:: It is important that you remember the anonymization</span>
-<span class="sd">                 number if you would ever like to de-anonymize but</span>
-<span class="sd">                 that it is not included in the code publication</span>
-<span class="sd">                 as that would break the anonymization.</span>
-
-<span class="sd">    BIDS requires that anonymized dates be before 1925. In order to</span>
-<span class="sd">    preserve the longitudinal structure and ensure anonymization, the</span>
-<span class="sd">    user is asked to provide the same `daysback` argument to each call</span>
-<span class="sd">    of `write_raw_bids`. To determine the miniumum number of daysback</span>
-<span class="sd">    necessary, this function will calculate the minimum number based on</span>
-<span class="sd">    the most recent measurement date of raw objects.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    raw : instance of mne.io.Raw</span>
-<span class="sd">        The raw data. It must be an instance or list of instances of mne.Raw.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    daysback_min : int</span>
-<span class="sd">        The minimum number of daysback necessary to be compatible with BIDS.</span>
-<span class="sd">    daysback_max : int</span>
-<span class="sd">        The maximum number of daysback that MNE can store.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">this_date</span> <span class="o">=</span> <span class="n">_stamp_to_dt</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;meas_date&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">date</span><span class="p">()</span>
-    <span class="n">daysback_min</span> <span class="o">=</span> <span class="p">(</span><span class="n">this_date</span> <span class="o">-</span> <span class="n">date</span><span class="p">(</span><span class="n">year</span><span class="o">=</span><span class="mi">1924</span><span class="p">,</span> <span class="n">month</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="mi">31</span><span class="p">))</span><span class="o">.</span><span class="n">days</span>
-    <span class="n">daysback_max</span> <span class="o">=</span> <span class="p">(</span><span class="n">this_date</span> <span class="o">-</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">date</span><span class="p">()</span> <span class="o">+</span>
-                    <span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">iinfo</span><span class="p">(</span><span class="s1">&#39;&gt;i4&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">))</span><span class="o">.</span><span class="n">days</span>
-    <span class="k">return</span> <span class="n">daysback_min</span><span class="p">,</span> <span class="n">daysback_max</span>
-
-
-<div class="viewcode-block" id="get_anonymization_daysback"><a class="viewcode-back" href="../../generated/mne_bids.get_anonymization_daysback.html#mne_bids.get_anonymization_daysback">[docs]</a><span class="k">def</span> <span class="nf">get_anonymization_daysback</span><span class="p">(</span><span class="n">raws</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Get the group min and max number of daysback necessary for BIDS specs.</span>
-
-<span class="sd">    .. warning:: It is important that you remember the anonymization</span>
-<span class="sd">                 number if you would ever like to de-anonymize but</span>
-<span class="sd">                 that it is not included in the code publication</span>
-<span class="sd">                 as that would break the anonymization.</span>
-
-<span class="sd">    BIDS requires that anonymized dates be before 1925. In order to</span>
-<span class="sd">    preserve the longitudinal structure and ensure anonymization, the</span>
-<span class="sd">    user is asked to provide the same `daysback` argument to each call</span>
-<span class="sd">    of `write_raw_bids`. To determine the miniumum number of daysback</span>
-<span class="sd">    necessary, this function will calculate the minimum number based on</span>
-<span class="sd">    the most recent measurement date of raw objects.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    raw : mne.io.Raw | list of Raw</span>
-<span class="sd">        The group raw data. It must be a list of instances of mne.Raw.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    daysback_min : int</span>
-<span class="sd">        The minimum number of daysback necessary to be compatible with BIDS.</span>
-<span class="sd">    daysback_max : int</span>
-<span class="sd">        The maximum number of daysback that MNE can store.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">raws</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-        <span class="n">raws</span> <span class="o">=</span> <span class="nb">list</span><span class="p">([</span><span class="n">raws</span><span class="p">])</span>
-    <span class="n">daysback_min_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
-    <span class="n">daysback_max_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
-    <span class="k">for</span> <span class="n">raw</span> <span class="ow">in</span> <span class="n">raws</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;meas_date&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">daysback_min</span><span class="p">,</span> <span class="n">daysback_max</span> <span class="o">=</span> <span class="n">_get_anonymization_daysback</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span>
-            <span class="n">daysback_min_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">daysback_min</span><span class="p">)</span>
-            <span class="n">daysback_max_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">daysback_max</span><span class="p">)</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">daysback_min_list</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">daysback_max_list</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;All measurement dates are None, &#39;</span>
-                         <span class="s1">&#39;pass any `daysback` value to anonymize.&#39;</span><span class="p">)</span>
-    <span class="n">daysback_min</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">daysback_min_list</span><span class="p">)</span>
-    <span class="n">daysback_max</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">daysback_max_list</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">daysback_min</span> <span class="o">&gt;</span> <span class="n">daysback_max</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;The dataset spans more time than can be &#39;</span>
-                         <span class="s1">&#39;accomodated by MNE, you may have to &#39;</span>
-                         <span class="s1">&#39;not follow BIDS recommendations and use&#39;</span>
-                         <span class="s1">&#39;anonymized dates after 1925&#39;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">daysback_min</span><span class="p">,</span> <span class="n">daysback_max</span></div>
-
-
 <div class="viewcode-block" id="make_dataset_description"><a class="viewcode-back" href="../../generated/mne_bids.make_dataset_description.html#mne_bids.make_dataset_description">[docs]</a><span class="k">def</span> <span class="nf">make_dataset_description</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">data_license</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                              <span class="n">authors</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">acknowledgements</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                              <span class="n">how_to_acknowledge</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">funding</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -1061,21 +963,22 @@
 <span class="sd">    event_id : dict | None</span>
 <span class="sd">        The event id dict used to create a &#39;trial_type&#39; column in events.tsv</span>
 <span class="sd">    anonymize : dict | None</span>
-<span class="sd">        If None is provided (default) no anonymization is performed.</span>
-<span class="sd">        If a dictionary is passed, data will be anonymized; identifying data</span>
-<span class="sd">        structures such as study date and time will be changed.</span>
-<span class="sd">        `daysback` is a required argument and `keep_his` is optional, these</span>
-<span class="sd">        arguments are passed to :func:`mne.io.anonymize_info`.</span>
+<span class="sd">        If None (default), no anonymization is performed.</span>
+<span class="sd">        If dict, data will be anonymized depending on the keys provided with</span>
+<span class="sd">        the dict: `daysback` is a required key, `keep_his` is an optional key.</span>
 
 <span class="sd">        `daysback` : int</span>
-<span class="sd">            Number of days to move back the date. To keep relative dates for</span>
-<span class="sd">            a subject use the same `daysback`. According to BIDS</span>
-<span class="sd">            specifications, the number of days back must be great enough</span>
-<span class="sd">            that the date is before 1925.</span>
+<span class="sd">            Number of days by which to move back the recording date in time.</span>
+<span class="sd">            In studies with multiple subjects the relative recording date</span>
+<span class="sd">            differences between subjects can be kept by using the same number</span>
+<span class="sd">            of `daysback` for all subject anonymizations. `daysback` should be</span>
+<span class="sd">            great enough to shift the date prior to 1925 to conform with BIDS</span>
+<span class="sd">            anonymization rules.</span>
 
 <span class="sd">        `keep_his` : bool</span>
-<span class="sd">            If True info[&#39;subject_info&#39;][&#39;his_id&#39;] of subject_info will NOT be</span>
-<span class="sd">            overwritten. Defaults to False.</span>
+<span class="sd">            By default (False), all subject information next to the recording</span>
+<span class="sd">            date will be overwritten as well. If True, keep subject information</span>
+<span class="sd">            apart from the recording date.</span>
 
 <span class="sd">    overwrite : bool</span>
 <span class="sd">        Whether to overwrite existing files or data in files.</span>
@@ -1105,6 +1008,10 @@
 <span class="sd">    For the participants.tsv file, the raw.info[&#39;subject_info&#39;] should be</span>
 <span class="sd">    updated and raw.info[&#39;meas_date&#39;] should not be None to compute the age</span>
 <span class="sd">    of the participant correctly.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    mne.io.anonymize_info</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">check_version</span><span class="p">(</span><span class="s1">&#39;mne&#39;</span><span class="p">,</span> <span class="s1">&#39;0.17&#39;</span><span class="p">):</span>
@@ -1233,35 +1140,21 @@
         <span class="n">bids_fname</span><span class="o">.</span><span class="n">prefix</span> <span class="o">=</span> <span class="n">bids_raw_folder</span>
 
     <span class="c1"># Anonymize</span>
+    <span class="n">convert</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="k">if</span> <span class="n">anonymize</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="c1"># if info[&#39;meas_date&#39;] None, then the dates are not stored</span>
-        <span class="k">if</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;meas_date&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">daysback</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="s1">&#39;daysback&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">anonymize</span> <span class="ow">or</span> <span class="n">anonymize</span><span class="p">[</span><span class="s1">&#39;daysback&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;`daysback` argument required to anonymize.&#39;</span><span class="p">)</span>
-            <span class="n">daysback</span> <span class="o">=</span> <span class="n">anonymize</span><span class="p">[</span><span class="s1">&#39;daysback&#39;</span><span class="p">]</span>
-            <span class="n">daysback_min</span><span class="p">,</span> <span class="n">daysback_max</span> <span class="o">=</span> <span class="n">_get_anonymization_daysback</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">daysback</span> <span class="o">&lt;</span> <span class="n">daysback_min</span><span class="p">:</span>
-                <span class="n">warn</span><span class="p">(</span><span class="s1">&#39;`daysback` is too small; the measurement date &#39;</span>
-                     <span class="s1">&#39;is after 1925, which is not recommended by BIDS.&#39;</span>
-                     <span class="s1">&#39;The minimum `daysback` value for changing the &#39;</span>
-                     <span class="s1">&#39;measurement date of this data to before this date &#39;</span>
-                     <span class="s1">&#39;is </span><span class="si">%i</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">daysback_min</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">ext</span> <span class="o">==</span> <span class="s1">&#39;.fif&#39;</span> <span class="ow">and</span> <span class="n">daysback</span> <span class="o">&gt;</span> <span class="n">daysback_max</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;`daysback` exceeds maximum value MNE &#39;</span>
-                                 <span class="s1">&#39;is able to store in FIF format, must &#39;</span>
-                                 <span class="s1">&#39;be less than </span><span class="si">%i</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">daysback_max</span><span class="p">)</span>
-        <span class="n">keep_his</span> <span class="o">=</span> <span class="n">anonymize</span><span class="p">[</span><span class="s1">&#39;keep_his&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="s1">&#39;keep_his&#39;</span> <span class="ow">in</span> <span class="n">anonymize</span> <span class="k">else</span> <span class="kc">False</span>
+        <span class="n">daysback</span><span class="p">,</span> <span class="n">keep_his</span> <span class="o">=</span> <span class="n">_check_anonymize</span><span class="p">(</span><span class="n">anonymize</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">ext</span><span class="p">)</span>
         <span class="n">raw</span><span class="o">.</span><span class="n">info</span> <span class="o">=</span> <span class="n">anonymize_info</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">,</span> <span class="n">daysback</span><span class="o">=</span><span class="n">daysback</span><span class="p">,</span>
                                   <span class="n">keep_his</span><span class="o">=</span><span class="n">keep_his</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s1">&#39;meg&#39;</span> <span class="ow">and</span> <span class="n">ext</span> <span class="o">!=</span> <span class="s1">&#39;.fif&#39;</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
                 <span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Converting to FIF for anonymization&#39;</span><span class="p">)</span>
+            <span class="n">convert</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="n">bids_fname</span><span class="o">.</span><span class="n">suffix</span> <span class="o">=</span> <span class="n">bids_fname</span><span class="o">.</span><span class="n">suffix</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">ext</span><span class="p">,</span> <span class="s1">&#39;.fif&#39;</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">kind</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;eeg&#39;</span><span class="p">,</span> <span class="s1">&#39;ieeg&#39;</span><span class="p">]:</span>
+        <span class="k">elif</span> <span class="n">kind</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;eeg&#39;</span><span class="p">,</span> <span class="s1">&#39;ieeg&#39;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">ext</span> <span class="o">!=</span> <span class="s1">&#39;.vhdr&#39;</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
                 <span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Converting to BV for anonymization&#39;</span><span class="p">)</span>
+            <span class="n">convert</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="n">bids_fname</span><span class="o">.</span><span class="n">suffix</span> <span class="o">=</span> <span class="n">bids_fname</span><span class="o">.</span><span class="n">suffix</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">ext</span><span class="p">,</span> <span class="s1">&#39;.vhdr&#39;</span><span class="p">)</span>
 
     <span class="c1"># Read in Raw object and extract metadata from Raw object if needed</span>
@@ -1313,19 +1206,21 @@
         <span class="k">raise</span> <span class="ne">FileExistsError</span><span class="p">(</span><span class="s1">&#39;&quot;</span><span class="si">%s</span><span class="s1">&quot; already exists. Please set &#39;</span>  <span class="c1"># noqa: F821</span>
                               <span class="s1">&#39;overwrite to True.&#39;</span> <span class="o">%</span> <span class="n">bids_fname</span><span class="p">)</span>
 
-    <span class="c1"># whether or not to convert to RECOMMENDED file formats</span>
-    <span class="n">convert</span> <span class="o">=</span> <span class="n">ext</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ALLOWED_EXTENSIONS</span><span class="p">[</span><span class="n">kind</span><span class="p">]</span>
+    <span class="c1"># If not already converting for anonymization, we may still need to do it</span>
+    <span class="c1"># if current format not BIDS compliant</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">convert</span><span class="p">:</span>
+        <span class="n">convert</span> <span class="o">=</span> <span class="n">ext</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ALLOWED_EXTENSIONS</span><span class="p">[</span><span class="n">kind</span><span class="p">]</span>
 
     <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s1">&#39;meg&#39;</span> <span class="ow">and</span> <span class="n">convert</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">anonymize</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Got file extension </span><span class="si">%s</span><span class="s1"> for MEG data, &#39;</span>
                          <span class="s1">&#39;expected one of </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span>
                          <span class="n">ALLOWED_EXTENSIONS</span><span class="p">[</span><span class="s1">&#39;meg&#39;</span><span class="p">])</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">convert</span> <span class="ow">or</span> <span class="n">anonymize</span><span class="p">)</span> <span class="ow">and</span> <span class="n">verbose</span><span class="p">:</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">convert</span> <span class="ow">and</span> <span class="n">verbose</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Copying data files to </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">op</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
 
     <span class="c1"># File saving branching logic</span>
-    <span class="k">if</span> <span class="n">convert</span> <span class="ow">or</span> <span class="p">(</span><span class="n">anonymize</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">convert</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s1">&#39;meg&#39;</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">ext</span> <span class="o">==</span> <span class="s1">&#39;.pdf&#39;</span><span class="p">:</span>
                 <span class="n">bids_fname</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="n">op</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">))</span>
@@ -1342,7 +1237,7 @@
         <span class="n">copyfile_ctf</span><span class="p">(</span><span class="n">raw_fname</span><span class="p">,</span> <span class="n">bids_fname</span><span class="p">)</span>
     <span class="c1"># BrainVision is multifile, copy over all of them and fix pointers</span>
     <span class="k">elif</span> <span class="n">ext</span> <span class="o">==</span> <span class="s1">&#39;.vhdr&#39;</span><span class="p">:</span>
-        <span class="n">copyfile_brainvision</span><span class="p">(</span><span class="n">raw_fname</span><span class="p">,</span> <span class="n">bids_fname</span><span class="p">)</span>
+        <span class="n">copyfile_brainvision</span><span class="p">(</span><span class="n">raw_fname</span><span class="p">,</span> <span class="n">bids_fname</span><span class="p">,</span> <span class="n">anonymize</span><span class="o">=</span><span class="n">anonymize</span><span class="p">)</span>
     <span class="c1"># EEGLAB .set might be accompanied by a .fdt - find out and copy it too</span>
     <span class="k">elif</span> <span class="n">ext</span> <span class="o">==</span> <span class="s1">&#39;.set&#39;</span><span class="p">:</span>
         <span class="n">copyfile_eeglab</span><span class="p">(</span><span class="n">raw_fname</span><span class="p">,</span> <span class="n">bids_fname</span><span class="p">)</span>

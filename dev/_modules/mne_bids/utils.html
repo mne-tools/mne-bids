@@ -123,7 +123,7 @@
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">shutil</span> <span class="k">as</span> <span class="nn">sh</span>
 <span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">timedelta</span><span class="p">,</span> <span class="n">timezone</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span><span class="p">,</span> <span class="n">OrderedDict</span>
 <span class="kn">from</span> <span class="nn">os</span> <span class="kn">import</span> <span class="n">path</span> <span class="k">as</span> <span class="n">op</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
@@ -1317,6 +1317,116 @@
 
     <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">kinds</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
     <span class="k">return</span> <span class="n">kinds</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">_check_anonymize</span><span class="p">(</span><span class="n">anonymize</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">ext</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Check the `anonymize` dict.&quot;&quot;&quot;</span>
+    <span class="c1"># if info[&#39;meas_date&#39;] None, then the dates are not stored</span>
+    <span class="k">if</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;meas_date&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">daysback</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s1">&#39;daysback&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">anonymize</span> <span class="ow">or</span> <span class="n">anonymize</span><span class="p">[</span><span class="s1">&#39;daysback&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;`daysback` argument required to anonymize.&#39;</span><span class="p">)</span>
+        <span class="n">daysback</span> <span class="o">=</span> <span class="n">anonymize</span><span class="p">[</span><span class="s1">&#39;daysback&#39;</span><span class="p">]</span>
+        <span class="n">daysback_min</span><span class="p">,</span> <span class="n">daysback_max</span> <span class="o">=</span> <span class="n">_get_anonymization_daysback</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">daysback</span> <span class="o">&lt;</span> <span class="n">daysback_min</span><span class="p">:</span>
+            <span class="n">warn</span><span class="p">(</span><span class="s1">&#39;`daysback` is too small; the measurement date &#39;</span>
+                 <span class="s1">&#39;is after 1925, which is not recommended by BIDS.&#39;</span>
+                 <span class="s1">&#39;The minimum `daysback` value for changing the &#39;</span>
+                 <span class="s1">&#39;measurement date of this data to before this date &#39;</span>
+                 <span class="s1">&#39;is </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">daysback_min</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ext</span> <span class="o">==</span> <span class="s1">&#39;.fif&#39;</span> <span class="ow">and</span> <span class="n">daysback</span> <span class="o">&gt;</span> <span class="n">daysback_max</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;`daysback` exceeds maximum value MNE &#39;</span>
+                             <span class="s1">&#39;is able to store in FIF format, must &#39;</span>
+                             <span class="s1">&#39;be less than </span><span class="si">%i</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">daysback_max</span><span class="p">)</span>
+    <span class="n">keep_his</span> <span class="o">=</span> <span class="n">anonymize</span><span class="p">[</span><span class="s1">&#39;keep_his&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="s1">&#39;keep_his&#39;</span> <span class="ow">in</span> <span class="n">anonymize</span> <span class="k">else</span> <span class="kc">False</span>
+    <span class="k">return</span> <span class="n">daysback</span><span class="p">,</span> <span class="n">keep_his</span>
+
+
+<span class="k">def</span> <span class="nf">_get_anonymization_daysback</span><span class="p">(</span><span class="n">raw</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Get the min and max number of daysback necessary to satisfy BIDS specs.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    raw : mne.io.Raw</span>
+<span class="sd">        Subject raw data.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    daysback_min : int</span>
+<span class="sd">        The minimum number of daysback necessary to be compatible with BIDS.</span>
+<span class="sd">    daysback_max : int</span>
+<span class="sd">        The maximum number of daysback that MNE can store.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">this_date</span> <span class="o">=</span> <span class="n">_stamp_to_dt</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;meas_date&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">date</span><span class="p">()</span>
+    <span class="n">daysback_min</span> <span class="o">=</span> <span class="p">(</span><span class="n">this_date</span> <span class="o">-</span> <span class="n">date</span><span class="p">(</span><span class="n">year</span><span class="o">=</span><span class="mi">1924</span><span class="p">,</span> <span class="n">month</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="n">day</span><span class="o">=</span><span class="mi">31</span><span class="p">))</span><span class="o">.</span><span class="n">days</span>
+    <span class="n">daysback_max</span> <span class="o">=</span> <span class="p">(</span><span class="n">this_date</span> <span class="o">-</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">date</span><span class="p">()</span> <span class="o">+</span>
+                    <span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">iinfo</span><span class="p">(</span><span class="s1">&#39;&gt;i4&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">))</span><span class="o">.</span><span class="n">days</span>
+    <span class="k">return</span> <span class="n">daysback_min</span><span class="p">,</span> <span class="n">daysback_max</span>
+
+
+<div class="viewcode-block" id="get_anonymization_daysback"><a class="viewcode-back" href="../../generated/mne_bids.get_anonymization_daysback.html#mne_bids.get_anonymization_daysback">[docs]</a><span class="k">def</span> <span class="nf">get_anonymization_daysback</span><span class="p">(</span><span class="n">raws</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Get the group min and max number of daysback necessary for BIDS specs.</span>
+
+<span class="sd">    .. warning:: It is important that you remember the anonymization</span>
+<span class="sd">                 number if you would ever like to de-anonymize but</span>
+<span class="sd">                 that it is not included in the code publication</span>
+<span class="sd">                 as that would break the anonymization.</span>
+
+<span class="sd">    BIDS requires that anonymized dates be before 1925. In order to</span>
+<span class="sd">    preserve the longitudinal structure and ensure anonymization, the</span>
+<span class="sd">    user is asked to provide the same `daysback` argument to each call</span>
+<span class="sd">    of `write_raw_bids`. To determine the miniumum number of daysback</span>
+<span class="sd">    necessary, this function will calculate the minimum number based on</span>
+<span class="sd">    the most recent measurement date of raw objects.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    raw : mne.io.Raw | list of Raw</span>
+<span class="sd">        Subject raw data or list of raw data from several subjects.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    daysback_min : int</span>
+<span class="sd">        The minimum number of daysback necessary to be compatible with BIDS.</span>
+<span class="sd">    daysback_max : int</span>
+<span class="sd">        The maximum number of daysback that MNE can store.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">raws</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="n">raws</span> <span class="o">=</span> <span class="nb">list</span><span class="p">([</span><span class="n">raws</span><span class="p">])</span>
+    <span class="n">daysback_min_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+    <span class="n">daysback_max_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">raw</span> <span class="ow">in</span> <span class="n">raws</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;meas_date&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">daysback_min</span><span class="p">,</span> <span class="n">daysback_max</span> <span class="o">=</span> <span class="n">_get_anonymization_daysback</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span>
+            <span class="n">daysback_min_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">daysback_min</span><span class="p">)</span>
+            <span class="n">daysback_max_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">daysback_max</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">daysback_min_list</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">daysback_max_list</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;All measurement dates are None, &#39;</span> <span class="o">+</span>
+                         <span class="s1">&#39;pass any `daysback` value to anonymize.&#39;</span><span class="p">)</span>
+    <span class="n">daysback_min</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">daysback_min_list</span><span class="p">)</span>
+    <span class="n">daysback_max</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">daysback_max_list</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">daysback_min</span> <span class="o">&gt;</span> <span class="n">daysback_max</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;The dataset spans more time than can be &#39;</span> <span class="o">+</span>
+                         <span class="s1">&#39;accomodated by MNE, you may have to &#39;</span> <span class="o">+</span>
+                         <span class="s1">&#39;not follow BIDS recommendations and use&#39;</span> <span class="o">+</span>
+                         <span class="s1">&#39;anonymized dates after 1925&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">daysback_min</span><span class="p">,</span> <span class="n">daysback_max</span></div>
+
+
+<span class="k">def</span> <span class="nf">_stamp_to_dt</span><span class="p">(</span><span class="n">utc_stamp</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Convert POSIX timestamp to datetime object in Windows-friendly way.&quot;&quot;&quot;</span>
+    <span class="c1"># This is a windows datetime bug for timestamp &lt; 0. A negative value</span>
+    <span class="c1"># is needed for anonymization which requires the date to be moved back</span>
+    <span class="c1"># to before 1925. This then requires a negative value of daysback</span>
+    <span class="c1"># compared the 1970 reference date.</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">utc_stamp</span><span class="p">,</span> <span class="n">datetime</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">utc_stamp</span>
+    <span class="n">stamp</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">utc_stamp</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">stamp</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>  <span class="c1"># In case there is no microseconds information</span>
+        <span class="n">stamp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">tz</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span> <span class="o">+</span>
+            <span class="n">timedelta</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">stamp</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">stamp</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>  <span class="c1"># day, sec, μs</span>
 </pre></div>
 
     </div>

@@ -180,16 +180,16 @@ of the directory tree.</p>
 |--- files/
 |------ eegmmidb/
 |--------- 1.0.0/
+|------------ S002/
+|--------------- S002R02.edf
+|--------------- S002R12.edf
+|--------------- S002R04.edf
+|--------------- S002R08.edf
 |------------ S001/
-|--------------- S001R12.edf
-|--------------- S001R08.edf
 |--------------- S001R02.edf
 |--------------- S001R04.edf
-|------------ S002/
-|--------------- S002R04.edf
-|--------------- S002R12.edf
-|--------------- S002R02.edf
-|--------------- S002R08.edf
+|--------------- S001R12.edf
+|--------------- S001R08.edf
 </pre></div>
 </div>
 <p>The data are in the <a class="reference external" href="https://www.edfplus.info/">European Data Format</a> with
@@ -333,21 +333,22 @@ which are however optional. The required inputs are:</p>
     event_id : dict | None
         The event id dict used to create a &#39;trial_type&#39; column in events.tsv
     anonymize : dict | None
-        If None is provided (default) no anonymization is performed.
-        If a dictionary is passed, data will be anonymized; identifying data
-        structures such as study date and time will be changed.
-        `daysback` is a required argument and `keep_his` is optional, these
-        arguments are passed to :func:`mne.io.anonymize_info`.
+        If None (default), no anonymization is performed.
+        If dict, data will be anonymized depending on the keys provided with
+        the dict: `daysback` is a required key, `keep_his` is an optional key.
 
         `daysback` : int
-            Number of days to move back the date. To keep relative dates for
-            a subject use the same `daysback`. According to BIDS
-            specifications, the number of days back must be great enough
-            that the date is before 1925.
+            Number of days by which to move back the recording date in time.
+            In studies with multiple subjects the relative recording date
+            differences between subjects can be kept by using the same number
+            of `daysback` for all subject anonymizations. `daysback` should be
+            great enough to shift the date prior to 1925 to conform with BIDS
+            anonymization rules.
 
         `keep_his` : bool
-            If True info[&#39;subject_info&#39;][&#39;his_id&#39;] of subject_info will NOT be
-            overwritten. Defaults to False.
+            By default (False), all subject information next to the recording
+            date will be overwritten as well. If True, keep subject information
+            apart from the recording date.
 
     overwrite : bool
         Whether to overwrite existing files or data in files.
@@ -377,6 +378,10 @@ which are however optional. The required inputs are:</p>
     For the participants.tsv file, the raw.info[&#39;subject_info&#39;] should be
     updated and raw.info[&#39;meas_date&#39;] should not be None to compute the age
     of the participant correctly.
+
+    See Also
+    --------
+    mne.io.anonymize_info
 </pre></div>
 </div>
 <p>We loaded <code class="docutils literal notranslate"><span class="pre">S001R02.edf</span></code>, which corresponds to subject 1 in the second run.
@@ -507,7 +512,7 @@ Writing &#39;/home/circleci/mne_data/eegmmidb_bids_eeg_example/dataset_descripti
     ]
 }
 Effective window size : 1.600 (s)
-/home/circleci/project/mne_bids/write.py:503: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
+/home/circleci/project/mne_bids/write.py:488: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
   warn(&#39;No line frequency found, defaulting to {} Hz &#39;
 Reading 0 ... 9759  =      0.000 ...    60.994 secs...
 
@@ -557,19 +562,19 @@ Wrote /home/circleci/mne_data/eegmmidb_bids_eeg_example/sub-001/sub-001_scans.ts
 </div>
 <p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>|eegmmidb_bids_eeg_example/
+|--- participants.json
 |--- dataset_description.json
 |--- README
 |--- participants.tsv
-|--- participants.json
 |--- sub-001/
 |------ sub-001_scans.tsv
 |------ eeg/
+|--------- sub-001_task-RestEyesClosed_events.tsv
 |--------- sub-001_task-RestEyesClosed_eeg.edf
+|--------- sub-001_task-RestEyesClosed_eeg.json
+|--------- sub-001_task-RestEyesClosed_channels.tsv
 |--------- sub-001_electrodes.tsv
 |--------- sub-001_coordsystem.json
-|--------- sub-001_task-RestEyesClosed_eeg.json
-|--------- sub-001_task-RestEyesClosed_events.tsv
-|--------- sub-001_task-RestEyesClosed_channels.tsv
 </pre></div>
 </div>
 <p>We can see that MNE-BIDS wrote several important files related to subject 1
@@ -620,7 +625,7 @@ directories called the “BIDS-validator”, available as a web version and a
 command line tool:</p>
 <p>Web version: <a class="reference external" href="https://bids-standard.github.io/bids-validator/">https://bids-standard.github.io/bids-validator/</a></p>
 <p>Command line tool: <a class="reference external" href="https://www.npmjs.com/package/bids-validator">https://www.npmjs.com/package/bids-validator</a></p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.194 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.188 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-eeg-to-bids-py">
 <div class="binder-badge docutils container">
 <a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/convert_eeg_to_bids.ipynb"><img alt="https://mybinder.org/badge_logo.svg" src="https://mybinder.org/badge_logo.svg" width="150px" /></a>

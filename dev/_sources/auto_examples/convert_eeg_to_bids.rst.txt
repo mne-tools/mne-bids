@@ -138,16 +138,16 @@ of the directory tree.
     |--- files/
     |------ eegmmidb/
     |--------- 1.0.0/
+    |------------ S002/
+    |--------------- S002R02.edf
+    |--------------- S002R12.edf
+    |--------------- S002R04.edf
+    |--------------- S002R08.edf
     |------------ S001/
-    |--------------- S001R12.edf
-    |--------------- S001R08.edf
     |--------------- S001R02.edf
     |--------------- S001R04.edf
-    |------------ S002/
-    |--------------- S002R04.edf
-    |--------------- S002R12.edf
-    |--------------- S002R02.edf
-    |--------------- S002R08.edf
+    |--------------- S001R12.edf
+    |--------------- S001R08.edf
 
 
 
@@ -341,21 +341,22 @@ which are however optional. The required inputs are:
         event_id : dict | None
             The event id dict used to create a 'trial_type' column in events.tsv
         anonymize : dict | None
-            If None is provided (default) no anonymization is performed.
-            If a dictionary is passed, data will be anonymized; identifying data
-            structures such as study date and time will be changed.
-            `daysback` is a required argument and `keep_his` is optional, these
-            arguments are passed to :func:`mne.io.anonymize_info`.
+            If None (default), no anonymization is performed.
+            If dict, data will be anonymized depending on the keys provided with
+            the dict: `daysback` is a required key, `keep_his` is an optional key.
 
             `daysback` : int
-                Number of days to move back the date. To keep relative dates for
-                a subject use the same `daysback`. According to BIDS
-                specifications, the number of days back must be great enough
-                that the date is before 1925.
+                Number of days by which to move back the recording date in time.
+                In studies with multiple subjects the relative recording date
+                differences between subjects can be kept by using the same number
+                of `daysback` for all subject anonymizations. `daysback` should be
+                great enough to shift the date prior to 1925 to conform with BIDS
+                anonymization rules.
 
             `keep_his` : bool
-                If True info['subject_info']['his_id'] of subject_info will NOT be
-                overwritten. Defaults to False.
+                By default (False), all subject information next to the recording
+                date will be overwritten as well. If True, keep subject information
+                apart from the recording date.
 
         overwrite : bool
             Whether to overwrite existing files or data in files.
@@ -385,6 +386,10 @@ which are however optional. The required inputs are:
         For the participants.tsv file, the raw.info['subject_info'] should be
         updated and raw.info['meas_date'] should not be None to compute the age
         of the participant correctly.
+
+        See Also
+        --------
+        mne.io.anonymize_info
 
     
 
@@ -543,7 +548,7 @@ Now we just need to specify a few more EEG details to get something sensible:
         ]
     }
     Effective window size : 1.600 (s)
-    /home/circleci/project/mne_bids/write.py:503: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
+    /home/circleci/project/mne_bids/write.py:488: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
       warn('No line frequency found, defaulting to {} Hz '
     Reading 0 ... 9759  =      0.000 ...    60.994 secs...
 
@@ -606,19 +611,19 @@ What does our fresh BIDS directory look like?
  .. code-block:: none
 
     |eegmmidb_bids_eeg_example/
+    |--- participants.json
     |--- dataset_description.json
     |--- README
     |--- participants.tsv
-    |--- participants.json
     |--- sub-001/
     |------ sub-001_scans.tsv
     |------ eeg/
+    |--------- sub-001_task-RestEyesClosed_events.tsv
     |--------- sub-001_task-RestEyesClosed_eeg.edf
+    |--------- sub-001_task-RestEyesClosed_eeg.json
+    |--------- sub-001_task-RestEyesClosed_channels.tsv
     |--------- sub-001_electrodes.tsv
     |--------- sub-001_coordsystem.json
-    |--------- sub-001_task-RestEyesClosed_eeg.json
-    |--------- sub-001_task-RestEyesClosed_events.tsv
-    |--------- sub-001_task-RestEyesClosed_channels.tsv
 
 
 
@@ -697,7 +702,7 @@ Command line tool: https://www.npmjs.com/package/bids-validator
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  0.194 seconds)
+   **Total running time of the script:** ( 0 minutes  0.188 seconds)
 
 
 .. _sphx_glr_download_auto_examples_convert_eeg_to_bids.py:

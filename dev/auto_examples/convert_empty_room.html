@@ -277,7 +277,7 @@ Writing &#39;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/dat
     ]
 }
 Effective window size : 0.426 (s)
-/home/circleci/project/mne_bids/write.py:503: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
+/home/circleci/project/mne_bids/write.py:488: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
   warn(&#39;No line frequency found, defaulting to {} Hz &#39;
 Reading 0 ... 166799  =      0.000 ...   277.714 secs...
 
@@ -431,7 +431,7 @@ Writing &#39;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/dat
     ]
 }
 Effective window size : 0.426 (s)
-/home/circleci/project/mne_bids/write.py:503: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
+/home/circleci/project/mne_bids/write.py:488: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
   warn(&#39;No line frequency found, defaulting to {} Hz &#39;
 
 Writing &#39;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-emptyroom/ses-20021206/meg/sub-emptyroom_ses-20021206_task-noise_meg.json&#39;...
@@ -557,7 +557,7 @@ Writing &#39;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/dat
     ]
 }
 Effective window size : 0.426 (s)
-/home/circleci/project/mne_bids/write.py:503: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
+/home/circleci/project/mne_bids/write.py:488: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
   warn(&#39;No line frequency found, defaulting to {} Hz &#39;
 
 Writing &#39;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-emptyroom/ses-20021204/meg/sub-emptyroom_ses-20021204_task-noise_meg.json&#39;...
@@ -665,7 +665,7 @@ Writing &#39;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/dat
     ]
 }
 Effective window size : 0.426 (s)
-/home/circleci/project/mne_bids/write.py:503: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
+/home/circleci/project/mne_bids/write.py:488: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
   warn(&#39;No line frequency found, defaulting to {} Hz &#39;
 
 Writing &#39;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-emptyroom/ses-20021201/meg/sub-emptyroom_ses-20021201_task-noise_meg.json&#39;...
@@ -773,7 +773,7 @@ Writing &#39;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/dat
     ]
 }
 Effective window size : 0.426 (s)
-/home/circleci/project/mne_bids/write.py:503: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
+/home/circleci/project/mne_bids/write.py:488: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
   warn(&#39;No line frequency found, defaulting to {} Hz &#39;
 
 Writing &#39;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-emptyroom/ses-20021001/meg/sub-emptyroom_ses-20021001_task-noise_meg.json&#39;...
@@ -826,47 +826,47 @@ Wrote /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-emptyr
 </div>
 <p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>|MNE-sample-data-bids/
+|--- participants.json
 |--- dataset_description.json
 |--- README
 |--- participants.tsv
-|--- participants.json
-|--- sub-01/
-|------ ses-01/
-|--------- sub-01_ses-01_scans.tsv
-|--------- anat/
-|------------ sub-01_ses-01_T1w.nii.gz
-|------------ sub-01_ses-01_T1w.json
-|--------- meg/
-|------------ sub-01_ses-01_task-audiovisual_run-01_events.tsv
-|------------ sub-01_ses-01_task-audiovisual_run-01_channels.tsv
-|------------ sub-01_ses-01_coordsystem.json
-|------------ sub-01_ses-01_task-audiovisual_run-01_meg.json
-|------------ sub-01_ses-01_task-audiovisual_run-01_meg.fif
 |--- sub-emptyroom/
 |------ ses-20021201/
 |--------- sub-emptyroom_ses-20021201_scans.tsv
 |--------- meg/
-|------------ sub-emptyroom_ses-20021201_task-noise_channels.tsv
 |------------ sub-emptyroom_ses-20021201_task-noise_meg.json
 |------------ sub-emptyroom_ses-20021201_task-noise_meg.fif
+|------------ sub-emptyroom_ses-20021201_task-noise_channels.tsv
+|------ ses-20021001/
+|--------- sub-emptyroom_ses-20021001_scans.tsv
+|--------- meg/
+|------------ sub-emptyroom_ses-20021001_task-noise_meg.fif
+|------------ sub-emptyroom_ses-20021001_task-noise_meg.json
+|------------ sub-emptyroom_ses-20021001_task-noise_channels.tsv
+|------ ses-20021204/
+|--------- sub-emptyroom_ses-20021204_scans.tsv
+|--------- meg/
+|------------ sub-emptyroom_ses-20021204_task-noise_meg.json
+|------------ sub-emptyroom_ses-20021204_task-noise_meg.fif
+|------------ sub-emptyroom_ses-20021204_task-noise_channels.tsv
 |------ ses-20021206/
 |--------- sub-emptyroom_ses-20021206_scans.tsv
 |--------- meg/
 |------------ sub-emptyroom_ses-20021206_task-noise_meg.fif
-|------------ sub-emptyroom_ses-20021206_task-noise_channels.tsv
 |------------ sub-emptyroom_ses-20021206_task-noise_meg.json
-|------ ses-20021001/
-|--------- sub-emptyroom_ses-20021001_scans.tsv
+|------------ sub-emptyroom_ses-20021206_task-noise_channels.tsv
+|--- sub-01/
+|------ ses-01/
+|--------- sub-01_ses-01_scans.tsv
 |--------- meg/
-|------------ sub-emptyroom_ses-20021001_task-noise_channels.tsv
-|------------ sub-emptyroom_ses-20021001_task-noise_meg.json
-|------------ sub-emptyroom_ses-20021001_task-noise_meg.fif
-|------ ses-20021204/
-|--------- sub-emptyroom_ses-20021204_scans.tsv
-|--------- meg/
-|------------ sub-emptyroom_ses-20021204_task-noise_channels.tsv
-|------------ sub-emptyroom_ses-20021204_task-noise_meg.json
-|------------ sub-emptyroom_ses-20021204_task-noise_meg.fif
+|------------ sub-01_ses-01_task-audiovisual_run-01_channels.tsv
+|------------ sub-01_ses-01_task-audiovisual_run-01_events.tsv
+|------------ sub-01_ses-01_task-audiovisual_run-01_meg.json
+|------------ sub-01_ses-01_task-audiovisual_run-01_meg.fif
+|------------ sub-01_ses-01_coordsystem.json
+|--------- anat/
+|------------ sub-01_ses-01_T1w.json
+|------------ sub-01_ses-01_T1w.nii.gz
 </pre></div>
 </div>
 <p>To get an accurate estimate of the noise, it is important that the empty
@@ -931,7 +931,7 @@ The search_str was &quot;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-d
   warn(msg)
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  5.963 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  5.616 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-empty-room-py">
 <div class="binder-badge docutils container">
 <a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/convert_empty_room.ipynb"><img alt="https://mybinder.org/badge_logo.svg" src="https://mybinder.org/badge_logo.svg" width="150px" /></a>

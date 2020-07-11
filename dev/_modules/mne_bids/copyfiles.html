@@ -128,12 +128,14 @@
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">os.path</span> <span class="k">as</span> <span class="nn">op</span>
 <span class="kn">import</span> <span class="nn">re</span>
+
 <span class="kn">import</span> <span class="nn">shutil</span> <span class="k">as</span> <span class="nn">sh</span>
 
+<span class="kn">from</span> <span class="nn">mne.io</span> <span class="kn">import</span> <span class="n">read_raw_brainvision</span><span class="p">,</span> <span class="n">anonymize_info</span>
 <span class="kn">from</span> <span class="nn">scipy.io</span> <span class="kn">import</span> <span class="n">loadmat</span><span class="p">,</span> <span class="n">savemat</span>
 
 <span class="kn">from</span> <span class="nn">mne_bids.read</span> <span class="kn">import</span> <span class="n">_parse_ext</span>
-<span class="kn">from</span> <span class="nn">mne_bids.utils</span> <span class="kn">import</span> <span class="n">_get_mrk_meas_date</span>
+<span class="kn">from</span> <span class="nn">mne_bids.utils</span> <span class="kn">import</span> <span class="n">_get_mrk_meas_date</span><span class="p">,</span> <span class="n">_check_anonymize</span>
 
 
 <span class="k">def</span> <span class="nf">_copytree</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dst</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -320,7 +322,35 @@
             <span class="n">sh</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">position_file</span><span class="p">,</span> <span class="n">position_fname</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="copyfile_brainvision"><a class="viewcode-back" href="../../generated/mne_bids.copyfiles.copyfile_brainvision.html#mne_bids.copyfiles.copyfile_brainvision">[docs]</a><span class="k">def</span> <span class="nf">copyfile_brainvision</span><span class="p">(</span><span class="n">vhdr_src</span><span class="p">,</span> <span class="n">vhdr_dest</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_replace_file</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">pattern</span><span class="p">,</span> <span class="n">replace</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Overwrite file, replacing end of lines matching pattern with replace.&quot;&quot;&quot;</span>
+    <span class="n">new_content</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">):</span>
+        <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">()[:</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">replace</span><span class="p">)]</span> <span class="o">+</span> <span class="n">replace</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+        <span class="n">new_content</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fout</span><span class="p">:</span>
+        <span class="n">fout</span><span class="o">.</span><span class="n">writelines</span><span class="p">(</span><span class="n">new_content</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_anonymize_brainvision</span><span class="p">(</span><span class="n">vhdr_file</span><span class="p">,</span> <span class="n">date</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Anonymize vmrk and vhdr files in place using `date` datetime object.&quot;&quot;&quot;</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">vmrk_file</span> <span class="o">=</span> <span class="n">_get_brainvision_paths</span><span class="p">(</span><span class="n">vhdr_file</span><span class="p">)</span>
+
+    <span class="c1"># Go through VMRK</span>
+    <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^Mk\d+=New Segment,.*,\d+,\d+,\d+,\d</span><span class="si">{20}</span><span class="s1">$&#39;</span><span class="p">)</span>
+    <span class="n">replace</span> <span class="o">=</span> <span class="n">date</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">%H%M%S</span><span class="si">%f</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">_replace_file</span><span class="p">(</span><span class="n">vmrk_file</span><span class="p">,</span> <span class="n">pattern</span><span class="p">,</span> <span class="n">replace</span><span class="p">)</span>
+
+    <span class="c1"># Go through VHDR</span>
+    <span class="n">pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^Impedance \[kOhm\] at \d\d:\d\d:\d\d :$&#39;</span><span class="p">)</span>
+    <span class="n">replace</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;at </span><span class="si">{</span><span class="n">date</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%H:%M:%S&quot;</span><span class="p">)</span><span class="si">}</span><span class="s1"> :&#39;</span>
+    <span class="n">_replace_file</span><span class="p">(</span><span class="n">vhdr_file</span><span class="p">,</span> <span class="n">pattern</span><span class="p">,</span> <span class="n">replace</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="copyfile_brainvision"><a class="viewcode-back" href="../../generated/mne_bids.copyfiles.copyfile_brainvision.html#mne_bids.copyfiles.copyfile_brainvision">[docs]</a><span class="k">def</span> <span class="nf">copyfile_brainvision</span><span class="p">(</span><span class="n">vhdr_src</span><span class="p">,</span> <span class="n">vhdr_dest</span><span class="p">,</span> <span class="n">anonymize</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Copy a BrainVision file triplet to a new location and repair links.</span>
 
 <span class="sd">    The BrainVision file format consists of three files: .vhdr, .eeg, and .vmrk</span>
@@ -334,6 +364,30 @@
 <span class="sd">        The src path of the .vhdr file to be copied.</span>
 <span class="sd">    vhdr_dest : str</span>
 <span class="sd">        The destination path of the .vhdr file.</span>
+<span class="sd">    anonymize : dict | None</span>
+<span class="sd">        If None (default), no anonymization is performed.</span>
+<span class="sd">        If dict, data will be anonymized depending on the keys provided with</span>
+<span class="sd">        the dict: `daysback` is a required key, `keep_his` is an optional key.</span>
+
+<span class="sd">        `daysback` : int</span>
+<span class="sd">            Number of days by which to move back the recording date in time.</span>
+<span class="sd">            In studies with multiple subjects the relative recording date</span>
+<span class="sd">            differences between subjects can be kept by using the same number</span>
+<span class="sd">            of `daysback` for all subject anonymizations. `daysback` should be</span>
+<span class="sd">            great enough to shift the date prior to 1925 to conform with BIDS</span>
+<span class="sd">            anonymization rules.</span>
+
+<span class="sd">        `keep_his` : bool</span>
+<span class="sd">            By default (False), all subject information next to the recording</span>
+<span class="sd">            date will be overwritten as well. If True, keep subject information</span>
+<span class="sd">            apart from the recording date.</span>
+
+<span class="sd">    verbose : bool</span>
+<span class="sd">        Determine whether results should be logged. Defaults to False.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    mne.io.anonymize_info</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Get extenstion of the brainvision file</span>
@@ -375,11 +429,21 @@
                     <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">basename_src</span><span class="p">,</span> <span class="n">basename_dest</span><span class="p">)</span>
                 <span class="n">fout</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
 
+    <span class="k">if</span> <span class="n">anonymize</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">raw</span> <span class="o">=</span> <span class="n">read_raw_brainvision</span><span class="p">(</span><span class="n">vhdr_src</span><span class="p">,</span> <span class="n">preload</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">daysback</span><span class="p">,</span> <span class="n">keep_his</span> <span class="o">=</span> <span class="n">_check_anonymize</span><span class="p">(</span><span class="n">anonymize</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="s1">&#39;.vhdr&#39;</span><span class="p">)</span>
+        <span class="n">raw</span><span class="o">.</span><span class="n">info</span> <span class="o">=</span> <span class="n">anonymize_info</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">,</span> <span class="n">daysback</span><span class="o">=</span><span class="n">daysback</span><span class="p">,</span>
+                                  <span class="n">keep_his</span><span class="o">=</span><span class="n">keep_his</span><span class="p">)</span>
+        <span class="n">_anonymize_brainvision</span><span class="p">(</span><span class="n">fname_dest</span> <span class="o">+</span> <span class="s1">&#39;.vhdr&#39;</span><span class="p">,</span>
+                               <span class="n">date</span><span class="o">=</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;meas_date&#39;</span><span class="p">])</span>
+
     <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">ext</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;.eeg&#39;</span><span class="p">,</span> <span class="s1">&#39;.vhdr&#39;</span><span class="p">,</span> <span class="s1">&#39;.vmrk&#39;</span><span class="p">]:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Created &quot;</span><span class="si">{}</span><span class="s1">&quot; in &quot;</span><span class="si">{}</span><span class="s1">&quot;&#39;</span>
-                  <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fname_dest</span> <span class="o">+</span> <span class="n">ext</span><span class="p">,</span>
-                          <span class="n">op</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">vhdr_dest</span><span class="p">))))</span></div>
+            <span class="n">_</span><span class="p">,</span> <span class="n">fname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">fname_dest</span> <span class="o">+</span> <span class="n">ext</span><span class="p">)</span>
+            <span class="n">dirname</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">vhdr_dest</span><span class="p">))</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Created &quot;</span><span class="si">{</span><span class="n">fname</span><span class="si">}</span><span class="s1">&quot; in &quot;</span><span class="si">{</span><span class="n">dirname</span><span class="si">}</span><span class="s1">&quot;.&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">anonymize</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Anonymized all dates in VHDR and VMRK.&#39;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="copyfile_eeglab"><a class="viewcode-back" href="../../generated/mne_bids.copyfiles.copyfile_eeglab.html#mne_bids.copyfiles.copyfile_eeglab">[docs]</a><span class="k">def</span> <span class="nf">copyfile_eeglab</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dest</span><span class="p">):</span>

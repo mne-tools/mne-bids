@@ -114,38 +114,54 @@
 </div>
 <div class="sphx-glr-example-title section" id="rename-brainvision-eeg-data-files">
 <span id="sphx-glr-auto-examples-rename-brainvision-files-py"></span><h1>06. Rename BrainVision EEG data files<a class="headerlink" href="#rename-brainvision-eeg-data-files" title="Permalink to this headline">¶</a></h1>
-<p>The BrainVision file format is one of the recommended formats to store EEG data
-within a BIDS directory. To organize EEG data in BIDS format, it is often
-necessary to rename the files. In the case of BrainVision files, we would have
-to rename multiple files for each dataset instance (i.e., once per recording):</p>
+<p>According to the EEG extension to BIDS <a class="footnote-reference brackets" href="#id2" id="id1">1</a>, the <a class="reference external" href="https://www.brainproducts.com/productdetails.php?id=21&amp;tab=5">BrainVision data format</a> is
+one of the recommended formats to store EEG data within a BIDS dataset.</p>
+<p>To organize EEG data in BIDS format, it is often necessary to rename the files.
+In the case of BrainVision files, we would have to rename multiple files for
+each recording:</p>
 <ol class="arabic simple">
 <li><p>A text header file (<code class="docutils literal notranslate"><span class="pre">.vhdr</span></code>) containing meta data</p></li>
 <li><p>A text marker file (<code class="docutils literal notranslate"><span class="pre">.vmrk</span></code>) containing information about events in the
 data</p></li>
 <li><p>A binary data file (<code class="docutils literal notranslate"><span class="pre">.eeg</span></code>) containing the voltage values of the EEG</p></li>
 </ol>
-<p>The problem is that the three files contain internal links that guide a
-potential data reading software. If we just rename the three files without also
-adjusting the internal links, we corrupt the file format.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The three files contain references that guide the data reading
+software. Simply <em>renaming</em> the files without adjusting these
+references will corrupt the dataset! But relax, MNE-BIDS can take
+care of this for you.</p>
+</div>
 <p>In this example, we use MNE-BIDS to rename BrainVision data files including a
-repair of the internal file pointers.</p>
+repair of the internal file links</p>
 <p>For the command line version of this tool, see the <code class="code docutils literal notranslate"><span class="pre">cp</span></code> tool in the docs
 for the <a class="reference internal" href="../generated/cli.html#python-cli"><span class="std std-ref">Python Command Line Interface</span></a>.</p>
+<div class="section" id="references">
+<h2>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<dl class="footnote brackets">
+<dt class="label" id="id2"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
+<dd><p>Pernet, C.R., Appelhoff, S., Gorgolewski, K.J. et al. EEG-BIDS, an
+extension to the brain imaging data structure for
+electroencephalography. Sci Data 6, 103 (2019).
+<a class="reference external" href="https://doi.org/10.1038/s41597-019-0104-8">https://doi.org/10.1038/s41597-019-0104-8</a></p>
+</dd>
+</dl>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Authors: Stefan Appelhoff &lt;stefan.appelhoff@mailbox.org&gt;</span>
+<span class="c1">#</span>
 <span class="c1"># License: BSD (3-clause)</span>
 </pre></div>
 </div>
 <p>We are importing everything we need for this example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os.path</span> <span class="k">as</span> <span class="nn">op</span>
 
-<span class="kn">from</span> <span class="nn">numpy.testing</span> <span class="kn">import</span> <a href="https://numpy.org/devdocs/reference/generated/numpy.testing.assert_array_equal.html#numpy.testing.assert_array_equal" title="numpy.testing.assert_array_equal" class="sphx-glr-backref-module-numpy-testing sphx-glr-backref-type-py-function"><span class="n">assert_array_equal</span></a>
 <span class="kn">import</span> <span class="nn">mne</span>
 
 <span class="kn">from</span> <span class="nn">mne_bids.copyfiles</span> <span class="kn">import</span> <a href="../generated/mne_bids.copyfiles.copyfile_brainvision.html#mne_bids.copyfiles.copyfile_brainvision" title="mne_bids.copyfiles.copyfile_brainvision" class="sphx-glr-backref-module-mne_bids-copyfiles sphx-glr-backref-type-py-function"><span class="n">copyfile_brainvision</span></a>
 </pre></div>
 </div>
-<div class="section" id="step-1-download-some-example-data">
-<h2>Step 1: Download some example data<a class="headerlink" href="#step-1-download-some-example-data" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="download-some-example-data">
+<h2>Download some example data<a class="headerlink" href="#download-some-example-data" title="Permalink to this headline">¶</a></h2>
 <p>To demonstrate the MNE-BIDS functions, we need some testing data. Here, we
 will use the MNE-Python testing data. Feel free to use your own BrainVision
 data.</p>
@@ -158,35 +174,37 @@ data.</p>
 </pre></div>
 </div>
 </div>
-<div class="section" id="step-2-rename-the-recording">
-<h2>Step 2: Rename the recording<a class="headerlink" href="#step-2-rename-the-recording" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="rename-the-recording">
+<h2>Rename the recording<a class="headerlink" href="#rename-the-recording" title="Permalink to this headline">¶</a></h2>
 <p>Above, at the top of the example, we imported
 <a class="reference internal" href="../generated/mne_bids.copyfiles.copyfile_brainvision.html#mne_bids.copyfiles.copyfile_brainvision" title="mne_bids.copyfiles.copyfile_brainvision"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.copyfiles.copyfile_brainvision()</span></code></a> from
-the MNE-BIDS <code class="docutils literal notranslate"><span class="pre">utils.py</span></code> module. This function takes two arguments as
-input: First, the path to the existing .vhdr file. And second, the path to
-the future .vhdr file.</p>
+the MNE-BIDS <code class="docutils literal notranslate"><span class="pre">mne_bids/copyfiles.py</span></code> module. This function takes two
+main inputs:
+First, the path to the existing <code class="docutils literal notranslate"><span class="pre">.vhdr</span></code> file. And second, the path to
+the future <code class="docutils literal notranslate"><span class="pre">.vhdr</span></code> file.</p>
+<p>With the optional <code class="docutils literal notranslate"><span class="pre">verbose</span></code> parameter you can furthermore determine how
+much information you want to get during the procedure.</p>
 <p><a class="reference internal" href="../generated/mne_bids.copyfiles.copyfile_brainvision.html#mne_bids.copyfiles.copyfile_brainvision" title="mne_bids.copyfiles.copyfile_brainvision"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.copyfiles.copyfile_brainvision()</span></code></a> will then create three new
-files (.vhdr, .vmrk, and .eeg) with the new names as provided with the second
-argument.</p>
+files (<code class="docutils literal notranslate"><span class="pre">.vhdr</span></code>, <code class="docutils literal notranslate"><span class="pre">.vmrk</span></code>, and <code class="docutils literal notranslate"><span class="pre">.eeg</span></code>) with the new names as provided
+with the second argument.</p>
 <p>Here, we rename a test file name:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">vhdr_file</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/os.path.html#os.path.join" title="os.path.join" class="sphx-glr-backref-module-os-path sphx-glr-backref-type-py-function"><span class="n">op</span><span class="o">.</span><span class="n">join</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">examples_dir</span></a><span class="p">,</span> <span class="s1">&#39;test_NO.vhdr&#39;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Rename the file</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">vhdr_file</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/os.path.html#os.path.join" title="os.path.join" class="sphx-glr-backref-module-os-path sphx-glr-backref-type-py-function"><span class="n">op</span><span class="o">.</span><span class="n">join</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">examples_dir</span></a><span class="p">,</span> <span class="s1">&#39;Analyzer_nV_Export.vhdr&#39;</span><span class="p">)</span>
 <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">vhdr_file_renamed</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/os.path.html#os.path.join" title="os.path.join" class="sphx-glr-backref-module-os-path sphx-glr-backref-type-py-function"><span class="n">op</span><span class="o">.</span><span class="n">join</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">examples_dir</span></a><span class="p">,</span> <span class="s1">&#39;test_renamed.vhdr&#39;</span><span class="p">)</span>
-<a href="../generated/mne_bids.copyfiles.copyfile_brainvision.html#mne_bids.copyfiles.copyfile_brainvision" title="mne_bids.copyfiles.copyfile_brainvision" class="sphx-glr-backref-module-mne_bids-copyfiles sphx-glr-backref-type-py-function"><span class="n">copyfile_brainvision</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">vhdr_file</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">vhdr_file_renamed</span></a><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="section" id="step-3-assert-that-the-renamed-data-can-be-read-by-a-software">
-<h2>Step 3: Assert that the renamed data can be read by a software<a class="headerlink" href="#step-3-assert-that-the-renamed-data-can-be-read-by-a-software" title="Permalink to this headline">¶</a></h2>
-<p>Finally, let’s use MNE-Python to read in both, the original BrainVision data
-as well as the renamed data. They should be the same.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">raw</span> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.io.read_raw_brainvision.html#mne.io.read_raw_brainvision" title="mne.io.read_raw_brainvision" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_raw_brainvision</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">vhdr_file</span></a><span class="p">)</span>
-<span class="n">raw_renamed</span> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.io.read_raw_brainvision.html#mne.io.read_raw_brainvision" title="mne.io.read_raw_brainvision" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_raw_brainvision</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">vhdr_file_renamed</span></a><span class="p">)</span>
+<a href="../generated/mne_bids.copyfiles.copyfile_brainvision.html#mne_bids.copyfiles.copyfile_brainvision" title="mne_bids.copyfiles.copyfile_brainvision" class="sphx-glr-backref-module-mne_bids-copyfiles sphx-glr-backref-type-py-function"><span class="n">copyfile_brainvision</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">vhdr_file</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">vhdr_file_renamed</span></a><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-<a href="https://numpy.org/devdocs/reference/generated/numpy.testing.assert_array_equal.html#numpy.testing.assert_array_equal" title="numpy.testing.assert_array_equal" class="sphx-glr-backref-module-numpy-testing sphx-glr-backref-type-py-function"><span class="n">assert_array_equal</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.io.BaseRaw.html#mne.io.BaseRaw.get_data" title="mne.io.BaseRaw.get_data" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-method"><span class="n">raw</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">(),</span> <a href="https://mne.tools/dev/generated/mne.io.BaseRaw.html#mne.io.BaseRaw.get_data" title="mne.io.BaseRaw.get_data" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-method"><span class="n">raw_renamed</span><span class="o">.</span><span class="n">get_data</span></a><span class="p">())</span>
+<span class="c1"># Check that MNE-Python can read in both, the original as well as the renamed</span>
+<span class="c1"># data (two files: their contents are the same apart from the name)</span>
+<span class="n">raw</span> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.io.read_raw_brainvision.html#mne.io.read_raw_brainvision" title="mne.io.read_raw_brainvision" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_raw_brainvision</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">vhdr_file</span></a><span class="p">)</span>
+<span class="n">raw_renamed</span> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.io.read_raw_brainvision.html#mne.io.read_raw_brainvision" title="mne.io.read_raw_brainvision" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_raw_brainvision</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">vhdr_file_renamed</span></a><span class="p">)</span>
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Extracting parameters from /home/circleci/mne_data/MNE-testing-data/Brainvision/test_NO.vhdr...
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Detected file encoding: UTF-8 (read from header).
+Created &quot;test_renamed.eeg&quot; in &quot;/home/circleci/mne_data/MNE-testing-data/Brainvision&quot;.
+Created &quot;test_renamed.vhdr&quot; in &quot;/home/circleci/mne_data/MNE-testing-data/Brainvision&quot;.
+Created &quot;test_renamed.vmrk&quot; in &quot;/home/circleci/mne_data/MNE-testing-data/Brainvision&quot;.
+Extracting parameters from /home/circleci/mne_data/MNE-testing-data/Brainvision/Analyzer_nV_Export.vhdr...
 Setting channel info structure...
 Extracting parameters from /home/circleci/mne_data/MNE-testing-data/Brainvision/test_renamed.vhdr...
 Setting channel info structure...
@@ -195,11 +213,9 @@ Setting channel info structure...
 </div>
 <div class="section" id="further-information">
 <h2>Further information<a class="headerlink" href="#further-information" title="Permalink to this headline">¶</a></h2>
-<p>There are alternative options to rename your BrainVision files. You could
-for example check out the
-<a class="reference external" href="https://github.com/stefanSchinkel/bvarenamer">BVARENAMER</a> by Stefan
-Schinkel.</p>
-<p>Lastly, there is a tool to check the integrity of your BrainVision files.
+<p>For converting data files, or writing new data to the BrainVision format, you
+can use the <a class="reference external" href="https://github.com/bids-standard/pybv">pybv</a> Python package.</p>
+<p>There is node JS tool to check the integrity of your BrainVision files.
 For that, see the <a class="reference external" href="https://github.com/sappelhoff/brainvision-validator">BrainVision Validator</a></p>
 <p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.024 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-rename-brainvision-files-py">
