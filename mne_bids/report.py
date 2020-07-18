@@ -38,30 +38,30 @@ def _range_str(minval, maxval, meanval, stdval, n_unknown, type):
         unknown_str = f'; {n_unknown} with unknown {type}'
     else:
         unknown_str = ''
-    return f'{round(minval, 2)} to {round(maxval, 2)} '\
-           f'({round(meanval, 2)} +/- {round(stdval, 2)}{unknown_str})'
+    return f'ranged from {round(minval, 2)} to {round(maxval, 2)} '\
+           f'(mean = {round(meanval, 2)}, std = {round(stdval, 2)}{unknown_str})'
            
 def _summarize_participant_hand(hands):
     n_unknown = len([hand for hand in hands if hand == 'n/a'])
 
     if n_unknown == len(hands):
-        return f'all unknown'
+        return f'were all unknown'
     n_rhand = len([hand for hand in hands if hand == 'R'])
     n_lhand = len([hand for hand in hands if hand == 'L'])
     n_ambidex = len([hand for hand in hands if hand == 'A'])
 
-    return f'{n_rhand} right hand, {n_lhand} left hand ' \
+    return f'comprised of {n_rhand} right hand, {n_lhand} left hand ' \
            f'and {n_ambidex} ambidextrous'
 
 def _summarize_participant_sex(sexs):
     n_unknown = len([sex for sex in sexs if sex == 'n/a'])
 
     if n_unknown == len(sexs):
-        return f'all unknown'
+        return f'were all unknown'
     n_males = len([sex for sex in sexs if sex == 'M'])
     n_females = len([sex for sex in sexs if sex == 'F'])
 
-    return f'{n_males} males and {n_females} females'        
+    return f'comprised of {n_males} males and {n_females} females'        
 
 def _length_recording_str(length_recordings):
     import numpy as np
@@ -74,40 +74,58 @@ def _length_recording_str(length_recordings):
     std_record_length = round(np.std(length_recordings), 2)
     total_record_length = round(sum(length_recordings), 2)
     
-    return f'The dataset lengths range from {min_record_length} to {max_record_length} seconds, '\
+    return f'Recording durations ranged from {min_record_length} to {max_record_length} seconds '\
+           f'(mean = {mean_record_length}, std = {std_record_length}), '\
            f'for a total of {total_record_length} seconds of data recorded '\
-           f'over all scans ({mean_record_length} +/- {std_record_length}).' 
+           f'over all scans.'
+
+def _summarize_software_filters(software_filters):
+    if software_filters in [{}, 'n/a']:
+        return ''
+    
+    msg = ''
+    for key, value in software_filters.items():
+        msg += f'{key}'
+        
+        if isinstance(value, dict) and value:
+            parameters = []
+            for param_name, param_value in value.items():
+                parameters.append(f'{param_value} {param_name}')
+            if parameters:
+                msg += ' with parameters '
+                msg += ', '.join(parameters)
+    return msg
+    
 }}"""  # noqa
 
 BIDS_DATASET_TEMPLATE = \
     """{{if name == 'n/a'}}This{{else}}The {{name}}{{endif}}
 dataset was created with BIDS version {{bids_version}}
 by {{_pretty_str(authors)}}. This report was generated with
-MNE-BIDS ({{mne_bids_doi}}). {{if n_subjects > 1}}There are
-{{n_subjects}} subjects. {{else}}There is {{n_subjects}}
-subject.{{endif}} """
+MNE-BIDS ({{mne_bids_doi}}). """
 BIDS_DATASET_TEMPLATE += \
-    """{{if n_sessions}}The dataset consists of {{n_sessions}}
-recording sessions {{(_pretty_str(sessions))}}.{{endif}}"""
+    """The dataset consists of {{n_subjects}} subjects and {{if n_sessions}}{{n_sessions}}
+recording sessions: {{(_pretty_str(sessions))}}.{{endif}} """
 
 PARTICIPANTS_TEMPLATE = \
-    """The sex of the subjects are {{_summarize_participant_sex(sexs)}}.
-The handedness of the subjects are {{_summarize_participant_hand(hands)}}.
-The ages of the subjects are
+    """The sex of the subjects {{_summarize_participant_sex(sexs)}}.
+The handedness of the subjects {{_summarize_participant_hand(hands)}}.
+The ages of the subjects
 {{_range_str(min_age, max_age, mean_age, std_age, n_age_unknown, 'age')}}. """
 
 MODALITY_AGNOSTIC_TEMPLATE = \
-"""Data was acquired using a {{_pretty_str(system)}} system
+"""Data was recorded using a {{_pretty_str(system)}} system
 {{if manufacturer}}({{_pretty_str(manufacturer)}} manufacturer){{endif}}
-with line noise at {{_pretty_str(powerlinefreq)}} Hz
-{{if software_filters not in [{}, 'n/a']}} using filters
-({{software_filters}}).{{else}}.{{endif}}
-{{if n_scans > 1}}There are {{n_scans}} scans in total,
-{{else}}There is {{n_scans}} scan in total,{{endif}}
-{{mean_chs}} +/- {{std_chs}} total recording channels per scan
-({{mean_good_chs}} +/- {{std_good_chs}} are used and
-{{mean_bad_chs}} +/- {{std_bad_chs}} are removed from analysis).
-{{_length_recording_str(length_recordings)}} """
+sampled at {{_pretty_str(sfreq)}} Hz
+with line noise at {{_pretty_str(powerlinefreq)}} Hz{{if _summarize_software_filters(software_filters)}} using
+{{_summarize_software_filters(software_filters)}}.{{else}}.{{endif}}
+{{if n_scans > 1}}There were {{n_scans}} scans in total.
+{{else}}There was {{n_scans}} scan in total.{{endif}}
+{{_length_recording_str(length_recordings)}}
+For each dataset, there were on average {{mean_chs}} (std = {{std_chs}}) recording channels per scan,
+out of which {{mean_good_chs}} (std = {{std_good_chs}}) were used in analysis
+({{mean_bad_chs}} +/- {{std_bad_chs}} were removed from analysis).
+ """
 
 
 def _pretty_dict(template_dict):
@@ -237,6 +255,8 @@ def _summarize_participants_tsv(bids_root, verbose=True):
 def _summarize_scans(bids_root, session=None, verbose=True):
     """Summarize scans in BIDS root directory.
 
+    Summarizes scans only if there is a *_scans.tsv file.
+
     Parameters
     ----------
     bids_root : str | pathlib.Path
@@ -350,7 +370,7 @@ def _summarize_sidecar_json(bids_root, scans_fpaths, verbose=True):
             manufacturer = sidecar_json.get('Manufacturer', 'n/a')
             record_duration = sidecar_json.get('RecordingDuration', 'n/a')
 
-            sfreqs.add(str(sfreq))
+            sfreqs.add(str(np.round(sfreq, 2)))
             powerlinefreqs.add(str(powerlinefreq))
             if manufacturer != 'n/a':
                 manufacturers.add(manufacturer)
@@ -531,3 +551,23 @@ def make_report(bids_root, session=None, verbose=True):
     paragraph = paragraph.replace('  ', ' ')
 
     return '\n'.join(textwrap.wrap(paragraph, width=80))
+
+if __name__ == '__main__':
+    output_fpath = './report.txt'
+
+    fpaths = {'somato': mne.datasets.somato.data_path(),
+              'epilepsy': '/Users/adam2392/Dropbox/epilepsy_bids/',
+              'ds001779-1.0.2': '/Users/adam2392/Downloads/ds001779-1.0.2',
+              'ds002778-1.0.1': '/Users/adam2392/Downloads/ds002778-1.0.1',
+              'ds002904-1.0.0': "/Users/adam2392/Downloads/ds002904-1.0.0",
+              'ds000117-master': "/Users/adam2392/Downloads/ds000117-master",
+              'ds000246-master': "/Users/adam2392/Downloads/ds000246-master",
+              'ds000248-master': "/Users/adam2392/Downloads/ds000248-master",
+              'ds001810-master': "/Users/adam2392/Downloads/ds001810-master",
+              'ds001971-master': "/Users/adam2392/Downloads/ds001971-master",
+              }
+    with open(output_fpath, 'w') as fout:
+        for name, bids_root in fpaths.items():
+            methods_paragraph = make_report(bids_root)
+            fout.write(f'\n\n{name}\n')
+            fout.write(methods_paragraph)
