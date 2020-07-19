@@ -20,7 +20,7 @@ consists of 102 subjects and 2 recording sessions: postsurgery, and presurgery.
 The sex of the subjects comprised of 48 males and 45 females. The handedness of
 the subjects comprised of 75 right hand, 12 left hand and 0 ambidextrous. The
 ages of the subjects all unknown. Data was recorded using a IEEG system sampled
-at 499.71, 1000.0, 1998.82, 1024.6, 249.85, 2000.0, and 999.41 Hz with line
+at 499.71, 1000.0, 1998.82, 1024.6, 999.41, 2000.0, and 249.85 Hz with line
 noise at 60 Hz. There were 570 scans in total. Recording durations ranged from
 20.4 to 1266.05 seconds (mean = 399.5, std = 190.5), for a total of 227716.71
 seconds of data recorded over all scans. For each dataset, there were on average
@@ -82,10 +82,10 @@ comprised of 9 males and 7 females. The handedness of the subjects were all
 unknown. The ages of the subjects ranged from 23.0 to 31.0 (mean = 26.38, std =
 2.76; 1 with unknown age). Data was recorded using a MEG system (Elekta/Neuromag
 manufacturer) sampled at 1100 Hz with line noise at 50 Hz using
-SpatialCompensation with parameters [] None. There were 104 scans in total.  For
-each dataset, there were on average 404.0 (std = 0.0) recording channels per
-scan, out of which 404.0 (std = 0.0) were used in analysis (0.0 +/- 0.0 were
-removed from analysis).
+SpatialCompensation. There were 104 scans in total.  For each dataset, there
+were on average 404.0 (std = 0.0) recording channels per scan, out of which
+404.0 (std = 0.0) were used in analysis (0.0 +/- 0.0 were removed from
+analysis).
 
 ds000246-master
 The MEG-BIDS Brainstorm data sample dataset was created with BIDS version 1.0.2

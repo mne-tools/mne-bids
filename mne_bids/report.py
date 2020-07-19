@@ -90,7 +90,8 @@ def _summarize_software_filters(software_filters):
         if isinstance(value, dict) and value:
             parameters = []
             for param_name, param_value in value.items():
-                parameters.append(f'{param_value} {param_name}')
+                if param_name and param_value:
+                    parameters.append(f'{param_value} {param_name}')
             if parameters:
                 msg += ' with parameters '
                 msg += ', '.join(parameters)
