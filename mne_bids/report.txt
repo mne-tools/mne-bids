@@ -16,17 +16,16 @@ were used in analysis (0.0 +/- 0.0 were removed from analysis).
 epilepsy
 This dataset was created with BIDS version 1.2.2 by MNE-BIDS. This report was
 generated with MNE-BIDS (https://doi.org/10.21105/joss.01896). The dataset
-consists of 102 subjects and 4 recording sessions: postsurgery, presurgery,
-seizure, and veeg. The sex of the subjects comprised of 48 males and 45 females.
-The handedness of the subjects comprised of 75 right hand, 12 left hand and 0
-ambidextrous. The ages of the subjects all unknown. Data was recorded using a
-IEEG system sampled at 1024.6, 1998.82, 2000.0, 249.85, 499.71, 999.41, and
-1000.0 Hz with line noise at 60 Hz. There were 570 scans in total. Recording
-durations ranged from 20.4 to 1266.05 seconds (mean = 399.5, std = 190.5), for a
-total of 227716.71 seconds of data recorded over all scans. For each dataset,
-there were on average 167.77 (std = 40.17) recording channels per scan, out of
-which 103.02 (std = 32.97) were used in analysis (64.75 +/- 32.89 were removed
-from analysis).
+consists of 102 subjects and 2 recording sessions: postsurgery, and presurgery.
+The sex of the subjects comprised of 48 males and 45 females. The handedness of
+the subjects comprised of 75 right hand, 12 left hand and 0 ambidextrous. The
+ages of the subjects all unknown. Data was recorded using a IEEG system sampled
+at 499.71, 1000.0, 1998.82, 1024.6, 249.85, 2000.0, and 999.41 Hz with line
+noise at 60 Hz. There were 570 scans in total. Recording durations ranged from
+20.4 to 1266.05 seconds (mean = 399.5, std = 190.5), for a total of 227716.71
+seconds of data recorded over all scans. For each dataset, there were on average
+167.77 (std = 40.17) recording channels per scan, out of which 103.02 (std =
+32.97) were used in analysis (64.75 +/- 32.89 were removed from analysis).
 
 ds001779-1.0.2
 The Epileptogenicity tutorial dataset was created with BIDS version 1.1.0 by

@@ -77,19 +77,3 @@ Copyfiles
    copyfile_ctf
    copyfile_bti
    copyfile_kit
-
-Reports
-=======
-
-:py:mod:`mne_bids.report`:
-
-.. automodule:: mne_bids.report
-   :no-members:
-   :no-inherited-members:
-
-.. currentmodule:: mne_bids.report
-
-.. autosummary::
-    :toctree: generated/
-
-    make_report

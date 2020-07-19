@@ -104,14 +104,15 @@ dataset was created with BIDS version {{bids_version}}
 by {{_pretty_str(authors)}}. This report was generated with
 MNE-BIDS ({{mne_bids_doi}}). """
 BIDS_DATASET_TEMPLATE += \
-    """The dataset consists of {{n_subjects}} subjects and {{if n_sessions}}{{n_sessions}}
+    """The dataset consists of
+{{n_subjects}} subjects and {{if n_sessions}}{{n_sessions}}
 recording sessions: {{(_pretty_str(sessions))}}.{{endif}} """
 
 PARTICIPANTS_TEMPLATE = \
     """The sex of the subjects {{_summarize_participant_sex(sexs)}}.
 The handedness of the subjects {{_summarize_participant_hand(hands)}}.
 The ages of the subjects
-{{_range_str(min_age, max_age, mean_age, std_age, n_age_unknown, 'age')}}. """
+{{_range_str(min_age, max_age, mean_age, std_age, n_age_unknown, 'age')}}. """  # noqa
 
 MODALITY_AGNOSTIC_TEMPLATE = \
 """Data was recorded using a {{_pretty_str(system)}} system
@@ -124,8 +125,7 @@ with line noise at {{_pretty_str(powerlinefreq)}} Hz{{if _summarize_software_fil
 {{_length_recording_str(length_recordings)}}
 For each dataset, there were on average {{mean_chs}} (std = {{std_chs}}) recording channels per scan,
 out of which {{mean_good_chs}} (std = {{std_good_chs}}) were used in analysis
-({{mean_bad_chs}} +/- {{std_bad_chs}} were removed from analysis).
- """
+({{mean_bad_chs}} +/- {{std_bad_chs}} were removed from analysis). """  # noqa
 
 
 def _pretty_dict(template_dict):
@@ -481,8 +481,8 @@ def make_report(bids_root, session=None, verbose=True):
 
       - dataset_description.json file
       - (optional) participants.tsv file
-      - (optional) modality-agnostic files for MEEG data,
-        which reads files from the \*scans.tsv file.
+      - (optional) modality-agnostic files for (M/I)EEG data,
+        which reads files from the *_scans.tsv file.
 
     Parameters
     ----------
@@ -551,6 +551,7 @@ def make_report(bids_root, session=None, verbose=True):
     paragraph = paragraph.replace('  ', ' ')
 
     return '\n'.join(textwrap.wrap(paragraph, width=80))
+
 
 if __name__ == '__main__':
     output_fpath = './report.txt'
