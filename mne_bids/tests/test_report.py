@@ -47,12 +47,14 @@ def test_read_raw_kind():
     expected_report = \
     """This dataset was created with BIDS version 1.4.0 by Please cite MNE-BIDS in your
 publication before removing this (citations in README). This report was
-generated with MNE-BIDS (https://doi.org/10.21105/joss.01896). There is 1
-subject. The dataset consists of 1 recording sessions 01.The sex of the subjects
-are all unknown. The handedness of the subjects are all unknown. The ages of the
-subjects are all unknown. Data was acquired using a MEG system (Elekta
-manufacturer) with line noise at 60 Hz . There is 1 scan in total, 376.0 +/- 0.0
-total recording channels per scan (374.0 +/- 0.0 are used and 2.0 +/- 0.0 are
-removed from analysis). The dataset lengths range from 20.0 to 20.0 seconds, for
-a total of 20.0 seconds of data recorded over all scans (20.0 +/- 0.0)."""  # noqa
+generated with MNE-BIDS (https://doi.org/10.21105/joss.01896). The dataset
+consists of 1 subjects and 1 recording sessions: 01. The sex of the subjects
+were all unknown. The handedness of the subjects were all unknown. The ages of
+the subjects all unknown. Data was recorded using a MEG system (Elekta
+manufacturer) sampled at 300.31 Hz with line noise at 60 Hz. There was 1 scan in
+total. Recording durations ranged from 20.0 to 20.0 seconds (mean = 20.0, std =
+0.0), for a total of 20.0 seconds of data recorded over all scans. For each
+dataset, there were on average 376.0 (std = 0.0) recording channels per scan,
+out of which 374.0 (std = 0.0) were used in analysis (2.0 +/- 0.0 were removed
+from analysis)."""  # noqa
     assert report == expected_report

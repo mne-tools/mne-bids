@@ -74,7 +74,7 @@ def _length_recording_str(length_recordings):
     std_record_length = round(np.std(length_recordings), 2)
     total_record_length = round(sum(length_recordings), 2)
     
-    return f'Recording durations ranged from {min_record_length} to {max_record_length} seconds '\
+    return f' Recording durations ranged from {min_record_length} to {max_record_length} seconds '\
            f'(mean = {mean_record_length}, std = {std_record_length}), '\
            f'for a total of {total_record_length} seconds of data recorded '\
            f'over all scans.'
@@ -106,8 +106,8 @@ by {{_pretty_str(authors)}}. This report was generated with
 MNE-BIDS ({{mne_bids_doi}}). """
 BIDS_DATASET_TEMPLATE += \
     """The dataset consists of
-{{n_subjects}} subjects and {{if n_sessions}}{{n_sessions}}
-recording sessions: {{(_pretty_str(sessions))}}.{{endif}} """
+{{n_subjects}} subjects{{if n_sessions}} and {{n_sessions}}
+recording sessions: {{(_pretty_str(sessions))}}.{{else}}.{{endif}} """
 
 PARTICIPANTS_TEMPLATE = \
     """The sex of the subjects {{_summarize_participant_sex(sexs)}}.
@@ -116,14 +116,13 @@ The ages of the subjects
 {{_range_str(min_age, max_age, mean_age, std_age, n_age_unknown, 'age')}}. """  # noqa
 
 MODALITY_AGNOSTIC_TEMPLATE = \
-"""Data was recorded using a {{_pretty_str(system)}} system
+    """Data was recorded using a {{_pretty_str(system)}} system
 {{if manufacturer}}({{_pretty_str(manufacturer)}} manufacturer){{endif}}
 sampled at {{_pretty_str(sfreq)}} Hz
 with line noise at {{_pretty_str(powerlinefreq)}} Hz{{if _summarize_software_filters(software_filters)}} using
 {{_summarize_software_filters(software_filters)}}.{{else}}.{{endif}}
 {{if n_scans > 1}}There were {{n_scans}} scans in total.
-{{else}}There was {{n_scans}} scan in total.{{endif}}
-{{_length_recording_str(length_recordings)}}
+{{else}}There was {{n_scans}} scan in total.{{endif}}{{_length_recording_str(length_recordings)}}
 For each dataset, there were on average {{mean_chs}} (std = {{std_chs}}) recording channels per scan,
 out of which {{mean_good_chs}} (std = {{std_good_chs}}) were used in analysis
 ({{mean_bad_chs}} +/- {{std_bad_chs}} were removed from analysis). """  # noqa
