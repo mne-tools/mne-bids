@@ -7,7 +7,6 @@ import os.path as op
 import textwrap
 from pathlib import Path
 
-import mne
 import numpy as np
 from mne.externals.tempita import Template
 from mne.utils import warn
@@ -551,24 +550,3 @@ def make_report(bids_root, session=None, verbose=True):
     paragraph = paragraph.replace('  ', ' ')
 
     return '\n'.join(textwrap.wrap(paragraph, width=80))
-
-
-if __name__ == '__main__':
-    output_fpath = './report.txt'
-
-    fpaths = {'somato': mne.datasets.somato.data_path(),
-              'epilepsy': '/Users/adam2392/Dropbox/epilepsy_bids/',
-              'ds001779-1.0.2': '/Users/adam2392/Downloads/ds001779-1.0.2',
-              'ds002778-1.0.1': '/Users/adam2392/Downloads/ds002778-1.0.1',
-              'ds002904-1.0.0': "/Users/adam2392/Downloads/ds002904-1.0.0",
-              'ds000117-master': "/Users/adam2392/Downloads/ds000117-master",
-              'ds000246-master': "/Users/adam2392/Downloads/ds000246-master",
-              'ds000248-master': "/Users/adam2392/Downloads/ds000248-master",
-              'ds001810-master': "/Users/adam2392/Downloads/ds001810-master",
-              'ds001971-master': "/Users/adam2392/Downloads/ds001971-master",
-              }
-    with open(output_fpath, 'w') as fout:
-        for name, bids_root in fpaths.items():
-            methods_paragraph = make_report(bids_root)
-            fout.write(f'\n\n{name}\n')
-            fout.write(methods_paragraph)
