@@ -201,7 +201,7 @@ def _summarize_participants_tsv(bids_root, verbose=True):
     participants_tsv = _from_tsv(str(participants_tsv_fpath))
     p_ids = participants_tsv['participant_id']
     if verbose:
-        print(f'Summarizing participants.tsv ...')
+        print(f'Summarizing participants.tsv {participants_tsv_fpath}...')
 
     # summarize sex count statistics
     keys = ['M', 'F', 'n/a']
@@ -283,7 +283,7 @@ def _summarize_scans(bids_root, session=None, verbose=True):
         return dict()
 
     if verbose:
-        print(f'Summarizing scans.tsv files...')
+        print(f'Summarizing scans.tsv files {scans_fpaths}...')
 
     # summarize sidecar.json, channels.tsv template
     sidecar_dict = _summarize_sidecar_json(bids_root, scans_fpaths,
