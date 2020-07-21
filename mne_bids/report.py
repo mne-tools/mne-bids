@@ -31,20 +31,20 @@ def _pretty_str(listed):
 
 def _range_str(minval, maxval, meanval, stdval, n_unknown, type):
     if minval == 'n/a':
-        return 'all unknown'
+        return 'ages all unknown'
         
     if n_unknown > 0:
         unknown_str = f'; {n_unknown} with unknown {type}'
     else:
         unknown_str = ''
-    return f'ranged from {round(minval, 2)} to {round(maxval, 2)} '\
+    return f'ages ranged from {round(minval, 2)} to {round(maxval, 2)} '\
            f'(mean = {round(meanval, 2)}, std = {round(stdval, 2)}{unknown_str})'
            
 def _summarize_participant_hand(hands):
     n_unknown = len([hand for hand in hands if hand == 'n/a'])
 
     if n_unknown == len(hands):
-        return f'were all unknown'
+        return f'handedness were all unknown'
     n_rhand = len([hand for hand in hands if hand == 'R'])
     n_lhand = len([hand for hand in hands if hand == 'L'])
     n_ambidex = len([hand for hand in hands if hand == 'A'])
@@ -56,11 +56,11 @@ def _summarize_participant_sex(sexs):
     n_unknown = len([sex for sex in sexs if sex == 'n/a'])
 
     if n_unknown == len(sexs):
-        return f'were all unknown'
+        return f'sex were all unknown'
     n_males = len([sex for sex in sexs if sex == 'M'])
     n_females = len([sex for sex in sexs if sex == 'F'])
 
-    return f'comprised of {n_males} males and {n_females} females'        
+    return f'comprised of {n_males} men and {n_females} women'        
 
 def _length_recording_str(length_recordings):
     import numpy as np
@@ -105,14 +105,11 @@ by {{_pretty_str(authors)}}. This report was generated with
 MNE-BIDS ({{mne_bids_doi}}). """
 BIDS_DATASET_TEMPLATE += \
     """The dataset consists of
-{{n_subjects}} subjects{{if n_sessions}} and {{n_sessions}}
-recording sessions: {{(_pretty_str(sessions))}}.{{else}}.{{endif}} """
+{{n_subjects}} participants ({{PARTICIPANTS_TEMPLATE}}){{if n_sessions}}and {{n_sessions}} recording sessions: {{(_pretty_str(sessions))}}.{{else}}.{{endif}} """  # noqa
 
 PARTICIPANTS_TEMPLATE = \
-    """The sex of the subjects {{_summarize_participant_sex(sexs)}}.
-The handedness of the subjects {{_summarize_participant_hand(hands)}}.
-The ages of the subjects
-{{_range_str(min_age, max_age, mean_age, std_age, n_age_unknown, 'age')}}. """  # noqa
+    """{{_summarize_participant_sex(sexs)}};
+{{_summarize_participant_hand(hands)}}; {{_range_str(min_age, max_age, mean_age, std_age, n_age_unknown, 'age')}}"""  # noqa
 
 MODALITY_AGNOSTIC_TEMPLATE = \
     """Data was recorded using a {{_pretty_str(system)}} system
@@ -507,27 +504,35 @@ def make_report(bids_root, session=None, verbose=True):
     kinds = [kind.upper() for kind in kinds if kind in ALLOWED_KINDS]
 
     # REQUIRED: dataset_description.json summary
-    dataset_template = _summarize_dataset(bids_root)
+    dataset_summary = _summarize_dataset(bids_root)
 
     # RECOMMENDED: participants summary
-    participants_template = _summarize_participants_tsv(bids_root)
+    participant_summary = _summarize_participants_tsv(bids_root)
 
     # RECOMMENDED: scans summary
-    scans_template = _summarize_scans(bids_root, session=session,
-                                      verbose=verbose)
+    scans_summary = _summarize_scans(bids_root, session=session,
+                                     verbose=verbose)
 
     # turn off 'recommended' report summary
     # if files are not available to summarize
-    if not participants_template:
+    if not participant_summary:
         participant_template = ''
     else:
-        participant_template = PARTICIPANTS_TEMPLATE
-    if not scans_template:
+        content = f'{FUNCTION_TEMPLATE}{PARTICIPANTS_TEMPLATE}'
+        participant_template = Template(content=content)
+        participant_template = participant_template.substitute(
+            **participant_summary)
+        if verbose:
+            print(f'The participant template found: {participant_template}')
+
+    dataset_summary['PARTICIPANTS_TEMPLATE'] = str(participant_template)
+
+    if not scans_summary:
         modality_agnostic_template = ''
     else:
         modality_agnostic_template = MODALITY_AGNOSTIC_TEMPLATE
 
-    dataset_template.update({
+    dataset_summary.update({
         'system': kinds,
         'n_subjects': len(subjects),
         'n_sessions': len(sessions),
@@ -539,11 +544,11 @@ def make_report(bids_root, session=None, verbose=True):
     # lower-case templates are "Recommended",
     # while upper-case templates are "Required".
     content = f'{FUNCTION_TEMPLATE}{BIDS_DATASET_TEMPLATE}' \
-              f'{participant_template}{modality_agnostic_template}'
+              f'{modality_agnostic_template}'
+
     paragraph = Template(content=content)
-    paragraph = paragraph.substitute(**dataset_template,
-                                     **participants_template,
-                                     **scans_template)
+    paragraph = paragraph.substitute(**dataset_summary,
+                                     **scans_summary)
 
     # Clean paragraph
     paragraph = paragraph.replace('\n', ' ')
