@@ -481,7 +481,7 @@ def make_report(bids_root, session=None, verbose=True):
       - dataset_description.json file
       - (optional) participants.tsv file
       - (optional) modality-agnostic files for (M/I)EEG data,
-        which reads files from the *_scans.tsv file.
+        which reads files from the ``*_scans.tsv`` file.
 
     Parameters
     ----------
