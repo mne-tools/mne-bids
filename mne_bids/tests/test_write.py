@@ -690,10 +690,8 @@ def test_bti(_bids_validate):
     assert op.exists(op.join(bids_root, 'participants.tsv'))
     _bids_validate(bids_root)
 
-    print('before read')
     raw = read_raw_bids(bids_basename=bids_basename, bids_root=bids_root,
                         kind='meg')
-    print('after read')
 
     with pytest.raises(TypeError, match="unexpected keyword argument 'foo'"):
         read_raw_bids(bids_basename=bids_basename, bids_root=bids_root,
