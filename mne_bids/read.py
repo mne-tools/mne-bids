@@ -238,9 +238,9 @@ def _handle_channels_reading(channels_fname, bids_fname, raw):
             # has been resolved.
             updated_ch_type = bids_to_mne_ch_types.get(ch_type.upper(), None)
             if updated_ch_type is not None:
-                msg = (f'The BIDS dataset contains channel types in lowercase '
-                       f'spelling. This violates the BIDS specification and '
-                       f'will raise an error in the future.')
+                msg = ('The BIDS dataset contains channel types in lowercase '
+                       'spelling. This violates the BIDS specification and '
+                       'will raise an error in the future.')
                 warn(msg)
 
         if updated_ch_type is not None:
