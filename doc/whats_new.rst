@@ -34,7 +34,6 @@ Changelog
 - :func:`make_dataset_description` now has an additional parameter ``dataset_type`` to set the recommended field ``DatasetType`` (defaults to ``"raw"``), by `Stefan Appelhoff`_ (`#472 <https://github.com/mne-tools/mne-bids/pull/472>`_)
 - :func:`mne_bids.copyfiles.copyfile_brainvision` now has an ``anonymize`` parameter to control anonymization, by `Stefan Appelhoff`_ (`#475 <https://github.com/mne-tools/mne-bids/pull/475>`_)
 - :func:`mne_bids.read_raw_bids` and :func:`mne_bids.write_raw_bids` now map respiratory (``RESP``) channel types, by `Richard Höchenberger` (`#482 <https://github.com/mne-tools/mne-bids/pull/482>`_)
-- :func:`mne_bids.read_raw_bids` now tries to correctly map channel types that are not in all-uppercase letters. Since this is in violation of BIDS, a warning is raised, by `Richard Höchenberger` (`#482 <https://github.com/mne-tools/mne-bids/pull/482>`_)
 
 Bug
 ~~~
