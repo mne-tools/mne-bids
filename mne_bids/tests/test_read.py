@@ -762,6 +762,7 @@ def test_read_raw_kind():
 
 
 def test_handle_channel_type_casing():
+    """Test that non-uppercase entries in the `type` column are accepted."""
     bids_root = _TempDir()
     raw = mne.io.read_raw_fif(raw_fname, verbose=False)
     write_raw_bids(raw, bids_basename, bids_root, overwrite=True,
