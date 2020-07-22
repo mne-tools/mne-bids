@@ -235,7 +235,8 @@ def _handle_channels_reading(channels_fname, bids_fname, raw):
         if updated_ch_type is None:
             # XXX Try again with uppercase spelling – this should be removed
             # XXX once https://github.com/bids-standard/bids-validator/issues/1018  # noqa:E501
-            # has been resolved.
+            # XXX has been resolved.
+            # XXX x-ref https://github.com/mne-tools/mne-bids/issues/481
             updated_ch_type = bids_to_mne_ch_types.get(ch_type.upper(), None)
             if updated_ch_type is not None:
                 msg = ('The BIDS dataset contains channel types in lowercase '
