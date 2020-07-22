@@ -759,3 +759,25 @@ def test_read_raw_kind():
 
     assert raw_1 == raw_2
     assert raw_1 == raw_3
+
+
+def test_handle_channel_type_casing():
+    """Test that non-uppercase entries in the `type` column are accepted."""
+    bids_root = _TempDir()
+    raw = mne.io.read_raw_fif(raw_fname, verbose=False)
+    write_raw_bids(raw, bids_basename, bids_root, overwrite=True,
+                   verbose=False)
+
+    subject_path = op.join(bids_root, f'sub-{subject_id}', f'ses-{session_id}',
+                           'meg')
+    bids_channels_fname = (bids_basename.copy()
+                           .update(prefix=subject_path,
+                                   suffix='channels.tsv'))
+
+    # Convert all channel type entries to lowercase.
+    channels_data = _from_tsv(bids_channels_fname)
+    channels_data['type'] = [t.lower() for t in channels_data['type']]
+    _to_tsv(channels_data, bids_channels_fname)
+
+    with pytest.warns(RuntimeWarning, match='lowercase spelling'):
+        read_raw_bids(bids_basename, bids_root=bids_root)

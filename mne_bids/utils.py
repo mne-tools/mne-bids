@@ -13,7 +13,7 @@ import json
 import shutil as sh
 import re
 from datetime import datetime, date, timedelta, timezone
-from collections import defaultdict, OrderedDict
+from collections import OrderedDict
 from os import path as op
 from pathlib import Path
 from copy import deepcopy
@@ -421,7 +421,7 @@ def _get_ch_type_mapping(fro='mne', to='bids'):
 
     Returns
     -------
-    ch_type_mapping : collections.defaultdict
+    mapping : dict
         Dictionary mapping from one nomenclature of channel types to another.
         If a key is not present, a default value will be returned that depends
         on the `fro` and `to` parameters.
@@ -434,34 +434,27 @@ def _get_ch_type_mapping(fro='mne', to='bids'):
 
     """
     if fro == 'mne' and to == 'bids':
-        map_chs = dict(eeg='EEG', misc='MISC', stim='TRIG', emg='EMG',
+        mapping = dict(eeg='EEG', misc='MISC', stim='TRIG', emg='EMG',
                        ecog='ECOG', seeg='SEEG', eog='EOG', ecg='ECG',
+                       resp='RESP',
                        # MEG channels
                        meggradaxial='MEGGRADAXIAL', megmag='MEGMAG',
                        megrefgradaxial='MEGREFGRADAXIAL',
-                       meggradplanar='MEGGRADPLANAR', megrefmag='MEGREFMAG',
-                       )
-        default_value = 'OTHER'
+                       meggradplanar='MEGGRADPLANAR', megrefmag='MEGREFMAG')
 
     elif fro == 'bids' and to == 'mne':
-        map_chs = dict(EEG='eeg', MISC='misc', TRIG='stim', EMG='emg',
+        mapping = dict(EEG='eeg', MISC='misc', TRIG='stim', EMG='emg',
                        ECOG='ecog', SEEG='seeg', EOG='eog', ECG='ecg',
+                       RESP='resp',
                        # No MEG channels for now
                        # Many to one mapping
-                       VEOG='eog', HEOG='eog',
-                       )
-        default_value = 'misc'
-
+                       VEOG='eog', HEOG='eog')
     else:
         raise ValueError('Only two types of mappings are currently supported: '
                          'from mne to bids, or from bids to mne. However, '
                          'you specified from "{}" to "{}"'.format(fro, to))
 
-    # Make it a defaultdict to prevent key errors
-    ch_type_mapping = defaultdict(lambda: default_value)
-    ch_type_mapping.update(map_chs)
-
-    return ch_type_mapping
+    return mapping
 
 
 def print_dir_tree(folder, max_depth=None):
