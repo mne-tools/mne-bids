@@ -124,7 +124,7 @@
 <span class="kn">import</span> <span class="nn">shutil</span> <span class="k">as</span> <span class="nn">sh</span>
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">timedelta</span><span class="p">,</span> <span class="n">timezone</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span><span class="p">,</span> <span class="n">OrderedDict</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
 <span class="kn">from</span> <span class="nn">os</span> <span class="kn">import</span> <span class="n">path</span> <span class="k">as</span> <span class="n">op</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
@@ -532,7 +532,7 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    ch_type_mapping : collections.defaultdict</span>
+<span class="sd">    mapping : dict</span>
 <span class="sd">        Dictionary mapping from one nomenclature of channel types to another.</span>
 <span class="sd">        If a key is not present, a default value will be returned that depends</span>
 <span class="sd">        on the `fro` and `to` parameters.</span>
@@ -545,34 +545,27 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">fro</span> <span class="o">==</span> <span class="s1">&#39;mne&#39;</span> <span class="ow">and</span> <span class="n">to</span> <span class="o">==</span> <span class="s1">&#39;bids&#39;</span><span class="p">:</span>
-        <span class="n">map_chs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">eeg</span><span class="o">=</span><span class="s1">&#39;EEG&#39;</span><span class="p">,</span> <span class="n">misc</span><span class="o">=</span><span class="s1">&#39;MISC&#39;</span><span class="p">,</span> <span class="n">stim</span><span class="o">=</span><span class="s1">&#39;TRIG&#39;</span><span class="p">,</span> <span class="n">emg</span><span class="o">=</span><span class="s1">&#39;EMG&#39;</span><span class="p">,</span>
+        <span class="n">mapping</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">eeg</span><span class="o">=</span><span class="s1">&#39;EEG&#39;</span><span class="p">,</span> <span class="n">misc</span><span class="o">=</span><span class="s1">&#39;MISC&#39;</span><span class="p">,</span> <span class="n">stim</span><span class="o">=</span><span class="s1">&#39;TRIG&#39;</span><span class="p">,</span> <span class="n">emg</span><span class="o">=</span><span class="s1">&#39;EMG&#39;</span><span class="p">,</span>
                        <span class="n">ecog</span><span class="o">=</span><span class="s1">&#39;ECOG&#39;</span><span class="p">,</span> <span class="n">seeg</span><span class="o">=</span><span class="s1">&#39;SEEG&#39;</span><span class="p">,</span> <span class="n">eog</span><span class="o">=</span><span class="s1">&#39;EOG&#39;</span><span class="p">,</span> <span class="n">ecg</span><span class="o">=</span><span class="s1">&#39;ECG&#39;</span><span class="p">,</span>
+                       <span class="n">resp</span><span class="o">=</span><span class="s1">&#39;RESP&#39;</span><span class="p">,</span>
                        <span class="c1"># MEG channels</span>
                        <span class="n">meggradaxial</span><span class="o">=</span><span class="s1">&#39;MEGGRADAXIAL&#39;</span><span class="p">,</span> <span class="n">megmag</span><span class="o">=</span><span class="s1">&#39;MEGMAG&#39;</span><span class="p">,</span>
                        <span class="n">megrefgradaxial</span><span class="o">=</span><span class="s1">&#39;MEGREFGRADAXIAL&#39;</span><span class="p">,</span>
-                       <span class="n">meggradplanar</span><span class="o">=</span><span class="s1">&#39;MEGGRADPLANAR&#39;</span><span class="p">,</span> <span class="n">megrefmag</span><span class="o">=</span><span class="s1">&#39;MEGREFMAG&#39;</span><span class="p">,</span>
-                       <span class="p">)</span>
-        <span class="n">default_value</span> <span class="o">=</span> <span class="s1">&#39;OTHER&#39;</span>
+                       <span class="n">meggradplanar</span><span class="o">=</span><span class="s1">&#39;MEGGRADPLANAR&#39;</span><span class="p">,</span> <span class="n">megrefmag</span><span class="o">=</span><span class="s1">&#39;MEGREFMAG&#39;</span><span class="p">)</span>
 
     <span class="k">elif</span> <span class="n">fro</span> <span class="o">==</span> <span class="s1">&#39;bids&#39;</span> <span class="ow">and</span> <span class="n">to</span> <span class="o">==</span> <span class="s1">&#39;mne&#39;</span><span class="p">:</span>
-        <span class="n">map_chs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">EEG</span><span class="o">=</span><span class="s1">&#39;eeg&#39;</span><span class="p">,</span> <span class="n">MISC</span><span class="o">=</span><span class="s1">&#39;misc&#39;</span><span class="p">,</span> <span class="n">TRIG</span><span class="o">=</span><span class="s1">&#39;stim&#39;</span><span class="p">,</span> <span class="n">EMG</span><span class="o">=</span><span class="s1">&#39;emg&#39;</span><span class="p">,</span>
+        <span class="n">mapping</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">EEG</span><span class="o">=</span><span class="s1">&#39;eeg&#39;</span><span class="p">,</span> <span class="n">MISC</span><span class="o">=</span><span class="s1">&#39;misc&#39;</span><span class="p">,</span> <span class="n">TRIG</span><span class="o">=</span><span class="s1">&#39;stim&#39;</span><span class="p">,</span> <span class="n">EMG</span><span class="o">=</span><span class="s1">&#39;emg&#39;</span><span class="p">,</span>
                        <span class="n">ECOG</span><span class="o">=</span><span class="s1">&#39;ecog&#39;</span><span class="p">,</span> <span class="n">SEEG</span><span class="o">=</span><span class="s1">&#39;seeg&#39;</span><span class="p">,</span> <span class="n">EOG</span><span class="o">=</span><span class="s1">&#39;eog&#39;</span><span class="p">,</span> <span class="n">ECG</span><span class="o">=</span><span class="s1">&#39;ecg&#39;</span><span class="p">,</span>
+                       <span class="n">RESP</span><span class="o">=</span><span class="s1">&#39;resp&#39;</span><span class="p">,</span>
                        <span class="c1"># No MEG channels for now</span>
                        <span class="c1"># Many to one mapping</span>
-                       <span class="n">VEOG</span><span class="o">=</span><span class="s1">&#39;eog&#39;</span><span class="p">,</span> <span class="n">HEOG</span><span class="o">=</span><span class="s1">&#39;eog&#39;</span><span class="p">,</span>
-                       <span class="p">)</span>
-        <span class="n">default_value</span> <span class="o">=</span> <span class="s1">&#39;misc&#39;</span>
-
+                       <span class="n">VEOG</span><span class="o">=</span><span class="s1">&#39;eog&#39;</span><span class="p">,</span> <span class="n">HEOG</span><span class="o">=</span><span class="s1">&#39;eog&#39;</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Only two types of mappings are currently supported: &#39;</span>
                          <span class="s1">&#39;from mne to bids, or from bids to mne. However, &#39;</span>
                          <span class="s1">&#39;you specified from &quot;</span><span class="si">{}</span><span class="s1">&quot; to &quot;</span><span class="si">{}</span><span class="s1">&quot;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fro</span><span class="p">,</span> <span class="n">to</span><span class="p">))</span>
 
-    <span class="c1"># Make it a defaultdict to prevent key errors</span>
-    <span class="n">ch_type_mapping</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">default_value</span><span class="p">)</span>
-    <span class="n">ch_type_mapping</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">map_chs</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">ch_type_mapping</span>
+    <span class="k">return</span> <span class="n">mapping</span>
 
 
 <div class="viewcode-block" id="print_dir_tree"><a class="viewcode-back" href="../../generated/mne_bids.utils.print_dir_tree.html#mne_bids.print_dir_tree">[docs]</a><span class="k">def</span> <span class="nf">print_dir_tree</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="n">max_depth</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -1440,7 +1433,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-07-11.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-07-22.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.1.2.<br/>
     </p>
   </div>

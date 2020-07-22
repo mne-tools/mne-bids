@@ -233,7 +233,7 @@ Let us loop over the subjects and create BIDS-compatible folder
             }
         }
     }
-    /home/circleci/project/mne_bids/utils.py:780: RuntimeWarning: No events found or provided. Please make sure to set channel type using raw.set_channel_types or provide events_data.
+    /home/circleci/project/mne_bids/utils.py:773: RuntimeWarning: No events found or provided. Please make sure to set channel type using raw.set_channel_types or provide events_data.
       warn('No events found or provided. Please make sure to'
 
     Writing '/home/circleci/mne_data/eegmmidb_bids_group_conversion/dataset_description.json'...
@@ -339,7 +339,7 @@ Let us loop over the subjects and create BIDS-compatible folder
             }
         }
     }
-    /home/circleci/project/mne_bids/utils.py:780: RuntimeWarning: No events found or provided. Please make sure to set channel type using raw.set_channel_types or provide events_data.
+    /home/circleci/project/mne_bids/utils.py:773: RuntimeWarning: No events found or provided. Please make sure to set channel type using raw.set_channel_types or provide events_data.
       warn('No events found or provided. Please make sure to'
 
     Writing '/home/circleci/mne_data/eegmmidb_bids_group_conversion/dataset_description.json'...
@@ -445,7 +445,7 @@ Let us loop over the subjects and create BIDS-compatible folder
             }
         }
     }
-    /home/circleci/project/mne_bids/utils.py:780: RuntimeWarning: No events found or provided. Please make sure to set channel type using raw.set_channel_types or provide events_data.
+    /home/circleci/project/mne_bids/utils.py:773: RuntimeWarning: No events found or provided. Please make sure to set channel type using raw.set_channel_types or provide events_data.
       warn('No events found or provided. Please make sure to'
 
     Writing '/home/circleci/mne_data/eegmmidb_bids_group_conversion/dataset_description.json'...
@@ -551,7 +551,7 @@ Let us loop over the subjects and create BIDS-compatible folder
             }
         }
     }
-    /home/circleci/project/mne_bids/utils.py:780: RuntimeWarning: No events found or provided. Please make sure to set channel type using raw.set_channel_types or provide events_data.
+    /home/circleci/project/mne_bids/utils.py:773: RuntimeWarning: No events found or provided. Please make sure to set channel type using raw.set_channel_types or provide events_data.
       warn('No events found or provided. Please make sure to'
 
     Writing '/home/circleci/mne_data/eegmmidb_bids_group_conversion/dataset_description.json'...
@@ -657,7 +657,7 @@ Let us loop over the subjects and create BIDS-compatible folder
             }
         }
     }
-    /home/circleci/project/mne_bids/utils.py:780: RuntimeWarning: No events found or provided. Please make sure to set channel type using raw.set_channel_types or provide events_data.
+    /home/circleci/project/mne_bids/utils.py:773: RuntimeWarning: No events found or provided. Please make sure to set channel type using raw.set_channel_types or provide events_data.
       warn('No events found or provided. Please make sure to'
 
     Writing '/home/circleci/mne_data/eegmmidb_bids_group_conversion/dataset_description.json'...
@@ -763,7 +763,7 @@ Let us loop over the subjects and create BIDS-compatible folder
             }
         }
     }
-    /home/circleci/project/mne_bids/utils.py:780: RuntimeWarning: No events found or provided. Please make sure to set channel type using raw.set_channel_types or provide events_data.
+    /home/circleci/project/mne_bids/utils.py:773: RuntimeWarning: No events found or provided. Please make sure to set channel type using raw.set_channel_types or provide events_data.
       warn('No events found or provided. Please make sure to'
 
     Writing '/home/circleci/mne_data/eegmmidb_bids_group_conversion/dataset_description.json'...
@@ -843,47 +843,47 @@ Now let's see the structure of the BIDS folder we created.
 
     |eegmmidb_bids_group_conversion/
     |--- participants.json
-    |--- dataset_description.json
-    |--- README
     |--- participants.tsv
+    |--- README
+    |--- dataset_description.json
     |--- sub-001/
     |------ ses-01/
     |--------- sub-001_ses-01_scans.tsv
     |--------- eeg/
-    |------------ sub-001_ses-01_task-MotorImagery_run-03_eeg.vmrk
-    |------------ sub-001_ses-01_task-MotorImagery_run-02_eeg.json
-    |------------ sub-001_ses-01_task-MotorImagery_run-02_eeg.eeg
-    |------------ sub-001_ses-01_task-MotorImagery_run-01_eeg.json
-    |------------ sub-001_ses-01_task-MotorImagery_run-01_channels.tsv
-    |------------ sub-001_ses-01_task-MotorImagery_run-02_channels.tsv
-    |------------ sub-001_ses-01_task-MotorImagery_run-01_eeg.eeg
-    |------------ sub-001_ses-01_task-MotorImagery_run-01_eeg.vhdr
-    |------------ sub-001_ses-01_task-MotorImagery_run-02_eeg.vmrk
-    |------------ sub-001_ses-01_task-MotorImagery_run-02_eeg.vhdr
-    |------------ sub-001_ses-01_task-MotorImagery_run-03_eeg.vhdr
     |------------ sub-001_ses-01_task-MotorImagery_run-01_eeg.vmrk
-    |------------ sub-001_ses-01_task-MotorImagery_run-03_eeg.json
-    |------------ sub-001_ses-01_task-MotorImagery_run-03_eeg.eeg
+    |------------ sub-001_ses-01_task-MotorImagery_run-01_eeg.json
     |------------ sub-001_ses-01_task-MotorImagery_run-03_channels.tsv
+    |------------ sub-001_ses-01_task-MotorImagery_run-02_eeg.vhdr
+    |------------ sub-001_ses-01_task-MotorImagery_run-02_eeg.json
+    |------------ sub-001_ses-01_task-MotorImagery_run-01_eeg.vhdr
+    |------------ sub-001_ses-01_task-MotorImagery_run-01_eeg.eeg
+    |------------ sub-001_ses-01_task-MotorImagery_run-02_channels.tsv
+    |------------ sub-001_ses-01_task-MotorImagery_run-03_eeg.json
+    |------------ sub-001_ses-01_task-MotorImagery_run-03_eeg.vhdr
+    |------------ sub-001_ses-01_task-MotorImagery_run-01_channels.tsv
+    |------------ sub-001_ses-01_task-MotorImagery_run-03_eeg.vmrk
+    |------------ sub-001_ses-01_task-MotorImagery_run-02_eeg.eeg
+    |------------ sub-001_ses-01_task-MotorImagery_run-03_eeg.eeg
+    |------------ sub-001_ses-01_task-MotorImagery_run-02_eeg.vmrk
     |--- sub-002/
     |------ ses-01/
     |--------- sub-002_ses-01_scans.tsv
     |--------- eeg/
-    |------------ sub-002_ses-01_task-MotorImagery_run-01_eeg.eeg
-    |------------ sub-002_ses-01_task-MotorImagery_run-01_eeg.vhdr
-    |------------ sub-002_ses-01_task-MotorImagery_run-02_eeg.vhdr
-    |------------ sub-002_ses-01_task-MotorImagery_run-01_eeg.json
-    |------------ sub-002_ses-01_task-MotorImagery_run-03_channels.tsv
-    |------------ sub-002_ses-01_task-MotorImagery_run-03_eeg.json
-    |------------ sub-002_ses-01_task-MotorImagery_run-02_channels.tsv
-    |------------ sub-002_ses-01_task-MotorImagery_run-03_eeg.vhdr
-    |------------ sub-002_ses-01_task-MotorImagery_run-02_eeg.eeg
-    |------------ sub-002_ses-01_task-MotorImagery_run-02_eeg.json
-    |------------ sub-002_ses-01_task-MotorImagery_run-01_channels.tsv
-    |------------ sub-002_ses-01_task-MotorImagery_run-01_eeg.vmrk
     |------------ sub-002_ses-01_task-MotorImagery_run-02_eeg.vmrk
+    |------------ sub-002_ses-01_task-MotorImagery_run-01_eeg.vmrk
+    |------------ sub-002_ses-01_task-MotorImagery_run-03_channels.tsv
+    |------------ sub-002_ses-01_task-MotorImagery_run-02_channels.tsv
     |------------ sub-002_ses-01_task-MotorImagery_run-03_eeg.vmrk
+    |------------ sub-002_ses-01_task-MotorImagery_run-02_eeg.json
+    |------------ sub-002_ses-01_task-MotorImagery_run-03_eeg.vhdr
+    |------------ sub-002_ses-01_task-MotorImagery_run-01_channels.tsv
+    |------------ sub-002_ses-01_task-MotorImagery_run-03_eeg.json
     |------------ sub-002_ses-01_task-MotorImagery_run-03_eeg.eeg
+    |------------ sub-002_ses-01_task-MotorImagery_run-02_eeg.eeg
+    |------------ sub-002_ses-01_task-MotorImagery_run-01_eeg.vhdr
+    |------------ sub-002_ses-01_task-MotorImagery_run-01_eeg.eeg
+    |------------ sub-002_ses-01_task-MotorImagery_run-01_eeg.json
+    |------------ sub-002_ses-01_task-MotorImagery_run-02_eeg.vhdr
 
 
 
@@ -891,7 +891,7 @@ Now let's see the structure of the BIDS folder we created.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  0.750 seconds)
+   **Total running time of the script:** ( 0 minutes  1.501 seconds)
 
 
 .. _sphx_glr_download_auto_examples_convert_group_studies.py:

@@ -181,15 +181,15 @@ of the directory tree.</p>
 |------ eegmmidb/
 |--------- 1.0.0/
 |------------ S002/
-|--------------- S002R02.edf
 |--------------- S002R12.edf
-|--------------- S002R04.edf
 |--------------- S002R08.edf
+|--------------- S002R04.edf
+|--------------- S002R02.edf
 |------------ S001/
 |--------------- S001R02.edf
+|--------------- S001R08.edf
 |--------------- S001R04.edf
 |--------------- S001R12.edf
-|--------------- S001R08.edf
 </pre></div>
 </div>
 <p>The data are in the <a class="reference external" href="https://www.edfplus.info/">European Data Format</a> with
@@ -563,18 +563,18 @@ Wrote /home/circleci/mne_data/eegmmidb_bids_eeg_example/sub-001/sub-001_scans.ts
 <p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>|eegmmidb_bids_eeg_example/
 |--- participants.json
-|--- dataset_description.json
-|--- README
 |--- participants.tsv
+|--- README
+|--- dataset_description.json
 |--- sub-001/
 |------ sub-001_scans.tsv
 |------ eeg/
-|--------- sub-001_task-RestEyesClosed_events.tsv
-|--------- sub-001_task-RestEyesClosed_eeg.edf
+|--------- sub-001_coordsystem.json
 |--------- sub-001_task-RestEyesClosed_eeg.json
 |--------- sub-001_task-RestEyesClosed_channels.tsv
+|--------- sub-001_task-RestEyesClosed_events.tsv
 |--------- sub-001_electrodes.tsv
-|--------- sub-001_coordsystem.json
+|--------- sub-001_task-RestEyesClosed_eeg.edf
 </pre></div>
 </div>
 <p>We can see that MNE-BIDS wrote several important files related to subject 1
@@ -625,7 +625,7 @@ directories called the “BIDS-validator”, available as a web version and a
 command line tool:</p>
 <p>Web version: <a class="reference external" href="https://bids-standard.github.io/bids-validator/">https://bids-standard.github.io/bids-validator/</a></p>
 <p>Command line tool: <a class="reference external" href="https://www.npmjs.com/package/bids-validator">https://www.npmjs.com/package/bids-validator</a></p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.188 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.151 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-eeg-to-bids-py">
 <div class="binder-badge docutils container">
 <a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/convert_eeg_to_bids.ipynb"><img alt="https://mybinder.org/badge_logo.svg" src="https://mybinder.org/badge_logo.svg" width="150px" /></a>
@@ -653,7 +653,7 @@ command line tool:</p>
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-07-11.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-07-22.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.1.2.<br/>
     </p>
   </div>

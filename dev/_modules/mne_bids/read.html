@@ -342,6 +342,19 @@
         <span class="c1"># Try to map from BIDS nomenclature to MNE, leave channel type</span>
         <span class="c1"># untouched if we are uncertain</span>
         <span class="n">updated_ch_type</span> <span class="o">=</span> <span class="n">bids_to_mne_ch_types</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ch_type</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">updated_ch_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># XXX Try again with uppercase spelling – this should be removed</span>
+            <span class="c1"># XXX once https://github.com/bids-standard/bids-validator/issues/1018  # noqa:E501</span>
+            <span class="c1"># XXX has been resolved.</span>
+            <span class="c1"># XXX x-ref https://github.com/mne-tools/mne-bids/issues/481</span>
+            <span class="n">updated_ch_type</span> <span class="o">=</span> <span class="n">bids_to_mne_ch_types</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ch_type</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">updated_ch_type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;The BIDS dataset contains channel types in lowercase &#39;</span>
+                       <span class="s1">&#39;spelling. This violates the BIDS specification and &#39;</span>
+                       <span class="s1">&#39;will raise an error in the future.&#39;</span><span class="p">)</span>
+                <span class="n">warn</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="n">updated_ch_type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">channel_type_dict</span><span class="p">[</span><span class="n">ch_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">updated_ch_type</span>
 
@@ -756,7 +769,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-07-11.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-07-22.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.1.2.<br/>
     </p>
   </div>
