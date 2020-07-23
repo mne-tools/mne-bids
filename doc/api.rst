@@ -39,16 +39,16 @@ MNE BIDS
    get_anonymization_daysback
 
 
-Utils
-=====
+Path
+====
 
-:py:mod:`mne_bids.utils`:
+:py:mod:`mne_bids.path`:
 
-.. automodule:: mne_bids.utils
+.. automodule:: mne_bids.path
    :no-members:
    :no-inherited-members:
 
-.. currentmodule:: mne_bids.utils
+.. currentmodule:: mne_bids.path
 
 .. autosummary::
    :toctree: generated/
