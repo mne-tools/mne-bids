@@ -26,8 +26,8 @@ and to display the data that is saved within the accompanying sidecars.
 # We are importing everything we need for this example:
 from mne.datasets import somato
 
-from mne_bids import make_bids_basename, read_raw_bids
-from mne_bids.path import print_dir_tree
+from mne_bids import (make_bids_basename, read_raw_bids,
+                      print_dir_tree)
 
 ###############################################################################
 # We will be using the `MNE somato data <mne_somato_data_>`_, which
