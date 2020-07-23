@@ -10,8 +10,9 @@ from pathlib import Path
 from mne.utils import warn, logger
 
 from mne_bids.config import BIDS_PATH_ENTITIES, reader
-from mne_bids.utils import (_check_key_val, _check_empty_room_basename, _check_types,
-                            _path_to_str, param_regex, _ensure_tuple)
+from mne_bids.utils import (_check_key_val, _check_empty_room_basename,
+                            _check_types, _path_to_str, param_regex,
+                            _ensure_tuple)
 
 
 class BIDSPath(object):

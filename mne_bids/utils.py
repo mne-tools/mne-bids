@@ -26,6 +26,11 @@ from mne.utils import check_version, warn, logger
 from mne_bids.tsv_handler import _to_tsv, _tsv_to_str
 
 
+# This regex matches key-val pairs. Any characters are allowed in the key and
+# the value, except these special symbols: - _ . \ /
+param_regex = re.compile(r'([^-_\.\\\/]+)-([^-_\.\\\/]+)')
+
+
 def _ensure_tuple(x):
     """Return a tuple."""
     if x is None:
@@ -82,11 +87,6 @@ def _get_ch_type_mapping(fro='mne', to='bids'):
                          'you specified from "{}" to "{}"'.format(fro, to))
 
     return mapping
-
-
-# This regex matches key-val pairs. Any characters are allowed in the key and
-# the value, except these special symbols: - _ . \ /
-param_regex = re.compile(r'([^-_\.\\\/]+)-([^-_\.\\\/]+)')
 
 
 def _handle_kind(raw):
