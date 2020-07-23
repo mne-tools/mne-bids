@@ -80,7 +80,7 @@ for date in dates:
 
 ###############################################################################
 # Let us look at the directory structure
-from mne_bids.utils import print_dir_tree # noqa
+from mne_bids.path import print_dir_tree
 
 print_dir_tree(bids_path)
 

@@ -33,13 +33,12 @@ from mne.utils import check_version, has_nibabel, logger, warn
 from mne_bids.pick import coil_type
 from mne_bids.dig import _write_dig_bids, _coordsystem_json
 from mne_bids.utils import (_write_json, _write_tsv, _write_text,
-                            _read_events, _mkdir_p, _age_on_date,
+                            _read_events, _age_on_date,
                             _infer_eeg_placement_scheme,
-                            _parse_bids_filename, _handle_kind,
-                            _path_to_str, _parse_ext,
-                            _get_ch_type_mapping, make_bids_folders,
-                            _estimate_line_freq, make_bids_basename,
-                            BIDSPath, _check_anonymize, _stamp_to_dt)
+                            _handle_kind,
+                            _path_to_str, _get_ch_type_mapping, _estimate_line_freq, _check_anonymize, _stamp_to_dt)
+from mne_bids import make_bids_folders, make_bids_basename
+from mne_bids.path import BIDSPath, _parse_ext, _parse_bids_filename, _mkdir_p
 from mne_bids.copyfiles import (copyfile_brainvision, copyfile_eeglab,
                                 copyfile_ctf, copyfile_bti, copyfile_kit)
 from mne_bids.tsv_handler import (_from_tsv, _drop, _contains_row,

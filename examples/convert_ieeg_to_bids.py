@@ -47,7 +47,7 @@ import numpy as np
 
 import mne
 from mne_bids import write_raw_bids, make_bids_basename, read_raw_bids
-from mne_bids.utils import print_dir_tree
+from mne_bids.path import print_dir_tree
 
 ###############################################################################
 # Step 1: Download the data

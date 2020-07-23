@@ -44,7 +44,8 @@ from mne_bids import (write_raw_bids, read_raw_bids, make_bids_basename,
 from mne_bids.utils import (_stamp_to_dt, _get_anonymization_daysback,
                             get_anonymization_daysback)
 from mne_bids.tsv_handler import _from_tsv, _to_tsv
-from mne_bids.utils import _find_matching_sidecar, _update_sidecar
+from mne_bids.utils import _update_sidecar
+from mne_bids.path import _find_matching_sidecar
 from mne_bids.pick import coil_type
 from mne_bids.config import REFERENCES
 

@@ -18,10 +18,10 @@ from mne_bids.config import (BIDS_IEEG_COORDINATE_FRAMES,
                              MNE_TO_BIDS_FRAMES, BIDS_TO_MNE_FRAMES,
                              MNE_FRAME_TO_STR, COORD_FRAME_DESCRIPTIONS)
 from mne_bids.tsv_handler import _from_tsv
-from mne_bids.utils import (_extract_landmarks, _parse_bids_filename,
-                            _scale_coord_to_meters, _write_json, _write_tsv,
-                            make_bids_basename
+from mne_bids.utils import (_extract_landmarks, _scale_coord_to_meters, _write_json, _write_tsv
                             )
+from mne_bids import make_bids_basename
+from mne_bids.path import _parse_bids_filename
 
 
 def _handle_electrodes_reading(electrodes_fname, coord_frame,

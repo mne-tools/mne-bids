@@ -6,14 +6,14 @@
 # License: BSD (3-clause)
 import os
 import os.path as op
-import pytest
+# This is here to handle mne-python <0.20
+import warnings
 from datetime import datetime
 from pathlib import Path
 
+import pytest
 from numpy.random import random
 
-# This is here to handle mne-python <0.20
-import warnings
 with warnings.catch_warnings():
     warnings.filterwarnings(action='ignore',
                             message="can't resolve package",
@@ -24,13 +24,12 @@ from mne.utils import _TempDir
 from mne.datasets import testing
 
 from mne_bids import make_bids_folders, make_bids_basename, write_raw_bids
-from mne_bids.utils import (_check_types, print_dir_tree, _age_on_date,
+from mne_bids.utils import (_check_types, _age_on_date,
                             _infer_eeg_placement_scheme, _handle_kind,
-                            _find_matching_sidecar, _parse_ext,
-                            _get_ch_type_mapping, _parse_bids_filename,
-                            _find_best_candidates, get_entity_vals,
-                            _path_to_str, get_kinds)
-
+                            _get_ch_type_mapping, _path_to_str)
+from mne_bids.path import (print_dir_tree, _parse_ext, _parse_bids_filename,
+                           _find_matching_sidecar, get_kinds,
+                           get_entity_vals, _find_best_candidates)
 
 base_path = op.join(op.dirname(mne.__file__), 'io')
 subject_id = '01'

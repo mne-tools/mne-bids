@@ -30,7 +30,7 @@ import mne
 from mne.datasets import sample
 
 from mne_bids import write_raw_bids, read_raw_bids, make_bids_basename
-from mne_bids.utils import print_dir_tree
+from mne_bids.path import print_dir_tree
 
 ###############################################################################
 # Now we can read the MNE sample data. We define an `event_id` based on our

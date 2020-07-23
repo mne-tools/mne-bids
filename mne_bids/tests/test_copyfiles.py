@@ -21,7 +21,8 @@ with warnings.catch_warnings():
 from mne.datasets import testing
 from mne.utils import _TempDir
 from mne_bids import make_bids_basename
-from mne_bids.utils import _handle_kind, _parse_ext
+from mne_bids.utils import _handle_kind
+from mne_bids.path import _parse_ext
 
 from mne_bids.copyfiles import (_get_brainvision_encoding,
                                 _get_brainvision_paths,

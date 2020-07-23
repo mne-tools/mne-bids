@@ -26,7 +26,7 @@ from mne.datasets import eegbci
 
 from mne_bids import (write_raw_bids, make_bids_basename,
                       get_anonymization_daysback, make_report)
-from mne_bids.utils import print_dir_tree
+from mne_bids.path import print_dir_tree
 
 ###############################################################################
 # And fetch the data for several subjects and runs of a single task.

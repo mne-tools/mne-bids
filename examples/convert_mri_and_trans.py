@@ -48,7 +48,7 @@ from mne.source_space import head_to_mri
 
 from mne_bids import (write_raw_bids, make_bids_basename, write_anat,
                       get_head_mri_trans)
-from mne_bids.utils import print_dir_tree
+from mne_bids.path import print_dir_tree
 
 ###############################################################################
 # We will be using the `MNE sample data <mne_sample_data_>`_ and write a basic
