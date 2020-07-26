@@ -1,5 +1,6 @@
 """Read/write BIDS compatible electrode/coords structures from MNE."""
 # Authors: Adam Li <adam2392@gmail.com>
+#          Stefan Appelhoff <stefan.appelhoff@mailbox.org>
 #
 # License: BSD (3-clause)
 import json
@@ -132,6 +133,21 @@ def _handle_coordsystem_reading(coordsystem_fpath, kind, verbose=True):
     return coord_frame, coord_unit
 
 
+def _get_impedances(raw, names):
+    """Get the impedance values in kOhm from raw.impedances."""
+    if not hasattr(raw, 'impedances'):
+        return ['n/a'] * len(names)
+    no_info = {'imp': 'n/a', 'imp_unit': 'kOhm'}
+    impedance_dicts = [raw.impedances.get(name, no_info) for name in names]
+    # If we encounter a unit not defined in `scalings`, return NaN
+    scalings = {'kOhm': 1, 'Ohm': 0.001}
+    impedances = [
+        imp_dict['imp'] * scalings.get(imp_dict['imp_unit'], np.nan)
+        for imp_dict in impedance_dicts
+    ]
+    return impedances
+
+
 def _electrodes_tsv(raw, fname, kind, overwrite=False, verbose=True):
     """Create an electrodes.tsv file and save it.
 
@@ -182,6 +198,11 @@ def _electrodes_tsv(raw, fname, kind, overwrite=False, verbose=True):
                             ])
     else:  # pragma: no cover
         raise RuntimeError("kind {} not supported.".format(kind))
+
+    # Add impedance values if available, currently only BrainVision:
+    # https://github.com/mne-tools/mne-python/pull/7974
+    if hasattr(raw, 'impedances'):
+        data['impedances'] = _get_impedances(raw, names)
 
     _write_tsv(fname, data, overwrite=overwrite, verbose=verbose)
 
