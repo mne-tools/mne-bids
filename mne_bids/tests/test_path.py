@@ -1,5 +1,5 @@
 import os
-from os import path as op
+import os.path as op
 from pathlib import Path
 
 import pytest
