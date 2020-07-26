@@ -202,7 +202,7 @@ def _electrodes_tsv(raw, fname, kind, overwrite=False, verbose=True):
     # Add impedance values if available, currently only BrainVision:
     # https://github.com/mne-tools/mne-python/pull/7974
     if hasattr(raw, 'impedances'):
-        data['impedances'] = _get_impedances(raw, names)
+        data['impedance'] = _get_impedances(raw, names)
 
     _write_tsv(fname, data, overwrite=overwrite, verbose=verbose)
 

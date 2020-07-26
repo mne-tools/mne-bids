@@ -793,9 +793,9 @@ def test_vhdr(_bids_validate):
     electrodes_fpath = _find_matching_sidecar(bids_basename, bids_root,
                                               suffix='electrodes.tsv')
     tsv = _from_tsv(electrodes_fpath)
-    assert len(tsv.get('impedances', {})) > 0
-    assert tsv['impedances'][-3:] == ['n/a', 'n/a', 'n/a']
-    assert tsv['impedances'][:3] == ['5.0', '2.0', '4.0']
+    assert len(tsv.get('impedance', {})) > 0
+    assert tsv['impedance'][-3:] == ['n/a', 'n/a', 'n/a']
+    assert tsv['impedance'][:3] == ['5.0', '2.0', '4.0']
 
 
 
