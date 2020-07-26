@@ -4,13 +4,24 @@
 # License: BSD (3-clause)
 import os
 import os.path as op
+# This is here to handle mne-python <0.20
+import warnings
 from pathlib import Path
 
 import pytest
+
+with warnings.catch_warnings():
+    warnings.filterwarnings(action='ignore',
+                            message="can't resolve package",
+                            category=ImportWarning)
+    import mne
+
+from mne.datasets import testing
 from mne.utils import _TempDir
 
 from mne_bids import (get_kinds, get_entity_vals, print_dir_tree,
-                      make_bids_folders, make_bids_basename)
+                      make_bids_folders, make_bids_basename,
+                      write_raw_bids)
 from mne_bids.path import (_parse_ext, _parse_bids_filename,
                            _find_best_candidates, _find_matching_sidecar)
 
@@ -23,6 +34,31 @@ task = 'testing'
 bids_basename = make_bids_basename(
     subject=subject_id, session=session_id, run=run, acquisition=acq,
     task=task)
+
+
+@pytest.fixture(scope='session')
+def return_bids_test_dir(tmpdir_factory):
+    """Return path to a written test BIDS dir."""
+    bids_root = str(tmpdir_factory.mktemp('mnebids_utils_test_bids_ds'))
+    data_path = testing.data_path()
+    raw_fname = op.join(data_path, 'MEG', 'sample',
+                        'sample_audvis_trunc_raw.fif')
+
+    event_id = {'Auditory/Left': 1, 'Auditory/Right': 2, 'Visual/Left': 3,
+                'Visual/Right': 4, 'Smiley': 5, 'Button': 32}
+    events_fname = op.join(data_path, 'MEG', 'sample',
+                           'sample_audvis_trunc_raw-eve.fif')
+
+    raw = mne.io.read_raw_fif(raw_fname)
+    # Write multiple runs for test_purposes
+    for run_idx in [run, '02']:
+        name = bids_basename.copy().update(run=run_idx)
+        with pytest.warns(RuntimeWarning, match='No line frequency'):
+            write_raw_bids(raw, name, bids_root,
+                           events_data=events_fname, event_id=event_id,
+                           overwrite=True)
+
+    return bids_root
 
 
 def test_get_keys(return_bids_test_dir):
