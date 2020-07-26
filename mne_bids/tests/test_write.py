@@ -708,9 +708,8 @@ def test_bti(_bids_validate):
 
 
 # XXX: vhdr test currently passes only on MNE master. Skip until next release.
-# see: https://github.com/mne-tools/mne-python/pull/6558
-@pytest.mark.skipif(LooseVersion(mne.__version__) < LooseVersion('0.19'),
-                    reason='requires mne 0.19.dev0 or higher')
+@pytest.mark.skipif(LooseVersion(mne.__version__) < LooseVersion('0.21'),
+                    reason='requires mne 0.21.dev0 or higher')
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_vhdr(_bids_validate):
     """Test write_raw_bids conversion for BrainVision data."""
