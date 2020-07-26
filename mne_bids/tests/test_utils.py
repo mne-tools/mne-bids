@@ -19,8 +19,6 @@ with warnings.catch_warnings():
                             category=ImportWarning)
     import mne
 
-from mne.datasets import testing
-
 from mne_bids import make_bids_basename, write_raw_bids
 from mne_bids.utils import (_check_types, _age_on_date,
                             _infer_eeg_placement_scheme, _handle_kind,
@@ -36,31 +34,6 @@ task = 'testing'
 bids_basename = make_bids_basename(
     subject=subject_id, session=session_id, run=run, acquisition=acq,
     task=task)
-
-
-@pytest.fixture(scope='session')
-def return_bids_test_dir(tmpdir_factory):
-    """Return path to a written test BIDS dir."""
-    bids_root = str(tmpdir_factory.mktemp('mnebids_utils_test_bids_ds'))
-    data_path = testing.data_path()
-    raw_fname = op.join(data_path, 'MEG', 'sample',
-                        'sample_audvis_trunc_raw.fif')
-
-    event_id = {'Auditory/Left': 1, 'Auditory/Right': 2, 'Visual/Left': 3,
-                'Visual/Right': 4, 'Smiley': 5, 'Button': 32}
-    events_fname = op.join(data_path, 'MEG', 'sample',
-                           'sample_audvis_trunc_raw-eve.fif')
-
-    raw = mne.io.read_raw_fif(raw_fname)
-    # Write multiple runs for test_purposes
-    for run_idx in [run, '02']:
-        name = bids_basename.copy().update(run=run_idx)
-        with pytest.warns(RuntimeWarning, match='No line frequency'):
-            write_raw_bids(raw, name, bids_root,
-                           events_data=events_fname, event_id=event_id,
-                           overwrite=True)
-
-    return bids_root
 
 
 def test_get_ch_type_mapping():
