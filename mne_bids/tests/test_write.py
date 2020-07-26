@@ -777,6 +777,27 @@ def test_vhdr(_bids_validate):
     write_raw_bids(raw, bids_basename, bids_root, overwrite=False)
     _bids_validate(bids_root)
 
+    # Test coords and impedance writing
+    # first read the data and set a montage
+    data_path = op.join(testing.data_path(), 'montage')
+    fname_vhdr = op.join(data_path, 'bv_dig_test.vhdr')
+    raw = mne.io.read_raw_brainvision(fname_vhdr, preload=False)
+    raw.set_channel_types({'HEOG': 'eog', 'VEOG': 'eog', 'ECG': 'ecg'})
+    fname_bvct = op.join(data_path, 'captrak_coords.bvct')
+    montage = mne.channels.read_dig_captrak(fname_bvct)
+    raw.set_montage(montage)
+
+    # convert to BIDS and check impedances
+    bids_root = _TempDir()
+    write_raw_bids(raw, bids_basename, bids_root)
+    electrodes_fpath = _find_matching_sidecar(bids_basename, bids_root,
+                                              suffix='electrodes.tsv')
+    tsv = _from_tsv(electrodes_fpath)
+    assert len(tsv.get('impedances', {})) > 0
+    assert tsv['impedances'][-3:] == ['n/a', 'n/a', 'n/a']
+    assert tsv['impedances'][:3] == ['5.0', '2.0', '4.0']
+
+
 
 @pytest.mark.filterwarnings(warning_str['nasion_not_found'])
 def test_edf(_bids_validate):
