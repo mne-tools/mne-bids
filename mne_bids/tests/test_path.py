@@ -1,3 +1,7 @@
+"""Test for the MNE BIDS path functions."""
+# Authors: Adam Li <adam2392@gmail.com>
+#
+# License: BSD (3-clause)
 import os
 import os.path as op
 from pathlib import Path

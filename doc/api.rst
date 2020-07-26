@@ -58,6 +58,7 @@ Path
    get_kinds
    BIDSPath
 
+
 Copyfiles
 =========
 
@@ -77,3 +78,20 @@ Copyfiles
    copyfile_ctf
    copyfile_bti
    copyfile_kit
+
+
+Utils
+=====
+
+:py:mod:`mne_bids.utils`:
+
+.. automodule:: mne_bids.utils
+   :no-members:
+   :no-inherited-members:
+
+.. currentmodule:: mne_bids.utils
+
+.. autosummary::
+   :toctree: generated/
+
+   get_anonymization_daysback

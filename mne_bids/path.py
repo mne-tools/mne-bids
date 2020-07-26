@@ -1,3 +1,7 @@
+"""BIDS compatible path functionality."""
+# Authors: Adam Li <adam2392@gmail.com>
+#
+# License: BSD (3-clause)
 import glob
 import os
 import re
