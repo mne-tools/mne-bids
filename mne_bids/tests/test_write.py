@@ -797,7 +797,6 @@ def test_vhdr(_bids_validate):
     assert tsv['impedance'][:3] == ['5.0', '2.0', '4.0']
 
 
-
 @pytest.mark.filterwarnings(warning_str['nasion_not_found'])
 def test_edf(_bids_validate):
     """Test write_raw_bids conversion for European Data Format data."""
