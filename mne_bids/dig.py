@@ -135,7 +135,7 @@ def _handle_coordsystem_reading(coordsystem_fpath, kind, verbose=True):
 
 def _get_impedances(raw, names):
     """Get the impedance values in kOhm from raw.impedances."""
-    if not hasattr(raw, 'impedances'):
+    if not hasattr(raw, 'impedances'):  # pragma: no cover
         return ['n/a'] * len(names)
     no_info = {'imp': 'n/a', 'imp_unit': 'kOhm'}
     impedance_dicts = [raw.impedances.get(name, no_info) for name in names]
