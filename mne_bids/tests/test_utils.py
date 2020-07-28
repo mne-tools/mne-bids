@@ -19,10 +19,11 @@ with warnings.catch_warnings():
                             category=ImportWarning)
     import mne
 
-from mne_bids import make_bids_basename, write_raw_bids
+from mne_bids import make_bids_basename
 from mne_bids.utils import (_check_types, _age_on_date,
                             _infer_eeg_placement_scheme, _handle_kind,
-                            _get_ch_type_mapping, _path_to_str)
+                            _get_ch_type_mapping)
+from mne_bids.path import _path_to_str
 
 base_path = op.join(op.dirname(mne.__file__), 'io')
 subject_id = '01'

@@ -12,7 +12,6 @@ import os
 import re
 from datetime import datetime, date, timedelta, timezone
 from os import path as op
-from pathlib import Path
 
 import numpy as np
 from mne import read_events, find_events, events_from_annotations
@@ -136,15 +135,6 @@ def _check_types(variables):
         if not isinstance(var, (str, type(None))):
             raise ValueError("You supplied a value of type %s, where a "
                              "string or None was expected." % type(var))
-
-
-def _path_to_str(var):
-    """Make sure var is a string or Path, return string representation."""
-    if not isinstance(var, (Path, str)):
-        raise ValueError("All path parameters must be either strings or "
-                         "pathlib.Path objects. Found type %s." % type(var))
-    else:
-        return str(var)
 
 
 def _write_json(fname, dictionary, overwrite=False, verbose=False):

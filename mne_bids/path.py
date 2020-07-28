@@ -15,7 +15,7 @@ from mne.utils import warn, logger
 
 from mne_bids.config import BIDS_PATH_ENTITIES, reader
 from mne_bids.utils import (_check_key_val, _check_empty_room_basename,
-                            _check_types, _path_to_str, param_regex,
+                            _check_types, param_regex,
                             _ensure_tuple)
 
 
@@ -777,3 +777,12 @@ def _infer_kind(*, bids_basename, bids_root, sub, ses):
 
     assert len(kinds) == 1
     return kinds[0]
+
+
+def _path_to_str(var):
+    """Make sure var is a string or Path, return string representation."""
+    if not isinstance(var, (Path, str)):
+        raise ValueError("All path parameters must be either strings or "
+                         "pathlib.Path objects. Found type %s." % type(var))
+    else:
+        return str(var)
