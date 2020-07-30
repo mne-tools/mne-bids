@@ -2,6 +2,7 @@
 
 __version__ = '0.5.dev0'
 from mne_bids import commands
+from mne_bids.report import make_report
 from mne_bids.read import (get_head_mri_trans, read_raw_bids,
                            get_matched_empty_room)
 from mne_bids.utils import (get_anonymization_daysback,

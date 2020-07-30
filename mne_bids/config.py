@@ -3,7 +3,9 @@ from mne import io
 from mne.io.constants import FIFF
 
 
-BIDS_VERSION = "1.2.2"
+BIDS_VERSION = "1.4.0"
+
+DOI = """https://doi.org/10.21105/joss.01896"""
 
 ALLOWED_KINDS = ['meg', 'eeg', 'ieeg']
 

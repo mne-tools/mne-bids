@@ -1053,6 +1053,8 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
 
     # save all participants meta data and readme file
     _readme(kind, readme_fname, overwrite, verbose)
+
+    # save all participants meta data
     _participants_tsv(raw, subject_id, participants_tsv_fname, overwrite,
                       verbose)
     _participants_json(participants_json_fname, True, verbose)
