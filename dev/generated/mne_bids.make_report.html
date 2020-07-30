@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>mne_bids.copyfiles.copyfile_brainvision &#8212; mne_bids 0.5.dev0 documentation</title>
+    <title>mne_bids.make_report &#8212; mne_bids 0.5.dev0 documentation</title>
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css" />
@@ -108,58 +108,49 @@
   <div class="row">
     <div class="body col-md-12 content" role="main">
       
-  <div class="section" id="mne-bids-copyfiles-copyfile-brainvision">
-<h1>mne_bids.copyfiles.copyfile_brainvision<a class="headerlink" href="#mne-bids-copyfiles-copyfile-brainvision" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="mne-bids-make-report">
+<h1>mne_bids.make_report<a class="headerlink" href="#mne-bids-make-report" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt id="mne_bids.copyfiles.copyfile_brainvision">
-<code class="sig-prename descclassname">mne_bids.copyfiles.</code><code class="sig-name descname">copyfile_brainvision</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">vhdr_src</span></em>, <em class="sig-param"><span class="n">vhdr_dest</span></em>, <em class="sig-param"><span class="n">anonymize</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/copyfiles.html#copyfile_brainvision"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.copyfiles.copyfile_brainvision" title="Permalink to this definition">¶</a></dt>
-<dd><p>Copy a BrainVision file triplet to a new location and repair links.</p>
-<p>The BrainVision file format consists of three files: .vhdr, .eeg, and .vmrk
-The .eeg and .vmrk files associated with the .vhdr file will be given names
-as in <em class="xref py py-obj">vhdr_dest</em> with adjusted extensions. Internal file pointers will be
-fixed.</p>
-<dl class="field-list">
+<dt id="mne_bids.make_report">
+<code class="sig-prename descclassname">mne_bids.</code><code class="sig-name descname">make_report</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">bids_root</span></em>, <em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/report.html#make_report"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.make_report" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a methods paragraph string from BIDS dataset.</p>
+<p>Summarizes the REQUIRED components in the BIDS specification
+and also some RECOMMENDED components. Currently, the methods
+paragraph summarize the:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>dataset_description.json file</p></li>
+<li><p>(optional) participants.tsv file</p></li>
+<li><p>(optional) modality-agnostic files for (M/I)EEG data,
+which reads files from the <code class="docutils literal notranslate"><span class="pre">*_scans.tsv</span></code> file.</p></li>
+</ul>
+</div></blockquote>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><dl>
-<dt><strong>vhdr_src</strong><span class="classifier">str</span></dt><dd><p>The src path of the .vhdr file to be copied.</p>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>bids_root</strong><span class="classifier">str | pathlib.Path</span></dt><dd><p>The path of the root of the BIDS compatible folder.</p>
 </dd>
-<dt><strong>vhdr_dest</strong><span class="classifier">str</span></dt><dd><p>The destination path of the .vhdr file.</p>
+<dt><strong>session</strong><span class="classifier">str , optional</span></dt><dd><p>The session for a item. Corresponds to “ses”.</p>
 </dd>
-<dt><strong>anonymize</strong><span class="classifier">dict | None</span></dt><dd><p>If None (default), no anonymization is performed.
-If dict, data will be anonymized depending on the keys provided with
-the dict: <em class="xref py py-obj">daysback</em> is a required key, <em class="xref py py-obj">keep_his</em> is an optional key.</p>
-<dl class="simple">
-<dt><em class="xref py py-obj">daysback</em><span class="classifier">int</span></dt><dd><p>Number of days by which to move back the recording date in time.
-In studies with multiple subjects the relative recording date
-differences between subjects can be kept by using the same number
-of <em class="xref py py-obj">daysback</em> for all subject anonymizations. <em class="xref py py-obj">daysback</em> should be
-great enough to shift the date prior to 1925 to conform with BIDS
-anonymization rules.</p>
-</dd>
-<dt><em class="xref py py-obj">keep_his</em><span class="classifier">bool</span></dt><dd><p>By default (False), all subject information next to the recording
-date will be overwritten as well. If True, keep subject information
-apart from the recording date.</p>
+<dt><strong>verbose</strong><span class="classifier">bool</span></dt><dd><p>Set verbose output to true or false.</p>
 </dd>
 </dl>
 </dd>
-<dt><strong>verbose</strong><span class="classifier">bool</span></dt><dd><p>Determine whether results should be logged. Defaults to False.</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>paragraph</strong><span class="classifier">str</span></dt><dd><p>The paragraph wrapped with 80 characters per line
+describing the summary of the subjects.</p>
 </dd>
 </dl>
 </dd>
 </dl>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<dl class="simple">
-<dt><a class="reference external" href="https://mne.tools/dev/generated/mne.io.anonymize_info.html#mne.io.anonymize_info" title="(in MNE v0.21.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.io.anonymize_info</span></code></a></dt><dd></dd>
-</dl>
-</div>
 </dd></dl>
 
-<div class="section" id="examples-using-mne-bids-copyfiles-copyfile-brainvision">
-<span id="sphx-glr-backreferences-mne-bids-copyfiles-copyfile-brainvision"></span><h2>Examples using <code class="docutils literal notranslate"><span class="pre">mne_bids.copyfiles.copyfile_brainvision</span></code><a class="headerlink" href="#examples-using-mne-bids-copyfiles-copyfile-brainvision" title="Permalink to this headline">¶</a></h2>
-<div class="sphx-glr-thumbcontainer" tooltip="According to the EEG extension to BIDS [1]_, the `BrainVision data format`_ is one of the recom..."><div class="figure align-default" id="id1">
-<img alt="06. Rename BrainVision EEG data files" src="../_images/sphx_glr_rename_brainvision_files_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/rename_brainvision_files.html#sphx-glr-auto-examples-rename-brainvision-files-py"><span class="std std-ref">06. Rename BrainVision EEG data files</span></a></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+<div class="section" id="examples-using-mne-bids-make-report">
+<span id="sphx-glr-backreferences-mne-bids-make-report"></span><h2>Examples using <code class="docutils literal notranslate"><span class="pre">mne_bids.make_report</span></code><a class="headerlink" href="#examples-using-mne-bids-make-report" title="Permalink to this headline">¶</a></h2>
+<div class="sphx-glr-thumbcontainer" tooltip="05. BIDS conversion for group studies"><div class="figure align-default" id="id1">
+<img alt="05. BIDS conversion for group studies" src="../_images/sphx_glr_convert_group_studies_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/convert_group_studies.html#sphx-glr-auto-examples-convert-group-studies-py"><span class="std std-ref">05. BIDS conversion for group studies</span></a></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
 </div>
 </div><div class="sphx-glr-clear"></div></div>
 </div>

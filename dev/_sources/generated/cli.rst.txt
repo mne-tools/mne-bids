@@ -92,3 +92,31 @@ example usage:  $ mne_bids raw_to_bids --subject_id sub01 --task rest
 --raw data.edf --bids_root new_path
 
 
+
+
+.. _gen_mne_bids_report:
+
+mne_bids report
+===============
+
+.. rst-class:: callout
+
+-------------------------------
+Write raw files to BIDS format.
+-------------------------------
+
+Usage: ``mne_bids report options args``
+
+Options
+-------
+
+.. rst-class:: field-list cmd-list
+
+  --version             show program's version number and exit
+  -h, --help            show this help message and exit
+  --bids_root=BIDS_ROOT
+                        The path of the BIDS compatible folder.
+
+example usage:  $ mne_bids report --bids_root bids_root_path
+
+

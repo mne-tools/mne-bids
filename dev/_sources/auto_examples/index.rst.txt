@@ -107,7 +107,7 @@ The examples are loosely ordered from more general to more advanced use cases.
 
 .. raw:: html
 
-    <div class="sphx-glr-thumbcontainer" tooltip="Here, we show how to do BIDS conversion for group studies. We will use the `EEG Motor Movement/...">
+    <div class="sphx-glr-thumbcontainer" tooltip="05. BIDS conversion for group studies">
 
 .. only:: html
 

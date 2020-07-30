@@ -114,12 +114,13 @@
 <div class="contents local topic" id="contents">
 <p class="topic-title">Contents</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="#mne-bids-cp" id="id2">mne_bids cp</a></p></li>
-<li><p><a class="reference internal" href="#mne-bids-raw-to-bids" id="id3">mne_bids raw_to_bids</a></p></li>
+<li><p><a class="reference internal" href="#mne-bids-cp" id="id4">mne_bids cp</a></p></li>
+<li><p><a class="reference internal" href="#mne-bids-raw-to-bids" id="id5">mne_bids raw_to_bids</a></p></li>
+<li><p><a class="reference internal" href="#mne-bids-report" id="id6">mne_bids report</a></p></li>
 </ul>
 </div>
 <div class="section" id="mne-bids-cp">
-<span id="gen-mne-bids-cp"></span><h2><a class="toc-backref" href="#id2">mne_bids cp</a><a class="headerlink" href="#mne-bids-cp" title="Permalink to this headline">¶</a></h2>
+<span id="gen-mne-bids-cp"></span><h2><a class="toc-backref" href="#id4">mne_bids cp</a><a class="headerlink" href="#mne-bids-cp" title="Permalink to this headline">¶</a></h2>
 <div class="callout section" id="rename-files-making-a-copy-and-update-their-internal-pointers">
 <h3>Rename files (making a copy) and update their internal pointers.<a class="headerlink" href="#rename-files-making-a-copy-and-update-their-internal-pointers" title="Permalink to this headline">¶</a></h3>
 <p>Usage: <code class="docutils literal notranslate"><span class="pre">mne_bids</span> <span class="pre">cp</span> <span class="pre">-i</span> <span class="pre">INPUT</span> <span class="pre">-o</span> <span class="pre">OUTPUT</span></code></p>
@@ -149,7 +150,7 @@ file)</p>
 </div>
 </div>
 <div class="section" id="mne-bids-raw-to-bids">
-<span id="gen-mne-bids-raw-to-bids"></span><h2><a class="toc-backref" href="#id3">mne_bids raw_to_bids</a><a class="headerlink" href="#mne-bids-raw-to-bids" title="Permalink to this headline">¶</a></h2>
+<span id="gen-mne-bids-raw-to-bids"></span><h2><a class="toc-backref" href="#id5">mne_bids raw_to_bids</a><a class="headerlink" href="#mne-bids-raw-to-bids" title="Permalink to this headline">¶</a></h2>
 <div class="callout section" id="write-raw-files-to-bids-format">
 <h3>Write raw files to BIDS format.<a class="headerlink" href="#write-raw-files-to-bids-format" title="Permalink to this headline">¶</a></h3>
 <p>Usage: <code class="docutils literal notranslate"><span class="pre">mne_bids</span> <span class="pre">raw_to_bids</span> <span class="pre">options</span> <span class="pre">args</span></code></p>
@@ -213,6 +214,28 @@ file)</p>
 </div>
 </div>
 </div>
+<div class="section" id="mne-bids-report">
+<span id="gen-mne-bids-report"></span><h2><a class="toc-backref" href="#id6">mne_bids report</a><a class="headerlink" href="#mne-bids-report" title="Permalink to this headline">¶</a></h2>
+<div class="callout section" id="id2">
+<h3>Write raw files to BIDS format.<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<p>Usage: <code class="docutils literal notranslate"><span class="pre">mne_bids</span> <span class="pre">report</span> <span class="pre">options</span> <span class="pre">args</span></code></p>
+<div class="section" id="id3">
+<h4>Options<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h4>
+<dl class="field-list cmd-list option-list">
+<dt><kbd><span class="option">--version</span></kbd></dt>
+<dd><p>show program’s version number and exit</p>
+</dd>
+<dt><kbd><span class="option">-h</span>, <span class="option">--help</span></kbd></dt>
+<dd><p>show this help message and exit</p>
+</dd>
+<dt><kbd><span class="option">--bids_root=<var>BIDS_ROOT</var></span></kbd></dt>
+<dd><p>The path of the BIDS compatible folder.</p>
+</dd>
+</dl>
+<p>example usage:  $ mne_bids report –bids_root bids_root_path</p>
+</div>
+</div>
+</div>
 </div>
 
 
@@ -227,7 +250,7 @@ file)</p>
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-07-27.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-07-30.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.1.2.<br/>
     </p>
   </div>

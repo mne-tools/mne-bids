@@ -2,15 +2,12 @@
 =====================================
 05. BIDS conversion for group studies
 =====================================
-
 Here, we show how to do BIDS conversion for group studies.
 We will use the
 `EEG Motor Movement/Imagery Dataset <https://doi.org/10.13026/C28G6P>`_
 available on the PhysioBank database.
-
 We recommend that you go through the more basic BIDS conversion example before
 checking out this group conversion example: :ref:`ex-convert-mne-sample`
-
 """
 
 # Authors: Mainak Jas <mainak.jas@telecom-paristech.fr>
@@ -28,7 +25,7 @@ import mne
 from mne.datasets import eegbci
 
 from mne_bids import (write_raw_bids, make_bids_basename,
-                      get_anonymization_daysback)
+                      get_anonymization_daysback, make_report)
 from mne_bids.utils import print_dir_tree
 
 ###############################################################################
@@ -102,3 +99,8 @@ for raw, bids_basename in zip(raw_list, bids_list):
 # Now let's see the structure of the BIDS folder we created.
 
 print_dir_tree(bids_root)
+
+###############################################################################
+# Now let's generate a report on the dataset.
+dataset_report = make_report(bids_root=bids_root)
+print(dataset_report)

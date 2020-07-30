@@ -117,8 +117,8 @@
 <p>Here, we show how to do BIDS conversion for group studies.
 We will use the
 <a class="reference external" href="https://doi.org/10.13026/C28G6P">EEG Motor Movement/Imagery Dataset</a>
-available on the PhysioBank database.</p>
-<p>We recommend that you go through the more basic BIDS conversion example before
+available on the PhysioBank database.
+We recommend that you go through the more basic BIDS conversion example before
 checking out this group conversion example: <a class="reference internal" href="convert_mne_sample.html#ex-convert-mne-sample"><span class="std std-ref">03. Convert MNE sample data to BIDS format</span></a></p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Authors: Mainak Jas &lt;mainak.jas@telecom-paristech.fr&gt;</span>
 <span class="c1">#          Teon Brooks &lt;teon.brooks@gmail.com&gt;</span>
@@ -134,7 +134,7 @@ checking out this group conversion example: <a class="reference internal" href="
 <span class="kn">from</span> <span class="nn">mne.datasets</span> <span class="kn">import</span> <span class="n">eegbci</span>
 
 <span class="kn">from</span> <span class="nn">mne_bids</span> <span class="kn">import</span> <span class="p">(</span><a href="../generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">write_raw_bids</span></a><span class="p">,</span> <a href="../generated/mne_bids.make_bids_basename.html#mne_bids.make_bids_basename" title="mne_bids.make_bids_basename" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">make_bids_basename</span></a><span class="p">,</span>
-                      <a href="../generated/mne_bids.get_anonymization_daysback.html#mne_bids.get_anonymization_daysback" title="mne_bids.get_anonymization_daysback" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">get_anonymization_daysback</span></a><span class="p">)</span>
+                      <a href="../generated/mne_bids.get_anonymization_daysback.html#mne_bids.get_anonymization_daysback" title="mne_bids.get_anonymization_daysback" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">get_anonymization_daysback</span></a><span class="p">,</span> <a href="../generated/mne_bids.make_report.html#mne_bids.make_report" title="mne_bids.make_report" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">make_report</span></a><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">mne_bids.utils</span> <span class="kn">import</span> <a href="../generated/mne_bids.utils.print_dir_tree.html#mne_bids.utils.print_dir_tree" title="mne_bids.utils.print_dir_tree" class="sphx-glr-backref-module-mne_bids-utils sphx-glr-backref-type-py-function"><span class="n">print_dir_tree</span></a>
 </pre></div>
 </div>
@@ -283,7 +283,7 @@ Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/dataset_desc
 
 {
     &quot;Name&quot;: &quot; &quot;,
-    &quot;BIDSVersion&quot;: &quot;1.2.2&quot;,
+    &quot;BIDSVersion&quot;: &quot;1.4.0&quot;,
     &quot;DatasetType&quot;: &quot;raw&quot;,
     &quot;Authors&quot;: [
         &quot;Please cite MNE-BIDS in your publication before removing this (citations in README)&quot;
@@ -323,7 +323,7 @@ Fc3.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
 Fc1.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
 Fcz.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
 Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
-/home/circleci/project/mne_bids/write.py:1119: RuntimeWarning: Converting data files to BrainVision format
+/home/circleci/project/mne_bids/write.py:1121: RuntimeWarning: Converting data files to BrainVision format
   warn(&#39;Converting data files to BrainVision format&#39;)
 
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-01/sub-001_ses-01_scans.tsv&#39;...
@@ -389,7 +389,7 @@ Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/dataset_desc
 
 {
     &quot;Name&quot;: &quot; &quot;,
-    &quot;BIDSVersion&quot;: &quot;1.2.2&quot;,
+    &quot;BIDSVersion&quot;: &quot;1.4.0&quot;,
     &quot;DatasetType&quot;: &quot;raw&quot;,
     &quot;Authors&quot;: [
         &quot;Please cite MNE-BIDS in your publication before removing this (citations in README)&quot;
@@ -429,7 +429,7 @@ Fc3.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
 Fc1.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
 Fcz.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
 Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
-/home/circleci/project/mne_bids/write.py:1119: RuntimeWarning: Converting data files to BrainVision format
+/home/circleci/project/mne_bids/write.py:1121: RuntimeWarning: Converting data files to BrainVision format
   warn(&#39;Converting data files to BrainVision format&#39;)
 
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-01/sub-001_ses-01_scans.tsv&#39;...
@@ -495,7 +495,7 @@ Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/dataset_desc
 
 {
     &quot;Name&quot;: &quot; &quot;,
-    &quot;BIDSVersion&quot;: &quot;1.2.2&quot;,
+    &quot;BIDSVersion&quot;: &quot;1.4.0&quot;,
     &quot;DatasetType&quot;: &quot;raw&quot;,
     &quot;Authors&quot;: [
         &quot;Please cite MNE-BIDS in your publication before removing this (citations in README)&quot;
@@ -535,7 +535,7 @@ Fc3.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
 Fc1.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
 Fcz.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
 Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
-/home/circleci/project/mne_bids/write.py:1119: RuntimeWarning: Converting data files to BrainVision format
+/home/circleci/project/mne_bids/write.py:1121: RuntimeWarning: Converting data files to BrainVision format
   warn(&#39;Converting data files to BrainVision format&#39;)
 
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-01/sub-001_ses-01_scans.tsv&#39;...
@@ -601,7 +601,7 @@ Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/dataset_desc
 
 {
     &quot;Name&quot;: &quot; &quot;,
-    &quot;BIDSVersion&quot;: &quot;1.2.2&quot;,
+    &quot;BIDSVersion&quot;: &quot;1.4.0&quot;,
     &quot;DatasetType&quot;: &quot;raw&quot;,
     &quot;Authors&quot;: [
         &quot;Please cite MNE-BIDS in your publication before removing this (citations in README)&quot;
@@ -641,7 +641,7 @@ Fc3.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
 Fc1.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
 Fcz.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
 Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
-/home/circleci/project/mne_bids/write.py:1119: RuntimeWarning: Converting data files to BrainVision format
+/home/circleci/project/mne_bids/write.py:1121: RuntimeWarning: Converting data files to BrainVision format
   warn(&#39;Converting data files to BrainVision format&#39;)
 
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/sub-002_ses-01_scans.tsv&#39;...
@@ -707,7 +707,7 @@ Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/dataset_desc
 
 {
     &quot;Name&quot;: &quot; &quot;,
-    &quot;BIDSVersion&quot;: &quot;1.2.2&quot;,
+    &quot;BIDSVersion&quot;: &quot;1.4.0&quot;,
     &quot;DatasetType&quot;: &quot;raw&quot;,
     &quot;Authors&quot;: [
         &quot;Please cite MNE-BIDS in your publication before removing this (citations in README)&quot;
@@ -747,7 +747,7 @@ Fc3.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
 Fc1.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
 Fcz.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
 Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
-/home/circleci/project/mne_bids/write.py:1119: RuntimeWarning: Converting data files to BrainVision format
+/home/circleci/project/mne_bids/write.py:1121: RuntimeWarning: Converting data files to BrainVision format
   warn(&#39;Converting data files to BrainVision format&#39;)
 
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/sub-002_ses-01_scans.tsv&#39;...
@@ -813,7 +813,7 @@ Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/dataset_desc
 
 {
     &quot;Name&quot;: &quot; &quot;,
-    &quot;BIDSVersion&quot;: &quot;1.2.2&quot;,
+    &quot;BIDSVersion&quot;: &quot;1.4.0&quot;,
     &quot;DatasetType&quot;: &quot;raw&quot;,
     &quot;Authors&quot;: [
         &quot;Please cite MNE-BIDS in your publication before removing this (citations in README)&quot;
@@ -853,7 +853,7 @@ Fc3.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
 Fc1.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
 Fcz.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
 Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
-/home/circleci/project/mne_bids/write.py:1119: RuntimeWarning: Converting data files to BrainVision format
+/home/circleci/project/mne_bids/write.py:1121: RuntimeWarning: Converting data files to BrainVision format
   warn(&#39;Converting data files to BrainVision format&#39;)
 
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/sub-002_ses-01_scans.tsv&#39;...
@@ -871,51 +871,74 @@ Wrote /home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/sub-
 </div>
 <p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>|eegmmidb_bids_group_conversion/
-|--- dataset_description.json
+|--- README
 |--- participants.tsv
 |--- participants.json
-|--- README
+|--- dataset_description.json
 |--- sub-002/
 |------ ses-01/
 |--------- sub-002_ses-01_scans.tsv
 |--------- eeg/
-|------------ sub-002_ses-01_task-MotorImagery_run-02_eeg.vhdr
-|------------ sub-002_ses-01_task-MotorImagery_run-03_eeg.json
-|------------ sub-002_ses-01_task-MotorImagery_run-02_eeg.json
-|------------ sub-002_ses-01_task-MotorImagery_run-03_eeg.vmrk
-|------------ sub-002_ses-01_task-MotorImagery_run-01_eeg.eeg
-|------------ sub-002_ses-01_task-MotorImagery_run-01_eeg.vhdr
 |------------ sub-002_ses-01_task-MotorImagery_run-02_eeg.eeg
-|------------ sub-002_ses-01_task-MotorImagery_run-02_channels.tsv
-|------------ sub-002_ses-01_task-MotorImagery_run-03_eeg.vhdr
-|------------ sub-002_ses-01_task-MotorImagery_run-01_eeg.vmrk
 |------------ sub-002_ses-01_task-MotorImagery_run-01_eeg.json
+|------------ sub-002_ses-01_task-MotorImagery_run-03_eeg.json
+|------------ sub-002_ses-01_task-MotorImagery_run-02_eeg.vhdr
+|------------ sub-002_ses-01_task-MotorImagery_run-01_eeg.vmrk
+|------------ sub-002_ses-01_task-MotorImagery_run-01_eeg.eeg
+|------------ sub-002_ses-01_task-MotorImagery_run-02_channels.tsv
 |------------ sub-002_ses-01_task-MotorImagery_run-03_eeg.eeg
-|------------ sub-002_ses-01_task-MotorImagery_run-01_channels.tsv
+|------------ sub-002_ses-01_task-MotorImagery_run-03_eeg.vmrk
+|------------ sub-002_ses-01_task-MotorImagery_run-02_eeg.json
 |------------ sub-002_ses-01_task-MotorImagery_run-02_eeg.vmrk
+|------------ sub-002_ses-01_task-MotorImagery_run-01_eeg.vhdr
+|------------ sub-002_ses-01_task-MotorImagery_run-01_channels.tsv
+|------------ sub-002_ses-01_task-MotorImagery_run-03_eeg.vhdr
 |------------ sub-002_ses-01_task-MotorImagery_run-03_channels.tsv
 |--- sub-001/
 |------ ses-01/
 |--------- sub-001_ses-01_scans.tsv
 |--------- eeg/
+|------------ sub-001_ses-01_task-MotorImagery_run-03_eeg.vmrk
+|------------ sub-001_ses-01_task-MotorImagery_run-01_eeg.vmrk
+|------------ sub-001_ses-01_task-MotorImagery_run-03_eeg.eeg
 |------------ sub-001_ses-01_task-MotorImagery_run-02_eeg.vhdr
+|------------ sub-001_ses-01_task-MotorImagery_run-01_eeg.json
 |------------ sub-001_ses-01_task-MotorImagery_run-02_eeg.vmrk
+|------------ sub-001_ses-01_task-MotorImagery_run-01_eeg.vhdr
 |------------ sub-001_ses-01_task-MotorImagery_run-03_eeg.vhdr
+|------------ sub-001_ses-01_task-MotorImagery_run-02_eeg.eeg
+|------------ sub-001_ses-01_task-MotorImagery_run-03_channels.tsv
 |------------ sub-001_ses-01_task-MotorImagery_run-03_eeg.json
 |------------ sub-001_ses-01_task-MotorImagery_run-02_channels.tsv
-|------------ sub-001_ses-01_task-MotorImagery_run-03_channels.tsv
-|------------ sub-001_ses-01_task-MotorImagery_run-01_eeg.eeg
-|------------ sub-001_ses-01_task-MotorImagery_run-01_eeg.vhdr
-|------------ sub-001_ses-01_task-MotorImagery_run-02_eeg.eeg
-|------------ sub-001_ses-01_task-MotorImagery_run-01_channels.tsv
-|------------ sub-001_ses-01_task-MotorImagery_run-01_eeg.vmrk
-|------------ sub-001_ses-01_task-MotorImagery_run-03_eeg.vmrk
-|------------ sub-001_ses-01_task-MotorImagery_run-03_eeg.eeg
-|------------ sub-001_ses-01_task-MotorImagery_run-01_eeg.json
 |------------ sub-001_ses-01_task-MotorImagery_run-02_eeg.json
+|------------ sub-001_ses-01_task-MotorImagery_run-01_eeg.eeg
+|------------ sub-001_ses-01_task-MotorImagery_run-01_channels.tsv
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  4.408 seconds)</p>
+<p>Now let’s generate a report on the dataset.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset_report</span></a> <span class="o">=</span> <a href="../generated/mne_bids.make_report.html#mne_bids.make_report" title="mne_bids.make_report" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">make_report</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset_report</span></a><span class="p">)</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Summarizing participants.tsv /home/circleci/mne_data/eegmmidb_bids_group_conversion/participants.tsv...
+Summarizing scans.tsv files [PosixPath(&#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/sub-002_ses-01_scans.tsv&#39;), PosixPath(&#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-01/sub-001_ses-01_scans.tsv&#39;)]...
+The participant template found: sex were all unknown;
+handedness were all unknown; ages all unknown
+This dataset was created with BIDS version 1.4.0 by Please cite MNE-BIDS in your
+publication before removing this (citations in README). This report was
+generated with MNE-BIDS (https://doi.org/10.21105/joss.01896). The dataset
+consists of 2 participants (sex were all unknown; handedness were all unknown;
+ages all unknown)and 1 recording sessions: 01. Data was recorded using a EEG
+system sampled at 160.0 Hz with line noise at 50, and 60 Hz. There were 6 scans
+in total. Recording durations ranged from 122.99 to 124.99 seconds (mean =
+123.99, std = 1.0), for a total of 743.96 seconds of data recorded over all
+scans. For each dataset, there were on average 64.0 (std = 0.0) recording
+channels per scan, out of which 64.0 (std = 0.0) were used in analysis (0.0 +/-
+0.0 were removed from analysis).
+</pre></div>
+</div>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.610 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-group-studies-py">
 <div class="binder-badge docutils container">
 <a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/convert_group_studies.ipynb"><img alt="https://mybinder.org/badge_logo.svg" src="https://mybinder.org/badge_logo.svg" width="150px" /></a>
@@ -942,7 +965,7 @@ Wrote /home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/sub-
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-07-27.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-07-30.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.1.2.<br/>
     </p>
   </div>
