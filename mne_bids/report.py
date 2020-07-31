@@ -13,10 +13,10 @@ from mne.utils import warn
 
 from mne_bids.config import DOI, ALLOWED_KINDS
 from mne_bids.tsv_handler import _from_tsv
-from mne_bids.utils import (make_bids_basename, get_kinds,
-                            get_entity_vals, _parse_ext,
-                            _find_matching_sidecar, _parse_bids_filename,
-                            BIDSPath)
+from mne_bids.path import (make_bids_basename, get_kinds,
+                           get_entity_vals, _parse_ext,
+                           _find_matching_sidecar, _parse_bids_filename,
+                           BIDSPath)
 
 # functions to be used inside Template strings
 FUNCTION_TEMPLATE = """{{py:  

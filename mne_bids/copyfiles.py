@@ -23,7 +23,7 @@ import shutil as sh
 from mne.io import read_raw_brainvision, anonymize_info
 from scipy.io import loadmat, savemat
 
-from mne_bids.read import _parse_ext
+from mne_bids.path import _parse_ext
 from mne_bids.utils import _get_mrk_meas_date, _check_anonymize
 
 
@@ -178,7 +178,7 @@ def copyfile_kit(src, dest, subject_id, session_id,
         Extract information of marker and headpoints
 
     """
-    from mne_bids.utils import make_bids_basename
+    from mne_bids import make_bids_basename
     # KIT data requires the marker file to be copied over too
     sh.copyfile(src, dest)
     data_path = op.split(dest)[0]
