@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>mne_bids.get_head_mri_trans &#8212; mne_bids 0.5.dev0 documentation</title>
+    <title>mne_bids.get_kinds &#8212; mne_bids 0.5.dev0 documentation</title>
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css" />
@@ -108,42 +108,32 @@
   <div class="row">
     <div class="body col-md-12 content" role="main">
       
-  <div class="section" id="mne-bids-get-head-mri-trans">
-<h1>mne_bids.get_head_mri_trans<a class="headerlink" href="#mne-bids-get-head-mri-trans" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="mne-bids-get-kinds">
+<h1>mne_bids.get_kinds<a class="headerlink" href="#mne-bids-get-kinds" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt id="mne_bids.get_head_mri_trans">
-<code class="sig-prename descclassname">mne_bids.</code><code class="sig-name descname">get_head_mri_trans</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">bids_basename</span></em>, <em class="sig-param"><span class="n">bids_root</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/read.html#get_head_mri_trans"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.get_head_mri_trans" title="Permalink to this definition">¶</a></dt>
-<dd><p>Produce transformation matrix from MEG and MRI landmark points.</p>
-<p>Will attempt to read the landmarks of Nasion, LPA, and RPA from the sidecar
-files of (i) the MEG and (ii) the T1 weighted MRI data. The two sets of
-points will then be used to calculate a transformation matrix from head
-coordinates to MRI coordinates.</p>
+<dt id="mne_bids.get_kinds">
+<code class="sig-prename descclassname">mne_bids.</code><code class="sig-name descname">get_kinds</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">bids_root</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/path.html#get_kinds"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.get_kinds" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get list of data types (“kinds”) present in a BIDS dataset.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>bids_basename</strong><span class="classifier">str | BIDSPath</span></dt><dd><p>The base filename of the BIDS-compatible file. Typically, this can be
-generated using <a class="reference internal" href="mne_bids.make_bids_basename.html#mne_bids.make_bids_basename" title="mne_bids.make_bids_basename"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.make_bids_basename()</span></code></a>.</p>
-</dd>
-<dt><strong>bids_root</strong><span class="classifier">str | pathlib.Path</span></dt><dd><p>Path to root of the BIDS folder</p>
+<dt><strong>bids_root</strong><span class="classifier">str | pathlib.Path</span></dt><dd><p>Path to the root of the BIDS directory.</p>
 </dd>
 </dl>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt><strong>trans</strong><span class="classifier">instance of mne.transforms.Transform</span></dt><dd><p>The data transformation matrix from head to MRI coordinates</p>
+<dt><strong>kinds</strong><span class="classifier">list of str</span></dt><dd><p>List of the data types present in the BIDS dataset pointed to by
+<em class="xref py py-obj">bids_root</em>.</p>
 </dd>
 </dl>
 </dd>
 </dl>
 </dd></dl>
 
-<div class="section" id="examples-using-mne-bids-get-head-mri-trans">
-<span id="sphx-glr-backreferences-mne-bids-get-head-mri-trans"></span><h2>Examples using <code class="docutils literal notranslate"><span class="pre">mne_bids.get_head_mri_trans</span></code><a class="headerlink" href="#examples-using-mne-bids-get-head-mri-trans" title="Permalink to this headline">¶</a></h2>
-<div class="sphx-glr-thumbcontainer" tooltip="When working with MEEG data in the domain of source localization, we usually have to deal with ..."><div class="figure align-default" id="id1">
-<img alt="07. Save and load T1-weighted MRI scan along with anatomical landmarks in BIDS" src="../_images/sphx_glr_convert_mri_and_trans_thumb.png" />
-<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/convert_mri_and_trans.html#sphx-glr-auto-examples-convert-mri-and-trans-py"><span class="std std-ref">07. Save and load T1-weighted MRI scan along with anatomical landmarks in BIDS</span></a></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
-</div>
-</div><div class="sphx-glr-clear"></div></div>
+<div class="section" id="examples-using-mne-bids-get-kinds">
+<span id="sphx-glr-backreferences-mne-bids-get-kinds"></span><h2>Examples using <code class="docutils literal notranslate"><span class="pre">mne_bids.get_kinds</span></code><a class="headerlink" href="#examples-using-mne-bids-get-kinds" title="Permalink to this headline">¶</a></h2>
+<div class="sphx-glr-clear"></div></div>
 </div>
 
 

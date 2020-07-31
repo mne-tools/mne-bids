@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>mne_bids.utils.get_entity_vals &#8212; mne_bids 0.5.dev0 documentation</title>
+    <title>mne_bids.get_entity_vals &#8212; mne_bids 0.5.dev0 documentation</title>
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css" />
@@ -108,13 +108,13 @@
   <div class="row">
     <div class="body col-md-12 content" role="main">
       
-  <div class="section" id="mne-bids-utils-get-entity-vals">
-<h1>mne_bids.utils.get_entity_vals<a class="headerlink" href="#mne-bids-utils-get-entity-vals" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="mne-bids-get-entity-vals">
+<h1>mne_bids.get_entity_vals<a class="headerlink" href="#mne-bids-get-entity-vals" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt id="mne_bids.utils.get_entity_vals">
-<code class="sig-prename descclassname">mne_bids.utils.</code><code class="sig-name descname">get_entity_vals</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">bids_root</span></em>, <em class="sig-param"><span class="n">entity_key</span></em>, <em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">ignore_sub</span><span class="o">=</span><span class="default_value">'emptyroom'</span></em>, <em class="sig-param"><span class="n">ignore_task</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ignore_ses</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ignore_run</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ignore_acq</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/utils.html#get_entity_vals"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.utils.get_entity_vals" title="Permalink to this definition">¶</a></dt>
+<dt id="mne_bids.get_entity_vals">
+<code class="sig-prename descclassname">mne_bids.</code><code class="sig-name descname">get_entity_vals</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">bids_root</span></em>, <em class="sig-param"><span class="n">entity_key</span></em>, <em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">ignore_sub</span><span class="o">=</span><span class="default_value">'emptyroom'</span></em>, <em class="sig-param"><span class="n">ignore_task</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ignore_ses</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ignore_run</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ignore_acq</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/path.html#get_entity_vals"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.get_entity_vals" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get list of values associated with an <em class="xref py py-obj">entity_key</em> in a BIDS dataset.</p>
-<p>BIDS file names are organized by key-value pairs called “entities” <a class="reference internal" href="#rdefda2db5d7c-1" id="id1">[1]</a>.
+<p>BIDS file names are organized by key-value pairs called “entities” <a class="reference internal" href="#rc14c75f75c01-1" id="id1">[1]</a>.
 With this function, you can get all values for an entity indexed by its
 key.</p>
 <dl class="field-list simple">
@@ -151,7 +151,7 @@ pointed to by <em class="xref py py-obj">bids_root</em>.</p>
 <code class="docutils literal notranslate"><span class="pre">derivatives</span></code> subfolder placed directly under <code class="docutils literal notranslate"><span class="pre">bids_root</span></code>.</p>
 <p class="rubric">References</p>
 <dl class="citation">
-<dt class="label" id="rdefda2db5d7c-1"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
+<dt class="label" id="rc14c75f75c01-1"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
 <dd><p><a class="reference external" href="https://bids-specification.rtfd.io/en/latest/02-common-principles.html#file-name-structure">https://bids-specification.rtfd.io/en/latest/02-common-principles.html#file-name-structure</a>  # noqa: E501</p>
 </dd>
 </dl>
@@ -164,8 +164,8 @@ pointed to by <em class="xref py py-obj">bids_root</em>.</p>
 </div>
 </dd></dl>
 
-<div class="section" id="examples-using-mne-bids-utils-get-entity-vals">
-<span id="sphx-glr-backreferences-mne-bids-utils-get-entity-vals"></span><h2>Examples using <code class="docutils literal notranslate"><span class="pre">mne_bids.utils.get_entity_vals</span></code><a class="headerlink" href="#examples-using-mne-bids-utils-get-entity-vals" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="examples-using-mne-bids-get-entity-vals">
+<span id="sphx-glr-backreferences-mne-bids-get-entity-vals"></span><h2>Examples using <code class="docutils literal notranslate"><span class="pre">mne_bids.get_entity_vals</span></code><a class="headerlink" href="#examples-using-mne-bids-get-entity-vals" title="Permalink to this headline">¶</a></h2>
 <div class="sphx-glr-clear"></div></div>
 </div>
 
@@ -181,7 +181,7 @@ pointed to by <em class="xref py py-obj">bids_root</em>.</p>
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-07-30.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-07-31.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.1.2.<br/>
     </p>
   </div>

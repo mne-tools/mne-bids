@@ -144,13 +144,14 @@
 <span class="kn">from</span> <span class="nn">mne_bids.pick</span> <span class="kn">import</span> <span class="n">coil_type</span>
 <span class="kn">from</span> <span class="nn">mne_bids.dig</span> <span class="kn">import</span> <span class="n">_write_dig_bids</span><span class="p">,</span> <span class="n">_coordsystem_json</span>
 <span class="kn">from</span> <span class="nn">mne_bids.utils</span> <span class="kn">import</span> <span class="p">(</span><span class="n">_write_json</span><span class="p">,</span> <span class="n">_write_tsv</span><span class="p">,</span> <span class="n">_write_text</span><span class="p">,</span>
-                            <span class="n">_read_events</span><span class="p">,</span> <span class="n">_mkdir_p</span><span class="p">,</span> <span class="n">_age_on_date</span><span class="p">,</span>
+                            <span class="n">_read_events</span><span class="p">,</span> <span class="n">_age_on_date</span><span class="p">,</span>
                             <span class="n">_infer_eeg_placement_scheme</span><span class="p">,</span>
-                            <span class="n">_parse_bids_filename</span><span class="p">,</span> <span class="n">_handle_kind</span><span class="p">,</span>
-                            <span class="n">_path_to_str</span><span class="p">,</span> <span class="n">_parse_ext</span><span class="p">,</span>
-                            <span class="n">_get_ch_type_mapping</span><span class="p">,</span> <span class="n">make_bids_folders</span><span class="p">,</span>
-                            <span class="n">_estimate_line_freq</span><span class="p">,</span> <span class="n">make_bids_basename</span><span class="p">,</span>
-                            <span class="n">BIDSPath</span><span class="p">,</span> <span class="n">_check_anonymize</span><span class="p">,</span> <span class="n">_stamp_to_dt</span><span class="p">)</span>
+                            <span class="n">_handle_kind</span><span class="p">,</span> <span class="n">_get_ch_type_mapping</span><span class="p">,</span>
+                            <span class="n">_estimate_line_freq</span><span class="p">,</span> <span class="n">_check_anonymize</span><span class="p">,</span>
+                            <span class="n">_stamp_to_dt</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">mne_bids</span> <span class="kn">import</span> <span class="n">make_bids_folders</span><span class="p">,</span> <span class="n">make_bids_basename</span>
+<span class="kn">from</span> <span class="nn">mne_bids.path</span> <span class="kn">import</span> <span class="p">(</span><span class="n">BIDSPath</span><span class="p">,</span> <span class="n">_parse_ext</span><span class="p">,</span> <span class="n">_parse_bids_filename</span><span class="p">,</span>
+                           <span class="n">_mkdir_p</span><span class="p">,</span> <span class="n">_path_to_str</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">mne_bids.copyfiles</span> <span class="kn">import</span> <span class="p">(</span><span class="n">copyfile_brainvision</span><span class="p">,</span> <span class="n">copyfile_eeglab</span><span class="p">,</span>
                                 <span class="n">copyfile_ctf</span><span class="p">,</span> <span class="n">copyfile_bti</span><span class="p">,</span> <span class="n">copyfile_kit</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">mne_bids.tsv_handler</span> <span class="kn">import</span> <span class="p">(</span><span class="n">_from_tsv</span><span class="p">,</span> <span class="n">_drop</span><span class="p">,</span> <span class="n">_contains_row</span><span class="p">,</span>
@@ -1475,7 +1476,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-07-30.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-07-31.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.1.2.<br/>
     </p>
   </div>

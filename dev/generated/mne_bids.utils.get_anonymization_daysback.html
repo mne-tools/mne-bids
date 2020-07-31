@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>mne_bids.utils.get_kinds &#8212; mne_bids 0.5.dev0 documentation</title>
+    <title>mne_bids.utils.get_anonymization_daysback &#8212; mne_bids 0.5.dev0 documentation</title>
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css" />
@@ -108,31 +108,45 @@
   <div class="row">
     <div class="body col-md-12 content" role="main">
       
-  <div class="section" id="mne-bids-utils-get-kinds">
-<h1>mne_bids.utils.get_kinds<a class="headerlink" href="#mne-bids-utils-get-kinds" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="mne-bids-utils-get-anonymization-daysback">
+<h1>mne_bids.utils.get_anonymization_daysback<a class="headerlink" href="#mne-bids-utils-get-anonymization-daysback" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt id="mne_bids.utils.get_kinds">
-<code class="sig-prename descclassname">mne_bids.utils.</code><code class="sig-name descname">get_kinds</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">bids_root</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/utils.html#get_kinds"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.utils.get_kinds" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get list of data types (“kinds”) present in a BIDS dataset.</p>
+<dt id="mne_bids.utils.get_anonymization_daysback">
+<code class="sig-prename descclassname">mne_bids.utils.</code><code class="sig-name descname">get_anonymization_daysback</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">raws</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/utils.html#get_anonymization_daysback"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.utils.get_anonymization_daysback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the group min and max number of daysback necessary for BIDS specs.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>It is important that you remember the anonymization
+number if you would ever like to de-anonymize but
+that it is not included in the code publication
+as that would break the anonymization.</p>
+</div>
+<p>BIDS requires that anonymized dates be before 1925. In order to
+preserve the longitudinal structure and ensure anonymization, the
+user is asked to provide the same <em class="xref py py-obj">daysback</em> argument to each call
+of <em class="xref py py-obj">write_raw_bids</em>. To determine the miniumum number of daysback
+necessary, this function will calculate the minimum number based on
+the most recent measurement date of raw objects.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>bids_root</strong><span class="classifier">str | pathlib.Path</span></dt><dd><p>Path to the root of the BIDS directory.</p>
+<dt><strong>raw</strong><span class="classifier">mne.io.Raw | list of Raw</span></dt><dd><p>Subject raw data or list of raw data from several subjects.</p>
 </dd>
 </dl>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt><strong>kinds</strong><span class="classifier">list of str</span></dt><dd><p>List of the data types present in the BIDS dataset pointed to by
-<em class="xref py py-obj">bids_root</em>.</p>
+<dt><strong>daysback_min</strong><span class="classifier">int</span></dt><dd><p>The minimum number of daysback necessary to be compatible with BIDS.</p>
+</dd>
+<dt><strong>daysback_max</strong><span class="classifier">int</span></dt><dd><p>The maximum number of daysback that MNE can store.</p>
 </dd>
 </dl>
 </dd>
 </dl>
 </dd></dl>
 
-<div class="section" id="examples-using-mne-bids-utils-get-kinds">
-<span id="sphx-glr-backreferences-mne-bids-utils-get-kinds"></span><h2>Examples using <code class="docutils literal notranslate"><span class="pre">mne_bids.utils.get_kinds</span></code><a class="headerlink" href="#examples-using-mne-bids-utils-get-kinds" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="examples-using-mne-bids-utils-get-anonymization-daysback">
+<span id="sphx-glr-backreferences-mne-bids-utils-get-anonymization-daysback"></span><h2>Examples using <code class="docutils literal notranslate"><span class="pre">mne_bids.utils.get_anonymization_daysback</span></code><a class="headerlink" href="#examples-using-mne-bids-utils-get-anonymization-daysback" title="Permalink to this headline">¶</a></h2>
 <div class="sphx-glr-clear"></div></div>
 </div>
 
@@ -148,7 +162,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-07-30.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-07-31.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.1.2.<br/>
     </p>
   </div>

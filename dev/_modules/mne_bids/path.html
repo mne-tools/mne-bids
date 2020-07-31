@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>mne_bids.path &#8212; mne_bids 0.5.dev0 documentation</title>
+    <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/style.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/gallery-dataframe.css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../../_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../index.html">
+          MNE-BIDS</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.5.dev0</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../../auto_examples/index.html">Examples</a></li>
+                <li><a href="../../api.html">API</a></li>
+                <li><a href="../../generated/cli.html">CLI</a></li>
+                <li><a href="../../whats_new.html">What's new</a></li>
+                <li><a href="https://github.com/mne-tools/mne-bids">GitHub</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"></ul>
+</li>
+              
+            
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+<div class="navbar-form navbar-right navbar-btn dropdown btn-group-sm" style="margin-left: 20px; margin-top: 5px; margin-bottom: 5px">
+  <button type="button" class="btn btn-primary navbar-btn dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown">
+    v0.5.dev0
+    <span class="caret"></span>
+  </button>
+  <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+    <li><a href="https://mne.tools/mne-bids/dev/index.html">Development</a></li>
+    <li><a href="https://mne.tools/mne-bids/stable/index.html">Stable</a></li>
+    <li><a href="https://mne.tools/mne-bids/v0.4/index.html">v0.4</a></li>
+    <li><a href="https://mne.tools/mne-bids/v0.3/index.html">v0.3</a></li>
+    <li><a href="https://mne.tools/mne-bids/v0.2/index.html">v0.2</a></li>
+    <li><a href="https://mne.tools/mne-bids/v0.1/index.html">v0.1</a></li>
+  </ul>
+</div>
+
+
+            
+<form class="navbar-form navbar-right" action="../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <h1>Source code for mne_bids.path</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;BIDS compatible path functionality.&quot;&quot;&quot;</span>
+<span class="c1"># Authors: Adam Li &lt;adam2392@gmail.com&gt;</span>
+<span class="c1">#</span>
+<span class="c1"># License: BSD (3-clause)</span>
+<span class="kn">import</span> <span class="nn">glob</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">shutil</span> <span class="k">as</span> <span class="nn">sh</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">from</span> <span class="nn">os</span> <span class="kn">import</span> <span class="n">path</span> <span class="k">as</span> <span class="n">op</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="n">warn</span><span class="p">,</span> <span class="n">logger</span>
+
+<span class="kn">from</span> <span class="nn">mne_bids.config</span> <span class="kn">import</span> <span class="n">BIDS_PATH_ENTITIES</span><span class="p">,</span> <span class="n">reader</span>
+<span class="kn">from</span> <span class="nn">mne_bids.utils</span> <span class="kn">import</span> <span class="p">(</span><span class="n">_check_key_val</span><span class="p">,</span> <span class="n">_check_empty_room_basename</span><span class="p">,</span>
+                            <span class="n">_check_types</span><span class="p">,</span> <span class="n">param_regex</span><span class="p">,</span>
+                            <span class="n">_ensure_tuple</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="BIDSPath"><a class="viewcode-back" href="../../generated/mne_bids.path.BIDSPath.html#mne_bids.BIDSPath">[docs]</a><span class="k">class</span> <span class="nc">BIDSPath</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create a partial/full BIDS filepath from its component parts.</span>
+
+<span class="sd">    BIDS filename prefixes have one or more pieces of metadata in them. They</span>
+<span class="sd">    must follow a particular order, which is followed by this function. This</span>
+<span class="sd">    will generate the *prefix* for a BIDS filename that can be used with many</span>
+<span class="sd">    subsequent files, or you may also give a suffix that will then complete</span>
+<span class="sd">    the file name.</span>
+
+<span class="sd">    BIDSPath allows dynamic updating of its entities in place, and operates</span>
+<span class="sd">    similar to `pathlib.Path`.</span>
+
+<span class="sd">    Note that not all parameters are applicable to each kind of data. For</span>
+<span class="sd">    example, electrode location TSV files do not need a &quot;task&quot; field.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    subject : str | None</span>
+<span class="sd">        The subject ID. Corresponds to &quot;sub&quot;.</span>
+<span class="sd">    session : str | None</span>
+<span class="sd">        The session for a item. Corresponds to &quot;ses&quot;.</span>
+<span class="sd">    task : str | None</span>
+<span class="sd">        The task for a item. Corresponds to &quot;task&quot;.</span>
+<span class="sd">    acquisition: str | None</span>
+<span class="sd">        The acquisition parameters for the item. Corresponds to &quot;acq&quot;.</span>
+<span class="sd">    run : int | None</span>
+<span class="sd">        The run number for this item. Corresponds to &quot;run&quot;.</span>
+<span class="sd">    processing : str | None</span>
+<span class="sd">        The processing label for this item. Corresponds to &quot;proc&quot;.</span>
+<span class="sd">    recording : str | None</span>
+<span class="sd">        The recording name for this item. Corresponds to &quot;rec&quot;.</span>
+<span class="sd">    space : str | None</span>
+<span class="sd">        The coordinate space for an anatomical file. Corresponds to &quot;space&quot;.</span>
+<span class="sd">    prefix : str | None</span>
+<span class="sd">        The prefix for the filename to be created. E.g., a path to the folder</span>
+<span class="sd">        in which you wish to create a file with this name.</span>
+<span class="sd">    suffix : str | None</span>
+<span class="sd">        The suffix for the filename to be created. E.g., &#39;audio.wav&#39;.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; bids_basename = make_bids_basename(subject=&#39;test&#39;, session=&#39;two&#39;, task=&#39;mytask&#39;, suffix=&#39;data.csv&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; print(bids_basename)</span>
+<span class="sd">    sub-test_ses-two_task-mytask_data.csv</span>
+<span class="sd">    &gt;&gt;&gt; bids_basename</span>
+<span class="sd">    BIDSPath(sub-test_ses-two_task-mytask_data.csv)</span>
+<span class="sd">    &gt;&gt;&gt; # copy and update multiple entities at once</span>
+<span class="sd">    &gt;&gt;&gt; new_basename = bids_basename.copy().update(subject=&#39;test2&#39;, session=&#39;one&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; print(new_basename)</span>
+<span class="sd">    sub-test2_ses-one_task-mytask_data.csv</span>
+<span class="sd">    &quot;&quot;&quot;</span>  <span class="c1"># noqa</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">task</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">acquisition</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">run</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">processing</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">recording</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">space</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">ii</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="p">[</span><span class="n">subject</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="n">task</span><span class="p">,</span>
+                                     <span class="n">acquisition</span><span class="p">,</span> <span class="n">run</span><span class="p">,</span> <span class="n">processing</span><span class="p">,</span>
+                                     <span class="n">recording</span><span class="p">,</span> <span class="n">space</span><span class="p">,</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">suffix</span><span class="p">]):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;At least one parameter must be given.&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="n">subject</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="n">task</span><span class="p">,</span>
+                    <span class="n">acquisition</span><span class="o">=</span><span class="n">acquisition</span><span class="p">,</span> <span class="n">run</span><span class="o">=</span><span class="n">run</span><span class="p">,</span> <span class="n">processing</span><span class="o">=</span><span class="n">processing</span><span class="p">,</span>
+                    <span class="n">recording</span><span class="o">=</span><span class="n">recording</span><span class="p">,</span> <span class="n">space</span><span class="o">=</span><span class="n">space</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="n">prefix</span><span class="p">,</span>
+                    <span class="n">suffix</span><span class="o">=</span><span class="n">suffix</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">entities</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return dictionary of the BIDS entities.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">OrderedDict</span><span class="p">([</span>
+            <span class="p">(</span><span class="s1">&#39;subject&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">subject</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;session&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;task&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">task</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;acquisition&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">acquisition</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;run&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">run</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;processing&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">processing</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;recording&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">recording</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;space&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">space</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;prefix&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">prefix</span><span class="p">),</span>
+            <span class="p">(</span><span class="s1">&#39;suffix&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">suffix</span><span class="p">)</span>
+        <span class="p">])</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the string representation of the path.&quot;&quot;&quot;</span>
+        <span class="n">basename</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">entities</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;prefix&#39;</span><span class="p">,</span> <span class="s1">&#39;suffix&#39;</span><span class="p">)</span> <span class="ow">and</span> \
+                    <span class="n">val</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">_check_key_val</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
+                <span class="c1"># convert certain keys to shorthand</span>
+                <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;subject&#39;</span><span class="p">:</span>
+                    <span class="n">key</span> <span class="o">=</span> <span class="s1">&#39;sub&#39;</span>
+                <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;session&#39;</span><span class="p">:</span>
+                    <span class="n">key</span> <span class="o">=</span> <span class="s1">&#39;ses&#39;</span>
+                <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;acquisition&#39;</span><span class="p">:</span>
+                    <span class="n">key</span> <span class="o">=</span> <span class="s1">&#39;acq&#39;</span>
+                <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;processing&#39;</span><span class="p">:</span>
+                    <span class="n">key</span> <span class="o">=</span> <span class="s1">&#39;proc&#39;</span>
+                <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;recording&#39;</span><span class="p">:</span>
+                    <span class="n">key</span> <span class="o">=</span> <span class="s1">&#39;rec&#39;</span>
+                <span class="n">basename</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">-</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">val</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">suffix</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">basename</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">suffix</span><span class="p">)</span>
+
+        <span class="n">basename</span> <span class="o">=</span> <span class="s1">&#39;_&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">basename</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">prefix</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">basename</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prefix</span><span class="p">,</span> <span class="n">basename</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">basename</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Representation in the style of `pathlib.Path`.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1">(</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="si">}</span><span class="s1">)&#39;</span>
+
+    <span class="k">def</span> <span class="nf">__fspath__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the string representation for any fs functions.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Compare str representations.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Compare str representations.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">str</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
+
+<div class="viewcode-block" id="BIDSPath.copy"><a class="viewcode-back" href="../../generated/mne_bids.path.BIDSPath.html#mne_bids.BIDSPath.copy">[docs]</a>    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Copy the instance.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        bidspath : instance of BIDSPath</span>
+<span class="sd">            The copied bidspath.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BIDSPath.get_bids_fname"><a class="viewcode-back" href="../../generated/mne_bids.path.BIDSPath.html#mne_bids.BIDSPath.get_bids_fname">[docs]</a>    <span class="k">def</span> <span class="nf">get_bids_fname</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bids_root</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get the BIDS filename, by inferring kind and extension.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        kind : str, optional</span>
+<span class="sd">            The kind of recording to read. If ``None`` and only one</span>
+<span class="sd">            kind (e.g., only EEG or only MEG data) is present in the</span>
+<span class="sd">            dataset, it will be selected automatically.</span>
+<span class="sd">        bids_root : str | os.PathLike, optional</span>
+<span class="sd">            Path to root of the BIDS folder</span>
+<span class="sd">        extension : str, optional</span>
+<span class="sd">            If ``None``, try to infer the filename extension by searching</span>
+<span class="sd">            for the file on disk. If the file cannot be found, an error</span>
+<span class="sd">            will be raised. To disable this automatic inference attempt,</span>
+<span class="sd">            pass a string (like ``&#39;.fif&#39;`` or ``&#39;.vhdr&#39;``).</span>
+<span class="sd">            If an empty string is passed, no extension</span>
+<span class="sd">            will be added to the filename.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        bids_fname : BIDSPath</span>
+<span class="sd">            A BIDSPath with a full filename.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Get the BIDS parameters (=entities)</span>
+        <span class="n">sub</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subject</span>
+        <span class="n">ses</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span>
+
+        <span class="k">if</span> <span class="n">extension</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">bids_root</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;No filename extension was provided, and it cannot be &#39;</span>
+                   <span class="s1">&#39;automatically inferred because no bids_root was passed.&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">extension</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">bids_fname</span> <span class="o">=</span> <span class="n">_get_bids_fname_from_filesystem</span><span class="p">(</span>
+                <span class="n">bids_basename</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">bids_root</span><span class="o">=</span><span class="n">bids_root</span><span class="p">,</span> <span class="n">sub</span><span class="o">=</span><span class="n">sub</span><span class="p">,</span> <span class="n">ses</span><span class="o">=</span><span class="n">ses</span><span class="p">,</span>
+                <span class="n">kind</span><span class="o">=</span><span class="n">kind</span><span class="p">)</span>
+            <span class="n">new_suffix</span> <span class="o">=</span> <span class="n">bids_fname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">bids_fname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="n">new_suffix</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">bids_fname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">{kind}</span><span class="s1">.</span><span class="si">{extension}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">bids_fname</span></div>
+
+<div class="viewcode-block" id="BIDSPath.update"><a class="viewcode-back" href="../../generated/mne_bids.path.BIDSPath.html#mne_bids.BIDSPath.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">entities</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Update inplace BIDS entity key/value pairs in object.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        entities : dict | kwarg</span>
+<span class="sd">            Allowed BIDS path entities:</span>
+<span class="sd">            &#39;subject&#39;, &#39;session&#39;, &#39;task&#39;, &#39;acquisition&#39;,</span>
+<span class="sd">            &#39;processing&#39;, &#39;run&#39;, &#39;recording&#39;, &#39;space&#39;, &#39;suffix&#39;, &#39;prefix&#39;</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        bidspath : instance of BIDSPath</span>
+<span class="sd">            The current instance of BIDSPath.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        If one creates a bids basename using</span>
+<span class="sd">        :func:`mne_bids.make_bids_basename`:</span>
+
+<span class="sd">        &gt;&gt;&gt; bids_basename = make_bids_basename(subject=&#39;test&#39;, session=&#39;two&#39;, task=&#39;mytask&#39;, suffix=&#39;data.csv&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; print(bids_basename)</span>
+<span class="sd">        sub-test_ses-two_task-mytask_data.csv</span>
+<span class="sd">        &gt;&gt;&gt; # Then, one can update this `BIDSPath` object in place</span>
+<span class="sd">        &gt;&gt;&gt; bids_basename.update(acquisition=&#39;test&#39;, suffix=&#39;ieeg.vhdr&#39;, task=None)</span>
+<span class="sd">        BIDSPath(sub-test_ses-two_acq-test_ieeg.vhdr)</span>
+<span class="sd">        &gt;&gt;&gt; print(bids_basename)</span>
+<span class="sd">        sub-test_ses-two_acq-test_ieeg.vhdr</span>
+<span class="sd">        &quot;&quot;&quot;</span>  <span class="c1"># noqa</span>
+        <span class="n">run</span> <span class="o">=</span> <span class="n">entities</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;run&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">run</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">run</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="c1"># Ensure that run is a string</span>
+            <span class="n">entities</span><span class="p">[</span><span class="s1">&#39;run&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{:02}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">run</span><span class="p">)</span>
+
+        <span class="c1"># error check entities</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">entities</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="c1"># error check allowed BIDS entity keywords</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">BIDS_PATH_ENTITIES</span> <span class="ow">and</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span>
+                <span class="s1">&#39;on_invalid_er_session&#39;</span><span class="p">,</span> <span class="s1">&#39;on_invalid_er_task&#39;</span><span class="p">,</span>
+            <span class="p">]:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Key must be one of </span><span class="si">{BIDS_PATH_ENTITIES}</span><span class="s1">, &#39;</span>
+                                 <span class="s1">&#39;got </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">key</span><span class="p">)</span>
+
+            <span class="c1"># set entity value</span>
+            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check</span><span class="p">(</span><span class="n">with_emptyroom</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+    <span class="k">def</span> <span class="nf">_check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">with_emptyroom</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="c1"># check the task/session of er basename</span>
+        <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>  <span class="c1"># run string representation to check validity of arguments</span>
+        <span class="k">if</span> <span class="n">with_emptyroom</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">subject</span> <span class="o">==</span> <span class="s1">&#39;emptyroom&#39;</span><span class="p">:</span>
+            <span class="n">_check_empty_room_basename</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="print_dir_tree"><a class="viewcode-back" href="../../generated/mne_bids.print_dir_tree.html#mne_bids.print_dir_tree">[docs]</a><span class="k">def</span> <span class="nf">print_dir_tree</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="n">max_depth</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Recursively print dir tree starting from `folder` up to `max_depth`.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">op</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">folder</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Directory does not exist: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">folder</span><span class="p">))</span>
+    <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;`max_depth` must be a positive integer or None&#39;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">max_depth</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">))):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">max_depth</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">max_depth</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s1">&#39;inf&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">max_depth</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="c1"># Use max_depth same as the -L param in the unix `tree` command</span>
+    <span class="n">max_depth</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="c1"># Base length of a tree branch, to normalize each tree&#39;s start to 0</span>
+    <span class="n">baselen</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">folder</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span>
+
+    <span class="c1"># Recursively walk through all directories</span>
+    <span class="k">for</span> <span class="n">root</span><span class="p">,</span> <span class="n">dirs</span><span class="p">,</span> <span class="n">files</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">folder</span><span class="p">):</span>
+
+        <span class="c1"># Check how far we have walked</span>
+        <span class="n">branchlen</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">root</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">))</span> <span class="o">-</span> <span class="n">baselen</span>
+
+        <span class="c1"># Only print, if this is up to the depth we asked</span>
+        <span class="k">if</span> <span class="n">branchlen</span> <span class="o">&lt;=</span> <span class="n">max_depth</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">branchlen</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;|</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">root</span><span class="p">)</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;|</span><span class="si">{}</span><span class="s1"> </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">((</span><span class="n">branchlen</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="s1">&#39;---&#39;</span><span class="p">,</span>
+                                      <span class="n">op</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">root</span><span class="p">)</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">))</span>
+
+            <span class="c1"># Only print files if we are NOT yet up to max_depth or beyond</span>
+            <span class="k">if</span> <span class="n">branchlen</span> <span class="o">&lt;</span> <span class="n">max_depth</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;|</span><span class="si">{}</span><span class="s1"> </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">branchlen</span> <span class="o">*</span> <span class="s1">&#39;---&#39;</span><span class="p">,</span> <span class="n">file</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="make_bids_folders"><a class="viewcode-back" href="../../generated/mne_bids.make_bids_folders.html#mne_bids.make_bids_folders">[docs]</a><span class="k">def</span> <span class="nf">make_bids_folders</span><span class="p">(</span><span class="n">subject</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bids_root</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                      <span class="n">make_dir</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create a BIDS folder hierarchy.</span>
+
+<span class="sd">    This creates a hierarchy of folders *within* a BIDS dataset. You should</span>
+<span class="sd">    plan to create these folders *inside* the bids_root folder of the dataset.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    subject : str</span>
+<span class="sd">        The subject ID. Corresponds to &quot;sub&quot;.</span>
+<span class="sd">    kind : str</span>
+<span class="sd">        The kind of folder being created at the end of the hierarchy. E.g.,</span>
+<span class="sd">        &quot;anat&quot;, &quot;func&quot;, etc.</span>
+<span class="sd">    session : str | None</span>
+<span class="sd">        The session for a item. Corresponds to &quot;ses&quot;.</span>
+<span class="sd">    bids_root : str | pathlib.Path | None</span>
+<span class="sd">        The bids_root for the folders to be created. If None, folders will be</span>
+<span class="sd">        created in the current working directory.</span>
+<span class="sd">    make_dir : bool</span>
+<span class="sd">        Whether to actually create the folders specified. If False, only a</span>
+<span class="sd">        path will be generated but no folders will be created.</span>
+<span class="sd">    overwrite : bool</span>
+<span class="sd">        How to handle overwriting previously generated data.</span>
+<span class="sd">        If overwrite == False then no existing folders will be removed, however</span>
+<span class="sd">        if overwrite == True then any existing folders at the session level</span>
+<span class="sd">        or lower will be removed, including any contained data.</span>
+<span class="sd">    verbose : bool</span>
+<span class="sd">        If verbose is True, print status updates</span>
+<span class="sd">        as folders are created.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    path : str</span>
+<span class="sd">        The (relative) path to the folder that was created.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; make_bids_folders(&#39;sub_01&#39;, session=&#39;mysession&#39;, kind=&#39;meg&#39;, bids_root=&#39;/path/to/project&#39;, make_dir=False)  # noqa</span>
+<span class="sd">    &#39;/path/to/project/sub-sub_01/ses-mysession/meg&#39;</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>  <span class="c1"># noqa</span>
+    <span class="n">_check_types</span><span class="p">((</span><span class="n">subject</span><span class="p">,</span> <span class="n">kind</span><span class="p">,</span> <span class="n">session</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">bids_root</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">bids_root</span> <span class="o">=</span> <span class="n">_path_to_str</span><span class="p">(</span><span class="n">bids_root</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">session</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">_check_key_val</span><span class="p">(</span><span class="s1">&#39;ses&#39;</span><span class="p">,</span> <span class="n">session</span><span class="p">)</span>
+
+    <span class="n">path</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;sub-</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">subject</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;ses-</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">session</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">kind</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">kind</span><span class="p">)</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="o">*</span><span class="n">path</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bids_root</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bids_root</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">make_dir</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">_mkdir_p</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">path</span></div>
+
+
+<span class="k">def</span> <span class="nf">_parse_ext</span><span class="p">(</span><span class="n">raw_fname</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Split a filename into its name and extension.&quot;&quot;&quot;</span>
+    <span class="n">fname</span><span class="p">,</span> <span class="n">ext</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">raw_fname</span><span class="p">)</span>
+    <span class="c1"># BTi data is the only file format that does not have a file extension</span>
+    <span class="k">if</span> <span class="n">ext</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span> <span class="ow">or</span> <span class="s1">&#39;c,rf&#39;</span> <span class="ow">in</span> <span class="n">fname</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">verbose</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Found no extension for raw file, assuming &quot;BTi&quot; format and &#39;</span>
+                  <span class="s1">&#39;appending extension .pdf&#39;</span><span class="p">)</span>
+        <span class="n">ext</span> <span class="o">=</span> <span class="s1">&#39;.pdf&#39;</span>
+    <span class="c1"># If ending on .gz, check whether it is an .nii.gz file</span>
+    <span class="k">elif</span> <span class="n">ext</span> <span class="o">==</span> <span class="s1">&#39;.gz&#39;</span> <span class="ow">and</span> <span class="n">raw_fname</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.nii.gz&#39;</span><span class="p">):</span>
+        <span class="n">ext</span> <span class="o">=</span> <span class="s1">&#39;.nii.gz&#39;</span>
+        <span class="n">fname</span> <span class="o">=</span> <span class="n">fname</span><span class="p">[:</span><span class="o">-</span><span class="mi">4</span><span class="p">]</span>  <span class="c1"># cut off the .nii</span>
+    <span class="k">return</span> <span class="n">fname</span><span class="p">,</span> <span class="n">ext</span>
+
+
+<span class="k">def</span> <span class="nf">_parse_bids_filename</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">verbose</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Get dict from BIDS fname.&quot;&quot;&quot;</span>
+    <span class="n">keys</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;sub&#39;</span><span class="p">,</span> <span class="s1">&#39;ses&#39;</span><span class="p">,</span> <span class="s1">&#39;task&#39;</span><span class="p">,</span> <span class="s1">&#39;acq&#39;</span><span class="p">,</span> <span class="s1">&#39;run&#39;</span><span class="p">,</span> <span class="s1">&#39;proc&#39;</span><span class="p">,</span> <span class="s1">&#39;run&#39;</span><span class="p">,</span> <span class="s1">&#39;space&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;rec&#39;</span><span class="p">,</span> <span class="s1">&#39;split&#39;</span><span class="p">,</span> <span class="s1">&#39;kind&#39;</span><span class="p">]</span>
+    <span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">}</span>
+    <span class="n">idx_key</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">re</span><span class="o">.</span><span class="n">finditer</span><span class="p">(</span><span class="n">param_regex</span><span class="p">,</span> <span class="n">op</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">fname</span><span class="p">)):</span>
+        <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">groups</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s1">&#39;Unexpected entity &quot;</span><span class="si">%s</span><span class="s1">&quot; found in filename &quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span>
+                           <span class="o">%</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">fname</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">keys</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">idx_key</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Entities in filename not ordered correctly.&#39;</span>
+                             <span class="s1">&#39; &quot;</span><span class="si">%s</span><span class="s1">&quot; should have occurred earlier in the &#39;</span>
+                             <span class="s1">&#39;filename &quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">fname</span><span class="p">))</span>
+        <span class="n">idx_key</span> <span class="o">=</span> <span class="n">keys</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="n">params</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+    <span class="k">return</span> <span class="n">params</span>
+
+
+<span class="k">def</span> <span class="nf">_find_matching_sidecar</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">,</span> <span class="n">bids_root</span><span class="p">,</span> <span class="n">suffix</span><span class="p">,</span> <span class="n">allow_fail</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Try to find a sidecar file with a given suffix for a data file.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    bids_fname : BIDSPath</span>
+<span class="sd">        Full name of the data file</span>
+<span class="sd">    bids_root : str | pathlib.Path</span>
+<span class="sd">        Path to root of the BIDS folder</span>
+<span class="sd">    suffix : str</span>
+<span class="sd">        The suffix of the sidecar file to be found. E.g., &quot;_coordsystem.json&quot;</span>
+<span class="sd">    allow_fail : bool</span>
+<span class="sd">        If False, will raise RuntimeError if not exactly one matching sidecar</span>
+<span class="sd">        was found. If True, will return None in that case. Defaults to False</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    sidecar_fname : str | None</span>
+<span class="sd">        Path to the identified sidecar file, or None, if `allow_fail` is True</span>
+<span class="sd">        and no sidecar_fname was found</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># We only use subject and session as identifier, because all other</span>
+    <span class="c1"># parameters are potentially not binding for metadata sidecar files</span>
+    <span class="n">search_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;sub-</span><span class="si">{</span><span class="n">bids_fname</span><span class="o">.</span><span class="n">subject</span><span class="si">}</span><span class="s1">&#39;</span>
+    <span class="k">if</span> <span class="n">bids_fname</span><span class="o">.</span><span class="n">session</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">search_str</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39;_ses-</span><span class="si">{</span><span class="n">bids_fname</span><span class="o">.</span><span class="n">session</span><span class="si">}</span><span class="s1">&#39;</span>
+
+    <span class="c1"># Find all potential sidecar files, doing a recursive glob</span>
+    <span class="c1"># from bids_root/sub_id/</span>
+    <span class="n">search_str</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bids_root</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;sub-</span><span class="si">{</span><span class="n">bids_fname</span><span class="o">.</span><span class="n">subject</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+                         <span class="s1">&#39;**&#39;</span><span class="p">,</span> <span class="n">search_str</span> <span class="o">+</span> <span class="s1">&#39;*&#39;</span> <span class="o">+</span> <span class="n">suffix</span><span class="p">)</span>
+    <span class="n">candidate_list</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">search_str</span><span class="p">,</span> <span class="n">recursive</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">best_candidates</span> <span class="o">=</span> <span class="n">_find_best_candidates</span><span class="p">(</span><span class="n">bids_fname</span><span class="o">.</span><span class="n">entities</span><span class="p">,</span>
+                                            <span class="n">candidate_list</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">best_candidates</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="c1"># Success</span>
+        <span class="k">return</span> <span class="n">best_candidates</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="c1"># map suffix to make warning message readable</span>
+    <span class="k">if</span> <span class="s1">&#39;electrodes.tsv&#39;</span> <span class="ow">in</span> <span class="n">suffix</span><span class="p">:</span>
+        <span class="n">suffix</span> <span class="o">=</span> <span class="s1">&#39;electrodes.tsv&#39;</span>
+    <span class="k">if</span> <span class="s1">&#39;coordsystem.json&#39;</span> <span class="ow">in</span> <span class="n">suffix</span><span class="p">:</span>
+        <span class="n">suffix</span> <span class="o">=</span> <span class="s1">&#39;coordsystem.json&#39;</span>
+
+    <span class="c1"># We failed. Construct a helpful error message.</span>
+    <span class="c1"># If this was expected, simply return None, otherwise, raise an exception.</span>
+    <span class="n">msg</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">best_candidates</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;Did not find any </span><span class="si">{}</span><span class="s1"> associated with </span><span class="si">{}</span><span class="s1">.&#39;</span>
+               <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">suffix</span><span class="p">,</span> <span class="n">bids_fname</span><span class="p">))</span>
+    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">best_candidates</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="c1"># More than one candidates were tied for best match</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;Expected to find a single </span><span class="si">{}</span><span class="s1"> file associated with &#39;</span>
+               <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">, but found </span><span class="si">{}</span><span class="s1">: &quot;</span><span class="si">{}</span><span class="s1">&quot;.&#39;</span>
+               <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">suffix</span><span class="p">,</span> <span class="n">bids_fname</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">candidate_list</span><span class="p">),</span>
+                       <span class="n">candidate_list</span><span class="p">))</span>
+    <span class="n">msg</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1">The search_str was &quot;</span><span class="si">{}</span><span class="s1">&quot;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">search_str</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">allow_fail</span><span class="p">:</span>
+        <span class="n">warn</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="make_bids_basename"><a class="viewcode-back" href="../../generated/mne_bids.make_bids_basename.html#mne_bids.make_bids_basename">[docs]</a><span class="k">def</span> <span class="nf">make_bids_basename</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                       <span class="n">acquisition</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">run</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">processing</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                       <span class="n">recording</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">space</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create a partial/full BIDS basename from its component parts.</span>
+
+<span class="sd">    BIDS filename prefixes have one or more pieces of metadata in them. They</span>
+<span class="sd">    must follow a particular order, which is followed by this function. This</span>
+<span class="sd">    will generate the *prefix* for a BIDS filename that can be used with many</span>
+<span class="sd">    subsequent files, or you may also give a suffix that will then complete</span>
+<span class="sd">    the file name.</span>
+
+<span class="sd">    Note that all parameters are not applicable to each kind of data. For</span>
+<span class="sd">    example, electrode location TSV files do not need a task field.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    subject : str | None</span>
+<span class="sd">        The subject ID. Corresponds to &quot;sub&quot;.</span>
+<span class="sd">    session : str | None</span>
+<span class="sd">        The session identifier. Corresponds to &quot;ses&quot;. Must be a date in</span>
+<span class="sd">        format &quot;YYYYMMDD&quot; if subject is &quot;emptyroom&quot;.</span>
+<span class="sd">    task : str | None</span>
+<span class="sd">        The task identifier. Corresponds to &quot;task&quot;. Must be &quot;noise&quot; if</span>
+<span class="sd">        subject is &quot;emptyroom&quot;.</span>
+<span class="sd">    acquisition: str | None</span>
+<span class="sd">        The acquisition parameters. Corresponds to &quot;acq&quot;.</span>
+<span class="sd">    run : int | None</span>
+<span class="sd">        The run number. Corresponds to &quot;run&quot;.</span>
+<span class="sd">    processing : str | None</span>
+<span class="sd">        The processing label. Corresponds to &quot;proc&quot;.</span>
+<span class="sd">    recording : str | None</span>
+<span class="sd">        The recording name. Corresponds to &quot;rec&quot;.</span>
+<span class="sd">    space : str | None</span>
+<span class="sd">        The coordinate space for an anatomical file. Corresponds to &quot;space&quot;.</span>
+<span class="sd">    prefix : str | None</span>
+<span class="sd">        The prefix for the filename to be created. E.g., a path to the folder</span>
+<span class="sd">        in which you wish to create a file with this name.</span>
+<span class="sd">    suffix : str | None</span>
+<span class="sd">        The suffix for the filename to be created. E.g., &#39;audio.wav&#39;.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    basename : BIDSPath</span>
+<span class="sd">        The BIDS basename you wish to create.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; print(make_bids_basename(subject=&#39;test&#39;, session=&#39;two&#39;, task=&#39;mytask&#39;, suffix=&#39;data.csv&#39;)) # noqa: E501</span>
+<span class="sd">    sub-test_ses-two_task-mytask_data.csv</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">bids_path</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="n">subject</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="n">task</span><span class="p">,</span>
+                         <span class="n">acquisition</span><span class="o">=</span><span class="n">acquisition</span><span class="p">,</span> <span class="n">run</span><span class="o">=</span><span class="n">run</span><span class="p">,</span>
+                         <span class="n">processing</span><span class="o">=</span><span class="n">processing</span><span class="p">,</span> <span class="n">recording</span><span class="o">=</span><span class="n">recording</span><span class="p">,</span>
+                         <span class="n">space</span><span class="o">=</span><span class="n">space</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="n">prefix</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="n">suffix</span><span class="p">)</span>
+    <span class="n">bids_path</span><span class="o">.</span><span class="n">_check</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">bids_path</span></div>
+
+
+<div class="viewcode-block" id="get_kinds"><a class="viewcode-back" href="../../generated/mne_bids.get_kinds.html#mne_bids.get_kinds">[docs]</a><span class="k">def</span> <span class="nf">get_kinds</span><span class="p">(</span><span class="n">bids_root</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Get list of data types (&quot;kinds&quot;) present in a BIDS dataset.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    bids_root : str | pathlib.Path</span>
+<span class="sd">        Path to the root of the BIDS directory.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    kinds : list of str</span>
+<span class="sd">        List of the data types present in the BIDS dataset pointed to by</span>
+<span class="sd">        `bids_root`.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Take all possible kinds from &quot;entity&quot; table (Appendix in BIDS spec)</span>
+    <span class="n">kind_list</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;anat&#39;</span><span class="p">,</span> <span class="s1">&#39;func&#39;</span><span class="p">,</span> <span class="s1">&#39;dwi&#39;</span><span class="p">,</span> <span class="s1">&#39;fmap&#39;</span><span class="p">,</span> <span class="s1">&#39;beh&#39;</span><span class="p">,</span> <span class="s1">&#39;meg&#39;</span><span class="p">,</span> <span class="s1">&#39;eeg&#39;</span><span class="p">,</span> <span class="s1">&#39;ieeg&#39;</span><span class="p">)</span>
+    <span class="n">kinds</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">root</span><span class="p">,</span> <span class="n">dirs</span><span class="p">,</span> <span class="n">files</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">bids_root</span><span class="p">):</span>
+        <span class="k">for</span> <span class="nb">dir</span> <span class="ow">in</span> <span class="n">dirs</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">dir</span> <span class="ow">in</span> <span class="n">kind_list</span> <span class="ow">and</span> <span class="nb">dir</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kinds</span><span class="p">:</span>
+                <span class="n">kinds</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">dir</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">kinds</span></div>
+
+
+<div class="viewcode-block" id="get_entity_vals"><a class="viewcode-back" href="../../generated/mne_bids.get_entity_vals.html#mne_bids.get_entity_vals">[docs]</a><span class="k">def</span> <span class="nf">get_entity_vals</span><span class="p">(</span><span class="n">bids_root</span><span class="p">,</span> <span class="n">entity_key</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">ignore_sub</span><span class="o">=</span><span class="s1">&#39;emptyroom&#39;</span><span class="p">,</span>
+                    <span class="n">ignore_task</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ignore_ses</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ignore_run</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                    <span class="n">ignore_acq</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Get list of values associated with an `entity_key` in a BIDS dataset.</span>
+
+<span class="sd">    BIDS file names are organized by key-value pairs called &quot;entities&quot; [1]_.</span>
+<span class="sd">    With this function, you can get all values for an entity indexed by its</span>
+<span class="sd">    key.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    bids_root : str | pathlib.Path</span>
+<span class="sd">        Path to the root of the BIDS directory.</span>
+<span class="sd">    entity_key : str</span>
+<span class="sd">        The name of the entity key to search for. Can be one of</span>
+<span class="sd">        [&#39;sub&#39;, &#39;ses&#39;, &#39;task&#39;, &#39;run&#39;, &#39;acq&#39;].</span>
+<span class="sd">    ignore_sub : str | iterable | None</span>
+<span class="sd">        Subject(s) to ignore. By default, entities from the ``emptyroom``</span>
+<span class="sd">        mock-subject are not returned. If ``None``, include all subjects.</span>
+<span class="sd">    ignore_task : str | iterable | None</span>
+<span class="sd">        Task(s) to ignore. If ``None``, include all tasks.</span>
+<span class="sd">    ignore_ses : str | iterable | None</span>
+<span class="sd">        Session(s) to ignore. If ``None``, include all sessions.</span>
+<span class="sd">    ignore_run : str | iterable | None</span>
+<span class="sd">        Run(s) to ignore. If ``None``, include all runs.</span>
+<span class="sd">    ignore_acq : str | iterable | None</span>
+<span class="sd">        Acquisition(s) to ignore. If ``None``, include all acquisitions.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    entity_vals : list of str</span>
+<span class="sd">        List of the values associated with an `entity_key` in the BIDS dataset</span>
+<span class="sd">        pointed to by `bids_root`.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; bids_root = os.path.expanduser(&#39;~/mne_data/eeg_matchingpennies&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; entity_key = &#39;sub&#39;</span>
+<span class="sd">    &gt;&gt;&gt; get_entity_vals(bids_root, entity_key)</span>
+<span class="sd">    [&#39;05&#39;, &#39;06&#39;, &#39;07&#39;, &#39;08&#39;, &#39;09&#39;, &#39;10&#39;, &#39;11&#39;]</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This function will scan the entire ``bids_root``, except for a</span>
+<span class="sd">    ``derivatives`` subfolder placed directly under ``bids_root``.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] https://bids-specification.rtfd.io/en/latest/02-common-principles.html#file-name-structure  # noqa: E501</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">entities</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;sub&#39;</span><span class="p">,</span> <span class="s1">&#39;ses&#39;</span><span class="p">,</span> <span class="s1">&#39;task&#39;</span><span class="p">,</span> <span class="s1">&#39;run&#39;</span><span class="p">,</span> <span class="s1">&#39;acq&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">entity_key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">entities</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;`key` must be one of &quot;</span><span class="si">{}</span><span class="s1">&quot;. Got &quot;</span><span class="si">{}</span><span class="s1">&quot;&#39;</span>
+                         <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">entities</span><span class="p">,</span> <span class="n">entity_key</span><span class="p">))</span>
+
+    <span class="n">ignore_sub</span> <span class="o">=</span> <span class="n">_ensure_tuple</span><span class="p">(</span><span class="n">ignore_sub</span><span class="p">)</span>
+    <span class="n">ignore_task</span> <span class="o">=</span> <span class="n">_ensure_tuple</span><span class="p">(</span><span class="n">ignore_task</span><span class="p">)</span>
+    <span class="n">ignore_ses</span> <span class="o">=</span> <span class="n">_ensure_tuple</span><span class="p">(</span><span class="n">ignore_ses</span><span class="p">)</span>
+    <span class="n">ignore_run</span> <span class="o">=</span> <span class="n">_ensure_tuple</span><span class="p">(</span><span class="n">ignore_run</span><span class="p">)</span>
+    <span class="n">ignore_acq</span> <span class="o">=</span> <span class="n">_ensure_tuple</span><span class="p">(</span><span class="n">ignore_acq</span><span class="p">)</span>
+
+    <span class="n">p</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">-(.*?)_&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">entity_key</span><span class="p">))</span>
+    <span class="n">value_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">Path</span><span class="p">(</span><span class="n">bids_root</span><span class="p">)</span><span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="s1">&#39;*</span><span class="si">{}</span><span class="s1">-*_*&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">entity_key</span><span class="p">)):</span>
+        <span class="c1"># Ignore `derivatives` folder.</span>
+        <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bids_root</span><span class="p">,</span> <span class="s1">&#39;derivatives&#39;</span><span class="p">)):</span>
+            <span class="k">continue</span>
+
+        <span class="k">if</span> <span class="n">ignore_sub</span> <span class="ow">and</span> <span class="nb">any</span><span class="p">([</span><span class="n">filename</span><span class="o">.</span><span class="n">stem</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;sub-</span><span class="si">{</span><span class="n">s</span><span class="si">}</span><span class="s1">_&#39;</span><span class="p">)</span>
+                               <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">ignore_sub</span><span class="p">]):</span>
+            <span class="k">continue</span>
+        <span class="k">if</span> <span class="n">ignore_task</span> <span class="ow">and</span> <span class="nb">any</span><span class="p">([</span><span class="sa">f</span><span class="s1">&#39;_task-</span><span class="si">{</span><span class="n">t</span><span class="si">}</span><span class="s1">_&#39;</span> <span class="ow">in</span> <span class="n">filename</span><span class="o">.</span><span class="n">stem</span>
+                                <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">ignore_task</span><span class="p">]):</span>
+            <span class="k">continue</span>
+        <span class="k">if</span> <span class="n">ignore_ses</span> <span class="ow">and</span> <span class="nb">any</span><span class="p">([</span><span class="sa">f</span><span class="s1">&#39;_ses-</span><span class="si">{</span><span class="n">s</span><span class="si">}</span><span class="s1">_&#39;</span> <span class="ow">in</span> <span class="n">filename</span><span class="o">.</span><span class="n">stem</span>
+                               <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">ignore_ses</span><span class="p">]):</span>
+            <span class="k">continue</span>
+        <span class="k">if</span> <span class="n">ignore_run</span> <span class="ow">and</span> <span class="nb">any</span><span class="p">([</span><span class="sa">f</span><span class="s1">&#39;_run-</span><span class="si">{</span><span class="n">r</span><span class="si">}</span><span class="s1">_&#39;</span> <span class="ow">in</span> <span class="n">filename</span><span class="o">.</span><span class="n">stem</span>
+                               <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">ignore_run</span><span class="p">]):</span>
+            <span class="k">continue</span>
+        <span class="k">if</span> <span class="n">ignore_acq</span> <span class="ow">and</span> <span class="nb">any</span><span class="p">([</span><span class="sa">f</span><span class="s1">&#39;_acq-</span><span class="si">{</span><span class="n">a</span><span class="si">}</span><span class="s1">_&#39;</span> <span class="ow">in</span> <span class="n">filename</span><span class="o">.</span><span class="n">stem</span>
+                               <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">ignore_acq</span><span class="p">]):</span>
+            <span class="k">continue</span>
+
+        <span class="n">match</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">filename</span><span class="o">.</span><span class="n">stem</span><span class="p">)</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">value_list</span><span class="p">:</span>
+            <span class="n">value_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">value_list</span><span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">_mkdir_p</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create a directory, making parent directories as needed [1].</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] stackoverflow.com/questions/600268/mkdir-p-functionality-in-python</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">overwrite</span> <span class="ow">and</span> <span class="n">op</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+        <span class="n">sh</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">verbose</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Clearing path: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">path</span><span class="p">)</span>
+
+    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">verbose</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Creating folder: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">path</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_find_best_candidates</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">candidate_list</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return the best candidate, based on the number of param matches.</span>
+
+<span class="sd">    Assign each candidate a score, based on how many entities are shared with</span>
+<span class="sd">    the ones supplied in the `params` parameter. The candidate with the highest</span>
+<span class="sd">    score wins. Candidates with entities that conflict with the supplied</span>
+<span class="sd">    `params` are disqualified.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    params : dict</span>
+<span class="sd">        The entities that the candidate should match.</span>
+<span class="sd">    candidate_list : list of str</span>
+<span class="sd">        A list of candidate filenames.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    best_candidates : list of str</span>
+<span class="sd">        A list of all the candidate filenames that are tied for first place.</span>
+<span class="sd">        Hopefully, the list will have a length of one.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="n">value</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">params</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">}</span>
+
+    <span class="n">best_candidates</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">best_n_matches</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">candidate</span> <span class="ow">in</span> <span class="n">candidate_list</span><span class="p">:</span>
+        <span class="n">n_matches</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">candidate_disqualified</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">candidate_params</span> <span class="o">=</span> <span class="n">_parse_bids_filename</span><span class="p">(</span><span class="n">candidate</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">entity</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">params</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">entity</span> <span class="ow">in</span> <span class="n">candidate_params</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">candidate_params</span><span class="p">[</span><span class="n">entity</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="k">elif</span> <span class="n">candidate_params</span><span class="p">[</span><span class="n">entity</span><span class="p">]</span> <span class="o">==</span> <span class="n">value</span><span class="p">:</span>
+                    <span class="n">n_matches</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># Incompatible entity found, candidate is disqualified</span>
+                    <span class="n">candidate_disqualified</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="k">break</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">candidate_disqualified</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">n_matches</span> <span class="o">&gt;</span> <span class="n">best_n_matches</span><span class="p">:</span>
+                <span class="n">best_n_matches</span> <span class="o">=</span> <span class="n">n_matches</span>
+                <span class="n">best_candidates</span> <span class="o">=</span> <span class="p">[</span><span class="n">candidate</span><span class="p">]</span>
+            <span class="k">elif</span> <span class="n">n_matches</span> <span class="o">==</span> <span class="n">best_n_matches</span><span class="p">:</span>
+                <span class="n">best_candidates</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">candidate</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">best_candidates</span>
+
+
+<span class="k">def</span> <span class="nf">_get_bids_fname_from_filesystem</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">bids_basename</span><span class="p">,</span> <span class="n">bids_root</span><span class="p">,</span> <span class="n">sub</span><span class="p">,</span> <span class="n">ses</span><span class="p">,</span>
+                                    <span class="n">kind</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">kind</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">kind</span> <span class="o">=</span> <span class="n">_infer_kind</span><span class="p">(</span><span class="n">bids_basename</span><span class="o">=</span><span class="n">bids_basename</span><span class="p">,</span> <span class="n">bids_root</span><span class="o">=</span><span class="n">bids_root</span><span class="p">,</span>
+                           <span class="n">sub</span><span class="o">=</span><span class="n">sub</span><span class="p">,</span> <span class="n">ses</span><span class="o">=</span><span class="n">ses</span><span class="p">)</span>
+
+    <span class="n">data_dir</span> <span class="o">=</span> <span class="n">make_bids_folders</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="n">sub</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">ses</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="n">kind</span><span class="p">,</span>
+                                 <span class="n">make_dir</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="n">bti_dir</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bids_root</span><span class="p">,</span> <span class="n">data_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">bids_basename</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">kind</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">op</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">bti_dir</span><span class="p">):</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Assuming BTi data in </span><span class="si">{</span><span class="n">bti_dir</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">bids_fname</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">bti_dir</span><span class="si">}</span><span class="s1">.pdf&#39;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Find all matching files in all supported formats.</span>
+        <span class="n">valid_exts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">reader</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="n">matching_paths</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bids_root</span><span class="p">,</span> <span class="n">data_dir</span><span class="p">,</span>
+                                           <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">bids_basename</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">kind</span><span class="si">}</span><span class="s1">.*&#39;</span><span class="p">))</span>
+        <span class="n">matching_paths</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">matching_paths</span>
+                          <span class="k">if</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">p</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="n">valid_exts</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">matching_paths</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;Could not locate a data file of a supported format. This &#39;</span>
+                   <span class="s1">&#39;is likely a problem with your BIDS dataset. Please run &#39;</span>
+                   <span class="s1">&#39;the BIDS validator on your data.&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+        <span class="c1"># FIXME This will break e.g. with FIFF data split across multiple</span>
+        <span class="c1"># FIXME files.</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">matching_paths</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;Found more than one matching data file for the requested &#39;</span>
+                   <span class="s1">&#39;recording. Cannot proceed due to the ambiguity. This is &#39;</span>
+                   <span class="s1">&#39;likely a problem with your BIDS dataset. Please run the &#39;</span>
+                   <span class="s1">&#39;BIDS validator on your data.&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+        <span class="n">matching_path</span> <span class="o">=</span> <span class="n">matching_paths</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">bids_fname</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">matching_path</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">bids_fname</span>
+
+
+<span class="k">def</span> <span class="nf">_get_kinds_for_sub</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">bids_basename</span><span class="p">,</span> <span class="n">bids_root</span><span class="p">,</span> <span class="n">sub</span><span class="p">,</span> <span class="n">ses</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Retrieve available data kinds for a specific subject and session.&quot;&quot;&quot;</span>
+    <span class="n">subject_dir</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bids_root</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">ses</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">subject_dir</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">subject_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;ses-</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="c1"># TODO We do this to ensure we don&#39;t accidentally pick up any &quot;spurious&quot;</span>
+    <span class="c1"># TODO sub-directories. But is that really necessary with valid BIDS data?</span>
+    <span class="n">kinds_in_dataset</span> <span class="o">=</span> <span class="n">get_kinds</span><span class="p">(</span><span class="n">bids_root</span><span class="o">=</span><span class="n">bids_root</span><span class="p">)</span>
+    <span class="n">subdirs</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">scandir</span><span class="p">(</span><span class="n">subject_dir</span><span class="p">)</span> <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">is_dir</span><span class="p">()]</span>
+    <span class="n">available_kinds</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">subdirs</span> <span class="k">if</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">kinds_in_dataset</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">available_kinds</span>
+
+
+<span class="k">def</span> <span class="nf">_infer_kind</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">bids_basename</span><span class="p">,</span> <span class="n">bids_root</span><span class="p">,</span> <span class="n">sub</span><span class="p">,</span> <span class="n">ses</span><span class="p">):</span>
+    <span class="c1"># Check which kind is available for this particular</span>
+    <span class="c1"># subject &amp; session. If we get no or multiple hits, throw an error.</span>
+
+    <span class="n">kinds</span> <span class="o">=</span> <span class="n">_get_kinds_for_sub</span><span class="p">(</span><span class="n">bids_basename</span><span class="o">=</span><span class="n">bids_basename</span><span class="p">,</span>
+                               <span class="n">bids_root</span><span class="o">=</span><span class="n">bids_root</span><span class="p">,</span> <span class="n">sub</span><span class="o">=</span><span class="n">sub</span><span class="p">,</span> <span class="n">ses</span><span class="o">=</span><span class="n">ses</span><span class="p">)</span>
+
+    <span class="c1"># We only want to handle electrophysiological data here.</span>
+    <span class="n">allowed_kinds</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;meg&#39;</span><span class="p">,</span> <span class="s1">&#39;eeg&#39;</span><span class="p">,</span> <span class="s1">&#39;ieeg&#39;</span><span class="p">]</span>
+    <span class="n">kinds</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">kinds</span><span class="p">)</span> <span class="o">&amp;</span> <span class="nb">set</span><span class="p">(</span><span class="n">allowed_kinds</span><span class="p">))</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">kinds</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;No electrophysiological data found.&#39;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">kinds</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Found data of more than one recording modality. Please &#39;</span>
+               <span class="sa">f</span><span class="s1">&#39;pass the `kind` parameter to specify which data to load. &#39;</span>
+               <span class="sa">f</span><span class="s1">&#39;Found the following kinds: </span><span class="si">{</span><span class="n">kinds</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">kinds</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">kinds</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">_path_to_str</span><span class="p">(</span><span class="n">var</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Make sure var is a string or Path, return string representation.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="p">(</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">)):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;All path parameters must be either strings or &quot;</span>
+                         <span class="s2">&quot;pathlib.Path objects. Found type </span><span class="si">%s</span><span class="s2">.&quot;</span> <span class="o">%</span> <span class="nb">type</span><span class="p">(</span><span class="n">var</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+      
+  </div>
+</div>
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-07-31.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.1.2.<br/>
+    </p>
+  </div>
+</footer>
+  </body>
+</html>

@@ -115,8 +115,9 @@
 <p class="topic-title">Contents</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="#mne-bids" id="id2">MNE BIDS</a></p></li>
-<li><p><a class="reference internal" href="#utils" id="id3">Utils</a></p></li>
+<li><p><a class="reference internal" href="#path" id="id3">Path</a></p></li>
 <li><p><a class="reference internal" href="#copyfiles" id="id4">Copyfiles</a></p></li>
+<li><p><a class="reference internal" href="#utils" id="id5">Utils</a></p></li>
 </ul>
 </div>
 <div class="section" id="mne-bids">
@@ -159,29 +160,29 @@
 <tr class="row-even"><td><p><a class="reference internal" href="generated/mne_bids.get_anonymization_daysback.html#mne_bids.get_anonymization_daysback" title="mne_bids.get_anonymization_daysback"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_anonymization_daysback</span></code></a>(raws)</p></td>
 <td><p>Get the group min and max number of daysback necessary for BIDS specs.</p></td>
 </tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/mne_bids.print_dir_tree.html#mne_bids.print_dir_tree" title="mne_bids.print_dir_tree"><code class="xref py py-obj docutils literal notranslate"><span class="pre">print_dir_tree</span></code></a>(folder[, max_depth])</p></td>
+<td><p>Recursively print dir tree starting from <em class="xref py py-obj">folder</em> up to <em class="xref py py-obj">max_depth</em>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/mne_bids.get_entity_vals.html#mne_bids.get_entity_vals" title="mne_bids.get_entity_vals"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_entity_vals</span></code></a>(bids_root, entity_key, *[, …])</p></td>
+<td><p>Get list of values associated with an <em class="xref py py-obj">entity_key</em> in a BIDS dataset.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/mne_bids.get_kinds.html#mne_bids.get_kinds" title="mne_bids.get_kinds"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_kinds</span></code></a>(bids_root)</p></td>
+<td><p>Get list of data types (“kinds”) present in a BIDS dataset.</p></td>
+</tr>
 </tbody>
 </table>
 </div>
-<div class="section" id="utils">
-<h2><a class="toc-backref" href="#id3">Utils</a><a class="headerlink" href="#utils" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference internal" href="#module-mne_bids.utils" title="mne_bids.utils"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mne_bids.utils</span></code></a>:</p>
-<span class="target" id="module-mne_bids.utils"></span><p>Utility and helper functions for MNE-BIDS.</p>
+<div class="section" id="path">
+<h2><a class="toc-backref" href="#id3">Path</a><a class="headerlink" href="#path" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="#module-mne_bids.path" title="mne_bids.path"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mne_bids.path</span></code></a>:</p>
+<span class="target" id="module-mne_bids.path"></span><p>BIDS compatible path functionality.</p>
 <table class="longtable docutils align-default">
 <colgroup>
 <col style="width: 10%" />
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/mne_bids.utils.print_dir_tree.html#mne_bids.utils.print_dir_tree" title="mne_bids.utils.print_dir_tree"><code class="xref py py-obj docutils literal notranslate"><span class="pre">print_dir_tree</span></code></a>(folder[, max_depth])</p></td>
-<td><p>Recursively print dir tree starting from <em class="xref py py-obj">folder</em> up to <em class="xref py py-obj">max_depth</em>.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/mne_bids.utils.get_entity_vals.html#mne_bids.utils.get_entity_vals" title="mne_bids.utils.get_entity_vals"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_entity_vals</span></code></a>(bids_root, entity_key, *[, …])</p></td>
-<td><p>Get list of values associated with an <em class="xref py py-obj">entity_key</em> in a BIDS dataset.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/mne_bids.utils.get_kinds.html#mne_bids.utils.get_kinds" title="mne_bids.utils.get_kinds"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_kinds</span></code></a>(bids_root)</p></td>
-<td><p>Get list of data types (“kinds”) present in a BIDS dataset.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/mne_bids.utils.BIDSPath.html#mne_bids.utils.BIDSPath" title="mne_bids.utils.BIDSPath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BIDSPath</span></code></a>([subject, session, task, …])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/mne_bids.path.BIDSPath.html#mne_bids.path.BIDSPath" title="mne_bids.path.BIDSPath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BIDSPath</span></code></a>([subject, session, task, …])</p></td>
 <td><p>Create a partial/full BIDS filepath from its component parts.</p></td>
 </tr>
 </tbody>
@@ -219,6 +220,22 @@ due to internal pointers that are not being updated.</p>
 </tbody>
 </table>
 </div>
+<div class="section" id="utils">
+<h2><a class="toc-backref" href="#id5">Utils</a><a class="headerlink" href="#utils" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="#module-mne_bids.utils" title="mne_bids.utils"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mne_bids.utils</span></code></a>:</p>
+<span class="target" id="module-mne_bids.utils"></span><p>Utility and helper functions for MNE-BIDS.</p>
+<table class="longtable docutils align-default">
+<colgroup>
+<col style="width: 10%" />
+<col style="width: 90%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/mne_bids.utils.get_anonymization_daysback.html#mne_bids.utils.get_anonymization_daysback" title="mne_bids.utils.get_anonymization_daysback"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_anonymization_daysback</span></code></a>(raws)</p></td>
+<td><p>Get the group min and max number of daysback necessary for BIDS specs.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
 </div>
 
 
@@ -233,7 +250,7 @@ due to internal pointers that are not being updated.</p>
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-07-30.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-07-31.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.1.2.<br/>
     </p>
   </div>

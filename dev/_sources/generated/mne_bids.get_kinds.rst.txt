@@ -1,0 +1,11 @@
+mne\_bids.get\_kinds
+====================
+
+.. currentmodule:: mne_bids
+
+.. autofunction:: get_kinds
+
+.. _sphx_glr_backreferences_mne_bids.get_kinds:
+
+.. minigallery:: mne_bids.get_kinds
+    :add-heading:
