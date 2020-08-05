@@ -118,6 +118,10 @@ def _channels_tsv(raw, fname, overwrite=False, verbose=True):
     n_channels = raw.info['nchan']
     sfreq = raw.info['sfreq']
 
+    # default to 'n/a' for status description
+    # XXX: improve with API to modify the description
+    status_description = ['n/a'] * len(status)
+
     ch_data = OrderedDict([
         ('name', raw.info['ch_names']),
         ('type', ch_type),
@@ -126,7 +130,9 @@ def _channels_tsv(raw, fname, overwrite=False, verbose=True):
         ('high_cutoff', np.full((n_channels), high_cutoff)),
         ('description', description),
         ('sampling_frequency', np.full((n_channels), sfreq)),
-        ('status', status)])
+        ('status', status),
+        ('status_description', status_description)
+    ])
     ch_data = _drop(ch_data, ignored_channels, 'name')
 
     _write_tsv(fname, ch_data, overwrite, verbose)

@@ -751,6 +751,8 @@ def test_vhdr(_bids_validate):
     assert data['units'][data['name'].index('FP1')] == 'µV'
     assert data['units'][data['name'].index('CP5')] == 'n/a'
     assert data['status'][data['name'].index(injected_bad[0])] == 'bad'
+    status_description = data['status_description']
+    assert status_description[data['name'].index(injected_bad[0])] == 'n/a'
 
     # check events.tsv is written
     events_tsv_fname = str(channels_tsv_name).replace('channels', 'events')
