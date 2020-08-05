@@ -628,7 +628,7 @@ def get_head_mri_trans(bids_basename, bids_root):
     mri_landmarks = mri_landmarks * 1e-3
 
     # Get MEG landmarks from the raw file
-    _, ext = _parse_ext(bids_basename)
+    _, ext = _parse_ext(bids_fname)
     extra_params = None
     if ext == '.fif':
         extra_params = dict(allow_maxshield=True)
