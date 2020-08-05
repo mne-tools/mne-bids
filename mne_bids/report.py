@@ -333,7 +333,7 @@ def _summarize_sidecar_json(bids_root, scans_fpaths, verbose=True):
             n_scans += 1
 
             # convert to BIDS Path
-            params = parse_bids_filename(bids_basename, verbose)
+            params = parse_bids_filename(bids_basename)
             bids_basename = BIDSPath(subject=params.get('sub'),
                                      session=params.get('ses'),
                                      recording=params.get('rec'),
@@ -427,7 +427,7 @@ def _summarize_channels_tsv(bids_root, scans_fpaths, verbose=True):
                 continue
 
             # convert to BIDS Path
-            params = parse_bids_filename(bids_basename, verbose)
+            params = parse_bids_filename(bids_basename)
             bids_basename = BIDSPath(subject=params.get('sub'),
                                      session=params.get('ses'),
                                      recording=params.get('rec'),
