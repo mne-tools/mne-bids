@@ -372,8 +372,37 @@ def _parse_ext(raw_fname, verbose=False):
     return fname, ext
 
 
-def _parse_bids_filename(fname, verbose):
-    """Get dict from BIDS fname."""
+def parse_bids_filename(fname):
+    """Retrieve a dictionary of BIDS entities from a filename.
+
+    Entities not present in ``fname`` will be assigned the value of ``None``.
+
+    Parameters
+    ----------
+    fname : BIDSPath | str
+        The path to parse.
+
+    Returns
+    -------
+    params : dict
+        A dictionary with the keys corresponding to the BIDS entity names, and
+        the values to the entity values encoded in the filename.
+
+    Examples
+    --------
+    >>> fname = 'sub-01_ses-exp_run-02_meg.fif'
+    >>> parse_bids_filename(fname)
+    {'sub': '01',
+    'ses': 'exp',
+    'task': None,
+    'acq': None,
+    'run': '02',
+    'proc': None,
+    'space': None,
+    'rec': None,
+    'split': None,
+    'kind': None}
+    """
     keys = ['sub', 'ses', 'task', 'acq', 'run', 'proc', 'run', 'space',
             'rec', 'split', 'kind']
     params = {key: None for key in keys}
@@ -680,7 +709,7 @@ def _find_best_candidates(params, candidate_list):
     for candidate in candidate_list:
         n_matches = 0
         candidate_disqualified = False
-        candidate_params = _parse_bids_filename(candidate, verbose=False)
+        candidate_params = parse_bids_filename(candidate)
         for entity, value in params.items():
             if entity in candidate_params:
                 if candidate_params[entity] is None:

@@ -39,7 +39,7 @@ from mne_bids.utils import (_write_json, _write_tsv, _write_text,
                             _estimate_line_freq, _check_anonymize,
                             _stamp_to_dt)
 from mne_bids import make_bids_folders, make_bids_basename
-from mne_bids.path import (BIDSPath, _parse_ext, _parse_bids_filename,
+from mne_bids.path import (BIDSPath, _parse_ext, parse_bids_filename,
                            _mkdir_p, _path_to_str)
 from mne_bids.copyfiles import (copyfile_brainvision, copyfile_eeglab,
                                 copyfile_ctf, copyfile_bti, copyfile_kit)
@@ -946,7 +946,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
 
     # convert to BIDS Path
     if isinstance(bids_basename, str):
-        params = _parse_bids_filename(bids_basename, verbose)
+        params = parse_bids_filename(bids_basename)
         bids_basename = BIDSPath(subject=params.get('sub'),
                                  session=params.get('ses'),
                                  recording=params.get('rec'),
