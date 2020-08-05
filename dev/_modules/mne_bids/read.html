@@ -137,7 +137,7 @@
 <span class="kn">from</span> <span class="nn">mne_bids.utils</span> <span class="kn">import</span> <span class="p">(</span><span class="n">_extract_landmarks</span><span class="p">,</span>
                             <span class="n">_get_ch_type_mapping</span><span class="p">,</span> <span class="n">_estimate_line_freq</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">mne_bids</span> <span class="kn">import</span> <span class="n">make_bids_folders</span>
-<span class="kn">from</span> <span class="nn">mne_bids.path</span> <span class="kn">import</span> <span class="p">(</span><span class="n">BIDSPath</span><span class="p">,</span> <span class="n">_parse_ext</span><span class="p">,</span> <span class="n">_parse_bids_filename</span><span class="p">,</span>
+<span class="kn">from</span> <span class="nn">mne_bids.path</span> <span class="kn">import</span> <span class="p">(</span><span class="n">BIDSPath</span><span class="p">,</span> <span class="n">_parse_ext</span><span class="p">,</span> <span class="n">parse_bids_filename</span><span class="p">,</span>
                            <span class="n">_find_matching_sidecar</span><span class="p">,</span> <span class="n">_infer_kind</span><span class="p">)</span>
 
 
@@ -423,7 +423,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># convert to BIDS Path</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bids_basename</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="n">params</span> <span class="o">=</span> <span class="n">_parse_bids_filename</span><span class="p">(</span><span class="n">bids_basename</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="n">parse_bids_filename</span><span class="p">(</span><span class="n">bids_basename</span><span class="p">)</span>
         <span class="n">bids_basename</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;sub&#39;</span><span class="p">),</span>
                                  <span class="n">session</span><span class="o">=</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;ses&#39;</span><span class="p">),</span>
                                  <span class="n">recording</span><span class="o">=</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;rec&#39;</span><span class="p">),</span>
@@ -533,7 +533,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># convert to BIDS Path</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bids_basename</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="n">params</span> <span class="o">=</span> <span class="n">_parse_bids_filename</span><span class="p">(</span><span class="n">bids_basename</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="n">parse_bids_filename</span><span class="p">(</span><span class="n">bids_basename</span><span class="p">)</span>
         <span class="n">bids_basename</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;sub&#39;</span><span class="p">),</span>
                                  <span class="n">session</span><span class="o">=</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;ses&#39;</span><span class="p">),</span>
                                  <span class="n">recording</span><span class="o">=</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;rec&#39;</span><span class="p">),</span>
@@ -600,7 +600,7 @@
 
     <span class="n">failed_to_get_er_date_count</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">for</span> <span class="n">er_fname</span> <span class="ow">in</span> <span class="n">candidate_er_fnames</span><span class="p">:</span>
-        <span class="n">params</span> <span class="o">=</span> <span class="n">_parse_bids_filename</span><span class="p">(</span><span class="n">er_fname</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="n">parse_bids_filename</span><span class="p">(</span><span class="n">er_fname</span><span class="p">)</span>
         <span class="n">er_meas_date</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="n">er_bids_path</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="s1">&#39;emptyroom&#39;</span><span class="p">,</span>
@@ -690,7 +690,7 @@
 
     <span class="c1"># convert to BIDS Path</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bids_basename</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="n">params</span> <span class="o">=</span> <span class="n">_parse_bids_filename</span><span class="p">(</span><span class="n">bids_basename</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="n">parse_bids_filename</span><span class="p">(</span><span class="n">bids_basename</span><span class="p">)</span>
         <span class="n">bids_basename</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;sub&#39;</span><span class="p">),</span>
                                  <span class="n">session</span><span class="o">=</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;ses&#39;</span><span class="p">),</span>
                                  <span class="n">recording</span><span class="o">=</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;rec&#39;</span><span class="p">),</span>

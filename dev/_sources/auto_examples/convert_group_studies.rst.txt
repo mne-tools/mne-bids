@@ -842,47 +842,47 @@ Now let's see the structure of the BIDS folder we created.
 
     |eegmmidb_bids_group_conversion/
     |--- dataset_description.json
-    |--- participants.tsv
     |--- README
     |--- participants.json
+    |--- participants.tsv
     |--- sub-001/
     |------ ses-01/
     |--------- sub-001_ses-01_scans.tsv
     |--------- eeg/
-    |------------ sub-001_ses-01_task-MotorImagery_run-02_channels.tsv
-    |------------ sub-001_ses-01_task-MotorImagery_run-03_eeg.json
-    |------------ sub-001_ses-01_task-MotorImagery_run-01_eeg.eeg
-    |------------ sub-001_ses-01_task-MotorImagery_run-01_eeg.vhdr
-    |------------ sub-001_ses-01_task-MotorImagery_run-01_eeg.json
     |------------ sub-001_ses-01_task-MotorImagery_run-01_eeg.vmrk
-    |------------ sub-001_ses-01_task-MotorImagery_run-02_eeg.vhdr
-    |------------ sub-001_ses-01_task-MotorImagery_run-02_eeg.eeg
-    |------------ sub-001_ses-01_task-MotorImagery_run-03_eeg.vhdr
-    |------------ sub-001_ses-01_task-MotorImagery_run-02_eeg.vmrk
-    |------------ sub-001_ses-01_task-MotorImagery_run-03_eeg.vmrk
-    |------------ sub-001_ses-01_task-MotorImagery_run-03_eeg.eeg
     |------------ sub-001_ses-01_task-MotorImagery_run-02_eeg.json
-    |------------ sub-001_ses-01_task-MotorImagery_run-03_channels.tsv
+    |------------ sub-001_ses-01_task-MotorImagery_run-03_eeg.vhdr
+    |------------ sub-001_ses-01_task-MotorImagery_run-02_eeg.vhdr
     |------------ sub-001_ses-01_task-MotorImagery_run-01_channels.tsv
+    |------------ sub-001_ses-01_task-MotorImagery_run-01_eeg.eeg
+    |------------ sub-001_ses-01_task-MotorImagery_run-03_eeg.vmrk
+    |------------ sub-001_ses-01_task-MotorImagery_run-03_channels.tsv
+    |------------ sub-001_ses-01_task-MotorImagery_run-03_eeg.json
+    |------------ sub-001_ses-01_task-MotorImagery_run-01_eeg.json
+    |------------ sub-001_ses-01_task-MotorImagery_run-03_eeg.eeg
+    |------------ sub-001_ses-01_task-MotorImagery_run-02_eeg.eeg
+    |------------ sub-001_ses-01_task-MotorImagery_run-01_eeg.vhdr
+    |------------ sub-001_ses-01_task-MotorImagery_run-02_channels.tsv
+    |------------ sub-001_ses-01_task-MotorImagery_run-02_eeg.vmrk
     |--- sub-002/
     |------ ses-01/
     |--------- sub-002_ses-01_scans.tsv
     |--------- eeg/
-    |------------ sub-002_ses-01_task-MotorImagery_run-03_eeg.json
-    |------------ sub-002_ses-01_task-MotorImagery_run-02_eeg.vmrk
-    |------------ sub-002_ses-01_task-MotorImagery_run-01_channels.tsv
-    |------------ sub-002_ses-01_task-MotorImagery_run-02_channels.tsv
-    |------------ sub-002_ses-01_task-MotorImagery_run-01_eeg.eeg
     |------------ sub-002_ses-01_task-MotorImagery_run-02_eeg.json
+    |------------ sub-002_ses-01_task-MotorImagery_run-02_eeg.vmrk
+    |------------ sub-002_ses-01_task-MotorImagery_run-01_eeg.eeg
+    |------------ sub-002_ses-01_task-MotorImagery_run-03_eeg.vhdr
     |------------ sub-002_ses-01_task-MotorImagery_run-01_eeg.vhdr
+    |------------ sub-002_ses-01_task-MotorImagery_run-03_eeg.json
+    |------------ sub-002_ses-01_task-MotorImagery_run-03_channels.tsv
     |------------ sub-002_ses-01_task-MotorImagery_run-02_eeg.eeg
     |------------ sub-002_ses-01_task-MotorImagery_run-03_eeg.eeg
-    |------------ sub-002_ses-01_task-MotorImagery_run-02_eeg.vhdr
-    |------------ sub-002_ses-01_task-MotorImagery_run-03_channels.tsv
-    |------------ sub-002_ses-01_task-MotorImagery_run-03_eeg.vmrk
-    |------------ sub-002_ses-01_task-MotorImagery_run-03_eeg.vhdr
-    |------------ sub-002_ses-01_task-MotorImagery_run-01_eeg.vmrk
     |------------ sub-002_ses-01_task-MotorImagery_run-01_eeg.json
+    |------------ sub-002_ses-01_task-MotorImagery_run-02_channels.tsv
+    |------------ sub-002_ses-01_task-MotorImagery_run-01_eeg.vmrk
+    |------------ sub-002_ses-01_task-MotorImagery_run-02_eeg.vhdr
+    |------------ sub-002_ses-01_task-MotorImagery_run-03_eeg.vmrk
+    |------------ sub-002_ses-01_task-MotorImagery_run-01_channels.tsv
 
 
 
@@ -913,7 +913,7 @@ Now let's generate a report on the dataset.
     generated with MNE-BIDS (https://doi.org/10.21105/joss.01896). The dataset
     consists of 2 participants (sex were all unknown; handedness were all unknown;
     ages all unknown)and 1 recording sessions: 01. Data was recorded using a EEG
-    system sampled at 160.0 Hz with line noise at 60, and 50 Hz. There were 6 scans
+    system sampled at 160.0 Hz with line noise at 50, and 60 Hz. There were 6 scans
     in total. Recording durations ranged from 122.99 to 124.99 seconds (mean =
     123.99, std = 1.0), for a total of 743.96 seconds of data recorded over all
     scans. For each dataset, there were on average 64.0 (std = 0.0) recording
@@ -926,7 +926,7 @@ Now let's generate a report on the dataset.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  0.593 seconds)
+   **Total running time of the script:** ( 0 minutes  0.717 seconds)
 
 
 .. _sphx_glr_download_auto_examples_convert_group_studies.py:

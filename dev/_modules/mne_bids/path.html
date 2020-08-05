@@ -483,8 +483,37 @@
     <span class="k">return</span> <span class="n">fname</span><span class="p">,</span> <span class="n">ext</span>
 
 
-<span class="k">def</span> <span class="nf">_parse_bids_filename</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">verbose</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Get dict from BIDS fname.&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="parse_bids_filename"><a class="viewcode-back" href="../../generated/mne_bids.path.parse_bids_filename.html#mne_bids.parse_bids_filename">[docs]</a><span class="k">def</span> <span class="nf">parse_bids_filename</span><span class="p">(</span><span class="n">fname</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Retrieve a dictionary of BIDS entities from a filename.</span>
+
+<span class="sd">    Entities not present in ``fname`` will be assigned the value of ``None``.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    fname : BIDSPath | str</span>
+<span class="sd">        The path to parse.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    params : dict</span>
+<span class="sd">        A dictionary with the keys corresponding to the BIDS entity names, and</span>
+<span class="sd">        the values to the entity values encoded in the filename.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; fname = &#39;sub-01_ses-exp_run-02_meg.fif&#39;</span>
+<span class="sd">    &gt;&gt;&gt; parse_bids_filename(fname)</span>
+<span class="sd">    {&#39;sub&#39;: &#39;01&#39;,</span>
+<span class="sd">    &#39;ses&#39;: &#39;exp&#39;,</span>
+<span class="sd">    &#39;task&#39;: None,</span>
+<span class="sd">    &#39;acq&#39;: None,</span>
+<span class="sd">    &#39;run&#39;: &#39;02&#39;,</span>
+<span class="sd">    &#39;proc&#39;: None,</span>
+<span class="sd">    &#39;space&#39;: None,</span>
+<span class="sd">    &#39;rec&#39;: None,</span>
+<span class="sd">    &#39;split&#39;: None,</span>
+<span class="sd">    &#39;kind&#39;: None}</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">keys</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;sub&#39;</span><span class="p">,</span> <span class="s1">&#39;ses&#39;</span><span class="p">,</span> <span class="s1">&#39;task&#39;</span><span class="p">,</span> <span class="s1">&#39;acq&#39;</span><span class="p">,</span> <span class="s1">&#39;run&#39;</span><span class="p">,</span> <span class="s1">&#39;proc&#39;</span><span class="p">,</span> <span class="s1">&#39;run&#39;</span><span class="p">,</span> <span class="s1">&#39;space&#39;</span><span class="p">,</span>
             <span class="s1">&#39;rec&#39;</span><span class="p">,</span> <span class="s1">&#39;split&#39;</span><span class="p">,</span> <span class="s1">&#39;kind&#39;</span><span class="p">]</span>
     <span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">}</span>
@@ -500,7 +529,7 @@
                              <span class="s1">&#39;filename &quot;</span><span class="si">%s</span><span class="s1">&quot;&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">fname</span><span class="p">))</span>
         <span class="n">idx_key</span> <span class="o">=</span> <span class="n">keys</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
         <span class="n">params</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
-    <span class="k">return</span> <span class="n">params</span>
+    <span class="k">return</span> <span class="n">params</span></div>
 
 
 <span class="k">def</span> <span class="nf">_find_matching_sidecar</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">,</span> <span class="n">bids_root</span><span class="p">,</span> <span class="n">suffix</span><span class="p">,</span> <span class="n">allow_fail</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
@@ -791,7 +820,7 @@
     <span class="k">for</span> <span class="n">candidate</span> <span class="ow">in</span> <span class="n">candidate_list</span><span class="p">:</span>
         <span class="n">n_matches</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">candidate_disqualified</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="n">candidate_params</span> <span class="o">=</span> <span class="n">_parse_bids_filename</span><span class="p">(</span><span class="n">candidate</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">candidate_params</span> <span class="o">=</span> <span class="n">parse_bids_filename</span><span class="p">(</span><span class="n">candidate</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">entity</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">params</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">entity</span> <span class="ow">in</span> <span class="n">candidate_params</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">candidate_params</span><span class="p">[</span><span class="n">entity</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
