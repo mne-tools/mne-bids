@@ -19,9 +19,8 @@ run = '01'
 acq = '01'
 task = 'testing'
 
-bids_basename = make_bids_basename(
-    subject=subject_id, session=session_id, run=run, acquisition=acq,
-    task=task)
+bids_basename = make_bids_basename(subject=subject_id, session=session_id,
+                                   task=task, acquisition=acq, run=run)
 
 # Get the MNE testing sample data
 data_path = testing.data_path()

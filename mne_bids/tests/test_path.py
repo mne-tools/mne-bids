@@ -31,9 +31,8 @@ run = '01'
 acq = None
 task = 'testing'
 
-bids_basename = make_bids_basename(
-    subject=subject_id, session=session_id, run=run, acquisition=acq,
-    task=task)
+bids_basename = make_bids_basename(subject=subject_id, session=session_id,
+                                   task=task, acquisition=acq, run=run)
 
 
 @pytest.fixture(scope='session')
@@ -57,7 +56,7 @@ def return_bids_test_dir(tmpdir_factory):
             write_raw_bids(raw, name, bids_root,
                            events_data=events_fname, event_id=event_id,
                            overwrite=True)
-
+    print_dir_tree(bids_root)
     return bids_root
 
 
@@ -164,13 +163,13 @@ def test_make_folders():
 
 
 def test_parse_ext():
-    """Test the file extension extraction."""
+    """Test the file ext extraction."""
     f = 'sub-05_task-matchingpennies.vhdr'
     fname, ext = _parse_ext(f)
     assert fname == 'sub-05_task-matchingpennies'
     assert ext == '.vhdr'
 
-    # Test for case where no extension: assume BTI format
+    # Test for case where no ext: assume BTI format
     f = 'sub-01_task-rest'
     fname, ext = _parse_ext(f)
     assert fname == f
@@ -229,6 +228,7 @@ def test_find_matching_sidecar(return_bids_test_dir):
     bids_root = return_bids_test_dir
 
     # Now find a sidecar
+    print(bids_basename)
     sidecar_fname = _find_matching_sidecar(bids_basename, bids_root,
                                            'coordsystem.json')
     expected_file = op.join('sub-01', 'ses-01', 'meg',
@@ -250,21 +250,19 @@ def test_bids_path(return_bids_test_dir):
     """Test usage of BIDSPath object."""
     bids_root = return_bids_test_dir
 
-    bids_basename = make_bids_basename(
-        subject=subject_id, session=session_id, run=run, acquisition=acq,
-        task=task)
+    bids_basename = make_bids_basename(subject=subject_id, session=session_id,
+                                       task=task, acquisition=acq, run=run)
 
     # get_bids_fname should fire warning
-    with pytest.raises(ValueError, match='No filename extension was provided'):
+    with pytest.raises(ValueError, match='No filename ext was provided'):
         bids_fname = bids_basename.get_bids_fname()
-
+    print_dir_tree(bids_root)
     # should find the correct filename if bids_root was passed
     bids_fname = bids_basename.get_bids_fname(bids_root=bids_root)
-    assert bids_fname == bids_basename.update(suffix='meg.fif')
+    assert bids_fname == bids_basename.update(kind='meg', ext='.fif')
 
     # confirm BIDSPath assigns properties correctly
-    bids_basename = make_bids_basename(subject=subject_id,
-                                       session=session_id)
+    bids_basename = make_bids_basename(subject=subject_id, session=session_id)
     assert bids_basename.subject == subject_id
     assert bids_basename.session == session_id
     assert 'subject' in bids_basename.entities
@@ -273,7 +271,7 @@ def test_bids_path(return_bids_test_dir):
     assert all(bids_basename.entities.get(entity) is None
                for entity in ['task', 'run', 'recording', 'acquisition',
                               'space', 'processing',
-                              'prefix', 'suffix'])
+                              'root', 'kind', 'ext'])
 
     # test updating functionality
     bids_basename.update(acquisition='03', run='2', session='02',
@@ -301,4 +299,6 @@ def test_bids_path(return_bids_test_dir):
     # test repr
     bids_path = make_bids_basename(subject='01', session='02',
                                    task='03', suffix='ieeg.edf')
-    assert repr(bids_path) == 'BIDSPath(sub-01_ses-02_task-03_ieeg.edf)'
+    assert repr(bids_path) == 'BIDSPath(\n' \
+                              'root: None\n' \
+                              'basename: sub-01_ses-02_task-03_ieeg.edf)'

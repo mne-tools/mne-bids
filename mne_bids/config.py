@@ -27,7 +27,7 @@ ieeg_manufacturers = {'.vhdr': 'BrainProducts', '.eeg': 'BrainProducts',
                       '.edf': 'n/a', '.set': 'n/a', '.fdt': 'n/a',
                       '.mef': 'n/a', '.nwb': 'n/a'}
 
-# file-extension map to mne-python readers
+# file-ext map to mne-python readers
 reader = {'.con': io.read_raw_kit, '.sqd': io.read_raw_kit,
           '.fif': io.read_raw_fif, '.pdf': io.read_raw_bti,
           '.ds': io.read_raw_ctf, '.vhdr': io.read_raw_brainvision,
@@ -68,7 +68,7 @@ ALLOWED_EXTENSIONS = {'meg': allowed_extensions_meg,
 # allowed BIDS entities
 BIDS_PATH_ENTITIES = ('subject', 'session', 'task', 'acquisition',
                       'processing', 'run', 'recording',
-                      'space', 'suffix', 'prefix')
+                      'space', 'root', 'kind', 'ext')
 
 # accepted BIDS formats, which may be subject to change
 # depending on the specification
@@ -158,7 +158,7 @@ REFERENCES = {'mne-bids':
               'eeg':
               'Pernet, C. R., Appelhoff, S., Gorgolewski, K. J., '
               'Flandin, G., Phillips, C., Delorme, A., Oostenveld, R. (2019). '
-              'EEG-BIDS, an extension to the brain imaging data structure '
+              'EEG-BIDS, an ext to the brain imaging data structure '
               'for electroencephalography. Scientific Data, 6, 103. '
               'https://doi.org/10.1038/s41597-019-0104-8',
               'ieeg':

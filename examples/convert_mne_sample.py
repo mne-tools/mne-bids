@@ -54,7 +54,7 @@ output_path = op.join(data_path, '..', 'MNE-sample-data-bids')
 #   ``mne-bids`` will try to infer as much information from the data as
 #   possible to then save this data in BIDS specific "sidecar" files. For
 #   example the manufacturer information, which is inferred from the data file
-#   extension. However, sometimes inferring is ambiguous (e.g., if your file
+#   ext. However, sometimes inferring is ambiguous (e.g., if your file
 #   format is non-standard for the manufacturer). In these cases, MNE-BIDS does
 #   *not* guess and you will have to update your BIDS fields manually.
 #

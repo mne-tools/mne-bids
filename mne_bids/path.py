@@ -52,15 +52,17 @@ class BIDSPath(object):
         The recording name for this item. Corresponds to "rec".
     space : str | None
         The coordinate space for an anatomical file. Corresponds to "space".
-    prefix : str | None
+    root : str | None
         The prefix for the filename to be created. E.g., a path to the folder
         in which you wish to create a file with this name.
-    suffix : str | None
-        The suffix for the filename to be created. E.g., 'audio.wav'.
+    kind : str | None
+        The suffix for the filename. E.g., 'audio.wav'.
+    ext : str | None
+        The ext for the filename.
 
     Examples
     --------
-    >>> bids_basename = make_bids_basename(subject='test', session='two', task='mytask', suffix='data.csv')
+    >>> bids_basename = make_bids_basename(subject='test',session='two',task='mytask',suffix='data.csv')
     >>> print(bids_basename)
     sub-test_ses-two_task-mytask_data.csv
     >>> bids_basename
@@ -72,17 +74,19 @@ class BIDSPath(object):
     """  # noqa
 
     def __init__(self, subject=None, session=None,
-                 task=None, acquisition=None, run=None, processing=None,
-                 recording=None, space=None, prefix=None, suffix=None):
+                 task=None, acquisition=None,
+                 run=None, processing=None,
+                 recording=None, space=None, root=None,
+                 kind=None, ext=None):
         if all(ii is None for ii in [subject, session, task,
                                      acquisition, run, processing,
-                                     recording, space, prefix, suffix]):
+                                     recording, space, root, kind]):
             raise ValueError("At least one parameter must be given.")
 
         self.update(subject=subject, session=session, task=task,
                     acquisition=acquisition, run=run, processing=processing,
-                    recording=recording, space=space, prefix=prefix,
-                    suffix=suffix)
+                    recording=recording, space=space, root=root,
+                    kind=kind, ext=ext)
 
     @property
     def entities(self):
@@ -96,15 +100,17 @@ class BIDSPath(object):
             ('processing', self.processing),
             ('recording', self.recording),
             ('space', self.space),
-            ('prefix', self.prefix),
-            ('suffix', self.suffix)
+            ('root', self.root),
+            ('kind', self.kind),
+            ('ext', self.ext),
         ])
 
-    def __str__(self):
-        """Return the string representation of the path."""
+    @property
+    def basename(self):
+        """Return the basename of the BIDS Path."""
         basename = []
         for key, val in self.entities.items():
-            if key not in ('prefix', 'suffix') and \
+            if key not in ('root', 'kind', 'ext') and \
                     val is not None:
                 _check_key_val(key, val)
                 # convert certain keys to shorthand
@@ -120,22 +126,28 @@ class BIDSPath(object):
                     key = 'rec'
                 basename.append('%s-%s' % (key, val))
 
-        if self.suffix is not None:
-            basename.append(self.suffix)
+        if self.kind is not None:
+            if self.ext is not None:
+                basename.append(f'{self.kind}{self.ext}')
+            else:
+                basename.append(self.kind)
 
         basename = '_'.join(basename)
-        if self.prefix is not None:
-            basename = op.join(self.prefix, basename)
-
         return basename
+
+    def __str__(self):
+        """Return the string representation of the path."""
+        return self.basename
 
     def __repr__(self):
         """Representation in the style of `pathlib.Path`."""
-        return f'{self.__class__.__name__}({str(self)})'
+        return f'{self.__class__.__name__}(\n' \
+               f'root: {self.root}\n' \
+               f'basename: {str(self)})'
 
     def __fspath__(self):
         """Return the string representation for any fs functions."""
-        return str(self)
+        return self.get_fpath()
 
     def __eq__(self, other):
         """Compare str representations."""
@@ -144,6 +156,12 @@ class BIDSPath(object):
     def __ne__(self, other):
         """Compare str representations."""
         return str(self) != str(other)
+
+    def get_fpath(self):
+        """Get the full filepath for this BIDS file."""
+        if self.root:
+            return op.join(self.root, self.basename)
+        return self.basename
 
     def copy(self):
         """Copy the instance.
@@ -155,7 +173,7 @@ class BIDSPath(object):
         """
         return deepcopy(self)
 
-    def get_bids_fname(self, kind=None, bids_root=None, extension=None):
+    def get_bids_fname(self, kind=None, bids_root=None, ext=None):
         """Get the BIDS filename, by inferring kind and extension.
 
         Parameters
@@ -166,7 +184,7 @@ class BIDSPath(object):
             dataset, it will be selected automatically.
         bids_root : str | os.PathLike, optional
             Path to root of the BIDS folder
-        extension : str, optional
+        ext : str, optional
             If ``None``, try to infer the filename extension by searching
             for the file on disk. If the file cannot be found, an error
             will be raised. To disable this automatic inference attempt,
@@ -183,19 +201,20 @@ class BIDSPath(object):
         sub = self.subject
         ses = self.session
 
-        if extension is None and bids_root is None:
-            msg = ('No filename extension was provided, and it cannot be '
+        if ext is None and bids_root is None:
+            msg = ('No filename ext was provided, and it cannot be '
                    'automatically inferred because no bids_root was passed.')
             raise ValueError(msg)
 
-        if extension is None:
+        if ext is None:
             bids_fname = _get_bids_fname_from_filesystem(
-                bids_basename=self, bids_root=bids_root, sub=sub, ses=ses,
-                kind=kind)
+                bids_basename=self.basename, bids_root=bids_root,
+                sub=sub, ses=ses, kind=kind)
             new_suffix = bids_fname.split("_")[-1]
-            bids_fname = self.copy().update(suffix=new_suffix)
+            kind, ext = _get_kind_ext_from_suffix(new_suffix)
+            bids_fname = self.copy().update(kind=kind, ext=ext)
         else:
-            bids_fname = self.copy().update(suffix='{kind}.{extension}')
+            bids_fname = self.copy().update(kind=kind, ext=ext)
 
         return bids_fname
 
@@ -207,7 +226,8 @@ class BIDSPath(object):
         entities : dict | kwarg
             Allowed BIDS path entities:
             'subject', 'session', 'task', 'acquisition',
-            'processing', 'run', 'recording', 'space', 'suffix', 'prefix'
+            'processing', 'run', 'recording', 'space', 
+            'kind', 'ext', 'root'
 
         Returns
         -------
@@ -219,11 +239,11 @@ class BIDSPath(object):
         If one creates a bids basename using
         :func:`mne_bids.make_bids_basename`:
 
-        >>> bids_basename = make_bids_basename(subject='test', session='two', task='mytask', suffix='data.csv')
+        >>> bids_basename = make_bids_basename(subject='test',session='two', task='mytask', kind='data', ext='.csv')
         >>> print(bids_basename)
         sub-test_ses-two_task-mytask_data.csv
         >>> # Then, one can update this `BIDSPath` object in place
-        >>> bids_basename.update(acquisition='test', suffix='ieeg.vhdr', task=None)
+        >>> bids_basename.update(acquisition='test', kind='ieeg', ext='.vhdr', task=None)
         BIDSPath(sub-test_ses-two_acq-test_ieeg.vhdr)
         >>> print(bids_basename)
         sub-test_ses-two_acq-test_ieeg.vhdr
@@ -233,13 +253,20 @@ class BIDSPath(object):
             # Ensure that run is a string
             entities['run'] = '{:02}'.format(run)
 
+        # ensure extension starts with a '.'
+        ext = entities.get('ext')
+        if ext is not None:
+            if not ext.startswith('.'):
+                ext = f'.{ext}'
+                entities['ext'] = ext
+
         # error check entities
         for key, val in entities.items():
             # error check allowed BIDS entity keywords
             if key not in BIDS_PATH_ENTITIES and key not in [
                 'on_invalid_er_session', 'on_invalid_er_task',
             ]:
-                raise ValueError('Key must be one of {BIDS_PATH_ENTITIES}, '
+                raise ValueError(f'Key must be one of {BIDS_PATH_ENTITIES}, '
                                  'got %s' % key)
 
             # set entity value
@@ -357,13 +384,13 @@ def make_bids_folders(subject, session=None, kind=None, bids_root=None,
 
 
 def _parse_ext(raw_fname, verbose=False):
-    """Split a filename into its name and extension."""
+    """Split a filename into its name and ext."""
     fname, ext = os.path.splitext(raw_fname)
-    # BTi data is the only file format that does not have a file extension
+    # BTi data is the only file format that does not have a file ext
     if ext == '' or 'c,rf' in fname:
         if verbose is True:
-            print('Found no extension for raw file, assuming "BTi" format and '
-                  'appending extension .pdf')
+            print('Found no ext for raw file, assuming "BTi" format and '
+                  'appending ext .pdf')
         ext = '.pdf'
     # If ending on .gz, check whether it is an .nii.gz file
     elif ext == '.gz' and raw_fname.endswith('.nii.gz'):
@@ -487,9 +514,9 @@ def _find_matching_sidecar(bids_fname, bids_root, suffix, allow_fail=False):
         raise RuntimeError(msg)
 
 
-def make_bids_basename(subject=None, session=None, task=None,
-                       acquisition=None, run=None, processing=None,
-                       recording=None, space=None, prefix=None, suffix=None):
+def make_bids_basename(subject=None, session=None, task=None, acquisition=None,
+                       run=None, processing=None, recording=None, space=None,
+                       root=None, suffix=None):
     """Create a partial/full BIDS basename from its component parts.
 
     BIDS filename prefixes have one or more pieces of metadata in them. They
@@ -521,9 +548,10 @@ def make_bids_basename(subject=None, session=None, task=None,
         The recording name. Corresponds to "rec".
     space : str | None
         The coordinate space for an anatomical file. Corresponds to "space".
-    prefix : str | None
-        The prefix for the filename to be created. E.g., a path to the folder
-        in which you wish to create a file with this name.
+    root : str | None
+        The root for the filename to be created. E.g., a path to the folder
+        in which you wish to create a file with this name. This is commonly
+        the bids root.
     suffix : str | None
         The suffix for the filename to be created. E.g., 'audio.wav'.
 
@@ -534,15 +562,30 @@ def make_bids_basename(subject=None, session=None, task=None,
 
     Examples
     --------
-    >>> print(make_bids_basename(subject='test', session='two', task='mytask', suffix='data.csv')) # noqa: E501
+    >>> print(make_bids_basename(subject='test',session='two',task='mytask',suffix='data.csv')) # noqa: E501
     sub-test_ses-two_task-mytask_data.csv
     """
-    bids_path = BIDSPath(subject=subject, session=session, task=task,
-                         acquisition=acquisition, run=run,
-                         processing=processing, recording=recording,
-                         space=space, prefix=prefix, suffix=suffix)
+    kind, ext = _get_kind_ext_from_suffix(suffix)
+    bids_path = BIDSPath(subject=subject, session=session,
+                         task=task, acquisition=acquisition,
+                         run=run, processing=processing,
+                         recording=recording, space=space,
+                         root=root, kind=kind, ext=ext)
     bids_path._check()
     return bids_path
+
+
+def _get_kind_ext_from_suffix(suffix):
+    """Parse suffix for valid kind and ext."""
+    kind = suffix
+    ext = None
+    if suffix is not None:
+        if '.' in suffix:
+            # handle case of multiple '.' in extension
+            split_str = suffix.split('.')
+            kind = split_str[0]
+            ext = '.'.join(split_str[1:])
+    return kind, ext
 
 
 def get_kinds(bids_root):
@@ -780,6 +823,7 @@ def _get_bids_fname_from_filesystem(*, bids_basename, bids_root, sub, ses,
         valid_exts = list(reader.keys())
         matching_paths = glob.glob(op.join(bids_root, data_dir,
                                            f'{bids_basename}_{kind}.*'))
+        print(op.join(bids_root, data_dir, f'{bids_basename}_{kind}.*'))
         matching_paths = [p for p in matching_paths
                           if _parse_ext(p)[1] in valid_exts]
 

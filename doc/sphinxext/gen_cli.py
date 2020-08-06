@@ -1,4 +1,4 @@
-"""Custom sphinx extension to generate docs for the command line interace.
+"""Custom sphinx ext to generate docs for the command line interace.
 
 Inspired by MNE-Python's `gen_commands.py`
 see: github.com/mne-tools/mne-python/blob/master/doc/sphinxext/gen_commands.py

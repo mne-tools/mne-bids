@@ -13,8 +13,7 @@ from mne.utils import warn
 
 from mne_bids.config import DOI, ALLOWED_KINDS
 from mne_bids.tsv_handler import _from_tsv
-from mne_bids.path import (make_bids_basename, get_kinds,
-                           get_entity_vals, _parse_ext,
+from mne_bids.path import (get_kinds, get_entity_vals, _parse_ext,
                            _find_matching_sidecar, parse_bids_filename,
                            BIDSPath)
 
@@ -152,8 +151,8 @@ def _summarize_dataset(bids_root):
     template_dict : dict
         A dictionary of values for various template strings.
     """
-    dataset_descrip_fpath = make_bids_basename(
-        prefix=bids_root, suffix='dataset_description.json')
+    dataset_descrip_fpath = op.join(
+        bids_root, 'dataset_description.json')
     if not op.exists(dataset_descrip_fpath):
         return dict()
 
@@ -190,8 +189,7 @@ def _summarize_participants_tsv(bids_root, verbose=True):
     template_dict : dict
         A dictionary of values for various template strings.
     """
-    participants_tsv_fpath = make_bids_basename(prefix=bids_root,
-                                                suffix='participants.tsv')
+    participants_tsv_fpath = op.join(bids_root, 'participants.tsv')
     if not op.exists(participants_tsv_fpath):
         return dict()
 
@@ -336,13 +334,12 @@ def _summarize_sidecar_json(bids_root, scans_fpaths, verbose=True):
             params = parse_bids_filename(bids_basename)
             bids_basename = BIDSPath(subject=params.get('sub'),
                                      session=params.get('ses'),
-                                     recording=params.get('rec'),
-                                     acquisition=params.get('acq'),
-                                     processing=params.get('proc'),
-                                     space=params.get('space'),
-                                     run=params.get('run'),
                                      task=params.get('task'),
-                                     )
+                                     acquisition=params.get('acq'),
+                                     run=params.get('run'),
+                                     processing=params.get('proc'),
+                                     recording=params.get('rec'),
+                                     space=params.get('space'))
 
             # XXX: improve to allow emptyroom
             if bids_basename.subject == 'emptyroom':
@@ -430,13 +427,13 @@ def _summarize_channels_tsv(bids_root, scans_fpaths, verbose=True):
             params = parse_bids_filename(bids_basename)
             bids_basename = BIDSPath(subject=params.get('sub'),
                                      session=params.get('ses'),
-                                     recording=params.get('rec'),
-                                     acquisition=params.get('acq'),
-                                     processing=params.get('proc'),
-                                     space=params.get('space'),
-                                     run=params.get('run'),
                                      task=params.get('task'),
-                                     prefix=bids_root)
+                                     acquisition=params.get('acq'),
+                                     run=params.get('run'),
+                                     processing=params.get('proc'),
+                                     recording=params.get('rec'),
+                                     space=params.get('space'),
+                                     root=bids_root)
 
             # XXX: improve to allow emptyroom
             if bids_basename.subject == 'emptyroom':

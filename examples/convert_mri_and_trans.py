@@ -67,8 +67,8 @@ sub = '01'
 ses = '01'
 task = 'audiovisual'
 run = '01'
-bids_basename = make_bids_basename(subject=sub, session=ses, task=task,
-                                   run=run)
+bids_basename = make_bids_basename(subject=sub, session=ses,
+                                   task=task, run=run)
 write_raw_bids(raw, bids_basename, output_path, events_data=events_data,
                event_id=event_id, overwrite=True)
 

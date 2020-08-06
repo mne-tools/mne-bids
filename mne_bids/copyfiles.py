@@ -195,9 +195,9 @@ def copyfile_kit(src, dest, subject_id, session_id,
             acq_map[None] = hpi
         for key, value in acq_map.items():
             marker_fname = make_bids_basename(
-                subject=subject_id, session=session_id, task=task, run=run,
-                acquisition=key, suffix='markers%s' % marker_ext,
-                prefix=data_path)
+                subject=subject_id, session=session_id, task=task,
+                acquisition=key, run=run,
+                root=data_path, suffix='markers%s' % marker_ext)
             sh.copyfile(value, marker_fname)
     for acq in ['elp', 'hsp']:
         if acq in _init_kwargs:
@@ -205,9 +205,9 @@ def copyfile_kit(src, dest, subject_id, session_id,
             task, run, acq = None, None, acq.upper()
             position_ext = '.pos'
             position_fname = make_bids_basename(
-                subject=subject_id, session=session_id, task=task, run=run,
-                acquisition=acq, suffix='headshape%s' % position_ext,
-                prefix=data_path)
+                subject=subject_id, session=session_id, task=task,
+                acquisition=acq, run=run,
+                root=data_path, suffix='headshape%s' % position_ext)
             sh.copyfile(position_file, position_fname)
 
 
@@ -283,7 +283,7 @@ def copyfile_brainvision(vhdr_src, vhdr_dest, anonymize=None, verbose=False):
     fname_src, ext_src = _parse_ext(vhdr_src)
     fname_dest, ext_dest = _parse_ext(vhdr_dest)
     if ext_src != ext_dest:
-        raise ValueError('Need to move data with same extension'
+        raise ValueError('Need to move data with same ext'
                          ' but got "{}", "{}"'.format(ext_src, ext_dest))
 
     eeg_file_path, vmrk_file_path = _get_brainvision_paths(vhdr_src)
@@ -355,7 +355,7 @@ def copyfile_eeglab(src, dest):
     fname_src, ext_src = _parse_ext(src)
     fname_dest, ext_dest = _parse_ext(dest)
     if ext_src != ext_dest:
-        raise ValueError('Need to move data with same extension'
+        raise ValueError('Need to move data with same ext'
                          ' but got {}, {}'.format(ext_src, ext_dest))
 
     # Extract matlab struct "EEG" from EEGLAB file
@@ -373,7 +373,7 @@ def copyfile_eeglab(src, dest):
         fdt_path = op.join(head, fdt_pointer)
         fdt_name, fdt_ext = _parse_ext(fdt_path)
         if fdt_ext != '.fdt':
-            raise IOError('Expected extension {} for linked data but found'
+            raise IOError('Expected ext {} for linked data but found'
                           ' {}'.format('.fdt', fdt_ext))
 
         # Copy the fdt file and give it a new name

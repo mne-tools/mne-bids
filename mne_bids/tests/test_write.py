@@ -58,9 +58,8 @@ acq = '01'
 run2 = '02'
 task = 'testing'
 
-bids_basename = make_bids_basename(
-    subject=subject_id, session=session_id, run=run, acquisition=acq,
-    task=task)
+bids_basename = make_bids_basename(subject=subject_id, session=session_id,
+                                   task=task, acquisition=acq, run=run)
 bids_basename_minimal = make_bids_basename(subject=subject_id, task=task)
 
 warning_str = dict(
@@ -106,9 +105,9 @@ def _test_anonymize(raw, bids_basename, events_fname=None, event_id=None):
                    events_data=events_fname,
                    event_id=event_id, anonymize=dict(daysback=33000),
                    overwrite=False)
-    scans_tsv = make_bids_basename(
-        subject=subject_id, session=session_id, suffix='scans.tsv',
-        prefix=op.join(bids_root, 'sub-01', 'ses-01'))
+    scans_tsv = make_bids_basename(subject=subject_id, session=session_id,
+                                   root=op.join(bids_root, 'sub-01', 'ses-01'),
+                                   suffix='scans.tsv')
     data = _from_tsv(scans_tsv)
     if data['acq_time'] is not None and data['acq_time'][0] != 'n/a':
         assert datetime.strptime(data['acq_time'][0],
@@ -275,7 +274,8 @@ def test_fif(_bids_validate):
     sidecar_basename = bids_basename.copy()
     for sidecar in ['channels.tsv', 'eeg.eeg', 'eeg.json', 'eeg.vhdr',
                     'eeg.vmrk', 'events.tsv']:
-        sidecar_basename.suffix = sidecar
+        kind, ext = sidecar.split('.')
+        sidecar_basename.update(kind=kind, ext=ext)
         assert op.isfile(op.join(bids_dir, sidecar_basename))
 
     raw2 = read_raw_bids(bids_basename=bids_basename, bids_root=bids_root,
@@ -309,9 +309,9 @@ def test_fif(_bids_validate):
         write_raw_bids(raw, er_bids_basename_bad, bids_root, overwrite=False)
 
     # test that the acquisition time was written properly
-    scans_tsv = make_bids_basename(
-        subject=subject_id, session=session_id, suffix='scans.tsv',
-        prefix=op.join(bids_root, 'sub-01', 'ses-01'))
+    scans_tsv = make_bids_basename(subject=subject_id, session=session_id,
+                                   root=op.join(bids_root, 'sub-01', 'ses-01'),
+                                   suffix='scans.tsv')
     data = _from_tsv(scans_tsv)
     assert data['acq_time'][0] == meas_date.strftime('%Y-%m-%dT%H:%M:%S')
 
@@ -469,7 +469,7 @@ def test_fif(_bids_validate):
     for FILE in files:
         assert 'split' in FILE
 
-    # test unknown extension
+    # test unknown ext
     raw = mne.io.read_raw_fif(raw_fname)
     raw._filenames = (raw.filenames[0].replace('.fif', '.foo'),)
     with pytest.raises(ValueError, match='Unrecognized file format'):
@@ -524,9 +524,9 @@ def test_fif_anonymize(_bids_validate):
                    event_id=event_id,
                    anonymize=dict(daysback=30000, keep_his=True),
                    overwrite=False)
-    scans_tsv = make_bids_basename(
-        subject=subject_id, session=session_id, suffix='scans.tsv',
-        prefix=op.join(bids_root, 'sub-01', 'ses-01'))
+    scans_tsv = make_bids_basename(subject=subject_id, session=session_id,
+                                   root=op.join(bids_root, 'sub-01', 'ses-01'),
+                                   suffix='scans.tsv')
     data = _from_tsv(scans_tsv)
 
     # anonymize using MNE manually
@@ -568,8 +568,8 @@ def test_kit(_bids_validate):
     # ensure the marker file is produced in the right place
     marker_fname = make_bids_basename(
         subject=subject_id, session=session_id, task=task, run=run,
-        suffix='markers.sqd',
-        prefix=op.join(bids_root, 'sub-01', 'ses-01', 'meg'))
+        root=op.join(bids_root, 'sub-01', 'ses-01', 'meg'),
+        suffix='markers.sqd')
     assert op.exists(marker_fname)
 
     # test anonymize
@@ -583,7 +583,7 @@ def test_kit(_bids_validate):
                                           events_fname, event_id)
 
     # ensure the channels file has no STI 014 channel:
-    channels_tsv = marker_fname.copy().update(suffix='channels.tsv')
+    channels_tsv = marker_fname.copy().update(kind='channels', ext='.tsv')
     data = _from_tsv(channels_tsv)
     assert 'STI 014' not in data['name']
 
@@ -615,8 +615,8 @@ def test_kit(_bids_validate):
 
     _bids_validate(bids_root)
     # ensure the marker files are renamed correctly
-    prefix = op.join(bids_root, 'sub-02', 'ses-01', 'meg')
-    marker_fname.update(acquisition='pre', subject=subject_id2, prefix=prefix)
+    root = op.join(bids_root, 'sub-02', 'ses-01', 'meg')
+    marker_fname.update(acquisition='pre', subject=subject_id2, root=root)
     info = get_kit_info(marker_fname, False)[0]
     assert info['meas_date'] == get_kit_info(hpi_pre_fname,
                                              False)[0]['meas_date']
@@ -743,10 +743,11 @@ def test_vhdr(_bids_validate):
 
     # Test that correct channel units are written ... and that bad channel
     # is in channels.tsv
-    prefix = op.join(bids_root, f'sub-{subject_id}', 'eeg')
-    suffix = 'channels.tsv'
-    channels_tsv_name = bids_basename_minimal.copy().update(prefix=prefix,
-                                                            suffix=suffix)
+    root = op.join(bids_root, f'sub-{subject_id}', 'eeg')
+    kind, ext = 'channels', '.tsv'
+    channels_tsv_name = bids_basename_minimal.copy().update(root=root,
+                                                            kind=kind,
+                                                            ext=ext)
     data = _from_tsv(channels_tsv_name)
     assert data['units'][data['name'].index('FP1')] == 'µV'
     assert data['units'][data['name'].index('CP5')] == 'n/a'
@@ -755,7 +756,7 @@ def test_vhdr(_bids_validate):
     assert status_description[data['name'].index(injected_bad[0])] == 'n/a'
 
     # check events.tsv is written
-    events_tsv_fname = str(channels_tsv_name).replace('channels', 'events')
+    events_tsv_fname = channels_tsv_name.update(kind='events')
     assert op.exists(events_tsv_fname)
 
     # create another bids folder with the overwrite command and check
@@ -879,16 +880,17 @@ def test_edf(_bids_validate):
 
     # ensure there is an EMG channel in the channels.tsv:
     channels_tsv = make_bids_basename(
-        subject=subject_id, session=session_id, task=task, run=run,
-        suffix='channels.tsv', acquisition=acq,
-        prefix=op.join(bids_root, 'sub-01', 'ses-01', 'eeg'))
+        subject=subject_id, session=session_id,
+        task=task, acquisition=acq, run=run,
+        root=op.join(bids_root, 'sub-01', 'ses-01', 'eeg'),
+        suffix='channels.tsv')
     data = _from_tsv(channels_tsv)
     assert 'ElectroMyoGram' in data['description']
 
     # check that the scans list contains two scans
-    scans_tsv = make_bids_basename(
-        subject=subject_id, session=session_id, suffix='scans.tsv',
-        prefix=op.join(bids_root, 'sub-01', 'ses-01'))
+    scans_tsv = make_bids_basename(subject=subject_id, session=session_id,
+                                   root=op.join(bids_root, 'sub-01', 'ses-01'),
+                                   suffix='scans.tsv')
     data = _from_tsv(scans_tsv)
     assert len(list(data.values())[0]) == 2
 
@@ -898,7 +900,7 @@ def test_edf(_bids_validate):
                        anonymize=dict(daysback=33000),
                        overwrite=True)
         data = _from_tsv(scans_tsv)
-        bids_fname = bids_basename.copy().update(suffix='eeg.vhdr')
+        bids_fname = bids_basename.copy().update(kind='eeg', ext='.vhdr')
         assert any([str(bids_fname) in fname for fname in data['filename']])
 
     # Also cover iEEG
@@ -980,7 +982,7 @@ def test_bdf(_bids_validate):
     assert coil_type(raw.info, test_ch_idx) != 'misc'
 
     # we will change the channel type to MISC and overwrite the channels file
-    bids_fname = bids_basename.copy().update(suffix='eeg.bdf')
+    bids_fname = bids_basename.copy().update(kind='eeg', ext='.bdf')
     channels_fname = _find_matching_sidecar(bids_fname, bids_root,
                                             'channels.tsv')
     channels_dict = _from_tsv(channels_fname)

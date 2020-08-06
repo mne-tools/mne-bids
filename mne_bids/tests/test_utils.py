@@ -32,9 +32,8 @@ run = '01'
 acq = None
 task = 'testing'
 
-bids_basename = make_bids_basename(
-    subject=subject_id, session=session_id, run=run, acquisition=acq,
-    task=task)
+bids_basename = make_bids_basename(subject=subject_id, session=session_id,
+                                   task=task, acquisition=acq, run=run)
 
 
 def test_get_ch_type_mapping():
@@ -77,7 +76,8 @@ def test_make_filenames():
     prefix_data = dict(subject='one', session='two', task='three',
                        acquisition='four', run='five', processing='six',
                        recording='seven', suffix='suffix.csv')
-    assert str(make_bids_basename(**prefix_data)) == 'sub-one_ses-two_task-three_acq-four_run-five_proc-six_rec-seven_suffix.csv'  # noqa
+    assert str(make_bids_basename(
+        **prefix_data)) == 'sub-one_ses-two_task-three_acq-four_run-five_proc-six_rec-seven_suffix.csv'  # noqa
 
     # subsets of keys works
     assert make_bids_basename(subject='one', task='three', run=4) == 'sub-one_task-three_run-04'  # noqa

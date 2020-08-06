@@ -815,7 +815,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
                    to FIF.
 
                  * ``mne-bids`` will infer the manufacturer information
-                   from the file extension. If your file format is non-standard
+                   from the file ext. If your file format is non-standard
                    for the manufacturer, please update the manufacturer field
                    in the sidecars manually.
 
@@ -846,7 +846,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
             scans.tsv
 
         Note that the modality 'meg' is automatically inferred from the raw
-        object and extension '.fif' is copied from raw.filenames.
+        object and ext '.fif' is copied from raw.filenames.
     bids_root : str | pathlib.Path
         The path of the root of the BIDS compatible folder. The session and
         subject specific folders will be populated automatically by parsing
@@ -955,19 +955,19 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
         params = parse_bids_filename(bids_basename)
         bids_basename = BIDSPath(subject=params.get('sub'),
                                  session=params.get('ses'),
-                                 recording=params.get('rec'),
+                                 task=params.get('task'),
                                  acquisition=params.get('acq'),
-                                 processing=params.get('proc'),
-                                 space=params.get('space'),
                                  run=params.get('run'),
-                                 task=params.get('task'))
+                                 processing=params.get('proc'),
+                                 recording=params.get('rec'),
+                                 space=params.get('space'))
 
     subject_id, session_id = bids_basename.subject, bids_basename.session
     task, run = bids_basename.task, bids_basename.run
     acquisition, space = bids_basename.acquisition, bids_basename.space
     kind = _handle_kind(raw)
 
-    bids_fname = bids_basename.copy().update(suffix=f'{kind}{ext}')
+    bids_fname = bids_basename.copy().update(kind=kind, ext=ext)
 
     # check whether the info provided indicates that the data is emptyroom
     # data
@@ -1004,36 +1004,37 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
 
     # create *_scans.tsv
     bids_path = BIDSPath(subject=subject_id, session=session_id,
-                         prefix=ses_path, suffix='scans.tsv',
-                         task=None)
-    scans_fname = str(bids_path)
+                         task=None, root=ses_path, kind='scans',
+                         ext='.tsv')
+    scans_fname = bids_path.get_fpath()
 
     # create *_coordsystem.json
     bids_path.update(acquisition=acquisition, space=space,
-                     prefix=data_path, suffix='coordsystem.json')
-    coordsystem_fname = str(bids_path)
+                     root=data_path, kind='coordsystem',
+                     ext='.json')
+    coordsystem_fname = bids_path.get_fpath()
 
     # create *_electrodes.tsv
-    bids_path = bids_path.update(suffix='electrodes.tsv')
-    electrodes_fname = str(bids_path)
+    bids_path = bids_path.update(kind='electrodes', ext='.tsv')
+    electrodes_fname = bids_path.get_fpath()
 
     # For the remaining files, we can use BIDSPath to alter.
-    readme_fname = make_bids_basename(prefix=bids_root, suffix='README')
-    participants_tsv_fname = make_bids_basename(prefix=bids_root,
+    readme_fname = op.join(bids_root, 'README')
+    participants_tsv_fname = make_bids_basename(root=bids_root,
                                                 suffix='participants.tsv')
     participants_json_fname = participants_tsv_fname.copy()
-    participants_json_fname.suffix = 'participants.json'
+    participants_json_fname.update(kind='participants', ext='.json')
 
-    sidecar_fname = bids_fname.copy().update(prefix=data_path,
-                                             suffix=f'{kind}.json')
+    sidecar_fname = bids_fname.copy().update(root=data_path,
+                                             kind=kind, ext='.json')
 
-    events_fname = sidecar_fname.copy().update(suffix='events.tsv')
-    channels_fname = sidecar_fname.copy().update(suffix='channels.tsv')
+    events_fname = sidecar_fname.copy().update(kind='events', ext='.tsv')
+    channels_fname = sidecar_fname.copy().update(kind='channels', ext='.tsv')
 
     if ext not in ['.fif', '.ds', '.vhdr', '.edf', '.bdf', '.set', '.con',
                    '.sqd']:
         bids_raw_folder = str(bids_fname).split(".")[0]
-        bids_fname.prefix = bids_raw_folder
+        bids_fname = bids_fname.update(root=bids_raw_folder)
 
     # Anonymize
     convert = False
@@ -1046,12 +1047,12 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
             if verbose:
                 warn('Converting to FIF for anonymization')
             convert = True
-            bids_fname.suffix = bids_fname.suffix.replace(ext, '.fif')
+            bids_fname.update(ext='.fif')
         elif kind in ['eeg', 'ieeg'] and ext != '.vhdr':
             if verbose:
                 warn('Converting to BV for anonymization')
             convert = True
-            bids_fname.suffix = bids_fname.suffix.replace(ext, '.vhdr')
+            bids_fname.update(ext='.vhdr')
 
     # Read in Raw object and extract metadata from Raw object if needed
     orient = ORIENTATION.get(ext, 'n/a')
@@ -1098,7 +1099,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
 
     # set the raw file name to now be the absolute path to ensure the files
     # are placed in the right location
-    bids_fname.prefix = data_path
+    bids_fname = bids_fname.update(root=data_path)
 
     if os.path.exists(bids_fname) and not overwrite:
         raise FileExistsError('"%s" already exists. Please set '  # noqa: F821
@@ -1110,7 +1111,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
         convert = ext not in ALLOWED_EXTENSIONS[kind]
 
     if kind == 'meg' and convert and not anonymize:
-        raise ValueError('Got file extension %s for MEG data, '
+        raise ValueError('Got file ext %s for MEG data, '
                          'expected one of %s' %
                          ALLOWED_EXTENSIONS['meg'])
 
@@ -1126,7 +1127,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
         else:
             if verbose:
                 warn('Converting data files to BrainVision format')
-            bids_fname.suffix = f'{kind}.vhdr'
+            bids_fname.update(kind=kind, ext='.vhdr')
             _write_raw_brainvision(raw, bids_fname, events)
     elif ext == '.fif':
         _write_raw_fif(raw, bids_fname)
@@ -1270,8 +1271,7 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
     # this needs to be a string, since nibabel assumes a string input
     t1w_basename = make_bids_basename(subject=subject, session=session,
                                       acquisition=acquisition,
-                                      prefix=anat_dir,
-                                      suffix='T1w.nii.gz')
+                                      root=anat_dir, suffix='T1w.nii.gz')
 
     # Check if we have necessary conditions for writing a sidecar JSON
     if trans is not None or landmarks is not None:
@@ -1336,7 +1336,7 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
             {'LPA': list(mri_landmarks[0, :]),
              'NAS': list(mri_landmarks[1, :]),
              'RPA': list(mri_landmarks[2, :])}
-        fname = str(t1w_basename).replace('.nii.gz', '.json')
+        fname = t1w_basename.update(ext='.json')
         if op.isfile(fname) and not overwrite:
             raise IOError('Wanted to write a file but it already exists and '
                           '`overwrite` is set to False. File: "{}"'
@@ -1355,6 +1355,6 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
                           '`overwrite` is set to False. File: "{}"'
                           .format(t1w_basename))
 
-    nib.save(t1w, t1w_basename)
+    nib.save(t1w, t1w_basename.get_fpath())
 
     return anat_dir

@@ -32,7 +32,7 @@ from mne_bids.path import (BIDSPath, _parse_ext, parse_bids_filename,
 
 def _read_raw(raw_fpath, electrode=None, hsp=None, hpi=None,
               allow_maxshield=False, config=None, verbose=None, **kwargs):
-    """Read a raw file into MNE, making inferences based on extension."""
+    """Read a raw file into MNE, making inferences based on ext."""
     _, ext = _parse_ext(raw_fpath)
 
     # KIT systems
@@ -55,14 +55,14 @@ def _read_raw(raw_fpath, electrode=None, hsp=None, hpi=None,
 
     # MEF and NWB are allowed, but not yet implemented
     elif ext in ['.mef', '.nwb']:
-        raise ValueError('Got "{}" as extension. This is an allowed extension '
+        raise ValueError('Got "{}" as ext. This is an allowed ext '
                          'but there is no IO support for this file format yet.'
                          .format(ext))
 
     # No supported data found ...
     # ---------------------------
     else:
-        raise ValueError('Raw file name extension must be one of {}\n'
+        raise ValueError('Raw file name ext must be one of {}\n'
                          'Got {}'.format(ALLOWED_EXTENSIONS, ext))
     return raw
 
@@ -337,12 +337,12 @@ def read_raw_bids(bids_basename, bids_root, kind=None, extra_params=None,
         params = parse_bids_filename(bids_basename)
         bids_basename = BIDSPath(subject=params.get('sub'),
                                  session=params.get('ses'),
-                                 recording=params.get('rec'),
+                                 task=params.get('task'),
                                  acquisition=params.get('acq'),
-                                 processing=params.get('proc'),
-                                 space=params.get('space'),
                                  run=params.get('run'),
-                                 task=params.get('task'))
+                                 processing=params.get('proc'),
+                                 recording=params.get('rec'),
+                                 space=params.get('space'))
     sub = bids_basename.subject
     ses = bids_basename.session
     acq = bids_basename.acquisition
@@ -447,12 +447,12 @@ def get_matched_empty_room(bids_basename, bids_root):
         params = parse_bids_filename(bids_basename)
         bids_basename = BIDSPath(subject=params.get('sub'),
                                  session=params.get('ses'),
-                                 recording=params.get('rec'),
+                                 task=params.get('task'),
                                  acquisition=params.get('acq'),
-                                 processing=params.get('proc'),
-                                 space=params.get('space'),
                                  run=params.get('run'),
-                                 task=params.get('task'))
+                                 processing=params.get('proc'),
+                                 recording=params.get('rec'),
+                                 space=params.get('space'))
 
     kind = 'meg'  # We're only concerned about MEG data here
     bids_fname = bids_basename.get_bids_fname(kind=kind, bids_root=bids_root)
@@ -489,8 +489,8 @@ def get_matched_empty_room(bids_basename, bids_root):
     # Now try to discover all recordings inside the session directories.
 
     allowed_extensions = list(reader.keys())
-    # `.pdf` is just a "virtual" extension for BTi data (which is stored inside
-    # a dedicated directory that doesn't have an extension)
+    # `.pdf` is just a "virtual" ext for BTi data (which is stored inside
+    # a dedicated directory that doesn't have an ext)
     del allowed_extensions[allowed_extensions.index('.pdf')]
 
     candidate_er_fnames = []
@@ -604,12 +604,12 @@ def get_head_mri_trans(bids_basename, bids_root):
         params = parse_bids_filename(bids_basename)
         bids_basename = BIDSPath(subject=params.get('sub'),
                                  session=params.get('ses'),
-                                 recording=params.get('rec'),
+                                 task=params.get('task'),
                                  acquisition=params.get('acq'),
-                                 processing=params.get('proc'),
-                                 space=params.get('space'),
                                  run=params.get('run'),
-                                 task=params.get('task'))
+                                 processing=params.get('proc'),
+                                 recording=params.get('rec'),
+                                 space=params.get('space'))
 
     # Get the sidecar file for MRI landmarks
     bids_fname = bids_basename.get_bids_fname(kind='meg', bids_root=bids_root)

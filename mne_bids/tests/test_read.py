@@ -46,9 +46,8 @@ run = '01'
 acq = '01'
 task = 'testing'
 
-bids_basename = make_bids_basename(
-    subject=subject_id, session=session_id, run=run, acquisition=acq,
-    task=task)
+bids_basename = make_bids_basename(subject=subject_id, session=session_id,
+                                   task=task, acquisition=acq, run=run)
 
 bids_basename_minimal = make_bids_basename(subject=subject_id, task=task)
 
@@ -74,7 +73,7 @@ def test_read_raw():
     """Test the raw reading."""
     # Use a file ending that does not exist
     f = 'file.bogus'
-    with pytest.raises(ValueError, match='file name extension must be one of'):
+    with pytest.raises(ValueError, match='file name ext must be one of'):
         _read_raw(f)
 
 
@@ -229,7 +228,7 @@ def test_line_freq_estimation():
     kind = "meg"
 
     # assert that we get the same line frequency set
-    bids_fname = bids_basename.copy().update(suffix=f'{kind}.fif')
+    bids_fname = bids_basename.copy().update(kind=kind, ext='.fif')
 
     # find sidecar JSON fname
     write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
@@ -283,7 +282,7 @@ def test_handle_info_reading():
     bids_basename = make_bids_basename(subject='01', session='01',
                                        task='audiovisual', run='01')
     kind = "meg"
-    bids_fname = bids_basename.copy().update(suffix=f'{kind}.fif')
+    bids_fname = bids_basename.copy().update(kind=kind, ext='.fif')
     write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
 
     # find sidecar JSON fname
@@ -411,7 +410,7 @@ def test_handle_ieeg_coords_reading(bids_basename):
 
     data_path = op.join(testing.data_path(), 'EDF')
     raw_fname = op.join(data_path, 'test_reduced.edf')
-    bids_fname = bids_basename.copy().update(suffix='ieeg.edf')
+    bids_fname = bids_basename.copy().update(kind='ieeg', ext='.edf')
 
     raw = mne.io.read_raw_edf(raw_fname)
 
@@ -617,8 +616,8 @@ def test_get_matched_empty_room():
         # mne < v0.20
         er_date = datetime.fromtimestamp(er_raw.info['meas_date'][0])
     er_date = er_date.strftime('%Y%m%d')
-    er_bids_basename = make_bids_basename(subject='emptyroom',
-                                          task='noise', session=er_date)
+    er_bids_basename = make_bids_basename(subject='emptyroom', session=er_date,
+                                          task='noise')
     write_raw_bids(er_raw, er_bids_basename, bids_root, overwrite=True)
 
     recovered_er_basename = get_matched_empty_room(bids_basename=bids_basename,
@@ -771,9 +770,9 @@ def test_handle_channel_type_casing():
 
     subject_path = op.join(bids_root, f'sub-{subject_id}', f'ses-{session_id}',
                            'meg')
-    bids_channels_fname = (bids_basename.copy()
-                           .update(prefix=subject_path,
-                                   suffix='channels.tsv'))
+    bids_channels_fname = (bids_basename.copy().update(root=subject_path,
+                                                       kind='channels',
+                                                       ext='.tsv'))
 
     # Convert all channel type entries to lowercase.
     channels_data = _from_tsv(bids_channels_fname)

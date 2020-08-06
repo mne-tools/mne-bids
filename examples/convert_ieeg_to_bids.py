@@ -164,8 +164,7 @@ shutil.rmtree(bids_root, ignore_errors=True)
 # temporarily save the data to disc before reading it back in.
 
 # Now convert our data to be in a new BIDS dataset.
-bids_basename = make_bids_basename(subject=subject_id,
-                                   task=task,
+bids_basename = make_bids_basename(subject=subject_id, task=task,
                                    acquisition="ecog")
 
 # write `raw` to BIDS and anonymize it into BrainVision format

@@ -202,7 +202,7 @@ def _read_events(events_data, event_id, raw, ext, verbose=None):
     raw : instance of Raw
         The data as MNE-Python Raw object.
     ext : str
-        The extension of the original data file.
+        The ext of the original data file.
     verbose : bool | str | int | None
         If not None, override default verbose level (see :func:`mne.verbose`).
 

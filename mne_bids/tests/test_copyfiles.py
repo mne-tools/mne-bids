@@ -150,9 +150,9 @@ def test_copyfile_kit():
     acq = '01'
     task = 'testing'
 
-    bids_basename = make_bids_basename(
-        subject=subject_id, session=session_id, run=run, acquisition=acq,
-        task=task)
+    bids_basename = make_bids_basename(subject=subject_id,
+                                       session=session_id, task=task,
+                                       acquisition=acq, run=run)
 
     kit_bids_basename = bids_basename.copy().update(acquisition=None,
                                                     prefix=output_path)
@@ -179,17 +179,17 @@ def test_copyfile_kit():
     if op.exists(electrode_fname):
         task, run, key = None, None, 'ELP'
         elp_ext = '.pos'
-        elp_fname = make_bids_basename(
-            subject=subject_id, session=session_id, task=task, run=run,
-            acquisition=key, suffix='headshape%s' % elp_ext,
-            prefix=output_path)
+        elp_fname = make_bids_basename(subject=subject_id, session=session_id,
+                                       task=task, acquisition=key, run=run,
+                                       root=output_path,
+                                       suffix='headshape%s' % elp_ext)
         assert op.exists(elp_fname)
 
     if op.exists(headshape_fname):
         task, run, key = None, None, 'HSP'
         hsp_ext = '.pos'
-        hsp_fname = make_bids_basename(
-            subject=subject_id, session=session_id, task=task, run=run,
-            acquisition=key, suffix='headshape%s' % hsp_ext,
-            prefix=output_path)
+        hsp_fname = make_bids_basename(subject=subject_id, session=session_id,
+                                       task=task, acquisition=key, run=run,
+                                       root=output_path,
+                                       suffix='headshape%s' % hsp_ext)
         assert op.exists(hsp_fname)

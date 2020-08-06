@@ -24,7 +24,7 @@ sys.path.append(os.path.abspath(os.path.join(curdir, 'sphinxext')))
 #
 # needs_sphinx = '1.0'
 
-# Add any Sphinx extension module names here, as strings. They can be
+# Add any Sphinx ext module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
@@ -37,7 +37,7 @@ extensions = [
     'sphinx.ext.intersphinx',
     'sphinx_gallery.gen_gallery',
     'numpydoc',
-    'gen_cli'  # custom extension, see ./sphinxext/gen_cli.py
+    'gen_cli'  # custom ext, see ./sphinxext/gen_cli.py
 ]
 
 # generate autosummary even if no references
