@@ -21,8 +21,9 @@ from mne.transforms import apply_trans
 
 from mne_bids.dig import _read_dig_bids
 from mne_bids.tsv_handler import _from_tsv, _drop
-from mne_bids.config import (ALLOWED_EXTENSIONS, _convert_hand_options,
-                             _convert_sex_options, reader)
+from mne_bids.config import (
+    ALLOWED_MODALITY_EXTENSIONS, _convert_hand_options,
+    _convert_sex_options, reader, ALLOWED_MODALITY_KINDS)
 from mne_bids.utils import (_extract_landmarks,
                             _get_ch_type_mapping, _estimate_line_freq)
 from mne_bids import make_bids_folders
@@ -63,7 +64,7 @@ def _read_raw(raw_fpath, electrode=None, hsp=None, hpi=None,
     # ---------------------------
     else:
         raise ValueError('Raw file name extension must be one of {}\n'
-                         'Got {}'.format(ALLOWED_EXTENSIONS, ext))
+                         'Got {}'.format(ALLOWED_MODALITY_EXTENSIONS, ext))
     return raw
 
 
@@ -400,7 +401,7 @@ def read_raw_bids(bids_basename, bids_root, kind=None, extra_params=None,
                                "should exist if electrodes.tsv does. "
                                "Please create coordsystem.json for"
                                "{}".format(bids_basename))
-        if kind in ['meg', 'eeg', 'ieeg']:
+        if kind in ALLOWED_MODALITY_KINDS:
             raw = _read_dig_bids(electrodes_fname, coordsystem_fname,
                                  raw, kind, verbose)
 

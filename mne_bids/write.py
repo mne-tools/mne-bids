@@ -47,7 +47,7 @@ from mne_bids.tsv_handler import (_from_tsv, _drop, _contains_row,
                                   _combine_rows)
 
 from mne_bids.config import (ORIENTATION, UNITS, MANUFACTURERS,
-                             IGNORED_CHANNELS, ALLOWED_EXTENSIONS,
+                             IGNORED_CHANNELS, ALLOWED_MODALITY_EXTENSIONS,
                              BIDS_VERSION, REFERENCES, _convert_hand_options,
                              _convert_sex_options, reader)
 
@@ -480,7 +480,7 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, overwrite=False,
     fname : str | BIDSPath
         Filename to save the sidecar json to.
     kind : str
-        Type of the data as in ALLOWED_KINDS.
+        Type of the data as in ALLOWED_MODALITY_KINDS.
     overwrite : bool
         Whether to overwrite the existing file.
         Defaults to False.
@@ -941,8 +941,8 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     raw_fname = raw_fname.replace('.fdt', '.set')
     _, ext = _parse_ext(raw_fname, verbose=verbose)
 
-    if ext not in [this_ext for data_type in ALLOWED_EXTENSIONS
-                   for this_ext in ALLOWED_EXTENSIONS[data_type]]:
+    if ext not in [this_ext for data_type in ALLOWED_MODALITY_EXTENSIONS
+                   for this_ext in ALLOWED_MODALITY_EXTENSIONS[data_type]]:
         raise ValueError('Unrecognized file format %s' % ext)
 
     raw_orig = reader[ext](**raw._init_kwargs)
@@ -1108,12 +1108,12 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     # If not already converting for anonymization, we may still need to do it
     # if current format not BIDS compliant
     if not convert:
-        convert = ext not in ALLOWED_EXTENSIONS[kind]
+        convert = ext not in ALLOWED_MODALITY_EXTENSIONS[kind]
 
     if kind == 'meg' and convert and not anonymize:
         raise ValueError('Got file ext %s for MEG data, '
                          'expected one of %s' %
-                         ALLOWED_EXTENSIONS['meg'])
+                         ALLOWED_MODALITY_EXTENSIONS['meg'])
 
     if not convert and verbose:
         print('Copying data files to %s' % op.splitext(bids_fname)[0])

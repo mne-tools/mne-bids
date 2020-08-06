@@ -13,7 +13,9 @@ from pathlib import Path
 
 from mne.utils import warn, logger
 
-from mne_bids.config import BIDS_PATH_ENTITIES, reader
+from mne_bids.config import (BIDS_PATH_ENTITIES, reader,
+                             ALLOWED_FILENAME_EXTENSIONS,
+                             ALLOWED_FILENAME_KINDS, ALLOWED_MODALITY_KINDS)
 from mne_bids.utils import (_check_key_val, _check_empty_room_basename,
                             _check_types, param_regex,
                             _ensure_tuple)
@@ -259,6 +261,19 @@ class BIDSPath(object):
             if not ext.startswith('.'):
                 ext = f'.{ext}'
                 entities['ext'] = ext
+            # check validity of the extension
+            if ext not in ALLOWED_FILENAME_EXTENSIONS:
+                raise ValueError(f'Extension {ext} is not '
+                                 f'allowed. Use one of these extensions '
+                                 f'{ALLOWED_FILENAME_EXTENSIONS}.')
+
+        # error check kind
+        kind = entities.get('kind')
+        if kind is not None:
+            if kind not in ALLOWED_FILENAME_KINDS:
+                raise ValueError(f'Kind {kind} is not allowed. '
+                                 f'Use one of these kinds '
+                                 f'{ALLOWED_FILENAME_KINDS}.')
 
         # error check entities
         for key, val in entities.items():
@@ -869,7 +884,7 @@ def _infer_kind(*, bids_basename, bids_root, sub, ses):
                                bids_root=bids_root, sub=sub, ses=ses)
 
     # We only want to handle electrophysiological data here.
-    allowed_kinds = ['meg', 'eeg', 'ieeg']
+    allowed_kinds = ALLOWED_MODALITY_KINDS
     kinds = list(set(kinds) & set(allowed_kinds))
     if not kinds:
         raise ValueError('No electrophysiological data found.')
