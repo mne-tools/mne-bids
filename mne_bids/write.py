@@ -1336,7 +1336,7 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
             {'LPA': list(mri_landmarks[0, :]),
              'NAS': list(mri_landmarks[1, :]),
              'RPA': list(mri_landmarks[2, :])}
-        fname = t1w_basename.update(ext='.json')
+        fname = t1w_basename.copy().update(ext='.json')
         if op.isfile(fname) and not overwrite:
             raise IOError('Wanted to write a file but it already exists and '
                           '`overwrite` is set to False. File: "{}"'

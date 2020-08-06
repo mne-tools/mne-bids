@@ -202,7 +202,7 @@ class BIDSPath(object):
         ses = self.session
 
         if ext is None and bids_root is None:
-            msg = ('No filename ext was provided, and it cannot be '
+            msg = ('No filename extension was provided, and it cannot be '
                    'automatically inferred because no bids_root was passed.')
             raise ValueError(msg)
 

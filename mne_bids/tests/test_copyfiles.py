@@ -155,25 +155,25 @@ def test_copyfile_kit():
         task=task)
 
     kit_bids_basename = bids_basename.copy().update(acquisition=None,
-                                                    prefix=output_path)
+                                                    root=output_path)
 
     raw = mne.io.read_raw_kit(
         raw_fname, mrk=hpi_fname, elp=electrode_fname,
         hsp=headshape_fname)
     _, ext = _parse_ext(raw_fname, verbose=True)
     kind = _handle_kind(raw)
-    bids_fname = str(bids_basename.copy().update(suffix=f'{kind}{ext}',
-                                                 prefix=output_path))
+    bids_fname = bids_basename.copy().update(kind=kind, ext=ext,
+                                             root=output_path)
 
     copyfile_kit(raw_fname, bids_fname, subject_id, session_id,
                  task, run, raw._init_kwargs)
     assert op.exists(bids_fname)
     _, ext = _parse_ext(hpi_fname, verbose=True)
     if ext == '.sqd':
-        kit_bids_basename.suffix = 'markers.sqd'
+        kit_bids_basename.update(kind='markers', ext='.sqd')
         assert op.exists(kit_bids_basename)
     elif ext == '.mrk':
-        kit_bids_basename.suffix = 'markers.mrk'
+        kit_bids_basename.update(kind='markers', ext='.mrk')
         assert op.exists(kit_bids_basename)
 
     if op.exists(electrode_fname):
