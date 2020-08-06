@@ -1427,6 +1427,7 @@ def test_mark_bad_channels(_bids_validate):
     bads = ['MEG 0112', 'MEG 0131', 'EEG 053']
     mark_bad_channels(channels=bads, bids_basename=bids_basename,
                       bids_root=bids_root, kind='meg')
+    _bids_validate(bids_root)
     raw = read_raw_bids(bids_basename=bids_basename, bids_root=bids_root,
                         kind='meg', verbose=False)
     assert len(bads) == len(raw.info['bads'])
@@ -1442,19 +1443,15 @@ def test_mark_bad_channels(_bids_validate):
     bads = 'MEG 0123'
     mark_bad_channels(channels=bads, bids_basename=bids_basename,
                       bids_root=bids_root, kind='meg')
-
-    # Test that we warn if channel is already "bad".
-    with pytest.warns(RuntimeWarning, match='already marked as bad'):
-        mark_bad_channels(channels=bads, bids_basename=bids_basename,
-                          bids_root=bids_root, kind='meg')
+    _bids_validate(bids_root)
 
     # Set descriptions: list.
     bads = ['MEG 0112', 'MEG 0131']
     descriptions = ['Really bad!', 'Even worse.']
-    with pytest.warns(RuntimeWarning, match='already marked as bad'):
-        mark_bad_channels(channels=bads, descriptions=descriptions,
-                          bids_basename=bids_basename, bids_root=bids_root,
-                          kind='meg')
+    mark_bad_channels(channels=bads, descriptions=descriptions,
+                      bids_basename=bids_basename, bids_root=bids_root,
+                      kind='meg')
+    _bids_validate(bids_root)
     tsv_data = _from_tsv(channels_fname)
     for description in descriptions:
         assert description in tsv_data['status_description']
@@ -1462,23 +1459,12 @@ def test_mark_bad_channels(_bids_validate):
     # Set descriptions: string.
     bads = 'MEG 0112'
     descriptions = 'Really bad!'
-    with pytest.warns(RuntimeWarning, match='already marked as bad'):
-        mark_bad_channels(channels=bads, descriptions=descriptions,
-                          bids_basename=bids_basename, bids_root=bids_root,
-                          kind='meg')
+    mark_bad_channels(channels=bads, descriptions=descriptions,
+                      bids_basename=bids_basename, bids_root=bids_root,
+                      kind='meg')
+    _bids_validate(bids_root)
     tsv_data = _from_tsv(channels_fname)
     assert 'Really bad!' in tsv_data['status_description']
-
-    # Test that we warn if description doesn't change.
-    with warnings.catch_warnings():
-        warnings.filterwarnings(action='ignore',
-                                message='.*already marked as bad.')
-
-        with pytest.warns(RuntimeWarning,
-                          match='Description.*has not changed'):
-            mark_bad_channels(channels=bads, descriptions=descriptions,
-                              bids_basename=bids_basename, bids_root=bids_root,
-                              kind='meg')
 
     # Test that we raise if number of channels doesn't match number of
     # descriptions.
@@ -1499,10 +1485,7 @@ def test_mark_bad_channels(_bids_validate):
     mark_bad_channels(channels=bads, descriptions=descriptions,
                       bids_basename=bids_basename, bids_root=bids_root,
                       kind='meg')
+    _bids_validate(bids_root)
     tsv_data = _from_tsv(channels_fname)
     assert 'status' in tsv_data
     assert 'status_description' in tsv_data
-
-    # Test that we raise if `bids_basename` / `bids_root` parameters are
-    # missing.
-    bads = 'MEG 0112'

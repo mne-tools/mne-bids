@@ -1413,7 +1413,7 @@ def mark_bad_channels(channels, descriptions=None, *, bids_basename,
     if isinstance(descriptions, str):
         descriptions = [descriptions]
     elif descriptions is None:
-        descriptions = [None] * len(channels)
+        descriptions = ['n/a'] * len(channels)
     if len(channels) != len(descriptions):
         raise ValueError('Number of channels and descriptions must match.')
 
@@ -1447,7 +1447,7 @@ def mark_bad_channels(channels, descriptions=None, *, bids_basename,
     if 'status_description' not in data:
         logger.info('No "status_description" column found in input file. '
                     'Creating.')
-        data['status_description'] = [''] * len(data['name'])
+        data['status_description'] = ['n/a'] * len(data['name'])
 
     # Update the sidecar data.
     for channel, description in zip(channels, descriptions):
@@ -1456,22 +1456,10 @@ def mark_bad_channels(channels, descriptions=None, *, bids_basename,
 
         idx = data['name'].index(channel)
 
-        # Update 'status' column.
-        if data['status'][idx] == 'bad':
-            warn(f'Channel {channel} was already marked as bad.')
-        else:
-            logger.info(f'Updating status of channel {channel}: '
-                        f'{data["status"][idx]} -> bad')
-            data['status'][idx] = 'bad'
-
-        # Update 'status_description' column.
-        if description is not None:
-            if data['status_description'][idx] == description:
-                warn(f'Description for channel {channel} has not changed.')
-            else:
-                logger.info(f'Updating description of channel {channel}: '
-                            f'{data["status_description"][idx]} -> '
-                            f'{description}')
-                data['status_description'][idx] = description
+        logger.info(f'Processing channel {channel}:\n'
+                    f'    status: bad\n'
+                    f'    description: {description}')
+        data['status'][idx] = 'bad'
+        data['status_description'][idx] = description
 
     _write_tsv(channels_fname, data, overwrite=True, verbose=verbose)
