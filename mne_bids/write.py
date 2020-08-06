@@ -40,7 +40,8 @@ from mne_bids.utils import (_write_json, _write_tsv, _write_text,
                             _stamp_to_dt)
 from mne_bids import make_bids_folders, make_bids_basename
 from mne_bids.path import (BIDSPath, _parse_ext, parse_bids_filename,
-                           _mkdir_p, _path_to_str)
+                           _mkdir_p, _path_to_str, _infer_kind,
+                           _find_matching_sidecar)
 from mne_bids.copyfiles import (copyfile_brainvision, copyfile_eeglab,
                                 copyfile_ctf, copyfile_bti, copyfile_kit)
 from mne_bids.tsv_handler import (_from_tsv, _drop, _contains_row,
@@ -1358,3 +1359,75 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
     nib.save(t1w, t1w_basename)
 
     return anat_dir
+
+
+def mark_bad_channels(channels, bids_basename, bids_root, kind=None,
+                      verbose=True):
+    """Update sidecar (metadata) files of an existing BIDS dataset.
+
+    Parameters
+    ----------
+    channels : str | list of str
+        The names of the channel(s) to mark as bad.
+    bids_basename : BIDSPath | str
+        The base filename of the BIDS compatible files. Typically, this can be
+        generated using :func:`mne_bids.make_bids_basename`.
+    bids_root : str | pathlib.Path
+        Path to root of the BIDS folder
+    kind : str | None
+        The kind of recording to  update. If ``None`` and only one kind (e.g.,
+        only EEG or only MEG data) is present in the dataset, it will be
+        selected automatically.
+    verbose : bool
+        The verbosity level.
+
+    Raises
+    ------
+    ValueError
+        If the specified channels cannot be found in the dataset.
+
+    ValueError
+        If the specified ``kind`` cannot be found in the dataset.
+
+    RuntimeError
+        If multiple recording kinds are present in the dataset, but
+        ``kind=None``.
+
+    RuntimeError
+        If more than one data files exist for the specified recording.
+
+    """
+    # convert to BIDS Path
+    if isinstance(bids_basename, str):
+        params = parse_bids_filename(bids_basename)
+        bids_basename = BIDSPath(subject=params.get('sub'),
+                                 session=params.get('ses'),
+                                 recording=params.get('rec'),
+                                 acquisition=params.get('acq'),
+                                 processing=params.get('proc'),
+                                 space=params.get('space'),
+                                 run=params.get('run'),
+                                 task=params.get('task'))
+    sub = bids_basename.subject
+    ses = bids_basename.session
+
+    if kind is None:
+        kind = _infer_kind(bids_basename=bids_basename, bids_root=bids_root,
+                           sub=sub, ses=ses)
+
+    bids_fname = bids_basename.get_bids_fname(kind=kind, bids_root=bids_root)
+    channels_fname = _find_matching_sidecar(bids_fname, bids_root,
+                                            'channels.tsv')
+    data = _from_tsv(channels_fname)
+    for channel in channels:
+        idx = data['name'].index(channel)
+        if data['status'][idx] == 'bad':
+            warn(f'Channel {channel} was already marked as bad, not updating.')
+            continue
+
+        msg = (f'Updating status of channel {channel}: '
+               f'{data["status"][idx]} -> bad')
+        logger.info(msg)
+        data['status'][idx] = 'bad'
+
+    _write_tsv(channels_fname, data, overwrite=True, verbose=verbose)

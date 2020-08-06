@@ -10,6 +10,7 @@ For each supported file format, implement a test.
 #          Matt Sanderson <matt.sanderson@mq.edu.au>
 #
 # License: BSD (3-clause)
+from mne_bids.write import mark_bad_channels
 import os
 import os.path as op
 import pytest
@@ -1397,3 +1398,33 @@ def test_write_does_not_alter_events_inplace():
                    events_data=events, overwrite=True)
 
     assert np.array_equal(events, events_orig)
+
+
+@pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+def test_mark_bad_channels(_bids_validate):
+    """Test marking channels of an existing BIDS dataset as "bad"."""
+
+    # Setup: Create a fresh BIDS dataset.
+    bids_root = _TempDir()
+    data_path = testing.data_path()
+    raw_fname = op.join(data_path, 'MEG', 'sample',
+                        'sample_audvis_trunc_raw.fif')
+
+    event_id = {'Auditory/Left': 1, 'Auditory/Right': 2, 'Visual/Left': 3,
+                'Visual/Right': 4, 'Smiley': 5, 'Button': 32}
+    events_fname = op.join(data_path, 'MEG', 'sample',
+                           'sample_audvis_trunc_raw-eve.fif')
+
+    raw = mne.io.read_raw_fif(raw_fname, verbose=False)
+    raw.info['bads'] = []
+    write_raw_bids(raw, bids_basename, bids_root, events_data=events_fname,
+                   event_id=event_id, verbose=False)
+
+    bads = ['MEG 0112', 'MEG 0131', 'EEG 053']
+    mark_bad_channels(channels=bads, bids_basename=bids_basename,
+                      bids_root=bids_root, kind='meg')
+
+    raw = read_raw_bids(bids_basename=bids_basename, bids_root=bids_root,
+                        kind='meg', verbose=False)
+    assert len(bads) == len(raw.info['bads'])
+    assert set(bads) == set(raw.info['bads'])  # XXX Order is not preserved?!
