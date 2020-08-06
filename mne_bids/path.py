@@ -53,12 +53,12 @@ class BIDSPath(object):
     space : str | None
         The coordinate space for an anatomical file. Corresponds to "space".
     root : str | None
-        The prefix for the filename to be created. E.g., a path to the folder
+        The directory for the filename. E.g., a path to the folder
         in which you wish to create a file with this name.
     kind : str | None
-        The suffix for the filename. E.g., 'audio.wav'.
+        The suffix for the filename. E.g., 'ieeg'.
     ext : str | None
-        The ext for the filename.
+        The ext for the filename. E.g., '.edf'
 
     Examples
     --------
@@ -384,13 +384,13 @@ def make_bids_folders(subject, session=None, kind=None, bids_root=None,
 
 
 def _parse_ext(raw_fname, verbose=False):
-    """Split a filename into its name and ext."""
+    """Split a filename into its name and extension."""
     fname, ext = os.path.splitext(raw_fname)
     # BTi data is the only file format that does not have a file ext
     if ext == '' or 'c,rf' in fname:
         if verbose is True:
-            print('Found no ext for raw file, assuming "BTi" format and '
-                  'appending ext .pdf')
+            print('Found no extension for raw file, assuming "BTi" format and '
+                  'appending extension .pdf')
         ext = '.pdf'
     # If ending on .gz, check whether it is an .nii.gz file
     elif ext == '.gz' and raw_fname.endswith('.nii.gz'):
@@ -823,7 +823,6 @@ def _get_bids_fname_from_filesystem(*, bids_basename, bids_root, sub, ses,
         valid_exts = list(reader.keys())
         matching_paths = glob.glob(op.join(bids_root, data_dir,
                                            f'{bids_basename}_{kind}.*'))
-        print(op.join(bids_root, data_dir, f'{bids_basename}_{kind}.*'))
         matching_paths = [p for p in matching_paths
                           if _parse_ext(p)[1] in valid_exts]
 

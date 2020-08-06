@@ -32,7 +32,7 @@ from mne_bids.path import (BIDSPath, _parse_ext, parse_bids_filename,
 
 def _read_raw(raw_fpath, electrode=None, hsp=None, hpi=None,
               allow_maxshield=False, config=None, verbose=None, **kwargs):
-    """Read a raw file into MNE, making inferences based on ext."""
+    """Read a raw file into MNE, making inferences based on extension."""
     _, ext = _parse_ext(raw_fpath)
 
     # KIT systems
@@ -55,14 +55,14 @@ def _read_raw(raw_fpath, electrode=None, hsp=None, hpi=None,
 
     # MEF and NWB are allowed, but not yet implemented
     elif ext in ['.mef', '.nwb']:
-        raise ValueError('Got "{}" as ext. This is an allowed ext '
+        raise ValueError('Got "{}" as extension. This is an allowed extension '
                          'but there is no IO support for this file format yet.'
                          .format(ext))
 
     # No supported data found ...
     # ---------------------------
     else:
-        raise ValueError('Raw file name ext must be one of {}\n'
+        raise ValueError('Raw file name extension must be one of {}\n'
                          'Got {}'.format(ALLOWED_EXTENSIONS, ext))
     return raw
 
@@ -489,8 +489,8 @@ def get_matched_empty_room(bids_basename, bids_root):
     # Now try to discover all recordings inside the session directories.
 
     allowed_extensions = list(reader.keys())
-    # `.pdf` is just a "virtual" ext for BTi data (which is stored inside
-    # a dedicated directory that doesn't have an ext)
+    # `.pdf` is just a "virtual" extension for BTi data (which is stored inside
+    # a dedicated directory that doesn't have an extension)
     del allowed_extensions[allowed_extensions.index('.pdf')]
 
     candidate_er_fnames = []

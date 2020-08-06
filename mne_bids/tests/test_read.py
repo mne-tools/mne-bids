@@ -73,7 +73,7 @@ def test_read_raw():
     """Test the raw reading."""
     # Use a file ending that does not exist
     f = 'file.bogus'
-    with pytest.raises(ValueError, match='file name ext must be one of'):
+    with pytest.raises(ValueError, match='file name extension must be one of'):
         _read_raw(f)
 
 

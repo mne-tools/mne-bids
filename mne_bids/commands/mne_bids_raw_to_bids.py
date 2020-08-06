@@ -66,9 +66,9 @@ def run():
         parser.error('Arguments missing. You need to specify at least the'
                      'following: --subject_id, --task, --raw, --bids_root.')
 
-    bids_basename = make_bids_basename(subject=opt.subject_id,
-                                       session=opt.session_id, task=opt.task,
-                                       acquisition=opt.acq, run=opt.run)
+    bids_basename = make_bids_basename(
+        subject=opt.subject_id, session=opt.session_id, run=opt.run,
+        acquisition=opt.acq, task=opt.task)
     raw = _read_raw(opt.raw_fname, hpi=opt.hpi, electrode=opt.electrode,
                     hsp=opt.hsp, config=opt.config,
                     allow_maxshield=opt.allow_maxshield)

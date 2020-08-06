@@ -815,7 +815,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
                    to FIF.
 
                  * ``mne-bids`` will infer the manufacturer information
-                   from the file ext. If your file format is non-standard
+                   from the file extension. If your file format is non-standard
                    for the manufacturer, please update the manufacturer field
                    in the sidecars manually.
 
@@ -846,7 +846,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
             scans.tsv
 
         Note that the modality 'meg' is automatically inferred from the raw
-        object and ext '.fif' is copied from raw.filenames.
+        object and extension '.fif' is copied from raw.filenames.
     bids_root : str | pathlib.Path
         The path of the root of the BIDS compatible folder. The session and
         subject specific folders will be populated automatically by parsing

@@ -469,7 +469,7 @@ def test_fif(_bids_validate):
     for FILE in files:
         assert 'split' in FILE
 
-    # test unknown ext
+    # test unknown extension
     raw = mne.io.read_raw_fif(raw_fname)
     raw._filenames = (raw.filenames[0].replace('.fif', '.foo'),)
     with pytest.raises(ValueError, match='Unrecognized file format'):

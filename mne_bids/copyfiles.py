@@ -373,7 +373,7 @@ def copyfile_eeglab(src, dest):
         fdt_path = op.join(head, fdt_pointer)
         fdt_name, fdt_ext = _parse_ext(fdt_path)
         if fdt_ext != '.fdt':
-            raise IOError('Expected ext {} for linked data but found'
+            raise IOError('Expected extension {} for linked data but found'
                           ' {}'.format('.fdt', fdt_ext))
 
         # Copy the fdt file and give it a new name

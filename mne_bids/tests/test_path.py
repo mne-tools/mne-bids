@@ -31,8 +31,9 @@ run = '01'
 acq = None
 task = 'testing'
 
-bids_basename = make_bids_basename(subject=subject_id, session=session_id,
-                                   task=task, acquisition=acq, run=run)
+bids_basename = make_bids_basename(
+    subject=subject_id, session=session_id, run=run, acquisition=acq,
+    task=task)
 
 
 @pytest.fixture(scope='session')
@@ -56,7 +57,6 @@ def return_bids_test_dir(tmpdir_factory):
             write_raw_bids(raw, name, bids_root,
                            events_data=events_fname, event_id=event_id,
                            overwrite=True)
-    print_dir_tree(bids_root)
     return bids_root
 
 
@@ -169,7 +169,7 @@ def test_parse_ext():
     assert fname == 'sub-05_task-matchingpennies'
     assert ext == '.vhdr'
 
-    # Test for case where no ext: assume BTI format
+    # Test for case where no extension: assume BTI format
     f = 'sub-01_task-rest'
     fname, ext = _parse_ext(f)
     assert fname == f
@@ -228,7 +228,6 @@ def test_find_matching_sidecar(return_bids_test_dir):
     bids_root = return_bids_test_dir
 
     # Now find a sidecar
-    print(bids_basename)
     sidecar_fname = _find_matching_sidecar(bids_basename, bids_root,
                                            'coordsystem.json')
     expected_file = op.join('sub-01', 'ses-01', 'meg',
@@ -254,9 +253,8 @@ def test_bids_path(return_bids_test_dir):
                                        task=task, acquisition=acq, run=run)
 
     # get_bids_fname should fire warning
-    with pytest.raises(ValueError, match='No filename ext was provided'):
+    with pytest.raises(ValueError, match='No filename extension was provided'):
         bids_fname = bids_basename.get_bids_fname()
-    print_dir_tree(bids_root)
     # should find the correct filename if bids_root was passed
     bids_fname = bids_basename.get_bids_fname(bids_root=bids_root)
     assert bids_fname == bids_basename.update(kind='meg', ext='.fif')
@@ -267,7 +265,6 @@ def test_bids_path(return_bids_test_dir):
     assert bids_basename.session == session_id
     assert 'subject' in bids_basename.entities
     assert 'session' in bids_basename.entities
-    print(bids_basename.entities)
     assert all(bids_basename.entities.get(entity) is None
                for entity in ['task', 'run', 'recording', 'acquisition',
                               'space', 'processing',

@@ -74,7 +74,7 @@ print_dir_tree(data_dir)
 
 ###############################################################################
 # The data are in the `European Data Format <https://www.edfplus.info/>`_ with
-# the ``.edf`` ext, which is good for us because next to the
+# the ``.edf`` extension, which is good for us because next to the
 # `BrainVision format`_, EDF is one of the recommended file formats for EEG
 # data in BIDS format.
 #
