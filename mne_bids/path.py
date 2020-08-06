@@ -514,9 +514,9 @@ def _find_matching_sidecar(bids_fname, bids_root, suffix, allow_fail=False):
         raise RuntimeError(msg)
 
 
-def make_bids_basename(subject=None, session=None, task=None, acquisition=None,
-                       run=None, processing=None, recording=None, space=None,
-                       root=None, suffix=None):
+def make_bids_basename(subject=None, session=None, task=None,
+                       acquisition=None, run=None, processing=None,
+                       recording=None, space=None, root=None, suffix=None):
     """Create a partial/full BIDS basename from its component parts.
 
     BIDS filename prefixes have one or more pieces of metadata in them. They

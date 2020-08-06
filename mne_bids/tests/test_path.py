@@ -163,7 +163,7 @@ def test_make_folders():
 
 
 def test_parse_ext():
-    """Test the file ext extraction."""
+    """Test the file extension extraction."""
     f = 'sub-05_task-matchingpennies.vhdr'
     fname, ext = _parse_ext(f)
     assert fname == 'sub-05_task-matchingpennies'
@@ -249,8 +249,9 @@ def test_bids_path(return_bids_test_dir):
     """Test usage of BIDSPath object."""
     bids_root = return_bids_test_dir
 
-    bids_basename = make_bids_basename(subject=subject_id, session=session_id,
-                                       task=task, acquisition=acq, run=run)
+    bids_basename = make_bids_basename(
+        subject=subject_id, session=session_id, run=run, acquisition=acq,
+        task=task)
 
     # get_bids_fname should fire warning
     with pytest.raises(ValueError, match='No filename extension was provided'):
