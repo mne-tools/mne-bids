@@ -1419,6 +1419,9 @@ def mark_bad_channels(channels, bids_basename, bids_root, kind=None,
     channels_fname = _find_matching_sidecar(bids_fname, bids_root,
                                             'channels.tsv')
     data = _from_tsv(channels_fname)
+    if isinstance(channels, str):
+        channels = [channels]
+
     for channel in channels:
         idx = data['name'].index(channel)
         if data['status'][idx] == 'bad':
