@@ -1423,6 +1423,9 @@ def mark_bad_channels(channels, bids_basename, bids_root, kind=None,
         channels = [channels]
 
     for channel in channels:
+        if channel not in data['name']:
+            raise ValueError(f'Channel {channel} not found in dataset!')
+
         idx = data['name'].index(channel)
         if data['status'][idx] == 'bad':
             warn(f'Channel {channel} was already marked as bad, not updating.')
