@@ -1361,8 +1361,8 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
     return anat_dir
 
 
-def mark_bad_channels(channels, descriptions=None, bids_basename=None,
-                      bids_root=None, kind=None, verbose=True):
+def mark_bad_channels(channels, descriptions=None, *, bids_basename,
+                      bids_root, kind=None, verbose=True):
     """Update sidecar (metadata) files of an existing BIDS dataset.
 
     Parameters
@@ -1374,10 +1374,9 @@ def mark_bad_channels(channels, descriptions=None, bids_basename=None,
         channel(s). If ``None``, no descriptions are added.
     bids_basename : BIDSPath | str
         The base filename of the BIDS compatible files. Typically, this can be
-        generated using :func:`mne_bids.make_bids_basename`. This is a required
-        argument.
+        generated using :func:`mne_bids.make_bids_basename`.
     bids_root : str | pathlib.Path
-        Path to root of the BIDS folder. This is a required argument.
+        Path to root of the BIDS folder.
     kind : str | None
         The kind of recording to  update. If ``None`` and only one kind (e.g.,
         only EEG or only MEG data) is present in the dataset, it will be
@@ -1387,9 +1386,6 @@ def mark_bad_channels(channels, descriptions=None, bids_basename=None,
 
     Raises
     ------
-    ValueError
-        If no ``bids_basename`` or ``bids_root`` are specified.
-
     ValueError
         If the number of channels and descriptions does not match.
 
