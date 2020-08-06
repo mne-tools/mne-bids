@@ -1414,17 +1414,33 @@ def test_mark_bad_channels(_bids_validate):
                 'Visual/Right': 4, 'Smiley': 5, 'Button': 32}
     events_fname = op.join(data_path, 'MEG', 'sample',
                            'sample_audvis_trunc_raw-eve.fif')
-
     raw = mne.io.read_raw_fif(raw_fname, verbose=False)
     raw.info['bads'] = []
     write_raw_bids(raw, bids_basename, bids_root, events_data=events_fname,
                    event_id=event_id, verbose=False)
 
+    # Mark some channels as bad, and verify the result when reading the
+    # dataset again.
     bads = ['MEG 0112', 'MEG 0131', 'EEG 053']
     mark_bad_channels(channels=bads, bids_basename=bids_basename,
                       bids_root=bids_root, kind='meg')
-
     raw = read_raw_bids(bids_basename=bids_basename, bids_root=bids_root,
                         kind='meg', verbose=False)
     assert len(bads) == len(raw.info['bads'])
     assert set(bads) == set(raw.info['bads'])  # XXX Order is not preserved?!
+
+    # Test we raise if we encounter an unknown channel name.
+    with pytest.raises(ValueError, match='not found in dataset'):
+        bads = ['nonsense']
+        mark_bad_channels(channels=bads, bids_basename=bids_basename,
+                          bids_root=bids_root, kind='meg')
+
+    # Test with channel name as string (not list).
+    bads = 'MEG 0123'
+    mark_bad_channels(channels=bads, bids_basename=bids_basename,
+                      bids_root=bids_root, kind='meg')
+
+    # Test we warn if channel is already "bad".
+    with pytest.warns(RuntimeWarning, match='already marked as bad'):
+        mark_bad_channels(channels=bads, bids_basename=bids_basename,
+                          bids_root=bids_root, kind='meg')
