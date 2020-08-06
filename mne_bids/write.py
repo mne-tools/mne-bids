@@ -1361,14 +1361,17 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
     return anat_dir
 
 
-def mark_bad_channels(channels, bids_basename, bids_root, kind=None,
-                      verbose=True):
+def mark_bad_channels(channels, descriptions=None, bids_basename=None,
+                      bids_root=None, kind=None, verbose=True):
     """Update sidecar (metadata) files of an existing BIDS dataset.
 
     Parameters
     ----------
     channels : str | list of str
         The names of the channel(s) to mark as bad.
+    descriptions : None | str | list of str
+        Descriptions of the reasons that lead to the exclusion of the
+        channel(s). If ``None``, no descriptions are added.
     bids_basename : BIDSPath | str
         The base filename of the BIDS compatible files. Typically, this can be
         generated using :func:`mne_bids.make_bids_basename`.
@@ -1384,6 +1387,12 @@ def mark_bad_channels(channels, bids_basename, bids_root, kind=None,
     Raises
     ------
     ValueError
+        If no ``bids_basename`` or ``bids_root`` are specified.
+
+    ValueError
+        If the number of channels and descriptions does not match.
+
+    ValueError
         If the specified channels cannot be found in the dataset.
 
     ValueError
@@ -1397,7 +1406,21 @@ def mark_bad_channels(channels, bids_basename, bids_root, kind=None,
         If more than one data files exist for the specified recording.
 
     """
-    # convert to BIDS Path
+    if bids_basename is None:
+        raise ValueError('You must specify the bids_basename parameter.')
+    if bids_root is None:
+        raise ValueError('You must specify the bids_root parameter.')
+
+    if isinstance(channels, str):
+        channels = [channels]
+    if isinstance(descriptions, str):
+        descriptions = [descriptions]
+    elif descriptions is None:
+        descriptions = [None] * len(channels)
+    if len(channels) != len(descriptions):
+        raise ValueError('Number of channels and descriptions must match.')
+
+    # convert to BIDSPath
     if isinstance(bids_basename, str):
         params = parse_bids_filename(bids_basename)
         bids_basename = BIDSPath(subject=params.get('sub'),
@@ -1415,25 +1438,43 @@ def mark_bad_channels(channels, bids_basename, bids_root, kind=None,
         kind = _infer_kind(bids_basename=bids_basename, bids_root=bids_root,
                            sub=sub, ses=ses)
 
+    # Read sidecare and create required columns if they do not exist.
     bids_fname = bids_basename.get_bids_fname(kind=kind, bids_root=bids_root)
     channels_fname = _find_matching_sidecar(bids_fname, bids_root,
                                             'channels.tsv')
     data = _from_tsv(channels_fname)
-    if isinstance(channels, str):
-        channels = [channels]
+    if 'status' not in data:
+        logger.info('No "status" column found in input file. Creating.')
+        data['status'] = ['good'] * len(data['name'])
 
-    for channel in channels:
+    if 'status_description' not in data:
+        logger.info('No "status_description" column found in input file. '
+                    'Creating.')
+        data['status_description'] = [''] * len(data['name'])
+
+    # Update the sidecar data.
+    for channel, description in zip(channels, descriptions):
         if channel not in data['name']:
             raise ValueError(f'Channel {channel} not found in dataset!')
 
         idx = data['name'].index(channel)
-        if data['status'][idx] == 'bad':
-            warn(f'Channel {channel} was already marked as bad, not updating.')
-            continue
 
-        msg = (f'Updating status of channel {channel}: '
-               f'{data["status"][idx]} -> bad')
-        logger.info(msg)
-        data['status'][idx] = 'bad'
+        # Update 'status' column.
+        if data['status'][idx] == 'bad':
+            warn(f'Channel {channel} was already marked as bad.')
+        else:
+            logger.info(f'Updating status of channel {channel}: '
+                        f'{data["status"][idx]} -> bad')
+            data['status'][idx] = 'bad'
+
+        # Update 'status_description' column.
+        if description is not None:
+            if data['status_description'][idx] == description:
+                warn(f'Description for channel {channel} has not changed.')
+            else:
+                logger.info(f'Updating description of channel {channel}: '
+                            f'{data["status_description"][idx]} -> '
+                            f'{description}')
+                data['status_description'][idx] = description
 
     _write_tsv(channels_fname, data, overwrite=True, verbose=verbose)
