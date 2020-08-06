@@ -1438,7 +1438,7 @@ def mark_bad_channels(channels, descriptions=None, bids_basename=None,
         kind = _infer_kind(bids_basename=bids_basename, bids_root=bids_root,
                            sub=sub, ses=ses)
 
-    # Read sidecare and create required columns if they do not exist.
+    # Read sidecar and create required columns if they do not exist.
     bids_fname = bids_basename.get_bids_fname(kind=kind, bids_root=bids_root)
     channels_fname = _find_matching_sidecar(bids_fname, bids_root,
                                             'channels.tsv')
