@@ -47,7 +47,7 @@ IGNORED_CHANNELS = {'KIT/Yokogawa': ['STI 014'],
                     'n/a': ['STI 014'],  # for unknown manufacturers, ignore it
                     'Biosemi': ['STI 014']}
 
-allowed_extensions_meg = ['.con', '.sqd', '.fif', '.pdf', '.ds']
+allowed_extensions_meg = ['.con', '.sqd', '.fif', '.pdf', '.ds', '.pos']
 allowed_extensions_eeg = ['.vhdr',  # BrainVision, accompanied by .vmrk, .eeg
                           '.edf',  # European Data Format
                           '.bdf',  # Biosemi
@@ -68,15 +68,18 @@ ALLOWED_MODALITY_EXTENSIONS = {'meg': allowed_extensions_meg,
 # allowed kinds (i.e. last "_" delimiter in the BIDS filenames)
 ALLOWED_FILENAME_KINDS = [
     'meg', 'markers', 'eeg', 'ieeg', 'T1w',  # modality
+    'participants', 'scans',
     'electrodes', 'channels', 'coordsystem', 'events',  # sidecars
     'headshape', 'digitizer',  # meg-specific sidecars
     'behav', 'phsyio', 'stim'  # behavioral
 ]
 
 # allowed BIDS extensions (extension in the BIDS filename)
-ALLOWED_FILENAME_EXTENSIONS = ALLOWED_MODALITY_EXTENSIONS.update({
-    'sidecar': ['.json', '.tsv', '.tsv.gz', '.nii', '.nii.gz']
-})
+ALLOWED_FILENAME_EXTENSIONS = \
+    allowed_extensions_meg + \
+    allowed_extensions_eeg + \
+    allowed_extensions_ieeg + \
+    ['.json', '.tsv', '.tsv.gz', '.nii', '.nii.gz']
 
 # allowed BIDS entities
 BIDS_PATH_ENTITIES = ('subject', 'session', 'task', 'acquisition',

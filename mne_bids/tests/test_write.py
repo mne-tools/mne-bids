@@ -273,8 +273,8 @@ def test_fif(_bids_validate):
     bids_dir = op.join(bids_root, 'sub-%s' % subject_id,
                        'ses-%s' % session_id, 'eeg')
     sidecar_basename = bids_basename.copy()
-    for sidecar in ['channels.tsv', 'eeg.eeg', 'eeg.json', 'eeg.vhdr',
-                    'eeg.vmrk', 'events.tsv']:
+    for sidecar in ['channels.tsv', 'eeg.json',
+                    'eeg.vhdr', 'events.tsv']:
         kind, ext = sidecar.split('.')
         sidecar_basename.update(kind=kind, ext=ext)
         assert op.isfile(op.join(bids_dir, sidecar_basename))
