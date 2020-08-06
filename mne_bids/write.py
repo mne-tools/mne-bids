@@ -1374,9 +1374,10 @@ def mark_bad_channels(channels, descriptions=None, bids_basename=None,
         channel(s). If ``None``, no descriptions are added.
     bids_basename : BIDSPath | str
         The base filename of the BIDS compatible files. Typically, this can be
-        generated using :func:`mne_bids.make_bids_basename`.
+        generated using :func:`mne_bids.make_bids_basename`. This is a required
+        argument.
     bids_root : str | pathlib.Path
-        Path to root of the BIDS folder
+        Path to root of the BIDS folder. This is a required argument.
     kind : str | None
         The kind of recording to  update. If ``None`` and only one kind (e.g.,
         only EEG or only MEG data) is present in the dataset, it will be

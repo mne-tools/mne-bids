@@ -1502,3 +1502,13 @@ def test_mark_bad_channels(_bids_validate):
     tsv_data = _from_tsv(channels_fname)
     assert 'status' in tsv_data
     assert 'status_description' in tsv_data
+
+    # Test that we raise if `bids_basename` / `bids_root` parameters are
+    # missing.
+    bads = 'MEG 0112'
+
+    with pytest.raises(ValueError, match='You must specify the bids_basename'):
+        mark_bad_channels(channels=bads, bids_root=bids_root)
+
+    with pytest.raises(ValueError, match='You must specify the bids_root'):
+        mark_bad_channels(channels=bads, bids_basename=bids_basename)
