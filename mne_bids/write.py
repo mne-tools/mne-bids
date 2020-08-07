@@ -1380,7 +1380,7 @@ def mark_bad_channels(ch_names, descriptions=None, *, bids_basename,
     bids_root : str | pathlib.Path
         Path to root of the BIDS folder.
     kind : str | None
-        The kind of recording to  update. If ``None`` and only one kind (e.g.,
+        The kind of recording to update. If ``None`` and only one kind (e.g.,
         only EEG or only MEG data) is present in the dataset, it will be
         selected automatically.
     overwrite : bool
