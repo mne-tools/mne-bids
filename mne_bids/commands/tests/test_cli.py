@@ -116,5 +116,12 @@ def test_mark_bad_chanels(tmpdir):
     with ArgvSetter(args):
         mne_bids_mark_bad_channels.run()
 
+    # Test resettig bad channels.
+    args = ('--subject_id', subject_id, '--task', task,
+            '--bids_root', output_path, '--kind', kind,
+            '--ch_name', '', '--overwrite')
+    with ArgvSetter(args):
+        mne_bids_mark_bad_channels.run()
+
 
 run_tests_if_main()

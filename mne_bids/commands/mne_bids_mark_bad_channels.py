@@ -4,7 +4,7 @@ example usage:
 $ mne_bids mark_bad_channels --ch_name="MEG 0112" --description="noisy" \
                              --ch_name="MEG 0131" --description="flat" \
                              --subject_id=01 --task=experiment --session=test \
-                             --bids_root=bids_root
+                             --bids_root=bids_root --overwrite
 
 """
 # Authors: Richard Höchenberger <richard.hoechenberger@gmail.com>
@@ -24,8 +24,10 @@ def run():
                            version=mne_bids.__version__)
 
     parser.add_option('--ch_name', dest='ch_names', action='append',
+                      default=[],
                       help='The names of the channels, separated by commas')
     parser.add_option('--description', dest='descriptions', action='append',
+                      default=[],
                       help='Descriptions as to why the channels are bad')
     parser.add_option('--bids_root', dest='bids_root',
                       help='The path of the folder containing the BIDS '
@@ -46,8 +48,8 @@ def run():
                       help='Recording name')
     parser.add_option('--kind', dest='kind',
                       help='Recording kind, e.g. meg or eeg')
-    parser.add_option('--overwrite', dest='overwrite',
-                      help='Retain existing channel status entries or not')
+    parser.add_option('--overwrite', dest='overwrite', action='store_true',
+                      help='Replace existing channel status entries')
 
     opt, args = parser.parse_args()
     opt = opt.__dict__  # XXX Is there a cleaner way?
@@ -71,6 +73,9 @@ def run():
     if opt['subject'] is None:
         parser.print_help()
         parser.error('You must specify subject_id')
+
+    if ch_names == ['']:
+        ch_names = []
 
     bids_basename = make_bids_basename(**opt)
     mark_bad_channels(ch_names=ch_names, descriptions=descriptions,

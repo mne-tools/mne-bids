@@ -1459,7 +1459,7 @@ def mark_bad_channels(ch_names, descriptions=None, *, bids_basename,
         ch_names = [ch_names]
     if isinstance(descriptions, str):
         descriptions = [descriptions]
-    elif descriptions is None:
+    elif not descriptions:
         descriptions = ['n/a'] * len(ch_names)
     if len(ch_names) != len(descriptions):
         raise ValueError('Number of channels and descriptions must match.')
