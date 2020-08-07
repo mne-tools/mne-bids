@@ -1395,7 +1395,7 @@ def mark_bad_channels(ch_names, descriptions=None, *, bids_basename,
     Raises
     ------
     ValueError
-        If the number of channels and descriptions does not match.
+        If the numbers of channels and descriptions do not match.
 
     ValueError
         If the specified channels cannot be found in the dataset.
