@@ -1444,6 +1444,9 @@ def test_mark_bad_channels(_bids_validate):
     mark_bad_channels(ch_names=bads, bids_basename=bids_basename,
                       bids_root=bids_root, kind='meg')
     _bids_validate(bids_root)
+    tsv_data = _from_tsv(channels_fname)
+    idx = tsv_data['name'].index(bads)
+    assert tsv_data['status'][idx] == 'bad'
 
     # Set descriptions: list.
     bads = ['MEG 0112', 'MEG 0131']
@@ -1534,3 +1537,12 @@ def test_mark_bad_channels(_bids_validate):
     assert new_descriptions[0] in tsv_data['status_description']
     assert all([d not in tsv_data['status_description']
                 for d in old_descriptions])
+
+    # Test with `kind=None`.
+    bads = 'MEG 0123'
+    mark_bad_channels(ch_names=bads, bids_basename=bids_basename,
+                      bids_root=bids_root, kind=None, overwrite=True)
+    _bids_validate(bids_root)
+    tsv_data = _from_tsv(channels_fname)
+    idx = tsv_data['name'].index(bads)
+    assert tsv_data['status'][idx] == 'bad'
