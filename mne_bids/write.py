@@ -1363,7 +1363,7 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
 
 def mark_bad_channels(channels, descriptions=None, *, bids_basename,
                       bids_root, kind=None, overwrite=False, verbose=True):
-    """Update sidecar (metadata) files of an existing BIDS dataset.
+    """Update which channels are marked as "bad" in an existing BIDS dataset.
 
     Parameters
     ----------
@@ -1411,6 +1411,37 @@ def mark_bad_channels(channels, descriptions=None, *, bids_basename,
 
     RuntimeError
         If more than one data files exist for the specified recording.
+
+    Examples
+    --------
+    Mark a single channel as bad.
+
+    >>> mark_bad_channels('MEG 0112', bids_basename=bids_basename,
+                          bids_root=bids_root)
+
+    Mark multiple channels as bad.
+
+    >>> bads = ['MEG 0112', 'MEG 0131']
+    >>> mark_bad_channels(bads, bids_basename=bids_basename,
+                          bids_root=bids_root)
+
+    Mark channels as bad, and add a description as to why.
+
+    >>> bads = ['MEG 0112', 'MEG 0131']
+    >>> descriptions = ['Only produced noise', 'Continuously flat']
+    >>> mark_bad_channels(bads, descriptions, bids_basename=bids_basename,
+                          bids_root=bids_root)
+
+    Mark channels as bad, and reset all others existing in the dataset to
+    "good".
+
+    >>> bads = ['MEG 0112', 'MEG 0131']
+    >>> mark_bad_channels(bads, overwrite=True, bids_basename=bids_basename, 
+                          bids_root=bids_root)
+
+    Mark all channels as good.
+
+    >>> mark_bad_channels([], bids_basename=bids_basename, bids_root=bids_root)
 
     """
     if not channels and not overwrite:
