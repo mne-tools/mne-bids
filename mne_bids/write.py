@@ -1403,11 +1403,6 @@ def mark_bad_channels(channels, descriptions=None, *, bids_basename,
         If more than one data files exist for the specified recording.
 
     """
-    if bids_basename is None:
-        raise ValueError('You must specify the bids_basename parameter.')
-    if bids_root is None:
-        raise ValueError('You must specify the bids_root parameter.')
-
     if isinstance(channels, str):
         channels = [channels]
     if isinstance(descriptions, str):
