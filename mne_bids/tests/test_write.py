@@ -10,7 +10,6 @@ For each supported file format, implement a test.
 #          Matt Sanderson <matt.sanderson@mq.edu.au>
 #
 # License: BSD (3-clause)
-from mne_bids.write import mark_bad_channels
 import os
 import os.path as op
 import pytest
@@ -41,7 +40,8 @@ from mne.io.constants import FIFF
 from mne.io.kit.kit import get_kit_info
 
 from mne_bids import (write_raw_bids, read_raw_bids, make_bids_basename,
-                      make_bids_folders, write_anat, make_dataset_description)
+                      make_bids_folders, write_anat, make_dataset_description,
+                      mark_bad_channels)
 from mne_bids.utils import (_stamp_to_dt, _get_anonymization_daysback,
                             get_anonymization_daysback)
 from mne_bids.tsv_handler import _from_tsv, _to_tsv
