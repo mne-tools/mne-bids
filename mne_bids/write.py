@@ -1362,13 +1362,14 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
 
 
 def mark_bad_channels(channels, descriptions=None, *, bids_basename,
-                      bids_root, kind=None, verbose=True):
+                      bids_root, kind=None, overwrite=False, verbose=True):
     """Update sidecar (metadata) files of an existing BIDS dataset.
 
     Parameters
     ----------
-    channels : str | list of str
-        The names of the channel(s) to mark as bad.
+    channels : str | list of str | empty list
+        The names of the channel(s) to mark as bad. Pass an empty list in
+        combination with ``overwrite=True`` to mark all channels as good.
     descriptions : None | str | list of str
         Descriptions of the reasons that lead to the exclusion of the
         channel(s). If ``None``, no descriptions are added.
@@ -1381,6 +1382,12 @@ def mark_bad_channels(channels, descriptions=None, *, bids_basename,
         The kind of recording to  update. If ``None`` and only one kind (e.g.,
         only EEG or only MEG data) is present in the dataset, it will be
         selected automatically.
+    overwrite : bool
+        If ``False``, only update the information of the channels passed via
+        ``channels``, and leave the rest untouched. If ``True``, update the
+        information of **all** channels: mark the channels passed via
+        ``channels`` as bad, and all remaining channels as good, also
+        discarding their descriptions.
     verbose : bool
         The verbosity level.
 
@@ -1395,6 +1402,9 @@ def mark_bad_channels(channels, descriptions=None, *, bids_basename,
     ValueError
         If the specified ``kind`` cannot be found in the dataset.
 
+    ValueError
+        If ``overwite=False``, but no channel names were passed.
+
     RuntimeError
         If multiple recording kinds are present in the dataset, but
         ``kind=None``.
@@ -1403,6 +1413,16 @@ def mark_bad_channels(channels, descriptions=None, *, bids_basename,
         If more than one data files exist for the specified recording.
 
     """
+    if not channels and not overwrite:
+        raise ValueError('You did not pass a channel name, but set '
+                         'overwrite=False. If you wish to mark all channels '
+                         'as good, please pass overwrite=True')
+
+    if descriptions and not channels:
+        raise ValueError('You passed descriptions, but no channels.')
+
+    if not channels:
+        descriptions = []
     if isinstance(channels, str):
         channels = [channels]
     if isinstance(descriptions, str):
@@ -1445,6 +1465,15 @@ def mark_bad_channels(channels, descriptions=None, *, bids_basename,
         data['status_description'] = ['n/a'] * len(data['name'])
 
     # Update the sidecar data.
+    if overwrite:
+        # XXX In cases where the "status" and / or "status_description"
+        # XXX columns were just created by us, we overwrite them again
+        # XXX here. This is not optimal in terms of performance, but
+        # XXX probably doesn't hurt anyone.
+        logger.info('Resetting status and description for all channels.')
+        data['status'] = ['good'] * len(data['name'])
+        data['status_description'] = ['n/a'] * len(data['name'])
+
     for channel, description in zip(channels, descriptions):
         if channel not in data['name']:
             raise ValueError(f'Channel {channel} not found in dataset!')

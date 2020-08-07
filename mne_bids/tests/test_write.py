@@ -1489,3 +1489,48 @@ def test_mark_bad_channels(_bids_validate):
     tsv_data = _from_tsv(channels_fname)
     assert 'status' in tsv_data
     assert 'status_description' in tsv_data
+
+    # Test that we leave existing entries unmodified by default.
+    old_bads = ['MEG 0112', 'MEG 0131']
+    old_descriptions = ['Really bad!', 'Even worse.']
+    new_bads = ['EEG 053']
+    new_descriptions = ['Just testing']
+
+    mark_bad_channels(channels=old_bads, descriptions=old_descriptions,
+                      bids_basename=bids_basename, bids_root=bids_root,
+                      kind='meg')
+    mark_bad_channels(channels=new_bads, descriptions=new_descriptions,
+                      bids_basename=bids_basename, bids_root=bids_root,
+                      kind='meg')
+    _bids_validate(bids_root)
+
+    raw = read_raw_bids(bids_basename=bids_basename, bids_root=bids_root,
+                        kind='meg', verbose=False)
+    assert set(raw.info['bads']) == set(old_bads + new_bads)
+
+    tsv_data = _from_tsv(channels_fname)
+    assert all([d in tsv_data['status_description']
+                for d in old_descriptions + new_descriptions])
+
+    # Test that existing entries are discarded if `overwrite=True`.
+    old_bads = ['MEG 0112', 'MEG 0131']
+    old_descriptions = ['Really bad!', 'Even worse.']
+    new_bads = ['EEG 053']
+    new_descriptions = ['Just testing']
+
+    mark_bad_channels(channels=old_bads, descriptions=old_descriptions,
+                      bids_basename=bids_basename, bids_root=bids_root,
+                      kind='meg')
+    mark_bad_channels(channels=new_bads, descriptions=new_descriptions,
+                      bids_basename=bids_basename, bids_root=bids_root,
+                      kind='meg', overwrite=True)
+    _bids_validate(bids_root)
+
+    raw = read_raw_bids(bids_basename=bids_basename, bids_root=bids_root,
+                        kind='meg', verbose=False)
+    assert raw.info['bads'] == new_bads
+
+    tsv_data = _from_tsv(channels_fname)
+    assert new_descriptions[0] in tsv_data['status_description']
+    assert all([d not in tsv_data['status_description']
+                for d in old_descriptions])
