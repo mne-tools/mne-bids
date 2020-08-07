@@ -1425,7 +1425,7 @@ def test_mark_bad_channels(_bids_validate):
     # Mark some channels as bad, and verify the result when reading the
     # dataset again.
     bads = ['MEG 0112', 'MEG 0131', 'EEG 053']
-    mark_bad_channels(channels=bads, bids_basename=bids_basename,
+    mark_bad_channels(ch_names=bads, bids_basename=bids_basename,
                       bids_root=bids_root, kind='meg')
     _bids_validate(bids_root)
     raw = read_raw_bids(bids_basename=bids_basename, bids_root=bids_root,
@@ -1436,19 +1436,19 @@ def test_mark_bad_channels(_bids_validate):
     # Test that we raise if we encounter an unknown channel name.
     bads = ['nonsense']
     with pytest.raises(ValueError, match='not found in dataset'):
-        mark_bad_channels(channels=bads, bids_basename=bids_basename,
+        mark_bad_channels(ch_names=bads, bids_basename=bids_basename,
                           bids_root=bids_root, kind='meg')
 
     # Test with channel name as string (not list).
     bads = 'MEG 0123'
-    mark_bad_channels(channels=bads, bids_basename=bids_basename,
+    mark_bad_channels(ch_names=bads, bids_basename=bids_basename,
                       bids_root=bids_root, kind='meg')
     _bids_validate(bids_root)
 
     # Set descriptions: list.
     bads = ['MEG 0112', 'MEG 0131']
     descriptions = ['Really bad!', 'Even worse.']
-    mark_bad_channels(channels=bads, descriptions=descriptions,
+    mark_bad_channels(ch_names=bads, descriptions=descriptions,
                       bids_basename=bids_basename, bids_root=bids_root,
                       kind='meg')
     _bids_validate(bids_root)
@@ -1459,7 +1459,7 @@ def test_mark_bad_channels(_bids_validate):
     # Set descriptions: string.
     bads = 'MEG 0112'
     descriptions = 'Really bad!'
-    mark_bad_channels(channels=bads, descriptions=descriptions,
+    mark_bad_channels(ch_names=bads, descriptions=descriptions,
                       bids_basename=bids_basename, bids_root=bids_root,
                       kind='meg')
     _bids_validate(bids_root)
@@ -1471,7 +1471,7 @@ def test_mark_bad_channels(_bids_validate):
     bads = ['MEG 0112', 'MEG 0131']
     descriptions = ['Really bad!']
     with pytest.raises(ValueError, match='must match'):
-        mark_bad_channels(channels=bads, descriptions=descriptions,
+        mark_bad_channels(ch_names=bads, descriptions=descriptions,
                           bids_basename=bids_basename, bids_root=bids_root,
                           kind='meg')
 
@@ -1482,7 +1482,7 @@ def test_mark_bad_channels(_bids_validate):
 
     bads = 'MEG 0112'
     descriptions = 'Really bad!'
-    mark_bad_channels(channels=bads, descriptions=descriptions,
+    mark_bad_channels(ch_names=bads, descriptions=descriptions,
                       bids_basename=bids_basename, bids_root=bids_root,
                       kind='meg')
     _bids_validate(bids_root)
@@ -1496,10 +1496,10 @@ def test_mark_bad_channels(_bids_validate):
     new_bads = ['EEG 053']
     new_descriptions = ['Just testing']
 
-    mark_bad_channels(channels=old_bads, descriptions=old_descriptions,
+    mark_bad_channels(ch_names=old_bads, descriptions=old_descriptions,
                       bids_basename=bids_basename, bids_root=bids_root,
                       kind='meg')
-    mark_bad_channels(channels=new_bads, descriptions=new_descriptions,
+    mark_bad_channels(ch_names=new_bads, descriptions=new_descriptions,
                       bids_basename=bids_basename, bids_root=bids_root,
                       kind='meg')
     _bids_validate(bids_root)
@@ -1518,10 +1518,10 @@ def test_mark_bad_channels(_bids_validate):
     new_bads = ['EEG 053']
     new_descriptions = ['Just testing']
 
-    mark_bad_channels(channels=old_bads, descriptions=old_descriptions,
+    mark_bad_channels(ch_names=old_bads, descriptions=old_descriptions,
                       bids_basename=bids_basename, bids_root=bids_root,
                       kind='meg')
-    mark_bad_channels(channels=new_bads, descriptions=new_descriptions,
+    mark_bad_channels(ch_names=new_bads, descriptions=new_descriptions,
                       bids_basename=bids_basename, bids_root=bids_root,
                       kind='meg', overwrite=True)
     _bids_validate(bids_root)

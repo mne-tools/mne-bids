@@ -1361,13 +1361,13 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
     return anat_dir
 
 
-def mark_bad_channels(channels, descriptions=None, *, bids_basename,
+def mark_bad_channels(ch_names, descriptions=None, *, bids_basename,
                       bids_root, kind=None, overwrite=False, verbose=True):
     """Update which channels are marked as "bad" in an existing BIDS dataset.
 
     Parameters
     ----------
-    channels : str | list of str | empty list
+    ch_names : str | list of str
         The names of the channel(s) to mark as bad. Pass an empty list in
         combination with ``overwrite=True`` to mark all channels as good.
     descriptions : None | str | list of str
@@ -1384,9 +1384,9 @@ def mark_bad_channels(channels, descriptions=None, *, bids_basename,
         selected automatically.
     overwrite : bool
         If ``False``, only update the information of the channels passed via
-        ``channels``, and leave the rest untouched. If ``True``, update the
+        ``ch_names``, and leave the rest untouched. If ``True``, update the
         information of **all** channels: mark the channels passed via
-        ``channels`` as bad, and all remaining channels as good, also
+        ``ch_names`` as bad, and all remaining channels as good, also
         discarding their descriptions.
     verbose : bool
         The verbosity level.
@@ -1427,7 +1427,7 @@ def mark_bad_channels(channels, descriptions=None, *, bids_basename,
 
     Mark channels as bad, and add a description as to why.
 
-    >>> bads = ['MEG 0112', 'MEG 0131']
+    >>> ch_names = ['MEG 0112', 'MEG 0131']
     >>> descriptions = ['Only produced noise', 'Continuously flat']
     >>> mark_bad_channels(bads, descriptions, bids_basename=bids_basename,
                           bids_root=bids_root)
@@ -1444,23 +1444,23 @@ def mark_bad_channels(channels, descriptions=None, *, bids_basename,
     >>> mark_bad_channels([], bids_basename=bids_basename, bids_root=bids_root)
 
     """
-    if not channels and not overwrite:
+    if not ch_names and not overwrite:
         raise ValueError('You did not pass a channel name, but set '
                          'overwrite=False. If you wish to mark all channels '
                          'as good, please pass overwrite=True')
 
-    if descriptions and not channels:
+    if descriptions and not ch_names:
         raise ValueError('You passed descriptions, but no channels.')
 
-    if not channels:
+    if not ch_names:
         descriptions = []
-    if isinstance(channels, str):
-        channels = [channels]
+    if isinstance(ch_names, str):
+        ch_names = [ch_names]
     if isinstance(descriptions, str):
         descriptions = [descriptions]
     elif descriptions is None:
-        descriptions = ['n/a'] * len(channels)
-    if len(channels) != len(descriptions):
+        descriptions = ['n/a'] * len(ch_names)
+    if len(ch_names) != len(descriptions):
         raise ValueError('Number of channels and descriptions must match.')
 
     # convert to BIDSPath
@@ -1505,13 +1505,13 @@ def mark_bad_channels(channels, descriptions=None, *, bids_basename,
         data['status'] = ['good'] * len(data['name'])
         data['status_description'] = ['n/a'] * len(data['name'])
 
-    for channel, description in zip(channels, descriptions):
-        if channel not in data['name']:
-            raise ValueError(f'Channel {channel} not found in dataset!')
+    for ch_name, description in zip(ch_names, descriptions):
+        if ch_name not in data['name']:
+            raise ValueError(f'Channel {ch_name} not found in dataset!')
 
-        idx = data['name'].index(channel)
+        idx = data['name'].index(ch_name)
 
-        logger.info(f'Processing channel {channel}:\n'
+        logger.info(f'Processing channel {ch_name}:\n'
                     f'    status: bad\n'
                     f'    description: {description}')
         data['status'][idx] = 'bad'
