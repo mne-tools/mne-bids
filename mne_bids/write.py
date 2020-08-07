@@ -1372,7 +1372,8 @@ def mark_bad_channels(ch_names, descriptions=None, *, bids_basename,
         combination with ``overwrite=True`` to mark all channels as good.
     descriptions : None | str | list of str
         Descriptions of the reasons that lead to the exclusion of the
-        channel(s). If ``None``, no descriptions are added.
+        channel(s). If a list, it must match the length of ``ch_names``.
+        If ``None``, no descriptions are added.
     bids_basename : BIDSPath | str
         The base filename of the BIDS compatible files. Typically, this can be
         generated using :func:`mne_bids.make_bids_basename`.
