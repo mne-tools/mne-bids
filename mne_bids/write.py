@@ -1436,7 +1436,7 @@ def mark_bad_channels(channels, descriptions=None, *, bids_basename,
     "good".
 
     >>> bads = ['MEG 0112', 'MEG 0131']
-    >>> mark_bad_channels(bads, overwrite=True, bids_basename=bids_basename, 
+    >>> mark_bad_channels(bads, overwrite=True, bids_basename=bids_basename,
                           bids_root=bids_root)
 
     Mark all channels as good.
