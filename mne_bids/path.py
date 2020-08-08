@@ -403,21 +403,28 @@ def parse_bids_filename(fname):
     'split': None,
     'kind': None}
     """
-    keys = ['sub', 'ses', 'task', 'acq', 'run', 'proc', 'run', 'space',
-            'rec', 'split', 'kind']
-    params = {key: None for key in keys}
+    # filename keywords to the BIDS entity mapping
+    fname_to_entity = {'sub': 'subject', 'ses': 'session', 'task': 'task',
+                       'acq': 'acquisition', 'run': 'run',
+                       'proc': 'processing', 'space': 'space',
+                       'rec': 'recording', 'split': 'split',
+                       'kind': 'kind'}
+    entity_vals = list(fname_to_entity.values())
+    fname_vals = list(fname_to_entity.keys())
+
+    params = {key: None for key in entity_vals}
     idx_key = 0
     for match in re.finditer(param_regex, op.basename(fname)):
         key, value = match.groups()
-        if key not in keys:
+        if key not in fname_vals:
             raise KeyError('Unexpected entity "%s" found in filename "%s"'
                            % (key, fname))
-        if keys.index(key) < idx_key:
+        if fname_vals.index(key) < idx_key:
             raise ValueError('Entities in filename not ordered correctly.'
                              ' "%s" should have occurred earlier in the '
                              'filename "%s"' % (key, fname))
-        idx_key = keys.index(key)
-        params[key] = value
+        idx_key = fname_vals.index(key)
+        params[fname_to_entity[key]] = value
     return params
 
 

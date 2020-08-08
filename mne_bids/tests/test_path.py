@@ -193,13 +193,15 @@ def test_parse_ext():
 def test_parse_bids_filename(fname):
     """Test parsing entities from a bids filename."""
     params = parse_bids_filename(fname)
-    assert params['sub'] == '01'
-    assert params['ses'] == '02'
+    print(params)
+    assert params['subject'] == '01'
+    assert params['session'] == '02'
     assert params['run'] == '3'
     assert params['task'] == 'test'
     assert params['split'] == '01'
-    assert list(params.keys()) == ['sub', 'ses', 'task', 'acq', 'run', 'proc',
-                                   'space', 'rec', 'split', 'kind']
+    assert list(params.keys()) == ['subject', 'session', 'task',
+                                   'acquisition', 'run', 'processing',
+                                   'space', 'recording', 'split', 'kind']
 
 
 @pytest.mark.parametrize('candidate_list, best_candidates', [
@@ -220,7 +222,7 @@ def test_parse_bids_filename(fname):
 ])
 def test_find_best_candidates(candidate_list, best_candidates):
     """Test matching of candidate sidecar files."""
-    params = dict(sub='01', ses='02', acq=None)
+    params = dict(subject='01', session='02', acquisition=None)
     assert _find_best_candidates(params, candidate_list) == best_candidates
 
 
