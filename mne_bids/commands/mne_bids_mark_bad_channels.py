@@ -73,7 +73,7 @@ def run():
                                        session=opt.session, task=opt.task,
                                        acquisition=opt.acquisition,
                                        run=opt.run, processing=opt.processing,
-                                       recordig=opt.recording)
+                                       recording=opt.recording)
     mark_bad_channels(ch_names=ch_names, descriptions=opt.descriptions,
                       bids_basename=bids_basename, bids_root=opt.bids_root,
                       kind=opt.kind, overwrite=opt.overwrite)
