@@ -317,9 +317,9 @@ def _write_dig_bids(electrodes_fname, coordsystem_fname, data_path,
     unit = "m"  # defaults to meters
 
     params = parse_bids_filename(electrodes_fname)
-    subject_id = params['sub']
-    session_id = params['ses']
-    acquisition = params['acq']
+    subject_id = params['subject']
+    session_id = params['session']
+    acquisition = params['acquisition']
 
     # get coordinate frame from digMontage
     digpoint = raw.info['dig'][0]

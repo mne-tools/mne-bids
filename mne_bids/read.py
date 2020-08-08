@@ -335,14 +335,7 @@ def read_raw_bids(bids_basename, bids_root, kind=None, extra_params=None,
     # convert to BIDS Path
     if isinstance(bids_basename, str):
         params = parse_bids_filename(bids_basename)
-        bids_basename = BIDSPath(subject=params.get('sub'),
-                                 session=params.get('ses'),
-                                 recording=params.get('rec'),
-                                 acquisition=params.get('acq'),
-                                 processing=params.get('proc'),
-                                 space=params.get('space'),
-                                 run=params.get('run'),
-                                 task=params.get('task'))
+        bids_basename = BIDSPath(**params)
     sub = bids_basename.subject
     ses = bids_basename.session
     acq = bids_basename.acquisition
@@ -445,14 +438,7 @@ def get_matched_empty_room(bids_basename, bids_root):
     # convert to BIDS Path
     if isinstance(bids_basename, str):
         params = parse_bids_filename(bids_basename)
-        bids_basename = BIDSPath(subject=params.get('sub'),
-                                 session=params.get('ses'),
-                                 recording=params.get('rec'),
-                                 acquisition=params.get('acq'),
-                                 processing=params.get('proc'),
-                                 space=params.get('space'),
-                                 run=params.get('run'),
-                                 task=params.get('task'))
+        bids_basename = BIDSPath(**params)
 
     kind = 'meg'  # We're only concerned about MEG data here
     bids_fname = bids_basename.get_bids_fname(kind=kind, bids_root=bids_root)
@@ -513,21 +499,14 @@ def get_matched_empty_room(bids_basename, bids_root):
     for er_fname in candidate_er_fnames:
         params = parse_bids_filename(er_fname)
         er_meas_date = None
-
-        er_bids_path = BIDSPath(subject='emptyroom',
-                                session=params.get('ses', None),
-                                task=params.get('task', None),
-                                acquisition=params.get('acq', None),
-                                run=params.get('run', None),
-                                processing=params.get('proc', None),
-                                recording=params.get('rec', None),
-                                space=params.get('space', None))
+        params.pop('subject')
+        er_bids_path = BIDSPath(subject='emptyroom', **params)
         er_basename = str(er_bids_path)
 
         # Try to extract date from filename.
-        if params['ses'] is not None:
+        if params['session'] is not None:
             try:
-                er_meas_date = datetime.strptime(params['ses'], '%Y%m%d')
+                er_meas_date = datetime.strptime(params['session'], '%Y%m%d')
             except (ValueError, TypeError):
                 # There is a session in the filename, but it doesn't encode a
                 # valid date.
@@ -602,14 +581,7 @@ def get_head_mri_trans(bids_basename, bids_root):
     # convert to BIDS Path
     if isinstance(bids_basename, str):
         params = parse_bids_filename(bids_basename)
-        bids_basename = BIDSPath(subject=params.get('sub'),
-                                 session=params.get('ses'),
-                                 recording=params.get('rec'),
-                                 acquisition=params.get('acq'),
-                                 processing=params.get('proc'),
-                                 space=params.get('space'),
-                                 run=params.get('run'),
-                                 task=params.get('task'))
+        bids_basename = BIDSPath(**params)
 
     # Get the sidecar file for MRI landmarks
     bids_fname = bids_basename.get_bids_fname(kind='meg', bids_root=bids_root)

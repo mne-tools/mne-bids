@@ -334,15 +334,7 @@ def _summarize_sidecar_json(bids_root, scans_fpaths, verbose=True):
 
             # convert to BIDS Path
             params = parse_bids_filename(bids_basename)
-            bids_basename = BIDSPath(subject=params.get('sub'),
-                                     session=params.get('ses'),
-                                     recording=params.get('rec'),
-                                     acquisition=params.get('acq'),
-                                     processing=params.get('proc'),
-                                     space=params.get('space'),
-                                     run=params.get('run'),
-                                     task=params.get('task'),
-                                     )
+            bids_basename = BIDSPath(**params)
 
             # XXX: improve to allow emptyroom
             if bids_basename.subject == 'emptyroom':
@@ -428,15 +420,7 @@ def _summarize_channels_tsv(bids_root, scans_fpaths, verbose=True):
 
             # convert to BIDS Path
             params = parse_bids_filename(bids_basename)
-            bids_basename = BIDSPath(subject=params.get('sub'),
-                                     session=params.get('ses'),
-                                     recording=params.get('rec'),
-                                     acquisition=params.get('acq'),
-                                     processing=params.get('proc'),
-                                     space=params.get('space'),
-                                     run=params.get('run'),
-                                     task=params.get('task'),
-                                     prefix=bids_root)
+            bids_basename = BIDSPath(prefix=bids_root, **params)
 
             # XXX: improve to allow emptyroom
             if bids_basename.subject == 'emptyroom':

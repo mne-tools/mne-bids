@@ -953,14 +953,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     # convert to BIDS Path
     if isinstance(bids_basename, str):
         params = parse_bids_filename(bids_basename)
-        bids_basename = BIDSPath(subject=params.get('sub'),
-                                 session=params.get('ses'),
-                                 recording=params.get('rec'),
-                                 acquisition=params.get('acq'),
-                                 processing=params.get('proc'),
-                                 space=params.get('space'),
-                                 run=params.get('run'),
-                                 task=params.get('task'))
+        bids_basename = BIDSPath(**params)
 
     subject_id, session_id = bids_basename.subject, bids_basename.session
     task, run = bids_basename.task, bids_basename.run

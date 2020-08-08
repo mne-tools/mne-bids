@@ -392,14 +392,14 @@ def parse_bids_filename(fname):
     --------
     >>> fname = 'sub-01_ses-exp_run-02_meg.fif'
     >>> parse_bids_filename(fname)
-    {'sub': '01',
-    'ses': 'exp',
+    {'subject': '01',
+    'session': 'exp',
     'task': None,
-    'acq': None,
+    'acquisition': None,
     'run': '02',
-    'proc': None,
+    'processing': None,
     'space': None,
-    'rec': None,
+    'recording': None,
     'split': None,
     'kind': None}
     """
