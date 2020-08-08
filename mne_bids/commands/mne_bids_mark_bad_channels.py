@@ -52,35 +52,31 @@ def run():
                       help='Replace existing channel status entries')
 
     opt, args = parser.parse_args()
-    opt = opt.__dict__  # XXX Is there a cleaner way?
-    ch_names = opt.pop('ch_names')
-    descriptions = opt.pop('descriptions')
-    bids_root = opt.pop('bids_root')
-    kind = opt.pop('kind')
-    overwrite = opt.pop('overwrite')
-
     if args:
         parser.print_help()
         parser.error(f'Please do not specify arguments without flags. '
                      f'Got: {args}.\n')
 
-    if bids_root is None:
+    if opt.bids_root is None:
         parser.print_help()
         parser.error('You must specify bids_root')
-    if ch_names is None:
+    if opt.ch_names is None:
         parser.print_help()
         parser.error('You must specify ch_names')
-    if opt['subject'] is None:
+    if opt.subject is None:
         parser.print_help()
         parser.error('You must specify subject_id')
 
-    if ch_names == ['']:
-        ch_names = []
+    ch_names = [] if opt.ch_names == [''] else opt.ch_names
 
-    bids_basename = make_bids_basename(**opt)
-    mark_bad_channels(ch_names=ch_names, descriptions=descriptions,
-                      bids_basename=bids_basename, bids_root=bids_root,
-                      kind=kind, overwrite=overwrite)
+    bids_basename = make_bids_basename(subject=opt.subject,
+                                       session=opt.session, task=opt.task,
+                                       acquisition=opt.acquisition,
+                                       run=opt.run, processing=opt.processing,
+                                       recordig=opt.recording)
+    mark_bad_channels(ch_names=ch_names, descriptions=opt.descriptions,
+                      bids_basename=bids_basename, bids_root=opt.bids_root,
+                      kind=opt.kind, overwrite=opt.overwrite)
 
 
 if __name__ == '__main__':  # pragma: no cover
