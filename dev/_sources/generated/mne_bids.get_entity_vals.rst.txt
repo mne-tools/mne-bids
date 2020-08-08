@@ -1,4 +1,4 @@
-mne\_bids.get\_entity\_vals
+﻿mne\_bids.get\_entity\_vals
 ===========================
 
 .. currentmodule:: mne_bids

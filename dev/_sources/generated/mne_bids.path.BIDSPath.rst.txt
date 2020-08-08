@@ -1,4 +1,4 @@
-mne\_bids.path.BIDSPath
+﻿mne\_bids.path.BIDSPath
 =======================
 
 .. currentmodule:: mne_bids.path

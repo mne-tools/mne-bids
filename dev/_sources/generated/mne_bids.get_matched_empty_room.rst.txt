@@ -1,4 +1,4 @@
-mne\_bids.get\_matched\_empty\_room
+﻿mne\_bids.get\_matched\_empty\_room
 ===================================
 
 .. currentmodule:: mne_bids

@@ -1,4 +1,4 @@
-mne\_bids.print\_dir\_tree
+﻿mne\_bids.print\_dir\_tree
 ==========================
 
 .. currentmodule:: mne_bids

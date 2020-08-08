@@ -1,4 +1,4 @@
-mne\_bids.make\_bids\_folders
+﻿mne\_bids.make\_bids\_folders
 =============================
 
 .. currentmodule:: mne_bids

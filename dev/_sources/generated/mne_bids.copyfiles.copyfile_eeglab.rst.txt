@@ -1,4 +1,4 @@
-mne\_bids.copyfiles.copyfile\_eeglab
+﻿mne\_bids.copyfiles.copyfile\_eeglab
 ====================================
 
 .. currentmodule:: mne_bids.copyfiles

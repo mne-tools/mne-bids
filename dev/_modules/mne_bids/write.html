@@ -3,7 +3,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>mne_bids.write &#8212; mne_bids 0.5.dev0 documentation</title>
     <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -229,6 +229,10 @@
     <span class="n">n_channels</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;nchan&#39;</span><span class="p">]</span>
     <span class="n">sfreq</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;sfreq&#39;</span><span class="p">]</span>
 
+    <span class="c1"># default to &#39;n/a&#39; for status description</span>
+    <span class="c1"># XXX: improve with API to modify the description</span>
+    <span class="n">status_description</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;n/a&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">status</span><span class="p">)</span>
+
     <span class="n">ch_data</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">([</span>
         <span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;ch_names&#39;</span><span class="p">]),</span>
         <span class="p">(</span><span class="s1">&#39;type&#39;</span><span class="p">,</span> <span class="n">ch_type</span><span class="p">),</span>
@@ -237,7 +241,9 @@
         <span class="p">(</span><span class="s1">&#39;high_cutoff&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="n">n_channels</span><span class="p">),</span> <span class="n">high_cutoff</span><span class="p">)),</span>
         <span class="p">(</span><span class="s1">&#39;description&#39;</span><span class="p">,</span> <span class="n">description</span><span class="p">),</span>
         <span class="p">(</span><span class="s1">&#39;sampling_frequency&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="n">n_channels</span><span class="p">),</span> <span class="n">sfreq</span><span class="p">)),</span>
-        <span class="p">(</span><span class="s1">&#39;status&#39;</span><span class="p">,</span> <span class="n">status</span><span class="p">)])</span>
+        <span class="p">(</span><span class="s1">&#39;status&#39;</span><span class="p">,</span> <span class="n">status</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;status_description&#39;</span><span class="p">,</span> <span class="n">status_description</span><span class="p">)</span>
+    <span class="p">])</span>
     <span class="n">ch_data</span> <span class="o">=</span> <span class="n">_drop</span><span class="p">(</span><span class="n">ch_data</span><span class="p">,</span> <span class="n">ignored_channels</span><span class="p">,</span> <span class="s1">&#39;name&#39;</span><span class="p">)</span>
 
     <span class="n">_write_tsv</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">ch_data</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
@@ -1476,8 +1482,8 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-08-05.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.1.2.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-08-08.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.0.<br/>
     </p>
   </div>
 </footer>

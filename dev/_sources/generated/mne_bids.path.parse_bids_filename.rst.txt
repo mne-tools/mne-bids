@@ -1,4 +1,4 @@
-mne\_bids.path.parse\_bids\_filename
+﻿mne\_bids.path.parse\_bids\_filename
 ====================================
 
 .. currentmodule:: mne_bids.path

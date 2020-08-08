@@ -3,7 +3,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>05. BIDS conversion for group studies &#8212; mne_bids 0.5.dev0 documentation</title>
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -232,7 +232,7 @@ EDF file detected
 Setting channel info structure...
 Creating raw.info structure...
 Creating folder: /home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-01/eeg
-/home/circleci/project/mne_bids/write.py:1046: RuntimeWarning: Converting to BV for anonymization
+/home/circleci/project/mne_bids/write.py:1052: RuntimeWarning: Converting to BV for anonymization
   warn(&#39;Converting to BV for anonymization&#39;)
 
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/README&#39;...
@@ -290,7 +290,7 @@ Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/dataset_desc
     ]
 }
 Effective window size : 1.600 (s)
-/home/circleci/project/mne_bids/write.py:489: RuntimeWarning: No line frequency found, defaulting to 50 Hz estimated from multi-taper FFT on 10 seconds of data.
+/home/circleci/project/mne_bids/write.py:495: RuntimeWarning: No line frequency found, defaulting to 50 Hz estimated from multi-taper FFT on 10 seconds of data.
   warn(&#39;No line frequency found, defaulting to {} Hz &#39;
 Reading 0 ... 19999  =      0.000 ...   124.994 secs...
 
@@ -317,13 +317,13 @@ Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-
 
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-01/eeg/sub-001_ses-01_task-MotorImagery_run-01_channels.tsv&#39;...
 
-name    type    units   low_cutoff      high_cutoff     description     sampling_frequency      status
-Fc5.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
-Fc3.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
-Fc1.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
-Fcz.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
-Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
-/home/circleci/project/mne_bids/write.py:1122: RuntimeWarning: Converting data files to BrainVision format
+name    type    units   low_cutoff      high_cutoff     description     sampling_frequency      status  status_description
+Fc5.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
+Fc3.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
+Fc1.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
+Fcz.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
+Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
+/home/circleci/project/mne_bids/write.py:1128: RuntimeWarning: Converting data files to BrainVision format
   warn(&#39;Converting data files to BrainVision format&#39;)
 
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-01/sub-001_ses-01_scans.tsv&#39;...
@@ -338,7 +338,7 @@ EDF file detected
 Setting channel info structure...
 Creating raw.info structure...
 Creating folder: /home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-01/eeg
-/home/circleci/project/mne_bids/write.py:1046: RuntimeWarning: Converting to BV for anonymization
+/home/circleci/project/mne_bids/write.py:1052: RuntimeWarning: Converting to BV for anonymization
   warn(&#39;Converting to BV for anonymization&#39;)
 
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/README&#39;...
@@ -396,7 +396,7 @@ Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/dataset_desc
     ]
 }
 Effective window size : 1.600 (s)
-/home/circleci/project/mne_bids/write.py:489: RuntimeWarning: No line frequency found, defaulting to 50 Hz estimated from multi-taper FFT on 10 seconds of data.
+/home/circleci/project/mne_bids/write.py:495: RuntimeWarning: No line frequency found, defaulting to 50 Hz estimated from multi-taper FFT on 10 seconds of data.
   warn(&#39;No line frequency found, defaulting to {} Hz &#39;
 Reading 0 ... 19999  =      0.000 ...   124.994 secs...
 
@@ -423,13 +423,13 @@ Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-
 
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-01/eeg/sub-001_ses-01_task-MotorImagery_run-02_channels.tsv&#39;...
 
-name    type    units   low_cutoff      high_cutoff     description     sampling_frequency      status
-Fc5.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
-Fc3.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
-Fc1.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
-Fcz.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
-Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
-/home/circleci/project/mne_bids/write.py:1122: RuntimeWarning: Converting data files to BrainVision format
+name    type    units   low_cutoff      high_cutoff     description     sampling_frequency      status  status_description
+Fc5.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
+Fc3.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
+Fc1.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
+Fcz.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
+Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
+/home/circleci/project/mne_bids/write.py:1128: RuntimeWarning: Converting data files to BrainVision format
   warn(&#39;Converting data files to BrainVision format&#39;)
 
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-01/sub-001_ses-01_scans.tsv&#39;...
@@ -444,7 +444,7 @@ EDF file detected
 Setting channel info structure...
 Creating raw.info structure...
 Creating folder: /home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-01/eeg
-/home/circleci/project/mne_bids/write.py:1046: RuntimeWarning: Converting to BV for anonymization
+/home/circleci/project/mne_bids/write.py:1052: RuntimeWarning: Converting to BV for anonymization
   warn(&#39;Converting to BV for anonymization&#39;)
 
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/README&#39;...
@@ -502,7 +502,7 @@ Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/dataset_desc
     ]
 }
 Effective window size : 1.600 (s)
-/home/circleci/project/mne_bids/write.py:489: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
+/home/circleci/project/mne_bids/write.py:495: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
   warn(&#39;No line frequency found, defaulting to {} Hz &#39;
 Reading 0 ... 19999  =      0.000 ...   124.994 secs...
 
@@ -529,13 +529,13 @@ Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-
 
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-01/eeg/sub-001_ses-01_task-MotorImagery_run-03_channels.tsv&#39;...
 
-name    type    units   low_cutoff      high_cutoff     description     sampling_frequency      status
-Fc5.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
-Fc3.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
-Fc1.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
-Fcz.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
-Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
-/home/circleci/project/mne_bids/write.py:1122: RuntimeWarning: Converting data files to BrainVision format
+name    type    units   low_cutoff      high_cutoff     description     sampling_frequency      status  status_description
+Fc5.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
+Fc3.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
+Fc1.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
+Fcz.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
+Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
+/home/circleci/project/mne_bids/write.py:1128: RuntimeWarning: Converting data files to BrainVision format
   warn(&#39;Converting data files to BrainVision format&#39;)
 
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-01/sub-001_ses-01_scans.tsv&#39;...
@@ -550,7 +550,7 @@ EDF file detected
 Setting channel info structure...
 Creating raw.info structure...
 Creating folder: /home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/eeg
-/home/circleci/project/mne_bids/write.py:1046: RuntimeWarning: Converting to BV for anonymization
+/home/circleci/project/mne_bids/write.py:1052: RuntimeWarning: Converting to BV for anonymization
   warn(&#39;Converting to BV for anonymization&#39;)
 
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/README&#39;...
@@ -608,7 +608,7 @@ Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/dataset_desc
     ]
 }
 Effective window size : 1.600 (s)
-/home/circleci/project/mne_bids/write.py:489: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
+/home/circleci/project/mne_bids/write.py:495: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
   warn(&#39;No line frequency found, defaulting to {} Hz &#39;
 Reading 0 ... 19679  =      0.000 ...   122.994 secs...
 
@@ -635,13 +635,13 @@ Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-
 
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/eeg/sub-002_ses-01_task-MotorImagery_run-01_channels.tsv&#39;...
 
-name    type    units   low_cutoff      high_cutoff     description     sampling_frequency      status
-Fc5.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
-Fc3.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
-Fc1.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
-Fcz.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
-Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
-/home/circleci/project/mne_bids/write.py:1122: RuntimeWarning: Converting data files to BrainVision format
+name    type    units   low_cutoff      high_cutoff     description     sampling_frequency      status  status_description
+Fc5.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
+Fc3.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
+Fc1.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
+Fcz.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
+Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
+/home/circleci/project/mne_bids/write.py:1128: RuntimeWarning: Converting data files to BrainVision format
   warn(&#39;Converting data files to BrainVision format&#39;)
 
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/sub-002_ses-01_scans.tsv&#39;...
@@ -656,7 +656,7 @@ EDF file detected
 Setting channel info structure...
 Creating raw.info structure...
 Creating folder: /home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/eeg
-/home/circleci/project/mne_bids/write.py:1046: RuntimeWarning: Converting to BV for anonymization
+/home/circleci/project/mne_bids/write.py:1052: RuntimeWarning: Converting to BV for anonymization
   warn(&#39;Converting to BV for anonymization&#39;)
 
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/README&#39;...
@@ -714,7 +714,7 @@ Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/dataset_desc
     ]
 }
 Effective window size : 1.600 (s)
-/home/circleci/project/mne_bids/write.py:489: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
+/home/circleci/project/mne_bids/write.py:495: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
   warn(&#39;No line frequency found, defaulting to {} Hz &#39;
 Reading 0 ... 19679  =      0.000 ...   122.994 secs...
 
@@ -741,13 +741,13 @@ Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-
 
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/eeg/sub-002_ses-01_task-MotorImagery_run-02_channels.tsv&#39;...
 
-name    type    units   low_cutoff      high_cutoff     description     sampling_frequency      status
-Fc5.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
-Fc3.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
-Fc1.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
-Fcz.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
-Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
-/home/circleci/project/mne_bids/write.py:1122: RuntimeWarning: Converting data files to BrainVision format
+name    type    units   low_cutoff      high_cutoff     description     sampling_frequency      status  status_description
+Fc5.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
+Fc3.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
+Fc1.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
+Fcz.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
+Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
+/home/circleci/project/mne_bids/write.py:1128: RuntimeWarning: Converting data files to BrainVision format
   warn(&#39;Converting data files to BrainVision format&#39;)
 
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/sub-002_ses-01_scans.tsv&#39;...
@@ -762,7 +762,7 @@ EDF file detected
 Setting channel info structure...
 Creating raw.info structure...
 Creating folder: /home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/eeg
-/home/circleci/project/mne_bids/write.py:1046: RuntimeWarning: Converting to BV for anonymization
+/home/circleci/project/mne_bids/write.py:1052: RuntimeWarning: Converting to BV for anonymization
   warn(&#39;Converting to BV for anonymization&#39;)
 
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/README&#39;...
@@ -820,7 +820,7 @@ Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/dataset_desc
     ]
 }
 Effective window size : 1.600 (s)
-/home/circleci/project/mne_bids/write.py:489: RuntimeWarning: No line frequency found, defaulting to 50 Hz estimated from multi-taper FFT on 10 seconds of data.
+/home/circleci/project/mne_bids/write.py:495: RuntimeWarning: No line frequency found, defaulting to 50 Hz estimated from multi-taper FFT on 10 seconds of data.
   warn(&#39;No line frequency found, defaulting to {} Hz &#39;
 Reading 0 ... 19679  =      0.000 ...   122.994 secs...
 
@@ -847,13 +847,13 @@ Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-
 
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/eeg/sub-002_ses-01_task-MotorImagery_run-03_channels.tsv&#39;...
 
-name    type    units   low_cutoff      high_cutoff     description     sampling_frequency      status
-Fc5.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
-Fc3.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
-Fc1.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
-Fcz.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
-Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good
-/home/circleci/project/mne_bids/write.py:1122: RuntimeWarning: Converting data files to BrainVision format
+name    type    units   low_cutoff      high_cutoff     description     sampling_frequency      status  status_description
+Fc5.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
+Fc3.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
+Fc1.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
+Fcz.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
+Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
+/home/circleci/project/mne_bids/write.py:1128: RuntimeWarning: Converting data files to BrainVision format
   warn(&#39;Converting data files to BrainVision format&#39;)
 
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/sub-002_ses-01_scans.tsv&#39;...
@@ -871,48 +871,48 @@ Wrote /home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/sub-
 </div>
 <p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>|eegmmidb_bids_group_conversion/
-|--- dataset_description.json
-|--- README
 |--- participants.json
+|--- dataset_description.json
 |--- participants.tsv
+|--- README
 |--- sub-001/
 |------ ses-01/
 |--------- sub-001_ses-01_scans.tsv
 |--------- eeg/
-|------------ sub-001_ses-01_task-MotorImagery_run-01_eeg.vmrk
-|------------ sub-001_ses-01_task-MotorImagery_run-02_eeg.json
-|------------ sub-001_ses-01_task-MotorImagery_run-03_eeg.vhdr
-|------------ sub-001_ses-01_task-MotorImagery_run-02_eeg.vhdr
-|------------ sub-001_ses-01_task-MotorImagery_run-01_channels.tsv
-|------------ sub-001_ses-01_task-MotorImagery_run-01_eeg.eeg
-|------------ sub-001_ses-01_task-MotorImagery_run-03_eeg.vmrk
-|------------ sub-001_ses-01_task-MotorImagery_run-03_channels.tsv
-|------------ sub-001_ses-01_task-MotorImagery_run-03_eeg.json
-|------------ sub-001_ses-01_task-MotorImagery_run-01_eeg.json
 |------------ sub-001_ses-01_task-MotorImagery_run-03_eeg.eeg
+|------------ sub-001_ses-01_task-MotorImagery_run-01_channels.tsv
+|------------ sub-001_ses-01_task-MotorImagery_run-02_eeg.json
+|------------ sub-001_ses-01_task-MotorImagery_run-01_eeg.json
+|------------ sub-001_ses-01_task-MotorImagery_run-03_eeg.vmrk
+|------------ sub-001_ses-01_task-MotorImagery_run-03_eeg.json
+|------------ sub-001_ses-01_task-MotorImagery_run-01_eeg.eeg
 |------------ sub-001_ses-01_task-MotorImagery_run-02_eeg.eeg
+|------------ sub-001_ses-01_task-MotorImagery_run-02_eeg.vhdr
 |------------ sub-001_ses-01_task-MotorImagery_run-01_eeg.vhdr
+|------------ sub-001_ses-01_task-MotorImagery_run-03_eeg.vhdr
 |------------ sub-001_ses-01_task-MotorImagery_run-02_channels.tsv
+|------------ sub-001_ses-01_task-MotorImagery_run-01_eeg.vmrk
+|------------ sub-001_ses-01_task-MotorImagery_run-03_channels.tsv
 |------------ sub-001_ses-01_task-MotorImagery_run-02_eeg.vmrk
 |--- sub-002/
 |------ ses-01/
 |--------- sub-002_ses-01_scans.tsv
 |--------- eeg/
-|------------ sub-002_ses-01_task-MotorImagery_run-02_eeg.json
 |------------ sub-002_ses-01_task-MotorImagery_run-02_eeg.vmrk
-|------------ sub-002_ses-01_task-MotorImagery_run-01_eeg.eeg
-|------------ sub-002_ses-01_task-MotorImagery_run-03_eeg.vhdr
-|------------ sub-002_ses-01_task-MotorImagery_run-01_eeg.vhdr
-|------------ sub-002_ses-01_task-MotorImagery_run-03_eeg.json
-|------------ sub-002_ses-01_task-MotorImagery_run-03_channels.tsv
-|------------ sub-002_ses-01_task-MotorImagery_run-02_eeg.eeg
-|------------ sub-002_ses-01_task-MotorImagery_run-03_eeg.eeg
-|------------ sub-002_ses-01_task-MotorImagery_run-01_eeg.json
-|------------ sub-002_ses-01_task-MotorImagery_run-02_channels.tsv
-|------------ sub-002_ses-01_task-MotorImagery_run-01_eeg.vmrk
-|------------ sub-002_ses-01_task-MotorImagery_run-02_eeg.vhdr
-|------------ sub-002_ses-01_task-MotorImagery_run-03_eeg.vmrk
 |------------ sub-002_ses-01_task-MotorImagery_run-01_channels.tsv
+|------------ sub-002_ses-01_task-MotorImagery_run-03_eeg.vhdr
+|------------ sub-002_ses-01_task-MotorImagery_run-02_eeg.vhdr
+|------------ sub-002_ses-01_task-MotorImagery_run-02_eeg.eeg
+|------------ sub-002_ses-01_task-MotorImagery_run-03_channels.tsv
+|------------ sub-002_ses-01_task-MotorImagery_run-03_eeg.vmrk
+|------------ sub-002_ses-01_task-MotorImagery_run-01_eeg.json
+|------------ sub-002_ses-01_task-MotorImagery_run-01_eeg.eeg
+|------------ sub-002_ses-01_task-MotorImagery_run-02_eeg.json
+|------------ sub-002_ses-01_task-MotorImagery_run-01_eeg.vhdr
+|------------ sub-002_ses-01_task-MotorImagery_run-03_eeg.eeg
+|------------ sub-002_ses-01_task-MotorImagery_run-02_channels.tsv
+|------------ sub-002_ses-01_task-MotorImagery_run-03_eeg.json
+|------------ sub-002_ses-01_task-MotorImagery_run-01_eeg.vmrk
 </pre></div>
 </div>
 <p>Now let’s generate a report on the dataset.</p>
@@ -938,7 +938,7 @@ channels per scan, out of which 64.0 (std = 0.0) were used in analysis (0.0 +/-
 0.0 were removed from analysis).
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.717 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.604 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-group-studies-py">
 <div class="binder-badge docutils container">
 <a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/convert_group_studies.ipynb"><img alt="https://mybinder.org/badge_logo.svg" src="https://mybinder.org/badge_logo.svg" width="150px" /></a>
@@ -965,8 +965,8 @@ channels per scan, out of which 64.0 (std = 0.0) were used in analysis (0.0 +/-
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-08-05.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.1.2.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-08-08.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.0.<br/>
     </p>
   </div>
 </footer>

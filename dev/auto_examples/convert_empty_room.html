@@ -3,7 +3,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>09. Storing empty room data in BIDS format &#8212; mne_bids 0.5.dev0 documentation</title>
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -278,7 +278,7 @@ Writing &#39;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/dat
     ]
 }
 Effective window size : 0.426 (s)
-/home/circleci/project/mne_bids/write.py:489: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
+/home/circleci/project/mne_bids/write.py:495: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
   warn(&#39;No line frequency found, defaulting to {} Hz &#39;
 Reading 0 ... 166799  =      0.000 ...   277.714 secs...
 
@@ -307,12 +307,12 @@ Writing &#39;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub
 
 Writing &#39;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_channels.tsv&#39;...
 
-name    type    units   low_cutoff      high_cutoff     description     sampling_frequency      status
-MEG 0113        MEGGRADPLANAR   T/m     0.10000000149011612     172.17630004882812      Planar Gradiometer      600.614990234375        good
-MEG 0112        MEGGRADPLANAR   T/m     0.10000000149011612     172.17630004882812      Planar Gradiometer      600.614990234375        good
-MEG 0111        MEGMAG  T       0.10000000149011612     172.17630004882812      Magnetometer    600.614990234375        good
-MEG 0122        MEGGRADPLANAR   T/m     0.10000000149011612     172.17630004882812      Planar Gradiometer      600.614990234375        good
-MEG 0123        MEGGRADPLANAR   T/m     0.10000000149011612     172.17630004882812      Planar Gradiometer      600.614990234375        good
+name    type    units   low_cutoff      high_cutoff     description     sampling_frequency      status  status_description
+MEG 0113        MEGGRADPLANAR   T/m     0.10000000149011612     172.17630004882812      Planar Gradiometer      600.614990234375        good    n/a
+MEG 0112        MEGGRADPLANAR   T/m     0.10000000149011612     172.17630004882812      Planar Gradiometer      600.614990234375        good    n/a
+MEG 0111        MEGMAG  T       0.10000000149011612     172.17630004882812      Magnetometer    600.614990234375        good    n/a
+MEG 0122        MEGGRADPLANAR   T/m     0.10000000149011612     172.17630004882812      Planar Gradiometer      600.614990234375        good    n/a
+MEG 0123        MEGGRADPLANAR   T/m     0.10000000149011612     172.17630004882812      Planar Gradiometer      600.614990234375        good    n/a
 Copying data files to /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg
 Overwriting existing file.
 Writing /home/circleci/mne_data/MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif
@@ -432,7 +432,7 @@ Writing &#39;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/dat
     ]
 }
 Effective window size : 0.426 (s)
-/home/circleci/project/mne_bids/write.py:489: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
+/home/circleci/project/mne_bids/write.py:495: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
   warn(&#39;No line frequency found, defaulting to {} Hz &#39;
 
 Writing &#39;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-emptyroom/ses-20021206/meg/sub-emptyroom_ses-20021206_task-noise_meg.json&#39;...
@@ -460,12 +460,12 @@ Writing &#39;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub
 
 Writing &#39;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-emptyroom/ses-20021206/meg/sub-emptyroom_ses-20021206_task-noise_channels.tsv&#39;...
 
-name    type    units   low_cutoff      high_cutoff     description     sampling_frequency      status
-MEG 0113        MEGGRADPLANAR   T/m     0.10000000149011612     172.17630004882812      Planar Gradiometer      600.614990234375        good
-MEG 0112        MEGGRADPLANAR   T/m     0.10000000149011612     172.17630004882812      Planar Gradiometer      600.614990234375        good
-MEG 0111        MEGMAG  T       0.10000000149011612     172.17630004882812      Magnetometer    600.614990234375        good
-MEG 0122        MEGGRADPLANAR   T/m     0.10000000149011612     172.17630004882812      Planar Gradiometer      600.614990234375        good
-MEG 0123        MEGGRADPLANAR   T/m     0.10000000149011612     172.17630004882812      Planar Gradiometer      600.614990234375        good
+name    type    units   low_cutoff      high_cutoff     description     sampling_frequency      status  status_description
+MEG 0113        MEGGRADPLANAR   T/m     0.10000000149011612     172.17630004882812      Planar Gradiometer      600.614990234375        good    n/a
+MEG 0112        MEGGRADPLANAR   T/m     0.10000000149011612     172.17630004882812      Planar Gradiometer      600.614990234375        good    n/a
+MEG 0111        MEGMAG  T       0.10000000149011612     172.17630004882812      Magnetometer    600.614990234375        good    n/a
+MEG 0122        MEGGRADPLANAR   T/m     0.10000000149011612     172.17630004882812      Planar Gradiometer      600.614990234375        good    n/a
+MEG 0123        MEGGRADPLANAR   T/m     0.10000000149011612     172.17630004882812      Planar Gradiometer      600.614990234375        good    n/a
 Copying data files to /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-emptyroom/ses-20021206/meg/sub-emptyroom_ses-20021206_task-noise_meg
 Writing /home/circleci/mne_data/MNE-sample-data-bids/sub-emptyroom/ses-20021206/meg/sub-emptyroom_ses-20021206_task-noise_meg.fif
 Closing /home/circleci/mne_data/MNE-sample-data-bids/sub-emptyroom/ses-20021206/meg/sub-emptyroom_ses-20021206_task-noise_meg.fif [done]
@@ -558,7 +558,7 @@ Writing &#39;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/dat
     ]
 }
 Effective window size : 0.426 (s)
-/home/circleci/project/mne_bids/write.py:489: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
+/home/circleci/project/mne_bids/write.py:495: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
   warn(&#39;No line frequency found, defaulting to {} Hz &#39;
 
 Writing &#39;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-emptyroom/ses-20021204/meg/sub-emptyroom_ses-20021204_task-noise_meg.json&#39;...
@@ -586,12 +586,12 @@ Writing &#39;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub
 
 Writing &#39;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-emptyroom/ses-20021204/meg/sub-emptyroom_ses-20021204_task-noise_channels.tsv&#39;...
 
-name    type    units   low_cutoff      high_cutoff     description     sampling_frequency      status
-MEG 0113        MEGGRADPLANAR   T/m     0.10000000149011612     172.17630004882812      Planar Gradiometer      600.614990234375        good
-MEG 0112        MEGGRADPLANAR   T/m     0.10000000149011612     172.17630004882812      Planar Gradiometer      600.614990234375        good
-MEG 0111        MEGMAG  T       0.10000000149011612     172.17630004882812      Magnetometer    600.614990234375        good
-MEG 0122        MEGGRADPLANAR   T/m     0.10000000149011612     172.17630004882812      Planar Gradiometer      600.614990234375        good
-MEG 0123        MEGGRADPLANAR   T/m     0.10000000149011612     172.17630004882812      Planar Gradiometer      600.614990234375        good
+name    type    units   low_cutoff      high_cutoff     description     sampling_frequency      status  status_description
+MEG 0113        MEGGRADPLANAR   T/m     0.10000000149011612     172.17630004882812      Planar Gradiometer      600.614990234375        good    n/a
+MEG 0112        MEGGRADPLANAR   T/m     0.10000000149011612     172.17630004882812      Planar Gradiometer      600.614990234375        good    n/a
+MEG 0111        MEGMAG  T       0.10000000149011612     172.17630004882812      Magnetometer    600.614990234375        good    n/a
+MEG 0122        MEGGRADPLANAR   T/m     0.10000000149011612     172.17630004882812      Planar Gradiometer      600.614990234375        good    n/a
+MEG 0123        MEGGRADPLANAR   T/m     0.10000000149011612     172.17630004882812      Planar Gradiometer      600.614990234375        good    n/a
 Copying data files to /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-emptyroom/ses-20021204/meg/sub-emptyroom_ses-20021204_task-noise_meg
 Writing /home/circleci/mne_data/MNE-sample-data-bids/sub-emptyroom/ses-20021204/meg/sub-emptyroom_ses-20021204_task-noise_meg.fif
 Closing /home/circleci/mne_data/MNE-sample-data-bids/sub-emptyroom/ses-20021204/meg/sub-emptyroom_ses-20021204_task-noise_meg.fif [done]
@@ -666,7 +666,7 @@ Writing &#39;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/dat
     ]
 }
 Effective window size : 0.426 (s)
-/home/circleci/project/mne_bids/write.py:489: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
+/home/circleci/project/mne_bids/write.py:495: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
   warn(&#39;No line frequency found, defaulting to {} Hz &#39;
 
 Writing &#39;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-emptyroom/ses-20021201/meg/sub-emptyroom_ses-20021201_task-noise_meg.json&#39;...
@@ -694,12 +694,12 @@ Writing &#39;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub
 
 Writing &#39;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-emptyroom/ses-20021201/meg/sub-emptyroom_ses-20021201_task-noise_channels.tsv&#39;...
 
-name    type    units   low_cutoff      high_cutoff     description     sampling_frequency      status
-MEG 0113        MEGGRADPLANAR   T/m     0.10000000149011612     172.17630004882812      Planar Gradiometer      600.614990234375        good
-MEG 0112        MEGGRADPLANAR   T/m     0.10000000149011612     172.17630004882812      Planar Gradiometer      600.614990234375        good
-MEG 0111        MEGMAG  T       0.10000000149011612     172.17630004882812      Magnetometer    600.614990234375        good
-MEG 0122        MEGGRADPLANAR   T/m     0.10000000149011612     172.17630004882812      Planar Gradiometer      600.614990234375        good
-MEG 0123        MEGGRADPLANAR   T/m     0.10000000149011612     172.17630004882812      Planar Gradiometer      600.614990234375        good
+name    type    units   low_cutoff      high_cutoff     description     sampling_frequency      status  status_description
+MEG 0113        MEGGRADPLANAR   T/m     0.10000000149011612     172.17630004882812      Planar Gradiometer      600.614990234375        good    n/a
+MEG 0112        MEGGRADPLANAR   T/m     0.10000000149011612     172.17630004882812      Planar Gradiometer      600.614990234375        good    n/a
+MEG 0111        MEGMAG  T       0.10000000149011612     172.17630004882812      Magnetometer    600.614990234375        good    n/a
+MEG 0122        MEGGRADPLANAR   T/m     0.10000000149011612     172.17630004882812      Planar Gradiometer      600.614990234375        good    n/a
+MEG 0123        MEGGRADPLANAR   T/m     0.10000000149011612     172.17630004882812      Planar Gradiometer      600.614990234375        good    n/a
 Copying data files to /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-emptyroom/ses-20021201/meg/sub-emptyroom_ses-20021201_task-noise_meg
 Writing /home/circleci/mne_data/MNE-sample-data-bids/sub-emptyroom/ses-20021201/meg/sub-emptyroom_ses-20021201_task-noise_meg.fif
 Closing /home/circleci/mne_data/MNE-sample-data-bids/sub-emptyroom/ses-20021201/meg/sub-emptyroom_ses-20021201_task-noise_meg.fif [done]
@@ -774,7 +774,7 @@ Writing &#39;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/dat
     ]
 }
 Effective window size : 0.426 (s)
-/home/circleci/project/mne_bids/write.py:489: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
+/home/circleci/project/mne_bids/write.py:495: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
   warn(&#39;No line frequency found, defaulting to {} Hz &#39;
 
 Writing &#39;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-emptyroom/ses-20021001/meg/sub-emptyroom_ses-20021001_task-noise_meg.json&#39;...
@@ -802,12 +802,12 @@ Writing &#39;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub
 
 Writing &#39;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-emptyroom/ses-20021001/meg/sub-emptyroom_ses-20021001_task-noise_channels.tsv&#39;...
 
-name    type    units   low_cutoff      high_cutoff     description     sampling_frequency      status
-MEG 0113        MEGGRADPLANAR   T/m     0.10000000149011612     172.17630004882812      Planar Gradiometer      600.614990234375        good
-MEG 0112        MEGGRADPLANAR   T/m     0.10000000149011612     172.17630004882812      Planar Gradiometer      600.614990234375        good
-MEG 0111        MEGMAG  T       0.10000000149011612     172.17630004882812      Magnetometer    600.614990234375        good
-MEG 0122        MEGGRADPLANAR   T/m     0.10000000149011612     172.17630004882812      Planar Gradiometer      600.614990234375        good
-MEG 0123        MEGGRADPLANAR   T/m     0.10000000149011612     172.17630004882812      Planar Gradiometer      600.614990234375        good
+name    type    units   low_cutoff      high_cutoff     description     sampling_frequency      status  status_description
+MEG 0113        MEGGRADPLANAR   T/m     0.10000000149011612     172.17630004882812      Planar Gradiometer      600.614990234375        good    n/a
+MEG 0112        MEGGRADPLANAR   T/m     0.10000000149011612     172.17630004882812      Planar Gradiometer      600.614990234375        good    n/a
+MEG 0111        MEGMAG  T       0.10000000149011612     172.17630004882812      Magnetometer    600.614990234375        good    n/a
+MEG 0122        MEGGRADPLANAR   T/m     0.10000000149011612     172.17630004882812      Planar Gradiometer      600.614990234375        good    n/a
+MEG 0123        MEGGRADPLANAR   T/m     0.10000000149011612     172.17630004882812      Planar Gradiometer      600.614990234375        good    n/a
 Copying data files to /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-emptyroom/ses-20021001/meg/sub-emptyroom_ses-20021001_task-noise_meg
 Writing /home/circleci/mne_data/MNE-sample-data-bids/sub-emptyroom/ses-20021001/meg/sub-emptyroom_ses-20021001_task-noise_meg.fif
 Closing /home/circleci/mne_data/MNE-sample-data-bids/sub-emptyroom/ses-20021001/meg/sub-emptyroom_ses-20021001_task-noise_meg.fif [done]
@@ -825,47 +825,47 @@ Wrote /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-emptyr
 </div>
 <p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>|MNE-sample-data-bids/
-|--- dataset_description.json
-|--- README
 |--- participants.json
+|--- dataset_description.json
 |--- participants.tsv
-|--- sub-emptyroom/
-|------ ses-20021204/
-|--------- sub-emptyroom_ses-20021204_scans.tsv
-|--------- meg/
-|------------ sub-emptyroom_ses-20021204_task-noise_channels.tsv
-|------------ sub-emptyroom_ses-20021204_task-noise_meg.json
-|------------ sub-emptyroom_ses-20021204_task-noise_meg.fif
-|------ ses-20021001/
-|--------- sub-emptyroom_ses-20021001_scans.tsv
-|--------- meg/
-|------------ sub-emptyroom_ses-20021001_task-noise_meg.json
-|------------ sub-emptyroom_ses-20021001_task-noise_meg.fif
-|------------ sub-emptyroom_ses-20021001_task-noise_channels.tsv
-|------ ses-20021201/
-|--------- sub-emptyroom_ses-20021201_scans.tsv
-|--------- meg/
-|------------ sub-emptyroom_ses-20021201_task-noise_meg.json
-|------------ sub-emptyroom_ses-20021201_task-noise_meg.fif
-|------------ sub-emptyroom_ses-20021201_task-noise_channels.tsv
-|------ ses-20021206/
-|--------- sub-emptyroom_ses-20021206_scans.tsv
-|--------- meg/
-|------------ sub-emptyroom_ses-20021206_task-noise_meg.json
-|------------ sub-emptyroom_ses-20021206_task-noise_meg.fif
-|------------ sub-emptyroom_ses-20021206_task-noise_channels.tsv
+|--- README
 |--- sub-01/
 |------ ses-01/
 |--------- sub-01_ses-01_scans.tsv
 |--------- anat/
-|------------ sub-01_ses-01_T1w.json
 |------------ sub-01_ses-01_T1w.nii.gz
+|------------ sub-01_ses-01_T1w.json
 |--------- meg/
+|------------ sub-01_ses-01_task-audiovisual_run-01_meg.fif
 |------------ sub-01_ses-01_task-audiovisual_run-01_events.tsv
+|------------ sub-01_ses-01_coordsystem.json
 |------------ sub-01_ses-01_task-audiovisual_run-01_channels.tsv
 |------------ sub-01_ses-01_task-audiovisual_run-01_meg.json
-|------------ sub-01_ses-01_task-audiovisual_run-01_meg.fif
-|------------ sub-01_ses-01_coordsystem.json
+|--- sub-emptyroom/
+|------ ses-20021201/
+|--------- sub-emptyroom_ses-20021201_scans.tsv
+|--------- meg/
+|------------ sub-emptyroom_ses-20021201_task-noise_meg.fif
+|------------ sub-emptyroom_ses-20021201_task-noise_meg.json
+|------------ sub-emptyroom_ses-20021201_task-noise_channels.tsv
+|------ ses-20021206/
+|--------- sub-emptyroom_ses-20021206_scans.tsv
+|--------- meg/
+|------------ sub-emptyroom_ses-20021206_task-noise_channels.tsv
+|------------ sub-emptyroom_ses-20021206_task-noise_meg.json
+|------------ sub-emptyroom_ses-20021206_task-noise_meg.fif
+|------ ses-20021204/
+|--------- sub-emptyroom_ses-20021204_scans.tsv
+|--------- meg/
+|------------ sub-emptyroom_ses-20021204_task-noise_meg.fif
+|------------ sub-emptyroom_ses-20021204_task-noise_channels.tsv
+|------------ sub-emptyroom_ses-20021204_task-noise_meg.json
+|------ ses-20021001/
+|--------- sub-emptyroom_ses-20021001_scans.tsv
+|--------- meg/
+|------------ sub-emptyroom_ses-20021001_task-noise_channels.tsv
+|------------ sub-emptyroom_ses-20021001_task-noise_meg.json
+|------------ sub-emptyroom_ses-20021001_task-noise_meg.fif
 </pre></div>
 </div>
 <p>To get an accurate estimate of the noise, it is important that the empty
@@ -930,7 +930,7 @@ The search_str was &quot;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-d
   warn(msg)
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  5.657 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  4.620 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-empty-room-py">
 <div class="binder-badge docutils container">
 <a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/convert_empty_room.ipynb"><img alt="https://mybinder.org/badge_logo.svg" src="https://mybinder.org/badge_logo.svg" width="150px" /></a>
@@ -957,8 +957,8 @@ The search_str was &quot;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-d
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-08-05.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.1.2.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-08-08.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.0.<br/>
     </p>
   </div>
 </footer>

@@ -1,4 +1,4 @@
-mne\_bids.utils.get\_anonymization\_daysback
+﻿mne\_bids.utils.get\_anonymization\_daysback
 ============================================
 
 .. currentmodule:: mne_bids.utils

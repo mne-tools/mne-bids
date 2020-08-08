@@ -1,4 +1,4 @@
-mne\_bids.make\_dataset\_description
+﻿mne\_bids.make\_dataset\_description
 ====================================
 
 .. currentmodule:: mne_bids

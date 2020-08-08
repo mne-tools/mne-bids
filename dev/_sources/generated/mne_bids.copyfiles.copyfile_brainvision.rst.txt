@@ -1,4 +1,4 @@
-mne\_bids.copyfiles.copyfile\_brainvision
+﻿mne\_bids.copyfiles.copyfile\_brainvision
 =========================================
 
 .. currentmodule:: mne_bids.copyfiles

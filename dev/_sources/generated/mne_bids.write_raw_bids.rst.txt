@@ -1,4 +1,4 @@
-mne\_bids.write\_raw\_bids
+﻿mne\_bids.write\_raw\_bids
 ==========================
 
 .. currentmodule:: mne_bids

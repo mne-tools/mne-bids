@@ -1,4 +1,4 @@
-mne\_bids.write\_anat
+﻿mne\_bids.write\_anat
 =====================
 
 .. currentmodule:: mne_bids

@@ -1,4 +1,4 @@
-mne\_bids.get\_head\_mri\_trans
+﻿mne\_bids.get\_head\_mri\_trans
 ===============================
 
 .. currentmodule:: mne_bids

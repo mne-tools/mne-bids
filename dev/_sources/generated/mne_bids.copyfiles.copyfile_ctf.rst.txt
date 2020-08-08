@@ -1,4 +1,4 @@
-mne\_bids.copyfiles.copyfile\_ctf
+﻿mne\_bids.copyfiles.copyfile\_ctf
 =================================
 
 .. currentmodule:: mne_bids.copyfiles

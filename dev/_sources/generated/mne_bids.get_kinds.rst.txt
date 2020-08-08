@@ -1,4 +1,4 @@
-mne\_bids.get\_kinds
+﻿mne\_bids.get\_kinds
 ====================
 
 .. currentmodule:: mne_bids

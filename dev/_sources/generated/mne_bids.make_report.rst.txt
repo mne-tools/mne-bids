@@ -1,4 +1,4 @@
-mne\_bids.make\_report
+﻿mne\_bids.make\_report
 ======================
 
 .. currentmodule:: mne_bids
