@@ -1392,27 +1392,6 @@ def mark_bad_channels(ch_names, descriptions=None, *, bids_basename,
     verbose : bool
         The verbosity level.
 
-    Raises
-    ------
-    ValueError
-        If the numbers of channels and descriptions do not match.
-
-    ValueError
-        If the specified channels cannot be found in the dataset.
-
-    ValueError
-        If the specified ``kind`` cannot be found in the dataset.
-
-    ValueError
-        If ``overwite=False``, but no channel names were passed.
-
-    RuntimeError
-        If multiple recording kinds are present in the dataset, but
-        ``kind=None``.
-
-    RuntimeError
-        If more than one data files exist for the specified recording.
-
     Examples
     --------
     Mark a single channel as bad.
@@ -1433,16 +1412,16 @@ def mark_bad_channels(ch_names, descriptions=None, *, bids_basename,
     >>> mark_bad_channels(bads, descriptions, bids_basename=bids_basename,
                           bids_root=bids_root)
 
-    Mark channels as bad, and reset all others existing in the dataset to
-    "good".
+    Mark channels as bad, and mark all others as good.
 
     >>> bads = ['MEG 0112', 'MEG 0131']
-    >>> mark_bad_channels(bads, overwrite=True, bids_basename=bids_basename,
-                          bids_root=bids_root)
+    >>> mark_bad_channels(bads, bids_basename=bids_basename,
+                          bids_root=bids_root, overwrite=True)
 
     Mark all channels as good.
 
-    >>> mark_bad_channels([], bids_basename=bids_basename, bids_root=bids_root)
+    >>> mark_bad_channels([], bids_basename=bids_basename, bids_root=bids_root,
+                          overwrite=True)
 
     """
     if not ch_names and not overwrite:
