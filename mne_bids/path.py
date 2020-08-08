@@ -424,7 +424,7 @@ def make_bids_folders(subject, session=None, kind=None, bids_root=None,
 def _parse_ext(raw_fname, verbose=False):
     """Split a filename into its name and extension."""
     fname, ext = os.path.splitext(raw_fname)
-    # BTi data is the only file format that does not have a file ext
+    # BTi data is the only file format that does not have a file extension
     if ext == '' or 'c,rf' in fname:
         if verbose is True:
             print('Found no extension for raw file, assuming "BTi" format and '
