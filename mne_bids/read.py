@@ -257,10 +257,7 @@ def _handle_channels_reading(channels_fname, bids_fname, raw):
         bad_bool = [True if chn.lower() == 'bad' else False
                     for chn in channels_dict['status']]
         bads = np.asarray(channels_dict['name'])[bad_bool]
-
-        # merge with bads already present in raw data file (if there are any)
-        unique_bads = set(raw.info['bads']).union(set(bads))
-        raw.info['bads'] = list(unique_bads)
+        raw.info['bads'] = bads
 
     return raw
 

@@ -782,3 +782,41 @@ def test_handle_channel_type_casing():
 
     with pytest.warns(RuntimeWarning, match='lowercase spelling'):
         read_raw_bids(bids_basename, bids_root=bids_root)
+
+
+@pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+def test_bads_reading():
+    bids_root = _TempDir()
+    raw = mne.io.read_raw_fif(raw_fname, verbose=False)
+
+    # Store bads in FIF file's info, and export to BIDS.
+    rawdata_bads = ['EEG 053', 'MEG 2443']
+    raw.info['bads'] = rawdata_bads
+    write_raw_bids(raw, bids_basename, bids_root, overwrite=True,
+                   verbose=False)
+
+    # Now, simulate a (manual or programmatic) edit of channels.tsv, to change
+    # which channels are marked as bad.
+    channels_fname = (bids_basename.copy()
+                      .update(prefix=op.join(bids_root, 'sub-01', 'ses-01',
+                                             'meg'),
+                              suffix='channels.tsv'))
+    tsv_data = _from_tsv(channels_fname)
+
+    for ch_name in rawdata_bads:
+        idx = tsv_data['name'].index(ch_name)
+        tsv_data['status'][idx] = 'good'
+
+    new_bads = ['MEG 0112', 'MEG 0131']
+    for ch_name in new_bads:
+        idx = tsv_data['name'].index(ch_name)
+        tsv_data['status'][idx] = 'bad'
+
+    _to_tsv(tsv_data, fname=channels_fname)
+
+    # Now read the data, and check that only `new_bads` are actually marked
+    # as bad.
+    raw = read_raw_bids(bids_basename=bids_basename, bids_root=bids_root,
+                        verbose=False)
+    assert len(new_bads) == len(raw.info['bads'])
+    assert set(new_bads) == set(raw.info['bads'])
