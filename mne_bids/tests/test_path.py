@@ -199,6 +199,7 @@ def test_parse_bids_filename(fname):
     assert params['run'] == '3'
     assert params['task'] == 'test'
     assert params['split'] == '01'
+    assert params['kind'] == 'meg'
     assert list(params.keys()) == ['subject', 'session', 'task',
                                    'acquisition', 'run', 'processing',
                                    'space', 'recording', 'split', 'kind']
