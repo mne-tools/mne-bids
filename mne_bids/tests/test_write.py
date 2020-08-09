@@ -1516,7 +1516,8 @@ def test_mark_bad_channels(_bids_validate,
         # ones should be present.
         expected_bads = _ensure_list(ch_names)
     else:
-        expected_bads = _ensure_list(ch_names) + list(existing_ch_names)
+        expected_bads = (_ensure_list(ch_names) +
+                         _ensure_list(existing_ch_names))
 
     if drop_description_col or overwrite:
         # Existing column values should have been discarded, so only the new
@@ -1524,10 +1525,7 @@ def test_mark_bad_channels(_bids_validate,
         expected_descriptions = _ensure_list(descriptions)
     else:
         expected_descriptions = (_ensure_list(descriptions) +
-                                 list(existing_descriptions))
-
-    if expected_descriptions == [None]:
-        expected_descriptions = []
+                                 _ensure_list(existing_descriptions))
 
     # XXX Order is not preserved
     assert len(expected_bads) == len(raw.info['bads'])
