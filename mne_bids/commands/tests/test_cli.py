@@ -87,7 +87,7 @@ def test_cp(tmpdir):
 
 
 def test_mark_bad_chanels(tmpdir):
-    """Test mne_bids cp."""
+    """Test mne_bids mark_bad_channels."""
 
     # Check that help is printed
     check_usage(mne_bids_mark_bad_channels)
