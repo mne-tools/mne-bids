@@ -1400,8 +1400,48 @@ def test_write_does_not_alter_events_inplace():
     assert np.array_equal(events, events_orig)
 
 
+def _ensure_list(x):
+    """Return a list representation of the input."""
+    if isinstance(x, str):
+        return [x]
+    elif x is None:
+        return []
+    else:
+        return list(x)
+
+
+@pytest.mark.parametrize(
+    'ch_names, descriptions, drop_status_col, drop_description_col, '
+    'existing_ch_names, existing_descriptions, kind, overwrite',
+    [
+        # Only mark channels, do not set descriptions.
+        (['MEG 0112', 'MEG 0131', 'EEG 053'], None, False, False, [], [], None,
+         False),
+        ('MEG 0112', None, False, False, [], [], None, False),
+        ('nonsense', None, False, False, [], [], None, False),
+        # Now also set descriptions.
+        (['MEG 0112', 'MEG 0131'], ['Really bad!', 'Even worse.'], False,
+         False, [], [], None, False),
+        ('MEG 0112', 'Really bad!', False, False, [], [], None, False),
+        (['MEG 0112', 'MEG 0131'], ['Really bad!'], False, False, [], [], None,
+         False),  # Should raise.
+        # `kind='meg`
+        (['MEG 0112'], ['Really bad!'], False, False, [], [], 'meg', False),
+        # Enure we create missing columns.
+        ('MEG 0112', 'Really bad!', True, True, [], [], None, False),
+        # Ensure existing entries are left untouched if `overwrite=False`
+        (['EEG 053'], ['Just testing'], False, False, ['MEG 0112', 'MEG 0131'],
+         ['Really bad!', 'Even worse.'], None, False),
+        # Ensure existing entries are discarded if `overwrite=True`.
+        (['EEG 053'], ['Just testing'], False, False, ['MEG 0112', 'MEG 0131'],
+         ['Really bad!', 'Even worse.'], None, True)
+    ])
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
-def test_mark_bad_channels(_bids_validate):
+def test_mark_bad_channels(_bids_validate,
+                           ch_names, descriptions,
+                           drop_status_col, drop_description_col,
+                           existing_ch_names, existing_descriptions,
+                           kind, overwrite):
     """Test marking channels of an existing BIDS dataset as "bad"."""
 
     # Setup: Create a fresh BIDS dataset.
@@ -1422,127 +1462,81 @@ def test_mark_bad_channels(_bids_validate):
     channels_fname = _find_matching_sidecar(bids_fname, bids_root,
                                             'channels.tsv')
 
-    # Mark some channels as bad, and verify the result when reading the
-    # dataset again.
-    bads = ['MEG 0112', 'MEG 0131', 'EEG 053']
-    mark_bad_channels(ch_names=bads, bids_basename=bids_basename,
-                      bids_root=bids_root, kind='meg')
-    _bids_validate(bids_root)
-    raw = read_raw_bids(bids_basename=bids_basename, bids_root=bids_root,
-                        kind='meg', verbose=False)
-    assert len(bads) == len(raw.info['bads'])
-    assert set(bads) == set(raw.info['bads'])  # XXX Order is not preserved?!
+    if drop_status_col:
+        tsv_data = _from_tsv(channels_fname)
+        del tsv_data['status']
+        _to_tsv(tsv_data, channels_fname)
 
-    # Test that we raise if we encounter an unknown channel name.
-    bads = ['nonsense']
-    with pytest.raises(ValueError, match='not found in dataset'):
-        mark_bad_channels(ch_names=bads, bids_basename=bids_basename,
-                          bids_root=bids_root, kind='meg')
-
-    # Test with channel name as string (not list).
-    bads = 'MEG 0123'
-    mark_bad_channels(ch_names=bads, bids_basename=bids_basename,
-                      bids_root=bids_root, kind='meg')
-    _bids_validate(bids_root)
-    tsv_data = _from_tsv(channels_fname)
-    idx = tsv_data['name'].index(bads)
-    assert tsv_data['status'][idx] == 'bad'
-
-    # Set descriptions: list.
-    bads = ['MEG 0112', 'MEG 0131']
-    descriptions = ['Really bad!', 'Even worse.']
-    mark_bad_channels(ch_names=bads, descriptions=descriptions,
-                      bids_basename=bids_basename, bids_root=bids_root,
-                      kind='meg')
-    _bids_validate(bids_root)
-    tsv_data = _from_tsv(channels_fname)
-    for description in descriptions:
-        assert description in tsv_data['status_description']
-
-    # Set descriptions: string.
-    bads = 'MEG 0112'
-    descriptions = 'Really bad!'
-    mark_bad_channels(ch_names=bads, descriptions=descriptions,
-                      bids_basename=bids_basename, bids_root=bids_root,
-                      kind='meg')
-    _bids_validate(bids_root)
-    tsv_data = _from_tsv(channels_fname)
-    assert 'Really bad!' in tsv_data['status_description']
+    if drop_description_col:
+        tsv_data = _from_tsv(channels_fname)
+        del tsv_data['status_description']
+        _to_tsv(tsv_data, channels_fname)
 
     # Test that we raise if number of channels doesn't match number of
     # descriptions.
-    bads = ['MEG 0112', 'MEG 0131']
-    descriptions = ['Really bad!']
-    with pytest.raises(ValueError, match='must match'):
-        mark_bad_channels(ch_names=bads, descriptions=descriptions,
+    if (descriptions is not None and
+            len(_ensure_list(ch_names)) != len(_ensure_list(descriptions))):
+        with pytest.raises(ValueError, match='must match'):
+            mark_bad_channels(ch_names=ch_names, descriptions=descriptions,
+                              bids_basename=bids_basename, bids_root=bids_root,
+                              kind=kind, overwrite=overwrite)
+        return
+
+    # Test that we raise if we encounter an unknown channel name.
+    if any([ch_name not in raw.ch_names
+            for ch_name in _ensure_list(ch_names)]):
+        with pytest.raises(ValueError, match='not found in dataset'):
+            mark_bad_channels(ch_names=ch_names, descriptions=descriptions,
+                              bids_basename=bids_basename, bids_root=bids_root,
+                              kind=kind, overwrite=overwrite)
+        return
+
+    if not overwrite:
+        # Mark `existing_ch_names` as bad before we begin our actual tests.
+        mark_bad_channels(ch_names=existing_ch_names,
+                          descriptions=existing_descriptions,
                           bids_basename=bids_basename, bids_root=bids_root,
-                          kind='meg')
+                          kind=kind, overwrite=True)
+        _bids_validate(bids_root)
+        raw = read_raw_bids(bids_basename=bids_basename, bids_root=bids_root,
+                            kind=kind, verbose=False)
+        # XXX Order is not preserved
+        assert set(existing_ch_names) == set(raw.info['bads'])
+        del raw
 
-    # Test that we create missing columns.
-    tsv_data = _from_tsv(channels_fname)
-    del tsv_data['status'], tsv_data['status_description']
-    _to_tsv(tsv_data, channels_fname)
-
-    bads = 'MEG 0112'
-    descriptions = 'Really bad!'
-    mark_bad_channels(ch_names=bads, descriptions=descriptions,
+    mark_bad_channels(ch_names=ch_names, descriptions=descriptions,
                       bids_basename=bids_basename, bids_root=bids_root,
-                      kind='meg')
+                      kind=kind, overwrite=overwrite)
     _bids_validate(bids_root)
+    raw = read_raw_bids(bids_basename=bids_basename, bids_root=bids_root,
+                        kind=kind, verbose=False)
+
+    if drop_status_col or overwrite:
+        # Existing column values should have been discarded, so only the new
+        # ones should be present.
+        expected_bads = _ensure_list(ch_names)
+    else:
+        expected_bads = _ensure_list(ch_names) + list(existing_ch_names)
+
+    if drop_description_col or overwrite:
+        # Existing column values should have been discarded, so only the new
+        # ones should be present.
+        expected_descriptions = _ensure_list(descriptions)
+    else:
+        expected_descriptions = (_ensure_list(descriptions) +
+                                 list(existing_descriptions))
+
+    if expected_descriptions == [None]:
+        expected_descriptions = []
+
+    # XXX Order is not preserved
+    assert len(expected_bads) == len(raw.info['bads'])
+    assert set(expected_bads) == set(raw.info['bads'])
+
+    # Descriptions are not mapped to Raw, so let's check the TSV contents
+    # directly.
     tsv_data = _from_tsv(channels_fname)
     assert 'status' in tsv_data
     assert 'status_description' in tsv_data
-
-    # Test that we leave existing entries unmodified by default.
-    old_bads = ['MEG 0112', 'MEG 0131']
-    old_descriptions = ['Really bad!', 'Even worse.']
-    new_bads = ['EEG 053']
-    new_descriptions = ['Just testing']
-
-    mark_bad_channels(ch_names=old_bads, descriptions=old_descriptions,
-                      bids_basename=bids_basename, bids_root=bids_root,
-                      kind='meg')
-    mark_bad_channels(ch_names=new_bads, descriptions=new_descriptions,
-                      bids_basename=bids_basename, bids_root=bids_root,
-                      kind='meg')
-    _bids_validate(bids_root)
-
-    raw = read_raw_bids(bids_basename=bids_basename, bids_root=bids_root,
-                        kind='meg', verbose=False)
-    assert set(raw.info['bads']) == set(old_bads + new_bads)
-
-    tsv_data = _from_tsv(channels_fname)
-    assert all([d in tsv_data['status_description']
-                for d in old_descriptions + new_descriptions])
-
-    # Test that existing entries are discarded if `overwrite=True`.
-    old_bads = ['MEG 0112', 'MEG 0131']
-    old_descriptions = ['Really bad!', 'Even worse.']
-    new_bads = ['EEG 053']
-    new_descriptions = ['Just testing']
-
-    mark_bad_channels(ch_names=old_bads, descriptions=old_descriptions,
-                      bids_basename=bids_basename, bids_root=bids_root,
-                      kind='meg')
-    mark_bad_channels(ch_names=new_bads, descriptions=new_descriptions,
-                      bids_basename=bids_basename, bids_root=bids_root,
-                      kind='meg', overwrite=True)
-    _bids_validate(bids_root)
-
-    raw = read_raw_bids(bids_basename=bids_basename, bids_root=bids_root,
-                        kind='meg', verbose=False)
-    assert raw.info['bads'] == new_bads
-
-    tsv_data = _from_tsv(channels_fname)
-    assert new_descriptions[0] in tsv_data['status_description']
-    assert all([d not in tsv_data['status_description']
-                for d in old_descriptions])
-
-    # Test with `kind=None`.
-    bads = 'MEG 0123'
-    mark_bad_channels(ch_names=bads, bids_basename=bids_basename,
-                      bids_root=bids_root, kind=None, overwrite=True)
-    _bids_validate(bids_root)
-    tsv_data = _from_tsv(channels_fname)
-    idx = tsv_data['name'].index(bads)
-    assert tsv_data['status'][idx] == 'bad'
+    for description in expected_descriptions:
+        assert description in tsv_data['status_description']
