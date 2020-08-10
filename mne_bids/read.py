@@ -256,8 +256,24 @@ def _handle_channels_reading(channels_fname, bids_fname, raw):
         # find bads from channels.tsv
         bad_bool = [True if chn.lower() == 'bad' else False
                     for chn in channels_dict['status']]
-        bads = np.asarray(channels_dict['name'])[bad_bool]
-        raw.info['bads'] = bads
+        bads_from_tsv = np.asarray(channels_dict['name'])[bad_bool]
+
+        if set(bads_from_tsv) != set(raw.info['bads']):
+            warn(f'Encountered conflicting information on channel status '
+                 f'between {op.basename(channels_fname)} and the associated '
+                 f'raw data file.\n'
+                 f'Channels marked as bad in '
+                 f'{op.basename(channels_fname)}: {bads_from_tsv}\n'
+                 f'Channels marked as bad in '
+                 f'raw.info["bads"]: {raw.info["bads"]}\n'
+                 f'Setting list of bad channels to: {bads_from_tsv}')
+
+        raw.info['bads'] = bads_from_tsv
+    elif raw.info['bads']:
+        # We do have info['bads'], but no bads in channels.tsv
+        logger.info(f'No "status" column found in '
+                    f'{op.basename(channels_fname)}; using list of bad '
+                    f'channels found in raw.info["bads"]: {raw.info["bads"]}')
 
     return raw
 
