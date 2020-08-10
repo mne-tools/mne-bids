@@ -297,6 +297,6 @@ def test_bids_path(return_bids_test_dir):
     # test repr
     bids_path = make_bids_basename(subject='01', session='02',
                                    task='03', suffix='ieeg.edf')
-    assert repr(bids_path) == 'BIDSPath(\n' \
-                              'root: None\n' \
-                              'basename: sub-01_ses-02_task-03_ieeg.edf)'
+    assert repr(bids_path) == ('BIDSPath(\n'
+                               'root: None\n'
+                               'basename: sub-01_ses-02_task-03_ieeg.edf)')
