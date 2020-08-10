@@ -68,7 +68,7 @@ ALLOWED_EXTENSIONS = {'meg': allowed_extensions_meg,
 # allowed BIDS entities
 BIDS_PATH_ENTITIES = ('subject', 'session', 'task', 'acquisition',
                       'processing', 'run', 'recording',
-                      'space', 'suffix', 'prefix')
+                      'space', 'split', 'suffix', 'prefix')
 
 # accepted BIDS formats, which may be subject to change
 # depending on the specification

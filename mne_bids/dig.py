@@ -21,7 +21,7 @@ from mne_bids.tsv_handler import _from_tsv
 from mne_bids.utils import (_extract_landmarks, _scale_coord_to_meters,
                             _write_json, _write_tsv)
 from mne_bids import make_bids_basename
-from mne_bids.path import parse_bids_filename
+from mne_bids.path import get_bids_entities_from_fname
 
 
 def _handle_electrodes_reading(electrodes_fname, coord_frame,
@@ -316,7 +316,7 @@ def _write_dig_bids(electrodes_fname, coordsystem_fname, data_path,
     # write electrodes data for iEEG and EEG
     unit = "m"  # defaults to meters
 
-    params = parse_bids_filename(electrodes_fname)
+    params = get_bids_entities_from_fname(electrodes_fname)
     subject_id = params['subject']
     session_id = params['session']
     acquisition = params['acquisition']
@@ -412,7 +412,7 @@ def _read_dig_bids(electrodes_fpath, coordsystem_fpath,
         The data as MNE-Python Raw object.
     """
     # get the space entity
-    params = parse_bids_filename(electrodes_fpath)
+    params = get_bids_entities_from_fname(electrodes_fpath)
     space = params['space']
     if space is None:
         space = ''

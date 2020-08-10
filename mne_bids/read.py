@@ -26,7 +26,7 @@ from mne_bids.config import (ALLOWED_EXTENSIONS, _convert_hand_options,
 from mne_bids.utils import (_extract_landmarks,
                             _get_ch_type_mapping, _estimate_line_freq)
 from mne_bids import make_bids_folders
-from mne_bids.path import (BIDSPath, _parse_ext, parse_bids_filename,
+from mne_bids.path import (BIDSPath, _parse_ext, get_bids_entities_from_fname,
                            _find_matching_sidecar, _infer_kind)
 
 
@@ -334,7 +334,7 @@ def read_raw_bids(bids_basename, bids_root, kind=None, extra_params=None,
     """
     # convert to BIDS Path
     if isinstance(bids_basename, str):
-        params = parse_bids_filename(bids_basename)
+        params = get_bids_entities_from_fname(bids_basename)
         bids_basename = BIDSPath(**params)
     sub = bids_basename.subject
     ses = bids_basename.session
@@ -437,7 +437,7 @@ def get_matched_empty_room(bids_basename, bids_root):
     """
     # convert to BIDS Path
     if isinstance(bids_basename, str):
-        params = parse_bids_filename(bids_basename)
+        params = get_bids_entities_from_fname(bids_basename)
         bids_basename = BIDSPath(**params)
 
     kind = 'meg'  # We're only concerned about MEG data here
@@ -497,7 +497,7 @@ def get_matched_empty_room(bids_basename, bids_root):
 
     failed_to_get_er_date_count = 0
     for er_fname in candidate_er_fnames:
-        params = parse_bids_filename(er_fname)
+        params = get_bids_entities_from_fname(er_fname)
         er_meas_date = None
         params.pop('subject')
         er_bids_path = BIDSPath(subject='emptyroom', **params)
@@ -580,7 +580,7 @@ def get_head_mri_trans(bids_basename, bids_root):
 
     # convert to BIDS Path
     if isinstance(bids_basename, str):
-        params = parse_bids_filename(bids_basename)
+        params = get_bids_entities_from_fname(bids_basename)
         bids_basename = BIDSPath(**params)
 
     # Get the sidecar file for MRI landmarks

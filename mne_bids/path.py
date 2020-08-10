@@ -52,6 +52,8 @@ class BIDSPath(object):
         The recording name for this item. Corresponds to "rec".
     space : str | None
         The coordinate space for an anatomical file. Corresponds to "space".
+    split : int | None
+        The split of the continuous recording file for ``.fif`` data. Corresponds to "split".
     prefix : str | None
         The prefix for the filename to be created. E.g., a path to the folder
         in which you wish to create a file with this name.
@@ -73,7 +75,7 @@ class BIDSPath(object):
 
     def __init__(self, subject=None, session=None,
                  task=None, acquisition=None, run=None, processing=None,
-                 recording=None, space=None, prefix=None, suffix=None):
+                 recording=None, space=None, split=None, prefix=None, suffix=None):
         if all(ii is None for ii in [subject, session, task,
                                      acquisition, run, processing,
                                      recording, space, prefix, suffix]):
@@ -81,7 +83,7 @@ class BIDSPath(object):
 
         self.update(subject=subject, session=session, task=task,
                     acquisition=acquisition, run=run, processing=processing,
-                    recording=recording, space=space, prefix=prefix,
+                    recording=recording, space=space, split=split, prefix=prefix,
                     suffix=suffix)
 
     @property
@@ -96,6 +98,7 @@ class BIDSPath(object):
             ('processing', self.processing),
             ('recording', self.recording),
             ('space', self.space),
+            ('split', self.split),
             ('prefix', self.prefix),
             ('suffix', self.suffix)
         ])
@@ -232,6 +235,10 @@ class BIDSPath(object):
         if run is not None and not isinstance(run, str):
             # Ensure that run is a string
             entities['run'] = '{:02}'.format(run)
+        split = entities.get('split')
+        if split is not None and not isinstance(split, str):
+            # Ensure that run is a string
+            entities['split'] = '{:02}'.format(split)
 
         # error check entities
         for key, val in entities.items():
@@ -372,7 +379,7 @@ def _parse_ext(raw_fname, verbose=False):
     return fname, ext
 
 
-def parse_bids_filename(fname):
+def get_bids_entities_from_fname(fname):
     """Retrieve a dictionary of BIDS entities from a filename.
 
     Entities not present in ``fname`` will be assigned the value of ``None``.
@@ -391,7 +398,7 @@ def parse_bids_filename(fname):
     Examples
     --------
     >>> fname = 'sub-01_ses-exp_run-02_meg.fif'
-    >>> parse_bids_filename(fname)
+    >>> get_bids_entities_from_fname(fname)
     {'subject': '01',
     'session': 'exp',
     'task': None,
@@ -425,6 +432,16 @@ def parse_bids_filename(fname):
                              'filename "%s"' % (key, fname))
         idx_key = fname_vals.index(key)
         params[fname_to_entity[key]] = value
+
+    # parse kind last
+    last_entity = fname.split('-')[-1]
+    if '_' in last_entity:
+        kind_and_ext = last_entity.split('_')[-1]
+        if '.' in kind_and_ext:
+            params['kind'] = kind_and_ext.split('.')[0]
+        else:
+            params['kind'] = kind_and_ext
+
     return params
 
 
@@ -496,7 +513,7 @@ def _find_matching_sidecar(bids_fname, bids_root, suffix, allow_fail=False):
 
 def make_bids_basename(subject=None, session=None, task=None,
                        acquisition=None, run=None, processing=None,
-                       recording=None, space=None, prefix=None, suffix=None):
+                       recording=None, space=None, split=None, prefix=None, suffix=None):
     """Create a partial/full BIDS basename from its component parts.
 
     BIDS filename prefixes have one or more pieces of metadata in them. They
@@ -528,6 +545,8 @@ def make_bids_basename(subject=None, session=None, task=None,
         The recording name. Corresponds to "rec".
     space : str | None
         The coordinate space for an anatomical file. Corresponds to "space".
+    split : int | None
+        The split of the continuous recording file for ``.fif`` data. Corresponds to "split".
     prefix : str | None
         The prefix for the filename to be created. E.g., a path to the folder
         in which you wish to create a file with this name.
@@ -547,7 +566,7 @@ def make_bids_basename(subject=None, session=None, task=None,
     bids_path = BIDSPath(subject=subject, session=session, task=task,
                          acquisition=acquisition, run=run,
                          processing=processing, recording=recording,
-                         space=space, prefix=prefix, suffix=suffix)
+                         space=space, split=split, prefix=prefix, suffix=suffix)
     bids_path._check()
     return bids_path
 
@@ -748,7 +767,7 @@ def _find_best_candidates(params, candidate_list):
     for candidate in candidate_list:
         n_matches = 0
         candidate_disqualified = False
-        candidate_params = parse_bids_filename(candidate)
+        candidate_params = get_bids_entities_from_fname(candidate)
         for entity, value in params.items():
             if entity in candidate_params:
                 if candidate_params[entity] is None:
