@@ -75,11 +75,11 @@ ALLOWED_FILENAME_KINDS = [
 ]
 
 # allowed BIDS extensions (extension in the BIDS filename)
-ALLOWED_FILENAME_EXTENSIONS = \
-    allowed_extensions_meg + \
-    allowed_extensions_eeg + \
-    allowed_extensions_ieeg + \
-    ['.json', '.tsv', '.tsv.gz', '.nii', '.nii.gz']
+ALLOWED_FILENAME_EXTENSIONS = (
+    allowed_extensions_meg +
+    allowed_extensions_eeg +
+    allowed_extensions_ieeg +
+    ['.json', '.tsv', '.tsv.gz', '.nii', '.nii.gz'])
 
 # allowed BIDS entities
 BIDS_PATH_ENTITIES = ('subject', 'session', 'task', 'acquisition',
