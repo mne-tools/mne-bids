@@ -163,6 +163,29 @@ class BIDSPath(object):
         """Get the full filepath for this BIDS file."""
         if self.root:
             return op.join(self.root, self.basename)
+
+        if self.ext is None and self.root is None:
+            msg = ('No filename extension was provided, and it cannot be '
+                   'automatically inferred because no bids_root was passed.')
+            raise ValueError(msg)
+
+        if self.kind is None:
+            msg = ('No kind was provided, and it cannot be '
+                   'automatically inferred. Please set kind to one of '
+                   f'{ALLOWED_FILENAME_KINDS}.')
+
+        if self.ext is None:
+            bids_fname = _get_bids_fname_from_filesystem(
+                bids_basename=self.basename, bids_root=self.root,
+                sub=self.subject, ses=self.session, kind=self.kind)
+            new_suffix = bids_fname.split("_")[-1]
+            kind, ext = _get_kind_ext_from_suffix(new_suffix)
+            bids_fname = self.copy().update(kind=kind, ext=ext)
+        else:
+            bids_fname = self.copy().update(kind=kind, ext=ext)
+
+        return bids_fname
+
         return self.basename
 
     def copy(self):
