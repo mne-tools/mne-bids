@@ -367,11 +367,24 @@
         <span class="c1"># find bads from channels.tsv</span>
         <span class="n">bad_bool</span> <span class="o">=</span> <span class="p">[</span><span class="kc">True</span> <span class="k">if</span> <span class="n">chn</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;bad&#39;</span> <span class="k">else</span> <span class="kc">False</span>
                     <span class="k">for</span> <span class="n">chn</span> <span class="ow">in</span> <span class="n">channels_dict</span><span class="p">[</span><span class="s1">&#39;status&#39;</span><span class="p">]]</span>
-        <span class="n">bads</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">channels_dict</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">])[</span><span class="n">bad_bool</span><span class="p">]</span>
+        <span class="n">bads_from_tsv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">channels_dict</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">])[</span><span class="n">bad_bool</span><span class="p">]</span>
 
-        <span class="c1"># merge with bads already present in raw data file (if there are any)</span>
-        <span class="n">unique_bads</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;bads&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">bads</span><span class="p">))</span>
-        <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;bads&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">unique_bads</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;bads&#39;</span><span class="p">]</span> <span class="ow">and</span> <span class="nb">set</span><span class="p">(</span><span class="n">bads_from_tsv</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">set</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;bads&#39;</span><span class="p">]):</span>
+            <span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Encountered conflicting information on channel status &#39;</span>
+                 <span class="sa">f</span><span class="s1">&#39;between </span><span class="si">{</span><span class="n">op</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">channels_fname</span><span class="p">)</span><span class="si">}</span><span class="s1"> and the associated &#39;</span>
+                 <span class="sa">f</span><span class="s1">&#39;raw data file.</span><span class="se">\n</span><span class="s1">&#39;</span>
+                 <span class="sa">f</span><span class="s1">&#39;Channels marked as bad in &#39;</span>
+                 <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">op</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">channels_fname</span><span class="p">)</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">bads_from_tsv</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span>
+                 <span class="sa">f</span><span class="s1">&#39;Channels marked as bad in &#39;</span>
+                 <span class="sa">f</span><span class="s1">&#39;raw.info[&quot;bads&quot;]: </span><span class="si">{</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;bads&quot;</span><span class="p">]</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span>
+                 <span class="sa">f</span><span class="s1">&#39;Setting list of bad channels to: </span><span class="si">{</span><span class="n">bads_from_tsv</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+        <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;bads&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bads_from_tsv</span>
+    <span class="k">elif</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;bads&#39;</span><span class="p">]:</span>
+        <span class="c1"># We do have info[&#39;bads&#39;], but no `status` in channels.tsv</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;No &quot;status&quot; column found in &#39;</span>
+                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">op</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">channels_fname</span><span class="p">)</span><span class="si">}</span><span class="s1">; using list of bad &#39;</span>
+                    <span class="sa">f</span><span class="s1">&#39;channels found in raw.info[&quot;bads&quot;]: </span><span class="si">{</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;bads&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">raw</span>
 
@@ -769,7 +782,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-08-08.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-08-10.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.0.<br/>
     </p>
   </div>
