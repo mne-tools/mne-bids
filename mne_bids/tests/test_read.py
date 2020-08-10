@@ -799,7 +799,6 @@ def test_bads_reading():
 
     ###########################################################################
     # bads in FIF only, no `status` column in channels.tsv
-    #
     bads = ['EEG 053', 'MEG 2443']
     raw.info['bads'] = bads
     write_raw_bids(raw, bids_basename, bids_root, overwrite=True,
