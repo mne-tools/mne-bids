@@ -60,7 +60,7 @@ class BIDSPath(object):
     kind : str | None
         The suffix for the filename. E.g., 'ieeg'.
     ext : str | None
-        The ext for the filename. E.g., '.edf'
+        The filename extension, e..g., ``'.edf'``.
 
     Examples
     --------
