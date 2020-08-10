@@ -270,7 +270,7 @@ def _handle_channels_reading(channels_fname, bids_fname, raw):
 
         raw.info['bads'] = bads_from_tsv
     elif raw.info['bads']:
-        # We do have info['bads'], but no bads in channels.tsv
+        # We do have info['bads'], but no `status` in channels.tsv
         logger.info(f'No "status" column found in '
                     f'{op.basename(channels_fname)}; using list of bad '
                     f'channels found in raw.info["bads"]: {raw.info["bads"]}')
