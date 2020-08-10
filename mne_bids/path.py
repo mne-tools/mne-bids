@@ -264,11 +264,13 @@ class BIDSPath(object):
         If one creates a bids basename using
         :func:`mne_bids.make_bids_basename`:
 
-        >>> bids_basename = make_bids_basename(subject='test',session='two', task='mytask', kind='data', ext='.csv')
+        >>> bids_basename = make_bids_basename(subject='test', session='two', 
+        >>>                                    task='mytask', kind='data', extension='.csv')
         >>> print(bids_basename)
         sub-test_ses-two_task-mytask_data.csv
         >>> # Then, one can update this `BIDSPath` object in place
-        >>> bids_basename.update(acquisition='test', kind='ieeg', ext='.vhdr', task=None)
+        >>> bids_basename.update(acquisition='test', kind='ieeg', 
+        >>>                      extension='.vhdr', task=None)
         BIDSPath(sub-test_ses-two_acq-test_ieeg.vhdr)
         >>> print(bids_basename)
         sub-test_ses-two_acq-test_ieeg.vhdr
@@ -305,7 +307,7 @@ class BIDSPath(object):
                 'on_invalid_er_session', 'on_invalid_er_task',
             ]:
                 raise ValueError(f'Key must be one of {BIDS_PATH_ENTITIES}, '
-                                 'got %s' % key)
+                                 f'got {key}')
 
             # set entity value
             setattr(self, key, val)
@@ -600,7 +602,8 @@ def make_bids_basename(subject=None, session=None, task=None,
 
     Examples
     --------
-    >>> print(make_bids_basename(subject='test',session='two',task='mytask',suffix='data.csv')) # noqa: E501
+    >>> print(make_bids_basename(subject='test', session='two',
+    >>>       task='mytask', suffix='data.csv'))
     sub-test_ses-two_task-mytask_data.csv
     """
     kind, ext = _get_kind_ext_from_suffix(suffix)
