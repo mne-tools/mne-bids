@@ -782,3 +782,68 @@ def test_handle_channel_type_casing():
 
     with pytest.warns(RuntimeWarning, match='lowercase spelling'):
         read_raw_bids(bids_basename, bids_root=bids_root)
+
+
+@pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+def test_bads_reading():
+    bids_root = _TempDir()
+    channels_fname = (bids_basename.copy()
+                      .update(prefix=op.join(bids_root, 'sub-01', 'ses-01',
+                                             'meg'),
+                              suffix='channels.tsv'))
+    raw_bids_fname = (bids_basename.copy()
+                      .update(prefix=op.join(bids_root, 'sub-01', 'ses-01',
+                                             'meg'),
+                              suffix='meg.fif'))
+    raw = mne.io.read_raw_fif(raw_fname, verbose=False)
+
+    ###########################################################################
+    # bads in FIF only, no `status` column in channels.tsv
+    bads = ['EEG 053', 'MEG 2443']
+    raw.info['bads'] = bads
+    write_raw_bids(raw, bids_basename, bids_root, overwrite=True,
+                   verbose=False)
+
+    # Delete `status` column
+    tsv_data = _from_tsv(channels_fname)
+    del tsv_data['status'], tsv_data['status_description']
+    _to_tsv(tsv_data, fname=channels_fname)
+
+    raw = read_raw_bids(bids_basename=bids_basename, bids_root=bids_root,
+                        verbose=False)
+    assert raw.info['bads'] == bads
+
+    ###########################################################################
+    # bads in `status` column in channels.tsv, no bads in raw.info['bads']
+    bads = ['EEG 053', 'MEG 2443']
+    raw.info['bads'] = bads
+    write_raw_bids(raw, bids_basename, bids_root, overwrite=True,
+                   verbose=False)
+
+    # Remove info['bads'] from the raw file.
+    raw = mne.io.read_raw_fif(raw_bids_fname, preload=True, verbose=False)
+    raw.info['bads'] = []
+    raw.save(raw_bids_fname, overwrite=True, verbose=False)
+
+    raw = read_raw_bids(bids_basename=bids_basename, bids_root=bids_root,
+                        verbose=False)
+    assert set(raw.info['bads']) == set(bads)
+
+    ###########################################################################
+    # Different bads in `status` column and raw.info['bads']
+    bads_bids = ['EEG 053', 'MEG 2443']
+    bads_raw = ['MEG 0112', 'MEG 0131']
+
+    raw.info['bads'] = bads_bids
+    write_raw_bids(raw, bids_basename, bids_root, overwrite=True,
+                   verbose=False)
+
+    # Replace info['bads'] in the raw file.
+    raw = mne.io.read_raw_fif(raw_bids_fname, preload=True, verbose=False)
+    raw.info['bads'] = bads_raw
+    raw.save(raw_bids_fname, overwrite=True, verbose=False)
+
+    with pytest.warns(RuntimeWarning, match='conflicting information'):
+        raw = read_raw_bids(bids_basename=bids_basename, bids_root=bids_root,
+                            verbose=False)
+    assert set(raw.info['bads']) == set(bads_bids)
