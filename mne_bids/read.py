@@ -258,7 +258,7 @@ def _handle_channels_reading(channels_fname, bids_fname, raw):
                     for chn in channels_dict['status']]
         bads_from_tsv = np.asarray(channels_dict['name'])[bad_bool]
 
-        if set(bads_from_tsv) != set(raw.info['bads']):
+        if raw.info['bads'] and set(bads_from_tsv) != set(raw.info['bads']):
             warn(f'Encountered conflicting information on channel status '
                  f'between {op.basename(channels_fname)} and the associated '
                  f'raw data file.\n'
