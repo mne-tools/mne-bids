@@ -150,10 +150,10 @@ task = 'testresteyes'
 # get MNE directory w/ example data
 mne_data_dir = mne.get_config('MNE_DATASETS_MISC_PATH')
 
-# There is the root directory for where we will write our data.
+# There is the bids_root directory for where we will write our data.
 bids_root = os.path.join(mne_data_dir, 'ieegmmidb_bids')
 
-# make sure we start w/ an empty bids root
+# make sure we start w/ an empty bids bids_root
 shutil.rmtree(bids_root, ignore_errors=True)
 
 ###############################################################################

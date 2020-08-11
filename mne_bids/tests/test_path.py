@@ -227,7 +227,7 @@ def test_find_matching_sidecar(return_bids_test_dir):
     """Test finding a sidecar file from a BIDS dir."""
     bids_root = return_bids_test_dir
 
-    bids_fpath = bids_basename.copy().update(root=bids_root)
+    bids_fpath = bids_basename.copy().update(bids_root=bids_root)
     # Now find a sidecar
     sidecar_fname = _find_matching_sidecar(bids_fpath,
                                            'coordsystem.json')
@@ -253,14 +253,14 @@ def test_bids_path(return_bids_test_dir):
         subject=subject_id, session=session_id, run=run,
         task=task)
 
-    # test bids path without root, kind, extension
+    # test bids path without bids_root, kind, extension
     # basename and fpath should be the same
     expected_basename = \
         f'sub-{subject_id}_ses-{session_id}_task-{task}_run-{run}'
     assert (bids_basename.basename == expected_basename)
     assert (bids_basename.fpath == expected_basename)
 
-    # without root and with kind/extension
+    # without bids_root and with kind/extension
     # basename and fpath should be the same
     bids_basename.update(kind='ieeg', extension='vhdr')
     expected_basename2 = expected_basename + '_ieeg.vhdr'
@@ -269,12 +269,12 @@ def test_bids_path(return_bids_test_dir):
     assert (bids_basename.basename == expected_basename2)
 
     with pytest.warns(RuntimeWarning,
-                      match='No root was passed in'):
+                      match='No bids root was passed in'):
         assert (bids_basename.fpath == expected_basename2)
 
-    # with root, but without kind/extension
+    # with bids_root, but without kind/extension
     # basename should work, but fpath should not.
-    bids_basename.update(root=bids_root, kind=None, extension=None)
+    bids_basename.update(bids_root=bids_root, kind=None, extension=None)
     assert bids_basename.basename == expected_basename
 
     # get_bids_fname should fire error when no ``kind`` is passed
@@ -296,7 +296,7 @@ def test_bids_path(return_bids_test_dir):
     assert all(bids_basename.entities.get(entity) is None
                for entity in ['task', 'run', 'recording', 'acquisition',
                               'space', 'processing',
-                              'root', 'kind', 'extension'])
+                              'bids_root', 'kind', 'extension'])
 
     # test updating functionality
     bids_basename.update(acquisition='03', run='2', session='02',
@@ -325,5 +325,5 @@ def test_bids_path(return_bids_test_dir):
     bids_path = make_bids_basename(subject='01', session='02',
                                    task='03', suffix='ieeg.edf')
     assert repr(bids_path) == ('BIDSPath(\n'
-                               'root: None\n'
+                               'bids_root: None\n'
                                'basename: sub-01_ses-02_task-03_ieeg.edf)')

@@ -84,7 +84,7 @@ ALLOWED_FILENAME_EXTENSIONS = (
 # allowed BIDS path entities
 BIDS_PATH_ENTITIES = ('subject', 'session', 'task', 'acquisition',
                       'processing', 'run', 'recording',
-                      'space', 'root', 'kind', 'extension')
+                      'space', 'bids_root', 'kind', 'extension')
 
 # accepted BIDS formats, which may be subject to change
 # depending on the specification

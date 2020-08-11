@@ -897,7 +897,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     Returns
     -------
     bids_root : str
-        The path of the root of the BIDS compatible folder.
+        The path of the bids_root of the BIDS compatible folder.
 
     Notes
     -----
@@ -961,6 +961,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
                                  processing=params.get('proc'),
                                  recording=params.get('rec'),
                                  space=params.get('space'))
+
     # make a copy to ensure that passed in BIDSPath does not get altered
     bids_basename = bids_basename.copy()
     subject_id, session_id = bids_basename.subject, bids_basename.session
@@ -1004,39 +1005,43 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     # as it does not make any advanced check.
 
     # create *_scans.tsv
-    bids_path = BIDSPath(subject=subject_id, session=session_id,
-                         task=None, root=ses_path, kind='scans',
+    bids_path = BIDSPath(subject=subject_id,
+                         session=session_id,
+                         task=None,
+                         bids_root=bids_root,
+                         kind='scans',
                          extension='.tsv')
-    scans_fname = bids_path.fpath
+    scans_fname = op.join(ses_path, bids_path.basename)
 
     # create *_coordsystem.json
     bids_path.update(acquisition=acquisition, space=space,
-                     root=data_path, kind='coordsystem',
-                     extension='.json')
-    coordsystem_fname = bids_path.fpath
+                     kind='coordsystem', extension='.json')
+    coordsystem_fname = op.join(data_path, bids_path.basename)
 
     # create *_electrodes.tsv
-    bids_path = bids_path.update(kind='electrodes', extension='.tsv')
-    electrodes_fname = bids_path.fpath
+    bids_path.update(kind='electrodes', extension='.tsv')
+    electrodes_fname = op.join(data_path, bids_path.basename)
 
     # For the remaining files, we can use BIDSPath to alter.
     readme_fname = op.join(bids_root, 'README')
-    participants_tsv_fname = make_bids_basename(root=bids_root,
+    participants_tsv_fname = make_bids_basename(bids_root=bids_root,
                                                 suffix='participants.tsv')
     participants_json_fname = participants_tsv_fname.copy()
-    participants_json_fname.update(kind='participants', extension='.json')
+    participants_json_fname.update(kind='participants',
+                                   extension='.json')
 
-    sidecar_fname = bids_fname.copy().update(root=data_path,
+    sidecar_fname = bids_fname.copy().update(bids_root=data_path,
                                              kind=kind, extension='.json')
 
-    events_fname = sidecar_fname.copy().update(kind='events', extension='.tsv')
+    events_fname = sidecar_fname.copy().update(kind='events',
+                                               extension='.tsv')
     channels_fname = sidecar_fname.copy().update(kind='channels',
                                                  extension='.tsv')
 
     if ext not in ['.fif', '.ds', '.vhdr', '.edf', '.bdf', '.set', '.con',
                    '.sqd']:
         bids_raw_folder = str(bids_fname).split(".")[0]
-        bids_fname = bids_fname.update(root=bids_raw_folder)
+        bids_fname = bids_fname.update(bids_root=bids_raw_folder)
 
     # Anonymize
     convert = False
@@ -1102,7 +1107,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
 
     # set the raw file name to now be the absolute path to ensure the files
     # are placed in the right location
-    bids_fname = bids_fname.update(root=data_path)
+    bids_fname = bids_fname.update(bids_root=data_path)
 
     if os.path.exists(bids_fname) and not overwrite:
         raise FileExistsError('"%s" already exists. Please set '  # noqa: F821
@@ -1174,7 +1179,7 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
     Parameters
     ----------
     bids_root : str | pathlib.Path
-        Path to root of the BIDS folder
+        Path to bids_root of the BIDS folder
     subject : str
         Subject label as in 'sub-<label>', for example: '01'
     t1w : str | pathlib.Path | nibabel image object
@@ -1274,7 +1279,7 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
     # this needs to be a string, since nibabel assumes a string input
     t1w_basename = make_bids_basename(subject=subject, session=session,
                                       acquisition=acquisition,
-                                      root=anat_dir, suffix='T1w.nii.gz')
+                                      bids_root=anat_dir, suffix='T1w.nii.gz')
 
     # Check if we have necessary conditions for writing a sidecar JSON
     if trans is not None or landmarks is not None:

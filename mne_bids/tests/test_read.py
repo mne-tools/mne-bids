@@ -231,7 +231,7 @@ def test_line_freq_estimation():
     # assert that we get the same line frequency set
     bids_basename.copy()
     bids_fname = bids_basename.copy().update(kind=kind, extension='.fif',
-                                             root=bids_root)
+                                             bids_root=bids_root)
 
     # find sidecar JSON fname
     write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
@@ -288,7 +288,7 @@ def test_handle_info_reading():
     write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
 
     # find sidecar JSON fname
-    bids_fname.update(root=bids_root)
+    bids_fname.update(bids_root=bids_root)
     sidecar_fname = _find_matching_sidecar(bids_fname,
                                            '{}.json'.format(kind),
                                            allow_fail=True)
@@ -362,7 +362,7 @@ def test_handle_eeg_coords_reading():
     raw.set_montage(montage)
     with pytest.warns(RuntimeWarning, match="Skipping EEG electrodes.tsv"):
         write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
-        bids_basename.update(root=bids_root)
+        bids_basename.update(bids_root=bids_root)
         coordsystem_fname = _find_matching_sidecar(bids_basename,
                                                    suffix='coordsystem.json',
                                                    allow_fail=True)
@@ -444,7 +444,7 @@ def test_handle_ieeg_coords_reading(bids_basename):
         for digpoint in raw_test.info['dig']:
             assert digpoint['coord_frame'] == coord_frame_int
 
-    # start w/ new bids root
+    # start w/ new bids bids_root
     sh.rmtree(bids_root)
     write_raw_bids(raw, bids_basename, bids_root,
                    overwrite=True, verbose=False)
@@ -460,7 +460,7 @@ def test_handle_ieeg_coords_reading(bids_basename):
     # read in the data and assert montage is the same
     # regardless of 'm', 'cm', 'mm', or 'pixel'
     scalings = {'m': 1, 'cm': 100, 'mm': 1000}
-    bids_fname.update(root=bids_root)
+    bids_fname.update(bids_root=bids_root)
     coordsystem_fname = _find_matching_sidecar(bids_fname,
                                                suffix='coordsystem.json',
                                                allow_fail=True)
@@ -775,7 +775,7 @@ def test_handle_channel_type_casing():
 
     subject_path = op.join(bids_root, f'sub-{subject_id}', f'ses-{session_id}',
                            'meg')
-    bids_channels_fname = (bids_basename.copy().update(root=subject_path,
+    bids_channels_fname = (bids_basename.copy().update(bids_root=subject_path,
                                                        kind='channels',
                                                        extension='.tsv'))
 
@@ -792,12 +792,12 @@ def test_handle_channel_type_casing():
 def test_bads_reading():
     bids_root = _TempDir()
     channels_fname = (bids_basename.copy()
-                      .update(root=op.join(bids_root, 'sub-01', 'ses-01',
-                                           'meg'),
+                      .update(bids_root=op.join(bids_root, 'sub-01',
+                                                'ses-01', 'meg'),
                               kind='channels', extension='.tsv'))
     raw_bids_fname = (bids_basename.copy()
-                      .update(root=op.join(bids_root, 'sub-01', 'ses-01',
-                                           'meg'),
+                      .update(bids_root=op.join(bids_root, 'sub-01',
+                                                'ses-01', 'meg'),
                               kind='meg', extension='.fif'))
     raw = mne.io.read_raw_fif(raw_fname, verbose=False)
 

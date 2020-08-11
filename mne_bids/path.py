@@ -54,13 +54,13 @@ class BIDSPath(object):
         The recording name for this item. Corresponds to "rec".
     space : str | None
         The coordinate space for an anatomical file. Corresponds to "space".
-    root : str | None
-        The parent directory, i.e. the BIDS root folder.
     kind : str | None
         The recording kind. Will be appended to the filename
         before the extension. E.g., 'ieeg'.
     extension : str | None
         The extension for the filename. E.g., '.edf'
+    bids_root : str | None
+        The bids_root directory of the BIDS dataset.
 
     Examples
     --------
@@ -75,27 +75,26 @@ class BIDSPath(object):
     >>>                                            session='one')
     >>> print(new_basename)
     sub-test2_ses-one_task-mytask_ieeg.edf
-    >>> # set a bids root
-    >>> new_basename.update(root='/bids_dataset')
-    >>> print(new_basename.root)
+    >>> # set a bids bids_root
+    >>> new_basename.update(bids_root='/bids_dataset')
+    >>> print(new_basename.bids_root)
     /bids_dataset
     >>> print(new_basename.basename)
     sub-test2_ses-one_task-mytask_ieeg.edf
     """
 
-    def __init__(self, subject=None, session=None,
-                 task=None, acquisition=None,
-                 run=None, processing=None,
-                 recording=None, space=None, root=None,
-                 kind=None, extension=None):
+    def __init__(self, subject=None, session=None, task=None,
+                 acquisition=None, run=None, processing=None,
+                 recording=None, space=None,
+                 kind=None, extension=None, bids_root=None):
         if all(ii is None for ii in [subject, session, task,
                                      acquisition, run, processing,
-                                     recording, space, root, kind]):
+                                     recording, space, bids_root, kind]):
             raise ValueError("At least one parameter must be given.")
 
         self.update(subject=subject, session=session, task=task,
                     acquisition=acquisition, run=run, processing=processing,
-                    recording=recording, space=space, root=root,
+                    recording=recording, space=space, bids_root=bids_root,
                     kind=kind, extension=extension)
 
     @property
@@ -118,7 +117,7 @@ class BIDSPath(object):
         """Return the basename of the BIDS Path."""
         basename = []
         for key, val in self.entities.items():
-            if key not in ('root', 'kind', 'extension') and \
+            if key not in ('bids_root', 'kind', 'extension') and \
                     val is not None:
                 _check_key_val(key, val)
                 # convert certain keys to shorthand
@@ -149,18 +148,18 @@ class BIDSPath(object):
 
         Getting the file path consists of the following behavior:
 
-        1. ``root`` is not passed into the object: A warning is shown
+        1. ``bids_root`` is not passed into the object: A warning is shown
         to the user and it return the ``basename``.
 
-        2. ``root`` is passed into the object:
+        2. ``bids_root`` is passed into the object:
 
             i. If ``kind`` and ``extension`` are given:
             The function will then return the full filepath
-            using ``root`` and ``basename``
+            using ``bids_root`` and ``basename``
 
             ii. Else:
             The function tries to infer the full filepath
-            for the given ``root`` and ``basename``
+            for the given ``bids_root`` and ``basename``
             and will return the full filepath. It will try to
             infer the filename extension by searching
             for the file on disk. If the file cannot be found, an error
@@ -177,16 +176,18 @@ class BIDSPath(object):
         bids_fpath : str
             Either the ``basename``, or full filepath to the dataset.
         """
-        if self.root is None:
-            msg = ('No root was passed in and full BIDS filepath cannot be '
-                   'automatically inferred. Returning the bids basename.')
+        if self.bids_root is None:
+            msg = ('No bids root was passed in and '
+                   'full BIDS filepath cannot be '
+                   'automatically inferred. '
+                   'Returning the bids basename.')
             warn(msg)
             return self.basename
 
         # TODO: how do we get rid of this? Hack to make sure no error out
         # during write/read.
         if self.kind is not None and self.extension is not None:
-            return op.join(self.root, self.basename)
+            return op.join(self.bids_root, self.basename)
 
         if self.kind is None:
             msg = ('No kind was provided, and it cannot be '
@@ -195,7 +196,7 @@ class BIDSPath(object):
             raise RuntimeError(msg)
 
         bids_fpath = _get_bids_fpath_from_filesystem(
-            bids_basename=self.basename, bids_root=self.root,
+            bids_basename=self.basename, bids_root=self.bids_root,
             sub=self.subject, ses=self.session, kind=self.kind,
             extension=self.extension)
 
@@ -208,7 +209,7 @@ class BIDSPath(object):
     def __repr__(self):
         """Representation in the style of `pathlib.Path`."""
         return f'{self.__class__.__name__}(\n' \
-               f'root: {self.root}\n' \
+               f'bids_root: {self.bids_root}\n' \
                f'basename: {self.basename})'
 
     def __fspath__(self):
@@ -242,7 +243,7 @@ class BIDSPath(object):
             Allowed BIDS path entities:
             'subject', 'session', 'task', 'acquisition',
             'processing', 'run', 'recording', 'space', 
-            'kind', 'extension', 'root'
+            'kind', 'extension', 'bids_root'
 
         Returns
         -------
@@ -300,7 +301,7 @@ class BIDSPath(object):
                                  f'got {key}')
 
             # set entity value and ensure it as a string
-            if key == 'root' and val is not None:
+            if key == 'bids_root' and val is not None:
                 val = str(val)
             setattr(self, key, val)
 
@@ -500,7 +501,7 @@ def _find_matching_sidecar(bids_fname, suffix, allow_fail=False):
         and no sidecar_fname was found
 
     """
-    bids_root = bids_fname.root
+    bids_root = bids_fname.bids_root
 
     # We only use subject and session as identifier, because all other
     # parameters are potentially not binding for metadata sidecar files
@@ -541,7 +542,8 @@ def _find_matching_sidecar(bids_fname, suffix, allow_fail=False):
 
 def make_bids_basename(subject=None, session=None, task=None,
                        acquisition=None, run=None, processing=None,
-                       recording=None, space=None, root=None, suffix=None):
+                       recording=None, space=None,
+                       bids_root=None, suffix=None):
     """Create a partial/full BIDS basename from its component parts.
 
     BIDS filename prefixes have one or more pieces of metadata in them. They
@@ -573,7 +575,7 @@ def make_bids_basename(subject=None, session=None, task=None,
         The recording name. Corresponds to "rec".
     space : str | None
         The coordinate space for an anatomical file. Corresponds to "space".
-    root : str | None
+    bids_root : str | None
         The root for the filename to be created. E.g., a path to the folder
         in which you wish to create a file with this name. This is commonly
         the bids root.
@@ -592,11 +594,11 @@ def make_bids_basename(subject=None, session=None, task=None,
     sub-test_ses-two_task-mytask_data.csv
     """
     kind, extension = _get_kind_ext_from_suffix(suffix)
-    bids_path = BIDSPath(subject=subject, session=session,
-                         task=task, acquisition=acquisition,
-                         run=run, processing=processing,
-                         recording=recording, space=space,
-                         root=root, kind=kind, extension=extension)
+    bids_path = BIDSPath(subject=subject, session=session, task=task,
+                         acquisition=acquisition, run=run,
+                         processing=processing, recording=recording,
+                         space=space, bids_root=bids_root, kind=kind,
+                         extension=extension)
     bids_path._check()
     return bids_path
 
@@ -621,7 +623,7 @@ def get_kinds(bids_root):
     Parameters
     ----------
     bids_root : str | pathlib.Path
-        Path to the root of the BIDS directory.
+        Path to the bids_root of the BIDS directory.
 
     Returns
     -------
@@ -655,7 +657,7 @@ def get_entity_vals(bids_root, entity_key, *, ignore_subjects='emptyroom',
     Parameters
     ----------
     bids_root : str | pathlib.Path
-        Path to the root of the BIDS directory.
+        Path to the bids_root of the BIDS directory.
     entity_key : str
         The name of the entity key to search for.
     ignore_subjects : str | iterable | None
@@ -869,7 +871,7 @@ def _get_bids_fpath_from_filesystem(*, bids_basename, bids_root, sub, ses,
             msg = ('Could not locate a data file of a supported format. This '
                    'is likely a problem with your BIDS dataset. Please run '
                    'the BIDS validator on your data. '
-                   f'(root={bids_root}, basename={bids_basename}, '
+                   f'(bids_root={bids_root}, basename={bids_basename}, '
                    f'kind={kind}, extension={extension}, '
                    f'search string={search_str}). '
                    f'{matching_paths}')

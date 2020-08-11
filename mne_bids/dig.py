@@ -348,11 +348,11 @@ def _write_dig_bids(electrodes_fname, coordsystem_fname, data_path,
                 coordsystem_fname = make_bids_basename(
                     subject=subject_id, session=session_id,
                     acquisition=acquisition, space=coord_frame,
-                    root=data_path, suffix='coordsystem.json')
+                    bids_root=data_path, suffix='coordsystem.json')
                 electrodes_fname = make_bids_basename(
                     subject=subject_id, session=session_id,
                     acquisition=acquisition, space=coord_frame,
-                    root=data_path, suffix='electrodes.tsv')
+                    bids_root=data_path, suffix='electrodes.tsv')
                 coord_frame = 'Other'
 
             # Now write the data to the elec coords and the coordsystem

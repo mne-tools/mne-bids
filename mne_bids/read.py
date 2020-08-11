@@ -302,7 +302,7 @@ def read_raw_bids(bids_basename, bids_root, kind=None, extra_params=None,
         The base filename of the BIDS compatible files. Typically, this can be
         generated using :func:`mne_bids.make_bids_basename`.
     bids_root : str | pathlib.Path
-        Path to root of the BIDS folder
+        Path to bids_root of the BIDS folder
     kind : str | None
         The kind of recording to read. If ``None`` and only one kind (e.g.,
         only EEG or only MEG data) is present in the dataset, it will be
@@ -357,7 +357,7 @@ def read_raw_bids(bids_basename, bids_root, kind=None, extra_params=None,
     data_dir = make_bids_folders(subject=sub, session=ses, kind=kind,
                                  make_dir=False)
     bids_fname = bids_basename.copy().update(kind=kind,
-                                             root=bids_root).fpath
+                                             bids_root=bids_root).fpath
 
     if op.splitext(bids_fname)[1] == '.pdf':
         bids_raw_folder = op.join(bids_root, data_dir,
@@ -375,7 +375,7 @@ def read_raw_bids(bids_basename, bids_root, kind=None, extra_params=None,
 
     # Try to find an associated events.tsv to get information about the
     # events in the recorded data
-    bids_basename.update(root=bids_root)
+    bids_basename.update(bids_root=bids_root)
     events_fname = _find_matching_sidecar(bids_basename,
                                           'events.tsv', allow_fail=True)
     if events_fname is not None:
@@ -438,7 +438,7 @@ def get_matched_empty_room(bids_basename, bids_root):
         The base filename of the BIDS-compatible file. Typically, this can be
         generated using :func:`mne_bids.make_bids_basename`.
     bids_root : str | pathlib.Path
-        Path to the BIDS root folder.
+        Path to the BIDS bids_root folder.
 
     Returns
     -------
@@ -459,7 +459,7 @@ def get_matched_empty_room(bids_basename, bids_root):
                                  space=params.get('space'))
 
     kind = 'meg'  # We're only concerned about MEG data here
-    bids_fname = bids_basename.update(kind=kind, root=bids_root).fpath
+    bids_fname = bids_basename.update(kind=kind, bids_root=bids_root).fpath
     _, ext = _parse_ext(bids_fname)
     if ext == '.fif':
         extra_params = dict(allow_maxshield=True)
@@ -591,7 +591,7 @@ def get_head_mri_trans(bids_basename, bids_root):
         The base filename of the BIDS-compatible file. Typically, this can be
         generated using :func:`mne_bids.make_bids_basename`.
     bids_root : str | pathlib.Path
-        Path to root of the BIDS folder
+        Path to bids_root of the BIDS folder
 
     Returns
     -------
@@ -616,7 +616,7 @@ def get_head_mri_trans(bids_basename, bids_root):
                                  space=params.get('space'))
 
     # Get the sidecar file for MRI landmarks
-    bids_fname = bids_basename.update(kind='meg', root=bids_root)
+    bids_fname = bids_basename.update(kind='meg', bids_root=bids_root)
     t1w_json_path = _find_matching_sidecar(bids_fname, 'T1w.json')
 
     # Get MRI landmarks from the JSON sidecar

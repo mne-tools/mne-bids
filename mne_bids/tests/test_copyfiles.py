@@ -155,7 +155,7 @@ def test_copyfile_kit():
         task=task)
 
     kit_bids_basename = bids_basename.copy().update(acquisition=None,
-                                                    root=output_path)
+                                                    bids_root=output_path)
 
     raw = mne.io.read_raw_kit(
         raw_fname, mrk=hpi_fname, elp=electrode_fname,
@@ -163,7 +163,7 @@ def test_copyfile_kit():
     _, ext = _parse_ext(raw_fname, verbose=True)
     kind = _handle_kind(raw)
     bids_fname = bids_basename.copy().update(kind=kind, extension=ext,
-                                             root=output_path)
+                                             bids_root=output_path)
 
     copyfile_kit(raw_fname, bids_fname, subject_id, session_id,
                  task, run, raw._init_kwargs)
@@ -181,7 +181,7 @@ def test_copyfile_kit():
         elp_ext = '.pos'
         elp_fname = make_bids_basename(subject=subject_id, session=session_id,
                                        task=task, acquisition=key, run=run,
-                                       root=output_path,
+                                       bids_root=output_path,
                                        suffix='headshape%s' % elp_ext)
         assert op.exists(elp_fname)
 
@@ -190,6 +190,6 @@ def test_copyfile_kit():
         hsp_ext = '.pos'
         hsp_fname = make_bids_basename(subject=subject_id, session=session_id,
                                        task=task, acquisition=key, run=run,
-                                       root=output_path,
+                                       bids_root=output_path,
                                        suffix='headshape%s' % hsp_ext)
         assert op.exists(hsp_fname)
