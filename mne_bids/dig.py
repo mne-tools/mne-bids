@@ -402,7 +402,7 @@ def _read_dig_bids(electrodes_fpath, coordsystem_fpath,
     raw : instance of Raw
         The data as MNE-Python Raw object.
     kind : str
-        Type of the data as in ALLOWED_MODALITY_KINDS.
+        Type of the data as in ``ALLOWED_MODALITY_KINDS``.
     verbose : bool
         Set verbose output to true or false.
 

@@ -81,10 +81,10 @@ ALLOWED_FILENAME_EXTENSIONS = (
     allowed_extensions_ieeg +
     ['.json', '.tsv', '.tsv.gz', '.nii', '.nii.gz'])
 
-# allowed BIDS entities
+# allowed BIDS path entities
 BIDS_PATH_ENTITIES = ('subject', 'session', 'task', 'acquisition',
                       'processing', 'run', 'recording',
-                      'space', 'root', 'kind', 'ext')
+                      'space', 'root', 'kind', 'extension')
 
 # accepted BIDS formats, which may be subject to change
 # depending on the specification

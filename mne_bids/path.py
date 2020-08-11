@@ -55,16 +55,15 @@ class BIDSPath(object):
     space : str | None
         The coordinate space for an anatomical file. Corresponds to "space".
     root : str | None
-        The directory for the filename. E.g., a path to the folder
-        in which you wish to create a file with this name.
+        The parent directory, i.e. the BIDS root folder.
     kind : str | None
-        The suffix for the filename. E.g., 'ieeg'.
-    ext : str | None
-        The filename extension, e..g., ``'.edf'``.
+        The recording kind. Will be appended to the filename before the extension. E.g., 'ieeg'.
+    extension : str | None
+        The extension for the filename. E.g., '.edf'
 
     Examples
     --------
-    >>> bids_basename = make_bids_basename(subject='test',session='two',task='mytask',suffix='data.csv')
+    >>> bids_basename = make_bids_basename(subject='test', session='two', task='mytask', suffix='data.csv')
     >>> print(bids_basename)
     sub-test_ses-two_task-mytask_data.csv
     >>> bids_basename
@@ -79,7 +78,7 @@ class BIDSPath(object):
                  task=None, acquisition=None,
                  run=None, processing=None,
                  recording=None, space=None, root=None,
-                 kind=None, ext=None):
+                 kind=None, extension=None):
         if all(ii is None for ii in [subject, session, task,
                                      acquisition, run, processing,
                                      recording, space, root, kind]):
@@ -88,7 +87,7 @@ class BIDSPath(object):
         self.update(subject=subject, session=session, task=task,
                     acquisition=acquisition, run=run, processing=processing,
                     recording=recording, space=space, root=root,
-                    kind=kind, ext=ext)
+                    kind=kind, extension=extension)
 
     @property
     def entities(self):
@@ -104,7 +103,7 @@ class BIDSPath(object):
             ('space', self.space),
             ('root', self.root),
             ('kind', self.kind),
-            ('ext', self.ext),
+            ('extension', self.extension),
         ])
 
     @property
@@ -112,7 +111,7 @@ class BIDSPath(object):
         """Return the basename of the BIDS Path."""
         basename = []
         for key, val in self.entities.items():
-            if key not in ('root', 'kind', 'ext') and \
+            if key not in ('root', 'kind', 'extension') and \
                     val is not None:
                 _check_key_val(key, val)
                 # convert certain keys to shorthand
@@ -129,8 +128,8 @@ class BIDSPath(object):
                 basename.append('%s-%s' % (key, val))
 
         if self.kind is not None:
-            if self.ext is not None:
-                basename.append(f'{self.kind}{self.ext}')
+            if self.extension is not None:
+                basename.append(f'{self.kind}{self.extension}')
             else:
                 basename.append(self.kind)
 
@@ -139,13 +138,13 @@ class BIDSPath(object):
 
     def __str__(self):
         """Return the string representation of the path."""
-        return self.basename
+        return self.get_fpath()
 
     def __repr__(self):
         """Representation in the style of `pathlib.Path`."""
         return f'{self.__class__.__name__}(\n' \
                f'root: {self.root}\n' \
-               f'basename: {str(self)})'
+               f'basename: {self.basename})'
 
     def __fspath__(self):
         """Return the string representation for any fs functions."""
@@ -160,33 +159,63 @@ class BIDSPath(object):
         return str(self) != str(other)
 
     def get_fpath(self):
-        """Get the full filepath for this BIDS file."""
-        if self.root:
-            return op.join(self.root, self.basename)
+        """Get the full filepath for this BIDS file.
 
-        if self.ext is None and self.root is None:
-            msg = ('No filename extension was provided, and it cannot be '
-                   'automatically inferred because no bids_root was passed.')
-            raise ValueError(msg)
+        Getting the file path consists of the following behavior:
+
+        1. ``root`` is not passed into the object: A warning is shown
+        to the user and it return the ``basename``.
+
+        2. ``root`` is passed into the object:
+
+            i. If ``kind`` and ``extension`` are given:
+            The function will then return the full filepath
+            using ``root`` and ``basename``
+
+            ii. Else:
+            The function tries to infer the full filepath
+            for the given ``root`` and ``basename``
+            and will return the full filepath.
+
+            If it cannot find a matching dataset, it
+            will result in an error.
+
+
+        If ``None``, try to infer the filename extension by searching
+            for the file on disk. If the file cannot be found, an error
+            will be raised. To disable this automatic inference attempt,
+            pass a string (like ``'.fif'`` or ``'.vhdr'``).
+            If an empty string is passed, no extension
+            will be added to the filename.
+            
+        Returns
+        -------
+        bids_fpath : str
+            Either the ``basename``, or full filepath to the dataset.
+        """
+        if self.root is None:
+            msg = ('No root was passed in and full BIDS filepath cannot be '
+                   'automatically inferred. Returning the bids basename.')
+            warn(msg)
+            return self.basename
+
+        # TODO: how do we get rid of this? Hack to make sure no error out
+        # during write/read.
+        if self.kind is not None and self.extension is not None:
+            return op.join(self.root, self.basename)
 
         if self.kind is None:
             msg = ('No kind was provided, and it cannot be '
                    'automatically inferred. Please set kind to one of '
                    f'{ALLOWED_FILENAME_KINDS}.')
+            raise ValueError(msg)
 
-        if self.ext is None:
-            bids_fname = _get_bids_fname_from_filesystem(
-                bids_basename=self.basename, bids_root=self.root,
-                sub=self.subject, ses=self.session, kind=self.kind)
-            new_suffix = bids_fname.split("_")[-1]
-            kind, ext = _get_kind_ext_from_suffix(new_suffix)
-            bids_fname = self.copy().update(kind=kind, ext=ext)
-        else:
-            bids_fname = self.copy().update(kind=kind, ext=ext)
+        bids_fpath = _get_bids_fpath_from_filesystem(
+            bids_basename=self.basename, bids_root=self.root,
+            sub=self.subject, ses=self.session, kind=self.kind,
+            extension=self.extension)
 
-        return bids_fname
-
-        return self.basename
+        return bids_fpath
 
     def copy(self):
         """Copy the instance.
@@ -198,51 +227,6 @@ class BIDSPath(object):
         """
         return deepcopy(self)
 
-    def get_bids_fname(self, kind=None, bids_root=None, ext=None):
-        """Get the BIDS filename, by inferring kind and extension.
-
-        Parameters
-        ----------
-        kind : str, optional
-            The kind of recording to read. If ``None`` and only one
-            kind (e.g., only EEG or only MEG data) is present in the
-            dataset, it will be selected automatically.
-        bids_root : str | os.PathLike, optional
-            Path to root of the BIDS folder
-        ext : str, optional
-            If ``None``, try to infer the filename extension by searching
-            for the file on disk. If the file cannot be found, an error
-            will be raised. To disable this automatic inference attempt,
-            pass a string (like ``'.fif'`` or ``'.vhdr'``).
-            If an empty string is passed, no extension
-            will be added to the filename.
-
-        Returns
-        -------
-        bids_fname : BIDSPath
-            A BIDSPath with a full filename.
-        """
-        # Get the BIDS parameters (=entities)
-        sub = self.subject
-        ses = self.session
-
-        if ext is None and bids_root is None:
-            msg = ('No filename extension was provided, and it cannot be '
-                   'automatically inferred because no bids_root was passed.')
-            raise ValueError(msg)
-
-        if ext is None:
-            bids_fname = _get_bids_fname_from_filesystem(
-                bids_basename=self.basename, bids_root=bids_root,
-                sub=sub, ses=ses, kind=kind)
-            new_suffix = bids_fname.split("_")[-1]
-            kind, ext = _get_kind_ext_from_suffix(new_suffix)
-            bids_fname = self.copy().update(kind=kind, ext=ext)
-        else:
-            bids_fname = self.copy().update(kind=kind, ext=ext)
-
-        return bids_fname
-
     def update(self, **entities):
         """Update inplace BIDS entity key/value pairs in object.
 
@@ -252,7 +236,7 @@ class BIDSPath(object):
             Allowed BIDS path entities:
             'subject', 'session', 'task', 'acquisition',
             'processing', 'run', 'recording', 'space', 
-            'kind', 'ext', 'root'
+            'kind', 'extension', 'root'
 
         Returns
         -------
@@ -281,11 +265,11 @@ class BIDSPath(object):
             entities['run'] = '{:02}'.format(run)
 
         # ensure extension starts with a '.'
-        ext = entities.get('ext')
+        ext = entities.get('extension')
         if ext is not None:
             if not ext.startswith('.'):
                 ext = f'.{ext}'
-                entities['ext'] = ext
+                entities['extension'] = ext
             # check validity of the extension
             if ext not in ALLOWED_FILENAME_EXTENSIONS:
                 raise ValueError(f'Extension {ext} is not '
@@ -317,7 +301,7 @@ class BIDSPath(object):
 
     def _check(self, with_emptyroom=True):
         # check the task/session of er basename
-        str(self)  # run string representation to check validity of arguments
+        self.basename  # run basename to check validity of arguments
         if with_emptyroom and self.subject == 'emptyroom':
             _check_empty_room_basename(self)
 
@@ -510,6 +494,17 @@ def _find_matching_sidecar(bids_fname, bids_root, suffix, allow_fail=False):
         and no sidecar_fname was found
 
     """
+    if isinstance(bids_fname, str):
+        params = parse_bids_filename(bids_fname)
+        bids_fname = BIDSPath(subject=params.get('sub'),
+                              session=params.get('ses'),
+                              task=params.get('task'),
+                              acquisition=params.get('acq'),
+                              run=params.get('run'),
+                              processing=params.get('proc'),
+                              recording=params.get('rec'),
+                              space=params.get('space'))
+
     # We only use subject and session as identifier, because all other
     # parameters are potentially not binding for metadata sidecar files
     search_str = f'sub-{bids_fname.subject}'
@@ -606,12 +601,12 @@ def make_bids_basename(subject=None, session=None, task=None,
     >>>       task='mytask', suffix='data.csv'))
     sub-test_ses-two_task-mytask_data.csv
     """
-    kind, ext = _get_kind_ext_from_suffix(suffix)
+    kind, extension = _get_kind_ext_from_suffix(suffix)
     bids_path = BIDSPath(subject=subject, session=session,
                          task=task, acquisition=acquisition,
                          run=run, processing=processing,
                          recording=recording, space=space,
-                         root=root, kind=kind, ext=ext)
+                         root=root, kind=kind, extension=extension)
     bids_path._check()
     return bids_path
 
@@ -846,31 +841,48 @@ def _find_best_candidates(params, candidate_list):
     return best_candidates
 
 
-def _get_bids_fname_from_filesystem(*, bids_basename, bids_root, sub, ses,
-                                    kind):
+def _get_bids_fpath_from_filesystem(*, bids_basename, bids_root, sub, ses,
+                                    kind, extension):
     if kind is None:
         kind = _infer_kind(bids_basename=bids_basename, bids_root=bids_root,
                            sub=sub, ses=ses)
 
-    data_dir = make_bids_folders(subject=sub, session=ses, kind=kind,
-                                 make_dir=False)
+    # support files above the bids_root/**/<kind>/ level
+    if kind == 'scans':
+        data_dir = make_bids_folders(subject=sub, session=ses,
+                                     make_dir=False)
+    else:
+        data_dir = make_bids_folders(subject=sub, session=ses, kind=kind,
+                                     make_dir=False)
 
-    bti_dir = op.join(bids_root, data_dir, f'{bids_basename}_{kind}')
+    bti_dir = op.join(bids_root, data_dir, f'{bids_basename}')
     if op.isdir(bti_dir):
         logger.info(f'Assuming BTi data in {bti_dir}')
-        bids_fname = f'{bti_dir}.pdf'
+        bids_fpath = f'{bti_dir}.pdf'
     else:
         # Find all matching files in all supported formats.
-        valid_exts = list(reader.keys())
-        matching_paths = glob.glob(op.join(bids_root, data_dir,
-                                           f'{bids_basename}_{kind}.*'))
+        valid_exts = ALLOWED_FILENAME_EXTENSIONS
+        search_str = op.join(bids_root, data_dir,
+                             f'{bids_basename}*')
+        matching_paths = glob.glob(search_str)
         matching_paths = [p for p in matching_paths
                           if _parse_ext(p)[1] in valid_exts]
+
+        if len(matching_paths) > 1:
+            # only get the raw (m/i)EEG dataset if more then one match
+            dataset_exts = list(reader.keys())
+            matching_paths = [fpath for fpath in matching_paths
+                              if _parse_ext(fpath)[1] in dataset_exts]
 
         if not matching_paths:
             msg = ('Could not locate a data file of a supported format. This '
                    'is likely a problem with your BIDS dataset. Please run '
-                   'the BIDS validator on your data.')
+                   'the BIDS validator on your data. '
+                   f'(root={bids_root}, basename={bids_basename}, '
+                   f'subject={sub}, session={ses}, '
+                   f'kind={kind}, extension={extension}, '
+                   f'search string={search_str}). '
+                   f'{matching_paths}')
             raise RuntimeError(msg)
 
         # FIXME This will break e.g. with FIFF data split across multiple
@@ -882,10 +894,14 @@ def _get_bids_fname_from_filesystem(*, bids_basename, bids_root, sub, ses,
                    'BIDS validator on your data.')
             raise RuntimeError(msg)
 
-        matching_path = matching_paths[0]
-        bids_fname = op.basename(matching_path)
+        if extension is not None:
+            matching_path = [fpath for fpath in matching_paths
+                             if fpath.endswith(extension)][0]
+        else:
+            matching_path = matching_paths[0]
+        bids_fpath = matching_path
 
-    return bids_fname
+    return bids_fpath
 
 
 def _get_kinds_for_sub(*, bids_basename, bids_root, sub, ses=None):

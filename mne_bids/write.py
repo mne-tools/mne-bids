@@ -967,7 +967,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     acquisition, space = bids_basename.acquisition, bids_basename.space
     kind = _handle_kind(raw)
 
-    bids_fname = bids_basename.copy().update(kind=kind, ext=ext)
+    bids_fname = bids_basename.copy().update(kind=kind, extension=ext)
 
     # check whether the info provided indicates that the data is emptyroom
     # data
@@ -1005,17 +1005,17 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     # create *_scans.tsv
     bids_path = BIDSPath(subject=subject_id, session=session_id,
                          task=None, root=ses_path, kind='scans',
-                         ext='.tsv')
+                         extension='.tsv')
     scans_fname = bids_path.get_fpath()
 
     # create *_coordsystem.json
     bids_path.update(acquisition=acquisition, space=space,
                      root=data_path, kind='coordsystem',
-                     ext='.json')
+                     extension='.json')
     coordsystem_fname = bids_path.get_fpath()
 
     # create *_electrodes.tsv
-    bids_path = bids_path.update(kind='electrodes', ext='.tsv')
+    bids_path = bids_path.update(kind='electrodes', extension='.tsv')
     electrodes_fname = bids_path.get_fpath()
 
     # For the remaining files, we can use BIDSPath to alter.
@@ -1023,13 +1023,14 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     participants_tsv_fname = make_bids_basename(root=bids_root,
                                                 suffix='participants.tsv')
     participants_json_fname = participants_tsv_fname.copy()
-    participants_json_fname.update(kind='participants', ext='.json')
+    participants_json_fname.update(kind='participants', extension='.json')
 
     sidecar_fname = bids_fname.copy().update(root=data_path,
-                                             kind=kind, ext='.json')
+                                             kind=kind, extension='.json')
 
-    events_fname = sidecar_fname.copy().update(kind='events', ext='.tsv')
-    channels_fname = sidecar_fname.copy().update(kind='channels', ext='.tsv')
+    events_fname = sidecar_fname.copy().update(kind='events', extension='.tsv')
+    channels_fname = sidecar_fname.copy().update(kind='channels',
+                                                 extension='.tsv')
 
     if ext not in ['.fif', '.ds', '.vhdr', '.edf', '.bdf', '.set', '.con',
                    '.sqd']:
@@ -1047,12 +1048,12 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
             if verbose:
                 warn('Converting to FIF for anonymization')
             convert = True
-            bids_fname.update(ext='.fif')
+            bids_fname.update(extension='.fif')
         elif kind in ['eeg', 'ieeg'] and ext != '.vhdr':
             if verbose:
                 warn('Converting to BV for anonymization')
             convert = True
-            bids_fname.update(ext='.vhdr')
+            bids_fname.update(extension='.vhdr')
 
     # Read in Raw object and extract metadata from Raw object if needed
     orient = ORIENTATION.get(ext, 'n/a')
@@ -1095,6 +1096,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
                   verbose)
     _channels_tsv(raw, channels_fname, overwrite, verbose)
 
+    print(bids_fname)
     _mkdir_p(os.path.dirname(op.join(data_path, bids_fname)))
 
     # set the raw file name to now be the absolute path to ensure the files
@@ -1127,7 +1129,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
         else:
             if verbose:
                 warn('Converting data files to BrainVision format')
-            bids_fname.update(kind=kind, ext='.vhdr')
+            bids_fname.update(kind=kind, extension='.vhdr')
             _write_raw_brainvision(raw, bids_fname, events)
     elif ext == '.fif':
         _write_raw_fif(raw, bids_fname)
@@ -1336,7 +1338,7 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
             {'LPA': list(mri_landmarks[0, :]),
              'NAS': list(mri_landmarks[1, :]),
              'RPA': list(mri_landmarks[2, :])}
-        fname = t1w_basename.copy().update(ext='.json')
+        fname = t1w_basename.copy().update(extension='.json')
         if op.isfile(fname) and not overwrite:
             raise IOError('Wanted to write a file but it already exists and '
                           '`overwrite` is set to False. File: "{}"'

@@ -162,7 +162,7 @@ def test_copyfile_kit():
         hsp=headshape_fname)
     _, ext = _parse_ext(raw_fname, verbose=True)
     kind = _handle_kind(raw)
-    bids_fname = bids_basename.copy().update(kind=kind, ext=ext,
+    bids_fname = bids_basename.copy().update(kind=kind, extension=ext,
                                              root=output_path)
 
     copyfile_kit(raw_fname, bids_fname, subject_id, session_id,
@@ -170,10 +170,10 @@ def test_copyfile_kit():
     assert op.exists(bids_fname)
     _, ext = _parse_ext(hpi_fname, verbose=True)
     if ext == '.sqd':
-        kit_bids_basename.update(kind='markers', ext='.sqd')
+        kit_bids_basename.update(kind='markers', extension='.sqd')
         assert op.exists(kit_bids_basename)
     elif ext == '.mrk':
-        kit_bids_basename.update(kind='markers', ext='.mrk')
+        kit_bids_basename.update(kind='markers', extension='.mrk')
         assert op.exists(kit_bids_basename)
 
     if op.exists(electrode_fname):
