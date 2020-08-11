@@ -1463,11 +1463,13 @@ def test_mark_bad_channels(_bids_validate,
                                             'channels.tsv')
 
     if drop_status_col:
+        # Remove `status` column from the sidecare TSV file.
         tsv_data = _from_tsv(channels_fname)
         del tsv_data['status']
         _to_tsv(tsv_data, channels_fname)
 
     if drop_description_col:
+        # Remove `status_description` column from the sidecare TSV file.
         tsv_data = _from_tsv(channels_fname)
         del tsv_data['status_description']
         _to_tsv(tsv_data, channels_fname)
@@ -1492,7 +1494,9 @@ def test_mark_bad_channels(_bids_validate,
         return
 
     if not overwrite:
-        # Mark `existing_ch_names` as bad before we begin our actual tests.
+        # Mark `existing_ch_names` as bad in raw and sidecar TSV before we
+        # begin our actual tests, which should then add additional channels
+        # to the list of bads, retaining the ones we're specifying here.
         mark_bad_channels(ch_names=existing_ch_names,
                           descriptions=existing_descriptions,
                           bids_basename=bids_basename, bids_root=bids_root,

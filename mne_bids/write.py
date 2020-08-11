@@ -38,7 +38,7 @@ from mne_bids.utils import (_write_json, _write_tsv, _write_text,
                             _handle_kind, _get_ch_type_mapping,
                             _estimate_line_freq, _check_anonymize,
                             _stamp_to_dt)
-from mne_bids import make_bids_folders, make_bids_basename
+from mne_bids import make_bids_folders, make_bids_basename, read_raw_bids
 from mne_bids.path import (BIDSPath, _parse_ext, parse_bids_filename,
                            _mkdir_p, _path_to_str, _infer_kind,
                            _find_matching_sidecar)
@@ -46,6 +46,7 @@ from mne_bids.copyfiles import (copyfile_brainvision, copyfile_eeglab,
                                 copyfile_ctf, copyfile_bti, copyfile_kit)
 from mne_bids.tsv_handler import (_from_tsv, _drop, _contains_row,
                                   _combine_rows)
+from mne_bids.read import _get_bads_from_tsv_data
 
 from mne_bids.config import (ORIENTATION, UNITS, MANUFACTURERS,
                              IGNORED_CHANNELS, ALLOWED_EXTENSIONS,
@@ -1461,19 +1462,32 @@ def mark_bad_channels(ch_names, descriptions=None, *, bids_basename,
         kind = _infer_kind(bids_basename=bids_basename, bids_root=bids_root,
                            sub=sub, ses=ses)
 
-    # Read sidecar and create required columns if they do not exist.
     bids_fname = bids_basename.get_bids_fname(kind=kind, bids_root=bids_root)
     channels_fname = _find_matching_sidecar(bids_fname, bids_root,
                                             'channels.tsv')
-    data = _from_tsv(channels_fname)
-    if 'status' not in data:
-        logger.info('No "status" column found in input file. Creating.')
-        data['status'] = ['good'] * len(data['name'])
 
-    if 'status_description' not in data:
+    # Read raw and sidecar file.
+    raw = read_raw_bids(bids_basename=bids_basename, bids_root=bids_root,
+                        kind=kind,
+                        extra_params=dict(allow_maxshield=True, preload=True),
+                        verbose=False)
+    bads_raw = raw.info['bads']
+
+    tsv_data = _from_tsv(channels_fname)
+    if 'status' in tsv_data:
+        bads_tsv = _get_bads_from_tsv_data(tsv_data)
+    else:
+        bads_tsv = []
+
+    # Read sidecar and create required columns if they do not exist.
+    if 'status' not in tsv_data:
+        logger.info('No "status" column found in input file. Creating.')
+        tsv_data['status'] = ['good'] * len(tsv_data['name'])
+
+    if 'status_description' not in tsv_data:
         logger.info('No "status_description" column found in input file. '
                     'Creating.')
-        data['status_description'] = ['n/a'] * len(data['name'])
+        tsv_data['status_description'] = ['n/a'] * len(tsv_data['name'])
 
     # Update the sidecar data.
     if overwrite:
@@ -1482,19 +1496,32 @@ def mark_bad_channels(ch_names, descriptions=None, *, bids_basename,
         # XXX here. This is not optimal in terms of performance, but
         # XXX probably doesn't hurt anyone.
         logger.info('Resetting status and description for all channels.')
-        data['status'] = ['good'] * len(data['name'])
-        data['status_description'] = ['n/a'] * len(data['name'])
+        tsv_data['status'] = ['good'] * len(tsv_data['name'])
+        tsv_data['status_description'] = ['n/a'] * len(tsv_data['name'])
+    elif not overwrite and not bads_tsv and bads_raw:
+        # No bads are marked in channels.tsv, but in raw.info['bads'], and
+        # the user requested to UPDATE (overwrite=False) the channel status.
+        # -> Inject bads from info['bads'] into channels.tsv before proceeding!
+        for ch_name in bads_raw:
+            idx = tsv_data['name'].index(ch_name)
+            tsv_data['status'][idx] = 'bad'
 
+    # Now actually mark the user-requested channels as bad.
     for ch_name, description in zip(ch_names, descriptions):
-        if ch_name not in data['name']:
+        if ch_name not in tsv_data['name']:
             raise ValueError(f'Channel {ch_name} not found in dataset!')
 
-        idx = data['name'].index(ch_name)
-
+        idx = tsv_data['name'].index(ch_name)
         logger.info(f'Processing channel {ch_name}:\n'
                     f'    status: bad\n'
                     f'    description: {description}')
-        data['status'][idx] = 'bad'
-        data['status_description'][idx] = description
+        tsv_data['status'][idx] = 'bad'
+        tsv_data['status_description'][idx] = description
 
-    _write_tsv(channels_fname, data, overwrite=True, verbose=verbose)
+    _write_tsv(channels_fname, tsv_data, overwrite=True, verbose=verbose)
+
+    # Update info['bads']
+    bads = _get_bads_from_tsv_data(tsv_data)
+    raw.info['bads'] = bads
+    # XXX (How) will this handle split files?
+    raw.save(raw.filenames[0], overwrite=True, verbose=False)
