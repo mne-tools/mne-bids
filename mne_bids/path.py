@@ -63,16 +63,24 @@ class BIDSPath(object):
 
     Examples
     --------
-    >>> bids_basename = make_bids_basename(subject='test', session='two', task='mytask', suffix='data.csv')
+    >>> bids_basename = make_bids_basename(subject='test', session='two',
+    >>>                                    task='mytask', suffix='ieeg.edf')
     >>> print(bids_basename)
-    sub-test_ses-two_task-mytask_data.csv
+    sub-test_ses-two_task-mytask_ieeg.edf
     >>> bids_basename
-    BIDSPath(sub-test_ses-two_task-mytask_data.csv)
+    BIDSPath(sub-test_ses-two_task-mytask_ieeg.edf)
     >>> # copy and update multiple entities at once
-    >>> new_basename = bids_basename.copy().update(subject='test2', session='one')
+    >>> new_basename = bids_basename.copy().update(subject='test2',
+    >>>                                            session='one')
     >>> print(new_basename)
-    sub-test2_ses-one_task-mytask_data.csv
-    """  # noqa
+    sub-test2_ses-one_task-mytask_ieeg.edf
+    >>> # set a bids root
+    >>> new_basename.update(root='/bids_dataset')
+    >>> print(new_basename.root)
+    /bids_dataset
+    >>> print(new_basename.basename)
+    sub-test2_ses-one_task-mytask_ieeg.edf
+    """
 
     def __init__(self, subject=None, session=None,
                  task=None, acquisition=None,
@@ -154,18 +162,16 @@ class BIDSPath(object):
             ii. Else:
             The function tries to infer the full filepath
             for the given ``root`` and ``basename``
-            and will return the full filepath.
+            and will return the full filepath. It will try to
+            infer the filename extension by searching
+            for the file on disk. If the file cannot be found, an error
+            will be raised. To disable this automatic inference attempt,
+            pass a string (like ``'.fif'`` or ``'.vhdr'``).
 
             If it cannot find a matching dataset, it
             will result in an error.
 
-
-        If ``None``, try to infer the filename extension by searching
-            for the file on disk. If the file cannot be found, an error
-            will be raised. To disable this automatic inference attempt,
-            pass a string (like ``'.fif'`` or ``'.vhdr'``).
-            If an empty string is passed, no extension
-            will be added to the filename.
+        If ``None``,
 
         Returns
         -------
@@ -883,7 +889,6 @@ def _get_bids_fpath_from_filesystem(*, bids_basename, bids_root, sub, ses,
                    'is likely a problem with your BIDS dataset. Please run '
                    'the BIDS validator on your data. '
                    f'(root={bids_root}, basename={bids_basename}, '
-                   f'subject={sub}, session={ses}, '
                    f'kind={kind}, extension={extension}, '
                    f'search string={search_str}). '
                    f'{matching_paths}')

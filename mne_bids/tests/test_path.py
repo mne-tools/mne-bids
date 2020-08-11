@@ -266,7 +266,10 @@ def test_bids_path(return_bids_test_dir):
     assert (bids_basename.basename == expected_basename2)
     bids_basename.update(extension='.vhdr')
     assert (bids_basename.basename == expected_basename2)
-    assert (bids_basename.fpath == expected_basename2)
+
+    with pytest.warns(RuntimeWarning,
+                      match='No root was passed in'):
+        assert (bids_basename.fpath == expected_basename2)
 
     # with root, but without kind/extension
     # basename should work, but fpath should not.
