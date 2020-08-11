@@ -253,12 +253,14 @@ def test_bids_path(return_bids_test_dir):
         task=task)
 
     # test bids path without root, kind, extension
+    # basename and fpath should be the same
     expected_basename = \
         f'sub-{subject_id}_ses-{session_id}_task-{task}_run-{run}'
     assert (bids_basename.basename == expected_basename)
     assert (bids_basename.fpath == expected_basename)
 
     # without root and with kind/extension
+    # basename and fpath should be the same
     bids_basename.update(kind='ieeg', extension='vhdr')
     expected_basename2 = expected_basename + '_ieeg.vhdr'
     assert (bids_basename.basename == expected_basename2)
@@ -267,6 +269,7 @@ def test_bids_path(return_bids_test_dir):
     assert (bids_basename.fpath == expected_basename2)
 
     # with root, but without kind/extension
+    # basename should work, but fpath should not.
     bids_basename.update(root=bids_root, kind=None, extension=None)
     assert bids_basename.basename == expected_basename
 

@@ -283,7 +283,7 @@ def copyfile_brainvision(vhdr_src, vhdr_dest, anonymize=None, verbose=False):
     fname_src, ext_src = _parse_ext(vhdr_src)
     fname_dest, ext_dest = _parse_ext(vhdr_dest)
     if ext_src != ext_dest:
-        raise ValueError('Need to move data with same ext'
+        raise ValueError('Need to move data with same extension'
                          ' but got "{}", "{}"'.format(ext_src, ext_dest))
 
     eeg_file_path, vmrk_file_path = _get_brainvision_paths(vhdr_src)
@@ -355,7 +355,7 @@ def copyfile_eeglab(src, dest):
     fname_src, ext_src = _parse_ext(src)
     fname_dest, ext_dest = _parse_ext(dest)
     if ext_src != ext_dest:
-        raise ValueError('Need to move data with same ext'
+        raise ValueError('Need to move data with same extension'
                          ' but got {}, {}'.format(ext_src, ext_dest))
 
     # Extract matlab struct "EEG" from EEGLAB file
