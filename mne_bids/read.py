@@ -186,6 +186,17 @@ def _handle_events_reading(events_fname, raw):
     return raw
 
 
+def _get_bads_from_tsv_data(tsv_data):
+    """Extract names of bads from data read from channels.tsv"""
+    idx = []
+    for ch_idx, status in enumerate(tsv_data['status']):
+        if status.lower() == 'bad':
+            idx.append(ch_idx)
+
+    bads = [tsv_data['name'][i] for i in idx]
+    return bads
+
+
 def _handle_channels_reading(channels_fname, bids_fname, raw):
     """Read associated channels.tsv and populate raw.
 
@@ -254,9 +265,7 @@ def _handle_channels_reading(channels_fname, bids_fname, raw):
     # good and bad channels
     if 'status' in channels_dict:
         # find bads from channels.tsv
-        bad_bool = [True if chn.lower() == 'bad' else False
-                    for chn in channels_dict['status']]
-        bads_from_tsv = np.asarray(channels_dict['name'])[bad_bool]
+        bads_from_tsv = _get_bads_from_tsv_data(channels_dict)
 
         if raw.info['bads'] and set(bads_from_tsv) != set(raw.info['bads']):
             warn(f'Encountered conflicting information on channel status '
