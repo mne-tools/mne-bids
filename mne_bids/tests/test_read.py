@@ -790,7 +790,7 @@ def test_bads_reading():
     bids_root = _TempDir()
     channels_fname = (bids_basename.copy()
                       .update(root=op.join(bids_root, 'sub-01', 'ses-01',
-                                             'meg'),
+                                           'meg'),
                               kind='channels', extension='.tsv'))
     raw_bids_fname = (bids_basename.copy()
                       .update(root=op.join(bids_root, 'sub-01', 'ses-01',
