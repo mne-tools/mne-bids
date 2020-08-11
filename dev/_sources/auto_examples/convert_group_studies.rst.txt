@@ -841,48 +841,48 @@ Now let's see the structure of the BIDS folder we created.
  .. code-block:: none
 
     |eegmmidb_bids_group_conversion/
+    |--- README
     |--- participants.tsv
     |--- participants.json
-    |--- README
     |--- dataset_description.json
     |--- sub-001/
     |------ ses-01/
     |--------- sub-001_ses-01_scans.tsv
     |--------- eeg/
-    |------------ sub-001_ses-01_task-MotorImagery_run-02_eeg.json
-    |------------ sub-001_ses-01_task-MotorImagery_run-02_eeg.vhdr
-    |------------ sub-001_ses-01_task-MotorImagery_run-01_eeg.json
     |------------ sub-001_ses-01_task-MotorImagery_run-03_eeg.vmrk
-    |------------ sub-001_ses-01_task-MotorImagery_run-01_eeg.eeg
+    |------------ sub-001_ses-01_task-MotorImagery_run-01_channels.tsv
     |------------ sub-001_ses-01_task-MotorImagery_run-03_eeg.json
+    |------------ sub-001_ses-01_task-MotorImagery_run-02_eeg.json
     |------------ sub-001_ses-01_task-MotorImagery_run-03_channels.tsv
     |------------ sub-001_ses-01_task-MotorImagery_run-03_eeg.vhdr
-    |------------ sub-001_ses-01_task-MotorImagery_run-02_channels.tsv
-    |------------ sub-001_ses-01_task-MotorImagery_run-02_eeg.eeg
-    |------------ sub-001_ses-01_task-MotorImagery_run-01_eeg.vmrk
     |------------ sub-001_ses-01_task-MotorImagery_run-02_eeg.vmrk
+    |------------ sub-001_ses-01_task-MotorImagery_run-02_eeg.vhdr
+    |------------ sub-001_ses-01_task-MotorImagery_run-01_eeg.json
+    |------------ sub-001_ses-01_task-MotorImagery_run-01_eeg.vmrk
+    |------------ sub-001_ses-01_task-MotorImagery_run-02_channels.tsv
     |------------ sub-001_ses-01_task-MotorImagery_run-03_eeg.eeg
+    |------------ sub-001_ses-01_task-MotorImagery_run-02_eeg.eeg
+    |------------ sub-001_ses-01_task-MotorImagery_run-01_eeg.eeg
     |------------ sub-001_ses-01_task-MotorImagery_run-01_eeg.vhdr
-    |------------ sub-001_ses-01_task-MotorImagery_run-01_channels.tsv
     |--- sub-002/
     |------ ses-01/
     |--------- sub-002_ses-01_scans.tsv
     |--------- eeg/
-    |------------ sub-002_ses-01_task-MotorImagery_run-03_channels.tsv
-    |------------ sub-002_ses-01_task-MotorImagery_run-01_eeg.eeg
-    |------------ sub-002_ses-01_task-MotorImagery_run-01_eeg.vmrk
+    |------------ sub-002_ses-01_task-MotorImagery_run-03_eeg.eeg
+    |------------ sub-002_ses-01_task-MotorImagery_run-02_channels.tsv
     |------------ sub-002_ses-01_task-MotorImagery_run-03_eeg.vhdr
-    |------------ sub-002_ses-01_task-MotorImagery_run-02_eeg.eeg
+    |------------ sub-002_ses-01_task-MotorImagery_run-01_eeg.json
     |------------ sub-002_ses-01_task-MotorImagery_run-02_eeg.vhdr
     |------------ sub-002_ses-01_task-MotorImagery_run-02_eeg.json
+    |------------ sub-002_ses-01_task-MotorImagery_run-02_eeg.eeg
     |------------ sub-002_ses-01_task-MotorImagery_run-01_eeg.vhdr
-    |------------ sub-002_ses-01_task-MotorImagery_run-01_eeg.json
-    |------------ sub-002_ses-01_task-MotorImagery_run-03_eeg.json
+    |------------ sub-002_ses-01_task-MotorImagery_run-03_channels.tsv
+    |------------ sub-002_ses-01_task-MotorImagery_run-01_eeg.vmrk
     |------------ sub-002_ses-01_task-MotorImagery_run-01_channels.tsv
-    |------------ sub-002_ses-01_task-MotorImagery_run-03_eeg.eeg
-    |------------ sub-002_ses-01_task-MotorImagery_run-02_eeg.vmrk
-    |------------ sub-002_ses-01_task-MotorImagery_run-02_channels.tsv
     |------------ sub-002_ses-01_task-MotorImagery_run-03_eeg.vmrk
+    |------------ sub-002_ses-01_task-MotorImagery_run-02_eeg.vmrk
+    |------------ sub-002_ses-01_task-MotorImagery_run-03_eeg.json
+    |------------ sub-002_ses-01_task-MotorImagery_run-01_eeg.eeg
 
 
 
@@ -926,7 +926,7 @@ Now let's generate a report on the dataset.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  0.629 seconds)
+   **Total running time of the script:** ( 0 minutes  0.624 seconds)
 
 
 .. _sphx_glr_download_auto_examples_convert_group_studies.py:

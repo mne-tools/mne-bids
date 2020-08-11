@@ -297,6 +297,17 @@
     <span class="k">return</span> <span class="n">raw</span>
 
 
+<span class="k">def</span> <span class="nf">_get_bads_from_tsv_data</span><span class="p">(</span><span class="n">tsv_data</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Extract names of bads from data read from channels.tsv.&quot;&quot;&quot;</span>
+    <span class="n">idx</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">ch_idx</span><span class="p">,</span> <span class="n">status</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">tsv_data</span><span class="p">[</span><span class="s1">&#39;status&#39;</span><span class="p">]):</span>
+        <span class="k">if</span> <span class="n">status</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;bad&#39;</span><span class="p">:</span>
+            <span class="n">idx</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ch_idx</span><span class="p">)</span>
+
+    <span class="n">bads</span> <span class="o">=</span> <span class="p">[</span><span class="n">tsv_data</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">idx</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">bads</span>
+
+
 <span class="k">def</span> <span class="nf">_handle_channels_reading</span><span class="p">(</span><span class="n">channels_fname</span><span class="p">,</span> <span class="n">bids_fname</span><span class="p">,</span> <span class="n">raw</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Read associated channels.tsv and populate raw.</span>
 
@@ -365,9 +376,7 @@
     <span class="c1"># good and bad channels</span>
     <span class="k">if</span> <span class="s1">&#39;status&#39;</span> <span class="ow">in</span> <span class="n">channels_dict</span><span class="p">:</span>
         <span class="c1"># find bads from channels.tsv</span>
-        <span class="n">bad_bool</span> <span class="o">=</span> <span class="p">[</span><span class="kc">True</span> <span class="k">if</span> <span class="n">chn</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;bad&#39;</span> <span class="k">else</span> <span class="kc">False</span>
-                    <span class="k">for</span> <span class="n">chn</span> <span class="ow">in</span> <span class="n">channels_dict</span><span class="p">[</span><span class="s1">&#39;status&#39;</span><span class="p">]]</span>
-        <span class="n">bads_from_tsv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">channels_dict</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">])[</span><span class="n">bad_bool</span><span class="p">]</span>
+        <span class="n">bads_from_tsv</span> <span class="o">=</span> <span class="n">_get_bads_from_tsv_data</span><span class="p">(</span><span class="n">channels_dict</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;bads&#39;</span><span class="p">]</span> <span class="ow">and</span> <span class="nb">set</span><span class="p">(</span><span class="n">bads_from_tsv</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">set</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;bads&#39;</span><span class="p">]):</span>
             <span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Encountered conflicting information on channel status &#39;</span>
@@ -782,7 +791,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-08-10.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-08-11.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.0.<br/>
     </p>
   </div>
