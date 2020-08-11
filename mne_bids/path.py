@@ -57,7 +57,8 @@ class BIDSPath(object):
     root : str | None
         The parent directory, i.e. the BIDS root folder.
     kind : str | None
-        The recording kind. Will be appended to the filename before the extension. E.g., 'ieeg'.
+        The recording kind. Will be appended to the filename
+        before the extension. E.g., 'ieeg'.
     extension : str | None
         The extension for the filename. E.g., '.edf'
 
@@ -109,9 +110,7 @@ class BIDSPath(object):
             ('processing', self.processing),
             ('space', self.space),
             ('recording', self.recording),
-            ('root', self.root),
             ('kind', self.kind),
-            ('extension', self.extension),
         ])
 
     @property
