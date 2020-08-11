@@ -229,6 +229,7 @@ def test_line_freq_estimation():
     kind = "meg"
 
     # assert that we get the same line frequency set
+    bids_basename.copy()
     bids_fname = bids_basename.copy().update(kind=kind, extension='.fif')
 
     # find sidecar JSON fname
@@ -250,8 +251,6 @@ def test_line_freq_estimation():
     # test that `somato` dataset finds 50 Hz (EU dataset)
     somato_raw = mne.io.read_raw_fif(somato_raw_fname)
     somato_raw.info['line_freq'] = None
-    print('HEREEREE', bids_basename)
-    print(type(bids_basename))
     write_raw_bids(somato_raw, bids_basename, bids_root, overwrite=True)
     sidecar_fname = _find_matching_sidecar(bids_fname, bids_root,
                                            '{}.json'.format(kind),
@@ -711,7 +710,7 @@ def test_get_matched_emptyroom_no_meas_date():
                                kind='meg', bids_root=bids_root)
     er_bids_path = BIDSPath(subject='emptyroom', session=er_session,
                             task='noise')
-    er_basename = str(er_bids_path)
+    er_basename = er_bids_path.basename
     raw = mne.io.read_raw_fif(raw_fname)
     er_raw_fname = op.join(data_path, 'MEG', 'sample', 'ernoise_raw.fif')
     raw.copy().crop(0, 10).save(er_raw_fname, overwrite=True)

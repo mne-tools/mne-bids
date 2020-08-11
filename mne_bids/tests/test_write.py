@@ -276,7 +276,7 @@ def test_fif(_bids_validate):
     for sidecar in ['channels.tsv', 'eeg.json',
                     'eeg.vhdr', 'events.tsv']:
         kind, ext = sidecar.split('.')
-        sidecar_basename.update(kind=kind, ext=ext)
+        sidecar_basename.update(kind=kind, extension=ext)
         assert op.isfile(op.join(bids_dir, sidecar_basename))
 
     raw2 = read_raw_bids(bids_basename=bids_basename, bids_root=bids_root,
@@ -584,7 +584,8 @@ def test_kit(_bids_validate):
                                           events_fname, event_id)
 
     # ensure the channels file has no STI 014 channel:
-    channels_tsv = marker_fname.copy().update(kind='channels', ext='.tsv')
+    channels_tsv = marker_fname.copy().update(kind='channels',
+                                              extension='.tsv')
     data = _from_tsv(channels_tsv)
     assert 'STI 014' not in data['name']
 
@@ -748,7 +749,7 @@ def test_vhdr(_bids_validate):
     kind, ext = 'channels', '.tsv'
     channels_tsv_name = bids_basename_minimal.copy().update(root=root,
                                                             kind=kind,
-                                                            ext=ext)
+                                                            extension=ext)
     data = _from_tsv(channels_tsv_name)
     assert data['units'][data['name'].index('FP1')] == 'µV'
     assert data['units'][data['name'].index('CP5')] == 'n/a'
@@ -901,7 +902,7 @@ def test_edf(_bids_validate):
                        anonymize=dict(daysback=33000),
                        overwrite=True)
         data = _from_tsv(scans_tsv)
-        bids_fname = bids_basename.copy().update(kind='eeg', ext='.vhdr')
+        bids_fname = bids_basename.copy().update(kind='eeg', extension='.vhdr')
         assert any([str(bids_fname) in fname for fname in data['filename']])
 
     # Also cover iEEG
@@ -983,7 +984,7 @@ def test_bdf(_bids_validate):
     assert coil_type(raw.info, test_ch_idx) != 'misc'
 
     # we will change the channel type to MISC and overwrite the channels file
-    bids_fname = bids_basename.copy().update(kind='eeg', ext='.bdf')
+    bids_fname = bids_basename.copy().update(kind='eeg', extension='.bdf')
     channels_fname = _find_matching_sidecar(bids_fname, bids_root,
                                             'channels.tsv')
     channels_dict = _from_tsv(channels_fname)

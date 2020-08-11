@@ -345,9 +345,10 @@ def read_raw_bids(bids_basename, bids_root, kind=None, extra_params=None,
                                  processing=params.get('proc'),
                                  recording=params.get('rec'),
                                  space=params.get('space'))
+    # make a copy to ensure that passed in BIDSPath does not get altered
+    bids_basename = bids_basename.copy()
     sub = bids_basename.subject
     ses = bids_basename.session
-    acq = bids_basename.acquisition
 
     if kind is None:
         kind = _infer_kind(bids_basename=bids_basename, bids_root=bids_root,
@@ -355,7 +356,8 @@ def read_raw_bids(bids_basename, bids_root, kind=None, extra_params=None,
 
     data_dir = make_bids_folders(subject=sub, session=ses, kind=kind,
                                  make_dir=False)
-    bids_fname = bids_basename.update(kind=kind, root=bids_root).get_fpath()
+    bids_fname = bids_basename.copy().update(kind=kind,
+                                             root=bids_root).get_fpath()
 
     if op.splitext(bids_fname)[1] == '.pdf':
         bids_raw_folder = op.join(bids_root, data_dir,
@@ -387,9 +389,8 @@ def read_raw_bids(bids_basename, bids_root, kind=None, extra_params=None,
 
     # Try to find an associated electrodes.tsv and coordsystem.json
     # to get information about the status and type of present channels
-    search_modifier = f'acq-{acq}' if acq else ''
-    elec_suffix = f'{search_modifier}*_electrodes.tsv'
-    coord_suffix = f'{search_modifier}*_coordsystem.json'
+    elec_suffix = 'electrodes.tsv'
+    coord_suffix = 'coordsystem.json'
     electrodes_fname = _find_matching_sidecar(bids_basename, bids_root,
                                               suffix=elec_suffix,
                                               allow_fail=True)

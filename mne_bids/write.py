@@ -961,7 +961,8 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
                                  processing=params.get('proc'),
                                  recording=params.get('rec'),
                                  space=params.get('space'))
-
+    # make a copy to ensure that passed in BIDSPath does not get altered
+    bids_basename = bids_basename.copy()
     subject_id, session_id = bids_basename.subject, bids_basename.session
     task, run = bids_basename.task, bids_basename.run
     acquisition, space = bids_basename.acquisition, bids_basename.space

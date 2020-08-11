@@ -248,18 +248,15 @@ def test_find_matching_sidecar(return_bids_test_dir):
 def test_bids_path(return_bids_test_dir):
     """Test usage of BIDSPath object."""
     bids_root = return_bids_test_dir
-    print(bids_root)
-    print_dir_tree(bids_root)
     bids_basename = make_bids_basename(
         subject=subject_id, session=session_id, run=run, acquisition=acq,
         task=task, root=bids_root)
 
     # get_bids_fname should fire error when no ``kind`` is passed
-    with pytest.raises(ValueError, match='No kind was provided'):
+    with pytest.raises(RuntimeError, match='No kind was provided'):
         bids_fpath = bids_basename.get_fpath()
     # should find the correct filename if kind was passed
     bids_basename.update(kind='meg')
-    print(bids_basename.basename)
     bids_fpath = bids_basename.get_fpath()
     assert op.basename(bids_fpath) == \
            bids_basename.update(extension='.fif').basename

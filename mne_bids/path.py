@@ -99,8 +99,8 @@ class BIDSPath(object):
             ('acquisition', self.acquisition),
             ('run', self.run),
             ('processing', self.processing),
-            ('recording', self.recording),
             ('space', self.space),
+            ('recording', self.recording),
             ('root', self.root),
             ('kind', self.kind),
             ('extension', self.extension),
@@ -187,7 +187,7 @@ class BIDSPath(object):
             pass a string (like ``'.fif'`` or ``'.vhdr'``).
             If an empty string is passed, no extension
             will be added to the filename.
-            
+
         Returns
         -------
         bids_fpath : str
@@ -204,11 +204,13 @@ class BIDSPath(object):
         if self.kind is not None and self.extension is not None:
             return op.join(self.root, self.basename)
 
+        print('inside: ', self.root)
+        print(self.root is None)
         if self.kind is None:
             msg = ('No kind was provided, and it cannot be '
                    'automatically inferred. Please set kind to one of '
                    f'{ALLOWED_FILENAME_KINDS}.')
-            raise ValueError(msg)
+            raise RuntimeError(msg)
 
         bids_fpath = _get_bids_fpath_from_filesystem(
             bids_basename=self.basename, bids_root=self.root,
@@ -293,7 +295,9 @@ class BIDSPath(object):
                 raise ValueError(f'Key must be one of {BIDS_PATH_ENTITIES}, '
                                  f'got {key}')
 
-            # set entity value
+            # set entity value and ensure it as a string
+            if key == 'root' and val is not None:
+                val = str(val)
             setattr(self, key, val)
 
         self._check(with_emptyroom=False)
@@ -534,12 +538,12 @@ def _find_matching_sidecar(bids_fname, bids_root, suffix, allow_fail=False):
     msg = None
     if len(best_candidates) == 0:
         msg = ('Did not find any {} associated with {}.'
-               .format(suffix, bids_fname))
+               .format(suffix, bids_fname.basename))
     elif len(best_candidates) > 1:
         # More than one candidates were tied for best match
         msg = ('Expected to find a single {} file associated with '
                '{}, but found {}: "{}".'
-               .format(suffix, bids_fname, len(candidate_list),
+               .format(suffix, bids_fname.basename, len(candidate_list),
                        candidate_list))
     msg += '\n\nThe search_str was "{}"'.format(search_str)
     if allow_fail:
@@ -613,6 +617,7 @@ def make_bids_basename(subject=None, session=None, task=None,
 
 def _get_kind_ext_from_suffix(suffix):
     """Parse suffix for valid kind and ext."""
+    # no matter what the suffix is, kind and extension are last
     kind = suffix
     ext = None
     if suffix is not None:
