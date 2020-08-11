@@ -187,7 +187,7 @@ def _handle_events_reading(events_fname, raw):
 
 
 def _get_bads_from_tsv_data(tsv_data):
-    """Extract names of bads from data read from channels.tsv"""
+    """Extract names of bads from data read from channels.tsv."""
     idx = []
     for ch_idx, status in enumerate(tsv_data['status']):
         if status.lower() == 'bad':
