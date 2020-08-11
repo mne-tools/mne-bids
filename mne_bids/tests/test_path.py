@@ -295,7 +295,7 @@ def test_bids_path(return_bids_test_dir):
     assert all(bids_basename.entities.get(entity) is None
                for entity in ['task', 'run', 'recording', 'acquisition',
                               'space', 'processing',
-                              'root', 'kind', 'ext'])
+                              'root', 'kind', 'extension'])
 
     # test updating functionality
     bids_basename.update(acquisition='03', run='2', session='02',
