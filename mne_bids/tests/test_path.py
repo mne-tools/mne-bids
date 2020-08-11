@@ -249,15 +249,34 @@ def test_bids_path(return_bids_test_dir):
     """Test usage of BIDSPath object."""
     bids_root = return_bids_test_dir
     bids_basename = make_bids_basename(
-        subject=subject_id, session=session_id, run=run, acquisition=acq,
-        task=task, root=bids_root)
+        subject=subject_id, session=session_id, run=run,
+        task=task)
+
+    # test bids path without root, kind, extension
+    expected_basename = \
+        f'sub-{subject_id}_ses-{session_id}_task-{task}_run-{run}'
+    assert (bids_basename.basename == expected_basename)
+    assert (bids_basename.fpath == expected_basename)
+
+    # without root and with kind/extension
+    bids_basename.update(kind='ieeg', extension='vhdr')
+    expected_basename2 = expected_basename + '_ieeg.vhdr'
+    assert (bids_basename.basename == expected_basename2)
+    bids_basename.update(extension='.vhdr')
+    assert (bids_basename.basename == expected_basename2)
+    assert (bids_basename.fpath == expected_basename2)
+
+    # with root, but without kind/extension
+    bids_basename.update(root=bids_root, kind=None, extension=None)
+    assert bids_basename.basename == expected_basename
 
     # get_bids_fname should fire error when no ``kind`` is passed
     with pytest.raises(RuntimeError, match='No kind was provided'):
-        bids_fpath = bids_basename.get_fpath()
+        bids_fpath = bids_basename.fpath
+
     # should find the correct filename if kind was passed
     bids_basename.update(kind='meg')
-    bids_fpath = bids_basename.get_fpath()
+    bids_fpath = bids_basename.fpath
     assert op.basename(bids_fpath) == \
            bids_basename.update(extension='.fif').basename
 

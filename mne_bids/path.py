@@ -136,29 +136,8 @@ class BIDSPath(object):
         basename = '_'.join(basename)
         return basename
 
-    def __str__(self):
-        """Return the string representation of the path."""
-        return self.get_fpath()
-
-    def __repr__(self):
-        """Representation in the style of `pathlib.Path`."""
-        return f'{self.__class__.__name__}(\n' \
-               f'root: {self.root}\n' \
-               f'basename: {self.basename})'
-
-    def __fspath__(self):
-        """Return the string representation for any fs functions."""
-        return self.get_fpath()
-
-    def __eq__(self, other):
-        """Compare str representations."""
-        return str(self) == str(other)
-
-    def __ne__(self, other):
-        """Compare str representations."""
-        return str(self) != str(other)
-
-    def get_fpath(self):
+    @property
+    def fpath(self):
         """Get the full filepath for this BIDS file.
 
         Getting the file path consists of the following behavior:
@@ -204,8 +183,6 @@ class BIDSPath(object):
         if self.kind is not None and self.extension is not None:
             return op.join(self.root, self.basename)
 
-        print('inside: ', self.root)
-        print(self.root is None)
         if self.kind is None:
             msg = ('No kind was provided, and it cannot be '
                    'automatically inferred. Please set kind to one of '
@@ -218,6 +195,28 @@ class BIDSPath(object):
             extension=self.extension)
 
         return bids_fpath
+
+    def __str__(self):
+        """Return the string representation of the path."""
+        return self.fpath
+
+    def __repr__(self):
+        """Representation in the style of `pathlib.Path`."""
+        return f'{self.__class__.__name__}(\n' \
+               f'root: {self.root}\n' \
+               f'basename: {self.basename})'
+
+    def __fspath__(self):
+        """Return the string representation for any fs functions."""
+        return self.fpath
+
+    def __eq__(self, other):
+        """Compare str representations."""
+        return str(self) == str(other)
+
+    def __ne__(self, other):
+        """Compare str representations."""
+        return str(self) != str(other)
 
     def copy(self):
         """Copy the instance.
@@ -790,11 +789,11 @@ def _mkdir_p(path, overwrite=False, verbose=False):
     if overwrite and op.isdir(path):
         sh.rmtree(path)
         if verbose is True:
-            print('Clearing path: %s' % path)
+            print(f'Clearing path: {path}')
 
     os.makedirs(path, exist_ok=True)
     if verbose is True:
-        print('Creating folder: %s' % path)
+        print(f'Creating folder: {path}')
 
 
 def _find_best_candidates(params, candidate_list):
@@ -948,7 +947,7 @@ def _infer_kind(*, bids_basename, bids_root, sub, ses):
 def _path_to_str(var):
     """Make sure var is a string or Path, return string representation."""
     if not isinstance(var, (Path, str)):
-        raise ValueError("All path parameters must be either strings or "
-                         "pathlib.Path objects. Found type %s." % type(var))
+        raise ValueError(f"All path parameters must be either strings or "
+                         f"pathlib.Path objects. Found type {type(var)}.")
     else:
         return str(var)

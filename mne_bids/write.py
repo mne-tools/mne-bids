@@ -1007,17 +1007,17 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     bids_path = BIDSPath(subject=subject_id, session=session_id,
                          task=None, root=ses_path, kind='scans',
                          extension='.tsv')
-    scans_fname = bids_path.get_fpath()
+    scans_fname = bids_path.fpath
 
     # create *_coordsystem.json
     bids_path.update(acquisition=acquisition, space=space,
                      root=data_path, kind='coordsystem',
                      extension='.json')
-    coordsystem_fname = bids_path.get_fpath()
+    coordsystem_fname = bids_path.fpath
 
     # create *_electrodes.tsv
     bids_path = bids_path.update(kind='electrodes', extension='.tsv')
-    electrodes_fname = bids_path.get_fpath()
+    electrodes_fname = bids_path.fpath
 
     # For the remaining files, we can use BIDSPath to alter.
     readme_fname = op.join(bids_root, 'README')
@@ -1358,6 +1358,6 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
                           '`overwrite` is set to False. File: "{}"'
                           .format(t1w_basename))
 
-    nib.save(t1w, t1w_basename.get_fpath())
+    nib.save(t1w, t1w_basename.fpath)
 
     return anat_dir

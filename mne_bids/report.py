@@ -498,7 +498,14 @@ def make_report(bids_root, session=None, verbose=True):
     kinds = get_kinds(bids_root)
 
     # only summarize allowed kinds (MEEG data)
-    kinds = [kind.upper() for kind in kinds if kind in ALLOWED_MODALITY_KINDS]
+    # map them to a pretty looking string
+    kind_map = {
+        'meg': 'MEG',
+        'eeg': 'EEG',
+        'ieeg': 'iEEG',
+    }
+    kinds = [kind_map[kind] for kind in kinds
+             if kind in ALLOWED_MODALITY_KINDS]
 
     # REQUIRED: dataset_description.json summary
     dataset_summary = _summarize_dataset(bids_root)

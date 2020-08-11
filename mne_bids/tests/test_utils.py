@@ -77,11 +77,15 @@ def test_make_filenames():
     prefix_data = dict(subject='one', session='two', task='three',
                        acquisition='four', run='five', processing='six',
                        recording='seven', suffix='ieeg.json')
-    assert str(make_bids_basename(**prefix_data)) == 'sub-one_ses-two_task-three_acq-four_run-five_proc-six_rec-seven_ieeg.json'  # noqa
+    expected_str = 'sub-one_ses-two_task-three_acq-four_run-five_proc-six_rec-seven_ieeg.json'  # noqa
+    assert str(make_bids_basename(**prefix_data)) == expected_str
 
     # subsets of keys works
-    assert make_bids_basename(subject='one', task='three', run=4) == 'sub-one_task-three_run-04'  # noqa
-    assert make_bids_basename(subject='one', task='three', suffix='meg.json') == 'sub-one_task-three_meg.json'  # noqa
+    assert (make_bids_basename(subject='one', task='three', run=4) ==
+            'sub-one_task-three_run-04')
+    assert (make_bids_basename(subject='one', task='three',
+                               suffix='meg.json') ==
+            'sub-one_task-three_meg.json')
 
     with pytest.raises(ValueError):
         make_bids_basename(subject='one-two', suffix='there.csv')
