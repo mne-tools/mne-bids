@@ -227,8 +227,9 @@ def test_find_matching_sidecar(return_bids_test_dir):
     """Test finding a sidecar file from a BIDS dir."""
     bids_root = return_bids_test_dir
 
+    bids_fpath = bids_basename.copy().update(root=bids_root)
     # Now find a sidecar
-    sidecar_fname = _find_matching_sidecar(bids_basename, bids_root,
+    sidecar_fname = _find_matching_sidecar(bids_fpath,
                                            'coordsystem.json')
     expected_file = op.join('sub-01', 'ses-01', 'meg',
                             'sub-01_ses-01_coordsystem.json')
@@ -238,11 +239,11 @@ def test_find_matching_sidecar(return_bids_test_dir):
     with pytest.raises(RuntimeError, match='Expected to find a single'):
         open(sidecar_fname.replace('coordsystem.json',
                                    '2coordsystem.json'), 'w').close()
-        _find_matching_sidecar(bids_basename, bids_root, 'coordsystem.json')
+        _find_matching_sidecar(bids_fpath, 'coordsystem.json')
 
     # Find nothing but receive None, because we set `allow_fail` to True
     with pytest.warns(RuntimeWarning, match='Did not find any'):
-        _find_matching_sidecar(bids_basename, bids_root, 'foo.bogus', True)
+        _find_matching_sidecar(bids_fpath, 'foo.bogus', True)
 
 
 def test_bids_path(return_bids_test_dir):

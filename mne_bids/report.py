@@ -339,14 +339,14 @@ def _summarize_sidecar_json(bids_root, scans_fpaths, verbose=True):
                                      run=params.get('run'),
                                      processing=params.get('proc'),
                                      recording=params.get('rec'),
-                                     space=params.get('space'))
+                                     space=params.get('space'),
+                                     root=bids_root)
 
             # XXX: improve to allow emptyroom
             if bids_basename.subject == 'emptyroom':
                 continue
 
             sidecar_fname = _find_matching_sidecar(bids_fname=bids_basename,
-                                                   bids_root=bids_root,
                                                    suffix=f'{kind}.json')
             with open(sidecar_fname, 'r') as fin:
                 sidecar_json = json.load(fin)
@@ -440,7 +440,6 @@ def _summarize_channels_tsv(bids_root, scans_fpaths, verbose=True):
                 continue
 
             channels_fname = _find_matching_sidecar(bids_fname=bids_basename,
-                                                    bids_root=bids_root,
                                                     suffix='channels.tsv')
 
             # summarize channels.tsv

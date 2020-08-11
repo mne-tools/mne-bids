@@ -480,15 +480,13 @@ def parse_bids_filename(fname):
     return params
 
 
-def _find_matching_sidecar(bids_fname, bids_root, suffix, allow_fail=False):
+def _find_matching_sidecar(bids_fname, suffix, allow_fail=False):
     """Try to find a sidecar file with a given suffix for a data file.
 
     Parameters
     ----------
     bids_fname : BIDSPath
         Full name of the data file
-    bids_root : str | pathlib.Path
-        Path to root of the BIDS folder
     suffix : str
         The suffix of the sidecar file to be found. E.g., "_coordsystem.json"
     allow_fail : bool
@@ -502,16 +500,7 @@ def _find_matching_sidecar(bids_fname, bids_root, suffix, allow_fail=False):
         and no sidecar_fname was found
 
     """
-    if isinstance(bids_fname, str):
-        params = parse_bids_filename(bids_fname)
-        bids_fname = BIDSPath(subject=params.get('sub'),
-                              session=params.get('ses'),
-                              task=params.get('task'),
-                              acquisition=params.get('acq'),
-                              run=params.get('run'),
-                              processing=params.get('proc'),
-                              recording=params.get('rec'),
-                              space=params.get('space'))
+    bids_root = bids_fname.root
 
     # We only use subject and session as identifier, because all other
     # parameters are potentially not binding for metadata sidecar files
@@ -545,10 +534,9 @@ def _find_matching_sidecar(bids_fname, bids_root, suffix, allow_fail=False):
                .format(suffix, bids_fname.basename))
     elif len(best_candidates) > 1:
         # More than one candidates were tied for best match
-        msg = ('Expected to find a single {} file associated with '
-               '{}, but found {}: "{}".'
-               .format(suffix, bids_fname.basename, len(candidate_list),
-                       candidate_list))
+        msg = (f'Expected to find a single {suffix} file associated with '
+               f'{bids_fname.basename}, but found '
+               f'{len(candidate_list)}: "{candidate_list}".')
     msg += '\n\nThe search_str was "{}"'.format(search_str)
     if allow_fail:
         warn(msg)

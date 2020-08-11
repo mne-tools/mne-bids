@@ -230,12 +230,12 @@ def test_line_freq_estimation():
 
     # assert that we get the same line frequency set
     bids_basename.copy()
-    bids_fname = bids_basename.copy().update(kind=kind, extension='.fif')
+    bids_fname = bids_basename.copy().update(kind=kind, extension='.fif',
+                                             root=bids_root)
 
     # find sidecar JSON fname
     write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
-    sidecar_fname = _find_matching_sidecar(bids_fname, bids_root,
-                                           '{}.json'.format(kind),
+    sidecar_fname = _find_matching_sidecar(bids_fname, f'{kind}.json',
                                            allow_fail=True)
 
     # 1. when nothing is set, default to use PSD estimation -> should be 60
@@ -252,7 +252,7 @@ def test_line_freq_estimation():
     somato_raw = mne.io.read_raw_fif(somato_raw_fname)
     somato_raw.info['line_freq'] = None
     write_raw_bids(somato_raw, bids_basename, bids_root, overwrite=True)
-    sidecar_fname = _find_matching_sidecar(bids_fname, bids_root,
+    sidecar_fname = _find_matching_sidecar(bids_fname,
                                            '{}.json'.format(kind),
                                            allow_fail=True)
     _update_sidecar(sidecar_fname, "PowerLineFrequency", "n/a")
@@ -288,7 +288,8 @@ def test_handle_info_reading():
     write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
 
     # find sidecar JSON fname
-    sidecar_fname = _find_matching_sidecar(bids_fname, bids_root,
+    bids_fname.update(root=bids_root)
+    sidecar_fname = _find_matching_sidecar(bids_fname,
                                            '{}.json'.format(kind),
                                            allow_fail=True)
 
@@ -361,10 +362,11 @@ def test_handle_eeg_coords_reading():
     raw.set_montage(montage)
     with pytest.warns(RuntimeWarning, match="Skipping EEG electrodes.tsv"):
         write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
-        coordsystem_fname = _find_matching_sidecar(bids_basename, bids_root,
+        bids_basename.update(root=bids_root)
+        coordsystem_fname = _find_matching_sidecar(bids_basename,
                                                    suffix='coordsystem.json',
                                                    allow_fail=True)
-        electrodes_fname = _find_matching_sidecar(bids_basename, bids_root,
+        electrodes_fname = _find_matching_sidecar(bids_basename,
                                                   suffix="electrodes.tsv",
                                                   allow_fail=True)
         assert coordsystem_fname is None
@@ -392,7 +394,7 @@ def test_handle_eeg_coords_reading():
     assert not object_diff(raw.info['chs'], raw_test.info['chs'])
 
     # modify coordinate frame to not-captrak
-    coordsystem_fname = _find_matching_sidecar(bids_basename, bids_root,
+    coordsystem_fname = _find_matching_sidecar(bids_basename,
                                                suffix='coordsystem.json',
                                                allow_fail=True)
     _update_sidecar(coordsystem_fname, 'EEGCoordinateSystem', 'besa')
@@ -458,10 +460,11 @@ def test_handle_ieeg_coords_reading(bids_basename):
     # read in the data and assert montage is the same
     # regardless of 'm', 'cm', 'mm', or 'pixel'
     scalings = {'m': 1, 'cm': 100, 'mm': 1000}
-    coordsystem_fname = _find_matching_sidecar(bids_fname, bids_root,
+    bids_fname.update(root=bids_root)
+    coordsystem_fname = _find_matching_sidecar(bids_fname,
                                                suffix='coordsystem.json',
                                                allow_fail=True)
-    electrodes_fname = _find_matching_sidecar(bids_fname, bids_root,
+    electrodes_fname = _find_matching_sidecar(bids_fname,
                                               "electrodes.tsv",
                                               allow_fail=True)
     orig_electrodes_dict = _from_tsv(electrodes_fname,
