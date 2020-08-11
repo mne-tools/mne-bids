@@ -789,13 +789,13 @@ def test_handle_channel_type_casing():
 def test_bads_reading():
     bids_root = _TempDir()
     channels_fname = (bids_basename.copy()
-                      .update(prefix=op.join(bids_root, 'sub-01', 'ses-01',
+                      .update(root=op.join(bids_root, 'sub-01', 'ses-01',
                                              'meg'),
-                              suffix='channels.tsv'))
+                              kind='channels', extension='.tsv'))
     raw_bids_fname = (bids_basename.copy()
-                      .update(prefix=op.join(bids_root, 'sub-01', 'ses-01',
-                                             'meg'),
-                              suffix='meg.fif'))
+                      .update(root=op.join(bids_root, 'sub-01', 'ses-01',
+                                           'meg'),
+                              kind='meg', extension='.fif'))
     raw = mne.io.read_raw_fif(raw_fname, verbose=False)
 
     ###########################################################################
