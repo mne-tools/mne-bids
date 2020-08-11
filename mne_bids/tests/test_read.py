@@ -827,6 +827,7 @@ def test_bads_reading():
 
     raw = read_raw_bids(bids_basename=bids_basename, bids_root=bids_root,
                         verbose=False)
+    assert type(raw.info['bads']) is list
     assert set(raw.info['bads']) == set(bads)
 
     ###########################################################################
@@ -846,4 +847,5 @@ def test_bads_reading():
     with pytest.warns(RuntimeWarning, match='conflicting information'):
         raw = read_raw_bids(bids_basename=bids_basename, bids_root=bids_root,
                             verbose=False)
+    assert type(raw.info['bads']) is list
     assert set(raw.info['bads']) == set(bads_bids)

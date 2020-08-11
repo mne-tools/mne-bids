@@ -52,6 +52,7 @@ Bug
 - Fix `raw_to_bids` CLI tool to work with non-FIF files, by `Austin Hurst`_ (`#456 <https://github.com/mne-tools/mne-bids/pull/456>`_)
 - Fix :func:`mne_bids.write_raw_bids` to output BTI and CTF data in the scans.tsv according to the BIDS specification by `Adam Li`_ (`#465 <https://github.com/mne-tools/mne-bids/pull/465>`_)
 - :func:`mne_bids.read_raw_bids` now populates the list of bad channels based on ``*_channels.tsv`` if (and only if) a ``status`` column is present, ignoring similar metadata stored in raw file (which will still be used if **no** ``status`` column is present in ``*_channels.tsv``), by `Richard Höchenberger`_ (`#499 <https://github.com/mne-tools/mne-bids/pull/499>`_)
+- Ensure that ``Raw.info['bads']`` returned by :func:`mne_bids.read_raw_bids` is always a list, by `Richard Höchenberger`_ (`#501 <https://github.com/mne-tools/mne-bids/pull/501>`_)
 
 
 API
