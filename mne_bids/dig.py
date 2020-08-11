@@ -158,7 +158,8 @@ def _electrodes_tsv(raw, fname, kind, overwrite=False, verbose=True):
     fname : str
         Filename to save the electrodes.tsv to.
     kind : str
-        Type of the data as in ALLOWED_MODALITY_KINDS. For iEEG, requires size.
+        Type of the data. One of ``'meg'``, ``'eeg'``, ``'ieeg'``.
+        For iEEG, requires size.
     overwrite : bool
         Defaults to False.
         Whether to overwrite the existing data in the file.
@@ -225,7 +226,8 @@ def _coordsystem_json(raw, unit, orient, coordsystem_name, fname,
     fname : str
         Filename to save the coordsystem.json to.
     kind : str
-        Type of the data as in ALLOWED_MODALITY_KINDS.
+        Type of the data. One of ``'meg'``, ``'eeg'``, ``'ieeg'``.
+        For iEEG, requires size.
     overwrite : bool
         Whether to overwrite the existing file.
         Defaults to False.
@@ -306,7 +308,8 @@ def _write_dig_bids(electrodes_fname, coordsystem_fname, data_path,
     raw : instance of Raw
         The data as MNE-Python Raw object.
     kind : str
-        Type of the data as in ALLOWED_MODALITY_KINDS.
+        Type of the data. One of ``'meg'``, ``'eeg'``, ``'ieeg'``.
+        For iEEG, requires size.
     overwrite : bool
         Whether to overwrite the existing file.
         Defaults to False.
@@ -402,7 +405,8 @@ def _read_dig_bids(electrodes_fpath, coordsystem_fpath,
     raw : instance of Raw
         The data as MNE-Python Raw object.
     kind : str
-        Type of the data as in ``ALLOWED_MODALITY_KINDS``.
+        Type of the data. One of ``'meg'``, ``'eeg'``, ``'ieeg'``.
+        For iEEG, requires size.
     verbose : bool
         Set verbose output to true or false.
 
