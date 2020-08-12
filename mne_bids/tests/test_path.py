@@ -69,20 +69,20 @@ def test_get_keys(return_bids_test_dir):
 
 @pytest.mark.parametrize('entity, expected_vals, kwargs',
                          [('bogus', None, None),
-                          ('sub', [subject_id], None),
-                          ('ses', [session_id], None),
+                          ('subject', [subject_id], None),
+                          ('session', [session_id], None),
                           ('run', [run, '02'], None),
-                          ('acq', [], None),
+                          ('acquisition', [], None),
                           ('task', [task], None),
-                          ('sub', [], dict(ignore_sub=[subject_id])),
-                          ('sub', [], dict(ignore_sub=subject_id)),
-                          ('ses', [], dict(ignore_ses=[session_id])),
-                          ('ses', [], dict(ignore_ses=session_id)),
-                          ('run', [run], dict(ignore_run=['02'])),
-                          ('run', [run], dict(ignore_run='02')),
-                          ('task', [], dict(ignore_task=[task])),
-                          ('task', [], dict(ignore_task=task)),
-                          ('run', [run, '02'], dict(ignore_run=['bogus']))])
+                          ('subject', [], dict(ignore_subjects=[subject_id])),
+                          ('subject', [], dict(ignore_subjects=subject_id)),
+                          ('session', [], dict(ignore_sessions=[session_id])),
+                          ('session', [], dict(ignore_sessions=session_id)),
+                          ('run', [run], dict(ignore_runs=['02'])),
+                          ('run', [run], dict(ignore_runs='02')),
+                          ('task', [], dict(ignore_tasks=[task])),
+                          ('task', [], dict(ignore_tasks=task)),
+                          ('run', [run, '02'], dict(ignore_runs=['bogus']))])
 def test_get_entity_vals(entity, expected_vals, kwargs, return_bids_test_dir):
     """Test getting a list of entities."""
     bids_root = return_bids_test_dir

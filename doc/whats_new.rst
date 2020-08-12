@@ -69,6 +69,7 @@ API
 - :func:`mne_bids.make_report` is now available from the `mne_bids` namespace that creates a string output of a summary of the BIDS dataset. In addition, the command line interface allows one to call `make_report`, by `Adam Li`_ (`#457 <https://github.com/mne-tools/mne-bids/pull/457>`_)
 - Added namespace :code:`mne_bids.path` which hosts path-like functionality for MNE-BIDS by `Adam Li`_ (`#483 <https://github.com/mne-tools/mne-bids/pull/483>`_)
 - A function for retrieval of BIDS entity values from a filename, :func:`mne_bids.path.parse_bids_filename`, is now part of the public API (it used to be a private function called ``mne_bids.path._parse_bids_filename``), by `Richard Höchenberger`_ (`#487 <https://github.com/mne-tools/mne-bids/pull/487>`_)
+- Entity names passed to :func:`mne_bids.get_entity_vals` hmust now be in the "long" for, e.g. ``subject`` instead of ``sub`` etc., by `Richard Höchenberger`_ (`#501 <https://github.com/mne-tools/mne-bids/pull/501>`_)
 
 .. _changes_0_4:
 

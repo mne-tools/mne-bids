@@ -496,8 +496,8 @@ def make_report(bids_root, session=None, verbose=True):
         describing the summary of the subjects.
     """
     # high level summary
-    subjects = get_entity_vals(bids_root, entity_key='sub')
-    sessions = get_entity_vals(bids_root, entity_key='ses')
+    subjects = get_entity_vals(bids_root, entity_key='subject')
+    sessions = get_entity_vals(bids_root, entity_key='session')
     kinds = get_kinds(bids_root)
 
     # only summarize allowed kinds (MEEG data)

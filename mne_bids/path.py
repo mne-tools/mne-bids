@@ -571,9 +571,11 @@ def get_kinds(bids_root):
     return kinds
 
 
-def get_entity_vals(bids_root, entity_key, *, ignore_sub='emptyroom',
-                    ignore_task=None, ignore_ses=None, ignore_run=None,
-                    ignore_acq=None):
+def get_entity_vals(bids_root, entity_key, *, ignore_subjects='emptyroom',
+                    ignore_sessions=None, ignore_tasks=None, ignore_runs=None,
+                    ignore_processings=None, ignore_spaces=None,
+                    ignore_acquisitions=None, ignore_splits=None,
+                    ignore_kinds=None):
     """Get list of values associated with an `entity_key` in a BIDS dataset.
 
     BIDS file names are organized by key-value pairs called "entities" [1]_.
@@ -585,19 +587,26 @@ def get_entity_vals(bids_root, entity_key, *, ignore_sub='emptyroom',
     bids_root : str | pathlib.Path
         Path to the root of the BIDS directory.
     entity_key : str
-        The name of the entity key to search for. Can be one of
-        ['sub', 'ses', 'task', 'run', 'acq'].
-    ignore_sub : str | iterable | None
+        The name of the entity key to search for.
+    ignore_subjects : str | iterable | None
         Subject(s) to ignore. By default, entities from the ``emptyroom``
         mock-subject are not returned. If ``None``, include all subjects.
-    ignore_task : str | iterable | None
-        Task(s) to ignore. If ``None``, include all tasks.
-    ignore_ses : str | iterable | None
+    ignore_sessions : str | iterable | None
         Session(s) to ignore. If ``None``, include all sessions.
-    ignore_run : str | iterable | None
+    ignore_tasks : str | iterable | None
+        Task(s) to ignore. If ``None``, include all tasks.
+    ignore_runs : str | iterable | None
         Run(s) to ignore. If ``None``, include all runs.
-    ignore_acq : str | iterable | None
+    ignore_processings : str | iterable | None
+        Processing(s) to ignore. If ``None``, include all processings.
+    ignore_spaces : str | iterable | None
+        Space(s) to ignore. If ``None``, include all spaces.
+    ignore_acquisitions : str | iterable | None
         Acquisition(s) to ignore. If ``None``, include all acquisitions.
+    ignore_splits : str | iterable | None
+        Split(s) to ignore. If ``None``, include all splits.
+    ignore_kinds : str | iterable | None
+        Kind(s) to ignore. If ``None``, include all kinds.
 
     Returns
     -------
@@ -622,45 +631,68 @@ def get_entity_vals(bids_root, entity_key, *, ignore_sub='emptyroom',
     .. [1] https://bids-specification.rtfd.io/en/latest/02-common-principles.html#file-name-structure  # noqa: E501
 
     """
-    entities = ('sub', 'ses', 'task', 'run', 'acq')
+    entities = ('subject', 'task', 'session', 'run', 'processing', 'space',
+                'acquisition', 'split', 'kind')
+    entities_abbr = ('sub', 'task', 'ses', 'run', 'proc', 'space', 'acq',
+                     'split', 'kind')
+    entity_long_abbr_map = dict(zip(entities, entities_abbr))
+
     if entity_key not in entities:
-        raise ValueError('`key` must be one of "{}". Got "{}"'
-                         .format(entities, entity_key))
+        raise ValueError(f'`key` must be one of: {", ".join(entities)}. '
+                         f'Got: {entity_key}')
 
-    ignore_sub = _ensure_tuple(ignore_sub)
-    ignore_task = _ensure_tuple(ignore_task)
-    ignore_ses = _ensure_tuple(ignore_ses)
-    ignore_run = _ensure_tuple(ignore_run)
-    ignore_acq = _ensure_tuple(ignore_acq)
+    ignore_subjects = _ensure_tuple(ignore_subjects)
+    ignore_sessions = _ensure_tuple(ignore_sessions)
+    ignore_tasks = _ensure_tuple(ignore_tasks)
+    ignore_runs = _ensure_tuple(ignore_runs)
+    ignore_processings = _ensure_tuple(ignore_processings)
+    ignore_spaces = _ensure_tuple(ignore_spaces)
+    ignore_acquisitions = _ensure_tuple(ignore_acquisitions)
+    ignore_splits = _ensure_tuple(ignore_splits)
+    ignore_kinds = _ensure_tuple(ignore_kinds)
 
-    p = re.compile(r'{}-(.*?)_'.format(entity_key))
-    value_list = list()
-    for filename in Path(bids_root).rglob('*{}-*_*'.format(entity_key)):
+    p = re.compile(r'{}-(.*?)_'.format(entity_long_abbr_map[entity_key]))
+    values = list()
+    filenames = (Path(bids_root)
+                 .rglob(f'*{entity_long_abbr_map[entity_key]}-*_*'))
+    for filename in filenames:
         # Ignore `derivatives` folder.
         if str(filename).startswith(op.join(bids_root, 'derivatives')):
             continue
 
-        if ignore_sub and any([filename.stem.startswith(f'sub-{s}_')
-                               for s in ignore_sub]):
+        if ignore_subjects and any([filename.stem.startswith(f'sub-{s}_')
+                                    for s in ignore_subjects]):
             continue
-        if ignore_task and any([f'_task-{t}_' in filename.stem
-                                for t in ignore_task]):
+        if ignore_sessions and any([f'_ses-{s}_' in filename.stem
+                                    for s in ignore_sessions]):
             continue
-        if ignore_ses and any([f'_ses-{s}_' in filename.stem
-                               for s in ignore_ses]):
+        if ignore_tasks and any([f'_task-{t}_' in filename.stem
+                                 for t in ignore_tasks]):
             continue
-        if ignore_run and any([f'_run-{r}_' in filename.stem
-                               for r in ignore_run]):
+        if ignore_runs and any([f'_run-{r}_' in filename.stem
+                                for r in ignore_runs]):
             continue
-        if ignore_acq and any([f'_acq-{a}_' in filename.stem
-                               for a in ignore_acq]):
+        if ignore_processings and any([f'_proc-{p}_' in filename.stem
+                                       for p in ignore_processings]):
+            continue
+        if ignore_spaces and any([f'_space-{s}_' in filename.stem
+                                  for s in ignore_spaces]):
+            continue
+        if ignore_acquisitions and any([f'_acq-{a}_' in filename.stem
+                                        for a in ignore_acquisitions]):
+            continue
+        if ignore_splits and any([f'_split-{s}_' in filename.stem
+                                  for s in ignore_splits]):
+            continue
+        if ignore_kinds and any([f'_{k}' in filename.stem
+                                 for k in ignore_kinds]):
             continue
 
         match = p.search(filename.stem)
         value = match.group(1)
-        if value not in value_list:
-            value_list.append(value)
-    return sorted(value_list)
+        if value not in values:
+            values.append(value)
+    return sorted(values)
 
 
 def _mkdir_p(path, overwrite=False, verbose=False):
