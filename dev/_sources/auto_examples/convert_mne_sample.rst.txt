@@ -327,30 +327,30 @@ Now let's see the structure of the BIDS folder we created.
     |--- participants.json
     |--- dataset_description.json
     |--- sub-emptyroom/
-    |------ ses-20021204/
-    |--------- sub-emptyroom_ses-20021204_scans.tsv
-    |--------- meg/
-    |------------ sub-emptyroom_ses-20021204_task-noise_channels.tsv
-    |------------ sub-emptyroom_ses-20021204_task-noise_meg.json
-    |------------ sub-emptyroom_ses-20021204_task-noise_meg.fif
-    |------ ses-20021206/
-    |--------- sub-emptyroom_ses-20021206_scans.tsv
-    |--------- meg/
-    |------------ sub-emptyroom_ses-20021206_task-noise_channels.tsv
-    |------------ sub-emptyroom_ses-20021206_task-noise_meg.fif
-    |------------ sub-emptyroom_ses-20021206_task-noise_meg.json
-    |------ ses-20021201/
-    |--------- sub-emptyroom_ses-20021201_scans.tsv
-    |--------- meg/
-    |------------ sub-emptyroom_ses-20021201_task-noise_meg.json
-    |------------ sub-emptyroom_ses-20021201_task-noise_meg.fif
-    |------------ sub-emptyroom_ses-20021201_task-noise_channels.tsv
     |------ ses-20021001/
     |--------- sub-emptyroom_ses-20021001_scans.tsv
     |--------- meg/
-    |------------ sub-emptyroom_ses-20021001_task-noise_meg.json
     |------------ sub-emptyroom_ses-20021001_task-noise_channels.tsv
+    |------------ sub-emptyroom_ses-20021001_task-noise_meg.json
     |------------ sub-emptyroom_ses-20021001_task-noise_meg.fif
+    |------ ses-20021206/
+    |--------- sub-emptyroom_ses-20021206_scans.tsv
+    |--------- meg/
+    |------------ sub-emptyroom_ses-20021206_task-noise_meg.json
+    |------------ sub-emptyroom_ses-20021206_task-noise_meg.fif
+    |------------ sub-emptyroom_ses-20021206_task-noise_channels.tsv
+    |------ ses-20021204/
+    |--------- sub-emptyroom_ses-20021204_scans.tsv
+    |--------- meg/
+    |------------ sub-emptyroom_ses-20021204_task-noise_meg.fif
+    |------------ sub-emptyroom_ses-20021204_task-noise_channels.tsv
+    |------------ sub-emptyroom_ses-20021204_task-noise_meg.json
+    |------ ses-20021201/
+    |--------- sub-emptyroom_ses-20021201_scans.tsv
+    |--------- meg/
+    |------------ sub-emptyroom_ses-20021201_task-noise_meg.fif
+    |------------ sub-emptyroom_ses-20021201_task-noise_meg.json
+    |------------ sub-emptyroom_ses-20021201_task-noise_channels.tsv
     |--- sub-01/
     |------ ses-01/
     |--------- sub-01_ses-01_scans.tsv
@@ -359,10 +359,10 @@ Now let's see the structure of the BIDS folder we created.
     |------------ sub-01_ses-01_T1w.json
     |--------- meg/
     |------------ sub-01_ses-01_task-audiovisual_run-01_meg.fif
-    |------------ sub-01_ses-01_task-audiovisual_run-01_meg.json
     |------------ sub-01_ses-01_coordsystem.json
     |------------ sub-01_ses-01_task-audiovisual_run-01_channels.tsv
     |------------ sub-01_ses-01_task-audiovisual_run-01_events.tsv
+    |------------ sub-01_ses-01_task-audiovisual_run-01_meg.json
 
 
 
@@ -479,7 +479,7 @@ cite MNE-BIDS there.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  9.975 seconds)
+   **Total running time of the script:** ( 0 minutes  8.101 seconds)
 
 
 .. _sphx_glr_download_auto_examples_convert_mne_sample.py:

@@ -112,7 +112,7 @@
 <h1>mne_bids.get_entity_vals<a class="headerlink" href="#mne-bids-get-entity-vals" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt id="mne_bids.get_entity_vals">
-<code class="sig-prename descclassname">mne_bids.</code><code class="sig-name descname">get_entity_vals</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">bids_root</span></em>, <em class="sig-param"><span class="n">entity_key</span></em>, <em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">ignore_sub</span><span class="o">=</span><span class="default_value">'emptyroom'</span></em>, <em class="sig-param"><span class="n">ignore_task</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ignore_ses</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ignore_run</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ignore_acq</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/path.html#get_entity_vals"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.get_entity_vals" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">mne_bids.</code><code class="sig-name descname">get_entity_vals</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">bids_root</span></em>, <em class="sig-param"><span class="n">entity_key</span></em>, <em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">ignore_subjects</span><span class="o">=</span><span class="default_value">'emptyroom'</span></em>, <em class="sig-param"><span class="n">ignore_sessions</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ignore_tasks</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ignore_runs</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ignore_processings</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ignore_spaces</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ignore_acquisitions</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ignore_splits</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ignore_kinds</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/path.html#get_entity_vals"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.get_entity_vals" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get list of values associated with an <em class="xref py py-obj">entity_key</em> in a BIDS dataset.</p>
 <p>BIDS file names are organized by key-value pairs called “entities” <a class="reference internal" href="#rc14c75f75c01-1" id="id1">[1]</a>.
 With this function, you can get all values for an entity indexed by its
@@ -122,19 +122,26 @@ key.</p>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>bids_root</strong><span class="classifier">str | pathlib.Path</span></dt><dd><p>Path to the root of the BIDS directory.</p>
 </dd>
-<dt><strong>entity_key</strong><span class="classifier">str</span></dt><dd><p>The name of the entity key to search for. Can be one of
-[‘sub’, ‘ses’, ‘task’, ‘run’, ‘acq’].</p>
+<dt><strong>entity_key</strong><span class="classifier">str</span></dt><dd><p>The name of the entity key to search for.</p>
 </dd>
-<dt><strong>ignore_sub</strong><span class="classifier">str | iterable | None</span></dt><dd><p>Subject(s) to ignore. By default, entities from the <code class="docutils literal notranslate"><span class="pre">emptyroom</span></code>
+<dt><strong>ignore_subjects</strong><span class="classifier">str | iterable | None</span></dt><dd><p>Subject(s) to ignore. By default, entities from the <code class="docutils literal notranslate"><span class="pre">emptyroom</span></code>
 mock-subject are not returned. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, include all subjects.</p>
 </dd>
-<dt><strong>ignore_task</strong><span class="classifier">str | iterable | None</span></dt><dd><p>Task(s) to ignore. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, include all tasks.</p>
+<dt><strong>ignore_sessions</strong><span class="classifier">str | iterable | None</span></dt><dd><p>Session(s) to ignore. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, include all sessions.</p>
 </dd>
-<dt><strong>ignore_ses</strong><span class="classifier">str | iterable | None</span></dt><dd><p>Session(s) to ignore. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, include all sessions.</p>
+<dt><strong>ignore_tasks</strong><span class="classifier">str | iterable | None</span></dt><dd><p>Task(s) to ignore. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, include all tasks.</p>
 </dd>
-<dt><strong>ignore_run</strong><span class="classifier">str | iterable | None</span></dt><dd><p>Run(s) to ignore. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, include all runs.</p>
+<dt><strong>ignore_runs</strong><span class="classifier">str | iterable | None</span></dt><dd><p>Run(s) to ignore. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, include all runs.</p>
 </dd>
-<dt><strong>ignore_acq</strong><span class="classifier">str | iterable | None</span></dt><dd><p>Acquisition(s) to ignore. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, include all acquisitions.</p>
+<dt><strong>ignore_processings</strong><span class="classifier">str | iterable | None</span></dt><dd><p>Processing(s) to ignore. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, include all processings.</p>
+</dd>
+<dt><strong>ignore_spaces</strong><span class="classifier">str | iterable | None</span></dt><dd><p>Space(s) to ignore. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, include all spaces.</p>
+</dd>
+<dt><strong>ignore_acquisitions</strong><span class="classifier">str | iterable | None</span></dt><dd><p>Acquisition(s) to ignore. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, include all acquisitions.</p>
+</dd>
+<dt><strong>ignore_splits</strong><span class="classifier">str | iterable | None</span></dt><dd><p>Split(s) to ignore. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, include all splits.</p>
+</dd>
+<dt><strong>ignore_kinds</strong><span class="classifier">str | iterable | None</span></dt><dd><p>Kind(s) to ignore. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, include all kinds.</p>
 </dd>
 </dl>
 </dd>
@@ -181,7 +188,7 @@ pointed to by <em class="xref py py-obj">bids_root</em>.</p>
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-08-11.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-08-12.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.0.<br/>
     </p>
   </div>
