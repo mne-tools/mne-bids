@@ -7,6 +7,7 @@ import os.path as op
 # This is here to handle mne-python <0.20
 import warnings
 from pathlib import Path
+from shutil import copyfile
 
 import pytest
 
@@ -286,6 +287,19 @@ def test_bids_path(return_bids_test_dir):
     bids_fpath = bids_basename.fpath
     assert op.basename(bids_fpath) == \
            bids_basename.update(extension='.fif').basename
+
+    # temporarily create another copy of the dataset
+    # with another extension and it will cause the
+    # inference of the correct fpath to be incorrect
+    bids_basename.update(extension=None)
+    wrong_fpath = op.join(bids_root, f'sub-{subject_id}',
+                          f'ses-{session_id}', 'meg',
+                          bids_basename.basename + '.sqd')
+    copyfile(bids_fpath, wrong_fpath)
+    with pytest.raises(RuntimeError, match='Found more than one '
+                                           'matching data file'):
+        bids_fpath = bids_basename.fpath
+        os.remove(wrong_fpath)
 
     # confirm BIDSPath assigns properties correctly
     bids_basename = make_bids_basename(subject=subject_id, session=session_id)
