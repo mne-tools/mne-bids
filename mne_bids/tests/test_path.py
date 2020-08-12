@@ -269,6 +269,7 @@ def test_bids_path(return_bids_test_dir):
     bids_basename.update(extension='.vhdr')
     assert (bids_basename.basename == expected_basename2)
 
+    # when bids root is not passed in, a warning is shown
     with pytest.warns(RuntimeWarning,
                       match='No bids root was passed in'):
         assert (bids_basename.fpath == expected_basename2)
