@@ -144,7 +144,7 @@ def _summarize_dataset(bids_root):
     Parameters
     ----------
     bids_root : str | pathlib.Path
-        The path of the bids_root of the BIDS compatible folder.
+        The path of the root of the BIDS compatible folder.
 
     Returns
     -------
@@ -175,12 +175,12 @@ def _summarize_dataset(bids_root):
 
 
 def _summarize_participants_tsv(bids_root, verbose=True):
-    """Summarize `participants.tsv` file in BIDS bids_root directory.
+    """Summarize `participants.tsv` file in BIDS root directory.
 
     Parameters
     ----------
     bids_root : str | pathlib.Path
-        The path of the bids_root of the BIDS compatible folder.
+        The path of the root of the BIDS compatible folder.
     verbose: bool
         Set verbose output to true or false.
 
@@ -247,14 +247,14 @@ def _summarize_participants_tsv(bids_root, verbose=True):
 
 
 def _summarize_scans(bids_root, session=None, verbose=True):
-    """Summarize scans in BIDS bids_root directory.
+    """Summarize scans in BIDS root directory.
 
     Summarizes scans only if there is a *_scans.tsv file.
 
     Parameters
     ----------
     bids_root : str | pathlib.Path
-        The path of the bids_root of the BIDS compatible folder.
+        The path of the root of the BIDS compatible folder.
     session : str, optional
         The session for a item. Corresponds to "ses".
     verbose : bool
@@ -293,12 +293,12 @@ def _summarize_scans(bids_root, session=None, verbose=True):
 
 
 def _summarize_sidecar_json(bids_root, scans_fpaths, verbose=True):
-    """Summarize scans in BIDS bids_root directory.
+    """Summarize scans in BIDS root directory.
 
     Parameters
     ----------
     bids_root : str | pathlib.Path
-        The path of the bids_root of the BIDS compatible folder.
+        The path of the root of the BIDS compatible folder.
     scans_fpaths : list
         A list of all *_scans.tsv files in bids_root. The summary
         will occur for all scans listed in the *_scans.tsv files.
@@ -385,7 +385,7 @@ def _summarize_sidecar_json(bids_root, scans_fpaths, verbose=True):
 
 
 def _summarize_channels_tsv(bids_root, scans_fpaths, verbose=True):
-    """Summarize channels.tsv data in BIDS bids_root directory.
+    """Summarize channels.tsv data in BIDS root directory.
 
     Currently, summarizes all REQUIRED components of channels
     data, and some RECOMMENDED and OPTIONAL components.
@@ -393,7 +393,7 @@ def _summarize_channels_tsv(bids_root, scans_fpaths, verbose=True):
     Parameters
     ----------
     bids_root : str | pathlib.Path
-        The path of the bids_root of the BIDS compatible folder.
+        The path of the root of the BIDS compatible folder.
     scans_fpaths : list
         A list of all *_scans.tsv files in bids_root. The summary
         will occur for all scans listed in the *_scans.tsv files.
@@ -479,7 +479,7 @@ def make_report(bids_root, session=None, verbose=True):
     Parameters
     ----------
     bids_root : str | pathlib.Path
-        The path of the bids_root of the BIDS compatible folder.
+        The path of the root of the BIDS compatible folder.
     session : str , optional
             The session for a item. Corresponds to "ses".
     verbose : bool

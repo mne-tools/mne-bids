@@ -629,7 +629,7 @@ def get_kinds(bids_root):
     Parameters
     ----------
     bids_root : str | pathlib.Path
-        Path to the bids_root of the BIDS directory.
+        Path to the root of the BIDS directory.
 
     Returns
     -------
@@ -663,7 +663,7 @@ def get_entity_vals(bids_root, entity_key, *, ignore_subjects='emptyroom',
     Parameters
     ----------
     bids_root : str | pathlib.Path
-        Path to the bids_root of the BIDS directory.
+        Path to the root of the BIDS directory.
     entity_key : str
         The name of the entity key to search for.
     ignore_subjects : str | iterable | None

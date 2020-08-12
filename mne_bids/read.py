@@ -302,7 +302,7 @@ def read_raw_bids(bids_basename, bids_root, kind=None, extra_params=None,
         The base filename of the BIDS compatible files. Typically, this can be
         generated using :func:`mne_bids.make_bids_basename`.
     bids_root : str | pathlib.Path
-        Path to bids_root of the BIDS folder
+        Path to root of the BIDS folder
     kind : str | None
         The kind of recording to read. If ``None`` and only one kind (e.g.,
         only EEG or only MEG data) is present in the dataset, it will be
@@ -438,7 +438,7 @@ def get_matched_empty_room(bids_basename, bids_root):
         The base filename of the BIDS-compatible file. Typically, this can be
         generated using :func:`mne_bids.make_bids_basename`.
     bids_root : str | pathlib.Path
-        Path to the BIDS bids_root folder.
+        Path to the BIDS root folder.
 
     Returns
     -------
@@ -591,7 +591,7 @@ def get_head_mri_trans(bids_basename, bids_root):
         The base filename of the BIDS-compatible file. Typically, this can be
         generated using :func:`mne_bids.make_bids_basename`.
     bids_root : str | pathlib.Path
-        Path to bids_root of the BIDS folder
+        Path to root of the BIDS folder
 
     Returns
     -------
