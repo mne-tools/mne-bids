@@ -119,7 +119,6 @@ class BIDSPath(object):
         for key, val in self.entities.items():
             if key not in ('bids_root', 'kind', 'extension') and \
                     val is not None:
-                _check_key_val(key, val)
                 # convert certain keys to shorthand
                 if key == 'subject':
                     key = 'sub'
@@ -242,7 +241,7 @@ class BIDSPath(object):
         entities : dict | kwarg
             Allowed BIDS path entities:
             'subject', 'session', 'task', 'acquisition',
-            'processing', 'run', 'recording', 'space', 
+            'processing', 'run', 'recording', 'space',
             'kind', 'extension', 'bids_root'
 
         Returns
@@ -255,17 +254,18 @@ class BIDSPath(object):
         If one creates a bids basename using
         :func:`mne_bids.make_bids_basename`:
 
-        >>> bids_basename = make_bids_basename(subject='test', session='two', 
-        >>>                                    task='mytask', kind='data', extension='.csv')
+        >>> bids_basename = make_bids_basename(subject='test', session='two',
+        task='mytask', kind='data', extension='.csv')
         >>> print(bids_basename)
         sub-test_ses-two_task-mytask_data.csv
         >>> # Then, one can update this `BIDSPath` object in place
-        >>> bids_basename.update(acquisition='test', kind='ieeg', 
-        >>>                      extension='.vhdr', task=None)
-        BIDSPath(sub-test_ses-two_acq-test_ieeg.vhdr)
+        >>> bids_basename.update(acquisition='test', kind='ieeg',
+        extension='.vhdr', task=None)
+        BIDSPath(root: None
+        basename: sub-test_ses-two_acq-test_ieeg.vhdr)
         >>> print(bids_basename)
         sub-test_ses-two_acq-test_ieeg.vhdr
-        """  # noqa
+        """
         run = entities.get('run')
         if run is not None and not isinstance(run, str):
             # Ensure that run is a string
@@ -293,6 +293,10 @@ class BIDSPath(object):
 
         # error check entities
         for key, val in entities.items():
+            # check if there are any characters not allowed
+            if val is not None and key != 'bids_root':
+                _check_key_val(key, val)
+
             # error check allowed BIDS entity keywords
             if key not in BIDS_PATH_ENTITIES and key not in [
                 'on_invalid_er_session', 'on_invalid_er_task',
@@ -305,6 +309,7 @@ class BIDSPath(object):
                 val = str(val)
             setattr(self, key, val)
 
+        # check validity of the BIDS entities
         self._check(with_emptyroom=False)
         return self
 
