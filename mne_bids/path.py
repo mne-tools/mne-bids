@@ -65,14 +65,14 @@ class BIDSPath(object):
     Examples
     --------
     >>> bids_basename = make_bids_basename(subject='test', session='two',
-    >>>                                    task='mytask', suffix='ieeg.edf')
+                                           task='mytask', suffix='ieeg.edf')
     >>> print(bids_basename)
     sub-test_ses-two_task-mytask_ieeg.edf
     >>> bids_basename
     BIDSPath(sub-test_ses-two_task-mytask_ieeg.edf)
     >>> # copy and update multiple entities at once
     >>> new_basename = bids_basename.copy().update(subject='test2',
-    >>>                                            session='one')
+                                                   session='one')
     >>> print(new_basename)
     sub-test2_ses-one_task-mytask_ieeg.edf
     >>> # set a bids bids_root
@@ -255,12 +255,13 @@ class BIDSPath(object):
         :func:`mne_bids.make_bids_basename`:
 
         >>> bids_basename = make_bids_basename(subject='test', session='two',
-        task='mytask', kind='data', extension='.csv')
+                                               task='mytask', kind='data',
+                                               extension='.csv')
         >>> print(bids_basename)
         sub-test_ses-two_task-mytask_data.csv
         >>> # Then, one can update this `BIDSPath` object in place
         >>> bids_basename.update(acquisition='test', kind='ieeg',
-        extension='.vhdr', task=None)
+                                 extension='.vhdr', task=None)
         BIDSPath(root: None
         basename: sub-test_ses-two_acq-test_ieeg.vhdr)
         >>> print(bids_basename)
