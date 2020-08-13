@@ -82,7 +82,7 @@ class BIDSPath(object):
     See Also
     --------
     mne_bids.make_bids_basename
-    mne_bids.parse_bids_fname
+    mne_bids.path.parse_bids_fname
 
     Examples
     --------
