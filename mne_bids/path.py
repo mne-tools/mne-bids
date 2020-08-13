@@ -79,11 +79,6 @@ class BIDSPath(object):
     fpath : str
         The full file path.
 
-    See Also
-    --------
-    mne_bids.make_bids_basename
-    mne_bids.path.parse_bids_fname
-
     Examples
     --------
     >>> bids_basename = make_bids_basename(subject='test', session='two',
