@@ -77,7 +77,7 @@ class BIDSPath(object):
     basename : str
         The basename of the file path. Similar to `os.path.basename(fpath)`.
     fpath : str
-        The full file path of the file.
+        The full file path.
 
     See Also
     --------
