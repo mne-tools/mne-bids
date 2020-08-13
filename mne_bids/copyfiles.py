@@ -197,7 +197,7 @@ def copyfile_kit(src, dest, subject_id, session_id,
             marker_fname = make_bids_basename(
                 subject=subject_id, session=session_id, task=task,
                 acquisition=key, run=run,
-                bids_root=data_path, suffix='markers%s' % marker_ext)
+                bids_root=data_path, suffix=f'markers{marker_ext}')
             sh.copyfile(value, marker_fname)
     for acq in ['elp', 'hsp']:
         if acq in _init_kwargs:
@@ -207,7 +207,7 @@ def copyfile_kit(src, dest, subject_id, session_id,
             position_fname = make_bids_basename(
                 subject=subject_id, session=session_id, task=task,
                 acquisition=acq, run=run,
-                bids_root=data_path, suffix='headshape%s' % position_ext)
+                bids_root=data_path, suffix=f'headshape{position_ext}')
             sh.copyfile(position_file, position_fname)
 
 

@@ -271,7 +271,7 @@ def test_bids_path(return_bids_test_dir):
 
     # when bids root is not passed in, a warning is shown
     with pytest.warns(RuntimeWarning,
-                      match='No bids root was passed in'):
+                      match='Bids root is None'):
         assert (bids_basename.fpath == expected_basename2)
 
     # with bids_root, but without kind/extension

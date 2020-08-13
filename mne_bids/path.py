@@ -55,12 +55,34 @@ class BIDSPath(object):
     space : str | None
         The coordinate space for an anatomical file. Corresponds to "space".
     kind : str | None
-        The recording kind. Will be appended to the filename
-        before the extension. E.g., 'ieeg'.
+        The kind of the path. Will be appended to the filename
+        before the extension. The following filename kinds are
+        accepted:
+        'meg', 'markers', 'eeg', 'ieeg', 'T1w',
+        'participants', 'scans',
+        'electrodes', 'channels', 'coordsystem', 'events',
+        'headshape', 'digitizer',
+        'behav', 'phsyio', 'stim'
     extension : str | None
         The extension for the filename. E.g., '.edf'
     bids_root : str | None
         The bids_root directory of the BIDS dataset.
+
+    Attributes
+    ----------
+    entities : dict
+        The dictionary of the BIDS entities and their values:
+        ``subject``, ``session``, ``task``, ``acquisition``,
+        ``run``, ``processing``, ``space``, ``recording`` and ``kind``.
+    basename : str
+        The basename of the file path. Similar to `os.path.basename(fpath)`.
+    fpath : str
+        The full file path of the file.
+
+    See Also
+    --------
+    mne_bids.make_bids_basename
+    mne_bids.parse_bids_fname
 
     Examples
     --------
@@ -75,7 +97,7 @@ class BIDSPath(object):
                                                    session='one')
     >>> print(new_basename)
     sub-test2_ses-one_task-mytask_ieeg.edf
-    >>> # set a bids bids_root
+    >>> # set a bids_root
     >>> new_basename.update(bids_root='/bids_dataset')
     >>> print(new_basename.bids_root)
     /bids_dataset
@@ -114,7 +136,7 @@ class BIDSPath(object):
 
     @property
     def basename(self):
-        """Return the basename of the BIDS Path."""
+        """Path basename."""
         basename = []
         for key, val in self.entities.items():
             if key not in ('bids_root', 'kind', 'extension') and \
@@ -143,48 +165,37 @@ class BIDSPath(object):
 
     @property
     def fpath(self):
-        """Get the full filepath for this BIDS file.
+        """Full filepath for this BIDS file.
 
         Getting the file path consists of the following behavior:
 
-        1. ``bids_root`` is not passed into the object: A warning is shown
-        to the user and it return the ``basename``.
+        1. ``bids_root`` is None: A warning is shown
+        to the user and it returns the ``basename``.
 
-        2. ``bids_root`` is passed into the object:
-
-            i. If ``kind`` and ``extension`` are given:
-            The function will then return the full filepath
-            using ``bids_root`` and ``basename``
-
-            ii. Else:
-            The function tries to infer the full filepath
-            for the given ``bids_root`` and ``basename``
-            and will return the full filepath. It will try to
-            infer the filename extension by searching
-            for the file on disk. If the file cannot be found, an error
-            will be raised. To disable this automatic inference attempt,
-            pass a string (like ``'.fif'`` or ``'.vhdr'``).
-
-            If it cannot find a matching dataset, it
-            will result in an error.
-
-        If ``None``,
+        2. ``bids_root`` is not None: The full file path
+        is inferred, or an error is raised if not possible.
 
         Returns
         -------
         bids_fpath : str
             Either the ``basename``, or full filepath to the dataset.
+            If ``kind`` and ``extension`` are not explicitly given,
+            the full file path will be inferred.
+
+            If it cannot find a matching dataset, it
+            will result in an error.
         """
         if self.bids_root is None:
-            msg = ('No bids root was passed in and '
+            msg = ('Bids root is None and '
                    'full BIDS filepath cannot be '
                    'automatically inferred. '
                    'Returning the bids basename.')
             warn(msg)
             return self.basename
 
-        # TODO: how do we get rid of this? Hack to make sure no error out
-        # during write/read.
+        # allows functionality as a file path that doesn't
+        # exist yet (e.g. in write_raw_bids)
+        # TODO: HACK to allow file paths that don't exist yet.
         if self.kind is not None and self.extension is not None:
             return op.join(self.bids_root, self.basename)
 
@@ -273,14 +284,14 @@ class BIDSPath(object):
             entities['run'] = '{:02}'.format(run)
 
         # ensure extension starts with a '.'
-        ext = entities.get('extension')
-        if ext is not None:
-            if not ext.startswith('.'):
-                ext = f'.{ext}'
-                entities['extension'] = ext
+        extension = entities.get('extension')
+        if extension is not None:
+            if not extension.startswith('.'):
+                extension = f'.{extension}'
+                entities['extension'] = extension
             # check validity of the extension
-            if ext not in ALLOWED_FILENAME_EXTENSIONS:
-                raise ValueError(f'Extension {ext} is not '
+            if extension not in ALLOWED_FILENAME_EXTENSIONS:
+                raise ValueError(f'Extension {extension} is not '
                                  f'allowed. Use one of these extensions '
                                  f'{ALLOWED_FILENAME_EXTENSIONS}.')
 
@@ -868,7 +879,7 @@ def _get_bids_fpath_from_filesystem(*, bids_basename, bids_root, sub, ses,
                           if _parse_ext(p)[1] in valid_exts]
 
         if len(matching_paths) > 1:
-            # only get the raw (m/i)EEG dataset if more then one match
+            # only get the raw MEG/EEG/iEEG dataset if more then one match
             dataset_exts = list(reader.keys())
             matching_paths = [fpath for fpath in matching_paths
                               if _parse_ext(fpath)[1] in dataset_exts]
