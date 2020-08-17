@@ -96,20 +96,18 @@ class BIDSPath(object):
             ('acquisition', self.acquisition),
             ('run', self.run),
             ('processing', self.processing),
-            ('recording', self.recording),
             ('space', self.space),
-            ('split', self.split),
-            ('prefix', self.prefix),
-            ('suffix', self.suffix)
+            ('recording', self.recording),
+            ('kind', self.kind),
         ])
 
-    def __str__(self):
-        """Return the string representation of the path."""
+    @property
+    def basename(self):
+        """Path basename."""
         basename = []
         for key, val in self.entities.items():
-            if key not in ('prefix', 'suffix') and \
+            if key not in ('bids_root', 'kind', 'extension') and \
                     val is not None:
-                _check_key_val(key, val)
                 # convert certain keys to shorthand
                 if key == 'subject':
                     key = 'sub'
@@ -123,14 +121,18 @@ class BIDSPath(object):
                     key = 'rec'
                 basename.append('%s-%s' % (key, val))
 
-        if self.suffix is not None:
-            basename.append(self.suffix)
+        if self.kind is not None:
+            if self.extension is not None:
+                basename.append(f'{self.kind}{self.extension}')
+            else:
+                basename.append(self.kind)
 
         basename = '_'.join(basename)
-        if self.prefix is not None:
-            basename = op.join(self.prefix, basename)
-
         return basename
+
+    def __str__(self):
+        """Return the string representation of the path."""
+        return self.basename
 
     def __repr__(self):
         """Representation in the style of `pathlib.Path`."""
@@ -235,6 +237,7 @@ class BIDSPath(object):
         if run is not None and not isinstance(run, str):
             # Ensure that run is a string
             entities['run'] = '{:02}'.format(run)
+            
         split = entities.get('split')
         if split is not None and not isinstance(split, str):
             # Ensure that run is a string
@@ -257,7 +260,7 @@ class BIDSPath(object):
 
     def _check(self, with_emptyroom=True):
         # check the task/session of er basename
-        str(self)  # run string representation to check validity of arguments
+        self.basename  # run basename to check validity of arguments
         if with_emptyroom and self.subject == 'emptyroom':
             _check_empty_room_basename(self)
 
