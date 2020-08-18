@@ -68,11 +68,8 @@ API
 - :func:`mne_bids.make_dataset_description` now takes the argument `overwrite` which will reset all fields if `True`. If `False`, user-provided fields will no longer be overwritten by :func:`mne_bids.write_raw_bids` when its `overwrite` argument is `True` unless new values are supplied, by `Alex Rockhill`_ (`#478 <https://github.com/mne-tools/mne-bids/pull/478>`_)
 - :func:`mne_bids.make_report` is now available from the `mne_bids` namespace that creates a string output of a summary of the BIDS dataset. In addition, the command line interface allows one to call `make_report`, by `Adam Li`_ (`#457 <https://github.com/mne-tools/mne-bids/pull/457>`_)
 - Added namespace :code:`mne_bids.path` which hosts path-like functionality for MNE-BIDS by `Adam Li`_ (`#483 <https://github.com/mne-tools/mne-bids/pull/483>`_)
-<<<<<<< HEAD
 - A function for retrieval of BIDS entity values from a filename, :func:`mne_bids.path.parse_bids_filename`, is now part of the public API (it used to be a private function called ``mne_bids.path._parse_bids_filename``), by `Richard Höchenberger`_ (`#487 <https://github.com/mne-tools/mne-bids/pull/487>`_)
 - Entity names passed to :func:`mne_bids.get_entity_vals` must now be in the "long" for, e.g. ``subject`` instead of ``sub`` etc., by `Richard Höchenberger`_ (`#501 <https://github.com/mne-tools/mne-bids/pull/501>`_)
-- Change :func:`mne_bids.path.parse_bids_fname` to use full entity kwargs (e.g. 'subject' instead of 'sub') in the return dictionary structure by `Adam Li`_ (`#496 <https://github.com/mne-tools/mne-bids/pull/496>`_)
-- A function for retrieval of BIDS entity values from a filename, :func:`mne_bids.path.get_bids_entities_from_fname`, is now part of the public API (it used to be a private function called ``mne_bids.path._parse_bids_filename``), by `Richard Höchenberger`_ (`#487 <https://github.com/mne-tools/mne-bids/pull/487>`_)
 - Change :func:`mne_bids.path.get_bids_entities_from_fname` to use full entity kwargs (e.g. 'subject' instead of 'sub') in the return dictionary structure by `Adam Li`_ (`#496 <https://github.com/mne-tools/mne-bids/pull/496>`_)
 
 .. _changes_0_4:
