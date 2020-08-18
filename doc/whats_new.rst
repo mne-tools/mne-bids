@@ -71,6 +71,8 @@ API
 - A function for retrieval of BIDS entity values from a filename, :func:`mne_bids.path.parse_bids_filename`, is now part of the public API (it used to be a private function called ``mne_bids.path._parse_bids_filename``), by `Richard Höchenberger`_ (`#487 <https://github.com/mne-tools/mne-bids/pull/487>`_)
 - Entity names passed to :func:`mne_bids.get_entity_vals` must now be in the "long" for, e.g. ``subject`` instead of ``sub`` etc., by `Richard Höchenberger`_ (`#501 <https://github.com/mne-tools/mne-bids/pull/501>`_)
 - Change :func:`mne_bids.path.get_bids_entities_from_fname` to use full entity kwargs (e.g. 'subject' instead of 'sub') in the return dictionary structure by `Adam Li`_ (`#496 <https://github.com/mne-tools/mne-bids/pull/496>`_)
+- Change :func:`mne_bids.path.BIDSPath` and :func:`mne_bids.make_bids_basename` to use explicitly ``kind`` and ``extension`` instead of ``suffix`` in kwargs by `Adam Li`_ (`#496 <https://github.com/mne-tools/mne-bids/pull/496>`_)
+
 
 .. _changes_0_4:
 
