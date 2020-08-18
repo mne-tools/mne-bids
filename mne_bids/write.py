@@ -955,6 +955,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
         params = get_bids_entities_from_fname(bids_basename)
         bids_basename = BIDSPath(**params)
 
+    bids_basename = bids_basename.copy()
     subject_id, session_id = bids_basename.subject, bids_basename.session
     task, run = bids_basename.task, bids_basename.run
     acquisition, space = bids_basename.acquisition, bids_basename.space
@@ -1042,12 +1043,12 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
             if verbose:
                 warn('Converting to FIF for anonymization')
             convert = True
-            bids_fname.suffix = bids_fname.suffix.replace(ext, '.fif')
+            bids_fname.update(extension='.fif')
         elif kind in ['eeg', 'ieeg'] and ext != '.vhdr':
             if verbose:
                 warn('Converting to BV for anonymization')
             convert = True
-            bids_fname.suffix = bids_fname.suffix.replace(ext, '.vhdr')
+            bids_fname.update(extension='.vhdr')
 
     # Read in Raw object and extract metadata from Raw object if needed
     orient = ORIENTATION.get(ext, 'n/a')
@@ -1122,7 +1123,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
         else:
             if verbose:
                 warn('Converting data files to BrainVision format')
-            bids_fname.suffix = f'{kind}.vhdr'
+            bids_fname.update(kind=kind, extension='.vhdr')
             _write_raw_brainvision(raw, bids_fname, events)
     elif ext == '.fif':
         _write_raw_fif(raw, bids_fname)

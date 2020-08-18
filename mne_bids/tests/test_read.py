@@ -620,13 +620,13 @@ def test_get_matched_empty_room():
         # mne < v0.20
         er_date = datetime.fromtimestamp(er_raw.info['meas_date'][0])
     er_date = er_date.strftime('%Y%m%d')
-    er_bids_basename = make_bids_basename(subject='emptyroom',
-                                          task='noise', session=er_date)
+    er_bids_basename = make_bids_basename(subject='emptyroom', task='noise',
+                                          session=er_date, kind='meg')
     write_raw_bids(er_raw, er_bids_basename, bids_root, overwrite=True)
 
     recovered_er_basename = get_matched_empty_room(bids_basename=bids_basename,
                                                    bids_root=bids_root)
-    assert er_bids_basename == recovered_er_basename
+    assert er_bids_basename.basename == recovered_er_basename
 
     # assert that we get best emptyroom if there are multiple available
     sh.rmtree(op.join(bids_root, 'sub-emptyroom'))
@@ -727,6 +727,8 @@ def test_get_matched_emptyroom_no_meas_date():
     write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
     os.remove(op.join(bids_root, 'participants.tsv'))
 
+    from mne_bids.path import print_dir_tree
+    print_dir_tree(bids_root)
     with pytest.warns(RuntimeWarning, match='Could not retrieve .* date'):
         get_matched_empty_room(bids_basename=bids_basename,
                                bids_root=bids_root)
@@ -793,11 +795,11 @@ def test_bads_reading():
     channels_fname = (bids_basename.copy()
                       .update(prefix=op.join(bids_root, 'sub-01', 'ses-01',
                                              'meg'),
-                              suffix='channels.tsv'))
+                              kind='channels', extension='.tsv'))
     raw_bids_fname = (bids_basename.copy()
                       .update(prefix=op.join(bids_root, 'sub-01', 'ses-01',
                                              'meg'),
-                              suffix='meg.fif'))
+                              kind='meg', extension='.fif'))
     raw = mne.io.read_raw_fif(raw_fname, verbose=False)
 
     ###########################################################################

@@ -47,7 +47,7 @@ IGNORED_CHANNELS = {'KIT/Yokogawa': ['STI 014'],
                     'n/a': ['STI 014'],  # for unknown manufacturers, ignore it
                     'Biosemi': ['STI 014']}
 
-allowed_extensions_meg = ['.con', '.sqd', '.fif', '.pdf', '.ds', '.pos']
+allowed_extensions_meg = ['.con', '.sqd', '.fif', '.pdf', '.ds']
 allowed_extensions_eeg = ['.vhdr',  # BrainVision, accompanied by .vmrk, .eeg
                           '.edf',  # European Data Format
                           '.bdf',  # Biosemi
@@ -79,7 +79,9 @@ ALLOWED_FILENAME_EXTENSIONS = (
     allowed_extensions_meg +
     allowed_extensions_eeg +
     allowed_extensions_ieeg +
-    ['.json', '.tsv', '.tsv.gz', '.nii', '.nii.gz'])
+    ['.json', '.tsv', '.tsv.gz', '.nii', '.nii.gz'] +
+    ['.pos', '.eeg', '.vmrk']  # extra modality-specific metadata files
+)
 
 # allowed BIDS path entities
 BIDS_PATH_ENTITIES = ('subject', 'session', 'task', 'run',

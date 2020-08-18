@@ -41,8 +41,6 @@ def test_read_raw_kind():
     write_raw_bids(raw, bids_basename, bids_root, overwrite=True,
                    verbose=False)
 
-    from mne_bids.path import print_dir_tree
-    print_dir_tree(bids_root)
     report = make_report(bids_root)
     print(report)
 

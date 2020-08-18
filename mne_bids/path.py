@@ -87,8 +87,8 @@ class BIDSPath(object):
 
         self.update(subject=subject, session=session, task=task,
                     acquisition=acquisition, run=run, processing=processing,
-                    recording=recording, space=space, split=split, prefix=prefix,
-                    kind=kind, extension=extension)
+                    recording=recording, space=space, split=split,
+                    prefix=prefix, kind=kind, extension=extension)
 
     @property
     def entities(self):
@@ -200,9 +200,11 @@ class BIDSPath(object):
             raise ValueError(msg)
 
         if extension is None:
+            # since kind is passed in, use that
+            bids_basename = self.copy().update(kind=None)
             bids_fname = _get_bids_fname_from_filesystem(
-                bids_basename=self, bids_root=bids_root, sub=sub, ses=ses,
-                kind=kind)
+                bids_basename=bids_basename, bids_root=bids_root,
+                sub=sub, ses=ses, kind=kind)
             new_suffix = bids_fname.split("_")[-1]
             kind, extension = _get_kind_ext_from_suffix(new_suffix)
             bids_fname = self.copy().update(kind=kind, extension=extension)
@@ -244,7 +246,7 @@ class BIDSPath(object):
         if run is not None and not isinstance(run, str):
             # Ensure that run is a string
             entities['run'] = '{:02}'.format(run)
-            
+
         split = entities.get('split')
         if split is not None and not isinstance(split, str):
             # Ensure that run is a string
@@ -272,6 +274,10 @@ class BIDSPath(object):
 
         # error check entities
         for key, val in entities.items():
+            # check if there are any characters not allowed
+            if val is not None and key != 'prefix':
+                _check_key_val(key, val)
+
             # error check allowed BIDS entity keywords
             if key not in BIDS_PATH_ENTITIES and key not in [
                 'on_invalid_er_session', 'on_invalid_er_task',
@@ -280,6 +286,9 @@ class BIDSPath(object):
                                  'got %s' % key)
 
             # set entity value
+            if key == 'prefix' and val is not None:
+                # ensure prefix is a string
+                val = str(val)
             setattr(self, key, val)
 
         self._check(with_emptyroom=False)
@@ -497,6 +506,9 @@ def _find_matching_sidecar(bids_fname, bids_root, suffix, allow_fail=False):
         and no sidecar_fname was found
 
     """
+    # do not search for kind since suffix is passed
+    bids_fname = bids_fname.copy().update(kind=None)
+
     # We only use subject and session as identifier, because all other
     # parameters are potentially not binding for metadata sidecar files
     search_str = f'sub-{bids_fname.subject}'
@@ -830,7 +842,6 @@ def _find_best_candidates(params, candidate_list):
                 best_candidates = [candidate]
             elif n_matches == best_n_matches:
                 best_candidates.append(candidate)
-
     return best_candidates
 
 
@@ -854,7 +865,6 @@ def _get_bids_fname_from_filesystem(*, bids_basename, bids_root, sub, ses,
                                            f'{bids_basename}_{kind}.*'))
         matching_paths = [p for p in matching_paths
                           if _parse_ext(p)[1] in valid_exts]
-
         if not matching_paths:
             msg = ('Could not locate a data file of a supported format. This '
                    'is likely a problem with your BIDS dataset. Please run '

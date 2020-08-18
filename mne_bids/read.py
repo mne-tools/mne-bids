@@ -21,8 +21,8 @@ from mne.transforms import apply_trans
 
 from mne_bids.dig import _read_dig_bids
 from mne_bids.tsv_handler import _from_tsv, _drop
-from mne_bids.config import (ALLOWED_MODALITY_EXTENSIONS, _convert_hand_options,
-                             _convert_sex_options, reader)
+from mne_bids.config import (ALLOWED_MODALITY_EXTENSIONS, reader,
+                             _convert_hand_options, _convert_sex_options)
 from mne_bids.utils import (_extract_landmarks,
                             _get_ch_type_mapping, _estimate_line_freq)
 from mne_bids import make_bids_folders
@@ -336,9 +336,9 @@ def read_raw_bids(bids_basename, bids_root, kind=None, extra_params=None,
     if isinstance(bids_basename, str):
         params = get_bids_entities_from_fname(bids_basename)
         bids_basename = BIDSPath(**params)
+    bids_basename = bids_basename.copy()
     sub = bids_basename.subject
     ses = bids_basename.session
-    acq = bids_basename.acquisition
 
     if kind is None:
         kind = _infer_kind(bids_basename=bids_basename, bids_root=bids_root,
@@ -378,13 +378,11 @@ def read_raw_bids(bids_basename, bids_root, kind=None, extra_params=None,
 
     # Try to find an associated electrodes.tsv and coordsystem.json
     # to get information about the status and type of present channels
-    elec_suffix = 'electrodes.tsv'
-    coord_suffix = 'coordsystem.json'
     electrodes_fname = _find_matching_sidecar(bids_fname, bids_root,
-                                              suffix=elec_suffix,
+                                              suffix='electrodes.tsv',
                                               allow_fail=True)
     coordsystem_fname = _find_matching_sidecar(bids_fname, bids_root,
-                                               suffix=coord_suffix,
+                                               suffix='coordsystem.json',
                                                allow_fail=True)
     if electrodes_fname is not None:
         if coordsystem_fname is None:
@@ -438,6 +436,7 @@ def get_matched_empty_room(bids_basename, bids_root):
     if isinstance(bids_basename, str):
         params = get_bids_entities_from_fname(bids_basename)
         bids_basename = BIDSPath(**params)
+    bids_basename = bids_basename.copy()
 
     kind = 'meg'  # We're only concerned about MEG data here
     bids_fname = bids_basename.get_bids_fname(kind=kind, bids_root=bids_root)

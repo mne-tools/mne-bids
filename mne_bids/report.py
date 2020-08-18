@@ -13,10 +13,9 @@ from mne.utils import warn
 
 from mne_bids.config import DOI, ALLOWED_MODALITY_KINDS
 from mne_bids.tsv_handler import _from_tsv
-from mne_bids.path import (make_bids_basename, get_kinds,
-                           get_entity_vals, _parse_ext,
-                           _find_matching_sidecar, get_bids_entities_from_fname,
-                           BIDSPath)
+from mne_bids.path import (get_kinds, get_entity_vals, BIDSPath,
+                           _parse_ext, _find_matching_sidecar,
+                           get_bids_entities_from_fname)
 
 # functions to be used inside Template strings
 FUNCTION_TEMPLATE = """{{py:  
@@ -424,9 +423,7 @@ def _summarize_channels_tsv(bids_root, scans_fpaths, verbose=True):
             # XXX: improve to allow emptyroom
             if bids_basename.subject == 'emptyroom':
                 continue
-
-            print(bids_basename)
-            print(bids_root)
+            # bids_basename.update(kind=None)  # searching for `channels` kind
             channels_fname = _find_matching_sidecar(bids_fname=bids_basename,
                                                     bids_root=bids_root,
                                                     suffix='channels.tsv')
