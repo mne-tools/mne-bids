@@ -264,7 +264,8 @@ def test_bids_path(return_bids_test_dir):
 
     # should find the correct filename if bids_root was passed
     bids_fname = bids_basename.get_bids_fname(bids_root=bids_root)
-    assert bids_fname == bids_basename.update(suffix='meg.fif')
+    assert bids_fname == bids_basename.update(kind='meg',
+                                              extension='.fif')
 
     # confirm BIDSPath assigns properties correctly
     bids_basename = make_bids_basename(subject=subject_id,
@@ -277,7 +278,7 @@ def test_bids_path(return_bids_test_dir):
     assert all(bids_basename.entities.get(entity) is None
                for entity in ['task', 'run', 'recording', 'acquisition',
                               'space', 'processing',
-                              'prefix', 'suffix'])
+                              'prefix', 'kind', 'extension'])
 
     # test updating functionality
     bids_basename.update(acquisition='03', run='2', session='02',
@@ -304,5 +305,6 @@ def test_bids_path(return_bids_test_dir):
 
     # test repr
     bids_path = make_bids_basename(subject='01', session='02',
-                                   task='03', suffix='ieeg.edf')
+                                   task='03', kind='ieeg',
+                                   extension='.edf')
     assert repr(bids_path) == 'BIDSPath(sub-01_ses-02_task-03_ieeg.edf)'

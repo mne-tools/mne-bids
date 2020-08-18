@@ -229,7 +229,8 @@ def test_line_freq_estimation():
     kind = "meg"
 
     # assert that we get the same line frequency set
-    bids_fname = bids_basename.copy().update(suffix=f'{kind}.fif')
+    bids_fname = bids_basename.copy().update(kind=kind,
+                                             extension='.fif')
 
     # find sidecar JSON fname
     write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
@@ -283,7 +284,8 @@ def test_handle_info_reading():
     bids_basename = make_bids_basename(subject='01', session='01',
                                        task='audiovisual', run='01')
     kind = "meg"
-    bids_fname = bids_basename.copy().update(suffix=f'{kind}.fif')
+    bids_fname = bids_basename.copy().update(kind=kind,
+                                             extension='.fif')
     write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
 
     # find sidecar JSON fname
@@ -411,7 +413,8 @@ def test_handle_ieeg_coords_reading(bids_basename):
 
     data_path = op.join(testing.data_path(), 'EDF')
     raw_fname = op.join(data_path, 'test_reduced.edf')
-    bids_fname = bids_basename.copy().update(suffix='ieeg.edf')
+    bids_fname = bids_basename.copy().update(kind='ieeg',
+                                             extension='.edf')
 
     raw = mne.io.read_raw_edf(raw_fname)
 
@@ -773,7 +776,7 @@ def test_handle_channel_type_casing():
                            'meg')
     bids_channels_fname = (bids_basename.copy()
                            .update(prefix=subject_path,
-                                   suffix='channels.tsv'))
+                                   kind='channels', extension='.tsv'))
 
     # Convert all channel type entries to lowercase.
     channels_data = _from_tsv(bids_channels_fname)

@@ -196,7 +196,7 @@ def copyfile_kit(src, dest, subject_id, session_id,
         for key, value in acq_map.items():
             marker_fname = make_bids_basename(
                 subject=subject_id, session=session_id, task=task, run=run,
-                acquisition=key, suffix='markers%s' % marker_ext,
+                acquisition=key, kind='markers', extension=marker_ext,
                 prefix=data_path)
             sh.copyfile(value, marker_fname)
     for acq in ['elp', 'hsp']:
@@ -206,7 +206,7 @@ def copyfile_kit(src, dest, subject_id, session_id,
             position_ext = '.pos'
             position_fname = make_bids_basename(
                 subject=subject_id, session=session_id, task=task, run=run,
-                acquisition=acq, suffix='headshape%s' % position_ext,
+                acquisition=acq, kind='headshape', extension=position_ext,
                 prefix=data_path)
             sh.copyfile(position_file, position_fname)
 

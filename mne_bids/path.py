@@ -13,7 +13,9 @@ from pathlib import Path
 
 from mne.utils import warn, logger
 
-from mne_bids.config import BIDS_PATH_ENTITIES, reader
+from mne_bids.config import (BIDS_PATH_ENTITIES, reader,
+                             ALLOWED_FILENAME_EXTENSIONS,
+                             ALLOWED_FILENAME_KINDS)
 from mne_bids.utils import (_check_key_val, _check_empty_room_basename,
                             _check_types, param_regex,
                             _ensure_tuple)
@@ -75,16 +77,18 @@ class BIDSPath(object):
 
     def __init__(self, subject=None, session=None,
                  task=None, acquisition=None, run=None, processing=None,
-                 recording=None, space=None, split=None, prefix=None, suffix=None):
+                 recording=None, space=None, split=None, prefix=None,
+                 kind=None, extension=None):
         if all(ii is None for ii in [subject, session, task,
                                      acquisition, run, processing,
-                                     recording, space, prefix, suffix]):
+                                     recording, space, prefix, kind,
+                                     extension]):
             raise ValueError("At least one parameter must be given.")
 
         self.update(subject=subject, session=session, task=task,
                     acquisition=acquisition, run=run, processing=processing,
                     recording=recording, space=space, split=split, prefix=prefix,
-                    suffix=suffix)
+                    kind=kind, extension=extension)
 
     @property
     def entities(self):
@@ -106,7 +110,7 @@ class BIDSPath(object):
         """Path basename."""
         basename = []
         for key, val in self.entities.items():
-            if key not in ('bids_root', 'kind', 'extension') and \
+            if key not in ('prefix', 'kind', 'extension') and \
                     val is not None:
                 # convert certain keys to shorthand
                 if key == 'subject':
@@ -132,6 +136,8 @@ class BIDSPath(object):
 
     def __str__(self):
         """Return the string representation of the path."""
+        if self.prefix is not None:
+            return op.join(self.prefix, self.basename)
         return self.basename
 
     def __repr__(self):
@@ -198,7 +204,8 @@ class BIDSPath(object):
                 bids_basename=self, bids_root=bids_root, sub=sub, ses=ses,
                 kind=kind)
             new_suffix = bids_fname.split("_")[-1]
-            bids_fname = self.copy().update(suffix=new_suffix)
+            kind, extension = _get_kind_ext_from_suffix(new_suffix)
+            bids_fname = self.copy().update(kind=kind, extension=extension)
         else:
             bids_fname = self.copy().update(suffix='{kind}.{extension}')
 
@@ -242,6 +249,26 @@ class BIDSPath(object):
         if split is not None and not isinstance(split, str):
             # Ensure that run is a string
             entities['split'] = '{:02}'.format(split)
+
+        # ensure extension starts with a '.'
+        extension = entities.get('extension')
+        if extension is not None:
+            if not extension.startswith('.'):
+                extension = f'.{extension}'
+                entities['extension'] = extension
+            # check validity of the extension
+            if extension not in ALLOWED_FILENAME_EXTENSIONS:
+                raise ValueError(f'Extension {extension} is not '
+                                 f'allowed. Use one of these extensions '
+                                 f'{ALLOWED_FILENAME_EXTENSIONS}.')
+
+        # error check kind
+        kind = entities.get('kind')
+        if kind is not None:
+            if kind not in ALLOWED_FILENAME_KINDS:
+                raise ValueError(f'Kind {kind} is not allowed. '
+                                 f'Use one of these kinds '
+                                 f'{ALLOWED_FILENAME_KINDS}.')
 
         # error check entities
         for key, val in entities.items():
@@ -499,12 +526,12 @@ def _find_matching_sidecar(bids_fname, bids_root, suffix, allow_fail=False):
     msg = None
     if len(best_candidates) == 0:
         msg = ('Did not find any {} associated with {}.'
-               .format(suffix, bids_fname))
+               .format(suffix, bids_fname.basename))
     elif len(best_candidates) > 1:
         # More than one candidates were tied for best match
         msg = ('Expected to find a single {} file associated with '
                '{}, but found {}: "{}".'
-               .format(suffix, bids_fname, len(candidate_list),
+               .format(suffix, bids_fname.basename, len(candidate_list),
                        candidate_list))
     msg += '\n\nThe search_str was "{}"'.format(search_str)
     if allow_fail:
@@ -516,7 +543,8 @@ def _find_matching_sidecar(bids_fname, bids_root, suffix, allow_fail=False):
 
 def make_bids_basename(subject=None, session=None, task=None,
                        acquisition=None, run=None, processing=None,
-                       recording=None, space=None, split=None, prefix=None, suffix=None):
+                       recording=None, space=None, split=None, prefix=None,
+                       kind=None, extension=None):
     """Create a partial/full BIDS basename from its component parts.
 
     BIDS filename prefixes have one or more pieces of metadata in them. They
@@ -569,9 +597,24 @@ def make_bids_basename(subject=None, session=None, task=None,
     bids_path = BIDSPath(subject=subject, session=session, task=task,
                          acquisition=acquisition, run=run,
                          processing=processing, recording=recording,
-                         space=space, split=split, prefix=prefix, suffix=suffix)
+                         space=space, split=split, prefix=prefix,
+                         kind=kind, extension=extension)
     bids_path._check()
     return bids_path
+
+
+def _get_kind_ext_from_suffix(suffix):
+    """Parse suffix for valid kind and ext."""
+    # no matter what the suffix is, kind and extension are last
+    kind = suffix
+    ext = None
+    if suffix is not None:
+        if '.' in suffix:
+            # handle case of multiple '.' in extension
+            split_str = suffix.split('.')
+            kind = split_str[0]
+            ext = '.'.join(split_str[1:])
+    return kind, ext
 
 
 def get_kinds(bids_root):

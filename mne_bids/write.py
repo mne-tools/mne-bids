@@ -47,7 +47,7 @@ from mne_bids.tsv_handler import (_from_tsv, _drop, _contains_row,
                                   _combine_rows)
 
 from mne_bids.config import (ORIENTATION, UNITS, MANUFACTURERS,
-                             IGNORED_CHANNELS, ALLOWED_EXTENSIONS,
+                             IGNORED_CHANNELS, ALLOWED_MODALITY_EXTENSIONS,
                              BIDS_VERSION, REFERENCES, _convert_hand_options,
                              _convert_sex_options, reader)
 
@@ -480,7 +480,7 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, overwrite=False,
     fname : str | BIDSPath
         Filename to save the sidecar json to.
     kind : str
-        Type of the data as in ALLOWED_KINDS.
+        Type of the data as in ALLOWED_MODALITY_KINDS.
     overwrite : bool
         Whether to overwrite the existing file.
         Defaults to False.
@@ -941,8 +941,8 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     raw_fname = raw_fname.replace('.fdt', '.set')
     _, ext = _parse_ext(raw_fname, verbose=verbose)
 
-    if ext not in [this_ext for data_type in ALLOWED_EXTENSIONS
-                   for this_ext in ALLOWED_EXTENSIONS[data_type]]:
+    if ext not in [this_ext for data_type in ALLOWED_MODALITY_EXTENSIONS
+                   for this_ext in ALLOWED_MODALITY_EXTENSIONS[data_type]]:
         raise ValueError('Unrecognized file format %s' % ext)
 
     raw_orig = reader[ext](**raw._init_kwargs)
@@ -960,7 +960,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     acquisition, space = bids_basename.acquisition, bids_basename.space
     kind = _handle_kind(raw)
 
-    bids_fname = bids_basename.copy().update(suffix=f'{kind}{ext}')
+    bids_fname = bids_basename.copy().update(kind=kind, extension=ext)
 
     # check whether the info provided indicates that the data is emptyroom
     # data
@@ -997,31 +997,35 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
 
     # create *_scans.tsv
     bids_path = BIDSPath(subject=subject_id, session=session_id,
-                         prefix=ses_path, suffix='scans.tsv',
+                         prefix=ses_path, kind='scans', extension='.tsv',
                          task=None)
     scans_fname = str(bids_path)
 
     # create *_coordsystem.json
     bids_path.update(acquisition=acquisition, space=space,
-                     prefix=data_path, suffix='coordsystem.json')
+                     prefix=data_path, kind='coordsystem',
+                     extension='.json')
     coordsystem_fname = str(bids_path)
 
     # create *_electrodes.tsv
-    bids_path = bids_path.update(suffix='electrodes.tsv')
+    bids_path = bids_path.update(kind='electrodes',
+                                 extension='.tsv')
     electrodes_fname = str(bids_path)
 
     # For the remaining files, we can use BIDSPath to alter.
-    readme_fname = make_bids_basename(prefix=bids_root, suffix='README')
-    participants_tsv_fname = make_bids_basename(prefix=bids_root,
-                                                suffix='participants.tsv')
-    participants_json_fname = participants_tsv_fname.copy()
-    participants_json_fname.suffix = 'participants.json'
+    readme_fname = op.join(bids_root, 'README')
+    participants_tsv_fname = op.join(bids_root, 'participants.tsv')
+    participants_json_fname = participants_tsv_fname.replace('tsv',
+                                                             'json')
 
     sidecar_fname = bids_fname.copy().update(prefix=data_path,
-                                             suffix=f'{kind}.json')
+                                             kind=kind,
+                                             extension='.json')
 
-    events_fname = sidecar_fname.copy().update(suffix='events.tsv')
-    channels_fname = sidecar_fname.copy().update(suffix='channels.tsv')
+    events_fname = sidecar_fname.copy().update(kind='events',
+                                               extension='.tsv')
+    channels_fname = sidecar_fname.copy().update(kind='channels',
+                                                 extension='.tsv')
 
     if ext not in ['.fif', '.ds', '.vhdr', '.edf', '.bdf', '.set', '.con',
                    '.sqd']:
@@ -1099,12 +1103,12 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     # If not already converting for anonymization, we may still need to do it
     # if current format not BIDS compliant
     if not convert:
-        convert = ext not in ALLOWED_EXTENSIONS[kind]
+        convert = ext not in ALLOWED_MODALITY_EXTENSIONS[kind]
 
     if kind == 'meg' and convert and not anonymize:
         raise ValueError('Got file extension %s for MEG data, '
                          'expected one of %s' %
-                         ALLOWED_EXTENSIONS['meg'])
+                         ALLOWED_MODALITY_EXTENSIONS['meg'])
 
     if not convert and verbose:
         print('Copying data files to %s' % op.splitext(bids_fname)[0])
@@ -1263,7 +1267,7 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
     t1w_basename = make_bids_basename(subject=subject, session=session,
                                       acquisition=acquisition,
                                       prefix=anat_dir,
-                                      suffix='T1w.nii.gz')
+                                      kind='T1w', extension='.nii.gz')
 
     # Check if we have necessary conditions for writing a sidecar JSON
     if trans is not None or landmarks is not None:

@@ -21,7 +21,7 @@ from mne.transforms import apply_trans
 
 from mne_bids.dig import _read_dig_bids
 from mne_bids.tsv_handler import _from_tsv, _drop
-from mne_bids.config import (ALLOWED_EXTENSIONS, _convert_hand_options,
+from mne_bids.config import (ALLOWED_MODALITY_EXTENSIONS, _convert_hand_options,
                              _convert_sex_options, reader)
 from mne_bids.utils import (_extract_landmarks,
                             _get_ch_type_mapping, _estimate_line_freq)
@@ -63,7 +63,7 @@ def _read_raw(raw_fpath, electrode=None, hsp=None, hpi=None,
     # ---------------------------
     else:
         raise ValueError('Raw file name extension must be one of {}\n'
-                         'Got {}'.format(ALLOWED_EXTENSIONS, ext))
+                         'Got {}'.format(ALLOWED_MODALITY_EXTENSIONS, ext))
     return raw
 
 
@@ -378,9 +378,8 @@ def read_raw_bids(bids_basename, bids_root, kind=None, extra_params=None,
 
     # Try to find an associated electrodes.tsv and coordsystem.json
     # to get information about the status and type of present channels
-    search_modifier = f'acq-{acq}' if acq else ''
-    elec_suffix = f'{search_modifier}*_electrodes.tsv'
-    coord_suffix = f'{search_modifier}*_coordsystem.json'
+    elec_suffix = 'electrodes.tsv'
+    coord_suffix = 'coordsystem.json'
     electrodes_fname = _find_matching_sidecar(bids_fname, bids_root,
                                               suffix=elec_suffix,
                                               allow_fail=True)
