@@ -123,7 +123,7 @@ class BIDSPath(object):
                     key = 'proc'
                 if key == 'recording':
                     key = 'rec'
-                basename.append('%s-%s' % (key, val))
+                basename.append(f'{key}-{val}')
 
         if self.kind is not None:
             if self.extension is not None:
@@ -282,8 +282,8 @@ class BIDSPath(object):
             if key not in BIDS_PATH_ENTITIES and key not in [
                 'on_invalid_er_session', 'on_invalid_er_task',
             ]:
-                raise ValueError('Key must be one of {BIDS_PATH_ENTITIES}, '
-                                 'got %s' % key)
+                raise ValueError(f'Key must be one of '
+                                 f'{BIDS_PATH_ENTITIES}, got {key}')
 
             # set entity value
             if key == 'prefix' and val is not None:
@@ -388,9 +388,9 @@ def make_bids_folders(subject, session=None, kind=None, bids_root=None,
     if session is not None:
         _check_key_val('ses', session)
 
-    path = ['sub-%s' % subject]
+    path = [f'sub-{subject}']
     if isinstance(session, str):
-        path.append('ses-%s' % session)
+        path.append(f'ses-{session}')
     if isinstance(kind, str):
         path.append(kind)
     path = op.join(*path)
@@ -463,12 +463,12 @@ def get_bids_entities_from_fname(fname):
     for match in re.finditer(param_regex, op.basename(fname)):
         key, value = match.groups()
         if key not in fname_vals:
-            raise KeyError('Unexpected entity "%s" found in filename "%s"'
-                           % (key, fname))
+            raise KeyError(f'Unexpected entity "{key}" found in '
+                           f'filename "{fname}"')
         if fname_vals.index(key) < idx_key:
-            raise ValueError('Entities in filename not ordered correctly.'
-                             ' "%s" should have occurred earlier in the '
-                             'filename "%s"' % (key, fname))
+            raise ValueError(f'Entities in filename not ordered correctly.'
+                             f' "{key}" should have occurred earlier in the '
+                             f'filename "{fname}"')
         idx_key = fname_vals.index(key)
         params[fname_to_entity[key]] = value
 
@@ -790,11 +790,11 @@ def _mkdir_p(path, overwrite=False, verbose=False):
     if overwrite and op.isdir(path):
         sh.rmtree(path)
         if verbose is True:
-            print('Clearing path: %s' % path)
+            print(f'Clearing path: {path}')
 
     os.makedirs(path, exist_ok=True)
     if verbose is True:
-        print('Creating folder: %s' % path)
+        print(f'Creating folder: {path}')
 
 
 def _find_best_candidates(params, candidate_list):
@@ -925,7 +925,7 @@ def _infer_kind(*, bids_basename, bids_root, sub, ses):
 def _path_to_str(var):
     """Make sure var is a string or Path, return string representation."""
     if not isinstance(var, (Path, str)):
-        raise ValueError("All path parameters must be either strings or "
-                         "pathlib.Path objects. Found type %s." % type(var))
+        raise ValueError(f"All path parameters must be either strings or "
+                         f"pathlib.Path objects. Found type {type(var)}.")
     else:
         return str(var)
