@@ -22,7 +22,7 @@ from mne.transforms import (_get_trans, apply_trans, get_ras_to_neuromag_trans,
 from mne import Epochs
 from mne.io.constants import FIFF
 from mne.io.pick import channel_type
-from mne.io import BaseRaw, anonymize_info, read_fiducials
+from mne.io import BaseRaw, read_fiducials
 try:
     from mne.io._digitization import _get_fid_coords
 except ImportError:
@@ -907,7 +907,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
 
     See Also
     --------
-    mne.io.anonymize_info
+    mne.io.Raw.anonymize
 
     """
     if not check_version('mne', '0.17'):
@@ -1039,8 +1039,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     convert = False
     if anonymize is not None:
         daysback, keep_his = _check_anonymize(anonymize, raw, ext)
-        raw.info = anonymize_info(raw.info, daysback=daysback,
-                                  keep_his=keep_his)
+        raw.anonymize(daysback=daysback, keep_his=keep_his, verbose=verbose)
 
         if kind == 'meg' and ext != '.fif':
             if verbose:
