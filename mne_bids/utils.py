@@ -344,19 +344,16 @@ def _estimate_line_freq(raw, verbose=False):
     if sfreq < 100:
         return None
 
-    # setup picks of the data to get at least 5 channels
-    pick_dict = {"meg": True}
-    picks = list(pick_types(raw.info, exclude='bads', **pick_dict))
-    if len(picks) < 5:
-        pick_dict = {"eeg": True}
-        picks = pick_types(raw.info, exclude='bads', **pick_dict)
-    if len(picks) < 5:
-        pick_dict = {"ecog": True}
-        picks = pick_types(raw.info, exclude='bads', **pick_dict)
-    if len(picks) < 5:
-        pick_dict = {"seeg": True}
-        picks = pick_types(raw.info, exclude='bads', **pick_dict)
-    if len(picks) < 5:
+    # setup picks of the data to get at least one channel
+    for kind in ('meg', 'eeg', 'ecog', 'seeg'):
+        pick_dict = {kind: True}
+        picks = list(pick_types(raw.info, exclude='bads', **pick_dict))
+        if picks:
+            # get just five channels of data at the most to estimate on
+            picks = picks[:min([len(picks), 5])]
+            break
+
+    if not picks:
         warn("Estimation of line frequency only "
              "supports 'meg', 'eeg', 'ecog', or 'seeg'.")
         return None
@@ -365,9 +362,9 @@ def _estimate_line_freq(raw, verbose=False):
     tmin = 0
     tmax = int(min(len(raw.times), 10 * sfreq))
 
-    # get just five channels of data to estimate on
+    # get the data
     data = raw.get_data(start=tmin, stop=tmax,
-                        picks=picks, return_times=False)[0:5, :]
+                        picks=picks, return_times=False)
 
     # run a multi-taper FFT between Power Line Frequencies of interest
     psds, freqs = psd_array_welch(data, fmin=49, fmax=61,

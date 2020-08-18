@@ -203,6 +203,28 @@ def test_get_anonymization_daysback():
             get_anonymization_daysback([raw, raw2, raw4])
 
 
+def test_create_fif(_bids_validate):
+    """Test functionality for very short raw file created from data."""
+    out_dir = _TempDir()
+    bids_root = _TempDir()
+    info = mne.create_info(['ch1', 'ch2', 'ch3'], 512,
+                           ['seeg'] * 3)
+    raw = mne.io.RawArray(np.random.random((3, 1000)) * 1e-6,
+                          info)
+    raw.save(op.join(out_dir, 'test-raw.fif'))
+    raw = mne.io.read_raw_fif(op.join(out_dir, 'test-raw.fif'))
+    with pytest.warns(RuntimeWarning, match='Cannot determine line frequency'):
+        write_raw_bids(raw, bids_basename, bids_root,
+                       verbose=False, overwrite=True)
+        raw2 = read_raw_bids(bids_basename=bids_basename, bids_root=bids_root,
+                             kind='ieeg')
+        assert raw2.info['line_freq'] is None
+    raw.info['line_freq'] = 60
+    write_raw_bids(raw, bids_basename, bids_root,
+                   verbose=False, overwrite=True)
+    _bids_validate(bids_root)
+
+
 @requires_version('pybv', '0.2.0')
 @pytest.mark.filterwarnings(warning_str['annotations_omitted'])
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
