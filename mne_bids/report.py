@@ -423,7 +423,7 @@ def _summarize_channels_tsv(bids_root, scans_fpaths, verbose=True):
             # XXX: improve to allow emptyroom
             if bids_basename.subject == 'emptyroom':
                 continue
-                
+
             channels_fname = _find_matching_sidecar(bids_fname=bids_basename,
                                                     bids_root=bids_root,
                                                     suffix='channels.tsv')
