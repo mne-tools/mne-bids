@@ -55,15 +55,15 @@ def _read_raw(raw_fpath, electrode=None, hsp=None, hpi=None,
 
     # MEF and NWB are allowed, but not yet implemented
     elif ext in ['.mef', '.nwb']:
-        raise ValueError('Got "{}" as extension. This is an allowed extension '
-                         'but there is no IO support for this file format yet.'
-                         .format(ext))
+        raise ValueError(f'Got "{ext}" as extension. This is an allowed extension '
+                         f'but there is no IO support for this file format yet.')
 
     # No supported data found ...
     # ---------------------------
     else:
-        raise ValueError('Raw file name extension must be one of {}\n'
-                         'Got {}'.format(ALLOWED_MODALITY_EXTENSIONS, ext))
+        raise ValueError(f'Raw file name extension must be one '
+                         f'of {ALLOWED_MODALITY_EXTENSIONS}\n'
+                         f'Got {ext}')
     return raw
 
 
@@ -497,7 +497,7 @@ def get_matched_empty_room(bids_basename, bids_root):
     for er_fname in candidate_er_fnames:
         params = get_bids_entities_from_fname(er_fname)
         er_meas_date = None
-        params.pop('subject')
+        params.pop('subject')  # er subject entity is different
         er_bids_path = BIDSPath(subject='emptyroom', **params)
         er_basename = str(er_bids_path)
 
