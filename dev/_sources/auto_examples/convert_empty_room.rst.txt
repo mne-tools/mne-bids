@@ -94,7 +94,6 @@ And define the paths and event_id dictionary.
             PCA-v3 (1 x 102)  idle
         Range : 25800 ... 192599 =     42.956 ...   320.670 secs
     Ready.
-    Current compensation grade : 0
     Opening raw data file /home/circleci/mne_data/MNE-sample-data/MEG/sample/sample_audvis_raw.fif...
         Read a total of 3 projection items:
             PCA-v1 (1 x 102)  idle
@@ -102,7 +101,6 @@ And define the paths and event_id dictionary.
             PCA-v3 (1 x 102)  idle
         Range : 25800 ... 192599 =     42.956 ...   320.670 secs
     Ready.
-    Current compensation grade : 0
     Creating folder: /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg
 
     Writing '/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/README'...
@@ -296,7 +294,6 @@ Specify some empty room data and run BIDS conversion on it.
             PCA-v3 (1 x 102)  idle
         Range : 19800 ... 85867 =     32.966 ...   142.965 secs
     Ready.
-    Current compensation grade : 0
     20021206
 
 
@@ -353,7 +350,6 @@ task is 'noise' (these are BIDS rules).
             PCA-v3 (1 x 102)  idle
         Range : 19800 ... 85867 =     32.966 ...   142.965 secs
     Ready.
-    Current compensation grade : 0
     Creating folder: /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-emptyroom/ses-20021206/meg
 
     Writing '/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/README'...
@@ -492,7 +488,6 @@ will be different on different days.
             PCA-v3 (1 x 102)  idle
         Range : 19800 ... 85867 =     32.966 ...   142.965 secs
     Ready.
-    Current compensation grade : 0
     Creating folder: /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-emptyroom/ses-20021204/meg
 
     Writing '/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/README'...
@@ -600,7 +595,6 @@ will be different on different days.
             PCA-v3 (1 x 102)  idle
         Range : 19800 ... 85867 =     32.966 ...   142.965 secs
     Ready.
-    Current compensation grade : 0
     Creating folder: /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-emptyroom/ses-20021201/meg
 
     Writing '/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/README'...
@@ -708,7 +702,6 @@ will be different on different days.
             PCA-v3 (1 x 102)  idle
         Range : 19800 ... 85867 =     32.966 ...   142.965 secs
     Ready.
-    Current compensation grade : 0
     Creating folder: /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-emptyroom/ses-20021001/meg
 
     Writing '/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/README'...
@@ -839,39 +832,39 @@ Let us look at the directory structure
     |------ ses-20021001/
     |--------- sub-emptyroom_ses-20021001_scans.tsv
     |--------- meg/
-    |------------ sub-emptyroom_ses-20021001_task-noise_channels.tsv
-    |------------ sub-emptyroom_ses-20021001_task-noise_meg.json
     |------------ sub-emptyroom_ses-20021001_task-noise_meg.fif
+    |------------ sub-emptyroom_ses-20021001_task-noise_meg.json
+    |------------ sub-emptyroom_ses-20021001_task-noise_channels.tsv
+    |------ ses-20021204/
+    |--------- sub-emptyroom_ses-20021204_scans.tsv
+    |--------- meg/
+    |------------ sub-emptyroom_ses-20021204_task-noise_meg.fif
+    |------------ sub-emptyroom_ses-20021204_task-noise_meg.json
+    |------------ sub-emptyroom_ses-20021204_task-noise_channels.tsv
     |------ ses-20021206/
     |--------- sub-emptyroom_ses-20021206_scans.tsv
     |--------- meg/
     |------------ sub-emptyroom_ses-20021206_task-noise_meg.json
     |------------ sub-emptyroom_ses-20021206_task-noise_meg.fif
     |------------ sub-emptyroom_ses-20021206_task-noise_channels.tsv
-    |------ ses-20021204/
-    |--------- sub-emptyroom_ses-20021204_scans.tsv
-    |--------- meg/
-    |------------ sub-emptyroom_ses-20021204_task-noise_meg.fif
-    |------------ sub-emptyroom_ses-20021204_task-noise_channels.tsv
-    |------------ sub-emptyroom_ses-20021204_task-noise_meg.json
     |------ ses-20021201/
     |--------- sub-emptyroom_ses-20021201_scans.tsv
     |--------- meg/
+    |------------ sub-emptyroom_ses-20021201_task-noise_channels.tsv
     |------------ sub-emptyroom_ses-20021201_task-noise_meg.fif
     |------------ sub-emptyroom_ses-20021201_task-noise_meg.json
-    |------------ sub-emptyroom_ses-20021201_task-noise_channels.tsv
     |--- sub-01/
     |------ ses-01/
     |--------- sub-01_ses-01_scans.tsv
+    |--------- meg/
+    |------------ sub-01_ses-01_task-audiovisual_run-01_meg.fif
+    |------------ sub-01_ses-01_task-audiovisual_run-01_channels.tsv
+    |------------ sub-01_ses-01_task-audiovisual_run-01_events.tsv
+    |------------ sub-01_ses-01_coordsystem.json
+    |------------ sub-01_ses-01_task-audiovisual_run-01_meg.json
     |--------- anat/
     |------------ sub-01_ses-01_T1w.nii.gz
     |------------ sub-01_ses-01_T1w.json
-    |--------- meg/
-    |------------ sub-01_ses-01_task-audiovisual_run-01_meg.fif
-    |------------ sub-01_ses-01_coordsystem.json
-    |------------ sub-01_ses-01_task-audiovisual_run-01_channels.tsv
-    |------------ sub-01_ses-01_task-audiovisual_run-01_events.tsv
-    |------------ sub-01_ses-01_task-audiovisual_run-01_meg.json
 
 
 
@@ -907,7 +900,6 @@ recording that is closest in time to the experimental measurement.
             PCA-v3 (1 x 102)  idle
         Range : 25800 ... 192599 =     42.956 ...   320.670 secs
     Ready.
-    Current compensation grade : 0
     Reading events from /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_events.tsv.
     Reading channel info from /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_channels.tsv.
     /home/circleci/project/mne_bids/read.py:262: RuntimeWarning: The unit for channel(s) STI 001, STI 002, STI 003, STI 004, STI 005, STI 006, STI 014, STI 015, STI 016 has changed from V to NA.
@@ -945,7 +937,6 @@ Finally, we can read the empty room file using
             PCA-v3 (1 x 102)  idle
         Range : 19800 ... 85867 =     32.966 ...   142.965 secs
     Ready.
-    Current compensation grade : 0
     /home/circleci/project/mne_bids/path.py:484: RuntimeWarning: Did not find any events.tsv associated with sub-emptyroom_ses-20021204_task-noise_meg.fif.
 
     The search_str was "/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-emptyroom/**/sub-emptyroom_ses-20021204*events.tsv"
@@ -968,7 +959,7 @@ Finally, we can read the empty room file using
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  4.810 seconds)
+   **Total running time of the script:** ( 0 minutes  5.154 seconds)
 
 
 .. _sphx_glr_download_auto_examples_convert_empty_room.py:

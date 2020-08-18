@@ -121,7 +121,6 @@ BIDS dataset. For more information, you can checkout the respective
             PCA-v3 (1 x 102)  idle
         Range : 25800 ... 192599 =     42.956 ...   320.670 secs
     Ready.
-    Current compensation grade : 0
     Opening raw data file /home/circleci/mne_data/MNE-sample-data/MEG/sample/sample_audvis_raw.fif...
         Read a total of 3 projection items:
             PCA-v1 (1 x 102)  idle
@@ -129,7 +128,6 @@ BIDS dataset. For more information, you can checkout the respective
             PCA-v3 (1 x 102)  idle
         Range : 25800 ... 192599 =     42.956 ...   320.670 secs
     Ready.
-    Current compensation grade : 0
     Creating folder: /home/circleci/mne_data/MNE-sample-data-bids/sub-01/ses-01/meg
 
     Writing '/home/circleci/mne_data/MNE-sample-data-bids/README'...
@@ -316,9 +314,9 @@ Print the directory tree
     |--------- sub-01_ses-01_scans.tsv
     |--------- meg/
     |------------ sub-01_ses-01_task-audiovisual_run-01_meg.fif
-    |------------ sub-01_ses-01_coordsystem.json
     |------------ sub-01_ses-01_task-audiovisual_run-01_channels.tsv
     |------------ sub-01_ses-01_task-audiovisual_run-01_events.tsv
+    |------------ sub-01_ses-01_coordsystem.json
     |------------ sub-01_ses-01_task-audiovisual_run-01_meg.json
 
 
@@ -440,15 +438,15 @@ Let's have another look at our BIDS directory
     |--- sub-01/
     |------ ses-01/
     |--------- sub-01_ses-01_scans.tsv
+    |--------- meg/
+    |------------ sub-01_ses-01_task-audiovisual_run-01_meg.fif
+    |------------ sub-01_ses-01_task-audiovisual_run-01_channels.tsv
+    |------------ sub-01_ses-01_task-audiovisual_run-01_events.tsv
+    |------------ sub-01_ses-01_coordsystem.json
+    |------------ sub-01_ses-01_task-audiovisual_run-01_meg.json
     |--------- anat/
     |------------ sub-01_ses-01_T1w.nii.gz
     |------------ sub-01_ses-01_T1w.json
-    |--------- meg/
-    |------------ sub-01_ses-01_task-audiovisual_run-01_meg.fif
-    |------------ sub-01_ses-01_coordsystem.json
-    |------------ sub-01_ses-01_task-audiovisual_run-01_channels.tsv
-    |------------ sub-01_ses-01_task-audiovisual_run-01_events.tsv
-    |------------ sub-01_ses-01_task-audiovisual_run-01_meg.json
 
 
 
@@ -480,7 +478,6 @@ transformation matrix using ``MNE-BIDS`` and the BIDS dataset.
             PCA-v3 (1 x 102)  idle
         Range : 25800 ... 192599 =     42.956 ...   320.670 secs
     Ready.
-    Current compensation grade : 0
     Reading events from /home/circleci/mne_data/MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_events.tsv.
     Reading channel info from /home/circleci/mne_data/MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_channels.tsv.
     /home/circleci/project/mne_bids/read.py:262: RuntimeWarning: The unit for channel(s) STI 001, STI 002, STI 003, STI 004, STI 005, STI 006, STI 014, STI 015, STI 016 has changed from V to NA.
@@ -619,7 +616,7 @@ We can deface the MRI for anonymization
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  14.119 seconds)
+   **Total running time of the script:** ( 0 minutes  17.816 seconds)
 
 
 .. _sphx_glr_download_auto_examples_convert_mri_and_trans.py:
