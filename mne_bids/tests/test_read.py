@@ -220,56 +220,6 @@ def test_handle_events_reading():
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
-def test_line_freq_estimation():
-    """Test estimating line frequency."""
-    bids_root = _TempDir()
-
-    # read in USA dataset, so it should find 50 Hz
-    raw = mne.io.read_raw_fif(raw_fname)
-    kind = "meg"
-
-    # assert that we get the same line frequency set
-    bids_fname = bids_basename.copy().update(suffix=f'{kind}.fif')
-
-    # find sidecar JSON fname
-    write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
-    sidecar_fname = _find_matching_sidecar(bids_fname, bids_root,
-                                           '{}.json'.format(kind),
-                                           allow_fail=True)
-
-    # 1. when nothing is set, default to use PSD estimation -> should be 60
-    # for `sample` dataset
-    raw.info['line_freq'] = None
-    write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
-    _update_sidecar(sidecar_fname, "PowerLineFrequency", "n/a")
-    with pytest.warns(RuntimeWarning, match="No line frequency found"):
-        raw = read_raw_bids(bids_basename=bids_basename,
-                            bids_root=bids_root, kind=kind)
-        assert raw.info['line_freq'] == 60
-
-    # test that `somato` dataset finds 50 Hz (EU dataset)
-    somato_raw = mne.io.read_raw_fif(somato_raw_fname)
-    somato_raw.info['line_freq'] = None
-    write_raw_bids(somato_raw, bids_basename, bids_root, overwrite=True)
-    sidecar_fname = _find_matching_sidecar(bids_fname, bids_root,
-                                           '{}.json'.format(kind),
-                                           allow_fail=True)
-    _update_sidecar(sidecar_fname, "PowerLineFrequency", "n/a")
-    with pytest.warns(RuntimeWarning, match="No line frequency found"):
-        somato_raw = read_raw_bids(bids_basename=bids_basename,
-                                   bids_root=bids_root, kind=kind)
-        assert somato_raw.info['line_freq'] == 50
-
-    # assert that line_freq should be None when
-    # all picks are not meg/eeg/ecog/seeg
-    somato_raw.info['line_freq'] = None
-    somato_raw.set_channel_types({somato_raw.ch_names[i]: 'bio'
-                                  for i in range(len(somato_raw.ch_names))})
-    somato_raw = _handle_info_reading(sidecar_fname, somato_raw, verbose=True)
-    assert somato_raw.info['line_freq'] is None
-
-
-@pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_handle_info_reading():
     """Test reading information from a BIDS sidecar.json file."""
     bids_root = _TempDir()

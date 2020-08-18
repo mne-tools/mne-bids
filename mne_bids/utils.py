@@ -19,7 +19,6 @@ from mne.channels import make_standard_montage
 from mne.io.constants import FIFF
 from mne.io.kit.kit import get_kit_info
 from mne.io.pick import pick_types
-from mne.time_frequency import psd_array_welch
 from mne.utils import check_version, warn, logger
 
 from mne_bids.tsv_handler import _to_tsv, _tsv_to_str
@@ -320,74 +319,6 @@ def _update_sidecar(sidecar_fname, key, val):
     sidecar_json[key] = val
     with open(sidecar_fname, "w") as fout:
         json.dump(sidecar_json, fout)
-
-
-def _estimate_line_freq(raw, verbose=False):
-    """Estimate power line noise from a given BaseRaw.
-
-    Uses 5 channels of either meg, eeg, ecog, or seeg to
-    estimate the line frequency.
-
-    Parameters
-    ----------
-    raw : mne.io.BaseRaw
-
-    Returns
-    -------
-    line_freq : int | None
-        Either 50, or 60 Hz depending if European,
-        or USA data recording.
-    """
-    sfreq = raw.info['sfreq']
-
-    # if sampling is not high enough, line_freq does not matter
-    if sfreq < 100:
-        return None
-
-    # setup picks of the data to get at least 5 channels
-    pick_dict = {"meg": True}
-    picks = list(pick_types(raw.info, exclude='bads', **pick_dict))
-    if len(picks) < 5:
-        pick_dict = {"eeg": True}
-        picks = pick_types(raw.info, exclude='bads', **pick_dict)
-    if len(picks) < 5:
-        pick_dict = {"ecog": True}
-        picks = pick_types(raw.info, exclude='bads', **pick_dict)
-    if len(picks) < 5:
-        pick_dict = {"seeg": True}
-        picks = pick_types(raw.info, exclude='bads', **pick_dict)
-    if len(picks) < 5:
-        warn("Estimation of line frequency only "
-             "supports 'meg', 'eeg', 'ecog', or 'seeg'.")
-        return None
-
-    # only sample first 10 seconds, or whole time series
-    tmin = 0
-    tmax = int(min(len(raw.times), 10 * sfreq))
-
-    # get just five channels of data to estimate on
-    data = raw.get_data(start=tmin, stop=tmax,
-                        picks=picks, return_times=False)[0:5, :]
-
-    # run a multi-taper FFT between Power Line Frequencies of interest
-    psds, freqs = psd_array_welch(data, fmin=49, fmax=61,
-                                  sfreq=sfreq, average="mean")
-    usa_ind = np.where(freqs == min(freqs, key=lambda x: abs(x - 60)))[0]
-    eu_ind = np.where(freqs == min(freqs, key=lambda x: abs(x - 50)))[0]
-
-    # get the average power within those frequency bands
-    usa_psd = np.mean((psds[..., usa_ind]))
-    eu_psd = np.mean((psds[..., eu_ind]))
-
-    if verbose is True:
-        print("EU (i.e. 50 Hz) PSD is {} and "
-              "USA (i.e. 60 Hz) PSD is {}".format(eu_psd, usa_psd))
-
-    if usa_psd > eu_psd:
-        line_freq = 60
-    else:
-        line_freq = 50
-    return line_freq
 
 
 def _scale_coord_to_meters(coord, unit):
