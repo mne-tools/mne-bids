@@ -118,16 +118,11 @@ class BIDSPath(object):
             if key not in ('prefix', 'kind', 'extension') and \
                     val is not None:
                 # convert certain keys to shorthand
-                if key == 'subject':
-                    key = 'sub'
-                if key == 'session':
-                    key = 'ses'
-                if key == 'acquisition':
-                    key = 'acq'
-                if key == 'processing':
-                    key = 'proc'
-                if key == 'recording':
-                    key = 'rec'
+                long_to_short_entity = {
+                    val: key for key, val
+                    in ALLOWED_PATH_ENTITIES_SHORT.items()
+                }
+                key = long_to_short_entity[key]
                 basename.append(f'{key}-{val}')
 
         if self.kind is not None:
