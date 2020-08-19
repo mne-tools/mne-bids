@@ -299,9 +299,23 @@ def test_bids_path(return_bids_test_dir):
     assert new_bids_basename == bids_basename.copy().update(task='02',
                                                             acquisition=None)
 
-    # error check
+    # error check on kwargs of update
     with pytest.raises(ValueError, match='Key must be one of*'):
         bids_basename.update(sub=subject_id, session=session_id)
+
+    # error check on the passed in entity containing a magic char
+    with pytest.raises(ValueError, match='Unallowed*'):
+        bids_basename.update(subject=subject_id + '-')
+
+    # error check on kind in update
+    kind = 'meeg'
+    with pytest.raises(ValueError, match=f'Kind {kind} is not'):
+        bids_basename.update(kind=kind)
+
+    # error check on extension in update
+    ext = '.mat'
+    with pytest.raises(ValueError, match=f'Extension {ext} is not'):
+        bids_basename.update(extension=ext)
 
     # test repr
     bids_path = make_bids_basename(subject='01', session='02',
