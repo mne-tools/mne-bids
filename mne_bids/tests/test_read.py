@@ -525,6 +525,13 @@ def test_handle_ieeg_coords_reading(bids_basename):
     for digpoint in raw_test.info['dig']:
         assert digpoint['coord_frame'] == coord_frame_int
 
+    # if we delete the coordsystem.json file, an error will be raised
+    os.remove(coordsystem_fname)
+    with pytest.raises(RuntimeError, match='BIDS mandates that '
+                                           'the coordsystem.json'):
+        raw = read_raw_bids(bids_basename=bids_basename,
+                            bids_root=bids_root, verbose=False)
+
     # test error message if electrodes don't match
     write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
     electrodes_dict = _from_tsv(electrodes_fname)
