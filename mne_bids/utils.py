@@ -372,7 +372,7 @@ def _estimate_line_freq(raw, verbose=False):
     usa_ind = np.where(freqs == min(freqs, key=lambda x: abs(x - 60)))[0]
     eu_ind = np.where(freqs == min(freqs, key=lambda x: abs(x - 50)))[0]
 
-    # get the average power within those frequency bands
+    # get the average and standard deviation power within those frequency bands
     usa_psd = np.mean((psds[..., usa_ind]))
     eu_psd = np.mean((psds[..., eu_ind]))
 
@@ -380,11 +380,7 @@ def _estimate_line_freq(raw, verbose=False):
         print("EU (i.e. 50 Hz) PSD is {} and "
               "USA (i.e. 60 Hz) PSD is {}".format(eu_psd, usa_psd))
 
-    if usa_psd > eu_psd:
-        line_freq = 60
-    else:
-        line_freq = 50
-    return line_freq
+    return 60 if usa_psd > eu_psd else 50
 
 
 def _scale_coord_to_meters(coord, unit):

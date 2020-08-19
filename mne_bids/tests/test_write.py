@@ -207,21 +207,21 @@ def test_create_fif(_bids_validate):
     """Test functionality for very short raw file created from data."""
     out_dir = _TempDir()
     bids_root = _TempDir()
-    info = mne.create_info(['ch1', 'ch2', 'ch3'], 512,
-                           ['seeg'] * 3)
-    raw = mne.io.RawArray(np.random.random((3, 1000)) * 1e-6,
-                          info)
+    sfreq, n_points = 1024., int(1e6)
+    info = mne.create_info(['ch1', 'ch2', 'ch3', 'ch4', 'ch5'], sfreq,
+                           ['seeg'] * 5)
+    np.random.seed(99)
+    data = np.random.random((5, n_points)) * 1e-6
+    power_line_noise = \
+        np.sin(np.linspace(0, n_points / sfreq, n_points) * 2 * np.pi * 60)
+    raw = mne.io.RawArray(data + power_line_noise, info)
     raw.save(op.join(out_dir, 'test-raw.fif'))
     raw = mne.io.read_raw_fif(op.join(out_dir, 'test-raw.fif'))
-    with pytest.warns(RuntimeWarning, match='Cannot determine line frequency'):
-        write_raw_bids(raw, bids_basename, bids_root,
-                       verbose=False, overwrite=True)
-        raw2 = read_raw_bids(bids_basename=bids_basename, bids_root=bids_root,
-                             kind='ieeg')
-        assert raw2.info['line_freq'] is None
-    raw.info['line_freq'] = 60
     write_raw_bids(raw, bids_basename, bids_root,
                    verbose=False, overwrite=True)
+    raw2 = read_raw_bids(bids_basename=bids_basename, bids_root=bids_root,
+                         kind='ieeg')
+    assert raw2.info['line_freq'] == 60
     _bids_validate(bids_root)
 
 
