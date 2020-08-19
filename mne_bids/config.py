@@ -84,10 +84,15 @@ ALLOWED_FILENAME_EXTENSIONS = (
 )
 
 # allowed BIDS path entities
-BIDS_PATH_ENTITIES = ('subject', 'session', 'task', 'run',
-                      'processing', 'recording', 'space',
-                      'acquisition', 'split', 'kind',
-                      'prefix', 'extension')
+ALLOWED_PATH_ENTITIES = ('subject', 'session', 'task', 'run',
+                         'processing', 'recording', 'space',
+                         'acquisition', 'split', 'kind',
+                         'prefix', 'extension')
+ALLOWED_PATH_ENTITIES_SHORT = {'sub': 'subject', 'ses': 'session',
+                               'task': 'task', 'acq': 'acquisition',
+                               'run': 'run', 'proc': 'processing',
+                               'space': 'space', 'rec': 'recording',
+                               'split': 'split', 'kind': 'kind'}
 
 # accepted BIDS formats, which may be subject to change
 # depending on the specification

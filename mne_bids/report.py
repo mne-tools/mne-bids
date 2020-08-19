@@ -15,7 +15,7 @@ from mne_bids.config import DOI, ALLOWED_MODALITY_KINDS
 from mne_bids.tsv_handler import _from_tsv
 from mne_bids.path import (get_kinds, get_entity_vals, BIDSPath,
                            _parse_ext, _find_matching_sidecar,
-                           get_bids_entities_from_fname)
+                           get_entities_from_fname)
 
 # functions to be used inside Template strings
 FUNCTION_TEMPLATE = """{{py:  
@@ -331,7 +331,7 @@ def _summarize_sidecar_json(bids_root, scans_fpaths, verbose=True):
             n_scans += 1
 
             # convert to BIDS Path
-            params = get_bids_entities_from_fname(bids_basename)
+            params = get_entities_from_fname(bids_basename)
             bids_basename = BIDSPath(**params)
 
             # XXX: improve to allow emptyroom
@@ -417,7 +417,7 @@ def _summarize_channels_tsv(bids_root, scans_fpaths, verbose=True):
                 continue
 
             # convert to BIDS Path
-            params = get_bids_entities_from_fname(bids_basename)
+            params = get_entities_from_fname(bids_basename)
             bids_basename = BIDSPath(**params)
 
             # XXX: improve to allow emptyroom

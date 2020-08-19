@@ -22,7 +22,7 @@ from mne.utils import _TempDir
 from mne_bids import (get_kinds, get_entity_vals, print_dir_tree,
                       make_bids_folders, make_bids_basename,
                       write_raw_bids)
-from mne_bids.path import (_parse_ext, get_bids_entities_from_fname,
+from mne_bids.path import (_parse_ext, get_entities_from_fname,
                            _find_best_candidates, _find_matching_sidecar)
 
 subject_id = '01'
@@ -192,7 +192,7 @@ def test_parse_ext():
 ])
 def test_parse_bids_filename(fname):
     """Test parsing entities from a bids filename."""
-    params = get_bids_entities_from_fname(fname)
+    params = get_entities_from_fname(fname)
     print(params)
     assert params['subject'] == '01'
     assert params['session'] == '02'

@@ -13,9 +13,10 @@ from pathlib import Path
 
 from mne.utils import warn, logger
 
-from mne_bids.config import (BIDS_PATH_ENTITIES, reader,
+from mne_bids.config import (ALLOWED_PATH_ENTITIES, reader,
                              ALLOWED_FILENAME_EXTENSIONS,
-                             ALLOWED_FILENAME_KINDS)
+                             ALLOWED_FILENAME_KINDS,
+                             ALLOWED_PATH_ENTITIES_SHORT)
 from mne_bids.utils import (_check_key_val, _check_empty_room_basename,
                             _check_types, param_regex,
                             _ensure_tuple)
@@ -279,11 +280,11 @@ class BIDSPath(object):
                 _check_key_val(key, val)
 
             # error check allowed BIDS entity keywords
-            if key not in BIDS_PATH_ENTITIES and key not in [
+            if key not in ALLOWED_PATH_ENTITIES and key not in [
                 'on_invalid_er_session', 'on_invalid_er_task',
             ]:
                 raise ValueError(f'Key must be one of '
-                                 f'{BIDS_PATH_ENTITIES}, got {key}')
+                                 f'{ALLOWED_PATH_ENTITIES}, got {key}')
 
             # set entity value
             if key == 'prefix' and val is not None:
@@ -418,7 +419,7 @@ def _parse_ext(raw_fname, verbose=False):
     return fname, ext
 
 
-def get_bids_entities_from_fname(fname):
+def get_entities_from_fname(fname):
     """Retrieve a dictionary of BIDS entities from a filename.
 
     Entities not present in ``fname`` will be assigned the value of ``None``.
@@ -437,7 +438,7 @@ def get_bids_entities_from_fname(fname):
     Examples
     --------
     >>> fname = 'sub-01_ses-exp_run-02_meg.fif'
-    >>> get_bids_entities_from_fname(fname)
+    >>> get_entities_from_fname(fname)
     {'subject': '01',
     'session': 'exp',
     'task': None,
@@ -450,13 +451,8 @@ def get_bids_entities_from_fname(fname):
     'kind': None}
     """
     # filename keywords to the BIDS entity mapping
-    fname_to_entity = {'sub': 'subject', 'ses': 'session', 'task': 'task',
-                       'acq': 'acquisition', 'run': 'run',
-                       'proc': 'processing', 'space': 'space',
-                       'rec': 'recording', 'split': 'split',
-                       'kind': 'kind'}
-    entity_vals = list(fname_to_entity.values())
-    fname_vals = list(fname_to_entity.keys())
+    entity_vals = list(ALLOWED_PATH_ENTITIES_SHORT.values())
+    fname_vals = list(ALLOWED_PATH_ENTITIES_SHORT.keys())
 
     params = {key: None for key in entity_vals}
     idx_key = 0
@@ -470,7 +466,7 @@ def get_bids_entities_from_fname(fname):
                              f' "{key}" should have occurred earlier in the '
                              f'filename "{fname}"')
         idx_key = fname_vals.index(key)
-        params[fname_to_entity[key]] = value
+        params[ALLOWED_PATH_ENTITIES_SHORT[key]] = value
 
     # parse kind last
     last_entity = fname.split('-')[-1]
@@ -823,7 +819,7 @@ def _find_best_candidates(params, candidate_list):
     for candidate in candidate_list:
         n_matches = 0
         candidate_disqualified = False
-        candidate_params = get_bids_entities_from_fname(candidate)
+        candidate_params = get_entities_from_fname(candidate)
         for entity, value in params.items():
             if entity in candidate_params:
                 if candidate_params[entity] is None:
