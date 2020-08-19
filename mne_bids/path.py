@@ -455,7 +455,7 @@ def get_entities_from_fname(fname):
     'space': None,
     'recording': None,
     'split': None,
-    'kind': None}
+    'kind': 'meg'}
     """
     # filename keywords to the BIDS entity mapping
     entity_vals = list(ALLOWED_PATH_ENTITIES_SHORT.values())
