@@ -67,7 +67,7 @@ def _get_brainvision_encoding(vhdr_file, verbose=False):
             enc = 'UTF-8'
             src = '(default)'
         if verbose is True:
-            print('Detected file encoding: %s %s.' % (enc, src))
+            print(f'Detected file encoding: {enc} {src}.')
     return enc
 
 
@@ -88,8 +88,8 @@ def _get_brainvision_paths(vhdr_path):
     """
     fname, ext = _parse_ext(vhdr_path)
     if ext != '.vhdr':
-        raise ValueError('Expecting file ending in ".vhdr",'
-                         ' but got {}'.format(ext))
+        raise ValueError(f'Expecting file ending in ".vhdr",'
+                         f' but got {ext}')
 
     # Header file seems fine
     # extract encoding from brainvision header file, or default to utf-8
@@ -103,7 +103,7 @@ def _get_brainvision_paths(vhdr_path):
     eeg_file_match = re.search(r'DataFile=(.*\.eeg)', ' '.join(lines))
     if not eeg_file_match:
         raise ValueError('Could not find a .eeg file link in'
-                         ' {}'.format(vhdr_path))
+                         f' {vhdr_path}')
     else:
         eeg_file = eeg_file_match.groups()[0]
 
@@ -111,7 +111,7 @@ def _get_brainvision_paths(vhdr_path):
     vmrk_file_match = re.search(r'MarkerFile=(.*\.vmrk)', ' '.join(lines))
     if not vmrk_file_match:
         raise ValueError('Could not find a .vmrk file link in'
-                         ' {}'.format(vhdr_path))
+                         f' {vhdr_path}')
     else:
         vmrk_file = vmrk_file_match.groups()[0]
 
@@ -283,8 +283,8 @@ def copyfile_brainvision(vhdr_src, vhdr_dest, anonymize=None, verbose=False):
     fname_src, ext_src = _parse_ext(vhdr_src)
     fname_dest, ext_dest = _parse_ext(vhdr_dest)
     if ext_src != ext_dest:
-        raise ValueError('Need to move data with same extension'
-                         ' but got "{}", "{}"'.format(ext_src, ext_dest))
+        raise ValueError(f'Need to move data with same extension'
+                         f' but got "{ext_src}", "{ext_dest}"')
 
     eeg_file_path, vmrk_file_path = _get_brainvision_paths(vhdr_src)
 
@@ -356,13 +356,13 @@ def copyfile_eeglab(src, dest):
     fname_dest, ext_dest = _parse_ext(dest)
     if ext_src != ext_dest:
         raise ValueError('Need to move data with same extension'
-                         ' but got {}, {}'.format(ext_src, ext_dest))
+                         f' but got {ext_src}, {ext_dest}')
 
     # Extract matlab struct "EEG" from EEGLAB file
     mat = loadmat(src, squeeze_me=False, chars_as_strings=False,
                   mat_dtype=False, struct_as_record=True)
     if 'EEG' not in mat:
-        raise ValueError('Could not find "EEG" field in {}'.format(src))
+        raise ValueError(f'Could not find "EEG" field in {src}')
     eeg = mat['EEG']
 
     # If the data field is a string, it points to a .fdt file in src dir
@@ -373,8 +373,8 @@ def copyfile_eeglab(src, dest):
         fdt_path = op.join(head, fdt_pointer)
         fdt_name, fdt_ext = _parse_ext(fdt_path)
         if fdt_ext != '.fdt':
-            raise IOError('Expected extension {} for linked data but found'
-                          ' {}'.format('.fdt', fdt_ext))
+            raise IOError('Expected extension .fdt for linked data but found'
+                          f' {fdt_ext}')
 
         # Copy the fdt file and give it a new name
         sh.copyfile(fdt_path, fname_dest + '.fdt')

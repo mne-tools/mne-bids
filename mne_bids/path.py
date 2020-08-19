@@ -475,11 +475,8 @@ def get_bids_entities_from_fname(fname):
     # parse kind last
     last_entity = fname.split('-')[-1]
     if '_' in last_entity:
-        kind_and_ext = last_entity.split('_')[-1]
-        if '.' in kind_and_ext:
-            params['kind'] = kind_and_ext.split('.')[0]
-        else:
-            params['kind'] = kind_and_ext
+        kind, _ = _get_kind_ext_from_suffix(last_entity)
+        params['kind'] = kind
 
     return params
 

@@ -308,9 +308,9 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False,
         # if the subject data provided is different to the currently existing
         # data and overwrite is not True raise an error
         if (sid_included and not exact_included) and not overwrite:
-            raise FileExistsError('"%s" already exists in the participant '  # noqa: E501 F821
-                                  'list. Please set overwrite to '
-                                  'True.' % subject_id)
+            raise FileExistsError(f'"{subject_id}" already exists in '  # noqa: E501 F821
+                                  f'the participant list. Please set '
+                                  f'overwrite to True.')
 
         # Append any additional columns that original data had.
         # Keep the original order of the data by looping over
@@ -411,8 +411,9 @@ def _scans_tsv(raw, raw_fname, fname, overwrite=False, verbose=True):
         orig_data = _from_tsv(fname)
         # if the file name is already in the file raise an error
         if raw_fname in orig_data['filename'] and not overwrite:
-            raise FileExistsError('"%s" already exists in the scans list. '  # noqa: E501 F821
-                                  'Please set overwrite to True.' % raw_fname)
+            raise FileExistsError(f'"{raw_fname}" already exists in '  # noqa: E501 F821
+                                  f'the scans list. Please set '
+                                  f'overwrite to True.')
         # otherwise add the new data
         data = _combine_rows(orig_data, data, 'filename')
 
@@ -943,7 +944,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
 
     if ext not in [this_ext for data_type in ALLOWED_MODALITY_EXTENSIONS
                    for this_ext in ALLOWED_MODALITY_EXTENSIONS[data_type]]:
-        raise ValueError('Unrecognized file format %s' % ext)
+        raise ValueError(f'Unrecognized file format {ext}')
 
     raw_orig = reader[ext](**raw._init_kwargs)
     assert_array_equal(raw.times, raw_orig.times,
@@ -1098,8 +1099,8 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     bids_fname.prefix = data_path
 
     if os.path.exists(bids_fname) and not overwrite:
-        raise FileExistsError('"%s" already exists. Please set '  # noqa: F821
-                              'overwrite to True.' % bids_fname)
+        raise FileExistsError(f'"{bids_fname}" already exists. '  # noqa: F821
+                              f'Please set overwrite to True.')
 
     # If not already converting for anonymization, we may still need to do it
     # if current format not BIDS compliant
@@ -1107,9 +1108,9 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
         convert = ext not in ALLOWED_MODALITY_EXTENSIONS[kind]
 
     if kind == 'meg' and convert and not anonymize:
-        raise ValueError('Got file extension %s for MEG data, '
-                         'expected one of %s' %
-                         ALLOWED_MODALITY_EXTENSIONS['meg'])
+        raise ValueError(f"Got file extension {convert} for MEG data, "
+                         f"expected one of "
+                         f"{ALLOWED_MODALITY_EXTENSIONS['meg']}")
 
     if not convert and verbose:
         print('Copying data files to %s' % op.splitext(bids_fname)[0])
@@ -1307,7 +1308,7 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
                 mri_landmarks = landmarks
             else:
                 raise ValueError('Coordinate frame not recognized, ' +
-                                 'found %s' % coord_frame)
+                                 f'found {coord_frame}')
         elif trans is not None:
             # get trans and ensure it is from head to MRI
             trans, _ = _get_trans(trans, fro='head', to='mri')
