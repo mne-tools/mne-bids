@@ -60,20 +60,24 @@ class BIDSPath(object):
     prefix : str | None
         The prefix for the filename to be created. E.g., a path to the folder
         in which you wish to create a file with this name.
-    suffix : str | None
-        The suffix for the filename to be created. E.g., 'audio.wav'.
+    kind : str | None
+        The filename kind. This is the entity after the last ``_`` before the extension. 
+        E.g., ``'ieeg'``.
+    extension : str | None
+        The extension of the filename. E.g., ``'.json'``.
 
     Examples
     --------
-    >>> bids_basename = make_bids_basename(subject='test', session='two', task='mytask', suffix='data.csv')
+    >>> bids_basename = make_bids_basename(subject='test', session='two', 
+                                           task='mytask', kind='ieeg', extension='.edf')
     >>> print(bids_basename)
-    sub-test_ses-two_task-mytask_data.csv
+    sub-test_ses-two_task-mytask_ieeg.edf
     >>> bids_basename
-    BIDSPath(sub-test_ses-two_task-mytask_data.csv)
+    BIDSPath(sub-test_ses-two_task-mytask_ieeg.edf)
     >>> # copy and update multiple entities at once
     >>> new_basename = bids_basename.copy().update(subject='test2', session='one')
     >>> print(new_basename)
-    sub-test2_ses-one_task-mytask_data.csv
+    sub-test2_ses-one_task-mytask_ieeg.edf
     """  # noqa
 
     def __init__(self, subject=None, session=None,
@@ -210,7 +214,7 @@ class BIDSPath(object):
             kind, extension = _get_kind_ext_from_suffix(new_suffix)
             bids_fname = self.copy().update(kind=kind, extension=extension)
         else:
-            bids_fname = self.copy().update(suffix='{kind}.{extension}')
+            bids_fname = self.copy().update(kind=kind, extension=extension)
 
         return bids_fname
 
@@ -234,11 +238,14 @@ class BIDSPath(object):
         If one creates a bids basename using
         :func:`mne_bids.make_bids_basename`:
 
-        >>> bids_basename = make_bids_basename(subject='test', session='two', task='mytask', suffix='data.csv')
+        >>> bids_basename = make_bids_basename(subject='test', session='two', 
+                                               task='mytask', kind='channels', 
+                                               extension='.tsv')
         >>> print(bids_basename)
-        sub-test_ses-two_task-mytask_data.csv
+        sub-test_ses-two_task-mytask_channels.tsv
         >>> # Then, one can update this `BIDSPath` object in place
-        >>> bids_basename.update(acquisition='test', suffix='ieeg.vhdr', task=None)
+        >>> bids_basename.update(acquisition='test', kind='ieeg', 
+                                 extension='.vhdr', task=None)
         BIDSPath(sub-test_ses-two_acq-test_ieeg.vhdr)
         >>> print(bids_basename)
         sub-test_ses-two_acq-test_ieeg.vhdr
@@ -478,7 +485,8 @@ def get_entities_from_fname(fname):
     return params
 
 
-def _find_matching_sidecar(bids_fname, bids_root, suffix, allow_fail=False):
+def _find_matching_sidecar(bids_fname, bids_root, kind=None,
+                           extension=None, allow_fail=False):
     """Try to find a sidecar file with a given suffix for a data file.
 
     Parameters
@@ -487,8 +495,11 @@ def _find_matching_sidecar(bids_fname, bids_root, suffix, allow_fail=False):
         Full name of the data file
     bids_root : str | pathlib.Path
         Path to root of the BIDS folder
-    suffix : str
-        The suffix of the sidecar file to be found. E.g., "_coordsystem.json"
+    kind : str | None
+        The filename kind. This is the entity after the last ``_``
+        before the extension. E.g., ``'ieeg'``.
+    extension : str | None
+        The extension of the filename. E.g., ``'.json'``.
     allow_fail : bool
         If False, will raise RuntimeError if not exactly one matching sidecar
         was found. If True, will return None in that case. Defaults to False
@@ -500,8 +511,15 @@ def _find_matching_sidecar(bids_fname, bids_root, suffix, allow_fail=False):
         and no sidecar_fname was found
 
     """
-    # do not search for kind since suffix is passed
-    bids_fname = bids_fname.copy().update(kind=None)
+    # suffix is kind and extension
+    suffix = ''
+    if kind is not None:
+        suffix = suffix + kind
+
+        # do not search for kind if kind is explicitly passed
+        bids_fname = bids_fname.copy().update(kind=None)
+    if extension is not None:
+        suffix = suffix + extension
 
     # We only use subject and session as identifier, because all other
     # parameters are potentially not binding for metadata sidecar files
@@ -516,16 +534,9 @@ def _find_matching_sidecar(bids_fname, bids_root, suffix, allow_fail=False):
     candidate_list = glob.glob(search_str, recursive=True)
     best_candidates = _find_best_candidates(bids_fname.entities,
                                             candidate_list)
-
     if len(best_candidates) == 1:
         # Success
         return best_candidates[0]
-
-    # map suffix to make warning message readable
-    if 'electrodes.tsv' in suffix:
-        suffix = 'electrodes.tsv'
-    if 'coordsystem.json' in suffix:
-        suffix = 'coordsystem.json'
 
     # We failed. Construct a helpful error message.
     # If this was expected, simply return None, otherwise, raise an exception.
@@ -556,8 +567,8 @@ def make_bids_basename(subject=None, session=None, task=None,
     BIDS filename prefixes have one or more pieces of metadata in them. They
     must follow a particular order, which is followed by this function. This
     will generate the *prefix* for a BIDS filename that can be used with many
-    subsequent files, or you may also give a suffix that will then complete
-    the file name.
+    subsequent files, or you may also give a kind and extension that will then
+    complete the file name.
 
     Note that all parameters are not applicable to each kind of data. For
     example, electrode location TSV files do not need a task field.
@@ -583,12 +594,16 @@ def make_bids_basename(subject=None, session=None, task=None,
     space : str | None
         The coordinate space for an anatomical file. Corresponds to "space".
     split : int | None
-        The split of the continuous recording file for ``.fif`` data. Corresponds to "split".
+        The split of the continuous recording file for ``.fif`` data.
+        Corresponds to "split".
     prefix : str | None
         The prefix for the filename to be created. E.g., a path to the folder
         in which you wish to create a file with this name.
-    suffix : str | None
-        The suffix for the filename to be created. E.g., 'audio.wav'.
+    kind : str | None
+        The filename kind. This is the entity after the last ``_``
+        before the extension. E.g., ``'ieeg'``.
+    extension : str | None
+        The extension of the filename. E.g., ``'.json'``.
 
     Returns
     -------
@@ -597,8 +612,9 @@ def make_bids_basename(subject=None, session=None, task=None,
 
     Examples
     --------
-    >>> print(make_bids_basename(subject='test', session='two', task='mytask', suffix='data.csv')) # noqa: E501
-    sub-test_ses-two_task-mytask_data.csv
+    >>> print(make_bids_basename(subject='test', session='two', task='mytask',
+                                 kind='ieeg', extension='.edf'))
+    sub-test_ses-two_task-mytask_ieeg.edf
     """
     bids_path = BIDSPath(subject=subject, session=session, task=task,
                          acquisition=acquisition, run=run,
@@ -614,12 +630,11 @@ def _get_kind_ext_from_suffix(suffix):
     # no matter what the suffix is, kind and extension are last
     kind = suffix
     ext = None
-    if suffix is not None:
-        if '.' in suffix:
-            # handle case of multiple '.' in extension
-            split_str = suffix.split('.')
-            kind = split_str[0]
-            ext = '.'.join(split_str[1:])
+    if '.' in suffix:
+        # handle case of multiple '.' in extension
+        split_str = suffix.split('.')
+        kind = split_str[0]
+        ext = '.'.join(split_str[1:])
     return kind, ext
 
 

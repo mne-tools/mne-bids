@@ -798,7 +798,8 @@ def test_vhdr(_bids_validate):
     bids_root = _TempDir()
     write_raw_bids(raw, bids_basename, bids_root)
     electrodes_fpath = _find_matching_sidecar(bids_basename, bids_root,
-                                              suffix='electrodes.tsv')
+                                              kind='electrodes',
+                                              extension='.tsv')
     tsv = _from_tsv(electrodes_fpath)
     assert len(tsv.get('impedance', {})) > 0
     assert tsv['impedance'][-3:] == ['n/a', 'n/a', 'n/a']
@@ -865,7 +866,8 @@ def test_edf(_bids_validate):
                                             'Setting montage not possible'):
         write_raw_bids(raw, bids_fname, bids_root, overwrite=True)
         electrodes_fpath = _find_matching_sidecar(bids_fname, bids_root,
-                                                  suffix='electrodes.tsv',
+                                                  kind='electrodes',
+                                                  extension='.tsv',
                                                   allow_fail=True)
         assert electrodes_fpath is None
 
@@ -878,7 +880,8 @@ def test_edf(_bids_validate):
     raw.set_montage(eeg_montage)
     write_raw_bids(raw, bids_fname, bids_root, overwrite=True)
     electrodes_fpath = _find_matching_sidecar(bids_fname, bids_root,
-                                              suffix='electrodes.tsv')
+                                              kind='electrodes',
+                                              extension='.tsv')
     assert op.exists(electrodes_fpath)
     _bids_validate(bids_root)
 
@@ -946,9 +949,11 @@ def test_edf(_bids_validate):
     # XXX: Should be improved with additional coordinate system descriptions
     # iEEG montages written from mne-python end up as "Other"
     electrodes_fname = _find_matching_sidecar(bids_fname, bids_root,
-                                              suffix='electrodes.tsv')
+                                              kind='electrodes',
+                                              extension='.tsv')
     coordsystem_fname = _find_matching_sidecar(bids_fname, bids_root,
-                                               suffix='coordsystem.json')
+                                               kind='coordsystem',
+                                               extension='.json')
     assert 'space-mri' in electrodes_fname
     assert 'space-mri' in coordsystem_fname
     with open(coordsystem_fname, 'r') as fin:
@@ -989,7 +994,7 @@ def test_bdf(_bids_validate):
     # we will change the channel type to MISC and overwrite the channels file
     bids_fname = bids_basename.copy().update(kind='eeg', extension='.bdf')
     channels_fname = _find_matching_sidecar(bids_fname, bids_root,
-                                            'channels.tsv')
+                                            kind='channels', extension='.tsv')
     channels_dict = _from_tsv(channels_fname)
     channels_dict['type'][test_ch_idx] = 'MISC'
     _to_tsv(channels_dict, channels_fname)
@@ -1129,7 +1134,8 @@ def test_write_anat(_bids_validate):
 
         # BONUS: test also that we can find the matching sidecar
         side_fname = _find_matching_sidecar(sidecar_basename,
-                                            bids_root, 'T1w.json')
+                                            bids_root, kind='T1w',
+                                            extension='.json')
         assert op.split(side_fname)[-1] == 'sub-01_ses-01_acq-01_T1w.json'
 
     # Now try some anat writing that will fail
@@ -1150,7 +1156,7 @@ def test_write_anat(_bids_validate):
     # Assert that we truly cannot find a sidecar
     with pytest.raises(RuntimeError, match='Did not find any'):
         _find_matching_sidecar(sidecar_basename,
-                               bids_root, 'T1w.json')
+                               bids_root, kind='T1w', extension='.json')
 
     # trans has a wrong type
     wrong_type = 1

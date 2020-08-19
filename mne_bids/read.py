@@ -365,7 +365,8 @@ def read_raw_bids(bids_basename, bids_root, kind=None, extra_params=None,
 
     # Try to find an associated events.tsv to get information about the
     # events in the recorded data
-    events_fname = _find_matching_sidecar(bids_fname, bids_root, 'events.tsv',
+    events_fname = _find_matching_sidecar(bids_fname, bids_root,
+                                          kind='events', extension='.tsv',
                                           allow_fail=True)
     if events_fname is not None:
         raw = _handle_events_reading(events_fname, raw)
@@ -373,17 +374,20 @@ def read_raw_bids(bids_basename, bids_root, kind=None, extra_params=None,
     # Try to find an associated channels.tsv to get information about the
     # status and type of present channels
     channels_fname = _find_matching_sidecar(bids_fname, bids_root,
-                                            'channels.tsv', allow_fail=True)
+                                            kind='channels', extension='.tsv',
+                                            allow_fail=True)
     if channels_fname is not None:
         raw = _handle_channels_reading(channels_fname, bids_fname, raw)
 
     # Try to find an associated electrodes.tsv and coordsystem.json
     # to get information about the status and type of present channels
     electrodes_fname = _find_matching_sidecar(bids_fname, bids_root,
-                                              suffix='electrodes.tsv',
+                                              kind='electrodes',
+                                              extension='.tsv',
                                               allow_fail=True)
     coordsystem_fname = _find_matching_sidecar(bids_fname, bids_root,
-                                               suffix='coordsystem.json',
+                                               kind='coordsystem',
+                                               extension='.json',
                                                allow_fail=True)
     if electrodes_fname is not None:
         if coordsystem_fname is None:
@@ -398,7 +402,7 @@ def read_raw_bids(bids_basename, bids_root, kind=None, extra_params=None,
     # Try to find an associated sidecar.json to get information about the
     # recording snapshot
     sidecar_fname = _find_matching_sidecar(bids_fname, bids_root,
-                                           '{}.json'.format(kind),
+                                           kind=kind, extension='.json',
                                            allow_fail=True)
     if sidecar_fname is not None:
         raw = _handle_info_reading(sidecar_fname, raw, verbose=verbose)
@@ -584,7 +588,8 @@ def get_head_mri_trans(bids_basename, bids_root):
 
     # Get the sidecar file for MRI landmarks
     bids_fname = bids_basename.get_bids_fname(kind='meg', bids_root=bids_root)
-    t1w_json_path = _find_matching_sidecar(bids_fname, bids_root, 'T1w.json')
+    t1w_json_path = _find_matching_sidecar(bids_fname, bids_root,
+                                           kind='T1w', extension='.json')
 
     # Get MRI landmarks from the JSON sidecar
     with open(t1w_json_path, 'r') as f:

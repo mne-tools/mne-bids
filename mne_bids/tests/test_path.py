@@ -234,7 +234,8 @@ def test_find_matching_sidecar(return_bids_test_dir):
 
     # Now find a sidecar
     sidecar_fname = _find_matching_sidecar(bids_basename, bids_root,
-                                           'coordsystem.json')
+                                           kind='coordsystem',
+                                           extension='.json')
     expected_file = op.join('sub-01', 'ses-01', 'meg',
                             'sub-01_ses-01_coordsystem.json')
     assert sidecar_fname.endswith(expected_file)
@@ -243,11 +244,15 @@ def test_find_matching_sidecar(return_bids_test_dir):
     with pytest.raises(RuntimeError, match='Expected to find a single'):
         open(sidecar_fname.replace('coordsystem.json',
                                    '2coordsystem.json'), 'w').close()
-        _find_matching_sidecar(bids_basename, bids_root, 'coordsystem.json')
+        print_dir_tree(bids_root)
+        _find_matching_sidecar(bids_basename, bids_root,
+                               kind='coordsystem', extension='.json')
 
     # Find nothing but receive None, because we set `allow_fail` to True
     with pytest.warns(RuntimeWarning, match='Did not find any'):
-        _find_matching_sidecar(bids_basename, bids_root, 'foo.bogus', True)
+        _find_matching_sidecar(bids_basename, bids_root,
+                               kind='foo', extension='.bogus',
+                               allow_fail=True)
 
 
 def test_bids_path(return_bids_test_dir):

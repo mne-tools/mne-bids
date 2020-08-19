@@ -235,7 +235,7 @@ def test_line_freq_estimation():
     # find sidecar JSON fname
     write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
     sidecar_fname = _find_matching_sidecar(bids_fname, bids_root,
-                                           '{}.json'.format(kind),
+                                           kind=kind, extension='.json',
                                            allow_fail=True)
 
     # 1. when nothing is set, default to use PSD estimation -> should be 60
@@ -253,7 +253,7 @@ def test_line_freq_estimation():
     somato_raw.info['line_freq'] = None
     write_raw_bids(somato_raw, bids_basename, bids_root, overwrite=True)
     sidecar_fname = _find_matching_sidecar(bids_fname, bids_root,
-                                           '{}.json'.format(kind),
+                                           kind=kind, extension='.json',
                                            allow_fail=True)
     _update_sidecar(sidecar_fname, "PowerLineFrequency", "n/a")
     with pytest.warns(RuntimeWarning, match="No line frequency found"):
@@ -290,7 +290,7 @@ def test_handle_info_reading():
 
     # find sidecar JSON fname
     sidecar_fname = _find_matching_sidecar(bids_fname, bids_root,
-                                           '{}.json'.format(kind),
+                                           kind=kind, extension='.json',
                                            allow_fail=True)
 
     # assert that we get the same line frequency set
@@ -363,10 +363,12 @@ def test_handle_eeg_coords_reading():
     with pytest.warns(RuntimeWarning, match="Skipping EEG electrodes.tsv"):
         write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
         coordsystem_fname = _find_matching_sidecar(bids_basename, bids_root,
-                                                   suffix='coordsystem.json',
+                                                   kind='coordsystem',
+                                                   extension='.json',
                                                    allow_fail=True)
         electrodes_fname = _find_matching_sidecar(bids_basename, bids_root,
-                                                  suffix="electrodes.tsv",
+                                                  kind='electrodes',
+                                                  extension='.tsv',
                                                   allow_fail=True)
         assert coordsystem_fname is None
         assert electrodes_fname is None
@@ -394,7 +396,8 @@ def test_handle_eeg_coords_reading():
 
     # modify coordinate frame to not-captrak
     coordsystem_fname = _find_matching_sidecar(bids_basename, bids_root,
-                                               suffix='coordsystem.json',
+                                               kind='coordsystem',
+                                               extension='.json',
                                                allow_fail=True)
     _update_sidecar(coordsystem_fname, 'EEGCoordinateSystem', 'besa')
     with pytest.warns(RuntimeWarning, match='EEG Coordinate frame is not '
@@ -461,10 +464,12 @@ def test_handle_ieeg_coords_reading(bids_basename):
     # regardless of 'm', 'cm', 'mm', or 'pixel'
     scalings = {'m': 1, 'cm': 100, 'mm': 1000}
     coordsystem_fname = _find_matching_sidecar(bids_fname, bids_root,
-                                               suffix='coordsystem.json',
+                                               kind='coordsystem',
+                                               extension='.json',
                                                allow_fail=True)
     electrodes_fname = _find_matching_sidecar(bids_fname, bids_root,
-                                              "electrodes.tsv",
+                                              kind='electrodes',
+                                              extension='.tsv',
                                               allow_fail=True)
     orig_electrodes_dict = _from_tsv(electrodes_fname,
                                      [str, float, float, float, str])
