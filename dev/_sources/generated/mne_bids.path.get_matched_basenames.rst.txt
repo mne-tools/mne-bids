@@ -1,0 +1,11 @@
+﻿mne\_bids.path.get\_matched\_basenames
+======================================
+
+.. currentmodule:: mne_bids.path
+
+.. autofunction:: get_matched_basenames
+
+.. _sphx_glr_backreferences_mne_bids.path.get_matched_basenames:
+
+.. minigallery:: mne_bids.path.get_matched_basenames
+    :add-heading:
