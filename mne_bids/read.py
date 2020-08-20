@@ -111,6 +111,9 @@ def _handle_info_reading(sidecar_fname, raw, verbose=None):
     if line_freq == "n/a":
         line_freq = None
 
+    if raw.info["line_freq"] is not None and line_freq is None:
+        line_freq = raw.info["line_freq"]  # take from file is present
+
     if raw.info["line_freq"] is not None and line_freq is not None:
         # if both have a set Power Line Frequency, then
         # check that they are the same, else there is a

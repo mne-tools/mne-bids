@@ -210,8 +210,8 @@ def test_create_fif(_bids_validate):
     sfreq, n_points = 1024., int(1e6)
     info = mne.create_info(['ch1', 'ch2', 'ch3', 'ch4', 'ch5'], sfreq,
                            ['seeg'] * 5)
-    np.random.seed(99)
-    raw = mne.io.RawArray(np.random.random((5, n_points)) * 1e-6, info)
+    rng = np.random.RandomState(99)
+    raw = mne.io.RawArray(rng.random((5, n_points)) * 1e-6, info)
     raw.info['line_freq'] = 60
     raw.save(op.join(out_dir, 'test-raw.fif'))
     raw = mne.io.read_raw_fif(op.join(out_dir, 'test-raw.fif'))
