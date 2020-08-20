@@ -321,7 +321,7 @@ def test_bids_path(return_bids_test_dir):
     # do not error check kind in update (not deep check)
     bids_basename.update(kind='foobar')
 
-    # do not error check error check on extension in update (not deep check)
+    # error check on extension in make_bids_basename (deep check)
     extension = '.mat'
     with pytest.raises(ValueError, match=f'Extension {extension} is not'):
         make_bids_basename(subject=subject_id, session=session_id,
