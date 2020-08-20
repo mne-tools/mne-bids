@@ -178,7 +178,7 @@
             <span class="n">enc</span> <span class="o">=</span> <span class="s1">&#39;UTF-8&#39;</span>
             <span class="n">src</span> <span class="o">=</span> <span class="s1">&#39;(default)&#39;</span>
         <span class="k">if</span> <span class="n">verbose</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Detected file encoding: </span><span class="si">%s</span><span class="s1"> </span><span class="si">%s</span><span class="s1">.&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">enc</span><span class="p">,</span> <span class="n">src</span><span class="p">))</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Detected file encoding: </span><span class="si">{</span><span class="n">enc</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">src</span><span class="si">}</span><span class="s1">.&#39;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">enc</span>
 
 
@@ -199,8 +199,8 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">fname</span><span class="p">,</span> <span class="n">ext</span> <span class="o">=</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">vhdr_path</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">ext</span> <span class="o">!=</span> <span class="s1">&#39;.vhdr&#39;</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Expecting file ending in &quot;.vhdr&quot;,&#39;</span>
-                         <span class="s1">&#39; but got </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ext</span><span class="p">))</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Expecting file ending in &quot;.vhdr&quot;,&#39;</span>
+                         <span class="sa">f</span><span class="s1">&#39; but got </span><span class="si">{</span><span class="n">ext</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 
     <span class="c1"># Header file seems fine</span>
     <span class="c1"># extract encoding from brainvision header file, or default to utf-8</span>
@@ -214,7 +214,7 @@
     <span class="n">eeg_file_match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;DataFile=(.*\.eeg)&#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">))</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">eeg_file_match</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Could not find a .eeg file link in&#39;</span>
-                         <span class="s1">&#39; </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">vhdr_path</span><span class="p">))</span>
+                         <span class="sa">f</span><span class="s1">&#39; </span><span class="si">{</span><span class="n">vhdr_path</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">eeg_file</span> <span class="o">=</span> <span class="n">eeg_file_match</span><span class="o">.</span><span class="n">groups</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
 
@@ -222,7 +222,7 @@
     <span class="n">vmrk_file_match</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;MarkerFile=(.*\.vmrk)&#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">))</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">vmrk_file_match</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Could not find a .vmrk file link in&#39;</span>
-                         <span class="s1">&#39; </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">vhdr_path</span><span class="p">))</span>
+                         <span class="sa">f</span><span class="s1">&#39; </span><span class="si">{</span><span class="n">vhdr_path</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">vmrk_file</span> <span class="o">=</span> <span class="n">vmrk_file_match</span><span class="o">.</span><span class="n">groups</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
 
@@ -307,7 +307,7 @@
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">acq_map</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">marker_fname</span> <span class="o">=</span> <span class="n">make_bids_basename</span><span class="p">(</span>
                 <span class="n">subject</span><span class="o">=</span><span class="n">subject_id</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session_id</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="n">task</span><span class="p">,</span> <span class="n">run</span><span class="o">=</span><span class="n">run</span><span class="p">,</span>
-                <span class="n">acquisition</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;markers</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">marker_ext</span><span class="p">,</span>
+                <span class="n">acquisition</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;markers&#39;</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="n">marker_ext</span><span class="p">,</span>
                 <span class="n">prefix</span><span class="o">=</span><span class="n">data_path</span><span class="p">)</span>
             <span class="n">sh</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">marker_fname</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">acq</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;elp&#39;</span><span class="p">,</span> <span class="s1">&#39;hsp&#39;</span><span class="p">]:</span>
@@ -317,7 +317,7 @@
             <span class="n">position_ext</span> <span class="o">=</span> <span class="s1">&#39;.pos&#39;</span>
             <span class="n">position_fname</span> <span class="o">=</span> <span class="n">make_bids_basename</span><span class="p">(</span>
                 <span class="n">subject</span><span class="o">=</span><span class="n">subject_id</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session_id</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="n">task</span><span class="p">,</span> <span class="n">run</span><span class="o">=</span><span class="n">run</span><span class="p">,</span>
-                <span class="n">acquisition</span><span class="o">=</span><span class="n">acq</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;headshape</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">position_ext</span><span class="p">,</span>
+                <span class="n">acquisition</span><span class="o">=</span><span class="n">acq</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;headshape&#39;</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="n">position_ext</span><span class="p">,</span>
                 <span class="n">prefix</span><span class="o">=</span><span class="n">data_path</span><span class="p">)</span>
             <span class="n">sh</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">position_file</span><span class="p">,</span> <span class="n">position_fname</span><span class="p">)</span></div>
 
@@ -394,8 +394,8 @@
     <span class="n">fname_src</span><span class="p">,</span> <span class="n">ext_src</span> <span class="o">=</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">vhdr_src</span><span class="p">)</span>
     <span class="n">fname_dest</span><span class="p">,</span> <span class="n">ext_dest</span> <span class="o">=</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">vhdr_dest</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">ext_src</span> <span class="o">!=</span> <span class="n">ext_dest</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Need to move data with same extension&#39;</span>
-                         <span class="s1">&#39; but got &quot;</span><span class="si">{}</span><span class="s1">&quot;, &quot;</span><span class="si">{}</span><span class="s1">&quot;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ext_src</span><span class="p">,</span> <span class="n">ext_dest</span><span class="p">))</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Need to move data with same extension&#39;</span>
+                         <span class="sa">f</span><span class="s1">&#39; but got &quot;</span><span class="si">{</span><span class="n">ext_src</span><span class="si">}</span><span class="s1">&quot;, &quot;</span><span class="si">{</span><span class="n">ext_dest</span><span class="si">}</span><span class="s1">&quot;&#39;</span><span class="p">)</span>
 
     <span class="n">eeg_file_path</span><span class="p">,</span> <span class="n">vmrk_file_path</span> <span class="o">=</span> <span class="n">_get_brainvision_paths</span><span class="p">(</span><span class="n">vhdr_src</span><span class="p">)</span>
 
@@ -467,13 +467,13 @@
     <span class="n">fname_dest</span><span class="p">,</span> <span class="n">ext_dest</span> <span class="o">=</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">dest</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">ext_src</span> <span class="o">!=</span> <span class="n">ext_dest</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Need to move data with same extension&#39;</span>
-                         <span class="s1">&#39; but got </span><span class="si">{}</span><span class="s1">, </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ext_src</span><span class="p">,</span> <span class="n">ext_dest</span><span class="p">))</span>
+                         <span class="sa">f</span><span class="s1">&#39; but got </span><span class="si">{</span><span class="n">ext_src</span><span class="si">}</span><span class="s1">, </span><span class="si">{</span><span class="n">ext_dest</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 
     <span class="c1"># Extract matlab struct &quot;EEG&quot; from EEGLAB file</span>
     <span class="n">mat</span> <span class="o">=</span> <span class="n">loadmat</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">squeeze_me</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">chars_as_strings</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                   <span class="n">mat_dtype</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">struct_as_record</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">if</span> <span class="s1">&#39;EEG&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">mat</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Could not find &quot;EEG&quot; field in </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">src</span><span class="p">))</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Could not find &quot;EEG&quot; field in </span><span class="si">{</span><span class="n">src</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
     <span class="n">eeg</span> <span class="o">=</span> <span class="n">mat</span><span class="p">[</span><span class="s1">&#39;EEG&#39;</span><span class="p">]</span>
 
     <span class="c1"># If the data field is a string, it points to a .fdt file in src dir</span>
@@ -484,8 +484,8 @@
         <span class="n">fdt_path</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">head</span><span class="p">,</span> <span class="n">fdt_pointer</span><span class="p">)</span>
         <span class="n">fdt_name</span><span class="p">,</span> <span class="n">fdt_ext</span> <span class="o">=</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">fdt_path</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">fdt_ext</span> <span class="o">!=</span> <span class="s1">&#39;.fdt&#39;</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="s1">&#39;Expected extension </span><span class="si">{}</span><span class="s1"> for linked data but found&#39;</span>
-                          <span class="s1">&#39; </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;.fdt&#39;</span><span class="p">,</span> <span class="n">fdt_ext</span><span class="p">))</span>
+            <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="s1">&#39;Expected extension .fdt for linked data but found&#39;</span>
+                          <span class="sa">f</span><span class="s1">&#39; </span><span class="si">{</span><span class="n">fdt_ext</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 
         <span class="c1"># Copy the fdt file and give it a new name</span>
         <span class="n">sh</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">fdt_path</span><span class="p">,</span> <span class="n">fname_dest</span> <span class="o">+</span> <span class="s1">&#39;.fdt&#39;</span><span class="p">)</span>

@@ -112,13 +112,13 @@
 <h1>mne_bids.make_bids_basename<a class="headerlink" href="#mne-bids-make-bids-basename" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt id="mne_bids.make_bids_basename">
-<code class="sig-prename descclassname">mne_bids.</code><code class="sig-name descname">make_bids_basename</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">subject</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">task</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">acquisition</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">run</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">processing</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">recording</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">space</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">prefix</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">suffix</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/path.html#make_bids_basename"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.make_bids_basename" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">mne_bids.</code><code class="sig-name descname">make_bids_basename</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">subject</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">task</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">acquisition</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">run</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">processing</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">recording</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">space</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">split</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">prefix</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">extension</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/path.html#make_bids_basename"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.make_bids_basename" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a partial/full BIDS basename from its component parts.</p>
 <p>BIDS filename prefixes have one or more pieces of metadata in them. They
 must follow a particular order, which is followed by this function. This
 will generate the <em>prefix</em> for a BIDS filename that can be used with many
-subsequent files, or you may also give a suffix that will then complete
-the file name.</p>
+subsequent files, or you may also give a kind and extension that will then
+complete the file name.</p>
 <p>Note that all parameters are not applicable to each kind of data. For
 example, electrode location TSV files do not need a task field.</p>
 <dl class="field-list simple">
@@ -142,10 +142,16 @@ subject is “emptyroom”.</p>
 </dd>
 <dt><strong>space</strong><span class="classifier">str | None</span></dt><dd><p>The coordinate space for an anatomical file. Corresponds to “space”.</p>
 </dd>
+<dt><strong>split</strong><span class="classifier">int | None</span></dt><dd><p>The split of the continuous recording file for <code class="docutils literal notranslate"><span class="pre">.fif</span></code> data.
+Corresponds to “split”.</p>
+</dd>
 <dt><strong>prefix</strong><span class="classifier">str | None</span></dt><dd><p>The prefix for the filename to be created. E.g., a path to the folder
 in which you wish to create a file with this name.</p>
 </dd>
-<dt><strong>suffix</strong><span class="classifier">str | None</span></dt><dd><p>The suffix for the filename to be created. E.g., ‘audio.wav’.</p>
+<dt><strong>kind</strong><span class="classifier">str | None</span></dt><dd><p>The filename kind. This is the entity after the last <code class="docutils literal notranslate"><span class="pre">_</span></code>
+before the extension. E.g., <code class="docutils literal notranslate"><span class="pre">'ieeg'</span></code>.</p>
+</dd>
+<dt><strong>extension</strong><span class="classifier">str | None</span></dt><dd><p>The extension of the filename. E.g., <code class="docutils literal notranslate"><span class="pre">'.json'</span></code>.</p>
 </dd>
 </dl>
 </dd>
@@ -157,8 +163,9 @@ in which you wish to create a file with this name.</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">make_bids_basename</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="s1">&#39;two&#39;</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="s1">&#39;mytask&#39;</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;data.csv&#39;</span><span class="p">))</span> <span class="c1"># noqa: E501</span>
-<span class="go">sub-test_ses-two_task-mytask_data.csv</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">make_bids_basename</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="s1">&#39;two&#39;</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="s1">&#39;mytask&#39;</span><span class="p">,</span>
+<span class="go">                             kind=&#39;ieeg&#39;, extension=&#39;.edf&#39;))</span>
+<span class="go">sub-test_ses-two_task-mytask_ieeg.edf</span>
 </pre></div>
 </div>
 </dd></dl>

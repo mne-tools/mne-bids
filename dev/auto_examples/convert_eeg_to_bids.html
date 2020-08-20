@@ -179,15 +179,15 @@ of the directory tree.</p>
 |--- files/
 |------ eegmmidb/
 |--------- 1.0.0/
-|------------ S002/
-|--------------- S002R12.edf
-|--------------- S002R08.edf
-|--------------- S002R04.edf
 |------------ S001/
 |--------------- S001R08.edf
-|--------------- S001R02.edf
 |--------------- S001R04.edf
 |--------------- S001R12.edf
+|--------------- S001R02.edf
+|------------ S002/
+|--------------- S002R04.edf
+|--------------- S002R12.edf
+|--------------- S002R08.edf
 </pre></div>
 </div>
 <p>The data are in the <a class="reference external" href="https://www.edfplus.info/">European Data Format</a> with
@@ -510,7 +510,7 @@ Writing &#39;/home/circleci/mne_data/eegmmidb_bids_eeg_example/dataset_descripti
     ]
 }
 Effective window size : 1.600 (s)
-/home/circleci/project/mne_bids/write.py:499: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
+/home/circleci/project/mne_bids/write.py:500: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
   warn(&#39;No line frequency found, defaulting to {} Hz &#39;
 Reading 0 ... 9759  =      0.000 ...    60.994 secs...
 
@@ -560,19 +560,19 @@ Wrote /home/circleci/mne_data/eegmmidb_bids_eeg_example/sub-001/sub-001_scans.ts
 </div>
 <p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>|eegmmidb_bids_eeg_example/
-|--- participants.json
 |--- dataset_description.json
-|--- README
+|--- participants.json
 |--- participants.tsv
+|--- README
 |--- sub-001/
 |------ sub-001_scans.tsv
 |------ eeg/
-|--------- sub-001_coordsystem.json
-|--------- sub-001_task-RestEyesClosed_events.tsv
+|--------- sub-001_electrodes.tsv
 |--------- sub-001_task-RestEyesClosed_channels.tsv
+|--------- sub-001_task-RestEyesClosed_events.tsv
 |--------- sub-001_task-RestEyesClosed_eeg.edf
 |--------- sub-001_task-RestEyesClosed_eeg.json
-|--------- sub-001_electrodes.tsv
+|--------- sub-001_coordsystem.json
 </pre></div>
 </div>
 <p>We can see that MNE-BIDS wrote several important files related to subject 1

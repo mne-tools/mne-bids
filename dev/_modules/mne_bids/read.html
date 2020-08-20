@@ -132,12 +132,12 @@
 
 <span class="kn">from</span> <span class="nn">mne_bids.dig</span> <span class="kn">import</span> <span class="n">_read_dig_bids</span>
 <span class="kn">from</span> <span class="nn">mne_bids.tsv_handler</span> <span class="kn">import</span> <span class="n">_from_tsv</span><span class="p">,</span> <span class="n">_drop</span>
-<span class="kn">from</span> <span class="nn">mne_bids.config</span> <span class="kn">import</span> <span class="p">(</span><span class="n">ALLOWED_EXTENSIONS</span><span class="p">,</span> <span class="n">_convert_hand_options</span><span class="p">,</span>
-                             <span class="n">_convert_sex_options</span><span class="p">,</span> <span class="n">reader</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">mne_bids.config</span> <span class="kn">import</span> <span class="p">(</span><span class="n">ALLOWED_MODALITY_EXTENSIONS</span><span class="p">,</span> <span class="n">reader</span><span class="p">,</span>
+                             <span class="n">_convert_hand_options</span><span class="p">,</span> <span class="n">_convert_sex_options</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">mne_bids.utils</span> <span class="kn">import</span> <span class="p">(</span><span class="n">_extract_landmarks</span><span class="p">,</span>
                             <span class="n">_get_ch_type_mapping</span><span class="p">,</span> <span class="n">_estimate_line_freq</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">mne_bids</span> <span class="kn">import</span> <span class="n">make_bids_folders</span>
-<span class="kn">from</span> <span class="nn">mne_bids.path</span> <span class="kn">import</span> <span class="p">(</span><span class="n">BIDSPath</span><span class="p">,</span> <span class="n">_parse_ext</span><span class="p">,</span> <span class="n">parse_bids_filename</span><span class="p">,</span>
+<span class="kn">from</span> <span class="nn">mne_bids.path</span> <span class="kn">import</span> <span class="p">(</span><span class="n">BIDSPath</span><span class="p">,</span> <span class="n">_parse_ext</span><span class="p">,</span> <span class="n">get_entities_from_fname</span><span class="p">,</span>
                            <span class="n">_find_matching_sidecar</span><span class="p">,</span> <span class="n">_infer_kind</span><span class="p">)</span>
 
 
@@ -166,15 +166,16 @@
 
     <span class="c1"># MEF and NWB are allowed, but not yet implemented</span>
     <span class="k">elif</span> <span class="n">ext</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;.mef&#39;</span><span class="p">,</span> <span class="s1">&#39;.nwb&#39;</span><span class="p">]:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Got &quot;</span><span class="si">{}</span><span class="s1">&quot; as extension. This is an allowed extension &#39;</span>
-                         <span class="s1">&#39;but there is no IO support for this file format yet.&#39;</span>
-                         <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ext</span><span class="p">))</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Got &quot;</span><span class="si">{</span><span class="n">ext</span><span class="si">}</span><span class="s1">&quot; as extension. This is an allowed &#39;</span>
+                         <span class="sa">f</span><span class="s1">&#39;extension but there is no IO support for this &#39;</span>
+                         <span class="sa">f</span><span class="s1">&#39;file format yet.&#39;</span><span class="p">)</span>
 
     <span class="c1"># No supported data found ...</span>
     <span class="c1"># ---------------------------</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Raw file name extension must be one of </span><span class="si">{}</span><span class="se">\n</span><span class="s1">&#39;</span>
-                         <span class="s1">&#39;Got </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ALLOWED_EXTENSIONS</span><span class="p">,</span> <span class="n">ext</span><span class="p">))</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Raw file name extension must be one &#39;</span>
+                         <span class="sa">f</span><span class="s1">&#39;of </span><span class="si">{</span><span class="n">ALLOWED_MODALITY_EXTENSIONS</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span>
+                         <span class="sa">f</span><span class="s1">&#39;Got </span><span class="si">{</span><span class="n">ext</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">raw</span>
 
 
@@ -445,18 +446,11 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># convert to BIDS Path</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bids_basename</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="n">params</span> <span class="o">=</span> <span class="n">parse_bids_filename</span><span class="p">(</span><span class="n">bids_basename</span><span class="p">)</span>
-        <span class="n">bids_basename</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;sub&#39;</span><span class="p">),</span>
-                                 <span class="n">session</span><span class="o">=</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;ses&#39;</span><span class="p">),</span>
-                                 <span class="n">recording</span><span class="o">=</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;rec&#39;</span><span class="p">),</span>
-                                 <span class="n">acquisition</span><span class="o">=</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;acq&#39;</span><span class="p">),</span>
-                                 <span class="n">processing</span><span class="o">=</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;proc&#39;</span><span class="p">),</span>
-                                 <span class="n">space</span><span class="o">=</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;space&#39;</span><span class="p">),</span>
-                                 <span class="n">run</span><span class="o">=</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;run&#39;</span><span class="p">),</span>
-                                 <span class="n">task</span><span class="o">=</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;task&#39;</span><span class="p">))</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="n">get_entities_from_fname</span><span class="p">(</span><span class="n">bids_basename</span><span class="p">)</span>
+        <span class="n">bids_basename</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span><span class="o">**</span><span class="n">params</span><span class="p">)</span>
+    <span class="n">bids_basename</span> <span class="o">=</span> <span class="n">bids_basename</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
     <span class="n">sub</span> <span class="o">=</span> <span class="n">bids_basename</span><span class="o">.</span><span class="n">subject</span>
     <span class="n">ses</span> <span class="o">=</span> <span class="n">bids_basename</span><span class="o">.</span><span class="n">session</span>
-    <span class="n">acq</span> <span class="o">=</span> <span class="n">bids_basename</span><span class="o">.</span><span class="n">acquisition</span>
 
     <span class="k">if</span> <span class="n">kind</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">kind</span> <span class="o">=</span> <span class="n">_infer_kind</span><span class="p">(</span><span class="n">bids_basename</span><span class="o">=</span><span class="n">bids_basename</span><span class="p">,</span> <span class="n">bids_root</span><span class="o">=</span><span class="n">bids_root</span><span class="p">,</span>
@@ -482,7 +476,8 @@
 
     <span class="c1"># Try to find an associated events.tsv to get information about the</span>
     <span class="c1"># events in the recorded data</span>
-    <span class="n">events_fname</span> <span class="o">=</span> <span class="n">_find_matching_sidecar</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">,</span> <span class="n">bids_root</span><span class="p">,</span> <span class="s1">&#39;events.tsv&#39;</span><span class="p">,</span>
+    <span class="n">events_fname</span> <span class="o">=</span> <span class="n">_find_matching_sidecar</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">,</span> <span class="n">bids_root</span><span class="p">,</span>
+                                          <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;events&#39;</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.tsv&#39;</span><span class="p">,</span>
                                           <span class="n">allow_fail</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">events_fname</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">raw</span> <span class="o">=</span> <span class="n">_handle_events_reading</span><span class="p">(</span><span class="n">events_fname</span><span class="p">,</span> <span class="n">raw</span><span class="p">)</span>
@@ -490,20 +485,20 @@
     <span class="c1"># Try to find an associated channels.tsv to get information about the</span>
     <span class="c1"># status and type of present channels</span>
     <span class="n">channels_fname</span> <span class="o">=</span> <span class="n">_find_matching_sidecar</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">,</span> <span class="n">bids_root</span><span class="p">,</span>
-                                            <span class="s1">&#39;channels.tsv&#39;</span><span class="p">,</span> <span class="n">allow_fail</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                                            <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;channels&#39;</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.tsv&#39;</span><span class="p">,</span>
+                                            <span class="n">allow_fail</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">channels_fname</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">raw</span> <span class="o">=</span> <span class="n">_handle_channels_reading</span><span class="p">(</span><span class="n">channels_fname</span><span class="p">,</span> <span class="n">bids_fname</span><span class="p">,</span> <span class="n">raw</span><span class="p">)</span>
 
     <span class="c1"># Try to find an associated electrodes.tsv and coordsystem.json</span>
     <span class="c1"># to get information about the status and type of present channels</span>
-    <span class="n">search_modifier</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;acq-</span><span class="si">{</span><span class="n">acq</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">if</span> <span class="n">acq</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span>
-    <span class="n">elec_suffix</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">search_modifier</span><span class="si">}</span><span class="s1">*_electrodes.tsv&#39;</span>
-    <span class="n">coord_suffix</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">search_modifier</span><span class="si">}</span><span class="s1">*_coordsystem.json&#39;</span>
     <span class="n">electrodes_fname</span> <span class="o">=</span> <span class="n">_find_matching_sidecar</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">,</span> <span class="n">bids_root</span><span class="p">,</span>
-                                              <span class="n">suffix</span><span class="o">=</span><span class="n">elec_suffix</span><span class="p">,</span>
+                                              <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;electrodes&#39;</span><span class="p">,</span>
+                                              <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.tsv&#39;</span><span class="p">,</span>
                                               <span class="n">allow_fail</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">coordsystem_fname</span> <span class="o">=</span> <span class="n">_find_matching_sidecar</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">,</span> <span class="n">bids_root</span><span class="p">,</span>
-                                               <span class="n">suffix</span><span class="o">=</span><span class="n">coord_suffix</span><span class="p">,</span>
+                                               <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;coordsystem&#39;</span><span class="p">,</span>
+                                               <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.json&#39;</span><span class="p">,</span>
                                                <span class="n">allow_fail</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">electrodes_fname</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">coordsystem_fname</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -518,7 +513,7 @@
     <span class="c1"># Try to find an associated sidecar.json to get information about the</span>
     <span class="c1"># recording snapshot</span>
     <span class="n">sidecar_fname</span> <span class="o">=</span> <span class="n">_find_matching_sidecar</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">,</span> <span class="n">bids_root</span><span class="p">,</span>
-                                           <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">.json&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">kind</span><span class="p">),</span>
+                                           <span class="n">kind</span><span class="o">=</span><span class="n">kind</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.json&#39;</span><span class="p">,</span>
                                            <span class="n">allow_fail</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">sidecar_fname</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">raw</span> <span class="o">=</span> <span class="n">_handle_info_reading</span><span class="p">(</span><span class="n">sidecar_fname</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
@@ -555,15 +550,9 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># convert to BIDS Path</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bids_basename</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="n">params</span> <span class="o">=</span> <span class="n">parse_bids_filename</span><span class="p">(</span><span class="n">bids_basename</span><span class="p">)</span>
-        <span class="n">bids_basename</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;sub&#39;</span><span class="p">),</span>
-                                 <span class="n">session</span><span class="o">=</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;ses&#39;</span><span class="p">),</span>
-                                 <span class="n">recording</span><span class="o">=</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;rec&#39;</span><span class="p">),</span>
-                                 <span class="n">acquisition</span><span class="o">=</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;acq&#39;</span><span class="p">),</span>
-                                 <span class="n">processing</span><span class="o">=</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;proc&#39;</span><span class="p">),</span>
-                                 <span class="n">space</span><span class="o">=</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;space&#39;</span><span class="p">),</span>
-                                 <span class="n">run</span><span class="o">=</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;run&#39;</span><span class="p">),</span>
-                                 <span class="n">task</span><span class="o">=</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;task&#39;</span><span class="p">))</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="n">get_entities_from_fname</span><span class="p">(</span><span class="n">bids_basename</span><span class="p">)</span>
+        <span class="n">bids_basename</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span><span class="o">**</span><span class="n">params</span><span class="p">)</span>
+    <span class="n">bids_basename</span> <span class="o">=</span> <span class="n">bids_basename</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
     <span class="n">kind</span> <span class="o">=</span> <span class="s1">&#39;meg&#39;</span>  <span class="c1"># We&#39;re only concerned about MEG data here</span>
     <span class="n">bids_fname</span> <span class="o">=</span> <span class="n">bids_basename</span><span class="o">.</span><span class="n">get_bids_fname</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="n">kind</span><span class="p">,</span> <span class="n">bids_root</span><span class="o">=</span><span class="n">bids_root</span><span class="p">)</span>
@@ -622,23 +611,16 @@
 
     <span class="n">failed_to_get_er_date_count</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">for</span> <span class="n">er_fname</span> <span class="ow">in</span> <span class="n">candidate_er_fnames</span><span class="p">:</span>
-        <span class="n">params</span> <span class="o">=</span> <span class="n">parse_bids_filename</span><span class="p">(</span><span class="n">er_fname</span><span class="p">)</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="n">get_entities_from_fname</span><span class="p">(</span><span class="n">er_fname</span><span class="p">)</span>
         <span class="n">er_meas_date</span> <span class="o">=</span> <span class="kc">None</span>
-
-        <span class="n">er_bids_path</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="s1">&#39;emptyroom&#39;</span><span class="p">,</span>
-                                <span class="n">session</span><span class="o">=</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;ses&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
-                                <span class="n">task</span><span class="o">=</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;task&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
-                                <span class="n">acquisition</span><span class="o">=</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;acq&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
-                                <span class="n">run</span><span class="o">=</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;run&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
-                                <span class="n">processing</span><span class="o">=</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;proc&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
-                                <span class="n">recording</span><span class="o">=</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;rec&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
-                                <span class="n">space</span><span class="o">=</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;space&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+        <span class="n">params</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;subject&#39;</span><span class="p">)</span>  <span class="c1"># er subject entity is different</span>
+        <span class="n">er_bids_path</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="s1">&#39;emptyroom&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">)</span>
         <span class="n">er_basename</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">er_bids_path</span><span class="p">)</span>
 
         <span class="c1"># Try to extract date from filename.</span>
-        <span class="k">if</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;ses&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;session&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">er_meas_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;ses&#39;</span><span class="p">],</span> <span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span>
+                <span class="n">er_meas_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;session&#39;</span><span class="p">],</span> <span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span>
             <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
                 <span class="c1"># There is a session in the filename, but it doesn&#39;t encode a</span>
                 <span class="c1"># valid date.</span>
@@ -712,19 +694,13 @@
 
     <span class="c1"># convert to BIDS Path</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bids_basename</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="n">params</span> <span class="o">=</span> <span class="n">parse_bids_filename</span><span class="p">(</span><span class="n">bids_basename</span><span class="p">)</span>
-        <span class="n">bids_basename</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;sub&#39;</span><span class="p">),</span>
-                                 <span class="n">session</span><span class="o">=</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;ses&#39;</span><span class="p">),</span>
-                                 <span class="n">recording</span><span class="o">=</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;rec&#39;</span><span class="p">),</span>
-                                 <span class="n">acquisition</span><span class="o">=</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;acq&#39;</span><span class="p">),</span>
-                                 <span class="n">processing</span><span class="o">=</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;proc&#39;</span><span class="p">),</span>
-                                 <span class="n">space</span><span class="o">=</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;space&#39;</span><span class="p">),</span>
-                                 <span class="n">run</span><span class="o">=</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;run&#39;</span><span class="p">),</span>
-                                 <span class="n">task</span><span class="o">=</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;task&#39;</span><span class="p">))</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="n">get_entities_from_fname</span><span class="p">(</span><span class="n">bids_basename</span><span class="p">)</span>
+        <span class="n">bids_basename</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span><span class="o">**</span><span class="n">params</span><span class="p">)</span>
 
     <span class="c1"># Get the sidecar file for MRI landmarks</span>
     <span class="n">bids_fname</span> <span class="o">=</span> <span class="n">bids_basename</span><span class="o">.</span><span class="n">get_bids_fname</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="s1">&#39;meg&#39;</span><span class="p">,</span> <span class="n">bids_root</span><span class="o">=</span><span class="n">bids_root</span><span class="p">)</span>
-    <span class="n">t1w_json_path</span> <span class="o">=</span> <span class="n">_find_matching_sidecar</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">,</span> <span class="n">bids_root</span><span class="p">,</span> <span class="s1">&#39;T1w.json&#39;</span><span class="p">)</span>
+    <span class="n">t1w_json_path</span> <span class="o">=</span> <span class="n">_find_matching_sidecar</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">,</span> <span class="n">bids_root</span><span class="p">,</span>
+                                           <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;T1w&#39;</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.json&#39;</span><span class="p">)</span>
 
     <span class="c1"># Get MRI landmarks from the JSON sidecar</span>
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">t1w_json_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>

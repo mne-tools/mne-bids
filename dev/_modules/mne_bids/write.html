@@ -150,7 +150,7 @@
                             <span class="n">_estimate_line_freq</span><span class="p">,</span> <span class="n">_check_anonymize</span><span class="p">,</span>
                             <span class="n">_stamp_to_dt</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">mne_bids</span> <span class="kn">import</span> <span class="n">make_bids_folders</span><span class="p">,</span> <span class="n">make_bids_basename</span>
-<span class="kn">from</span> <span class="nn">mne_bids.path</span> <span class="kn">import</span> <span class="p">(</span><span class="n">BIDSPath</span><span class="p">,</span> <span class="n">_parse_ext</span><span class="p">,</span> <span class="n">parse_bids_filename</span><span class="p">,</span>
+<span class="kn">from</span> <span class="nn">mne_bids.path</span> <span class="kn">import</span> <span class="p">(</span><span class="n">BIDSPath</span><span class="p">,</span> <span class="n">_parse_ext</span><span class="p">,</span> <span class="n">get_entities_from_fname</span><span class="p">,</span>
                            <span class="n">_mkdir_p</span><span class="p">,</span> <span class="n">_path_to_str</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">mne_bids.copyfiles</span> <span class="kn">import</span> <span class="p">(</span><span class="n">copyfile_brainvision</span><span class="p">,</span> <span class="n">copyfile_eeglab</span><span class="p">,</span>
                                 <span class="n">copyfile_ctf</span><span class="p">,</span> <span class="n">copyfile_bti</span><span class="p">,</span> <span class="n">copyfile_kit</span><span class="p">)</span>
@@ -158,7 +158,7 @@
                                   <span class="n">_combine_rows</span><span class="p">)</span>
 
 <span class="kn">from</span> <span class="nn">mne_bids.config</span> <span class="kn">import</span> <span class="p">(</span><span class="n">ORIENTATION</span><span class="p">,</span> <span class="n">UNITS</span><span class="p">,</span> <span class="n">MANUFACTURERS</span><span class="p">,</span>
-                             <span class="n">IGNORED_CHANNELS</span><span class="p">,</span> <span class="n">ALLOWED_EXTENSIONS</span><span class="p">,</span>
+                             <span class="n">IGNORED_CHANNELS</span><span class="p">,</span> <span class="n">ALLOWED_MODALITY_EXTENSIONS</span><span class="p">,</span>
                              <span class="n">BIDS_VERSION</span><span class="p">,</span> <span class="n">REFERENCES</span><span class="p">,</span> <span class="n">_convert_hand_options</span><span class="p">,</span>
                              <span class="n">_convert_sex_options</span><span class="p">,</span> <span class="n">reader</span><span class="p">)</span>
 
@@ -419,9 +419,9 @@
         <span class="c1"># if the subject data provided is different to the currently existing</span>
         <span class="c1"># data and overwrite is not True raise an error</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">sid_included</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">exact_included</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">overwrite</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">FileExistsError</span><span class="p">(</span><span class="s1">&#39;&quot;</span><span class="si">%s</span><span class="s1">&quot; already exists in the participant &#39;</span>  <span class="c1"># noqa: E501 F821</span>
-                                  <span class="s1">&#39;list. Please set overwrite to &#39;</span>
-                                  <span class="s1">&#39;True.&#39;</span> <span class="o">%</span> <span class="n">subject_id</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">FileExistsError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">subject_id</span><span class="si">}</span><span class="s1">&quot; already exists in &#39;</span>  <span class="c1"># noqa: E501 F821</span>
+                                  <span class="sa">f</span><span class="s1">&#39;the participant list. Please set &#39;</span>
+                                  <span class="sa">f</span><span class="s1">&#39;overwrite to True.&#39;</span><span class="p">)</span>
 
         <span class="c1"># Append any additional columns that original data had.</span>
         <span class="c1"># Keep the original order of the data by looping over</span>
@@ -522,8 +522,9 @@
         <span class="n">orig_data</span> <span class="o">=</span> <span class="n">_from_tsv</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
         <span class="c1"># if the file name is already in the file raise an error</span>
         <span class="k">if</span> <span class="n">raw_fname</span> <span class="ow">in</span> <span class="n">orig_data</span><span class="p">[</span><span class="s1">&#39;filename&#39;</span><span class="p">]</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">overwrite</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">FileExistsError</span><span class="p">(</span><span class="s1">&#39;&quot;</span><span class="si">%s</span><span class="s1">&quot; already exists in the scans list. &#39;</span>  <span class="c1"># noqa: E501 F821</span>
-                                  <span class="s1">&#39;Please set overwrite to True.&#39;</span> <span class="o">%</span> <span class="n">raw_fname</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">FileExistsError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">raw_fname</span><span class="si">}</span><span class="s1">&quot; already exists in &#39;</span>  <span class="c1"># noqa: E501 F821</span>
+                                  <span class="sa">f</span><span class="s1">&#39;the scans list. Please set &#39;</span>
+                                  <span class="sa">f</span><span class="s1">&#39;overwrite to True.&#39;</span><span class="p">)</span>
         <span class="c1"># otherwise add the new data</span>
         <span class="n">data</span> <span class="o">=</span> <span class="n">_combine_rows</span><span class="p">(</span><span class="n">orig_data</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="s1">&#39;filename&#39;</span><span class="p">)</span>
 
@@ -591,7 +592,7 @@
 <span class="sd">    fname : str | BIDSPath</span>
 <span class="sd">        Filename to save the sidecar json to.</span>
 <span class="sd">    kind : str</span>
-<span class="sd">        Type of the data as in ALLOWED_KINDS.</span>
+<span class="sd">        Type of the data as in ALLOWED_MODALITY_KINDS.</span>
 <span class="sd">    overwrite : bool</span>
 <span class="sd">        Whether to overwrite the existing file.</span>
 <span class="sd">        Defaults to False.</span>
@@ -1056,9 +1057,9 @@
     <span class="n">raw_fname</span> <span class="o">=</span> <span class="n">raw_fname</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.fdt&#39;</span><span class="p">,</span> <span class="s1">&#39;.set&#39;</span><span class="p">)</span>
     <span class="n">_</span><span class="p">,</span> <span class="n">ext</span> <span class="o">=</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">raw_fname</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">ext</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="n">this_ext</span> <span class="k">for</span> <span class="n">data_type</span> <span class="ow">in</span> <span class="n">ALLOWED_EXTENSIONS</span>
-                   <span class="k">for</span> <span class="n">this_ext</span> <span class="ow">in</span> <span class="n">ALLOWED_EXTENSIONS</span><span class="p">[</span><span class="n">data_type</span><span class="p">]]:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Unrecognized file format </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">ext</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">ext</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="n">this_ext</span> <span class="k">for</span> <span class="n">data_type</span> <span class="ow">in</span> <span class="n">ALLOWED_MODALITY_EXTENSIONS</span>
+                   <span class="k">for</span> <span class="n">this_ext</span> <span class="ow">in</span> <span class="n">ALLOWED_MODALITY_EXTENSIONS</span><span class="p">[</span><span class="n">data_type</span><span class="p">]]:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Unrecognized file format </span><span class="si">{</span><span class="n">ext</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 
     <span class="n">raw_orig</span> <span class="o">=</span> <span class="n">reader</span><span class="p">[</span><span class="n">ext</span><span class="p">](</span><span class="o">**</span><span class="n">raw</span><span class="o">.</span><span class="n">_init_kwargs</span><span class="p">)</span>
     <span class="n">assert_array_equal</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">times</span><span class="p">,</span> <span class="n">raw_orig</span><span class="o">.</span><span class="n">times</span><span class="p">,</span>
@@ -1067,22 +1068,16 @@
 
     <span class="c1"># convert to BIDS Path</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bids_basename</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="n">params</span> <span class="o">=</span> <span class="n">parse_bids_filename</span><span class="p">(</span><span class="n">bids_basename</span><span class="p">)</span>
-        <span class="n">bids_basename</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;sub&#39;</span><span class="p">),</span>
-                                 <span class="n">session</span><span class="o">=</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;ses&#39;</span><span class="p">),</span>
-                                 <span class="n">recording</span><span class="o">=</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;rec&#39;</span><span class="p">),</span>
-                                 <span class="n">acquisition</span><span class="o">=</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;acq&#39;</span><span class="p">),</span>
-                                 <span class="n">processing</span><span class="o">=</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;proc&#39;</span><span class="p">),</span>
-                                 <span class="n">space</span><span class="o">=</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;space&#39;</span><span class="p">),</span>
-                                 <span class="n">run</span><span class="o">=</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;run&#39;</span><span class="p">),</span>
-                                 <span class="n">task</span><span class="o">=</span><span class="n">params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;task&#39;</span><span class="p">))</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="n">get_entities_from_fname</span><span class="p">(</span><span class="n">bids_basename</span><span class="p">)</span>
+        <span class="n">bids_basename</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span><span class="o">**</span><span class="n">params</span><span class="p">)</span>
 
+    <span class="n">bids_basename</span> <span class="o">=</span> <span class="n">bids_basename</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
     <span class="n">subject_id</span><span class="p">,</span> <span class="n">session_id</span> <span class="o">=</span> <span class="n">bids_basename</span><span class="o">.</span><span class="n">subject</span><span class="p">,</span> <span class="n">bids_basename</span><span class="o">.</span><span class="n">session</span>
     <span class="n">task</span><span class="p">,</span> <span class="n">run</span> <span class="o">=</span> <span class="n">bids_basename</span><span class="o">.</span><span class="n">task</span><span class="p">,</span> <span class="n">bids_basename</span><span class="o">.</span><span class="n">run</span>
     <span class="n">acquisition</span><span class="p">,</span> <span class="n">space</span> <span class="o">=</span> <span class="n">bids_basename</span><span class="o">.</span><span class="n">acquisition</span><span class="p">,</span> <span class="n">bids_basename</span><span class="o">.</span><span class="n">space</span>
     <span class="n">kind</span> <span class="o">=</span> <span class="n">_handle_kind</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span>
 
-    <span class="n">bids_fname</span> <span class="o">=</span> <span class="n">bids_basename</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">kind</span><span class="si">}{</span><span class="n">ext</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">bids_fname</span> <span class="o">=</span> <span class="n">bids_basename</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="n">kind</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="n">ext</span><span class="p">)</span>
 
     <span class="c1"># check whether the info provided indicates that the data is emptyroom</span>
     <span class="c1"># data</span>
@@ -1119,31 +1114,35 @@
 
     <span class="c1"># create *_scans.tsv</span>
     <span class="n">bids_path</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="n">subject_id</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session_id</span><span class="p">,</span>
-                         <span class="n">prefix</span><span class="o">=</span><span class="n">ses_path</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;scans.tsv&#39;</span><span class="p">,</span>
+                         <span class="n">prefix</span><span class="o">=</span><span class="n">ses_path</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;scans&#39;</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.tsv&#39;</span><span class="p">,</span>
                          <span class="n">task</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
     <span class="n">scans_fname</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">bids_path</span><span class="p">)</span>
 
     <span class="c1"># create *_coordsystem.json</span>
     <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">acquisition</span><span class="o">=</span><span class="n">acquisition</span><span class="p">,</span> <span class="n">space</span><span class="o">=</span><span class="n">space</span><span class="p">,</span>
-                     <span class="n">prefix</span><span class="o">=</span><span class="n">data_path</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;coordsystem.json&#39;</span><span class="p">)</span>
+                     <span class="n">prefix</span><span class="o">=</span><span class="n">data_path</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;coordsystem&#39;</span><span class="p">,</span>
+                     <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.json&#39;</span><span class="p">)</span>
     <span class="n">coordsystem_fname</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">bids_path</span><span class="p">)</span>
 
     <span class="c1"># create *_electrodes.tsv</span>
-    <span class="n">bids_path</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;electrodes.tsv&#39;</span><span class="p">)</span>
+    <span class="n">bids_path</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="s1">&#39;electrodes&#39;</span><span class="p">,</span>
+                                 <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.tsv&#39;</span><span class="p">)</span>
     <span class="n">electrodes_fname</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">bids_path</span><span class="p">)</span>
 
     <span class="c1"># For the remaining files, we can use BIDSPath to alter.</span>
-    <span class="n">readme_fname</span> <span class="o">=</span> <span class="n">make_bids_basename</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="n">bids_root</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;README&#39;</span><span class="p">)</span>
-    <span class="n">participants_tsv_fname</span> <span class="o">=</span> <span class="n">make_bids_basename</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="n">bids_root</span><span class="p">,</span>
-                                                <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;participants.tsv&#39;</span><span class="p">)</span>
-    <span class="n">participants_json_fname</span> <span class="o">=</span> <span class="n">participants_tsv_fname</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-    <span class="n">participants_json_fname</span><span class="o">.</span><span class="n">suffix</span> <span class="o">=</span> <span class="s1">&#39;participants.json&#39;</span>
+    <span class="n">readme_fname</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bids_root</span><span class="p">,</span> <span class="s1">&#39;README&#39;</span><span class="p">)</span>
+    <span class="n">participants_tsv_fname</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bids_root</span><span class="p">,</span> <span class="s1">&#39;participants.tsv&#39;</span><span class="p">)</span>
+    <span class="n">participants_json_fname</span> <span class="o">=</span> <span class="n">participants_tsv_fname</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;tsv&#39;</span><span class="p">,</span>
+                                                             <span class="s1">&#39;json&#39;</span><span class="p">)</span>
 
     <span class="n">sidecar_fname</span> <span class="o">=</span> <span class="n">bids_fname</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="n">data_path</span><span class="p">,</span>
-                                             <span class="n">suffix</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">kind</span><span class="si">}</span><span class="s1">.json&#39;</span><span class="p">)</span>
+                                             <span class="n">kind</span><span class="o">=</span><span class="n">kind</span><span class="p">,</span>
+                                             <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.json&#39;</span><span class="p">)</span>
 
-    <span class="n">events_fname</span> <span class="o">=</span> <span class="n">sidecar_fname</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;events.tsv&#39;</span><span class="p">)</span>
-    <span class="n">channels_fname</span> <span class="o">=</span> <span class="n">sidecar_fname</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;channels.tsv&#39;</span><span class="p">)</span>
+    <span class="n">events_fname</span> <span class="o">=</span> <span class="n">sidecar_fname</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="s1">&#39;events&#39;</span><span class="p">,</span>
+                                               <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.tsv&#39;</span><span class="p">)</span>
+    <span class="n">channels_fname</span> <span class="o">=</span> <span class="n">sidecar_fname</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="s1">&#39;channels&#39;</span><span class="p">,</span>
+                                                 <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.tsv&#39;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">ext</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;.fif&#39;</span><span class="p">,</span> <span class="s1">&#39;.ds&#39;</span><span class="p">,</span> <span class="s1">&#39;.vhdr&#39;</span><span class="p">,</span> <span class="s1">&#39;.edf&#39;</span><span class="p">,</span> <span class="s1">&#39;.bdf&#39;</span><span class="p">,</span> <span class="s1">&#39;.set&#39;</span><span class="p">,</span> <span class="s1">&#39;.con&#39;</span><span class="p">,</span>
                    <span class="s1">&#39;.sqd&#39;</span><span class="p">]:</span>
@@ -1160,12 +1159,12 @@
             <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
                 <span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Converting to FIF for anonymization&#39;</span><span class="p">)</span>
             <span class="n">convert</span> <span class="o">=</span> <span class="kc">True</span>
-            <span class="n">bids_fname</span><span class="o">.</span><span class="n">suffix</span> <span class="o">=</span> <span class="n">bids_fname</span><span class="o">.</span><span class="n">suffix</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">ext</span><span class="p">,</span> <span class="s1">&#39;.fif&#39;</span><span class="p">)</span>
+            <span class="n">bids_fname</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.fif&#39;</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">kind</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;eeg&#39;</span><span class="p">,</span> <span class="s1">&#39;ieeg&#39;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">ext</span> <span class="o">!=</span> <span class="s1">&#39;.vhdr&#39;</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
                 <span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Converting to BV for anonymization&#39;</span><span class="p">)</span>
             <span class="n">convert</span> <span class="o">=</span> <span class="kc">True</span>
-            <span class="n">bids_fname</span><span class="o">.</span><span class="n">suffix</span> <span class="o">=</span> <span class="n">bids_fname</span><span class="o">.</span><span class="n">suffix</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">ext</span><span class="p">,</span> <span class="s1">&#39;.vhdr&#39;</span><span class="p">)</span>
+            <span class="n">bids_fname</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.vhdr&#39;</span><span class="p">)</span>
 
     <span class="c1"># Read in Raw object and extract metadata from Raw object if needed</span>
     <span class="n">orient</span> <span class="o">=</span> <span class="n">ORIENTATION</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ext</span><span class="p">,</span> <span class="s1">&#39;n/a&#39;</span><span class="p">)</span>
@@ -1215,18 +1214,18 @@
     <span class="n">bids_fname</span><span class="o">.</span><span class="n">prefix</span> <span class="o">=</span> <span class="n">data_path</span>
 
     <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">overwrite</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">FileExistsError</span><span class="p">(</span><span class="s1">&#39;&quot;</span><span class="si">%s</span><span class="s1">&quot; already exists. Please set &#39;</span>  <span class="c1"># noqa: F821</span>
-                              <span class="s1">&#39;overwrite to True.&#39;</span> <span class="o">%</span> <span class="n">bids_fname</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">FileExistsError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">bids_fname</span><span class="si">}</span><span class="s1">&quot; already exists. &#39;</span>  <span class="c1"># noqa: F821</span>
+                              <span class="sa">f</span><span class="s1">&#39;Please set overwrite to True.&#39;</span><span class="p">)</span>
 
     <span class="c1"># If not already converting for anonymization, we may still need to do it</span>
     <span class="c1"># if current format not BIDS compliant</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">convert</span><span class="p">:</span>
-        <span class="n">convert</span> <span class="o">=</span> <span class="n">ext</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ALLOWED_EXTENSIONS</span><span class="p">[</span><span class="n">kind</span><span class="p">]</span>
+        <span class="n">convert</span> <span class="o">=</span> <span class="n">ext</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ALLOWED_MODALITY_EXTENSIONS</span><span class="p">[</span><span class="n">kind</span><span class="p">]</span>
 
     <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s1">&#39;meg&#39;</span> <span class="ow">and</span> <span class="n">convert</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">anonymize</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Got file extension </span><span class="si">%s</span><span class="s1"> for MEG data, &#39;</span>
-                         <span class="s1">&#39;expected one of </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span>
-                         <span class="n">ALLOWED_EXTENSIONS</span><span class="p">[</span><span class="s1">&#39;meg&#39;</span><span class="p">])</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Got file extension </span><span class="si">{</span><span class="n">convert</span><span class="si">}</span><span class="s2"> for MEG data, &quot;</span>
+                         <span class="sa">f</span><span class="s2">&quot;expected one of &quot;</span>
+                         <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ALLOWED_MODALITY_EXTENSIONS</span><span class="p">[</span><span class="s1">&#39;meg&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">convert</span> <span class="ow">and</span> <span class="n">verbose</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Copying data files to </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">op</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
@@ -1240,7 +1239,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
                 <span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Converting data files to BrainVision format&#39;</span><span class="p">)</span>
-            <span class="n">bids_fname</span><span class="o">.</span><span class="n">suffix</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">kind</span><span class="si">}</span><span class="s1">.vhdr&#39;</span>
+            <span class="n">bids_fname</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="n">kind</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.vhdr&#39;</span><span class="p">)</span>
             <span class="n">_write_raw_brainvision</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_fname</span><span class="p">,</span> <span class="n">events</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">ext</span> <span class="o">==</span> <span class="s1">&#39;.fif&#39;</span><span class="p">:</span>
         <span class="n">_write_raw_fif</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_fname</span><span class="p">)</span>
@@ -1385,7 +1384,7 @@
     <span class="n">t1w_basename</span> <span class="o">=</span> <span class="n">make_bids_basename</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="n">subject</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span>
                                       <span class="n">acquisition</span><span class="o">=</span><span class="n">acquisition</span><span class="p">,</span>
                                       <span class="n">prefix</span><span class="o">=</span><span class="n">anat_dir</span><span class="p">,</span>
-                                      <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;T1w.nii.gz&#39;</span><span class="p">)</span>
+                                      <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;T1w&#39;</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.nii.gz&#39;</span><span class="p">)</span>
 
     <span class="c1"># Check if we have necessary conditions for writing a sidecar JSON</span>
     <span class="k">if</span> <span class="n">trans</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">landmarks</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -1424,7 +1423,7 @@
                 <span class="n">mri_landmarks</span> <span class="o">=</span> <span class="n">landmarks</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Coordinate frame not recognized, &#39;</span> <span class="o">+</span>
-                                 <span class="s1">&#39;found </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">coord_frame</span><span class="p">)</span>
+                                 <span class="sa">f</span><span class="s1">&#39;found </span><span class="si">{</span><span class="n">coord_frame</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">trans</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># get trans and ensure it is from head to MRI</span>
             <span class="n">trans</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_get_trans</span><span class="p">(</span><span class="n">trans</span><span class="p">,</span> <span class="n">fro</span><span class="o">=</span><span class="s1">&#39;head&#39;</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="s1">&#39;mri&#39;</span><span class="p">)</span>

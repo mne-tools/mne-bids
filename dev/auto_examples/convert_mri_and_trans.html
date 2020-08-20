@@ -304,7 +304,7 @@ Writing &#39;/home/circleci/mne_data/MNE-sample-data-bids/dataset_description.js
     ]
 }
 Effective window size : 0.426 (s)
-/home/circleci/project/mne_bids/write.py:499: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
+/home/circleci/project/mne_bids/write.py:500: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
   warn(&#39;No line frequency found, defaulting to {} Hz &#39;
 Reading 0 ... 166799  =      0.000 ...   277.714 secs...
 
@@ -358,18 +358,18 @@ Wrote /home/circleci/mne_data/MNE-sample-data-bids/sub-01/ses-01/sub-01_ses-01_s
 </div>
 <p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>|MNE-sample-data-bids/
-|--- participants.json
 |--- dataset_description.json
-|--- README
+|--- participants.json
 |--- participants.tsv
+|--- README
 |--- sub-01/
 |------ ses-01/
 |--------- sub-01_ses-01_scans.tsv
 |--------- meg/
-|------------ sub-01_ses-01_task-audiovisual_run-01_meg.json
-|------------ sub-01_ses-01_coordsystem.json
 |------------ sub-01_ses-01_task-audiovisual_run-01_meg.fif
+|------------ sub-01_ses-01_task-audiovisual_run-01_meg.json
 |------------ sub-01_ses-01_task-audiovisual_run-01_events.tsv
+|------------ sub-01_ses-01_coordsystem.json
 |------------ sub-01_ses-01_task-audiovisual_run-01_channels.tsv
 </pre></div>
 </div>
@@ -439,22 +439,22 @@ retrieve our transformation matrix <code class="code docutils literal notranslat
 </div>
 <p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>|MNE-sample-data-bids/
-|--- participants.json
 |--- dataset_description.json
-|--- README
+|--- participants.json
 |--- participants.tsv
+|--- README
 |--- sub-01/
 |------ ses-01/
 |--------- sub-01_ses-01_scans.tsv
 |--------- meg/
-|------------ sub-01_ses-01_task-audiovisual_run-01_meg.json
-|------------ sub-01_ses-01_coordsystem.json
 |------------ sub-01_ses-01_task-audiovisual_run-01_meg.fif
+|------------ sub-01_ses-01_task-audiovisual_run-01_meg.json
 |------------ sub-01_ses-01_task-audiovisual_run-01_events.tsv
+|------------ sub-01_ses-01_coordsystem.json
 |------------ sub-01_ses-01_task-audiovisual_run-01_channels.tsv
 |--------- anat/
-|------------ sub-01_ses-01_T1w.json
 |------------ sub-01_ses-01_T1w.nii.gz
+|------------ sub-01_ses-01_T1w.json
 </pre></div>
 </div>
 <p>Our BIDS dataset is now ready to be shared. We can easily estimate the
@@ -474,11 +474,11 @@ transformation matrix using <code class="docutils literal notranslate"><span cla
 Ready.
 Reading events from /home/circleci/mne_data/MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_events.tsv.
 Reading channel info from /home/circleci/mne_data/MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_channels.tsv.
-/home/circleci/project/mne_bids/read.py:262: RuntimeWarning: The unit for channel(s) STI 001, STI 002, STI 003, STI 004, STI 005, STI 006, STI 014, STI 015, STI 016 has changed from V to NA.
+/home/circleci/project/mne_bids/read.py:263: RuntimeWarning: The unit for channel(s) STI 001, STI 002, STI 003, STI 004, STI 005, STI 006, STI 014, STI 015, STI 016 has changed from V to NA.
   raw.set_channel_types(channel_type_dict)
-/home/circleci/project/mne_bids/path.py:484: RuntimeWarning: Did not find any electrodes.tsv associated with sub-01_ses-01_task-audiovisual_run-01_meg.fif.
+/home/circleci/project/mne_bids/path.py:550: RuntimeWarning: Did not find any electrodes.tsv associated with sub-01_ses-01_task-audiovisual_run-01.
 
-The search_str was &quot;/home/circleci/mne_data/MNE-sample-data-bids/sub-01/**/sub-01_ses-01**_electrodes.tsv&quot;
+The search_str was &quot;/home/circleci/mne_data/MNE-sample-data-bids/sub-01/**/sub-01_ses-01*electrodes.tsv&quot;
   warn(msg)
 </pre></div>
 </div>
@@ -563,7 +563,7 @@ plot the results.</p>
 }
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 1 minutes  4.532 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  16.298 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-mri-and-trans-py">
 <div class="binder-badge docutils container">
 <a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/convert_mri_and_trans.ipynb"><img alt="https://mybinder.org/badge_logo.svg" src="https://mybinder.org/badge_logo.svg" width="150px" /></a>

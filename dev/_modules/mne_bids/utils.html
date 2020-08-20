@@ -244,8 +244,8 @@
     <span class="sd">&quot;&quot;&quot;Make sure all vars are str or None.&quot;&quot;&quot;</span>
     <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">variables</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">))):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;You supplied a value of type </span><span class="si">%s</span><span class="s2">, where a &quot;</span>
-                             <span class="s2">&quot;string or None was expected.&quot;</span> <span class="o">%</span> <span class="nb">type</span><span class="p">(</span><span class="n">var</span><span class="p">))</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You supplied a value of type </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">var</span><span class="p">)</span><span class="si">}</span><span class="s2">, &quot;</span>
+                             <span class="sa">f</span><span class="s2">&quot;where a string or None was expected.&quot;</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">_write_json</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">dictionary</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
@@ -294,7 +294,7 @@
     <span class="sd">&quot;&quot;&quot;Perform checks on a value to make sure it adheres to the spec.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">ii</span> <span class="ow">in</span> <span class="n">val</span> <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="s1">&#39;_&#39;</span><span class="p">,</span> <span class="s1">&#39;/&#39;</span><span class="p">]):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Unallowed `-`, `_`, or `/` found in key/value pair&quot;</span>
-                         <span class="s2">&quot; </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">val</span><span class="p">))</span>
+                         <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">val</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span>
 
 
@@ -331,10 +331,10 @@
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">events_data</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">events_data</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Events must have two dimensions, &#39;</span>
-                             <span class="s1">&#39;found </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">events_data</span><span class="o">.</span><span class="n">ndim</span><span class="p">)</span>
+                             <span class="sa">f</span><span class="s1">&#39;found </span><span class="si">{</span><span class="n">events_data</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">events_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Events must have second dimension of length 3, &#39;</span>
-                             <span class="s1">&#39;found </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">events_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                             <span class="sa">f</span><span class="s1">&#39;found </span><span class="si">{</span><span class="n">events_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="n">events</span> <span class="o">=</span> <span class="n">events_data</span>
     <span class="k">elif</span> <span class="s1">&#39;stim&#39;</span> <span class="ow">in</span> <span class="n">raw</span><span class="p">:</span>
         <span class="n">events</span> <span class="o">=</span> <span class="n">find_events</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">min_duration</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span> <span class="n">initial_event</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -545,11 +545,11 @@
                  <span class="s1">&#39;is after 1925, which is not recommended by BIDS.&#39;</span>
                  <span class="s1">&#39;The minimum `daysback` value for changing the &#39;</span>
                  <span class="s1">&#39;measurement date of this data to before this date &#39;</span>
-                 <span class="s1">&#39;is </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">daysback_min</span><span class="p">)</span>
+                 <span class="sa">f</span><span class="s1">&#39;is </span><span class="si">{</span><span class="n">daysback_min</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">ext</span> <span class="o">==</span> <span class="s1">&#39;.fif&#39;</span> <span class="ow">and</span> <span class="n">daysback</span> <span class="o">&gt;</span> <span class="n">daysback_max</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;`daysback` exceeds maximum value MNE &#39;</span>
                              <span class="s1">&#39;is able to store in FIF format, must &#39;</span>
-                             <span class="s1">&#39;be less than </span><span class="si">%i</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">daysback_max</span><span class="p">)</span>
+                             <span class="sa">f</span><span class="s1">&#39;be less than </span><span class="si">{</span><span class="n">daysback_max</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
     <span class="n">keep_his</span> <span class="o">=</span> <span class="n">anonymize</span><span class="p">[</span><span class="s1">&#39;keep_his&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="s1">&#39;keep_his&#39;</span> <span class="ow">in</span> <span class="n">anonymize</span> <span class="k">else</span> <span class="kc">False</span>
     <span class="k">return</span> <span class="n">daysback</span><span class="p">,</span> <span class="n">keep_his</span>
 

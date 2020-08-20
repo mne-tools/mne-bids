@@ -112,7 +112,7 @@
 <h1>mne_bids.path.BIDSPath<a class="headerlink" href="#mne-bids-path-bidspath" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="mne_bids.path.BIDSPath">
-<em class="property">class </em><code class="sig-prename descclassname">mne_bids.path.</code><code class="sig-name descname">BIDSPath</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">subject</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">task</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">acquisition</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">run</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">processing</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">recording</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">space</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">prefix</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">suffix</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/path.html#BIDSPath"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.path.BIDSPath" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">mne_bids.path.</code><code class="sig-name descname">BIDSPath</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">subject</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">task</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">acquisition</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">run</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">processing</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">recording</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">space</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">split</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">prefix</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">extension</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/path.html#BIDSPath"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.path.BIDSPath" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a partial/full BIDS filepath from its component parts.</p>
 <p>BIDS filename prefixes have one or more pieces of metadata in them. They
 must follow a particular order, which is followed by this function. This
@@ -142,29 +142,37 @@ example, electrode location TSV files do not need a “task” field.</p>
 </dd>
 <dt><strong>space</strong><span class="classifier">str | None</span></dt><dd><p>The coordinate space for an anatomical file. Corresponds to “space”.</p>
 </dd>
+<dt><strong>split</strong><span class="classifier">int | None</span></dt><dd><p>The split of the continuous recording file for <code class="docutils literal notranslate"><span class="pre">.fif</span></code> data. Corresponds to “split”.</p>
+</dd>
 <dt><strong>prefix</strong><span class="classifier">str | None</span></dt><dd><p>The prefix for the filename to be created. E.g., a path to the folder
 in which you wish to create a file with this name.</p>
 </dd>
-<dt><strong>suffix</strong><span class="classifier">str | None</span></dt><dd><p>The suffix for the filename to be created. E.g., ‘audio.wav’.</p>
+<dt><strong>kind</strong><span class="classifier">str | None</span></dt><dd><p>The filename kind. This is the entity after the last <code class="docutils literal notranslate"><span class="pre">_</span></code> before the extension. 
+E.g., <code class="docutils literal notranslate"><span class="pre">'ieeg'</span></code>.</p>
+</dd>
+<dt><strong>extension</strong><span class="classifier">str | None</span></dt><dd><p>The extension of the filename. E.g., <code class="docutils literal notranslate"><span class="pre">'.json'</span></code>.</p>
 </dd>
 </dl>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">bids_basename</span> <span class="o">=</span> <span class="n">make_bids_basename</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="s1">&#39;two&#39;</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="s1">&#39;mytask&#39;</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;data.csv&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">bids_basename</span> <span class="o">=</span> <span class="n">make_bids_basename</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="s1">&#39;two&#39;</span><span class="p">,</span> 
+<span class="go">                                       task=&#39;mytask&#39;, kind=&#39;ieeg&#39;, extension=&#39;.edf&#39;)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">bids_basename</span><span class="p">)</span>
-<span class="go">sub-test_ses-two_task-mytask_data.csv</span>
+<span class="go">sub-test_ses-two_task-mytask_ieeg.edf</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">bids_basename</span>
-<span class="go">BIDSPath(sub-test_ses-two_task-mytask_data.csv)</span>
+<span class="go">BIDSPath(sub-test_ses-two_task-mytask_ieeg.edf)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># copy and update multiple entities at once</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">new_basename</span> <span class="o">=</span> <span class="n">bids_basename</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="s1">&#39;test2&#39;</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="s1">&#39;one&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">new_basename</span><span class="p">)</span>
-<span class="go">sub-test2_ses-one_task-mytask_data.csv</span>
+<span class="go">sub-test2_ses-one_task-mytask_ieeg.edf</span>
 </pre></div>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Attributes</dt>
 <dd class="field-odd"><dl class="simple">
+<dt><a class="reference internal" href="#mne_bids.path.BIDSPath.basename" title="mne_bids.path.BIDSPath.basename"><code class="xref py py-obj docutils literal notranslate"><span class="pre">basename</span></code></a></dt><dd><p>Path basename.</p>
+</dd>
 <dt><a class="reference internal" href="#mne_bids.path.BIDSPath.entities" title="mne_bids.path.BIDSPath.entities"><code class="xref py py-obj docutils literal notranslate"><span class="pre">entities</span></code></a></dt><dd><p>Return dictionary of the BIDS entities.</p>
 </dd>
 </dl>
@@ -188,6 +196,12 @@ in which you wish to create a file with this name.</p>
 </tr>
 </tbody>
 </table>
+<dl class="py method">
+<dt id="mne_bids.path.BIDSPath.basename">
+<em class="property">property </em><code class="sig-name descname">basename</code><a class="headerlink" href="#mne_bids.path.BIDSPath.basename" title="Permalink to this definition">¶</a></dt>
+<dd><p>Path basename.</p>
+</dd></dl>
+
 <dl class="py method">
 <dt id="mne_bids.path.BIDSPath.copy">
 <code class="sig-name descname">copy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/path.html#BIDSPath.copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.path.BIDSPath.copy" title="Permalink to this definition">¶</a></dt>
@@ -262,11 +276,14 @@ will be added to the filename.</p>
 <p class="rubric">Examples</p>
 <p>If one creates a bids basename using
 <a class="reference internal" href="mne_bids.make_bids_basename.html#mne_bids.make_bids_basename" title="mne_bids.make_bids_basename"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.make_bids_basename()</span></code></a>:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">bids_basename</span> <span class="o">=</span> <span class="n">make_bids_basename</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="s1">&#39;two&#39;</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="s1">&#39;mytask&#39;</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;data.csv&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">bids_basename</span> <span class="o">=</span> <span class="n">make_bids_basename</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="s1">&#39;two&#39;</span><span class="p">,</span> 
+<span class="go">                                       task=&#39;mytask&#39;, kind=&#39;channels&#39;, </span>
+<span class="go">                                       extension=&#39;.tsv&#39;)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">bids_basename</span><span class="p">)</span>
-<span class="go">sub-test_ses-two_task-mytask_data.csv</span>
+<span class="go">sub-test_ses-two_task-mytask_channels.tsv</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># Then, one can update this `BIDSPath` object in place</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">bids_basename</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">acquisition</span><span class="o">=</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;ieeg.vhdr&#39;</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bids_basename</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">acquisition</span><span class="o">=</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;ieeg&#39;</span><span class="p">,</span> 
+<span class="go">                         extension=&#39;.vhdr&#39;, task=None)</span>
 <span class="go">BIDSPath(sub-test_ses-two_acq-test_ieeg.vhdr)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">bids_basename</span><span class="p">)</span>
 <span class="go">sub-test_ses-two_acq-test_ieeg.vhdr</span>

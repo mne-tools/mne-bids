@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.path.parse_bids_filename &#8212; mne_bids 0.5.dev0 documentation</title>
+    <title>mne_bids.path.get_entities_from_fname &#8212; mne_bids 0.5.dev0 documentation</title>
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css" />
@@ -108,11 +108,11 @@
   <div class="row">
     <div class="body col-md-12 content" role="main">
       
-  <div class="section" id="mne-bids-path-parse-bids-filename">
-<h1>mne_bids.path.parse_bids_filename<a class="headerlink" href="#mne-bids-path-parse-bids-filename" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="mne-bids-path-get-entities-from-fname">
+<h1>mne_bids.path.get_entities_from_fname<a class="headerlink" href="#mne-bids-path-get-entities-from-fname" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt id="mne_bids.path.parse_bids_filename">
-<code class="sig-prename descclassname">mne_bids.path.</code><code class="sig-name descname">parse_bids_filename</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fname</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/path.html#parse_bids_filename"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.path.parse_bids_filename" title="Permalink to this definition">¶</a></dt>
+<dt id="mne_bids.path.get_entities_from_fname">
+<code class="sig-prename descclassname">mne_bids.path.</code><code class="sig-name descname">get_entities_from_fname</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fname</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/path.html#get_entities_from_fname"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.path.get_entities_from_fname" title="Permalink to this definition">¶</a></dt>
 <dd><p>Retrieve a dictionary of BIDS entities from a filename.</p>
 <p>Entities not present in <code class="docutils literal notranslate"><span class="pre">fname</span></code> will be assigned the value of <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 <dl class="field-list simple">
@@ -132,23 +132,23 @@ the values to the entity values encoded in the filename.</p>
 </dl>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">fname</span> <span class="o">=</span> <span class="s1">&#39;sub-01_ses-exp_run-02_meg.fif&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">parse_bids_filename</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
-<span class="go">{&#39;sub&#39;: &#39;01&#39;,</span>
-<span class="go">&#39;ses&#39;: &#39;exp&#39;,</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">get_entities_from_fname</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+<span class="go">{&#39;subject&#39;: &#39;01&#39;,</span>
+<span class="go">&#39;session&#39;: &#39;exp&#39;,</span>
 <span class="go">&#39;task&#39;: None,</span>
-<span class="go">&#39;acq&#39;: None,</span>
+<span class="go">&#39;acquisition&#39;: None,</span>
 <span class="go">&#39;run&#39;: &#39;02&#39;,</span>
-<span class="go">&#39;proc&#39;: None,</span>
+<span class="go">&#39;processing&#39;: None,</span>
 <span class="go">&#39;space&#39;: None,</span>
-<span class="go">&#39;rec&#39;: None,</span>
+<span class="go">&#39;recording&#39;: None,</span>
 <span class="go">&#39;split&#39;: None,</span>
-<span class="go">&#39;kind&#39;: None}</span>
+<span class="go">&#39;kind&#39;: &#39;meg&#39;}</span>
 </pre></div>
 </div>
 </dd></dl>
 
-<div class="section" id="examples-using-mne-bids-path-parse-bids-filename">
-<span id="sphx-glr-backreferences-mne-bids-path-parse-bids-filename"></span><h2>Examples using <code class="docutils literal notranslate"><span class="pre">mne_bids.path.parse_bids_filename</span></code><a class="headerlink" href="#examples-using-mne-bids-path-parse-bids-filename" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="examples-using-mne-bids-path-get-entities-from-fname">
+<span id="sphx-glr-backreferences-mne-bids-path-get-entities-from-fname"></span><h2>Examples using <code class="docutils literal notranslate"><span class="pre">mne_bids.path.get_entities_from_fname</span></code><a class="headerlink" href="#examples-using-mne-bids-path-get-entities-from-fname" title="Permalink to this headline">¶</a></h2>
 <div class="sphx-glr-clear"></div></div>
 </div>
 

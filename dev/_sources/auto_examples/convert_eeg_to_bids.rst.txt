@@ -137,15 +137,15 @@ of the directory tree.
     |--- files/
     |------ eegmmidb/
     |--------- 1.0.0/
-    |------------ S002/
-    |--------------- S002R12.edf
-    |--------------- S002R08.edf
-    |--------------- S002R04.edf
     |------------ S001/
     |--------------- S001R08.edf
-    |--------------- S001R02.edf
     |--------------- S001R04.edf
     |--------------- S001R12.edf
+    |--------------- S001R02.edf
+    |------------ S002/
+    |--------------- S002R04.edf
+    |--------------- S002R12.edf
+    |--------------- S002R08.edf
 
 
 
@@ -546,7 +546,7 @@ Now we just need to specify a few more EEG details to get something sensible:
         ]
     }
     Effective window size : 1.600 (s)
-    /home/circleci/project/mne_bids/write.py:499: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
+    /home/circleci/project/mne_bids/write.py:500: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
       warn('No line frequency found, defaulting to {} Hz '
     Reading 0 ... 9759  =      0.000 ...    60.994 secs...
 
@@ -609,19 +609,19 @@ What does our fresh BIDS directory look like?
  .. code-block:: none
 
     |eegmmidb_bids_eeg_example/
-    |--- participants.json
     |--- dataset_description.json
-    |--- README
+    |--- participants.json
     |--- participants.tsv
+    |--- README
     |--- sub-001/
     |------ sub-001_scans.tsv
     |------ eeg/
-    |--------- sub-001_coordsystem.json
-    |--------- sub-001_task-RestEyesClosed_events.tsv
+    |--------- sub-001_electrodes.tsv
     |--------- sub-001_task-RestEyesClosed_channels.tsv
+    |--------- sub-001_task-RestEyesClosed_events.tsv
     |--------- sub-001_task-RestEyesClosed_eeg.edf
     |--------- sub-001_task-RestEyesClosed_eeg.json
-    |--------- sub-001_electrodes.tsv
+    |--------- sub-001_coordsystem.json
 
 
 
