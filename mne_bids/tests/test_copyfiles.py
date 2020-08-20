@@ -179,17 +179,17 @@ def test_copyfile_kit():
     if op.exists(electrode_fname):
         task, run, key = None, None, 'ELP'
         elp_ext = '.pos'
-        elp_fname = make_bids_basename(subject=subject_id, session=session_id,
-                                       task=task, acquisition=key, run=run,
-                                       bids_root=output_path,
-                                       suffix='headshape%s' % elp_ext)
+        elp_fname = make_bids_basename(
+            subject=subject_id, session=session_id, task=task, run=run,
+            acquisition=key, kind='headshape', extension=elp_ext,
+            bids_root=output_path)
         assert op.exists(elp_fname)
 
     if op.exists(headshape_fname):
         task, run, key = None, None, 'HSP'
         hsp_ext = '.pos'
-        hsp_fname = make_bids_basename(subject=subject_id, session=session_id,
-                                       task=task, acquisition=key, run=run,
-                                       bids_root=output_path,
-                                       suffix='headshape%s' % hsp_ext)
+        hsp_fname = make_bids_basename(
+            subject=subject_id, session=session_id, task=task, run=run,
+            acquisition=key, kind='headshape', extension=hsp_ext,
+            bids_root=output_path)
         assert op.exists(hsp_fname)

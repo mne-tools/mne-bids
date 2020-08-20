@@ -109,7 +109,7 @@ def _test_anonymize(raw, bids_basename, events_fname=None, event_id=None):
     scans_tsv = make_bids_basename(subject=subject_id, session=session_id,
                                    bids_root=op.join(bids_root,
                                                      'sub-01', 'ses-01'),
-                                   suffix='scans.tsv')
+                                   kind='scans', extension='.tsv')
     data = _from_tsv(scans_tsv)
     if data['acq_time'] is not None and data['acq_time'][0] != 'n/a':
         assert datetime.strptime(data['acq_time'][0],
@@ -204,6 +204,28 @@ def test_get_anonymization_daysback():
             get_anonymization_daysback([raw, raw2, raw4])
 
 
+def test_create_fif(_bids_validate):
+    """Test functionality for very short raw file created from data."""
+    out_dir = _TempDir()
+    bids_root = _TempDir()
+    sfreq, n_points = 1024., int(1e6)
+    info = mne.create_info(['ch1', 'ch2', 'ch3', 'ch4', 'ch5'], sfreq,
+                           ['seeg'] * 5)
+    np.random.seed(99)
+    data = np.random.random((5, n_points)) * 1e-6
+    power_line_noise = \
+        np.sin(np.linspace(0, n_points / sfreq, n_points) * 2 * np.pi * 60)
+    raw = mne.io.RawArray(data + power_line_noise, info)
+    raw.save(op.join(out_dir, 'test-raw.fif'))
+    raw = mne.io.read_raw_fif(op.join(out_dir, 'test-raw.fif'))
+    write_raw_bids(raw, bids_basename, bids_root,
+                   verbose=False, overwrite=True)
+    raw2 = read_raw_bids(bids_basename=bids_basename, bids_root=bids_root,
+                         kind='ieeg')
+    assert raw2.info['line_freq'] == 60
+    _bids_validate(bids_root)
+
+
 @requires_version('pybv', '0.2.0')
 @pytest.mark.filterwarnings(warning_str['annotations_omitted'])
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
@@ -274,10 +296,10 @@ def test_fif(_bids_validate):
     bids_dir = op.join(bids_root, 'sub-%s' % subject_id,
                        'ses-%s' % session_id, 'eeg')
     sidecar_basename = bids_basename.copy()
-    for sidecar in ['channels.tsv', 'eeg.json',
-                    'eeg.vhdr', 'events.tsv']:
-        kind, ext = sidecar.split('.')
-        sidecar_basename.update(kind=kind, extension=ext)
+    for sidecar in ['channels.tsv', 'eeg.eeg', 'eeg.json', 'eeg.vhdr',
+                    'eeg.vmrk', 'events.tsv']:
+        kind, extension = sidecar.split('.')
+        sidecar_basename.update(kind=kind, extension=extension)
         assert op.isfile(op.join(bids_dir, sidecar_basename))
 
     raw2 = read_raw_bids(bids_basename=bids_basename, bids_root=bids_root,
@@ -314,7 +336,7 @@ def test_fif(_bids_validate):
     scans_tsv = make_bids_basename(subject=subject_id, session=session_id,
                                    bids_root=op.join(bids_root,
                                                      'sub-01', 'ses-01'),
-                                   suffix='scans.tsv')
+                                   kind='scans', extension='.tsv')
     data = _from_tsv(scans_tsv)
     assert data['acq_time'][0] == meas_date.strftime('%Y-%m-%dT%H:%M:%S')
 
@@ -530,7 +552,7 @@ def test_fif_anonymize(_bids_validate):
     scans_tsv = make_bids_basename(subject=subject_id, session=session_id,
                                    bids_root=op.join(bids_root,
                                                      'sub-01', 'ses-01'),
-                                   suffix='scans.tsv')
+                                   kind='scans', extension='.tsv')
     data = _from_tsv(scans_tsv)
 
     # anonymize using MNE manually
@@ -573,7 +595,7 @@ def test_kit(_bids_validate):
     marker_fname = make_bids_basename(
         subject=subject_id, session=session_id, task=task, run=run,
         bids_root=op.join(bids_root, 'sub-01', 'ses-01', 'meg'),
-        suffix='markers.sqd')
+        kind='markers', extension='.sqd')
     assert op.exists(marker_fname)
 
     # test anonymize
@@ -753,6 +775,7 @@ def test_vhdr(_bids_validate):
     channels_tsv_name = bids_basename_minimal.copy().update(bids_root=root,
                                                             kind=kind,
                                                             extension=ext)
+
     data = _from_tsv(channels_tsv_name)
     assert data['units'][data['name'].index('FP1')] == 'µV'
     assert data['units'][data['name'].index('CP5')] == 'n/a'
@@ -800,7 +823,7 @@ def test_vhdr(_bids_validate):
     write_raw_bids(raw, bids_basename, bids_root)
     electrodes_fpath = _find_matching_sidecar(
         bids_basename.copy().update(bids_root=bids_root),
-        suffix='electrodes.tsv')
+        kind='electrodes', extension='.tsv')
     tsv = _from_tsv(electrodes_fpath)
     assert len(tsv.get('impedance', {})) > 0
     assert tsv['impedance'][-3:] == ['n/a', 'n/a', 'n/a']
@@ -868,7 +891,8 @@ def test_edf(_bids_validate):
         write_raw_bids(raw, bids_fname, bids_root, overwrite=True)
         bids_fname.update(bids_root=bids_root)
         electrodes_fpath = _find_matching_sidecar(bids_fname,
-                                                  suffix='electrodes.tsv',
+                                                  kind='electrodes',
+                                                  extension='.tsv',
                                                   allow_fail=True)
         assert electrodes_fpath is None
 
@@ -881,7 +905,8 @@ def test_edf(_bids_validate):
     raw.set_montage(eeg_montage)
     write_raw_bids(raw, bids_fname, bids_root, overwrite=True)
     electrodes_fpath = _find_matching_sidecar(bids_fname,
-                                              suffix='electrodes.tsv')
+                                              kind='electrodes',
+                                              extension='.tsv')
     assert op.exists(electrodes_fpath)
     _bids_validate(bids_root)
 
@@ -890,7 +915,7 @@ def test_edf(_bids_validate):
         subject=subject_id, session=session_id,
         task=task, acquisition=acq, run=run,
         bids_root=op.join(bids_root, 'sub-01', 'ses-01', 'eeg'),
-        suffix='channels.tsv')
+        kind='channels', extension='.tsv')
     data = _from_tsv(channels_tsv)
     assert 'ElectroMyoGram' in data['description']
 
@@ -898,7 +923,7 @@ def test_edf(_bids_validate):
     scans_tsv = make_bids_basename(subject=subject_id, session=session_id,
                                    bids_root=op.join(bids_root,
                                                      'sub-01', 'ses-01'),
-                                   suffix='scans.tsv')
+                                   kind='scans', extension='.tsv')
     data = _from_tsv(scans_tsv)
     assert len(list(data.values())[0]) == 2
 
@@ -950,9 +975,11 @@ def test_edf(_bids_validate):
     # iEEG montages written from mne-python end up as "Other"
     bids_fname.update(bids_root=bids_root)
     electrodes_fname = _find_matching_sidecar(bids_fname,
-                                              suffix='electrodes.tsv')
-    coordsystem_fname = _find_matching_sidecar(bids_fname,
-                                               suffix='coordsystem.json')
+                                              kind='electrodes',
+                                              extension='.tsv')
+    coordsystem_fname = _find_matching_sidecar(bids_fname, bids_root,
+                                               kind='coordsystem',
+                                               extension='.json')
     assert 'space-mri' in electrodes_fname
     assert 'space-mri' in coordsystem_fname
     with open(coordsystem_fname, 'r') as fin:
@@ -993,8 +1020,8 @@ def test_bdf(_bids_validate):
     # we will change the channel type to MISC and overwrite the channels file
     bids_fname = bids_basename.copy().update(kind='eeg', extension='.bdf',
                                              bids_root=bids_root)
-    channels_fname = _find_matching_sidecar(bids_fname,
-                                            'channels.tsv')
+    channels_fname = _find_matching_sidecar(bids_fname, kind='channels',
+                                            extension='.tsv')
     channels_dict = _from_tsv(channels_fname)
     channels_dict['type'][test_ch_idx] = 'MISC'
     _to_tsv(channels_dict, channels_fname)
@@ -1125,8 +1152,9 @@ def test_write_anat(_bids_validate):
                                   point_list)
     sidecar_basename = make_bids_basename(subject='01', session='01',
                                           acquisition='01',
-                                          suffix='T1w.nii.gz',
-                                          bids_root=bids_root)
+                                          bids_root=bids_root,
+                                          kind='T1w', extension='.nii.gz')
+
     # test the actual values of the voxels (no floating points)
     for i, point in enumerate([(66, 51, 46), (41, 32, 74), (17, 53, 47)]):
         coords = anat_dict[point_list[i]]
@@ -1135,7 +1163,8 @@ def test_write_anat(_bids_validate):
 
         # BONUS: test also that we can find the matching sidecar
         side_fname = _find_matching_sidecar(sidecar_basename,
-                                            'T1w.json')
+                                            kind='T1w',
+                                            extension='.json')
         assert op.split(side_fname)[-1] == 'sub-01_ses-01_acq-01_T1w.json'
 
     # Now try some anat writing that will fail
@@ -1155,8 +1184,8 @@ def test_write_anat(_bids_validate):
     write_anat(bids_root, subject_id, t1w_mgh, session_id)
     # Assert that we truly cannot find a sidecar
     with pytest.raises(RuntimeError, match='Did not find any'):
-        _find_matching_sidecar(sidecar_basename,
-                               'T1w.json')
+        _find_matching_sidecar(sidecar_basename, kind='T1w',
+                               extension='.json')
 
     # trans has a wrong type
     wrong_type = 1

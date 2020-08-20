@@ -53,7 +53,8 @@ Bug
 - Fix :func:`mne_bids.write_raw_bids` to output BTI and CTF data in the scans.tsv according to the BIDS specification by `Adam Li`_ (`#465 <https://github.com/mne-tools/mne-bids/pull/465>`_)
 - :func:`mne_bids.read_raw_bids` now populates the list of bad channels based on ``*_channels.tsv`` if (and only if) a ``status`` column is present, ignoring similar metadata stored in raw file (which will still be used if **no** ``status`` column is present in ``*_channels.tsv``), by `Richard Höchenberger`_ (`#499 <https://github.com/mne-tools/mne-bids/pull/499>`_)
 - Ensure that ``Raw.info['bads']`` returned by :func:`mne_bids.read_raw_bids` is always a list, by `Richard Höchenberger`_ (`#501 <https://github.com/mne-tools/mne-bids/pull/501>`_)
-
+- :func:`mne_bids.write_raw_bids` now ensures that **all** parts of the :class:`mne.io.Raw` instance stay in sync when using anonymization to shift dates, e.g. ``raw.annotations``, by `Richard Höchenberger`_ (`#504 <https://github.com/mne-tools/mne-bids/pull/504>`_)
+- Fix :func:`mne_bids.write_raw_bids` failed BIDS validator for ``raw.info['dig'] = []`` and for data that has too few channels to find powerline info, by `Alex Rockhill`_ (`#505 <https://github.com/mne-tools/mne-bids/pull/505>`_)
 
 API
 ~~~
@@ -68,8 +69,11 @@ API
 - :func:`mne_bids.make_dataset_description` now takes the argument `overwrite` which will reset all fields if `True`. If `False`, user-provided fields will no longer be overwritten by :func:`mne_bids.write_raw_bids` when its `overwrite` argument is `True` unless new values are supplied, by `Alex Rockhill`_ (`#478 <https://github.com/mne-tools/mne-bids/pull/478>`_)
 - :func:`mne_bids.make_report` is now available from the `mne_bids` namespace that creates a string output of a summary of the BIDS dataset. In addition, the command line interface allows one to call `make_report`, by `Adam Li`_ (`#457 <https://github.com/mne-tools/mne-bids/pull/457>`_)
 - Added namespace :code:`mne_bids.path` which hosts path-like functionality for MNE-BIDS by `Adam Li`_ (`#483 <https://github.com/mne-tools/mne-bids/pull/483>`_)
-- A function for retrieval of BIDS entity values from a filename, :func:`mne_bids.path.parse_bids_filename`, is now part of the public API (it used to be a private function called ``mne_bids.path._parse_bids_filename``), by `Richard Höchenberger`_ (`#487 <https://github.com/mne-tools/mne-bids/pull/487>`_)
+- A function for retrieval of BIDS entity values from a filename, :func:`mne_bids.path.get_entities_from_fname`, is now part of the public API (it used to be a private function called ``mne_bids.path._parse_bids_filename``), by `Richard Höchenberger`_ (`#487 <https://github.com/mne-tools/mne-bids/pull/487>`_)
 - Entity names passed to :func:`mne_bids.get_entity_vals` must now be in the "long" for, e.g. ``subject`` instead of ``sub`` etc., by `Richard Höchenberger`_ (`#501 <https://github.com/mne-tools/mne-bids/pull/501>`_)
+- Change :func:`mne_bids.path.get_entities_from_fname` to use full entity kwargs (e.g. 'subject' instead of 'sub') in the return dictionary structure by `Adam Li`_ (`#496 <https://github.com/mne-tools/mne-bids/pull/496>`_)
+- Change :func:`mne_bids.path.BIDSPath` and :func:`mne_bids.make_bids_basename` to use explicitly ``kind`` and ``extension`` instead of ``suffix`` in kwargs by `Adam Li`_ (`#496 <https://github.com/mne-tools/mne-bids/pull/496>`_)
+
 
 .. _changes_0_4:
 

@@ -31,7 +31,8 @@ from mne_bids import make_bids_folders, make_bids_basename
 # final file path. Omitted keys will not be included in the file path.
 
 bids_basename = make_bids_basename(subject='test', session='two',
-                                   task='mytask', suffix='events.tsv')
+                                   task='mytask', kind='events',
+                                   extension='.tsv')
 print(bids_basename)
 
 ###############################################################################

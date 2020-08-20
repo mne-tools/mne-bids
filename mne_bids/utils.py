@@ -133,8 +133,8 @@ def _check_types(variables):
     """Make sure all vars are str or None."""
     for var in variables:
         if not isinstance(var, (str, type(None))):
-            raise ValueError("You supplied a value of type %s, where a "
-                             "string or None was expected." % type(var))
+            raise ValueError(f"You supplied a value of type {type(var)}, "
+                             f"where a string or None was expected.")
 
 
 def _write_json(fname, dictionary, overwrite=False, verbose=False):
@@ -183,7 +183,7 @@ def _check_key_val(key, val):
     """Perform checks on a value to make sure it adheres to the spec."""
     if any(ii in val for ii in ['-', '_', '/']):
         raise ValueError("Unallowed `-`, `_`, or `/` found in key/value pair"
-                         " %s: %s" % (key, val))
+                         f" {key}: {val}")
     return key, val
 
 
@@ -220,10 +220,10 @@ def _read_events(events_data, event_id, raw, ext, verbose=None):
     elif isinstance(events_data, np.ndarray):
         if events_data.ndim != 2:
             raise ValueError('Events must have two dimensions, '
-                             'found %s' % events_data.ndim)
+                             f'found {events_data.ndim}')
         if events_data.shape[1] != 3:
             raise ValueError('Events must have second dimension of length 3, '
-                             'found %s' % events_data.shape[1])
+                             f'found {events_data.shape[1]}')
         events = events_data
     elif 'stim' in raw:
         events = find_events(raw, min_duration=0.001, initial_event=True,
@@ -344,19 +344,16 @@ def _estimate_line_freq(raw, verbose=False):
     if sfreq < 100:
         return None
 
-    # setup picks of the data to get at least 5 channels
-    pick_dict = {"meg": True}
-    picks = list(pick_types(raw.info, exclude='bads', **pick_dict))
-    if len(picks) < 5:
-        pick_dict = {"eeg": True}
-        picks = pick_types(raw.info, exclude='bads', **pick_dict)
-    if len(picks) < 5:
-        pick_dict = {"ecog": True}
-        picks = pick_types(raw.info, exclude='bads', **pick_dict)
-    if len(picks) < 5:
-        pick_dict = {"seeg": True}
-        picks = pick_types(raw.info, exclude='bads', **pick_dict)
-    if len(picks) < 5:
+    # setup picks of the data to get at least one channel
+    for kind in ('meg', 'eeg', 'ecog', 'seeg'):
+        pick_dict = {kind: True}
+        picks = list(pick_types(raw.info, exclude='bads', **pick_dict))
+        if picks:
+            # get just five channels of data at the most to estimate on
+            picks = picks[:min([len(picks), 5])]
+            break
+
+    if not picks:
         warn("Estimation of line frequency only "
              "supports 'meg', 'eeg', 'ecog', or 'seeg'.")
         return None
@@ -365,9 +362,9 @@ def _estimate_line_freq(raw, verbose=False):
     tmin = 0
     tmax = int(min(len(raw.times), 10 * sfreq))
 
-    # get just five channels of data to estimate on
+    # get the data
     data = raw.get_data(start=tmin, stop=tmax,
-                        picks=picks, return_times=False)[0:5, :]
+                        picks=picks, return_times=False)
 
     # run a multi-taper FFT between Power Line Frequencies of interest
     psds, freqs = psd_array_welch(data, fmin=49, fmax=61,
@@ -375,7 +372,7 @@ def _estimate_line_freq(raw, verbose=False):
     usa_ind = np.where(freqs == min(freqs, key=lambda x: abs(x - 60)))[0]
     eu_ind = np.where(freqs == min(freqs, key=lambda x: abs(x - 50)))[0]
 
-    # get the average power within those frequency bands
+    # get the average and standard deviation power within those frequency bands
     usa_psd = np.mean((psds[..., usa_ind]))
     eu_psd = np.mean((psds[..., eu_ind]))
 
@@ -383,11 +380,7 @@ def _estimate_line_freq(raw, verbose=False):
         print("EU (i.e. 50 Hz) PSD is {} and "
               "USA (i.e. 60 Hz) PSD is {}".format(eu_psd, usa_psd))
 
-    if usa_psd > eu_psd:
-        line_freq = 60
-    else:
-        line_freq = 50
-    return line_freq
+    return 60 if usa_psd > eu_psd else 50
 
 
 def _scale_coord_to_meters(coord, unit):
@@ -441,11 +434,11 @@ def _check_anonymize(anonymize, raw, ext):
                  'is after 1925, which is not recommended by BIDS.'
                  'The minimum `daysback` value for changing the '
                  'measurement date of this data to before this date '
-                 'is %s' % daysback_min)
+                 f'is {daysback_min}')
         if ext == '.fif' and daysback > daysback_max:
             raise ValueError('`daysback` exceeds maximum value MNE '
                              'is able to store in FIF format, must '
-                             'be less than %i' % daysback_max)
+                             f'be less than {daysback_max}')
     keep_his = anonymize['keep_his'] if 'keep_his' in anonymize else False
     return daysback, keep_his
 
