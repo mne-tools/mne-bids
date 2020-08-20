@@ -492,9 +492,13 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, overwrite=False,
     powerlinefrequency = raw.info.get('line_freq', None)
     if powerlinefrequency is None:
         powerlinefrequency = _estimate_line_freq(raw)
-        warn('No line frequency found, defaulting to {} Hz '
-             'estimated from multi-taper FFT '
-             'on 10 seconds of data.'.format(powerlinefrequency))
+        if powerlinefrequency is None:
+            powerlinefrequency = 'n/a'  # must be 'n/a' for validator
+            warn('Cannot determine line frequency')
+        else:
+            warn('No line frequency found, defaulting to {} Hz '
+                 'estimated from multi-taper FFT '
+                 'on 10 seconds of data.'.format(powerlinefrequency))
 
     if isinstance(raw, BaseRaw):
         rec_type = 'continuous'
@@ -1073,7 +1077,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     elif kind in ['eeg', 'ieeg']:
         # We only write electrodes.tsv and accompanying coordsystem.json
         # if we have an available DigMontage
-        if raw.info['dig'] is not None:
+        if raw.info['dig'] is not None and raw.info['dig']:
             _write_dig_bids(electrodes_fname, coordsystem_fname, data_path,
                             raw, kind, overwrite, verbose)
     else:
