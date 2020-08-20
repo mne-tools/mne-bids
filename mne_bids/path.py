@@ -1018,7 +1018,6 @@ def get_matched_basenames(bids_root, *, subject=None, session=None, task=None,
         matches were found.
 
     """
-
     bids_root = Path(bids_root)
 
     fnames = bids_root.rglob('*.*')
