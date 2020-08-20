@@ -255,6 +255,7 @@ class BIDSPath(object):
             # Ensure that run is a string
             entities['split'] = '{:02}'.format(split)
 
+        # ensure extension starts with a '.'
         extension = entities.get('extension')
         if extension is not None:
             if not extension.startswith('.'):
