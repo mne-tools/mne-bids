@@ -106,10 +106,10 @@ def _test_anonymize(raw, bids_basename, events_fname=None, event_id=None):
                    events_data=events_fname,
                    event_id=event_id, anonymize=dict(daysback=33000),
                    overwrite=False)
-    scans_tsv = make_bids_basename(subject=subject_id, session=session_id,
-                                   bids_root=op.join(bids_root,
-                                                     'sub-01', 'ses-01'),
-                                   kind='scans', extension='.tsv')
+    scans_tsv = make_bids_basename(
+        subject=subject_id, session=session_id,
+        kind='scans', extension='.tsv',
+        bids_root=op.join(bids_root, 'sub-01', 'ses-01'))
     data = _from_tsv(scans_tsv)
     if data['acq_time'] is not None and data['acq_time'][0] != 'n/a':
         assert datetime.strptime(data['acq_time'][0],
@@ -333,10 +333,10 @@ def test_fif(_bids_validate):
         write_raw_bids(raw, er_bids_basename_bad, bids_root, overwrite=False)
 
     # test that the acquisition time was written properly
-    scans_tsv = make_bids_basename(subject=subject_id, session=session_id,
-                                   bids_root=op.join(bids_root,
-                                                     'sub-01', 'ses-01'),
-                                   kind='scans', extension='.tsv')
+    scans_tsv = make_bids_basename(
+        subject=subject_id, session=session_id,
+        kind='scans', extension='.tsv',
+        bids_root=op.join(bids_root, 'sub-01', 'ses-01'))
     data = _from_tsv(scans_tsv)
     assert data['acq_time'][0] == meas_date.strftime('%Y-%m-%dT%H:%M:%S')
 
@@ -370,7 +370,7 @@ def test_fif(_bids_validate):
         }
     }
     _update_sidecar(participants_json_fpath, 'subject_test_col1', json_field)
-    # bids bids_root should still be valid because json reflects changes in tsv
+    # bids root should still be valid because json reflects changes in tsv
     _bids_validate(bids_root)
     write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
     data = _from_tsv(participants_tsv)
@@ -549,10 +549,10 @@ def test_fif_anonymize(_bids_validate):
                    event_id=event_id,
                    anonymize=dict(daysback=30000, keep_his=True),
                    overwrite=False)
-    scans_tsv = make_bids_basename(subject=subject_id, session=session_id,
-                                   bids_root=op.join(bids_root,
-                                                     'sub-01', 'ses-01'),
-                                   kind='scans', extension='.tsv')
+    scans_tsv = make_bids_basename(
+        subject=subject_id, session=session_id,
+        kind='scans', extension='.tsv',
+        bids_root=op.join(bids_root, 'sub-01', 'ses-01'))
     data = _from_tsv(scans_tsv)
 
     # anonymize using MNE manually
@@ -920,10 +920,10 @@ def test_edf(_bids_validate):
     assert 'ElectroMyoGram' in data['description']
 
     # check that the scans list contains two scans
-    scans_tsv = make_bids_basename(subject=subject_id, session=session_id,
-                                   bids_root=op.join(bids_root,
-                                                     'sub-01', 'ses-01'),
-                                   kind='scans', extension='.tsv')
+    scans_tsv = make_bids_basename(
+        subject=subject_id, session=session_id,
+        kind='scans', extension='.tsv',
+        bids_root=op.join(bids_root, 'sub-01', 'ses-01'))
     data = _from_tsv(scans_tsv)
     assert len(list(data.values())[0]) == 2
 

@@ -13,9 +13,9 @@ from mne.utils import warn
 
 from mne_bids.config import DOI, ALLOWED_MODALITY_KINDS
 from mne_bids.tsv_handler import _from_tsv
-from mne_bids.path import (get_kinds, get_entity_vals, _parse_ext,
-                           _find_matching_sidecar, get_entities_from_fname,
-                           BIDSPath)
+from mne_bids.path import (get_kinds, get_entity_vals, BIDSPath,
+                           _parse_ext, _find_matching_sidecar,
+                           get_entities_from_fname)
 
 # functions to be used inside Template strings
 FUNCTION_TEMPLATE = """{{py:  
@@ -151,8 +151,8 @@ def _summarize_dataset(bids_root):
     template_dict : dict
         A dictionary of values for various template strings.
     """
-    dataset_descrip_fpath = op.join(
-        bids_root, 'dataset_description.json')
+    dataset_descrip_fpath = op.join(bids_root,
+                                    'dataset_description.json')
     if not op.exists(dataset_descrip_fpath):
         return dict()
 

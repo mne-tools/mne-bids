@@ -902,7 +902,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     Returns
     -------
     bids_root : str
-        The path of the bids_root of the BIDS compatible folder.
+        The path of the root of the BIDS compatible folder.
 
     Notes
     -----
@@ -1001,12 +1001,9 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     # as it does not make any advanced check.
 
     # create *_scans.tsv
-    bids_path = BIDSPath(subject=subject_id,
-                         session=session_id,
-                         task=None,
-                         bids_root=bids_root,
-                         kind='scans',
-                         extension='.tsv')
+    bids_path = BIDSPath(subject=subject_id, session=session_id,
+                         task=None, bids_root=bids_root,
+                         kind='scans', extension='.tsv')
     scans_fname = op.join(ses_path, bids_path.basename)
 
     # create *_coordsystem.json

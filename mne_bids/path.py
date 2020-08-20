@@ -86,7 +86,8 @@ class BIDSPath(object):
     Examples
     --------
     >>> bids_basename = make_bids_basename(subject='test', session='two',
-                                           task='mytask', suffix='ieeg.edf')
+                                           task='mytask', kind='ieeg',
+                                           extension='.edf'))
     >>> print(bids_basename)
     sub-test_ses-two_task-mytask_ieeg.edf
     >>> bids_basename
@@ -106,7 +107,7 @@ class BIDSPath(object):
 
     def __init__(self, subject=None, session=None, task=None,
                  acquisition=None, run=None, processing=None,
-                 recording=None, space=None,
+                 recording=None, space=None, split=None,
                  kind=None, extension=None, bids_root=None):
         if all(ii is None for ii in [subject, session, task,
                                      acquisition, run, processing,
@@ -115,8 +116,8 @@ class BIDSPath(object):
 
         self.update(subject=subject, session=session, task=task,
                     acquisition=acquisition, run=run, processing=processing,
-                    recording=recording, space=space, bids_root=bids_root,
-                    kind=kind, extension=extension)
+                    recording=recording, space=space, split=split,
+                    bids_root=bids_root, kind=kind, extension=extension)
 
     @property
     def entities(self):
@@ -130,6 +131,7 @@ class BIDSPath(object):
             ('processing', self.processing),
             ('space', self.space),
             ('recording', self.recording),
+            ('split', self.split),
             ('kind', self.kind),
         ])
 
@@ -247,7 +249,7 @@ class BIDSPath(object):
             Allowed BIDS path entities:
             'subject', 'session', 'task', 'acquisition',
             'processing', 'run', 'recording', 'space',
-            'kind', 'extension', 'bids_root'
+            'split', 'kind', 'extension', 'bids_root'
 
         Returns
         -------

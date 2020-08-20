@@ -360,7 +360,7 @@ def test_bids_path(return_bids_test_dir):
 
     # test repr
     bids_path = make_bids_basename(subject='01', session='02',
-                                   task='03', suffix='ieeg',
+                                   task='03', kind='ieeg',
                                    extension='.edf')
     assert repr(bids_path) == ('BIDSPath(\n'
                                'bids_root: None\n'
