@@ -261,19 +261,6 @@ class BIDSPath(object):
             if not extension.startswith('.'):
                 extension = f'.{extension}'
                 entities['extension'] = extension
-            # check validity of the extension
-            if extension not in ALLOWED_FILENAME_EXTENSIONS:
-                raise ValueError(f'Extension {extension} is not '
-                                 f'allowed. Use one of these extensions '
-                                 f'{ALLOWED_FILENAME_EXTENSIONS}.')
-
-        # error check kind
-        kind = entities.get('kind')
-        if kind is not None:
-            if kind not in ALLOWED_FILENAME_KINDS:
-                raise ValueError(f'Kind {kind} is not allowed. '
-                                 f'Use one of these kinds '
-                                 f'{ALLOWED_FILENAME_KINDS}.')
 
         # error check entities
         for key, val in entities.items():
@@ -294,14 +281,33 @@ class BIDSPath(object):
                 val = str(val)
             setattr(self, key, val)
 
-        self._check(with_emptyroom=False)
+        self._check(deep=False)
         return self
 
-    def _check(self, with_emptyroom=True):
-        # check the task/session of er basename
+    def _check(self, deep=True):
+        """Deep check or not of the instance."""
         self.basename  # run basename to check validity of arguments
-        if with_emptyroom and self.subject == 'emptyroom':
-            _check_empty_room_basename(self)
+
+        if deep:
+            if self.subject == 'emptyroom':
+                _check_empty_room_basename(self)
+
+            # ensure extension starts with a '.'
+            extension = self.extension
+            if extension is not None:
+                # check validity of the extension
+                if extension not in ALLOWED_FILENAME_EXTENSIONS:
+                    raise ValueError(f'Extension {extension} is not '
+                                     f'allowed. Use one of these extensions '
+                                     f'{ALLOWED_FILENAME_EXTENSIONS}.')
+
+            # error check kind
+            kind = self.kind
+            if kind is not None:
+                if kind not in ALLOWED_FILENAME_KINDS:
+                    raise ValueError(f'Kind {kind} is not allowed. '
+                                     f'Use one of these kinds '
+                                     f'{ALLOWED_FILENAME_KINDS}.')
 
 
 def print_dir_tree(folder, max_depth=None):
@@ -452,6 +458,8 @@ def get_entities_from_fname(fname):
     'split': None,
     'kind': 'meg'}
     """
+    fname = str(fname)  # to accept also BIDSPath or Path instances
+
     # filename keywords to the BIDS entity mapping
     entity_vals = list(ALLOWED_PATH_ENTITIES_SHORT.values())
     fname_vals = list(ALLOWED_PATH_ENTITIES_SHORT.keys())

@@ -312,15 +312,23 @@ def test_bids_path(return_bids_test_dir):
     with pytest.raises(ValueError, match='Unallowed*'):
         bids_basename.update(subject=subject_id + '-')
 
-    # error check on kind in update
+    # error check on kind in make_bids_basename (deep check)
     kind = 'meeg'
     with pytest.raises(ValueError, match=f'Kind {kind} is not'):
-        bids_basename.update(kind=kind)
+        make_bids_basename(subject=subject_id, session=session_id,
+                           kind=kind)
 
-    # error check on extension in update
-    ext = '.mat'
-    with pytest.raises(ValueError, match=f'Extension {ext} is not'):
-        bids_basename.update(extension=ext)
+    # do not error check kind in update (not deep check)
+    bids_basename.update(kind='foobar')
+
+    # error check on extension in make_bids_basename (deep check)
+    extension = '.mat'
+    with pytest.raises(ValueError, match=f'Extension {extension} is not'):
+        make_bids_basename(subject=subject_id, session=session_id,
+                           extension=extension)
+
+    # do not error extension in update (not deep check)
+    bids_basename.update(extension='.foo')
 
     # test repr
     bids_path = make_bids_basename(subject='01', session='02',
