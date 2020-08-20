@@ -290,7 +290,7 @@ def _coordsystem_json(raw, unit, orient, coordsystem_name, fname,
     _write_json(fname, fid_json, overwrite, verbose)
 
 
-def _write_dig_bids(electrodes_fname, coordsystem_fname, data_path,
+def _write_dig_bids(electrodes_fname, coordsystem_fname, bids_root,
                     raw, kind, overwrite=False, verbose=True):
     """Write BIDS formatted DigMontage from Raw instance.
 
@@ -303,7 +303,7 @@ def _write_dig_bids(electrodes_fname, coordsystem_fname, data_path,
         Filename to save the electrodes.tsv to.
     coordsystem_fname : str
         Filename to save the coordsystem.json to.
-    data_path : str | pathlib.Path
+    bids_root : str | pathlib.Path
         Path to the data directory
     raw : instance of Raw
         The data as MNE-Python Raw object.
@@ -349,12 +349,12 @@ def _write_dig_bids(electrodes_fname, coordsystem_fname, data_path,
                     subject=subject_id, session=session_id,
                     acquisition=acquisition, space=coord_frame,
                     kind='coordsystem', extension='.json',
-                    bids_root=data_path)
+                    bids_root=bids_root)
                 electrodes_fname = make_bids_basename(
                     subject=subject_id, session=session_id,
                     acquisition=acquisition, space=coord_frame,
                     kind='electrodes', extension='.tsv',
-                    bids_root=data_path)
+                    bids_root=bids_root)
                 coord_frame = 'Other'
 
             # Now write the data to the elec coords and the coordsystem

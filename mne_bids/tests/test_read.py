@@ -790,9 +790,8 @@ def test_handle_channel_type_casing():
 
     subject_path = op.join(bids_root, f'sub-{subject_id}', f'ses-{session_id}',
                            'meg')
-    bids_channels_fname = (bids_basename.copy().update(bids_root=subject_path,
-                                                       kind='channels',
-                                                       extension='.tsv'))
+    ch_path = bids_basename.copy().update(kind='channels', extension='.tsv')
+    bids_channels_fname = op.join(subject_path, ch_path.basename)
 
     # Convert all channel type entries to lowercase.
     channels_data = _from_tsv(bids_channels_fname)
@@ -806,13 +805,14 @@ def test_handle_channel_type_casing():
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_bads_reading():
     bids_root = _TempDir()
-    channels_fname = (bids_basename.copy()
-                      .update(bids_root=op.join(bids_root, 'sub-01',
-                                                'ses-01', 'meg'),
-                              kind='channels', extension='.tsv'))
+    data_path = make_bids_folders(
+        subject=subject_id, session=session_id, kind='meg',
+        bids_root=bids_root, make_dir=False)
+    ch_path = (bids_basename.copy().update(kind='channels',
+                                           extension='.tsv'))
+    channels_fname = op.join(data_path, ch_path.basename)
     raw_bids_fname = (bids_basename.copy()
-                      .update(bids_root=op.join(bids_root, 'sub-01',
-                                                'ses-01', 'meg'),
+                      .update(bids_root=bids_root,
                               kind='meg', extension='.fif'))
     raw = mne.io.read_raw_fif(raw_fname, verbose=False)
 

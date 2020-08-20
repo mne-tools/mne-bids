@@ -965,7 +965,8 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     acquisition, space = bids_basename.acquisition, bids_basename.space
     kind = _handle_kind(raw)
 
-    bids_fname = bids_basename.copy().update(kind=kind, extension=ext)
+    bids_fname = bids_basename.copy().update(kind=kind, extension=ext,
+                                             bids_root=bids_root)
 
     # check whether the info provided indicates that the data is emptyroom
     # data
@@ -1015,23 +1016,25 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     bids_path.update(kind='electrodes', extension='.tsv')
     electrodes_fname = op.join(data_path, bids_path.basename)
 
-    # For the remaining files, we can use BIDSPath to alter.
+    # create paths to the README, and 'participants' files
     readme_fname = op.join(bids_root, 'README')
     participants_tsv_fname = op.join(bids_root, 'participants.tsv')
     participants_json_fname = participants_tsv_fname.replace('tsv', 'json')
 
-    sidecar_fname = bids_fname.copy().update(bids_root=data_path,
-                                             kind=kind, extension='.json')
+    # For the remaining files, we can use BIDSPath to alter.
+    sidecar_path = bids_fname.copy().update(kind=kind, extension='.json')
+    sidecar_fname = op.join(data_path, sidecar_path.basename)
+    sidecar_path.update(kind='events', extension='.tsv')
+    events_fname = op.join(data_path, sidecar_path.basename)
+    sidecar_path.update(kind='channels', extension='.tsv')
+    channels_fname = op.join(data_path, sidecar_path.basename)
 
-    events_fname = sidecar_fname.copy().update(kind='events',
-                                               extension='.tsv')
-    channels_fname = sidecar_fname.copy().update(kind='channels',
-                                                 extension='.tsv')
-
+    print('OUTSIDE HERE ', ext)
     if ext not in ['.fif', '.ds', '.vhdr', '.edf', '.bdf', '.set', '.con',
                    '.sqd']:
+        print('HERE1', ext)
         bids_raw_folder = str(bids_fname).split(".")[0]
-        bids_fname = bids_fname.update(bids_root=bids_raw_folder)
+        # bids_fname = bids_fname.update(bids_root=bids_raw_folder)
 
     # Anonymize
     convert = False
@@ -1072,7 +1075,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
         # We only write electrodes.tsv and accompanying coordsystem.json
         # if we have an available DigMontage
         if raw.info['dig'] is not None and raw.info['dig']:
-            _write_dig_bids(electrodes_fname, coordsystem_fname, data_path,
+            _write_dig_bids(electrodes_fname, coordsystem_fname, bids_root,
                             raw, kind, overwrite, verbose)
     else:
         logger.warning('Writing of electrodes.tsv '
@@ -1087,17 +1090,13 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     make_dataset_description(bids_root, name=" ", overwrite=overwrite,
                              verbose=verbose)
 
+    # write sidecar json and channels tsv files
     _sidecar_json(raw, task, manufacturer, sidecar_fname, kind, overwrite,
                   verbose)
     _channels_tsv(raw, channels_fname, overwrite, verbose)
 
-    print(bids_fname)
+    # create parent directories if needed
     _mkdir_p(os.path.dirname(op.join(data_path, bids_fname)))
-
-    # set the raw file name to now be the absolute path to ensure the files
-    # are placed in the right location
-    bids_fname = bids_fname.update(bids_root=data_path)
-
     if os.path.exists(bids_fname) and not overwrite:
         raise FileExistsError(f'"{bids_fname}" already exists. '  # noqa: F821
                               f'Please set overwrite to True.')
@@ -1113,13 +1112,14 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
                          f"{ALLOWED_MODALITY_EXTENSIONS['meg']}")
 
     if not convert and verbose:
-        print('Copying data files to %s' % op.splitext(bids_fname)[0])
+        print(f'Copying data files to {op.splitext(bids_fname)[0]} '
+              f'with extension {ext}')
 
     # File saving branching logic
     if convert:
         if kind == 'meg':
             if ext == '.pdf':
-                bids_fname = op.join(data_path, op.basename(bids_fname))
+                bids_fname.update(extension='.fif')
             _write_raw_fif(raw, bids_fname)
         else:
             if verbose:
@@ -1139,6 +1139,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
         copyfile_eeglab(raw_fname, bids_fname)
     elif ext == '.pdf':
         bids_fname = op.join(data_path, bids_raw_folder)
+        _mkdir_p(bids_fname)
         copyfile_bti(raw_orig, bids_fname)
     elif ext in ['.con', '.sqd']:
         copyfile_kit(raw_fname, bids_fname, subject_id, session_id,
@@ -1268,7 +1269,7 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
     # this needs to be a string, since nibabel assumes a string input
     t1w_basename = make_bids_basename(subject=subject, session=session,
                                       acquisition=acquisition,
-                                      bids_root=anat_dir,
+                                      bids_root=bids_root,
                                       kind='T1w', extension='.nii.gz')
 
     # Check if we have necessary conditions for writing a sidecar JSON

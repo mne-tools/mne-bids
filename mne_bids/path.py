@@ -16,7 +16,7 @@ from mne.utils import warn, logger
 from mne_bids.config import (
     ALLOWED_PATH_ENTITIES, ALLOWED_MODALITY_KINDS,
     ALLOWED_FILENAME_EXTENSIONS, ALLOWED_FILENAME_KINDS,
-    ALLOWED_PATH_ENTITIES_SHORT)
+    ALLOWED_PATH_ENTITIES_SHORT, ALLOWED_MODALITY_EXTENSIONS)
 from mne_bids.utils import (_check_key_val, _check_empty_room_basename,
                             _check_types, param_regex,
                             _ensure_tuple)
@@ -103,6 +103,14 @@ class BIDSPath(object):
     /bids_dataset
     >>> print(new_basename.basename)
     sub-test2_ses-one_task-mytask_ieeg.edf
+    >>> print(new_basename)
+    /bids_dataset/sub-test2/ses-one/ieeg/sub-test2_ses-one_task-mytask_ieeg.edf
+    >>> new_basename.update(session=None)
+    >>> print(new_basename)
+    /bids_dataset/sub-test2/ieeg/sub-test2_task-mytask_ieeg.edf
+    >>> new_basename.update(kind='scans', extension='.tsv')
+    >>> print(new_basename)
+    /bids_dataset/sub-test2/sub-test2_scans.tsv
     """
 
     def __init__(self, subject=None, session=None, task=None,
@@ -168,8 +176,10 @@ class BIDSPath(object):
         1. ``bids_root`` is None: A warning is shown
         to the user and it returns the ``basename``.
 
-        2. ``bids_root`` is not None: The full file path
-        is inferred, or an error is raised if not possible.
+        2. ``bids_root`` is not None: The full file path will be
+        returned based on the entities passed in, or is inferred.
+        An error is raised if the inference finds more then one
+        matching paths based on the BIDS path entities.
 
         Returns
         -------
@@ -189,22 +199,58 @@ class BIDSPath(object):
             warn(msg)
             return self.basename
 
-        # allows functionality as a file path that doesn't
-        # exist yet (e.g. in write_raw_bids)
-        # TODO: HACK to allow file paths that don't exist yet.
-        if self.kind is not None and self.extension is not None:
-            return op.join(self.bids_root, self.basename)
+        # create the data path based on entities available
+        data_path = self.bids_root
+        if self.subject is not None:
+            data_path = op.join(data_path, f'sub-{self.subject}')
+        if self.session is not None:
+            data_path = op.join(data_path, f'ses-{self.session}')
 
+        # file-kind will allow 'meg', 'eeg', 'ieeg', 'anat'
         if self.kind is None:
             msg = ('No kind was provided, and it cannot be '
                    'automatically inferred. Please set kind to one of '
                    f'{ALLOWED_FILENAME_KINDS}.')
             raise RuntimeError(msg)
+        elif self.kind in ALLOWED_MODALITY_KINDS:
+            data_path = op.join(data_path, self.kind)
+        elif self.kind == 'T1w':
+            data_path = op.join(data_path, 'anat')
 
-        bids_fpath = _get_bids_fpath_from_filesystem(
-            bids_basename=self.basename, bids_root=self.bids_root,
-            sub=self.subject, ses=self.session, kind=self.kind,
-            extension=self.extension)
+        # account for MEG data that are directory-based
+        # else, all other file paths attempt to match
+        if self.kind == 'meg' and self.extension == '.ds':
+            return op.join(data_path, self.basename)
+        elif self.kind == 'meg' and self.extension == '.pdf':
+            return op.join(
+                data_path, op.splitext(self.basename)[0])
+        else:
+            # get matching BIDS paths inside the bids root
+            matching_paths = _get_matching_bidspaths_from_filesystem(
+                bids_basename=self)
+
+            # found no matching paths
+            if not matching_paths:
+                msg = ('Could not locate a data file of a supported format. '
+                       'This is likely a problem with your BIDS dataset. '
+                       'Please run the BIDS validator on your data. '
+                       f'(bids_root={self.bids_root}, '
+                       f'basename={self.basename}). '
+                       f'{matching_paths}')
+                warn(msg)
+
+                # make bids_fpath
+                bids_fpath = op.join(data_path, self.basename)
+            # if paths still cannot be resolved, then there is an error
+            elif len(matching_paths) > 1:
+                msg = ('Found more than one matching data file for the '
+                       'requested recording. Cannot proceed due to the '
+                       'ambiguity. This is likely a problem with your '
+                       'BIDS dataset. Please run the BIDS validator on '
+                       'your data.')
+                raise RuntimeError(msg)
+            else:
+                bids_fpath = matching_paths[0]
 
         return bids_fpath
 
@@ -552,6 +598,9 @@ def _find_matching_sidecar(bids_fname, kind=None,
     if extension is not None:
         suffix = suffix + extension
 
+        # do not search for kind if kind is explicitly passed
+        bids_fname = bids_fname.copy().update(extension=None)
+
     # We only use subject and session as identifier, because all other
     # parameters are potentially not binding for metadata sidecar files
     search_str = f'sub-{bids_fname.subject}'
@@ -886,63 +935,53 @@ def _find_best_candidates(params, candidate_list):
     return best_candidates
 
 
-def _get_bids_fpath_from_filesystem(*, bids_basename, bids_root, sub, ses,
-                                    kind, extension):
+def _get_matching_bidspaths_from_filesystem(bids_basename):
+    # extract relevant entities to find filepath
+    sub, ses = bids_basename.subject, bids_basename.session
+    kind, extension = bids_basename.kind, bids_basename.extension
+    basename, bids_root = bids_basename.basename, bids_basename.bids_root
     if kind is None:
         kind = _infer_kind(bids_basename=bids_basename, bids_root=bids_root,
                            sub=sub, ses=ses)
 
-    # support files above the bids_root/**/<kind>/ level
-    if kind == 'scans':
-        data_dir = make_bids_folders(subject=sub, session=ses,
-                                     make_dir=False)
-    else:
-        data_dir = make_bids_folders(subject=sub, session=ses, kind=kind,
-                                     make_dir=False)
-
-    bti_dir = op.join(bids_root, data_dir, f'{bids_basename}')
+    data_dir = make_bids_folders(subject=sub, session=ses, kind=kind,
+                                 make_dir=False)
+    bti_dir = op.join(bids_root, data_dir, f'{basename}')
     if op.isdir(bti_dir):
         logger.info(f'Assuming BTi data in {bti_dir}')
-        bids_fpath = f'{bti_dir}.pdf'
+        matching_paths = [f'{bti_dir}.pdf']
     else:
         # Find all matching files in all supported formats.
         valid_exts = ALLOWED_FILENAME_EXTENSIONS
-        search_str = op.join(bids_root, data_dir,
-                             f'{bids_basename}*')
+        search_str = bids_root
+        if sub is not None:
+            search_str = op.join(search_str, f'sub-{sub}')
+        if ses is not None:
+            search_str = op.join(search_str, f'ses-{ses}')
+        search_str = op.join(search_str, '**', f'{basename}*')
+
         matching_paths = glob.glob(search_str)
         matching_paths = [p for p in matching_paths
                           if _parse_ext(p)[1] in valid_exts]
 
-        if not matching_paths:
-            msg = ('Could not locate a data file of a supported format. This '
-                   'is likely a problem with your BIDS dataset. Please run '
-                   'the BIDS validator on your data. '
-                   f'(bids_root={bids_root}, basename={bids_basename}, '
-                   f'kind={kind}, extension={extension}, '
-                   f'search string={search_str}). '
-                   f'{matching_paths}')
-            raise RuntimeError(msg)
-
         # FIXME This will break e.g. with FIFF data split across multiple
         # FIXME files.
-        if len(matching_paths) > 1:
-            msg = ('Found more than one matching data file for the requested '
-                   'recording. Cannot proceed due to the ambiguity. This is '
-                   'likely a problem with your BIDS dataset. Please run the '
-                   'BIDS validator on your data.')
-            raise RuntimeError(msg)
-
-        if extension is not None:
-            matching_path = [fpath for fpath in matching_paths
-                             if fpath.endswith(extension)][0]
-        else:
-            matching_path = matching_paths[0]
-        bids_fpath = matching_path
-
-    return bids_fpath
+        # if extension is not specified and there is no unique file path
+        # return filepath of the actual dataset for MEG/EEG/iEEG data
+        if len(matching_paths) > 1 and extension is None:
+            # now only use valid modality extension
+            valid_exts = sum(ALLOWED_MODALITY_EXTENSIONS.values(), [])
+            matching_paths = [p for p in matching_paths
+                              if _parse_ext(p)[1] in valid_exts]
+        # if extension is specified, use that to
+        # find the unique file path
+        elif extension is not None:
+            matching_paths = [fpath for fpath in matching_paths
+                              if fpath.endswith(extension)]
+    return matching_paths
 
 
-def _get_kinds_for_sub(*, bids_basename, bids_root, sub, ses=None):
+def _get_kinds_for_sub(*, bids_root, sub, ses=None):
     """Retrieve available data kinds for a specific subject and session."""
     subject_dir = op.join(bids_root, f'sub-{sub}')
     if ses is not None:
@@ -956,12 +995,11 @@ def _get_kinds_for_sub(*, bids_basename, bids_root, sub, ses=None):
     return available_kinds
 
 
-def _infer_kind(*, bids_basename, bids_root, sub, ses):
+def _infer_kind(*, bids_basename, sub, ses):
     # Check which kind is available for this particular
     # subject & session. If we get no or multiple hits, throw an error.
-
-    kinds = _get_kinds_for_sub(bids_basename=bids_basename,
-                               bids_root=bids_root, sub=sub, ses=ses)
+    bids_root = bids_basename.bids_root
+    kinds = _get_kinds_for_sub(bids_root=bids_root, sub=sub, ses=ses)
 
     # We only want to handle electrophysiological data here.
     allowed_kinds = ALLOWED_MODALITY_KINDS

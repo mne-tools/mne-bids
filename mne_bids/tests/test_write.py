@@ -108,8 +108,7 @@ def _test_anonymize(raw, bids_basename, events_fname=None, event_id=None):
                    overwrite=False)
     scans_tsv = make_bids_basename(
         subject=subject_id, session=session_id,
-        kind='scans', extension='.tsv',
-        bids_root=op.join(bids_root, 'sub-01', 'ses-01'))
+        kind='scans', extension='.tsv', bids_root=bids_root)
     data = _from_tsv(scans_tsv)
     if data['acq_time'] is not None and data['acq_time'][0] != 'n/a':
         assert datetime.strptime(data['acq_time'][0],
@@ -336,7 +335,7 @@ def test_fif(_bids_validate):
     scans_tsv = make_bids_basename(
         subject=subject_id, session=session_id,
         kind='scans', extension='.tsv',
-        bids_root=op.join(bids_root, 'sub-01', 'ses-01'))
+        bids_root=bids_root)
     data = _from_tsv(scans_tsv)
     assert data['acq_time'][0] == meas_date.strftime('%Y-%m-%dT%H:%M:%S')
 
@@ -552,7 +551,7 @@ def test_fif_anonymize(_bids_validate):
     scans_tsv = make_bids_basename(
         subject=subject_id, session=session_id,
         kind='scans', extension='.tsv',
-        bids_root=op.join(bids_root, 'sub-01', 'ses-01'))
+        bids_root=bids_root)
     data = _from_tsv(scans_tsv)
 
     # anonymize using MNE manually
@@ -584,7 +583,6 @@ def test_kit(_bids_validate):
     write_raw_bids(raw, kit_bids_basename, bids_root,
                    events_data=events_fname,
                    event_id=event_id, overwrite=False)
-
     _bids_validate(bids_root)
     assert op.exists(op.join(bids_root, 'participants.tsv'))
 
@@ -594,7 +592,7 @@ def test_kit(_bids_validate):
     # ensure the marker file is produced in the right place
     marker_fname = make_bids_basename(
         subject=subject_id, session=session_id, task=task, run=run,
-        bids_root=op.join(bids_root, 'sub-01', 'ses-01', 'meg'),
+        bids_root=bids_root,
         kind='markers', extension='.sqd')
     assert op.exists(marker_fname)
 
@@ -642,8 +640,7 @@ def test_kit(_bids_validate):
 
     _bids_validate(bids_root)
     # ensure the marker files are renamed correctly
-    root = op.join(bids_root, 'sub-02', 'ses-01', 'meg')
-    marker_fname.update(acquisition='pre', subject=subject_id2, bids_root=root)
+    marker_fname.update(acquisition='pre', subject=subject_id2)
     info = get_kit_info(marker_fname, False)[0]
     assert info['meas_date'] == get_kit_info(hpi_pre_fname,
                                              False)[0]['meas_date']
@@ -770,11 +767,9 @@ def test_vhdr(_bids_validate):
 
     # Test that correct channel units are written ... and that bad channel
     # is in channels.tsv
-    root = op.join(bids_root, f'sub-{subject_id}', 'eeg')
     kind, ext = 'channels', '.tsv'
-    channels_tsv_name = bids_basename_minimal.copy().update(bids_root=root,
-                                                            kind=kind,
-                                                            extension=ext)
+    channels_tsv_name = bids_basename_minimal.copy().update(
+        bids_root=bids_root, kind=kind, extension=ext)
 
     data = _from_tsv(channels_tsv_name)
     assert data['units'][data['name'].index('FP1')] == 'µV'
@@ -914,8 +909,9 @@ def test_edf(_bids_validate):
     channels_tsv = make_bids_basename(
         subject=subject_id, session=session_id,
         task=task, acquisition=acq, run=run,
-        bids_root=op.join(bids_root, 'sub-01', 'ses-01', 'eeg'),
+        bids_root=bids_root,
         kind='channels', extension='.tsv')
+    # channels_tsv = op.join(bids_root, 'sub-01', 'ses-01', 'eeg')
     data = _from_tsv(channels_tsv)
     assert 'ElectroMyoGram' in data['description']
 
@@ -923,7 +919,7 @@ def test_edf(_bids_validate):
     scans_tsv = make_bids_basename(
         subject=subject_id, session=session_id,
         kind='scans', extension='.tsv',
-        bids_root=op.join(bids_root, 'sub-01', 'ses-01'))
+        bids_root=bids_root)
     data = _from_tsv(scans_tsv)
     assert len(list(data.values())[0]) == 2
 
@@ -977,7 +973,7 @@ def test_edf(_bids_validate):
     electrodes_fname = _find_matching_sidecar(bids_fname,
                                               kind='electrodes',
                                               extension='.tsv')
-    coordsystem_fname = _find_matching_sidecar(bids_fname, bids_root,
+    coordsystem_fname = _find_matching_sidecar(bids_fname,
                                                kind='coordsystem',
                                                extension='.json')
     assert 'space-mri' in electrodes_fname

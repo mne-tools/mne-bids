@@ -7,7 +7,7 @@ BIDS_VERSION = "1.4.0"
 
 DOI = """https://doi.org/10.21105/joss.01896"""
 
-ALLOWED_MODALITY_KINDS = ['meg', 'eeg', 'ieeg']
+ALLOWED_MODALITY_KINDS = ['meg', 'eeg', 'ieeg', 'anat']
 
 # Orientation of the coordinate system dependent on manufacturer
 ORIENTATION = {'.sqd': 'ALS', '.con': 'ALS', '.fif': 'RAS', '.pdf': 'ALS',
@@ -87,7 +87,7 @@ ALLOWED_FILENAME_EXTENSIONS = (
 ALLOWED_PATH_ENTITIES = ('subject', 'session', 'task', 'run',
                          'processing', 'recording', 'space',
                          'acquisition', 'split', 'kind',
-                         'prefix', 'extension')
+                         'bids_root', 'extension')
 ALLOWED_PATH_ENTITIES_SHORT = {'sub': 'subject', 'ses': 'session',
                                'task': 'task', 'acq': 'acquisition',
                                'run': 'run', 'proc': 'processing',

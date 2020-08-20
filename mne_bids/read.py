@@ -341,19 +341,19 @@ def read_raw_bids(bids_basename, bids_root, kind=None, extra_params=None,
     bids_basename = bids_basename.copy()
     sub = bids_basename.subject
     ses = bids_basename.session
-
+    bids_basename.update(bids_root=bids_root)
     if kind is None:
-        kind = _infer_kind(bids_basename=bids_basename, bids_root=bids_root,
+        kind = _infer_kind(bids_basename=bids_basename,
                            sub=sub, ses=ses)
+    bids_basename.update(kind=kind)
 
     data_dir = make_bids_folders(subject=sub, session=ses, kind=kind,
                                  make_dir=False)
-    bids_fname = bids_basename.copy().update(kind=kind,
-                                             bids_root=bids_root).fpath
+    bids_fname = bids_basename.fpath
 
     if op.splitext(bids_fname)[1] == '.pdf':
         bids_raw_folder = op.join(bids_root, data_dir,
-                                  f'{bids_basename}_{kind}')
+                                  f'{bids_basename.basename}')
         bids_fpath = glob.glob(op.join(bids_raw_folder, 'c,rf*'))[0]
         config = op.join(bids_raw_folder, 'config')
     else:
@@ -367,7 +367,6 @@ def read_raw_bids(bids_basename, bids_root, kind=None, extra_params=None,
 
     # Try to find an associated events.tsv to get information about the
     # events in the recorded data
-    bids_basename.update(bids_root=bids_root)
     events_fname = _find_matching_sidecar(bids_basename,
                                           kind='events', extension='.tsv',
                                           allow_fail=True)
@@ -398,7 +397,7 @@ def read_raw_bids(bids_basename, bids_root, kind=None, extra_params=None,
             raise RuntimeError("BIDS mandates that the coordsystem.json "
                                "should exist if electrodes.tsv does. "
                                "Please create coordsystem.json for"
-                               "{}".format(bids_basename))
+                               f"{bids_basename.basename}")
         if kind in ALLOWED_MODALITY_KINDS:
             raw = _read_dig_bids(electrodes_fname, coordsystem_fname,
                                  raw, kind, verbose)
