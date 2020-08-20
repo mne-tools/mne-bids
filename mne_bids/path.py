@@ -1021,6 +1021,7 @@ def get_matched_basenames(bids_root, *, subject=None, session=None, task=None,
     bids_root = Path(bids_root)
 
     fnames = bids_root.rglob('*.*')
+    # Only keep files (not directories), and omit the JSON sidecars.
     fnames = [str(f.name) for f in fnames
               if f.is_file() and f.suffix != '.json']
     fnames = _filter_fnames(fnames, subject=subject, session=session,
