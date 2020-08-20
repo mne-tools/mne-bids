@@ -956,7 +956,8 @@ def _filter_fnames(fnames, *, subject=None, session=None, task=None,
     rec_str = f'_rec-{recording}' if recording else r'(|_rec-([^_]+))'
     space_str = f'_space-{space}' if space else r'(|_space-([^_]+))'
     split_str = f'_split-{split}' if split else r'(|_split-([^_]+))'
-    kind_str = f'_{kind}' if kind else r'_(meg|eeg|ieeg|mri)'  # XXX do we want MRI here?
+    # XXX do we want MRI here?
+    kind_str = f'_{kind}' if kind else r'_(meg|eeg|ieeg|mri)'
     ext_str = extension if extension else r'.([^_]+)'
 
     regexp = (sub_str + ses_str + task_str + acq_str + run_str + proc_str +
