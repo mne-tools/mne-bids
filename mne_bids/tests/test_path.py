@@ -346,7 +346,7 @@ def test_bids_path(return_bids_test_dir):
         (dict(task='audio'), 2),
         (dict(processing='sss'), 1),
         (dict(kind='meg'), 4),
-        (dict(acquisition='t1w'), 1),
+        (dict(acquisition='lowres'), 1),
         (dict(task='test', processing='ica', kind='eeg'), 2),
         (dict(subject='5', task='test', processing='ica', kind='eeg'), 1)
     ])
@@ -359,7 +359,7 @@ def test_filter_fnames(entities, expected_n_matches):
               'sub-Foo_ses-bar_meg.fif',
               'sub-Bar_task-invasive_run-1_ieeg.fif',
               'sub-3_task-fun_proc-sss_meg.fif',
-              'sub-4_task-pain_acq-t1w_mri.nii.gz',
+              'sub-4_task-pain_acq-lowres_T1w.nii.gz',
               'sub-5_task-test_proc-ica_eeg.vhdr',
               'sub-6_task-test_proc-ica_eeg.vhdr')
 
@@ -372,14 +372,13 @@ def test_get_matched_basenames(return_bids_test_dir):
     bids_root = return_bids_test_dir
 
     paths = get_matched_basenames(bids_root=bids_root)
-    assert len(paths) == 2
-    assert paths[0].basename == 'sub-01_ses-01_task-testing_run-01_meg'
-    assert paths[1].basename == 'sub-01_ses-01_task-testing_run-02_meg'
+    assert len(paths) == 7
+    assert all('sub-01_ses-01' in p.basename for p in paths)
     assert all([p.prefix == bids_root for p in paths])
 
     paths = get_matched_basenames(bids_root=bids_root, run='01')
-    assert len(paths) == 1
-    assert paths[0].basename == 'sub-01_ses-01_task-testing_run-01_meg'
+    assert len(paths) == 3
+    assert paths[0].basename == 'sub-01_ses-01_task-testing_run-01_channels'
 
     paths = get_matched_basenames(bids_root=bids_root, subject='unknown')
     assert len(paths) == 0
