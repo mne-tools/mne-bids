@@ -56,7 +56,7 @@ Path
    :toctree: generated/
 
    BIDSPath
-   parse_bids_filename
+   get_entities_from_fname
 
 Copyfiles
 =========

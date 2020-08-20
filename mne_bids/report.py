@@ -11,12 +11,11 @@ import numpy as np
 from mne.externals.tempita import Template
 from mne.utils import warn
 
-from mne_bids.config import DOI, ALLOWED_KINDS
+from mne_bids.config import DOI, ALLOWED_MODALITY_KINDS
 from mne_bids.tsv_handler import _from_tsv
-from mne_bids.path import (make_bids_basename, get_kinds,
-                           get_entity_vals, _parse_ext,
-                           _find_matching_sidecar, parse_bids_filename,
-                           BIDSPath)
+from mne_bids.path import (get_kinds, get_entity_vals, BIDSPath,
+                           _parse_ext, _find_matching_sidecar,
+                           get_entities_from_fname)
 
 # functions to be used inside Template strings
 FUNCTION_TEMPLATE = """{{py:  
@@ -152,8 +151,8 @@ def _summarize_dataset(bids_root):
     template_dict : dict
         A dictionary of values for various template strings.
     """
-    dataset_descrip_fpath = make_bids_basename(
-        prefix=bids_root, suffix='dataset_description.json')
+    dataset_descrip_fpath = op.join(bids_root,
+                                    'dataset_description.json')
     if not op.exists(dataset_descrip_fpath):
         return dict()
 
@@ -190,8 +189,7 @@ def _summarize_participants_tsv(bids_root, verbose=True):
     template_dict : dict
         A dictionary of values for various template strings.
     """
-    participants_tsv_fpath = make_bids_basename(prefix=bids_root,
-                                                suffix='participants.tsv')
+    participants_tsv_fpath = op.join(bids_root, 'participants.tsv')
     if not op.exists(participants_tsv_fpath):
         return dict()
 
@@ -327,22 +325,14 @@ def _summarize_sidecar_json(bids_root, scans_fpaths, verbose=True):
             # summarize metadata of recordings
             bids_basename, ext = _parse_ext(scan)
             kind = op.dirname(scan)
-            if kind not in ALLOWED_KINDS:
+            if kind not in ALLOWED_MODALITY_KINDS:
                 continue
 
             n_scans += 1
 
             # convert to BIDS Path
-            params = parse_bids_filename(bids_basename)
-            bids_basename = BIDSPath(subject=params.get('sub'),
-                                     session=params.get('ses'),
-                                     recording=params.get('rec'),
-                                     acquisition=params.get('acq'),
-                                     processing=params.get('proc'),
-                                     space=params.get('space'),
-                                     run=params.get('run'),
-                                     task=params.get('task'),
-                                     )
+            params = get_entities_from_fname(bids_basename)
+            bids_basename = BIDSPath(**params)
 
             # XXX: improve to allow emptyroom
             if bids_basename.subject == 'emptyroom':
@@ -350,7 +340,8 @@ def _summarize_sidecar_json(bids_root, scans_fpaths, verbose=True):
 
             sidecar_fname = _find_matching_sidecar(bids_fname=bids_basename,
                                                    bids_root=bids_root,
-                                                   suffix=f'{kind}.json')
+                                                   kind=kind,
+                                                   extension='.json')
             with open(sidecar_fname, 'r') as fin:
                 sidecar_json = json.load(fin)
 
@@ -427,16 +418,8 @@ def _summarize_channels_tsv(bids_root, scans_fpaths, verbose=True):
                 continue
 
             # convert to BIDS Path
-            params = parse_bids_filename(bids_basename)
-            bids_basename = BIDSPath(subject=params.get('sub'),
-                                     session=params.get('ses'),
-                                     recording=params.get('rec'),
-                                     acquisition=params.get('acq'),
-                                     processing=params.get('proc'),
-                                     space=params.get('space'),
-                                     run=params.get('run'),
-                                     task=params.get('task'),
-                                     prefix=bids_root)
+            params = get_entities_from_fname(bids_basename)
+            bids_basename = BIDSPath(**params)
 
             # XXX: improve to allow emptyroom
             if bids_basename.subject == 'emptyroom':
@@ -444,7 +427,8 @@ def _summarize_channels_tsv(bids_root, scans_fpaths, verbose=True):
 
             channels_fname = _find_matching_sidecar(bids_fname=bids_basename,
                                                     bids_root=bids_root,
-                                                    suffix='channels.tsv')
+                                                    kind='channels',
+                                                    extension='.tsv')
 
             # summarize channels.tsv
             channels_tsv = _from_tsv(channels_fname)
@@ -500,8 +484,15 @@ def make_report(bids_root, session=None, verbose=True):
     sessions = get_entity_vals(bids_root, entity_key='session')
     kinds = get_kinds(bids_root)
 
-    # only summarize allowed kinds (MEEG data)
-    kinds = [kind.upper() for kind in kinds if kind in ALLOWED_KINDS]
+    # only summarize allowed kinds (MEG/EEG/iEEG) data
+    # map them to a pretty looking string
+    kind_map = {
+        'meg': 'MEG',
+        'eeg': 'EEG',
+        'ieeg': 'iEEG',
+    }
+    kinds = [kind_map[kind] for kind in kinds
+             if kind in ALLOWED_MODALITY_KINDS]
 
     # REQUIRED: dataset_description.json summary
     dataset_summary = _summarize_dataset(bids_root)
