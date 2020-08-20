@@ -76,15 +76,19 @@ def test_make_filenames():
     # All keys work
     prefix_data = dict(subject='one', session='two', task='three',
                        acquisition='four', run='five', processing='six',
-                       recording='seven', suffix='suffix.csv')
-    assert str(make_bids_basename(**prefix_data)) == 'sub-one_ses-two_task-three_acq-four_run-five_proc-six_rec-seven_suffix.csv'  # noqa
+                       recording='seven', kind='ieeg', extension='.json')
+    expected_str = 'sub-one_ses-two_task-three_acq-four_run-five_proc-six_rec-seven_ieeg.json'  # noqa
+    assert str(make_bids_basename(**prefix_data)) == expected_str
 
     # subsets of keys works
-    assert make_bids_basename(subject='one', task='three', run=4) == 'sub-one_task-three_run-04'  # noqa
-    assert make_bids_basename(subject='one', task='three', suffix='hi.csv') == 'sub-one_task-three_hi.csv'  # noqa
+    assert (make_bids_basename(subject='one', task='three', run=4) ==
+            'sub-one_task-three_run-04')
+    assert (make_bids_basename(subject='one', task='three',
+                               kind='meg', extension='.json') ==
+            'sub-one_task-three_meg.json')
 
     with pytest.raises(ValueError):
-        make_bids_basename(subject='one-two', suffix='there.csv')
+        make_bids_basename(subject='one-two', kind='ieeg', extension='.edf')
 
     with pytest.raises(ValueError, match='At least one'):
         make_bids_basename()

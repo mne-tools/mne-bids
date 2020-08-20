@@ -21,12 +21,12 @@ from mne.transforms import apply_trans
 
 from mne_bids.dig import _read_dig_bids
 from mne_bids.tsv_handler import _from_tsv, _drop
-from mne_bids.config import (ALLOWED_EXTENSIONS, _convert_hand_options,
-                             _convert_sex_options, reader)
+from mne_bids.config import (ALLOWED_MODALITY_EXTENSIONS, reader,
+                             _convert_hand_options, _convert_sex_options)
 from mne_bids.utils import (_extract_landmarks,
                             _get_ch_type_mapping, _estimate_line_freq)
 from mne_bids import make_bids_folders
-from mne_bids.path import (BIDSPath, _parse_ext, parse_bids_filename,
+from mne_bids.path import (BIDSPath, _parse_ext, get_entities_from_fname,
                            _find_matching_sidecar, _infer_kind)
 
 
@@ -55,15 +55,16 @@ def _read_raw(raw_fpath, electrode=None, hsp=None, hpi=None,
 
     # MEF and NWB are allowed, but not yet implemented
     elif ext in ['.mef', '.nwb']:
-        raise ValueError('Got "{}" as extension. This is an allowed extension '
-                         'but there is no IO support for this file format yet.'
-                         .format(ext))
+        raise ValueError(f'Got "{ext}" as extension. This is an allowed '
+                         f'extension but there is no IO support for this '
+                         f'file format yet.')
 
     # No supported data found ...
     # ---------------------------
     else:
-        raise ValueError('Raw file name extension must be one of {}\n'
-                         'Got {}'.format(ALLOWED_EXTENSIONS, ext))
+        raise ValueError(f'Raw file name extension must be one '
+                         f'of {ALLOWED_MODALITY_EXTENSIONS}\n'
+                         f'Got {ext}')
     return raw
 
 
@@ -334,18 +335,11 @@ def read_raw_bids(bids_basename, bids_root, kind=None, extra_params=None,
     """
     # convert to BIDS Path
     if isinstance(bids_basename, str):
-        params = parse_bids_filename(bids_basename)
-        bids_basename = BIDSPath(subject=params.get('sub'),
-                                 session=params.get('ses'),
-                                 recording=params.get('rec'),
-                                 acquisition=params.get('acq'),
-                                 processing=params.get('proc'),
-                                 space=params.get('space'),
-                                 run=params.get('run'),
-                                 task=params.get('task'))
+        params = get_entities_from_fname(bids_basename)
+        bids_basename = BIDSPath(**params)
+    bids_basename = bids_basename.copy()
     sub = bids_basename.subject
     ses = bids_basename.session
-    acq = bids_basename.acquisition
 
     if kind is None:
         kind = _infer_kind(bids_basename=bids_basename, bids_root=bids_root,
@@ -371,7 +365,8 @@ def read_raw_bids(bids_basename, bids_root, kind=None, extra_params=None,
 
     # Try to find an associated events.tsv to get information about the
     # events in the recorded data
-    events_fname = _find_matching_sidecar(bids_fname, bids_root, 'events.tsv',
+    events_fname = _find_matching_sidecar(bids_fname, bids_root,
+                                          kind='events', extension='.tsv',
                                           allow_fail=True)
     if events_fname is not None:
         raw = _handle_events_reading(events_fname, raw)
@@ -379,20 +374,20 @@ def read_raw_bids(bids_basename, bids_root, kind=None, extra_params=None,
     # Try to find an associated channels.tsv to get information about the
     # status and type of present channels
     channels_fname = _find_matching_sidecar(bids_fname, bids_root,
-                                            'channels.tsv', allow_fail=True)
+                                            kind='channels', extension='.tsv',
+                                            allow_fail=True)
     if channels_fname is not None:
         raw = _handle_channels_reading(channels_fname, bids_fname, raw)
 
     # Try to find an associated electrodes.tsv and coordsystem.json
     # to get information about the status and type of present channels
-    search_modifier = f'acq-{acq}' if acq else ''
-    elec_suffix = f'{search_modifier}*_electrodes.tsv'
-    coord_suffix = f'{search_modifier}*_coordsystem.json'
     electrodes_fname = _find_matching_sidecar(bids_fname, bids_root,
-                                              suffix=elec_suffix,
+                                              kind='electrodes',
+                                              extension='.tsv',
                                               allow_fail=True)
     coordsystem_fname = _find_matching_sidecar(bids_fname, bids_root,
-                                               suffix=coord_suffix,
+                                               kind='coordsystem',
+                                               extension='.json',
                                                allow_fail=True)
     if electrodes_fname is not None:
         if coordsystem_fname is None:
@@ -407,7 +402,7 @@ def read_raw_bids(bids_basename, bids_root, kind=None, extra_params=None,
     # Try to find an associated sidecar.json to get information about the
     # recording snapshot
     sidecar_fname = _find_matching_sidecar(bids_fname, bids_root,
-                                           '{}.json'.format(kind),
+                                           kind=kind, extension='.json',
                                            allow_fail=True)
     if sidecar_fname is not None:
         raw = _handle_info_reading(sidecar_fname, raw, verbose=verbose)
@@ -444,15 +439,9 @@ def get_matched_empty_room(bids_basename, bids_root):
     """
     # convert to BIDS Path
     if isinstance(bids_basename, str):
-        params = parse_bids_filename(bids_basename)
-        bids_basename = BIDSPath(subject=params.get('sub'),
-                                 session=params.get('ses'),
-                                 recording=params.get('rec'),
-                                 acquisition=params.get('acq'),
-                                 processing=params.get('proc'),
-                                 space=params.get('space'),
-                                 run=params.get('run'),
-                                 task=params.get('task'))
+        params = get_entities_from_fname(bids_basename)
+        bids_basename = BIDSPath(**params)
+    bids_basename = bids_basename.copy()
 
     kind = 'meg'  # We're only concerned about MEG data here
     bids_fname = bids_basename.get_bids_fname(kind=kind, bids_root=bids_root)
@@ -511,23 +500,16 @@ def get_matched_empty_room(bids_basename, bids_root):
 
     failed_to_get_er_date_count = 0
     for er_fname in candidate_er_fnames:
-        params = parse_bids_filename(er_fname)
+        params = get_entities_from_fname(er_fname)
         er_meas_date = None
-
-        er_bids_path = BIDSPath(subject='emptyroom',
-                                session=params.get('ses', None),
-                                task=params.get('task', None),
-                                acquisition=params.get('acq', None),
-                                run=params.get('run', None),
-                                processing=params.get('proc', None),
-                                recording=params.get('rec', None),
-                                space=params.get('space', None))
+        params.pop('subject')  # er subject entity is different
+        er_bids_path = BIDSPath(subject='emptyroom', **params)
         er_basename = str(er_bids_path)
 
         # Try to extract date from filename.
-        if params['ses'] is not None:
+        if params['session'] is not None:
             try:
-                er_meas_date = datetime.strptime(params['ses'], '%Y%m%d')
+                er_meas_date = datetime.strptime(params['session'], '%Y%m%d')
             except (ValueError, TypeError):
                 # There is a session in the filename, but it doesn't encode a
                 # valid date.
@@ -601,19 +583,13 @@ def get_head_mri_trans(bids_basename, bids_root):
 
     # convert to BIDS Path
     if isinstance(bids_basename, str):
-        params = parse_bids_filename(bids_basename)
-        bids_basename = BIDSPath(subject=params.get('sub'),
-                                 session=params.get('ses'),
-                                 recording=params.get('rec'),
-                                 acquisition=params.get('acq'),
-                                 processing=params.get('proc'),
-                                 space=params.get('space'),
-                                 run=params.get('run'),
-                                 task=params.get('task'))
+        params = get_entities_from_fname(bids_basename)
+        bids_basename = BIDSPath(**params)
 
     # Get the sidecar file for MRI landmarks
     bids_fname = bids_basename.get_bids_fname(kind='meg', bids_root=bids_root)
-    t1w_json_path = _find_matching_sidecar(bids_fname, bids_root, 'T1w.json')
+    t1w_json_path = _find_matching_sidecar(bids_fname, bids_root,
+                                           kind='T1w', extension='.json')
 
     # Get MRI landmarks from the JSON sidecar
     with open(t1w_json_path, 'r') as f:

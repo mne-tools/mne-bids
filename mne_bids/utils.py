@@ -133,8 +133,8 @@ def _check_types(variables):
     """Make sure all vars are str or None."""
     for var in variables:
         if not isinstance(var, (str, type(None))):
-            raise ValueError("You supplied a value of type %s, where a "
-                             "string or None was expected." % type(var))
+            raise ValueError(f"You supplied a value of type {type(var)}, "
+                             f"where a string or None was expected.")
 
 
 def _write_json(fname, dictionary, overwrite=False, verbose=False):
@@ -183,7 +183,7 @@ def _check_key_val(key, val):
     """Perform checks on a value to make sure it adheres to the spec."""
     if any(ii in val for ii in ['-', '_', '/']):
         raise ValueError("Unallowed `-`, `_`, or `/` found in key/value pair"
-                         " %s: %s" % (key, val))
+                         f" {key}: {val}")
     return key, val
 
 
@@ -220,10 +220,10 @@ def _read_events(events_data, event_id, raw, ext, verbose=None):
     elif isinstance(events_data, np.ndarray):
         if events_data.ndim != 2:
             raise ValueError('Events must have two dimensions, '
-                             'found %s' % events_data.ndim)
+                             f'found {events_data.ndim}')
         if events_data.shape[1] != 3:
             raise ValueError('Events must have second dimension of length 3, '
-                             'found %s' % events_data.shape[1])
+                             f'found {events_data.shape[1]}')
         events = events_data
     elif 'stim' in raw:
         events = find_events(raw, min_duration=0.001, initial_event=True,
@@ -434,11 +434,11 @@ def _check_anonymize(anonymize, raw, ext):
                  'is after 1925, which is not recommended by BIDS.'
                  'The minimum `daysback` value for changing the '
                  'measurement date of this data to before this date '
-                 'is %s' % daysback_min)
+                 f'is {daysback_min}')
         if ext == '.fif' and daysback > daysback_max:
             raise ValueError('`daysback` exceeds maximum value MNE '
                              'is able to store in FIF format, must '
-                             'be less than %i' % daysback_max)
+                             f'be less than {daysback_max}')
     keep_his = anonymize['keep_his'] if 'keep_his' in anonymize else False
     return daysback, keep_his
 

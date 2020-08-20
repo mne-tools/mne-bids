@@ -7,7 +7,7 @@ BIDS_VERSION = "1.4.0"
 
 DOI = """https://doi.org/10.21105/joss.01896"""
 
-ALLOWED_KINDS = ['meg', 'eeg', 'ieeg']
+ALLOWED_MODALITY_KINDS = ['meg', 'eeg', 'ieeg']
 
 # Orientation of the coordinate system dependent on manufacturer
 ORIENTATION = {'.sqd': 'ALS', '.con': 'ALS', '.fif': 'RAS', '.pdf': 'ALS',
@@ -61,14 +61,38 @@ allowed_extensions_ieeg = ['.vhdr',  # BrainVision, accompanied by .vmrk, .eeg
                            '.nwb',  # Neurodata without borders
                            ]
 
-ALLOWED_EXTENSIONS = {'meg': allowed_extensions_meg,
-                      'eeg': allowed_extensions_eeg,
-                      'ieeg': allowed_extensions_ieeg}
+ALLOWED_MODALITY_EXTENSIONS = {'meg': allowed_extensions_meg,
+                               'eeg': allowed_extensions_eeg,
+                               'ieeg': allowed_extensions_ieeg}
 
-# allowed BIDS entities
-BIDS_PATH_ENTITIES = ('subject', 'session', 'task', 'acquisition',
-                      'processing', 'run', 'recording',
-                      'space', 'suffix', 'prefix')
+# allowed kinds (i.e. last "_" delimiter in the BIDS filenames)
+ALLOWED_FILENAME_KINDS = [
+    'meg', 'markers', 'eeg', 'ieeg', 'T1w',  # modality
+    'participants', 'scans',
+    'electrodes', 'channels', 'coordsystem', 'events',  # sidecars
+    'headshape', 'digitizer',  # meg-specific sidecars
+    'behav', 'phsyio', 'stim'  # behavioral
+]
+
+# allowed BIDS extensions (extension in the BIDS filename)
+ALLOWED_FILENAME_EXTENSIONS = (
+    allowed_extensions_meg +
+    allowed_extensions_eeg +
+    allowed_extensions_ieeg +
+    ['.json', '.tsv', '.tsv.gz', '.nii', '.nii.gz'] +
+    ['.pos', '.eeg', '.vmrk']  # extra modality-specific metadata files
+)
+
+# allowed BIDS path entities
+ALLOWED_PATH_ENTITIES = ('subject', 'session', 'task', 'run',
+                         'processing', 'recording', 'space',
+                         'acquisition', 'split', 'kind',
+                         'prefix', 'extension')
+ALLOWED_PATH_ENTITIES_SHORT = {'sub': 'subject', 'ses': 'session',
+                               'task': 'task', 'acq': 'acquisition',
+                               'run': 'run', 'proc': 'processing',
+                               'space': 'space', 'rec': 'recording',
+                               'split': 'split', 'kind': 'kind'}
 
 # accepted BIDS formats, which may be subject to change
 # depending on the specification

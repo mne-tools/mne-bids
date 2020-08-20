@@ -22,7 +22,7 @@ from mne.utils import _TempDir
 from mne_bids import (get_kinds, get_entity_vals, print_dir_tree,
                       make_bids_folders, make_bids_basename,
                       write_raw_bids)
-from mne_bids.path import (_parse_ext, parse_bids_filename,
+from mne_bids.path import (_parse_ext, get_entities_from_fname,
                            _find_best_candidates, _find_matching_sidecar)
 
 subject_id = '01'
@@ -192,14 +192,18 @@ def test_parse_ext():
 ])
 def test_parse_bids_filename(fname):
     """Test parsing entities from a bids filename."""
-    params = parse_bids_filename(fname)
-    assert params['sub'] == '01'
-    assert params['ses'] == '02'
+    params = get_entities_from_fname(fname)
+    print(params)
+    assert params['subject'] == '01'
+    assert params['session'] == '02'
     assert params['run'] == '3'
     assert params['task'] == 'test'
     assert params['split'] == '01'
-    assert list(params.keys()) == ['sub', 'ses', 'task', 'acq', 'run', 'proc',
-                                   'space', 'rec', 'split', 'kind']
+    if 'meg' in fname:
+        assert params['kind'] == 'meg'
+    assert list(params.keys()) == ['subject', 'session', 'task',
+                                   'acquisition', 'run', 'processing',
+                                   'space', 'recording', 'split', 'kind']
 
 
 @pytest.mark.parametrize('candidate_list, best_candidates', [
@@ -220,7 +224,7 @@ def test_parse_bids_filename(fname):
 ])
 def test_find_best_candidates(candidate_list, best_candidates):
     """Test matching of candidate sidecar files."""
-    params = dict(sub='01', ses='02', acq=None)
+    params = dict(subject='01', session='02', acquisition=None)
     assert _find_best_candidates(params, candidate_list) == best_candidates
 
 
@@ -230,7 +234,8 @@ def test_find_matching_sidecar(return_bids_test_dir):
 
     # Now find a sidecar
     sidecar_fname = _find_matching_sidecar(bids_basename, bids_root,
-                                           'coordsystem.json')
+                                           kind='coordsystem',
+                                           extension='.json')
     expected_file = op.join('sub-01', 'ses-01', 'meg',
                             'sub-01_ses-01_coordsystem.json')
     assert sidecar_fname.endswith(expected_file)
@@ -239,11 +244,15 @@ def test_find_matching_sidecar(return_bids_test_dir):
     with pytest.raises(RuntimeError, match='Expected to find a single'):
         open(sidecar_fname.replace('coordsystem.json',
                                    '2coordsystem.json'), 'w').close()
-        _find_matching_sidecar(bids_basename, bids_root, 'coordsystem.json')
+        print_dir_tree(bids_root)
+        _find_matching_sidecar(bids_basename, bids_root,
+                               kind='coordsystem', extension='.json')
 
     # Find nothing but receive None, because we set `allow_fail` to True
     with pytest.warns(RuntimeWarning, match='Did not find any'):
-        _find_matching_sidecar(bids_basename, bids_root, 'foo.bogus', True)
+        _find_matching_sidecar(bids_basename, bids_root,
+                               kind='foo', extension='.bogus',
+                               allow_fail=True)
 
 
 def test_bids_path(return_bids_test_dir):
@@ -260,7 +269,8 @@ def test_bids_path(return_bids_test_dir):
 
     # should find the correct filename if bids_root was passed
     bids_fname = bids_basename.get_bids_fname(bids_root=bids_root)
-    assert bids_fname == bids_basename.update(suffix='meg.fif')
+    assert bids_fname == bids_basename.update(kind='meg',
+                                              extension='.fif')
 
     # confirm BIDSPath assigns properties correctly
     bids_basename = make_bids_basename(subject=subject_id,
@@ -273,7 +283,7 @@ def test_bids_path(return_bids_test_dir):
     assert all(bids_basename.entities.get(entity) is None
                for entity in ['task', 'run', 'recording', 'acquisition',
                               'space', 'processing',
-                              'prefix', 'suffix'])
+                              'prefix', 'kind', 'extension'])
 
     # test updating functionality
     bids_basename.update(acquisition='03', run='2', session='02',
@@ -294,11 +304,26 @@ def test_bids_path(return_bids_test_dir):
     assert new_bids_basename == bids_basename.copy().update(task='02',
                                                             acquisition=None)
 
-    # error check
+    # error check on kwargs of update
     with pytest.raises(ValueError, match='Key must be one of*'):
         bids_basename.update(sub=subject_id, session=session_id)
 
+    # error check on the passed in entity containing a magic char
+    with pytest.raises(ValueError, match='Unallowed*'):
+        bids_basename.update(subject=subject_id + '-')
+
+    # error check on kind in update
+    kind = 'meeg'
+    with pytest.raises(ValueError, match=f'Kind {kind} is not'):
+        bids_basename.update(kind=kind)
+
+    # error check on extension in update
+    ext = '.mat'
+    with pytest.raises(ValueError, match=f'Extension {ext} is not'):
+        bids_basename.update(extension=ext)
+
     # test repr
     bids_path = make_bids_basename(subject='01', session='02',
-                                   task='03', suffix='ieeg.edf')
+                                   task='03', kind='ieeg',
+                                   extension='.edf')
     assert repr(bids_path) == 'BIDSPath(sub-01_ses-02_task-03_ieeg.edf)'
