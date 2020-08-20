@@ -941,3 +941,98 @@ def _path_to_str(var):
                          f"pathlib.Path objects. Found type {type(var)}.")
     else:
         return str(var)
+
+
+def _filter_fnames(fnames, *, subject=None, session=None, task=None,
+                   acquisition=None, run=None, processing=None, recording=None,
+                   space=None, split=None, kind=None, extension=None):
+    """Filter a list of BIDS filenames based on BIDS entity values."""
+    sub_str = f'sub-{subject}' if subject else r'sub-([^_]+)'
+    ses_str = f'_ses-{session}' if session else r'(|_ses-([^_]+))'
+    task_str = f'_task-{task}' if task else r'(|_task-([^_]+))'
+    acq_str = f'_acq-{acquisition}' if acquisition else r'(|_acq-([^_]+))'
+    run_str = f'_run-{run}' if run else r'(|_run-([^_]+))'
+    proc_str = f'_proc-{processing}' if processing else r'(|_proc-([^_]+))'
+    rec_str = f'_rec-{recording}' if recording else r'(|_rec-([^_]+))'
+    space_str = f'_space-{space}' if space else r'(|_space-([^_]+))'
+    split_str = f'_split-{split}' if split else r'(|_split-([^_]+))'
+    kind_str = f'_{kind}' if kind else r'_(meg|eeg|ieeg|mri)'  # XXX do we want MRI here?
+    ext_str = extension if extension else r'.([^_]+)'
+
+    regexp = (sub_str + ses_str + task_str + acq_str + run_str + proc_str +
+              rec_str + space_str + split_str + kind_str + ext_str)
+
+    # https://stackoverflow.com/a/51246151/1944216
+    fnames_filtered = sorted(filter(re.compile(regexp).match, fnames))
+    return fnames_filtered
+
+
+def get_matched_basenames(bids_root, *, subject=None, session=None, task=None,
+                          acquisition=None, run=None, processing=None,
+                          recording=None, space=None, kind=None, split=None,
+                          extension=None):
+    """Retrieve a list of BIDSPaths matching the specified entities.
+
+    The entity values you pass act as a filter: only those basenames that
+    include the specified entity values will be returned. Passing ``None``
+    (default for all entities) means that **all** values for this entity
+    will be included.
+
+    Parameters
+    ----------
+    bids_root : str
+        The BIDS root directory.
+    subject : str | None
+        The subject ID. Corresponds to "sub".
+    session : str | None
+        The session identifier. Corresponds to "ses". Must be a date in
+        format "YYYYMMDD" if subject is "emptyroom".
+    task : str | None
+        The task identifier. Corresponds to "task". Must be "noise" if
+        subject is "emptyroom".
+    acquisition: str | None
+        The acquisition parameters. Corresponds to "acq".
+    run : int | None
+        The run number. Corresponds to "run".
+    processing : str | None
+        The processing label. Corresponds to "proc".
+    recording : str | None
+        The recording name. Corresponds to "rec".
+    space : str | None
+        The coordinate space for an anatomical file. Corresponds to "space".
+    prefix : str | None
+        The prefix for the filename to be created. E.g., a path to the folder
+        in which you wish to create a file with this name.
+    kind : str | None
+        The recording kind.
+    split : int | None
+        The split number.
+    extension : str | None
+        The filename extension.
+
+    Returns
+    -------
+    paths : list of BIDSPath
+        The matching BIDSPaths from the dataset. Returns an empty list if no
+        matches were found.
+
+    """
+
+    bids_root = Path(bids_root)
+
+    fnames = bids_root.rglob('*.*')
+    fnames = [str(f.name) for f in fnames
+              if f.is_file() and f.suffix != '.json']
+    fnames = _filter_fnames(fnames, subject=subject, session=session,
+                            task=task, acquisition=acquisition, run=run,
+                            processing=processing, recording=recording,
+                            space=space, split=split, kind=kind,
+                            extension=extension)
+
+    paths = []
+    for fname in fnames:
+        entity = get_entities_from_fname(fname)
+        path = make_bids_basename(prefix=bids_root, **entity)
+        paths.append(path)
+
+    return paths

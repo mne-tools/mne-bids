@@ -36,6 +36,7 @@ Changelog
 - :func:`mne_bids.read_raw_bids` and :func:`mne_bids.write_raw_bids` now map respiratory (``RESP``) channel types, by `Richard Höchenberger`_ (`#482 <https://github.com/mne-tools/mne-bids/pull/482>`_)
 - When impedance values are available from a ``raw.impedances`` attribute, MNE-BIDS will now write an ``impedance`` column to ``*_electrodes.tsv`` files, by `Stefan Appelhoff`_ (`#484 <https://github.com/mne-tools/mne-bids/pull/484>`_)
 - :func:`mne_bids.write_raw_bids` writes out status_description with 'n/a' values into the channels.tsv sidecar file, by `Adam Li`_ (`#489 <https://github.com/mne-tools/mne-bids/pull/489>`_)
+- The new function :func:`mne_bids.path.get_matched_basenames()` allows uers to retrieve a list of :class:`mne_bids.path.BIDSPath` objects matching a specified set of entity values in the dataset, by `Richard Höchenberger`_ (`#507 <https://github.com/mne-tools/mne-bids/pull/507>`_)
 
 Bug
 ~~~
@@ -72,7 +73,7 @@ API
 - A function for retrieval of BIDS entity values from a filename, :func:`mne_bids.path.get_entities_from_fname`, is now part of the public API (it used to be a private function called ``mne_bids.path._parse_bids_filename``), by `Richard Höchenberger`_ (`#487 <https://github.com/mne-tools/mne-bids/pull/487>`_)
 - Entity names passed to :func:`mne_bids.get_entity_vals` must now be in the "long" for, e.g. ``subject`` instead of ``sub`` etc., by `Richard Höchenberger`_ (`#501 <https://github.com/mne-tools/mne-bids/pull/501>`_)
 - Change :func:`mne_bids.path.get_entities_from_fname` to use full entity kwargs (e.g. 'subject' instead of 'sub') in the return dictionary structure by `Adam Li`_ (`#496 <https://github.com/mne-tools/mne-bids/pull/496>`_)
-- Change :func:`mne_bids.path.BIDSPath` and :func:`mne_bids.make_bids_basename` to use explicitly ``kind`` and ``extension`` instead of ``suffix`` in kwargs by `Adam Li`_ (`#496 <https://github.com/mne-tools/mne-bids/pull/496>`_)
+- Change :class:`mne_bids.path.BIDSPath` and :func:`mne_bids.make_bids_basename` to use explicitly ``kind`` and ``extension`` instead of ``suffix`` in kwargs by `Adam Li`_ (`#496 <https://github.com/mne-tools/mne-bids/pull/496>`_)
 
 
 .. _changes_0_4:
