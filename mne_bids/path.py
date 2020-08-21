@@ -564,7 +564,7 @@ def _find_matching_sidecar(bids_fname, bids_root, kind=None,
 def make_bids_basename(subject=None, session=None, task=None,
                        acquisition=None, run=None, processing=None,
                        recording=None, space=None, split=None, prefix=None,
-                       kind=None, extension=None):
+                       kind=None, extension=None, check=True):
     """Create a partial/full BIDS basename from its component parts.
 
     BIDS filename prefixes have one or more pieces of metadata in them. They
@@ -607,6 +607,10 @@ def make_bids_basename(subject=None, session=None, task=None,
         before the extension. E.g., ``'ieeg'``.
     extension : str | None
         The extension of the filename. E.g., ``'.json'``.
+    check : bool
+        Checks validity of the passed in entities (Default is ``True``).
+        If you are using this function for creating ``derivatives`` names,
+        then you should turn this to ``False``.
 
     Returns
     -------
@@ -624,7 +628,7 @@ def make_bids_basename(subject=None, session=None, task=None,
                          processing=processing, recording=recording,
                          space=space, split=split, prefix=prefix,
                          kind=kind, extension=extension)
-    bids_path._check()
+    bids_path._check(deep=check)
     return bids_path
 
 
