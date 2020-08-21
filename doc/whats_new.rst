@@ -54,7 +54,7 @@ Bug
 - :func:`mne_bids.read_raw_bids` now populates the list of bad channels based on ``*_channels.tsv`` if (and only if) a ``status`` column is present, ignoring similar metadata stored in raw file (which will still be used if **no** ``status`` column is present in ``*_channels.tsv``), by `Richard Höchenberger`_ (`#499 <https://github.com/mne-tools/mne-bids/pull/499>`_)
 - Ensure that ``Raw.info['bads']`` returned by :func:`mne_bids.read_raw_bids` is always a list, by `Richard Höchenberger`_ (`#501 <https://github.com/mne-tools/mne-bids/pull/501>`_)
 - :func:`mne_bids.write_raw_bids` now ensures that **all** parts of the :class:`mne.io.Raw` instance stay in sync when using anonymization to shift dates, e.g. ``raw.annotations``, by `Richard Höchenberger`_ (`#504 <https://github.com/mne-tools/mne-bids/pull/504>`_)
-- Fix :func:`mne_bids.write_raw_bids` failed BIDS validator for ``raw.info['dig'] = []`` and for data that has too few channels to find powerline info, by `Alex Rockhill`_ (`#505 <https://github.com/mne-tools/mne-bids/pull/505>`_)
+- Fix :func:`mne_bids.write_raw_bids` failed BIDS validator for ``raw.info['dig'] = []`` by `Alex Rockhill`_ (`#505 <https://github.com/mne-tools/mne-bids/pull/505>`_)
 
 API
 ~~~
@@ -73,6 +73,8 @@ API
 - Entity names passed to :func:`mne_bids.get_entity_vals` must now be in the "long" for, e.g. ``subject`` instead of ``sub`` etc., by `Richard Höchenberger`_ (`#501 <https://github.com/mne-tools/mne-bids/pull/501>`_)
 - Change :func:`mne_bids.path.get_entities_from_fname` to use full entity kwargs (e.g. 'subject' instead of 'sub') in the return dictionary structure by `Adam Li`_ (`#496 <https://github.com/mne-tools/mne-bids/pull/496>`_)
 - Change :func:`mne_bids.path.BIDSPath` and :func:`mne_bids.make_bids_basename` to use explicitly ``kind`` and ``extension`` instead of ``suffix`` in kwargs by `Adam Li`_ (`#496 <https://github.com/mne-tools/mne-bids/pull/496>`_)
+- It is now required to specify the Power Line Frequency to use :func:`write_raw_bids`, while in 0.4 it could be estimated, by `Alexandre Gramfort`_ and `Alex Rockhill`_ (`#506 <https://github.com/mne-tools/mne-bids/pull/506>`_)
+
 
 
 .. _changes_0_4:
