@@ -53,6 +53,8 @@ def run():
     parser.add_option('--allow_maxshield', dest='allow_maxshield',
                       help="whether to allow non maxfiltered data (BOOLEAN)",
                       action='store_true')
+    parser.add_option('--line_freq', dest='line_freq',
+                      help="The frequency of the line noise (e.g. 50 or 60).")
 
     opt, args = parser.parse_args()
 
@@ -72,6 +74,8 @@ def run():
     raw = _read_raw(opt.raw_fname, hpi=opt.hpi, electrode=opt.electrode,
                     hsp=opt.hsp, config=opt.config,
                     allow_maxshield=opt.allow_maxshield)
+    if opt.line_freq is not None:
+        raw.info['line_freq'] = opt.line_freq
     write_raw_bids(raw, bids_basename, opt.bids_root, event_id=opt.event_id,
                    events_data=opt.events_data, overwrite=opt.overwrite,
                    verbose=True)

@@ -491,8 +491,11 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, overwrite=False,
     sfreq = raw.info['sfreq']
     powerlinefrequency = raw.info.get('line_freq', None)
     if powerlinefrequency is None:
-        powerlinefrequency = 'n/a'
-        warn('No line frequency found')
+        raise ValueError("PowerLineFrequency parameter is required "
+                         "in the sidecar files. Please specify it "
+                         "in info['line_freq'] before saving to BIDS "
+                         "(e.g. raw.info['line_freq'] = 60 or with "
+                         "--line_freq option in the command line.).")
 
     if isinstance(raw, BaseRaw):
         rec_type = 'continuous'
