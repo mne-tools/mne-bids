@@ -105,7 +105,7 @@ def test_make_filenames():
     prefix_data['extension'] = '.h5'
     with pytest.raises(ValueError, match='Extension .h5 is not allowed'):
         make_bids_basename(**prefix_data)
-    basename = make_bids_basename(**prefix_data)
+    basename = make_bids_basename(**prefix_data, check=False)
     assert basename.basename == 'sub-one_ses-two_task-three_acq-four_run-five_proc-six_rec-seven_ieeg.h5'  # noqa
 
 
