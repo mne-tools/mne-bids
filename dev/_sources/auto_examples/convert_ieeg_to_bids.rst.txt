@@ -118,7 +118,7 @@ MNE-Python:
     Using default location ~/mne_data for misc...
     Downloading archive mne-misc-data-0.6.tar.gz to /home/circleci/mne_data
     Downloading https://codeload.github.com/mne-tools/mne-misc-data/tar.gz/0.6 (0 bytes)
-      0%|          | Downloading : 0.00/0.00 [00:00<?,        ?B/s]      0%|          | Downloading : 56.0k/0.00 [00:00<00:00,    3.45MB/s]      0%|          | Downloading : 152k/0.00 [00:00<00:00,    3.47MB/s]       0%|          | Downloading : 216k/0.00 [00:00<00:00,    3.46MB/s]      0%|          | Downloading : 280k/0.00 [00:00<00:00,    3.18MB/s]      0%|          | Downloading : 728k/0.00 [00:00<00:00,    3.32MB/s]      0%|          | Downloading : 1.21M/0.00 [00:00<00:00,    3.46MB/s]      0%|          | Downloading : 1.71M/0.00 [00:00<00:00,    3.61MB/s]      0%|          | Downloading : 2.21M/0.00 [00:00<00:00,    3.76MB/s]      0%|          | Downloading : 2.46M/0.00 [00:00<00:00,    3.90MB/s]      0%|          | Downloading : 2.71M/0.00 [00:00<00:00,    4.05MB/s]      0%|          | Downloading : 3.21M/0.00 [00:00<00:00,    3.99MB/s]      0%|          | Downloading : 3.34M/0.00 [00:00<00:00,    3.92MB/s]      0%|          | Downloading : 3.46M/0.00 [00:00<00:00,    3.73MB/s]      0%|          | Downloading : 3.59M/0.00 [00:00<00:00,    3.66MB/s]      0%|          | Downloading : 3.71M/0.00 [00:00<00:00,    3.62MB/s]      0%|          | Downloading : 3.84M/0.00 [00:00<00:00,    3.42MB/s]      0%|          | Downloading : 3.96M/0.00 [00:00<00:00,    3.40MB/s]      0%|          | Downloading : 4.09M/0.00 [00:00<00:00,    3.35MB/s]      0%|          | Downloading : 4.21M/0.00 [00:00<00:00,    3.21MB/s]      0%|          | Downloading : 4.46M/0.00 [00:00<00:00,    3.34MB/s]      0%|          | Downloading : 4.96M/0.00 [00:00<00:00,    3.48MB/s]      0%|          | Downloading : 5.46M/0.00 [00:00<00:00,    3.63MB/s]      0%|          | Downloading : 5.96M/0.00 [00:00<00:00,    3.78MB/s]      0%|          | Downloading : 6.46M/0.00 [00:01<00:00,    3.93MB/s]      0%|          | Downloading : 6.96M/0.00 [00:01<00:00,    4.10MB/s]      0%|          | Downloading : 7.46M/0.00 [00:01<00:00,    4.26MB/s]      0%|          | Downloading : 7.96M/0.00 [00:01<00:00,    4.43MB/s]      0%|          | Downloading : 8.46M/0.00 [00:01<00:00,    4.59MB/s]      0%|          | Downloading : 8.96M/0.00 [00:01<00:00,    4.75MB/s]      0%|          | Downloading : 9.21M/0.00 [00:01<00:00,    4.92MB/s]      0%|          | Downloading : 9.46M/0.00 [00:01<00:00,    5.09MB/s]      0%|          | Downloading : 9.71M/0.00 [00:01<00:00,    5.27MB/s]      0%|          | Downloading : 10.2M/0.00 [00:01<00:00,    5.47MB/s]      0%|          | Downloading : 10.7M/0.00 [00:01<00:00,    5.67MB/s]      0%|          | Downloading : 11.2M/0.00 [00:01<00:00,    5.86MB/s]      0%|          | Downloading : 11.5M/0.00 [00:01<00:00,    6.03MB/s]      0%|          | Downloading : 11.7M/0.00 [00:01<00:00,    6.19MB/s]      0%|          | Downloading : 12.0M/0.00 [00:01<00:00,    6.37MB/s]      0%|          | Downloading : 12.2M/0.00 [00:01<00:00,    6.53MB/s]      0%|          | Downloading : 12.5M/0.00 [00:01<00:00,    6.71MB/s]      0%|          | Downloading : 12.7M/0.00 [00:01<00:00,    6.89MB/s]      0%|          | Downloading : 13.2M/0.00 [00:01<00:00,    7.11MB/s]      0%|          | Downloading : 13.5M/0.00 [00:01<00:00,    6.22MB/s]      0%|          | Downloading : 13.6M/0.00 [00:01<00:00,    5.85MB/s]      0%|          | Downloading : 13.7M/0.00 [00:01<00:00,    5.50MB/s]      0%|          | Downloading : 13.8M/0.00 [00:01<00:00,    5.02MB/s]      0%|          | Downloading : 14.0M/0.00 [00:01<00:00,    4.79MB/s]      0%|          | Downloading : 14.1M/0.00 [00:01<00:00,    4.44MB/s]      0%|          | Downloading : 14.2M/0.00 [00:01<00:00,    4.32MB/s]      0%|          | Downloading : 14.3M/0.00 [00:01<00:00,    4.23MB/s]      0%|          | Downloading : 14.5M/0.00 [00:02<00:00,    3.99MB/s]      0%|          | Downloading : 14.6M/0.00 [00:02<00:00,    4.02MB/s]      0%|          | Downloading : 15.0M/0.00 [00:02<00:00,    4.18MB/s]      0%|          | Downloading : 15.5M/0.00 [00:02<00:00,    4.35MB/s]      0%|          | Downloading : 16.0M/0.00 [00:02<00:00,    4.52MB/s]      0%|          | Downloading : 16.5M/0.00 [00:02<00:00,    4.69MB/s]      0%|          | Downloading : 17.0M/0.00 [00:02<00:00,    4.87MB/s]      0%|          | Downloading : 17.5M/0.00 [00:02<00:00,    5.05MB/s]      0%|          | Downloading : 18.0M/0.00 [00:02<00:00,    5.23MB/s]      0%|          | Downloading : 18.5M/0.00 [00:02<00:00,    5.42MB/s]      0%|          | Downloading : 19.0M/0.00 [00:02<00:00,    5.61MB/s]      0%|          | Downloading : 19.2M/0.00 [00:02<00:00,    5.78MB/s]      0%|          | Downloading : 19.7M/0.00 [00:02<00:00,    5.99MB/s]      0%|          | Downloading : 20.0M/0.00 [00:02<00:00,    6.18MB/s]      0%|          | Downloading : 20.5M/0.00 [00:02<00:00,    6.37MB/s]      0%|          | Downloading : 20.7M/0.00 [00:02<00:00,    6.56MB/s]      0%|          | Downloading : 21.0M/0.00 [00:02<00:00,    6.71MB/s]      0%|          | Downloading : 21.2M/0.00 [00:02<00:00,    6.90MB/s]      0%|          | Downloading : 21.5M/0.00 [00:02<00:00,    7.06MB/s]      0%|          | Downloading : 21.7M/0.00 [00:02<00:00,    7.27MB/s]      0%|          | Downloading : 22.2M/0.00 [00:02<00:00,    7.48MB/s]      0%|          | Downloading : 22.5M/0.00 [00:02<00:00,    7.64MB/s]      0%|          | Downloading : 22.7M/0.00 [00:02<00:00,    7.81MB/s]      0%|          | Downloading : 23.2M/0.00 [00:02<00:00,    8.02MB/s]      0%|          | Downloading : 23.7M/0.00 [00:02<00:00,    8.10MB/s]      0%|          | Downloading : 24.0M/0.00 [00:02<00:00,    8.31MB/s]      0%|          | Downloading : 24.5M/0.00 [00:02<00:00,    8.55MB/s]      0%|          | Downloading : 25.0M/0.00 [00:02<00:00,    8.79MB/s]      0%|          | Downloading : 25.5M/0.00 [00:02<00:00,    9.03MB/s]      0%|          | Downloading : 26.0M/0.00 [00:02<00:00,    9.29MB/s]      0%|          | Downloading : 26.5M/0.00 [00:02<00:00,    9.51MB/s]      0%|          | Downloading : 27.2M/0.00 [00:02<00:00,    9.78MB/s]      0%|          | Downloading : 27.7M/0.00 [00:02<00:00,    10.0MB/s]      0%|          | Downloading : 28.2M/0.00 [00:02<00:00,    10.2MB/s]      0%|          | Downloading : 28.7M/0.00 [00:03<00:00,    10.0MB/s]      0%|          | Downloading : 29.2M/0.00 [00:03<00:00,    9.96MB/s]      0%|          | Downloading : 29.7M/0.00 [00:03<00:00,    9.90MB/s]      0%|          | Downloading : 30.2M/0.00 [00:03<00:00,    9.82MB/s]      0%|          | Downloading : 30.7M/0.00 [00:03<00:00,    9.77MB/s]      0%|          | Downloading : 30.9M/0.00 [00:03<00:00,    9.75MB/s]      0%|          | Downloading : 30.9M/0.00 [00:03<00:00,    9.91MB/s]
+      0%|          | Downloading : 0.00/0.00 [00:00<?,        ?B/s]      0%|          | Downloading : 152k/0.00 [00:00<00:00,    4.11MB/s]      0%|          | Downloading : 216k/0.00 [00:00<00:00,    4.04MB/s]      0%|          | Downloading : 280k/0.00 [00:00<00:00,    3.64MB/s]      0%|          | Downloading : 728k/0.00 [00:00<00:00,    3.79MB/s]      0%|          | Downloading : 1.21M/0.00 [00:00<00:00,    3.95MB/s]      0%|          | Downloading : 1.71M/0.00 [00:00<00:00,    4.10MB/s]      0%|          | Downloading : 2.21M/0.00 [00:00<00:00,    4.27MB/s]      0%|          | Downloading : 2.71M/0.00 [00:00<00:00,    4.44MB/s]      0%|          | Downloading : 3.21M/0.00 [00:00<00:00,    4.34MB/s]      0%|          | Downloading : 3.34M/0.00 [00:00<00:00,    4.25MB/s]      0%|          | Downloading : 3.46M/0.00 [00:00<00:00,    4.05MB/s]      0%|          | Downloading : 3.59M/0.00 [00:00<00:00,    3.97MB/s]      0%|          | Downloading : 3.71M/0.00 [00:00<00:00,    3.89MB/s]      0%|          | Downloading : 3.84M/0.00 [00:00<00:00,    3.68MB/s]      0%|          | Downloading : 3.96M/0.00 [00:00<00:00,    3.64MB/s]      0%|          | Downloading : 4.09M/0.00 [00:00<00:00,    3.56MB/s]      0%|          | Downloading : 4.21M/0.00 [00:00<00:00,    3.43MB/s]      0%|          | Downloading : 4.46M/0.00 [00:00<00:00,    3.56MB/s]      0%|          | Downloading : 4.96M/0.00 [00:00<00:00,    3.71MB/s]      0%|          | Downloading : 5.46M/0.00 [00:00<00:00,    3.87MB/s]      0%|          | Downloading : 5.96M/0.00 [00:00<00:00,    4.02MB/s]      0%|          | Downloading : 6.46M/0.00 [00:00<00:00,    4.19MB/s]      0%|          | Downloading : 6.96M/0.00 [00:01<00:00,    4.35MB/s]      0%|          | Downloading : 7.46M/0.00 [00:01<00:00,    4.53MB/s]      0%|          | Downloading : 7.96M/0.00 [00:01<00:00,    4.71MB/s]      0%|          | Downloading : 8.46M/0.00 [00:01<00:00,    4.90MB/s]      0%|          | Downloading : 8.96M/0.00 [00:01<00:00,    5.08MB/s]      0%|          | Downloading : 9.46M/0.00 [00:01<00:00,    5.28MB/s]      0%|          | Downloading : 9.96M/0.00 [00:01<00:00,    5.47MB/s]      0%|          | Downloading : 10.5M/0.00 [00:01<00:00,    5.68MB/s]      0%|          | Downloading : 11.0M/0.00 [00:01<00:00,    5.88MB/s]      0%|          | Downloading : 11.5M/0.00 [00:01<00:00,    6.09MB/s]      0%|          | Downloading : 12.0M/0.00 [00:01<00:00,    6.30MB/s]      0%|          | Downloading : 12.5M/0.00 [00:01<00:00,    6.52MB/s]      0%|          | Downloading : 13.0M/0.00 [00:01<00:00,    6.74MB/s]      0%|          | Downloading : 13.5M/0.00 [00:01<00:00,    6.44MB/s]      0%|          | Downloading : 13.6M/0.00 [00:01<00:00,    6.08MB/s]      0%|          | Downloading : 13.7M/0.00 [00:01<00:00,    5.75MB/s]      0%|          | Downloading : 13.8M/0.00 [00:01<00:00,    5.25MB/s]      0%|          | Downloading : 14.0M/0.00 [00:01<00:00,    5.11MB/s]      0%|          | Downloading : 14.1M/0.00 [00:01<00:00,    4.76MB/s]      0%|          | Downloading : 14.2M/0.00 [00:01<00:00,    4.61MB/s]      0%|          | Downloading : 14.3M/0.00 [00:01<00:00,    4.47MB/s]      0%|          | Downloading : 14.5M/0.00 [00:01<00:00,    4.25MB/s]      0%|          | Downloading : 14.6M/0.00 [00:01<00:00,    4.27MB/s]      0%|          | Downloading : 15.0M/0.00 [00:01<00:00,    4.45MB/s]      0%|          | Downloading : 15.5M/0.00 [00:01<00:00,    4.62MB/s]      0%|          | Downloading : 16.0M/0.00 [00:02<00:00,    4.80MB/s]      0%|          | Downloading : 16.5M/0.00 [00:02<00:00,    5.00MB/s]      0%|          | Downloading : 17.0M/0.00 [00:02<00:00,    5.19MB/s]      0%|          | Downloading : 17.5M/0.00 [00:02<00:00,    5.38MB/s]      0%|          | Downloading : 17.7M/0.00 [00:02<00:00,    5.55MB/s]      0%|          | Downloading : 18.5M/0.00 [00:02<00:00,    5.77MB/s]      0%|          | Downloading : 19.0M/0.00 [00:02<00:00,    5.96MB/s]      0%|          | Downloading : 19.5M/0.00 [00:02<00:00,    6.17MB/s]      0%|          | Downloading : 20.0M/0.00 [00:02<00:00,    6.38MB/s]      0%|          | Downloading : 20.5M/0.00 [00:02<00:00,    6.60MB/s]      0%|          | Downloading : 21.0M/0.00 [00:02<00:00,    6.83MB/s]      0%|          | Downloading : 21.5M/0.00 [00:02<00:00,    7.05MB/s]      0%|          | Downloading : 22.0M/0.00 [00:02<00:00,    7.28MB/s]      0%|          | Downloading : 22.5M/0.00 [00:02<00:00,    7.51MB/s]      0%|          | Downloading : 23.0M/0.00 [00:02<00:00,    7.75MB/s]      0%|          | Downloading : 23.5M/0.00 [00:02<00:00,    7.98MB/s]      0%|          | Downloading : 24.0M/0.00 [00:02<00:00,    8.05MB/s]      0%|          | Downloading : 24.5M/0.00 [00:02<00:00,    8.33MB/s]      0%|          | Downloading : 25.0M/0.00 [00:02<00:00,    8.62MB/s]      0%|          | Downloading : 25.5M/0.00 [00:02<00:00,    8.92MB/s]      0%|          | Downloading : 26.0M/0.00 [00:02<00:00,    9.24MB/s]      0%|          | Downloading : 26.5M/0.00 [00:02<00:00,    9.54MB/s]      0%|          | Downloading : 27.0M/0.00 [00:02<00:00,    9.87MB/s]      0%|          | Downloading : 27.5M/0.00 [00:02<00:00,    10.2MB/s]      0%|          | Downloading : 28.0M/0.00 [00:02<00:00,    10.5MB/s]      0%|          | Downloading : 28.5M/0.00 [00:02<00:00,    10.8MB/s]      0%|          | Downloading : 29.0M/0.00 [00:02<00:00,    10.4MB/s]      0%|          | Downloading : 29.5M/0.00 [00:02<00:00,    10.5MB/s]      0%|          | Downloading : 30.0M/0.00 [00:02<00:00,    10.6MB/s]      0%|          | Downloading : 30.5M/0.00 [00:02<00:00,    10.6MB/s]      0%|          | Downloading : 30.9M/0.00 [00:02<00:00,    10.6MB/s]      0%|          | Downloading : 30.9M/0.00 [00:02<00:00,    11.1MB/s]
     Verifying hash e00808c3b05123059e2cf49ff276e919.
     Removing old directory: /home/circleci/mne_data/MNE-misc-data
     Decompressing the archive: /home/circleci/mne_data/mne-misc-data-0.6.tar.gz
@@ -163,6 +163,7 @@ use the montage we created.
 
     info = mne.create_info(ch_names, 1000., 'ecog')
     raw = mne.io.read_raw_edf(misc_path + '/ecog/sample_ecog.edf')
+    raw.info['line_freq'] = 60  # specify power line frequency as required by BIDS
     raw.set_channel_types({ch: 'ecog' for ch in raw.ch_names})
 
     # set the bad channels
@@ -187,9 +188,9 @@ use the montage we created.
     EDF file detected
     Setting channel info structure...
     Creating raw.info structure...
-    /home/circleci/project/examples/convert_ieeg_to_bids.py:106: RuntimeWarning: Fiducial point nasion not found, assuming identity unknown to head transformation
+    /home/circleci/project/examples/convert_ieeg_to_bids.py:107: RuntimeWarning: Fiducial point nasion not found, assuming identity unknown to head transformation
       raw.set_montage(montage, on_missing='warn')
-    /home/circleci/project/examples/convert_ieeg_to_bids.py:106: RuntimeWarning: DigMontage is only a subset of info. There are 14 channel positions not present in the DigMontage. The required channels are: ['BTM1', 'BTM2', 'BTM3', 'BTM4', 'BTM5', 'BTM6', 'BTP1', 'BTP2', 'BTP3', 'BTP4', 'BTP5', 'BTP6', 'EKGL', 'EKGR']
+    /home/circleci/project/examples/convert_ieeg_to_bids.py:107: RuntimeWarning: DigMontage is only a subset of info. There are 14 channel positions not present in the DigMontage. The required channels are: ['BTM1', 'BTM2', 'BTM3', 'BTM4', 'BTM5', 'BTM6', 'BTP1', 'BTP2', 'BTP3', 'BTP4', 'BTP5', 'BTP6', 'EKGL', 'EKGR']
       raw.set_montage(montage, on_missing='warn')
 
     <RawEDF | sample_ecog.edf, 78 x 21658 (21.7 s), ~195 kB, data not loaded>
@@ -439,7 +440,7 @@ temporarily save the data to disc before reading it back in.
     Setting channel info structure...
     Creating raw.info structure...
     Creating folder: /home/circleci/mne_data/ieegmmidb_bids/sub-001/ieeg
-    /home/circleci/project/mne_bids/write.py:1054: RuntimeWarning: Converting to BV for anonymization
+    /home/circleci/project/mne_bids/write.py:1050: RuntimeWarning: Converting to BV for anonymization
       warn('Converting to BV for anonymization')
 
     Writing '/home/circleci/mne_data/ieegmmidb_bids/README'...
@@ -502,7 +503,7 @@ temporarily save the data to disc before reading it back in.
         "iEEGCoordinateSystemDescription": "n/a",
         "iEEGCoordinateUnits": "m"
     }
-    /home/circleci/project/mne_bids/utils.py:235: RuntimeWarning: No events found or provided. Please make sure to set channel type using raw.set_channel_types or provide events_data.
+    /home/circleci/project/mne_bids/utils.py:234: RuntimeWarning: No events found or provided. Please make sure to set channel type using raw.set_channel_types or provide events_data.
       warn('No events found or provided. Please make sure to'
 
     Writing '/home/circleci/mne_data/ieegmmidb_bids/dataset_description.json'...
@@ -515,9 +516,6 @@ temporarily save the data to disc before reading it back in.
             "Please cite MNE-BIDS in your publication before removing this (citations in README)"
         ]
     }
-    Effective window size : 0.256 (s)
-    /home/circleci/project/mne_bids/write.py:500: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
-      warn('No line frequency found, defaulting to {} Hz '
 
     Writing '/home/circleci/mne_data/ieegmmidb_bids/sub-001/ieeg/sub-001_task-testresteyes_acq-ecog_ieeg.json'...
 
@@ -548,7 +546,7 @@ temporarily save the data to disc before reading it back in.
     C3      ECOG    µV      0.0     499.70605526161086      Electrocorticography    999.4121105232217       good    n/a
     C4      ECOG    µV      0.0     499.70605526161086      Electrocorticography    999.4121105232217       good    n/a
     C5      ECOG    µV      0.0     499.70605526161086      Electrocorticography    999.4121105232217       good    n/a
-    /home/circleci/project/mne_bids/write.py:1130: RuntimeWarning: Converting data files to BrainVision format
+    /home/circleci/project/mne_bids/write.py:1126: RuntimeWarning: Converting data files to BrainVision format
       warn('Converting data files to BrainVision format')
 
     Writing '/home/circleci/mne_data/ieegmmidb_bids/sub-001/sub-001_scans.tsv'...
@@ -582,20 +580,20 @@ Step 3: Check and compare with standard
  .. code-block:: none
 
     |ieegmmidb_bids/
-    |--- README
     |--- participants.json
+    |--- README
     |--- participants.tsv
     |--- dataset_description.json
     |--- sub-001/
     |------ sub-001_scans.tsv
     |------ ieeg/
-    |--------- sub-001_task-testresteyes_acq-ecog_ieeg.vhdr
-    |--------- sub-001_acq-ecog_space-mri_coordsystem.json
     |--------- sub-001_task-testresteyes_acq-ecog_channels.tsv
-    |--------- sub-001_task-testresteyes_acq-ecog_ieeg.eeg
     |--------- sub-001_acq-ecog_space-mri_electrodes.tsv
     |--------- sub-001_task-testresteyes_acq-ecog_ieeg.vmrk
+    |--------- sub-001_task-testresteyes_acq-ecog_ieeg.vhdr
+    |--------- sub-001_acq-ecog_space-mri_coordsystem.json
     |--------- sub-001_task-testresteyes_acq-ecog_ieeg.json
+    |--------- sub-001_task-testresteyes_acq-ecog_ieeg.eeg
 
 
 
@@ -729,7 +727,7 @@ Now we have written our BIDS directory. We can use
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  4.024 seconds)
+   **Total running time of the script:** ( 0 minutes  3.995 seconds)
 
 
 .. _sphx_glr_download_auto_examples_convert_ieeg_to_bids.py:

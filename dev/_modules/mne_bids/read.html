@@ -134,8 +134,7 @@
 <span class="kn">from</span> <span class="nn">mne_bids.tsv_handler</span> <span class="kn">import</span> <span class="n">_from_tsv</span><span class="p">,</span> <span class="n">_drop</span>
 <span class="kn">from</span> <span class="nn">mne_bids.config</span> <span class="kn">import</span> <span class="p">(</span><span class="n">ALLOWED_MODALITY_EXTENSIONS</span><span class="p">,</span> <span class="n">reader</span><span class="p">,</span>
                              <span class="n">_convert_hand_options</span><span class="p">,</span> <span class="n">_convert_sex_options</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">mne_bids.utils</span> <span class="kn">import</span> <span class="p">(</span><span class="n">_extract_landmarks</span><span class="p">,</span>
-                            <span class="n">_get_ch_type_mapping</span><span class="p">,</span> <span class="n">_estimate_line_freq</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">mne_bids.utils</span> <span class="kn">import</span> <span class="n">_extract_landmarks</span><span class="p">,</span> <span class="n">_get_ch_type_mapping</span>
 <span class="kn">from</span> <span class="nn">mne_bids</span> <span class="kn">import</span> <span class="n">make_bids_folders</span>
 <span class="kn">from</span> <span class="nn">mne_bids.path</span> <span class="kn">import</span> <span class="p">(</span><span class="n">BIDSPath</span><span class="p">,</span> <span class="n">_parse_ext</span><span class="p">,</span> <span class="n">get_entities_from_fname</span><span class="p">,</span>
                            <span class="n">_find_matching_sidecar</span><span class="p">,</span> <span class="n">_infer_kind</span><span class="p">)</span>
@@ -224,20 +223,10 @@
     <span class="k">if</span> <span class="n">line_freq</span> <span class="o">==</span> <span class="s2">&quot;n/a&quot;</span><span class="p">:</span>
         <span class="n">line_freq</span> <span class="o">=</span> <span class="kc">None</span>
 
-    <span class="k">if</span> <span class="n">line_freq</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;line_freq&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="c1"># estimate line noise using PSD from multitaper FFT</span>
-        <span class="n">powerlinefrequency</span> <span class="o">=</span> <span class="n">_estimate_line_freq</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
-        <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;line_freq&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">powerlinefrequency</span>
-        <span class="n">warn</span><span class="p">(</span><span class="s1">&#39;No line frequency found, defaulting to </span><span class="si">{}</span><span class="s1"> Hz &#39;</span>
-             <span class="s1">&#39;estimated from multi-taper FFT &#39;</span>
-             <span class="s1">&#39;on 10 seconds of data.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">powerlinefrequency</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;line_freq&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">line_freq</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">line_freq</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;line_freq&quot;</span><span class="p">]</span>  <span class="c1"># take from file is present</span>
 
-    <span class="k">elif</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;line_freq&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">line_freq</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="c1"># if the read in frequency is not set inside Raw</span>
-        <span class="c1"># -&gt; set it to what the sidecar JSON specifies</span>
-        <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;line_freq&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">line_freq</span>
-    <span class="k">elif</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;line_freq&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> \
-            <span class="ow">and</span> <span class="n">line_freq</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;line_freq&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">line_freq</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># if both have a set Power Line Frequency, then</span>
         <span class="c1"># check that they are the same, else there is a</span>
         <span class="c1"># discrepency in the metadata of the dataset.</span>
@@ -248,6 +237,7 @@
                              <span class="s2">&quot;Raw is -&gt; </span><span class="si">{}</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;line_freq&quot;</span><span class="p">]),</span>
                              <span class="s2">&quot;Sidecar JSON is -&gt; </span><span class="si">{}</span><span class="s2"> &quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">line_freq</span><span class="p">))</span>
 
+    <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s2">&quot;line_freq&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">line_freq</span>
     <span class="k">return</span> <span class="n">raw</span>
 
 
@@ -767,7 +757,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-08-20.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-08-21.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
     </p>
   </div>

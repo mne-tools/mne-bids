@@ -138,13 +138,13 @@ of the directory tree.
     |------ eegmmidb/
     |--------- 1.0.0/
     |------------ S001/
-    |--------------- S001R08.edf
     |--------------- S001R04.edf
-    |--------------- S001R02.edf
     |--------------- S001R12.edf
+    |--------------- S001R08.edf
+    |--------------- S001R02.edf
     |------------ S002/
-    |--------------- S002R12.edf
     |--------------- S002R04.edf
+    |--------------- S002R12.edf
     |--------------- S002R08.edf
 
 
@@ -177,6 +177,7 @@ It prevents the data from being loaded and modified when converting to BIDS.
     # Load the data from "2 minutes eyes closed rest"
     edf_path = eegbci.load_data(subject=subject, runs=run)[0]
     raw = mne.io.read_raw_edf(edf_path, preload=False)
+    raw.info['line_freq'] = 50  # specify power line frequency as required by BIDS
 
     # For converting the data to BIDS, we need to convert the the annotations
     # stored in the file to a 2D numpy array of events.
@@ -545,9 +546,6 @@ Now we just need to specify a few more EEG details to get something sensible:
             "Please cite MNE-BIDS in your publication before removing this (citations in README)"
         ]
     }
-    Effective window size : 1.600 (s)
-    /home/circleci/project/mne_bids/write.py:500: RuntimeWarning: No line frequency found, defaulting to 60 Hz estimated from multi-taper FFT on 10 seconds of data.
-      warn('No line frequency found, defaulting to {} Hz '
     Reading 0 ... 9759  =      0.000 ...    60.994 secs...
 
     Writing '/home/circleci/mne_data/eegmmidb_bids_eeg_example/sub-001/eeg/sub-001_task-RestEyesClosed_eeg.json'...
@@ -555,7 +553,7 @@ Now we just need to specify a few more EEG details to get something sensible:
     {
         "TaskName": "RestEyesClosed",
         "Manufacturer": "n/a",
-        "PowerLineFrequency": 60,
+        "PowerLineFrequency": 50,
         "SamplingFrequency": 160.0,
         "SoftwareFilters": "n/a",
         "RecordingDuration": 60.99375,
@@ -609,19 +607,19 @@ What does our fresh BIDS directory look like?
  .. code-block:: none
 
     |eegmmidb_bids_eeg_example/
-    |--- README
     |--- participants.json
+    |--- README
     |--- participants.tsv
     |--- dataset_description.json
     |--- sub-001/
     |------ sub-001_scans.tsv
     |------ eeg/
     |--------- sub-001_task-RestEyesClosed_events.tsv
-    |--------- sub-001_task-RestEyesClosed_eeg.edf
-    |--------- sub-001_coordsystem.json
-    |--------- sub-001_task-RestEyesClosed_eeg.json
     |--------- sub-001_electrodes.tsv
+    |--------- sub-001_task-RestEyesClosed_eeg.json
+    |--------- sub-001_coordsystem.json
     |--------- sub-001_task-RestEyesClosed_channels.tsv
+    |--------- sub-001_task-RestEyesClosed_eeg.edf
 
 
 
@@ -700,7 +698,7 @@ Command line tool: https://www.npmjs.com/package/bids-validator
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  0.472 seconds)
+   **Total running time of the script:** ( 0 minutes  0.368 seconds)
 
 
 .. _sphx_glr_download_auto_examples_convert_eeg_to_bids.py:

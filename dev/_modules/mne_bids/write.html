@@ -147,8 +147,7 @@
                             <span class="n">_read_events</span><span class="p">,</span> <span class="n">_age_on_date</span><span class="p">,</span>
                             <span class="n">_infer_eeg_placement_scheme</span><span class="p">,</span>
                             <span class="n">_handle_kind</span><span class="p">,</span> <span class="n">_get_ch_type_mapping</span><span class="p">,</span>
-                            <span class="n">_estimate_line_freq</span><span class="p">,</span> <span class="n">_check_anonymize</span><span class="p">,</span>
-                            <span class="n">_stamp_to_dt</span><span class="p">)</span>
+                            <span class="n">_check_anonymize</span><span class="p">,</span> <span class="n">_stamp_to_dt</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">mne_bids</span> <span class="kn">import</span> <span class="n">make_bids_folders</span><span class="p">,</span> <span class="n">make_bids_basename</span>
 <span class="kn">from</span> <span class="nn">mne_bids.path</span> <span class="kn">import</span> <span class="p">(</span><span class="n">BIDSPath</span><span class="p">,</span> <span class="n">_parse_ext</span><span class="p">,</span> <span class="n">get_entities_from_fname</span><span class="p">,</span>
                            <span class="n">_mkdir_p</span><span class="p">,</span> <span class="n">_path_to_str</span><span class="p">)</span>
@@ -603,14 +602,11 @@
     <span class="n">sfreq</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;sfreq&#39;</span><span class="p">]</span>
     <span class="n">powerlinefrequency</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;line_freq&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">powerlinefrequency</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">powerlinefrequency</span> <span class="o">=</span> <span class="n">_estimate_line_freq</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">powerlinefrequency</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">powerlinefrequency</span> <span class="o">=</span> <span class="s1">&#39;n/a&#39;</span>  <span class="c1"># must be &#39;n/a&#39; for validator</span>
-            <span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Cannot determine line frequency&#39;</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">warn</span><span class="p">(</span><span class="s1">&#39;No line frequency found, defaulting to </span><span class="si">{}</span><span class="s1"> Hz &#39;</span>
-                 <span class="s1">&#39;estimated from multi-taper FFT &#39;</span>
-                 <span class="s1">&#39;on 10 seconds of data.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">powerlinefrequency</span><span class="p">))</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;PowerLineFrequency parameter is required &quot;</span>
+                         <span class="s2">&quot;in the sidecar files. Please specify it &quot;</span>
+                         <span class="s2">&quot;in info[&#39;line_freq&#39;] before saving to BIDS &quot;</span>
+                         <span class="s2">&quot;(e.g. raw.info[&#39;line_freq&#39;] = 60 or with &quot;</span>
+                         <span class="s2">&quot;--line_freq option in the command line.).&quot;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">BaseRaw</span><span class="p">):</span>
         <span class="n">rec_type</span> <span class="o">=</span> <span class="s1">&#39;continuous&#39;</span>
@@ -1484,7 +1480,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-08-20.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-08-21.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
     </p>
   </div>

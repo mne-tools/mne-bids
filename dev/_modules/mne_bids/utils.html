@@ -130,7 +130,6 @@
 <span class="kn">from</span> <span class="nn">mne.io.constants</span> <span class="kn">import</span> <span class="n">FIFF</span>
 <span class="kn">from</span> <span class="nn">mne.io.kit.kit</span> <span class="kn">import</span> <span class="n">get_kit_info</span>
 <span class="kn">from</span> <span class="nn">mne.io.pick</span> <span class="kn">import</span> <span class="n">pick_types</span>
-<span class="kn">from</span> <span class="nn">mne.time_frequency</span> <span class="kn">import</span> <span class="n">psd_array_welch</span>
 <span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="n">check_version</span><span class="p">,</span> <span class="n">warn</span><span class="p">,</span> <span class="n">logger</span>
 
 <span class="kn">from</span> <span class="nn">mne_bids.tsv_handler</span> <span class="kn">import</span> <span class="n">_to_tsv</span><span class="p">,</span> <span class="n">_tsv_to_str</span>
@@ -433,67 +432,6 @@
         <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">sidecar_json</span><span class="p">,</span> <span class="n">fout</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_estimate_line_freq</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Estimate power line noise from a given BaseRaw.</span>
-
-<span class="sd">    Uses 5 channels of either meg, eeg, ecog, or seeg to</span>
-<span class="sd">    estimate the line frequency.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    raw : mne.io.BaseRaw</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    line_freq : int | None</span>
-<span class="sd">        Either 50, or 60 Hz depending if European,</span>
-<span class="sd">        or USA data recording.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">sfreq</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;sfreq&#39;</span><span class="p">]</span>
-
-    <span class="c1"># if sampling is not high enough, line_freq does not matter</span>
-    <span class="k">if</span> <span class="n">sfreq</span> <span class="o">&lt;</span> <span class="mi">100</span><span class="p">:</span>
-        <span class="k">return</span> <span class="kc">None</span>
-
-    <span class="c1"># setup picks of the data to get at least one channel</span>
-    <span class="k">for</span> <span class="n">kind</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;meg&#39;</span><span class="p">,</span> <span class="s1">&#39;eeg&#39;</span><span class="p">,</span> <span class="s1">&#39;ecog&#39;</span><span class="p">,</span> <span class="s1">&#39;seeg&#39;</span><span class="p">):</span>
-        <span class="n">pick_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">kind</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
-        <span class="n">picks</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">pick_types</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="s1">&#39;bads&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">pick_dict</span><span class="p">))</span>
-        <span class="k">if</span> <span class="n">picks</span><span class="p">:</span>
-            <span class="c1"># get just five channels of data at the most to estimate on</span>
-            <span class="n">picks</span> <span class="o">=</span> <span class="n">picks</span><span class="p">[:</span><span class="nb">min</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">picks</span><span class="p">),</span> <span class="mi">5</span><span class="p">])]</span>
-            <span class="k">break</span>
-
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">picks</span><span class="p">:</span>
-        <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Estimation of line frequency only &quot;</span>
-             <span class="s2">&quot;supports &#39;meg&#39;, &#39;eeg&#39;, &#39;ecog&#39;, or &#39;seeg&#39;.&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="kc">None</span>
-
-    <span class="c1"># only sample first 10 seconds, or whole time series</span>
-    <span class="n">tmin</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="n">tmax</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">times</span><span class="p">),</span> <span class="mi">10</span> <span class="o">*</span> <span class="n">sfreq</span><span class="p">))</span>
-
-    <span class="c1"># get the data</span>
-    <span class="n">data</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">tmin</span><span class="p">,</span> <span class="n">stop</span><span class="o">=</span><span class="n">tmax</span><span class="p">,</span>
-                        <span class="n">picks</span><span class="o">=</span><span class="n">picks</span><span class="p">,</span> <span class="n">return_times</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-
-    <span class="c1"># run a multi-taper FFT between Power Line Frequencies of interest</span>
-    <span class="n">psds</span><span class="p">,</span> <span class="n">freqs</span> <span class="o">=</span> <span class="n">psd_array_welch</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">fmin</span><span class="o">=</span><span class="mi">49</span><span class="p">,</span> <span class="n">fmax</span><span class="o">=</span><span class="mi">61</span><span class="p">,</span>
-                                  <span class="n">sfreq</span><span class="o">=</span><span class="n">sfreq</span><span class="p">,</span> <span class="n">average</span><span class="o">=</span><span class="s2">&quot;mean&quot;</span><span class="p">)</span>
-    <span class="n">usa_ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">freqs</span> <span class="o">==</span> <span class="nb">min</span><span class="p">(</span><span class="n">freqs</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">abs</span><span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="mi">60</span><span class="p">)))[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">eu_ind</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">freqs</span> <span class="o">==</span> <span class="nb">min</span><span class="p">(</span><span class="n">freqs</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">abs</span><span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="mi">50</span><span class="p">)))[</span><span class="mi">0</span><span class="p">]</span>
-
-    <span class="c1"># get the average and standard deviation power within those frequency bands</span>
-    <span class="n">usa_psd</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">psds</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">usa_ind</span><span class="p">]))</span>
-    <span class="n">eu_psd</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">((</span><span class="n">psds</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">eu_ind</span><span class="p">]))</span>
-
-    <span class="k">if</span> <span class="n">verbose</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;EU (i.e. 50 Hz) PSD is </span><span class="si">{}</span><span class="s2"> and &quot;</span>
-              <span class="s2">&quot;USA (i.e. 60 Hz) PSD is </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">eu_psd</span><span class="p">,</span> <span class="n">usa_psd</span><span class="p">))</span>
-
-    <span class="k">return</span> <span class="mi">60</span> <span class="k">if</span> <span class="n">usa_psd</span> <span class="o">&gt;</span> <span class="n">eu_psd</span> <span class="k">else</span> <span class="mi">50</span>
-
-
 <span class="k">def</span> <span class="nf">_scale_coord_to_meters</span><span class="p">(</span><span class="n">coord</span><span class="p">,</span> <span class="n">unit</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Scale units to meters (mne-python default).&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">unit</span> <span class="o">==</span> <span class="s1">&#39;cm&#39;</span><span class="p">:</span>
@@ -651,7 +589,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-08-20.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-08-21.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
     </p>
   </div>

@@ -87,6 +87,8 @@ Options
   --overwrite=OVERWRITE
                         whether to overwrite existing data (BOOLEAN)
   --allow_maxshield     whether to allow non maxfiltered data (BOOLEAN)
+  --line_freq=LINE_FREQ
+                        The frequency of the line noise (e.g. 50 or 60).
 
 example usage:  $ mne_bids raw_to_bids --subject_id sub01 --task rest
 --raw data.edf --bids_root new_path

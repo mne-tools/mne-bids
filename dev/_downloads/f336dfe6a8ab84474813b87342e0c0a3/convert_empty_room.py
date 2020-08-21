@@ -40,6 +40,8 @@ bids_path = op.join(data_path, '..', 'MNE-sample-data-bids')
 
 # Specify the raw_file and events_data and run the BIDS conversion.
 raw = mne.io.read_raw_fif(raw_fname)
+raw.info['line_freq'] = 60  # specify power line frequency as required by BIDS
+
 bids_basename = make_bids_basename(subject='01', session='01',
                                    task='audiovisual', run='01')
 write_raw_bids(raw, bids_basename, bids_path, overwrite=True)
@@ -48,6 +50,7 @@ write_raw_bids(raw, bids_basename, bids_path, overwrite=True)
 # Specify some empty room data and run BIDS conversion on it.
 er_raw_fname = op.join(data_path, 'MEG', 'sample', 'ernoise_raw.fif')
 er_raw = mne.io.read_raw_fif(er_raw_fname)
+er_raw.info['line_freq'] = 60  # specify power line frequency as req. by BIDS
 
 # For empty room data we need to specify the recording date in the format
 # YYYYMMDD for the session id.
