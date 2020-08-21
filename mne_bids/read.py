@@ -23,8 +23,7 @@ from mne_bids.dig import _read_dig_bids
 from mne_bids.tsv_handler import _from_tsv, _drop
 from mne_bids.config import (ALLOWED_MODALITY_EXTENSIONS, reader,
                              _convert_hand_options, _convert_sex_options)
-from mne_bids.utils import (_extract_landmarks,
-                            _get_ch_type_mapping, _estimate_line_freq)
+from mne_bids.utils import _extract_landmarks, _get_ch_type_mapping
 from mne_bids import make_bids_folders
 from mne_bids.path import (BIDSPath, _parse_ext, get_entities_from_fname,
                            _find_matching_sidecar, _infer_kind)
@@ -113,20 +112,10 @@ def _handle_info_reading(sidecar_fname, raw, verbose=None):
     if line_freq == "n/a":
         line_freq = None
 
-    if line_freq is None and raw.info["line_freq"] is None:
-        # estimate line noise using PSD from multitaper FFT
-        powerlinefrequency = _estimate_line_freq(raw, verbose=verbose)
-        raw.info["line_freq"] = powerlinefrequency
-        warn('No line frequency found, defaulting to {} Hz '
-             'estimated from multi-taper FFT '
-             'on 10 seconds of data.'.format(powerlinefrequency))
+    if raw.info["line_freq"] is not None and line_freq is None:
+        line_freq = raw.info["line_freq"]  # take from file is present
 
-    elif raw.info["line_freq"] is None and line_freq is not None:
-        # if the read in frequency is not set inside Raw
-        # -> set it to what the sidecar JSON specifies
-        raw.info["line_freq"] = line_freq
-    elif raw.info["line_freq"] is not None \
-            and line_freq is not None:
+    if raw.info["line_freq"] is not None and line_freq is not None:
         # if both have a set Power Line Frequency, then
         # check that they are the same, else there is a
         # discrepency in the metadata of the dataset.
@@ -137,6 +126,7 @@ def _handle_info_reading(sidecar_fname, raw, verbose=None):
                              "Raw is -> {} ".format(raw.info["line_freq"]),
                              "Sidecar JSON is -> {} ".format(line_freq))
 
+    raw.info["line_freq"] = line_freq
     return raw
 
 

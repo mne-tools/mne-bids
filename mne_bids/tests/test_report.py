@@ -38,6 +38,8 @@ def test_read_raw_kind():
     """Test that read_raw_bids() can infer the kind if need be."""
     bids_root = _TempDir()
     raw = mne.io.read_raw_fif(raw_fname, verbose=False)
+    raw.info['line_freq'] = 60
+
     write_raw_bids(raw, bids_basename, bids_root, overwrite=True,
                    verbose=False)
 

@@ -77,6 +77,7 @@ for subject_id in subject_ids:
     for run in runs:
         raw_fname = eegbci.load_data(subject=subject_id, runs=run)[0]
         raw = mne.io.read_raw_edf(raw_fname)
+        raw.info['line_freq'] = 50  # specify power line frequency
         raw_list.append(raw)
         bids_basename = make_bids_basename(subject=f'{subject_id:03}',
                                            session='01', task='MotorImagery',

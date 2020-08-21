@@ -95,6 +95,7 @@ print(dict(zip(ch_names, elec)))
 # use the montage we created.
 info = mne.create_info(ch_names, 1000., 'ecog')
 raw = mne.io.read_raw_edf(misc_path + '/ecog/sample_ecog.edf')
+raw.info['line_freq'] = 60  # specify power line frequency as required by BIDS
 raw.set_channel_types({ch: 'ecog' for ch in raw.ch_names})
 
 # set the bad channels
