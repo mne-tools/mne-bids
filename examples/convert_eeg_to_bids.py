@@ -97,6 +97,7 @@ print_dir_tree(data_dir)
 # Load the data from "2 minutes eyes closed rest"
 edf_path = eegbci.load_data(subject=subject, runs=run)[0]
 raw = mne.io.read_raw_edf(edf_path, preload=False)
+raw.info['line_freq'] = 50  # specify power line frequency as required by BIDS
 
 # For converting the data to BIDS, we need to convert the the annotations
 # stored in the file to a 2D numpy array of events.
