@@ -36,8 +36,7 @@ from mne_bids.utils import (_write_json, _write_tsv, _write_text,
                             _read_events, _age_on_date,
                             _infer_eeg_placement_scheme,
                             _handle_kind, _get_ch_type_mapping,
-                            _estimate_line_freq, _check_anonymize,
-                            _stamp_to_dt)
+                            _check_anonymize, _stamp_to_dt)
 from mne_bids import make_bids_folders, make_bids_basename
 from mne_bids.path import (BIDSPath, _parse_ext, get_entities_from_fname,
                            _mkdir_p, _path_to_str)
@@ -492,14 +491,11 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, overwrite=False,
     sfreq = raw.info['sfreq']
     powerlinefrequency = raw.info.get('line_freq', None)
     if powerlinefrequency is None:
-        powerlinefrequency = _estimate_line_freq(raw)
-        if powerlinefrequency is None:
-            powerlinefrequency = 'n/a'  # must be 'n/a' for validator
-            warn('Cannot determine line frequency')
-        else:
-            warn('No line frequency found, defaulting to {} Hz '
-                 'estimated from multi-taper FFT '
-                 'on 10 seconds of data.'.format(powerlinefrequency))
+        raise ValueError("PowerLineFrequency parameter is required "
+                         "in the sidecar files. Please specify it "
+                         "in info['line_freq'] before saving to BIDS "
+                         "(e.g. raw.info['line_freq'] = 60 or with "
+                         "--line_freq option in the command line.).")
 
     if isinstance(raw, BaseRaw):
         rec_type = 'continuous'

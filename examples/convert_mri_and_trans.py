@@ -63,6 +63,8 @@ output_path = op.abspath(op.join(data_path, '..', 'MNE-sample-data-bids'))
 if op.exists(output_path):
     sh.rmtree(output_path)
 raw = mne.io.read_raw_fif(raw_fname)
+raw.info['line_freq'] = 60  # specify power line frequency as required by BIDS
+
 sub = '01'
 ses = '01'
 task = 'audiovisual'

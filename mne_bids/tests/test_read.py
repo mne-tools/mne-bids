@@ -33,7 +33,7 @@ from mne_bids import (get_matched_empty_room, make_bids_basename,
 from mne_bids.config import MNE_STR_TO_FRAME
 from mne_bids.read import (read_raw_bids,
                            _read_raw, get_head_mri_trans,
-                           _handle_events_reading, _handle_info_reading)
+                           _handle_events_reading)
 from mne_bids.tsv_handler import _to_tsv, _from_tsv
 from mne_bids.utils import (_update_sidecar,
                             _write_json)
@@ -70,6 +70,19 @@ warning_str = dict(
 )
 
 
+def _wrap_read_raw(read_raw):
+    def fn(fname, *args, **kwargs):
+        raw = read_raw(fname, *args, **kwargs)
+        raw.info['line_freq'] = 60
+        return raw
+    return fn
+
+
+_read_raw_fif = _wrap_read_raw(mne.io.read_raw_fif)
+_read_raw_ctf = _wrap_read_raw(mne.io.read_raw_ctf)
+_read_raw_edf = _wrap_read_raw(mne.io.read_raw_edf)
+
+
 def test_read_raw():
     """Test the raw reading."""
     # Use a file ending that does not exist
@@ -94,7 +107,7 @@ def test_not_implemented():
 def test_read_participants_data():
     """Test reading information from a BIDS sidecar.json file."""
     bids_root = _TempDir()
-    raw = mne.io.read_raw_fif(raw_fname, verbose=False)
+    raw = _read_raw_fif(raw_fname, verbose=False)
 
     # if subject info was set, we don't roundtrip birthday
     # due to possible anonymization in mne-bids
@@ -135,7 +148,7 @@ def test_read_participants_data():
         assert raw.info['subject_info']['sex'] is None
 
     # make sure to read in if no participants file
-    raw = mne.io.read_raw_fif(raw_fname, verbose=False)
+    raw = _read_raw_fif(raw_fname, verbose=False)
     write_raw_bids(raw, bids_basename, bids_root, overwrite=True,
                    verbose=False)
     os.remove(participants_tsv_fpath)
@@ -157,12 +170,11 @@ def test_get_head_mri_trans():
                            'sample_audvis_trunc_raw-eve.fif')
 
     # Write it to BIDS
-    raw = mne.io.read_raw_fif(raw_fname)
+    raw = _read_raw_fif(raw_fname)
     bids_root = _TempDir()
-    with pytest.warns(RuntimeWarning, match='No line frequency'):
-        write_raw_bids(raw, bids_basename, bids_root,
-                       events_data=events_fname, event_id=event_id,
-                       overwrite=False)
+    write_raw_bids(raw, bids_basename, bids_root,
+                   events_data=events_fname, event_id=event_id,
+                   overwrite=False)
 
     # We cannot recover trans, if no MRI has yet been written
     with pytest.raises(RuntimeError):
@@ -203,7 +215,7 @@ def test_get_head_mri_trans():
 def test_handle_events_reading():
     """Test reading events from a BIDS events.tsv file."""
     # We can use any `raw` for this
-    raw = mne.io.read_raw_fif(raw_fname)
+    raw = _read_raw_fif(raw_fname)
 
     # Create an arbitrary events.tsv file, to test we can deal with 'n/a'
     # make sure we can deal w/ "#" characters
@@ -220,65 +232,12 @@ def test_handle_events_reading():
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
-def test_line_freq_estimation():
-    """Test estimating line frequency."""
-    bids_root = _TempDir()
-
-    # read in USA dataset, so it should find 50 Hz
-    raw = mne.io.read_raw_fif(raw_fname)
-    kind = "meg"
-
-    # assert that we get the same line frequency set
-    bids_basename.copy()
-    bids_fname = bids_basename.copy().update(kind=kind, extension='.fif',
-                                             bids_root=bids_root)
-
-    # find sidecar JSON fname
-    write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
-    sidecar_fname = _find_matching_sidecar(bids_fname,
-                                           kind=kind, extension='.json',
-                                           allow_fail=True)
-
-    # 1. when nothing is set, default to use PSD estimation -> should be 60
-    # for `sample` dataset
-    raw.info['line_freq'] = None
-    write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
-    _update_sidecar(sidecar_fname, "PowerLineFrequency", "n/a")
-    with pytest.warns(RuntimeWarning, match="No line frequency found"):
-        raw = read_raw_bids(bids_basename=bids_basename,
-                            bids_root=bids_root, kind=kind)
-        assert raw.info['line_freq'] == 60
-
-    # test that `somato` dataset finds 50 Hz (EU dataset)
-    somato_raw = mne.io.read_raw_fif(somato_raw_fname)
-    somato_raw.info['line_freq'] = None
-    write_raw_bids(somato_raw, bids_basename, bids_root, overwrite=True)
-    sidecar_fname = _find_matching_sidecar(bids_fname,
-                                           kind=kind, extension='.json',
-                                           allow_fail=True)
-    _update_sidecar(sidecar_fname, "PowerLineFrequency", "n/a")
-    with pytest.warns(RuntimeWarning, match="No line frequency found"):
-        somato_raw = read_raw_bids(bids_basename=bids_basename,
-                                   bids_root=bids_root, kind=kind)
-        assert somato_raw.info['line_freq'] == 50
-
-    # assert that line_freq should be None when
-    # all picks are not meg/eeg/ecog/seeg
-    somato_raw.info['line_freq'] = None
-    somato_raw.set_channel_types({somato_raw.ch_names[i]: 'bio'
-                                  for i in range(len(somato_raw.ch_names))})
-    somato_raw = _handle_info_reading(sidecar_fname, somato_raw, verbose=True)
-    assert somato_raw.info['line_freq'] is None
-
-
-@pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_handle_info_reading():
     """Test reading information from a BIDS sidecar.json file."""
     bids_root = _TempDir()
 
     # read in USA dataset, so it should find 50 Hz
-    raw = mne.io.read_raw_fif(raw_fname)
-    raw.info['line_freq'] = 60
+    raw = _read_raw_fif(raw_fname)
 
     # write copy of raw with line freq of 60
     # bids basename and fname
@@ -299,13 +258,10 @@ def test_handle_info_reading():
                         kind=kind)
     assert raw.info['line_freq'] == 60
 
-    # 2. if line frequency is not set in raw file, then default to sidecar
+    # 2. if line frequency is not set in raw file, then ValueError
     raw.info['line_freq'] = None
-    write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
-    _update_sidecar(sidecar_fname, "PowerLineFrequency", 55)
-    raw = read_raw_bids(bids_basename=bids_basename, bids_root=bids_root,
-                        kind=kind)
-    assert raw.info['line_freq'] == 55
+    with pytest.raises(ValueError, match="PowerLineFrequency .* required"):
+        write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
 
     # make a copy of the sidecar in "derivatives/"
     # to check that we make sure we always get the right sidecar
@@ -320,21 +276,14 @@ def test_handle_info_reading():
     _write_json(sidecar_copy, sidecar_json)
     raw = read_raw_bids(bids_basename=bids_basename, bids_root=bids_root,
                         kind=kind)
-    assert raw.info['line_freq'] == 55
-
-    # 3. if line frequency is set in raw file, but not sidecar
-    raw.info['line_freq'] = 60
-    write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
-    _update_sidecar(sidecar_fname, "PowerLineFrequency", "n/a")
-    raw = read_raw_bids(bids_basename=bids_basename, bids_root=bids_root,
-                        kind=kind)
     assert raw.info['line_freq'] == 60
 
-    # 4. assert that we get an error when sidecar json doesn't match
+    # 3. assert that we get an error when sidecar json doesn't match
     _update_sidecar(sidecar_fname, "PowerLineFrequency", 55)
     with pytest.raises(ValueError, match="Line frequency in sidecar json"):
         raw = read_raw_bids(bids_basename=bids_basename, bids_root=bids_root,
                             kind=kind)
+        assert raw.info['line_freq'] == 55
 
 
 @pytest.mark.filterwarnings(warning_str['nasion_not_found'])
@@ -345,7 +294,7 @@ def test_handle_eeg_coords_reading():
 
     data_path = op.join(testing.data_path(), 'EDF')
     raw_fname = op.join(data_path, 'test_reduced.edf')
-    raw = mne.io.read_raw_edf(raw_fname)
+    raw = _read_raw_edf(raw_fname)
 
     # ensure we are writing 'eeg' data
     raw.set_channel_types({ch: 'eeg'
@@ -420,7 +369,7 @@ def test_handle_ieeg_coords_reading(bids_basename):
     raw_fname = op.join(data_path, 'test_reduced.edf')
     bids_fname = bids_basename.copy().update(kind='ieeg', extension='.edf')
 
-    raw = mne.io.read_raw_edf(raw_fname)
+    raw = _read_raw_edf(raw_fname)
 
     # ensure we are writing 'ecog'/'ieeg' data
     raw.set_channel_types({ch: 'ecog'
@@ -585,7 +534,7 @@ def test_get_head_mri_trans_ctf():
 
     ctf_data_path = op.join(testing.data_path(), 'CTF')
     raw_ctf_fname = op.join(ctf_data_path, 'testdata_ctf.ds')
-    raw_ctf = mne.io.read_raw_ctf(raw_ctf_fname)
+    raw_ctf = _read_raw_ctf(raw_ctf_fname)
     bids_root = _TempDir()
     write_raw_bids(raw_ctf, bids_basename, bids_root,
                    overwrite=False)
@@ -614,7 +563,8 @@ def test_get_matched_empty_room():
     """Test reading of empty room data."""
     bids_root = _TempDir()
 
-    raw = mne.io.read_raw_fif(raw_fname)
+    raw = _read_raw_fif(raw_fname)
+
     bids_basename = make_bids_basename(subject='01', session='01',
                                        task='audiovisual', run='01')
     write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
@@ -628,7 +578,7 @@ def test_get_matched_empty_room():
     er_raw_fname = op.join(data_path, 'MEG', 'sample', 'ernoise_raw.fif')
     raw.crop(0, 10).save(er_raw_fname, overwrite=True)
 
-    er_raw = mne.io.read_raw_fif(er_raw_fname)
+    er_raw = _read_raw_fif(er_raw_fname)
     er_date = er_raw.info['meas_date']
     if not isinstance(er_date, datetime):
         # mne < v0.20
@@ -688,10 +638,11 @@ def test_get_matched_emptyroom_ties():
                  .strptime(session, '%Y%m%d')
                  .replace(tzinfo=timezone.utc))
 
-    raw = mne.io.read_raw_fif(raw_fname)
+    raw = _read_raw_fif(raw_fname)
+
     er_raw_fname = op.join(data_path, 'MEG', 'sample', 'ernoise_raw.fif')
     raw.copy().crop(0, 10).save(er_raw_fname, overwrite=True)
-    er_raw = mne.io.read_raw_fif(er_raw_fname)
+    er_raw = _read_raw_fif(er_raw_fname)
 
     if check_version('mne', '0.20'):
         raw.set_meas_date(meas_date)
@@ -727,17 +678,18 @@ def test_get_matched_emptyroom_no_meas_date():
     er_bids_path = BIDSPath(subject='emptyroom', session=er_session,
                             task='noise')
     er_basename = er_bids_path.basename
-    raw = mne.io.read_raw_fif(raw_fname)
+    raw = _read_raw_fif(raw_fname)
+
     er_raw_fname = op.join(data_path, 'MEG', 'sample', 'ernoise_raw.fif')
     raw.copy().crop(0, 10).save(er_raw_fname, overwrite=True)
-    er_raw = mne.io.read_raw_fif(er_raw_fname)
+    er_raw = _read_raw_fif(er_raw_fname)
     er_raw.set_meas_date(er_meas_date)
     er_raw.save(op.join(er_dir, f'{er_basename}_meg.fif'), overwrite=True)
 
     # Write raw file data using mne-bids, and remove participants.tsv
     # as it's incomplete (doesn't contain the emptyroom subject we wrote
     # manually using MNE's Raw.save() above)
-    raw = mne.io.read_raw_fif(raw_fname)
+    raw = _read_raw_fif(raw_fname)
     write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
     os.remove(op.join(bids_root, 'participants.tsv'))
 
@@ -752,7 +704,7 @@ def test_get_matched_emptyroom_no_meas_date():
 def test_read_raw_bids_pathlike():
     """Test that read_raw_bids() can handle a Path-like bids_root."""
     bids_root = _TempDir()
-    raw = mne.io.read_raw_fif(raw_fname, verbose=False)
+    raw = _read_raw_fif(raw_fname, verbose=False)
     write_raw_bids(raw, bids_basename, bids_root, overwrite=True,
                    verbose=False)
     raw = read_raw_bids(bids_basename=bids_basename, bids_root=Path(bids_root),
@@ -763,7 +715,7 @@ def test_read_raw_bids_pathlike():
 def test_read_raw_kind():
     """Test that read_raw_bids() can infer the kind if need be."""
     bids_root = _TempDir()
-    raw = mne.io.read_raw_fif(raw_fname, verbose=False)
+    raw = _read_raw_fif(raw_fname, verbose=False)
     write_raw_bids(raw, bids_basename, bids_root, overwrite=True,
                    verbose=False)
 
@@ -784,7 +736,8 @@ def test_read_raw_kind():
 def test_handle_channel_type_casing():
     """Test that non-uppercase entries in the `type` column are accepted."""
     bids_root = _TempDir()
-    raw = mne.io.read_raw_fif(raw_fname, verbose=False)
+    raw = _read_raw_fif(raw_fname, verbose=False)
+
     write_raw_bids(raw, bids_basename, bids_root, overwrite=True,
                    verbose=False)
 
@@ -814,7 +767,7 @@ def test_bads_reading():
     raw_bids_fname = (bids_basename.copy()
                       .update(bids_root=bids_root,
                               kind='meg', extension='.fif'))
-    raw = mne.io.read_raw_fif(raw_fname, verbose=False)
+    raw = _read_raw_fif(raw_fname, verbose=False)
 
     ###########################################################################
     # bads in FIF only, no `status` column in channels.tsv
@@ -840,7 +793,7 @@ def test_bads_reading():
                    verbose=False)
 
     # Remove info['bads'] from the raw file.
-    raw = mne.io.read_raw_fif(raw_bids_fname, preload=True, verbose=False)
+    raw = _read_raw_fif(raw_bids_fname, preload=True, verbose=False)
     raw.info['bads'] = []
     raw.save(raw_bids_fname, overwrite=True, verbose=False)
 
@@ -859,7 +812,7 @@ def test_bads_reading():
                    verbose=False)
 
     # Replace info['bads'] in the raw file.
-    raw = mne.io.read_raw_fif(raw_bids_fname, preload=True, verbose=False)
+    raw = _read_raw_fif(raw_bids_fname, preload=True, verbose=False)
     raw.info['bads'] = bads_raw
     raw.save(raw_bids_fname, overwrite=True, verbose=False)
 
