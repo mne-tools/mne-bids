@@ -23,7 +23,8 @@ from mne_bids import (get_kinds, get_entity_vals, print_dir_tree,
                       make_bids_folders, make_bids_basename,
                       write_raw_bids)
 from mne_bids.path import (_parse_ext, get_entities_from_fname,
-                           _find_best_candidates, _find_matching_sidecar)
+                           _find_best_candidates, _find_matching_sidecar,
+                           _filter_fnames, get_matched_basenames)
 
 subject_id = '01'
 session_id = '01'
@@ -312,18 +313,72 @@ def test_bids_path(return_bids_test_dir):
     with pytest.raises(ValueError, match='Unallowed*'):
         bids_basename.update(subject=subject_id + '-')
 
-    # error check on kind in update
+    # error check on kind in make_bids_basename (deep check)
     kind = 'meeg'
     with pytest.raises(ValueError, match=f'Kind {kind} is not'):
-        bids_basename.update(kind=kind)
+        make_bids_basename(subject=subject_id, session=session_id,
+                           kind=kind)
 
-    # error check on extension in update
-    ext = '.mat'
-    with pytest.raises(ValueError, match=f'Extension {ext} is not'):
-        bids_basename.update(extension=ext)
+    # do not error check kind in update (not deep check)
+    bids_basename.update(kind='foobar')
+
+    # error check on extension in make_bids_basename (deep check)
+    extension = '.mat'
+    with pytest.raises(ValueError, match=f'Extension {extension} is not'):
+        make_bids_basename(subject=subject_id, session=session_id,
+                           extension=extension)
+
+    # do not error extension in update (not deep check)
+    bids_basename.update(extension='.foo')
 
     # test repr
     bids_path = make_bids_basename(subject='01', session='02',
                                    task='03', kind='ieeg',
                                    extension='.edf')
     assert repr(bids_path) == 'BIDSPath(sub-01_ses-02_task-03_ieeg.edf)'
+
+
+@pytest.mark.parametrize(
+    'entities, expected_n_matches',
+    [
+        (dict(), 9),
+        (dict(subject='01'), 2),
+        (dict(task='audio'), 2),
+        (dict(processing='sss'), 1),
+        (dict(kind='meg'), 4),
+        (dict(acquisition='lowres'), 1),
+        (dict(task='test', processing='ica', kind='eeg'), 2),
+        (dict(subject='5', task='test', processing='ica', kind='eeg'), 1)
+    ])
+def test_filter_fnames(entities, expected_n_matches):
+    """Test filtering filenames based on BIDS entities works."""
+
+    fnames = ('sub-01_task-audio_meg.fif',
+              'sub-01_ses-05_task-audio_meg.fif',
+              'sub-02_task-visual_eeg.vhdr',
+              'sub-Foo_ses-bar_meg.fif',
+              'sub-Bar_task-invasive_run-1_ieeg.fif',
+              'sub-3_task-fun_proc-sss_meg.fif',
+              'sub-4_task-pain_acq-lowres_T1w.nii.gz',
+              'sub-5_task-test_proc-ica_eeg.vhdr',
+              'sub-6_task-test_proc-ica_eeg.vhdr')
+
+    output = _filter_fnames(fnames, **entities)
+    assert len(output) == expected_n_matches
+
+
+def test_get_matched_basenames(return_bids_test_dir):
+    """Test retrieval of matching basenames."""
+    bids_root = return_bids_test_dir
+
+    paths = get_matched_basenames(bids_root=bids_root)
+    assert len(paths) == 7
+    assert all('sub-01_ses-01' in p.basename for p in paths)
+    assert all([p.prefix == bids_root for p in paths])
+
+    paths = get_matched_basenames(bids_root=bids_root, run='01')
+    assert len(paths) == 3
+    assert paths[0].basename == 'sub-01_ses-01_task-testing_run-01_channels'
+
+    paths = get_matched_basenames(bids_root=bids_root, subject='unknown')
+    assert len(paths) == 0
