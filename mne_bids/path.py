@@ -214,7 +214,7 @@ class BIDSPath(object):
 
         return bids_fname
 
-    def update(self, check=False, **entities):
+    def update(self, check=True, **entities):
         """Update inplace BIDS entity key/value pairs in object.
 
         Parameters
