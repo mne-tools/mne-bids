@@ -340,10 +340,6 @@ def _check_non_sub_ses_entity(bids_path):
 def _convert_str_to_BIDSPath(bids_basename):
     """Convert string of bids basename to BIDSPath object."""
     params = get_entities_from_fname(bids_basename)
-    if params['subject'] == 'emptyroom':
-        check = False
-    else:
-        check = True
     bids_path = BIDSPath(**params)
     return bids_path
 

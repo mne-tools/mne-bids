@@ -494,7 +494,6 @@ def get_matched_empty_room(bids_basename, bids_root):
         params.pop('subject')  # er subject entity is different
         er_bids_path = BIDSPath(subject='emptyroom', **params,
                                 check=False)
-        er_basename = str(er_bids_path)
 
         # Try to extract date from filename.
         if params['session'] is not None:
@@ -512,7 +511,7 @@ def get_matched_empty_room(bids_basename, bids_root):
             else:
                 extra_params = None
 
-            er_raw = read_raw_bids(bids_basename=er_basename,
+            er_raw = read_raw_bids(bids_basename=er_bids_path,
                                    bids_root=bids_root,
                                    kind=kind,
                                    extra_params=extra_params)
@@ -529,7 +528,7 @@ def get_matched_empty_room(bids_basename, bids_root):
             date_tie = True
         elif abs(delta_t.total_seconds()) < min_delta_t:
             min_delta_t = abs(delta_t.total_seconds())
-            best_er_basename = er_basename
+            best_er_basename = er_bids_path.basename
             date_tie = False
 
     if failed_to_get_er_date_count > 0:
