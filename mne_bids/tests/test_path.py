@@ -381,6 +381,11 @@ def test_make_filenames():
         BIDSPath(subject='emptyroom', session='20131201',
                  task='blah', kind='meg')
 
+    # when the suffix is not 'meg', then it does not result in
+    # an error
+    BIDSPath(subject='emptyroom', session='20131201',
+             task='blah')
+
     # test what would happen if you don't want to check
     prefix_data['extension'] = '.h5'
     with pytest.raises(ValueError, match='Extension .h5 is not allowed'):
