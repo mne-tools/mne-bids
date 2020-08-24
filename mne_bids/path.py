@@ -344,7 +344,7 @@ def _convert_str_to_BIDSPath(bids_basename):
         check = False
     else:
         check = True
-    bids_path = BIDSPath(check=check, **params)
+    bids_path = BIDSPath(**params)
     return bids_path
 
 
