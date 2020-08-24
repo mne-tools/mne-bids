@@ -65,7 +65,7 @@ API
 - :func:`get_head_mri_trans` now expects `bids_basename` as the first argument. The `bids_fname` argument has been dropped, by `Richard Höchenberger`_ (`#410 <https://github.com/mne-tools/mne-bids/pull/410>`_)
 - BIDS conformity: The ``_part-%d`` entity is now called ``_split-`` throughout BIDS, MNE, and MNE-BIDS, by `Stefan Appelhoff`_ (`#417 <https://github.com/mne-tools/mne-bids/pull/417>`_)
 - The :code:`mne_bids.make_bids_basename` function has been moved to :code:`mne_bids.utils.BIDSPath`. Like before, it can also be accessed via `mne_bids.BIDSPath`, by `Richard Höchenberger`_ (`#424 <https://github.com/mne-tools/mne-bids/pull/424>`_)
-- The :func:`mne_bids.make_bids_basename` function has been updated to create a :code:`mne_bids.utils.BIDSPath` object, which operates like a path object and allows dynamic updating of BIDs entities, by `Adam Li`_ (`#446 <https://github.com/mne-tools/mne-bids/pull/446>`_)
+- The :code:`mne_bids.make_bids_basename` function has been updated to create a :code:`mne_bids.utils.BIDSPath` object, which operates like a path object and allows dynamic updating of BIDs entities, by `Adam Li`_ (`#446 <https://github.com/mne-tools/mne-bids/pull/446>`_)
 - The ``datasets.py`` module was removed from ``MNE-BIDS`` and its utility was replaced by ``mne.datasets``, by `Stefan Appelhoff`_ (`#471 <https://github.com/mne-tools/mne-bids/pull/471>`_)
 - :func:`mne_bids.make_dataset_description` now takes the argument `overwrite` which will reset all fields if `True`. If `False`, user-provided fields will no longer be overwritten by :func:`mne_bids.write_raw_bids` when its `overwrite` argument is `True` unless new values are supplied, by `Alex Rockhill`_ (`#478 <https://github.com/mne-tools/mne-bids/pull/478>`_)
 - :func:`mne_bids.make_report` is now available from the `mne_bids` namespace that creates a string output of a summary of the BIDS dataset. In addition, the command line interface allows one to call `make_report`, by `Adam Li`_ (`#457 <https://github.com/mne-tools/mne-bids/pull/457>`_)
@@ -75,7 +75,7 @@ API
 - Change :func:`mne_bids.path.get_entities_from_fname` to use full entity kwargs (e.g. 'subject' instead of 'sub') in the return dictionary structure by `Adam Li`_ (`#496 <https://github.com/mne-tools/mne-bids/pull/496>`_)
 - Change :class:`mne_bids.path.BIDSPath` to use explicitly ``kind`` and ``extension`` instead of ``suffix`` in kwargs by `Adam Li`_ (`#496 <https://github.com/mne-tools/mne-bids/pull/496>`_)
 - It is now required to specify the Power Line Frequency to use :func:`write_raw_bids`, while in 0.4 it could be estimated, by `Alexandre Gramfort`_ and `Alex Rockhill`_ (`#506 <https://github.com/mne-tools/mne-bids/pull/506>`_)
-- ``mne_bids.make_bids_basename`` is now :func:`mne_bids.BIDSPath` that instantiates the same exact object by `Adam Li`_ (`#511 <https://github.com/mne-tools/mne-bids/pull/511>`_)
+- The :code:`mne_bids.make_bids_basename` is now :func:`mne_bids.BIDSPath` that instantiates the same exact object by `Adam Li`_ (`#511 <https://github.com/mne-tools/mne-bids/pull/511>`_)
 - Add ``check`` kwarg to :func:`mne_bids.BIDSPath` that allows users to turn off entity checks by `Adam Li`_ (`#511 <https://github.com/mne-tools/mne-bids/pull/511>`_)
 
 .. _changes_0_4:
