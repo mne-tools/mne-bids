@@ -20,8 +20,7 @@ from mne_bids.config import (BIDS_IEEG_COORDINATE_FRAMES,
 from mne_bids.tsv_handler import _from_tsv
 from mne_bids.utils import (_extract_landmarks, _scale_coord_to_meters,
                             _write_json, _write_tsv)
-from mne_bids import make_bids_basename
-from mne_bids.path import get_entities_from_fname
+from mne_bids.path import BIDSPath, get_entities_from_fname
 
 
 def _handle_electrodes_reading(electrodes_fname, coord_frame,
@@ -345,16 +344,16 @@ def _write_dig_bids(electrodes_fname, coordsystem_fname, bids_root,
         if coord_frame is not None:
             # XXX: To improve when mne-python allows coord_frame='unknown'
             if coord_frame not in BIDS_IEEG_COORDINATE_FRAMES:
-                coordsystem_fname = make_bids_basename(
+                coordsystem_fname = BIDSPath(
                     subject=subject_id, session=session_id,
                     acquisition=acquisition, space=coord_frame,
-                    kind='coordsystem', extension='.json',
-                    bids_root=bids_root)
-                electrodes_fname = make_bids_basename(
+                    kind=kind, bids_root=bids_root,
+                    suffix='coordsystem', extension='.json')
+                electrodes_fname = BIDSPath(
                     subject=subject_id, session=session_id,
                     acquisition=acquisition, space=coord_frame,
-                    kind='electrodes', extension='.tsv',
-                    bids_root=bids_root)
+                    suffix='electrodes', extension='.tsv',
+                    kind=kind, bids_root=bids_root)
                 coord_frame = 'Other'
 
             # Now write the data to the elec coords and the coordsystem

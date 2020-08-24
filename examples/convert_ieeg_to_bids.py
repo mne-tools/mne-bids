@@ -136,7 +136,7 @@ pprint([x for x in zip(ch_names, pos)])
 # which are however optional. The required inputs are:
 #
 # * :code:`raw`
-# * :code:`bids_path`
+# * :code:`bids_basename`
 # * :code:`bids_root`
 #
 # ... as you can see in the docstring:
