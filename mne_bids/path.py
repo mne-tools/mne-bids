@@ -225,8 +225,8 @@ class BIDSPath(object):
         Parameters
         ----------
         check : bool | None
-            Check validity of the entity values (default is True). 
-            Checks valid suffixes, and extensions against BIDS 
+            Check validity of the entity values (default is True).
+            Checks valid suffixes, and extensions against BIDS
             specification.
         entities : dict | kwarg
             Allowed BIDS path entities:
@@ -244,13 +244,13 @@ class BIDSPath(object):
         If one creates a bids basename using
         :func:`mne_bids.BIDSPath`:
 
-        >>> bids_basename = BIDSPath(subject='test', session='two', 
-                                               task='mytask', kind='channels', 
-                                               extension='.tsv')
+        >>> bids_basename = BIDSPath(subject='test', session='two',
+                                     task='mytask', kind='channels',
+                                     extension='.tsv')
         >>> print(bids_basename)
         sub-test_ses-two_task-mytask_channels.tsv
         >>> # Then, one can update this `BIDSPath` object in place
-        >>> bids_basename.update(acquisition='test', kind='ieeg', 
+        >>> bids_basename.update(acquisition='test', kind='ieeg',
                                  extension='.vhdr', task=None)
         BIDSPath(sub-test_ses-two_acq-test_ieeg.vhdr)
         >>> print(bids_basename)
@@ -298,6 +298,13 @@ class BIDSPath(object):
         """Deep check or not of the instance."""
         self.basename  # run basename to check validity of arguments
 
+        # perform error check on scans
+        if (self.kind == 'scans' and self.extension == '.tsv') \
+                and _check_non_sub_ses_entity(self):
+            raise ValueError('scans.tsv file name can only contain '
+                             'subject and session entities. BIDSPath '
+                             f'currently contains {self.entities}.')
+
         if deep:
             if self.subject == 'emptyroom':
                 _check_empty_room_basename(self)
@@ -318,6 +325,15 @@ class BIDSPath(object):
                     raise ValueError(f'Kind {kind} is not allowed. '
                                      f'Use one of these kinds '
                                      f'{ALLOWED_FILENAME_KINDS}.')
+
+
+def _check_non_sub_ses_entity(bids_path):
+    if bids_path.task or bids_path.acquisition or \
+            bids_path.run or bids_path.space or \
+            bids_path.recording or bids_path.split or \
+            bids_path.processing:
+        return True
+    return False
 
 
 def _convert_str_to_BIDSPath(bids_basename):
