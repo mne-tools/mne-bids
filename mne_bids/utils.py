@@ -88,7 +88,7 @@ def _get_ch_type_mapping(fro='mne', to='bids'):
 
 
 def _handle_kind(raw):
-    """Get kind."""
+    """Get suffix."""
     if 'eeg' in raw and ('ecog' in raw or 'seeg' in raw):
         raise ValueError('Both EEG and iEEG channels found in data.'
                          'There is currently no specification on how'

@@ -244,13 +244,14 @@ def test_handle_info_reading():
     bids_basename = make_bids_basename(subject='01', session='01',
                                        task='audiovisual', run='01')
     kind = "meg"
-    bids_fname = bids_basename.copy().update(kind=kind, extension='.fif')
+    bids_fname = bids_basename.copy().update(kind=kind, suffix=kind,
+                                             extension='.fif')
     write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
 
     # find sidecar JSON fname
     bids_fname.update(bids_root=bids_root)
     sidecar_fname = _find_matching_sidecar(bids_fname,
-                                           kind=kind, extension='.json',
+                                           suffix=kind, extension='.json',
                                            allow_fail=True)
 
     # assert that we get the same line frequency set
@@ -314,11 +315,11 @@ def test_handle_eeg_coords_reading():
         write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
         bids_basename.update(bids_root=bids_root)
         coordsystem_fname = _find_matching_sidecar(bids_basename,
-                                                   kind='coordsystem',
+                                                   suffix='coordsystem',
                                                    extension='.json',
                                                    allow_fail=True)
         electrodes_fname = _find_matching_sidecar(bids_basename,
-                                                  kind='electrodes',
+                                                  suffix='electrodes',
                                                   extension='.tsv',
                                                   allow_fail=True)
         assert coordsystem_fname is None
@@ -347,7 +348,7 @@ def test_handle_eeg_coords_reading():
 
     # modify coordinate frame to not-captrak
     coordsystem_fname = _find_matching_sidecar(bids_basename,
-                                               kind='coordsystem',
+                                               suffix='coordsystem',
                                                extension='.json',
                                                allow_fail=True)
     _update_sidecar(coordsystem_fname, 'EEGCoordinateSystem', 'besa')
@@ -367,7 +368,8 @@ def test_handle_ieeg_coords_reading(bids_basename):
 
     data_path = op.join(testing.data_path(), 'EDF')
     raw_fname = op.join(data_path, 'test_reduced.edf')
-    bids_fname = bids_basename.copy().update(kind='ieeg', extension='.edf')
+    bids_fname = bids_basename.copy().update(kind='ieeg', suffix='ieeg',
+                                             extension='.edf')
 
     raw = _read_raw_edf(raw_fname)
 
@@ -415,11 +417,11 @@ def test_handle_ieeg_coords_reading(bids_basename):
     scalings = {'m': 1, 'cm': 100, 'mm': 1000}
     bids_fname.update(bids_root=bids_root)
     coordsystem_fname = _find_matching_sidecar(bids_fname,
-                                               kind='coordsystem',
+                                               suffix='coordsystem',
                                                extension='.json',
                                                allow_fail=True)
     electrodes_fname = _find_matching_sidecar(bids_fname,
-                                              kind='electrodes',
+                                              suffix='electrodes',
                                               extension='.tsv',
                                               allow_fail=True)
     orig_electrodes_dict = _from_tsv(electrodes_fname,
@@ -653,9 +655,9 @@ def test_get_matched_emptyroom_ties():
 
     write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
     er_bids_path = BIDSPath(subject='emptyroom', session=session)
-    er_basename_1 = str(er_bids_path)
+    er_basename_1 = str(er_bids_path.basename)
     er_basename_2 = make_bids_basename(subject='emptyroom', session=session,
-                                       task='noise')
+                                       task='noise').basename
     er_raw.save(op.join(er_dir, f'{er_basename_1}_meg.fif'))
     er_raw.save(op.join(er_dir, f'{er_basename_2}_meg.fif'))
 
@@ -693,8 +695,6 @@ def test_get_matched_emptyroom_no_meas_date():
     write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
     os.remove(op.join(bids_root, 'participants.tsv'))
 
-    from mne_bids.path import print_dir_tree
-    print_dir_tree(bids_root)
     with pytest.warns(RuntimeWarning, match='Could not retrieve .* date'):
         get_matched_empty_room(bids_basename=bids_basename,
                                bids_root=bids_root)
@@ -713,7 +713,7 @@ def test_read_raw_bids_pathlike():
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_read_raw_kind():
-    """Test that read_raw_bids() can infer the kind if need be."""
+    """Test that read_raw_bids() can infer the suffix if need be."""
     bids_root = _TempDir()
     raw = _read_raw_fif(raw_fname, verbose=False)
     write_raw_bids(raw, bids_basename, bids_root, overwrite=True,
@@ -743,7 +743,7 @@ def test_handle_channel_type_casing():
 
     subject_path = op.join(bids_root, f'sub-{subject_id}', f'ses-{session_id}',
                            'meg')
-    ch_path = bids_basename.copy().update(kind='channels', extension='.tsv')
+    ch_path = bids_basename.copy().update(suffix='channels', extension='.tsv')
     bids_channels_fname = op.join(subject_path, ch_path.basename)
 
     # Convert all channel type entries to lowercase.
@@ -761,12 +761,12 @@ def test_bads_reading():
     data_path = make_bids_folders(
         subject=subject_id, session=session_id, kind='meg',
         bids_root=bids_root, make_dir=False)
-    ch_path = (bids_basename.copy().update(kind='channels',
+    ch_path = (bids_basename.copy().update(suffix='channels',
                                            extension='.tsv'))
     channels_fname = op.join(data_path, ch_path.basename)
     raw_bids_fname = (bids_basename.copy()
-                      .update(bids_root=bids_root,
-                              kind='meg', extension='.fif'))
+                      .update(bids_root=bids_root, kind='meg',
+                              suffix='meg', extension='.fif'))
     raw = _read_raw_fif(raw_fname, verbose=False)
 
     ###########################################################################

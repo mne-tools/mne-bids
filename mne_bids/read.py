@@ -294,7 +294,7 @@ def read_raw_bids(bids_basename, bids_root, kind=None, extra_params=None,
     bids_root : str | pathlib.Path
         Path to root of the BIDS folder
     kind : str | None
-        The kind of recording to read. If ``None`` and only one kind (e.g.,
+        The suffix of recording to read. If ``None`` and only one suffix (e.g.,
         only EEG or only MEG data) is present in the dataset, it will be
         selected automatically.
     extra_params : None | dict
@@ -312,7 +312,7 @@ def read_raw_bids(bids_basename, bids_root, kind=None, extra_params=None,
     ------
     RuntimeError
         If multiple recording kinds are present in the dataset, but
-        ``kind=None``.
+        ``suffix=None``.
 
     RuntimeError
         If more than one data files exist for the specified recording.
@@ -321,7 +321,7 @@ def read_raw_bids(bids_basename, bids_root, kind=None, extra_params=None,
         If no data file in a supported format can be located.
 
     ValueError
-        If the specified ``kind`` cannot be found in the dataset.
+        If the specified ``suffix`` cannot be found in the dataset.
 
     """
     # convert to BIDS Path
@@ -335,11 +335,11 @@ def read_raw_bids(bids_basename, bids_root, kind=None, extra_params=None,
     if kind is None:
         kind = _infer_kind(bids_basename=bids_basename,
                            sub=sub, ses=ses)
-    bids_basename.update(kind=kind)
+    bids_basename.update(suffix=kind, kind=kind)
 
     data_dir = make_bids_folders(subject=sub, session=ses, kind=kind,
                                  make_dir=False)
-    bids_fname = bids_basename.fpath
+    bids_fname = op.basename(bids_basename.fpath)
 
     if op.splitext(bids_fname)[1] == '.pdf':
         bids_raw_folder = op.join(bids_root, data_dir,
@@ -352,13 +352,14 @@ def read_raw_bids(bids_basename, bids_root, kind=None, extra_params=None,
 
     if extra_params is None:
         extra_params = dict()
+    print(bids_fpath)
     raw = _read_raw(bids_fpath, electrode=None, hsp=None, hpi=None,
                     config=config, verbose=None, **extra_params)
 
     # Try to find an associated events.tsv to get information about the
     # events in the recorded data
-    events_fname = _find_matching_sidecar(bids_basename,
-                                          kind='events', extension='.tsv',
+    events_fname = _find_matching_sidecar(bids_basename, suffix='events',
+                                          extension='.tsv',
                                           allow_fail=True)
 
     if events_fname is not None:
@@ -367,7 +368,8 @@ def read_raw_bids(bids_basename, bids_root, kind=None, extra_params=None,
     # Try to find an associated channels.tsv to get information about the
     # status and type of present channels
     channels_fname = _find_matching_sidecar(bids_basename,
-                                            kind='channels', extension='.tsv',
+                                            suffix='channels',
+                                            extension='.tsv',
                                             allow_fail=True)
     if channels_fname is not None:
         raw = _handle_channels_reading(channels_fname, bids_fname, raw)
@@ -375,11 +377,11 @@ def read_raw_bids(bids_basename, bids_root, kind=None, extra_params=None,
     # Try to find an associated electrodes.tsv and coordsystem.json
     # to get information about the status and type of present channels
     electrodes_fname = _find_matching_sidecar(bids_basename,
-                                              kind='electrodes',
+                                              suffix='electrodes',
                                               extension='.tsv',
                                               allow_fail=True)
     coordsystem_fname = _find_matching_sidecar(bids_basename,
-                                               kind='coordsystem',
+                                               suffix='coordsystem',
                                                extension='.json',
                                                allow_fail=True)
     if electrodes_fname is not None:
@@ -395,7 +397,7 @@ def read_raw_bids(bids_basename, bids_root, kind=None, extra_params=None,
     # Try to find an associated sidecar.json to get information about the
     # recording snapshot
     sidecar_fname = _find_matching_sidecar(bids_basename,
-                                           kind=kind, extension='.json',
+                                           suffix=kind, extension='.json',
                                            allow_fail=True)
     if sidecar_fname is not None:
         raw = _handle_info_reading(sidecar_fname, raw, verbose=verbose)
@@ -437,7 +439,7 @@ def get_matched_empty_room(bids_basename, bids_root):
     bids_basename = bids_basename.copy()
 
     kind = 'meg'  # We're only concerned about MEG data here
-    bids_fname = bids_basename.update(kind=kind, bids_root=bids_root).fpath
+    bids_fname = bids_basename.update(suffix=kind, bids_root=bids_root).fpath
     _, ext = _parse_ext(bids_fname)
     if ext == '.fif':
         extra_params = dict(allow_maxshield=True)
@@ -544,6 +546,8 @@ def get_matched_empty_room(bids_basename, bids_root):
         msg = ('Found more than one matching empty-room measurement with the '
                'same recording date. Selecting the first match.')
         warn(msg)
+    if best_er_basename is not None:
+        best_er_basename = op.basename(best_er_basename)
 
     return best_er_basename
 
@@ -579,9 +583,9 @@ def get_head_mri_trans(bids_basename, bids_root):
         params = get_entities_from_fname(bids_basename)
         bids_basename = BIDSPath(**params)
     # Get the sidecar file for MRI landmarks
-    bids_fname = bids_basename.update(kind='meg', bids_root=bids_root)
+    bids_fname = bids_basename.update(suffix='meg', bids_root=bids_root)
     t1w_json_path = _find_matching_sidecar(bids_fname,
-                                           kind='T1w', extension='.json')
+                                           suffix='T1w', extension='.json')
 
     # Get MRI landmarks from the JSON sidecar
     with open(t1w_json_path, 'r') as f:

@@ -35,7 +35,7 @@ warning_str = dict(
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_read_raw_kind():
-    """Test that read_raw_bids() can infer the kind if need be."""
+    """Test that read_raw_bids() can infer the suffix if need be."""
     bids_root = _TempDir()
     raw = mne.io.read_raw_fif(raw_fname, verbose=False)
     raw.info['line_freq'] = 60

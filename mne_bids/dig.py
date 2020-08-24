@@ -198,7 +198,7 @@ def _electrodes_tsv(raw, fname, kind, overwrite=False, verbose=True):
                             ('z', z),
                             ])
     else:  # pragma: no cover
-        raise RuntimeError("kind {} not supported.".format(kind))
+        raise RuntimeError("suffix {} not supported.".format(kind))
 
     # Add impedance values if available, currently only BrainVision:
     # https://github.com/mne-tools/mne-python/pull/7974

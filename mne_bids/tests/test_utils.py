@@ -44,7 +44,7 @@ def test_get_ch_type_mapping():
 
 
 def test_handle_kind():
-    """Test the automatic extraction of kind from the data."""
+    """Test the automatic extraction of suffix from the data."""
     # Create a dummy raw
     n_channels = 1
     sampling_rate = 100
@@ -69,37 +69,6 @@ def test_handle_kind():
         info = mne.create_info(n_channels, sampling_rate, ch_types=['misc'])
         raw = mne.io.RawArray(data, info)
         _handle_kind(raw)
-
-
-def test_make_filenames():
-    """Test that we create filenames according to the BIDS spec."""
-    # All keys work
-    prefix_data = dict(subject='one', session='two', task='three',
-                       acquisition='four', run='five', processing='six',
-                       recording='seven', kind='ieeg', extension='.json')
-    expected_str = 'sub-one_ses-two_task-three_acq-four_run-five_proc-six_rec-seven_ieeg.json'  # noqa
-    assert str(make_bids_basename(**prefix_data)) == expected_str
-
-    # subsets of keys works
-    assert (make_bids_basename(subject='one', task='three', run=4) ==
-            'sub-one_task-three_run-04')
-    assert (make_bids_basename(subject='one', task='three',
-                               kind='meg', extension='.json') ==
-            'sub-one_task-three_meg.json')
-
-    with pytest.raises(ValueError):
-        make_bids_basename(subject='one-two', kind='ieeg', extension='.edf')
-
-    with pytest.raises(ValueError, match='At least one'):
-        make_bids_basename()
-
-    # emptyroom checks
-    with pytest.raises(ValueError, match='empty-room session should be a '
-                                         'string of format YYYYMMDD'):
-        make_bids_basename(subject='emptyroom', session='12345', task='noise')
-    with pytest.raises(ValueError, match='task must be'):
-        make_bids_basename(subject='emptyroom', session='20131201',
-                           task='blah')
 
 
 def test_check_types():

@@ -339,7 +339,7 @@ def _summarize_sidecar_json(bids_root, scans_fpaths, verbose=True):
                 continue
 
             sidecar_fname = _find_matching_sidecar(bids_basename,
-                                                   kind=kind,
+                                                   suffix=kind,
                                                    extension='.json')
             with open(sidecar_fname, 'r') as fin:
                 sidecar_json = json.load(fin)
@@ -425,7 +425,7 @@ def _summarize_channels_tsv(bids_root, scans_fpaths, verbose=True):
                 continue
 
             channels_fname = _find_matching_sidecar(bids_basename,
-                                                    kind='channels',
+                                                    suffix='channels',
                                                     extension='.tsv')
 
             # summarize channels.tsv

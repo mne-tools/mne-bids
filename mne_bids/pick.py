@@ -12,7 +12,7 @@ def get_coil_types():
     -------
     coil_types : dict
         The keys contain the channel types, and the values contain the
-        corresponding values in the info['chs'][idx]['kind']
+        corresponding values in the info['chs'][idx]['suffix']
 
     """
     return dict(meggradaxial=(FIFF.FIFFV_COIL_KIT_GRAD,
