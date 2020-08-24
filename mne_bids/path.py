@@ -90,7 +90,6 @@ class BIDSPath(object):
                                      extension]):
             raise ValueError("At least one parameter must be given.")
 
-        self.check = check
         self.update(subject=subject, session=session, task=task,
                     acquisition=acquisition, run=run, processing=processing,
                     recording=recording, space=space, split=split,
@@ -203,15 +202,17 @@ class BIDSPath(object):
 
         if extension is None:
             # since kind is passed in, use that
-            bids_basename = self.copy().update(kind=None)
+            bids_basename = self.copy().update(kind=None, check=False)
             bids_fname = _get_bids_fname_from_filesystem(
                 bids_basename=bids_basename, bids_root=bids_root,
                 sub=sub, ses=ses, kind=kind)
             new_suffix = bids_fname.split("_")[-1]
             kind, extension = _get_kind_ext_from_suffix(new_suffix)
-            bids_fname = self.copy().update(kind=kind, extension=extension)
+            bids_fname = self.copy().update(kind=kind, extension=extension,
+                                            check=False)
         else:
-            bids_fname = self.copy().update(kind=kind, extension=extension)
+            bids_fname = self.copy().update(kind=kind, extension=extension,
+                                            check=False)
 
         return bids_fname
 
@@ -536,7 +537,8 @@ def _find_matching_sidecar(bids_fname, bids_root, kind=None,
         suffix = suffix + kind
 
         # do not search for kind if kind is explicitly passed
-        bids_fname = bids_fname.copy().update(kind=None)
+        bids_fname = bids_fname.copy().update(kind=None,
+                                              check=False)
     if extension is not None:
         suffix = suffix + extension
 
