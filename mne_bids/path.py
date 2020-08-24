@@ -56,13 +56,14 @@ class BIDSPath(object):
     space : str | None
         The coordinate space for an anatomical file. Corresponds to "space".
     split : int | None
-        The split of the continuous recording file for ``.fif`` data. Corresponds to "split".
+        The split of the continuous recording file for ``.fif`` data.
+        Corresponds to "split".
     prefix : str | None
         The prefix for the filename to be created. E.g., a path to the folder
         in which you wish to create a file with this name.
     kind : str | None
-        The filename kind. This is the entity after the last ``_`` before the extension. 
-        E.g., ``'ieeg'``.
+        The filename kind. This is the entity after the
+        last ``_`` before the extension. E.g., ``'ieeg'``.
     extension : str | None
         The extension of the filename. E.g., ``'.json'``.
 
