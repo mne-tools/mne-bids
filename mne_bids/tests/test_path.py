@@ -379,7 +379,7 @@ def test_make_filenames():
         BIDSPath(subject='emptyroom', session='12345', task='noise')
     with pytest.raises(ValueError, match='task must be'):
         BIDSPath(subject='emptyroom', session='20131201',
-                 task='blah')
+                 task='blah', kind='meg')
 
     # test what would happen if you don't want to check
     prefix_data['extension'] = '.h5'

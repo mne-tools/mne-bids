@@ -231,7 +231,8 @@ class BIDSPath(object):
         entities : dict | kwarg
             Allowed BIDS path entities:
             'subject', 'session', 'task', 'acquisition',
-            'processing', 'run', 'recording', 'space', 'suffix', 'prefix'
+            'processing', 'run', 'recording', 'space',
+            'suffix', 'prefix'
 
         Returns
         -------
@@ -254,7 +255,7 @@ class BIDSPath(object):
         BIDSPath(sub-test_ses-two_acq-test_ieeg.vhdr)
         >>> print(bids_basename)
         sub-test_ses-two_acq-test_ieeg.vhdr
-        """  # noqa
+        """
         run = entities.get('run')
         if run is not None and not isinstance(run, str):
             # Ensure that run is a string
