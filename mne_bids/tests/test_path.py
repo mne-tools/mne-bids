@@ -393,6 +393,14 @@ def test_make_filenames():
     basename = BIDSPath(**prefix_data, check=False)
     assert basename.basename == 'sub-one_ses-two_task-three_acq-four_run-five_proc-six_rec-seven_ieeg.h5'  # noqa
 
+    # what happens with scans.tsv file
+    with pytest.raises(ValueError, match='scans.tsv file name '
+                                         'can only contain'):
+        scans_path = BIDSPath(
+            subject=subject_id, session=session_id, task=task,
+            kind='scans', extension='.tsv'
+        )
+
 
 @pytest.mark.parametrize(
     'entities, expected_n_matches',
