@@ -93,7 +93,7 @@ class BIDSPath(object):
         self.update(subject=subject, session=session, task=task,
                     acquisition=acquisition, run=run, processing=processing,
                     recording=recording, space=space, split=split,
-                    prefix=prefix, kind=kind, extension=extension, 
+                    prefix=prefix, kind=kind, extension=extension,
                     check=check)
 
     @property
@@ -285,7 +285,6 @@ class BIDSPath(object):
                 # ensure prefix is a string
                 val = str(val)
             setattr(self, key, val)
-        
         self._check(deep=check)
         return self
 
