@@ -28,7 +28,7 @@ from mne.utils import _TempDir, requires_nibabel, check_version, object_diff
 from mne.utils import assert_dig_allclose
 from mne.datasets import testing, somato
 
-from mne_bids import (get_matched_empty_room, make_bids_basename,
+from mne_bids import (get_matched_empty_room, BIDSPath,
                       make_bids_folders)
 from mne_bids.config import MNE_STR_TO_FRAME
 from mne_bids.read import (read_raw_bids,
@@ -46,11 +46,11 @@ run = '01'
 acq = '01'
 task = 'testing'
 
-bids_basename = make_bids_basename(
+bids_basename = BIDSPath(
     subject=subject_id, session=session_id, run=run, acquisition=acq,
     task=task)
 
-bids_basename_minimal = make_bids_basename(subject=subject_id, task=task)
+bids_basename_minimal = BIDSPath(subject=subject_id, task=task)
 
 # Get the MNE testing sample data - USA
 data_path = testing.data_path()
@@ -241,8 +241,8 @@ def test_handle_info_reading():
 
     # write copy of raw with line freq of 60
     # bids basename and fname
-    bids_basename = make_bids_basename(subject='01', session='01',
-                                       task='audiovisual', run='01')
+    bids_basename = BIDSPath(subject='01', session='01',
+                             task='audiovisual', run='01')
     kind = "meg"
     bids_fname = bids_basename.copy().update(kind=kind,
                                              extension='.fif')
@@ -564,8 +564,8 @@ def test_get_matched_empty_room():
 
     raw = _read_raw_fif(raw_fname)
 
-    bids_basename = make_bids_basename(subject='01', session='01',
-                                       task='audiovisual', run='01')
+    bids_basename = BIDSPath(subject='01', session='01',
+                             task='audiovisual', run='01')
     write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
 
     er_basename = get_matched_empty_room(bids_basename=bids_basename,
@@ -583,8 +583,8 @@ def test_get_matched_empty_room():
         # mne < v0.20
         er_date = datetime.fromtimestamp(er_raw.info['meas_date'][0])
     er_date = er_date.strftime('%Y%m%d')
-    er_bids_basename = make_bids_basename(subject='emptyroom', task='noise',
-                                          session=er_date, kind='meg')
+    er_bids_basename = BIDSPath(subject='emptyroom', task='noise',
+                                session=er_date, kind='meg', check=False)
     write_raw_bids(er_raw, er_bids_basename, bids_root, overwrite=True)
 
     recovered_er_basename = get_matched_empty_room(bids_basename=bids_basename,
@@ -651,10 +651,11 @@ def test_get_matched_emptyroom_ties():
         er_raw.info['meas_date'] = (meas_date.timestamp(), 0)
 
     write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
-    er_bids_path = BIDSPath(subject='emptyroom', session=session)
+    er_bids_path = BIDSPath(subject='emptyroom', session=session,
+                            check=False)
     er_basename_1 = str(er_bids_path)
-    er_basename_2 = make_bids_basename(subject='emptyroom', session=session,
-                                       task='noise')
+    er_basename_2 = BIDSPath(subject='emptyroom', session=session,
+                             task='noise', check=False)
     er_raw.save(op.join(er_dir, f'{er_basename_1}_meg.fif'))
     er_raw.save(op.join(er_dir, f'{er_basename_2}_meg.fif'))
 
@@ -675,7 +676,7 @@ def test_get_matched_emptyroom_no_meas_date():
     er_dir = make_bids_folders(subject='emptyroom', session=er_session,
                                kind='meg', bids_root=bids_root)
     er_bids_path = BIDSPath(subject='emptyroom', session=er_session,
-                            task='noise')
+                            task='noise', check=False)
     er_basename = str(er_bids_path)
     raw = _read_raw_fif(raw_fname)
 

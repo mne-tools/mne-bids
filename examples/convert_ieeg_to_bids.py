@@ -46,7 +46,7 @@ import shutil
 import numpy as np
 
 import mne
-from mne_bids import (write_raw_bids, make_bids_basename,
+from mne_bids import (write_raw_bids, BIDSPath,
                       read_raw_bids, print_dir_tree)
 
 ###############################################################################
@@ -165,9 +165,9 @@ shutil.rmtree(bids_root, ignore_errors=True)
 # temporarily save the data to disc before reading it back in.
 
 # Now convert our data to be in a new BIDS dataset.
-bids_basename = make_bids_basename(subject=subject_id,
-                                   task=task,
-                                   acquisition="ecog")
+bids_basename = BIDSPath(subject=subject_id,
+                         task=task,
+                         acquisition="ecog")
 
 # write `raw` to BIDS and anonymize it into BrainVision format
 write_raw_bids(raw, bids_basename, bids_root=bids_root,

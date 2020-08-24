@@ -20,7 +20,7 @@ from mne_bids.config import (BIDS_IEEG_COORDINATE_FRAMES,
 from mne_bids.tsv_handler import _from_tsv
 from mne_bids.utils import (_extract_landmarks, _scale_coord_to_meters,
                             _write_json, _write_tsv)
-from mne_bids import make_bids_basename
+from mne_bids import BIDSPath
 from mne_bids.path import get_entities_from_fname
 
 
@@ -342,11 +342,11 @@ def _write_dig_bids(electrodes_fname, coordsystem_fname, data_path,
         if coord_frame is not None:
             # XXX: To improve when mne-python allows coord_frame='unknown'
             if coord_frame not in BIDS_IEEG_COORDINATE_FRAMES:
-                coordsystem_fname = make_bids_basename(
+                coordsystem_fname = BIDSPath(
                     subject=subject_id, session=session_id,
                     acquisition=acquisition, space=coord_frame,
                     kind='coordsystem', extension='.json', prefix=data_path)
-                electrodes_fname = make_bids_basename(
+                electrodes_fname = BIDSPath(
                     subject=subject_id, session=session_id,
                     acquisition=acquisition, space=coord_frame,
                     kind='electrodes', extension='.tsv', prefix=data_path)

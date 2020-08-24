@@ -178,7 +178,7 @@ def copyfile_kit(src, dest, subject_id, session_id,
         Extract information of marker and headpoints
 
     """
-    from mne_bids import make_bids_basename
+    from mne_bids import BIDSPath
     # KIT data requires the marker file to be copied over too
     sh.copyfile(src, dest)
     data_path = op.split(dest)[0]
@@ -194,7 +194,7 @@ def copyfile_kit(src, dest, subject_id, session_id,
             _, marker_ext = _parse_ext(hpi)
             acq_map[None] = hpi
         for key, value in acq_map.items():
-            marker_fname = make_bids_basename(
+            marker_fname = BIDSPath(
                 subject=subject_id, session=session_id, task=task, run=run,
                 acquisition=key, kind='markers', extension=marker_ext,
                 prefix=data_path)
@@ -204,7 +204,7 @@ def copyfile_kit(src, dest, subject_id, session_id,
             position_file = _init_kwargs[acq]
             task, run, acq = None, None, acq.upper()
             position_ext = '.pos'
-            position_fname = make_bids_basename(
+            position_fname = BIDSPath(
                 subject=subject_id, session=session_id, task=task, run=run,
                 acquisition=acq, kind='headshape', extension=position_ext,
                 prefix=data_path)

@@ -9,7 +9,7 @@ import pytest
 from mne.datasets import testing
 from mne.utils import _TempDir
 
-from mne_bids import (make_bids_basename,
+from mne_bids import (BIDSPath,
                       make_report)
 from mne_bids.write import write_raw_bids
 
@@ -19,7 +19,7 @@ run = '01'
 acq = '01'
 task = 'testing'
 
-bids_basename = make_bids_basename(
+bids_basename = BIDSPath(
     subject=subject_id, session=session_id, run=run, acquisition=acq,
     task=task)
 

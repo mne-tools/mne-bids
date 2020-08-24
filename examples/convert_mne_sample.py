@@ -30,7 +30,7 @@ import mne
 from mne.datasets import sample
 
 from mne_bids import (write_raw_bids, read_raw_bids,
-                      make_bids_basename, print_dir_tree)
+                      BIDSPath, print_dir_tree)
 
 ###############################################################################
 # Now we can read the MNE sample data. We define an `event_id` based on our
@@ -64,8 +64,8 @@ output_path = op.join(data_path, '..', 'MNE-sample-data-bids')
 raw = mne.io.read_raw_fif(raw_fname)
 raw.info['line_freq'] = 60  # specify power line frequency as required by BIDS
 
-bids_basename = make_bids_basename(subject='01', session='01',
-                                   task='audiovisual', run='01')
+bids_basename = BIDSPath(subject='01', session='01',
+                         task='audiovisual', run='01')
 write_raw_bids(raw, bids_basename, output_path, events_data=events_data,
                event_id=event_id, overwrite=True)
 

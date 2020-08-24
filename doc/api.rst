@@ -30,7 +30,7 @@ MNE BIDS
    write_raw_bids
    read_raw_bids
    make_bids_folders
-   make_bids_basename
+   BIDSPath
    make_dataset_description
    make_report
    write_anat

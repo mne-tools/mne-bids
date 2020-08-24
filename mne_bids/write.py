@@ -37,9 +37,9 @@ from mne_bids.utils import (_write_json, _write_tsv, _write_text,
                             _infer_eeg_placement_scheme,
                             _handle_kind, _get_ch_type_mapping,
                             _check_anonymize, _stamp_to_dt)
-from mne_bids import make_bids_folders, make_bids_basename
-from mne_bids.path import (BIDSPath, _parse_ext, get_entities_from_fname,
-                           _mkdir_p, _path_to_str)
+from mne_bids import make_bids_folders
+from mne_bids.path import (BIDSPath, _parse_ext, _mkdir_p, _path_to_str,
+                           _convert_str_to_BIDSPath)
 from mne_bids.copyfiles import (copyfile_brainvision, copyfile_eeglab,
                                 copyfile_ctf, copyfile_bti, copyfile_kit)
 from mne_bids.tsv_handler import (_from_tsv, _drop, _contains_row,
@@ -827,7 +827,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
         loaded from disk, i.e., raw.preload must be False.
     bids_basename : str | BIDSPath
         The base filename of the BIDS compatible files. Typically, this can be
-        generated using make_bids_basename.
+        generated using BIDSPath.
         Example: `sub-01_ses-01_task-testing_acq-01_run-01`.
         This will write the following files in the correct subfolder of the
         bids_root::
@@ -952,15 +952,19 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
                        " in from the file. It may have been cropped.")
 
     # convert to BIDS Path
+    check = True
     if isinstance(bids_basename, str):
-        params = get_entities_from_fname(bids_basename)
-        bids_basename = BIDSPath(**params)
+        bids_basename = _convert_str_to_BIDSPath(bids_basename)
 
     bids_basename = bids_basename.copy()
     subject_id, session_id = bids_basename.subject, bids_basename.session
     task, run = bids_basename.task, bids_basename.run
     acquisition, space = bids_basename.acquisition, bids_basename.space
     kind = _handle_kind(raw)
+
+    # turn off downstream checks on BIDSPath if emptyroom
+    if subject_id == 'emptyroom':
+        check = False
 
     bids_fname = bids_basename.copy().update(kind=kind, extension=ext)
 
@@ -990,17 +994,17 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
                                      bids_root=bids_root, make_dir=False,
                                      overwrite=False, verbose=verbose)
 
-    # In case of an "emptyroom" subject, make_bids_basename() will raise
+    # In case of an "emptyroom" subject, BIDSPath() will raise
     # an exception if we don't provide a valid task ("noise"). Now,
     # scans_fname, electrodes_fname, and coordsystem_fname must NOT include
     # the task entity. Therefore, we cannot generate them with
-    # make_bids_basename() directly. Instead, we use BIDSPath() directly
+    # BIDSPath() directly. Instead, we use BIDSPath() directly
     # as it does not make any advanced check.
 
     # create *_scans.tsv
     bids_path = BIDSPath(subject=subject_id, session=session_id,
                          prefix=ses_path, kind='scans', extension='.tsv',
-                         task=None)
+                         task=None, check=check)
     scans_fname = str(bids_path)
 
     # create *_coordsystem.json
@@ -1266,10 +1270,10 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
 
     # Now give the NIfTI file a BIDS name and write it to the BIDS location
     # this needs to be a string, since nibabel assumes a string input
-    t1w_basename = make_bids_basename(subject=subject, session=session,
-                                      acquisition=acquisition,
-                                      prefix=anat_dir,
-                                      kind='T1w', extension='.nii.gz')
+    t1w_basename = BIDSPath(subject=subject, session=session,
+                            acquisition=acquisition,
+                            prefix=anat_dir,
+                            kind='T1w', extension='.nii.gz')
 
     # Check if we have necessary conditions for writing a sidecar JSON
     if trans is not None or landmarks is not None:
