@@ -68,17 +68,19 @@ class BIDSPath(object):
 
     Examples
     --------
-    >>> bids_basename = BIDSPath(subject='test', session='two', 
-                                           task='mytask', kind='ieeg', extension='.edf')
+    >>> bids_basename = BIDSPath(subject='test', session='two',
+                                 task='mytask', kind='ieeg',
+                                 extension='.edf')
     >>> print(bids_basename)
     sub-test_ses-two_task-mytask_ieeg.edf
     >>> bids_basename
     BIDSPath(sub-test_ses-two_task-mytask_ieeg.edf)
     >>> # copy and update multiple entities at once
-    >>> new_basename = bids_basename.copy().update(subject='test2', session='one')
+    >>> new_basename = bids_basename.copy().update(subject='test2',
+                                                   session='one')
     >>> print(new_basename)
     sub-test2_ses-one_task-mytask_ieeg.edf
-    """  # noqa
+    """
 
     def __init__(self, subject=None, session=None,
                  task=None, acquisition=None, run=None, processing=None,
