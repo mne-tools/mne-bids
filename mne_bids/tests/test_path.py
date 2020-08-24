@@ -320,7 +320,19 @@ def test_bids_path(return_bids_test_dir):
                  kind=kind)
 
     # do not error check kind in update (not deep check)
+    with pytest.raises(ValueError, match=f'Kind foobar is not'):
+        bids_basename.update(kind='foobar')
+
+    # does not error check on kind in BIDSPath (deep check)
+    kind = 'meeg'
+    bids_basename = BIDSPath(subject=subject_id, session=session_id,
+                             kind=kind, check=False)
+    # also inherits error check from instantiation
     bids_basename.update(kind='foobar')
+
+    # can reset error check on update
+    with pytest.raises(ValueError, match=f'Kind foobar is not'):
+        bids_basename.update(kind='foobar', check=True)
 
     # error check on extension in BIDSPath (deep check)
     extension = '.mat'
@@ -329,7 +341,7 @@ def test_bids_path(return_bids_test_dir):
                  extension=extension)
 
     # do not error extension in update (not deep check)
-    bids_basename.update(extension='.foo')
+    bids_basename.update(extension='.foo', check=False)
 
     # test repr
     bids_path = BIDSPath(subject='01', session='02',

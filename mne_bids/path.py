@@ -90,6 +90,7 @@ class BIDSPath(object):
                                      extension]):
             raise ValueError("At least one parameter must be given.")
 
+        self.check = check
         self.update(subject=subject, session=session, task=task,
                     acquisition=acquisition, run=run, processing=processing,
                     recording=recording, space=space, split=split,
@@ -214,13 +215,14 @@ class BIDSPath(object):
 
         return bids_fname
 
-    def update(self, check=True, **entities):
+    def update(self, check=None, **entities):
         """Update inplace BIDS entity key/value pairs in object.
 
         Parameters
         ----------
-        check : bool
-            Check validity of the entity values (default is True). 
+        check : bool | None
+            Check validity of the entity values (default uses the 
+            ``check`` set from initialization of the ``BIDSPath`` object). 
             Checks valid suffixes, and extensions against BIDS 
             specification.
         entities : dict | kwarg
@@ -285,7 +287,11 @@ class BIDSPath(object):
                 # ensure prefix is a string
                 val = str(val)
             setattr(self, key, val)
-        self._check(deep=check)
+
+        if check is not None:
+            self.check = check
+        # perform a check of the entities
+        self._check(deep=self.check)
         return self
 
     def _check(self, deep=True):
