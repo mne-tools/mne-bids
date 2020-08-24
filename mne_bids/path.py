@@ -276,9 +276,7 @@ class BIDSPath(object):
                 _check_key_val(key, val)
 
             # error check allowed BIDS entity keywords
-            if key not in ALLOWED_PATH_ENTITIES and key not in [
-                'on_invalid_er_session', 'on_invalid_er_task',
-            ]:
+            if key not in ALLOWED_PATH_ENTITIES:
                 raise ValueError(f'Key must be one of '
                                  f'{ALLOWED_PATH_ENTITIES}, got {key}')
 
