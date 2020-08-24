@@ -328,6 +328,7 @@ class BIDSPath(object):
 
 
 def _check_non_sub_ses_entity(bids_path):
+    """Check existence of non subject/session entities in BIDSPath."""
     if bids_path.task or bids_path.acquisition or \
             bids_path.run or bids_path.space or \
             bids_path.recording or bids_path.split or \
