@@ -294,7 +294,7 @@ def read_raw_bids(bids_basename, bids_root, kind=None, extra_params=None,
     bids_root : str | pathlib.Path
         Path to root of the BIDS folder
     kind : str | None
-        The suffix of recording to read. If ``None`` and only one suffix (e.g.,
+        The kind of recording to read. If ``None`` and only one kind (e.g.,
         only EEG or only MEG data) is present in the dataset, it will be
         selected automatically.
     extra_params : None | dict
@@ -312,7 +312,7 @@ def read_raw_bids(bids_basename, bids_root, kind=None, extra_params=None,
     ------
     RuntimeError
         If multiple recording kinds are present in the dataset, but
-        ``suffix=None``.
+        ``kind=None``.
 
     RuntimeError
         If more than one data files exist for the specified recording.
@@ -321,7 +321,7 @@ def read_raw_bids(bids_basename, bids_root, kind=None, extra_params=None,
         If no data file in a supported format can be located.
 
     ValueError
-        If the specified ``suffix`` cannot be found in the dataset.
+        If the specified ``kind`` cannot be found in the dataset.
 
     """
     # convert to BIDS Path
@@ -352,7 +352,6 @@ def read_raw_bids(bids_basename, bids_root, kind=None, extra_params=None,
 
     if extra_params is None:
         extra_params = dict()
-    print(bids_fpath)
     raw = _read_raw(bids_fpath, electrode=None, hsp=None, hpi=None,
                     config=config, verbose=None, **extra_params)
 
@@ -361,7 +360,6 @@ def read_raw_bids(bids_basename, bids_root, kind=None, extra_params=None,
     events_fname = _find_matching_sidecar(bids_basename, suffix='events',
                                           extension='.tsv',
                                           allow_fail=True)
-
     if events_fname is not None:
         raw = _handle_events_reading(events_fname, raw)
 
