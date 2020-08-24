@@ -270,7 +270,7 @@ class BIDSPath(object):
         # error check entities
         for key, val in entities.items():
             # check if there are any characters not allowed
-            if val is not None and key not in 'prefix':
+            if val is not None and key != 'prefix':
                 _check_key_val(key, val)
 
             # error check allowed BIDS entity keywords
