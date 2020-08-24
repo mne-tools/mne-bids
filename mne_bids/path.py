@@ -215,14 +215,13 @@ class BIDSPath(object):
 
         return bids_fname
 
-    def update(self, check=None, **entities):
+    def update(self, check=True, **entities):
         """Update inplace BIDS entity key/value pairs in object.
 
         Parameters
         ----------
         check : bool | None
-            Check validity of the entity values (default uses the 
-            ``check`` set from initialization of the ``BIDSPath`` object). 
+            Check validity of the entity values (default is True). 
             Checks valid suffixes, and extensions against BIDS 
             specification.
         entities : dict | kwarg
@@ -286,10 +285,8 @@ class BIDSPath(object):
                 val = str(val)
             setattr(self, key, val)
 
-        if check is not None:
-            self.check = check
         # perform a check of the entities
-        self._check(deep=self.check)
+        self._check(deep=check)
         return self
 
     def _check(self, deep=True):

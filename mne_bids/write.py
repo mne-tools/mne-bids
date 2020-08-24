@@ -966,7 +966,8 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     if subject_id == 'emptyroom':
         check = False
 
-    bids_fname = bids_basename.copy().update(kind=kind, extension=ext)
+    bids_fname = bids_basename.copy().update(kind=kind, extension=ext,
+                                             check=check)
 
     # check whether the info provided indicates that the data is emptyroom
     # data
@@ -1010,12 +1011,12 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     # create *_coordsystem.json
     bids_path.update(acquisition=acquisition, space=space,
                      prefix=data_path, kind='coordsystem',
-                     extension='.json')
+                     extension='.json', check=check)
     coordsystem_fname = str(bids_path)
 
     # create *_electrodes.tsv
     bids_path = bids_path.update(kind='electrodes',
-                                 extension='.tsv')
+                                 extension='.tsv', check=check)
     electrodes_fname = str(bids_path)
 
     # For the remaining files, we can use BIDSPath to alter.
@@ -1026,12 +1027,15 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
 
     sidecar_fname = bids_fname.copy().update(prefix=data_path,
                                              kind=kind,
-                                             extension='.json')
+                                             extension='.json',
+                                             check=check)
 
     events_fname = sidecar_fname.copy().update(kind='events',
-                                               extension='.tsv')
+                                               extension='.tsv',
+                                               check=check)
     channels_fname = sidecar_fname.copy().update(kind='channels',
-                                                 extension='.tsv')
+                                                 extension='.tsv',
+                                                 check=check)
 
     if ext not in ['.fif', '.ds', '.vhdr', '.edf', '.bdf', '.set', '.con',
                    '.sqd']:
