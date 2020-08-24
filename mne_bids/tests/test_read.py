@@ -693,8 +693,6 @@ def test_get_matched_emptyroom_no_meas_date():
     write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
     os.remove(op.join(bids_root, 'participants.tsv'))
 
-    from mne_bids.path import print_dir_tree
-    print_dir_tree(bids_root)
     with pytest.warns(RuntimeWarning, match='Could not retrieve .* date'):
         get_matched_empty_room(bids_basename=bids_basename,
                                bids_root=bids_root)
