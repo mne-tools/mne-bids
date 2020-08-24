@@ -962,10 +962,6 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     acquisition, space = bids_basename.acquisition, bids_basename.space
     kind = _handle_kind(raw)
 
-    # turn off downstream checks on BIDSPath if emptyroom
-    if subject_id == 'emptyroom':
-        check = False
-
     bids_fname = bids_basename.copy().update(kind=kind, extension=ext,
                                              check=check)
 
