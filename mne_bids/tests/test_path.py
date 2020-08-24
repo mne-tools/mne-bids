@@ -396,7 +396,7 @@ def test_make_filenames():
     # what happens with scans.tsv file
     with pytest.raises(ValueError, match='scans.tsv file name '
                                          'can only contain'):
-        scans_path = BIDSPath(
+        BIDSPath(
             subject=subject_id, session=session_id, task=task,
             kind='scans', extension='.tsv'
         )
