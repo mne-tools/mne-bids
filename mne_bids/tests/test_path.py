@@ -135,22 +135,22 @@ def test_make_folders():
     """Test that folders are created and named properly."""
     # Make sure folders are created properly
     bids_root = _TempDir()
-    make_bids_folders(subject='hi', session='foo', kind='ba',
+    make_bids_folders(subject='hi', session='foo', modality='ba',
                       bids_root=bids_root)
     assert op.isdir(op.join(bids_root, 'sub-hi', 'ses-foo', 'ba'))
 
     # If we remove a kwarg the folder shouldn't be created
     bids_root = _TempDir()
-    make_bids_folders(subject='hi', kind='ba', bids_root=bids_root)
+    make_bids_folders(subject='hi', modality='ba', bids_root=bids_root)
     assert op.isdir(op.join(bids_root, 'sub-hi', 'ba'))
 
     # check overwriting of folders
-    make_bids_folders(subject='hi', kind='ba', bids_root=bids_root,
+    make_bids_folders(subject='hi', modality='ba', bids_root=bids_root,
                       overwrite=True, verbose=True)
 
     # Check if a pathlib.Path bids_root works.
     bids_root = Path(_TempDir())
-    make_bids_folders(subject='hi', session='foo', kind='ba',
+    make_bids_folders(subject='hi', session='foo', modality='ba',
                       bids_root=bids_root)
     assert op.isdir(op.join(bids_root, 'sub-hi', 'ses-foo', 'ba'))
 
@@ -158,7 +158,7 @@ def test_make_folders():
     bids_root = _TempDir()
     curr_dir = os.getcwd()
     os.chdir(bids_root)
-    make_bids_folders(subject='hi', session='foo', kind='ba',
+    make_bids_folders(subject='hi', session='foo', modality='ba',
                       bids_root=None)
     assert op.isdir(op.join(os.getcwd(), 'sub-hi', 'ses-foo', 'ba'))
     os.chdir(curr_dir)
@@ -201,10 +201,10 @@ def test_parse_bids_filename(fname):
     assert params['task'] == 'test'
     assert params['split'] == '01'
     if 'meg' in fname:
-        assert params['suffix'] == 'meg'
+        assert params['str_suffix'] == 'meg'
     assert list(params.keys()) == ['subject', 'session', 'task',
                                    'acquisition', 'run', 'processing',
-                                   'space', 'recording', 'split', 'suffix']
+                                   'space', 'recording', 'split', 'str_suffix']
 
 
 @pytest.mark.parametrize('candidate_list, best_candidates', [
@@ -235,7 +235,7 @@ def test_find_matching_sidecar(return_bids_test_dir):
 
     # Now find a sidecar
     sidecar_fname = _find_matching_sidecar(bids_basename, bids_root,
-                                           kind='coordsystem',
+                                           suffix='coordsystem',
                                            extension='.json')
     expected_file = op.join('sub-01', 'ses-01', 'meg',
                             'sub-01_ses-01_coordsystem.json')
@@ -247,12 +247,12 @@ def test_find_matching_sidecar(return_bids_test_dir):
                                    '2coordsystem.json'), 'w').close()
         print_dir_tree(bids_root)
         _find_matching_sidecar(bids_basename, bids_root,
-                               kind='coordsystem', extension='.json')
+                               suffix='coordsystem', extension='.json')
 
     # Find nothing but receive None, because we set `allow_fail` to True
     with pytest.warns(RuntimeWarning, match='Did not find any'):
         _find_matching_sidecar(bids_basename, bids_root,
-                               kind='foo', extension='.bogus',
+                               suffix='foo', extension='.bogus',
                                allow_fail=True)
 
 
@@ -284,7 +284,7 @@ def test_bids_path(return_bids_test_dir):
     assert all(bids_basename.entities.get(entity) is None
                for entity in ['task', 'run', 'recording', 'acquisition',
                               'space', 'processing',
-                              'prefix', 'suffix', 'extension'])
+                              'prefix', 'str_suffix', 'extension'])
 
     # test updating functionality
     bids_basename.update(acquisition='03', run='2', session='02',
@@ -313,7 +313,7 @@ def test_bids_path(return_bids_test_dir):
     with pytest.raises(ValueError, match='Unallowed*'):
         bids_basename.update(subject=subject_id + '-')
 
-    # error check on suffix in BIDSPath (deep check)
+    # error check on str_suffix in BIDSPath (deep check)
     kind = 'meeg'
     with pytest.raises(ValueError, match=f'Kind {kind} is not'):
         BIDSPath(subject=subject_id, session=session_id,
@@ -326,7 +326,7 @@ def test_bids_path(return_bids_test_dir):
                              acquisition=acq, task=task)
     bids_basename.update(kind=error_kind, check=False)
 
-    # does not error check on suffix in BIDSPath (deep check)
+    # does not error check on str_suffix in BIDSPath (deep check)
     kind = 'meeg'
     bids_basename = BIDSPath(subject=subject_id, session=session_id,
                              suffix=kind, check=False)
@@ -376,7 +376,7 @@ def test_make_filenames():
         BIDSPath(subject='emptyroom', session='20131201',
                  task='blah', suffix='meg')
 
-    # when the suffix is not 'meg', then it does not result in
+    # when the str_suffix is not 'meg', then it does not result in
     # an error
     BIDSPath(subject='emptyroom', session='20131201',
              task='blah')

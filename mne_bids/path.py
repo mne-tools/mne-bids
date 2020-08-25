@@ -34,7 +34,7 @@ class BIDSPath(object):
     BIDSPath allows dynamic updating of its entities in place, and operates
     similar to `pathlib.Path`.
 
-    Note that not all parameters are applicable to each kind of data. For
+    Note that not all parameters are applicable to each suffix of data. For
     example, electrode location TSV files do not need a "task" field.
 
     Parameters
@@ -62,7 +62,7 @@ class BIDSPath(object):
         The prefix for the filename to be created. E.g., a path to the folder
         in which you wish to create a file with this name.
     suffix : str | None
-        The filename kind. This is the entity after the
+        The filename suffix. This is the entity after the
         last ``_`` before the extension. E.g., ``'channels'``.
     extension : str | None
         The extension of the filename. E.g., ``'.json'``.
@@ -81,7 +81,7 @@ class BIDSPath(object):
     Examples
     --------
     >>> bids_basename = BIDSPath(subject='test', session='two', task='mytask',
-                                 kind='ieeg', extension='.edf')
+                                 suffix='ieeg', extension='.edf')
     >>> print(bids_basename)
     sub-test_ses-two_task-mytask_ieeg.edf
     >>> bids_basename
@@ -96,7 +96,7 @@ class BIDSPath(object):
     def __init__(self, subject=None, session=None,
                  task=None, acquisition=None, run=None, processing=None,
                  recording=None, space=None, split=None, prefix=None,
-                 suffix=None, extension=None, check=True):
+                 suffix=None, extension=None, modality=None, check=True):
         if all(ii is None for ii in [subject, session, task,
                                      acquisition, run, processing,
                                      recording, space, prefix, suffix,
@@ -108,7 +108,8 @@ class BIDSPath(object):
         self.update(subject=subject, session=session, task=task,
                     acquisition=acquisition, run=run, processing=processing,
                     recording=recording, space=space, split=split,
-                    prefix=prefix, suffix=suffix, extension=extension)
+                    prefix=prefix, modality=modality,
+                    suffix=suffix, extension=extension)
 
     @property
     def entities(self):
@@ -223,7 +224,7 @@ class BIDSPath(object):
                 bids_basename=bids_basename, bids_root=bids_root,
                 sub=sub, ses=ses, kind=kind)
             new_suffix = bids_fname.split("_")[-1]
-            kind, extension = _get_kind_ext_from_suffix(new_suffix)
+            kind, extension = _get_bids_suffix_and_ext(new_suffix)
             bids_fname = bids_basename.update(kind=kind, extension=extension)
         else:
             bids_fname = bids_basename.update(kind=kind, extension=extension)
@@ -398,7 +399,7 @@ def print_dir_tree(folder, max_depth=None):
                     print('|{} {}'.format(branchlen * '---', file))
 
 
-def make_bids_folders(subject, session=None, kind=None, bids_root=None,
+def make_bids_folders(subject, session=None, modality=None, bids_root=None,
                       make_dir=True, overwrite=False, verbose=False):
     """Create a BIDS folder hierarchy.
 
@@ -409,9 +410,9 @@ def make_bids_folders(subject, session=None, kind=None, bids_root=None,
     ----------
     subject : str
         The subject ID. Corresponds to "sub".
-    kind : str
-        The suffix of folder being created at the end of the hierarchy. E.g.,
-        "anat", "func", etc.
+    modality : str
+        The "modality" of folder being created at the end of the hierarchy. 
+        E.g., "anat", "func", "eeg", "meg", "ieeg", etc.
     session : str | None
         The session for a item. Corresponds to "ses".
     bids_root : str | pathlib.Path | None
@@ -440,7 +441,7 @@ def make_bids_folders(subject, session=None, kind=None, bids_root=None,
     '/path/to/project/sub-sub_01/ses-mysession/meg'
 
     """  # noqa
-    _check_types((subject, kind, session))
+    _check_types((subject, modality, session))
     if bids_root is not None:
         bids_root = _path_to_str(bids_root)
 
@@ -450,8 +451,8 @@ def make_bids_folders(subject, session=None, kind=None, bids_root=None,
     path = [f'sub-{subject}']
     if isinstance(session, str):
         path.append(f'ses-{session}')
-    if isinstance(kind, str):
-        path.append(kind)
+    if isinstance(modality, str):
+        path.append(modality)
     path = op.join(*path)
     if isinstance(bids_root, str):
         path = op.join(bids_root, path)
@@ -532,13 +533,13 @@ def get_entities_from_fname(fname):
     last_entity = fname.split('-')[-1]
     if '_' in last_entity:
         suffix = last_entity.split('_')[-1]
-        kind, _ = _get_kind_ext_from_suffix(suffix)
+        kind, _ = _get_bids_suffix_and_ext(suffix)
         params['suffix'] = kind
 
     return params
 
 
-def _find_matching_sidecar(bids_fname, bids_root, kind=None,
+def _find_matching_sidecar(bids_fname, bids_root, suffix=None,
                            extension=None, allow_fail=False):
     """Try to find a sidecar file with a given suffix for a data file.
 
@@ -548,7 +549,7 @@ def _find_matching_sidecar(bids_fname, bids_root, kind=None,
         Full name of the data file
     bids_root : str | pathlib.Path
         Path to root of the BIDS folder
-    kind : str | None
+    suffix : str | None
         The filename suffix. This is the entity after the last ``_``
         before the extension. E.g., ``'ieeg'``.
     extension : str | None
@@ -564,18 +565,18 @@ def _find_matching_sidecar(bids_fname, bids_root, kind=None,
         and no sidecar_fname was found
 
     """
-    # suffix is suffix and extension
-    suffix = ''
-    if kind is not None:
-        suffix = suffix + kind
+    # search suffix is BIDS-suffix and extension
+    search_suffix = ''
+    if suffix is not None:
+        search_suffix = search_suffix + suffix
 
         # do not search for suffix if suffix is explicitly passed
         bids_fname = bids_fname.copy()
         bids_fname.check = False
-        bids_fname.update(kind=None)
+        bids_fname.update(suffix=None)
 
     if extension is not None:
-        suffix = suffix + extension
+        search_suffix = search_suffix + extension
 
     # We only use subject and session as identifier, because all other
     # parameters are potentially not binding for metadata sidecar files
@@ -586,7 +587,7 @@ def _find_matching_sidecar(bids_fname, bids_root, kind=None,
     # Find all potential sidecar files, doing a recursive glob
     # from bids_root/sub_id/
     search_str = op.join(bids_root, f'sub-{bids_fname.subject}',
-                         '**', search_str + '*' + suffix)
+                         '**', search_str + '*' + search_suffix)
     candidate_list = glob.glob(search_str, recursive=True)
     best_candidates = _find_best_candidates(bids_fname.entities,
                                             candidate_list)
@@ -602,10 +603,9 @@ def _find_matching_sidecar(bids_fname, bids_root, kind=None,
                .format(suffix, bids_fname.basename))
     elif len(best_candidates) > 1:
         # More than one candidates were tied for best match
-        msg = ('Expected to find a single {} file associated with '
-               '{}, but found {}: "{}".'
-               .format(suffix, bids_fname.basename, len(candidate_list),
-                       candidate_list))
+        msg = (f'Expected to find a single {suffix} file '
+               f'associated with {bids_fname.basename}, '
+               f'but found {len(candidate_list)}: "{candidate_list}".')
     msg += '\n\nThe search_str was "{}"'.format(search_str)
     if allow_fail:
         warn(msg)
@@ -614,17 +614,17 @@ def _find_matching_sidecar(bids_fname, bids_root, kind=None,
         raise RuntimeError(msg)
 
 
-def _get_kind_ext_from_suffix(suffix):
+def _get_bids_suffix_and_ext(str_suffix):
     """Parse suffix for valid suffix and ext."""
     # no matter what the suffix is, suffix and extension are last
-    kind = suffix
+    suffix = str_suffix
     ext = None
-    if '.' in suffix:
+    if '.' in str_suffix:
         # handle case of multiple '.' in extension
-        split_str = suffix.split('.')
-        kind = split_str[0]
+        split_str = str_suffix.split('.')
+        suffix = split_str[0]
         ext = '.'.join(split_str[1:])
-    return kind, ext
+    return suffix, ext
 
 
 def get_kinds(bids_root):
@@ -849,7 +849,7 @@ def _get_bids_fname_from_filesystem(*, bids_basename, bids_root, sub, ses,
         kind = _infer_kind(bids_basename=bids_basename, bids_root=bids_root,
                            sub=sub, ses=ses)
 
-    data_dir = make_bids_folders(subject=sub, session=ses, kind=kind,
+    data_dir = make_bids_folders(subject=sub, session=ses, modality=kind,
                                  make_dir=False)
 
     bti_dir = op.join(bids_root, data_dir, f'{bids_basename}_{kind}')
@@ -931,7 +931,7 @@ def _path_to_str(var):
 
 def _filter_fnames(fnames, *, subject=None, session=None, task=None,
                    acquisition=None, run=None, processing=None, recording=None,
-                   space=None, split=None, kind=None, extension=None):
+                   space=None, split=None, suffix=None, extension=None):
     """Filter a list of BIDS filenames based on BIDS entity values."""
     sub_str = f'sub-{subject}' if subject else r'sub-([^_]+)'
     ses_str = f'_ses-{session}' if session else r'(|_ses-([^_]+))'
@@ -942,7 +942,7 @@ def _filter_fnames(fnames, *, subject=None, session=None, task=None,
     rec_str = f'_rec-{recording}' if recording else r'(|_rec-([^_]+))'
     space_str = f'_space-{space}' if space else r'(|_space-([^_]+))'
     split_str = f'_split-{split}' if split else r'(|_split-([^_]+))'
-    kind_str = (f'_{kind}' if kind else r'_(' +
+    kind_str = (f'_{suffix}' if suffix else r'_(' +
                 '|'.join(ALLOWED_FILENAME_SUFFIX) + ')')
     ext_str = extension if extension else r'.([^_]+)'
 
@@ -956,7 +956,7 @@ def _filter_fnames(fnames, *, subject=None, session=None, task=None,
 
 def get_matched_basenames(bids_root, *, subject=None, session=None, task=None,
                           acquisition=None, run=None, processing=None,
-                          recording=None, space=None, kind=None, split=None,
+                          recording=None, space=None, suffix=None, split=None,
                           extension=None):
     """Retrieve a list of BIDSPaths matching the specified entities.
 
@@ -990,8 +990,8 @@ def get_matched_basenames(bids_root, *, subject=None, session=None, task=None,
     prefix : str | None
         The prefix for the filename to be created. E.g., a path to the folder
         in which you wish to create a file with this name.
-    kind : str | None
-        The recording suffix.
+    suffix : str | None
+        The recording suffix. E.g. ('meg', or 'channels')
     split : int | None
         The split number.
     extension : str | None
@@ -1013,7 +1013,7 @@ def get_matched_basenames(bids_root, *, subject=None, session=None, task=None,
     fnames = _filter_fnames(fnames, subject=subject, session=session,
                             task=task, acquisition=acquisition, run=run,
                             processing=processing, recording=recording,
-                            space=space, split=split, kind=kind,
+                            space=space, split=split, suffix=suffix,
                             extension=extension)
 
     paths = []

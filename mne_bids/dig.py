@@ -197,7 +197,7 @@ def _electrodes_tsv(raw, fname, kind, overwrite=False, verbose=True):
                             ('z', z),
                             ])
     else:  # pragma: no cover
-        raise RuntimeError("suffix {} not supported.".format(kind))
+        raise RuntimeError("kind {} not supported.".format(kind))
 
     # Add impedance values if available, currently only BrainVision:
     # https://github.com/mne-tools/mne-python/pull/7974
@@ -237,7 +237,7 @@ def _coordsystem_json(raw, unit, orient, coordsystem_name, fname,
     if dig is None:
         dig = []
     coords = _extract_landmarks(dig)
-    hpi = {d['ident']: d for d in dig if d['suffix'] == FIFF.FIFFV_POINT_HPI}
+    hpi = {d['ident']: d for d in dig if d['kind'] == FIFF.FIFFV_POINT_HPI}
     if hpi:
         for ident in hpi.keys():
             coords['coil%d' % ident] = hpi[ident]['r'].tolist()
@@ -254,9 +254,9 @@ def _coordsystem_json(raw, unit, orient, coordsystem_name, fname,
         print('Using the `Other` keyword for the CoordinateSystem field. '
               'Please specify the CoordinateSystemDescription field manually.')
 
-    # create the coordinate json data structure based on 'suffix'
+    # create the coordinate json data structure based on 'kind'
     if kind == 'meg':
-        hpi = {d['ident']: d for d in dig if d['suffix'] == FIFF.FIFFV_POINT_HPI}
+        hpi = {d['ident']: d for d in dig if d['kind'] == FIFF.FIFFV_POINT_HPI}
         if hpi:
             for ident in hpi.keys():
                 coords['coil%d' % ident] = hpi[ident]['r'].tolist()

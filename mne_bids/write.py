@@ -462,11 +462,12 @@ def _mri_landmarks_to_mri_voxels(mri_landmarks, t1_mgh):
     return mri_landmarks
 
 
-def _sidecar_json(raw, task, manufacturer, fname, kind, overwrite=False,
+def _sidecar_json(raw, task, manufacturer, fname, modality, overwrite=False,
                   verbose=True):
     """Create a sidecar json file depending on the suffix and save it.
 
-    The sidecar json file provides meta data about the data of a certain suffix.
+    The sidecar json file provides meta data about the data
+    of a certain modality.
 
     Parameters
     ----------
@@ -479,7 +480,7 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, overwrite=False,
         coordinate system for the MEG sensors.
     fname : str | BIDSPath
         Filename to save the sidecar json to.
-    kind : str
+    modality : str
         Type of the data as in ALLOWED_ELECTROPHYSIO_MODALITY.
     overwrite : bool
         Whether to overwrite the existing file.
@@ -511,25 +512,25 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, overwrite=False,
     # all ignored channels are trigger channels at the moment...
 
     n_megchan = len([ch for ch in raw.info['chs']
-                     if ch['suffix'] == FIFF.FIFFV_MEG_CH])
+                     if ch['kind'] == FIFF.FIFFV_MEG_CH])
     n_megrefchan = len([ch for ch in raw.info['chs']
-                        if ch['suffix'] == FIFF.FIFFV_REF_MEG_CH])
+                        if ch['kind'] == FIFF.FIFFV_REF_MEG_CH])
     n_eegchan = len([ch for ch in raw.info['chs']
-                     if ch['suffix'] == FIFF.FIFFV_EEG_CH])
+                     if ch['kind'] == FIFF.FIFFV_EEG_CH])
     n_ecogchan = len([ch for ch in raw.info['chs']
-                      if ch['suffix'] == FIFF.FIFFV_ECOG_CH])
+                      if ch['kind'] == FIFF.FIFFV_ECOG_CH])
     n_seegchan = len([ch for ch in raw.info['chs']
-                      if ch['suffix'] == FIFF.FIFFV_SEEG_CH])
+                      if ch['kind'] == FIFF.FIFFV_SEEG_CH])
     n_eogchan = len([ch for ch in raw.info['chs']
-                     if ch['suffix'] == FIFF.FIFFV_EOG_CH])
+                     if ch['kind'] == FIFF.FIFFV_EOG_CH])
     n_ecgchan = len([ch for ch in raw.info['chs']
-                     if ch['suffix'] == FIFF.FIFFV_ECG_CH])
+                     if ch['kind'] == FIFF.FIFFV_ECG_CH])
     n_emgchan = len([ch for ch in raw.info['chs']
-                     if ch['suffix'] == FIFF.FIFFV_EMG_CH])
+                     if ch['kind'] == FIFF.FIFFV_EMG_CH])
     n_miscchan = len([ch for ch in raw.info['chs']
-                      if ch['suffix'] == FIFF.FIFFV_MISC_CH])
+                      if ch['kind'] == FIFF.FIFFV_MISC_CH])
     n_stimchan = len([ch for ch in raw.info['chs']
-                      if ch['suffix'] == FIFF.FIFFV_STIM_CH]) - n_ignored
+                      if ch['kind'] == FIFF.FIFFV_STIM_CH]) - n_ignored
 
     # Define modality-specific JSON dictionaries
     ch_info_json_common = [
@@ -565,11 +566,11 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, overwrite=False,
 
     # Stitch together the complete JSON dictionary
     ch_info_json = ch_info_json_common
-    if kind == 'meg':
+    if modality == 'meg':
         append_kind_json = ch_info_json_meg
-    elif kind == 'eeg':
+    elif modality == 'eeg':
         append_kind_json = ch_info_json_eeg
-    elif kind == 'ieeg':
+    elif modality == 'ieeg':
         append_kind_json = ch_info_json_ieeg
 
     ch_info_json += append_kind_json
@@ -980,7 +981,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
                                  "session date.")
 
     data_path = make_bids_folders(subject=subject_id, session=session_id,
-                                  kind=kind, bids_root=bids_root,
+                                  modality=kind, bids_root=bids_root,
                                   overwrite=False, verbose=verbose)
     if session_id is None:
         ses_path = os.sep.join(data_path.split(os.sep)[:-1])
