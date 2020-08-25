@@ -289,7 +289,7 @@
 <span class="sd">        Extract information of marker and headpoints</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">from</span> <span class="nn">mne_bids</span> <span class="kn">import</span> <span class="n">make_bids_basename</span>
+    <span class="kn">from</span> <span class="nn">mne_bids</span> <span class="kn">import</span> <span class="n">BIDSPath</span>
     <span class="c1"># KIT data requires the marker file to be copied over too</span>
     <span class="n">sh</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dest</span><span class="p">)</span>
     <span class="n">data_path</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">dest</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
@@ -305,7 +305,7 @@
             <span class="n">_</span><span class="p">,</span> <span class="n">marker_ext</span> <span class="o">=</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">hpi</span><span class="p">)</span>
             <span class="n">acq_map</span><span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="n">hpi</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">acq_map</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">marker_fname</span> <span class="o">=</span> <span class="n">make_bids_basename</span><span class="p">(</span>
+            <span class="n">marker_fname</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span>
                 <span class="n">subject</span><span class="o">=</span><span class="n">subject_id</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session_id</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="n">task</span><span class="p">,</span> <span class="n">run</span><span class="o">=</span><span class="n">run</span><span class="p">,</span>
                 <span class="n">acquisition</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;markers&#39;</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="n">marker_ext</span><span class="p">,</span>
                 <span class="n">prefix</span><span class="o">=</span><span class="n">data_path</span><span class="p">)</span>
@@ -315,7 +315,7 @@
             <span class="n">position_file</span> <span class="o">=</span> <span class="n">_init_kwargs</span><span class="p">[</span><span class="n">acq</span><span class="p">]</span>
             <span class="n">task</span><span class="p">,</span> <span class="n">run</span><span class="p">,</span> <span class="n">acq</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">acq</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
             <span class="n">position_ext</span> <span class="o">=</span> <span class="s1">&#39;.pos&#39;</span>
-            <span class="n">position_fname</span> <span class="o">=</span> <span class="n">make_bids_basename</span><span class="p">(</span>
+            <span class="n">position_fname</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span>
                 <span class="n">subject</span><span class="o">=</span><span class="n">subject_id</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session_id</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="n">task</span><span class="p">,</span> <span class="n">run</span><span class="o">=</span><span class="n">run</span><span class="p">,</span>
                 <span class="n">acquisition</span><span class="o">=</span><span class="n">acq</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;headshape&#39;</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="n">position_ext</span><span class="p">,</span>
                 <span class="n">prefix</span><span class="o">=</span><span class="n">data_path</span><span class="p">)</span>

@@ -56,7 +56,7 @@ We are importing everything we need for this example:
     import mne
     from mne.datasets import eegbci
 
-    from mne_bids import write_raw_bids, make_bids_basename, print_dir_tree
+    from mne_bids import write_raw_bids, BIDSPath, print_dir_tree
 
 
 
@@ -105,6 +105,8 @@ MNE-Python:
  .. code-block:: none
 
     Using default location ~/mne_data for EEGBCI...
+    Downloading https://physionet.org/files/eegmmidb/1.0.0/S001/S001R02.edf (1.2 MB)
+      0%|          | Downloading : 0.00/1.22M [00:00<?,        ?B/s]      4%|4         | Downloading : 56.0k/1.22M [00:00<00:00,    3.10MB/s]     12%|#2        | Downloading : 152k/1.22M [00:00<00:00,    3.11MB/s]      17%|#7        | Downloading : 216k/1.22M [00:00<00:00,    3.14MB/s]     22%|##2       | Downloading : 280k/1.22M [00:00<00:00,    3.13MB/s]     28%|##7       | Downloading : 344k/1.22M [00:00<00:00,    3.17MB/s]     38%|###7      | Downloading : 472k/1.22M [00:00<00:00,    3.21MB/s]     48%|####8     | Downloading : 600k/1.22M [00:00<00:00,    3.26MB/s]     53%|#####3    | Downloading : 664k/1.22M [00:00<00:00,    3.23MB/s]     58%|#####8    | Downloading : 728k/1.22M [00:00<00:00,    3.21MB/s]     69%|######8   | Downloading : 856k/1.22M [00:00<00:00,    3.27MB/s]     79%|#######8  | Downloading : 984k/1.22M [00:00<00:00,    3.34MB/s]     89%|########9 | Downloading : 1.09M/1.22M [00:00<00:00,    3.42MB/s]    100%|#########9| Downloading : 1.21M/1.22M [00:00<00:00,    3.50MB/s]    100%|##########| Downloading : 1.22M/1.22M [00:00<00:00,    4.25MB/s]
 
     ['/home/circleci/mne_data/MNE-eegbci-data/files/eegmmidb/1.0.0/S001/S001R02.edf']
 
@@ -137,15 +139,8 @@ of the directory tree.
     |--- files/
     |------ eegmmidb/
     |--------- 1.0.0/
-    |------------ S002/
-    |--------------- S002R04.edf
-    |--------------- S002R08.edf
-    |--------------- S002R12.edf
     |------------ S001/
-    |--------------- S001R08.edf
-    |--------------- S001R12.edf
     |--------------- S001R02.edf
-    |--------------- S001R04.edf
 
 
 
@@ -250,6 +245,13 @@ format.
  .. code-block:: none
 
     Using default location ~/mne_data for testing...
+    Downloading archive mne-testing-data-0.104.tar.gz to /home/circleci/mne_data
+    Downloading https://codeload.github.com/mne-tools/mne-testing-data/tar.gz/0.104 (991.9 MB)
+      0%|          | Downloading : 0.00/992M [00:00<?,        ?B/s]      0%|          | Downloading : 504k/992M [00:00<00:33,    31.0MB/s]      0%|          | Downloading : 1.49M/992M [00:00<00:32,    31.7MB/s]      0%|          | Downloading : 3.49M/992M [00:00<00:31,    32.9MB/s]      1%|          | Downloading : 7.49M/992M [00:00<00:30,    34.3MB/s]      1%|1         | Downloading : 11.5M/992M [00:00<00:28,    35.8MB/s]      2%|1         | Downloading : 15.5M/992M [00:00<00:27,    37.4MB/s]      3%|2         | Downloading : 27.5M/992M [00:00<00:25,    39.1MB/s]      4%|3         | Downloading : 35.5M/992M [00:00<00:24,    40.9MB/s]      4%|4         | Downloading : 43.5M/992M [00:00<00:23,    42.7MB/s]      5%|5         | Downloading : 51.5M/992M [00:00<00:22,    44.6MB/s]      6%|5         | Downloading : 59.5M/992M [00:00<00:20,    46.6MB/s]      7%|6         | Downloading : 67.5M/992M [00:00<00:19,    48.8MB/s]      8%|7         | Downloading : 75.5M/992M [00:00<00:18,    50.8MB/s]      8%|8         | Downloading : 83.5M/992M [00:00<00:17,    53.0MB/s]      9%|9         | Downloading : 91.5M/992M [00:00<00:17,    55.3MB/s]     10%|#         | Downloading : 99.5M/992M [00:00<00:16,    57.7MB/s]     11%|#         | Downloading : 107M/992M [00:00<00:15,    60.2MB/s]      12%|#1        | Downloading : 115M/992M [00:00<00:14,    62.7MB/s]     12%|#2        | Downloading : 123M/992M [00:00<00:13,    65.2MB/s]     13%|#3        | Downloading : 131M/992M [00:00<00:13,    67.9MB/s]     14%|#4        | Downloading : 139M/992M [00:00<00:12,    70.7MB/s]     15%|#4        | Downloading : 147M/992M [00:00<00:12,    73.6MB/s]     16%|#5        | Downloading : 155M/992M [00:00<00:11,    76.5MB/s]     16%|#6        | Downloading : 163M/992M [00:00<00:10,    79.4MB/s]     17%|#7        | Downloading : 171M/992M [00:00<00:10,    82.3MB/s]     18%|#8        | Downloading : 179M/992M [00:00<00:09,    85.5MB/s]     19%|#8        | Downloading : 187M/992M [00:00<00:09,    88.7MB/s]     20%|#9        | Downloading : 195M/992M [00:00<00:09,    92.0MB/s]     21%|##        | Downloading : 203M/992M [00:00<00:08,    95.2MB/s]     21%|##1       | Downloading : 211M/992M [00:00<00:08,    98.5MB/s]     22%|##2       | Downloading : 219M/992M [00:00<00:07,     102MB/s]     23%|##2       | Downloading : 227M/992M [00:00<00:07,     105MB/s]     24%|##3       | Downloading : 235M/992M [00:00<00:07,     109MB/s]     25%|##4       | Downloading : 243M/992M [00:00<00:06,     112MB/s]     25%|##5       | Downloading : 251M/992M [00:00<00:06,     116MB/s]     26%|##6       | Downloading : 259M/992M [00:00<00:06,     120MB/s]     27%|##6       | Downloading : 267M/992M [00:00<00:06,     124MB/s]     28%|##7       | Downloading : 275M/992M [00:01<00:05,     127MB/s]     29%|##8       | Downloading : 283M/992M [00:01<00:05,     131MB/s]     29%|##9       | Downloading : 291M/992M [00:01<00:05,     135MB/s]     30%|###       | Downloading : 299M/992M [00:01<00:05,     139MB/s]     31%|###1      | Downloading : 307M/992M [00:01<00:05,     143MB/s]     32%|###1      | Downloading : 315M/992M [00:01<00:04,     147MB/s]     33%|###2      | Downloading : 323M/992M [00:01<00:04,     151MB/s]     33%|###3      | Downloading : 331M/992M [00:01<00:04,     155MB/s]     34%|###4      | Downloading : 339M/992M [00:01<00:04,     160MB/s]     35%|###5      | Downloading : 347M/992M [00:01<00:04,     163MB/s]     36%|###5      | Downloading : 355M/992M [00:01<00:04,     167MB/s]     37%|###6      | Downloading : 363M/992M [00:01<00:03,     171MB/s]     37%|###7      | Downloading : 371M/992M [00:01<00:03,     175MB/s]     38%|###8      | Downloading : 379M/992M [00:01<00:03,     180MB/s]     39%|###9      | Downloading : 387M/992M [00:01<00:03,     183MB/s]     40%|###9      | Downloading : 395M/992M [00:01<00:03,     187MB/s]     41%|####      | Downloading : 403M/992M [00:01<00:03,     191MB/s]     41%|####1     | Downloading : 411M/992M [00:01<00:03,     195MB/s]     42%|####2     | Downloading : 419M/992M [00:01<00:03,     199MB/s]     43%|####3     | Downloading : 427M/992M [00:01<00:02,     202MB/s]     44%|####3     | Downloading : 435M/992M [00:01<00:02,     205MB/s]     45%|####4     | Downloading : 443M/992M [00:01<00:02,     208MB/s]     46%|####5     | Downloading : 451M/992M [00:01<00:02,     211MB/s]     46%|####6     | Downloading : 459M/992M [00:01<00:02,     214MB/s]     47%|####7     | Downloading : 467M/992M [00:01<00:02,     218MB/s]     48%|####7     | Downloading : 475M/992M [00:01<00:02,     221MB/s]     49%|####8     | Downloading : 483M/992M [00:01<00:02,     224MB/s]     50%|####9     | Downloading : 491M/992M [00:01<00:02,     228MB/s]     50%|#####     | Downloading : 499M/992M [00:01<00:02,     231MB/s]     51%|#####1    | Downloading : 507M/992M [00:01<00:02,     233MB/s]     52%|#####1    | Downloading : 515M/992M [00:01<00:02,     235MB/s]     53%|#####2    | Downloading : 523M/992M [00:01<00:02,     239MB/s]     54%|#####3    | Downloading : 531M/992M [00:01<00:01,     242MB/s]     54%|#####4    | Downloading : 539M/992M [00:01<00:01,     245MB/s]     55%|#####5    | Downloading : 547M/992M [00:01<00:01,     246MB/s]     56%|#####6    | Downloading : 555M/992M [00:01<00:01,     246MB/s]     57%|#####6    | Downloading : 563M/992M [00:02<00:01,     247MB/s]     58%|#####7    | Downloading : 571M/992M [00:02<00:01,     248MB/s]     58%|#####8    | Downloading : 579M/992M [00:02<00:01,     249MB/s]     59%|#####9    | Downloading : 587M/992M [00:02<00:01,     251MB/s]     60%|######    | Downloading : 595M/992M [00:02<00:01,     252MB/s]     61%|######    | Downloading : 603M/992M [00:02<00:01,     254MB/s]     62%|######1   | Downloading : 611M/992M [00:02<00:01,     255MB/s]     62%|######2   | Downloading : 619M/992M [00:02<00:01,     257MB/s]     63%|######3   | Downloading : 627M/992M [00:02<00:01,     258MB/s]     64%|######4   | Downloading : 635M/992M [00:02<00:01,     260MB/s]     65%|######4   | Downloading : 643M/992M [00:02<00:01,     263MB/s]     66%|######5   | Downloading : 651M/992M [00:02<00:01,     264MB/s]     66%|######6   | Downloading : 659M/992M [00:02<00:01,     265MB/s]     67%|######7   | Downloading : 667M/992M [00:02<00:01,     268MB/s]     68%|######8   | Downloading : 675M/992M [00:02<00:01,     269MB/s]     69%|######8   | Downloading : 683M/992M [00:02<00:01,     270MB/s]     70%|######9   | Downloading : 691M/992M [00:02<00:01,     273MB/s]     71%|#######   | Downloading : 699M/992M [00:02<00:01,     274MB/s]     71%|#######1  | Downloading : 707M/992M [00:02<00:01,     277MB/s]     72%|#######2  | Downloading : 715M/992M [00:02<00:01,     279MB/s]     73%|#######2  | Downloading : 723M/992M [00:02<00:00,     282MB/s]     74%|#######3  | Downloading : 731M/992M [00:02<00:00,     285MB/s]     75%|#######4  | Downloading : 739M/992M [00:02<00:00,     286MB/s]     75%|#######5  | Downloading : 747M/992M [00:02<00:00,     288MB/s]     76%|#######6  | Downloading : 755M/992M [00:02<00:00,     288MB/s]     77%|#######6  | Downloading : 763M/992M [00:02<00:00,     288MB/s]     78%|#######7  | Downloading : 771M/992M [00:02<00:00,     289MB/s]     79%|#######8  | Downloading : 779M/992M [00:02<00:00,     289MB/s]     79%|#######9  | Downloading : 787M/992M [00:02<00:00,     289MB/s]     80%|########  | Downloading : 795M/992M [00:02<00:00,     291MB/s]     81%|########1 | Downloading : 803M/992M [00:02<00:00,     292MB/s]     82%|########1 | Downloading : 811M/992M [00:02<00:00,     292MB/s]     83%|########2 | Downloading : 819M/992M [00:02<00:00,     290MB/s]     83%|########3 | Downloading : 827M/992M [00:02<00:00,     288MB/s]     84%|########4 | Downloading : 835M/992M [00:02<00:00,     285MB/s]     85%|########5 | Downloading : 843M/992M [00:02<00:00,     282MB/s]     86%|########5 | Downloading : 851M/992M [00:03<00:00,     280MB/s]     87%|########6 | Downloading : 859M/992M [00:03<00:00,     279MB/s]     87%|########7 | Downloading : 867M/992M [00:03<00:00,     278MB/s]     88%|########8 | Downloading : 875M/992M [00:03<00:00,     278MB/s]     89%|########9 | Downloading : 883M/992M [00:03<00:00,     276MB/s]     90%|########9 | Downloading : 891M/992M [00:03<00:00,     275MB/s]     91%|######### | Downloading : 899M/992M [00:03<00:00,     275MB/s]     91%|#########1| Downloading : 907M/992M [00:03<00:00,     274MB/s]     92%|#########2| Downloading : 915M/992M [00:03<00:00,     275MB/s]     93%|#########3| Downloading : 923M/992M [00:03<00:00,     276MB/s]     94%|#########3| Downloading : 931M/992M [00:03<00:00,     278MB/s]     95%|#########4| Downloading : 939M/992M [00:03<00:00,     279MB/s]     96%|#########5| Downloading : 947M/992M [00:03<00:00,     280MB/s]     96%|#########6| Downloading : 955M/992M [00:03<00:00,     280MB/s]     97%|#########7| Downloading : 963M/992M [00:03<00:00,     281MB/s]     98%|#########7| Downloading : 971M/992M [00:03<00:00,     282MB/s]     99%|#########8| Downloading : 979M/992M [00:03<00:00,     284MB/s]    100%|#########9| Downloading : 987M/992M [00:03<00:00,     285MB/s]    100%|##########| Downloading : 992M/992M [00:03<00:00,     293MB/s]
+    Verifying hash fd03bb43ce58a5f6cc9e131a804451e2.
+    Decompressing the archive: /home/circleci/mne_data/mne-testing-data-0.104.tar.gz
+    (please be patient, this can take some time)
+    Successfully extracted to: ['/home/circleci/mne_data/MNE-testing-data']
 
     <Figure size 640x640 with 1 Axes>
 
@@ -307,7 +309,7 @@ which are however optional. The required inputs are:
             loaded from disk, i.e., raw.preload must be False.
         bids_basename : str | BIDSPath
             The base filename of the BIDS compatible files. Typically, this can be
-            generated using make_bids_basename.
+            generated using BIDSPath.
             Example: `sub-01_ses-01_task-testing_acq-01_run-01`.
             This will write the following files in the correct subfolder of the
             bids_root::
@@ -432,7 +434,7 @@ Now we just need to specify a few more EEG details to get something sensible:
     event_id = {'rest': 0}
 
     # Now convert our data to be in a new BIDS dataset.
-    bids_basename = make_bids_basename(subject=subject_id, task=task)
+    bids_basename = BIDSPath(subject=subject_id, task=task)
     write_raw_bids(raw, bids_basename, bids_root, event_id=event_id,
                    events_data=events, overwrite=True)
 
@@ -608,18 +610,18 @@ What does our fresh BIDS directory look like?
 
     |eegmmidb_bids_eeg_example/
     |--- participants.tsv
-    |--- README
-    |--- participants.json
     |--- dataset_description.json
+    |--- participants.json
+    |--- README
     |--- sub-001/
     |------ sub-001_scans.tsv
     |------ eeg/
-    |--------- sub-001_task-RestEyesClosed_eeg.json
-    |--------- sub-001_task-RestEyesClosed_channels.tsv
-    |--------- sub-001_electrodes.tsv
     |--------- sub-001_coordsystem.json
+    |--------- sub-001_electrodes.tsv
     |--------- sub-001_task-RestEyesClosed_events.tsv
     |--------- sub-001_task-RestEyesClosed_eeg.edf
+    |--------- sub-001_task-RestEyesClosed_eeg.json
+    |--------- sub-001_task-RestEyesClosed_channels.tsv
 
 
 
@@ -698,7 +700,7 @@ Command line tool: https://www.npmjs.com/package/bids-validator
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  0.127 seconds)
+   **Total running time of the script:** ( 0 minutes  19.207 seconds)
 
 
 .. _sphx_glr_download_auto_examples_convert_eeg_to_bids.py:

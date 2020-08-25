@@ -148,9 +148,9 @@
                             <span class="n">_infer_eeg_placement_scheme</span><span class="p">,</span>
                             <span class="n">_handle_kind</span><span class="p">,</span> <span class="n">_get_ch_type_mapping</span><span class="p">,</span>
                             <span class="n">_check_anonymize</span><span class="p">,</span> <span class="n">_stamp_to_dt</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">mne_bids</span> <span class="kn">import</span> <span class="n">make_bids_folders</span><span class="p">,</span> <span class="n">make_bids_basename</span>
-<span class="kn">from</span> <span class="nn">mne_bids.path</span> <span class="kn">import</span> <span class="p">(</span><span class="n">BIDSPath</span><span class="p">,</span> <span class="n">_parse_ext</span><span class="p">,</span> <span class="n">get_entities_from_fname</span><span class="p">,</span>
-                           <span class="n">_mkdir_p</span><span class="p">,</span> <span class="n">_path_to_str</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">mne_bids</span> <span class="kn">import</span> <span class="n">make_bids_folders</span>
+<span class="kn">from</span> <span class="nn">mne_bids.path</span> <span class="kn">import</span> <span class="p">(</span><span class="n">BIDSPath</span><span class="p">,</span> <span class="n">_parse_ext</span><span class="p">,</span> <span class="n">_mkdir_p</span><span class="p">,</span> <span class="n">_path_to_str</span><span class="p">,</span>
+                           <span class="n">_convert_str_to_bids_path</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">mne_bids.copyfiles</span> <span class="kn">import</span> <span class="p">(</span><span class="n">copyfile_brainvision</span><span class="p">,</span> <span class="n">copyfile_eeglab</span><span class="p">,</span>
                                 <span class="n">copyfile_ctf</span><span class="p">,</span> <span class="n">copyfile_bti</span><span class="p">,</span> <span class="n">copyfile_kit</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">mne_bids.tsv_handler</span> <span class="kn">import</span> <span class="p">(</span><span class="n">_from_tsv</span><span class="p">,</span> <span class="n">_drop</span><span class="p">,</span> <span class="n">_contains_row</span><span class="p">,</span>
@@ -938,7 +938,7 @@
 <span class="sd">        loaded from disk, i.e., raw.preload must be False.</span>
 <span class="sd">    bids_basename : str | BIDSPath</span>
 <span class="sd">        The base filename of the BIDS compatible files. Typically, this can be</span>
-<span class="sd">        generated using make_bids_basename.</span>
+<span class="sd">        generated using BIDSPath.</span>
 <span class="sd">        Example: `sub-01_ses-01_task-testing_acq-01_run-01`.</span>
 <span class="sd">        This will write the following files in the correct subfolder of the</span>
 <span class="sd">        bids_root::</span>
@@ -1064,8 +1064,7 @@
 
     <span class="c1"># convert to BIDS Path</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bids_basename</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="n">params</span> <span class="o">=</span> <span class="n">get_entities_from_fname</span><span class="p">(</span><span class="n">bids_basename</span><span class="p">)</span>
-        <span class="n">bids_basename</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span><span class="o">**</span><span class="n">params</span><span class="p">)</span>
+        <span class="n">bids_basename</span> <span class="o">=</span> <span class="n">_convert_str_to_bids_path</span><span class="p">(</span><span class="n">bids_basename</span><span class="p">)</span>
 
     <span class="n">bids_basename</span> <span class="o">=</span> <span class="n">bids_basename</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
     <span class="n">subject_id</span><span class="p">,</span> <span class="n">session_id</span> <span class="o">=</span> <span class="n">bids_basename</span><span class="o">.</span><span class="n">subject</span><span class="p">,</span> <span class="n">bids_basename</span><span class="o">.</span><span class="n">session</span>
@@ -1089,7 +1088,7 @@
             <span class="n">er_date</span> <span class="o">=</span> <span class="n">meas_date</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">er_date</span> <span class="o">!=</span> <span class="n">session_id</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Date provided for session doesn&#39;t match &quot;</span>
-                                 <span class="s2">&quot;session date.&quot;</span><span class="p">)</span>
+                                 <span class="s2">&quot;measurement date.&quot;</span><span class="p">)</span>
 
     <span class="n">data_path</span> <span class="o">=</span> <span class="n">make_bids_folders</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="n">subject_id</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session_id</span><span class="p">,</span>
                                   <span class="n">kind</span><span class="o">=</span><span class="n">kind</span><span class="p">,</span> <span class="n">bids_root</span><span class="o">=</span><span class="n">bids_root</span><span class="p">,</span>
@@ -1101,11 +1100,11 @@
                                      <span class="n">bids_root</span><span class="o">=</span><span class="n">bids_root</span><span class="p">,</span> <span class="n">make_dir</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                                      <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
 
-    <span class="c1"># In case of an &quot;emptyroom&quot; subject, make_bids_basename() will raise</span>
+    <span class="c1"># In case of an &quot;emptyroom&quot; subject, BIDSPath() will raise</span>
     <span class="c1"># an exception if we don&#39;t provide a valid task (&quot;noise&quot;). Now,</span>
     <span class="c1"># scans_fname, electrodes_fname, and coordsystem_fname must NOT include</span>
     <span class="c1"># the task entity. Therefore, we cannot generate them with</span>
-    <span class="c1"># make_bids_basename() directly. Instead, we use BIDSPath() directly</span>
+    <span class="c1"># BIDSPath() directly. Instead, we use BIDSPath() directly</span>
     <span class="c1"># as it does not make any advanced check.</span>
 
     <span class="c1"># create *_scans.tsv</span>
@@ -1377,10 +1376,10 @@
 
     <span class="c1"># Now give the NIfTI file a BIDS name and write it to the BIDS location</span>
     <span class="c1"># this needs to be a string, since nibabel assumes a string input</span>
-    <span class="n">t1w_basename</span> <span class="o">=</span> <span class="n">make_bids_basename</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="n">subject</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span>
-                                      <span class="n">acquisition</span><span class="o">=</span><span class="n">acquisition</span><span class="p">,</span>
-                                      <span class="n">prefix</span><span class="o">=</span><span class="n">anat_dir</span><span class="p">,</span>
-                                      <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;T1w&#39;</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.nii.gz&#39;</span><span class="p">)</span>
+    <span class="n">t1w_basename</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="n">subject</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span>
+                            <span class="n">acquisition</span><span class="o">=</span><span class="n">acquisition</span><span class="p">,</span>
+                            <span class="n">prefix</span><span class="o">=</span><span class="n">anat_dir</span><span class="p">,</span>
+                            <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;T1w&#39;</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.nii.gz&#39;</span><span class="p">)</span>
 
     <span class="c1"># Check if we have necessary conditions for writing a sidecar JSON</span>
     <span class="k">if</span> <span class="n">trans</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">landmarks</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>

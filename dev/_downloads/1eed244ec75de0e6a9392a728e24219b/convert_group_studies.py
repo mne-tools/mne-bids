@@ -24,7 +24,7 @@ import os.path as op
 import mne
 from mne.datasets import eegbci
 
-from mne_bids import (write_raw_bids, make_bids_basename,
+from mne_bids import (write_raw_bids, BIDSPath,
                       get_anonymization_daysback, make_report,
                       print_dir_tree)
 
@@ -79,9 +79,9 @@ for subject_id in subject_ids:
         raw = mne.io.read_raw_edf(raw_fname)
         raw.info['line_freq'] = 50  # specify power line frequency
         raw_list.append(raw)
-        bids_basename = make_bids_basename(subject=f'{subject_id:03}',
-                                           session='01', task='MotorImagery',
-                                           run=f'{run_map[run]:02}')
+        bids_basename = BIDSPath(subject=f'{subject_id:03}',
+                                 session='01', task='MotorImagery',
+                                 run=f'{run_map[run]:02}')
         bids_list.append(bids_basename)
 
 daysback_min, daysback_max = get_anonymization_daysback(raw_list)

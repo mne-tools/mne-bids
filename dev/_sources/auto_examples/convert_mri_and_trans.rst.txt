@@ -68,7 +68,7 @@ We are importing everything we need for this example:
     from mne.datasets import sample
     from mne.source_space import head_to_mri
 
-    from mne_bids import (write_raw_bids, make_bids_basename, write_anat,
+    from mne_bids import (write_raw_bids, BIDSPath, write_anat,
                           get_head_mri_trans, print_dir_tree)
 
 
@@ -101,8 +101,8 @@ BIDS dataset. For more information, you can checkout the respective
     ses = '01'
     task = 'audiovisual'
     run = '01'
-    bids_basename = make_bids_basename(subject=sub, session=ses, task=task,
-                                       run=run)
+    bids_basename = BIDSPath(subject=sub, session=ses, task=task,
+                             run=run)
     write_raw_bids(raw, bids_basename, output_path, events_data=events_data,
                    event_id=event_id, overwrite=True)
 
@@ -305,18 +305,18 @@ Print the directory tree
 
     |MNE-sample-data-bids/
     |--- participants.tsv
-    |--- README
-    |--- participants.json
     |--- dataset_description.json
+    |--- participants.json
+    |--- README
     |--- sub-01/
     |------ ses-01/
     |--------- sub-01_ses-01_scans.tsv
     |--------- meg/
-    |------------ sub-01_ses-01_task-audiovisual_run-01_meg.fif
-    |------------ sub-01_ses-01_coordsystem.json
-    |------------ sub-01_ses-01_task-audiovisual_run-01_channels.tsv
     |------------ sub-01_ses-01_task-audiovisual_run-01_events.tsv
+    |------------ sub-01_ses-01_task-audiovisual_run-01_meg.fif
     |------------ sub-01_ses-01_task-audiovisual_run-01_meg.json
+    |------------ sub-01_ses-01_task-audiovisual_run-01_channels.tsv
+    |------------ sub-01_ses-01_coordsystem.json
 
 
 
@@ -431,21 +431,21 @@ Let's have another look at our BIDS directory
 
     |MNE-sample-data-bids/
     |--- participants.tsv
-    |--- README
-    |--- participants.json
     |--- dataset_description.json
+    |--- participants.json
+    |--- README
     |--- sub-01/
     |------ ses-01/
     |--------- sub-01_ses-01_scans.tsv
-    |--------- meg/
-    |------------ sub-01_ses-01_task-audiovisual_run-01_meg.fif
-    |------------ sub-01_ses-01_coordsystem.json
-    |------------ sub-01_ses-01_task-audiovisual_run-01_channels.tsv
-    |------------ sub-01_ses-01_task-audiovisual_run-01_events.tsv
-    |------------ sub-01_ses-01_task-audiovisual_run-01_meg.json
     |--------- anat/
-    |------------ sub-01_ses-01_T1w.nii.gz
     |------------ sub-01_ses-01_T1w.json
+    |------------ sub-01_ses-01_T1w.nii.gz
+    |--------- meg/
+    |------------ sub-01_ses-01_task-audiovisual_run-01_events.tsv
+    |------------ sub-01_ses-01_task-audiovisual_run-01_meg.fif
+    |------------ sub-01_ses-01_task-audiovisual_run-01_meg.json
+    |------------ sub-01_ses-01_task-audiovisual_run-01_channels.tsv
+    |------------ sub-01_ses-01_coordsystem.json
 
 
 
@@ -479,9 +479,9 @@ transformation matrix using ``MNE-BIDS`` and the BIDS dataset.
     Ready.
     Reading events from /home/circleci/mne_data/MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_events.tsv.
     Reading channel info from /home/circleci/mne_data/MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_channels.tsv.
-    /home/circleci/project/mne_bids/read.py:253: RuntimeWarning: The unit for channel(s) STI 001, STI 002, STI 003, STI 004, STI 005, STI 006, STI 014, STI 015, STI 016 has changed from V to NA.
+    /home/circleci/project/mne_bids/read.py:254: RuntimeWarning: The unit for channel(s) STI 001, STI 002, STI 003, STI 004, STI 005, STI 006, STI 014, STI 015, STI 016 has changed from V to NA.
       raw.set_channel_types(channel_type_dict)
-    /home/circleci/project/mne_bids/path.py:558: RuntimeWarning: Did not find any electrodes.tsv associated with sub-01_ses-01_task-audiovisual_run-01.
+    /home/circleci/project/mne_bids/path.py:602: RuntimeWarning: Did not find any electrodes.tsv associated with sub-01_ses-01_task-audiovisual_run-01.
 
     The search_str was "/home/circleci/mne_data/MNE-sample-data-bids/sub-01/**/sub-01_ses-01*electrodes.tsv"
       warn(msg)
@@ -615,7 +615,7 @@ We can deface the MRI for anonymization
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  14.526 seconds)
+   **Total running time of the script:** ( 0 minutes  16.171 seconds)
 
 
 .. _sphx_glr_download_auto_examples_convert_mri_and_trans.py:

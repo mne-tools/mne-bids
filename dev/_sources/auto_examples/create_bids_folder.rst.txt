@@ -42,7 +42,7 @@ First we will import the relevant functions
 .. code-block:: default
 
 
-    from mne_bids import make_bids_folders, make_bids_basename
+    from mne_bids import make_bids_folders, BIDSPath
 
 
 
@@ -55,7 +55,7 @@ Creating file names for BIDS
 ----------------------------
 
 BIDS requires a specific ordering and structure for metadata fields in
-file paths, the function `make_bids_basename` allows you to specify many such
+file paths, the class `BIDSPath` allows you to specify many such
 pieces of metadata, ensuring that they are in the correct order in the
 final file path. Omitted keys will not be included in the file path.
 
@@ -63,9 +63,8 @@ final file path. Omitted keys will not be included in the file path.
 .. code-block:: default
 
 
-    bids_basename = make_bids_basename(subject='test', session='two',
-                                       task='mytask', kind='events',
-                                       extension='.tsv')
+    bids_basename = BIDSPath(subject='test', session='two', task='mytask',
+                             kind='events', extension='.tsv')
     print(bids_basename)
 
 
@@ -90,7 +89,7 @@ file name. This could then prepended to many more files.
 .. code-block:: default
 
 
-    bids_basename = make_bids_basename(subject='test', task='mytask')
+    bids_basename = BIDSPath(subject='test', task='mytask')
     print(bids_basename)
 
 

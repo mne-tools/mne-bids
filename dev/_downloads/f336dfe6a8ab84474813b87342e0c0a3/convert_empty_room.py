@@ -28,7 +28,7 @@ import mne
 from mne.datasets import sample
 
 from mne_bids import (write_raw_bids, read_raw_bids,
-                      make_bids_basename, print_dir_tree)
+                      BIDSPath, print_dir_tree)
 
 ###############################################################################
 # And define the paths and event_id dictionary.
@@ -42,8 +42,8 @@ bids_path = op.join(data_path, '..', 'MNE-sample-data-bids')
 raw = mne.io.read_raw_fif(raw_fname)
 raw.info['line_freq'] = 60  # specify power line frequency as required by BIDS
 
-bids_basename = make_bids_basename(subject='01', session='01',
-                                   task='audiovisual', run='01')
+bids_basename = BIDSPath(subject='01', session='01',
+                         task='audiovisual', run='01')
 write_raw_bids(raw, bids_basename, bids_path, overwrite=True)
 
 ###############################################################################
@@ -65,8 +65,8 @@ print(raw_date)
 ###############################################################################
 # We also need to specify that the subject ID is 'emptyroom', and that the
 # task is 'noise' (these are BIDS rules).
-er_bids_basename = make_bids_basename(subject='emptyroom', session=er_date,
-                                      task='noise')
+er_bids_basename = BIDSPath(subject='emptyroom', session=er_date,
+                            task='noise')
 write_raw_bids(er_raw, er_bids_basename, bids_path, overwrite=True)
 
 ###############################################################################
@@ -76,8 +76,8 @@ write_raw_bids(er_raw, er_bids_basename, bids_path, overwrite=True)
 dates = ['20021204', '20021201', '20021001']
 
 for date in dates:
-    er_bids_basename = make_bids_basename(subject='emptyroom', session=date,
-                                          task='noise')
+    er_bids_basename = BIDSPath(subject='emptyroom', session=date,
+                                task='noise')
     er_meas_date = datetime.strptime(date, '%Y%m%d')
     er_raw.set_meas_date(er_meas_date.replace(tzinfo=timezone.utc))
     write_raw_bids(er_raw, er_bids_basename, bids_path, overwrite=True)

@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.path.BIDSPath &#8212; mne_bids 0.5.dev0 documentation</title>
+    <title>mne_bids.BIDSPath &#8212; mne_bids 0.5.dev0 documentation</title>
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css" />
@@ -108,11 +108,11 @@
   <div class="row">
     <div class="body col-md-12 content" role="main">
       
-  <div class="section" id="mne-bids-path-bidspath">
-<h1>mne_bids.path.BIDSPath<a class="headerlink" href="#mne-bids-path-bidspath" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="mne-bids-bidspath">
+<h1>mne_bids.BIDSPath<a class="headerlink" href="#mne-bids-bidspath" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
-<dt id="mne_bids.path.BIDSPath">
-<em class="property">class </em><code class="sig-prename descclassname">mne_bids.path.</code><code class="sig-name descname">BIDSPath</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">subject</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">task</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">acquisition</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">run</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">processing</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">recording</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">space</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">split</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">prefix</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">extension</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">check</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/path.html#BIDSPath"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.path.BIDSPath" title="Permalink to this definition">¶</a></dt>
+<dt id="mne_bids.BIDSPath">
+<em class="property">class </em><code class="sig-prename descclassname">mne_bids.</code><code class="sig-name descname">BIDSPath</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">subject</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">task</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">acquisition</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">run</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">processing</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">recording</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">space</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">split</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">prefix</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">extension</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">check</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/path.html#BIDSPath"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.BIDSPath" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a partial/full BIDS filepath from its component parts.</p>
 <p>BIDS filename prefixes have one or more pieces of metadata in them. They
 must follow a particular order, which is followed by this function. This
@@ -190,26 +190,26 @@ and any <code class="docutils literal notranslate"><span class="pre">update</spa
 <col style="width: 90%" />
 </colgroup>
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#mne_bids.path.BIDSPath.copy" title="mne_bids.path.BIDSPath.copy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mne_bids.BIDSPath.copy" title="mne_bids.BIDSPath.copy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy</span></code></a>()</p></td>
 <td><p>Copy the instance.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#mne_bids.path.BIDSPath.get_bids_fname" title="mne_bids.path.BIDSPath.get_bids_fname"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_bids_fname</span></code></a>([kind, bids_root, extension])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#mne_bids.BIDSPath.get_bids_fname" title="mne_bids.BIDSPath.get_bids_fname"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_bids_fname</span></code></a>([kind, bids_root, extension])</p></td>
 <td><p>Get the BIDS filename, by inferring kind and extension.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#mne_bids.path.BIDSPath.update" title="mne_bids.path.BIDSPath.update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code></a>(**entities)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mne_bids.BIDSPath.update" title="mne_bids.BIDSPath.update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code></a>(**entities)</p></td>
 <td><p>Update inplace BIDS entity key/value pairs in object.</p></td>
 </tr>
 </tbody>
 </table>
 <dl class="py method">
-<dt id="mne_bids.path.BIDSPath.basename">
-<em class="property">property </em><code class="sig-name descname">basename</code><a class="headerlink" href="#mne_bids.path.BIDSPath.basename" title="Permalink to this definition">¶</a></dt>
+<dt id="mne_bids.BIDSPath.basename">
+<em class="property">property </em><code class="sig-name descname">basename</code><a class="headerlink" href="#mne_bids.BIDSPath.basename" title="Permalink to this definition">¶</a></dt>
 <dd><p>Path basename.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="mne_bids.path.BIDSPath.copy">
-<code class="sig-name descname">copy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/path.html#BIDSPath.copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.path.BIDSPath.copy" title="Permalink to this definition">¶</a></dt>
+<dt id="mne_bids.BIDSPath.copy">
+<code class="sig-name descname">copy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/path.html#BIDSPath.copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.BIDSPath.copy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Copy the instance.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -222,14 +222,14 @@ and any <code class="docutils literal notranslate"><span class="pre">update</spa
 </dd></dl>
 
 <dl class="py method">
-<dt id="mne_bids.path.BIDSPath.entities">
-<em class="property">property </em><code class="sig-name descname">entities</code><a class="headerlink" href="#mne_bids.path.BIDSPath.entities" title="Permalink to this definition">¶</a></dt>
+<dt id="mne_bids.BIDSPath.entities">
+<em class="property">property </em><code class="sig-name descname">entities</code><a class="headerlink" href="#mne_bids.BIDSPath.entities" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return dictionary of the BIDS entities.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="mne_bids.path.BIDSPath.get_bids_fname">
-<code class="sig-name descname">get_bids_fname</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">bids_root</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">extension</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/path.html#BIDSPath.get_bids_fname"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.path.BIDSPath.get_bids_fname" title="Permalink to this definition">¶</a></dt>
+<dt id="mne_bids.BIDSPath.get_bids_fname">
+<code class="sig-name descname">get_bids_fname</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">bids_root</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">extension</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/path.html#BIDSPath.get_bids_fname"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.BIDSPath.get_bids_fname" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the BIDS filename, by inferring kind and extension.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -259,8 +259,8 @@ will be added to the filename.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="mne_bids.path.BIDSPath.update">
-<code class="sig-name descname">update</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">entities</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/path.html#BIDSPath.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.path.BIDSPath.update" title="Permalink to this definition">¶</a></dt>
+<dt id="mne_bids.BIDSPath.update">
+<code class="sig-name descname">update</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">entities</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/path.html#BIDSPath.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.BIDSPath.update" title="Permalink to this definition">¶</a></dt>
 <dd><p>Update inplace BIDS entity key/value pairs in object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -281,7 +281,7 @@ will be added to the filename.</p>
 </dl>
 <p class="rubric">Examples</p>
 <p>If one creates a bids basename using
-<a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.BIDSPath()</span></code></a>:</p>
+<a class="reference internal" href="#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.BIDSPath()</span></code></a>:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">bids_basename</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="s1">&#39;two&#39;</span><span class="p">,</span>
 <span class="go">                             task=&#39;mytask&#39;, kind=&#39;channels&#39;,</span>
 <span class="go">                             extension=&#39;.tsv&#39;)</span>
@@ -299,9 +299,41 @@ will be added to the filename.</p>
 
 </dd></dl>
 
-<div class="section" id="examples-using-mne-bids-path-bidspath">
-<span id="sphx-glr-backreferences-mne-bids-path-bidspath"></span><h2>Examples using <code class="docutils literal notranslate"><span class="pre">mne_bids.path.BIDSPath</span></code><a class="headerlink" href="#examples-using-mne-bids-path-bidspath" title="Permalink to this headline">¶</a></h2>
-<div class="sphx-glr-clear"></div></div>
+<div class="section" id="examples-using-mne-bids-bidspath">
+<span id="sphx-glr-backreferences-mne-bids-bidspath"></span><h2>Examples using <code class="docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code><a class="headerlink" href="#examples-using-mne-bids-bidspath" title="Permalink to this headline">¶</a></h2>
+<div class="sphx-glr-thumbcontainer" tooltip="The Brain Imaging Data Structure (BIDS) has standard conventions for file names and folder hier..."><div class="figure align-default" id="id1">
+<img alt="01. Creating BIDS-compatible folder names and filenames" src="../_images/sphx_glr_create_bids_folder_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/create_bids_folder.html#sphx-glr-auto-examples-create-bids-folder-py"><span class="std std-ref">01. Creating BIDS-compatible folder names and filenames</span></a></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="When working with neural data in the BIDS format, we usually have varying types of data, which ..."><div class="figure align-default" id="id2">
+<img alt="02. Read and load datasets in BIDS format" src="../_images/sphx_glr_read_bids_datasets_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/read_bids_datasets.html#sphx-glr-auto-examples-read-bids-datasets-py"><span class="std std-ref">02. Read and load datasets in BIDS format</span></a></span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="In this example we will use MNE-BIDS to organize the MNE sample data according to the BIDS stan..."><div class="figure align-default" id="id3">
+<img alt="03. Convert MNE sample data to BIDS format" src="../_images/sphx_glr_convert_mne_sample_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/convert_mne_sample.html#sphx-glr-auto-examples-convert-mne-sample-py"><span class="std std-ref">03. Convert MNE sample data to BIDS format</span></a></span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="In this example, we use MNE-BIDS to create a BIDS-compatible directory of EEG data. Specificall..."><div class="figure align-default" id="id4">
+<img alt="04. Convert EEG data to BIDS format" src="../_images/sphx_glr_convert_eeg_to_bids_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/convert_eeg_to_bids.html#sphx-glr-auto-examples-convert-eeg-to-bids-py"><span class="std std-ref">04. Convert EEG data to BIDS format</span></a></span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="05. BIDS conversion for group studies"><div class="figure align-default" id="id5">
+<img alt="05. BIDS conversion for group studies" src="../_images/sphx_glr_convert_group_studies_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/convert_group_studies.html#sphx-glr-auto-examples-convert-group-studies-py"><span class="std std-ref">05. BIDS conversion for group studies</span></a></span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="When working with MEEG data in the domain of source localization, we usually have to deal with ..."><div class="figure align-default" id="id6">
+<img alt="07. Save and load T1-weighted MRI scan along with anatomical landmarks in BIDS" src="../_images/sphx_glr_convert_mri_and_trans_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/convert_mri_and_trans.html#sphx-glr-auto-examples-convert-mri-and-trans-py"><span class="std std-ref">07. Save and load T1-weighted MRI scan along with anatomical landmarks in BIDS</span></a></span><a class="headerlink" href="#id6" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="In this example, we use MNE-BIDS to create a BIDS-compatible directory of iEEG data. Specifical..."><div class="figure align-default" id="id7">
+<img alt="08. Convert iEEG data to BIDS format" src="../_images/sphx_glr_convert_ieeg_to_bids_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/convert_ieeg_to_bids.html#sphx-glr-auto-examples-convert-ieeg-to-bids-py"><span class="std std-ref">08. Convert iEEG data to BIDS format</span></a></span><a class="headerlink" href="#id7" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates how to store empty room data in BIDS format and how to retrieve them."><div class="figure align-default" id="id8">
+<img alt="09. Storing empty room data in BIDS format" src="../_images/sphx_glr_convert_empty_room_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/convert_empty_room.html#sphx-glr-auto-examples-convert-empty-room-py"><span class="std std-ref">09. Storing empty room data in BIDS format</span></a></span><a class="headerlink" href="#id8" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-clear"></div></div>
 </div>
 
 

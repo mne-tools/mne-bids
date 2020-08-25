@@ -167,39 +167,53 @@
 <span class="sd">    space : str | None</span>
 <span class="sd">        The coordinate space for an anatomical file. Corresponds to &quot;space&quot;.</span>
 <span class="sd">    split : int | None</span>
-<span class="sd">        The split of the continuous recording file for ``.fif`` data. Corresponds to &quot;split&quot;.</span>
+<span class="sd">        The split of the continuous recording file for ``.fif`` data.</span>
+<span class="sd">        Corresponds to &quot;split&quot;.</span>
 <span class="sd">    prefix : str | None</span>
 <span class="sd">        The prefix for the filename to be created. E.g., a path to the folder</span>
 <span class="sd">        in which you wish to create a file with this name.</span>
 <span class="sd">    kind : str | None</span>
-<span class="sd">        The filename kind. This is the entity after the last ``_`` before the extension. </span>
-<span class="sd">        E.g., ``&#39;ieeg&#39;``.</span>
+<span class="sd">        The filename kind. This is the entity after the</span>
+<span class="sd">        last ``_`` before the extension. E.g., ``&#39;ieeg&#39;``.</span>
 <span class="sd">    extension : str | None</span>
 <span class="sd">        The extension of the filename. E.g., ``&#39;.json&#39;``.</span>
+<span class="sd">    check : bool</span>
+<span class="sd">        If True enforces the entities to be valid according to the</span>
+<span class="sd">        current BIDS standard. Defaults to True.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    check : bool</span>
+<span class="sd">        If True enforces the entities to be valid according to the</span>
+<span class="sd">        current BIDS standard. The check is performed on instantiation</span>
+<span class="sd">        and any ``update`` function calls.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; bids_basename = make_bids_basename(subject=&#39;test&#39;, session=&#39;two&#39;, </span>
-<span class="sd">                                           task=&#39;mytask&#39;, kind=&#39;ieeg&#39;, extension=&#39;.edf&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; bids_basename = BIDSPath(subject=&#39;test&#39;, session=&#39;two&#39;, task=&#39;mytask&#39;,</span>
+<span class="sd">                                 kind=&#39;ieeg&#39;, extension=&#39;.edf&#39;)</span>
 <span class="sd">    &gt;&gt;&gt; print(bids_basename)</span>
 <span class="sd">    sub-test_ses-two_task-mytask_ieeg.edf</span>
 <span class="sd">    &gt;&gt;&gt; bids_basename</span>
 <span class="sd">    BIDSPath(sub-test_ses-two_task-mytask_ieeg.edf)</span>
 <span class="sd">    &gt;&gt;&gt; # copy and update multiple entities at once</span>
-<span class="sd">    &gt;&gt;&gt; new_basename = bids_basename.copy().update(subject=&#39;test2&#39;, session=&#39;one&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; new_basename = bids_basename.copy().update(subject=&#39;test2&#39;,</span>
+<span class="sd">                                                   session=&#39;one&#39;)</span>
 <span class="sd">    &gt;&gt;&gt; print(new_basename)</span>
 <span class="sd">    sub-test2_ses-one_task-mytask_ieeg.edf</span>
-<span class="sd">    &quot;&quot;&quot;</span>  <span class="c1"># noqa</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">task</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">acquisition</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">run</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">processing</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">recording</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">space</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 <span class="n">kind</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+                 <span class="n">kind</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">ii</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="p">[</span><span class="n">subject</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="n">task</span><span class="p">,</span>
                                      <span class="n">acquisition</span><span class="p">,</span> <span class="n">run</span><span class="p">,</span> <span class="n">processing</span><span class="p">,</span>
                                      <span class="n">recording</span><span class="p">,</span> <span class="n">space</span><span class="p">,</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">kind</span><span class="p">,</span>
                                      <span class="n">extension</span><span class="p">]):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;At least one parameter must be given.&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">check</span> <span class="o">=</span> <span class="n">check</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="n">subject</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="n">task</span><span class="p">,</span>
                     <span class="n">acquisition</span><span class="o">=</span><span class="n">acquisition</span><span class="p">,</span> <span class="n">run</span><span class="o">=</span><span class="n">run</span><span class="p">,</span> <span class="n">processing</span><span class="o">=</span><span class="n">processing</span><span class="p">,</span>
@@ -310,17 +324,20 @@
                    <span class="s1">&#39;automatically inferred because no bids_root was passed.&#39;</span><span class="p">)</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
+        <span class="n">bids_basename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">bids_basename</span><span class="o">.</span><span class="n">check</span> <span class="o">=</span> <span class="kc">False</span>
+
         <span class="k">if</span> <span class="n">extension</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># since kind is passed in, use that</span>
-            <span class="n">bids_basename</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+            <span class="n">bids_basename</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
             <span class="n">bids_fname</span> <span class="o">=</span> <span class="n">_get_bids_fname_from_filesystem</span><span class="p">(</span>
                 <span class="n">bids_basename</span><span class="o">=</span><span class="n">bids_basename</span><span class="p">,</span> <span class="n">bids_root</span><span class="o">=</span><span class="n">bids_root</span><span class="p">,</span>
                 <span class="n">sub</span><span class="o">=</span><span class="n">sub</span><span class="p">,</span> <span class="n">ses</span><span class="o">=</span><span class="n">ses</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="n">kind</span><span class="p">)</span>
             <span class="n">new_suffix</span> <span class="o">=</span> <span class="n">bids_fname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
             <span class="n">kind</span><span class="p">,</span> <span class="n">extension</span> <span class="o">=</span> <span class="n">_get_kind_ext_from_suffix</span><span class="p">(</span><span class="n">new_suffix</span><span class="p">)</span>
-            <span class="n">bids_fname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="n">kind</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="n">extension</span><span class="p">)</span>
+            <span class="n">bids_fname</span> <span class="o">=</span> <span class="n">bids_basename</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="n">kind</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="n">extension</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">bids_fname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="n">kind</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="n">extension</span><span class="p">)</span>
+            <span class="n">bids_fname</span> <span class="o">=</span> <span class="n">bids_basename</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="n">kind</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="n">extension</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">bids_fname</span></div>
 
@@ -332,7 +349,8 @@
 <span class="sd">        entities : dict | kwarg</span>
 <span class="sd">            Allowed BIDS path entities:</span>
 <span class="sd">            &#39;subject&#39;, &#39;session&#39;, &#39;task&#39;, &#39;acquisition&#39;,</span>
-<span class="sd">            &#39;processing&#39;, &#39;run&#39;, &#39;recording&#39;, &#39;space&#39;, &#39;suffix&#39;, &#39;prefix&#39;</span>
+<span class="sd">            &#39;processing&#39;, &#39;run&#39;, &#39;recording&#39;, &#39;space&#39;,</span>
+<span class="sd">            &#39;suffix&#39;, &#39;prefix&#39;</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -342,20 +360,20 @@
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        If one creates a bids basename using</span>
-<span class="sd">        :func:`mne_bids.make_bids_basename`:</span>
+<span class="sd">        :func:`mne_bids.BIDSPath`:</span>
 
-<span class="sd">        &gt;&gt;&gt; bids_basename = make_bids_basename(subject=&#39;test&#39;, session=&#39;two&#39;, </span>
-<span class="sd">                                               task=&#39;mytask&#39;, kind=&#39;channels&#39;, </span>
-<span class="sd">                                               extension=&#39;.tsv&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; bids_basename = BIDSPath(subject=&#39;test&#39;, session=&#39;two&#39;,</span>
+<span class="sd">                                     task=&#39;mytask&#39;, kind=&#39;channels&#39;,</span>
+<span class="sd">                                     extension=&#39;.tsv&#39;)</span>
 <span class="sd">        &gt;&gt;&gt; print(bids_basename)</span>
 <span class="sd">        sub-test_ses-two_task-mytask_channels.tsv</span>
 <span class="sd">        &gt;&gt;&gt; # Then, one can update this `BIDSPath` object in place</span>
-<span class="sd">        &gt;&gt;&gt; bids_basename.update(acquisition=&#39;test&#39;, kind=&#39;ieeg&#39;, </span>
+<span class="sd">        &gt;&gt;&gt; bids_basename.update(acquisition=&#39;test&#39;, kind=&#39;ieeg&#39;,</span>
 <span class="sd">                                 extension=&#39;.vhdr&#39;, task=None)</span>
 <span class="sd">        BIDSPath(sub-test_ses-two_acq-test_ieeg.vhdr)</span>
 <span class="sd">        &gt;&gt;&gt; print(bids_basename)</span>
 <span class="sd">        sub-test_ses-two_acq-test_ieeg.vhdr</span>
-<span class="sd">        &quot;&quot;&quot;</span>  <span class="c1"># noqa</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">run</span> <span class="o">=</span> <span class="n">entities</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;run&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">run</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">run</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="c1"># Ensure that run is a string</span>
@@ -380,9 +398,7 @@
                 <span class="n">_check_key_val</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
 
             <span class="c1"># error check allowed BIDS entity keywords</span>
-            <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ALLOWED_PATH_ENTITIES</span> <span class="ow">and</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span>
-                <span class="s1">&#39;on_invalid_er_session&#39;</span><span class="p">,</span> <span class="s1">&#39;on_invalid_er_task&#39;</span><span class="p">,</span>
-            <span class="p">]:</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ALLOWED_PATH_ENTITIES</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Key must be one of &#39;</span>
                                  <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">ALLOWED_PATH_ENTITIES</span><span class="si">}</span><span class="s1">, got </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 
@@ -392,14 +408,22 @@
                 <span class="n">val</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
             <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_check</span><span class="p">(</span><span class="n">deep</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="c1"># perform a check of the entities</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span></div>
 
-    <span class="k">def</span> <span class="nf">_check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">deep</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_check</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Deep check or not of the instance.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">basename</span>  <span class="c1"># run basename to check validity of arguments</span>
 
-        <span class="k">if</span> <span class="n">deep</span><span class="p">:</span>
+        <span class="c1"># perform error check on scans</span>
+        <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="s1">&#39;scans&#39;</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">extension</span> <span class="o">==</span> <span class="s1">&#39;.tsv&#39;</span><span class="p">)</span> \
+                <span class="ow">and</span> <span class="n">_check_non_sub_ses_entity</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;scans.tsv file name can only contain &#39;</span>
+                             <span class="s1">&#39;subject and session entities. BIDSPath &#39;</span>
+                             <span class="sa">f</span><span class="s1">&#39;currently contains </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">entities</span><span class="si">}</span><span class="s1">.&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">check</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">subject</span> <span class="o">==</span> <span class="s1">&#39;emptyroom&#39;</span><span class="p">:</span>
                 <span class="n">_check_empty_room_basename</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
@@ -419,6 +443,23 @@
                     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Kind </span><span class="si">{</span><span class="n">kind</span><span class="si">}</span><span class="s1"> is not allowed. &#39;</span>
                                      <span class="sa">f</span><span class="s1">&#39;Use one of these kinds &#39;</span>
                                      <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">ALLOWED_FILENAME_KINDS</span><span class="si">}</span><span class="s1">.&#39;</span><span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">_check_non_sub_ses_entity</span><span class="p">(</span><span class="n">bids_path</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Check existence of non subject/session entities in BIDSPath.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">task</span> <span class="ow">or</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">acquisition</span> <span class="ow">or</span> \
+            <span class="n">bids_path</span><span class="o">.</span><span class="n">run</span> <span class="ow">or</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">space</span> <span class="ow">or</span> \
+            <span class="n">bids_path</span><span class="o">.</span><span class="n">recording</span> <span class="ow">or</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">split</span> <span class="ow">or</span> \
+            <span class="n">bids_path</span><span class="o">.</span><span class="n">processing</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">return</span> <span class="kc">False</span>
+
+
+<span class="k">def</span> <span class="nf">_convert_str_to_bids_path</span><span class="p">(</span><span class="n">bids_basename</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Convert string of bids basename to BIDSPath object.&quot;&quot;&quot;</span>
+    <span class="n">params</span> <span class="o">=</span> <span class="n">get_entities_from_fname</span><span class="p">(</span><span class="n">bids_basename</span><span class="p">)</span>
+    <span class="n">bids_path</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span><span class="o">**</span><span class="n">params</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">bids_path</span>
 
 
 <div class="viewcode-block" id="print_dir_tree"><a class="viewcode-back" href="../../generated/mne_bids.print_dir_tree.html#mne_bids.print_dir_tree">[docs]</a><span class="k">def</span> <span class="nf">print_dir_tree</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="n">max_depth</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -631,7 +672,10 @@
         <span class="n">suffix</span> <span class="o">=</span> <span class="n">suffix</span> <span class="o">+</span> <span class="n">kind</span>
 
         <span class="c1"># do not search for kind if kind is explicitly passed</span>
-        <span class="n">bids_fname</span> <span class="o">=</span> <span class="n">bids_fname</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        <span class="n">bids_fname</span> <span class="o">=</span> <span class="n">bids_fname</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">bids_fname</span><span class="o">.</span><span class="n">check</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">bids_fname</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
     <span class="k">if</span> <span class="n">extension</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">suffix</span> <span class="o">=</span> <span class="n">suffix</span> <span class="o">+</span> <span class="n">extension</span>
 
@@ -670,73 +714,6 @@
         <span class="k">return</span> <span class="kc">None</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-
-
-<div class="viewcode-block" id="make_bids_basename"><a class="viewcode-back" href="../../generated/mne_bids.make_bids_basename.html#mne_bids.make_bids_basename">[docs]</a><span class="k">def</span> <span class="nf">make_bids_basename</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                       <span class="n">acquisition</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">run</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">processing</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                       <span class="n">recording</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">space</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                       <span class="n">kind</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Create a partial/full BIDS basename from its component parts.</span>
-
-<span class="sd">    BIDS filename prefixes have one or more pieces of metadata in them. They</span>
-<span class="sd">    must follow a particular order, which is followed by this function. This</span>
-<span class="sd">    will generate the *prefix* for a BIDS filename that can be used with many</span>
-<span class="sd">    subsequent files, or you may also give a kind and extension that will then</span>
-<span class="sd">    complete the file name.</span>
-
-<span class="sd">    Note that all parameters are not applicable to each kind of data. For</span>
-<span class="sd">    example, electrode location TSV files do not need a task field.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    subject : str | None</span>
-<span class="sd">        The subject ID. Corresponds to &quot;sub&quot;.</span>
-<span class="sd">    session : str | None</span>
-<span class="sd">        The session identifier. Corresponds to &quot;ses&quot;. Must be a date in</span>
-<span class="sd">        format &quot;YYYYMMDD&quot; if subject is &quot;emptyroom&quot;.</span>
-<span class="sd">    task : str | None</span>
-<span class="sd">        The task identifier. Corresponds to &quot;task&quot;. Must be &quot;noise&quot; if</span>
-<span class="sd">        subject is &quot;emptyroom&quot;.</span>
-<span class="sd">    acquisition: str | None</span>
-<span class="sd">        The acquisition parameters. Corresponds to &quot;acq&quot;.</span>
-<span class="sd">    run : int | None</span>
-<span class="sd">        The run number. Corresponds to &quot;run&quot;.</span>
-<span class="sd">    processing : str | None</span>
-<span class="sd">        The processing label. Corresponds to &quot;proc&quot;.</span>
-<span class="sd">    recording : str | None</span>
-<span class="sd">        The recording name. Corresponds to &quot;rec&quot;.</span>
-<span class="sd">    space : str | None</span>
-<span class="sd">        The coordinate space for an anatomical file. Corresponds to &quot;space&quot;.</span>
-<span class="sd">    split : int | None</span>
-<span class="sd">        The split of the continuous recording file for ``.fif`` data.</span>
-<span class="sd">        Corresponds to &quot;split&quot;.</span>
-<span class="sd">    prefix : str | None</span>
-<span class="sd">        The prefix for the filename to be created. E.g., a path to the folder</span>
-<span class="sd">        in which you wish to create a file with this name.</span>
-<span class="sd">    kind : str | None</span>
-<span class="sd">        The filename kind. This is the entity after the last ``_``</span>
-<span class="sd">        before the extension. E.g., ``&#39;ieeg&#39;``.</span>
-<span class="sd">    extension : str | None</span>
-<span class="sd">        The extension of the filename. E.g., ``&#39;.json&#39;``.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    basename : BIDSPath</span>
-<span class="sd">        The BIDS basename you wish to create.</span>
-
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; print(make_bids_basename(subject=&#39;test&#39;, session=&#39;two&#39;, task=&#39;mytask&#39;,</span>
-<span class="sd">                                 kind=&#39;ieeg&#39;, extension=&#39;.edf&#39;))</span>
-<span class="sd">    sub-test_ses-two_task-mytask_ieeg.edf</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">bids_path</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="n">subject</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="n">task</span><span class="p">,</span>
-                         <span class="n">acquisition</span><span class="o">=</span><span class="n">acquisition</span><span class="p">,</span> <span class="n">run</span><span class="o">=</span><span class="n">run</span><span class="p">,</span>
-                         <span class="n">processing</span><span class="o">=</span><span class="n">processing</span><span class="p">,</span> <span class="n">recording</span><span class="o">=</span><span class="n">recording</span><span class="p">,</span>
-                         <span class="n">space</span><span class="o">=</span><span class="n">space</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="n">split</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="n">prefix</span><span class="p">,</span>
-                         <span class="n">kind</span><span class="o">=</span><span class="n">kind</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="n">extension</span><span class="p">)</span>
-    <span class="n">bids_path</span><span class="o">.</span><span class="n">_check</span><span class="p">()</span>
-    <span class="k">return</span> <span class="n">bids_path</span></div>
 
 
 <span class="k">def</span> <span class="nf">_get_kind_ext_from_suffix</span><span class="p">(</span><span class="n">suffix</span><span class="p">):</span>
@@ -1144,7 +1121,7 @@
     <span class="n">paths</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">fname</span> <span class="ow">in</span> <span class="n">fnames</span><span class="p">:</span>
         <span class="n">entity</span> <span class="o">=</span> <span class="n">get_entities_from_fname</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
-        <span class="n">path</span> <span class="o">=</span> <span class="n">make_bids_basename</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="n">bids_root</span><span class="p">,</span> <span class="o">**</span><span class="n">entity</span><span class="p">)</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="n">bids_root</span><span class="p">,</span> <span class="o">**</span><span class="n">entity</span><span class="p">)</span>
         <span class="n">paths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">paths</span></div>
