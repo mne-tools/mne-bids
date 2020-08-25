@@ -75,7 +75,7 @@ API
 - It is now required to specify the Power Line Frequency to use :func:`write_raw_bids`, while in 0.4 it could be estimated, by `Alexandre Gramfort`_ and `Alex Rockhill`_ (`#506 <https://github.com/mne-tools/mne-bids/pull/506>`_)
 - :code:`mne_bids.make_bids_basename` has been removed. Use :class:`mne_bids.BIDSPath` directly, by `Adam Li`_ (`#511 <https://github.com/mne-tools/mne-bids/pull/511>`_)
 - Add ``check`` parameter and attribute to :class:`mne_bids.BIDSPath` that allows users to turn off entity checks by `Adam Li`_ (`#511 <https://github.com/mne-tools/mne-bids/pull/511>`_)
-- Add ``modality`` parameter and attribute to :class:`mne_bids.BIDSPath` that allows users to specify EEG, MEG, or iEEG datasets by `Adam Li`_ (`#511 <https://github.com/mne-tools/mne-bids/pull/511>`_)
+- Add ``modality`` parameter and attribute to :class:`mne_bids.BIDSPath` that allows users to specify EEG, MEG, or iEEG datasets by `Adam Li`_ (`#514 <https://github.com/mne-tools/mne-bids/pull/514>`_)
 
 
 .. _changes_0_4:
