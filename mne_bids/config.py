@@ -7,7 +7,6 @@ BIDS_VERSION = "1.4.0"
 
 DOI = """https://doi.org/10.21105/joss.01896"""
 
-ALLOWED_ELECTROPHYSIO_MODALITY = ['meg', 'eeg', 'ieeg']
 ALLOWED_MODALITIES = ['meg', 'eeg', 'ieeg', 'anat']
 
 # Orientation of the coordinate system dependent on manufacturer
