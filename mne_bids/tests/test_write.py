@@ -313,8 +313,8 @@ def test_fif(_bids_validate):
     sidecar_basename = bids_basename.copy()
     for sidecar in ['channels.tsv', 'eeg.eeg', 'eeg.json', 'eeg.vhdr',
                     'eeg.vmrk', 'events.tsv']:
-        kind, extension = sidecar.split('.')
-        sidecar_basename.update(kind=kind, extension=extension)
+        suffix, extension = sidecar.split('.')
+        sidecar_basename.update(suffix=suffix, extension=extension)
         assert op.isfile(op.join(bids_dir, sidecar_basename))
 
     raw2 = read_raw_bids(bids_basename=bids_basename, bids_root=bids_root,
@@ -624,7 +624,7 @@ def test_kit(_bids_validate):
                                           events_fname, event_id)
 
     # ensure the channels file has no STI 014 channel:
-    channels_tsv = marker_fname.copy().update(kind='channels',
+    channels_tsv = marker_fname.copy().update(suffix='channels',
                                               extension='.tsv')
     data = _from_tsv(channels_tsv)
     assert 'STI 014' not in data['name']
@@ -788,7 +788,7 @@ def test_vhdr(_bids_validate):
     # is in channels.tsv
     prefix = op.join(bids_root, f'sub-{subject_id}', 'eeg')
     channels_tsv_name = bids_basename_minimal.copy().update(prefix=prefix,
-                                                            kind='channels',
+                                                            suffix='channels',
                                                             extension='.tsv')
     data = _from_tsv(channels_tsv_name)
     assert data['units'][data['name'].index('FP1')] == 'µV'
@@ -945,7 +945,7 @@ def test_edf(_bids_validate):
                        anonymize=dict(daysback=33000),
                        overwrite=True)
         data = _from_tsv(scans_tsv)
-        bids_fname = bids_basename.copy().update(kind='eeg',
+        bids_fname = bids_basename.copy().update(suffix='eeg',
                                                  extension='.vhdr')
         assert any([str(bids_fname) in fname for fname in data['filename']])
 
@@ -1030,7 +1030,7 @@ def test_bdf(_bids_validate):
     assert coil_type(raw.info, test_ch_idx) != 'misc'
 
     # we will change the channel type to MISC and overwrite the channels file
-    bids_fname = bids_basename.copy().update(kind='eeg',
+    bids_fname = bids_basename.copy().update(suffix='eeg',
                                              extension='.bdf')
     channels_fname = _find_matching_sidecar(bids_fname, bids_root,
                                             suffix='channels',

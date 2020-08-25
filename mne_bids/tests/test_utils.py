@@ -21,7 +21,7 @@ with warnings.catch_warnings():
 
 from mne_bids import BIDSPath
 from mne_bids.utils import (_check_types, _age_on_date,
-                            _infer_eeg_placement_scheme, _handle_kind,
+                            _infer_eeg_placement_scheme, _handle_modality,
                             _get_ch_type_mapping)
 from mne_bids.path import _path_to_str
 
@@ -55,20 +55,20 @@ def test_handle_kind():
     for chtype, kind in zip(channel_types, expected_kinds):
         info = mne.create_info(n_channels, sampling_rate, ch_types=[chtype])
         raw = mne.io.RawArray(data, info)
-        assert _handle_kind(raw) == kind
+        assert _handle_modality(raw) == kind
 
     # if the situation is ambiguous (EEG and iEEG channels both), raise error
     with pytest.raises(ValueError, match='Both EEG and iEEG channels found'):
         info = mne.create_info(2, sampling_rate,
                                ch_types=['eeg', 'ecog'])
         raw = mne.io.RawArray(random((2, sampling_rate)), info)
-        _handle_kind(raw)
+        _handle_modality(raw)
 
     # if we cannot find a proper channel type, we raise an error
     with pytest.raises(ValueError, match='Neither MEG/EEG/iEEG channels'):
         info = mne.create_info(n_channels, sampling_rate, ch_types=['misc'])
         raw = mne.io.RawArray(data, info)
-        _handle_kind(raw)
+        _handle_modality(raw)
 
 
 def test_check_types():

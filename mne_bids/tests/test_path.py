@@ -201,10 +201,10 @@ def test_parse_bids_filename(fname):
     assert params['task'] == 'test'
     assert params['split'] == '01'
     if 'meg' in fname:
-        assert params['str_suffix'] == 'meg'
+        assert params['suffix'] == 'meg'
     assert list(params.keys()) == ['subject', 'session', 'task',
                                    'acquisition', 'run', 'processing',
-                                   'space', 'recording', 'split', 'str_suffix']
+                                   'space', 'recording', 'split', 'suffix']
 
 
 @pytest.mark.parametrize('candidate_list, best_candidates', [
@@ -270,7 +270,7 @@ def test_bids_path(return_bids_test_dir):
 
     # should find the correct filename if bids_root was passed
     bids_fname = bids_basename.get_bids_fname(bids_root=bids_root)
-    assert bids_fname == bids_basename.update(kind='meg',
+    assert bids_fname == bids_basename.update(suffix='meg',
                                               extension='.fif')
 
     # confirm BIDSPath assigns properties correctly
@@ -284,7 +284,8 @@ def test_bids_path(return_bids_test_dir):
     assert all(bids_basename.entities.get(entity) is None
                for entity in ['task', 'run', 'recording', 'acquisition',
                               'space', 'processing',
-                              'prefix', 'str_suffix', 'extension'])
+                              'prefix', 'modality',
+                              'suffix', 'extension'])
 
     # test updating functionality
     bids_basename.update(acquisition='03', run='2', session='02',
@@ -313,25 +314,30 @@ def test_bids_path(return_bids_test_dir):
     with pytest.raises(ValueError, match='Unallowed*'):
         bids_basename.update(subject=subject_id + '-')
 
-    # error check on str_suffix in BIDSPath (deep check)
+    # error check on suffix in BIDSPath (deep check)
     kind = 'meeg'
-    with pytest.raises(ValueError, match=f'Kind {kind} is not'):
+    with pytest.raises(ValueError, match=f'Suffix {kind} is not'):
         BIDSPath(subject=subject_id, session=session_id,
                  suffix=kind)
 
-    # do not error check suffix in update (not deep check)
-    # disable check in update by setting check=False
+    # do error check suffix in update
     error_kind = 'foobar'
-    bids_basename = BIDSPath(subject=subject_id, session=session_id, run=run,
-                             acquisition=acq, task=task)
-    bids_basename.update(kind=error_kind, check=False)
+    with pytest.raises(ValueError, match=f'Suffix {error_kind} is not'):
+        bids_basename.update(suffix=error_kind)
 
-    # does not error check on str_suffix in BIDSPath (deep check)
+    # does not error check on suffix in BIDSPath (deep check)
     kind = 'meeg'
     bids_basename = BIDSPath(subject=subject_id, session=session_id,
                              suffix=kind, check=False)
+
     # also inherits error check from instantiation
-    bids_basename.update(suffix=error_kind)
+    # always error check modality
+    with pytest.raises(ValueError, match='"modality" can only be '
+                                         'one of'):
+        bids_basename.copy().update(modality=error_kind)
+
+    # suffix won't be error checks if initial check was false
+    bids_basename.update(suffix=kind)
 
     # error check on extension in BIDSPath (deep check)
     extension = '.mat'
@@ -354,7 +360,7 @@ def test_make_filenames():
     # All keys work
     prefix_data = dict(subject='one', session='two', task='three',
                        acquisition='four', run='five', processing='six',
-                       recording='seven', kind='ieeg', extension='.json')
+                       recording='seven', suffix='ieeg', extension='.json')
     expected_str = 'sub-one_ses-two_task-three_acq-four_run-five_proc-six_rec-seven_ieeg.json'  # noqa
     assert str(BIDSPath(**prefix_data)) == expected_str
 
@@ -376,7 +382,7 @@ def test_make_filenames():
         BIDSPath(subject='emptyroom', session='20131201',
                  task='blah', suffix='meg')
 
-    # when the str_suffix is not 'meg', then it does not result in
+    # when the suffix is not 'meg', then it does not result in
     # an error
     BIDSPath(subject='emptyroom', session='20131201',
              task='blah')
@@ -404,10 +410,10 @@ def test_make_filenames():
         (dict(subject='01'), 2),
         (dict(task='audio'), 2),
         (dict(processing='sss'), 1),
-        (dict(kind='meg'), 4),
+        (dict(suffix='meg'), 4),
         (dict(acquisition='lowres'), 1),
-        (dict(task='test', processing='ica', kind='eeg'), 2),
-        (dict(subject='5', task='test', processing='ica', kind='eeg'), 1)
+        (dict(task='test', processing='ica', suffix='eeg'), 2),
+        (dict(subject='5', task='test', processing='ica', suffix='eeg'), 1)
     ])
 def test_filter_fnames(entities, expected_n_matches):
     """Test filtering filenames based on BIDS entities works."""

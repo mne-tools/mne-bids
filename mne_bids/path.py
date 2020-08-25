@@ -16,7 +16,8 @@ from mne.utils import warn, logger
 from mne_bids.config import (ALLOWED_PATH_ENTITIES, reader,
                              ALLOWED_FILENAME_EXTENSIONS,
                              ALLOWED_FILENAME_SUFFIX,
-                             ALLOWED_PATH_ENTITIES_SHORT)
+                             ALLOWED_PATH_ENTITIES_SHORT,
+                             ALLOWED_MODALITIES)
 from mne_bids.utils import (_check_key_val, _check_empty_room_basename,
                             _check_types, param_regex,
                             _ensure_tuple)
@@ -182,12 +183,12 @@ class BIDSPath(object):
         """
         return deepcopy(self)
 
-    def get_bids_fname(self, kind=None, bids_root=None, extension=None):
+    def get_bids_fname(self, suffix=None, bids_root=None, extension=None):
         """Get the BIDS filename, by inferring suffix and extension.
 
         Parameters
         ----------
-        kind : str, optional
+        suffix : str, optional
             The suffix of recording to read. If ``None`` and only one
             suffix (e.g., only EEG or only MEG data) is present in the
             dataset, it will be selected automatically.
@@ -219,15 +220,17 @@ class BIDSPath(object):
 
         if extension is None:
             # since suffix is passed in, use that
-            bids_basename.update(kind=None)
+            bids_basename.update(suffix=None)
             bids_fname = _get_bids_fname_from_filesystem(
                 bids_basename=bids_basename, bids_root=bids_root,
-                sub=sub, ses=ses, kind=kind)
+                sub=sub, ses=ses, kind=suffix)
             new_suffix = bids_fname.split("_")[-1]
-            kind, extension = _get_bids_suffix_and_ext(new_suffix)
-            bids_fname = bids_basename.update(kind=kind, extension=extension)
+            suffix, extension = _get_bids_suffix_and_ext(new_suffix)
+            bids_fname = bids_basename.update(suffix=suffix,
+                                              extension=extension)
         else:
-            bids_fname = bids_basename.update(kind=kind, extension=extension)
+            bids_fname = bids_basename.update(suffix=suffix,
+                                              extension=extension)
 
         return bids_fname
 
@@ -322,6 +325,14 @@ class BIDSPath(object):
                              'subject and session entities. BIDSPath '
                              f'currently contains {self.entities}.')
 
+        # error check modality
+        if self.modality is not None and \
+                self.modality not in ALLOWED_MODALITIES:
+            raise ValueError(f'"modality" can only be one of '
+                             f'{ALLOWED_MODALITIES}. You passed in '
+                             f'{self.modality}, which is not '
+                             f'BIDS compliant. ')
+
         if self.check:
             if self.subject == 'emptyroom':
                 _check_empty_room_basename(self)
@@ -339,8 +350,8 @@ class BIDSPath(object):
             suffix = self.suffix
             if suffix is not None:
                 if suffix not in ALLOWED_FILENAME_SUFFIX:
-                    raise ValueError(f'Kind {suffix} is not allowed. '
-                                     f'Use one of these kinds '
+                    raise ValueError(f'Suffix {suffix} is not allowed. '
+                                     f'Use one of these suffixes '
                                      f'{ALLOWED_FILENAME_SUFFIX}.')
 
 
@@ -599,8 +610,8 @@ def _find_matching_sidecar(bids_fname, bids_root, suffix=None,
     # If this was expected, simply return None, otherwise, raise an exception.
     msg = None
     if len(best_candidates) == 0:
-        msg = ('Did not find any {} associated with {}.'
-               .format(suffix, bids_fname.basename))
+        msg = (f'Did not find any {search_suffix} '
+               f'associated with {bids_fname.basename}.')
     elif len(best_candidates) > 1:
         # More than one candidates were tied for best match
         msg = (f'Expected to find a single {suffix} file '

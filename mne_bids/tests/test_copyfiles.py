@@ -21,7 +21,7 @@ with warnings.catch_warnings():
 from mne.datasets import testing
 from mne.utils import _TempDir
 from mne_bids import BIDSPath
-from mne_bids.utils import _handle_kind
+from mne_bids.utils import _handle_modality
 from mne_bids.path import _parse_ext
 
 from mne_bids.copyfiles import (_get_brainvision_encoding,
@@ -161,8 +161,9 @@ def test_copyfile_kit():
         raw_fname, mrk=hpi_fname, elp=electrode_fname,
         hsp=headshape_fname)
     _, ext = _parse_ext(raw_fname, verbose=True)
-    kind = _handle_kind(raw)
-    bids_fname = str(bids_basename.copy().update(kind=kind,
+    modality = _handle_modality(raw)
+    bids_fname = str(bids_basename.copy().update(modality=modality,
+                                                 suffix=modality,
                                                  extension=ext,
                                                  prefix=output_path))
 
@@ -171,10 +172,10 @@ def test_copyfile_kit():
     assert op.exists(bids_fname)
     _, ext = _parse_ext(hpi_fname, verbose=True)
     if ext == '.sqd':
-        kit_bids_basename.update(kind='markers', extension='.sqd')
+        kit_bids_basename.update(suffix='markers', extension='.sqd')
         assert op.exists(kit_bids_basename)
     elif ext == '.mrk':
-        kit_bids_basename.update(kind='markers', extension='.mrk')
+        kit_bids_basename.update(suffix='markers', extension='.mrk')
         assert op.exists(kit_bids_basename)
 
     if op.exists(electrode_fname):

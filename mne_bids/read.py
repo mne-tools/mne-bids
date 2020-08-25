@@ -338,7 +338,7 @@ def read_raw_bids(bids_basename, bids_root, modality=None, extra_params=None,
 
     data_dir = make_bids_folders(subject=sub, session=ses, modality=modality,
                                  make_dir=False)
-    bids_fname = bids_basename.get_bids_fname(kind=modality,
+    bids_fname = bids_basename.get_bids_fname(suffix=modality,
                                               bids_root=bids_root)
 
     if op.splitext(bids_fname)[1] == '.pdf':
@@ -436,7 +436,7 @@ def get_matched_empty_room(bids_basename, bids_root):
     bids_basename = bids_basename.copy()
 
     modality = 'meg'  # We're only concerned about MEG data here
-    bids_fname = bids_basename.get_bids_fname(kind=modality,
+    bids_fname = bids_basename.get_bids_fname(suffix=modality,
                                               bids_root=bids_root)
     _, ext = _parse_ext(bids_fname)
     if ext == '.fif':
@@ -579,7 +579,8 @@ def get_head_mri_trans(bids_basename, bids_root):
         bids_basename = _convert_str_to_bids_path(bids_basename)
 
     # Get the sidecar file for MRI landmarks
-    bids_fname = bids_basename.get_bids_fname(kind='meg', bids_root=bids_root)
+    bids_fname = bids_basename.get_bids_fname(suffix='meg',
+                                              bids_root=bids_root)
     t1w_json_path = _find_matching_sidecar(bids_fname, bids_root,
                                            suffix='T1w', extension='.json')
 
