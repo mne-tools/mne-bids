@@ -74,7 +74,8 @@ class BIDSPath(object):
     ----------
     check : bool
         If True enforces the entities to be valid according to the
-        current BIDS standard.
+        current BIDS standard. The check is performed on instantiation
+        and any ``update`` function calls.
 
     Examples
     --------
