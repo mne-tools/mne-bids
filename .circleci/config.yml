@@ -79,7 +79,7 @@ jobs:
           command: gh-pages --dotfiles --message "doc updates [skip ci]" --dist doc/_build/html --dest ./dev
 
 workflows:
-  build:
+  commit:
     jobs:
       - docs-build
       - docs-deploy:
@@ -88,3 +88,15 @@ workflows:
           filters:
             branches:
               only: master
+
+  scheduled:
+    jobs:
+      - docs-build
+
+    triggers:
+      - schedule:
+          cron: "0 4 * * *"
+          filters:
+            branches:
+              only:
+                - master
