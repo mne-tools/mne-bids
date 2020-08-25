@@ -66,12 +66,15 @@ class BIDSPath(object):
         last ``_`` before the extension. E.g., ``'ieeg'``.
     extension : str | None
         The extension of the filename. E.g., ``'.json'``.
+    check : bool
+        If True enforces the entities to be valid according to the
+        current BIDS standard. Defaults to True.
 
     Attributes
     ----------
     check : bool
-        If True enforces the instance to follow strictly the BIDS
-        standard.
+        If True enforces the entities to be valid according to the
+        current BIDS standard.
 
     Examples
     --------

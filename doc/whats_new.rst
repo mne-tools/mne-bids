@@ -74,7 +74,7 @@ API
 - Change :class:`mne_bids.BIDSPath` to explicitly use  ``kind`` and ``extension`` instead of ``suffix`` in kwargs, by `Adam Li`_ (`#496 <https://github.com/mne-tools/mne-bids/pull/496>`_)
 - It is now required to specify the Power Line Frequency to use :func:`write_raw_bids`, while in 0.4 it could be estimated, by `Alexandre Gramfort`_ and `Alex Rockhill`_ (`#506 <https://github.com/mne-tools/mne-bids/pull/506>`_)
 - :code:`mne_bids.make_bids_basename` has been removed. Use :class:`mne_bids.BIDSPath` directly, by `Adam Li`_ (`#511 <https://github.com/mne-tools/mne-bids/pull/511>`_)
-- Add ``check`` kwarg to :class:`mne_bids.BIDSPath` that allows users to turn off entity checks by `Adam Li`_ (`#511 <https://github.com/mne-tools/mne-bids/pull/511>`_)
+- Add ``check`` parameter and attribute to :class:`mne_bids.BIDSPath` that allows users to turn off entity checks by `Adam Li`_ (`#511 <https://github.com/mne-tools/mne-bids/pull/511>`_)
 
 .. _changes_0_4:
 
