@@ -201,10 +201,10 @@ def test_parse_bids_filename(fname):
     assert params['task'] == 'test'
     assert params['split'] == '01'
     if 'meg' in fname:
-        assert params['kind'] == 'meg'
+        assert params['suffix'] == 'meg'
     assert list(params.keys()) == ['subject', 'session', 'task',
                                    'acquisition', 'run', 'processing',
-                                   'space', 'recording', 'split', 'kind']
+                                   'space', 'recording', 'split', 'suffix']
 
 
 @pytest.mark.parametrize('candidate_list, best_candidates', [
@@ -284,7 +284,7 @@ def test_bids_path(return_bids_test_dir):
     assert all(bids_basename.entities.get(entity) is None
                for entity in ['task', 'run', 'recording', 'acquisition',
                               'space', 'processing',
-                              'prefix', 'kind', 'extension'])
+                              'prefix', 'suffix', 'extension'])
 
     # test updating functionality
     bids_basename.update(acquisition='03', run='2', session='02',
@@ -313,29 +313,25 @@ def test_bids_path(return_bids_test_dir):
     with pytest.raises(ValueError, match='Unallowed*'):
         bids_basename.update(subject=subject_id + '-')
 
-    # error check on kind in BIDSPath (deep check)
+    # error check on suffix in BIDSPath (deep check)
     kind = 'meeg'
     with pytest.raises(ValueError, match=f'Kind {kind} is not'):
         BIDSPath(subject=subject_id, session=session_id,
-                 kind=kind)
+                 suffix=kind)
 
-    # error check kind in update (deep check)
-    error_kind = 'foobar'
-    with pytest.raises(ValueError, match=f'Kind {error_kind} is not'):
-        bids_basename.update(kind=error_kind)
-
+    # do not error check suffix in update (not deep check)
     # disable check in update by setting check=False
     error_kind = 'foobar'
     bids_basename = BIDSPath(subject=subject_id, session=session_id, run=run,
                              acquisition=acq, task=task)
     bids_basename.update(kind=error_kind, check=False)
 
-    # does not error check on kind in BIDSPath (deep check)
+    # does not error check on suffix in BIDSPath (deep check)
     kind = 'meeg'
     bids_basename = BIDSPath(subject=subject_id, session=session_id,
-                             kind=kind, check=False)
+                             suffix=kind, check=False)
     # also inherits error check from instantiation
-    bids_basename.update(kind=error_kind)
+    bids_basename.update(suffix=error_kind)
 
     # error check on extension in BIDSPath (deep check)
     extension = '.mat'
@@ -348,7 +344,7 @@ def test_bids_path(return_bids_test_dir):
 
     # test repr
     bids_path = BIDSPath(subject='01', session='02',
-                         task='03', kind='ieeg',
+                         task='03', suffix='ieeg',
                          extension='.edf')
     assert repr(bids_path) == 'BIDSPath(sub-01_ses-02_task-03_ieeg.edf)'
 
@@ -366,11 +362,11 @@ def test_make_filenames():
     assert (BIDSPath(subject='one', task='three', run=4) ==
             'sub-one_task-three_run-04')
     assert (BIDSPath(subject='one', task='three',
-                     kind='meg', extension='.json') ==
+                     suffix='meg', extension='.json') ==
             'sub-one_task-three_meg.json')
 
     with pytest.raises(ValueError):
-        BIDSPath(subject='one-two', kind='ieeg', extension='.edf')
+        BIDSPath(subject='one-two', suffix='ieeg', extension='.edf')
 
     with pytest.raises(ValueError, match='At least one'):
         BIDSPath()
@@ -378,7 +374,7 @@ def test_make_filenames():
     # emptyroom check: invalid task
     with pytest.raises(ValueError, match='task must be'):
         BIDSPath(subject='emptyroom', session='20131201',
-                 task='blah', kind='meg')
+                 task='blah', suffix='meg')
 
     # when the suffix is not 'meg', then it does not result in
     # an error
@@ -397,7 +393,7 @@ def test_make_filenames():
                                          'can only contain'):
         BIDSPath(
             subject=subject_id, session=session_id, task=task,
-            kind='scans', extension='.tsv'
+            suffix='scans', extension='.tsv'
         )
 
 

@@ -15,7 +15,7 @@ from mne.utils import warn, logger
 
 from mne_bids.config import (ALLOWED_PATH_ENTITIES, reader,
                              ALLOWED_FILENAME_EXTENSIONS,
-                             ALLOWED_FILENAME_KINDS,
+                             ALLOWED_FILENAME_SUFFIX,
                              ALLOWED_PATH_ENTITIES_SHORT)
 from mne_bids.utils import (_check_key_val, _check_empty_room_basename,
                             _check_types, param_regex,
@@ -61,9 +61,9 @@ class BIDSPath(object):
     prefix : str | None
         The prefix for the filename to be created. E.g., a path to the folder
         in which you wish to create a file with this name.
-    kind : str | None
+    suffix : str | None
         The filename kind. This is the entity after the
-        last ``_`` before the extension. E.g., ``'ieeg'``.
+        last ``_`` before the extension. E.g., ``'channels'``.
     extension : str | None
         The extension of the filename. E.g., ``'.json'``.
     check : bool
@@ -96,10 +96,10 @@ class BIDSPath(object):
     def __init__(self, subject=None, session=None,
                  task=None, acquisition=None, run=None, processing=None,
                  recording=None, space=None, split=None, prefix=None,
-                 kind=None, extension=None, check=True):
+                 suffix=None, extension=None, check=True):
         if all(ii is None for ii in [subject, session, task,
                                      acquisition, run, processing,
-                                     recording, space, prefix, kind,
+                                     recording, space, prefix, suffix,
                                      extension]):
             raise ValueError("At least one parameter must be given.")
 
@@ -108,7 +108,7 @@ class BIDSPath(object):
         self.update(subject=subject, session=session, task=task,
                     acquisition=acquisition, run=run, processing=processing,
                     recording=recording, space=space, split=split,
-                    prefix=prefix, kind=kind, extension=extension)
+                    prefix=prefix, suffix=suffix, extension=extension)
 
     @property
     def entities(self):
@@ -122,7 +122,7 @@ class BIDSPath(object):
             ('processing', self.processing),
             ('space', self.space),
             ('recording', self.recording),
-            ('kind', self.kind),
+            ('suffix', self.suffix),
         ])
 
     @property
@@ -130,7 +130,7 @@ class BIDSPath(object):
         """Path basename."""
         basename = []
         for key, val in self.entities.items():
-            if key not in ('prefix', 'kind', 'extension') and \
+            if key not in ('prefix', 'suffix', 'extension') and \
                     val is not None:
                 # convert certain keys to shorthand
                 long_to_short_entity = {
@@ -140,11 +140,11 @@ class BIDSPath(object):
                 key = long_to_short_entity[key]
                 basename.append(f'{key}-{val}')
 
-        if self.kind is not None:
+        if self.suffix is not None:
             if self.extension is not None:
-                basename.append(f'{self.kind}{self.extension}')
+                basename.append(f'{self.suffix}{self.extension}')
             else:
-                basename.append(self.kind)
+                basename.append(self.suffix)
 
         basename = '_'.join(basename)
         return basename
@@ -182,13 +182,13 @@ class BIDSPath(object):
         return deepcopy(self)
 
     def get_bids_fname(self, kind=None, bids_root=None, extension=None):
-        """Get the BIDS filename, by inferring kind and extension.
+        """Get the BIDS filename, by inferring suffix and extension.
 
         Parameters
         ----------
         kind : str, optional
-            The kind of recording to read. If ``None`` and only one
-            kind (e.g., only EEG or only MEG data) is present in the
+            The suffix of recording to read. If ``None`` and only one
+            suffix (e.g., only EEG or only MEG data) is present in the
             dataset, it will be selected automatically.
         bids_root : str | os.PathLike, optional
             Path to root of the BIDS folder
@@ -217,7 +217,7 @@ class BIDSPath(object):
         bids_basename = self.copy().update(check=False)
 
         if extension is None:
-            # since kind is passed in, use that
+            # since suffix is passed in, use that
             bids_basename.update(kind=None)
             bids_fname = _get_bids_fname_from_filesystem(
                 bids_basename=bids_basename, bids_root=bids_root,
@@ -259,12 +259,12 @@ class BIDSPath(object):
         :func:`mne_bids.BIDSPath`:
 
         >>> bids_basename = BIDSPath(subject='test', session='two',
-                                     task='mytask', kind='channels',
+                                     task='mytask', suffix='channels',
                                      extension='.tsv')
         >>> print(bids_basename)
         sub-test_ses-two_task-mytask_channels.tsv
         >>> # Then, one can update this `BIDSPath` object in place
-        >>> bids_basename.update(acquisition='test', kind='ieeg',
+        >>> bids_basename.update(acquisition='test', suffix='ieeg',
                                  extension='.vhdr', task=None)
         BIDSPath(sub-test_ses-two_acq-test_ieeg.vhdr)
         >>> print(bids_basename)
@@ -315,7 +315,7 @@ class BIDSPath(object):
         self.basename  # run basename to check validity of arguments
 
         # perform error check on scans
-        if (self.kind == 'scans' and self.extension == '.tsv') \
+        if (self.suffix == 'scans' and self.extension == '.tsv') \
                 and _check_non_sub_ses_entity(self):
             raise ValueError('scans.tsv file name can only contain '
                              'subject and session entities. BIDSPath '
@@ -334,13 +334,13 @@ class BIDSPath(object):
                                      f'allowed. Use one of these extensions '
                                      f'{ALLOWED_FILENAME_EXTENSIONS}.')
 
-            # error check kind
-            kind = self.kind
-            if kind is not None:
-                if kind not in ALLOWED_FILENAME_KINDS:
-                    raise ValueError(f'Kind {kind} is not allowed. '
+            # error check suffix
+            suffix = self.suffix
+            if suffix is not None:
+                if suffix not in ALLOWED_FILENAME_SUFFIX:
+                    raise ValueError(f'Kind {suffix} is not allowed. '
                                      f'Use one of these kinds '
-                                     f'{ALLOWED_FILENAME_KINDS}.')
+                                     f'{ALLOWED_FILENAME_SUFFIX}.')
 
 
 def _check_non_sub_ses_entity(bids_path):
@@ -410,7 +410,7 @@ def make_bids_folders(subject, session=None, kind=None, bids_root=None,
     subject : str
         The subject ID. Corresponds to "sub".
     kind : str
-        The kind of folder being created at the end of the hierarchy. E.g.,
+        The suffix of folder being created at the end of the hierarchy. E.g.,
         "anat", "func", etc.
     session : str | None
         The session for a item. Corresponds to "ses".
@@ -436,7 +436,7 @@ def make_bids_folders(subject, session=None, kind=None, bids_root=None,
 
     Examples
     --------
-    >>> make_bids_folders('sub_01', session='mysession', kind='meg', bids_root='/path/to/project', make_dir=False)  # noqa
+    >>> make_bids_folders('sub_01', session='mysession', suffix='meg', bids_root='/path/to/project', make_dir=False)  # noqa
     '/path/to/project/sub-sub_01/ses-mysession/meg'
 
     """  # noqa
@@ -506,7 +506,7 @@ def get_entities_from_fname(fname):
     'space': None,
     'recording': None,
     'split': None,
-    'kind': 'meg'}
+    'suffix': 'meg'}
     """
     fname = str(fname)  # to accept also BIDSPath or Path instances
 
@@ -528,12 +528,12 @@ def get_entities_from_fname(fname):
         idx_key = fname_vals.index(key)
         params[ALLOWED_PATH_ENTITIES_SHORT[key]] = value
 
-    # parse kind last
+    # parse suffix last
     last_entity = fname.split('-')[-1]
     if '_' in last_entity:
         suffix = last_entity.split('_')[-1]
         kind, _ = _get_kind_ext_from_suffix(suffix)
-        params['kind'] = kind
+        params['suffix'] = kind
 
     return params
 
@@ -549,7 +549,7 @@ def _find_matching_sidecar(bids_fname, bids_root, kind=None,
     bids_root : str | pathlib.Path
         Path to root of the BIDS folder
     kind : str | None
-        The filename kind. This is the entity after the last ``_``
+        The filename suffix. This is the entity after the last ``_``
         before the extension. E.g., ``'ieeg'``.
     extension : str | None
         The extension of the filename. E.g., ``'.json'``.
@@ -564,13 +564,15 @@ def _find_matching_sidecar(bids_fname, bids_root, kind=None,
         and no sidecar_fname was found
 
     """
-    # suffix is kind and extension
+    # suffix is suffix and extension
     suffix = ''
     if kind is not None:
         suffix = suffix + kind
 
-        # do not search for kind if kind is explicitly passed
-        bids_fname = bids_fname.copy().update(kind=None, check=False)
+        # do not search for suffix if suffix is explicitly passed
+        bids_fname = bids_fname.copy()
+        bids_fname.check = False
+        bids_fname.update(kind=None)
 
     if extension is not None:
         suffix = suffix + extension
@@ -613,8 +615,8 @@ def _find_matching_sidecar(bids_fname, bids_root, kind=None,
 
 
 def _get_kind_ext_from_suffix(suffix):
-    """Parse suffix for valid kind and ext."""
-    # no matter what the suffix is, kind and extension are last
+    """Parse suffix for valid suffix and ext."""
+    # no matter what the suffix is, suffix and extension are last
     kind = suffix
     ext = None
     if '.' in suffix:
@@ -712,9 +714,9 @@ def get_entity_vals(bids_root, entity_key, *, ignore_subjects='emptyroom',
 
     """
     entities = ('subject', 'task', 'session', 'run', 'processing', 'space',
-                'acquisition', 'split', 'kind')
+                'acquisition', 'split', 'suffix')
     entities_abbr = ('sub', 'task', 'ses', 'run', 'proc', 'space', 'acq',
-                     'split', 'kind')
+                     'split', 'suffix')
     entity_long_abbr_map = dict(zip(entities, entities_abbr))
 
     if entity_key not in entities:
@@ -897,7 +899,7 @@ def _get_kinds_for_sub(*, bids_basename, bids_root, sub, ses=None):
 
 
 def _infer_kind(*, bids_basename, bids_root, sub, ses):
-    # Check which kind is available for this particular
+    # Check which suffix is available for this particular
     # subject & session. If we get no or multiple hits, throw an error.
 
     kinds = _get_kinds_for_sub(bids_basename=bids_basename,
@@ -910,7 +912,7 @@ def _infer_kind(*, bids_basename, bids_root, sub, ses):
         raise ValueError('No electrophysiological data found.')
     elif len(kinds) >= 2:
         msg = (f'Found data of more than one recording modality. Please '
-               f'pass the `kind` parameter to specify which data to load. '
+               f'pass the `suffix` parameter to specify which data to load. '
                f'Found the following kinds: {kinds}')
         raise RuntimeError(msg)
 
@@ -941,7 +943,7 @@ def _filter_fnames(fnames, *, subject=None, session=None, task=None,
     space_str = f'_space-{space}' if space else r'(|_space-([^_]+))'
     split_str = f'_split-{split}' if split else r'(|_split-([^_]+))'
     kind_str = (f'_{kind}' if kind else r'_(' +
-                '|'.join(ALLOWED_FILENAME_KINDS) + ')')
+                '|'.join(ALLOWED_FILENAME_SUFFIX) + ')')
     ext_str = extension if extension else r'.([^_]+)'
 
     regexp = (sub_str + ses_str + task_str + acq_str + run_str + proc_str +
@@ -989,7 +991,7 @@ def get_matched_basenames(bids_root, *, subject=None, session=None, task=None,
         The prefix for the filename to be created. E.g., a path to the folder
         in which you wish to create a file with this name.
     kind : str | None
-        The recording kind.
+        The recording suffix.
     split : int | None
         The split number.
     extension : str | None

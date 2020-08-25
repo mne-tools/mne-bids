@@ -126,7 +126,7 @@ def _test_anonymize(raw, bids_basename, events_fname=None, event_id=None):
                    overwrite=False)
     scans_tsv = BIDSPath(
         subject=subject_id, session=session_id,
-        kind='scans', extension='.tsv',
+        suffix='scans', extension='.tsv',
         prefix=op.join(bids_root, 'sub-01', 'ses-01'))
     data = _from_tsv(scans_tsv)
     if data['acq_time'] is not None and data['acq_time'][0] != 'n/a':
@@ -349,7 +349,7 @@ def test_fif(_bids_validate):
     # test that the acquisition time was written properly
     scans_tsv = BIDSPath(
         subject=subject_id, session=session_id,
-        kind='scans', extension='.tsv',
+        suffix='scans', extension='.tsv',
         prefix=op.join(bids_root, 'sub-01', 'ses-01'))
     data = _from_tsv(scans_tsv)
     assert data['acq_time'][0] == meas_date.strftime('%Y-%m-%dT%H:%M:%S')
@@ -565,7 +565,7 @@ def test_fif_anonymize(_bids_validate):
                    overwrite=False)
     scans_tsv = BIDSPath(
         subject=subject_id, session=session_id,
-        kind='scans', extension='.tsv',
+        suffix='scans', extension='.tsv',
         prefix=op.join(bids_root, 'sub-01', 'ses-01'))
     data = _from_tsv(scans_tsv)
 
@@ -608,7 +608,7 @@ def test_kit(_bids_validate):
     # ensure the marker file is produced in the right place
     marker_fname = BIDSPath(
         subject=subject_id, session=session_id, task=task, run=run,
-        kind='markers', extension='.sqd',
+        suffix='markers', extension='.sqd',
         prefix=op.join(bids_root, 'sub-01', 'ses-01', 'meg'))
     assert op.exists(marker_fname)
 
@@ -924,7 +924,7 @@ def test_edf(_bids_validate):
     # ensure there is an EMG channel in the channels.tsv:
     channels_tsv = BIDSPath(
         subject=subject_id, session=session_id, task=task, run=run,
-        kind='channels', extension='.tsv', acquisition=acq,
+        suffix='channels', extension='.tsv', acquisition=acq,
         prefix=op.join(bids_root, 'sub-01', 'ses-01', 'eeg'))
     data = _from_tsv(channels_tsv)
     assert 'ElectroMyoGram' in data['description']
@@ -932,7 +932,7 @@ def test_edf(_bids_validate):
     # check that the scans list contains two scans
     scans_tsv = BIDSPath(
         subject=subject_id, session=session_id,
-        kind='scans', extension='.tsv',
+        suffix='scans', extension='.tsv',
         prefix=op.join(bids_root, 'sub-01', 'ses-01'))
     data = _from_tsv(scans_tsv)
     assert len(list(data.values())[0]) == 2
@@ -1161,7 +1161,7 @@ def test_write_anat(_bids_validate):
                                   point_list)
     sidecar_basename = BIDSPath(subject='01', session='01',
                                 acquisition='01',
-                                kind='T1w', extension='.nii.gz')
+                                suffix='T1w', extension='.nii.gz')
     # test the actual values of the voxels (no floating points)
     for i, point in enumerate([(66, 51, 46), (41, 32, 74), (17, 53, 47)]):
         coords = anat_dict[point_list[i]]

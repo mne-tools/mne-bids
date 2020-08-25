@@ -44,7 +44,7 @@ def test_get_ch_type_mapping():
 
 
 def test_handle_kind():
-    """Test the automatic extraction of kind from the data."""
+    """Test the automatic extraction of suffix from the data."""
     # Create a dummy raw
     n_channels = 1
     sampling_rate = 100

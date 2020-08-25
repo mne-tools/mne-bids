@@ -11,7 +11,7 @@ import numpy as np
 from mne.externals.tempita import Template
 from mne.utils import warn
 
-from mne_bids.config import DOI, ALLOWED_MODALITY_KINDS
+from mne_bids.config import DOI, ALLOWED_ELECTROPHYSIO_MODALITY
 from mne_bids.tsv_handler import _from_tsv
 from mne_bids.path import (get_kinds, get_entity_vals, BIDSPath,
                            _parse_ext, _find_matching_sidecar,
@@ -325,7 +325,7 @@ def _summarize_sidecar_json(bids_root, scans_fpaths, verbose=True):
             # summarize metadata of recordings
             bids_basename, ext = _parse_ext(scan)
             kind = op.dirname(scan)
-            if kind not in ALLOWED_MODALITY_KINDS:
+            if kind not in ALLOWED_ELECTROPHYSIO_MODALITY:
                 continue
 
             n_scans += 1
@@ -492,7 +492,7 @@ def make_report(bids_root, session=None, verbose=True):
         'ieeg': 'iEEG',
     }
     kinds = [kind_map[kind] for kind in kinds
-             if kind in ALLOWED_MODALITY_KINDS]
+             if kind in ALLOWED_ELECTROPHYSIO_MODALITY]
 
     # REQUIRED: dataset_description.json summary
     dataset_summary = _summarize_dataset(bids_root)

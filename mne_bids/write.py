@@ -464,9 +464,9 @@ def _mri_landmarks_to_mri_voxels(mri_landmarks, t1_mgh):
 
 def _sidecar_json(raw, task, manufacturer, fname, kind, overwrite=False,
                   verbose=True):
-    """Create a sidecar json file depending on the kind and save it.
+    """Create a sidecar json file depending on the suffix and save it.
 
-    The sidecar json file provides meta data about the data of a certain kind.
+    The sidecar json file provides meta data about the data of a certain suffix.
 
     Parameters
     ----------
@@ -480,7 +480,7 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, overwrite=False,
     fname : str | BIDSPath
         Filename to save the sidecar json to.
     kind : str
-        Type of the data as in ALLOWED_MODALITY_KINDS.
+        Type of the data as in ALLOWED_ELECTROPHYSIO_MODALITY.
     overwrite : bool
         Whether to overwrite the existing file.
         Defaults to False.
@@ -511,25 +511,25 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, overwrite=False,
     # all ignored channels are trigger channels at the moment...
 
     n_megchan = len([ch for ch in raw.info['chs']
-                     if ch['kind'] == FIFF.FIFFV_MEG_CH])
+                     if ch['suffix'] == FIFF.FIFFV_MEG_CH])
     n_megrefchan = len([ch for ch in raw.info['chs']
-                        if ch['kind'] == FIFF.FIFFV_REF_MEG_CH])
+                        if ch['suffix'] == FIFF.FIFFV_REF_MEG_CH])
     n_eegchan = len([ch for ch in raw.info['chs']
-                     if ch['kind'] == FIFF.FIFFV_EEG_CH])
+                     if ch['suffix'] == FIFF.FIFFV_EEG_CH])
     n_ecogchan = len([ch for ch in raw.info['chs']
-                      if ch['kind'] == FIFF.FIFFV_ECOG_CH])
+                      if ch['suffix'] == FIFF.FIFFV_ECOG_CH])
     n_seegchan = len([ch for ch in raw.info['chs']
-                      if ch['kind'] == FIFF.FIFFV_SEEG_CH])
+                      if ch['suffix'] == FIFF.FIFFV_SEEG_CH])
     n_eogchan = len([ch for ch in raw.info['chs']
-                     if ch['kind'] == FIFF.FIFFV_EOG_CH])
+                     if ch['suffix'] == FIFF.FIFFV_EOG_CH])
     n_ecgchan = len([ch for ch in raw.info['chs']
-                     if ch['kind'] == FIFF.FIFFV_ECG_CH])
+                     if ch['suffix'] == FIFF.FIFFV_ECG_CH])
     n_emgchan = len([ch for ch in raw.info['chs']
-                     if ch['kind'] == FIFF.FIFFV_EMG_CH])
+                     if ch['suffix'] == FIFF.FIFFV_EMG_CH])
     n_miscchan = len([ch for ch in raw.info['chs']
-                      if ch['kind'] == FIFF.FIFFV_MISC_CH])
+                      if ch['suffix'] == FIFF.FIFFV_MISC_CH])
     n_stimchan = len([ch for ch in raw.info['chs']
-                      if ch['kind'] == FIFF.FIFFV_STIM_CH]) - n_ignored
+                      if ch['suffix'] == FIFF.FIFFV_STIM_CH]) - n_ignored
 
     # Define modality-specific JSON dictionaries
     ch_info_json_common = [
@@ -998,7 +998,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
 
     # create *_scans.tsv
     bids_path = BIDSPath(subject=subject_id, session=session_id,
-                         prefix=ses_path, kind='scans', extension='.tsv',
+                         prefix=ses_path, suffix='scans', extension='.tsv',
                          task=None)
     scans_fname = str(bids_path)
 
@@ -1076,7 +1076,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
                             raw, kind, overwrite, verbose)
     else:
         logger.warning('Writing of electrodes.tsv '
-                       'is not supported for kind "{}". '
+                       'is not supported for suffix "{}". '
                        'Skipping ...'.format(kind))
 
     events, event_id = _read_events(events_data, event_id, raw, ext,
@@ -1268,7 +1268,7 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
     t1w_basename = BIDSPath(subject=subject, session=session,
                             acquisition=acquisition,
                             prefix=anat_dir,
-                            kind='T1w', extension='.nii.gz')
+                            suffix='T1w', extension='.nii.gz')
 
     # Check if we have necessary conditions for writing a sidecar JSON
     if trans is not None or landmarks is not None:

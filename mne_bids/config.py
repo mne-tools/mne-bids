@@ -7,7 +7,8 @@ BIDS_VERSION = "1.4.0"
 
 DOI = """https://doi.org/10.21105/joss.01896"""
 
-ALLOWED_MODALITY_KINDS = ['meg', 'eeg', 'ieeg']
+ALLOWED_ELECTROPHYSIO_MODALITY = ['meg', 'eeg', 'ieeg']
+ALLOWED_MODALITIES = ['meg', 'eeg', 'ieeg', 'anat']
 
 # Orientation of the coordinate system dependent on manufacturer
 ORIENTATION = {'.sqd': 'ALS', '.con': 'ALS', '.fif': 'RAS', '.pdf': 'ALS',
@@ -66,7 +67,7 @@ ALLOWED_MODALITY_EXTENSIONS = {'meg': allowed_extensions_meg,
                                'ieeg': allowed_extensions_ieeg}
 
 # allowed kinds (i.e. last "_" delimiter in the BIDS filenames)
-ALLOWED_FILENAME_KINDS = [
+ALLOWED_FILENAME_SUFFIX = [
     'meg', 'markers', 'eeg', 'ieeg', 'T1w',  # modality
     'participants', 'scans',
     'electrodes', 'channels', 'coordsystem', 'events',  # sidecars
@@ -86,13 +87,13 @@ ALLOWED_FILENAME_EXTENSIONS = (
 # allowed BIDS path entities
 ALLOWED_PATH_ENTITIES = ('subject', 'session', 'task', 'run',
                          'processing', 'recording', 'space',
-                         'acquisition', 'split', 'kind',
+                         'acquisition', 'split', 'suffix',
                          'prefix', 'extension')
 ALLOWED_PATH_ENTITIES_SHORT = {'sub': 'subject', 'ses': 'session',
                                'task': 'task', 'acq': 'acquisition',
                                'run': 'run', 'proc': 'processing',
                                'space': 'space', 'rec': 'recording',
-                               'split': 'split', 'kind': 'kind'}
+                               'split': 'split', 'suffix': 'suffix'}
 
 # accepted BIDS formats, which may be subject to change
 # depending on the specification

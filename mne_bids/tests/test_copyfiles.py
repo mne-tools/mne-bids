@@ -182,7 +182,7 @@ def test_copyfile_kit():
         elp_ext = '.pos'
         elp_fname = BIDSPath(
             subject=subject_id, session=session_id, task=task, run=run,
-            acquisition=key, kind='headshape', extension=elp_ext,
+            acquisition=key, suffix='headshape', extension=elp_ext,
             prefix=output_path)
         assert op.exists(elp_fname)
 
@@ -191,6 +191,6 @@ def test_copyfile_kit():
         hsp_ext = '.pos'
         hsp_fname = BIDSPath(
             subject=subject_id, session=session_id, task=task, run=run,
-            acquisition=key, kind='headshape', extension=hsp_ext,
+            acquisition=key, suffix='headshape', extension=hsp_ext,
             prefix=output_path)
         assert op.exists(hsp_fname)

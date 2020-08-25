@@ -88,7 +88,7 @@ def _get_ch_type_mapping(fro='mne', to='bids'):
 
 
 def _handle_kind(raw):
-    """Get kind."""
+    """Get suffix."""
     if 'eeg' in raw and ('ecog' in raw or 'seeg' in raw):
         raise ValueError('Both EEG and iEEG channels found in data.'
                          'There is currently no specification on how'
@@ -291,7 +291,7 @@ def _extract_landmarks(dig):
     """Extract NAS, LPA, and RPA from raw.info['dig']."""
     coords = dict()
     landmarks = {d['ident']: d for d in dig
-                 if d['kind'] == FIFF.FIFFV_POINT_CARDINAL}
+                 if d['suffix'] == FIFF.FIFFV_POINT_CARDINAL}
     if landmarks:
         if FIFF.FIFFV_POINT_NASION in landmarks:
             coords['NAS'] = landmarks[FIFF.FIFFV_POINT_NASION]['r'].tolist()
