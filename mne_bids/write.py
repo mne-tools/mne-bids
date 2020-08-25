@@ -39,7 +39,7 @@ from mne_bids.utils import (_write_json, _write_tsv, _write_text,
                             _check_anonymize, _stamp_to_dt)
 from mne_bids import make_bids_folders
 from mne_bids.path import (BIDSPath, _parse_ext, _mkdir_p, _path_to_str,
-                           _convert_str_to_BIDSPath)
+                           _convert_str_to_bids_path)
 from mne_bids.copyfiles import (copyfile_brainvision, copyfile_eeglab,
                                 copyfile_ctf, copyfile_bti, copyfile_kit)
 from mne_bids.tsv_handler import (_from_tsv, _drop, _contains_row,
@@ -952,9 +952,8 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
                        " in from the file. It may have been cropped.")
 
     # convert to BIDS Path
-    check = True
     if isinstance(bids_basename, str):
-        bids_basename = _convert_str_to_BIDSPath(bids_basename)
+        bids_basename = _convert_str_to_bids_path(bids_basename)
 
     bids_basename = bids_basename.copy()
     subject_id, session_id = bids_basename.subject, bids_basename.session
@@ -962,8 +961,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     acquisition, space = bids_basename.acquisition, bids_basename.space
     kind = _handle_kind(raw)
 
-    bids_fname = bids_basename.copy().update(kind=kind, extension=ext,
-                                             check=check)
+    bids_fname = bids_basename.copy().update(kind=kind, extension=ext)
 
     # check whether the info provided indicates that the data is emptyroom
     # data
@@ -1001,18 +999,18 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     # create *_scans.tsv
     bids_path = BIDSPath(subject=subject_id, session=session_id,
                          prefix=ses_path, kind='scans', extension='.tsv',
-                         task=None, check=check)
+                         task=None)
     scans_fname = str(bids_path)
 
     # create *_coordsystem.json
     bids_path.update(acquisition=acquisition, space=space,
                      prefix=data_path, kind='coordsystem',
-                     extension='.json', check=check)
+                     extension='.json')
     coordsystem_fname = str(bids_path)
 
     # create *_electrodes.tsv
     bids_path = bids_path.update(kind='electrodes',
-                                 extension='.tsv', check=check)
+                                 extension='.tsv')
     electrodes_fname = str(bids_path)
 
     # For the remaining files, we can use BIDSPath to alter.
@@ -1023,15 +1021,12 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
 
     sidecar_fname = bids_fname.copy().update(prefix=data_path,
                                              kind=kind,
-                                             extension='.json',
-                                             check=check)
+                                             extension='.json')
 
     events_fname = sidecar_fname.copy().update(kind='events',
-                                               extension='.tsv',
-                                               check=check)
+                                               extension='.tsv')
     channels_fname = sidecar_fname.copy().update(kind='channels',
-                                                 extension='.tsv',
-                                                 check=check)
+                                                 extension='.tsv')
 
     if ext not in ['.fif', '.ds', '.vhdr', '.edf', '.bdf', '.set', '.con',
                    '.sqd']:

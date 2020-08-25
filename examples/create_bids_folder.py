@@ -26,13 +26,12 @@ from mne_bids import make_bids_folders, BIDSPath
 # ----------------------------
 #
 # BIDS requires a specific ordering and structure for metadata fields in
-# file paths, the function `BIDSPath` allows you to specify many such
+# file paths, the class `BIDSPath` allows you to specify many such
 # pieces of metadata, ensuring that they are in the correct order in the
 # final file path. Omitted keys will not be included in the file path.
 
-bids_basename = BIDSPath(subject='test', session='two',
-                         task='mytask', kind='events',
-                         extension='.tsv')
+bids_basename = BIDSPath(subject='test', session='two', task='mytask',
+                         kind='events', extension='.tsv')
 print(bids_basename)
 
 ###############################################################################

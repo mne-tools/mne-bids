@@ -27,7 +27,7 @@ from mne_bids.utils import _extract_landmarks, _get_ch_type_mapping
 from mne_bids import make_bids_folders
 from mne_bids.path import (BIDSPath, _parse_ext, get_entities_from_fname,
                            _find_matching_sidecar, _infer_kind,
-                           _convert_str_to_BIDSPath)
+                           _convert_str_to_bids_path)
 
 
 def _read_raw(raw_fpath, electrode=None, hsp=None, hpi=None,
@@ -326,7 +326,7 @@ def read_raw_bids(bids_basename, bids_root, kind=None, extra_params=None,
     """
     # convert to BIDS Path
     if isinstance(bids_basename, str):
-        bids_basename = _convert_str_to_BIDSPath(bids_basename)
+        bids_basename = _convert_str_to_bids_path(bids_basename)
     bids_basename = bids_basename.copy()
     sub = bids_basename.subject
     ses = bids_basename.session
@@ -429,7 +429,7 @@ def get_matched_empty_room(bids_basename, bids_root):
     """
     # convert to BIDS Path
     if isinstance(bids_basename, str):
-        bids_basename = _convert_str_to_BIDSPath(bids_basename)
+        bids_basename = _convert_str_to_bids_path(bids_basename)
     bids_basename = bids_basename.copy()
 
     kind = 'meg'  # We're only concerned about MEG data here
@@ -572,7 +572,7 @@ def get_head_mri_trans(bids_basename, bids_root):
 
     # convert to BIDS Path
     if isinstance(bids_basename, str):
-        bids_basename = _convert_str_to_BIDSPath(bids_basename)
+        bids_basename = _convert_str_to_bids_path(bids_basename)
 
     # Get the sidecar file for MRI landmarks
     bids_fname = bids_basename.get_bids_fname(kind='meg', bids_root=bids_root)

@@ -67,11 +67,16 @@ class BIDSPath(object):
     extension : str | None
         The extension of the filename. E.g., ``'.json'``.
 
+    Attributes
+    ----------
+    check : bool
+        If True enforces the instance to follow strictly the BIDS
+        standard.
+
     Examples
     --------
-    >>> bids_basename = BIDSPath(subject='test', session='two',
-                                 task='mytask', kind='ieeg',
-                                 extension='.edf')
+    >>> bids_basename = BIDSPath(subject='test', session='two', task='mytask',
+                                 kind='ieeg', extension='.edf')
     >>> print(bids_basename)
     sub-test_ses-two_task-mytask_ieeg.edf
     >>> bids_basename
@@ -93,11 +98,12 @@ class BIDSPath(object):
                                      extension]):
             raise ValueError("At least one parameter must be given.")
 
+        self.check = check
+
         self.update(subject=subject, session=session, task=task,
                     acquisition=acquisition, run=run, processing=processing,
                     recording=recording, space=space, split=split,
-                    prefix=prefix, kind=kind, extension=extension,
-                    check=check)
+                    prefix=prefix, kind=kind, extension=extension)
 
     @property
     def entities(self):
@@ -203,31 +209,28 @@ class BIDSPath(object):
                    'automatically inferred because no bids_root was passed.')
             raise ValueError(msg)
 
+        bids_basename = self.copy()
+        bids_basename.check = False
+
         if extension is None:
             # since kind is passed in, use that
-            bids_basename = self.copy().update(kind=None, check=False)
+            bids_basename.update(kind=None)
             bids_fname = _get_bids_fname_from_filesystem(
                 bids_basename=bids_basename, bids_root=bids_root,
                 sub=sub, ses=ses, kind=kind)
             new_suffix = bids_fname.split("_")[-1]
             kind, extension = _get_kind_ext_from_suffix(new_suffix)
-            bids_fname = self.copy().update(kind=kind, extension=extension,
-                                            check=False)
+            bids_fname = bids_basename.update(kind=kind, extension=extension)
         else:
-            bids_fname = self.copy().update(kind=kind, extension=extension,
-                                            check=False)
+            bids_fname = bids_basename.update(kind=kind, extension=extension)
 
         return bids_fname
 
-    def update(self, check=True, **entities):
+    def update(self, **entities):
         """Update inplace BIDS entity key/value pairs in object.
 
         Parameters
         ----------
-        check : bool | None
-            Check validity of the entity values (default is True).
-            Checks valid suffixes, and extensions against BIDS
-            specification.
         entities : dict | kwarg
             Allowed BIDS path entities:
             'subject', 'session', 'task', 'acquisition',
@@ -291,10 +294,10 @@ class BIDSPath(object):
             setattr(self, key, val)
 
         # perform a check of the entities
-        self._check(deep=check)
+        self._check()
         return self
 
-    def _check(self, deep=True):
+    def _check(self):
         """Deep check or not of the instance."""
         self.basename  # run basename to check validity of arguments
 
@@ -305,7 +308,7 @@ class BIDSPath(object):
                              'subject and session entities. BIDSPath '
                              f'currently contains {self.entities}.')
 
-        if deep:
+        if self.check:
             if self.subject == 'emptyroom':
                 _check_empty_room_basename(self)
 
@@ -337,7 +340,7 @@ def _check_non_sub_ses_entity(bids_path):
     return False
 
 
-def _convert_str_to_BIDSPath(bids_basename):
+def _convert_str_to_bids_path(bids_basename):
     """Convert string of bids basename to BIDSPath object."""
     params = get_entities_from_fname(bids_basename)
     bids_path = BIDSPath(**params)
@@ -554,8 +557,10 @@ def _find_matching_sidecar(bids_fname, bids_root, kind=None,
         suffix = suffix + kind
 
         # do not search for kind if kind is explicitly passed
-        bids_fname = bids_fname.copy().update(kind=None,
-                                              check=False)
+        bids_fname = bids_fname.copy()
+        bids_fname.check = False
+        bids_fname.update(kind=None)
+
     if extension is not None:
         suffix = suffix + extension
 
