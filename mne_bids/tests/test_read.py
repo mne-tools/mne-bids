@@ -7,7 +7,6 @@ import os
 import os.path as op
 from datetime import datetime, timezone
 from pathlib import Path
-from distutils.version import LooseVersion
 
 import pytest
 import shutil as sh
@@ -639,7 +638,7 @@ def test_get_matched_empty_room():
                     .replace(tzinfo=timezone.utc))
     er_raw.set_meas_date(er_meas_date)
     kws = dict(subject='emptyroom', session='invalid', kind='meg')
-    er_basename = BIDSPath(**kws, task='noise', extension='.fif', 
+    er_basename = BIDSPath(**kws, task='noise', extension='.fif',
                            prefix=bids_root, check=False)
     er_ses_dir = make_bids_folders(**kws, bids_root=bids_root, make_dir=True)
     er_raw.save(op.join(er_ses_dir, er_basename.basename))
