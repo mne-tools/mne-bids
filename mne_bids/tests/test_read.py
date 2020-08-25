@@ -624,6 +624,39 @@ def test_get_matched_empty_room():
         get_matched_empty_room(bids_basename=bids_basename,
                                bids_root=bids_root)
 
+    # Raise upon invalid session.
+    er_session = 'invalid'
+    with pytest.raises(ValueError, match='.*should be a string of format'):
+        BIDSPath(subject='emptyroom', session=er_session, task='noise',
+                 kind='meg')
+
+    # Create an ER-file with a naming scheme violating BIDS, and check that
+    # we raise upon invoking get_matched_empty_room().
+
+    # First write the empty-room file.
+    er_raw = _read_raw_fif(er_raw_fname)
+    er_meas_date = (datetime.strptime('20200825', '%Y%m%d')
+                    .replace(tzinfo=timezone.utc))
+    er_raw.set_meas_date(er_meas_date)
+    kws = dict(subject='emptyroom', session='invalid', kind='meg')
+    er_basename = BIDSPath(**kws, task='noise', extension='.fif', 
+                           prefix=bids_root, check=False)
+    er_ses_dir = make_bids_folders(**kws, bids_root=bids_root, make_dir=True)
+    er_raw.save(op.join(er_ses_dir, er_basename.basename))
+
+    # Now add a matching raw file.
+    raw = _read_raw_fif(raw_fname)
+    raw.set_meas_date(er_meas_date)
+    raw_basename = BIDSPath(subject='01', session='01', task='audiovisual',
+                            run='01', kind='meg')
+    write_raw_bids(raw, raw_basename, bids_root, overwrite=True)
+
+    # When searching for the empty-room file matching the raw, we should
+    # encounter the invalid ER naming and raise.
+    with pytest.raises(RuntimeError, match='invalid empty-room session'):
+        get_matched_empty_room(bids_basename=raw_basename,
+                               bids_root=bids_root)
+
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_get_matched_emptyroom_ties():
@@ -659,40 +692,6 @@ def test_get_matched_emptyroom_ties():
     er_raw.save(op.join(er_dir, f'{er_basename_2}_meg.fif'))
 
     with pytest.warns(RuntimeWarning, match='Found more than one'):
-        get_matched_empty_room(bids_basename=bids_basename,
-                               bids_root=bids_root)
-
-
-@pytest.mark.skipif(LooseVersion(mne.__version__) < LooseVersion('0.21'),
-                    reason="requires mne 0.21.dev0 or higher")
-@pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
-def test_get_matched_emptyroom_no_meas_date():
-    """Test that we warn if measurement date can be read or inferred."""
-    bids_root = _TempDir()
-    er_session = 'mysession'
-    er_meas_date = None
-
-    er_dir = make_bids_folders(subject='emptyroom', session=er_session,
-                               kind='meg', bids_root=bids_root)
-    er_bids_path = BIDSPath(subject='emptyroom', session=er_session,
-                            task='noise', check=False)
-    er_basename = str(er_bids_path)
-    raw = _read_raw_fif(raw_fname)
-
-    er_raw_fname = op.join(data_path, 'MEG', 'sample', 'ernoise_raw.fif')
-    raw.copy().crop(0, 10).save(er_raw_fname, overwrite=True)
-    er_raw = _read_raw_fif(er_raw_fname)
-    er_raw.set_meas_date(er_meas_date)
-    er_raw.save(op.join(er_dir, f'{er_basename}_meg.fif'), overwrite=True)
-
-    # Write raw file data using mne-bids, and remove participants.tsv
-    # as it's incomplete (doesn't contain the emptyroom subject we wrote
-    # manually using MNE's Raw.save() above)
-    raw = _read_raw_fif(raw_fname)
-    write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
-    os.remove(op.join(bids_root, 'participants.tsv'))
-
-    with pytest.warns(RuntimeWarning, match='Could not retrieve .* date'):
         get_matched_empty_room(bids_basename=bids_basename,
                                bids_root=bids_root)
 

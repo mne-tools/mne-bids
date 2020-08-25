@@ -977,7 +977,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
             er_date = meas_date.strftime('%Y%m%d')
             if er_date != session_id:
                 raise ValueError("Date provided for session doesn't match "
-                                 "session date.")
+                                 "measurement date.")
 
     data_path = make_bids_folders(subject=subject_id, session=session_id,
                                   kind=kind, bids_root=bids_root,
