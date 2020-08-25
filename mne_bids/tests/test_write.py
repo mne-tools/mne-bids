@@ -39,7 +39,7 @@ from mne.io import anonymize_info
 from mne.io.constants import FIFF
 from mne.io.kit.kit import get_kit_info
 
-from mne_bids import (write_raw_bids, read_raw_bids, make_bids_basename,
+from mne_bids import (write_raw_bids, read_raw_bids, BIDSPath,
                       make_bids_folders, write_anat, make_dataset_description)
 from mne_bids.utils import (_stamp_to_dt, _get_anonymization_daysback,
                             get_anonymization_daysback)
@@ -58,10 +58,10 @@ acq = '01'
 run2 = '02'
 task = 'testing'
 
-bids_basename = make_bids_basename(
+bids_basename = BIDSPath(
     subject=subject_id, session=session_id, run=run, acquisition=acq,
     task=task)
-bids_basename_minimal = make_bids_basename(subject=subject_id, task=task)
+bids_basename_minimal = BIDSPath(subject=subject_id, task=task)
 
 warning_str = dict(
     channel_unit_changed='ignore:The unit for chann*.:RuntimeWarning:mne',
@@ -124,7 +124,7 @@ def _test_anonymize(raw, bids_basename, events_fname=None, event_id=None):
                    events_data=events_fname,
                    event_id=event_id, anonymize=dict(daysback=33000),
                    overwrite=False)
-    scans_tsv = make_bids_basename(
+    scans_tsv = BIDSPath(
         subject=subject_id, session=session_id,
         kind='scans', extension='.tsv',
         prefix=op.join(bids_root, 'sub-01', 'ses-01'))
@@ -347,7 +347,7 @@ def test_fif(_bids_validate):
         write_raw_bids(raw, er_bids_basename_bad, bids_root, overwrite=False)
 
     # test that the acquisition time was written properly
-    scans_tsv = make_bids_basename(
+    scans_tsv = BIDSPath(
         subject=subject_id, session=session_id,
         kind='scans', extension='.tsv',
         prefix=op.join(bids_root, 'sub-01', 'ses-01'))
@@ -563,7 +563,7 @@ def test_fif_anonymize(_bids_validate):
                    event_id=event_id,
                    anonymize=dict(daysback=30000, keep_his=True),
                    overwrite=False)
-    scans_tsv = make_bids_basename(
+    scans_tsv = BIDSPath(
         subject=subject_id, session=session_id,
         kind='scans', extension='.tsv',
         prefix=op.join(bids_root, 'sub-01', 'ses-01'))
@@ -606,7 +606,7 @@ def test_kit(_bids_validate):
                   kind='meg')
 
     # ensure the marker file is produced in the right place
-    marker_fname = make_bids_basename(
+    marker_fname = BIDSPath(
         subject=subject_id, session=session_id, task=task, run=run,
         kind='markers', extension='.sqd',
         prefix=op.join(bids_root, 'sub-01', 'ses-01', 'meg'))
@@ -922,7 +922,7 @@ def test_edf(_bids_validate):
     _bids_validate(bids_root)
 
     # ensure there is an EMG channel in the channels.tsv:
-    channels_tsv = make_bids_basename(
+    channels_tsv = BIDSPath(
         subject=subject_id, session=session_id, task=task, run=run,
         kind='channels', extension='.tsv', acquisition=acq,
         prefix=op.join(bids_root, 'sub-01', 'ses-01', 'eeg'))
@@ -930,7 +930,7 @@ def test_edf(_bids_validate):
     assert 'ElectroMyoGram' in data['description']
 
     # check that the scans list contains two scans
-    scans_tsv = make_bids_basename(
+    scans_tsv = BIDSPath(
         subject=subject_id, session=session_id,
         kind='scans', extension='.tsv',
         prefix=op.join(bids_root, 'sub-01', 'ses-01'))
@@ -1159,9 +1159,9 @@ def test_write_anat(_bids_validate):
     point_list = ['LPA', 'NAS', 'RPA']
     np.testing.assert_array_equal(list(anat_dict.keys()),
                                   point_list)
-    sidecar_basename = make_bids_basename(subject='01', session='01',
-                                          acquisition='01',
-                                          kind='T1w', extension='.nii.gz')
+    sidecar_basename = BIDSPath(subject='01', session='01',
+                                acquisition='01',
+                                kind='T1w', extension='.nii.gz')
     # test the actual values of the voxels (no floating points)
     for i, point in enumerate([(66, 51, 46), (41, 32, 74), (17, 53, 47)]):
         coords = anat_dict[point_list[i]]

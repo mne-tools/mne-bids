@@ -34,7 +34,7 @@ import shutil as sh
 import mne
 from mne.datasets import eegbci
 
-from mne_bids import write_raw_bids, make_bids_basename, print_dir_tree
+from mne_bids import write_raw_bids, BIDSPath, print_dir_tree
 
 ###############################################################################
 # Download the data
@@ -175,7 +175,7 @@ sh.rmtree(bids_root, ignore_errors=True)
 event_id = {'rest': 0}
 
 # Now convert our data to be in a new BIDS dataset.
-bids_basename = make_bids_basename(subject=subject_id, task=task)
+bids_basename = BIDSPath(subject=subject_id, task=task)
 write_raw_bids(raw, bids_basename, bids_root, event_id=event_id,
                events_data=events, overwrite=True)
 

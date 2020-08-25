@@ -19,27 +19,26 @@ wish to create these files/folders on your own.
 ###############################################################################
 # First we will import the relevant functions
 
-from mne_bids import make_bids_folders, make_bids_basename
+from mne_bids import make_bids_folders, BIDSPath
 
 ###############################################################################
 # Creating file names for BIDS
 # ----------------------------
 #
 # BIDS requires a specific ordering and structure for metadata fields in
-# file paths, the function `make_bids_basename` allows you to specify many such
+# file paths, the class `BIDSPath` allows you to specify many such
 # pieces of metadata, ensuring that they are in the correct order in the
 # final file path. Omitted keys will not be included in the file path.
 
-bids_basename = make_bids_basename(subject='test', session='two',
-                                   task='mytask', kind='events',
-                                   extension='.tsv')
+bids_basename = BIDSPath(subject='test', session='two', task='mytask',
+                         kind='events', extension='.tsv')
 print(bids_basename)
 
 ###############################################################################
 # You may also omit the suffix, which will result in *only* a prefix for a
 # file name. This could then prepended to many more files.
 
-bids_basename = make_bids_basename(subject='test', task='mytask')
+bids_basename = BIDSPath(subject='test', task='mytask')
 print(bids_basename)
 
 ###############################################################################

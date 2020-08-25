@@ -26,7 +26,7 @@ and to display the data that is saved within the accompanying sidecars.
 # We are importing everything we need for this example:
 from mne.datasets import somato
 
-from mne_bids import (make_bids_basename, read_raw_bids,
+from mne_bids import (BIDSPath, read_raw_bids,
                       print_dir_tree)
 
 ###############################################################################
@@ -45,7 +45,7 @@ subject_id = '01'
 task = 'somato'
 kind = 'meg'
 
-bids_basename = make_bids_basename(subject=subject_id, task=task)
+bids_basename = BIDSPath(subject=subject_id, task=task)
 
 # bids basename is nicely formatted
 print(bids_basename)

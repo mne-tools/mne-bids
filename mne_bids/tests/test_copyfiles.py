@@ -20,7 +20,7 @@ with warnings.catch_warnings():
 
 from mne.datasets import testing
 from mne.utils import _TempDir
-from mne_bids import make_bids_basename
+from mne_bids import BIDSPath
 from mne_bids.utils import _handle_kind
 from mne_bids.path import _parse_ext
 
@@ -150,7 +150,7 @@ def test_copyfile_kit():
     acq = '01'
     task = 'testing'
 
-    bids_basename = make_bids_basename(
+    bids_basename = BIDSPath(
         subject=subject_id, session=session_id, run=run, acquisition=acq,
         task=task)
 
@@ -180,7 +180,7 @@ def test_copyfile_kit():
     if op.exists(electrode_fname):
         task, run, key = None, None, 'ELP'
         elp_ext = '.pos'
-        elp_fname = make_bids_basename(
+        elp_fname = BIDSPath(
             subject=subject_id, session=session_id, task=task, run=run,
             acquisition=key, kind='headshape', extension=elp_ext,
             prefix=output_path)
@@ -189,7 +189,7 @@ def test_copyfile_kit():
     if op.exists(headshape_fname):
         task, run, key = None, None, 'HSP'
         hsp_ext = '.pos'
-        hsp_fname = make_bids_basename(
+        hsp_fname = BIDSPath(
             subject=subject_id, session=session_id, task=task, run=run,
             acquisition=key, kind='headshape', extension=hsp_ext,
             prefix=output_path)

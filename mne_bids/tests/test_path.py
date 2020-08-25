@@ -20,7 +20,7 @@ from mne.datasets import testing
 from mne.utils import _TempDir
 
 from mne_bids import (get_kinds, get_entity_vals, print_dir_tree,
-                      make_bids_folders, make_bids_basename,
+                      make_bids_folders, BIDSPath,
                       write_raw_bids)
 from mne_bids.path import (_parse_ext, get_entities_from_fname,
                            _find_best_candidates, _find_matching_sidecar,
@@ -32,7 +32,7 @@ run = '01'
 acq = None
 task = 'testing'
 
-bids_basename = make_bids_basename(
+bids_basename = BIDSPath(
     subject=subject_id, session=session_id, run=run, acquisition=acq,
     task=task)
 
@@ -260,7 +260,7 @@ def test_bids_path(return_bids_test_dir):
     """Test usage of BIDSPath object."""
     bids_root = return_bids_test_dir
 
-    bids_basename = make_bids_basename(
+    bids_basename = BIDSPath(
         subject=subject_id, session=session_id, run=run, acquisition=acq,
         task=task)
 
@@ -274,8 +274,8 @@ def test_bids_path(return_bids_test_dir):
                                               extension='.fif')
 
     # confirm BIDSPath assigns properties correctly
-    bids_basename = make_bids_basename(subject=subject_id,
-                                       session=session_id)
+    bids_basename = BIDSPath(subject=subject_id,
+                             session=session_id)
     assert bids_basename.subject == subject_id
     assert bids_basename.session == session_id
     assert 'subject' in bids_basename.entities
@@ -313,29 +313,89 @@ def test_bids_path(return_bids_test_dir):
     with pytest.raises(ValueError, match='Unallowed*'):
         bids_basename.update(subject=subject_id + '-')
 
-    # error check on kind in make_bids_basename (deep check)
+    # error check on kind in BIDSPath (deep check)
     kind = 'meeg'
     with pytest.raises(ValueError, match=f'Kind {kind} is not'):
-        make_bids_basename(subject=subject_id, session=session_id,
-                           kind=kind)
+        BIDSPath(subject=subject_id, session=session_id,
+                 kind=kind)
 
     # do not error check kind in update (not deep check)
-    bids_basename.update(kind='foobar')
+    error_kind = 'foobar'
+    with pytest.raises(ValueError, match=f'Kind {error_kind} is not'):
+        bids_basename.update(kind=error_kind)
 
-    # error check on extension in make_bids_basename (deep check)
+    # does not error check on kind in BIDSPath (deep check)
+    kind = 'meeg'
+    bids_basename = BIDSPath(subject=subject_id, session=session_id,
+                             kind=kind, check=False)
+    # also inherits error check from instantiation
+    bids_basename.update(kind=error_kind)
+
+    # error check on extension in BIDSPath (deep check)
     extension = '.mat'
     with pytest.raises(ValueError, match=f'Extension {extension} is not'):
-        make_bids_basename(subject=subject_id, session=session_id,
-                           extension=extension)
+        BIDSPath(subject=subject_id, session=session_id,
+                 extension=extension)
 
     # do not error extension in update (not deep check)
     bids_basename.update(extension='.foo')
 
     # test repr
-    bids_path = make_bids_basename(subject='01', session='02',
-                                   task='03', kind='ieeg',
-                                   extension='.edf')
+    bids_path = BIDSPath(subject='01', session='02',
+                         task='03', kind='ieeg',
+                         extension='.edf')
     assert repr(bids_path) == 'BIDSPath(sub-01_ses-02_task-03_ieeg.edf)'
+
+
+def test_make_filenames():
+    """Test that we create filenames according to the BIDS spec."""
+    # All keys work
+    prefix_data = dict(subject='one', session='two', task='three',
+                       acquisition='four', run='five', processing='six',
+                       recording='seven', kind='ieeg', extension='.json')
+    expected_str = 'sub-one_ses-two_task-three_acq-four_run-five_proc-six_rec-seven_ieeg.json'  # noqa
+    assert str(BIDSPath(**prefix_data)) == expected_str
+
+    # subsets of keys works
+    assert (BIDSPath(subject='one', task='three', run=4) ==
+            'sub-one_task-three_run-04')
+    assert (BIDSPath(subject='one', task='three',
+                     kind='meg', extension='.json') ==
+            'sub-one_task-three_meg.json')
+
+    with pytest.raises(ValueError):
+        BIDSPath(subject='one-two', kind='ieeg', extension='.edf')
+
+    with pytest.raises(ValueError, match='At least one'):
+        BIDSPath()
+
+    # emptyroom checks
+    with pytest.raises(ValueError, match='empty-room session should be a '
+                                         'string of format YYYYMMDD'):
+        BIDSPath(subject='emptyroom', session='12345', task='noise')
+    with pytest.raises(ValueError, match='task must be'):
+        BIDSPath(subject='emptyroom', session='20131201',
+                 task='blah', kind='meg')
+
+    # when the suffix is not 'meg', then it does not result in
+    # an error
+    BIDSPath(subject='emptyroom', session='20131201',
+             task='blah')
+
+    # test what would happen if you don't want to check
+    prefix_data['extension'] = '.h5'
+    with pytest.raises(ValueError, match='Extension .h5 is not allowed'):
+        BIDSPath(**prefix_data)
+    basename = BIDSPath(**prefix_data, check=False)
+    assert basename.basename == 'sub-one_ses-two_task-three_acq-four_run-five_proc-six_rec-seven_ieeg.h5'  # noqa
+
+    # what happens with scans.tsv file
+    with pytest.raises(ValueError, match='scans.tsv file name '
+                                         'can only contain'):
+        BIDSPath(
+            subject=subject_id, session=session_id, task=task,
+            kind='scans', extension='.tsv'
+        )
 
 
 @pytest.mark.parametrize(

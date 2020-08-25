@@ -26,7 +26,8 @@ from mne_bids.config import (ALLOWED_MODALITY_EXTENSIONS, reader,
 from mne_bids.utils import _extract_landmarks, _get_ch_type_mapping
 from mne_bids import make_bids_folders
 from mne_bids.path import (BIDSPath, _parse_ext, get_entities_from_fname,
-                           _find_matching_sidecar, _infer_kind)
+                           _find_matching_sidecar, _infer_kind,
+                           _convert_str_to_bids_path)
 
 
 def _read_raw(raw_fpath, electrode=None, hsp=None, hpi=None,
@@ -289,7 +290,7 @@ def read_raw_bids(bids_basename, bids_root, kind=None, extra_params=None,
     ----------
     bids_basename : str | BIDSPath
         The base filename of the BIDS compatible files. Typically, this can be
-        generated using :func:`mne_bids.make_bids_basename`.
+        generated using :func:`mne_bids.BIDSPath`.
     bids_root : str | pathlib.Path
         Path to root of the BIDS folder
     kind : str | None
@@ -325,8 +326,7 @@ def read_raw_bids(bids_basename, bids_root, kind=None, extra_params=None,
     """
     # convert to BIDS Path
     if isinstance(bids_basename, str):
-        params = get_entities_from_fname(bids_basename)
-        bids_basename = BIDSPath(**params)
+        bids_basename = _convert_str_to_bids_path(bids_basename)
     bids_basename = bids_basename.copy()
     sub = bids_basename.subject
     ses = bids_basename.session
@@ -417,7 +417,7 @@ def get_matched_empty_room(bids_basename, bids_root):
     ----------
     bids_basename : str | BIDSPath
         The base filename of the BIDS-compatible file. Typically, this can be
-        generated using :func:`mne_bids.make_bids_basename`.
+        generated using :func:`mne_bids.BIDSPath`.
     bids_root : str | pathlib.Path
         Path to the BIDS root folder.
 
@@ -429,8 +429,7 @@ def get_matched_empty_room(bids_basename, bids_root):
     """
     # convert to BIDS Path
     if isinstance(bids_basename, str):
-        params = get_entities_from_fname(bids_basename)
-        bids_basename = BIDSPath(**params)
+        bids_basename = _convert_str_to_bids_path(bids_basename)
     bids_basename = bids_basename.copy()
 
     kind = 'meg'  # We're only concerned about MEG data here
@@ -482,19 +481,18 @@ def get_matched_empty_room(bids_basename, bids_root):
                     (not item.suffix and item.is_dir())):  # Hopefully BTi?
                 candidate_er_fnames.append(item.name)
 
-    # Walk through recordings, trying to extract the recording date:
-    # First, from the filename; and if that fails, from `info['meas_date']`.
+    # Walk through recordings, trying to extract the recording date from the
+    # filename.
     best_er_basename = None
     min_delta_t = np.inf
     date_tie = False
 
-    failed_to_get_er_date_count = 0
     for er_fname in candidate_er_fnames:
         params = get_entities_from_fname(er_fname)
         er_meas_date = None
         params.pop('subject')  # er subject entity is different
-        er_bids_path = BIDSPath(subject='emptyroom', **params)
-        er_basename = str(er_bids_path)
+        er_bids_path = BIDSPath(subject='emptyroom', **params,
+                                check=False)
 
         # Try to extract date from filename.
         if params['session'] is not None:
@@ -503,24 +501,10 @@ def get_matched_empty_room(bids_basename, bids_root):
             except (ValueError, TypeError):
                 # There is a session in the filename, but it doesn't encode a
                 # valid date.
-                pass
-
-        if er_meas_date is None:  # No luck so far! Check info['meas_date']
-            _, ext = _parse_ext(er_fname)
-            if ext == '.fif':
-                extra_params = dict(allow_maxshield=True)
-            else:
-                extra_params = None
-
-            er_raw = read_raw_bids(bids_basename=er_basename,
-                                   bids_root=bids_root,
-                                   kind=kind,
-                                   extra_params=extra_params)
-
-            er_meas_date = er_raw.info['meas_date']
-            if er_meas_date is None:  # There's nothing we can do.
-                failed_to_get_er_date_count += 1
-                continue
+                msg = (f'Encountered an invalid empty-room session: '
+                       f'{params["session"]}. Empty-room sessions must be in '
+                       f'the form of: YYYYMMDD. Please fix your BIDS dataset.')
+                raise RuntimeError(msg)
 
         er_meas_date = er_meas_date.replace(tzinfo=ref_date.tzinfo)
         delta_t = er_meas_date - ref_date
@@ -529,13 +513,8 @@ def get_matched_empty_room(bids_basename, bids_root):
             date_tie = True
         elif abs(delta_t.total_seconds()) < min_delta_t:
             min_delta_t = abs(delta_t.total_seconds())
-            best_er_basename = er_basename
+            best_er_basename = er_bids_path.basename
             date_tie = False
-
-    if failed_to_get_er_date_count > 0:
-        msg = (f'Could not retrieve the empty-room measurement date from '
-               f'a total of {failed_to_get_er_date_count} recording(s).')
-        warn(msg)
 
     if date_tie:
         msg = ('Found more than one matching empty-room measurement with the '
@@ -557,7 +536,7 @@ def get_head_mri_trans(bids_basename, bids_root):
     ----------
     bids_basename : str | BIDSPath
         The base filename of the BIDS-compatible file. Typically, this can be
-        generated using :func:`mne_bids.make_bids_basename`.
+        generated using :func:`mne_bids.BIDSPath`.
     bids_root : str | pathlib.Path
         Path to root of the BIDS folder
 
@@ -573,8 +552,7 @@ def get_head_mri_trans(bids_basename, bids_root):
 
     # convert to BIDS Path
     if isinstance(bids_basename, str):
-        params = get_entities_from_fname(bids_basename)
-        bids_basename = BIDSPath(**params)
+        bids_basename = _convert_str_to_bids_path(bids_basename)
 
     # Get the sidecar file for MRI landmarks
     bids_fname = bids_basename.get_bids_fname(kind='meg', bids_root=bids_root)

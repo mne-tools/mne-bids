@@ -9,7 +9,7 @@ example usage:  $ mne_bids raw_to_bids --subject_id sub01 --task rest
 #
 # License: BSD (3-clause)
 import mne_bids
-from mne_bids import write_raw_bids, make_bids_basename
+from mne_bids import write_raw_bids, BIDSPath
 from mne_bids.read import _read_raw
 
 
@@ -68,7 +68,7 @@ def run():
         parser.error('Arguments missing. You need to specify at least the'
                      'following: --subject_id, --task, --raw, --bids_root.')
 
-    bids_basename = make_bids_basename(
+    bids_basename = BIDSPath(
         subject=opt.subject_id, session=opt.session_id, run=opt.run,
         acquisition=opt.acq, task=opt.task)
     raw = _read_raw(opt.raw_fname, hpi=opt.hpi, electrode=opt.electrode,

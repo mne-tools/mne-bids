@@ -333,15 +333,17 @@ def _scale_coord_to_meters(coord, unit):
 
 def _check_empty_room_basename(bids_path, on_invalid_er_session='raise',
                                on_invalid_er_task='raise'):
-    if bids_path.task != 'noise':
-        msg = (f'task must be "noise" if subject is "emptyroom", but '
-               f'received: {bids_path.task}')
-        if on_invalid_er_task == 'raise':
-            raise ValueError(msg)
-        elif on_invalid_er_task == 'warn':
-            logger.critical(msg)
-        else:
-            pass
+    # only check task entity for emptyroom when it is the sidecar/MEG file
+    if bids_path.kind == 'meg':
+        if bids_path.task != 'noise':
+            msg = (f'task must be "noise" if subject is "emptyroom", but '
+                   f'received: {bids_path.task}')
+            if on_invalid_er_task == 'raise':
+                raise ValueError(msg)
+            elif on_invalid_er_task == 'warn':
+                logger.critical(msg)
+            else:
+                pass
     try:
         datetime.strptime(bids_path.session, '%Y%m%d')
     except (ValueError, TypeError):
