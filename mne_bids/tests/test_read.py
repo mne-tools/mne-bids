@@ -584,7 +584,7 @@ def test_get_matched_empty_room():
         er_date = datetime.fromtimestamp(er_raw.info['meas_date'][0])
     er_date = er_date.strftime('%Y%m%d')
     er_bids_basename = BIDSPath(subject='emptyroom', task='noise',
-                                session=er_date, kind='meg', check=False)
+                                session=er_date, kind='meg')
     write_raw_bids(er_raw, er_bids_basename, bids_root, overwrite=True)
 
     recovered_er_basename = get_matched_empty_room(bids_basename=bids_basename,
@@ -651,11 +651,10 @@ def test_get_matched_emptyroom_ties():
         er_raw.info['meas_date'] = (meas_date.timestamp(), 0)
 
     write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
-    er_bids_path = BIDSPath(subject='emptyroom', session=session,
-                            check=False)
+    er_bids_path = BIDSPath(subject='emptyroom', session=session)
     er_basename_1 = str(er_bids_path)
     er_basename_2 = BIDSPath(subject='emptyroom', session=session,
-                             task='noise', check=False)
+                             task='noise')
     er_raw.save(op.join(er_dir, f'{er_basename_1}_meg.fif'))
     er_raw.save(op.join(er_dir, f'{er_basename_2}_meg.fif'))
 
