@@ -62,7 +62,7 @@ def return_bids_test_dir(tmpdir_factory):
     return bids_root
 
 
-def test_get_keys(return_bids_test_dir):
+def test_get_kinds(return_bids_test_dir):
     """Test getting the datatypes (=kinds) of a dir."""
     kinds = get_kinds(return_bids_test_dir)
     assert kinds == ['meg']
@@ -319,26 +319,25 @@ def test_bids_path(return_bids_test_dir):
         BIDSPath(subject=subject_id, session=session_id,
                  kind=kind)
 
-    # do not error check kind in update (not deep check)
+    # error check kind in update (deep check)
     error_kind = 'foobar'
     with pytest.raises(ValueError, match=f'Kind {error_kind} is not'):
         bids_basename.update(kind=error_kind)
 
-    # does not error check on kind in BIDSPath (deep check)
-    kind = 'meeg'
-    bids_basename = BIDSPath(subject=subject_id, session=session_id,
-                             kind=kind, check=False)
-    # also inherits error check from instantiation
-    bids_basename.update(kind=error_kind)
-
-    # error check on extension in BIDSPath (deep check)
+    # error check extension in BIDSPath (deep check)
     extension = '.mat'
     with pytest.raises(ValueError, match=f'Extension {extension} is not'):
         BIDSPath(subject=subject_id, session=session_id,
                  extension=extension)
 
-    # do not error extension in update (not deep check)
-    bids_basename.update(extension='.foo')
+    # does not error check on kind in BIDSPath (no deep check)
+    kind = 'meeg'
+    bids_basename = BIDSPath(subject=subject_id, session=session_id,
+                             kind=kind, check=False)
+    # Update with an invalid key or extension requires explicitly passing
+    # `check=False` too.
+    bids_basename.update(kind=error_kind, check=False)
+    bids_basename.update(extension='.foo', check=False)
 
     # test repr
     bids_path = BIDSPath(subject='01', session='02',

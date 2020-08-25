@@ -67,15 +67,8 @@ class BIDSPath(object):
     extension : str | None
         The extension of the filename. E.g., ``'.json'``.
     check : bool
-        If True enforces the entities to be valid according to the
-        current BIDS standard. Defaults to True.
-
-    Attributes
-    ----------
-    check : bool
-        If True enforces the entities to be valid according to the
-        current BIDS standard. The check is performed on instantiation
-        and any ``update`` function calls.
+        If ``True``, enforces the entities to be valid according to the
+        BIDS standard. Defaults to ``True``.
 
     Examples
     --------
@@ -92,7 +85,7 @@ class BIDSPath(object):
     sub-test2_ses-one_task-mytask_ieeg.edf
     """
 
-    def __init__(self, subject=None, session=None,
+    def __init__(self, *, subject=None, session=None,
                  task=None, acquisition=None, run=None, processing=None,
                  recording=None, space=None, split=None, prefix=None,
                  kind=None, extension=None, check=True):
@@ -102,12 +95,10 @@ class BIDSPath(object):
                                      extension]):
             raise ValueError("At least one parameter must be given.")
 
-        self.check = check
-
         self.update(subject=subject, session=session, task=task,
                     acquisition=acquisition, run=run, processing=processing,
                     recording=recording, space=space, split=split,
-                    prefix=prefix, kind=kind, extension=extension)
+                    prefix=prefix, kind=kind, extension=extension, check=check)
 
     @property
     def entities(self):
@@ -230,16 +221,19 @@ class BIDSPath(object):
 
         return bids_fname
 
-    def update(self, **entities):
+    def update(self, check=True, **entities):
         """Update inplace BIDS entity key/value pairs in object.
 
         Parameters
         ----------
+        check : bool
+            If ``True``, enforces the entities to be valid according to the
+            BIDS standard. Defaults to ``True``.
         entities : dict | kwarg
             Allowed BIDS path entities:
-            'subject', 'session', 'task', 'acquisition',
-            'processing', 'run', 'recording', 'space',
-            'suffix', 'prefix'
+            ``'subject'``, ``'session'``, ``'task'``, ``'acquisition'``,
+            ``'processing'``, ``'run'``, ``'recording'``, ``'space'``,
+            ``'suffix'``, ``'prefix'``
 
         Returns
         -------
@@ -298,10 +292,10 @@ class BIDSPath(object):
             setattr(self, key, val)
 
         # perform a check of the entities
-        self._check()
+        self._check(deep=check)
         return self
 
-    def _check(self):
+    def _check(self, deep):
         """Deep check or not of the instance."""
         self.basename  # run basename to check validity of arguments
 
@@ -312,7 +306,7 @@ class BIDSPath(object):
                              'subject and session entities. BIDSPath '
                              f'currently contains {self.entities}.')
 
-        if self.check:
+        if deep:
             if self.subject == 'emptyroom':
                 _check_empty_room_basename(self)
 
