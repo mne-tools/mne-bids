@@ -19,7 +19,7 @@ with warnings.catch_warnings():
 from mne.datasets import testing
 from mne.utils import _TempDir
 
-from mne_bids import (get_kinds, get_entity_vals, print_dir_tree,
+from mne_bids import (get_modalities, get_entity_vals, print_dir_tree,
                       make_bids_folders, BIDSPath,
                       write_raw_bids)
 from mne_bids.path import (_parse_ext, get_entities_from_fname,
@@ -63,9 +63,9 @@ def return_bids_test_dir(tmpdir_factory):
 
 
 def test_get_keys(return_bids_test_dir):
-    """Test getting the datatypes (=kinds) of a dir."""
-    kinds = get_kinds(return_bids_test_dir)
-    assert kinds == ['meg']
+    """Test getting the datatypes (=modalities) of a dir."""
+    modalities = get_modalities(return_bids_test_dir)
+    assert modalities == ['meg']
 
 
 @pytest.mark.parametrize('entity, expected_vals, kwargs',
@@ -315,10 +315,10 @@ def test_bids_path(return_bids_test_dir):
         bids_basename.update(subject=subject_id + '-')
 
     # error check on suffix in BIDSPath (deep check)
-    kind = 'meeg'
-    with pytest.raises(ValueError, match=f'Suffix {kind} is not'):
+    suffix = 'meeg'
+    with pytest.raises(ValueError, match=f'Suffix {suffix} is not'):
         BIDSPath(subject=subject_id, session=session_id,
-                 suffix=kind)
+                 suffix=suffix)
 
     # do error check suffix in update
     error_kind = 'foobar'
@@ -326,10 +326,9 @@ def test_bids_path(return_bids_test_dir):
         bids_basename.update(suffix=error_kind)
 
     # does not error check on suffix in BIDSPath (deep check)
-    kind = 'meeg'
+    suffix = 'meeg'
     bids_basename = BIDSPath(subject=subject_id, session=session_id,
-                             suffix=kind, check=False)
-
+                             suffix=suffix, check=False)
     # also inherits error check from instantiation
     # always error check modality
     with pytest.raises(ValueError, match='"modality" can only be '
@@ -337,7 +336,7 @@ def test_bids_path(return_bids_test_dir):
         bids_basename.copy().update(modality=error_kind)
 
     # suffix won't be error checks if initial check was false
-    bids_basename.update(suffix=kind)
+    bids_basename.update(suffix=suffix)
 
     # error check on extension in BIDSPath (deep check)
     extension = '.mat'

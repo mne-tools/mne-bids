@@ -193,7 +193,7 @@ def _events_tsv(events, raw, fname, trial_type, overwrite=False,
     _write_tsv(fname, data, overwrite, verbose)
 
 
-def _readme(kind, fname, overwrite=False, verbose=True):
+def _readme(modality, fname, overwrite=False, verbose=True):
     """Create a README file and save it.
 
     This will write a README file containing an MNE-BIDS citation.
@@ -202,7 +202,7 @@ def _readme(kind, fname, overwrite=False, verbose=True):
 
     Parameters
     ----------
-    kind : string
+    modality : string
         The type of data contained in the raw file ('meg', 'eeg', 'ieeg')
     fname : str | BIDSPath
         Filename to save the README to.
@@ -219,16 +219,16 @@ def _readme(kind, fname, overwrite=False, verbose=True):
         with open(fname, 'r') as fid:
             orig_data = fid.read()
         mne_bids_ref = REFERENCES['mne-bids'] in orig_data
-        kind_ref = REFERENCES[kind] in orig_data
-        if mne_bids_ref and kind_ref:
+        modality_ref = REFERENCES[modality] in orig_data
+        if mne_bids_ref and modality_ref:
             return
         text = '{}References\n----------\n{}{}'.format(
             orig_data + '\n\n',
             '' if mne_bids_ref else REFERENCES['mne-bids'] + '\n\n',
-            '' if kind_ref else REFERENCES[kind] + '\n')
+            '' if modality_ref else REFERENCES[modality] + '\n')
     else:
         text = 'References\n----------\n{}{}'.format(
-            REFERENCES['mne-bids'] + '\n\n', REFERENCES[kind] + '\n')
+            REFERENCES['mne-bids'] + '\n\n', REFERENCES[modality] + '\n')
 
     _write_text(fname, text, overwrite=True, verbose=verbose)
 
@@ -565,13 +565,13 @@ def _sidecar_json(raw, task, manufacturer, fname, modality, overwrite=False,
     # Stitch together the complete JSON dictionary
     ch_info_json = ch_info_json_common
     if modality == 'meg':
-        append_kind_json = ch_info_json_meg
+        append_modality_json = ch_info_json_meg
     elif modality == 'eeg':
-        append_kind_json = ch_info_json_eeg
+        append_modality_json = ch_info_json_eeg
     elif modality == 'ieeg':
-        append_kind_json = ch_info_json_ieeg
+        append_modality_json = ch_info_json_ieeg
 
-    ch_info_json += append_kind_json
+    ch_info_json += append_modality_json
     ch_info_json += ch_info_ch_counts
     ch_info_json = OrderedDict(ch_info_json)
 
@@ -1076,9 +1076,9 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
             _write_dig_bids(electrodes_fname, coordsystem_fname, data_path,
                             raw, modality, overwrite, verbose)
     else:
-        logger.warning('Writing of electrodes.tsv '
-                       'is not supported for suffix "{}". '
-                       'Skipping ...'.format(modality))
+        logger.warning(f'Writing of electrodes.tsv '
+                       f'is not supported for modality "{modality}". '
+                       f'Skipping ...')
 
     events, event_id = _read_events(events_data, event_id, raw, ext,
                                     verbose=verbose)

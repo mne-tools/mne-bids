@@ -26,7 +26,7 @@ from mne_bids.config import (ALLOWED_MODALITY_EXTENSIONS, reader,
 from mne_bids.utils import _extract_landmarks, _get_ch_type_mapping
 from mne_bids import make_bids_folders
 from mne_bids.path import (BIDSPath, _parse_ext, get_entities_from_fname,
-                           _find_matching_sidecar, _infer_kind,
+                           _find_matching_sidecar, _infer_modality,
                            _convert_str_to_bids_path)
 
 
@@ -332,9 +332,8 @@ def read_raw_bids(bids_basename, bids_root, modality=None, extra_params=None,
     ses = bids_basename.session
 
     if modality is None:
-        modality = _infer_kind(bids_basename=bids_basename,
-                               bids_root=bids_root,
-                               sub=sub, ses=ses)
+        modality = _infer_modality(bids_root=bids_root,
+                                   sub=sub, ses=ses)
 
     data_dir = make_bids_folders(subject=sub, session=ses, modality=modality,
                                  make_dir=False)

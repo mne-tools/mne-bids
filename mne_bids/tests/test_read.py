@@ -243,19 +243,19 @@ def test_handle_info_reading():
     # bids basename and fname
     bids_basename = BIDSPath(subject='01', session='01',
                              task='audiovisual', run='01')
-    kind = "meg"
-    bids_fname = bids_basename.copy().update(suffix=kind,
+    suffix = "meg"
+    bids_fname = bids_basename.copy().update(suffix=suffix,
                                              extension='.fif')
     write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
 
     # find sidecar JSON fname
     sidecar_fname = _find_matching_sidecar(bids_fname, bids_root,
-                                           suffix=kind, extension='.json',
+                                           suffix=suffix, extension='.json',
                                            allow_fail=True)
 
     # assert that we get the same line frequency set
     raw = read_raw_bids(bids_basename=bids_basename, bids_root=bids_root,
-                        modality=kind)
+                        modality=suffix)
     assert raw.info['line_freq'] == 60
 
     # 2. if line frequency is not set in raw file, then ValueError
@@ -275,14 +275,14 @@ def test_handle_info_reading():
         sidecar_json["PowerLineFrequency"] = 45
     _write_json(sidecar_copy, sidecar_json)
     raw = read_raw_bids(bids_basename=bids_basename, bids_root=bids_root,
-                        modality=kind)
+                        modality=suffix)
     assert raw.info['line_freq'] == 60
 
     # 3. assert that we get an error when sidecar json doesn't match
     _update_sidecar(sidecar_fname, "PowerLineFrequency", 55)
     with pytest.raises(ValueError, match="Line frequency in sidecar json"):
         raw = read_raw_bids(bids_basename=bids_basename, bids_root=bids_root,
-                            modality=kind)
+                            modality=suffix)
         assert raw.info['line_freq'] == 55
 
 
@@ -709,7 +709,7 @@ def test_read_raw_bids_pathlike():
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
-def test_read_raw_kind():
+def test_read_raw_modality():
     """Test that read_raw_bids() can infer the str_suffix if need be."""
     bids_root = _TempDir()
     raw = _read_raw_fif(raw_fname, verbose=False)

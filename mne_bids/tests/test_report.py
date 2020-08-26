@@ -34,8 +34,8 @@ warning_str = dict(
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
-def test_read_raw_kind():
-    """Test that read_raw_bids() can infer the str_suffix if need be."""
+def test_report():
+    """Test that report generated works as intended."""
     bids_root = _TempDir()
     raw = mne.io.read_raw_fif(raw_fname, verbose=False)
     raw.info['line_freq'] = 60
