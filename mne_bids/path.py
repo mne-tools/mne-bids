@@ -67,17 +67,17 @@ class BIDSPath(object):
         last ``_`` before the extension. E.g., ``'channels'``.
     extension : str | None
         The extension of the filename. E.g., ``'.json'``.
+    modality : str | None
+        The recording modality. Must be one of ``'meg'``, ``'eeg'``,
+        ``'ieeg'``, and ``'anat'``
     check : bool
         If True enforces the entities to be valid according to the
         current BIDS standard. Defaults to True.
 
     Attributes
     ----------
-    check : bool
-        If ``True``, enforces the entities to be valid according to the
-        BIDS specification. The check is performed on instantiation
-        and any ``update`` function calls (and may be overridden in the
-        latter).
+    All parameters supplied to ``BIDSPath`` upon creation are exposed as
+    attributes with the same name, i.e., ``.subject``, ``.session``, etc.
 
     Examples
     --------
