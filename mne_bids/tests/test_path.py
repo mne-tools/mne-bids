@@ -284,20 +284,19 @@ def test_bids_path_inference(return_bids_test_dir):
     channels_fname = BIDSPath(subject=subject_id, session=session_id,
                               run=run, acquisition=acq, task=task,
                               root=bids_root, suffix='channels')
-    channels_fpath = channels_fname.fpath
+    channels_fname.fpath
 
     # create an extra file under 'eeg'
-    extra_file = Path(bids_root) / \
-                 f'sub-{subject_id}' / \
-                 f'ses-{session_id}' / \
-                 'eeg' / \
-                 (channels_fname.basename + '.tsv')
-    extra_file.parent.mkdir(exist_ok=True, parents=True)
-    # Creates a new file
-    with open(extra_file, 'w') as fp:
+    extra_file = op.join(bids_root, f'sub-{subject_id}',
+                         f'ses-{session_id}', 'eeg',
+                         channels_fname.basename + '.tsv')
+    Path(extra_file).parent.mkdir(exist_ok=True, parents=True)
+    # Creates a new file and because of this new file, there is now
+    # ambiguity
+    with open(extra_file, 'w'):
         pass
     with pytest.raises(RuntimeError, match='Found data of more than one'):
-        channels_fpath = channels_fname.fpath
+        channels_fname.fpath
 
     # if you set modality, now there is no ambiguity
     channels_fname.update(modality='eeg')

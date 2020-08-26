@@ -264,9 +264,9 @@ class BIDSPath(object):
                 matching_paths = \
                     _get_matching_bidspaths_from_filesystem(self)
 
-                # FIXME This will break e.g. with FIFF data split across multiple
-                # FIXME files.
-                # if extension is not specified and there is no unique file path
+                # FIXME This will break
+                # FIXME e.g. with FIFF data split across multiple FIXME files.
+                # if extension is not specified and no unique file path
                 # return filepath of the actual dataset for MEG/EEG/iEEG data
                 if self.suffix in ALLOWED_MODALITIES:
                     # now only use valid modality extension
@@ -441,7 +441,7 @@ class BIDSPath(object):
                 raise ValueError(f'Suffix {suffix} is not allowed. '
                                  f'Use one of these suffixes '
                                  f'{ALLOWED_FILENAME_SUFFIX}.')
-            
+
 
 def _get_matching_bidspaths_from_filesystem(bids_path):
     """Get matching file paths for a BIDS path.
