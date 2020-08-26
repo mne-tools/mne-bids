@@ -112,7 +112,7 @@
 <h1>mne_bids.make_bids_folders<a class="headerlink" href="#mne-bids-make-bids-folders" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt id="mne_bids.make_bids_folders">
-<code class="sig-prename descclassname">mne_bids.</code><code class="sig-name descname">make_bids_folders</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">subject</span></em>, <em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">bids_root</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">make_dir</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">overwrite</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/path.html#make_bids_folders"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.make_bids_folders" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">mne_bids.</code><code class="sig-name descname">make_bids_folders</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">subject</span></em>, <em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">modality</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">bids_root</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">make_dir</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">overwrite</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/path.html#make_bids_folders"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.make_bids_folders" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a BIDS folder hierarchy.</p>
 <p>This creates a hierarchy of folders <em>within</em> a BIDS dataset. You should
 plan to create these folders <em>inside</em> the bids_root folder of the dataset.</p>
@@ -121,8 +121,8 @@ plan to create these folders <em>inside</em> the bids_root folder of the dataset
 <dd class="field-odd"><dl class="simple">
 <dt><strong>subject</strong><span class="classifier">str</span></dt><dd><p>The subject ID. Corresponds to “sub”.</p>
 </dd>
-<dt><strong>kind</strong><span class="classifier">str</span></dt><dd><p>The kind of folder being created at the end of the hierarchy. E.g.,
-“anat”, “func”, etc.</p>
+<dt><strong>modality</strong><span class="classifier">str</span></dt><dd><p>The “modality” of folder being created at the end of the hierarchy. 
+E.g., “anat”, “func”, “eeg”, “meg”, “ieeg”, etc.</p>
 </dd>
 <dt><strong>session</strong><span class="classifier">str | None</span></dt><dd><p>The session for a item. Corresponds to “ses”.</p>
 </dd>
@@ -150,7 +150,9 @@ as folders are created.</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">make_bids_folders</span><span class="p">(</span><span class="s1">&#39;sub_01&#39;</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="s1">&#39;mysession&#39;</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;meg&#39;</span><span class="p">,</span> <span class="n">bids_root</span><span class="o">=</span><span class="s1">&#39;/path/to/project&#39;</span><span class="p">,</span> <span class="n">make_dir</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>  <span class="c1"># noqa</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">make_bids_folders</span><span class="p">(</span><span class="s1">&#39;sub_01&#39;</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="s1">&#39;mysession&#39;</span><span class="p">,</span>
+<span class="go">                      modality=&#39;meg&#39;, bids_root=&#39;/path/to/project&#39;,</span>
+<span class="go">                      make_dir=False)</span>
 <span class="go">&#39;/path/to/project/sub-sub_01/ses-mysession/meg&#39;</span>
 </pre></div>
 </div>

@@ -198,23 +198,23 @@
     <span class="k">return</span> <span class="n">mapping</span>
 
 
-<span class="k">def</span> <span class="nf">_handle_kind</span><span class="p">(</span><span class="n">raw</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Get kind.&quot;&quot;&quot;</span>
+<span class="k">def</span> <span class="nf">_handle_modality</span><span class="p">(</span><span class="n">raw</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Get modality.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="s1">&#39;eeg&#39;</span> <span class="ow">in</span> <span class="n">raw</span> <span class="ow">and</span> <span class="p">(</span><span class="s1">&#39;ecog&#39;</span> <span class="ow">in</span> <span class="n">raw</span> <span class="ow">or</span> <span class="s1">&#39;seeg&#39;</span> <span class="ow">in</span> <span class="n">raw</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Both EEG and iEEG channels found in data.&#39;</span>
                          <span class="s1">&#39;There is currently no specification on how&#39;</span>
                          <span class="s1">&#39;to handle this data. Please proceed manually.&#39;</span><span class="p">)</span>
     <span class="k">elif</span> <span class="s1">&#39;meg&#39;</span> <span class="ow">in</span> <span class="n">raw</span><span class="p">:</span>
-        <span class="n">kind</span> <span class="o">=</span> <span class="s1">&#39;meg&#39;</span>
+        <span class="n">modality</span> <span class="o">=</span> <span class="s1">&#39;meg&#39;</span>
     <span class="k">elif</span> <span class="s1">&#39;ecog&#39;</span> <span class="ow">in</span> <span class="n">raw</span> <span class="ow">or</span> <span class="s1">&#39;seeg&#39;</span> <span class="ow">in</span> <span class="n">raw</span><span class="p">:</span>
-        <span class="n">kind</span> <span class="o">=</span> <span class="s1">&#39;ieeg&#39;</span>
+        <span class="n">modality</span> <span class="o">=</span> <span class="s1">&#39;ieeg&#39;</span>
     <span class="k">elif</span> <span class="s1">&#39;eeg&#39;</span> <span class="ow">in</span> <span class="n">raw</span><span class="p">:</span>
-        <span class="n">kind</span> <span class="o">=</span> <span class="s1">&#39;eeg&#39;</span>
+        <span class="n">modality</span> <span class="o">=</span> <span class="s1">&#39;eeg&#39;</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Neither MEG/EEG/iEEG channels found in data.&#39;</span>
                          <span class="s1">&#39;Please use raw.set_channel_types to set the &#39;</span>
                          <span class="s1">&#39;channel types in the data.&#39;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">kind</span>
+    <span class="k">return</span> <span class="n">modality</span>
 
 
 <span class="k">def</span> <span class="nf">_age_on_date</span><span class="p">(</span><span class="n">bday</span><span class="p">,</span> <span class="n">exp_date</span><span class="p">):</span>
@@ -444,7 +444,7 @@
 
 <span class="k">def</span> <span class="nf">_check_empty_room_basename</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">on_invalid_er_task</span><span class="o">=</span><span class="s1">&#39;raise&#39;</span><span class="p">):</span>
     <span class="c1"># only check task entity for emptyroom when it is the sidecar/MEG file</span>
-    <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="s1">&#39;meg&#39;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">suffix</span> <span class="o">==</span> <span class="s1">&#39;meg&#39;</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">task</span> <span class="o">!=</span> <span class="s1">&#39;noise&#39;</span><span class="p">:</span>
             <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="sa">f</span><span class="s1">&#39;task must be &quot;noise&quot; if subject is &quot;emptyroom&quot;, but &#39;</span>
                    <span class="sa">f</span><span class="s1">&#39;received: </span><span class="si">{</span><span class="n">bids_path</span><span class="o">.</span><span class="n">task</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>

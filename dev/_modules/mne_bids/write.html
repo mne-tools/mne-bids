@@ -146,7 +146,7 @@
 <span class="kn">from</span> <span class="nn">mne_bids.utils</span> <span class="kn">import</span> <span class="p">(</span><span class="n">_write_json</span><span class="p">,</span> <span class="n">_write_tsv</span><span class="p">,</span> <span class="n">_write_text</span><span class="p">,</span>
                             <span class="n">_read_events</span><span class="p">,</span> <span class="n">_age_on_date</span><span class="p">,</span>
                             <span class="n">_infer_eeg_placement_scheme</span><span class="p">,</span>
-                            <span class="n">_handle_kind</span><span class="p">,</span> <span class="n">_get_ch_type_mapping</span><span class="p">,</span>
+                            <span class="n">_handle_modality</span><span class="p">,</span> <span class="n">_get_ch_type_mapping</span><span class="p">,</span>
                             <span class="n">_check_anonymize</span><span class="p">,</span> <span class="n">_stamp_to_dt</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">mne_bids</span> <span class="kn">import</span> <span class="n">make_bids_folders</span>
 <span class="kn">from</span> <span class="nn">mne_bids.path</span> <span class="kn">import</span> <span class="p">(</span><span class="n">BIDSPath</span><span class="p">,</span> <span class="n">_parse_ext</span><span class="p">,</span> <span class="n">_mkdir_p</span><span class="p">,</span> <span class="n">_path_to_str</span><span class="p">,</span>
@@ -203,8 +203,6 @@
     <span class="n">get_specific</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;mag&#39;</span><span class="p">,</span> <span class="s1">&#39;ref_meg&#39;</span><span class="p">,</span> <span class="s1">&#39;grad&#39;</span><span class="p">)</span>
 
     <span class="c1"># get the manufacturer from the file in the Raw object</span>
-    <span class="n">manufacturer</span> <span class="o">=</span> <span class="kc">None</span>
-
     <span class="n">_</span><span class="p">,</span> <span class="n">ext</span> <span class="o">=</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">filenames</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
     <span class="n">manufacturer</span> <span class="o">=</span> <span class="n">MANUFACTURERS</span><span class="p">[</span><span class="n">ext</span><span class="p">]</span>
 
@@ -306,7 +304,7 @@
     <span class="n">_write_tsv</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_readme</span><span class="p">(</span><span class="n">kind</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_readme</span><span class="p">(</span><span class="n">modality</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Create a README file and save it.</span>
 
 <span class="sd">    This will write a README file containing an MNE-BIDS citation.</span>
@@ -315,7 +313,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    kind : string</span>
+<span class="sd">    modality : string</span>
 <span class="sd">        The type of data contained in the raw file (&#39;meg&#39;, &#39;eeg&#39;, &#39;ieeg&#39;)</span>
 <span class="sd">    fname : str | BIDSPath</span>
 <span class="sd">        Filename to save the README to.</span>
@@ -332,16 +330,16 @@
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fid</span><span class="p">:</span>
             <span class="n">orig_data</span> <span class="o">=</span> <span class="n">fid</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
         <span class="n">mne_bids_ref</span> <span class="o">=</span> <span class="n">REFERENCES</span><span class="p">[</span><span class="s1">&#39;mne-bids&#39;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">orig_data</span>
-        <span class="n">kind_ref</span> <span class="o">=</span> <span class="n">REFERENCES</span><span class="p">[</span><span class="n">kind</span><span class="p">]</span> <span class="ow">in</span> <span class="n">orig_data</span>
-        <span class="k">if</span> <span class="n">mne_bids_ref</span> <span class="ow">and</span> <span class="n">kind_ref</span><span class="p">:</span>
+        <span class="n">modality_ref</span> <span class="o">=</span> <span class="n">REFERENCES</span><span class="p">[</span><span class="n">modality</span><span class="p">]</span> <span class="ow">in</span> <span class="n">orig_data</span>
+        <span class="k">if</span> <span class="n">mne_bids_ref</span> <span class="ow">and</span> <span class="n">modality_ref</span><span class="p">:</span>
             <span class="k">return</span>
         <span class="n">text</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">References</span><span class="se">\n</span><span class="s1">----------</span><span class="se">\n</span><span class="si">{}{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
             <span class="n">orig_data</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1">&#39;</span><span class="p">,</span>
             <span class="s1">&#39;&#39;</span> <span class="k">if</span> <span class="n">mne_bids_ref</span> <span class="k">else</span> <span class="n">REFERENCES</span><span class="p">[</span><span class="s1">&#39;mne-bids&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1">&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;&#39;</span> <span class="k">if</span> <span class="n">kind_ref</span> <span class="k">else</span> <span class="n">REFERENCES</span><span class="p">[</span><span class="n">kind</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="s1">&#39;&#39;</span> <span class="k">if</span> <span class="n">modality_ref</span> <span class="k">else</span> <span class="n">REFERENCES</span><span class="p">[</span><span class="n">modality</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">text</span> <span class="o">=</span> <span class="s1">&#39;References</span><span class="se">\n</span><span class="s1">----------</span><span class="se">\n</span><span class="si">{}{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-            <span class="n">REFERENCES</span><span class="p">[</span><span class="s1">&#39;mne-bids&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">REFERENCES</span><span class="p">[</span><span class="n">kind</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="n">REFERENCES</span><span class="p">[</span><span class="s1">&#39;mne-bids&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">REFERENCES</span><span class="p">[</span><span class="n">modality</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
 
     <span class="n">_write_text</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
 
@@ -573,11 +571,12 @@
     <span class="k">return</span> <span class="n">mri_landmarks</span>
 
 
-<span class="k">def</span> <span class="nf">_sidecar_json</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">task</span><span class="p">,</span> <span class="n">manufacturer</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">kind</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="k">def</span> <span class="nf">_sidecar_json</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">task</span><span class="p">,</span> <span class="n">manufacturer</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">modality</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                   <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Create a sidecar json file depending on the kind and save it.</span>
+    <span class="sd">&quot;&quot;&quot;Create a sidecar json file depending on the suffix and save it.</span>
 
-<span class="sd">    The sidecar json file provides meta data about the data of a certain kind.</span>
+<span class="sd">    The sidecar json file provides meta data about the data</span>
+<span class="sd">    of a certain modality.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -590,8 +589,8 @@
 <span class="sd">        coordinate system for the MEG sensors.</span>
 <span class="sd">    fname : str | BIDSPath</span>
 <span class="sd">        Filename to save the sidecar json to.</span>
-<span class="sd">    kind : str</span>
-<span class="sd">        Type of the data as in ALLOWED_MODALITY_KINDS.</span>
+<span class="sd">    modality : str</span>
+<span class="sd">        Type of the data as in ALLOWED_ELECTROPHYSIO_MODALITY.</span>
 <span class="sd">    overwrite : bool</span>
 <span class="sd">        Whether to overwrite the existing file.</span>
 <span class="sd">        Defaults to False.</span>
@@ -676,14 +675,14 @@
 
     <span class="c1"># Stitch together the complete JSON dictionary</span>
     <span class="n">ch_info_json</span> <span class="o">=</span> <span class="n">ch_info_json_common</span>
-    <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s1">&#39;meg&#39;</span><span class="p">:</span>
-        <span class="n">append_kind_json</span> <span class="o">=</span> <span class="n">ch_info_json_meg</span>
-    <span class="k">elif</span> <span class="n">kind</span> <span class="o">==</span> <span class="s1">&#39;eeg&#39;</span><span class="p">:</span>
-        <span class="n">append_kind_json</span> <span class="o">=</span> <span class="n">ch_info_json_eeg</span>
-    <span class="k">elif</span> <span class="n">kind</span> <span class="o">==</span> <span class="s1">&#39;ieeg&#39;</span><span class="p">:</span>
-        <span class="n">append_kind_json</span> <span class="o">=</span> <span class="n">ch_info_json_ieeg</span>
+    <span class="k">if</span> <span class="n">modality</span> <span class="o">==</span> <span class="s1">&#39;meg&#39;</span><span class="p">:</span>
+        <span class="n">append_modality_json</span> <span class="o">=</span> <span class="n">ch_info_json_meg</span>
+    <span class="k">elif</span> <span class="n">modality</span> <span class="o">==</span> <span class="s1">&#39;eeg&#39;</span><span class="p">:</span>
+        <span class="n">append_modality_json</span> <span class="o">=</span> <span class="n">ch_info_json_eeg</span>
+    <span class="k">elif</span> <span class="n">modality</span> <span class="o">==</span> <span class="s1">&#39;ieeg&#39;</span><span class="p">:</span>
+        <span class="n">append_modality_json</span> <span class="o">=</span> <span class="n">ch_info_json_ieeg</span>
 
-    <span class="n">ch_info_json</span> <span class="o">+=</span> <span class="n">append_kind_json</span>
+    <span class="n">ch_info_json</span> <span class="o">+=</span> <span class="n">append_modality_json</span>
     <span class="n">ch_info_json</span> <span class="o">+=</span> <span class="n">ch_info_ch_counts</span>
     <span class="n">ch_info_json</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">(</span><span class="n">ch_info_json</span><span class="p">)</span>
 
@@ -1070,9 +1069,11 @@
     <span class="n">subject_id</span><span class="p">,</span> <span class="n">session_id</span> <span class="o">=</span> <span class="n">bids_basename</span><span class="o">.</span><span class="n">subject</span><span class="p">,</span> <span class="n">bids_basename</span><span class="o">.</span><span class="n">session</span>
     <span class="n">task</span><span class="p">,</span> <span class="n">run</span> <span class="o">=</span> <span class="n">bids_basename</span><span class="o">.</span><span class="n">task</span><span class="p">,</span> <span class="n">bids_basename</span><span class="o">.</span><span class="n">run</span>
     <span class="n">acquisition</span><span class="p">,</span> <span class="n">space</span> <span class="o">=</span> <span class="n">bids_basename</span><span class="o">.</span><span class="n">acquisition</span><span class="p">,</span> <span class="n">bids_basename</span><span class="o">.</span><span class="n">space</span>
-    <span class="n">kind</span> <span class="o">=</span> <span class="n">_handle_kind</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span>
+    <span class="n">modality</span> <span class="o">=</span> <span class="n">_handle_modality</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span>
 
-    <span class="n">bids_fname</span> <span class="o">=</span> <span class="n">bids_basename</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="n">kind</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="n">ext</span><span class="p">)</span>
+    <span class="n">bids_fname</span> <span class="o">=</span> <span class="n">bids_basename</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">modality</span><span class="o">=</span><span class="n">modality</span><span class="p">,</span>
+                                             <span class="n">suffix</span><span class="o">=</span><span class="n">modality</span><span class="p">,</span>
+                                             <span class="n">extension</span><span class="o">=</span><span class="n">ext</span><span class="p">)</span>
 
     <span class="c1"># check whether the info provided indicates that the data is emptyroom</span>
     <span class="c1"># data</span>
@@ -1091,7 +1092,7 @@
                                  <span class="s2">&quot;session date.&quot;</span><span class="p">)</span>
 
     <span class="n">data_path</span> <span class="o">=</span> <span class="n">make_bids_folders</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="n">subject_id</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session_id</span><span class="p">,</span>
-                                  <span class="n">kind</span><span class="o">=</span><span class="n">kind</span><span class="p">,</span> <span class="n">bids_root</span><span class="o">=</span><span class="n">bids_root</span><span class="p">,</span>
+                                  <span class="n">modality</span><span class="o">=</span><span class="n">modality</span><span class="p">,</span> <span class="n">bids_root</span><span class="o">=</span><span class="n">bids_root</span><span class="p">,</span>
                                   <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">session_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">ses_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
@@ -1109,18 +1110,18 @@
 
     <span class="c1"># create *_scans.tsv</span>
     <span class="n">bids_path</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="n">subject_id</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session_id</span><span class="p">,</span>
-                         <span class="n">prefix</span><span class="o">=</span><span class="n">ses_path</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;scans&#39;</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.tsv&#39;</span><span class="p">,</span>
+                         <span class="n">prefix</span><span class="o">=</span><span class="n">ses_path</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;scans&#39;</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.tsv&#39;</span><span class="p">,</span>
                          <span class="n">task</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
     <span class="n">scans_fname</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">bids_path</span><span class="p">)</span>
 
     <span class="c1"># create *_coordsystem.json</span>
     <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">acquisition</span><span class="o">=</span><span class="n">acquisition</span><span class="p">,</span> <span class="n">space</span><span class="o">=</span><span class="n">space</span><span class="p">,</span>
-                     <span class="n">prefix</span><span class="o">=</span><span class="n">data_path</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;coordsystem&#39;</span><span class="p">,</span>
-                     <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.json&#39;</span><span class="p">)</span>
+                     <span class="n">prefix</span><span class="o">=</span><span class="n">data_path</span><span class="p">,</span> <span class="n">modality</span><span class="o">=</span><span class="n">modality</span><span class="p">,</span>
+                     <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;coordsystem&#39;</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.json&#39;</span><span class="p">)</span>
     <span class="n">coordsystem_fname</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">bids_path</span><span class="p">)</span>
 
     <span class="c1"># create *_electrodes.tsv</span>
-    <span class="n">bids_path</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="s1">&#39;electrodes&#39;</span><span class="p">,</span>
+    <span class="n">bids_path</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;electrodes&#39;</span><span class="p">,</span>
                                  <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.tsv&#39;</span><span class="p">)</span>
     <span class="n">electrodes_fname</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">bids_path</span><span class="p">)</span>
 
@@ -1131,12 +1132,12 @@
                                                              <span class="s1">&#39;json&#39;</span><span class="p">)</span>
 
     <span class="n">sidecar_fname</span> <span class="o">=</span> <span class="n">bids_fname</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="n">data_path</span><span class="p">,</span>
-                                             <span class="n">kind</span><span class="o">=</span><span class="n">kind</span><span class="p">,</span>
+                                             <span class="n">suffix</span><span class="o">=</span><span class="n">modality</span><span class="p">,</span>
                                              <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.json&#39;</span><span class="p">)</span>
 
-    <span class="n">events_fname</span> <span class="o">=</span> <span class="n">sidecar_fname</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="s1">&#39;events&#39;</span><span class="p">,</span>
+    <span class="n">events_fname</span> <span class="o">=</span> <span class="n">sidecar_fname</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;events&#39;</span><span class="p">,</span>
                                                <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.tsv&#39;</span><span class="p">)</span>
-    <span class="n">channels_fname</span> <span class="o">=</span> <span class="n">sidecar_fname</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="s1">&#39;channels&#39;</span><span class="p">,</span>
+    <span class="n">channels_fname</span> <span class="o">=</span> <span class="n">sidecar_fname</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;channels&#39;</span><span class="p">,</span>
                                                  <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.tsv&#39;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">ext</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;.fif&#39;</span><span class="p">,</span> <span class="s1">&#39;.ds&#39;</span><span class="p">,</span> <span class="s1">&#39;.vhdr&#39;</span><span class="p">,</span> <span class="s1">&#39;.edf&#39;</span><span class="p">,</span> <span class="s1">&#39;.bdf&#39;</span><span class="p">,</span> <span class="s1">&#39;.set&#39;</span><span class="p">,</span> <span class="s1">&#39;.con&#39;</span><span class="p">,</span>
@@ -1150,12 +1151,12 @@
         <span class="n">daysback</span><span class="p">,</span> <span class="n">keep_his</span> <span class="o">=</span> <span class="n">_check_anonymize</span><span class="p">(</span><span class="n">anonymize</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">ext</span><span class="p">)</span>
         <span class="n">raw</span><span class="o">.</span><span class="n">anonymize</span><span class="p">(</span><span class="n">daysback</span><span class="o">=</span><span class="n">daysback</span><span class="p">,</span> <span class="n">keep_his</span><span class="o">=</span><span class="n">keep_his</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s1">&#39;meg&#39;</span> <span class="ow">and</span> <span class="n">ext</span> <span class="o">!=</span> <span class="s1">&#39;.fif&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">modality</span> <span class="o">==</span> <span class="s1">&#39;meg&#39;</span> <span class="ow">and</span> <span class="n">ext</span> <span class="o">!=</span> <span class="s1">&#39;.fif&#39;</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
                 <span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Converting to FIF for anonymization&#39;</span><span class="p">)</span>
             <span class="n">convert</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="n">bids_fname</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.fif&#39;</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">kind</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;eeg&#39;</span><span class="p">,</span> <span class="s1">&#39;ieeg&#39;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">ext</span> <span class="o">!=</span> <span class="s1">&#39;.vhdr&#39;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">modality</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;eeg&#39;</span><span class="p">,</span> <span class="s1">&#39;ieeg&#39;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">ext</span> <span class="o">!=</span> <span class="s1">&#39;.vhdr&#39;</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
                 <span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Converting to BV for anonymization&#39;</span><span class="p">)</span>
             <span class="n">convert</span> <span class="o">=</span> <span class="kc">True</span>
@@ -1167,7 +1168,7 @@
     <span class="n">manufacturer</span> <span class="o">=</span> <span class="n">MANUFACTURERS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ext</span><span class="p">,</span> <span class="s1">&#39;n/a&#39;</span><span class="p">)</span>
 
     <span class="c1"># save all participants meta data and readme file</span>
-    <span class="n">_readme</span><span class="p">(</span><span class="n">kind</span><span class="p">,</span> <span class="n">readme_fname</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
+    <span class="n">_readme</span><span class="p">(</span><span class="n">modality</span><span class="p">,</span> <span class="n">readme_fname</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
 
     <span class="c1"># save all participants meta data</span>
     <span class="n">_participants_tsv</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">subject_id</span><span class="p">,</span> <span class="n">participants_tsv_fname</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">,</span>
@@ -1175,20 +1176,20 @@
     <span class="n">_participants_json</span><span class="p">(</span><span class="n">participants_json_fname</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
 
     <span class="c1"># for MEG, we only write coordinate system</span>
-    <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s1">&#39;meg&#39;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">emptyroom</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">modality</span> <span class="o">==</span> <span class="s1">&#39;meg&#39;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">emptyroom</span><span class="p">:</span>
         <span class="n">_coordsystem_json</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">unit</span><span class="p">,</span> <span class="n">orient</span><span class="p">,</span>
-                          <span class="n">manufacturer</span><span class="p">,</span> <span class="n">coordsystem_fname</span><span class="p">,</span> <span class="n">kind</span><span class="p">,</span>
+                          <span class="n">manufacturer</span><span class="p">,</span> <span class="n">coordsystem_fname</span><span class="p">,</span> <span class="n">modality</span><span class="p">,</span>
                           <span class="n">overwrite</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">kind</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;eeg&#39;</span><span class="p">,</span> <span class="s1">&#39;ieeg&#39;</span><span class="p">]:</span>
+    <span class="k">elif</span> <span class="n">modality</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;eeg&#39;</span><span class="p">,</span> <span class="s1">&#39;ieeg&#39;</span><span class="p">]:</span>
         <span class="c1"># We only write electrodes.tsv and accompanying coordsystem.json</span>
         <span class="c1"># if we have an available DigMontage</span>
         <span class="k">if</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;dig&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;dig&#39;</span><span class="p">]:</span>
             <span class="n">_write_dig_bids</span><span class="p">(</span><span class="n">electrodes_fname</span><span class="p">,</span> <span class="n">coordsystem_fname</span><span class="p">,</span> <span class="n">data_path</span><span class="p">,</span>
-                            <span class="n">raw</span><span class="p">,</span> <span class="n">kind</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
+                            <span class="n">raw</span><span class="p">,</span> <span class="n">modality</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Writing of electrodes.tsv &#39;</span>
-                       <span class="s1">&#39;is not supported for kind &quot;</span><span class="si">{}</span><span class="s1">&quot;. &#39;</span>
-                       <span class="s1">&#39;Skipping ...&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">kind</span><span class="p">))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Writing of electrodes.tsv &#39;</span>
+                       <span class="sa">f</span><span class="s1">&#39;is not supported for modality &quot;</span><span class="si">{</span><span class="n">modality</span><span class="si">}</span><span class="s1">&quot;. &#39;</span>
+                       <span class="sa">f</span><span class="s1">&#39;Skipping ...&#39;</span><span class="p">)</span>
 
     <span class="n">events</span><span class="p">,</span> <span class="n">event_id</span> <span class="o">=</span> <span class="n">_read_events</span><span class="p">(</span><span class="n">events_data</span><span class="p">,</span> <span class="n">event_id</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">ext</span><span class="p">,</span>
                                     <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
@@ -1198,7 +1199,7 @@
     <span class="n">make_dataset_description</span><span class="p">(</span><span class="n">bids_root</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">,</span>
                              <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
 
-    <span class="n">_sidecar_json</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">task</span><span class="p">,</span> <span class="n">manufacturer</span><span class="p">,</span> <span class="n">sidecar_fname</span><span class="p">,</span> <span class="n">kind</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">,</span>
+    <span class="n">_sidecar_json</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">task</span><span class="p">,</span> <span class="n">manufacturer</span><span class="p">,</span> <span class="n">sidecar_fname</span><span class="p">,</span> <span class="n">modality</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">,</span>
                   <span class="n">verbose</span><span class="p">)</span>
     <span class="n">_channels_tsv</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">channels_fname</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
 
@@ -1215,9 +1216,9 @@
     <span class="c1"># If not already converting for anonymization, we may still need to do it</span>
     <span class="c1"># if current format not BIDS compliant</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">convert</span><span class="p">:</span>
-        <span class="n">convert</span> <span class="o">=</span> <span class="n">ext</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ALLOWED_MODALITY_EXTENSIONS</span><span class="p">[</span><span class="n">kind</span><span class="p">]</span>
+        <span class="n">convert</span> <span class="o">=</span> <span class="n">ext</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ALLOWED_MODALITY_EXTENSIONS</span><span class="p">[</span><span class="n">modality</span><span class="p">]</span>
 
-    <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s1">&#39;meg&#39;</span> <span class="ow">and</span> <span class="n">convert</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">anonymize</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">modality</span> <span class="o">==</span> <span class="s1">&#39;meg&#39;</span> <span class="ow">and</span> <span class="n">convert</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">anonymize</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Got file extension </span><span class="si">{</span><span class="n">convert</span><span class="si">}</span><span class="s2"> for MEG data, &quot;</span>
                          <span class="sa">f</span><span class="s2">&quot;expected one of &quot;</span>
                          <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">ALLOWED_MODALITY_EXTENSIONS</span><span class="p">[</span><span class="s1">&#39;meg&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -1227,14 +1228,14 @@
 
     <span class="c1"># File saving branching logic</span>
     <span class="k">if</span> <span class="n">convert</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">kind</span> <span class="o">==</span> <span class="s1">&#39;meg&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">modality</span> <span class="o">==</span> <span class="s1">&#39;meg&#39;</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">ext</span> <span class="o">==</span> <span class="s1">&#39;.pdf&#39;</span><span class="p">:</span>
                 <span class="n">bids_fname</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="n">op</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">))</span>
             <span class="n">_write_raw_fif</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_fname</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
                 <span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Converting data files to BrainVision format&#39;</span><span class="p">)</span>
-            <span class="n">bids_fname</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="n">kind</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.vhdr&#39;</span><span class="p">)</span>
+            <span class="n">bids_fname</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="n">modality</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.vhdr&#39;</span><span class="p">)</span>
             <span class="n">_write_raw_brainvision</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_fname</span><span class="p">,</span> <span class="n">events</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">ext</span> <span class="o">==</span> <span class="s1">&#39;.fif&#39;</span><span class="p">:</span>
         <span class="n">_write_raw_fif</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_fname</span><span class="p">)</span>
@@ -1257,7 +1258,7 @@
         <span class="n">sh</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">raw_fname</span><span class="p">,</span> <span class="n">bids_fname</span><span class="p">)</span>
 
     <span class="c1"># write to the scans.tsv file the output file written</span>
-    <span class="n">scan_relative_fpath</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">kind</span><span class="p">,</span> <span class="n">op</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">))</span>
+    <span class="n">scan_relative_fpath</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">modality</span><span class="p">,</span> <span class="n">op</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">))</span>
     <span class="n">_scans_tsv</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">scan_relative_fpath</span><span class="p">,</span> <span class="n">scans_fname</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Wrote </span><span class="si">{</span><span class="n">scans_fname</span><span class="si">}</span><span class="s1"> entry with </span><span class="si">{</span><span class="n">scan_relative_fpath</span><span class="si">}</span><span class="s1">.&#39;</span><span class="p">)</span>
@@ -1379,7 +1380,7 @@
     <span class="n">t1w_basename</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="n">subject</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span>
                             <span class="n">acquisition</span><span class="o">=</span><span class="n">acquisition</span><span class="p">,</span>
                             <span class="n">prefix</span><span class="o">=</span><span class="n">anat_dir</span><span class="p">,</span>
-                            <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;T1w&#39;</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.nii.gz&#39;</span><span class="p">)</span>
+                            <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;T1w&#39;</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.nii.gz&#39;</span><span class="p">)</span>
 
     <span class="c1"># Check if we have necessary conditions for writing a sidecar JSON</span>
     <span class="k">if</span> <span class="n">trans</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">landmarks</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>

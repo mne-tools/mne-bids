@@ -1,0 +1,11 @@
+﻿mne\_bids.get\_modalities
+=========================
+
+.. currentmodule:: mne_bids
+
+.. autofunction:: get_modalities
+
+.. _sphx_glr_backreferences_mne_bids.get_modalities:
+
+.. minigallery:: mne_bids.get_modalities
+    :add-heading:

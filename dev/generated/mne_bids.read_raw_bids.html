@@ -112,7 +112,7 @@
 <h1>mne_bids.read_raw_bids<a class="headerlink" href="#mne-bids-read-raw-bids" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt id="mne_bids.read_raw_bids">
-<code class="sig-prename descclassname">mne_bids.</code><code class="sig-name descname">read_raw_bids</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">bids_basename</span></em>, <em class="sig-param"><span class="n">bids_root</span></em>, <em class="sig-param"><span class="n">kind</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">extra_params</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/read.html#read_raw_bids"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.read_raw_bids" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">mne_bids.</code><code class="sig-name descname">read_raw_bids</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">bids_basename</span></em>, <em class="sig-param"><span class="n">bids_root</span></em>, <em class="sig-param"><span class="n">modality</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">extra_params</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/read.html#read_raw_bids"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.read_raw_bids" title="Permalink to this definition">¶</a></dt>
 <dd><p>Read BIDS compatible data.</p>
 <p>Will attempt to read associated events.tsv and channels.tsv files to
 populate the returned raw object with raw.annotations and raw.info[‘bads’].</p>
@@ -124,7 +124,7 @@ generated using <a class="reference internal" href="mne_bids.BIDSPath.html#mne_b
 </dd>
 <dt><strong>bids_root</strong><span class="classifier">str | pathlib.Path</span></dt><dd><p>Path to root of the BIDS folder</p>
 </dd>
-<dt><strong>kind</strong><span class="classifier">str | None</span></dt><dd><p>The kind of recording to read. If <code class="docutils literal notranslate"><span class="pre">None</span></code> and only one kind (e.g.,
+<dt><strong>modality</strong><span class="classifier">str | None</span></dt><dd><p>The kind of recording to read. If <code class="docutils literal notranslate"><span class="pre">None</span></code> and only one modality (e.g.,
 only EEG or only MEG data) is present in the dataset, it will be
 selected automatically.</p>
 </dd>
@@ -143,14 +143,14 @@ If a dict, for example: <code class="docutils literal notranslate"><span class="
 </dd>
 <dt class="field-odd">Raises</dt>
 <dd class="field-odd"><dl class="simple">
-<dt>RuntimeError</dt><dd><p>If multiple recording kinds are present in the dataset, but
-<code class="docutils literal notranslate"><span class="pre">kind=None</span></code>.</p>
+<dt>RuntimeError</dt><dd><p>If multiple recording modalities are present in the dataset, but
+<code class="docutils literal notranslate"><span class="pre">modality=None</span></code>.</p>
 </dd>
 <dt>RuntimeError</dt><dd><p>If more than one data files exist for the specified recording.</p>
 </dd>
 <dt>RuntimeError</dt><dd><p>If no data file in a supported format can be located.</p>
 </dd>
-<dt>ValueError</dt><dd><p>If the specified <code class="docutils literal notranslate"><span class="pre">kind</span></code> cannot be found in the dataset.</p>
+<dt>ValueError</dt><dd><p>If the specified <code class="docutils literal notranslate"><span class="pre">modality</span></code> cannot be found in the dataset.</p>
 </dd>
 </dl>
 </dd>
