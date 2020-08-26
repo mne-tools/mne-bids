@@ -448,7 +448,9 @@ def make_bids_folders(subject, session=None, modality=None, bids_root=None,
 
     Examples
     --------
-    >>> make_bids_folders('sub_01', session='mysession', suffix='meg', bids_root='/path/to/project', make_dir=False)  # noqa
+    >>> make_bids_folders('sub_01', session='mysession',
+                          modality='meg', bids_root='/path/to/project',
+                          make_dir=False)
     '/path/to/project/sub-sub_01/ses-mysession/meg'
 
     """  # noqa
