@@ -150,22 +150,22 @@ def test_copyfile_kit():
     acq = '01'
     task = 'testing'
 
-    bids_basename = BIDSPath(
-        subject=subject_id, session=session_id, run=run, acquisition=acq,
-        task=task)
-
-    kit_bids_basename = bids_basename.copy().update(acquisition=None,
-                                                    prefix=output_path)
-
     raw = mne.io.read_raw_kit(
         raw_fname, mrk=hpi_fname, elp=electrode_fname,
         hsp=headshape_fname)
     _, ext = _parse_ext(raw_fname, verbose=True)
     modality = _handle_modality(raw)
+
+    bids_basename = BIDSPath(
+        subject=subject_id, session=session_id, run=run, acquisition=acq,
+        task=task)
+    kit_bids_basename = bids_basename.copy().update(acquisition=None,
+                                                    modality=modality,
+                                                    bids_root=output_path)
     bids_fname = str(bids_basename.copy().update(modality=modality,
                                                  suffix=modality,
                                                  extension=ext,
-                                                 prefix=output_path))
+                                                 bids_root=output_path))
 
     copyfile_kit(raw_fname, bids_fname, subject_id, session_id,
                  task, run, raw._init_kwargs)
@@ -184,7 +184,7 @@ def test_copyfile_kit():
         elp_fname = BIDSPath(
             subject=subject_id, session=session_id, task=task, run=run,
             acquisition=key, suffix='headshape', extension=elp_ext,
-            bids_root=output_path)
+            modality='meg', bids_root=output_path)
         assert op.exists(elp_fname)
 
     if op.exists(headshape_fname):
@@ -193,5 +193,5 @@ def test_copyfile_kit():
         hsp_fname = BIDSPath(
             subject=subject_id, session=session_id, task=task, run=run,
             acquisition=key, suffix='headshape', extension=hsp_ext,
-            bids_root=output_path)
+            modality='meg', bids_root=output_path)
         assert op.exists(hsp_fname)

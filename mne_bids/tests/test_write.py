@@ -126,8 +126,7 @@ def _test_anonymize(raw, bids_basename, events_fname=None, event_id=None):
                    overwrite=False)
     scans_tsv = BIDSPath(
         subject=subject_id, session=session_id,
-        suffix='scans', extension='.tsv',
-        bids_root=op.join(bids_root, 'sub-01', 'ses-01'))
+        suffix='scans', extension='.tsv', bids_root=bids_root)
     data = _from_tsv(scans_tsv)
     if data['acq_time'] is not None and data['acq_time'][0] != 'n/a':
         assert datetime.strptime(data['acq_time'][0],
@@ -315,7 +314,7 @@ def test_fif(_bids_validate):
                     'eeg.vmrk', 'events.tsv']:
         suffix, extension = sidecar.split('.')
         sidecar_basename.update(suffix=suffix, extension=extension)
-        assert op.isfile(op.join(bids_dir, sidecar_basename))
+        assert op.isfile(op.join(bids_dir, sidecar_basename.basename))
 
     raw2 = read_raw_bids(bids_basename=bids_basename, bids_root=bids_root,
                          modality='eeg')
@@ -350,8 +349,7 @@ def test_fif(_bids_validate):
     # test that the acquisition time was written properly
     scans_tsv = BIDSPath(
         subject=subject_id, session=session_id,
-        suffix='scans', extension='.tsv',
-        bids_root=op.join(bids_root, 'sub-01', 'ses-01'))
+        suffix='scans', extension='.tsv', bids_root=bids_root)
     data = _from_tsv(scans_tsv)
     assert data['acq_time'][0] == meas_date.strftime('%Y-%m-%dT%H:%M:%S')
 
@@ -567,7 +565,7 @@ def test_fif_anonymize(_bids_validate):
     scans_tsv = BIDSPath(
         subject=subject_id, session=session_id,
         suffix='scans', extension='.tsv',
-        bids_root=op.join(bids_root, 'sub-01', 'ses-01'))
+        bids_root=bids_root)
     data = _from_tsv(scans_tsv)
 
     # anonymize using MNE manually
@@ -610,7 +608,7 @@ def test_kit(_bids_validate):
     marker_fname = BIDSPath(
         subject=subject_id, session=session_id, task=task, run=run,
         suffix='markers', extension='.sqd',
-        bids_root=op.join(bids_root, 'sub-01', 'ses-01', 'meg'))
+        bids_root=bids_root)
     assert op.exists(marker_fname)
 
     # test anonymize
@@ -657,8 +655,7 @@ def test_kit(_bids_validate):
 
     _bids_validate(bids_root)
     # ensure the marker files are renamed correctly
-    prefix = op.join(bids_root, 'sub-02', 'ses-01', 'meg')
-    marker_fname.update(acquisition='pre', subject=subject_id2, prefix=prefix)
+    marker_fname.update(acquisition='pre', subject=subject_id2)
     info = get_kit_info(marker_fname, False)[0]
     assert info['meas_date'] == get_kit_info(hpi_pre_fname,
                                              False)[0]['meas_date']
@@ -786,10 +783,10 @@ def test_vhdr(_bids_validate):
 
     # Test that correct channel units are written ... and that bad channel
     # is in channels.tsv
-    prefix = op.join(bids_root, f'sub-{subject_id}', 'eeg')
-    channels_tsv_name = bids_basename_minimal.copy().update(prefix=prefix,
-                                                            suffix='channels',
-                                                            extension='.tsv')
+    suffix, ext = 'channels', '.tsv'
+    channels_tsv_name = bids_basename_minimal.copy().update(
+        modality='eeg', bids_root=bids_root, suffix=suffix, extension=ext)
+
     data = _from_tsv(channels_tsv_name)
     assert data['units'][data['name'].index('FP1')] == 'µV'
     assert data['units'][data['name'].index('CP5')] == 'n/a'
@@ -798,7 +795,7 @@ def test_vhdr(_bids_validate):
     assert status_description[data['name'].index(injected_bad[0])] == 'n/a'
 
     # check events.tsv is written
-    events_tsv_fname = str(channels_tsv_name).replace('channels', 'events')
+    events_tsv_fname = channels_tsv_name.update(suffix='events')
     assert op.exists(events_tsv_fname)
 
     # create another bids folder with the overwrite command and check
@@ -835,9 +832,9 @@ def test_vhdr(_bids_validate):
     # convert to BIDS and check impedances
     bids_root = _TempDir()
     write_raw_bids(raw, bids_basename, bids_root)
-    electrodes_fpath = _find_matching_sidecar(bids_basename, bids_root,
-                                              suffix='electrodes',
-                                              extension='.tsv')
+    electrodes_fpath = _find_matching_sidecar(
+        bids_basename.copy().update(bids_root=bids_root),
+        suffix='electrodes', extension='.tsv')
     tsv = _from_tsv(electrodes_fpath)
     assert len(tsv.get('impedance', {})) > 0
     assert tsv['impedance'][-3:] == ['n/a', 'n/a', 'n/a']
@@ -903,7 +900,8 @@ def test_edf(_bids_validate):
     with pytest.warns(RuntimeWarning, match='Skipping EEG electrodes.tsv... '
                                             'Setting montage not possible'):
         write_raw_bids(raw, bids_fname, bids_root, overwrite=True)
-        electrodes_fpath = _find_matching_sidecar(bids_fname, bids_root,
+        bids_fname.update(bids_root=bids_root)
+        electrodes_fpath = _find_matching_sidecar(bids_fname,
                                                   suffix='electrodes',
                                                   extension='.tsv',
                                                   allow_fail=True)
@@ -917,7 +915,7 @@ def test_edf(_bids_validate):
                                                 rpa=[0, 0, 1])
     raw.set_montage(eeg_montage)
     write_raw_bids(raw, bids_fname, bids_root, overwrite=True)
-    electrodes_fpath = _find_matching_sidecar(bids_fname, bids_root,
+    electrodes_fpath = _find_matching_sidecar(bids_fname,
                                               suffix='electrodes',
                                               extension='.tsv')
     assert op.exists(electrodes_fpath)
@@ -927,7 +925,7 @@ def test_edf(_bids_validate):
     channels_tsv = BIDSPath(
         subject=subject_id, session=session_id, task=task, run=run,
         suffix='channels', extension='.tsv', acquisition=acq,
-        bids_root=op.join(bids_root, 'sub-01', 'ses-01', 'eeg'))
+        bids_root=bids_root, modality='eeg')
     data = _from_tsv(channels_tsv)
     assert 'ElectroMyoGram' in data['description']
 
@@ -935,7 +933,7 @@ def test_edf(_bids_validate):
     scans_tsv = BIDSPath(
         subject=subject_id, session=session_id,
         suffix='scans', extension='.tsv',
-        bids_root=op.join(bids_root, 'sub-01', 'ses-01'))
+        bids_root=bids_root)
     data = _from_tsv(scans_tsv)
     assert len(list(data.values())[0]) == 2
 
@@ -947,7 +945,8 @@ def test_edf(_bids_validate):
         data = _from_tsv(scans_tsv)
         bids_fname = bids_basename.copy().update(suffix='eeg',
                                                  extension='.vhdr')
-        assert any([str(bids_fname) in fname for fname in data['filename']])
+        assert any([bids_fname.basename in fname
+                    for fname in data['filename']])
 
     # Also cover iEEG
     # We use the same data and pretend that eeg channels are ecog
@@ -986,10 +985,11 @@ def test_edf(_bids_validate):
 
     # XXX: Should be improved with additional coordinate system descriptions
     # iEEG montages written from mne-python end up as "Other"
-    electrodes_fname = _find_matching_sidecar(bids_fname, bids_root,
+    bids_fname.update(bids_root=bids_root)
+    electrodes_fname = _find_matching_sidecar(bids_fname,
                                               suffix='electrodes',
                                               extension='.tsv')
-    coordsystem_fname = _find_matching_sidecar(bids_fname, bids_root,
+    coordsystem_fname = _find_matching_sidecar(bids_fname,
                                                suffix='coordsystem',
                                                extension='.json')
     assert 'space-mri' in electrodes_fname
@@ -1031,8 +1031,9 @@ def test_bdf(_bids_validate):
 
     # we will change the channel type to MISC and overwrite the channels file
     bids_fname = bids_basename.copy().update(suffix='eeg',
-                                             extension='.bdf')
-    channels_fname = _find_matching_sidecar(bids_fname, bids_root,
+                                             extension='.bdf',
+                                             bids_root=bids_root)
+    channels_fname = _find_matching_sidecar(bids_fname,
                                             suffix='channels',
                                             extension='.tsv')
     channels_dict = _from_tsv(channels_fname)
@@ -1099,7 +1100,7 @@ def test_set(_bids_validate):
     # is broken for earlier versions
     events_tsv_fname = op.join(bids_root, 'sub-' + subject_id,
                                'ses-' + session_id, 'eeg',
-                               str(bids_basename) + '_events.tsv')
+                               str(bids_basename.basename) + '_events.tsv')
     if check_version('mne', '0.18'):
         assert op.exists(events_tsv_fname)
 
@@ -1165,7 +1166,7 @@ def test_write_anat(_bids_validate):
     np.testing.assert_array_equal(list(anat_dict.keys()),
                                   point_list)
     sidecar_basename = BIDSPath(subject='01', session='01',
-                                acquisition='01',
+                                acquisition='01', bids_root=bids_root,
                                 suffix='T1w', extension='.nii.gz')
     # test the actual values of the voxels (no floating points)
     for i, point in enumerate([(66, 51, 46), (41, 32, 74), (17, 53, 47)]):
@@ -1175,7 +1176,7 @@ def test_write_anat(_bids_validate):
 
         # BONUS: test also that we can find the matching sidecar
         side_fname = _find_matching_sidecar(sidecar_basename,
-                                            bids_root, suffix='T1w',
+                                            suffix='T1w',
                                             extension='.json')
         assert op.split(side_fname)[-1] == 'sub-01_ses-01_acq-01_T1w.json'
 
@@ -1197,7 +1198,7 @@ def test_write_anat(_bids_validate):
     # Assert that we truly cannot find a sidecar
     with pytest.raises(RuntimeError, match='Did not find any'):
         _find_matching_sidecar(sidecar_basename,
-                               bids_root, suffix='T1w', extension='.json')
+                               suffix='T1w', extension='.json')
 
     # trans has a wrong type
     wrong_type = 1

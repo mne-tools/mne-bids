@@ -960,9 +960,9 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     acquisition, space = bids_basename.acquisition, bids_basename.space
     modality = _handle_modality(raw)
 
-    bids_fname = bids_basename.copy().update(modality=modality,
-                                             suffix=modality,
-                                             extension=ext)
+    bids_fname = bids_basename.copy().update(
+        modality=modality, suffix=modality, extension=ext,
+        bids_root=bids_root)
 
     # check whether the info provided indicates that the data is emptyroom
     # data
@@ -983,12 +983,6 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     data_path = make_bids_folders(subject=subject_id, session=session_id,
                                   modality=modality, bids_root=bids_root,
                                   overwrite=False, verbose=verbose)
-    if session_id is None:
-        ses_path = os.sep.join(data_path.split(os.sep)[:-1])
-    else:
-        ses_path = make_bids_folders(subject=subject_id, session=session_id,
-                                     bids_root=bids_root, make_dir=False,
-                                     overwrite=False, verbose=verbose)
 
     # In case of an "emptyroom" subject, BIDSPath() will raise
     # an exception if we don't provide a valid task ("noise"). Now,
@@ -999,20 +993,19 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
 
     # create *_scans.tsv
     bids_path = BIDSPath(subject=subject_id, session=session_id,
-                         bids_root=ses_path, suffix='scans', extension='.tsv',
-                         task=None)
-    scans_fname = str(bids_path)
+                         bids_root=bids_root,
+                         suffix='scans', extension='.tsv')
+    scans_fname = bids_path.fpath
 
     # create *_coordsystem.json
     bids_path.update(acquisition=acquisition, space=space,
-                     prefix=data_path, modality=modality,
+                     modality=modality,
                      suffix='coordsystem', extension='.json')
-    coordsystem_fname = str(bids_path)
+    coordsystem_fname = bids_path.fpath
 
     # create *_electrodes.tsv
-    bids_path = bids_path.update(suffix='electrodes',
-                                 extension='.tsv')
-    electrodes_fname = str(bids_path)
+    bids_path.update(suffix='electrodes', extension='.tsv')
+    electrodes_fname = bids_path.fpath
 
     # For the remaining files, we can use BIDSPath to alter.
     readme_fname = op.join(bids_root, 'README')
@@ -1020,19 +1013,18 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     participants_json_fname = participants_tsv_fname.replace('tsv',
                                                              'json')
 
-    sidecar_fname = bids_fname.copy().update(prefix=data_path,
-                                             suffix=modality,
-                                             extension='.json')
-
-    events_fname = sidecar_fname.copy().update(suffix='events',
-                                               extension='.tsv')
-    channels_fname = sidecar_fname.copy().update(suffix='channels',
-                                                 extension='.tsv')
+    sidecar_path = bids_fname.copy().update(suffix=modality,
+                                            extension='.json')
+    sidecar_fname = sidecar_path.fpath
+    sidecar_path.update(suffix='events', extension='.tsv')
+    events_fname = sidecar_path.fpath
+    sidecar_path.update(suffix='channels', extension='.tsv')
+    channels_fname = sidecar_path.fpath
 
     if ext not in ['.fif', '.ds', '.vhdr', '.edf', '.bdf', '.set', '.con',
                    '.sqd']:
         bids_raw_folder = str(bids_fname).split(".")[0]
-        bids_fname.bids_root = bids_raw_folder
+        bids_fname.update(bids_root=bids_raw_folder)
 
     # Anonymize
     convert = False
@@ -1073,7 +1065,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
         # We only write electrodes.tsv and accompanying coordsystem.json
         # if we have an available DigMontage
         if raw.info['dig'] is not None and raw.info['dig']:
-            _write_dig_bids(electrodes_fname, coordsystem_fname, data_path,
+            _write_dig_bids(electrodes_fname, coordsystem_fname, bids_root,
                             raw, modality, overwrite, verbose)
     else:
         logger.warning(f'Writing of electrodes.tsv '
@@ -1092,11 +1084,8 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
                   verbose)
     _channels_tsv(raw, channels_fname, overwrite, verbose)
 
-    _mkdir_p(os.path.dirname(op.join(data_path, bids_fname)))
-
-    # set the raw file name to now be the absolute path to ensure the files
-    # are placed in the right location
-    bids_fname.bids_root = data_path
+    # create parent directories if needed
+    _mkdir_p(os.path.dirname(data_path))
 
     if os.path.exists(bids_fname) and not overwrite:
         raise FileExistsError(f'"{bids_fname}" already exists. '  # noqa: F821
@@ -1138,8 +1127,9 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     elif ext == '.set':
         copyfile_eeglab(raw_fname, bids_fname)
     elif ext == '.pdf':
-        bids_fname = op.join(data_path, bids_raw_folder)
-        copyfile_bti(raw_orig, bids_fname)
+        bids_path = op.join(data_path, bids_raw_folder)
+        _mkdir_p(bids_path)
+        copyfile_bti(raw_orig, bids_path)
     elif ext in ['.con', '.sqd']:
         copyfile_kit(raw_fname, bids_fname, subject_id, session_id,
                      task, run, raw._init_kwargs)
@@ -1268,7 +1258,7 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
     # this needs to be a string, since nibabel assumes a string input
     t1w_basename = BIDSPath(subject=subject, session=session,
                             acquisition=acquisition,
-                            bids_root=anat_dir,
+                            bids_root=bids_root,
                             suffix='T1w', extension='.nii.gz')
 
     # Check if we have necessary conditions for writing a sidecar JSON
@@ -1334,7 +1324,7 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
             {'LPA': list(mri_landmarks[0, :]),
              'NAS': list(mri_landmarks[1, :]),
              'RPA': list(mri_landmarks[2, :])}
-        fname = str(t1w_basename).replace('.nii.gz', '.json')
+        fname = t1w_basename.copy().update(extension='.json')
         if op.isfile(fname) and not overwrite:
             raise IOError('Wanted to write a file but it already exists and '
                           '`overwrite` is set to False. File: "{}"'
@@ -1353,6 +1343,6 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
                           '`overwrite` is set to False. File: "{}"'
                           .format(t1w_basename))
 
-    nib.save(t1w, t1w_basename)
+    nib.save(t1w, t1w_basename.fpath)
 
     return anat_dir

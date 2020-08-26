@@ -338,8 +338,7 @@ def _summarize_sidecar_json(bids_root, scans_fpaths, verbose=True):
             if bids_basename.subject == 'emptyroom':
                 continue
 
-            sidecar_fname = _find_matching_sidecar(bids_fname=bids_basename,
-                                                   bids_root=bids_root,
+            sidecar_fname = _find_matching_sidecar(bids_path=bids_basename,
                                                    suffix=modality,
                                                    extension='.json')
             with open(sidecar_fname, 'r') as fin:
@@ -425,8 +424,7 @@ def _summarize_channels_tsv(bids_root, scans_fpaths, verbose=True):
             if bids_basename.subject == 'emptyroom':
                 continue
 
-            channels_fname = _find_matching_sidecar(bids_fname=bids_basename,
-                                                    bids_root=bids_root,
+            channels_fname = _find_matching_sidecar(bids_path=bids_basename,
                                                     suffix='channels',
                                                     extension='.tsv')
 

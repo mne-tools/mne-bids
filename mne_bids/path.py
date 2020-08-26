@@ -165,8 +165,7 @@ class BIDSPath(object):
         """Path basename."""
         basename = []
         for key, val in self.entities.items():
-            if key not in ('prefix', 'suffix', 'extension') and \
-                    val is not None:
+            if key != 'suffix' and val is not None:
                 # convert certain keys to shorthand
                 long_to_short_entity = {
                     val: key for key, val
@@ -240,8 +239,8 @@ class BIDSPath(object):
         if self.session is not None:
             data_path = op.join(data_path, f'ses-{self.session}')
         # file-suffix will allow 'meg', 'eeg', 'ieeg', 'anat'
-        if self.kind is not None:
-            data_path = op.join(data_path, self.kind)
+        if self.modality is not None:
+            data_path = op.join(data_path, self.modality)
         elif self.suffix in SUFFIX_TO_MODALITY:
             # infers path suffix from the suffix
             data_path = op.join(data_path, SUFFIX_TO_MODALITY[self.suffix])
@@ -289,59 +288,28 @@ class BIDSPath(object):
 
         return bids_fpath
 
-    def get_bids_fname(self, suffix=None, bids_root=None, extension=None):
-        """Get the BIDS filename, by inferring suffix and extension.
-
-        Parameters
-        ----------
-        suffix : str, optional
-            The suffix of recording to read. If ``None`` and only one
-            suffix (e.g., only EEG or only MEG data) is present in the
-            dataset, it will be selected automatically.
-        bids_root : str | os.PathLike, optional
-            Path to root of the BIDS folder
-        extension : str, optional
-            If ``None``, try to infer the filename extension by searching
-            for the file on disk. If the file cannot be found, an error
-            will be raised. To disable this automatic inference attempt,
-            pass a string (like ``'.fif'`` or ``'.vhdr'``).
-            If an empty string is passed, no extension
-            will be added to the filename.
-
-        Returns
-        -------
-        bids_fname : BIDSPath
-            A BIDSPath with a full filename.
-        """
-        # Get the BIDS parameters (=entities)
-        sub = self.subject
-        ses = self.session
-
-        if extension is None and bids_root is None:
-            msg = ('No filename extension was provided, and it cannot be '
-                   'automatically inferred because no bids_root was passed.')
-            raise ValueError(msg)
-
-        bids_basename = self.copy().update(check=False)
-
-        if extension is None:
-            # since suffix is passed in, use that
-            bids_basename.update(suffix=None)
-            bids_fname = _get_bids_fname_from_filesystem(
-                bids_basename=bids_basename, bids_root=bids_root,
-                sub=sub, ses=ses, modality=suffix)
-            new_suffix = bids_fname.split("_")[-1]
-            suffix, extension = _get_bids_suffix_and_ext(new_suffix)
-            bids_fname = bids_basename.update(suffix=suffix,
-                                              extension=extension)
-        else:
-            bids_fname = bids_basename.update(suffix=suffix,
-                                              extension=extension)
-
-        return bids_fname
-
     def update(self, check=None, **entities):
         """Update inplace BIDS entity key/value pairs in object.
+
+        ``run`` and ``split`` are auto-parsed to have two
+        numbers when passed in. For example, if ``run=1``, then it will
+        become ``run='01'``.
+
+        Also performs error checks on various entities to
+        adhere to the BIDS specification. Specifically:
+        - ``suffix`` should be one of:
+            (``anat``, ``eeg``, ``ieeg``, ``meg``)
+        - ``extension`` should be one of the accepted file
+        extensions in the file path:
+             (``.con``, ``.sqd``, ``.fif``, ``.pdf``, ``.ds``,
+              ``.vhdr``, ``.edf``, ``.bdf``, ``.set``, ``.edf``,
+              ``.set``, ``.mef``, ``.nwb``)
+        - ``suffix`` should be one acceptable file suffixes in:
+            (``meg``, ``markers``, ``eeg``, ``ieeg``, ``T1w``,
+            ``participants``, ``scans``,
+            ``electrodes``, ``channels``, ``coordsystem``,
+            ``events``, ``headshape``, ``digitizer``,
+            ``behav``, ``phsyio``, ``stim``)
 
         Parameters
         ----------
@@ -439,6 +407,12 @@ class BIDSPath(object):
                              f'{self.modality}, which is not '
                              f'BIDS compliant. ')
 
+        # infer modality if suffix is uniquely the modality
+        if self.modality is None and \
+                self.suffix in ['eeg', 'meg', 'ieeg', 'T1w']:
+            self.modality = SUFFIX_TO_MODALITY[self.suffix]
+
+        # perform deeper check if user has it turned on
         if self.check:
             if self.subject == 'emptyroom':
                 _check_empty_room_basename(self)
@@ -709,16 +683,14 @@ def get_entities_from_fname(fname):
     return params
 
 
-def _find_matching_sidecar(bids_fname, bids_root, suffix=None,
+def _find_matching_sidecar(bids_path, suffix=None,
                            extension=None, allow_fail=False):
     """Try to find a sidecar file with a given suffix for a data file.
 
     Parameters
     ----------
-    bids_fname : BIDSPath
+    bids_path : BIDSPath
         Full name of the data file
-    bids_root : str | pathlib.Path
-        Path to root of the BIDS folder
     suffix : str | None
         The filename suffix. This is the entity after the last ``_``
         before the extension. E.g., ``'ieeg'``.
@@ -735,31 +707,38 @@ def _find_matching_sidecar(bids_fname, bids_root, suffix=None,
         and no sidecar_fname was found
 
     """
+    bids_root = bids_path.bids_root
+
     # search suffix is BIDS-suffix and extension
     search_suffix = ''
     if suffix is not None:
         search_suffix = search_suffix + suffix
 
         # do not search for suffix if suffix is explicitly passed
-        bids_fname = bids_fname.copy()
-        bids_fname.check = False
-        bids_fname.update(suffix=None)
+        bids_path = bids_path.copy()
+        bids_path.check = False
+        bids_path.update(suffix=None)
 
     if extension is not None:
         search_suffix = search_suffix + extension
 
+        # do not search for extension if extension is explicitly passed
+        bids_path = bids_path.copy()
+        bids_path.check = False
+        bids_path = bids_path.update(extension=None)
+
     # We only use subject and session as identifier, because all other
     # parameters are potentially not binding for metadata sidecar files
-    search_str = f'sub-{bids_fname.subject}'
-    if bids_fname.session is not None:
-        search_str += f'_ses-{bids_fname.session}'
+    search_str = f'sub-{bids_path.subject}'
+    if bids_path.session is not None:
+        search_str += f'_ses-{bids_path.session}'
 
     # Find all potential sidecar files, doing a recursive glob
     # from bids_root/sub_id/
-    search_str = op.join(bids_root, f'sub-{bids_fname.subject}',
+    search_str = op.join(bids_root, f'sub-{bids_path.subject}',
                          '**', search_str + '*' + search_suffix)
     candidate_list = glob.glob(search_str, recursive=True)
-    best_candidates = _find_best_candidates(bids_fname.entities,
+    best_candidates = _find_best_candidates(bids_path.entities,
                                             candidate_list)
     if len(best_candidates) == 1:
         # Success
@@ -770,11 +749,11 @@ def _find_matching_sidecar(bids_fname, bids_root, suffix=None,
     msg = None
     if len(best_candidates) == 0:
         msg = (f'Did not find any {search_suffix} '
-               f'associated with {bids_fname.basename}.')
+               f'associated with {bids_path.basename}.')
     elif len(best_candidates) > 1:
         # More than one candidates were tied for best match
         msg = (f'Expected to find a single {suffix} file '
-               f'associated with {bids_fname.basename}, '
+               f'associated with {bids_path.basename}, '
                f'but found {len(candidate_list)}: "{candidate_list}".')
     msg += '\n\nThe search_str was "{}"'.format(search_str)
     if allow_fail:
@@ -1158,9 +1137,6 @@ def get_matched_basenames(bids_root, *, subject=None, session=None, task=None,
         The recording name. Corresponds to "rec".
     space : str | None
         The coordinate space for an anatomical file. Corresponds to "space".
-    prefix : str | None
-        The prefix for the filename to be created. E.g., a path to the folder
-        in which you wish to create a file with this name.
     suffix : str | None
         The data suffix. E.g. 'meg', or 'channels'
     split : int | None
