@@ -214,8 +214,7 @@ class BIDSPath(object):
                    'automatically inferred because no bids_root was passed.')
             raise ValueError(msg)
 
-        bids_basename = self.copy()
-        bids_basename.check = False
+        bids_basename = self.copy().update(check=False)
 
         if extension is None:
             # since kind is passed in, use that
@@ -571,9 +570,7 @@ def _find_matching_sidecar(bids_fname, bids_root, kind=None,
         suffix = suffix + kind
 
         # do not search for kind if kind is explicitly passed
-        bids_fname = bids_fname.copy()
-        bids_fname.check = False
-        bids_fname.update(kind=None)
+        bids_fname = bids_fname.copy().update(kind=None, check=False)
 
     if extension is not None:
         suffix = suffix + extension
