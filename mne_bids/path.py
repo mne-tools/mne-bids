@@ -264,6 +264,16 @@ class BIDSPath(object):
                 matching_paths = \
                     _get_matching_bidspaths_from_filesystem(self)
 
+                # FIXME This will break e.g. with FIFF data split across multiple
+                # FIXME files.
+                # if extension is not specified and there is no unique file path
+                # return filepath of the actual dataset for MEG/EEG/iEEG data
+                if self.suffix in ALLOWED_MODALITIES:
+                    # now only use valid modality extension
+                    valid_exts = sum(ALLOWED_MODALITY_EXTENSIONS.values(), [])
+                    matching_paths = [p for p in matching_paths
+                                      if _parse_ext(p)[1] in valid_exts]
+
                 # found no matching paths
                 if not matching_paths:
                     msg = (f'Could not locate a data file of a supported '
@@ -431,7 +441,7 @@ class BIDSPath(object):
                 raise ValueError(f'Suffix {suffix} is not allowed. '
                                  f'Use one of these suffixes '
                                  f'{ALLOWED_FILENAME_SUFFIX}.')
-
+            
 
 def _get_matching_bidspaths_from_filesystem(bids_path):
     """Get matching file paths for a BIDS path.
@@ -460,27 +470,22 @@ def _get_matching_bidspaths_from_filesystem(bids_path):
     # otherwise, search for valid file paths
     else:
         search_str = bids_root
+        # parse down the BIDS directory structure
         if sub is not None:
             search_str = op.join(search_str, f'sub-{sub}')
         if ses is not None:
             search_str = op.join(search_str, f'ses-{ses}')
-        search_str = op.join(search_str, '**', f'{basename}*')
+        if modality is not None:
+            search_str = op.join(search_str, modality)
+        else:
+            search_str = op.join(search_str, '**')
+        search_str = op.join(search_str, f'{basename}*')
 
         # Find all matching files in all supported formats.
         valid_exts = ALLOWED_FILENAME_EXTENSIONS
         matching_paths = glob.glob(search_str)
         matching_paths = [p for p in matching_paths
                           if _parse_ext(p)[1] in valid_exts]
-
-        # FIXME This will break e.g. with FIFF data split across multiple
-        # FIXME files.
-        # if extension is not specified and there is no unique file path
-        # return filepath of the actual dataset for MEG/EEG/iEEG data
-        if len(matching_paths) > 1:
-            # now only use valid modality extension
-            valid_exts = sum(ALLOWED_MODALITY_EXTENSIONS.values(), [])
-            matching_paths = [p for p in matching_paths
-                              if _parse_ext(p)[1] in valid_exts]
     return matching_paths
 
 

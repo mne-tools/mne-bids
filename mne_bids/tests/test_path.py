@@ -7,6 +7,7 @@ import os.path as op
 # This is here to handle mne-python <0.20
 import warnings
 from pathlib import Path
+import shutil
 
 import pytest
 
@@ -258,18 +259,64 @@ def test_find_matching_sidecar(return_bids_test_dir):
                                allow_fail=True)
 
 
+def test_bids_path_inference(return_bids_test_dir):
+    """Test usage of BIDSPath object and fpath."""
+    bids_root = return_bids_test_dir
+
+    # without providing all the entities, ambiguous when trying
+    # to use fpath
+    bids_path = BIDSPath(
+        subject=subject_id, session=session_id, acquisition=acq,
+        task=task, root=bids_root)
+    with pytest.raises(RuntimeError, match='Found more than one'):
+        bids_path.fpath
+
+    # can't locate a file, but the basename should work
+    bids_path = BIDSPath(
+        subject=subject_id, session=session_id, acquisition=acq,
+        task=task, run='10', root=bids_root)
+    with pytest.warns(RuntimeWarning, match='Could not locate'):
+        fpath = bids_path.fpath
+        assert fpath == op.join(bids_root, f'sub-{subject_id}',
+                                f'ses-{session_id}', bids_path.basename)
+
+    # shouldn't error out when there is no uncertainty
+    channels_fname = BIDSPath(subject=subject_id, session=session_id,
+                              run=run, acquisition=acq, task=task,
+                              root=bids_root, suffix='channels')
+    channels_fpath = channels_fname.fpath
+
+    # create an extra file under 'eeg'
+    extra_file = Path(bids_root) / \
+                 f'sub-{subject_id}' / \
+                 f'ses-{session_id}' / \
+                 'eeg' / \
+                 (channels_fname.basename + '.tsv')
+    extra_file.parent.mkdir(exist_ok=True, parents=True)
+    # Creates a new file
+    with open(extra_file, 'w') as fp:
+        pass
+    with pytest.raises(RuntimeError, match='Found data of more than one'):
+        channels_fpath = channels_fname.fpath
+
+    # if you set modality, now there is no ambiguity
+    channels_fname.update(modality='eeg')
+    assert channels_fname.fpath == extra_file.as_posix()
+    # set state back to original
+    shutil.rmtree(extra_file.parent)
+
+
 def test_bids_path(return_bids_test_dir):
     """Test usage of BIDSPath object."""
     bids_root = return_bids_test_dir
 
     bids_path = BIDSPath(
         subject=subject_id, session=session_id, run=run, acquisition=acq,
-        task=task, root=bids_root)
+        task=task, root=bids_root, suffix='meg')
 
     # test bids path without bids_root, suffix, extension
     # basename and fpath should be the same
     expected_basename = f'sub-{subject_id}_ses-{session_id}_task-{task}_run-{run}'  # noqa
-    assert (bids_path.basename == expected_basename)
     assert (op.basename(bids_path.fpath) ==
             expected_basename + '_meg.fif')
     assert op.dirname(bids_path.fpath).startswith(bids_root)
@@ -278,8 +325,7 @@ def test_bids_path(return_bids_test_dir):
     bids_path2 = bids_path.copy().update(modality='meg', root=None)
     expected_relpath = op.join(
         f'sub-{subject_id}', f'ses-{session_id}', 'meg',
-        expected_basename)
-    print(bids_path2.fpath)
+        expected_basename + '_meg')
     assert bids_path2.fpath == expected_relpath
 
     # without bids_root and with suffix/extension
