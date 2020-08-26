@@ -375,10 +375,7 @@ def test_make_filenames():
     with pytest.raises(ValueError, match='At least one'):
         BIDSPath()
 
-    # emptyroom checks
-    with pytest.raises(ValueError, match='empty-room session should be a '
-                                         'string of format YYYYMMDD'):
-        BIDSPath(subject='emptyroom', session='12345', task='noise')
+    # emptyroom check: invalid task
     with pytest.raises(ValueError, match='task must be'):
         BIDSPath(subject='emptyroom', session='20131201',
                  task='blah', kind='meg')
