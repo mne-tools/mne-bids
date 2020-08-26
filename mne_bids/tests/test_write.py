@@ -127,7 +127,7 @@ def _test_anonymize(raw, bids_basename, events_fname=None, event_id=None):
     scans_tsv = BIDSPath(
         subject=subject_id, session=session_id,
         suffix='scans', extension='.tsv',
-        prefix=op.join(bids_root, 'sub-01', 'ses-01'))
+        bids_root=op.join(bids_root, 'sub-01', 'ses-01'))
     data = _from_tsv(scans_tsv)
     if data['acq_time'] is not None and data['acq_time'][0] != 'n/a':
         assert datetime.strptime(data['acq_time'][0],
@@ -351,7 +351,7 @@ def test_fif(_bids_validate):
     scans_tsv = BIDSPath(
         subject=subject_id, session=session_id,
         suffix='scans', extension='.tsv',
-        prefix=op.join(bids_root, 'sub-01', 'ses-01'))
+        bids_root=op.join(bids_root, 'sub-01', 'ses-01'))
     data = _from_tsv(scans_tsv)
     assert data['acq_time'][0] == meas_date.strftime('%Y-%m-%dT%H:%M:%S')
 
@@ -567,7 +567,7 @@ def test_fif_anonymize(_bids_validate):
     scans_tsv = BIDSPath(
         subject=subject_id, session=session_id,
         suffix='scans', extension='.tsv',
-        prefix=op.join(bids_root, 'sub-01', 'ses-01'))
+        bids_root=op.join(bids_root, 'sub-01', 'ses-01'))
     data = _from_tsv(scans_tsv)
 
     # anonymize using MNE manually
@@ -610,7 +610,7 @@ def test_kit(_bids_validate):
     marker_fname = BIDSPath(
         subject=subject_id, session=session_id, task=task, run=run,
         suffix='markers', extension='.sqd',
-        prefix=op.join(bids_root, 'sub-01', 'ses-01', 'meg'))
+        bids_root=op.join(bids_root, 'sub-01', 'ses-01', 'meg'))
     assert op.exists(marker_fname)
 
     # test anonymize
@@ -927,7 +927,7 @@ def test_edf(_bids_validate):
     channels_tsv = BIDSPath(
         subject=subject_id, session=session_id, task=task, run=run,
         suffix='channels', extension='.tsv', acquisition=acq,
-        prefix=op.join(bids_root, 'sub-01', 'ses-01', 'eeg'))
+        bids_root=op.join(bids_root, 'sub-01', 'ses-01', 'eeg'))
     data = _from_tsv(channels_tsv)
     assert 'ElectroMyoGram' in data['description']
 
@@ -935,7 +935,7 @@ def test_edf(_bids_validate):
     scans_tsv = BIDSPath(
         subject=subject_id, session=session_id,
         suffix='scans', extension='.tsv',
-        prefix=op.join(bids_root, 'sub-01', 'ses-01'))
+        bids_root=op.join(bids_root, 'sub-01', 'ses-01'))
     data = _from_tsv(scans_tsv)
     assert len(list(data.values())[0]) == 2
 

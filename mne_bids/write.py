@@ -999,7 +999,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
 
     # create *_scans.tsv
     bids_path = BIDSPath(subject=subject_id, session=session_id,
-                         prefix=ses_path, suffix='scans', extension='.tsv',
+                         bids_root=ses_path, suffix='scans', extension='.tsv',
                          task=None)
     scans_fname = str(bids_path)
 
@@ -1032,7 +1032,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     if ext not in ['.fif', '.ds', '.vhdr', '.edf', '.bdf', '.set', '.con',
                    '.sqd']:
         bids_raw_folder = str(bids_fname).split(".")[0]
-        bids_fname.prefix = bids_raw_folder
+        bids_fname.bids_root = bids_raw_folder
 
     # Anonymize
     convert = False
@@ -1096,7 +1096,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
 
     # set the raw file name to now be the absolute path to ensure the files
     # are placed in the right location
-    bids_fname.prefix = data_path
+    bids_fname.bids_root = data_path
 
     if os.path.exists(bids_fname) and not overwrite:
         raise FileExistsError(f'"{bids_fname}" already exists. '  # noqa: F821
@@ -1268,7 +1268,7 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
     # this needs to be a string, since nibabel assumes a string input
     t1w_basename = BIDSPath(subject=subject, session=session,
                             acquisition=acquisition,
-                            prefix=anat_dir,
+                            bids_root=anat_dir,
                             suffix='T1w', extension='.nii.gz')
 
     # Check if we have necessary conditions for writing a sidecar JSON

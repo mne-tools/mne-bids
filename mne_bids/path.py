@@ -13,11 +13,10 @@ from pathlib import Path
 
 from mne.utils import warn, logger
 
-from mne_bids.config import (ALLOWED_PATH_ENTITIES, reader,
-                             ALLOWED_FILENAME_EXTENSIONS,
-                             ALLOWED_FILENAME_SUFFIX,
-                             ALLOWED_PATH_ENTITIES_SHORT,
-                             ALLOWED_MODALITIES)
+from mne_bids.config import (
+    ALLOWED_PATH_ENTITIES, reader, ALLOWED_FILENAME_EXTENSIONS,
+    ALLOWED_FILENAME_SUFFIX, ALLOWED_PATH_ENTITIES_SHORT,
+    ALLOWED_MODALITIES, SUFFIX_TO_MODALITY, ALLOWED_MODALITY_EXTENSIONS)
 from mne_bids.utils import (_check_key_val, _check_empty_room_basename,
                             _check_types, param_regex,
                             _ensure_tuple)
@@ -59,20 +58,36 @@ class BIDSPath(object):
     split : int | None
         The split of the continuous recording file for ``.fif`` data.
         Corresponds to "split".
-    prefix : str | None
-        The prefix for the filename to be created. E.g., a path to the folder
-        in which you wish to create a file with this name.
     suffix : str | None
         The filename suffix. This is the entity after the
         last ``_`` before the extension. E.g., ``'channels'``.
+        The following filename suffix's are accepted:
+        'meg', 'markers', 'eeg', 'ieeg', 'T1w',
+        'participants', 'scans', 'electrodes', 'coordsystem',
+        'channels', 'events', 'headshape', 'digitizer',
+        'behav', 'phsyio', 'stim'
     extension : str | None
         The extension of the filename. E.g., ``'.json'``.
+    modality : str
+        The "modality" of folder being created at the end of the hierarchy.
+        E.g., "anat", "func", "eeg", "meg", "ieeg", etc.
+    bids_root : str | None
+        The root for the filename to be created. E.g., a path to the folder
+        in which you wish to create a file with this name.
     check : bool
         If True enforces the entities to be valid according to the
         current BIDS standard. Defaults to True.
 
     Attributes
     ----------
+    entities : dict
+        The dictionary of the BIDS entities and their values:
+        ``subject``, ``session``, ``task``, ``acquisition``,
+        ``run``, ``processing``, ``space``, ``recording`` and ``suffix``.
+    basename : str
+        The basename of the file path. Similar to `os.path.basename(fpath)`.
+    fpath : str
+        The full file path.
     check : bool
         If ``True``, enforces the entities to be valid according to the
         BIDS specification. The check is performed on instantiation
@@ -83,24 +98,42 @@ class BIDSPath(object):
     --------
     >>> bids_basename = BIDSPath(subject='test', session='two', task='mytask',
                                  suffix='ieeg', extension='.edf')
-    >>> print(bids_basename)
+    >>> print(bids_basename.basename)
     sub-test_ses-two_task-mytask_ieeg.edf
     >>> bids_basename
-    BIDSPath(sub-test_ses-two_task-mytask_ieeg.edf)
+    BIDSPath(root: None,
+    basename: sub-test_ses-two_task-mytask_ieeg.edf)
     >>> # copy and update multiple entities at once
     >>> new_basename = bids_basename.copy().update(subject='test2',
                                                    session='one')
-    >>> print(new_basename)
+    >>> print(new_basename.basename)
     sub-test2_ses-one_task-mytask_ieeg.edf
+    >>> # printing the BIDSPath will show relative path when
+    >>> # bids_root is not set
+    >>> print(new_basename)
+    sub-test2/ses-one/ieeg/sub-test2_ses-one_task-mytask_ieeg.edf
+    >>> new_basename.update(suffix='channels', extension='.tsv')
+    >>> # setting suffix without an identifiable modality will
+    >>> # result in a wildcard at the modality directory level
+    >>> print(new_basename)
+    sub-test2/ses-one/*/sub-test2_ses-one_task-mytask_channels.tsv
+    >>> # set a bids_root
+    >>> new_basename.update(bids_root='/bids_dataset')
+    >>> print(new_basename.bids_root)
+    /bids_dataset
+    >>> print(new_basename.basename)
+    sub-test2_ses-one_task-mytask_ieeg.edf
+    >>> print(new_basename)
+    /bids_dataset/sub-test2/ses-one/ieeg/sub-test2_ses-one_task-mytask_ieeg.edf
     """
 
     def __init__(self, subject=None, session=None,
                  task=None, acquisition=None, run=None, processing=None,
-                 recording=None, space=None, split=None, prefix=None,
+                 recording=None, space=None, split=None, bids_root=None,
                  suffix=None, extension=None, modality=None, check=True):
         if all(ii is None for ii in [subject, session, task,
                                      acquisition, run, processing,
-                                     recording, space, prefix, suffix,
+                                     recording, space, bids_root, suffix,
                                      extension]):
             raise ValueError("At least one parameter must be given.")
 
@@ -109,7 +142,7 @@ class BIDSPath(object):
         self.update(subject=subject, session=session, task=task,
                     acquisition=acquisition, run=run, processing=processing,
                     recording=recording, space=space, split=split,
-                    prefix=prefix, modality=modality,
+                    bids_root=bids_root, modality=modality,
                     suffix=suffix, extension=extension)
 
     @property
@@ -153,17 +186,17 @@ class BIDSPath(object):
 
     def __str__(self):
         """Return the string representation of the path."""
-        if self.prefix is not None:
-            return op.join(self.prefix, self.basename)
-        return self.basename
+        return self.fpath
 
     def __repr__(self):
         """Representation in the style of `pathlib.Path`."""
-        return f'{self.__class__.__name__}({str(self)})'
+        return f'{self.__class__.__name__}(\n' \
+               f'bids_root: {self.bids_root}\n' \
+               f'basename: {self.basename})'
 
     def __fspath__(self):
         """Return the string representation for any fs functions."""
-        return str(self)
+        return self.fpath
 
     def __eq__(self, other):
         """Compare str representations."""
@@ -182,6 +215,79 @@ class BIDSPath(object):
             The copied bidspath.
         """
         return deepcopy(self)
+
+    @property
+    def fpath(self):
+        """Full filepath for this BIDS file.
+
+        Getting the file path consists of the entities passed in
+        and will get the relative (or full if ``bids_root`` is passed)
+        path.
+
+        Returns
+        -------
+        bids_fpath : str
+            Either the relative, or full path to the dataset.
+        """
+        # create the data path based on entities available
+        # bids_root, subject, session and suffix
+        if self.bids_root is not None:
+            data_path = self.bids_root
+        else:
+            data_path = ''
+        if self.subject is not None:
+            data_path = op.join(data_path, f'sub-{self.subject}')
+        if self.session is not None:
+            data_path = op.join(data_path, f'ses-{self.session}')
+        # file-suffix will allow 'meg', 'eeg', 'ieeg', 'anat'
+        if self.kind is not None:
+            data_path = op.join(data_path, self.kind)
+        elif self.suffix in SUFFIX_TO_MODALITY:
+            # infers path suffix from the suffix
+            data_path = op.join(data_path, SUFFIX_TO_MODALITY[self.suffix])
+
+        # account for MEG data that are directory-based
+        # else, all other file paths attempt to match
+        if self.suffix == 'meg' and self.extension == '.ds':
+            bids_fpath = op.join(data_path, self.basename)
+        elif self.suffix == 'meg' and self.extension == '.pdf':
+            bids_fpath = op.join(data_path,
+                                 op.splitext(self.basename)[0])
+        else:
+            # if suffix and/or extension is missing, and bids_root is
+            # not None, then BIDSPath will infer the dataset
+            # else, return the relative path with the basename
+            if (self.suffix is None or self.extension is None) and \
+                    self.bids_root is not None:
+                # get matching BIDS paths inside the bids root
+                matching_paths = \
+                    _get_matching_bidspaths_from_filesystem(self)
+
+                # found no matching paths
+                if not matching_paths:
+                    msg = (f'Could not locate a data file of a supported '
+                           f'format. This is likely a problem with your '
+                           f'BIDS dataset. Please run the BIDS validator '
+                           f'on your data. (bids_root={self.bids_root}, '
+                           f'basename={self.basename}). '
+                           f'{matching_paths}')
+                    warn(msg)
+
+                    bids_fpath = op.join(data_path, self.basename)
+                # if paths still cannot be resolved, then there is an error
+                elif len(matching_paths) > 1:
+                    msg = ('Found more than one matching data file for the '
+                           'requested recording. Cannot proceed due to the '
+                           'ambiguity. This is likely a problem with your '
+                           'BIDS dataset. Please run the BIDS validator on '
+                           'your data.')
+                    raise RuntimeError(msg)
+                else:
+                    bids_fpath = matching_paths[0]
+            else:
+                bids_fpath = op.join(data_path, self.basename)
+
+        return bids_fpath
 
     def get_bids_fname(self, suffix=None, bids_root=None, extension=None):
         """Get the BIDS filename, by inferring suffix and extension.
@@ -294,7 +400,7 @@ class BIDSPath(object):
         # error check entities
         for key, val in entities.items():
             # check if there are any characters not allowed
-            if val is not None and key != 'prefix':
+            if val is not None and key != 'bids_root':
                 _check_key_val(key, val)
 
             # error check allowed BIDS entity keywords
@@ -303,7 +409,7 @@ class BIDSPath(object):
                                  f'{ALLOWED_PATH_ENTITIES}, got {key}')
 
             # set entity value
-            if key == 'prefix' and val is not None:
+            if key == 'bids_root' and val is not None:
                 # ensure prefix is a string
                 val = str(val)
             setattr(self, key, val)
@@ -353,6 +459,57 @@ class BIDSPath(object):
                 raise ValueError(f'Suffix {suffix} is not allowed. '
                                  f'Use one of these suffixes '
                                  f'{ALLOWED_FILENAME_SUFFIX}.')
+
+
+def _get_matching_bidspaths_from_filesystem(bids_path):
+    """Get matching file paths for a BIDS path.
+    
+    Assumes suffix and/or extension is not provided.
+    """
+    # extract relevant entities to find filepath
+    sub, ses = bids_path.subject, bids_path.session
+    modality = bids_path.modality
+    basename, bids_root = bids_path.basename, bids_path.bids_root
+
+    if modality is None:
+        modality = _infer_modality(bids_root=bids_root,
+                                   sub=sub, ses=ses)
+
+    data_dir = make_bids_folders(subject=sub, session=ses,
+                                 modality=modality, bids_root=bids_root,
+                                 make_dir=False)
+
+    # For BTI data, just return the directory with a '.pdf' extension
+    # to facilitate reading in mne-bids
+    bti_dir = op.join(data_dir, f'{basename}')
+    if op.isdir(bti_dir):
+        logger.info(f'Assuming BTi data in {bti_dir}')
+        matching_paths = [f'{bti_dir}.pdf']
+    # otherwise, search for valid file paths
+    else:
+        search_str = bids_root
+        if sub is not None:
+            search_str = op.join(search_str, f'sub-{sub}')
+        if ses is not None:
+            search_str = op.join(search_str, f'ses-{ses}')
+        search_str = op.join(search_str, '**', f'{basename}*')
+
+    # Find all matching files in all supported formats.
+    valid_exts = ALLOWED_FILENAME_EXTENSIONS
+    matching_paths = glob.glob(search_str)
+    matching_paths = [p for p in matching_paths
+                      if _parse_ext(p)[1] in valid_exts]
+
+    # FIXME This will break e.g. with FIFF data split across multiple
+    # FIXME files.
+    # if extension is not specified and there is no unique file path
+    # return filepath of the actual dataset for MEG/EEG/iEEG data
+    if len(matching_paths) > 1:
+        # now only use valid modality extension
+        valid_exts = sum(ALLOWED_MODALITY_EXTENSIONS.values(), [])
+        matching_paths = [p for p in matching_paths
+                          if _parse_ext(p)[1] in valid_exts]
+    return matching_paths
 
 
 def _check_non_sub_ses_entity(bids_path):
@@ -1033,7 +1190,7 @@ def get_matched_basenames(bids_root, *, subject=None, session=None, task=None,
     paths = []
     for fname in fnames:
         entity = get_entities_from_fname(fname)
-        path = BIDSPath(prefix=bids_root, **entity)
+        path = BIDSPath(bids_root=bids_root, **entity)
         paths.append(path)
 
     return paths
