@@ -19,7 +19,7 @@ with warnings.catch_warnings():
 from mne.datasets import testing
 from mne.utils import _TempDir
 
-from mne_bids import (get_kinds, get_entity_vals, print_dir_tree,
+from mne_bids import (get_modalities, get_entity_vals, print_dir_tree,
                       make_bids_folders, BIDSPath,
                       write_raw_bids)
 from mne_bids.path import (_parse_ext, get_entities_from_fname,
@@ -63,9 +63,9 @@ def return_bids_test_dir(tmpdir_factory):
 
 
 def test_get_keys(return_bids_test_dir):
-    """Test getting the datatypes (=kinds) of a dir."""
-    kinds = get_kinds(return_bids_test_dir)
-    assert kinds == ['meg']
+    """Test getting the datatypes (=modalities) of a dir."""
+    modalities = get_modalities(return_bids_test_dir)
+    assert modalities == ['meg']
 
 
 @pytest.mark.parametrize('entity, expected_vals, kwargs',
@@ -135,22 +135,22 @@ def test_make_folders():
     """Test that folders are created and named properly."""
     # Make sure folders are created properly
     bids_root = _TempDir()
-    make_bids_folders(subject='hi', session='foo', kind='ba',
+    make_bids_folders(subject='hi', session='foo', modality='ba',
                       bids_root=bids_root)
     assert op.isdir(op.join(bids_root, 'sub-hi', 'ses-foo', 'ba'))
 
     # If we remove a kwarg the folder shouldn't be created
     bids_root = _TempDir()
-    make_bids_folders(subject='hi', kind='ba', bids_root=bids_root)
+    make_bids_folders(subject='hi', modality='ba', bids_root=bids_root)
     assert op.isdir(op.join(bids_root, 'sub-hi', 'ba'))
 
     # check overwriting of folders
-    make_bids_folders(subject='hi', kind='ba', bids_root=bids_root,
+    make_bids_folders(subject='hi', modality='ba', bids_root=bids_root,
                       overwrite=True, verbose=True)
 
     # Check if a pathlib.Path bids_root works.
     bids_root = Path(_TempDir())
-    make_bids_folders(subject='hi', session='foo', kind='ba',
+    make_bids_folders(subject='hi', session='foo', modality='ba',
                       bids_root=bids_root)
     assert op.isdir(op.join(bids_root, 'sub-hi', 'ses-foo', 'ba'))
 
@@ -158,7 +158,7 @@ def test_make_folders():
     bids_root = _TempDir()
     curr_dir = os.getcwd()
     os.chdir(bids_root)
-    make_bids_folders(subject='hi', session='foo', kind='ba',
+    make_bids_folders(subject='hi', session='foo', modality='ba',
                       bids_root=None)
     assert op.isdir(op.join(os.getcwd(), 'sub-hi', 'ses-foo', 'ba'))
     os.chdir(curr_dir)
@@ -201,10 +201,10 @@ def test_parse_bids_filename(fname):
     assert params['task'] == 'test'
     assert params['split'] == '01'
     if 'meg' in fname:
-        assert params['kind'] == 'meg'
+        assert params['suffix'] == 'meg'
     assert list(params.keys()) == ['subject', 'session', 'task',
                                    'acquisition', 'run', 'processing',
-                                   'space', 'recording', 'split', 'kind']
+                                   'space', 'recording', 'split', 'suffix']
 
 
 @pytest.mark.parametrize('candidate_list, best_candidates', [
@@ -235,7 +235,7 @@ def test_find_matching_sidecar(return_bids_test_dir):
 
     # Now find a sidecar
     sidecar_fname = _find_matching_sidecar(bids_basename, bids_root,
-                                           kind='coordsystem',
+                                           suffix='coordsystem',
                                            extension='.json')
     expected_file = op.join('sub-01', 'ses-01', 'meg',
                             'sub-01_ses-01_coordsystem.json')
@@ -247,12 +247,12 @@ def test_find_matching_sidecar(return_bids_test_dir):
                                    '2coordsystem.json'), 'w').close()
         print_dir_tree(bids_root)
         _find_matching_sidecar(bids_basename, bids_root,
-                               kind='coordsystem', extension='.json')
+                               suffix='coordsystem', extension='.json')
 
     # Find nothing but receive None, because we set `allow_fail` to True
     with pytest.warns(RuntimeWarning, match='Did not find any'):
         _find_matching_sidecar(bids_basename, bids_root,
-                               kind='foo', extension='.bogus',
+                               suffix='foo', extension='.bogus',
                                allow_fail=True)
 
 
@@ -270,7 +270,7 @@ def test_bids_path(return_bids_test_dir):
 
     # should find the correct filename if bids_root was passed
     bids_fname = bids_basename.get_bids_fname(bids_root=bids_root)
-    assert bids_fname == bids_basename.update(kind='meg',
+    assert bids_fname == bids_basename.update(suffix='meg',
                                               extension='.fif')
 
     # confirm BIDSPath assigns properties correctly
@@ -284,7 +284,8 @@ def test_bids_path(return_bids_test_dir):
     assert all(bids_basename.entities.get(entity) is None
                for entity in ['task', 'run', 'recording', 'acquisition',
                               'space', 'processing',
-                              'prefix', 'kind', 'extension'])
+                              'prefix', 'modality',
+                              'suffix', 'extension'])
 
     # test updating functionality
     bids_basename.update(acquisition='03', run='2', session='02',
@@ -313,29 +314,29 @@ def test_bids_path(return_bids_test_dir):
     with pytest.raises(ValueError, match='Unallowed*'):
         bids_basename.update(subject=subject_id + '-')
 
-    # error check on kind in BIDSPath (deep check)
-    kind = 'meeg'
-    with pytest.raises(ValueError, match=f'Kind {kind} is not'):
+    # error check on suffix in BIDSPath (deep check)
+    suffix = 'meeg'
+    with pytest.raises(ValueError, match=f'Suffix {suffix} is not'):
         BIDSPath(subject=subject_id, session=session_id,
-                 kind=kind)
+                 suffix=suffix)
 
-    # error check kind in update (deep check)
+    # do error check suffix in update
     error_kind = 'foobar'
-    with pytest.raises(ValueError, match=f'Kind {error_kind} is not'):
-        bids_basename.update(kind=error_kind)
+    with pytest.raises(ValueError, match=f'Suffix {error_kind} is not'):
+        bids_basename.update(suffix=error_kind)
 
-    # disable check in update by setting check=False
-    error_kind = 'foobar'
-    bids_basename = BIDSPath(subject=subject_id, session=session_id, run=run,
-                             acquisition=acq, task=task)
-    bids_basename.update(kind=error_kind, check=False)
-
-    # does not error check on kind in BIDSPath (deep check)
-    kind = 'meeg'
+    # does not error check on suffix in BIDSPath (deep check)
+    suffix = 'meeg'
     bids_basename = BIDSPath(subject=subject_id, session=session_id,
-                             kind=kind, check=False)
+                             suffix=suffix, check=False)
     # also inherits error check from instantiation
-    bids_basename.update(kind=error_kind)
+    # always error check modality
+    with pytest.raises(ValueError, match='"modality" can only be '
+                                         'one of'):
+        bids_basename.copy().update(modality=error_kind)
+
+    # suffix won't be error checks if initial check was false
+    bids_basename.update(suffix=suffix)
 
     # error check on extension in BIDSPath (deep check)
     extension = '.mat'
@@ -348,7 +349,7 @@ def test_bids_path(return_bids_test_dir):
 
     # test repr
     bids_path = BIDSPath(subject='01', session='02',
-                         task='03', kind='ieeg',
+                         task='03', suffix='ieeg',
                          extension='.edf')
     assert repr(bids_path) == 'BIDSPath(sub-01_ses-02_task-03_ieeg.edf)'
 
@@ -358,7 +359,7 @@ def test_make_filenames():
     # All keys work
     prefix_data = dict(subject='one', session='two', task='three',
                        acquisition='four', run='five', processing='six',
-                       recording='seven', kind='ieeg', extension='.json')
+                       recording='seven', suffix='ieeg', extension='.json')
     expected_str = 'sub-one_ses-two_task-three_acq-four_run-five_proc-six_rec-seven_ieeg.json'  # noqa
     assert str(BIDSPath(**prefix_data)) == expected_str
 
@@ -366,11 +367,11 @@ def test_make_filenames():
     assert (BIDSPath(subject='one', task='three', run=4) ==
             'sub-one_task-three_run-04')
     assert (BIDSPath(subject='one', task='three',
-                     kind='meg', extension='.json') ==
+                     suffix='meg', extension='.json') ==
             'sub-one_task-three_meg.json')
 
     with pytest.raises(ValueError):
-        BIDSPath(subject='one-two', kind='ieeg', extension='.edf')
+        BIDSPath(subject='one-two', suffix='ieeg', extension='.edf')
 
     with pytest.raises(ValueError, match='At least one'):
         BIDSPath()
@@ -378,7 +379,7 @@ def test_make_filenames():
     # emptyroom check: invalid task
     with pytest.raises(ValueError, match='task must be'):
         BIDSPath(subject='emptyroom', session='20131201',
-                 task='blah', kind='meg')
+                 task='blah', suffix='meg')
 
     # when the suffix is not 'meg', then it does not result in
     # an error
@@ -397,7 +398,7 @@ def test_make_filenames():
                                          'can only contain'):
         BIDSPath(
             subject=subject_id, session=session_id, task=task,
-            kind='scans', extension='.tsv'
+            suffix='scans', extension='.tsv'
         )
 
 
@@ -408,10 +409,10 @@ def test_make_filenames():
         (dict(subject='01'), 2),
         (dict(task='audio'), 2),
         (dict(processing='sss'), 1),
-        (dict(kind='meg'), 4),
+        (dict(suffix='meg'), 4),
         (dict(acquisition='lowres'), 1),
-        (dict(task='test', processing='ica', kind='eeg'), 2),
-        (dict(subject='5', task='test', processing='ica', kind='eeg'), 1)
+        (dict(task='test', processing='ica', suffix='eeg'), 2),
+        (dict(subject='5', task='test', processing='ica', suffix='eeg'), 1)
     ])
 def test_filter_fnames(entities, expected_n_matches):
     """Test filtering filenames based on BIDS entities works."""

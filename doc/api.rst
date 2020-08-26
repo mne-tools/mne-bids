@@ -39,7 +39,7 @@ MNE BIDS
    get_anonymization_daysback
    print_dir_tree
    get_entity_vals
-   get_kinds
+   get_modalities
 
 Path
 ====

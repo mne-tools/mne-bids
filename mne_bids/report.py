@@ -11,9 +11,9 @@ import numpy as np
 from mne.externals.tempita import Template
 from mne.utils import warn
 
-from mne_bids.config import DOI, ALLOWED_MODALITY_KINDS
+from mne_bids.config import DOI, ALLOWED_MODALITIES
 from mne_bids.tsv_handler import _from_tsv
-from mne_bids.path import (get_kinds, get_entity_vals, BIDSPath,
+from mne_bids.path import (get_modalities, get_entity_vals, BIDSPath,
                            _parse_ext, _find_matching_sidecar,
                            get_entities_from_fname)
 
@@ -324,8 +324,8 @@ def _summarize_sidecar_json(bids_root, scans_fpaths, verbose=True):
         for scan in scans:
             # summarize metadata of recordings
             bids_basename, ext = _parse_ext(scan)
-            kind = op.dirname(scan)
-            if kind not in ALLOWED_MODALITY_KINDS:
+            modality = op.dirname(scan)
+            if modality not in ALLOWED_MODALITIES:
                 continue
 
             n_scans += 1
@@ -340,7 +340,7 @@ def _summarize_sidecar_json(bids_root, scans_fpaths, verbose=True):
 
             sidecar_fname = _find_matching_sidecar(bids_fname=bids_basename,
                                                    bids_root=bids_root,
-                                                   kind=kind,
+                                                   suffix=modality,
                                                    extension='.json')
             with open(sidecar_fname, 'r') as fin:
                 sidecar_json = json.load(fin)
@@ -413,8 +413,8 @@ def _summarize_channels_tsv(bids_root, scans_fpaths, verbose=True):
         for scan in scans:
             # summarize metadata of recordings
             bids_basename, _ = _parse_ext(scan)
-            kind = op.dirname(scan)
-            if kind not in ['meg', 'eeg', 'ieeg']:
+            modality = op.dirname(scan)
+            if modality not in ['meg', 'eeg', 'ieeg']:
                 continue
 
             # convert to BIDS Path
@@ -427,7 +427,7 @@ def _summarize_channels_tsv(bids_root, scans_fpaths, verbose=True):
 
             channels_fname = _find_matching_sidecar(bids_fname=bids_basename,
                                                     bids_root=bids_root,
-                                                    kind='channels',
+                                                    suffix='channels',
                                                     extension='.tsv')
 
             # summarize channels.tsv
@@ -482,17 +482,17 @@ def make_report(bids_root, session=None, verbose=True):
     # high level summary
     subjects = get_entity_vals(bids_root, entity_key='subject')
     sessions = get_entity_vals(bids_root, entity_key='session')
-    kinds = get_kinds(bids_root)
+    modalities = get_modalities(bids_root)
 
-    # only summarize allowed kinds (MEG/EEG/iEEG) data
+    # only summarize allowed modalities (MEG/EEG/iEEG) data
     # map them to a pretty looking string
-    kind_map = {
+    modality_map = {
         'meg': 'MEG',
         'eeg': 'EEG',
         'ieeg': 'iEEG',
     }
-    kinds = [kind_map[kind] for kind in kinds
-             if kind in ALLOWED_MODALITY_KINDS]
+    modalities = [modality_map[modality] for modality in modalities
+                  if modality in modality_map.keys()]
 
     # REQUIRED: dataset_description.json summary
     dataset_summary = _summarize_dataset(bids_root)
@@ -524,13 +524,13 @@ def make_report(bids_root, session=None, verbose=True):
         modality_agnostic_template = MODALITY_AGNOSTIC_TEMPLATE
 
     dataset_summary.update({
-        'system': kinds,
+        'system': modalities,
         'n_subjects': len(subjects),
         'n_sessions': len(sessions),
         'sessions': sessions,
     })
 
-    # XXX: add channel summary for kinds (ieeg, meg, eeg)
+    # XXX: add channel summary for modalities (ieeg, meg, eeg)
     # create the content and mne Template
     # lower-case templates are "Recommended",
     # while upper-case templates are "Required".

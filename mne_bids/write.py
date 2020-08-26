@@ -35,7 +35,7 @@ from mne_bids.dig import _write_dig_bids, _coordsystem_json
 from mne_bids.utils import (_write_json, _write_tsv, _write_text,
                             _read_events, _age_on_date,
                             _infer_eeg_placement_scheme,
-                            _handle_kind, _get_ch_type_mapping,
+                            _handle_modality, _get_ch_type_mapping,
                             _check_anonymize, _stamp_to_dt)
 from mne_bids import make_bids_folders
 from mne_bids.path import (BIDSPath, _parse_ext, _mkdir_p, _path_to_str,
@@ -92,8 +92,6 @@ def _channels_tsv(raw, fname, overwrite=False, verbose=True):
     get_specific = ('mag', 'ref_meg', 'grad')
 
     # get the manufacturer from the file in the Raw object
-    manufacturer = None
-
     _, ext = _parse_ext(raw.filenames[0], verbose=verbose)
     manufacturer = MANUFACTURERS[ext]
 
@@ -195,7 +193,7 @@ def _events_tsv(events, raw, fname, trial_type, overwrite=False,
     _write_tsv(fname, data, overwrite, verbose)
 
 
-def _readme(kind, fname, overwrite=False, verbose=True):
+def _readme(modality, fname, overwrite=False, verbose=True):
     """Create a README file and save it.
 
     This will write a README file containing an MNE-BIDS citation.
@@ -204,7 +202,7 @@ def _readme(kind, fname, overwrite=False, verbose=True):
 
     Parameters
     ----------
-    kind : string
+    modality : string
         The type of data contained in the raw file ('meg', 'eeg', 'ieeg')
     fname : str | BIDSPath
         Filename to save the README to.
@@ -221,16 +219,16 @@ def _readme(kind, fname, overwrite=False, verbose=True):
         with open(fname, 'r') as fid:
             orig_data = fid.read()
         mne_bids_ref = REFERENCES['mne-bids'] in orig_data
-        kind_ref = REFERENCES[kind] in orig_data
-        if mne_bids_ref and kind_ref:
+        modality_ref = REFERENCES[modality] in orig_data
+        if mne_bids_ref and modality_ref:
             return
         text = '{}References\n----------\n{}{}'.format(
             orig_data + '\n\n',
             '' if mne_bids_ref else REFERENCES['mne-bids'] + '\n\n',
-            '' if kind_ref else REFERENCES[kind] + '\n')
+            '' if modality_ref else REFERENCES[modality] + '\n')
     else:
         text = 'References\n----------\n{}{}'.format(
-            REFERENCES['mne-bids'] + '\n\n', REFERENCES[kind] + '\n')
+            REFERENCES['mne-bids'] + '\n\n', REFERENCES[modality] + '\n')
 
     _write_text(fname, text, overwrite=True, verbose=verbose)
 
@@ -462,11 +460,12 @@ def _mri_landmarks_to_mri_voxels(mri_landmarks, t1_mgh):
     return mri_landmarks
 
 
-def _sidecar_json(raw, task, manufacturer, fname, kind, overwrite=False,
+def _sidecar_json(raw, task, manufacturer, fname, modality, overwrite=False,
                   verbose=True):
-    """Create a sidecar json file depending on the kind and save it.
+    """Create a sidecar json file depending on the suffix and save it.
 
-    The sidecar json file provides meta data about the data of a certain kind.
+    The sidecar json file provides meta data about the data
+    of a certain modality.
 
     Parameters
     ----------
@@ -479,8 +478,8 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, overwrite=False,
         coordinate system for the MEG sensors.
     fname : str | BIDSPath
         Filename to save the sidecar json to.
-    kind : str
-        Type of the data as in ALLOWED_MODALITY_KINDS.
+    modality : str
+        Type of the data as in ALLOWED_ELECTROPHYSIO_MODALITY.
     overwrite : bool
         Whether to overwrite the existing file.
         Defaults to False.
@@ -565,14 +564,14 @@ def _sidecar_json(raw, task, manufacturer, fname, kind, overwrite=False,
 
     # Stitch together the complete JSON dictionary
     ch_info_json = ch_info_json_common
-    if kind == 'meg':
-        append_kind_json = ch_info_json_meg
-    elif kind == 'eeg':
-        append_kind_json = ch_info_json_eeg
-    elif kind == 'ieeg':
-        append_kind_json = ch_info_json_ieeg
+    if modality == 'meg':
+        append_modality_json = ch_info_json_meg
+    elif modality == 'eeg':
+        append_modality_json = ch_info_json_eeg
+    elif modality == 'ieeg':
+        append_modality_json = ch_info_json_ieeg
 
-    ch_info_json += append_kind_json
+    ch_info_json += append_modality_json
     ch_info_json += ch_info_ch_counts
     ch_info_json = OrderedDict(ch_info_json)
 
@@ -959,9 +958,11 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     subject_id, session_id = bids_basename.subject, bids_basename.session
     task, run = bids_basename.task, bids_basename.run
     acquisition, space = bids_basename.acquisition, bids_basename.space
-    kind = _handle_kind(raw)
+    modality = _handle_modality(raw)
 
-    bids_fname = bids_basename.copy().update(kind=kind, extension=ext)
+    bids_fname = bids_basename.copy().update(modality=modality,
+                                             suffix=modality,
+                                             extension=ext)
 
     # check whether the info provided indicates that the data is emptyroom
     # data
@@ -980,7 +981,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
                                  "session date.")
 
     data_path = make_bids_folders(subject=subject_id, session=session_id,
-                                  kind=kind, bids_root=bids_root,
+                                  modality=modality, bids_root=bids_root,
                                   overwrite=False, verbose=verbose)
     if session_id is None:
         ses_path = os.sep.join(data_path.split(os.sep)[:-1])
@@ -998,18 +999,18 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
 
     # create *_scans.tsv
     bids_path = BIDSPath(subject=subject_id, session=session_id,
-                         prefix=ses_path, kind='scans', extension='.tsv',
+                         prefix=ses_path, suffix='scans', extension='.tsv',
                          task=None)
     scans_fname = str(bids_path)
 
     # create *_coordsystem.json
     bids_path.update(acquisition=acquisition, space=space,
-                     prefix=data_path, kind='coordsystem',
-                     extension='.json')
+                     prefix=data_path, modality=modality,
+                     suffix='coordsystem', extension='.json')
     coordsystem_fname = str(bids_path)
 
     # create *_electrodes.tsv
-    bids_path = bids_path.update(kind='electrodes',
+    bids_path = bids_path.update(suffix='electrodes',
                                  extension='.tsv')
     electrodes_fname = str(bids_path)
 
@@ -1020,12 +1021,12 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
                                                              'json')
 
     sidecar_fname = bids_fname.copy().update(prefix=data_path,
-                                             kind=kind,
+                                             suffix=modality,
                                              extension='.json')
 
-    events_fname = sidecar_fname.copy().update(kind='events',
+    events_fname = sidecar_fname.copy().update(suffix='events',
                                                extension='.tsv')
-    channels_fname = sidecar_fname.copy().update(kind='channels',
+    channels_fname = sidecar_fname.copy().update(suffix='channels',
                                                  extension='.tsv')
 
     if ext not in ['.fif', '.ds', '.vhdr', '.edf', '.bdf', '.set', '.con',
@@ -1039,12 +1040,12 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
         daysback, keep_his = _check_anonymize(anonymize, raw, ext)
         raw.anonymize(daysback=daysback, keep_his=keep_his, verbose=verbose)
 
-        if kind == 'meg' and ext != '.fif':
+        if modality == 'meg' and ext != '.fif':
             if verbose:
                 warn('Converting to FIF for anonymization')
             convert = True
             bids_fname.update(extension='.fif')
-        elif kind in ['eeg', 'ieeg'] and ext != '.vhdr':
+        elif modality in ['eeg', 'ieeg'] and ext != '.vhdr':
             if verbose:
                 warn('Converting to BV for anonymization')
             convert = True
@@ -1056,7 +1057,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     manufacturer = MANUFACTURERS.get(ext, 'n/a')
 
     # save all participants meta data and readme file
-    _readme(kind, readme_fname, overwrite, verbose)
+    _readme(modality, readme_fname, overwrite, verbose)
 
     # save all participants meta data
     _participants_tsv(raw, subject_id, participants_tsv_fname, overwrite,
@@ -1064,20 +1065,20 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     _participants_json(participants_json_fname, True, verbose)
 
     # for MEG, we only write coordinate system
-    if kind == 'meg' and not emptyroom:
+    if modality == 'meg' and not emptyroom:
         _coordsystem_json(raw, unit, orient,
-                          manufacturer, coordsystem_fname, kind,
+                          manufacturer, coordsystem_fname, modality,
                           overwrite, verbose)
-    elif kind in ['eeg', 'ieeg']:
+    elif modality in ['eeg', 'ieeg']:
         # We only write electrodes.tsv and accompanying coordsystem.json
         # if we have an available DigMontage
         if raw.info['dig'] is not None and raw.info['dig']:
             _write_dig_bids(electrodes_fname, coordsystem_fname, data_path,
-                            raw, kind, overwrite, verbose)
+                            raw, modality, overwrite, verbose)
     else:
-        logger.warning('Writing of electrodes.tsv '
-                       'is not supported for kind "{}". '
-                       'Skipping ...'.format(kind))
+        logger.warning(f'Writing of electrodes.tsv '
+                       f'is not supported for modality "{modality}". '
+                       f'Skipping ...')
 
     events, event_id = _read_events(events_data, event_id, raw, ext,
                                     verbose=verbose)
@@ -1087,7 +1088,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     make_dataset_description(bids_root, name=" ", overwrite=overwrite,
                              verbose=verbose)
 
-    _sidecar_json(raw, task, manufacturer, sidecar_fname, kind, overwrite,
+    _sidecar_json(raw, task, manufacturer, sidecar_fname, modality, overwrite,
                   verbose)
     _channels_tsv(raw, channels_fname, overwrite, verbose)
 
@@ -1104,9 +1105,9 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     # If not already converting for anonymization, we may still need to do it
     # if current format not BIDS compliant
     if not convert:
-        convert = ext not in ALLOWED_MODALITY_EXTENSIONS[kind]
+        convert = ext not in ALLOWED_MODALITY_EXTENSIONS[modality]
 
-    if kind == 'meg' and convert and not anonymize:
+    if modality == 'meg' and convert and not anonymize:
         raise ValueError(f"Got file extension {convert} for MEG data, "
                          f"expected one of "
                          f"{ALLOWED_MODALITY_EXTENSIONS['meg']}")
@@ -1116,14 +1117,14 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
 
     # File saving branching logic
     if convert:
-        if kind == 'meg':
+        if modality == 'meg':
             if ext == '.pdf':
                 bids_fname = op.join(data_path, op.basename(bids_fname))
             _write_raw_fif(raw, bids_fname)
         else:
             if verbose:
                 warn('Converting data files to BrainVision format')
-            bids_fname.update(kind=kind, extension='.vhdr')
+            bids_fname.update(suffix=modality, extension='.vhdr')
             _write_raw_brainvision(raw, bids_fname, events)
     elif ext == '.fif':
         _write_raw_fif(raw, bids_fname)
@@ -1146,7 +1147,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
         sh.copyfile(raw_fname, bids_fname)
 
     # write to the scans.tsv file the output file written
-    scan_relative_fpath = op.join(kind, op.basename(bids_fname))
+    scan_relative_fpath = op.join(modality, op.basename(bids_fname))
     _scans_tsv(raw, scan_relative_fpath, scans_fname, overwrite, verbose)
     if verbose:
         print(f'Wrote {scans_fname} entry with {scan_relative_fpath}.')
@@ -1268,7 +1269,7 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
     t1w_basename = BIDSPath(subject=subject, session=session,
                             acquisition=acquisition,
                             prefix=anat_dir,
-                            kind='T1w', extension='.nii.gz')
+                            suffix='T1w', extension='.nii.gz')
 
     # Check if we have necessary conditions for writing a sidecar JSON
     if trans is not None or landmarks is not None:

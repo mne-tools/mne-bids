@@ -31,7 +31,7 @@ from mne_bids import make_bids_folders, BIDSPath
 # final file path. Omitted keys will not be included in the file path.
 
 bids_basename = BIDSPath(subject='test', session='two', task='mytask',
-                         kind='events', extension='.tsv')
+                         suffix='events', extension='.tsv')
 print(bids_basename)
 
 ###############################################################################
@@ -48,7 +48,7 @@ print(bids_basename)
 # You can also use MNE-BIDS to create folder hierarchies.
 
 path_folder = make_bids_folders(subject='01', session='mysession',
-                                kind='meg', bids_root='path/to/project',
+                                modality='meg', bids_root='path/to/project',
                                 make_dir=False)
 print(path_folder)
 

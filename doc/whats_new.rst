@@ -71,10 +71,13 @@ API
 - A function for retrieval of BIDS entity values from a filename, :func:`mne_bids.path.get_entities_from_fname`, is now part of the public API (it used to be a private function called ``mne_bids.path._parse_bids_filename``), by `Richard Höchenberger`_ (`#487 <https://github.com/mne-tools/mne-bids/pull/487>`_)
 - Entity names passed to :func:`mne_bids.get_entity_vals` must now be in the "long" format, e.g. ``subject`` instead of ``sub`` etc., by `Richard Höchenberger`_ (`#501 <https://github.com/mne-tools/mne-bids/pull/501>`_)
 - Change :func:`mne_bids.path.get_entities_from_fname` to use full entity kwargs (e.g. 'subject' instead of 'sub') in the return dictionary structure by `Adam Li`_ (`#496 <https://github.com/mne-tools/mne-bids/pull/496>`_)
-- Change :class:`mne_bids.BIDSPath` to explicitly use  ``kind`` and ``extension`` instead of ``suffix`` in kwargs, by `Adam Li`_ (`#496 <https://github.com/mne-tools/mne-bids/pull/496>`_)
+- Change :class:`mne_bids.BIDSPath` to explicitly use  ``suffix`` and ``extension`` instead of just ``suffix`` in kwargs, by `Adam Li`_ (`#496 <https://github.com/mne-tools/mne-bids/pull/496>`_)
 - It is now required to specify the Power Line Frequency to use :func:`write_raw_bids`, while in 0.4 it could be estimated, by `Alexandre Gramfort`_ and `Alex Rockhill`_ (`#506 <https://github.com/mne-tools/mne-bids/pull/506>`_)
 - :code:`mne_bids.make_bids_basename` has been removed. Use :class:`mne_bids.BIDSPath` directly, by `Adam Li`_ (`#511 <https://github.com/mne-tools/mne-bids/pull/511>`_)
 - Add ``check`` parameter and attribute to :class:`mne_bids.BIDSPath` that allows users to turn off entity checks by `Adam Li`_ (`#511 <https://github.com/mne-tools/mne-bids/pull/511>`_)
+- Add ``modality`` parameter and attribute to :class:`mne_bids.BIDSPath` that allows users to specify EEG, MEG, or iEEG datasets by `Adam Li`_ (`#514 <https://github.com/mne-tools/mne-bids/pull/514>`_)
+- Add ``modality`` to replace ``kind`` parameter to :func:`mne_bids.make_bids_folders` and :func:`mne_bids.read_raw_bids` that allows users to specify EEG, MEG, or iEEG datasets by `Adam Li`_ (`#514 <https://github.com/mne-tools/mne-bids/pull/514>`_)
+
 
 .. _changes_0_4:
 
@@ -138,7 +141,7 @@ Version 0.3
 Changelog
 ~~~~~~~~~
 
-- New function :func:`mne_bids.get_kinds` for getting data types from a BIDS dataset, by `Stefan Appelhoff`_ (`#253 <https://github.com/mne-tools/mne-bids/pull/253>`_)
+- New function :func:`mne_bids.get_modalities` for getting data types from a BIDS dataset, by `Stefan Appelhoff`_ (`#253 <https://github.com/mne-tools/mne-bids/pull/253>`_)
 - New function :func:`mne_bids.get_entity_vals` allows to get a list of instances of a certain entity in a BIDS directory, by `Mainak Jas`_ and `Stefan Appelhoff`_ (`#252 <https://github.com/mne-tools/mne-bids/pull/252>`_)
 - :func:`mne_bids.print_dir_tree` now accepts an argument :code:`max_depth` which can limit the depth until which the directory tree is printed, by `Stefan Appelhoff`_ (`#245 <https://github.com/mne-tools/mne-bids/pull/245>`_)
 - New command line function exposed :code:`cp` for renaming/copying files including automatic doc generation "CLI", by `Stefan Appelhoff`_ (`#225 <https://github.com/mne-tools/mne-bids/pull/225>`_)
@@ -198,7 +201,7 @@ Bug
 - Allow files with no stim channel, which could be the case for example in resting state data, by `Mainak Jas`_ (`#167 <https://github.com/mne-tools/mne-bids/pull/167/files>`_)
 - Better handling of unicode strings in TSV files, by `Mainak Jas`_ (`#172 <https://github.com/mne-tools/mne-bids/pull/172/files>`_)
 - Fix separator in scans.tsv to always be `/`, by `Matt Sanderson`_ (`#176 <https://github.com/mne-tools/mne-bids/pull/176>`_)
-- Add seeg to :code:`mne_bids.utils._handle_kind` when determining the kind of ieeg data, by `Ezequiel Mikulan`_ (`#180 <https://github.com/mne-tools/mne-bids/pull/180/files>`_)
+- Add seeg to :code:`mne_bids.utils._handle_modality` when determining the kind of ieeg data, by `Ezequiel Mikulan`_ (`#180 <https://github.com/mne-tools/mne-bids/pull/180/files>`_)
 - Fix problem in copying CTF files on Network File System due to a bug upstream in Python by `Mainak Jas`_ (`#174 <https://github.com/mne-tools/mne-bids/pull/174/files>`_)
 - Fix problem in copying BTi files. Now, a utility function ensures that all the related files
   such as config and headshape are copied correctly, by `Mainak Jas`_ (`#135 <https://github.com/mne-tools/mne-bids/pull/135>`_)
