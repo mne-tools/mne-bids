@@ -300,9 +300,9 @@ def test_bids_path_inference(return_bids_test_dir):
 
     # if you set modality, now there is no ambiguity
     channels_fname.update(modality='eeg')
-    assert channels_fname.fpath == extra_file.as_posix()
+    assert channels_fname.fpath == extra_file
     # set state back to original
-    shutil.rmtree(extra_file.parent)
+    shutil.rmtree(Path(extra_file).parent)
 
 
 def test_bids_path(return_bids_test_dir):

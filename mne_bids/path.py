@@ -159,7 +159,8 @@ class BIDSPath(object):
             ('processing', self.processing),
             ('space', self.space),
             ('recording', self.recording),
-            ('suffix', self.suffix),
+            ('split', self.split),
+            ('modality', self.modality)
         ])
 
     @property
@@ -167,7 +168,7 @@ class BIDSPath(object):
         """Path basename."""
         basename = []
         for key, val in self.entities.items():
-            if key != 'suffix' and val is not None:
+            if val is not None and key != 'modality':
                 # convert certain keys to shorthand
                 long_to_short_entity = {
                     val: key for key, val
