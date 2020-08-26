@@ -126,7 +126,7 @@ def _test_anonymize(raw, bids_basename, events_fname=None, event_id=None):
                    overwrite=False)
     scans_tsv = BIDSPath(
         subject=subject_id, session=session_id,
-        suffix='scans', extension='.tsv', bids_root=bids_root)
+        suffix='scans', extension='.tsv', root=bids_root)
     data = _from_tsv(scans_tsv)
     if data['acq_time'] is not None and data['acq_time'][0] != 'n/a':
         assert datetime.strptime(data['acq_time'][0],
@@ -349,7 +349,7 @@ def test_fif(_bids_validate):
     # test that the acquisition time was written properly
     scans_tsv = BIDSPath(
         subject=subject_id, session=session_id,
-        suffix='scans', extension='.tsv', bids_root=bids_root)
+        suffix='scans', extension='.tsv', root=bids_root)
     data = _from_tsv(scans_tsv)
     assert data['acq_time'][0] == meas_date.strftime('%Y-%m-%dT%H:%M:%S')
 
@@ -565,7 +565,7 @@ def test_fif_anonymize(_bids_validate):
     scans_tsv = BIDSPath(
         subject=subject_id, session=session_id,
         suffix='scans', extension='.tsv',
-        bids_root=bids_root)
+        root=bids_root)
     data = _from_tsv(scans_tsv)
 
     # anonymize using MNE manually
@@ -589,7 +589,8 @@ def test_kit(_bids_validate):
     headshape_fname = op.join(data_path, 'test.hsp')
     event_id = dict(cond=1)
 
-    kit_bids_basename = bids_basename.copy().update(acquisition=None)
+    kit_bids_basename = bids_basename.copy().update(acquisition=None,
+                                                    suffix='meg')
 
     raw = _read_raw_kit(
         raw_fname, mrk=hpi_fname, elp=electrode_fname,
@@ -608,7 +609,7 @@ def test_kit(_bids_validate):
     marker_fname = BIDSPath(
         subject=subject_id, session=session_id, task=task, run=run,
         suffix='markers', extension='.sqd',
-        bids_root=bids_root)
+        root=bids_root)
     assert op.exists(marker_fname)
 
     # test anonymize
@@ -622,7 +623,8 @@ def test_kit(_bids_validate):
                                           events_fname, event_id)
 
     # ensure the channels file has no STI 014 channel:
-    channels_tsv = marker_fname.copy().update(suffix='channels',
+    channels_tsv = marker_fname.copy().update(modality='meg',
+                                              suffix='channels',
                                               extension='.tsv')
     data = _from_tsv(channels_tsv)
     assert 'STI 014' not in data['name']
@@ -833,7 +835,7 @@ def test_vhdr(_bids_validate):
     bids_root = _TempDir()
     write_raw_bids(raw, bids_basename, bids_root)
     electrodes_fpath = _find_matching_sidecar(
-        bids_basename.copy().update(bids_root=bids_root),
+        bids_basename.copy().update(root=bids_root),
         suffix='electrodes', extension='.tsv')
     tsv = _from_tsv(electrodes_fpath)
     assert len(tsv.get('impedance', {})) > 0
@@ -900,7 +902,7 @@ def test_edf(_bids_validate):
     with pytest.warns(RuntimeWarning, match='Skipping EEG electrodes.tsv... '
                                             'Setting montage not possible'):
         write_raw_bids(raw, bids_fname, bids_root, overwrite=True)
-        bids_fname.update(bids_root=bids_root)
+        bids_fname.update(root=bids_root)
         electrodes_fpath = _find_matching_sidecar(bids_fname,
                                                   suffix='electrodes',
                                                   extension='.tsv',
@@ -925,7 +927,7 @@ def test_edf(_bids_validate):
     channels_tsv = BIDSPath(
         subject=subject_id, session=session_id, task=task, run=run,
         suffix='channels', extension='.tsv', acquisition=acq,
-        bids_root=bids_root, modality='eeg')
+        root=bids_root, modality='eeg')
     data = _from_tsv(channels_tsv)
     assert 'ElectroMyoGram' in data['description']
 
@@ -933,7 +935,7 @@ def test_edf(_bids_validate):
     scans_tsv = BIDSPath(
         subject=subject_id, session=session_id,
         suffix='scans', extension='.tsv',
-        bids_root=bids_root)
+        root=bids_root)
     data = _from_tsv(scans_tsv)
     assert len(list(data.values())[0]) == 2
 
@@ -985,7 +987,7 @@ def test_edf(_bids_validate):
 
     # XXX: Should be improved with additional coordinate system descriptions
     # iEEG montages written from mne-python end up as "Other"
-    bids_fname.update(bids_root=bids_root)
+    bids_fname.update(root=bids_root)
     electrodes_fname = _find_matching_sidecar(bids_fname,
                                               suffix='electrodes',
                                               extension='.tsv')
@@ -1166,7 +1168,7 @@ def test_write_anat(_bids_validate):
     np.testing.assert_array_equal(list(anat_dict.keys()),
                                   point_list)
     sidecar_basename = BIDSPath(subject='01', session='01',
-                                acquisition='01', bids_root=bids_root,
+                                acquisition='01', root=bids_root,
                                 suffix='T1w', extension='.nii.gz')
     # test the actual values of the voxels (no floating points)
     for i, point in enumerate([(66, 51, 46), (41, 32, 74), (17, 53, 47)]):

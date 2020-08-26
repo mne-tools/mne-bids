@@ -993,7 +993,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
 
     # create *_scans.tsv
     bids_path = BIDSPath(subject=subject_id, session=session_id,
-                         bids_root=bids_root,
+                         root=bids_root,
                          suffix='scans', extension='.tsv')
     scans_fname = bids_path.fpath
 
@@ -1024,7 +1024,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     if ext not in ['.fif', '.ds', '.vhdr', '.edf', '.bdf', '.set', '.con',
                    '.sqd']:
         bids_raw_folder = str(bids_fname).split(".")[0]
-        bids_fname.update(bids_root=bids_raw_folder)
+        bids_fname.update(root=bids_raw_folder)
 
     # Anonymize
     convert = False
@@ -1258,7 +1258,7 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
     # this needs to be a string, since nibabel assumes a string input
     t1w_basename = BIDSPath(subject=subject, session=session,
                             acquisition=acquisition,
-                            bids_root=bids_root,
+                            root=bids_root,
                             suffix='T1w', extension='.nii.gz')
 
     # Check if we have necessary conditions for writing a sidecar JSON

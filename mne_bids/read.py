@@ -330,11 +330,14 @@ def read_raw_bids(bids_basename, bids_root, modality=None, extra_params=None,
     bids_basename = bids_basename.copy()
     sub = bids_basename.subject
     ses = bids_basename.session
-    bids_basename.update(bids_root=bids_root)
 
+    # set root, infer the modality and
+    # then set it to the modality and suffix of the BIDSPath
+    bids_basename.update(root=bids_root)
     if modality is None:
         modality = _infer_modality(bids_root=bids_root,
                                    sub=sub, ses=ses)
+    bids_basename.update(modality=modality, suffix=modality)
 
     data_dir = make_bids_folders(subject=sub, session=ses, modality=modality,
                                  make_dir=False)

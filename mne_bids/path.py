@@ -71,7 +71,7 @@ class BIDSPath(object):
     modality : str
         The "modality" of folder being created at the end of the hierarchy.
         E.g., "anat", "func", "eeg", "meg", "ieeg", etc.
-    bids_root : str | None
+    root : str | None
         The root for the filename to be created. E.g., a path to the folder
         in which you wish to create a file with this name.
     check : bool
@@ -109,7 +109,7 @@ class BIDSPath(object):
     >>> print(new_basename.basename)
     sub-test2_ses-one_task-mytask_ieeg.edf
     >>> # printing the BIDSPath will show relative path when
-    >>> # bids_root is not set
+    >>> # root is not set
     >>> print(new_basename)
     sub-test2/ses-one/ieeg/sub-test2_ses-one_task-mytask_ieeg.edf
     >>> new_basename.update(suffix='channels', extension='.tsv')
@@ -118,8 +118,8 @@ class BIDSPath(object):
     >>> print(new_basename)
     sub-test2/ses-one/*/sub-test2_ses-one_task-mytask_channels.tsv
     >>> # set a bids_root
-    >>> new_basename.update(bids_root='/bids_dataset')
-    >>> print(new_basename.bids_root)
+    >>> new_basename.update(root='/bids_dataset')
+    >>> print(new_basename.root)
     /bids_dataset
     >>> print(new_basename.basename)
     sub-test2_ses-one_task-mytask_ieeg.edf
@@ -129,11 +129,11 @@ class BIDSPath(object):
 
     def __init__(self, subject=None, session=None,
                  task=None, acquisition=None, run=None, processing=None,
-                 recording=None, space=None, split=None, bids_root=None,
+                 recording=None, space=None, split=None, root=None,
                  suffix=None, extension=None, modality=None, check=True):
         if all(ii is None for ii in [subject, session, task,
                                      acquisition, run, processing,
-                                     recording, space, bids_root, suffix,
+                                     recording, space, root, suffix,
                                      extension]):
             raise ValueError("At least one parameter must be given.")
 
@@ -142,7 +142,7 @@ class BIDSPath(object):
         self.update(subject=subject, session=session, task=task,
                     acquisition=acquisition, run=run, processing=processing,
                     recording=recording, space=space, split=split,
-                    bids_root=bids_root, modality=modality,
+                    root=root, modality=modality,
                     suffix=suffix, extension=extension)
 
     @property
@@ -190,7 +190,7 @@ class BIDSPath(object):
     def __repr__(self):
         """Representation in the style of `pathlib.Path`."""
         return f'{self.__class__.__name__}(\n' \
-               f'bids_root: {self.bids_root}\n' \
+               f'root: {self.root}\n' \
                f'basename: {self.basename})'
 
     def __fspath__(self):
@@ -230,8 +230,8 @@ class BIDSPath(object):
         """
         # create the data path based on entities available
         # bids_root, subject, session and suffix
-        if self.bids_root is not None:
-            data_path = self.bids_root
+        if self.root is not None:
+            data_path = self.root
         else:
             data_path = ''
         if self.subject is not None:
@@ -257,7 +257,7 @@ class BIDSPath(object):
             # not None, then BIDSPath will infer the dataset
             # else, return the relative path with the basename
             if (self.suffix is None or self.extension is None) and \
-                    self.bids_root is not None:
+                    self.root is not None:
                 # get matching BIDS paths inside the bids root
                 matching_paths = \
                     _get_matching_bidspaths_from_filesystem(self)
@@ -267,7 +267,7 @@ class BIDSPath(object):
                     msg = (f'Could not locate a data file of a supported '
                            f'format. This is likely a problem with your '
                            f'BIDS dataset. Please run the BIDS validator '
-                           f'on your data. (bids_root={self.bids_root}, '
+                           f'on your data. (root={self.root}, '
                            f'basename={self.basename}). '
                            f'{matching_paths}')
                     warn(msg)
@@ -324,7 +324,7 @@ class BIDSPath(object):
             Allowed BIDS path entities:
             'subject', 'session', 'task', 'acquisition',
             'processing', 'run', 'recording', 'space',
-            'suffix', 'prefix'
+            'suffix'
 
         Returns
         -------
@@ -339,13 +339,12 @@ class BIDSPath(object):
         >>> bids_basename = BIDSPath(subject='test', session='two',
                                      task='mytask', suffix='channels',
                                      extension='.tsv')
-        >>> print(bids_basename)
+        >>> print(bids_basename.basename)
         sub-test_ses-two_task-mytask_channels.tsv
         >>> # Then, one can update this `BIDSPath` object in place
         >>> bids_basename.update(acquisition='test', suffix='ieeg',
                                  extension='.vhdr', task=None)
-        BIDSPath(sub-test_ses-two_acq-test_ieeg.vhdr)
-        >>> print(bids_basename)
+        >>> print(bids_basename.basename)
         sub-test_ses-two_acq-test_ieeg.vhdr
         """
         run = entities.get('run')
@@ -368,7 +367,7 @@ class BIDSPath(object):
         # error check entities
         for key, val in entities.items():
             # check if there are any characters not allowed
-            if val is not None and key != 'bids_root':
+            if val is not None and key != 'root':
                 _check_key_val(key, val)
 
             # error check allowed BIDS entity keywords
@@ -377,7 +376,7 @@ class BIDSPath(object):
                                  f'{ALLOWED_PATH_ENTITIES}, got {key}')
 
             # set entity value
-            if key == 'bids_root' and val is not None:
+            if key == 'root' and val is not None:
                 # ensure prefix is a string
                 val = str(val)
             setattr(self, key, val)
@@ -443,7 +442,7 @@ def _get_matching_bidspaths_from_filesystem(bids_path):
     # extract relevant entities to find filepath
     sub, ses = bids_path.subject, bids_path.session
     modality = bids_path.modality
-    basename, bids_root = bids_path.basename, bids_path.bids_root
+    basename, bids_root = bids_path.basename, bids_path.root
 
     if modality is None:
         modality = _infer_modality(bids_root=bids_root,
@@ -468,21 +467,21 @@ def _get_matching_bidspaths_from_filesystem(bids_path):
             search_str = op.join(search_str, f'ses-{ses}')
         search_str = op.join(search_str, '**', f'{basename}*')
 
-    # Find all matching files in all supported formats.
-    valid_exts = ALLOWED_FILENAME_EXTENSIONS
-    matching_paths = glob.glob(search_str)
-    matching_paths = [p for p in matching_paths
-                      if _parse_ext(p)[1] in valid_exts]
-
-    # FIXME This will break e.g. with FIFF data split across multiple
-    # FIXME files.
-    # if extension is not specified and there is no unique file path
-    # return filepath of the actual dataset for MEG/EEG/iEEG data
-    if len(matching_paths) > 1:
-        # now only use valid modality extension
-        valid_exts = sum(ALLOWED_MODALITY_EXTENSIONS.values(), [])
+        # Find all matching files in all supported formats.
+        valid_exts = ALLOWED_FILENAME_EXTENSIONS
+        matching_paths = glob.glob(search_str)
         matching_paths = [p for p in matching_paths
                           if _parse_ext(p)[1] in valid_exts]
+
+        # FIXME This will break e.g. with FIFF data split across multiple
+        # FIXME files.
+        # if extension is not specified and there is no unique file path
+        # return filepath of the actual dataset for MEG/EEG/iEEG data
+        if len(matching_paths) > 1:
+            # now only use valid modality extension
+            valid_exts = sum(ALLOWED_MODALITY_EXTENSIONS.values(), [])
+            matching_paths = [p for p in matching_paths
+                              if _parse_ext(p)[1] in valid_exts]
     return matching_paths
 
 
@@ -1166,7 +1165,7 @@ def get_matched_basenames(bids_root, *, subject=None, session=None, task=None,
     paths = []
     for fname in fnames:
         entity = get_entities_from_fname(fname)
-        path = BIDSPath(bids_root=bids_root, **entity)
+        path = BIDSPath(root=bids_root, **entity)
         paths.append(path)
 
     return paths

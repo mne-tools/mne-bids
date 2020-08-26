@@ -233,7 +233,7 @@ def test_find_matching_sidecar(return_bids_test_dir):
     """Test finding a sidecar file from a BIDS dir."""
     bids_root = return_bids_test_dir
 
-    bids_fpath = bids_basename.copy().update(bids_root=bids_root)
+    bids_fpath = bids_basename.copy().update(root=bids_root)
 
     # Now find a sidecar
     sidecar_fname = _find_matching_sidecar(bids_fpath,
@@ -264,7 +264,7 @@ def test_bids_path(return_bids_test_dir):
 
     bids_path = BIDSPath(
         subject=subject_id, session=session_id, run=run, acquisition=acq,
-        task=task, bids_root=bids_root)
+        task=task, root=bids_root)
 
     # test bids path without bids_root, suffix, extension
     # basename and fpath should be the same
@@ -275,10 +275,11 @@ def test_bids_path(return_bids_test_dir):
     assert op.dirname(bids_path.fpath).startswith(bids_root)
 
     # when bids root is not passed in, passes relative path
-    bids_path2 = bids_path.copy().update(bids_root=None)
+    bids_path2 = bids_path.copy().update(modality='meg', root=None)
     expected_relpath = op.join(
         f'sub-{subject_id}', f'ses-{session_id}', 'meg',
         expected_basename)
+    print(bids_path2.fpath)
     assert bids_path2.fpath == expected_relpath
 
     # without bids_root and with suffix/extension
@@ -291,7 +292,7 @@ def test_bids_path(return_bids_test_dir):
 
     # with bids_root, but without suffix/extension
     # basename should work, but fpath should not.
-    bids_path.update(bids_root=bids_root, suffix=None, extension=None)
+    bids_path.update(root=bids_root, suffix=None, extension=None)
     assert bids_path.basename == expected_basename
 
     # should find the correct filename if suffix was passed
@@ -311,7 +312,7 @@ def test_bids_path(return_bids_test_dir):
     assert all(bids_basename.entities.get(entity) is None
                for entity in ['task', 'run', 'recording', 'acquisition',
                               'space', 'processing', 'split',
-                              'bids_root', 'modality',
+                              'root', 'modality',
                               'suffix', 'extension'])
 
     # test updating functionality
@@ -390,13 +391,15 @@ def test_make_filenames():
                        acquisition='four', run='five', processing='six',
                        recording='seven', suffix='ieeg', extension='.json')
     expected_str = 'sub-one_ses-two_task-three_acq-four_run-five_proc-six_rec-seven_ieeg.json'  # noqa
-    assert str(BIDSPath(**prefix_data)) == expected_str
+    assert BIDSPath(**prefix_data).basename == expected_str
+    assert BIDSPath(**prefix_data) == op.join('sub-one', 'ses-two',
+                                              'ieeg', expected_str)
 
     # subsets of keys works
-    assert (BIDSPath(subject='one', task='three', run=4) ==
+    assert (BIDSPath(subject='one', task='three', run=4).basename ==
             'sub-one_task-three_run-04')
     assert (BIDSPath(subject='one', task='three',
-                     suffix='meg', extension='.json') ==
+                     suffix='meg', extension='.json').basename ==
             'sub-one_task-three_meg.json')
 
     with pytest.raises(ValueError):
