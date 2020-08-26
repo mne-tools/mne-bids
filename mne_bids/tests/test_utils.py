@@ -44,7 +44,7 @@ def test_get_ch_type_mapping():
 
 
 def test_handle_modality():
-    """Test the automatic extraction of str_suffix from the data."""
+    """Test the automatic extraction of modality from the data."""
     # Create a dummy raw
     n_channels = 1
     sampling_rate = 100
