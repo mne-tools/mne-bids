@@ -380,7 +380,7 @@ def test_bids_path(return_bids_test_dir):
                          task='03', suffix='ieeg',
                          extension='.edf')
     assert repr(bids_path) == ('BIDSPath(\n'
-                               'bids_root: None\n'
+                               'root: None\n'
                                'basename: sub-01_ses-02_task-03_ieeg.edf)')
 
 
@@ -470,7 +470,7 @@ def test_get_matched_basenames(return_bids_test_dir):
     paths = get_matched_basenames(bids_root=bids_root)
     assert len(paths) == 7
     assert all('sub-01_ses-01' in p.basename for p in paths)
-    assert all([p.bids_root == bids_root for p in paths])
+    assert all([p.root == bids_root for p in paths])
 
     paths = get_matched_basenames(bids_root=bids_root, run='01')
     assert len(paths) == 3

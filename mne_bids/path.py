@@ -86,6 +86,8 @@ class BIDSPath(object):
         ``run``, ``processing``, ``space``, ``recording`` and ``suffix``.
     basename : str
         The basename of the file path. Similar to `os.path.basename(fpath)`.
+    root : str
+        The root of the BIDS path.
     fpath : str
         The full file path.
     check : bool
@@ -96,34 +98,34 @@ class BIDSPath(object):
 
     Examples
     --------
-    >>> bids_basename = BIDSPath(subject='test', session='two', task='mytask',
+    >>> bids_path = BIDSPath(subject='test', session='two', task='mytask',
                                  suffix='ieeg', extension='.edf')
-    >>> print(bids_basename.basename)
+    >>> print(bids_path.basename)
     sub-test_ses-two_task-mytask_ieeg.edf
-    >>> bids_basename
+    >>> bids_path
     BIDSPath(root: None,
     basename: sub-test_ses-two_task-mytask_ieeg.edf)
     >>> # copy and update multiple entities at once
-    >>> new_basename = bids_basename.copy().update(subject='test2',
+    >>> new_bids_path = bids_path.copy().update(subject='test2',
                                                    session='one')
-    >>> print(new_basename.basename)
+    >>> print(new_bids_path.basename)
     sub-test2_ses-one_task-mytask_ieeg.edf
     >>> # printing the BIDSPath will show relative path when
     >>> # root is not set
-    >>> print(new_basename)
+    >>> print(new_bids_path)
     sub-test2/ses-one/ieeg/sub-test2_ses-one_task-mytask_ieeg.edf
-    >>> new_basename.update(suffix='channels', extension='.tsv')
+    >>> new_bids_path.update(suffix='channels', extension='.tsv')
     >>> # setting suffix without an identifiable modality will
     >>> # result in a wildcard at the modality directory level
-    >>> print(new_basename)
+    >>> print(new_bids_path)
     sub-test2/ses-one/*/sub-test2_ses-one_task-mytask_channels.tsv
     >>> # set a bids_root
-    >>> new_basename.update(root='/bids_dataset')
-    >>> print(new_basename.root)
+    >>> new_bids_path.update(root='/bids_dataset')
+    >>> print(new_bids_path.root)
     /bids_dataset
-    >>> print(new_basename.basename)
+    >>> print(new_bids_path.basename)
     sub-test2_ses-one_task-mytask_ieeg.edf
-    >>> print(new_basename)
+    >>> print(new_bids_path)
     /bids_dataset/sub-test2/ses-one/ieeg/sub-test2_ses-one_task-mytask_ieeg.edf
     """
 
@@ -706,7 +708,7 @@ def _find_matching_sidecar(bids_path, suffix=None,
         and no sidecar_fname was found
 
     """
-    bids_root = bids_path.bids_root
+    bids_root = bids_path.root
 
     # search suffix is BIDS-suffix and extension
     search_suffix = ''

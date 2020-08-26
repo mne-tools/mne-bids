@@ -787,7 +787,7 @@ def test_vhdr(_bids_validate):
     # is in channels.tsv
     suffix, ext = 'channels', '.tsv'
     channels_tsv_name = bids_basename_minimal.copy().update(
-        modality='eeg', bids_root=bids_root, suffix=suffix, extension=ext)
+        modality='eeg', root=bids_root, suffix=suffix, extension=ext)
 
     data = _from_tsv(channels_tsv_name)
     assert data['units'][data['name'].index('FP1')] == 'µV'
@@ -1034,7 +1034,7 @@ def test_bdf(_bids_validate):
     # we will change the channel type to MISC and overwrite the channels file
     bids_fname = bids_basename.copy().update(suffix='eeg',
                                              extension='.bdf',
-                                             bids_root=bids_root)
+                                             root=bids_root)
     channels_fname = _find_matching_sidecar(bids_fname,
                                             suffix='channels',
                                             extension='.tsv')

@@ -962,7 +962,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
 
     bids_fname = bids_basename.copy().update(
         modality=modality, suffix=modality, extension=ext,
-        bids_root=bids_root)
+        root=bids_root)
 
     # check whether the info provided indicates that the data is emptyroom
     # data
