@@ -299,17 +299,16 @@ class BIDSPath(object):
 
         Also performs error checks on various entities to
         adhere to the BIDS specification. Specifically:
-        - ``suffix`` should be one of:
-            (``anat``, ``eeg``, ``ieeg``, ``meg``)
+        - ``suffix`` should be one of: ``anat``, ``eeg``, ``ieeg``, ``meg``
         - ``extension`` should be one of the accepted file
-        extensions in the file path: (``.con``, ``.sqd``, ``.fif``,
+        extensions in the file path: ``.con``, ``.sqd``, ``.fif``,
         ``.pdf``, ``.ds``, ``.vhdr``, ``.edf``, ``.bdf``, ``.set``,
-        ``.edf``, ``.set``, ``.mef``, ``.nwb``)
-        - ``suffix`` should be one acceptable file suffixes in:
-        (``meg``, ``markers``, ``eeg``, ``ieeg``, ``T1w``,
+        ``.edf``, ``.set``, ``.mef``, ``.nwb``
+        - ``suffix`` should be one acceptable file suffixes in: ``meg``,
+        ``markers``, ``eeg``, ``ieeg``, ``T1w``,
         ``participants``, ``scans``, ``electrodes``, ``channels``,
         ``coordsystem``, ``events``, ``headshape``, ``digitizer``,
-        ``behav``, ``phsyio``, ``stim``)
+        ``behav``, ``phsyio``, ``stim``
 
         Parameters
         ----------
