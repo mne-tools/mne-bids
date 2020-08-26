@@ -331,8 +331,7 @@ def _scale_coord_to_meters(coord, unit):
         return coord
 
 
-def _check_empty_room_basename(bids_path, on_invalid_er_session='raise',
-                               on_invalid_er_task='raise'):
+def _check_empty_room_basename(bids_path, on_invalid_er_task='raise'):
     # only check task entity for emptyroom when it is the sidecar/MEG file
     if bids_path.kind == 'meg':
         if bids_path.task != 'noise':
@@ -344,19 +343,6 @@ def _check_empty_room_basename(bids_path, on_invalid_er_session='raise',
                 logger.critical(msg)
             else:
                 pass
-    try:
-        datetime.strptime(bids_path.session, '%Y%m%d')
-    except (ValueError, TypeError):
-        msg = (f'empty-room session should be a string of format '
-               f'YYYYMMDD, but received: {bids_path.session}')
-        if on_invalid_er_session == 'raise':
-            raise ValueError(msg)
-        elif on_invalid_er_session == 'warn':
-            msg = (f'{msg}. Will proceed anyway, but you should consider '
-                   f'fixing your dataset.')
-            logger.critical(msg)
-        else:
-            pass
 
 
 def _check_anonymize(anonymize, raw, ext):
