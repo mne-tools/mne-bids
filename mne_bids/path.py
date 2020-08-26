@@ -73,9 +73,10 @@ class BIDSPath(object):
     Attributes
     ----------
     check : bool
-        If True enforces the entities to be valid according to the
-        current BIDS standard. The check is performed on instantiation
-        and any ``update`` function calls.
+        If ``True``, enforces the entities to be valid according to the
+        BIDS specification. The check is performed on instantiation
+        and any ``update`` function calls (and may be overridden in the
+        latter).
 
     Examples
     --------
@@ -230,11 +231,18 @@ class BIDSPath(object):
 
         return bids_fname
 
-    def update(self, **entities):
+    def update(self, check=None, **entities):
         """Update inplace BIDS entity key/value pairs in object.
 
         Parameters
         ----------
+        check : None | bool
+            If a boolean, controls whether to enforce the entities to be valid
+            according to the BIDS specification. This will set the
+            ``.check`` attribute accordingly. If ``None``, rely on the existing
+            ``.check`` attribute instead, which is set upon ``BIDSPath``
+            instantiation. Defaults to ``None``.
+
         entities : dict | kwarg
             Allowed BIDS path entities:
             'subject', 'session', 'task', 'acquisition',
@@ -297,7 +305,9 @@ class BIDSPath(object):
                 val = str(val)
             setattr(self, key, val)
 
-        # perform a check of the entities
+        # Update .check attribute and perform a check of the entities.
+        if check is not None:
+            self.check = check
         self._check()
         return self
 
