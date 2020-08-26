@@ -176,9 +176,10 @@ current BIDS standard. Defaults to True.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Attributes</dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>check</strong><span class="classifier">bool</span></dt><dd><p>If True enforces the entities to be valid according to the
-current BIDS standard. The check is performed on instantiation
-and any <code class="docutils literal notranslate"><span class="pre">update</span></code> function calls.</p>
+<dt><strong>check</strong><span class="classifier">bool</span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, enforces the entities to be valid according to the
+BIDS specification. The check is performed on instantiation
+and any <code class="docutils literal notranslate"><span class="pre">update</span></code> function calls (and may be overridden in the
+latter).</p>
 </dd>
 </dl>
 </dd>
@@ -196,7 +197,7 @@ and any <code class="docutils literal notranslate"><span class="pre">update</spa
 <tr class="row-even"><td><p><a class="reference internal" href="#mne_bids.path.BIDSPath.get_bids_fname" title="mne_bids.path.BIDSPath.get_bids_fname"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_bids_fname</span></code></a>([kind, bids_root, extension])</p></td>
 <td><p>Get the BIDS filename, by inferring kind and extension.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#mne_bids.path.BIDSPath.update" title="mne_bids.path.BIDSPath.update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code></a>(**entities)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mne_bids.path.BIDSPath.update" title="mne_bids.path.BIDSPath.update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code></a>([check])</p></td>
 <td><p>Update inplace BIDS entity key/value pairs in object.</p></td>
 </tr>
 </tbody>
@@ -260,11 +261,17 @@ will be added to the filename.</p>
 
 <dl class="py method">
 <dt id="mne_bids.path.BIDSPath.update">
-<code class="sig-name descname">update</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">**</span><span class="n">entities</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/path.html#BIDSPath.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.path.BIDSPath.update" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">update</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">check</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">entities</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/path.html#BIDSPath.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.path.BIDSPath.update" title="Permalink to this definition">¶</a></dt>
 <dd><p>Update inplace BIDS entity key/value pairs in object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
+<dt><strong>check</strong><span class="classifier">None | bool</span></dt><dd><p>If a boolean, controls whether to enforce the entities to be valid
+according to the BIDS specification. This will set the
+<code class="docutils literal notranslate"><span class="pre">.check</span></code> attribute accordingly. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, rely on the existing
+<code class="docutils literal notranslate"><span class="pre">.check</span></code> attribute instead, which is set upon <code class="docutils literal notranslate"><span class="pre">BIDSPath</span></code>
+instantiation. Defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</dd>
 <dt><strong>entities</strong><span class="classifier">dict | kwarg</span></dt><dd><p>Allowed BIDS path entities:
 ‘subject’, ‘session’, ‘task’, ‘acquisition’,
 ‘processing’, ‘run’, ‘recording’, ‘space’,
@@ -316,7 +323,7 @@ will be added to the filename.</p>
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-08-25.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-08-26.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
     </p>
   </div>
