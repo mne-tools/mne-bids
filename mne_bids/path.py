@@ -463,7 +463,7 @@ class BIDSPath(object):
 
 def _get_matching_bidspaths_from_filesystem(bids_path):
     """Get matching file paths for a BIDS path.
-    
+
     Assumes suffix and/or extension is not provided.
     """
     # extract relevant entities to find filepath
