@@ -673,7 +673,7 @@ def test_get_matched_emptyroom_no_meas_date():
     er_meas_date = None
 
     er_dir = make_bids_folders(subject='emptyroom', session=er_session,
-                               kind='meg', bids_root=bids_root)
+                               modality='meg', bids_root=bids_root)
     er_bids_path = BIDSPath(subject='emptyroom', session=er_session,
                             task='noise', check=False)
     er_basename = str(er_bids_path)
