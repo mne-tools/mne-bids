@@ -302,16 +302,14 @@ class BIDSPath(object):
         - ``suffix`` should be one of:
             (``anat``, ``eeg``, ``ieeg``, ``meg``)
         - ``extension`` should be one of the accepted file
-        extensions in the file path:
-             (``.con``, ``.sqd``, ``.fif``, ``.pdf``, ``.ds``,
-              ``.vhdr``, ``.edf``, ``.bdf``, ``.set``, ``.edf``,
-              ``.set``, ``.mef``, ``.nwb``)
+        extensions in the file path: (``.con``, ``.sqd``, ``.fif``,
+        ``.pdf``, ``.ds``, ``.vhdr``, ``.edf``, ``.bdf``, ``.set``,
+        ``.edf``, ``.set``, ``.mef``, ``.nwb``)
         - ``suffix`` should be one acceptable file suffixes in:
-            (``meg``, ``markers``, ``eeg``, ``ieeg``, ``T1w``,
-            ``participants``, ``scans``,
-            ``electrodes``, ``channels``, ``coordsystem``,
-            ``events``, ``headshape``, ``digitizer``,
-            ``behav``, ``phsyio``, ``stim``)
+        (``meg``, ``markers``, ``eeg``, ``ieeg``, ``T1w``,
+        ``participants``, ``scans``, ``electrodes``, ``channels``,
+        ``coordsystem``, ``events``, ``headshape``, ``digitizer``,
+        ``behav``, ``phsyio``, ``stim``)
 
         Parameters
         ----------
