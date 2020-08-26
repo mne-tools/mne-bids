@@ -516,7 +516,7 @@ def get_matched_empty_room(bids_basename, bids_root):
 
             er_raw = read_raw_bids(bids_basename=er_bids_path,
                                    bids_root=bids_root,
-                                   kind=kind,
+                                   modality=modality,
                                    extra_params=extra_params)
 
             er_meas_date = er_raw.info['meas_date']
