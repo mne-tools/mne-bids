@@ -147,12 +147,11 @@ def test_write_correct_inputs():
                                            'BIDSPath object'):
         write_raw_bids(raw, bids_path_str)
 
-    bids_root = _TempDir()
-    bids_path.update(root=bids_root)
+    bids_path.update(root=None)
     with pytest.raises(
-            RuntimeError,
+            ValueError,
             match='The root of the "bids_path" must be set'):
-        write_raw_bids(raw, bids_path_str)
+        write_raw_bids(raw, bids_path)
 
 
 def test_make_dataset_description():
