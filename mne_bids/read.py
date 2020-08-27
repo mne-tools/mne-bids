@@ -287,13 +287,10 @@ def read_raw_bids(bids_path, extra_params=None, verbose=True):
     Parameters
     ----------
     bids_path : BIDSPath
-        The base filename of the BIDS compatible files. Typically, this can be
-        generated using :func:`mne_bids.BIDSPath`. The path to root of the
-        BIDS folder must be passed in via the ``BIDSPath`` object.
-        In addition, the kind of recording via the ``modality`` property of
-        the ``BIDSPath`` object may be passed in. If ``None`` and only
-        one modality (e.g., only EEG or only MEG data) is present in the
-        dataset, it will be selected automatically.
+        The file to read. The :class:mne_bids.BIDSPath instance passed here
+        must have the .root attribute set. The .modality attribute may be set.
+        If .modality is not set and only one modality (e.g., only EEG or MEG
+        data) is present in the dataset, it will be selected automatically.
     extra_params : None | dict
         Extra parameters to be passed to MNE read_raw_* functions.
         If a dict, for example: ``extra_params=dict(allow_maxshield=True)``.

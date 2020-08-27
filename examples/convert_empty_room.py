@@ -79,7 +79,7 @@ for date in dates:
     er_bids_path.update(session=date)
     er_meas_date = datetime.strptime(date, '%Y%m%d')
     er_raw.set_meas_date(er_meas_date.replace(tzinfo=timezone.utc))
-    write_raw_bids(er_raw, er_bids_path, bids_root, overwrite=True)
+    write_raw_bids(er_raw, er_bids_path, overwrite=True)
 
 ###############################################################################
 # Let us look at the directory structure

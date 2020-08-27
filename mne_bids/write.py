@@ -824,10 +824,11 @@ def write_raw_bids(raw, bids_path, events_data=None,
         The raw data. It must be an instance of mne.Raw. The data should not be
         loaded from disk, i.e., raw.preload must be False.
     bids_path : BIDSPath
-        The base filename of the BIDS compatible files. Typically, this can be
-        generated using :func:`mne_bids.BIDSPath`, and then calling
-        ``basename`` property. The path to root of the
-        BIDS folder must be passed in via the ``BIDSPath`` object.
+        The file to write. The :class:mne_bids.BIDSPath instance passed here
+        must have the .root attributes set. If the .modality attribute is not
+        set, then it will be inferred from the type of recordings in the
+        ``raw`` instance.
+
         Example: `sub-01_ses-01_task-testing_acq-01_run-01`.
         This will write the following files in the correct subfolder of the
         bids_root::

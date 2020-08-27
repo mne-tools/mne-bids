@@ -46,7 +46,8 @@ task = 'somato'
 modality = 'meg'
 
 bids_path = BIDSPath(subject=subject_id, task=task,
-                     modality=modality, root=bids_root)
+                     modality=modality, suffix=modality,
+                     root=bids_root)
 
 # bids basename is nicely formatted
 print(bids_path)
