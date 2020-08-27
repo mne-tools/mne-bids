@@ -142,10 +142,17 @@ def test_write_correct_inputs():
                         'sample_audvis_trunc_raw.fif')
     raw = _read_raw_fif(raw_fname)
 
-    bids_path = 'sub-01_ses-01_meg.fif'
+    bids_path_str = 'sub-01_ses-01_meg.fif'
     with pytest.raises(RuntimeError, match='"bids_path" must be a '
                                            'BIDSPath object'):
-        write_raw_bids(raw, bids_path)
+        write_raw_bids(raw, bids_path_str)
+
+    bids_root = _TempDir()
+    bids_path.update(root=bids_root)
+    with pytest.raises(
+            RuntimeError,
+            match='The root of the "bids_path" must be set'):
+        write_raw_bids(raw, bids_path_str)
 
 
 def test_make_dataset_description():
