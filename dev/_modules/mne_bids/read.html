@@ -540,9 +540,10 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    er_basename : str | None.</span>
-<span class="sd">        The basename corresponding to the best-matching empty-room measurement.</span>
+<span class="sd">    BIDSPath | None</span>
+<span class="sd">        The path corresponding to the best-matching empty-room measurement.</span>
 <span class="sd">        Returns None if none was found.</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># convert to BIDS Path</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bids_basename</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
@@ -601,7 +602,7 @@
 
     <span class="c1"># Walk through recordings, trying to extract the recording date:</span>
     <span class="c1"># First, from the filename; and if that fails, from `info[&#39;meas_date&#39;]`.</span>
-    <span class="n">best_er_basename</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">best_er_bids_path</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">min_delta_t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
     <span class="n">date_tie</span> <span class="o">=</span> <span class="kc">False</span>
 
@@ -610,8 +611,8 @@
         <span class="n">params</span> <span class="o">=</span> <span class="n">get_entities_from_fname</span><span class="p">(</span><span class="n">er_fname</span><span class="p">)</span>
         <span class="n">er_meas_date</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">params</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;subject&#39;</span><span class="p">)</span>  <span class="c1"># er subject entity is different</span>
-        <span class="n">er_bids_path</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="s1">&#39;emptyroom&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">,</span>
-                                <span class="n">check</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">er_bids_path</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="s1">&#39;emptyroom&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">,</span> <span class="n">modality</span><span class="o">=</span><span class="s1">&#39;meg&#39;</span><span class="p">,</span>
+                                <span class="n">root</span><span class="o">=</span><span class="n">bids_root</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
         <span class="c1"># Try to extract date from filename.</span>
         <span class="k">if</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;session&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -646,7 +647,7 @@
             <span class="n">date_tie</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">elif</span> <span class="nb">abs</span><span class="p">(</span><span class="n">delta_t</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">())</span> <span class="o">&lt;</span> <span class="n">min_delta_t</span><span class="p">:</span>
             <span class="n">min_delta_t</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">delta_t</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">())</span>
-            <span class="n">best_er_basename</span> <span class="o">=</span> <span class="n">er_bids_path</span><span class="o">.</span><span class="n">basename</span>
+            <span class="n">best_er_bids_path</span> <span class="o">=</span> <span class="n">er_bids_path</span>
             <span class="n">date_tie</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="k">if</span> <span class="n">failed_to_get_er_date_count</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
@@ -659,7 +660,7 @@
                <span class="s1">&#39;same recording date. Selecting the first match.&#39;</span><span class="p">)</span>
         <span class="n">warn</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">best_er_basename</span></div>
+    <span class="k">return</span> <span class="n">best_er_bids_path</span></div>
 
 
 <div class="viewcode-block" id="get_head_mri_trans"><a class="viewcode-back" href="../../generated/mne_bids.get_head_mri_trans.html#mne_bids.get_head_mri_trans">[docs]</a><span class="k">def</span> <span class="nf">get_head_mri_trans</span><span class="p">(</span><span class="n">bids_basename</span><span class="p">,</span> <span class="n">bids_root</span><span class="p">):</span>
