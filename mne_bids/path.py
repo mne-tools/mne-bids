@@ -377,18 +377,17 @@ class BIDSPath(object):
 
         # error check entities
         for key, val in entities.items():
-            # check if there are any characters not allowed
-            if val is not None and key != 'root':
-                _check_key_val(key, val)
-
             # error check allowed BIDS entity keywords
             if key not in ALLOWED_PATH_ENTITIES:
                 raise ValueError(f'Key must be one of '
                                  f'{ALLOWED_PATH_ENTITIES}, got {key}')
 
-            # set entity value
+            # check if there are any characters not allowed
+            if val is not None and key != 'root':
+                _check_key_val(key, val)
+
+            # set entity value, ensuring `root` is a string
             if key == 'root' and val is not None:
-                # ensure prefix is a string
                 val = str(val)
             setattr(self, key, val)
 
