@@ -323,7 +323,7 @@ def read_raw_bids(bids_path, extra_params=None, verbose=True):
     """
     if not isinstance(bids_path, BIDSPath):
         raise RuntimeError('"bids_path" must be a BIDSPath object. Please '
-                           'instantiate using BIDSPath().')
+                           'instantiate using mne_bids.BIDSPath().')
 
     bids_path = bids_path.copy()
     sub = bids_path.subject
