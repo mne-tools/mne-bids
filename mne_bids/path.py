@@ -194,6 +194,7 @@ class BIDSPath(object):
         """Representation in the style of `pathlib.Path`."""
         return f'{self.__class__.__name__}(\n' \
                f'root: {self.root}\n' \
+               f'modality: {self.modality}\n' \
                f'basename: {self.basename})'
 
     def __fspath__(self):
@@ -391,6 +392,15 @@ class BIDSPath(object):
                 val = str(val)
             setattr(self, key, val)
 
+        # infer modality if suffix is uniquely the modality
+        if self.modality is None and \
+                self.suffix in SUFFIX_TO_MODALITY:
+            self.modality = SUFFIX_TO_MODALITY[self.suffix]
+        # set modality based on suffix if calling update
+        elif self.suffix in SUFFIX_TO_MODALITY and \
+                'modality' not in entities:
+            self.modality = SUFFIX_TO_MODALITY[self.suffix]
+
         # Update .check attribute and perform a check of the entities.
         if check is not None:
             self.check = check
@@ -415,11 +425,6 @@ class BIDSPath(object):
                              f'{ALLOWED_MODALITIES}. You passed in '
                              f'{self.modality}, which is not '
                              f'BIDS compliant. ')
-
-        # infer modality if suffix is uniquely the modality
-        if self.modality is None and \
-                self.suffix in ['eeg', 'meg', 'ieeg', 'T1w']:
-            self.modality = SUFFIX_TO_MODALITY[self.suffix]
 
         # perform deeper check if user has it turned on
         if self.check:

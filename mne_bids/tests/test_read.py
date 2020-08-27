@@ -7,7 +7,6 @@ import os
 import os.path as op
 from datetime import datetime, timezone
 from distutils.version import LooseVersion
-from pathlib import Path
 
 import pytest
 import shutil as sh
@@ -103,6 +102,22 @@ def test_not_implemented():
             _read_raw(raw_fname)
 
 
+def test_read_correct_inputs():
+    """Test that inputs of read functions are correct."""
+    bids_path = 'sub-01_ses-01_meg.fif'
+    with pytest.raises(RuntimeError, match='"bids_path" must be a '
+                                           'BIDSPath object'):
+        read_raw_bids(bids_path)
+
+    with pytest.raises(RuntimeError, match='"bids_path" must be a '
+                                           'BIDSPath object'):
+        get_head_mri_trans(bids_path)
+
+    with pytest.raises(RuntimeError, match='"bids_path" must be a '
+                                           'BIDSPath object'):
+        get_matched_empty_room(bids_path)
+
+
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_read_participants_data():
     """Test reading information from a BIDS sidecar.json file."""
@@ -116,10 +131,9 @@ def test_read_participants_data():
         'sex': 2,
     }
     raw.info['subject_info'] = subject_info
-    write_raw_bids(raw, bids_path, bids_root, overwrite=True,
-                   verbose=False)
-    raw = read_raw_bids(bids_path=bids_path, bids_root=bids_root,
-                        modality='meg')
+    bids_path.update(root=bids_root, modality='meg')
+    write_raw_bids(raw, bids_path, overwrite=True, verbose=False)
+    raw = read_raw_bids(bids_path=bids_path)
     print(raw.info['subject_info'])
     assert raw.info['subject_info']['hand'] == 1
     assert raw.info['subject_info']['sex'] == 2
@@ -130,8 +144,7 @@ def test_read_participants_data():
     participants_tsv = _from_tsv(participants_tsv_fpath)
     participants_tsv['hand'][0] = 'n/a'
     _to_tsv(participants_tsv, participants_tsv_fpath)
-    raw = read_raw_bids(bids_path=bids_path, bids_root=Path(bids_root),
-                        modality='meg')
+    raw = read_raw_bids(bids_path=bids_path)
     assert raw.info['subject_info']['hand'] == 0
     assert raw.info['subject_info']['sex'] == 2
     assert raw.info['subject_info'].get('birthday', None) is None
@@ -142,19 +155,16 @@ def test_read_participants_data():
     participants_tsv['sex'][0] = 'malesy'
     _to_tsv(participants_tsv, participants_tsv_fpath)
     with pytest.warns(RuntimeWarning, match='Unable to map'):
-        raw = read_raw_bids(bids_path=bids_path,
-                            bids_root=Path(bids_root), modality='meg')
+        raw = read_raw_bids(bids_path=bids_path)
         assert raw.info['subject_info']['hand'] is None
         assert raw.info['subject_info']['sex'] is None
 
     # make sure to read in if no participants file
     raw = _read_raw_fif(raw_fname, verbose=False)
-    write_raw_bids(raw, bids_path, bids_root, overwrite=True,
-                   verbose=False)
+    write_raw_bids(raw, bids_path, overwrite=True, verbose=False)
     os.remove(participants_tsv_fpath)
     with pytest.warns(RuntimeWarning, match='Participants file not found'):
-        raw = read_raw_bids(bids_path=bids_path,
-                            bids_root=Path(bids_root), modality='meg')
+        raw = read_raw_bids(bids_path=bids_path)
         assert raw.info['subject_info'] is None
 
 
@@ -172,14 +182,13 @@ def test_get_head_mri_trans():
     # Write it to BIDS
     raw = _read_raw_fif(raw_fname)
     bids_root = _TempDir()
-    write_raw_bids(raw, bids_path, bids_root,
-                   events_data=events_fname, event_id=event_id,
-                   overwrite=False)
+    bids_path.update(root=bids_root)
+    write_raw_bids(raw, bids_path, events_data=events_fname,
+                   event_id=event_id, overwrite=False)
 
     # We cannot recover trans, if no MRI has yet been written
     with pytest.raises(RuntimeError):
-        estimated_trans = get_head_mri_trans(bids_path=bids_path,
-                                             bids_root=bids_root)
+        estimated_trans = get_head_mri_trans(bids_path=bids_path)
 
     # Write some MRI data and supply a `trans` so that a sidecar gets written
     trans = mne.read_trans(raw_fname.replace('_raw.fif', '-trans.fif'))
@@ -193,8 +202,7 @@ def test_get_head_mri_trans():
                           raw=raw, trans=trans, verbose=True)
 
     # Try to get trans back through fitting points
-    estimated_trans = get_head_mri_trans(bids_path=bids_path,
-                                         bids_root=bids_root)
+    estimated_trans = get_head_mri_trans(bids_path=bids_path)
 
     assert trans['from'] == estimated_trans['from']
     assert trans['to'] == estimated_trans['to']
@@ -208,8 +216,7 @@ def test_get_head_mri_trans():
         sh.rmtree(anat_dir)
         write_anat(bids_root, subject_id, t1w_mgh, session_id, acq, raw=raw,
                    trans=trans, verbose=True)
-        estimated_trans = get_head_mri_trans(bids_path=bids_path,
-                                             bids_root=bids_root)
+        estimated_trans = get_head_mri_trans(bids_path=bids_path)
 
 
 def test_handle_events_reading():
@@ -242,27 +249,27 @@ def test_handle_info_reading():
     # write copy of raw with line freq of 60
     # bids basename and fname
     bids_path = BIDSPath(subject='01', session='01',
-                         task='audiovisual', run='01')
+                         task='audiovisual', run='01',
+                         root=bids_root)
     suffix = "meg"
     bids_fname = bids_path.copy().update(suffix=suffix,
                                          extension='.fif')
-    write_raw_bids(raw, bids_path, bids_root, overwrite=True)
+    write_raw_bids(raw, bids_path, overwrite=True)
 
     # find sidecar JSON fname
-    bids_fname.update(root=bids_root)
+    bids_fname.update(modality=suffix)
     sidecar_fname = _find_matching_sidecar(bids_fname,
                                            suffix=suffix, extension='.json',
                                            allow_fail=True)
 
     # assert that we get the same line frequency set
-    raw = read_raw_bids(bids_path=bids_path, bids_root=bids_root,
-                        modality=suffix)
+    raw = read_raw_bids(bids_path=bids_path)
     assert raw.info['line_freq'] == 60
 
     # 2. if line frequency is not set in raw file, then ValueError
     raw.info['line_freq'] = None
     with pytest.raises(ValueError, match="PowerLineFrequency .* required"):
-        write_raw_bids(raw, bids_path, bids_root, overwrite=True)
+        write_raw_bids(raw, bids_path, overwrite=True)
 
     # make a copy of the sidecar in "derivatives/"
     # to check that we make sure we always get the right sidecar
@@ -275,15 +282,13 @@ def test_handle_info_reading():
         sidecar_json = json.load(fin)
         sidecar_json["PowerLineFrequency"] = 45
     _write_json(sidecar_copy, sidecar_json)
-    raw = read_raw_bids(bids_path=bids_path, bids_root=bids_root,
-                        modality=suffix)
+    raw = read_raw_bids(bids_path=bids_path)
     assert raw.info['line_freq'] == 60
 
     # 3. assert that we get an error when sidecar json doesn't match
     _update_sidecar(sidecar_fname, "PowerLineFrequency", 55)
     with pytest.raises(ValueError, match="Line frequency in sidecar json"):
-        raw = read_raw_bids(bids_path=bids_path, bids_root=bids_root,
-                            modality=suffix)
+        raw = read_raw_bids(bids_path=bids_path)
         assert raw.info['line_freq'] == 55
 
 
@@ -295,7 +300,7 @@ def test_handle_eeg_coords_reading():
 
     bids_path = BIDSPath(
         subject=subject_id, session=session_id, run=run, acquisition=acq,
-        task=task)
+        task=task, root=bids_root)
 
     data_path = op.join(testing.data_path(), 'EDF')
     raw_fname = op.join(data_path, 'test_reduced.edf')
@@ -316,7 +321,7 @@ def test_handle_eeg_coords_reading():
                                             coord_frame="unknown")
     raw.set_montage(montage)
     with pytest.warns(RuntimeWarning, match="Skipping EEG electrodes.tsv"):
-        write_raw_bids(raw, bids_path, bids_root, overwrite=True)
+        write_raw_bids(raw, bids_path, overwrite=True)
         bids_path.update(root=bids_root)
         coordsystem_fname = _find_matching_sidecar(bids_path,
                                                    suffix='coordsystem',
@@ -336,7 +341,7 @@ def test_handle_eeg_coords_reading():
     raw.set_montage(montage)
     with pytest.warns(RuntimeWarning, match='Setting montage not possible '
                                             'if anatomical landmarks'):
-        write_raw_bids(raw, bids_path, bids_root, overwrite=True)
+        write_raw_bids(raw, bids_path, overwrite=True)
 
     montage = mne.channels.make_dig_montage(ch_pos=ch_pos,
                                             coord_frame="head",
@@ -344,10 +349,10 @@ def test_handle_eeg_coords_reading():
                                             lpa=[0, 1, 0],
                                             rpa=[0, 0, 1])
     raw.set_montage(montage)
-    write_raw_bids(raw, bids_path, bids_root, overwrite=True)
+    write_raw_bids(raw, bids_path, overwrite=True)
 
     # obtain the sensor positions and assert ch_coords are same
-    raw_test = read_raw_bids(bids_path, bids_root, verbose=True)
+    raw_test = read_raw_bids(bids_path, verbose=True)
     assert not object_diff(raw.info['chs'], raw_test.info['chs'])
 
     # modify coordinate frame to not-captrak
@@ -358,7 +363,7 @@ def test_handle_eeg_coords_reading():
     _update_sidecar(coordsystem_fname, 'EEGCoordinateSystem', 'besa')
     with pytest.warns(RuntimeWarning, match='EEG Coordinate frame is not '
                                             'accepted BIDS keyword'):
-        raw_test = read_raw_bids(bids_path, bids_root)
+        raw_test = read_raw_bids(bids_path)
         assert raw_test.info['dig'] is None
 
 
@@ -374,7 +379,8 @@ def test_handle_ieeg_coords_reading(bids_path):
     raw_fname = op.join(data_path, 'test_reduced.edf')
     bids_fname = bids_path.copy().update(modality='ieeg',
                                          suffix='ieeg',
-                                         extension='.edf')
+                                         extension='.edf',
+                                         root=bids_root)
     raw = _read_raw_edf(raw_fname)
 
     # ensure we are writing 'ecog'/'ieeg' data
@@ -393,24 +399,21 @@ def test_handle_ieeg_coords_reading(bids_path):
         montage = mne.channels.make_dig_montage(ch_pos=ch_pos,
                                                 coord_frame=coord_frame)
         raw.set_montage(montage)
-        write_raw_bids(raw, bids_fname, bids_root,
+        write_raw_bids(raw, bids_fname,
                        overwrite=True, verbose=False)
         # read in raw file w/ updated coordinate frame
         # and make sure all digpoints are correct coordinate frames
-        raw_test = read_raw_bids(bids_path=bids_fname,
-                                 bids_root=bids_root, verbose=False)
+        raw_test = read_raw_bids(bids_path=bids_fname, verbose=False)
         coord_frame_int = MNE_STR_TO_FRAME[coord_frame]
         for digpoint in raw_test.info['dig']:
             assert digpoint['coord_frame'] == coord_frame_int
 
     # start w/ new bids root
     sh.rmtree(bids_root)
-    write_raw_bids(raw, bids_fname, bids_root,
-                   overwrite=True, verbose=False)
+    write_raw_bids(raw, bids_fname, overwrite=True, verbose=False)
 
     # obtain the sensor positions and assert ch_coords are same
-    raw_test = read_raw_bids(bids_path=bids_fname, bids_root=bids_root,
-                             verbose=False)
+    raw_test = read_raw_bids(bids_path=bids_fname, verbose=False)
     orig_locs = raw.info['dig'][1]
     test_locs = raw_test.info['dig'][1]
     assert orig_locs == test_locs
@@ -443,8 +446,7 @@ def test_handle_ieeg_coords_reading(bids_path):
     _to_tsv(electrodes_dict, electrodes_fname)
     with pytest.warns(RuntimeWarning, match='Coordinate unit is not '
                                             'an accepted BIDS unit'):
-        raw_test = read_raw_bids(bids_path=bids_fname,
-                                 bids_root=bids_root, verbose=False)
+        raw_test = read_raw_bids(bids_path=bids_fname, verbose=False)
 
     # correct BIDS units should scale to meters properly
     for coord_unit, scaling in scalings.items():
@@ -458,8 +460,7 @@ def test_handle_ieeg_coords_reading(bids_path):
         _to_tsv(electrodes_dict, electrodes_fname)
 
         # read in raw file w/ updated montage
-        raw_test = read_raw_bids(bids_path=bids_fname,
-                                 bids_root=bids_root, verbose=False)
+        raw_test = read_raw_bids(bids_path=bids_fname, verbose=False)
 
         # obtain the sensor positions and make sure they're the same
         assert_dig_allclose(raw.info, raw_test.info)
@@ -475,14 +476,12 @@ def test_handle_ieeg_coords_reading(bids_path):
         # and make sure all digpoints are MRI coordinate frame
         with pytest.warns(RuntimeWarning, match="iEEG Coordinate frame is "
                                                 "not accepted BIDS keyword"):
-            raw_test = read_raw_bids(bids_path=bids_fname,
-                                     bids_root=bids_root, verbose=False)
+            raw_test = read_raw_bids(bids_path=bids_fname, verbose=False)
             assert raw_test.info['dig'] is None
 
     # ACPC should be read in as RAS for iEEG
     _update_sidecar(coordsystem_fname, 'iEEGCoordinateSystem', 'acpc')
-    raw_test = read_raw_bids(bids_path=bids_fname, bids_root=bids_root,
-                             verbose=False)
+    raw_test = read_raw_bids(bids_path=bids_fname, verbose=False)
     coord_frame_int = MNE_STR_TO_FRAME['ras']
     for digpoint in raw_test.info['dig']:
         assert digpoint['coord_frame'] == coord_frame_int
@@ -491,11 +490,11 @@ def test_handle_ieeg_coords_reading(bids_path):
     os.remove(coordsystem_fname)
     with pytest.raises(RuntimeError, match='BIDS mandates that '
                                            'the coordsystem.json'):
-        raw = read_raw_bids(bids_path=bids_fname,
-                            bids_root=bids_root, verbose=False)
+        raw = read_raw_bids(bids_path=bids_fname, verbose=False)
 
     # test error message if electrodes don't match
-    write_raw_bids(raw, bids_path, bids_root, overwrite=True)
+    bids_path.update(root=bids_root)
+    write_raw_bids(raw, bids_path, overwrite=True)
     electrodes_dict = _from_tsv(electrodes_fname)
     # pop off 5 channels
     for key in electrodes_dict.keys():
@@ -503,12 +502,11 @@ def test_handle_ieeg_coords_reading(bids_path):
             electrodes_dict[key].pop()
     _to_tsv(electrodes_dict, electrodes_fname)
     with pytest.raises(RuntimeError, match='Channels do not correspond'):
-        raw_test = read_raw_bids(bids_path=bids_fname,
-                                 bids_root=bids_root, verbose=False)
+        raw_test = read_raw_bids(bids_path=bids_fname, verbose=False)
 
     # make sure montage is set if there are coordinates w/ 'n/a'
     raw.info['bads'] = []
-    write_raw_bids(raw, bids_path, bids_root,
+    write_raw_bids(raw, bids_path,
                    overwrite=True, verbose=False)
     electrodes_dict = _from_tsv(electrodes_fname)
     for axis in ['x', 'y', 'z']:
@@ -522,8 +520,7 @@ def test_handle_ieeg_coords_reading(bids_path):
     nan_chs = [electrodes_dict['name'][i] for i in [0, 3]]
     with pytest.warns(RuntimeWarning, match='There are channels '
                                             'without locations'):
-        raw = read_raw_bids(bids_path=bids_fname, bids_root=bids_root,
-                            verbose=False)
+        raw = read_raw_bids(bids_path=bids_fname, verbose=False)
         for idx, ch in enumerate(raw.info['chs']):
             if ch['ch_name'] in nan_chs:
                 assert all(np.isnan(ch['loc'][:3]))
@@ -542,8 +539,8 @@ def test_get_head_mri_trans_ctf():
     raw_ctf_fname = op.join(ctf_data_path, 'testdata_ctf.ds')
     raw_ctf = _read_raw_ctf(raw_ctf_fname)
     bids_root = _TempDir()
-    write_raw_bids(raw_ctf, bids_path, bids_root,
-                   overwrite=False)
+    bids_path.update(root=bids_root)
+    write_raw_bids(raw_ctf, bids_path, overwrite=False)
 
     # Take a fake trans
     trans = mne.read_trans(raw_fname.replace('_raw.fif', '-trans.fif'))
@@ -557,8 +554,7 @@ def test_get_head_mri_trans_ctf():
                raw=raw_ctf, trans=trans)
 
     # Try to get trans back through fitting points
-    estimated_trans = get_head_mri_trans(bids_path=bids_path,
-                                         bids_root=bids_root)
+    estimated_trans = get_head_mri_trans(bids_path=bids_path)
 
     assert_almost_equal(trans['trans'], estimated_trans['trans'])
 
@@ -571,11 +567,11 @@ def test_get_matched_empty_room():
 
     raw = _read_raw_fif(raw_fname)
     bids_path = BIDSPath(subject='01', session='01',
-                         task='audiovisual', run='01')
-    write_raw_bids(raw, bids_path, bids_root, overwrite=True)
+                         task='audiovisual', run='01',
+                         root=bids_root, suffix='meg')
+    write_raw_bids(raw, bids_path, overwrite=True)
 
-    er_basename = get_matched_empty_room(bids_path=bids_path,
-                                         bids_root=bids_root)
+    er_basename = get_matched_empty_room(bids_path=bids_path)
     assert er_basename is None
 
     # testing data has no noise recording, so save the actual data
@@ -592,10 +588,9 @@ def test_get_matched_empty_room():
     er_bids_path = BIDSPath(subject='emptyroom', task='noise',
                             session=er_date, suffix='meg',
                             root=bids_root)
-    write_raw_bids(er_raw, er_bids_path, bids_root, overwrite=True)
+    write_raw_bids(er_raw, er_bids_path, overwrite=True)
 
-    recovered_er_basename = get_matched_empty_room(bids_path=bids_path,
-                                                   bids_root=bids_root)
+    recovered_er_basename = get_matched_empty_room(bids_path=bids_path)
     assert er_bids_path == recovered_er_basename
 
     # assert that we get best emptyroom if there are multiple available
@@ -610,32 +605,30 @@ def test_get_matched_empty_room():
             er_raw.set_meas_date(er_meas_date)
         else:
             er_raw.info['meas_date'] = (er_meas_date.timestamp(), 0)
-        write_raw_bids(er_raw, er_bids_path, bids_root)
+        write_raw_bids(er_raw, er_bids_path)
 
-    best_er_basename = get_matched_empty_room(bids_path=bids_path,
-                                              bids_root=bids_root)
+    best_er_basename = get_matched_empty_room(bids_path=bids_path)
     assert best_er_basename.session == '20021204'
 
     # assert that we get error if meas_date is not available.
-    raw = read_raw_bids(bids_path=bids_path, bids_root=bids_root,
-                        modality='meg')
+    raw = read_raw_bids(bids_path=bids_path)
     if check_version('mne', '0.20'):
         raw.set_meas_date(None)
     else:
         raw.info['meas_date'] = None
         raw.annotations.orig_time = None
     anonymize_info(raw.info)
-    write_raw_bids(raw, bids_path, bids_root, overwrite=True)
+    write_raw_bids(raw, bids_path, overwrite=True)
     with pytest.raises(ValueError, match='The provided recording does not '
                                          'have a measurement date set'):
-        get_matched_empty_room(bids_path=bids_path,
-                               bids_root=bids_root)
+        get_matched_empty_room(bids_path=bids_path)
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_get_matched_emptyroom_ties():
     """Test that we receive a warning on a date tie."""
     bids_root = _TempDir()
+    bids_path.update(root=bids_root)
     session = '20010101'
     er_dir = make_bids_folders(subject='emptyroom', session=session,
                                modality='meg', bids_root=bids_root)
@@ -657,7 +650,7 @@ def test_get_matched_emptyroom_ties():
         raw.info['meas_date'] = (meas_date.timestamp(), 0)
         er_raw.info['meas_date'] = (meas_date.timestamp(), 0)
 
-    write_raw_bids(raw, bids_path, bids_root, overwrite=True)
+    write_raw_bids(raw, bids_path, overwrite=True)
     er_bids_path = BIDSPath(subject='emptyroom', session=session)
     er_basename_1 = er_bids_path.basename
     er_basename_2 = BIDSPath(subject='emptyroom', session=session,
@@ -666,8 +659,7 @@ def test_get_matched_emptyroom_ties():
     er_raw.save(op.join(er_dir, f'{er_basename_2}_meg.fif'))
 
     with pytest.warns(RuntimeWarning, match='Found more than one'):
-        get_matched_empty_room(bids_path=bids_path,
-                               bids_root=bids_root)
+        get_matched_empty_room(bids_path=bids_path)
 
 
 @pytest.mark.skipif(LooseVersion(mne.__version__) < LooseVersion('0.21'),
@@ -676,6 +668,7 @@ def test_get_matched_emptyroom_ties():
 def test_get_matched_emptyroom_no_meas_date():
     """Test that we warn if measurement date can be read or inferred."""
     bids_root = _TempDir()
+    bids_path.update(root=bids_root)
     er_session = 'mysession'
     er_meas_date = None
 
@@ -696,38 +689,35 @@ def test_get_matched_emptyroom_no_meas_date():
     # as it's incomplete (doesn't contain the emptyroom subject we wrote
     # manually using MNE's Raw.save() above)
     raw = _read_raw_fif(raw_fname)
-    write_raw_bids(raw, bids_path, bids_root, overwrite=True)
+    write_raw_bids(raw, bids_path, overwrite=True)
     os.remove(op.join(bids_root, 'participants.tsv'))
 
     with pytest.warns(RuntimeWarning, match='Could not retrieve .* date'):
-        get_matched_empty_room(bids_path=bids_path,
-                               bids_root=bids_root)
+        get_matched_empty_room(bids_path=bids_path)
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_read_raw_bids_pathlike():
     """Test that read_raw_bids() can handle a Path-like bids_root."""
     bids_root = _TempDir()
+    bids_path.update(root=bids_root, modality='meg')
     raw = _read_raw_fif(raw_fname, verbose=False)
-    write_raw_bids(raw, bids_path, bids_root, overwrite=True,
-                   verbose=False)
-    raw = read_raw_bids(bids_path=bids_path, bids_root=Path(bids_root),
-                        modality='meg')
+    write_raw_bids(raw, bids_path, overwrite=True, verbose=False)
+    raw = read_raw_bids(bids_path=bids_path)
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_read_raw_modality():
     """Test that read_raw_bids() can infer the str_suffix if need be."""
     bids_root = _TempDir()
+    bids_path.update(root=bids_root, modality='meg')
     raw = _read_raw_fif(raw_fname, verbose=False)
-    write_raw_bids(raw, bids_path, bids_root, overwrite=True,
-                   verbose=False)
+    write_raw_bids(raw, bids_path, overwrite=True, verbose=False)
 
-    raw_1 = read_raw_bids(bids_path=bids_path, bids_root=bids_root,
-                          modality='meg')
-    raw_2 = read_raw_bids(bids_path=bids_path, bids_root=bids_root,
-                          modality=None)
-    raw_3 = read_raw_bids(bids_path=bids_path, bids_root=bids_root)
+    raw_1 = read_raw_bids(bids_path=bids_path)
+    bids_path.update(modality=None)
+    raw_2 = read_raw_bids(bids_path=bids_path)
+    raw_3 = read_raw_bids(bids_path=bids_path)
 
     raw_1.crop(0, 2).load_data()
     raw_2.crop(0, 2).load_data()
@@ -740,9 +730,10 @@ def test_read_raw_modality():
 def test_handle_channel_type_casing():
     """Test that non-uppercase entries in the `type` column are accepted."""
     bids_root = _TempDir()
+    bids_path.update(root=bids_root)
     raw = _read_raw_fif(raw_fname, verbose=False)
 
-    write_raw_bids(raw, bids_path, bids_root, overwrite=True,
+    write_raw_bids(raw, bids_path, overwrite=True,
                    verbose=False)
 
     ch_path = bids_path.copy().update(root=bids_root,
@@ -757,12 +748,13 @@ def test_handle_channel_type_casing():
     _to_tsv(channels_data, bids_channels_fname)
 
     with pytest.warns(RuntimeWarning, match='lowercase spelling'):
-        read_raw_bids(bids_path, bids_root=bids_root)
+        read_raw_bids(bids_path)
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_bads_reading():
     bids_root = _TempDir()
+    bids_path.update(root=bids_root)
     data_path = make_bids_folders(
         subject=subject_id, session=session_id, modality='meg',
         bids_root=bids_root, make_dir=False)
@@ -779,7 +771,7 @@ def test_bads_reading():
     # bads in FIF only, no `status` column in channels.tsv
     bads = ['EEG 053', 'MEG 2443']
     raw.info['bads'] = bads
-    write_raw_bids(raw, bids_path, bids_root, overwrite=True,
+    write_raw_bids(raw, bids_path, overwrite=True,
                    verbose=False)
 
     # Delete `status` column
@@ -787,24 +779,21 @@ def test_bads_reading():
     del tsv_data['status'], tsv_data['status_description']
     _to_tsv(tsv_data, fname=channels_fname)
 
-    raw = read_raw_bids(bids_path=bids_path, bids_root=bids_root,
-                        verbose=False)
+    raw = read_raw_bids(bids_path=bids_path, verbose=False)
     assert raw.info['bads'] == bads
 
     ###########################################################################
     # bads in `status` column in channels.tsv, no bads in raw.info['bads']
     bads = ['EEG 053', 'MEG 2443']
     raw.info['bads'] = bads
-    write_raw_bids(raw, bids_path, bids_root, overwrite=True,
-                   verbose=False)
+    write_raw_bids(raw, bids_path, overwrite=True, verbose=False)
 
     # Remove info['bads'] from the raw file.
     raw = _read_raw_fif(raw_bids_fname, preload=True, verbose=False)
     raw.info['bads'] = []
     raw.save(raw_bids_fname, overwrite=True, verbose=False)
 
-    raw = read_raw_bids(bids_path=bids_path, bids_root=bids_root,
-                        verbose=False)
+    raw = read_raw_bids(bids_path=bids_path, verbose=False)
     assert type(raw.info['bads']) is list
     assert set(raw.info['bads']) == set(bads)
 
@@ -814,8 +803,7 @@ def test_bads_reading():
     bads_raw = ['MEG 0112', 'MEG 0131']
 
     raw.info['bads'] = bads_bids
-    write_raw_bids(raw, bids_path, bids_root, overwrite=True,
-                   verbose=False)
+    write_raw_bids(raw, bids_path, overwrite=True, verbose=False)
 
     # Replace info['bads'] in the raw file.
     raw = _read_raw_fif(raw_bids_fname, preload=True, verbose=False)
@@ -823,7 +811,6 @@ def test_bads_reading():
     raw.save(raw_bids_fname, overwrite=True, verbose=False)
 
     with pytest.warns(RuntimeWarning, match='conflicting information'):
-        raw = read_raw_bids(bids_path=bids_path, bids_root=bids_root,
-                            verbose=False)
+        raw = read_raw_bids(bids_path=bids_path, verbose=False)
     assert type(raw.info['bads']) is list
     assert set(raw.info['bads']) == set(bads_bids)

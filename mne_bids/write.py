@@ -38,8 +38,7 @@ from mne_bids.utils import (_write_json, _write_tsv, _write_text,
                             _handle_modality, _get_ch_type_mapping,
                             _check_anonymize, _stamp_to_dt)
 from mne_bids import make_bids_folders
-from mne_bids.path import (BIDSPath, _parse_ext, _mkdir_p, _path_to_str,
-                           _convert_str_to_bids_path)
+from mne_bids.path import (BIDSPath, _parse_ext, _mkdir_p, _path_to_str)
 from mne_bids.copyfiles import (copyfile_brainvision, copyfile_eeglab,
                                 copyfile_ctf, copyfile_bti, copyfile_kit)
 from mne_bids.tsv_handler import (_from_tsv, _drop, _contains_row,
@@ -802,7 +801,7 @@ def make_dataset_description(path, name, data_license=None,
     _write_json(fname, description, overwrite=True, verbose=verbose)
 
 
-def write_raw_bids(raw, bids_path, bids_root, events_data=None,
+def write_raw_bids(raw, bids_path, events_data=None,
                    event_id=None, anonymize=None,
                    overwrite=False, verbose=True):
     """Save raw data to a BIDS-compliant folder structure.
@@ -827,7 +826,8 @@ def write_raw_bids(raw, bids_path, bids_root, events_data=None,
     bids_path : str | BIDSPath
         The base filename of the BIDS compatible files. Typically, this can be
         generated using :func:`mne_bids.BIDSPath`, and then calling
-        ``basename`` property.
+        ``basename`` property. The path to root of the
+        BIDS folder must be passed in via the ``BIDSPath`` object.
         Example: `sub-01_ses-01_task-testing_acq-01_run-01`.
         This will write the following files in the correct subfolder of the
         bids_root::
@@ -848,10 +848,6 @@ def write_raw_bids(raw, bids_path, bids_root, events_data=None,
 
         Note that the modality 'meg' is automatically inferred from the raw
         object and extension '.fif' is copied from raw.filenames.
-    bids_root : str | pathlib.Path
-        The path of the root of the BIDS compatible folder. The session and
-        subject specific folders will be populated automatically by parsing
-        bids_path.
     events_data : str | pathlib.Path | array | None
         The events file. If a string or a Path object, specifies the path of
         the events file. If an array, the MNE events array (shape n_events, 3).
@@ -931,7 +927,17 @@ def write_raw_bids(raw, bids_path, bids_root, events_data=None,
     if raw.preload is not False:
         raise ValueError('The data should not be preloaded.')
 
-    bids_root = _path_to_str(bids_root)
+    if not isinstance(bids_path, BIDSPath):
+        raise RuntimeError('"bids_path" must be a BIDSPath object. Please '
+                           'instantiate using BIDSPath().')
+
+    # check root available
+    bids_root = bids_path.root
+    if bids_root is None:
+        raise ValueError('The root of the "bids_path" must be set. '
+                         'Please use `bids_path.update(root="<root>")` '
+                         'to set the root of the BIDS folder to read.')
+
     raw = raw.copy()
 
     raw_fname = raw.filenames[0]
@@ -950,10 +956,6 @@ def write_raw_bids(raw, bids_path, bids_root, events_data=None,
     assert_array_equal(raw.times, raw_orig.times,
                        "raw.times should not have changed since reading"
                        " in from the file. It may have been cropped.")
-
-    # convert to BIDS Path
-    if isinstance(bids_path, str):
-        bids_path = _convert_str_to_bids_path(bids_path)
 
     bids_path = bids_path.copy()
     subject_id, session_id = bids_path.subject, bids_path.session

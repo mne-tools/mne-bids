@@ -53,12 +53,12 @@ def return_bids_test_dir(tmpdir_factory):
 
     raw = mne.io.read_raw_fif(raw_fname)
     raw.info['line_freq'] = 60
+    bids_path.update(root=bids_root)
     # Write multiple runs for test_purposes
     for run_idx in [run, '02']:
         name = bids_path.copy().update(run=run_idx)
-        write_raw_bids(raw, name, bids_root,
-                       events_data=events_fname, event_id=event_id,
-                       overwrite=True)
+        write_raw_bids(raw, name, events_data=events_fname,
+                       event_id=event_id, overwrite=True)
 
     return bids_root
 
@@ -433,6 +433,7 @@ def test_bids_path(return_bids_test_dir):
                          extension='.edf')
     assert repr(bids_path) == ('BIDSPath(\n'
                                'root: None\n'
+                               'modality: ieeg\n'
                                'basename: sub-01_ses-02_task-03_ieeg.edf)')
 
 
