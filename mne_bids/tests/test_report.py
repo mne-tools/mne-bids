@@ -19,7 +19,7 @@ run = '01'
 acq = '01'
 task = 'testing'
 
-bids_basename = BIDSPath(
+bids_path = BIDSPath(
     subject=subject_id, session=session_id, run=run, acquisition=acq,
     task=task)
 
@@ -40,7 +40,7 @@ def test_report():
     raw = mne.io.read_raw_fif(raw_fname, verbose=False)
     raw.info['line_freq'] = 60
 
-    write_raw_bids(raw, bids_basename, bids_root, overwrite=True,
+    write_raw_bids(raw, bids_path, bids_root, overwrite=True,
                    verbose=False)
 
     report = make_report(bids_root)

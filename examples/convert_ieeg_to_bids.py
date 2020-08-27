@@ -165,12 +165,12 @@ shutil.rmtree(bids_root, ignore_errors=True)
 # temporarily save the data to disc before reading it back in.
 
 # Now convert our data to be in a new BIDS dataset.
-bids_basename = BIDSPath(subject=subject_id,
-                         task=task,
-                         acquisition="ecog")
+bids_path = BIDSPath(subject=subject_id,
+                     task=task,
+                     acquisition="ecog")
 
 # write `raw` to BIDS and anonymize it into BrainVision format
-write_raw_bids(raw, bids_basename, bids_root=bids_root,
+write_raw_bids(raw, bids_path, bids_root=bids_root,
                anonymize=dict(daysback=30000), overwrite=True)
 
 ###############################################################################
@@ -219,7 +219,7 @@ print(text)
 # :func:`read_raw_bids` to read in the data.
 
 # read in the BIDS dataset and plot the coordinates
-raw = read_raw_bids(bids_basename=bids_basename, bids_root=bids_root)
+raw = read_raw_bids(bids_path=bids_path, bids_root=bids_root)
 
 # get the first 5 channels and show their locations
 # this should match what was printed earlier.

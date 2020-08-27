@@ -323,7 +323,7 @@ def _summarize_sidecar_json(bids_root, scans_fpaths, verbose=True):
         scans = scans_tsv['filename']
         for scan in scans:
             # summarize metadata of recordings
-            bids_basename, ext = _parse_ext(scan)
+            bids_path, ext = _parse_ext(scan)
             modality = op.dirname(scan)
             if modality not in ALLOWED_MODALITIES:
                 continue
@@ -331,14 +331,14 @@ def _summarize_sidecar_json(bids_root, scans_fpaths, verbose=True):
             n_scans += 1
 
             # convert to BIDS Path
-            params = get_entities_from_fname(bids_basename)
-            bids_basename = BIDSPath(root=bids_root, **params)
+            params = get_entities_from_fname(bids_path)
+            bids_path = BIDSPath(root=bids_root, **params)
 
             # XXX: improve to allow emptyroom
-            if bids_basename.subject == 'emptyroom':
+            if bids_path.subject == 'emptyroom':
                 continue
 
-            sidecar_fname = _find_matching_sidecar(bids_path=bids_basename,
+            sidecar_fname = _find_matching_sidecar(bids_path=bids_path,
                                                    suffix=modality,
                                                    extension='.json')
             with open(sidecar_fname, 'r') as fin:
@@ -411,20 +411,20 @@ def _summarize_channels_tsv(bids_root, scans_fpaths, verbose=True):
         scans = scans_tsv['filename']
         for scan in scans:
             # summarize metadata of recordings
-            bids_basename, _ = _parse_ext(scan)
+            bids_path, _ = _parse_ext(scan)
             modality = op.dirname(scan)
             if modality not in ['meg', 'eeg', 'ieeg']:
                 continue
 
             # convert to BIDS Path
-            params = get_entities_from_fname(bids_basename)
-            bids_basename = BIDSPath(root=bids_root, **params)
+            params = get_entities_from_fname(bids_path)
+            bids_path = BIDSPath(root=bids_root, **params)
 
             # XXX: improve to allow emptyroom
-            if bids_basename.subject == 'emptyroom':
+            if bids_path.subject == 'emptyroom':
                 continue
 
-            channels_fname = _find_matching_sidecar(bids_path=bids_basename,
+            channels_fname = _find_matching_sidecar(bids_path=bids_path,
                                                     suffix='channels',
                                                     extension='.tsv')
 

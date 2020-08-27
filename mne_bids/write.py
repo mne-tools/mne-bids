@@ -802,7 +802,7 @@ def make_dataset_description(path, name, data_license=None,
     _write_json(fname, description, overwrite=True, verbose=verbose)
 
 
-def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
+def write_raw_bids(raw, bids_path, bids_root, events_data=None,
                    event_id=None, anonymize=None,
                    overwrite=False, verbose=True):
     """Save raw data to a BIDS-compliant folder structure.
@@ -824,9 +824,10 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     raw : instance of mne.io.Raw
         The raw data. It must be an instance of mne.Raw. The data should not be
         loaded from disk, i.e., raw.preload must be False.
-    bids_basename : str | BIDSPath
+    bids_path : str | BIDSPath
         The base filename of the BIDS compatible files. Typically, this can be
-        generated using BIDSPath.
+        generated using :func:`mne_bids.BIDSPath`, and then calling
+        ``basename`` property.
         Example: `sub-01_ses-01_task-testing_acq-01_run-01`.
         This will write the following files in the correct subfolder of the
         bids_root::
@@ -850,7 +851,7 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
     bids_root : str | pathlib.Path
         The path of the root of the BIDS compatible folder. The session and
         subject specific folders will be populated automatically by parsing
-        bids_basename.
+        bids_path.
     events_data : str | pathlib.Path | array | None
         The events file. If a string or a Path object, specifies the path of
         the events file. If an array, the MNE events array (shape n_events, 3).
@@ -951,16 +952,16 @@ def write_raw_bids(raw, bids_basename, bids_root, events_data=None,
                        " in from the file. It may have been cropped.")
 
     # convert to BIDS Path
-    if isinstance(bids_basename, str):
-        bids_basename = _convert_str_to_bids_path(bids_basename)
+    if isinstance(bids_path, str):
+        bids_path = _convert_str_to_bids_path(bids_path)
 
-    bids_basename = bids_basename.copy()
-    subject_id, session_id = bids_basename.subject, bids_basename.session
-    task, run = bids_basename.task, bids_basename.run
-    acquisition, space = bids_basename.acquisition, bids_basename.space
+    bids_path = bids_path.copy()
+    subject_id, session_id = bids_path.subject, bids_path.session
+    task, run = bids_path.task, bids_path.run
+    acquisition, space = bids_path.acquisition, bids_path.space
     modality = _handle_modality(raw)
 
-    bids_fname = bids_basename.copy().update(
+    bids_fname = bids_path.copy().update(
         modality=modality, suffix=modality, extension=ext,
         root=bids_root)
 

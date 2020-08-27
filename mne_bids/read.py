@@ -279,7 +279,7 @@ def _handle_channels_reading(channels_fname, bids_fname, raw):
     return raw
 
 
-def read_raw_bids(bids_basename, bids_root, modality=None, extra_params=None,
+def read_raw_bids(bids_path, bids_root, modality=None, extra_params=None,
                   verbose=True):
     """Read BIDS compatible data.
 
@@ -288,7 +288,7 @@ def read_raw_bids(bids_basename, bids_root, modality=None, extra_params=None,
 
     Parameters
     ----------
-    bids_basename : str | BIDSPath
+    bids_path : str | BIDSPath
         The base filename of the BIDS compatible files. Typically, this can be
         generated using :func:`mne_bids.BIDSPath`.
     bids_root : str | pathlib.Path
@@ -325,27 +325,27 @@ def read_raw_bids(bids_basename, bids_root, modality=None, extra_params=None,
 
     """
     # convert to BIDS Path
-    if isinstance(bids_basename, str):
-        bids_basename = _convert_str_to_bids_path(bids_basename)
-    bids_basename = bids_basename.copy()
-    sub = bids_basename.subject
-    ses = bids_basename.session
+    if isinstance(bids_path, str):
+        bids_path = _convert_str_to_bids_path(bids_path)
+    bids_path = bids_path.copy()
+    sub = bids_path.subject
+    ses = bids_path.session
 
     # set root, infer the modality and
     # then set it to the modality and suffix of the BIDSPath
-    bids_basename.update(root=bids_root)
+    bids_path.update(root=bids_root)
     if modality is None:
         modality = _infer_modality(bids_root=bids_root,
                                    sub=sub, ses=ses)
-    bids_basename.update(modality=modality, suffix=modality)
+    bids_path.update(modality=modality, suffix=modality)
 
     data_dir = make_bids_folders(subject=sub, session=ses, modality=modality,
                                  make_dir=False)
-    bids_fname = op.basename(bids_basename.fpath)
+    bids_fname = op.basename(bids_path.fpath)
 
     if op.splitext(bids_fname)[1] == '.pdf':
         bids_raw_folder = op.join(bids_root, data_dir,
-                                  f'{bids_basename.basename}')
+                                  f'{bids_path.basename}')
         bids_fpath = glob.glob(op.join(bids_raw_folder, 'c,rf*'))[0]
         config = op.join(bids_raw_folder, 'config')
     else:
@@ -359,7 +359,7 @@ def read_raw_bids(bids_basename, bids_root, modality=None, extra_params=None,
 
     # Try to find an associated events.tsv to get information about the
     # events in the recorded data
-    events_fname = _find_matching_sidecar(bids_basename, suffix='events',
+    events_fname = _find_matching_sidecar(bids_path, suffix='events',
                                           extension='.tsv',
                                           allow_fail=True)
     if events_fname is not None:
@@ -367,7 +367,7 @@ def read_raw_bids(bids_basename, bids_root, modality=None, extra_params=None,
 
     # Try to find an associated channels.tsv to get information about the
     # status and type of present channels
-    channels_fname = _find_matching_sidecar(bids_basename,
+    channels_fname = _find_matching_sidecar(bids_path,
                                             suffix='channels',
                                             extension='.tsv',
                                             allow_fail=True)
@@ -376,11 +376,11 @@ def read_raw_bids(bids_basename, bids_root, modality=None, extra_params=None,
 
     # Try to find an associated electrodes.tsv and coordsystem.json
     # to get information about the status and type of present channels
-    electrodes_fname = _find_matching_sidecar(bids_basename,
+    electrodes_fname = _find_matching_sidecar(bids_path,
                                               suffix='electrodes',
                                               extension='.tsv',
                                               allow_fail=True)
-    coordsystem_fname = _find_matching_sidecar(bids_basename,
+    coordsystem_fname = _find_matching_sidecar(bids_path,
                                                suffix='coordsystem',
                                                extension='.json',
                                                allow_fail=True)
@@ -389,14 +389,14 @@ def read_raw_bids(bids_basename, bids_root, modality=None, extra_params=None,
             raise RuntimeError(f"BIDS mandates that the coordsystem.json "
                                f"should exist if electrodes.tsv does. "
                                f"Please create coordsystem.json for"
-                               f"{bids_basename.basename}")
+                               f"{bids_path.basename}")
         if modality in ['meg', 'eeg', 'ieeg']:
             raw = _read_dig_bids(electrodes_fname, coordsystem_fname,
                                  raw, modality, verbose)
 
     # Try to find an associated sidecar.json to get information about the
     # recording snapshot
-    sidecar_fname = _find_matching_sidecar(bids_basename,
+    sidecar_fname = _find_matching_sidecar(bids_path,
                                            suffix=modality,
                                            extension='.json',
                                            allow_fail=True)
@@ -405,7 +405,7 @@ def read_raw_bids(bids_basename, bids_root, modality=None, extra_params=None,
 
     # read in associated subject info from participants.tsv
     participants_tsv_fpath = op.join(bids_root, 'participants.tsv')
-    subject = f"sub-{bids_basename.subject}"
+    subject = f"sub-{bids_path.subject}"
     if op.exists(participants_tsv_fpath):
         raw = _handle_participants_reading(participants_tsv_fpath, raw,
                                            subject, verbose=verbose)
@@ -416,12 +416,12 @@ def read_raw_bids(bids_basename, bids_root, modality=None, extra_params=None,
     return raw
 
 
-def get_matched_empty_room(bids_basename, bids_root):
+def get_matched_empty_room(bids_path, bids_root):
     """Get matching empty-room file for an MEG recording.
 
     Parameters
     ----------
-    bids_basename : str | BIDSPath
+    bids_path : str | BIDSPath
         The base filename of the BIDS-compatible file. Typically, this can be
         generated using :func:`mne_bids.BIDSPath`.
     bids_root : str | pathlib.Path
@@ -435,20 +435,20 @@ def get_matched_empty_room(bids_basename, bids_root):
 
     """
     # convert to BIDS Path
-    if isinstance(bids_basename, str):
-        bids_basename = _convert_str_to_bids_path(bids_basename)
-    bids_basename = bids_basename.copy()
+    if isinstance(bids_path, str):
+        bids_path = _convert_str_to_bids_path(bids_path)
+    bids_path = bids_path.copy()
 
     modality = 'meg'  # We're only concerned about MEG data here
-    bids_fname = bids_basename.update(suffix=modality,
-                                      root=bids_root).fpath
+    bids_fname = bids_path.update(suffix=modality,
+                                  root=bids_root).fpath
     _, ext = _parse_ext(bids_fname)
     if ext == '.fif':
         extra_params = dict(allow_maxshield=True)
     else:
         extra_params = None
 
-    raw = read_raw_bids(bids_basename=bids_basename, bids_root=bids_root,
+    raw = read_raw_bids(bids_path=bids_path, bids_root=bids_root,
                         modality=modality, extra_params=extra_params)
     if raw.info['meas_date'] is None:
         raise ValueError('The provided recording does not have a measurement '
@@ -519,7 +519,7 @@ def get_matched_empty_room(bids_basename, bids_root):
             else:
                 extra_params = None
 
-            er_raw = read_raw_bids(bids_basename=er_bids_path,
+            er_raw = read_raw_bids(bids_path=er_bids_path,
                                    bids_root=bids_root,
                                    modality=modality,
                                    extra_params=extra_params)
@@ -552,7 +552,7 @@ def get_matched_empty_room(bids_basename, bids_root):
     return best_er_bids_path
 
 
-def get_head_mri_trans(bids_basename, bids_root):
+def get_head_mri_trans(bids_path, bids_root):
     """Produce transformation matrix from MEG and MRI landmark points.
 
     Will attempt to read the landmarks of Nasion, LPA, and RPA from the sidecar
@@ -562,7 +562,7 @@ def get_head_mri_trans(bids_basename, bids_root):
 
     Parameters
     ----------
-    bids_basename : str | BIDSPath
+    bids_path : str | BIDSPath
         The base filename of the BIDS-compatible file. Typically, this can be
         generated using :func:`mne_bids.BIDSPath`.
     bids_root : str | pathlib.Path
@@ -579,11 +579,11 @@ def get_head_mri_trans(bids_basename, bids_root):
     import nibabel as nib
 
     # convert to BIDS Path
-    if isinstance(bids_basename, str):
-        bids_basename = _convert_str_to_bids_path(bids_basename)
+    if isinstance(bids_path, str):
+        bids_path = _convert_str_to_bids_path(bids_path)
 
     # Get the sidecar file for MRI landmarks
-    bids_fname = bids_basename.update(suffix='meg', root=bids_root)
+    bids_fname = bids_path.update(suffix='meg', root=bids_root)
     t1w_json_path = _find_matching_sidecar(bids_fname, suffix='T1w',
                                            extension='.json')
 
@@ -627,7 +627,7 @@ def get_head_mri_trans(bids_basename, bids_root):
     if ext == '.fif':
         extra_params = dict(allow_maxshield=True)
 
-    raw = read_raw_bids(bids_basename=bids_basename, bids_root=bids_root,
+    raw = read_raw_bids(bids_path=bids_path, bids_root=bids_root,
                         extra_params=extra_params, modality='meg')
     meg_coords_dict = _extract_landmarks(raw.info['dig'])
     meg_landmarks = np.asarray((meg_coords_dict['LPA'],
