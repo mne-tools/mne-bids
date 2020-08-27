@@ -134,7 +134,7 @@
 <span class="kn">from</span> <span class="nn">mne.io</span> <span class="kn">import</span> <span class="n">read_raw_brainvision</span><span class="p">,</span> <span class="n">anonymize_info</span>
 <span class="kn">from</span> <span class="nn">scipy.io</span> <span class="kn">import</span> <span class="n">loadmat</span><span class="p">,</span> <span class="n">savemat</span>
 
-<span class="kn">from</span> <span class="nn">mne_bids.path</span> <span class="kn">import</span> <span class="n">_parse_ext</span>
+<span class="kn">from</span> <span class="nn">mne_bids.path</span> <span class="kn">import</span> <span class="n">BIDSPath</span><span class="p">,</span> <span class="n">_parse_ext</span><span class="p">,</span> <span class="n">_mkdir_p</span>
 <span class="kn">from</span> <span class="nn">mne_bids.utils</span> <span class="kn">import</span> <span class="n">_get_mrk_meas_date</span><span class="p">,</span> <span class="n">_check_anonymize</span>
 
 
@@ -289,10 +289,13 @@
 <span class="sd">        Extract information of marker and headpoints</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">from</span> <span class="nn">mne_bids</span> <span class="kn">import</span> <span class="n">BIDSPath</span>
+    <span class="c1"># create parent directories in case it does not exist yet</span>
+    <span class="n">_mkdir_p</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">dest</span><span class="p">))</span>
+
     <span class="c1"># KIT data requires the marker file to be copied over too</span>
     <span class="n">sh</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dest</span><span class="p">)</span>
     <span class="n">data_path</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">dest</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">modality</span> <span class="o">=</span> <span class="s1">&#39;meg&#39;</span>
     <span class="k">if</span> <span class="s1">&#39;mrk&#39;</span> <span class="ow">in</span> <span class="n">_init_kwargs</span><span class="p">:</span>
         <span class="n">hpi</span> <span class="o">=</span> <span class="n">_init_kwargs</span><span class="p">[</span><span class="s1">&#39;mrk&#39;</span><span class="p">]</span>
         <span class="n">acq_map</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
@@ -308,8 +311,8 @@
             <span class="n">marker_fname</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span>
                 <span class="n">subject</span><span class="o">=</span><span class="n">subject_id</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session_id</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="n">task</span><span class="p">,</span> <span class="n">run</span><span class="o">=</span><span class="n">run</span><span class="p">,</span>
                 <span class="n">acquisition</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;markers&#39;</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="n">marker_ext</span><span class="p">,</span>
-                <span class="n">prefix</span><span class="o">=</span><span class="n">data_path</span><span class="p">)</span>
-            <span class="n">sh</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">marker_fname</span><span class="p">)</span>
+                <span class="n">modality</span><span class="o">=</span><span class="n">modality</span><span class="p">)</span>
+            <span class="n">sh</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="n">marker_fname</span><span class="o">.</span><span class="n">basename</span><span class="p">))</span>
     <span class="k">for</span> <span class="n">acq</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;elp&#39;</span><span class="p">,</span> <span class="s1">&#39;hsp&#39;</span><span class="p">]:</span>
         <span class="k">if</span> <span class="n">acq</span> <span class="ow">in</span> <span class="n">_init_kwargs</span><span class="p">:</span>
             <span class="n">position_file</span> <span class="o">=</span> <span class="n">_init_kwargs</span><span class="p">[</span><span class="n">acq</span><span class="p">]</span>
@@ -318,8 +321,9 @@
             <span class="n">position_fname</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span>
                 <span class="n">subject</span><span class="o">=</span><span class="n">subject_id</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session_id</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="n">task</span><span class="p">,</span> <span class="n">run</span><span class="o">=</span><span class="n">run</span><span class="p">,</span>
                 <span class="n">acquisition</span><span class="o">=</span><span class="n">acq</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;headshape&#39;</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="n">position_ext</span><span class="p">,</span>
-                <span class="n">prefix</span><span class="o">=</span><span class="n">data_path</span><span class="p">)</span>
-            <span class="n">sh</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">position_file</span><span class="p">,</span> <span class="n">position_fname</span><span class="p">)</span></div>
+                <span class="n">modality</span><span class="o">=</span><span class="n">modality</span><span class="p">)</span>
+            <span class="n">sh</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">position_file</span><span class="p">,</span>
+                        <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="n">position_fname</span><span class="o">.</span><span class="n">basename</span><span class="p">))</span></div>
 
 
 <span class="k">def</span> <span class="nf">_replace_file</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">pattern</span><span class="p">,</span> <span class="n">replace</span><span class="p">):</span>
@@ -533,7 +537,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-08-26.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-08-27.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
     </p>
   </div>

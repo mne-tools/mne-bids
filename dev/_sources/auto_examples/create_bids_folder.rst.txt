@@ -77,7 +77,7 @@ final file path. Omitted keys will not be included in the file path.
 
  .. code-block:: none
 
-    sub-test_ses-two_task-mytask_events.tsv
+    sub-test/ses-two/sub-test_ses-two_task-mytask_events.tsv
 
 
 
@@ -102,7 +102,7 @@ file name. This could then prepended to many more files.
 
  .. code-block:: none
 
-    sub-test_task-mytask
+    sub-test/sub-test_task-mytask
 
 
 
@@ -144,7 +144,7 @@ You can also use MNE-BIDS to create folder hierarchies.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  0.001 seconds)
+   **Total running time of the script:** ( 0 minutes  0.002 seconds)
 
 
 .. _sphx_glr_download_auto_examples_create_bids_folder.py:

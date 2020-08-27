@@ -442,18 +442,21 @@
     <span class="n">sub</span> <span class="o">=</span> <span class="n">bids_basename</span><span class="o">.</span><span class="n">subject</span>
     <span class="n">ses</span> <span class="o">=</span> <span class="n">bids_basename</span><span class="o">.</span><span class="n">session</span>
 
+    <span class="c1"># set root, infer the modality and</span>
+    <span class="c1"># then set it to the modality and suffix of the BIDSPath</span>
+    <span class="n">bids_basename</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="n">bids_root</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">modality</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">modality</span> <span class="o">=</span> <span class="n">_infer_modality</span><span class="p">(</span><span class="n">bids_root</span><span class="o">=</span><span class="n">bids_root</span><span class="p">,</span>
                                    <span class="n">sub</span><span class="o">=</span><span class="n">sub</span><span class="p">,</span> <span class="n">ses</span><span class="o">=</span><span class="n">ses</span><span class="p">)</span>
+    <span class="n">bids_basename</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">modality</span><span class="o">=</span><span class="n">modality</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="n">modality</span><span class="p">)</span>
 
     <span class="n">data_dir</span> <span class="o">=</span> <span class="n">make_bids_folders</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="n">sub</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">ses</span><span class="p">,</span> <span class="n">modality</span><span class="o">=</span><span class="n">modality</span><span class="p">,</span>
                                  <span class="n">make_dir</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">bids_fname</span> <span class="o">=</span> <span class="n">bids_basename</span><span class="o">.</span><span class="n">get_bids_fname</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="n">modality</span><span class="p">,</span>
-                                              <span class="n">bids_root</span><span class="o">=</span><span class="n">bids_root</span><span class="p">)</span>
+    <span class="n">bids_fname</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">bids_basename</span><span class="o">.</span><span class="n">fpath</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">op</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;.pdf&#39;</span><span class="p">:</span>
         <span class="n">bids_raw_folder</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bids_root</span><span class="p">,</span> <span class="n">data_dir</span><span class="p">,</span>
-                                  <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">bids_basename</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">modality</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+                                  <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">bids_basename</span><span class="o">.</span><span class="n">basename</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="n">bids_fpath</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bids_raw_folder</span><span class="p">,</span> <span class="s1">&#39;c,rf*&#39;</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">config</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bids_raw_folder</span><span class="p">,</span> <span class="s1">&#39;config&#39;</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
@@ -467,15 +470,15 @@
 
     <span class="c1"># Try to find an associated events.tsv to get information about the</span>
     <span class="c1"># events in the recorded data</span>
-    <span class="n">events_fname</span> <span class="o">=</span> <span class="n">_find_matching_sidecar</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">,</span> <span class="n">bids_root</span><span class="p">,</span>
-                                          <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;events&#39;</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.tsv&#39;</span><span class="p">,</span>
+    <span class="n">events_fname</span> <span class="o">=</span> <span class="n">_find_matching_sidecar</span><span class="p">(</span><span class="n">bids_basename</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;events&#39;</span><span class="p">,</span>
+                                          <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.tsv&#39;</span><span class="p">,</span>
                                           <span class="n">allow_fail</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">events_fname</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">raw</span> <span class="o">=</span> <span class="n">_handle_events_reading</span><span class="p">(</span><span class="n">events_fname</span><span class="p">,</span> <span class="n">raw</span><span class="p">)</span>
 
     <span class="c1"># Try to find an associated channels.tsv to get information about the</span>
     <span class="c1"># status and type of present channels</span>
-    <span class="n">channels_fname</span> <span class="o">=</span> <span class="n">_find_matching_sidecar</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">,</span> <span class="n">bids_root</span><span class="p">,</span>
+    <span class="n">channels_fname</span> <span class="o">=</span> <span class="n">_find_matching_sidecar</span><span class="p">(</span><span class="n">bids_basename</span><span class="p">,</span>
                                             <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;channels&#39;</span><span class="p">,</span>
                                             <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.tsv&#39;</span><span class="p">,</span>
                                             <span class="n">allow_fail</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -484,28 +487,29 @@
 
     <span class="c1"># Try to find an associated electrodes.tsv and coordsystem.json</span>
     <span class="c1"># to get information about the status and type of present channels</span>
-    <span class="n">electrodes_fname</span> <span class="o">=</span> <span class="n">_find_matching_sidecar</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">,</span> <span class="n">bids_root</span><span class="p">,</span>
+    <span class="n">electrodes_fname</span> <span class="o">=</span> <span class="n">_find_matching_sidecar</span><span class="p">(</span><span class="n">bids_basename</span><span class="p">,</span>
                                               <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;electrodes&#39;</span><span class="p">,</span>
                                               <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.tsv&#39;</span><span class="p">,</span>
                                               <span class="n">allow_fail</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">coordsystem_fname</span> <span class="o">=</span> <span class="n">_find_matching_sidecar</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">,</span> <span class="n">bids_root</span><span class="p">,</span>
+    <span class="n">coordsystem_fname</span> <span class="o">=</span> <span class="n">_find_matching_sidecar</span><span class="p">(</span><span class="n">bids_basename</span><span class="p">,</span>
                                                <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;coordsystem&#39;</span><span class="p">,</span>
                                                <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.json&#39;</span><span class="p">,</span>
                                                <span class="n">allow_fail</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">electrodes_fname</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">coordsystem_fname</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;BIDS mandates that the coordsystem.json &quot;</span>
-                               <span class="s2">&quot;should exist if electrodes.tsv does. &quot;</span>
-                               <span class="s2">&quot;Please create coordsystem.json for&quot;</span>
-                               <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">bids_basename</span><span class="p">))</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;BIDS mandates that the coordsystem.json &quot;</span>
+                               <span class="sa">f</span><span class="s2">&quot;should exist if electrodes.tsv does. &quot;</span>
+                               <span class="sa">f</span><span class="s2">&quot;Please create coordsystem.json for&quot;</span>
+                               <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bids_basename</span><span class="o">.</span><span class="n">basename</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">modality</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;meg&#39;</span><span class="p">,</span> <span class="s1">&#39;eeg&#39;</span><span class="p">,</span> <span class="s1">&#39;ieeg&#39;</span><span class="p">]:</span>
             <span class="n">raw</span> <span class="o">=</span> <span class="n">_read_dig_bids</span><span class="p">(</span><span class="n">electrodes_fname</span><span class="p">,</span> <span class="n">coordsystem_fname</span><span class="p">,</span>
                                  <span class="n">raw</span><span class="p">,</span> <span class="n">modality</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
 
     <span class="c1"># Try to find an associated sidecar.json to get information about the</span>
     <span class="c1"># recording snapshot</span>
-    <span class="n">sidecar_fname</span> <span class="o">=</span> <span class="n">_find_matching_sidecar</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">,</span> <span class="n">bids_root</span><span class="p">,</span>
-                                           <span class="n">suffix</span><span class="o">=</span><span class="n">modality</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.json&#39;</span><span class="p">,</span>
+    <span class="n">sidecar_fname</span> <span class="o">=</span> <span class="n">_find_matching_sidecar</span><span class="p">(</span><span class="n">bids_basename</span><span class="p">,</span>
+                                           <span class="n">suffix</span><span class="o">=</span><span class="n">modality</span><span class="p">,</span>
+                                           <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.json&#39;</span><span class="p">,</span>
                                            <span class="n">allow_fail</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">sidecar_fname</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">raw</span> <span class="o">=</span> <span class="n">_handle_info_reading</span><span class="p">(</span><span class="n">sidecar_fname</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
@@ -546,8 +550,8 @@
     <span class="n">bids_basename</span> <span class="o">=</span> <span class="n">bids_basename</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
     <span class="n">modality</span> <span class="o">=</span> <span class="s1">&#39;meg&#39;</span>  <span class="c1"># We&#39;re only concerned about MEG data here</span>
-    <span class="n">bids_fname</span> <span class="o">=</span> <span class="n">bids_basename</span><span class="o">.</span><span class="n">get_bids_fname</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="n">modality</span><span class="p">,</span>
-                                              <span class="n">bids_root</span><span class="o">=</span><span class="n">bids_root</span><span class="p">)</span>
+    <span class="n">bids_fname</span> <span class="o">=</span> <span class="n">bids_basename</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="n">modality</span><span class="p">,</span>
+                                      <span class="n">root</span><span class="o">=</span><span class="n">bids_root</span><span class="p">)</span><span class="o">.</span><span class="n">fpath</span>
     <span class="n">_</span><span class="p">,</span> <span class="n">ext</span> <span class="o">=</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">ext</span> <span class="o">==</span> <span class="s1">&#39;.fif&#39;</span><span class="p">:</span>
         <span class="n">extra_params</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">allow_maxshield</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -689,10 +693,9 @@
         <span class="n">bids_basename</span> <span class="o">=</span> <span class="n">_convert_str_to_bids_path</span><span class="p">(</span><span class="n">bids_basename</span><span class="p">)</span>
 
     <span class="c1"># Get the sidecar file for MRI landmarks</span>
-    <span class="n">bids_fname</span> <span class="o">=</span> <span class="n">bids_basename</span><span class="o">.</span><span class="n">get_bids_fname</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;meg&#39;</span><span class="p">,</span>
-                                              <span class="n">bids_root</span><span class="o">=</span><span class="n">bids_root</span><span class="p">)</span>
-    <span class="n">t1w_json_path</span> <span class="o">=</span> <span class="n">_find_matching_sidecar</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">,</span> <span class="n">bids_root</span><span class="p">,</span>
-                                           <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;T1w&#39;</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.json&#39;</span><span class="p">)</span>
+    <span class="n">bids_fname</span> <span class="o">=</span> <span class="n">bids_basename</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;meg&#39;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">bids_root</span><span class="p">)</span>
+    <span class="n">t1w_json_path</span> <span class="o">=</span> <span class="n">_find_matching_sidecar</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;T1w&#39;</span><span class="p">,</span>
+                                           <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.json&#39;</span><span class="p">)</span>
 
     <span class="c1"># Get MRI landmarks from the JSON sidecar</span>
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">t1w_json_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
@@ -759,7 +762,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-08-26.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-08-27.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
     </p>
   </div>
