@@ -429,9 +429,10 @@ def get_matched_empty_room(bids_basename, bids_root):
 
     Returns
     -------
-    er_path : BIDSPath | None
-        The basename corresponding to the best-matching empty-room measurement.
+    BIDSPath | None
+        The path corresponding to the best-matching empty-room measurement.
         Returns None if none was found.
+
     """
     # convert to BIDS Path
     if isinstance(bids_basename, str):
