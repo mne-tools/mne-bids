@@ -436,6 +436,13 @@ def test_bids_path(return_bids_test_dir):
                                'modality: ieeg\n'
                                'basename: sub-01_ses-02_task-03_ieeg.edf)')
 
+    # test update can change check
+    bids_path.update(check=False)
+    bids_path.update(extension='.mat')
+
+    bids_path.update(split=1)
+    assert bids_path.basename == 'sub-01_ses-02_task-03_split-01_ieeg.mat'
+
 
 def test_make_filenames():
     """Test that we create filenames according to the BIDS spec."""

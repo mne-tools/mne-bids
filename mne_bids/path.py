@@ -505,13 +505,6 @@ def _check_non_sub_ses_entity(bids_path):
     return False
 
 
-def _convert_str_to_bids_path(bids_basename):
-    """Convert string of bids basename to BIDSPath object."""
-    params = get_entities_from_fname(bids_basename)
-    bids_path = BIDSPath(**params)
-    return bids_path
-
-
 def print_dir_tree(folder, max_depth=None):
     """Recursively print dir tree starting from `folder` up to `max_depth`."""
     if not op.exists(folder):
