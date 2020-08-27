@@ -570,7 +570,6 @@ def test_get_matched_empty_room():
     bids_root = _TempDir()
 
     raw = _read_raw_fif(raw_fname)
-
     bids_basename = BIDSPath(subject='01', session='01',
                              task='audiovisual', run='01')
     write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
@@ -591,12 +590,13 @@ def test_get_matched_empty_room():
         er_date = datetime.fromtimestamp(er_raw.info['meas_date'][0])
     er_date = er_date.strftime('%Y%m%d')
     er_bids_basename = BIDSPath(subject='emptyroom', task='noise',
-                                session=er_date, suffix='meg')
+                                session=er_date, suffix='meg',
+                                root=bids_root)
     write_raw_bids(er_raw, er_bids_basename, bids_root, overwrite=True)
 
     recovered_er_basename = get_matched_empty_room(bids_basename=bids_basename,
                                                    bids_root=bids_root)
-    assert er_bids_basename.basename == recovered_er_basename
+    assert er_bids_basename == recovered_er_basename
 
     # assert that we get best emptyroom if there are multiple available
     sh.rmtree(op.join(bids_root, 'sub-emptyroom'))
@@ -614,7 +614,7 @@ def test_get_matched_empty_room():
 
     best_er_basename = get_matched_empty_room(bids_basename=bids_basename,
                                               bids_root=bids_root)
-    assert '20021204' in best_er_basename
+    assert '20021204' in best_er_basename.basename
 
     # assert that we get error if meas_date is not available.
     raw = read_raw_bids(bids_basename=bids_basename, bids_root=bids_root,
