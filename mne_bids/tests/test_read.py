@@ -614,7 +614,7 @@ def test_get_matched_empty_room():
 
     best_er_basename = get_matched_empty_room(bids_basename=bids_basename,
                                               bids_root=bids_root)
-    assert '20021204' in best_er_basename.basename
+    assert best_er_basename.session == '20021204'
 
     # assert that we get error if meas_date is not available.
     raw = read_raw_bids(bids_basename=bids_basename, bids_root=bids_root,
