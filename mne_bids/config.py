@@ -75,6 +75,12 @@ ALLOWED_FILENAME_SUFFIX = [
     'behav', 'phsyio', 'stim'  # behavioral
 ]
 
+# converts suffix to known path modalities
+SUFFIX_TO_MODALITY = {
+    'meg': 'meg', 'eeg': 'eeg', 'ieeg': 'ieeg', 'T1w': 'anat',
+    'headshape': 'meg', 'digitizer': 'meg', 'markers': 'meg'
+}
+
 # allowed BIDS extensions (extension in the BIDS filename)
 ALLOWED_FILENAME_EXTENSIONS = (
     allowed_extensions_meg +
@@ -89,7 +95,7 @@ ALLOWED_PATH_ENTITIES = ('subject', 'session', 'task', 'run',
                          'processing', 'recording', 'space',
                          'acquisition', 'split',
                          'suffix', 'extension',
-                         'modality', 'prefix')
+                         'modality', 'root')
 ALLOWED_PATH_ENTITIES_SHORT = {'sub': 'subject', 'ses': 'session',
                                'task': 'task', 'acq': 'acquisition',
                                'run': 'run', 'proc': 'processing',

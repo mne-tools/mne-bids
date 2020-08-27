@@ -249,7 +249,8 @@ def test_handle_info_reading():
     write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
 
     # find sidecar JSON fname
-    sidecar_fname = _find_matching_sidecar(bids_fname, bids_root,
+    bids_fname.update(root=bids_root)
+    sidecar_fname = _find_matching_sidecar(bids_fname,
                                            suffix=suffix, extension='.json',
                                            allow_fail=True)
 
@@ -292,6 +293,10 @@ def test_handle_eeg_coords_reading():
     """Test reading iEEG coordinates from BIDS files."""
     bids_root = _TempDir()
 
+    bids_basename = BIDSPath(
+        subject=subject_id, session=session_id, run=run, acquisition=acq,
+        task=task)
+
     data_path = op.join(testing.data_path(), 'EDF')
     raw_fname = op.join(data_path, 'test_reduced.edf')
     raw = _read_raw_edf(raw_fname)
@@ -312,11 +317,12 @@ def test_handle_eeg_coords_reading():
     raw.set_montage(montage)
     with pytest.warns(RuntimeWarning, match="Skipping EEG electrodes.tsv"):
         write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
-        coordsystem_fname = _find_matching_sidecar(bids_basename, bids_root,
+        bids_basename.update(root=bids_root)
+        coordsystem_fname = _find_matching_sidecar(bids_basename,
                                                    suffix='coordsystem',
                                                    extension='.json',
                                                    allow_fail=True)
-        electrodes_fname = _find_matching_sidecar(bids_basename, bids_root,
+        electrodes_fname = _find_matching_sidecar(bids_basename,
                                                   suffix='electrodes',
                                                   extension='.tsv',
                                                   allow_fail=True)
@@ -345,7 +351,7 @@ def test_handle_eeg_coords_reading():
     assert not object_diff(raw.info['chs'], raw_test.info['chs'])
 
     # modify coordinate frame to not-captrak
-    coordsystem_fname = _find_matching_sidecar(bids_basename, bids_root,
+    coordsystem_fname = _find_matching_sidecar(bids_basename,
                                                suffix='coordsystem',
                                                extension='.json',
                                                allow_fail=True)
@@ -366,9 +372,9 @@ def test_handle_ieeg_coords_reading(bids_basename):
 
     data_path = op.join(testing.data_path(), 'EDF')
     raw_fname = op.join(data_path, 'test_reduced.edf')
-    bids_fname = bids_basename.copy().update(suffix='ieeg',
+    bids_fname = bids_basename.copy().update(modality='ieeg',
+                                             suffix='ieeg',
                                              extension='.edf')
-
     raw = _read_raw_edf(raw_fname)
 
     # ensure we are writing 'ecog'/'ieeg' data
@@ -387,11 +393,11 @@ def test_handle_ieeg_coords_reading(bids_basename):
         montage = mne.channels.make_dig_montage(ch_pos=ch_pos,
                                                 coord_frame=coord_frame)
         raw.set_montage(montage)
-        write_raw_bids(raw, bids_basename, bids_root,
+        write_raw_bids(raw, bids_fname, bids_root,
                        overwrite=True, verbose=False)
         # read in raw file w/ updated coordinate frame
         # and make sure all digpoints are correct coordinate frames
-        raw_test = read_raw_bids(bids_basename=bids_basename,
+        raw_test = read_raw_bids(bids_basename=bids_fname,
                                  bids_root=bids_root, verbose=False)
         coord_frame_int = MNE_STR_TO_FRAME[coord_frame]
         for digpoint in raw_test.info['dig']:
@@ -399,11 +405,11 @@ def test_handle_ieeg_coords_reading(bids_basename):
 
     # start w/ new bids root
     sh.rmtree(bids_root)
-    write_raw_bids(raw, bids_basename, bids_root,
+    write_raw_bids(raw, bids_fname, bids_root,
                    overwrite=True, verbose=False)
 
     # obtain the sensor positions and assert ch_coords are same
-    raw_test = read_raw_bids(bids_basename=bids_basename, bids_root=bids_root,
+    raw_test = read_raw_bids(bids_basename=bids_fname, bids_root=bids_root,
                              verbose=False)
     orig_locs = raw.info['dig'][1]
     test_locs = raw_test.info['dig'][1]
@@ -413,11 +419,12 @@ def test_handle_ieeg_coords_reading(bids_basename):
     # read in the data and assert montage is the same
     # regardless of 'm', 'cm', 'mm', or 'pixel'
     scalings = {'m': 1, 'cm': 100, 'mm': 1000}
-    coordsystem_fname = _find_matching_sidecar(bids_fname, bids_root,
+    bids_fname.update(root=bids_root)
+    coordsystem_fname = _find_matching_sidecar(bids_fname,
                                                suffix='coordsystem',
                                                extension='.json',
                                                allow_fail=True)
-    electrodes_fname = _find_matching_sidecar(bids_fname, bids_root,
+    electrodes_fname = _find_matching_sidecar(bids_fname,
                                               suffix='electrodes',
                                               extension='.tsv',
                                               allow_fail=True)
@@ -436,7 +443,7 @@ def test_handle_ieeg_coords_reading(bids_basename):
     _to_tsv(electrodes_dict, electrodes_fname)
     with pytest.warns(RuntimeWarning, match='Coordinate unit is not '
                                             'an accepted BIDS unit'):
-        raw_test = read_raw_bids(bids_basename=bids_basename,
+        raw_test = read_raw_bids(bids_basename=bids_fname,
                                  bids_root=bids_root, verbose=False)
 
     # correct BIDS units should scale to meters properly
@@ -451,7 +458,7 @@ def test_handle_ieeg_coords_reading(bids_basename):
         _to_tsv(electrodes_dict, electrodes_fname)
 
         # read in raw file w/ updated montage
-        raw_test = read_raw_bids(bids_basename=bids_basename,
+        raw_test = read_raw_bids(bids_basename=bids_fname,
                                  bids_root=bids_root, verbose=False)
 
         # obtain the sensor positions and make sure they're the same
@@ -468,13 +475,13 @@ def test_handle_ieeg_coords_reading(bids_basename):
         # and make sure all digpoints are MRI coordinate frame
         with pytest.warns(RuntimeWarning, match="iEEG Coordinate frame is "
                                                 "not accepted BIDS keyword"):
-            raw_test = read_raw_bids(bids_basename=bids_basename,
+            raw_test = read_raw_bids(bids_basename=bids_fname,
                                      bids_root=bids_root, verbose=False)
             assert raw_test.info['dig'] is None
 
     # ACPC should be read in as RAS for iEEG
     _update_sidecar(coordsystem_fname, 'iEEGCoordinateSystem', 'acpc')
-    raw_test = read_raw_bids(bids_basename=bids_basename, bids_root=bids_root,
+    raw_test = read_raw_bids(bids_basename=bids_fname, bids_root=bids_root,
                              verbose=False)
     coord_frame_int = MNE_STR_TO_FRAME['ras']
     for digpoint in raw_test.info['dig']:
@@ -484,7 +491,7 @@ def test_handle_ieeg_coords_reading(bids_basename):
     os.remove(coordsystem_fname)
     with pytest.raises(RuntimeError, match='BIDS mandates that '
                                            'the coordsystem.json'):
-        raw = read_raw_bids(bids_basename=bids_basename,
+        raw = read_raw_bids(bids_basename=bids_fname,
                             bids_root=bids_root, verbose=False)
 
     # test error message if electrodes don't match
@@ -496,7 +503,7 @@ def test_handle_ieeg_coords_reading(bids_basename):
             electrodes_dict[key].pop()
     _to_tsv(electrodes_dict, electrodes_fname)
     with pytest.raises(RuntimeError, match='Channels do not correspond'):
-        raw_test = read_raw_bids(bids_basename=bids_basename,
+        raw_test = read_raw_bids(bids_basename=bids_fname,
                                  bids_root=bids_root, verbose=False)
 
     # make sure montage is set if there are coordinates w/ 'n/a'
@@ -515,7 +522,7 @@ def test_handle_ieeg_coords_reading(bids_basename):
     nan_chs = [electrodes_dict['name'][i] for i in [0, 3]]
     with pytest.warns(RuntimeWarning, match='There are channels '
                                             'without locations'):
-        raw = read_raw_bids(bids_basename=bids_basename, bids_root=bids_root,
+        raw = read_raw_bids(bids_basename=bids_fname, bids_root=bids_root,
                             verbose=False)
         for idx, ch in enumerate(raw.info['chs']):
             if ch['ch_name'] in nan_chs:
@@ -652,9 +659,9 @@ def test_get_matched_emptyroom_ties():
 
     write_raw_bids(raw, bids_basename, bids_root, overwrite=True)
     er_bids_path = BIDSPath(subject='emptyroom', session=session)
-    er_basename_1 = str(er_bids_path)
+    er_basename_1 = er_bids_path.basename
     er_basename_2 = BIDSPath(subject='emptyroom', session=session,
-                             task='noise')
+                             task='noise').basename
     er_raw.save(op.join(er_dir, f'{er_basename_1}_meg.fif'))
     er_raw.save(op.join(er_dir, f'{er_basename_2}_meg.fif'))
 
@@ -676,7 +683,7 @@ def test_get_matched_emptyroom_no_meas_date():
                                modality='meg', bids_root=bids_root)
     er_bids_path = BIDSPath(subject='emptyroom', session=er_session,
                             task='noise', check=False)
-    er_basename = str(er_bids_path)
+    er_basename = er_bids_path.basename
     raw = _read_raw_fif(raw_fname)
 
     er_raw_fname = op.join(data_path, 'MEG', 'sample', 'ernoise_raw.fif')
@@ -738,11 +745,11 @@ def test_handle_channel_type_casing():
     write_raw_bids(raw, bids_basename, bids_root, overwrite=True,
                    verbose=False)
 
-    subject_path = op.join(bids_root, f'sub-{subject_id}', f'ses-{session_id}',
-                           'meg')
-    bids_channels_fname = (bids_basename.copy()
-                           .update(prefix=subject_path,
-                                   suffix='channels', extension='.tsv'))
+    ch_path = bids_basename.copy().update(root=bids_root,
+                                          modality='meg',
+                                          suffix='channels',
+                                          extension='.tsv')
+    bids_channels_fname = ch_path.fpath
 
     # Convert all channel type entries to lowercase.
     channels_data = _from_tsv(bids_channels_fname)
@@ -756,13 +763,15 @@ def test_handle_channel_type_casing():
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_bads_reading():
     bids_root = _TempDir()
-    channels_fname = (bids_basename.copy()
-                      .update(prefix=op.join(bids_root, 'sub-01', 'ses-01',
-                                             'meg'),
-                              suffix='channels', extension='.tsv'))
+    data_path = make_bids_folders(
+        subject=subject_id, session=session_id, modality='meg',
+        bids_root=bids_root, make_dir=False)
+    ch_path = (bids_basename.copy().update(suffix='channels',
+                                           extension='.tsv'))
+    channels_fname = op.join(data_path, ch_path.basename)
+
     raw_bids_fname = (bids_basename.copy()
-                      .update(prefix=op.join(bids_root, 'sub-01', 'ses-01',
-                                             'meg'),
+                      .update(root=bids_root, modality='meg',
                               suffix='meg', extension='.fif'))
     raw = _read_raw_fif(raw_fname, verbose=False)
 

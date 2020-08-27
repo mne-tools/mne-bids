@@ -7,6 +7,7 @@ import os.path as op
 # This is here to handle mne-python <0.20
 import warnings
 from pathlib import Path
+import shutil
 
 import pytest
 
@@ -233,8 +234,10 @@ def test_find_matching_sidecar(return_bids_test_dir):
     """Test finding a sidecar file from a BIDS dir."""
     bids_root = return_bids_test_dir
 
+    bids_fpath = bids_basename.copy().update(root=bids_root)
+
     # Now find a sidecar
-    sidecar_fname = _find_matching_sidecar(bids_basename, bids_root,
+    sidecar_fname = _find_matching_sidecar(bids_fpath,
                                            suffix='coordsystem',
                                            extension='.json')
     expected_file = op.join('sub-01', 'ses-01', 'meg',
@@ -246,32 +249,109 @@ def test_find_matching_sidecar(return_bids_test_dir):
         open(sidecar_fname.replace('coordsystem.json',
                                    '2coordsystem.json'), 'w').close()
         print_dir_tree(bids_root)
-        _find_matching_sidecar(bids_basename, bids_root,
+        _find_matching_sidecar(bids_fpath,
                                suffix='coordsystem', extension='.json')
 
     # Find nothing but receive None, because we set `allow_fail` to True
     with pytest.warns(RuntimeWarning, match='Did not find any'):
-        _find_matching_sidecar(bids_basename, bids_root,
+        _find_matching_sidecar(bids_fpath,
                                suffix='foo', extension='.bogus',
                                allow_fail=True)
+
+
+def test_bids_path_inference(return_bids_test_dir):
+    """Test usage of BIDSPath object and fpath."""
+    bids_root = return_bids_test_dir
+
+    # without providing all the entities, ambiguous when trying
+    # to use fpath
+    bids_path = BIDSPath(
+        subject=subject_id, session=session_id, acquisition=acq,
+        task=task, root=bids_root)
+    with pytest.raises(RuntimeError, match='Found more than one'):
+        bids_path.fpath
+
+    # can't locate a file, but the basename should work
+    bids_path = BIDSPath(
+        subject=subject_id, session=session_id, acquisition=acq,
+        task=task, run='10', root=bids_root)
+    with pytest.warns(RuntimeWarning, match='Could not locate'):
+        fpath = bids_path.fpath
+        assert str(fpath) == op.join(bids_root, f'sub-{subject_id}',
+                                     f'ses-{session_id}',
+                                     bids_path.basename)
+
+    # shouldn't error out when there is no uncertainty
+    channels_fname = BIDSPath(subject=subject_id, session=session_id,
+                              run=run, acquisition=acq, task=task,
+                              root=bids_root, suffix='channels')
+    channels_fname.fpath
+
+    # create an extra file under 'eeg'
+    extra_file = op.join(bids_root, f'sub-{subject_id}',
+                         f'ses-{session_id}', 'eeg',
+                         channels_fname.basename + '.tsv')
+    Path(extra_file).parent.mkdir(exist_ok=True, parents=True)
+    # Creates a new file and because of this new file, there is now
+    # ambiguity
+    with open(extra_file, 'w'):
+        pass
+    with pytest.raises(RuntimeError, match='Found data of more than one'):
+        channels_fname.fpath
+
+    # if you set modality, now there is no ambiguity
+    channels_fname.update(modality='eeg')
+    assert str(channels_fname.fpath) == extra_file
+    # set state back to original
+    shutil.rmtree(Path(extra_file).parent)
 
 
 def test_bids_path(return_bids_test_dir):
     """Test usage of BIDSPath object."""
     bids_root = return_bids_test_dir
 
-    bids_basename = BIDSPath(
+    bids_path = BIDSPath(
         subject=subject_id, session=session_id, run=run, acquisition=acq,
-        task=task)
+        task=task, root=bids_root, suffix='meg')
 
-    # get_bids_fname should fire warning
-    with pytest.raises(ValueError, match='No filename extension was provided'):
-        bids_fname = bids_basename.get_bids_fname()
+    expected_parent_dir = op.join(bids_root, f'sub-{subject_id}',
+                                  f'ses-{session_id}', 'meg')
+    assert str(bids_path.fpath.parent) == expected_parent_dir
 
-    # should find the correct filename if bids_root was passed
-    bids_fname = bids_basename.get_bids_fname(bids_root=bids_root)
-    assert bids_fname == bids_basename.update(suffix='meg',
-                                              extension='.fif')
+    # test bids path without bids_root, suffix, extension
+    # basename and fpath should be the same
+    expected_basename = f'sub-{subject_id}_ses-{session_id}_task-{task}_run-{run}'  # noqa
+    assert (op.basename(bids_path.fpath) ==
+            expected_basename + '_meg.fif')
+    assert op.dirname(bids_path.fpath).startswith(bids_root)
+
+    # when bids root is not passed in, passes relative path
+    bids_path2 = bids_path.copy().update(modality='meg', root=None)
+    expected_relpath = op.join(
+        f'sub-{subject_id}', f'ses-{session_id}', 'meg',
+        expected_basename + '_meg')
+    assert str(bids_path2.fpath) == expected_relpath
+
+    # without bids_root and with suffix/extension
+    # basename and fpath should be the same
+    bids_path.update(suffix='ieeg', extension='vhdr')
+    expected_basename2 = expected_basename + '_ieeg.vhdr'
+    assert (bids_path.basename == expected_basename2)
+    bids_path.update(extension='.vhdr')
+    assert (bids_path.basename == expected_basename2)
+
+    # with bids_root, but without suffix/extension
+    # basename should work, but fpath should not.
+    bids_path.update(root=bids_root, suffix=None, extension=None)
+    assert bids_path.basename == expected_basename
+
+    # should find the correct filename if suffix was passed
+    bids_path.update(suffix='meg', extension='.fif')
+    bids_fpath = bids_path.fpath
+    assert op.basename(bids_fpath) == \
+           bids_path.basename
+    # Same test, but exploiting the fact that bids_fpath is a pathlib.Path
+    assert bids_fpath.name == bids_path.basename
 
     # confirm BIDSPath assigns properties correctly
     bids_basename = BIDSPath(subject=subject_id,
@@ -283,8 +363,8 @@ def test_bids_path(return_bids_test_dir):
     print(bids_basename.entities)
     assert all(bids_basename.entities.get(entity) is None
                for entity in ['task', 'run', 'recording', 'acquisition',
-                              'space', 'processing',
-                              'prefix', 'modality',
+                              'space', 'processing', 'split',
+                              'root', 'modality',
                               'suffix', 'extension'])
 
     # test updating functionality
@@ -351,7 +431,9 @@ def test_bids_path(return_bids_test_dir):
     bids_path = BIDSPath(subject='01', session='02',
                          task='03', suffix='ieeg',
                          extension='.edf')
-    assert repr(bids_path) == 'BIDSPath(sub-01_ses-02_task-03_ieeg.edf)'
+    assert repr(bids_path) == ('BIDSPath(\n'
+                               'root: None\n'
+                               'basename: sub-01_ses-02_task-03_ieeg.edf)')
 
 
 def test_make_filenames():
@@ -361,13 +443,15 @@ def test_make_filenames():
                        acquisition='four', run='five', processing='six',
                        recording='seven', suffix='ieeg', extension='.json')
     expected_str = 'sub-one_ses-two_task-three_acq-four_run-five_proc-six_rec-seven_ieeg.json'  # noqa
-    assert str(BIDSPath(**prefix_data)) == expected_str
+    assert BIDSPath(**prefix_data).basename == expected_str
+    assert BIDSPath(**prefix_data) == op.join('sub-one', 'ses-two',
+                                              'ieeg', expected_str)
 
     # subsets of keys works
-    assert (BIDSPath(subject='one', task='three', run=4) ==
+    assert (BIDSPath(subject='one', task='three', run=4).basename ==
             'sub-one_task-three_run-04')
     assert (BIDSPath(subject='one', task='three',
-                     suffix='meg', extension='.json') ==
+                     suffix='meg', extension='.json').basename ==
             'sub-one_task-three_meg.json')
 
     with pytest.raises(ValueError):
@@ -438,7 +522,7 @@ def test_get_matched_basenames(return_bids_test_dir):
     paths = get_matched_basenames(bids_root=bids_root)
     assert len(paths) == 7
     assert all('sub-01_ses-01' in p.basename for p in paths)
-    assert all([p.prefix == bids_root for p in paths])
+    assert all([p.root == bids_root for p in paths])
 
     paths = get_matched_basenames(bids_root=bids_root, run='01')
     assert len(paths) == 3

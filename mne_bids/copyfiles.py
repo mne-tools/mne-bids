@@ -23,7 +23,7 @@ import shutil as sh
 from mne.io import read_raw_brainvision, anonymize_info
 from scipy.io import loadmat, savemat
 
-from mne_bids.path import _parse_ext
+from mne_bids.path import BIDSPath, _parse_ext, _mkdir_p
 from mne_bids.utils import _get_mrk_meas_date, _check_anonymize
 
 
@@ -178,10 +178,13 @@ def copyfile_kit(src, dest, subject_id, session_id,
         Extract information of marker and headpoints
 
     """
-    from mne_bids import BIDSPath
+    # create parent directories in case it does not exist yet
+    _mkdir_p(op.dirname(dest))
+
     # KIT data requires the marker file to be copied over too
     sh.copyfile(src, dest)
     data_path = op.split(dest)[0]
+    modality = 'meg'
     if 'mrk' in _init_kwargs:
         hpi = _init_kwargs['mrk']
         acq_map = dict()
@@ -197,8 +200,8 @@ def copyfile_kit(src, dest, subject_id, session_id,
             marker_fname = BIDSPath(
                 subject=subject_id, session=session_id, task=task, run=run,
                 acquisition=key, suffix='markers', extension=marker_ext,
-                prefix=data_path)
-            sh.copyfile(value, marker_fname)
+                modality=modality)
+            sh.copyfile(value, op.join(data_path, marker_fname.basename))
     for acq in ['elp', 'hsp']:
         if acq in _init_kwargs:
             position_file = _init_kwargs[acq]
@@ -207,8 +210,9 @@ def copyfile_kit(src, dest, subject_id, session_id,
             position_fname = BIDSPath(
                 subject=subject_id, session=session_id, task=task, run=run,
                 acquisition=acq, suffix='headshape', extension=position_ext,
-                prefix=data_path)
-            sh.copyfile(position_file, position_fname)
+                modality=modality)
+            sh.copyfile(position_file,
+                        op.join(data_path, position_fname.basename))
 
 
 def _replace_file(fname, pattern, replace):
