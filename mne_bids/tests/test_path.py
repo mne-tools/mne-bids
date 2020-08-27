@@ -440,6 +440,7 @@ def test_bids_path(return_bids_test_dir):
     bids_path.update(check=False)
     bids_path.update(extension='.mat')
 
+    # test that split gets properly set
     bids_path.update(split=1)
     assert bids_path.basename == 'sub-01_ses-02_task-03_split-01_ieeg.mat'
 

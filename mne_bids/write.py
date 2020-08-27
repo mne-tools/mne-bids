@@ -829,7 +829,9 @@ def write_raw_bids(raw, bids_path, events_data=None,
         attribute is not set, it will be inferred from the recording modality
         found in ``raw``.
 
-        Example: `sub-01_ses-01_task-testing_acq-01_run-01`.
+        Example: bids_path = BIDSPath(subject='01', session='01',
+                                      task='testing', acquisition='01',
+                                      run='01')`.
         This will write the following files in the correct subfolder of the
         bids_root::
 
@@ -930,7 +932,7 @@ def write_raw_bids(raw, bids_path, events_data=None,
 
     if not isinstance(bids_path, BIDSPath):
         raise RuntimeError('"bids_path" must be a BIDSPath object. Please '
-                           'instantiate using BIDSPath().')
+                           'instantiate using mne_bids.BIDSPath().')
 
     # check root available
     bids_root = bids_path.root

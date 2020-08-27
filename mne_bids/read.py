@@ -439,7 +439,7 @@ def get_matched_empty_room(bids_path):
     """
     if not isinstance(bids_path, BIDSPath):
         raise RuntimeError('"bids_path" must be a BIDSPath object. Please '
-                           'instantiate using BIDSPath().')
+                           'instantiate using mne_bids.BIDSPath().')
 
     # check root available
     bids_root = bids_path.root
@@ -587,7 +587,7 @@ def get_head_mri_trans(bids_path):
 
     if not isinstance(bids_path, BIDSPath):
         raise RuntimeError('"bids_path" must be a BIDSPath object. Please '
-                           'instantiate using BIDSPath().')
+                           'instantiate using mne_bids.BIDSPath().')
 
     # check root available
     bids_root = bids_path.root

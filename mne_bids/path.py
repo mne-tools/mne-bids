@@ -245,9 +245,6 @@ class BIDSPath(object):
         # file-suffix will allow 'meg', 'eeg', 'ieeg', 'anat'
         if self.modality is not None:
             data_path = op.join(data_path, self.modality)
-        elif self.suffix in SUFFIX_TO_MODALITY:
-            # infers path suffix from the suffix
-            data_path = op.join(data_path, SUFFIX_TO_MODALITY[self.suffix])
 
         # account for MEG data that are directory-based
         # else, all other file paths attempt to match
