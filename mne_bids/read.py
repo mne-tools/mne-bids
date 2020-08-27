@@ -426,8 +426,8 @@ def get_matched_empty_room(bids_path):
     ----------
     bids_path : BIDSPath
         The path of the experimental recording for which to retrieve the
-        empty-room recording. The :class:`mne_bids.BIDSPath` instance passed
-        here **must** have the ``.root`` attribute set.
+        corresponding empty-room recording. The :class:`mne_bids.BIDSPath`
+        instance passed here **must** have the ``.root`` attribute set.
 
     Returns
     -------
