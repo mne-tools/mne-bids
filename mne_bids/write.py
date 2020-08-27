@@ -823,7 +823,7 @@ def write_raw_bids(raw, bids_path, events_data=None,
     raw : instance of mne.io.Raw
         The raw data. It must be an instance of mne.Raw. The data should not be
         loaded from disk, i.e., raw.preload must be False.
-    bids_path : str | BIDSPath
+    bids_path : BIDSPath
         The base filename of the BIDS compatible files. Typically, this can be
         generated using :func:`mne_bids.BIDSPath`, and then calling
         ``basename`` property. The path to root of the
