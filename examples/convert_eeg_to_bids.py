@@ -175,8 +175,8 @@ sh.rmtree(bids_root, ignore_errors=True)
 event_id = {'rest': 0}
 
 # Now convert our data to be in a new BIDS dataset.
-bids_path = BIDSPath(subject=subject_id, task=task)
-write_raw_bids(raw, bids_path, bids_root, event_id=event_id,
+bids_path = BIDSPath(subject=subject_id, task=task, root=bids_root)
+write_raw_bids(raw, bids_path, event_id=event_id,
                events_data=events, overwrite=True)
 
 ###############################################################################
