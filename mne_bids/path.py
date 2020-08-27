@@ -14,7 +14,7 @@ from pathlib import Path
 from mne.utils import warn, logger
 
 from mne_bids.config import (
-    ALLOWED_PATH_ENTITIES, reader, ALLOWED_FILENAME_EXTENSIONS,
+    ALLOWED_PATH_ENTITIES, ALLOWED_FILENAME_EXTENSIONS,
     ALLOWED_FILENAME_SUFFIX, ALLOWED_PATH_ENTITIES_SHORT,
     ALLOWED_MODALITIES, SUFFIX_TO_MODALITY, ALLOWED_MODALITY_EXTENSIONS)
 from mne_bids.utils import (_check_key_val, _check_empty_room_basename,
@@ -347,15 +347,15 @@ class BIDSPath(object):
         If one creates a bids basename using
         :func:`mne_bids.BIDSPath`:
 
-        >>> bids_basename = BIDSPath(subject='test', session='two',
+        >>> bids_path = BIDSPath(subject='test', session='two',
                                      task='mytask', suffix='channels',
                                      extension='.tsv')
-        >>> print(bids_basename.basename)
+        >>> print(bids_path.basename)
         sub-test_ses-two_task-mytask_channels.tsv
         >>> # Then, one can update this `BIDSPath` object in place
-        >>> bids_basename.update(acquisition='test', suffix='ieeg',
+        >>> bids_path.update(acquisition='test', suffix='ieeg',
                                  extension='.vhdr', task=None)
-        >>> print(bids_basename.basename)
+        >>> print(bids_path.basename)
         sub-test_ses-two_acq-test_ieeg.vhdr
         """
         run = entities.get('run')
@@ -996,46 +996,6 @@ def _find_best_candidates(params, candidate_list):
             elif n_matches == best_n_matches:
                 best_candidates.append(candidate)
     return best_candidates
-
-
-def _get_bids_fname_from_filesystem(*, bids_basename, bids_root, sub, ses,
-                                    modality):
-    if modality is None:
-        modality = _infer_modality(bids_root=bids_root, sub=sub, ses=ses)
-
-    data_dir = make_bids_folders(subject=sub, session=ses,
-                                 modality=modality, make_dir=False)
-
-    bti_dir = op.join(bids_root, data_dir, f'{bids_basename}_{modality}')
-    if op.isdir(bti_dir):
-        logger.info(f'Assuming BTi data in {bti_dir}')
-        bids_fname = f'{bti_dir}.pdf'
-    else:
-        # Find all matching files in all supported formats.
-        valid_exts = list(reader.keys())
-        matching_paths = glob.glob(op.join(bids_root, data_dir,
-                                           f'{bids_basename}_{modality}.*'))
-        matching_paths = [p for p in matching_paths
-                          if _parse_ext(p)[1] in valid_exts]
-        if not matching_paths:
-            msg = ('Could not locate a data file of a supported format. This '
-                   'is likely a problem with your BIDS dataset. Please run '
-                   'the BIDS validator on your data.')
-            raise RuntimeError(msg)
-
-        # FIXME This will break e.g. with FIFF data split across multiple
-        # FIXME files.
-        if len(matching_paths) > 1:
-            msg = ('Found more than one matching data file for the requested '
-                   'recording. Cannot proceed due to the ambiguity. This is '
-                   'likely a problem with your BIDS dataset. Please run the '
-                   'BIDS validator on your data.')
-            raise RuntimeError(msg)
-
-        matching_path = matching_paths[0]
-        bids_fname = op.basename(matching_path)
-
-    return bids_fname
 
 
 def _get_modalities_for_sub(*, bids_root, sub, ses=None):

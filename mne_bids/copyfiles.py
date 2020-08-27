@@ -197,22 +197,22 @@ def copyfile_kit(src, dest, subject_id, session_id,
             _, marker_ext = _parse_ext(hpi)
             acq_map[None] = hpi
         for key, value in acq_map.items():
-            marker_fname = BIDSPath(
+            marker_path = BIDSPath(
                 subject=subject_id, session=session_id, task=task, run=run,
                 acquisition=key, suffix='markers', extension=marker_ext,
                 modality=modality)
-            sh.copyfile(value, op.join(data_path, marker_fname.basename))
+            sh.copyfile(value, op.join(data_path, marker_path.basename))
     for acq in ['elp', 'hsp']:
         if acq in _init_kwargs:
             position_file = _init_kwargs[acq]
             task, run, acq = None, None, acq.upper()
             position_ext = '.pos'
-            position_fname = BIDSPath(
+            position_path = BIDSPath(
                 subject=subject_id, session=session_id, task=task, run=run,
                 acquisition=acq, suffix='headshape', extension=position_ext,
                 modality=modality)
             sh.copyfile(position_file,
-                        op.join(data_path, position_fname.basename))
+                        op.join(data_path, position_path.basename))
 
 
 def _replace_file(fname, pattern, replace):

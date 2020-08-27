@@ -219,7 +219,7 @@ print(text)
 # :func:`read_raw_bids` to read in the data.
 
 # read in the BIDS dataset and plot the coordinates
-raw = read_raw_bids(bids_basename=bids_basename, bids_root=bids_root)
+raw = read_raw_bids(bids_path=bids_basename, bids_root=bids_root)
 
 # get the first 5 channels and show their locations
 # this should match what was printed earlier.

@@ -32,7 +32,7 @@ run = '01'
 acq = None
 task = 'testing'
 
-bids_basename = BIDSPath(
+bids_path = BIDSPath(
     subject=subject_id, session=session_id, run=run, acquisition=acq,
     task=task)
 

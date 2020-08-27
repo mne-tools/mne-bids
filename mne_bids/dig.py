@@ -290,7 +290,7 @@ def _coordsystem_json(raw, unit, orient, coordsystem_name, fname,
     _write_json(fname, fid_json, overwrite, verbose)
 
 
-def _write_dig_bids(electrodes_fname, coordsystem_fname, root,
+def _write_dig_bids(electrodes_path, coordsystem_path, root,
                     raw, modality, overwrite=False, verbose=True):
     """Write BIDS formatted DigMontage from Raw instance.
 
@@ -299,9 +299,9 @@ def _write_dig_bids(electrodes_fname, coordsystem_fname, root,
 
     Parameters
     ----------
-    electrodes_fname : str
+    electrodes_path : str
         Filename to save the electrodes.tsv to.
-    coordsystem_fname : str
+    coordsystem_path : str
         Filename to save the coordsystem.json to.
     root : str | pathlib.Path
         Path to the data directory
@@ -319,7 +319,7 @@ def _write_dig_bids(electrodes_fname, coordsystem_fname, root,
     # write electrodes data for iEEG and EEG
     unit = "m"  # defaults to meters
 
-    params = get_entities_from_fname(electrodes_fname)
+    params = get_entities_from_fname(electrodes_path)
     subject_id = params['subject']
     session_id = params['session']
     acquisition = params['acquisition']
@@ -338,19 +338,19 @@ def _write_dig_bids(electrodes_fname, coordsystem_fname, root,
     coord_frame = MNE_TO_BIDS_FRAMES.get(mne_coord_frame, None)
 
     if verbose:
-        print("Writing electrodes file to... ", electrodes_fname)
-        print("Writing coordsytem file to... ", coordsystem_fname)
+        print("Writing electrodes file to... ", electrodes_path)
+        print("Writing coordsytem file to... ", coordsystem_path)
 
     if modality == "ieeg":
         if coord_frame is not None:
             # XXX: To improve when mne-python allows coord_frame='unknown'
             if coord_frame not in BIDS_IEEG_COORDINATE_FRAMES:
-                coordsystem_fname = BIDSPath(
+                coordsystem_path = BIDSPath(
                     subject=subject_id, session=session_id,
                     acquisition=acquisition, space=coord_frame,
                     suffix='coordsystem', extension='.json',
                     root=root)
-                electrodes_fname = BIDSPath(
+                electrodes_path = BIDSPath(
                     subject=subject_id, session=session_id,
                     acquisition=acquisition, space=coord_frame,
                     suffix='electrodes', extension='.tsv',
@@ -358,16 +358,16 @@ def _write_dig_bids(electrodes_fname, coordsystem_fname, root,
                 coord_frame = 'Other'
 
             # Now write the data to the elec coords and the coordsystem
-            _electrodes_tsv(raw, electrodes_fname,
+            _electrodes_tsv(raw, electrodes_path,
                             modality, overwrite, verbose)
             _coordsystem_json(raw, unit, 'n/a',
-                              coord_frame, coordsystem_fname, modality,
+                              coord_frame, coordsystem_path, modality,
                               overwrite, verbose)
         else:
             # default coordinate frame to mri if not available
             warn("Coordinate frame of iEEG coords missing/unknown "
                  "for {}. Skipping reading "
-                 "in of montage...".format(electrodes_fname))
+                 "in of montage...".format(electrodes_path))
     elif modality == 'eeg':
         # We only write EEG electrodes.tsv and coordsystem.json
         # if we have LPA, RPA, and NAS available to rescale to a known
@@ -379,10 +379,10 @@ def _write_dig_bids(electrodes_fname, coordsystem_fname, root,
         # mne-python automatically converts unknown coord frame to head
         if coord_frame_int == FIFF.FIFFV_COORD_HEAD and landmarks:
             # Now write the data
-            _electrodes_tsv(raw, electrodes_fname, modality,
+            _electrodes_tsv(raw, electrodes_path, modality,
                             overwrite, verbose)
             _coordsystem_json(raw, 'm', 'RAS', 'CapTrak',
-                              coordsystem_fname, modality,
+                              coordsystem_path, modality,
                               overwrite, verbose)
         else:
             warn("Skipping EEG electrodes.tsv... "

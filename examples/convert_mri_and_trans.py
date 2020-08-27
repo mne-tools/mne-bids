@@ -115,7 +115,7 @@ print_dir_tree(output_path)
 ###############################################################################
 # Our BIDS dataset is now ready to be shared. We can easily estimate the
 # transformation matrix using ``MNE-BIDS`` and the BIDS dataset.
-estim_trans = get_head_mri_trans(bids_basename=bids_basename,
+estim_trans = get_head_mri_trans(bids_path=bids_basename,
                                  bids_root=output_path  # root of our BIDS dir
                                  )
 

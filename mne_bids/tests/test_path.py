@@ -33,7 +33,7 @@ run = '01'
 acq = None
 task = 'testing'
 
-bids_basename = BIDSPath(
+bids_path = BIDSPath(
     subject=subject_id, session=session_id, run=run, acquisition=acq,
     task=task)
 
@@ -55,7 +55,7 @@ def return_bids_test_dir(tmpdir_factory):
     raw.info['line_freq'] = 60
     # Write multiple runs for test_purposes
     for run_idx in [run, '02']:
-        name = bids_basename.copy().update(run=run_idx)
+        name = bids_path.copy().update(run=run_idx)
         write_raw_bids(raw, name, bids_root,
                        events_data=events_fname, event_id=event_id,
                        overwrite=True)
@@ -234,7 +234,7 @@ def test_find_matching_sidecar(return_bids_test_dir):
     """Test finding a sidecar file from a BIDS dir."""
     bids_root = return_bids_test_dir
 
-    bids_fpath = bids_basename.copy().update(root=bids_root)
+    bids_fpath = bids_path.copy().update(root=bids_root)
 
     # Now find a sidecar
     sidecar_fname = _find_matching_sidecar(bids_fpath,
@@ -354,45 +354,45 @@ def test_bids_path(return_bids_test_dir):
     assert bids_fpath.name == bids_path.basename
 
     # confirm BIDSPath assigns properties correctly
-    bids_basename = BIDSPath(subject=subject_id,
-                             session=session_id)
-    assert bids_basename.subject == subject_id
-    assert bids_basename.session == session_id
-    assert 'subject' in bids_basename.entities
-    assert 'session' in bids_basename.entities
-    print(bids_basename.entities)
-    assert all(bids_basename.entities.get(entity) is None
+    bids_path = BIDSPath(subject=subject_id,
+                         session=session_id)
+    assert bids_path.subject == subject_id
+    assert bids_path.session == session_id
+    assert 'subject' in bids_path.entities
+    assert 'session' in bids_path.entities
+    print(bids_path.entities)
+    assert all(bids_path.entities.get(entity) is None
                for entity in ['task', 'run', 'recording', 'acquisition',
                               'space', 'processing', 'split',
                               'root', 'modality',
                               'suffix', 'extension'])
 
     # test updating functionality
-    bids_basename.update(acquisition='03', run='2', session='02',
-                         task=None)
-    assert bids_basename.subject == subject_id
-    assert bids_basename.session == '02'
-    assert bids_basename.acquisition == '03'
-    assert bids_basename.run == '2'
-    assert bids_basename.task is None
+    bids_path.update(acquisition='03', run='2', session='02',
+                     task=None)
+    assert bids_path.subject == subject_id
+    assert bids_path.session == '02'
+    assert bids_path.acquisition == '03'
+    assert bids_path.run == '2'
+    assert bids_path.task is None
 
-    new_bids_basename = bids_basename.copy().update(task='02',
-                                                    acquisition=None)
-    assert new_bids_basename.task == '02'
-    assert new_bids_basename.acquisition is None
+    new_bids_path = bids_path.copy().update(task='02',
+                                            acquisition=None)
+    assert new_bids_path.task == '02'
+    assert new_bids_path.acquisition is None
 
     # equality of bids basename
-    assert new_bids_basename != bids_basename
-    assert new_bids_basename == bids_basename.copy().update(task='02',
-                                                            acquisition=None)
+    assert new_bids_path != bids_path
+    assert new_bids_path == bids_path.copy().update(task='02',
+                                                    acquisition=None)
 
     # error check on kwargs of update
     with pytest.raises(ValueError, match='Key must be one of*'):
-        bids_basename.update(sub=subject_id, session=session_id)
+        bids_path.update(sub=subject_id, session=session_id)
 
     # error check on the passed in entity containing a magic char
     with pytest.raises(ValueError, match='Unallowed*'):
-        bids_basename.update(subject=subject_id + '-')
+        bids_path.update(subject=subject_id + '-')
 
     # error check on suffix in BIDSPath (deep check)
     suffix = 'meeg'
@@ -403,20 +403,20 @@ def test_bids_path(return_bids_test_dir):
     # do error check suffix in update
     error_kind = 'foobar'
     with pytest.raises(ValueError, match=f'Suffix {error_kind} is not'):
-        bids_basename.update(suffix=error_kind)
+        bids_path.update(suffix=error_kind)
 
     # does not error check on suffix in BIDSPath (deep check)
     suffix = 'meeg'
-    bids_basename = BIDSPath(subject=subject_id, session=session_id,
-                             suffix=suffix, check=False)
+    bids_path = BIDSPath(subject=subject_id, session=session_id,
+                         suffix=suffix, check=False)
     # also inherits error check from instantiation
     # always error check modality
     with pytest.raises(ValueError, match='"modality" can only be '
                                          'one of'):
-        bids_basename.copy().update(modality=error_kind)
+        bids_path.copy().update(modality=error_kind)
 
     # suffix won't be error checks if initial check was false
-    bids_basename.update(suffix=suffix)
+    bids_path.update(suffix=suffix)
 
     # error check on extension in BIDSPath (deep check)
     extension = '.mat'
@@ -425,7 +425,7 @@ def test_bids_path(return_bids_test_dir):
                  extension=extension)
 
     # do not error check extension in update (not deep check)
-    bids_basename.update(extension='.foo')
+    bids_path.update(extension='.foo')
 
     # test repr
     bids_path = BIDSPath(subject='01', session='02',

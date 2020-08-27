@@ -156,27 +156,27 @@ def test_copyfile_kit():
     _, ext = _parse_ext(raw_fname, verbose=True)
     modality = _handle_modality(raw)
 
-    bids_basename = BIDSPath(
+    bids_path = BIDSPath(
         subject=subject_id, session=session_id, run=run, acquisition=acq,
         task=task)
-    kit_bids_basename = bids_basename.copy().update(acquisition=None,
-                                                    modality=modality,
-                                                    root=output_path)
-    bids_fname = str(bids_basename.copy().update(modality=modality,
-                                                 suffix=modality,
-                                                 extension=ext,
-                                                 root=output_path))
+    kit_bids_path = bids_path.copy().update(acquisition=None,
+                                            modality=modality,
+                                            root=output_path)
+    bids_fname = str(bids_path.copy().update(modality=modality,
+                                             suffix=modality,
+                                             extension=ext,
+                                             root=output_path))
 
     copyfile_kit(raw_fname, bids_fname, subject_id, session_id,
                  task, run, raw._init_kwargs)
     assert op.exists(bids_fname)
     _, ext = _parse_ext(hpi_fname, verbose=True)
     if ext == '.sqd':
-        kit_bids_basename.update(suffix='markers', extension='.sqd')
-        assert op.exists(kit_bids_basename)
+        kit_bids_path.update(suffix='markers', extension='.sqd')
+        assert op.exists(kit_bids_path)
     elif ext == '.mrk':
-        kit_bids_basename.update(suffix='markers', extension='.mrk')
-        assert op.exists(kit_bids_basename)
+        kit_bids_path.update(suffix='markers', extension='.mrk')
+        assert op.exists(kit_bids_path)
 
     if op.exists(electrode_fname):
         task, run, key = None, None, 'ELP'
