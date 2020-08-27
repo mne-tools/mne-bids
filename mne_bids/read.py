@@ -428,9 +428,9 @@ def get_matched_empty_room(bids_path):
     Parameters
     ----------
     bids_path : BIDSPath
-        The base filename of the BIDS compatible files. Typically, this can be
-        generated using :func:`mne_bids.BIDSPath`. The path to root of the
-        BIDS folder must be passed in via the ``BIDSPath`` object.
+        The path of the experimental recording for which to retrieve the
+        empty-room recording. The :class:`mne_bids.BIDSPath` instance passed
+        here **must** have the ``.root`` attribute set.
 
     Returns
     -------
