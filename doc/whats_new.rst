@@ -77,7 +77,6 @@ API
 - Add ``check`` parameter and attribute to :class:`mne_bids.BIDSPath` that allows users to turn off entity checks by `Adam Li`_ (`#511 <https://github.com/mne-tools/mne-bids/pull/511>`_)
 - Add ``modality`` parameter and attribute to :class:`mne_bids.BIDSPath` that allows users to specify EEG, MEG, or iEEG datasets by `Adam Li`_ (`#514 <https://github.com/mne-tools/mne-bids/pull/514>`_)
 - Add ``modality`` to replace ``kind`` parameter to :func:`mne_bids.make_bids_folders` and :func:`mne_bids.read_raw_bids` that allows users to specify EEG, MEG, or iEEG datasets by `Adam Li`_ (`#514 <https://github.com/mne-tools/mne-bids/pull/514>`_)
-- The :class:`mne_bids.path.BIDSPath` object now stores the `basename` and `root` of the path, and replaces ``root`` for ``prefix`` kwarg, and can get the full file path of a dataset using the ``fpath`` property by `Adam Li`_ (`#515 <https://github.com/mne-tools/mne-bids/pull/446>`_, `#492 <https://github.com/mne-tools/mne-bids/pull/515>`_)
 
 .. _changes_0_4:
 
