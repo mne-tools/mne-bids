@@ -61,7 +61,7 @@ API
 ~~~
 
 - :func:`read_raw_bids` now expects `bids_basename` as the first argument and gains a `kind` parameter. The name of the file to read will be inferred automatically, and can no longer be passed to the function directly. This ensures better API consistency with :func:`write_raw_bids`, by `Richard Höchenberger`_ (`#410 <https://github.com/mne-tools/mne-bids/pull/410>`_)
-- :func:`get_matched_empty_room` now expects `bids_basename` as the first argument and returns the `bids_basename` of the best-matching empty-room recording (instead of its filename before). The `bids_fname` argument has been dropped, by `Richard Höchenberger`_ (`#410 <https://github.com/mne-tools/mne-bids/pull/410>`_)
+- :func:`get_matched_empty_room` now expects `bids_basename` as the first argument and returns the :class:`mne_bids.BIDSPath` of the best-matching empty-room recording (instead of its filename before). The `bids_fname` argument has been dropped, by `Richard Höchenberger`_ (`#410 <https://github.com/mne-tools/mne-bids/pull/410>`_, `#521 <https://github.com/mne-tools/mne-bids/pull/521>`_)
 - :func:`get_head_mri_trans` now expects `bids_basename` as the first argument. The `bids_fname` argument has been dropped, by `Richard Höchenberger`_ (`#410 <https://github.com/mne-tools/mne-bids/pull/410>`_)
 - BIDS conformity: The ``_part-%d`` entity is now called ``_split-`` throughout BIDS, MNE, and MNE-BIDS, by `Stefan Appelhoff`_ (`#417 <https://github.com/mne-tools/mne-bids/pull/417>`_)
 - The ``datasets.py`` module was removed from ``MNE-BIDS`` and its utility was replaced by ``mne.datasets``, by `Stefan Appelhoff`_ (`#471 <https://github.com/mne-tools/mne-bids/pull/471>`_)
