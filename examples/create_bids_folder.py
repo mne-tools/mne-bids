@@ -30,16 +30,16 @@ from mne_bids import make_bids_folders, BIDSPath
 # pieces of metadata, ensuring that they are in the correct order in the
 # final file path. Omitted keys will not be included in the file path.
 
-bids_basename = BIDSPath(subject='test', session='two', task='mytask',
-                         suffix='events', extension='.tsv')
-print(bids_basename)
+bids_path = BIDSPath(subject='test', session='two', task='mytask',
+                     suffix='events', extension='.tsv')
+print(bids_path)
 
 ###############################################################################
 # You may also omit the suffix, which will result in *only* a prefix for a
 # file name. This could then prepended to many more files.
 
-bids_basename = BIDSPath(subject='test', task='mytask')
-print(bids_basename)
+bids_path = BIDSPath(subject='test', task='mytask')
+print(bids_path)
 
 ###############################################################################
 # Creating folders

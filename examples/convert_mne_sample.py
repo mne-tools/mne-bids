@@ -64,9 +64,9 @@ output_path = op.join(data_path, '..', 'MNE-sample-data-bids')
 raw = mne.io.read_raw_fif(raw_fname)
 raw.info['line_freq'] = 60  # specify power line frequency as required by BIDS
 
-bids_basename = BIDSPath(subject='01', session='01',
-                         task='audiovisual', run='01')
-write_raw_bids(raw, bids_basename, output_path, events_data=events_data,
+bids_path = BIDSPath(subject='01', session='01',
+                     task='audiovisual', run='01')
+write_raw_bids(raw, bids_path, output_path, events_data=events_data,
                event_id=event_id, overwrite=True)
 
 ###############################################################################
@@ -79,7 +79,7 @@ print_dir_tree(output_path)
 # packages can automate your workflow. For example, reading the data back
 # into MNE-Python can easily be done using :func:`read_raw_bids`.
 
-raw = read_raw_bids(bids_path=bids_basename, bids_root=output_path)
+raw = read_raw_bids(bids_path=bids_path, bids_root=output_path)
 
 ###############################################################################
 # The resulting data is already in a convenient form to create epochs and
