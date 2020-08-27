@@ -277,8 +277,9 @@ def test_bids_path_inference(return_bids_test_dir):
         task=task, run='10', root=bids_root)
     with pytest.warns(RuntimeWarning, match='Could not locate'):
         fpath = bids_path.fpath
-        assert fpath == op.join(bids_root, f'sub-{subject_id}',
-                                f'ses-{session_id}', bids_path.basename)
+        assert str(fpath) == op.join(bids_root, f'sub-{subject_id}',
+                                     f'ses-{session_id}',
+                                     bids_path.basename)
 
     # shouldn't error out when there is no uncertainty
     channels_fname = BIDSPath(subject=subject_id, session=session_id,
@@ -300,7 +301,7 @@ def test_bids_path_inference(return_bids_test_dir):
 
     # if you set modality, now there is no ambiguity
     channels_fname.update(modality='eeg')
-    assert channels_fname.fpath == extra_file
+    assert str(channels_fname.fpath) == extra_file
     # set state back to original
     shutil.rmtree(Path(extra_file).parent)
 
@@ -312,6 +313,10 @@ def test_bids_path(return_bids_test_dir):
     bids_path = BIDSPath(
         subject=subject_id, session=session_id, run=run, acquisition=acq,
         task=task, root=bids_root, suffix='meg')
+
+    expected_parent_dir = op.join(bids_root, f'sub-{subject_id}',
+                                  f'ses-{session_id}', 'meg')
+    assert str(bids_path.fpath.parent) == expected_parent_dir
 
     # test bids path without bids_root, suffix, extension
     # basename and fpath should be the same
@@ -325,7 +330,7 @@ def test_bids_path(return_bids_test_dir):
     expected_relpath = op.join(
         f'sub-{subject_id}', f'ses-{session_id}', 'meg',
         expected_basename + '_meg')
-    assert bids_path2.fpath == expected_relpath
+    assert str(bids_path2.fpath) == expected_relpath
 
     # without bids_root and with suffix/extension
     # basename and fpath should be the same
@@ -345,6 +350,8 @@ def test_bids_path(return_bids_test_dir):
     bids_fpath = bids_path.fpath
     assert op.basename(bids_fpath) == \
            bids_path.basename
+    # Same test, but exploiting the fact that bids_fpath is a pathlib.Path
+    assert bids_fpath.name == bids_path.basename
 
     # confirm BIDSPath assigns properties correctly
     bids_basename = BIDSPath(subject=subject_id,

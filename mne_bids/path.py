@@ -188,7 +188,7 @@ class BIDSPath(object):
 
     def __str__(self):
         """Return the string representation of the path."""
-        return self.fpath
+        return str(self.fpath)
 
     def __repr__(self):
         """Representation in the style of `pathlib.Path`."""
@@ -198,7 +198,7 @@ class BIDSPath(object):
 
     def __fspath__(self):
         """Return the string representation for any fs functions."""
-        return self.fpath
+        return str(self.fpath)
 
     def __eq__(self, other):
         """Compare str representations."""
@@ -228,7 +228,7 @@ class BIDSPath(object):
 
         Returns
         -------
-        bids_fpath : str
+        bids_fpath : pathlib.Path
             Either the relative, or full path to the dataset.
         """
         # create the data path based on entities available
@@ -299,6 +299,7 @@ class BIDSPath(object):
             else:
                 bids_fpath = op.join(data_path, self.basename)
 
+        bids_fpath = Path(bids_fpath)
         return bids_fpath
 
     def update(self, check=None, **entities):
