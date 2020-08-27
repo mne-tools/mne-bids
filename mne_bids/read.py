@@ -572,7 +572,7 @@ def get_head_mri_trans(bids_path):
 
     Parameters
     ----------
-    bids_path : str | BIDSPath
+    bids_path : BIDSPath
         The base filename of the BIDS compatible files. Typically, this can be
         generated using :func:`mne_bids.BIDSPath`. The path to root of the
         BIDS folder must be passed in via the ``BIDSPath`` object.
