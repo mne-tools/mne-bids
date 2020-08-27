@@ -429,9 +429,10 @@ def get_matched_empty_room(bids_basename, bids_root):
 
     Returns
     -------
-    er_basename : str | None.
-        The basename corresponding to the best-matching empty-room measurement.
+    BIDSPath | None
+        The path corresponding to the best-matching empty-room measurement.
         Returns None if none was found.
+
     """
     # convert to BIDS Path
     if isinstance(bids_basename, str):
@@ -490,7 +491,7 @@ def get_matched_empty_room(bids_basename, bids_root):
 
     # Walk through recordings, trying to extract the recording date:
     # First, from the filename; and if that fails, from `info['meas_date']`.
-    best_er_basename = None
+    best_er_bids_path = None
     min_delta_t = np.inf
     date_tie = False
 
@@ -499,8 +500,8 @@ def get_matched_empty_room(bids_basename, bids_root):
         params = get_entities_from_fname(er_fname)
         er_meas_date = None
         params.pop('subject')  # er subject entity is different
-        er_bids_path = BIDSPath(subject='emptyroom', **params,
-                                check=False)
+        er_bids_path = BIDSPath(subject='emptyroom', **params, modality='meg',
+                                root=bids_root, check=False)
 
         # Try to extract date from filename.
         if params['session'] is not None:
@@ -535,7 +536,7 @@ def get_matched_empty_room(bids_basename, bids_root):
             date_tie = True
         elif abs(delta_t.total_seconds()) < min_delta_t:
             min_delta_t = abs(delta_t.total_seconds())
-            best_er_basename = er_bids_path.basename
+            best_er_bids_path = er_bids_path
             date_tie = False
 
     if failed_to_get_er_date_count > 0:
@@ -548,7 +549,7 @@ def get_matched_empty_room(bids_basename, bids_root):
                'same recording date. Selecting the first match.')
         warn(msg)
 
-    return best_er_basename
+    return best_er_bids_path
 
 
 def get_head_mri_trans(bids_basename, bids_root):
