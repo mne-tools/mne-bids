@@ -63,9 +63,9 @@ final file path. Omitted keys will not be included in the file path.
 .. code-block:: default
 
 
-    bids_basename = BIDSPath(subject='test', session='two', task='mytask',
-                             suffix='events', extension='.tsv')
-    print(bids_basename)
+    bids_path = BIDSPath(subject='test', session='two', task='mytask',
+                         suffix='events', extension='.tsv')
+    print(bids_path)
 
 
 
@@ -89,8 +89,8 @@ file name. This could then prepended to many more files.
 .. code-block:: default
 
 
-    bids_basename = BIDSPath(subject='test', task='mytask')
-    print(bids_basename)
+    bids_path = BIDSPath(subject='test', task='mytask')
+    print(bids_path)
 
 
 

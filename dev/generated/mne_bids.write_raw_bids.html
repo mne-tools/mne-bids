@@ -112,7 +112,7 @@
 <h1>mne_bids.write_raw_bids<a class="headerlink" href="#mne-bids-write-raw-bids" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt id="mne_bids.write_raw_bids">
-<code class="sig-prename descclassname">mne_bids.</code><code class="sig-name descname">write_raw_bids</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">raw</span></em>, <em class="sig-param"><span class="n">bids_basename</span></em>, <em class="sig-param"><span class="n">bids_root</span></em>, <em class="sig-param"><span class="n">events_data</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">event_id</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">anonymize</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">overwrite</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/write.html#write_raw_bids"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.write_raw_bids" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">mne_bids.</code><code class="sig-name descname">write_raw_bids</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">raw</span></em>, <em class="sig-param"><span class="n">bids_path</span></em>, <em class="sig-param"><span class="n">bids_root</span></em>, <em class="sig-param"><span class="n">events_data</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">event_id</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">anonymize</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">overwrite</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/write.html#write_raw_bids"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.write_raw_bids" title="Permalink to this definition">¶</a></dt>
 <dd><p>Save raw data to a BIDS-compliant folder structure.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
@@ -135,8 +135,9 @@ in the sidecars manually.</p></li>
 <dt><strong>raw</strong><span class="classifier">instance of mne.io.Raw</span></dt><dd><p>The raw data. It must be an instance of mne.Raw. The data should not be
 loaded from disk, i.e., raw.preload must be False.</p>
 </dd>
-<dt><strong>bids_basename</strong><span class="classifier">str | BIDSPath</span></dt><dd><p>The base filename of the BIDS compatible files. Typically, this can be
-generated using BIDSPath.
+<dt><strong>bids_path</strong><span class="classifier">str | BIDSPath</span></dt><dd><p>The base filename of the BIDS compatible files. Typically, this can be
+generated using <a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.BIDSPath()</span></code></a>, and then calling
+<code class="docutils literal notranslate"><span class="pre">basename</span></code> property.
 Example: <em class="xref py py-obj">sub-01_ses-01_task-testing_acq-01_run-01</em>.
 This will write the following files in the correct subfolder of the
 bids_root:</p>
@@ -160,7 +161,7 @@ object and extension ‘.fif’ is copied from raw.filenames.</p>
 </dd>
 <dt><strong>bids_root</strong><span class="classifier">str | pathlib.Path</span></dt><dd><p>The path of the root of the BIDS compatible folder. The session and
 subject specific folders will be populated automatically by parsing
-bids_basename.</p>
+bids_path.</p>
 </dd>
 <dt><strong>events_data</strong><span class="classifier">str | pathlib.Path | array | None</span></dt><dd><p>The events file. If a string or a Path object, specifies the path of
 the events file. If an array, the MNE events array (shape n_events, 3).

@@ -125,7 +125,7 @@
 <span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="n">warn</span><span class="p">,</span> <span class="n">logger</span>
 
 <span class="kn">from</span> <span class="nn">mne_bids.config</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">ALLOWED_PATH_ENTITIES</span><span class="p">,</span> <span class="n">reader</span><span class="p">,</span> <span class="n">ALLOWED_FILENAME_EXTENSIONS</span><span class="p">,</span>
+    <span class="n">ALLOWED_PATH_ENTITIES</span><span class="p">,</span> <span class="n">ALLOWED_FILENAME_EXTENSIONS</span><span class="p">,</span>
     <span class="n">ALLOWED_FILENAME_SUFFIX</span><span class="p">,</span> <span class="n">ALLOWED_PATH_ENTITIES_SHORT</span><span class="p">,</span>
     <span class="n">ALLOWED_MODALITIES</span><span class="p">,</span> <span class="n">SUFFIX_TO_MODALITY</span><span class="p">,</span> <span class="n">ALLOWED_MODALITY_EXTENSIONS</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">mne_bids.utils</span> <span class="kn">import</span> <span class="p">(</span><span class="n">_check_key_val</span><span class="p">,</span> <span class="n">_check_empty_room_basename</span><span class="p">,</span>
@@ -458,15 +458,15 @@
 <span class="sd">        If one creates a bids basename using</span>
 <span class="sd">        :func:`mne_bids.BIDSPath`:</span>
 
-<span class="sd">        &gt;&gt;&gt; bids_basename = BIDSPath(subject=&#39;test&#39;, session=&#39;two&#39;,</span>
+<span class="sd">        &gt;&gt;&gt; bids_path = BIDSPath(subject=&#39;test&#39;, session=&#39;two&#39;,</span>
 <span class="sd">                                     task=&#39;mytask&#39;, suffix=&#39;channels&#39;,</span>
 <span class="sd">                                     extension=&#39;.tsv&#39;)</span>
-<span class="sd">        &gt;&gt;&gt; print(bids_basename.basename)</span>
+<span class="sd">        &gt;&gt;&gt; print(bids_path.basename)</span>
 <span class="sd">        sub-test_ses-two_task-mytask_channels.tsv</span>
 <span class="sd">        &gt;&gt;&gt; # Then, one can update this `BIDSPath` object in place</span>
-<span class="sd">        &gt;&gt;&gt; bids_basename.update(acquisition=&#39;test&#39;, suffix=&#39;ieeg&#39;,</span>
+<span class="sd">        &gt;&gt;&gt; bids_path.update(acquisition=&#39;test&#39;, suffix=&#39;ieeg&#39;,</span>
 <span class="sd">                                 extension=&#39;.vhdr&#39;, task=None)</span>
-<span class="sd">        &gt;&gt;&gt; print(bids_basename.basename)</span>
+<span class="sd">        &gt;&gt;&gt; print(bids_path.basename)</span>
 <span class="sd">        sub-test_ses-two_acq-test_ieeg.vhdr</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">run</span> <span class="o">=</span> <span class="n">entities</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;run&#39;</span><span class="p">)</span>
@@ -1107,46 +1107,6 @@
             <span class="k">elif</span> <span class="n">n_matches</span> <span class="o">==</span> <span class="n">best_n_matches</span><span class="p">:</span>
                 <span class="n">best_candidates</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">candidate</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">best_candidates</span>
-
-
-<span class="k">def</span> <span class="nf">_get_bids_fname_from_filesystem</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">bids_basename</span><span class="p">,</span> <span class="n">bids_root</span><span class="p">,</span> <span class="n">sub</span><span class="p">,</span> <span class="n">ses</span><span class="p">,</span>
-                                    <span class="n">modality</span><span class="p">):</span>
-    <span class="k">if</span> <span class="n">modality</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">modality</span> <span class="o">=</span> <span class="n">_infer_modality</span><span class="p">(</span><span class="n">bids_root</span><span class="o">=</span><span class="n">bids_root</span><span class="p">,</span> <span class="n">sub</span><span class="o">=</span><span class="n">sub</span><span class="p">,</span> <span class="n">ses</span><span class="o">=</span><span class="n">ses</span><span class="p">)</span>
-
-    <span class="n">data_dir</span> <span class="o">=</span> <span class="n">make_bids_folders</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="n">sub</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">ses</span><span class="p">,</span>
-                                 <span class="n">modality</span><span class="o">=</span><span class="n">modality</span><span class="p">,</span> <span class="n">make_dir</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-
-    <span class="n">bti_dir</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bids_root</span><span class="p">,</span> <span class="n">data_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">bids_basename</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">modality</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">op</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">bti_dir</span><span class="p">):</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Assuming BTi data in </span><span class="si">{</span><span class="n">bti_dir</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-        <span class="n">bids_fname</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">bti_dir</span><span class="si">}</span><span class="s1">.pdf&#39;</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="c1"># Find all matching files in all supported formats.</span>
-        <span class="n">valid_exts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">reader</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
-        <span class="n">matching_paths</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bids_root</span><span class="p">,</span> <span class="n">data_dir</span><span class="p">,</span>
-                                           <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">bids_basename</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">modality</span><span class="si">}</span><span class="s1">.*&#39;</span><span class="p">))</span>
-        <span class="n">matching_paths</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">matching_paths</span>
-                          <span class="k">if</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">p</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="n">valid_exts</span><span class="p">]</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">matching_paths</span><span class="p">:</span>
-            <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;Could not locate a data file of a supported format. This &#39;</span>
-                   <span class="s1">&#39;is likely a problem with your BIDS dataset. Please run &#39;</span>
-                   <span class="s1">&#39;the BIDS validator on your data.&#39;</span><span class="p">)</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-
-        <span class="c1"># FIXME This will break e.g. with FIFF data split across multiple</span>
-        <span class="c1"># FIXME files.</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">matching_paths</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;Found more than one matching data file for the requested &#39;</span>
-                   <span class="s1">&#39;recording. Cannot proceed due to the ambiguity. This is &#39;</span>
-                   <span class="s1">&#39;likely a problem with your BIDS dataset. Please run the &#39;</span>
-                   <span class="s1">&#39;BIDS validator on your data.&#39;</span><span class="p">)</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-
-        <span class="n">matching_path</span> <span class="o">=</span> <span class="n">matching_paths</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="n">bids_fname</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">matching_path</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">bids_fname</span>
 
 
 <span class="k">def</span> <span class="nf">_get_modalities_for_sub</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">bids_root</span><span class="p">,</span> <span class="n">sub</span><span class="p">,</span> <span class="n">ses</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>

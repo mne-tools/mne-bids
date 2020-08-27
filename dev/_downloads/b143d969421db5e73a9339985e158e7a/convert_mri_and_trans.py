@@ -69,9 +69,9 @@ sub = '01'
 ses = '01'
 task = 'audiovisual'
 run = '01'
-bids_basename = BIDSPath(subject=sub, session=ses, task=task,
-                         run=run)
-write_raw_bids(raw, bids_basename, output_path, events_data=events_data,
+bids_path = BIDSPath(subject=sub, session=ses, task=task,
+                     run=run)
+write_raw_bids(raw, bids_path, output_path, events_data=events_data,
                event_id=event_id, overwrite=True)
 
 ###############################################################################
@@ -115,7 +115,7 @@ print_dir_tree(output_path)
 ###############################################################################
 # Our BIDS dataset is now ready to be shared. We can easily estimate the
 # transformation matrix using ``MNE-BIDS`` and the BIDS dataset.
-estim_trans = get_head_mri_trans(bids_basename=bids_basename,
+estim_trans = get_head_mri_trans(bids_path=bids_path,
                                  bids_root=output_path  # root of our BIDS dir
                                  )
 

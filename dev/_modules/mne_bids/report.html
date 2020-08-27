@@ -434,7 +434,7 @@
         <span class="n">scans</span> <span class="o">=</span> <span class="n">scans_tsv</span><span class="p">[</span><span class="s1">&#39;filename&#39;</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">scan</span> <span class="ow">in</span> <span class="n">scans</span><span class="p">:</span>
             <span class="c1"># summarize metadata of recordings</span>
-            <span class="n">bids_basename</span><span class="p">,</span> <span class="n">ext</span> <span class="o">=</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">scan</span><span class="p">)</span>
+            <span class="n">bids_path</span><span class="p">,</span> <span class="n">ext</span> <span class="o">=</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">scan</span><span class="p">)</span>
             <span class="n">modality</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">scan</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">modality</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ALLOWED_MODALITIES</span><span class="p">:</span>
                 <span class="k">continue</span>
@@ -442,14 +442,14 @@
             <span class="n">n_scans</span> <span class="o">+=</span> <span class="mi">1</span>
 
             <span class="c1"># convert to BIDS Path</span>
-            <span class="n">params</span> <span class="o">=</span> <span class="n">get_entities_from_fname</span><span class="p">(</span><span class="n">bids_basename</span><span class="p">)</span>
-            <span class="n">bids_basename</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="n">bids_root</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">)</span>
+            <span class="n">params</span> <span class="o">=</span> <span class="n">get_entities_from_fname</span><span class="p">(</span><span class="n">bids_path</span><span class="p">)</span>
+            <span class="n">bids_path</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="n">bids_root</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">)</span>
 
             <span class="c1"># XXX: improve to allow emptyroom</span>
-            <span class="k">if</span> <span class="n">bids_basename</span><span class="o">.</span><span class="n">subject</span> <span class="o">==</span> <span class="s1">&#39;emptyroom&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">subject</span> <span class="o">==</span> <span class="s1">&#39;emptyroom&#39;</span><span class="p">:</span>
                 <span class="k">continue</span>
 
-            <span class="n">sidecar_fname</span> <span class="o">=</span> <span class="n">_find_matching_sidecar</span><span class="p">(</span><span class="n">bids_path</span><span class="o">=</span><span class="n">bids_basename</span><span class="p">,</span>
+            <span class="n">sidecar_fname</span> <span class="o">=</span> <span class="n">_find_matching_sidecar</span><span class="p">(</span><span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span><span class="p">,</span>
                                                    <span class="n">suffix</span><span class="o">=</span><span class="n">modality</span><span class="p">,</span>
                                                    <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.json&#39;</span><span class="p">)</span>
             <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">sidecar_fname</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fin</span><span class="p">:</span>
@@ -522,20 +522,20 @@
         <span class="n">scans</span> <span class="o">=</span> <span class="n">scans_tsv</span><span class="p">[</span><span class="s1">&#39;filename&#39;</span><span class="p">]</span>
         <span class="k">for</span> <span class="n">scan</span> <span class="ow">in</span> <span class="n">scans</span><span class="p">:</span>
             <span class="c1"># summarize metadata of recordings</span>
-            <span class="n">bids_basename</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">scan</span><span class="p">)</span>
+            <span class="n">bids_path</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">scan</span><span class="p">)</span>
             <span class="n">modality</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">scan</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">modality</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;meg&#39;</span><span class="p">,</span> <span class="s1">&#39;eeg&#39;</span><span class="p">,</span> <span class="s1">&#39;ieeg&#39;</span><span class="p">]:</span>
                 <span class="k">continue</span>
 
             <span class="c1"># convert to BIDS Path</span>
-            <span class="n">params</span> <span class="o">=</span> <span class="n">get_entities_from_fname</span><span class="p">(</span><span class="n">bids_basename</span><span class="p">)</span>
-            <span class="n">bids_basename</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="n">bids_root</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">)</span>
+            <span class="n">params</span> <span class="o">=</span> <span class="n">get_entities_from_fname</span><span class="p">(</span><span class="n">bids_path</span><span class="p">)</span>
+            <span class="n">bids_path</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="n">bids_root</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">)</span>
 
             <span class="c1"># XXX: improve to allow emptyroom</span>
-            <span class="k">if</span> <span class="n">bids_basename</span><span class="o">.</span><span class="n">subject</span> <span class="o">==</span> <span class="s1">&#39;emptyroom&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">subject</span> <span class="o">==</span> <span class="s1">&#39;emptyroom&#39;</span><span class="p">:</span>
                 <span class="k">continue</span>
 
-            <span class="n">channels_fname</span> <span class="o">=</span> <span class="n">_find_matching_sidecar</span><span class="p">(</span><span class="n">bids_path</span><span class="o">=</span><span class="n">bids_basename</span><span class="p">,</span>
+            <span class="n">channels_fname</span> <span class="o">=</span> <span class="n">_find_matching_sidecar</span><span class="p">(</span><span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span><span class="p">,</span>
                                                     <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;channels&#39;</span><span class="p">,</span>
                                                     <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.tsv&#39;</span><span class="p">)</span>
 

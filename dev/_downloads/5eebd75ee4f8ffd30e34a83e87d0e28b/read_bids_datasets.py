@@ -45,10 +45,10 @@ subject_id = '01'
 task = 'somato'
 modality = 'meg'
 
-bids_basename = BIDSPath(subject=subject_id, task=task)
+bids_path = BIDSPath(subject=subject_id, task=task)
 
 # bids basename is nicely formatted
-print(bids_basename)
+print(bids_path)
 
 ###############################################################################
 # Print the directory tree
@@ -60,7 +60,7 @@ print_dir_tree(bids_root)
 #
 # Let's read in the dataset and show off a few features of the
 # loading function `read_raw_bids`. Note, this is just one line of code.
-raw = read_raw_bids(bids_basename=bids_basename, bids_root=bids_root,
+raw = read_raw_bids(bids_path=bids_path, bids_root=bids_root,
                     modality=modality, verbose=True)
 
 ###############################################################################

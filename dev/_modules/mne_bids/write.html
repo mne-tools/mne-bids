@@ -913,7 +913,7 @@
     <span class="n">_write_json</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="write_raw_bids"><a class="viewcode-back" href="../../generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids">[docs]</a><span class="k">def</span> <span class="nf">write_raw_bids</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_basename</span><span class="p">,</span> <span class="n">bids_root</span><span class="p">,</span> <span class="n">events_data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<div class="viewcode-block" id="write_raw_bids"><a class="viewcode-back" href="../../generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids">[docs]</a><span class="k">def</span> <span class="nf">write_raw_bids</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_path</span><span class="p">,</span> <span class="n">bids_root</span><span class="p">,</span> <span class="n">events_data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                    <span class="n">event_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">anonymize</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                    <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Save raw data to a BIDS-compliant folder structure.</span>
@@ -935,9 +935,10 @@
 <span class="sd">    raw : instance of mne.io.Raw</span>
 <span class="sd">        The raw data. It must be an instance of mne.Raw. The data should not be</span>
 <span class="sd">        loaded from disk, i.e., raw.preload must be False.</span>
-<span class="sd">    bids_basename : str | BIDSPath</span>
+<span class="sd">    bids_path : str | BIDSPath</span>
 <span class="sd">        The base filename of the BIDS compatible files. Typically, this can be</span>
-<span class="sd">        generated using BIDSPath.</span>
+<span class="sd">        generated using :func:`mne_bids.BIDSPath`, and then calling</span>
+<span class="sd">        ``basename`` property.</span>
 <span class="sd">        Example: `sub-01_ses-01_task-testing_acq-01_run-01`.</span>
 <span class="sd">        This will write the following files in the correct subfolder of the</span>
 <span class="sd">        bids_root::</span>
@@ -961,7 +962,7 @@
 <span class="sd">    bids_root : str | pathlib.Path</span>
 <span class="sd">        The path of the root of the BIDS compatible folder. The session and</span>
 <span class="sd">        subject specific folders will be populated automatically by parsing</span>
-<span class="sd">        bids_basename.</span>
+<span class="sd">        bids_path.</span>
 <span class="sd">    events_data : str | pathlib.Path | array | None</span>
 <span class="sd">        The events file. If a string or a Path object, specifies the path of</span>
 <span class="sd">        the events file. If an array, the MNE events array (shape n_events, 3).</span>
@@ -1062,16 +1063,16 @@
                        <span class="s2">&quot; in from the file. It may have been cropped.&quot;</span><span class="p">)</span>
 
     <span class="c1"># convert to BIDS Path</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bids_basename</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="n">bids_basename</span> <span class="o">=</span> <span class="n">_convert_str_to_bids_path</span><span class="p">(</span><span class="n">bids_basename</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">bids_path</span> <span class="o">=</span> <span class="n">_convert_str_to_bids_path</span><span class="p">(</span><span class="n">bids_path</span><span class="p">)</span>
 
-    <span class="n">bids_basename</span> <span class="o">=</span> <span class="n">bids_basename</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-    <span class="n">subject_id</span><span class="p">,</span> <span class="n">session_id</span> <span class="o">=</span> <span class="n">bids_basename</span><span class="o">.</span><span class="n">subject</span><span class="p">,</span> <span class="n">bids_basename</span><span class="o">.</span><span class="n">session</span>
-    <span class="n">task</span><span class="p">,</span> <span class="n">run</span> <span class="o">=</span> <span class="n">bids_basename</span><span class="o">.</span><span class="n">task</span><span class="p">,</span> <span class="n">bids_basename</span><span class="o">.</span><span class="n">run</span>
-    <span class="n">acquisition</span><span class="p">,</span> <span class="n">space</span> <span class="o">=</span> <span class="n">bids_basename</span><span class="o">.</span><span class="n">acquisition</span><span class="p">,</span> <span class="n">bids_basename</span><span class="o">.</span><span class="n">space</span>
+    <span class="n">bids_path</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">subject_id</span><span class="p">,</span> <span class="n">session_id</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">subject</span><span class="p">,</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">session</span>
+    <span class="n">task</span><span class="p">,</span> <span class="n">run</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">task</span><span class="p">,</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">run</span>
+    <span class="n">acquisition</span><span class="p">,</span> <span class="n">space</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">acquisition</span><span class="p">,</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">space</span>
     <span class="n">modality</span> <span class="o">=</span> <span class="n">_handle_modality</span><span class="p">(</span><span class="n">raw</span><span class="p">)</span>
 
-    <span class="n">bids_fname</span> <span class="o">=</span> <span class="n">bids_basename</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+    <span class="n">bids_fname</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
         <span class="n">modality</span><span class="o">=</span><span class="n">modality</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="n">modality</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="n">ext</span><span class="p">,</span>
         <span class="n">root</span><span class="o">=</span><span class="n">bids_root</span><span class="p">)</span>
 

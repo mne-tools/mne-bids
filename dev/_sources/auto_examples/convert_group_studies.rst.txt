@@ -132,20 +132,20 @@ Let us loop over the subjects and create BIDS-compatible folder
             raw = mne.io.read_raw_edf(raw_fname)
             raw.info['line_freq'] = 50  # specify power line frequency
             raw_list.append(raw)
-            bids_basename = BIDSPath(subject=f'{subject_id:03}',
-                                     session='01', task='MotorImagery',
-                                     run=f'{run_map[run]:02}')
-            bids_list.append(bids_basename)
+            bids_path = BIDSPath(subject=f'{subject_id:03}',
+                                 session='01', task='MotorImagery',
+                                 run=f'{run_map[run]:02}')
+            bids_list.append(bids_path)
 
     daysback_min, daysback_max = get_anonymization_daysback(raw_list)
 
-    for raw, bids_basename in zip(raw_list, bids_list):
+    for raw, bids_path in zip(raw_list, bids_list):
         # By using the same anonymization `daysback` number we can
         # preserve the longitudinal structure of multiple sessions for a
         # single subject and the relation between subjects. Be sure to
         # change or delete this number before putting code online, you
         # wouldn't want to inadvertently de-anonymize your data.
-        write_raw_bids(raw, bids_basename, bids_root, event_id=event_id,
+        write_raw_bids(raw, bids_path, bids_root, event_id=event_id,
                        anonymize=dict(daysback=daysback_min + 2117),
                        overwrite=True)
 
@@ -188,7 +188,7 @@ Let us loop over the subjects and create BIDS-compatible folder
     Setting channel info structure...
     Creating raw.info structure...
     Creating folder: /home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-01/eeg
-    /home/circleci/project/mne_bids/write.py:1042: RuntimeWarning: Converting to BV for anonymization
+    /home/circleci/project/mne_bids/write.py:1043: RuntimeWarning: Converting to BV for anonymization
       warn('Converting to BV for anonymization')
 
     Writing '/home/circleci/mne_data/eegmmidb_bids_group_conversion/README'...
@@ -276,7 +276,7 @@ Let us loop over the subjects and create BIDS-compatible folder
     Fc1.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
     Fcz.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
     Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
-    /home/circleci/project/mne_bids/write.py:1115: RuntimeWarning: Converting data files to BrainVision format
+    /home/circleci/project/mne_bids/write.py:1116: RuntimeWarning: Converting data files to BrainVision format
       warn('Converting data files to BrainVision format')
 
     Writing '/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-01/sub-001_ses-01_scans.tsv'...
@@ -291,7 +291,7 @@ Let us loop over the subjects and create BIDS-compatible folder
     Setting channel info structure...
     Creating raw.info structure...
     Creating folder: /home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-01/eeg
-    /home/circleci/project/mne_bids/write.py:1042: RuntimeWarning: Converting to BV for anonymization
+    /home/circleci/project/mne_bids/write.py:1043: RuntimeWarning: Converting to BV for anonymization
       warn('Converting to BV for anonymization')
 
     Writing '/home/circleci/mne_data/eegmmidb_bids_group_conversion/README'...
@@ -379,7 +379,7 @@ Let us loop over the subjects and create BIDS-compatible folder
     Fc1.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
     Fcz.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
     Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
-    /home/circleci/project/mne_bids/write.py:1115: RuntimeWarning: Converting data files to BrainVision format
+    /home/circleci/project/mne_bids/write.py:1116: RuntimeWarning: Converting data files to BrainVision format
       warn('Converting data files to BrainVision format')
 
     Writing '/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-01/sub-001_ses-01_scans.tsv'...
@@ -394,7 +394,7 @@ Let us loop over the subjects and create BIDS-compatible folder
     Setting channel info structure...
     Creating raw.info structure...
     Creating folder: /home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-01/eeg
-    /home/circleci/project/mne_bids/write.py:1042: RuntimeWarning: Converting to BV for anonymization
+    /home/circleci/project/mne_bids/write.py:1043: RuntimeWarning: Converting to BV for anonymization
       warn('Converting to BV for anonymization')
 
     Writing '/home/circleci/mne_data/eegmmidb_bids_group_conversion/README'...
@@ -482,7 +482,7 @@ Let us loop over the subjects and create BIDS-compatible folder
     Fc1.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
     Fcz.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
     Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
-    /home/circleci/project/mne_bids/write.py:1115: RuntimeWarning: Converting data files to BrainVision format
+    /home/circleci/project/mne_bids/write.py:1116: RuntimeWarning: Converting data files to BrainVision format
       warn('Converting data files to BrainVision format')
 
     Writing '/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-01/sub-001_ses-01_scans.tsv'...
@@ -497,7 +497,7 @@ Let us loop over the subjects and create BIDS-compatible folder
     Setting channel info structure...
     Creating raw.info structure...
     Creating folder: /home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/eeg
-    /home/circleci/project/mne_bids/write.py:1042: RuntimeWarning: Converting to BV for anonymization
+    /home/circleci/project/mne_bids/write.py:1043: RuntimeWarning: Converting to BV for anonymization
       warn('Converting to BV for anonymization')
 
     Writing '/home/circleci/mne_data/eegmmidb_bids_group_conversion/README'...
@@ -585,7 +585,7 @@ Let us loop over the subjects and create BIDS-compatible folder
     Fc1.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
     Fcz.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
     Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
-    /home/circleci/project/mne_bids/write.py:1115: RuntimeWarning: Converting data files to BrainVision format
+    /home/circleci/project/mne_bids/write.py:1116: RuntimeWarning: Converting data files to BrainVision format
       warn('Converting data files to BrainVision format')
 
     Writing '/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/sub-002_ses-01_scans.tsv'...
@@ -600,7 +600,7 @@ Let us loop over the subjects and create BIDS-compatible folder
     Setting channel info structure...
     Creating raw.info structure...
     Creating folder: /home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/eeg
-    /home/circleci/project/mne_bids/write.py:1042: RuntimeWarning: Converting to BV for anonymization
+    /home/circleci/project/mne_bids/write.py:1043: RuntimeWarning: Converting to BV for anonymization
       warn('Converting to BV for anonymization')
 
     Writing '/home/circleci/mne_data/eegmmidb_bids_group_conversion/README'...
@@ -688,7 +688,7 @@ Let us loop over the subjects and create BIDS-compatible folder
     Fc1.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
     Fcz.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
     Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
-    /home/circleci/project/mne_bids/write.py:1115: RuntimeWarning: Converting data files to BrainVision format
+    /home/circleci/project/mne_bids/write.py:1116: RuntimeWarning: Converting data files to BrainVision format
       warn('Converting data files to BrainVision format')
 
     Writing '/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/sub-002_ses-01_scans.tsv'...
@@ -703,7 +703,7 @@ Let us loop over the subjects and create BIDS-compatible folder
     Setting channel info structure...
     Creating raw.info structure...
     Creating folder: /home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/eeg
-    /home/circleci/project/mne_bids/write.py:1042: RuntimeWarning: Converting to BV for anonymization
+    /home/circleci/project/mne_bids/write.py:1043: RuntimeWarning: Converting to BV for anonymization
       warn('Converting to BV for anonymization')
 
     Writing '/home/circleci/mne_data/eegmmidb_bids_group_conversion/README'...
@@ -791,7 +791,7 @@ Let us loop over the subjects and create BIDS-compatible folder
     Fc1.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
     Fcz.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
     Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
-    /home/circleci/project/mne_bids/write.py:1115: RuntimeWarning: Converting data files to BrainVision format
+    /home/circleci/project/mne_bids/write.py:1116: RuntimeWarning: Converting data files to BrainVision format
       warn('Converting data files to BrainVision format')
 
     Writing '/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/sub-002_ses-01_scans.tsv'...
@@ -824,48 +824,48 @@ Now let's see the structure of the BIDS folder we created.
  .. code-block:: none
 
     |eegmmidb_bids_group_conversion/
-    |--- dataset_description.json
     |--- README
     |--- participants.tsv
     |--- participants.json
+    |--- dataset_description.json
     |--- sub-001/
     |------ ses-01/
     |--------- sub-001_ses-01_scans.tsv
     |--------- eeg/
-    |------------ sub-001_ses-01_task-MotorImagery_run-02_eeg.vhdr
-    |------------ sub-001_ses-01_task-MotorImagery_run-01_channels.tsv
-    |------------ sub-001_ses-01_task-MotorImagery_run-01_eeg.vhdr
-    |------------ sub-001_ses-01_task-MotorImagery_run-02_eeg.eeg
-    |------------ sub-001_ses-01_task-MotorImagery_run-03_eeg.vmrk
-    |------------ sub-001_ses-01_task-MotorImagery_run-01_eeg.eeg
-    |------------ sub-001_ses-01_task-MotorImagery_run-02_channels.tsv
-    |------------ sub-001_ses-01_task-MotorImagery_run-03_channels.tsv
-    |------------ sub-001_ses-01_task-MotorImagery_run-03_eeg.eeg
-    |------------ sub-001_ses-01_task-MotorImagery_run-03_eeg.json
-    |------------ sub-001_ses-01_task-MotorImagery_run-02_eeg.vmrk
-    |------------ sub-001_ses-01_task-MotorImagery_run-03_eeg.vhdr
-    |------------ sub-001_ses-01_task-MotorImagery_run-01_eeg.vmrk
     |------------ sub-001_ses-01_task-MotorImagery_run-02_eeg.json
+    |------------ sub-001_ses-01_task-MotorImagery_run-01_eeg.eeg
+    |------------ sub-001_ses-01_task-MotorImagery_run-02_eeg.vhdr
+    |------------ sub-001_ses-01_task-MotorImagery_run-03_eeg.vhdr
+    |------------ sub-001_ses-01_task-MotorImagery_run-01_channels.tsv
+    |------------ sub-001_ses-01_task-MotorImagery_run-03_eeg.vmrk
+    |------------ sub-001_ses-01_task-MotorImagery_run-01_eeg.vhdr
     |------------ sub-001_ses-01_task-MotorImagery_run-01_eeg.json
+    |------------ sub-001_ses-01_task-MotorImagery_run-02_eeg.eeg
+    |------------ sub-001_ses-01_task-MotorImagery_run-02_eeg.vmrk
+    |------------ sub-001_ses-01_task-MotorImagery_run-02_channels.tsv
+    |------------ sub-001_ses-01_task-MotorImagery_run-03_eeg.eeg
+    |------------ sub-001_ses-01_task-MotorImagery_run-01_eeg.vmrk
+    |------------ sub-001_ses-01_task-MotorImagery_run-03_channels.tsv
+    |------------ sub-001_ses-01_task-MotorImagery_run-03_eeg.json
     |--- sub-002/
     |------ ses-01/
     |--------- sub-002_ses-01_scans.tsv
     |--------- eeg/
     |------------ sub-002_ses-01_task-MotorImagery_run-03_eeg.json
-    |------------ sub-002_ses-01_task-MotorImagery_run-01_eeg.json
-    |------------ sub-002_ses-01_task-MotorImagery_run-02_eeg.eeg
-    |------------ sub-002_ses-01_task-MotorImagery_run-03_eeg.vmrk
-    |------------ sub-002_ses-01_task-MotorImagery_run-01_eeg.vhdr
-    |------------ sub-002_ses-01_task-MotorImagery_run-02_eeg.vhdr
-    |------------ sub-002_ses-01_task-MotorImagery_run-02_channels.tsv
-    |------------ sub-002_ses-01_task-MotorImagery_run-01_eeg.eeg
-    |------------ sub-002_ses-01_task-MotorImagery_run-02_eeg.vmrk
-    |------------ sub-002_ses-01_task-MotorImagery_run-01_channels.tsv
-    |------------ sub-002_ses-01_task-MotorImagery_run-01_eeg.vmrk
-    |------------ sub-002_ses-01_task-MotorImagery_run-03_channels.tsv
-    |------------ sub-002_ses-01_task-MotorImagery_run-03_eeg.vhdr
-    |------------ sub-002_ses-01_task-MotorImagery_run-03_eeg.eeg
     |------------ sub-002_ses-01_task-MotorImagery_run-02_eeg.json
+    |------------ sub-002_ses-01_task-MotorImagery_run-01_eeg.vhdr
+    |------------ sub-002_ses-01_task-MotorImagery_run-02_eeg.eeg
+    |------------ sub-002_ses-01_task-MotorImagery_run-03_eeg.vhdr
+    |------------ sub-002_ses-01_task-MotorImagery_run-03_eeg.vmrk
+    |------------ sub-002_ses-01_task-MotorImagery_run-03_eeg.eeg
+    |------------ sub-002_ses-01_task-MotorImagery_run-01_eeg.vmrk
+    |------------ sub-002_ses-01_task-MotorImagery_run-01_eeg.json
+    |------------ sub-002_ses-01_task-MotorImagery_run-02_channels.tsv
+    |------------ sub-002_ses-01_task-MotorImagery_run-01_channels.tsv
+    |------------ sub-002_ses-01_task-MotorImagery_run-02_eeg.vmrk
+    |------------ sub-002_ses-01_task-MotorImagery_run-01_eeg.eeg
+    |------------ sub-002_ses-01_task-MotorImagery_run-02_eeg.vhdr
+    |------------ sub-002_ses-01_task-MotorImagery_run-03_channels.tsv
 
 
 
@@ -909,7 +909,7 @@ Now let's generate a report on the dataset.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  0.928 seconds)
+   **Total running time of the script:** ( 0 minutes  0.583 seconds)
 
 
 .. _sphx_glr_download_auto_examples_convert_group_studies.py:

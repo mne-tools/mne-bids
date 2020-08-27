@@ -79,20 +79,20 @@ for subject_id in subject_ids:
         raw = mne.io.read_raw_edf(raw_fname)
         raw.info['line_freq'] = 50  # specify power line frequency
         raw_list.append(raw)
-        bids_basename = BIDSPath(subject=f'{subject_id:03}',
-                                 session='01', task='MotorImagery',
-                                 run=f'{run_map[run]:02}')
-        bids_list.append(bids_basename)
+        bids_path = BIDSPath(subject=f'{subject_id:03}',
+                             session='01', task='MotorImagery',
+                             run=f'{run_map[run]:02}')
+        bids_list.append(bids_path)
 
 daysback_min, daysback_max = get_anonymization_daysback(raw_list)
 
-for raw, bids_basename in zip(raw_list, bids_list):
+for raw, bids_path in zip(raw_list, bids_list):
     # By using the same anonymization `daysback` number we can
     # preserve the longitudinal structure of multiple sessions for a
     # single subject and the relation between subjects. Be sure to
     # change or delete this number before putting code online, you
     # wouldn't want to inadvertently de-anonymize your data.
-    write_raw_bids(raw, bids_basename, bids_root, event_id=event_id,
+    write_raw_bids(raw, bids_path, bids_root, event_id=event_id,
                    anonymize=dict(daysback=daysback_min + 2117),
                    overwrite=True)
 

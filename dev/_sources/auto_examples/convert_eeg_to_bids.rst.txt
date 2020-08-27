@@ -137,15 +137,15 @@ of the directory tree.
     |--- files/
     |------ eegmmidb/
     |--------- 1.0.0/
-    |------------ S001/
-    |--------------- S001R04.edf
-    |--------------- S001R08.edf
-    |--------------- S001R12.edf
-    |--------------- S001R02.edf
     |------------ S002/
-    |--------------- S002R04.edf
     |--------------- S002R08.edf
     |--------------- S002R12.edf
+    |--------------- S002R04.edf
+    |------------ S001/
+    |--------------- S001R12.edf
+    |--------------- S001R04.edf
+    |--------------- S001R02.edf
+    |--------------- S001R08.edf
 
 
 
@@ -305,9 +305,10 @@ which are however optional. The required inputs are:
         raw : instance of mne.io.Raw
             The raw data. It must be an instance of mne.Raw. The data should not be
             loaded from disk, i.e., raw.preload must be False.
-        bids_basename : str | BIDSPath
+        bids_path : str | BIDSPath
             The base filename of the BIDS compatible files. Typically, this can be
-            generated using BIDSPath.
+            generated using :func:`mne_bids.BIDSPath`, and then calling
+            ``basename`` property.
             Example: `sub-01_ses-01_task-testing_acq-01_run-01`.
             This will write the following files in the correct subfolder of the
             bids_root::
@@ -331,7 +332,7 @@ which are however optional. The required inputs are:
         bids_root : str | pathlib.Path
             The path of the root of the BIDS compatible folder. The session and
             subject specific folders will be populated automatically by parsing
-            bids_basename.
+            bids_path.
         events_data : str | pathlib.Path | array | None
             The events file. If a string or a Path object, specifies the path of
             the events file. If an array, the MNE events array (shape n_events, 3).
@@ -432,8 +433,8 @@ Now we just need to specify a few more EEG details to get something sensible:
     event_id = {'rest': 0}
 
     # Now convert our data to be in a new BIDS dataset.
-    bids_basename = BIDSPath(subject=subject_id, task=task)
-    write_raw_bids(raw, bids_basename, bids_root, event_id=event_id,
+    bids_path = BIDSPath(subject=subject_id, task=task)
+    write_raw_bids(raw, bids_path, bids_root, event_id=event_id,
                    events_data=events, overwrite=True)
 
 
@@ -607,19 +608,19 @@ What does our fresh BIDS directory look like?
  .. code-block:: none
 
     |eegmmidb_bids_eeg_example/
-    |--- dataset_description.json
     |--- README
     |--- participants.tsv
     |--- participants.json
+    |--- dataset_description.json
     |--- sub-001/
     |------ sub-001_scans.tsv
     |------ eeg/
-    |--------- sub-001_task-RestEyesClosed_channels.tsv
-    |--------- sub-001_coordsystem.json
     |--------- sub-001_task-RestEyesClosed_eeg.edf
-    |--------- sub-001_electrodes.tsv
     |--------- sub-001_task-RestEyesClosed_eeg.json
+    |--------- sub-001_electrodes.tsv
+    |--------- sub-001_task-RestEyesClosed_channels.tsv
     |--------- sub-001_task-RestEyesClosed_events.tsv
+    |--------- sub-001_coordsystem.json
 
 
 
@@ -698,7 +699,7 @@ Command line tool: https://www.npmjs.com/package/bids-validator
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  0.191 seconds)
+   **Total running time of the script:** ( 0 minutes  0.136 seconds)
 
 
 .. _sphx_glr_download_auto_examples_convert_eeg_to_bids.py:
