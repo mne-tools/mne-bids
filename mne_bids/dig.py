@@ -100,7 +100,7 @@ def _handle_electrodes_reading(electrodes_fname, coord_frame,
     return raw
 
 
-def _handle_coordsystem_reading(coordsystem_fpath, modality, verbose=True):
+def _handle_coordsystem_reading(coordsystem_fpath, datatype, verbose=True):
     """Read associated coordsystem.json.
 
     Handle reading the coordinate frame and coordinate unit
@@ -110,17 +110,17 @@ def _handle_coordsystem_reading(coordsystem_fpath, modality, verbose=True):
     with open(coordsystem_fpath, 'r') as fin:
         coordsystem_json = json.load(fin)
 
-    if modality == 'meg':
+    if datatype == 'meg':
         coord_frame = coordsystem_json['MEGCoordinateSystem'].lower()
         coord_unit = coordsystem_json['MEGCoordinateUnits']
         coord_frame_desc = coordsystem_json.get('MEGCoordinateDescription',
                                                 None)
-    elif modality == 'eeg':
+    elif datatype == 'eeg':
         coord_frame = coordsystem_json['EEGCoordinateSystem'].lower()
         coord_unit = coordsystem_json['EEGCoordinateUnits']
         coord_frame_desc = coordsystem_json.get('EEGCoordinateDescription',
                                                 None)
-    elif modality == 'ieeg':
+    elif datatype == 'ieeg':
         coord_frame = coordsystem_json['iEEGCoordinateSystem'].lower()
         coord_unit = coordsystem_json['iEEGCoordinateUnits']
         coord_frame_desc = coordsystem_json.get('iEEGCoordinateDescription',
@@ -148,7 +148,7 @@ def _get_impedances(raw, names):
     return impedances
 
 
-def _electrodes_tsv(raw, fname, modality, overwrite=False, verbose=True):
+def _electrodes_tsv(raw, fname, datatype, overwrite=False, verbose=True):
     """Create an electrodes.tsv file and save it.
 
     Parameters
@@ -157,7 +157,7 @@ def _electrodes_tsv(raw, fname, modality, overwrite=False, verbose=True):
         The data as MNE-Python Raw object.
     fname : str
         Filename to save the electrodes.tsv to.
-    modality : str
+    datatype : str
         Type of the data recording. Can be ``meg``, ``eeg``,
         or ``ieeg``.
     overwrite : bool
@@ -182,7 +182,7 @@ def _electrodes_tsv(raw, fname, modality, overwrite=False, verbose=True):
         names.append(ch['ch_name'])
 
     # create OrderedDict to write to tsv file
-    if modality == "ieeg":
+    if datatype == "ieeg":
         # XXX: size should be included in the future
         sizes = ['n/a'] * len(names)
         data = OrderedDict([('name', names),
@@ -191,14 +191,14 @@ def _electrodes_tsv(raw, fname, modality, overwrite=False, verbose=True):
                             ('z', z),
                             ('size', sizes),
                             ])
-    elif modality == 'eeg':
+    elif datatype == 'eeg':
         data = OrderedDict([('name', names),
                             ('x', x),
                             ('y', y),
                             ('z', z),
                             ])
     else:  # pragma: no cover
-        raise RuntimeError("modality {} not supported.".format(modality))
+        raise RuntimeError("datatype {} not supported.".format(datatype))
 
     # Add impedance values if available, currently only BrainVision:
     # https://github.com/mne-tools/mne-python/pull/7974
@@ -209,7 +209,7 @@ def _electrodes_tsv(raw, fname, modality, overwrite=False, verbose=True):
 
 
 def _coordsystem_json(raw, unit, orient, coordsystem_name, fname,
-                      modality, overwrite=False, verbose=True):
+                      datatype, overwrite=False, verbose=True):
     """Create a coordsystem.json file and save it.
 
     Parameters
@@ -225,7 +225,7 @@ def _coordsystem_json(raw, unit, orient, coordsystem_name, fname,
         Name of the coordinate system for the sensor positions.
     fname : str
         Filename to save the coordsystem.json to.
-    modality : str
+    datatype : str
         Type of the data recording. Can be ``meg``, ``eeg``,
         or ``ieeg``.
     overwrite : bool
@@ -256,8 +256,8 @@ def _coordsystem_json(raw, unit, orient, coordsystem_name, fname,
         print('Using the `Other` keyword for the CoordinateSystem field. '
               'Please specify the CoordinateSystemDescription field manually.')
 
-    # create the coordinate json data structure based on 'modality'
-    if modality == 'meg':
+    # create the coordinate json data structure based on 'datatype'
+    if datatype == 'meg':
         hpi = {d['ident']: d for d in dig if d['kind'] == FIFF.FIFFV_POINT_HPI}
         if hpi:
             for ident in hpi.keys():
@@ -271,7 +271,7 @@ def _coordsystem_json(raw, unit, orient, coordsystem_name, fname,
             'HeadCoilCoordinateSystem': orient,
             'HeadCoilCoordinateUnits': unit  # XXX validate this
         }
-    elif modality == 'eeg':
+    elif datatype == 'eeg':
         fid_json = {
             'EEGCoordinateSystem': coordsystem_name,
             'EEGCoordinateUnits': unit,
@@ -280,7 +280,7 @@ def _coordsystem_json(raw, unit, orient, coordsystem_name, fname,
             'AnatomicalLandmarkCoordinateSystem': coordsystem_name,
             'AnatomicalLandmarkCoordinateUnits': unit,
         }
-    elif modality == "ieeg":
+    elif datatype == "ieeg":
         fid_json = {
             'iEEGCoordinateSystem': coordsystem_name,  # (Other, Pixels, ACPC)
             'iEEGCoordinateSystemDescription': coordsystem_desc,
@@ -291,7 +291,7 @@ def _coordsystem_json(raw, unit, orient, coordsystem_name, fname,
 
 
 def _write_dig_bids(electrodes_path, coordsystem_path, root,
-                    raw, modality, overwrite=False, verbose=True):
+                    raw, datatype, overwrite=False, verbose=True):
     """Write BIDS formatted DigMontage from Raw instance.
 
     Handles coordinatesystem.json and electrodes.tsv writing
@@ -307,7 +307,7 @@ def _write_dig_bids(electrodes_path, coordsystem_path, root,
         Path to the data directory
     raw : instance of Raw
         The data as MNE-Python Raw object.
-    modality : str
+    datatype : str
         Type of the data recording. Can be ``meg``, ``eeg``,
         or ``ieeg``.
     overwrite : bool
@@ -341,7 +341,7 @@ def _write_dig_bids(electrodes_path, coordsystem_path, root,
         print("Writing electrodes file to... ", electrodes_path)
         print("Writing coordsytem file to... ", coordsystem_path)
 
-    if modality == "ieeg":
+    if datatype == "ieeg":
         if coord_frame is not None:
             # XXX: To improve when mne-python allows coord_frame='unknown'
             if coord_frame not in BIDS_IEEG_COORDINATE_FRAMES:
@@ -359,16 +359,16 @@ def _write_dig_bids(electrodes_path, coordsystem_path, root,
 
             # Now write the data to the elec coords and the coordsystem
             _electrodes_tsv(raw, electrodes_path,
-                            modality, overwrite, verbose)
+                            datatype, overwrite, verbose)
             _coordsystem_json(raw, unit, 'n/a',
-                              coord_frame, coordsystem_path, modality,
+                              coord_frame, coordsystem_path, datatype,
                               overwrite, verbose)
         else:
             # default coordinate frame to mri if not available
             warn("Coordinate frame of iEEG coords missing/unknown "
                  "for {}. Skipping reading "
                  "in of montage...".format(electrodes_path))
-    elif modality == 'eeg':
+    elif datatype == 'eeg':
         # We only write EEG electrodes.tsv and coordsystem.json
         # if we have LPA, RPA, and NAS available to rescale to a known
         # coordinate system frame
@@ -379,10 +379,10 @@ def _write_dig_bids(electrodes_path, coordsystem_path, root,
         # mne-python automatically converts unknown coord frame to head
         if coord_frame_int == FIFF.FIFFV_COORD_HEAD and landmarks:
             # Now write the data
-            _electrodes_tsv(raw, electrodes_path, modality,
+            _electrodes_tsv(raw, electrodes_path, datatype,
                             overwrite, verbose)
             _coordsystem_json(raw, 'm', 'RAS', 'CapTrak',
-                              coordsystem_path, modality,
+                              coordsystem_path, datatype,
                               overwrite, verbose)
         else:
             warn("Skipping EEG electrodes.tsv... "
@@ -392,7 +392,7 @@ def _write_dig_bids(electrodes_path, coordsystem_path, root,
 
 
 def _read_dig_bids(electrodes_fpath, coordsystem_fpath,
-                   raw, modality, verbose):
+                   raw, datatype, verbose):
     """Read MNE-Python formatted DigMontage from BIDS files.
 
     Handles coordinatesystem.json and electrodes.tsv reading
@@ -406,7 +406,7 @@ def _read_dig_bids(electrodes_fpath, coordsystem_fpath,
         Filepath of the coordsystem.json to read.
     raw : instance of Raw
         The data as MNE-Python Raw object.
-    modality : str
+    datatype : str
         Type of the data recording. Can be ``meg``, ``eeg``,
         or ``ieeg``.
     verbose : bool
@@ -426,9 +426,9 @@ def _read_dig_bids(electrodes_fpath, coordsystem_fpath,
 
     # read in coordinate information
     coord_frame, coord_unit = _handle_coordsystem_reading(coordsystem_fpath,
-                                                          modality, verbose)
+                                                          datatype, verbose)
 
-    if modality == 'meg':
+    if datatype == 'meg':
         if coord_frame not in BIDS_MEG_COORDINATE_FRAMES:
             warn("MEG Coordinate frame is not accepted "
                  "BIDS keyword. The allowed keywords are: "
@@ -441,7 +441,7 @@ def _read_dig_bids(electrodes_fpath, coordsystem_fpath,
             coord_frame = None
         else:
             coord_frame = BIDS_TO_MNE_FRAMES.get(coord_frame, None)
-    elif modality == 'ieeg':
+    elif datatype == 'ieeg':
         if coord_frame not in BIDS_IEEG_COORDINATE_FRAMES:
             warn("iEEG Coordinate frame is not accepted "
                  "BIDS keyword. The allowed keywords are: "
@@ -462,7 +462,7 @@ def _read_dig_bids(electrodes_fpath, coordsystem_fpath,
                 warn("Defaulting coordinate frame to unknown "
                      "from coordinate system input {}".format(coord_frame))
             coord_frame = BIDS_TO_MNE_FRAMES.get(space, None)
-    elif modality == 'eeg':
+    elif datatype == 'eeg':
         # only accept captrak
         if coord_frame not in BIDS_EEG_COORDINATE_FRAMES:
             warn("EEG Coordinate frame is not accepted "

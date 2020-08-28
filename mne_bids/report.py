@@ -11,7 +11,7 @@ import numpy as np
 from mne.externals.tempita import Template
 from mne.utils import warn
 
-from mne_bids.config import DOI, ALLOWED_MODALITIES
+from mne_bids.config import DOI, ALLOWED_DATATYPES
 from mne_bids.tsv_handler import _from_tsv
 from mne_bids.path import (get_modalities, get_entity_vals, BIDSPath,
                            _parse_ext, _find_matching_sidecar,
@@ -110,7 +110,7 @@ PARTICIPANTS_TEMPLATE = \
     """{{_summarize_participant_sex(sexs)}};
 {{_summarize_participant_hand(hands)}}; {{_range_str(min_age, max_age, mean_age, std_age, n_age_unknown, 'age')}}"""  # noqa
 
-MODALITY_AGNOSTIC_TEMPLATE = \
+DATATYPE_AGNOSTIC_TEMPLATE = \
     """Data was recorded using a {{_pretty_str(system)}} system
 {{if manufacturer}}({{_pretty_str(manufacturer)}} manufacturer){{endif}}
 sampled at {{_pretty_str(sfreq)}} Hz
@@ -324,8 +324,8 @@ def _summarize_sidecar_json(bids_root, scans_fpaths, verbose=True):
         for scan in scans:
             # summarize metadata of recordings
             bids_path, ext = _parse_ext(scan)
-            modality = op.dirname(scan)
-            if modality not in ALLOWED_MODALITIES:
+            datatype = op.dirname(scan)
+            if datatype not in ALLOWED_DATATYPES:
                 continue
 
             n_scans += 1
@@ -339,7 +339,7 @@ def _summarize_sidecar_json(bids_root, scans_fpaths, verbose=True):
                 continue
 
             sidecar_fname = _find_matching_sidecar(bids_path=bids_path,
-                                                   suffix=modality,
+                                                   suffix=datatype,
                                                    extension='.json')
             with open(sidecar_fname, 'r') as fin:
                 sidecar_json = json.load(fin)
@@ -412,8 +412,8 @@ def _summarize_channels_tsv(bids_root, scans_fpaths, verbose=True):
         for scan in scans:
             # summarize metadata of recordings
             bids_path, _ = _parse_ext(scan)
-            modality = op.dirname(scan)
-            if modality not in ['meg', 'eeg', 'ieeg']:
+            datatype = op.dirname(scan)
+            if datatype not in ['meg', 'eeg', 'ieeg']:
                 continue
 
             # convert to BIDS Path
@@ -459,7 +459,7 @@ def make_report(bids_root, session=None, verbose=True):
 
       - dataset_description.json file
       - (optional) participants.tsv file
-      - (optional) modality-agnostic files for (M/I)EEG data,
+      - (optional) datatype-agnostic files for (M/I)EEG data,
         which reads files from the ``*_scans.tsv`` file.
 
     Parameters
@@ -484,13 +484,13 @@ def make_report(bids_root, session=None, verbose=True):
 
     # only summarize allowed modalities (MEG/EEG/iEEG) data
     # map them to a pretty looking string
-    modality_map = {
+    datatype_map = {
         'meg': 'MEG',
         'eeg': 'EEG',
         'ieeg': 'iEEG',
     }
-    modalities = [modality_map[modality] for modality in modalities
-                  if modality in modality_map.keys()]
+    modalities = [datatype_map[datatype] for datatype in modalities
+                  if datatype in datatype_map.keys()]
 
     # REQUIRED: dataset_description.json summary
     dataset_summary = _summarize_dataset(bids_root)
@@ -517,9 +517,9 @@ def make_report(bids_root, session=None, verbose=True):
     dataset_summary['PARTICIPANTS_TEMPLATE'] = str(participant_template)
 
     if not scans_summary:
-        modality_agnostic_template = ''
+        datatype_agnostic_template = ''
     else:
-        modality_agnostic_template = MODALITY_AGNOSTIC_TEMPLATE
+        datatype_agnostic_template = DATATYPE_AGNOSTIC_TEMPLATE
 
     dataset_summary.update({
         'system': modalities,
@@ -533,7 +533,7 @@ def make_report(bids_root, session=None, verbose=True):
     # lower-case templates are "Recommended",
     # while upper-case templates are "Required".
     content = f'{FUNCTION_TEMPLATE}{BIDS_DATASET_TEMPLATE}' \
-              f'{modality_agnostic_template}'
+              f'{datatype_agnostic_template}'
 
     paragraph = Template(content=content)
     paragraph = paragraph.substitute(**dataset_summary,

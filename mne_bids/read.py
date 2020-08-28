@@ -21,12 +21,12 @@ from mne.transforms import apply_trans
 
 from mne_bids.dig import _read_dig_bids
 from mne_bids.tsv_handler import _from_tsv, _drop
-from mne_bids.config import (ALLOWED_MODALITY_EXTENSIONS, reader,
+from mne_bids.config import (ALLOWED_DATATYPE_EXTENSIONS, reader,
                              _convert_hand_options, _convert_sex_options)
 from mne_bids.utils import _extract_landmarks, _get_ch_type_mapping
 from mne_bids import make_bids_folders
 from mne_bids.path import (BIDSPath, _parse_ext, get_entities_from_fname,
-                           _find_matching_sidecar, _infer_modality,
+                           _find_matching_sidecar, _infer_datatype,
                            _convert_str_to_bids_path)
 
 
@@ -63,7 +63,7 @@ def _read_raw(raw_fpath, electrode=None, hsp=None, hpi=None,
     # ---------------------------
     else:
         raise ValueError(f'Raw file name extension must be one '
-                         f'of {ALLOWED_MODALITY_EXTENSIONS}\n'
+                         f'of {ALLOWED_DATATYPE_EXTENSIONS}\n'
                          f'Got {ext}')
     return raw
 
@@ -279,7 +279,7 @@ def _handle_channels_reading(channels_fname, bids_fname, raw):
     return raw
 
 
-def read_raw_bids(bids_path, bids_root, modality=None, extra_params=None,
+def read_raw_bids(bids_path, bids_root, datatype=None, extra_params=None,
                   verbose=True):
     """Read BIDS compatible data.
 
@@ -293,8 +293,8 @@ def read_raw_bids(bids_path, bids_root, modality=None, extra_params=None,
         generated using :func:`mne_bids.BIDSPath`.
     bids_root : str | pathlib.Path
         Path to root of the BIDS folder
-    modality : str | None
-        The kind of recording to read. If ``None`` and only one modality (e.g.,
+    datatype : str | None
+        The kind of recording to read. If ``None`` and only one datatype (e.g.,
         only EEG or only MEG data) is present in the dataset, it will be
         selected automatically.
     extra_params : None | dict
@@ -312,7 +312,7 @@ def read_raw_bids(bids_path, bids_root, modality=None, extra_params=None,
     ------
     RuntimeError
         If multiple recording modalities are present in the dataset, but
-        ``modality=None``.
+        ``datatype=None``.
 
     RuntimeError
         If more than one data files exist for the specified recording.
@@ -321,7 +321,7 @@ def read_raw_bids(bids_path, bids_root, modality=None, extra_params=None,
         If no data file in a supported format can be located.
 
     ValueError
-        If the specified ``modality`` cannot be found in the dataset.
+        If the specified ``datatype`` cannot be found in the dataset.
 
     """
     # convert to BIDS Path
@@ -331,15 +331,15 @@ def read_raw_bids(bids_path, bids_root, modality=None, extra_params=None,
     sub = bids_path.subject
     ses = bids_path.session
 
-    # set root, infer the modality and
-    # then set it to the modality and suffix of the BIDSPath
+    # set root, infer the datatype and
+    # then set it to the datatype and suffix of the BIDSPath
     bids_path.update(root=bids_root)
-    if modality is None:
-        modality = _infer_modality(bids_root=bids_root,
+    if datatype is None:
+        datatype = _infer_datatype(bids_root=bids_root,
                                    sub=sub, ses=ses)
-    bids_path.update(modality=modality, suffix=modality)
+    bids_path.update(datatype=datatype, suffix=datatype)
 
-    data_dir = make_bids_folders(subject=sub, session=ses, modality=modality,
+    data_dir = make_bids_folders(subject=sub, session=ses, datatype=datatype,
                                  make_dir=False)
     bids_fname = op.basename(bids_path.fpath)
 
@@ -390,14 +390,14 @@ def read_raw_bids(bids_path, bids_root, modality=None, extra_params=None,
                                f"should exist if electrodes.tsv does. "
                                f"Please create coordsystem.json for"
                                f"{bids_path.basename}")
-        if modality in ['meg', 'eeg', 'ieeg']:
+        if datatype in ['meg', 'eeg', 'ieeg']:
             raw = _read_dig_bids(electrodes_fname, coordsystem_fname,
-                                 raw, modality, verbose)
+                                 raw, datatype, verbose)
 
     # Try to find an associated sidecar.json to get information about the
     # recording snapshot
     sidecar_fname = _find_matching_sidecar(bids_path,
-                                           suffix=modality,
+                                           suffix=datatype,
                                            extension='.json',
                                            allow_fail=True)
     if sidecar_fname is not None:
@@ -439,8 +439,8 @@ def get_matched_empty_room(bids_path, bids_root):
         bids_path = _convert_str_to_bids_path(bids_path)
     bids_path = bids_path.copy()
 
-    modality = 'meg'  # We're only concerned about MEG data here
-    bids_fname = bids_path.update(suffix=modality,
+    datatype = 'meg'  # We're only concerned about MEG data here
+    bids_fname = bids_path.update(suffix=datatype,
                                   root=bids_root).fpath
     _, ext = _parse_ext(bids_fname)
     if ext == '.fif':
@@ -449,7 +449,7 @@ def get_matched_empty_room(bids_path, bids_root):
         extra_params = None
 
     raw = read_raw_bids(bids_path=bids_path, bids_root=bids_root,
-                        modality=modality, extra_params=extra_params)
+                        datatype=datatype, extra_params=extra_params)
     if raw.info['meas_date'] is None:
         raise ValueError('The provided recording does not have a measurement '
                          'date set. Cannot get matching empty-room file.')
@@ -481,8 +481,8 @@ def get_matched_empty_room(bids_path, bids_root):
 
     candidate_er_fnames = []
     for session_dir in emptyroom_session_dirs:
-        dir_contents = glob.glob(op.join(session_dir, modality,
-                                         f'sub-emptyroom_*_{modality}*'))
+        dir_contents = glob.glob(op.join(session_dir, datatype,
+                                         f'sub-emptyroom_*_{datatype}*'))
         for item in dir_contents:
             item = pathlib.Path(item)
             if ((item.suffix in allowed_extensions) or
@@ -500,7 +500,7 @@ def get_matched_empty_room(bids_path, bids_root):
         params = get_entities_from_fname(er_fname)
         er_meas_date = None
         params.pop('subject')  # er subject entity is different
-        er_bids_path = BIDSPath(subject='emptyroom', **params, modality='meg',
+        er_bids_path = BIDSPath(subject='emptyroom', **params, datatype='meg',
                                 root=bids_root, check=False)
 
         # Try to extract date from filename.
@@ -521,7 +521,7 @@ def get_matched_empty_room(bids_path, bids_root):
 
             er_raw = read_raw_bids(bids_path=er_bids_path,
                                    bids_root=bids_root,
-                                   modality=modality,
+                                   datatype=datatype,
                                    extra_params=extra_params)
 
             er_meas_date = er_raw.info['meas_date']
@@ -628,7 +628,7 @@ def get_head_mri_trans(bids_path, bids_root):
         extra_params = dict(allow_maxshield=True)
 
     raw = read_raw_bids(bids_path=bids_path, bids_root=bids_root,
-                        extra_params=extra_params, modality='meg')
+                        extra_params=extra_params, datatype='meg')
     meg_coords_dict = _extract_landmarks(raw.info['dig'])
     meg_landmarks = np.asarray((meg_coords_dict['LPA'],
                                 meg_coords_dict['NAS'],

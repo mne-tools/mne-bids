@@ -71,7 +71,7 @@ If you use ``mne-bids`` in your work, please cite our
 
 If you use ``mne-bids``, the chances are high that you are also using BIDS. So
 please cite one of the following papers to credit BIDS, depending on which
-modality you used:
+datatype you used:
 
 - MEG (`http://doi.org/10.1038/sdata.2018.110 <http://doi.org/10.1038/sdata.2018.110>`_)
 - EEG (`https://doi.org/10.1038/s41597-019-0104-8 <https://doi.org/10.1038/s41597-019-0104-8>`_)
