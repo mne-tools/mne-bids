@@ -68,15 +68,15 @@ def run():
         parser.error('Arguments missing. You need to specify at least the'
                      'following: --subject_id, --task, --raw, --bids_root.')
 
-    bids_basename = BIDSPath(
+    bids_path = BIDSPath(
         subject=opt.subject_id, session=opt.session_id, run=opt.run,
-        acquisition=opt.acq, task=opt.task)
+        acquisition=opt.acq, task=opt.task, root=opt.bids_root)
     raw = _read_raw(opt.raw_fname, hpi=opt.hpi, electrode=opt.electrode,
                     hsp=opt.hsp, config=opt.config,
                     allow_maxshield=opt.allow_maxshield)
     if opt.line_freq is not None:
         raw.info['line_freq'] = opt.line_freq
-    write_raw_bids(raw, bids_basename, opt.bids_root, event_id=opt.event_id,
+    write_raw_bids(raw, bids_path, event_id=opt.event_id,
                    events_data=opt.events_data, overwrite=opt.overwrite,
                    verbose=True)
 

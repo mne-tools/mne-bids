@@ -39,9 +39,8 @@ def test_report():
     bids_root = _TempDir()
     raw = mne.io.read_raw_fif(raw_fname, verbose=False)
     raw.info['line_freq'] = 60
-
-    write_raw_bids(raw, bids_path, bids_root, overwrite=True,
-                   verbose=False)
+    bids_path.update(root=bids_root)
+    write_raw_bids(raw, bids_path, overwrite=True, verbose=False)
 
     report = make_report(bids_root)
     print(report)

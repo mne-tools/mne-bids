@@ -38,8 +38,7 @@ from mne_bids.utils import (_write_json, _write_tsv, _write_text,
                             _handle_datatype, _get_ch_type_mapping,
                             _check_anonymize, _stamp_to_dt)
 from mne_bids import make_bids_folders
-from mne_bids.path import (BIDSPath, _parse_ext, _mkdir_p, _path_to_str,
-                           _convert_str_to_bids_path)
+from mne_bids.path import (BIDSPath, _parse_ext, _mkdir_p, _path_to_str)
 from mne_bids.copyfiles import (copyfile_brainvision, copyfile_eeglab,
                                 copyfile_ctf, copyfile_bti, copyfile_kit)
 from mne_bids.tsv_handler import (_from_tsv, _drop, _contains_row,
@@ -802,7 +801,7 @@ def make_dataset_description(path, name, data_license=None,
     _write_json(fname, description, overwrite=True, verbose=verbose)
 
 
-def write_raw_bids(raw, bids_path, bids_root, events_data=None,
+def write_raw_bids(raw, bids_path, events_data=None,
                    event_id=None, anonymize=None,
                    overwrite=False, verbose=True):
     """Save raw data to a BIDS-compliant folder structure.
@@ -822,22 +821,27 @@ def write_raw_bids(raw, bids_path, bids_root, events_data=None,
     Parameters
     ----------
     raw : instance of mne.io.Raw
-        The raw data. It must be an instance of mne.Raw. The data should not be
-        loaded from disk, i.e., raw.preload must be False.
-    bids_path : str | BIDSPath
-        The base filename of the BIDS compatible files. Typically, this can be
-        generated using :func:`mne_bids.BIDSPath`, and then calling
-        ``basename`` property.
-        Example: `sub-01_ses-01_task-testing_acq-01_run-01`.
-        This will write the following files in the correct subfolder of the
-        bids_root::
+        The raw data. It must be an instance of `mne.io.Raw`. The data
+        should not be loaded from disk, i.e., ``raw.preload`` must be
+        ``False``.
+    bids_path : BIDSPath
+        The file to write. The `mne_bids.BIDSPath` instance passed here
+        **must** have the ``.root`` attribute set. If the ``.datatype``
+        attribute is not set, it will be inferred from the recording data type
+        found in ``raw``.
+        Example::
+
+            bids_path = BIDSPath(subject='01', session='01', task='testing',
+                                 acquisition='01', run='01', root='/data/BIDS')
+
+        This will write the following files in the correct subfolder ``root``::
 
             sub-01_ses-01_task-testing_acq-01_run-01_meg.fif
             sub-01_ses-01_task-testing_acq-01_run-01_meg.json
             sub-01_ses-01_task-testing_acq-01_run-01_channels.tsv
             sub-01_ses-01_task-testing_acq-01_run-01_coordsystem.json
 
-        and the following one if events_data is not None::
+        and the following one if ``events_data`` is not ``None``::
 
             sub-01_ses-01_task-testing_acq-01_run-01_events.tsv
 
@@ -846,65 +850,62 @@ def write_raw_bids(raw, bids_path, bids_root, events_data=None,
             participants.tsv
             scans.tsv
 
-        Note that the datatype 'meg' is automatically inferred from the raw
-        object and extension '.fif' is copied from raw.filenames.
-    bids_root : str | pathlib.Path
-        The path of the root of the BIDS compatible folder. The session and
-        subject specific folders will be populated automatically by parsing
-        bids_path.
+        Note that the datatype ``'meg'`` is automatically inferred from the raw
+        object and extension ``'.fif'`` is copied from ``raw.filenames``.
     events_data : str | pathlib.Path | array | None
         The events file. If a string or a Path object, specifies the path of
-        the events file. If an array, the MNE events array (shape n_events, 3).
-        If None, events will be inferred from the stim channel using
+        the events file. If an array, the MNE events array
+        (shape: ``(n_events, 3)``).
+        If ``None``, events will be inferred from the stim channel using
         `mne.find_events`.
     event_id : dict | None
-        The event id dict used to create a 'trial_type' column in events.tsv
+        The event ID dictionary used to create a `trial_type` column in
+        ``*_events.tsv``.
     anonymize : dict | None
-        If None (default), no anonymization is performed.
-        If dict, data will be anonymized depending on the keys provided with
-        the dict: `daysback` is a required key, `keep_his` is an optional key.
+        If `None` (default), no anonymization is performed.
+        If a dictionary, data will be anonymized depending on the dictionary
+        keys: ``daysback`` is a required key, ``keep_his`` is optional.
 
-        `daysback` : int
+        ``daysback`` : int
             Number of days by which to move back the recording date in time.
             In studies with multiple subjects the relative recording date
             differences between subjects can be kept by using the same number
-            of `daysback` for all subject anonymizations. `daysback` should be
-            great enough to shift the date prior to 1925 to conform with BIDS
-            anonymization rules.
+            of ``daysback`` for all subject anonymizations. ``daysback`` should
+            be great enough to shift the date prior to 1925 to conform with
+            BIDS anonymization rules.
 
-        `keep_his` : bool
-            By default (False), all subject information next to the recording
-            date will be overwritten as well. If True, keep subject information
-            apart from the recording date.
+        ``keep_his`` : bool
+            If ``False`` (default), all subject information next to the
+            recording date will be overwritten as well. If True, keep subject
+            information apart from the recording date.
 
     overwrite : bool
         Whether to overwrite existing files or data in files.
-        Defaults to False.
+        Defaults to ``False``.
 
-        If overwrite is True, any existing files with the same BIDS parameters
-        will be overwritten with the exception of the `participants.tsv` and
-        `scans.tsv` files. For these files, parts of pre-existing data that
-        match the current data will be replaced. For `participants.tsv`,
-        specifically, age, sex and hand fields will be overwritten, while
-        any added fields in the `participants.json` and `participants.tsv`
-        by a user will be kept.
-
-        If overwrite is False, no existing data will be overwritten or
+        If ``True``, any existing files with the same BIDS parameters
+        will be overwritten with the exception of the ``*_participants.tsv``
+        and ``*_scans.tsv`` files. For these files, parts of pre-existing data
+        that match the current data will be replaced. For
+        ``*_participants.tsv``, specifically, age, sex and hand fields will be
+        overwritten, while any manually added fields in ``participants.json``
+        and ``participants.tsv`` by a user will be retained.
+        If ``False``, no existing data will be overwritten or
         replaced.
     verbose : bool
-        If verbose is True, this will print a snippet of the sidecar files. If
-        False, no content will be printed.
+        If ``True``, this will print a snippet of the sidecar files. Otherwise,
+        no content will be printed.
 
     Returns
     -------
     bids_root : str
-        The path of the root of the BIDS compatible folder.
+        The path of the root of the BIDS-compatible folder.
 
     Notes
     -----
-    For the participants.tsv file, the raw.info['subject_info'] should be
-    updated and raw.info['meas_date'] should not be None to compute the age
-    of the participant correctly.
+    For the ``*_participants.tsv`` file, ``raw.info['subject_info']`` should be
+    updated and ``raw.info['meas_date']`` should not be ``None`` to allow
+    computation of each participant's age correctly.
 
     See Also
     --------
@@ -931,7 +932,17 @@ def write_raw_bids(raw, bids_path, bids_root, events_data=None,
     if raw.preload is not False:
         raise ValueError('The data should not be preloaded.')
 
-    bids_root = _path_to_str(bids_root)
+    if not isinstance(bids_path, BIDSPath):
+        raise RuntimeError('"bids_path" must be a BIDSPath object. Please '
+                           'instantiate using mne_bids.BIDSPath().')
+
+    # check root available
+    bids_root = bids_path.root
+    if bids_root is None:
+        raise ValueError('The root of the "bids_path" must be set. '
+                         'Please use `bids_path.update(root="<root>")` '
+                         'to set the root of the BIDS folder to read.')
+
     raw = raw.copy()
 
     raw_fname = raw.filenames[0]
@@ -950,10 +961,6 @@ def write_raw_bids(raw, bids_path, bids_root, events_data=None,
     assert_array_equal(raw.times, raw_orig.times,
                        "raw.times should not have changed since reading"
                        " in from the file. It may have been cropped.")
-
-    # convert to BIDS Path
-    if isinstance(bids_path, str):
-        bids_path = _convert_str_to_bids_path(bids_path)
 
     bids_path = bids_path.copy()
     subject_id, session_id = bids_path.subject, bids_path.session

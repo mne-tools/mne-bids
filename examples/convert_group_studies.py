@@ -81,7 +81,8 @@ for subject_id in subject_ids:
         raw_list.append(raw)
         bids_path = BIDSPath(subject=f'{subject_id:03}',
                              session='01', task='MotorImagery',
-                             run=f'{run_map[run]:02}')
+                             run=f'{run_map[run]:02}',
+                             root=bids_root)
         bids_list.append(bids_path)
 
 daysback_min, daysback_max = get_anonymization_daysback(raw_list)
@@ -92,7 +93,7 @@ for raw, bids_path in zip(raw_list, bids_list):
     # single subject and the relation between subjects. Be sure to
     # change or delete this number before putting code online, you
     # wouldn't want to inadvertently de-anonymize your data.
-    write_raw_bids(raw, bids_path, bids_root, event_id=event_id,
+    write_raw_bids(raw, bids_path, event_id=event_id,
                    anonymize=dict(daysback=daysback_min + 2117),
                    overwrite=True)
 

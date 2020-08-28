@@ -26,8 +26,7 @@ from mne_bids.config import (ALLOWED_DATATYPE_EXTENSIONS, reader,
 from mne_bids.utils import _extract_landmarks, _get_ch_type_mapping
 from mne_bids import make_bids_folders
 from mne_bids.path import (BIDSPath, _parse_ext, get_entities_from_fname,
-                           _find_matching_sidecar, _infer_datatype,
-                           _convert_str_to_bids_path)
+                           _find_matching_sidecar, _infer_datatype)
 
 
 def _read_raw(raw_fpath, electrode=None, hsp=None, hpi=None,
@@ -279,8 +278,7 @@ def _handle_channels_reading(channels_fname, bids_fname, raw):
     return raw
 
 
-def read_raw_bids(bids_path, bids_root, datatype=None, extra_params=None,
-                  verbose=True):
+def read_raw_bids(bids_path, extra_params=None, verbose=True):
     """Read BIDS compatible data.
 
     Will attempt to read associated events.tsv and channels.tsv files to
@@ -288,14 +286,11 @@ def read_raw_bids(bids_path, bids_root, datatype=None, extra_params=None,
 
     Parameters
     ----------
-    bids_path : str | BIDSPath
-        The base filename of the BIDS compatible files. Typically, this can be
-        generated using :func:`mne_bids.BIDSPath`.
-    bids_root : str | pathlib.Path
-        Path to root of the BIDS folder
-    datatype : str | None
-        The kind of recording to read. If ``None`` and only one datatype (e.g.,
-        only EEG or only MEG data) is present in the dataset, it will be
+    bids_path : BIDSPath
+        The file to read. The :class:`mne_bids.BIDSPath` instance passed here
+        **must** have the ``.root`` attribute set. The ``.datatype`` attribute
+        **may** be set. If ``.datatype`` is not set and only one data type
+        (e.g., only EEG or MEG data) is present in the dataset, it will be
         selected automatically.
     extra_params : None | dict
         Extra parameters to be passed to MNE read_raw_* functions.
@@ -311,7 +306,7 @@ def read_raw_bids(bids_path, bids_root, datatype=None, extra_params=None,
     Raises
     ------
     RuntimeError
-        If multiple recording modalities are present in the dataset, but
+        If multiple recording data types are present in the dataset, but
         ``datatype=None``.
 
     RuntimeError
@@ -324,12 +319,21 @@ def read_raw_bids(bids_path, bids_root, datatype=None, extra_params=None,
         If the specified ``datatype`` cannot be found in the dataset.
 
     """
-    # convert to BIDS Path
-    if isinstance(bids_path, str):
-        bids_path = _convert_str_to_bids_path(bids_path)
+    if not isinstance(bids_path, BIDSPath):
+        raise RuntimeError('"bids_path" must be a BIDSPath object. Please '
+                           'instantiate using mne_bids.BIDSPath().')
+
     bids_path = bids_path.copy()
     sub = bids_path.subject
     ses = bids_path.session
+    bids_root = bids_path.root
+    datatype = bids_path.datatype
+
+    # check root available
+    if bids_root is None:
+        raise ValueError('The root of the "bids_path" must be set. '
+                         'Please use `bids_path.update(root="<root>")` '
+                         'to set the root of the BIDS folder to read.')
 
     # set root, infer the datatype and
     # then set it to the datatype and suffix of the BIDSPath
@@ -416,16 +420,15 @@ def read_raw_bids(bids_path, bids_root, datatype=None, extra_params=None,
     return raw
 
 
-def get_matched_empty_room(bids_path, bids_root):
+def get_matched_empty_room(bids_path):
     """Get matching empty-room file for an MEG recording.
 
     Parameters
     ----------
-    bids_path : str | BIDSPath
-        The base filename of the BIDS-compatible file. Typically, this can be
-        generated using :func:`mne_bids.BIDSPath`.
-    bids_root : str | pathlib.Path
-        Path to the BIDS root folder.
+    bids_path : BIDSPath
+        The path of the experimental recording for which to retrieve the
+        corresponding empty-room recording. The :class:`mne_bids.BIDSPath`
+        instance passed here **must** have the ``.root`` attribute set.
 
     Returns
     -------
@@ -434,9 +437,17 @@ def get_matched_empty_room(bids_path, bids_root):
         Returns None if none was found.
 
     """
-    # convert to BIDS Path
-    if isinstance(bids_path, str):
-        bids_path = _convert_str_to_bids_path(bids_path)
+    if not isinstance(bids_path, BIDSPath):
+        raise RuntimeError('"bids_path" must be a BIDSPath object. Please '
+                           'instantiate using mne_bids.BIDSPath().')
+
+    # check root available
+    bids_root = bids_path.root
+    if bids_root is None:
+        raise ValueError('The root of the "bids_path" must be set. '
+                         'Please use `bids_path.update(root="<root>")` '
+                         'to set the root of the BIDS folder to read.')
+
     bids_path = bids_path.copy()
 
     datatype = 'meg'  # We're only concerned about MEG data here
@@ -448,8 +459,7 @@ def get_matched_empty_room(bids_path, bids_root):
     else:
         extra_params = None
 
-    raw = read_raw_bids(bids_path=bids_path, bids_root=bids_root,
-                        datatype=datatype, extra_params=extra_params)
+    raw = read_raw_bids(bids_path=bids_path, extra_params=extra_params)
     if raw.info['meas_date'] is None:
         raise ValueError('The provided recording does not have a measurement '
                          'date set. Cannot get matching empty-room file.')
@@ -520,8 +530,6 @@ def get_matched_empty_room(bids_path, bids_root):
                 extra_params = None
 
             er_raw = read_raw_bids(bids_path=er_bids_path,
-                                   bids_root=bids_root,
-                                   datatype=datatype,
                                    extra_params=extra_params)
 
             er_meas_date = er_raw.info['meas_date']
@@ -552,7 +560,7 @@ def get_matched_empty_room(bids_path, bids_root):
     return best_er_bids_path
 
 
-def get_head_mri_trans(bids_path, bids_root):
+def get_head_mri_trans(bids_path):
     """Produce transformation matrix from MEG and MRI landmark points.
 
     Will attempt to read the landmarks of Nasion, LPA, and RPA from the sidecar
@@ -562,11 +570,10 @@ def get_head_mri_trans(bids_path, bids_root):
 
     Parameters
     ----------
-    bids_path : str | BIDSPath
-        The base filename of the BIDS-compatible file. Typically, this can be
-        generated using :func:`mne_bids.BIDSPath`.
-    bids_root : str | pathlib.Path
-        Path to root of the BIDS folder
+    bids_path : BIDSPath
+        The path of the recording for which to retrieve the transformation. The
+        :class:`mne_bids.BIDSPath` instance passed here **must** have the
+        ``.root`` attribute set.
 
     Returns
     -------
@@ -578,9 +585,18 @@ def get_head_mri_trans(bids_path, bids_root):
         raise ImportError('This function requires nibabel.')
     import nibabel as nib
 
-    # convert to BIDS Path
-    if isinstance(bids_path, str):
-        bids_path = _convert_str_to_bids_path(bids_path)
+    if not isinstance(bids_path, BIDSPath):
+        raise RuntimeError('"bids_path" must be a BIDSPath object. Please '
+                           'instantiate using mne_bids.BIDSPath().')
+
+    # check root available
+    bids_root = bids_path.root
+    if bids_root is None:
+        raise ValueError('The root of the "bids_path" must be set. '
+                         'Please use `bids_path.update(root="<root>")` '
+                         'to set the root of the BIDS folder to read.')
+    # only get this for MEG data
+    bids_path.update(datatype='meg')
 
     # Get the sidecar file for MRI landmarks
     bids_fname = bids_path.update(suffix='meg', root=bids_root)
@@ -627,8 +643,7 @@ def get_head_mri_trans(bids_path, bids_root):
     if ext == '.fif':
         extra_params = dict(allow_maxshield=True)
 
-    raw = read_raw_bids(bids_path=bids_path, bids_root=bids_root,
-                        extra_params=extra_params, datatype='meg')
+    raw = read_raw_bids(bids_path=bids_path, extra_params=extra_params)
     meg_coords_dict = _extract_landmarks(raw.info['dig'])
     meg_landmarks = np.asarray((meg_coords_dict['LPA'],
                                 meg_coords_dict['NAS'],

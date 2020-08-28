@@ -69,8 +69,9 @@ class BIDSPath(object):
     extension : str | None
         The extension of the filename. E.g., ``'.json'``.
     datatype : str
-        The "datatype" of folder being created at the end of the hierarchy.
-        E.g., "anat", "func", "eeg", "meg", "ieeg", etc.
+        The "data type" of folder being created at the end of the folder
+        hierarchy. E.g., ``'anat'``, ``'func'``, ``'eeg'``, ``'meg'``,
+        ``'ieeg'``, etc.
     root : str | None
         The root for the filename to be created. E.g., a path to the folder
         in which you wish to create a file with this name.
@@ -194,6 +195,7 @@ class BIDSPath(object):
         """Representation in the style of `pathlib.Path`."""
         return f'{self.__class__.__name__}(\n' \
                f'root: {self.root}\n' \
+               f'datatype: {self.datatype}\n' \
                f'basename: {self.basename})'
 
     def __fspath__(self):
@@ -244,9 +246,6 @@ class BIDSPath(object):
         # file-suffix will allow 'meg', 'eeg', 'ieeg', 'anat'
         if self.datatype is not None:
             data_path = op.join(data_path, self.datatype)
-        elif self.suffix in SUFFIX_TO_DATATYPE:
-            # infers path suffix from the suffix
-            data_path = op.join(data_path, SUFFIX_TO_DATATYPE[self.suffix])
 
         # account for MEG data that are directory-based
         # else, all other file paths attempt to match
@@ -391,6 +390,15 @@ class BIDSPath(object):
                 val = str(val)
             setattr(self, key, val)
 
+        # infer datatype if suffix is uniquely the datatype
+        if self.datatype is None and \
+                self.suffix in SUFFIX_TO_DATATYPE:
+            self.datatype = SUFFIX_TO_DATATYPE[self.suffix]
+        # set datatype based on suffix if calling update
+        elif self.suffix in SUFFIX_TO_DATATYPE and \
+                'datatype' not in entities:
+            self.datatype = SUFFIX_TO_DATATYPE[self.suffix]
+
         # Update .check attribute and perform a check of the entities.
         if check is not None:
             self.check = check
@@ -415,11 +423,6 @@ class BIDSPath(object):
                              f'{ALLOWED_DATATYPES}. You passed in '
                              f'{self.datatype}, which is not '
                              f'BIDS compliant. ')
-
-        # infer datatype if suffix is uniquely the datatype
-        if self.datatype is None and \
-                self.suffix in ['eeg', 'meg', 'ieeg', 'T1w']:
-            self.datatype = SUFFIX_TO_DATATYPE[self.suffix]
 
         # perform deeper check if user has it turned on
         if self.check:
@@ -498,13 +501,6 @@ def _check_non_sub_ses_entity(bids_path):
             bids_path.processing:
         return True
     return False
-
-
-def _convert_str_to_bids_path(bids_basename):
-    """Convert string of bids basename to BIDSPath object."""
-    params = get_entities_from_fname(bids_basename)
-    bids_path = BIDSPath(**params)
-    return bids_path
 
 
 def print_dir_tree(folder, max_depth=None):
