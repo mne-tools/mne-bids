@@ -25,7 +25,7 @@ from mne_bids import (get_modalities, get_entity_vals, print_dir_tree,
                       write_raw_bids)
 from mne_bids.path import (_parse_ext, get_entities_from_fname,
                            _find_best_candidates, _find_matching_sidecar,
-                           _filter_fnames, _get_matched_basenames)
+                           _filter_fnames)
 
 subject_id = '01'
 session_id = '01'
@@ -528,16 +528,19 @@ def test_get_matched_basenames(return_bids_test_dir):
     """Test retrieval of matching basenames."""
     bids_root = return_bids_test_dir
 
-    paths = _get_matched_basenames(bids_root=bids_root)
+    bids_path_01 = BIDSPath(root=bids_root)
+    paths = bids_path_01.match()
     assert len(paths) == 7
     assert all('sub-01_ses-01' in p.basename for p in paths)
     assert all([p.root == bids_root for p in paths])
 
-    paths = _get_matched_basenames(bids_root=bids_root, run='01')
+    bids_path_01 = BIDSPath(root=bids_root, run='01')
+    paths = bids_path_01.match()
     assert len(paths) == 3
     assert paths[0].basename == 'sub-01_ses-01_task-testing_run-01_channels'
 
-    paths = _get_matched_basenames(bids_root=bids_root, subject='unknown')
+    bids_path_01 = BIDSPath(root=bids_root, subject='unknown')
+    paths = bids_path_01.match()
     assert len(paths) == 0
 
     # now test it with BIDSPath
