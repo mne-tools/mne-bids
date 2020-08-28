@@ -406,7 +406,7 @@ class BIDSPath(object):
         return self
 
     def match(self):
-        """Get a list of all matching basenames.
+        """Get a list of all matching paths in the root directory.
 
         Performs a search based on the entities that are set in the
         ``BIDSPath`` object. Requires a ``root`` attribute to be set.
