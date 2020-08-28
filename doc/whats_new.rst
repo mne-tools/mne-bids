@@ -77,7 +77,7 @@ API
 - Add ``check`` parameter and attribute to :class:`mne_bids.BIDSPath` that allows users to turn off entity checks by `Adam Li`_ (`#511 <https://github.com/mne-tools/mne-bids/pull/511>`_)
 - Add ``modality`` parameter and attribute to :class:`mne_bids.BIDSPath` that allows users to specify EEG, MEG, or iEEG datasets by `Adam Li`_ (`#514 <https://github.com/mne-tools/mne-bids/pull/514>`_)
 - Add ``modality`` to replace ``kind`` parameter to :func:`mne_bids.make_bids_folders` and :func:`mne_bids.read_raw_bids` that allows users to specify EEG, MEG, or iEEG datasets by `Adam Li`_ (`#514 <https://github.com/mne-tools/mne-bids/pull/514>`_)
-- :func:`mne_bids.write_raw_bids`, :func:`mne_bids.read_raw_bids`, :func:`mne_bids.get_matched_emptyroom` and :func:`mne_bids.get_head_mri_trans` now take in a :class:`mne_bids.BIDSPath` object for the ``bids_path`` kwarg, which should store the ``root`` and the ``modality`` by `Adam Li`_ (`#525 <https://github.com/mne-tools/mne-bids/pull/525>`_)
+- :func:`mne_bids.write_raw_bids`, :func:`mne_bids.read_raw_bids`, :func:`mne_bids.get_matched_empty_room` and :func:`mne_bids.get_head_mri_trans` now take in a :class:`mne_bids.BIDSPath` object for the ``bids_path`` kwarg, which should store the ``root`` and the ``modality`` by `Adam Li`_ (`#525 <https://github.com/mne-tools/mne-bids/pull/525>`_)
 
 
 .. _changes_0_4:
