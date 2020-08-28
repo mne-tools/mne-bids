@@ -828,7 +828,6 @@ def write_raw_bids(raw, bids_path, events_data=None,
         **must** have the ``.root`` attribute set. If the ``.modality``
         attribute is not set, it will be inferred from the recording modality
         found in ``raw``.
-
         Example: bids_path = BIDSPath(subject='01', session='01',
                                       task='testing', acquisition='01',
                                       run='01')`.
