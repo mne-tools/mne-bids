@@ -821,27 +821,26 @@ def write_raw_bids(raw, bids_path, events_data=None,
     Parameters
     ----------
     raw : instance of mne.io.Raw
-        The raw data. It must be an instance of mne.Raw. The data should not be
-        loaded from disk, i.e., raw.preload must be False.
+        The raw data. It must be an instance of `mne.io.Raw`. The data
+        should not be loaded from disk, i.e., ``raw.preload`` must be ``False``.
     bids_path : BIDSPath
-        The file to write. The :class:`mne_bids.BIDSPath` instance passed here
+        The file to write. The `mne_bids.BIDSPath` instance passed here
         **must** have the ``.root`` attribute set. If the ``.datatype``
         attribute is not set, it will be inferred from the recording data type
         found in ``raw``.
         Example::
 
             bids_path = BIDSPath(subject='01', session='01', task='testing',
-                                 acquisition='01', run='01')
+                                 acquisition='01', run='01', root='/data/BIDS')
 
-        This will write the following files in the correct subfolder of the
-        bids_root::
+        This will write the following files in the correct subfolder ``root``::
 
             sub-01_ses-01_task-testing_acq-01_run-01_meg.fif
             sub-01_ses-01_task-testing_acq-01_run-01_meg.json
             sub-01_ses-01_task-testing_acq-01_run-01_channels.tsv
             sub-01_ses-01_task-testing_acq-01_run-01_coordsystem.json
 
-        and the following one if events_data is not None::
+        and the following one if ``events_data`` is not ``None``::
 
             sub-01_ses-01_task-testing_acq-01_run-01_events.tsv
 
@@ -850,61 +849,62 @@ def write_raw_bids(raw, bids_path, events_data=None,
             participants.tsv
             scans.tsv
 
-        Note that the datatype 'meg' is automatically inferred from the raw
-        object and extension '.fif' is copied from raw.filenames.
+        Note that the datatype ``'meg'`` is automatically inferred from the raw
+        object and extension ``'.fif'`` is copied from ``raw.filenames``.
     events_data : str | pathlib.Path | array | None
         The events file. If a string or a Path object, specifies the path of
-        the events file. If an array, the MNE events array (shape n_events, 3).
-        If None, events will be inferred from the stim channel using
+        the events file. If an array, the MNE events array
+        (shape: ``(n_events, 3)``).
+        If ``None``, events will be inferred from the stim channel using
         `mne.find_events`.
     event_id : dict | None
-        The event id dict used to create a 'trial_type' column in events.tsv
+        The event ID dictionary used to create a `trial_type` column in
+        ``*_events.tsv``.
     anonymize : dict | None
-        If None (default), no anonymization is performed.
-        If dict, data will be anonymized depending on the keys provided with
-        the dict: `daysback` is a required key, `keep_his` is an optional key.
+        If `None` (default), no anonymization is performed.
+        If a dictionary, data will be anonymized depending on the dictionary
+        keys: ``daysback`` is a required key, ``keep_his`` is optional.
 
-        `daysback` : int
+        ``daysback`` : int
             Number of days by which to move back the recording date in time.
             In studies with multiple subjects the relative recording date
             differences between subjects can be kept by using the same number
-            of `daysback` for all subject anonymizations. `daysback` should be
-            great enough to shift the date prior to 1925 to conform with BIDS
-            anonymization rules.
+            of ``daysback`` for all subject anonymizations. ``daysback`` should
+            be great enough to shift the date prior to 1925 to conform with
+            BIDS anonymization rules.
 
-        `keep_his` : bool
-            By default (False), all subject information next to the recording
-            date will be overwritten as well. If True, keep subject information
-            apart from the recording date.
+        ``keep_his`` : bool
+            If ``False`` (default), all subject information next to the
+            recording date will be overwritten as well. If True, keep subject
+            information apart from the recording date.
 
     overwrite : bool
         Whether to overwrite existing files or data in files.
-        Defaults to False.
+        Defaults to ``False``.
 
-        If overwrite is True, any existing files with the same BIDS parameters
-        will be overwritten with the exception of the `participants.tsv` and
-        `scans.tsv` files. For these files, parts of pre-existing data that
-        match the current data will be replaced. For `participants.tsv`,
-        specifically, age, sex and hand fields will be overwritten, while
-        any added fields in the `participants.json` and `participants.tsv`
-        by a user will be kept.
-
-        If overwrite is False, no existing data will be overwritten or
+        If ``True``, any existing files with the same BIDS parameters
+        will be overwritten with the exception of the ``*_participants.tsv``
+        and ``*_scans.tsv`` files. For these files, parts of pre-existing data
+        that match the current data will be replaced. For
+        ``*_participants.tsv``, specifically, age, sex and hand fields will be
+        overwritten, while any manually added fields in ``participants.json``
+        and ``participants.tsv`` by a user will be retained.
+        If ``False``, no existing data will be overwritten or
         replaced.
     verbose : bool
-        If verbose is True, this will print a snippet of the sidecar files. If
-        False, no content will be printed.
+        If ``True``, this will print a snippet of the sidecar files. Otherwise,
+        no content will be printed.
 
     Returns
     -------
     bids_root : str
-        The path of the root of the BIDS compatible folder.
+        The path of the root of the BIDS-compatible folder.
 
     Notes
     -----
-    For the participants.tsv file, the raw.info['subject_info'] should be
-    updated and raw.info['meas_date'] should not be None to compute the age
-    of the participant correctly.
+    For the ``*_participants.tsv`` file, ``raw.info['subject_info']`` should be
+    updated and ``raw.info['meas_date']`` should not be ``None`` to allow
+    computation of each participant's age correctly.
 
     See Also
     --------
