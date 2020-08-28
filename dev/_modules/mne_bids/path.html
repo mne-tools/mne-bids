@@ -127,7 +127,7 @@
 <span class="kn">from</span> <span class="nn">mne_bids.config</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">ALLOWED_PATH_ENTITIES</span><span class="p">,</span> <span class="n">ALLOWED_FILENAME_EXTENSIONS</span><span class="p">,</span>
     <span class="n">ALLOWED_FILENAME_SUFFIX</span><span class="p">,</span> <span class="n">ALLOWED_PATH_ENTITIES_SHORT</span><span class="p">,</span>
-    <span class="n">ALLOWED_MODALITIES</span><span class="p">,</span> <span class="n">SUFFIX_TO_MODALITY</span><span class="p">,</span> <span class="n">ALLOWED_MODALITY_EXTENSIONS</span><span class="p">)</span>
+    <span class="n">ALLOWED_DATATYPES</span><span class="p">,</span> <span class="n">SUFFIX_TO_DATATYPE</span><span class="p">,</span> <span class="n">ALLOWED_DATATYPE_EXTENSIONS</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">mne_bids.utils</span> <span class="kn">import</span> <span class="p">(</span><span class="n">_check_key_val</span><span class="p">,</span> <span class="n">_check_empty_room_basename</span><span class="p">,</span>
                             <span class="n">_check_types</span><span class="p">,</span> <span class="n">param_regex</span><span class="p">,</span>
                             <span class="n">_ensure_tuple</span><span class="p">)</span>
@@ -179,8 +179,8 @@
 <span class="sd">        &#39;behav&#39;, &#39;phsyio&#39;, &#39;stim&#39;</span>
 <span class="sd">    extension : str | None</span>
 <span class="sd">        The extension of the filename. E.g., ``&#39;.json&#39;``.</span>
-<span class="sd">    modality : str</span>
-<span class="sd">        The &quot;modality&quot; of folder being created at the end of the hierarchy.</span>
+<span class="sd">    datatype : str</span>
+<span class="sd">        The &quot;datatype&quot; of folder being created at the end of the hierarchy.</span>
 <span class="sd">        E.g., &quot;anat&quot;, &quot;func&quot;, &quot;eeg&quot;, &quot;meg&quot;, &quot;ieeg&quot;, etc.</span>
 <span class="sd">    root : str | None</span>
 <span class="sd">        The root for the filename to be created. E.g., a path to the folder</span>
@@ -226,8 +226,8 @@
 <span class="sd">    &gt;&gt;&gt; print(new_bids_path)</span>
 <span class="sd">    sub-test2/ses-one/ieeg/sub-test2_ses-one_task-mytask_ieeg.edf</span>
 <span class="sd">    &gt;&gt;&gt; new_bids_path.update(suffix=&#39;channels&#39;, extension=&#39;.tsv&#39;)</span>
-<span class="sd">    &gt;&gt;&gt; # setting suffix without an identifiable modality will</span>
-<span class="sd">    &gt;&gt;&gt; # result in a wildcard at the modality directory level</span>
+<span class="sd">    &gt;&gt;&gt; # setting suffix without an identifiable datatype will</span>
+<span class="sd">    &gt;&gt;&gt; # result in a wildcard at the datatype directory level</span>
 <span class="sd">    &gt;&gt;&gt; print(new_bids_path)</span>
 <span class="sd">    sub-test2/ses-one/*/sub-test2_ses-one_task-mytask_channels.tsv</span>
 <span class="sd">    &gt;&gt;&gt; # set a bids_root</span>
@@ -243,7 +243,7 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">task</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">acquisition</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">run</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">processing</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                  <span class="n">recording</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">space</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 <span class="n">suffix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">modality</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+                 <span class="n">suffix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">ii</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="p">[</span><span class="n">subject</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="n">task</span><span class="p">,</span>
                                      <span class="n">acquisition</span><span class="p">,</span> <span class="n">run</span><span class="p">,</span> <span class="n">processing</span><span class="p">,</span>
                                      <span class="n">recording</span><span class="p">,</span> <span class="n">space</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">suffix</span><span class="p">,</span>
@@ -255,7 +255,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="n">subject</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="n">task</span><span class="p">,</span>
                     <span class="n">acquisition</span><span class="o">=</span><span class="n">acquisition</span><span class="p">,</span> <span class="n">run</span><span class="o">=</span><span class="n">run</span><span class="p">,</span> <span class="n">processing</span><span class="o">=</span><span class="n">processing</span><span class="p">,</span>
                     <span class="n">recording</span><span class="o">=</span><span class="n">recording</span><span class="p">,</span> <span class="n">space</span><span class="o">=</span><span class="n">space</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="n">split</span><span class="p">,</span>
-                    <span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">,</span> <span class="n">modality</span><span class="o">=</span><span class="n">modality</span><span class="p">,</span>
+                    <span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">datatype</span><span class="p">,</span>
                     <span class="n">suffix</span><span class="o">=</span><span class="n">suffix</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="n">extension</span><span class="p">)</span>
 
     <span class="nd">@property</span>
@@ -271,7 +271,7 @@
             <span class="p">(</span><span class="s1">&#39;space&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">space</span><span class="p">),</span>
             <span class="p">(</span><span class="s1">&#39;recording&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">recording</span><span class="p">),</span>
             <span class="p">(</span><span class="s1">&#39;split&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">split</span><span class="p">),</span>
-            <span class="p">(</span><span class="s1">&#39;modality&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">modality</span><span class="p">)</span>
+            <span class="p">(</span><span class="s1">&#39;datatype&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span><span class="p">)</span>
         <span class="p">])</span>
 
     <span class="nd">@property</span>
@@ -279,7 +279,7 @@
         <span class="sd">&quot;&quot;&quot;Path basename.&quot;&quot;&quot;</span>
         <span class="n">basename</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">entities</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="k">if</span> <span class="n">val</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">key</span> <span class="o">!=</span> <span class="s1">&#39;modality&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">val</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">key</span> <span class="o">!=</span> <span class="s1">&#39;datatype&#39;</span><span class="p">:</span>
                 <span class="c1"># convert certain keys to shorthand</span>
                 <span class="n">long_to_short_entity</span> <span class="o">=</span> <span class="p">{</span>
                     <span class="n">val</span><span class="p">:</span> <span class="n">key</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span>
@@ -353,11 +353,11 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">data_path</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;ses-</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="c1"># file-suffix will allow &#39;meg&#39;, &#39;eeg&#39;, &#39;ieeg&#39;, &#39;anat&#39;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">modality</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">data_path</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">modality</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">suffix</span> <span class="ow">in</span> <span class="n">SUFFIX_TO_MODALITY</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">data_path</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">suffix</span> <span class="ow">in</span> <span class="n">SUFFIX_TO_DATATYPE</span><span class="p">:</span>
             <span class="c1"># infers path suffix from the suffix</span>
-            <span class="n">data_path</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="n">SUFFIX_TO_MODALITY</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">suffix</span><span class="p">])</span>
+            <span class="n">data_path</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="n">SUFFIX_TO_DATATYPE</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">suffix</span><span class="p">])</span>
 
         <span class="c1"># account for MEG data that are directory-based</span>
         <span class="c1"># else, all other file paths attempt to match</span>
@@ -380,9 +380,9 @@
                 <span class="c1"># FIXME e.g. with FIFF data split across multiple FIXME files.</span>
                 <span class="c1"># if extension is not specified and no unique file path</span>
                 <span class="c1"># return filepath of the actual dataset for MEG/EEG/iEEG data</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">suffix</span> <span class="ow">in</span> <span class="n">ALLOWED_MODALITIES</span><span class="p">:</span>
-                    <span class="c1"># now only use valid modality extension</span>
-                    <span class="n">valid_exts</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">ALLOWED_MODALITY_EXTENSIONS</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="p">[])</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">suffix</span> <span class="ow">in</span> <span class="n">ALLOWED_DATATYPES</span><span class="p">:</span>
+                    <span class="c1"># now only use valid datatype extension</span>
+                    <span class="n">valid_exts</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">ALLOWED_DATATYPE_EXTENSIONS</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="p">[])</span>
                     <span class="n">matching_paths</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">matching_paths</span>
                                       <span class="k">if</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">p</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="n">valid_exts</span><span class="p">]</span>
 
@@ -519,18 +519,18 @@
                              <span class="s1">&#39;subject and session entities. BIDSPath &#39;</span>
                              <span class="sa">f</span><span class="s1">&#39;currently contains </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">entities</span><span class="si">}</span><span class="s1">.&#39;</span><span class="p">)</span>
 
-        <span class="c1"># error check modality</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">modality</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> \
-                <span class="bp">self</span><span class="o">.</span><span class="n">modality</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ALLOWED_MODALITIES</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;&quot;modality&quot; can only be one of &#39;</span>
-                             <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">ALLOWED_MODALITIES</span><span class="si">}</span><span class="s1">. You passed in &#39;</span>
-                             <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">modality</span><span class="si">}</span><span class="s1">, which is not &#39;</span>
+        <span class="c1"># error check datatype</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> \
+                <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ALLOWED_DATATYPES</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;&quot;datatype&quot; can only be one of &#39;</span>
+                             <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">ALLOWED_DATATYPES</span><span class="si">}</span><span class="s1">. You passed in &#39;</span>
+                             <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">datatype</span><span class="si">}</span><span class="s1">, which is not &#39;</span>
                              <span class="sa">f</span><span class="s1">&#39;BIDS compliant. &#39;</span><span class="p">)</span>
 
-        <span class="c1"># infer modality if suffix is uniquely the modality</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">modality</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> \
+        <span class="c1"># infer datatype if suffix is uniquely the datatype</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> \
                 <span class="bp">self</span><span class="o">.</span><span class="n">suffix</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;eeg&#39;</span><span class="p">,</span> <span class="s1">&#39;meg&#39;</span><span class="p">,</span> <span class="s1">&#39;ieeg&#39;</span><span class="p">,</span> <span class="s1">&#39;T1w&#39;</span><span class="p">]:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">modality</span> <span class="o">=</span> <span class="n">SUFFIX_TO_MODALITY</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">suffix</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="n">SUFFIX_TO_DATATYPE</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">suffix</span><span class="p">]</span>
 
         <span class="c1"># perform deeper check if user has it turned on</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">check</span><span class="p">:</span>
@@ -562,15 +562,15 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># extract relevant entities to find filepath</span>
     <span class="n">sub</span><span class="p">,</span> <span class="n">ses</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">subject</span><span class="p">,</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">session</span>
-    <span class="n">modality</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">modality</span>
+    <span class="n">datatype</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span>
     <span class="n">basename</span><span class="p">,</span> <span class="n">bids_root</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">basename</span><span class="p">,</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">root</span>
 
-    <span class="k">if</span> <span class="n">modality</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">modality</span> <span class="o">=</span> <span class="n">_infer_modality</span><span class="p">(</span><span class="n">bids_root</span><span class="o">=</span><span class="n">bids_root</span><span class="p">,</span>
+    <span class="k">if</span> <span class="n">datatype</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">datatype</span> <span class="o">=</span> <span class="n">_infer_datatype</span><span class="p">(</span><span class="n">bids_root</span><span class="o">=</span><span class="n">bids_root</span><span class="p">,</span>
                                    <span class="n">sub</span><span class="o">=</span><span class="n">sub</span><span class="p">,</span> <span class="n">ses</span><span class="o">=</span><span class="n">ses</span><span class="p">)</span>
 
     <span class="n">data_dir</span> <span class="o">=</span> <span class="n">make_bids_folders</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="n">sub</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">ses</span><span class="p">,</span>
-                                 <span class="n">modality</span><span class="o">=</span><span class="n">modality</span><span class="p">,</span> <span class="n">bids_root</span><span class="o">=</span><span class="n">bids_root</span><span class="p">,</span>
+                                 <span class="n">datatype</span><span class="o">=</span><span class="n">datatype</span><span class="p">,</span> <span class="n">bids_root</span><span class="o">=</span><span class="n">bids_root</span><span class="p">,</span>
                                  <span class="n">make_dir</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
     <span class="c1"># For BTI data, just return the directory with a &#39;.pdf&#39; extension</span>
@@ -587,8 +587,8 @@
             <span class="n">search_str</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">search_str</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">ses</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">search_str</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">search_str</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;ses-</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">modality</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">search_str</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">search_str</span><span class="p">,</span> <span class="n">modality</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">datatype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">search_str</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">search_str</span><span class="p">,</span> <span class="n">datatype</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">search_str</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">search_str</span><span class="p">,</span> <span class="s1">&#39;**&#39;</span><span class="p">)</span>
         <span class="n">search_str</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">search_str</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">basename</span><span class="si">}</span><span class="s1">*&#39;</span><span class="p">)</span>
@@ -656,7 +656,7 @@
                     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;|</span><span class="si">{}</span><span class="s1"> </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">branchlen</span> <span class="o">*</span> <span class="s1">&#39;---&#39;</span><span class="p">,</span> <span class="n">file</span><span class="p">))</span></div>
 
 
-<div class="viewcode-block" id="make_bids_folders"><a class="viewcode-back" href="../../generated/mne_bids.make_bids_folders.html#mne_bids.make_bids_folders">[docs]</a><span class="k">def</span> <span class="nf">make_bids_folders</span><span class="p">(</span><span class="n">subject</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">modality</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bids_root</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<div class="viewcode-block" id="make_bids_folders"><a class="viewcode-back" href="../../generated/mne_bids.make_bids_folders.html#mne_bids.make_bids_folders">[docs]</a><span class="k">def</span> <span class="nf">make_bids_folders</span><span class="p">(</span><span class="n">subject</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bids_root</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                       <span class="n">make_dir</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Create a BIDS folder hierarchy.</span>
 
@@ -667,8 +667,8 @@
 <span class="sd">    ----------</span>
 <span class="sd">    subject : str</span>
 <span class="sd">        The subject ID. Corresponds to &quot;sub&quot;.</span>
-<span class="sd">    modality : str</span>
-<span class="sd">        The &quot;modality&quot; of folder being created at the end of the hierarchy. </span>
+<span class="sd">    datatype : str</span>
+<span class="sd">        The &quot;datatype&quot; of folder being created at the end of the hierarchy.</span>
 <span class="sd">        E.g., &quot;anat&quot;, &quot;func&quot;, &quot;eeg&quot;, &quot;meg&quot;, &quot;ieeg&quot;, etc.</span>
 <span class="sd">    session : str | None</span>
 <span class="sd">        The session for a item. Corresponds to &quot;ses&quot;.</span>
@@ -695,12 +695,12 @@
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; make_bids_folders(&#39;sub_01&#39;, session=&#39;mysession&#39;,</span>
-<span class="sd">                          modality=&#39;meg&#39;, bids_root=&#39;/path/to/project&#39;,</span>
+<span class="sd">                          datatype=&#39;meg&#39;, bids_root=&#39;/path/to/project&#39;,</span>
 <span class="sd">                          make_dir=False)</span>
 <span class="sd">    &#39;/path/to/project/sub-sub_01/ses-mysession/meg&#39;</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>  <span class="c1"># noqa</span>
-    <span class="n">_check_types</span><span class="p">((</span><span class="n">subject</span><span class="p">,</span> <span class="n">modality</span><span class="p">,</span> <span class="n">session</span><span class="p">))</span>
+    <span class="n">_check_types</span><span class="p">((</span><span class="n">subject</span><span class="p">,</span> <span class="n">datatype</span><span class="p">,</span> <span class="n">session</span><span class="p">))</span>
     <span class="k">if</span> <span class="n">bids_root</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">bids_root</span> <span class="o">=</span> <span class="n">_path_to_str</span><span class="p">(</span><span class="n">bids_root</span><span class="p">)</span>
 
@@ -710,8 +710,8 @@
     <span class="n">path</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s1">&#39;sub-</span><span class="si">{</span><span class="n">subject</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
         <span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;ses-</span><span class="si">{</span><span class="n">session</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">modality</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">modality</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">datatype</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">datatype</span><span class="p">)</span>
     <span class="n">path</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="o">*</span><span class="n">path</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bids_root</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
         <span class="n">path</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bids_root</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
@@ -908,12 +908,12 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Take all possible &quot;modalities&quot; from &quot;entity&quot; table</span>
     <span class="c1"># (Appendix in BIDS spec)</span>
-    <span class="n">modality_list</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;anat&#39;</span><span class="p">,</span> <span class="s1">&#39;func&#39;</span><span class="p">,</span> <span class="s1">&#39;dwi&#39;</span><span class="p">,</span> <span class="s1">&#39;fmap&#39;</span><span class="p">,</span> <span class="s1">&#39;beh&#39;</span><span class="p">,</span>
+    <span class="n">datatype_list</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;anat&#39;</span><span class="p">,</span> <span class="s1">&#39;func&#39;</span><span class="p">,</span> <span class="s1">&#39;dwi&#39;</span><span class="p">,</span> <span class="s1">&#39;fmap&#39;</span><span class="p">,</span> <span class="s1">&#39;beh&#39;</span><span class="p">,</span>
                      <span class="s1">&#39;meg&#39;</span><span class="p">,</span> <span class="s1">&#39;eeg&#39;</span><span class="p">,</span> <span class="s1">&#39;ieeg&#39;</span><span class="p">)</span>
     <span class="n">modalities</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">root</span><span class="p">,</span> <span class="n">dirs</span><span class="p">,</span> <span class="n">files</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">bids_root</span><span class="p">):</span>
         <span class="k">for</span> <span class="nb">dir</span> <span class="ow">in</span> <span class="n">dirs</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">dir</span> <span class="ow">in</span> <span class="n">modality_list</span> <span class="ow">and</span> <span class="nb">dir</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">modalities</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">dir</span> <span class="ow">in</span> <span class="n">datatype_list</span> <span class="ow">and</span> <span class="nb">dir</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">modalities</span><span class="p">:</span>
                 <span class="n">modalities</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">dir</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">modalities</span></div>
@@ -1123,7 +1123,7 @@
     <span class="k">return</span> <span class="n">available_modalities</span>
 
 
-<span class="k">def</span> <span class="nf">_infer_modality</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">bids_root</span><span class="p">,</span> <span class="n">sub</span><span class="p">,</span> <span class="n">ses</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_infer_datatype</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">bids_root</span><span class="p">,</span> <span class="n">sub</span><span class="p">,</span> <span class="n">ses</span><span class="p">):</span>
     <span class="c1"># Check which suffix is available for this particular</span>
     <span class="c1"># subject &amp; session. If we get no or multiple hits, throw an error.</span>
 
@@ -1136,7 +1136,7 @@
     <span class="k">if</span> <span class="ow">not</span> <span class="n">modalities</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;No electrophysiological data found.&#39;</span><span class="p">)</span>
     <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">modalities</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">:</span>
-        <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Found data of more than one recording modality. Please &#39;</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Found data of more than one recording datatype. Please &#39;</span>
                <span class="sa">f</span><span class="s1">&#39;pass the `suffix` parameter to specify which data to load. &#39;</span>
                <span class="sa">f</span><span class="s1">&#39;Found the following modalitiess: </span><span class="si">{</span><span class="n">modalities</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
@@ -1258,7 +1258,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-08-27.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-08-28.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
     </p>
   </div>

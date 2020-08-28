@@ -118,7 +118,7 @@
 <p class="admonition-title">Warning</p>
 <ul class="simple">
 <li><p>The original file is simply copied over if the original
-file format is BIDS-supported for that modality. Otherwise,
+file format is BIDS-supported for that datatype. Otherwise,
 this function will convert to a BIDS-supported file format
 while warning the user. For EEG and iEEG data, conversion
 will be to BrainVision format, for MEG conversion will be
@@ -156,7 +156,7 @@ bids_root:</p>
 <span class="n">scans</span><span class="o">.</span><span class="n">tsv</span>
 </pre></div>
 </div>
-<p>Note that the modality ‘meg’ is automatically inferred from the raw
+<p>Note that the datatype ‘meg’ is automatically inferred from the raw
 object and extension ‘.fif’ is copied from raw.filenames.</p>
 </dd>
 <dt><strong>bids_root</strong><span class="classifier">str | pathlib.Path</span></dt><dd><p>The path of the root of the BIDS compatible folder. The session and
@@ -264,7 +264,7 @@ of the participant correctly.</p>
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-08-27.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-08-28.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
     </p>
   </div>

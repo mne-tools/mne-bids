@@ -122,7 +122,7 @@
 <span class="kn">from</span> <span class="nn">mne.externals.tempita</span> <span class="kn">import</span> <span class="n">Template</span>
 <span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="n">warn</span>
 
-<span class="kn">from</span> <span class="nn">mne_bids.config</span> <span class="kn">import</span> <span class="n">DOI</span><span class="p">,</span> <span class="n">ALLOWED_MODALITIES</span>
+<span class="kn">from</span> <span class="nn">mne_bids.config</span> <span class="kn">import</span> <span class="n">DOI</span><span class="p">,</span> <span class="n">ALLOWED_DATATYPES</span>
 <span class="kn">from</span> <span class="nn">mne_bids.tsv_handler</span> <span class="kn">import</span> <span class="n">_from_tsv</span>
 <span class="kn">from</span> <span class="nn">mne_bids.path</span> <span class="kn">import</span> <span class="p">(</span><span class="n">get_modalities</span><span class="p">,</span> <span class="n">get_entity_vals</span><span class="p">,</span> <span class="n">BIDSPath</span><span class="p">,</span>
                            <span class="n">_parse_ext</span><span class="p">,</span> <span class="n">_find_matching_sidecar</span><span class="p">,</span>
@@ -221,7 +221,7 @@
     <span class="sd">&quot;&quot;&quot;{{_summarize_participant_sex(sexs)}};</span>
 <span class="sd">{{_summarize_participant_hand(hands)}}; {{_range_str(min_age, max_age, mean_age, std_age, n_age_unknown, &#39;age&#39;)}}&quot;&quot;&quot;</span>  <span class="c1"># noqa</span>
 
-<span class="n">MODALITY_AGNOSTIC_TEMPLATE</span> <span class="o">=</span> \
+<span class="n">DATATYPE_AGNOSTIC_TEMPLATE</span> <span class="o">=</span> \
     <span class="sd">&quot;&quot;&quot;Data was recorded using a {{_pretty_str(system)}} system</span>
 <span class="sd">{{if manufacturer}}({{_pretty_str(manufacturer)}} manufacturer){{endif}}</span>
 <span class="sd">sampled at {{_pretty_str(sfreq)}} Hz</span>
@@ -435,8 +435,8 @@
         <span class="k">for</span> <span class="n">scan</span> <span class="ow">in</span> <span class="n">scans</span><span class="p">:</span>
             <span class="c1"># summarize metadata of recordings</span>
             <span class="n">bids_path</span><span class="p">,</span> <span class="n">ext</span> <span class="o">=</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">scan</span><span class="p">)</span>
-            <span class="n">modality</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">scan</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">modality</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ALLOWED_MODALITIES</span><span class="p">:</span>
+            <span class="n">datatype</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">scan</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">datatype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ALLOWED_DATATYPES</span><span class="p">:</span>
                 <span class="k">continue</span>
 
             <span class="n">n_scans</span> <span class="o">+=</span> <span class="mi">1</span>
@@ -450,7 +450,7 @@
                 <span class="k">continue</span>
 
             <span class="n">sidecar_fname</span> <span class="o">=</span> <span class="n">_find_matching_sidecar</span><span class="p">(</span><span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span><span class="p">,</span>
-                                                   <span class="n">suffix</span><span class="o">=</span><span class="n">modality</span><span class="p">,</span>
+                                                   <span class="n">suffix</span><span class="o">=</span><span class="n">datatype</span><span class="p">,</span>
                                                    <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.json&#39;</span><span class="p">)</span>
             <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">sidecar_fname</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fin</span><span class="p">:</span>
                 <span class="n">sidecar_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fin</span><span class="p">)</span>
@@ -523,8 +523,8 @@
         <span class="k">for</span> <span class="n">scan</span> <span class="ow">in</span> <span class="n">scans</span><span class="p">:</span>
             <span class="c1"># summarize metadata of recordings</span>
             <span class="n">bids_path</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">scan</span><span class="p">)</span>
-            <span class="n">modality</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">scan</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">modality</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;meg&#39;</span><span class="p">,</span> <span class="s1">&#39;eeg&#39;</span><span class="p">,</span> <span class="s1">&#39;ieeg&#39;</span><span class="p">]:</span>
+            <span class="n">datatype</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">scan</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">datatype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;meg&#39;</span><span class="p">,</span> <span class="s1">&#39;eeg&#39;</span><span class="p">,</span> <span class="s1">&#39;ieeg&#39;</span><span class="p">]:</span>
                 <span class="k">continue</span>
 
             <span class="c1"># convert to BIDS Path</span>
@@ -570,7 +570,7 @@
 
 <span class="sd">      - dataset_description.json file</span>
 <span class="sd">      - (optional) participants.tsv file</span>
-<span class="sd">      - (optional) modality-agnostic files for (M/I)EEG data,</span>
+<span class="sd">      - (optional) datatype-agnostic files for (M/I)EEG data,</span>
 <span class="sd">        which reads files from the ``*_scans.tsv`` file.</span>
 
 <span class="sd">    Parameters</span>
@@ -595,13 +595,13 @@
 
     <span class="c1"># only summarize allowed modalities (MEG/EEG/iEEG) data</span>
     <span class="c1"># map them to a pretty looking string</span>
-    <span class="n">modality_map</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">datatype_map</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s1">&#39;meg&#39;</span><span class="p">:</span> <span class="s1">&#39;MEG&#39;</span><span class="p">,</span>
         <span class="s1">&#39;eeg&#39;</span><span class="p">:</span> <span class="s1">&#39;EEG&#39;</span><span class="p">,</span>
         <span class="s1">&#39;ieeg&#39;</span><span class="p">:</span> <span class="s1">&#39;iEEG&#39;</span><span class="p">,</span>
     <span class="p">}</span>
-    <span class="n">modalities</span> <span class="o">=</span> <span class="p">[</span><span class="n">modality_map</span><span class="p">[</span><span class="n">modality</span><span class="p">]</span> <span class="k">for</span> <span class="n">modality</span> <span class="ow">in</span> <span class="n">modalities</span>
-                  <span class="k">if</span> <span class="n">modality</span> <span class="ow">in</span> <span class="n">modality_map</span><span class="o">.</span><span class="n">keys</span><span class="p">()]</span>
+    <span class="n">modalities</span> <span class="o">=</span> <span class="p">[</span><span class="n">datatype_map</span><span class="p">[</span><span class="n">datatype</span><span class="p">]</span> <span class="k">for</span> <span class="n">datatype</span> <span class="ow">in</span> <span class="n">modalities</span>
+                  <span class="k">if</span> <span class="n">datatype</span> <span class="ow">in</span> <span class="n">datatype_map</span><span class="o">.</span><span class="n">keys</span><span class="p">()]</span>
 
     <span class="c1"># REQUIRED: dataset_description.json summary</span>
     <span class="n">dataset_summary</span> <span class="o">=</span> <span class="n">_summarize_dataset</span><span class="p">(</span><span class="n">bids_root</span><span class="p">)</span>
@@ -628,9 +628,9 @@
     <span class="n">dataset_summary</span><span class="p">[</span><span class="s1">&#39;PARTICIPANTS_TEMPLATE&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">participant_template</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">scans_summary</span><span class="p">:</span>
-        <span class="n">modality_agnostic_template</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="n">datatype_agnostic_template</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">modality_agnostic_template</span> <span class="o">=</span> <span class="n">MODALITY_AGNOSTIC_TEMPLATE</span>
+        <span class="n">datatype_agnostic_template</span> <span class="o">=</span> <span class="n">DATATYPE_AGNOSTIC_TEMPLATE</span>
 
     <span class="n">dataset_summary</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
         <span class="s1">&#39;system&#39;</span><span class="p">:</span> <span class="n">modalities</span><span class="p">,</span>
@@ -644,7 +644,7 @@
     <span class="c1"># lower-case templates are &quot;Recommended&quot;,</span>
     <span class="c1"># while upper-case templates are &quot;Required&quot;.</span>
     <span class="n">content</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">FUNCTION_TEMPLATE</span><span class="si">}{</span><span class="n">BIDS_DATASET_TEMPLATE</span><span class="si">}</span><span class="s1">&#39;</span> \
-              <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">modality_agnostic_template</span><span class="si">}</span><span class="s1">&#39;</span>
+              <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">datatype_agnostic_template</span><span class="si">}</span><span class="s1">&#39;</span>
 
     <span class="n">paragraph</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="n">content</span><span class="p">)</span>
     <span class="n">paragraph</span> <span class="o">=</span> <span class="n">paragraph</span><span class="o">.</span><span class="n">substitute</span><span class="p">(</span><span class="o">**</span><span class="n">dataset_summary</span><span class="p">,</span>
@@ -668,7 +668,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-08-27.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-08-28.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
     </p>
   </div>

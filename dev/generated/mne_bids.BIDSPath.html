@@ -112,7 +112,7 @@
 <h1>mne_bids.BIDSPath<a class="headerlink" href="#mne-bids-bidspath" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="mne_bids.BIDSPath">
-<em class="property">class </em><code class="sig-prename descclassname">mne_bids.</code><code class="sig-name descname">BIDSPath</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">subject</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">task</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">acquisition</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">run</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">processing</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">recording</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">space</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">split</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">root</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">suffix</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">extension</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">modality</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">check</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/path.html#BIDSPath"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.BIDSPath" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">mne_bids.</code><code class="sig-name descname">BIDSPath</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">subject</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">task</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">acquisition</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">run</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">processing</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">recording</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">space</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">split</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">root</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">suffix</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">extension</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">datatype</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">check</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/path.html#BIDSPath"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.BIDSPath" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a partial/full BIDS filepath from its component parts.</p>
 <p>BIDS filename prefixes have one or more pieces of metadata in them. They
 must follow a particular order, which is followed by this function. This
@@ -155,7 +155,7 @@ The following filename suffix’s are accepted:
 </dd>
 <dt><strong>extension</strong><span class="classifier">str | None</span></dt><dd><p>The extension of the filename. E.g., <code class="docutils literal notranslate"><span class="pre">'.json'</span></code>.</p>
 </dd>
-<dt><strong>modality</strong><span class="classifier">str</span></dt><dd><p>The “modality” of folder being created at the end of the hierarchy.
+<dt><strong>datatype</strong><span class="classifier">str</span></dt><dd><p>The “datatype” of folder being created at the end of the hierarchy.
 E.g., “anat”, “func”, “eeg”, “meg”, “ieeg”, etc.</p>
 </dd>
 <dt><strong>root</strong><span class="classifier">str | None</span></dt><dd><p>The root for the filename to be created. E.g., a path to the folder
@@ -185,8 +185,8 @@ current BIDS standard. Defaults to True.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">new_bids_path</span><span class="p">)</span>
 <span class="go">sub-test2/ses-one/ieeg/sub-test2_ses-one_task-mytask_ieeg.edf</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">new_bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;channels&#39;</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.tsv&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c1"># setting suffix without an identifiable modality will</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c1"># result in a wildcard at the modality directory level</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># setting suffix without an identifiable datatype will</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># result in a wildcard at the datatype directory level</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">new_bids_path</span><span class="p">)</span>
 <span class="go">sub-test2/ses-one/*/sub-test2_ses-one_task-mytask_channels.tsv</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># set a bids_root</span>
@@ -386,7 +386,7 @@ instantiation. Defaults to <code class="docutils literal notranslate"><span clas
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-08-27.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-08-28.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
     </p>
   </div>

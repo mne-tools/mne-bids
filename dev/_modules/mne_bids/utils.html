@@ -198,23 +198,23 @@
     <span class="k">return</span> <span class="n">mapping</span>
 
 
-<span class="k">def</span> <span class="nf">_handle_modality</span><span class="p">(</span><span class="n">raw</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Get modality.&quot;&quot;&quot;</span>
+<span class="k">def</span> <span class="nf">_handle_datatype</span><span class="p">(</span><span class="n">raw</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Get datatype.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="s1">&#39;eeg&#39;</span> <span class="ow">in</span> <span class="n">raw</span> <span class="ow">and</span> <span class="p">(</span><span class="s1">&#39;ecog&#39;</span> <span class="ow">in</span> <span class="n">raw</span> <span class="ow">or</span> <span class="s1">&#39;seeg&#39;</span> <span class="ow">in</span> <span class="n">raw</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Both EEG and iEEG channels found in data.&#39;</span>
                          <span class="s1">&#39;There is currently no specification on how&#39;</span>
                          <span class="s1">&#39;to handle this data. Please proceed manually.&#39;</span><span class="p">)</span>
     <span class="k">elif</span> <span class="s1">&#39;meg&#39;</span> <span class="ow">in</span> <span class="n">raw</span><span class="p">:</span>
-        <span class="n">modality</span> <span class="o">=</span> <span class="s1">&#39;meg&#39;</span>
+        <span class="n">datatype</span> <span class="o">=</span> <span class="s1">&#39;meg&#39;</span>
     <span class="k">elif</span> <span class="s1">&#39;ecog&#39;</span> <span class="ow">in</span> <span class="n">raw</span> <span class="ow">or</span> <span class="s1">&#39;seeg&#39;</span> <span class="ow">in</span> <span class="n">raw</span><span class="p">:</span>
-        <span class="n">modality</span> <span class="o">=</span> <span class="s1">&#39;ieeg&#39;</span>
+        <span class="n">datatype</span> <span class="o">=</span> <span class="s1">&#39;ieeg&#39;</span>
     <span class="k">elif</span> <span class="s1">&#39;eeg&#39;</span> <span class="ow">in</span> <span class="n">raw</span><span class="p">:</span>
-        <span class="n">modality</span> <span class="o">=</span> <span class="s1">&#39;eeg&#39;</span>
+        <span class="n">datatype</span> <span class="o">=</span> <span class="s1">&#39;eeg&#39;</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Neither MEG/EEG/iEEG channels found in data.&#39;</span>
                          <span class="s1">&#39;Please use raw.set_channel_types to set the &#39;</span>
                          <span class="s1">&#39;channel types in the data.&#39;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">modality</span>
+    <span class="k">return</span> <span class="n">datatype</span>
 
 
 <span class="k">def</span> <span class="nf">_age_on_date</span><span class="p">(</span><span class="n">bday</span><span class="p">,</span> <span class="n">exp_date</span><span class="p">):</span>
@@ -577,7 +577,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-08-27.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-08-28.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
     </p>
   </div>

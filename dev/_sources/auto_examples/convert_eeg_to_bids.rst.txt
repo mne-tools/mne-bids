@@ -142,10 +142,10 @@ of the directory tree.
     |--------------- S002R12.edf
     |--------------- S002R04.edf
     |------------ S001/
-    |--------------- S001R12.edf
-    |--------------- S001R04.edf
-    |--------------- S001R02.edf
     |--------------- S001R08.edf
+    |--------------- S001R12.edf
+    |--------------- S001R02.edf
+    |--------------- S001R04.edf
 
 
 
@@ -289,7 +289,7 @@ which are however optional. The required inputs are:
     Save raw data to a BIDS-compliant folder structure.
 
         .. warning:: * The original file is simply copied over if the original
-                       file format is BIDS-supported for that modality. Otherwise,
+                       file format is BIDS-supported for that datatype. Otherwise,
                        this function will convert to a BIDS-supported file format
                        while warning the user. For EEG and iEEG data, conversion
                        will be to BrainVision format, for MEG conversion will be
@@ -327,7 +327,7 @@ which are however optional. The required inputs are:
                 participants.tsv
                 scans.tsv
 
-            Note that the modality 'meg' is automatically inferred from the raw
+            Note that the datatype 'meg' is automatically inferred from the raw
             object and extension '.fif' is copied from raw.filenames.
         bids_root : str | pathlib.Path
             The path of the root of the BIDS compatible folder. The session and
@@ -608,19 +608,19 @@ What does our fresh BIDS directory look like?
  .. code-block:: none
 
     |eegmmidb_bids_eeg_example/
+    |--- dataset_description.json
+    |--- participants.json
     |--- README
     |--- participants.tsv
-    |--- participants.json
-    |--- dataset_description.json
     |--- sub-001/
     |------ sub-001_scans.tsv
     |------ eeg/
     |--------- sub-001_task-RestEyesClosed_eeg.edf
     |--------- sub-001_task-RestEyesClosed_eeg.json
-    |--------- sub-001_electrodes.tsv
-    |--------- sub-001_task-RestEyesClosed_channels.tsv
     |--------- sub-001_task-RestEyesClosed_events.tsv
     |--------- sub-001_coordsystem.json
+    |--------- sub-001_electrodes.tsv
+    |--------- sub-001_task-RestEyesClosed_channels.tsv
 
 
 
@@ -699,7 +699,7 @@ Command line tool: https://www.npmjs.com/package/bids-validator
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  0.136 seconds)
+   **Total running time of the script:** ( 0 minutes  0.128 seconds)
 
 
 .. _sphx_glr_download_auto_examples_convert_eeg_to_bids.py:
