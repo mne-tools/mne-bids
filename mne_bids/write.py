@@ -822,7 +822,8 @@ def write_raw_bids(raw, bids_path, events_data=None,
     ----------
     raw : instance of mne.io.Raw
         The raw data. It must be an instance of `mne.io.Raw`. The data
-        should not be loaded from disk, i.e., ``raw.preload`` must be ``False``.
+        should not be loaded from disk, i.e., ``raw.preload`` must be
+        ``False``.
     bids_path : BIDSPath
         The file to write. The `mne_bids.BIDSPath` instance passed here
         **must** have the ``.root`` attribute set. If the ``.datatype``
