@@ -244,7 +244,7 @@ def test_create_fif(_bids_validate):
     """Test functionality for very short raw file created from data."""
     out_dir = _TempDir()
     bids_root = _TempDir()
-    bids_path.update(root=bids_root)
+    bids_path = bids_path.copy().update(root=bids_root)
     sfreq, n_points = 1024., int(1e6)
     info = mne.create_info(['ch1', 'ch2', 'ch3', 'ch4', 'ch5'], sfreq,
                            ['seeg'] * 5)
@@ -263,7 +263,7 @@ def test_create_fif(_bids_validate):
 def test_fif(_bids_validate):
     """Test functionality of the write_raw_bids conversion for fif."""
     bids_root = _TempDir()
-    bids_path.update(root=bids_root, datatype='meg')
+    bids_path = bids_path.copy().update(root=bids_root, datatype='meg')
     data_path = testing.data_path()
     raw_fname = op.join(data_path, 'MEG', 'sample',
                         'sample_audvis_trunc_raw.fif')
@@ -532,7 +532,7 @@ def test_fif(_bids_validate):
 def test_fif_anonymize(_bids_validate):
     """Test write_raw_bids() with anonymization fif."""
     bids_root = _TempDir()
-    bids_path.update(root=bids_root)
+    bids_path = bids_path.copy().update(root=bids_root)
     data_path = testing.data_path()
     raw_fname = op.join(data_path, 'MEG', 'sample',
                         'sample_audvis_trunc_raw.fif')
@@ -649,7 +649,7 @@ def test_kit(_bids_validate):
     # make the data the wrong number of dimensions
     event_data_3d = np.atleast_3d(event_data)
     other_output_path = _TempDir()
-    bids_path.update(root=other_output_path)
+    bids_path = bids_path.copy().update(root=other_output_path)
     with pytest.raises(ValueError, match='two dimensions'):
         write_raw_bids(raw, bids_path, events_data=event_data_3d,
                        event_id=event_id, overwrite=True)
@@ -693,7 +693,7 @@ def test_ctf(_bids_validate):
     bids_root = _TempDir()
     data_path = op.join(testing.data_path(download=False), 'CTF')
     raw_fname = op.join(data_path, 'testdata_ctf.ds')
-    bids_path.update(root=bids_root, datatype='meg')
+    bids_path = bids_path.copy().update(root=bids_root, datatype='meg')
 
     raw = _read_raw_ctf(raw_fname)
     raw.info['line_freq'] = 60
@@ -736,7 +736,7 @@ def test_bti(_bids_validate):
     raw = _read_raw_bti(raw_fname, config_fname=config_fname,
                         head_shape_fname=headshape_fname)
 
-    bids_path.update(root=bids_root, datatype='meg')
+    bids_path = bids_path.copy().update(root=bids_root, datatype='meg')
 
     # write the BIDS dataset description, then write BIDS files
     make_dataset_description(bids_root, name="BTi data")
@@ -777,7 +777,7 @@ def test_vhdr(_bids_validate):
     injected_bad = ['FP1']
     raw.info['bads'] = injected_bad
 
-    bids_path.update(root=bids_root)
+    bids_path = bids_path.copy().update(root=bids_root)
     bids_path_minimal.update(root=bids_root, datatype='eeg')
 
     # write with injected bad channels
@@ -869,7 +869,7 @@ def test_edf(_bids_validate):
     raw.info['chs'][0]['coil_type'] = FIFF.FIFFV_COIL_EEG_BIPOLAR
     raw.rename_channels({raw.info['ch_names'][1]: 'EMG'})
     raw.set_channel_types({'EMG': 'emg'})
-    bids_path.update(root=bids_root, datatype='eeg')
+    bids_path = bids_path.copy().update(root=bids_root, datatype='eeg')
 
     # test dataset description overwrites with the authors set
     make_dataset_description(bids_root, name="test",
@@ -1026,7 +1026,7 @@ def test_bdf(_bids_validate):
     data_path = op.join(base_path, 'edf', 'tests', 'data')
     raw_fname = op.join(data_path, 'test.bdf')
 
-    bids_path.update(root=bids_root)
+    bids_path = bids_path.copy().update(root=bids_root)
 
     raw = _read_raw_bdf(raw_fname)
     raw.info['line_freq'] = 60
@@ -1086,7 +1086,7 @@ def test_set(_bids_validate):
     data_path = op.join(testing.data_path(), 'EEGLAB')
     raw_fname = op.join(data_path, 'test_raw.set')
     raw = _read_raw_eeglab(raw_fname)
-    bids_path.update(root=bids_root, datatype='eeg')
+    bids_path = bids_path.copy().update(root=bids_root, datatype='eeg')
 
     # embedded - test mne-version assertion
     tmp_version = mne.__version__
@@ -1146,7 +1146,7 @@ def test_write_anat(_bids_validate):
                            'sample_audvis_trunc_raw-eve.fif')
 
     raw = _read_raw_fif(raw_fname)
-    bids_path.update(root=bids_root)
+    bids_path = bids_path.copy().update(root=bids_root)
     write_raw_bids(raw, bids_path, events_data=events_fname,
                    event_id=event_id, overwrite=False)
 
@@ -1400,7 +1400,7 @@ def test_write_raw_pathlike():
     bids_root = Path(_TempDir())
     events_fname = (Path(data_path) / 'MEG' / 'sample' /
                     'sample_audvis_trunc_raw-eve.fif')
-    bids_path.update(root=bids_root)
+    bids_path = bids_path.copy().update(root=bids_root)
     bids_root_ = write_raw_bids(raw=raw, bids_path=bids_path,
                                 events_data=events_fname,
                                 event_id=event_id, overwrite=False)
@@ -1416,7 +1416,7 @@ def test_write_raw_no_dig():
                         'sample_audvis_trunc_raw.fif')
     raw = _read_raw_fif(raw_fname)
     bids_root = Path(_TempDir())
-    bids_path.update(root=bids_root)
+    bids_path = bids_path.copy().update(root=bids_root)
     bids_root_ = write_raw_bids(raw=raw, bids_path=bids_path,
                                 overwrite=True)
     assert bids_root_ == str(bids_root)
@@ -1463,7 +1463,7 @@ def test_write_does_not_alter_events_inplace():
     events_orig = events.copy()
 
     bids_root = _TempDir()
-    bids_path.update(root=bids_root)
+    bids_path = bids_path.copy().update(root=bids_root)
     write_raw_bids(raw=raw, bids_path=bids_path,
                    events_data=events, overwrite=True)
 
