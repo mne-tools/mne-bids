@@ -408,6 +408,9 @@ class BIDSPath(object):
     def match(self):
         """Get a list of all matching basenames.
 
+        Performs a search based on the entities that are set in the
+        ``BIDSPath`` object. Requires a ``root`` attribute to be set.
+
         Returns
         -------
         paths : list of pathlib.Paths
