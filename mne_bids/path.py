@@ -413,8 +413,8 @@ class BIDSPath(object):
 
         Returns
         -------
-        paths : list of pathlib.Paths
-            All paths with matching basenames.
+        paths : List[BIDSPath]
+            All paths with matching basenames as a BIDSPath.
         """
         if self.root is None:
             raise RuntimeError('Cannot match basenames if `root` '
