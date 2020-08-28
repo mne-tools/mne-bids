@@ -263,7 +263,7 @@ def test_create_fif(_bids_validate):
 def test_fif(_bids_validate):
     """Test functionality of the write_raw_bids conversion for fif."""
     bids_root = _TempDir()
-    bids_path.update(root=bids_root, modality='meg')
+    bids_path.update(root=bids_root, datatype='meg')
     data_path = testing.data_path()
     raw_fname = op.join(data_path, 'MEG', 'sample',
                         'sample_audvis_trunc_raw.fif')
@@ -336,7 +336,7 @@ def test_fif(_bids_validate):
         sidecar_basename.update(suffix=suffix, extension=extension)
         assert op.isfile(op.join(bids_dir, sidecar_basename.basename))
 
-    bids_path.update(root=bids_root, modality='eeg')
+    bids_path.update(root=bids_root, datatype='eeg')
     raw2 = read_raw_bids(bids_path=bids_path)
     os.remove(op.join(bids_root, 'test-raw.fif'))
 
@@ -635,7 +635,7 @@ def test_kit(_bids_validate):
                                           events_fname, event_id)
 
     # ensure the channels file has no STI 014 channel:
-    channels_tsv = marker_fname.copy().update(modality='meg',
+    channels_tsv = marker_fname.copy().update(datatype='meg',
                                               suffix='channels',
                                               extension='.tsv')
     data = _from_tsv(channels_tsv)
@@ -693,9 +693,7 @@ def test_ctf(_bids_validate):
     bids_root = _TempDir()
     data_path = op.join(testing.data_path(download=False), 'CTF')
     raw_fname = op.join(data_path, 'testdata_ctf.ds')
-
-    bids_path.update(root=bids_root,
-                     modality='meg')
+    bids_path.update(root=bids_root, datatype='meg')
 
     raw = _read_raw_ctf(raw_fname)
     raw.info['line_freq'] = 60
@@ -738,7 +736,7 @@ def test_bti(_bids_validate):
     raw = _read_raw_bti(raw_fname, config_fname=config_fname,
                         head_shape_fname=headshape_fname)
 
-    bids_path.update(root=bids_root, modality='meg')
+    bids_path.update(root=bids_root, datatype='meg')
 
     # write the BIDS dataset description, then write BIDS files
     make_dataset_description(bids_root, name="BTi data")
@@ -780,7 +778,7 @@ def test_vhdr(_bids_validate):
     raw.info['bads'] = injected_bad
 
     bids_path.update(root=bids_root)
-    bids_path_minimal.update(root=bids_root, modality='eeg')
+    bids_path_minimal.update(root=bids_root, datatype='eeg')
 
     # write with injected bad channels
     write_raw_bids(raw, bids_path_minimal, overwrite=False)
@@ -788,7 +786,6 @@ def test_vhdr(_bids_validate):
 
     # read and also get the bad channels
     raw = read_raw_bids(bids_path=bids_path_minimal)
-
     with pytest.raises(TypeError, match="unexpected keyword argument 'foo'"):
         read_raw_bids(bids_path=bids_path_minimal,
                       extra_params=dict(foo='bar'))
@@ -816,7 +813,7 @@ def test_vhdr(_bids_validate):
 
     # create another bids folder with the overwrite command and check
     # no files are in the folder
-    data_path = make_bids_folders(subject=subject_id, modality='eeg',
+    data_path = make_bids_folders(subject=subject_id, datatype='eeg',
                                   bids_root=bids_root, overwrite=True)
     assert len([f for f in os.listdir(data_path) if op.isfile(f)]) == 0
 
@@ -872,8 +869,7 @@ def test_edf(_bids_validate):
     raw.info['chs'][0]['coil_type'] = FIFF.FIFFV_COIL_EEG_BIPOLAR
     raw.rename_channels({raw.info['ch_names'][1]: 'EMG'})
     raw.set_channel_types({'EMG': 'emg'})
-
-    bids_path.update(root=bids_root, modality='eeg')
+    bids_path.update(root=bids_root, datatype='eeg')
 
     # test dataset description overwrites with the authors set
     make_dataset_description(bids_root, name="test",
@@ -942,7 +938,7 @@ def test_edf(_bids_validate):
     channels_tsv = BIDSPath(
         subject=subject_id, session=session_id, task=task, run=run,
         suffix='channels', extension='.tsv', acquisition=acq,
-        root=bids_root, modality='eeg')
+        root=bids_root, datatype='eeg')
     data = _from_tsv(channels_tsv)
     assert 'ElectroMyoGram' in data['description']
 
@@ -1063,10 +1059,9 @@ def test_bdf(_bids_validate):
     # Now read the raw data back from BIDS, with the tampered TSV, to show
     # that the channels.tsv truly influences how read_raw_bids sets ch_types
     # in the raw data object
-    bids_path.update(modality='eeg')
+    bids_path.update(datatype='eeg')
     raw = read_raw_bids(bids_path=bids_path)
     assert coil_type(raw.info, test_ch_idx) == 'misc'
-
     with pytest.raises(TypeError, match="unexpected keyword argument 'foo'"):
         read_raw_bids(bids_path=bids_path, extra_params=dict(foo='bar'))
 
@@ -1090,10 +1085,8 @@ def test_set(_bids_validate):
     bids_root = _TempDir()
     data_path = op.join(testing.data_path(), 'EEGLAB')
     raw_fname = op.join(data_path, 'test_raw.set')
-
     raw = _read_raw_eeglab(raw_fname)
-
-    bids_path.update(root=bids_root, modality='eeg')
+    bids_path.update(root=bids_root, datatype='eeg')
 
     # embedded - test mne-version assertion
     tmp_version = mne.__version__

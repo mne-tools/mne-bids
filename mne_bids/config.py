@@ -7,7 +7,7 @@ BIDS_VERSION = "1.4.0"
 
 DOI = """https://doi.org/10.21105/joss.01896"""
 
-ALLOWED_MODALITIES = ['meg', 'eeg', 'ieeg', 'anat']
+ALLOWED_DATATYPES = ['meg', 'eeg', 'ieeg', 'anat']
 
 # Orientation of the coordinate system dependent on manufacturer
 ORIENTATION = {'.sqd': 'ALS', '.con': 'ALS', '.fif': 'RAS', '.pdf': 'ALS',
@@ -61,14 +61,14 @@ allowed_extensions_ieeg = ['.vhdr',  # BrainVision, accompanied by .vmrk, .eeg
                            '.nwb',  # Neurodata without borders
                            ]
 
-ALLOWED_MODALITY_EXTENSIONS = {'meg': allowed_extensions_meg,
+ALLOWED_DATATYPE_EXTENSIONS = {'meg': allowed_extensions_meg,
                                'eeg': allowed_extensions_eeg,
                                'ieeg': allowed_extensions_ieeg}
 
 # allowed suffixes (i.e. last "_" delimiter in the BIDS filenames before
 # the extension)
 ALLOWED_FILENAME_SUFFIX = [
-    'meg', 'markers', 'eeg', 'ieeg', 'T1w',  # modality
+    'meg', 'markers', 'eeg', 'ieeg', 'T1w',  # datatype
     'participants', 'scans',
     'electrodes', 'channels', 'coordsystem', 'events',  # sidecars
     'headshape', 'digitizer',  # meg-specific sidecars
@@ -76,7 +76,7 @@ ALLOWED_FILENAME_SUFFIX = [
 ]
 
 # converts suffix to known path modalities
-SUFFIX_TO_MODALITY = {
+SUFFIX_TO_DATATYPE = {
     'meg': 'meg', 'eeg': 'eeg', 'ieeg': 'ieeg', 'T1w': 'anat',
     'headshape': 'meg', 'digitizer': 'meg', 'markers': 'meg'
 }
@@ -87,7 +87,7 @@ ALLOWED_FILENAME_EXTENSIONS = (
     allowed_extensions_eeg +
     allowed_extensions_ieeg +
     ['.json', '.tsv', '.tsv.gz', '.nii', '.nii.gz'] +
-    ['.pos', '.eeg', '.vmrk']  # extra modality-specific metadata files
+    ['.pos', '.eeg', '.vmrk']  # extra datatype-specific metadata files
 )
 
 # allowed BIDS path entities
@@ -95,7 +95,7 @@ ALLOWED_PATH_ENTITIES = ('subject', 'session', 'task', 'run',
                          'processing', 'recording', 'space',
                          'acquisition', 'split',
                          'suffix', 'extension',
-                         'modality', 'root')
+                         'datatype', 'root')
 ALLOWED_PATH_ENTITIES_SHORT = {'sub': 'subject', 'ses': 'session',
                                'task': 'task', 'acq': 'acquisition',
                                'run': 'run', 'proc': 'processing',

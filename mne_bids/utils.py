@@ -87,23 +87,23 @@ def _get_ch_type_mapping(fro='mne', to='bids'):
     return mapping
 
 
-def _handle_modality(raw):
-    """Get modality."""
+def _handle_datatype(raw):
+    """Get datatype."""
     if 'eeg' in raw and ('ecog' in raw or 'seeg' in raw):
         raise ValueError('Both EEG and iEEG channels found in data.'
                          'There is currently no specification on how'
                          'to handle this data. Please proceed manually.')
     elif 'meg' in raw:
-        modality = 'meg'
+        datatype = 'meg'
     elif 'ecog' in raw or 'seeg' in raw:
-        modality = 'ieeg'
+        datatype = 'ieeg'
     elif 'eeg' in raw:
-        modality = 'eeg'
+        datatype = 'eeg'
     else:
         raise ValueError('Neither MEG/EEG/iEEG channels found in data.'
                          'Please use raw.set_channel_types to set the '
                          'channel types in the data.')
-    return modality
+    return datatype
 
 
 def _age_on_date(bday, exp_date):

@@ -131,7 +131,7 @@ def test_read_participants_data():
         'sex': 2,
     }
     raw.info['subject_info'] = subject_info
-    bids_path.update(root=bids_root, modality='meg')
+    bids_path.update(root=bids_root, datatype='meg')
     write_raw_bids(raw, bids_path, overwrite=True, verbose=False)
     raw = read_raw_bids(bids_path=bids_path)
     print(raw.info['subject_info'])
@@ -257,7 +257,7 @@ def test_handle_info_reading():
     write_raw_bids(raw, bids_path, overwrite=True)
 
     # find sidecar JSON fname
-    bids_fname.update(modality=suffix)
+    bids_fname.update(datatype=suffix)
     sidecar_fname = _find_matching_sidecar(bids_fname,
                                            suffix=suffix, extension='.json',
                                            allow_fail=True)
@@ -377,7 +377,7 @@ def test_handle_ieeg_coords_reading(bids_path):
 
     data_path = op.join(testing.data_path(), 'EDF')
     raw_fname = op.join(data_path, 'test_reduced.edf')
-    bids_fname = bids_path.copy().update(modality='ieeg',
+    bids_fname = bids_path.copy().update(datatype='ieeg',
                                          suffix='ieeg',
                                          extension='.edf',
                                          root=bids_root)
@@ -631,7 +631,7 @@ def test_get_matched_emptyroom_ties():
     bids_path.update(root=bids_root)
     session = '20010101'
     er_dir = make_bids_folders(subject='emptyroom', session=session,
-                               modality='meg', bids_root=bids_root)
+                               datatype='meg', bids_root=bids_root)
 
     meas_date = (datetime
                  .strptime(session, '%Y%m%d')
@@ -673,7 +673,7 @@ def test_get_matched_emptyroom_no_meas_date():
     er_meas_date = None
 
     er_dir = make_bids_folders(subject='emptyroom', session=er_session,
-                               modality='meg', bids_root=bids_root)
+                               datatype='meg', bids_root=bids_root)
     er_bids_path = BIDSPath(subject='emptyroom', session=er_session,
                             task='noise', check=False)
     er_basename = er_bids_path.basename
@@ -700,22 +700,22 @@ def test_get_matched_emptyroom_no_meas_date():
 def test_read_raw_bids_pathlike():
     """Test that read_raw_bids() can handle a Path-like bids_root."""
     bids_root = _TempDir()
-    bids_path.update(root=bids_root, modality='meg')
+    bids_path.update(root=bids_root, datatype='meg')
     raw = _read_raw_fif(raw_fname, verbose=False)
     write_raw_bids(raw, bids_path, overwrite=True, verbose=False)
     raw = read_raw_bids(bids_path=bids_path)
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
-def test_read_raw_modality():
+def test_read_raw_datatype():
     """Test that read_raw_bids() can infer the str_suffix if need be."""
     bids_root = _TempDir()
-    bids_path.update(root=bids_root, modality='meg')
+    bids_path.update(root=bids_root, datatype='meg')
     raw = _read_raw_fif(raw_fname, verbose=False)
     write_raw_bids(raw, bids_path, overwrite=True, verbose=False)
 
     raw_1 = read_raw_bids(bids_path=bids_path)
-    bids_path.update(modality=None)
+    bids_path.update(datatype=None)
     raw_2 = read_raw_bids(bids_path=bids_path)
     raw_3 = read_raw_bids(bids_path=bids_path)
 
@@ -737,7 +737,7 @@ def test_handle_channel_type_casing():
                    verbose=False)
 
     ch_path = bids_path.copy().update(root=bids_root,
-                                      modality='meg',
+                                      datatype='meg',
                                       suffix='channels',
                                       extension='.tsv')
     bids_channels_fname = ch_path.fpath
@@ -756,14 +756,14 @@ def test_bads_reading():
     bids_root = _TempDir()
     bids_path.update(root=bids_root)
     data_path = make_bids_folders(
-        subject=subject_id, session=session_id, modality='meg',
+        subject=subject_id, session=session_id, datatype='meg',
         bids_root=bids_root, make_dir=False)
     ch_path = (bids_path.copy().update(suffix='channels',
                                        extension='.tsv'))
     channels_fname = op.join(data_path, ch_path.basename)
 
     raw_bids_fname = (bids_path.copy()
-                      .update(root=bids_root, modality='meg',
+                      .update(root=bids_root, datatype='meg',
                               suffix='meg', extension='.fif'))
     raw = _read_raw_fif(raw_fname, verbose=False)
 

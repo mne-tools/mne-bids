@@ -43,10 +43,10 @@ from mne_bids import (BIDSPath, read_raw_bids,
 bids_root = somato.data_path()
 subject_id = '01'
 task = 'somato'
-modality = 'meg'
+datatype = 'meg'
 
 bids_path = BIDSPath(subject=subject_id, task=task,
-                     modality=modality, suffix=modality,
+                     datatype=datatype, suffix=datatype,
                      root=bids_root)
 
 # bids basename is nicely formatted
