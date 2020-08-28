@@ -36,7 +36,7 @@ Changelog
 - :func:`mne_bids.read_raw_bids` and :func:`mne_bids.write_raw_bids` now map respiratory (``RESP``) channel types, by `Richard Höchenberger`_ (`#482 <https://github.com/mne-tools/mne-bids/pull/482>`_)
 - When impedance values are available from a ``raw.impedances`` attribute, MNE-BIDS will now write an ``impedance`` column to ``*_electrodes.tsv`` files, by `Stefan Appelhoff`_ (`#484 <https://github.com/mne-tools/mne-bids/pull/484>`_)
 - :func:`mne_bids.write_raw_bids` writes out status_description with 'n/a' values into the channels.tsv sidecar file, by `Adam Li`_ (`#489 <https://github.com/mne-tools/mne-bids/pull/489>`_)
-- The new function :func:`mne_bids.path.get_matched_basenames` allows uers to retrieve a list of :class:`mne_bids.BIDSPath` objects matching a specified set of entity values in the dataset, by `Richard Höchenberger`_ (`#507 <https://github.com/mne-tools/mne-bids/pull/507>`_)
+- The new function :func:`mne_bids.path._get_matched_basenames` allows uers to retrieve a list of :class:`mne_bids.BIDSPath` objects matching a specified set of entity values in the dataset, by `Richard Höchenberger`_ (`#507 <https://github.com/mne-tools/mne-bids/pull/507>`_)
 
 Bug
 ~~~
@@ -78,6 +78,7 @@ API
 - Add ``datatype`` parameter and attribute to :class:`mne_bids.BIDSPath` that allows users to specify EEG, MEG, or iEEG datasets by `Adam Li`_ (`#514 <https://github.com/mne-tools/mne-bids/pull/514>`_)
 - Add ``datatype`` to replace ``kind`` parameter to :func:`mne_bids.make_bids_folders` and :func:`mne_bids.read_raw_bids` that allows users to specify EEG, MEG, or iEEG datasets by `Adam Li`_ (`#514 <https://github.com/mne-tools/mne-bids/pull/514>`_)
 - In :func:`mne_bids.write_raw_bids`, :func:`mne_bids.read_raw_bids`, :func:`mne_bids.get_matched_empty_room`, and :func:`mne_bids.get_head_mri_trans`, the ``bids_basename`` and ``bids_root`` keyword arguments have been removed. The functions now expect ``bids_path``, an instance of :class:`mne_bids.BIDSPath`, by `Adam Li`_ (`#525 <https://github.com/mne-tools/mne-bids/pull/525>`_)
+- :class:`mne_bids.BIDSPath` now has a function ``match``, which will get all matched basenames under the ``root`` directory by `Adam Li`_ (`#511 <https://github.com/mne-tools/mne-bids/pull/511>`_)
 
 .. _changes_0_4:
 

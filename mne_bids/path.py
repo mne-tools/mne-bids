@@ -405,6 +405,22 @@ class BIDSPath(object):
         self._check()
         return self
 
+    def match(self):
+        """Get a list of all matching basenames.
+
+        Returns
+        -------
+        paths : list of pathlib.Paths
+            All paths with matching basenames.
+        """
+        if self.root is None:
+            raise RuntimeError('Cannot match basenames if `root` '
+                               'attribute is not set. Please set the'
+                               'BIDS root directory path to `root` via '
+                               'BIDSPath.update().')
+        paths = _get_matched_basenames(self.root, **self.entities)
+        return paths
+
     def _check(self):
         """Deep check or not of the instance."""
         self.basename  # run basename to check validity of arguments
@@ -1064,10 +1080,10 @@ def _filter_fnames(fnames, *, subject=None, session=None, task=None,
     return fnames_filtered
 
 
-def get_matched_basenames(bids_root, *, subject=None, session=None, task=None,
-                          acquisition=None, run=None, processing=None,
-                          recording=None, space=None, suffix=None, split=None,
-                          extension=None):
+def _get_matched_basenames(bids_root, *, subject=None, session=None, task=None,
+                           acquisition=None, run=None, processing=None,
+                           recording=None, space=None, suffix=None, split=None,
+                           extension=None, datatype=None):
     """Retrieve a list of BIDSPaths matching the specified entities.
 
     The entity values you pass act as a filter: only those basenames that
@@ -1112,8 +1128,14 @@ def get_matched_basenames(bids_root, *, subject=None, session=None, task=None,
 
     """
     bids_root = Path(bids_root)
+    # allow searching by datatype
+    # all other entities are filtered below
+    if datatype is not None:
+        search_str = f'*/{datatype}/*'
+    else:
+        search_str = '*.*'
 
-    fnames = bids_root.rglob('*.*')
+    fnames = bids_root.rglob(search_str)
     # Only keep files (not directories), and omit the JSON sidecars.
     fnames = [str(f.name) for f in fnames
               if f.is_file() and f.suffix != '.json']

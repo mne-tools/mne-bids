@@ -25,7 +25,7 @@ from mne_bids import (get_modalities, get_entity_vals, print_dir_tree,
                       write_raw_bids)
 from mne_bids.path import (_parse_ext, get_entities_from_fname,
                            _find_best_candidates, _find_matching_sidecar,
-                           _filter_fnames, get_matched_basenames)
+                           _filter_fnames, _get_matched_basenames)
 
 subject_id = '01'
 session_id = '01'
@@ -528,14 +528,23 @@ def test_get_matched_basenames(return_bids_test_dir):
     """Test retrieval of matching basenames."""
     bids_root = return_bids_test_dir
 
-    paths = get_matched_basenames(bids_root=bids_root)
+    paths = _get_matched_basenames(bids_root=bids_root)
     assert len(paths) == 7
     assert all('sub-01_ses-01' in p.basename for p in paths)
     assert all([p.root == bids_root for p in paths])
 
-    paths = get_matched_basenames(bids_root=bids_root, run='01')
+    paths = _get_matched_basenames(bids_root=bids_root, run='01')
     assert len(paths) == 3
     assert paths[0].basename == 'sub-01_ses-01_task-testing_run-01_channels'
 
-    paths = get_matched_basenames(bids_root=bids_root, subject='unknown')
+    paths = _get_matched_basenames(bids_root=bids_root, subject='unknown')
     assert len(paths) == 0
+
+    # now test it with BIDSPath
+    bids_path_01 = bids_path.copy().update(root=None)
+    with pytest.raises(RuntimeError, match='Cannot match'):
+        bids_path_01.match()
+
+    bids_path_01.update(datatype='meg', root=bids_root)
+    same_paths = bids_path_01.match()
+    assert len(same_paths) == 3
