@@ -449,7 +449,7 @@ def test_fif(_bids_validate):
     with open(readme, 'w') as fid:
         fid.write('Welcome to my dataset\n')
 
-    bids_path2 = _bids_path.copy().update(subject=subject_id2)
+    bids_path2 = bids_path.copy().update(subject=subject_id2)
     raw = _read_raw_fif(raw_fname2)
     bids_output_path = write_raw_bids(raw, bids_path2,
                                       events_data=events_fname,
@@ -512,7 +512,7 @@ def test_fif(_bids_validate):
              split_naming='neuromag', overwrite=True)
     raw = _read_raw_fif(raw_fname3)
     subject_id3 = '03'
-    bids_path3 = _bids_path.copy().update(subject=subject_id3)
+    bids_path3 = bids_path.copy().update(subject=subject_id3)
     bids_output_path = write_raw_bids(raw, bids_path3,
                                       overwrite=False)
     files = glob(op.join(bids_output_path, 'sub-' + subject_id3,
@@ -798,7 +798,7 @@ def test_vhdr(_bids_validate):
     # Test that correct channel units are written ... and that bad channel
     # is in channels.tsv
     suffix, ext = 'channels', '.tsv'
-    channels_tsv_name = _bids_path_minimal.copy().update(
+    channels_tsv_name = bids_path_minimal.copy().update(
         suffix=suffix, extension=ext)
 
     data = _from_tsv(channels_tsv_name)
@@ -849,7 +849,7 @@ def test_vhdr(_bids_validate):
     bids_path.update(root=bids_root)
     write_raw_bids(raw, bids_path)
     electrodes_fpath = _find_matching_sidecar(
-        _bids_path.copy().update(root=bids_root),
+        bids_path.copy().update(root=bids_root),
         suffix='electrodes', extension='.tsv')
     tsv = _from_tsv(electrodes_fpath)
     assert len(tsv.get('impedance', {})) > 0
@@ -900,7 +900,7 @@ def test_edf(_bids_validate):
     with pytest.raises(TypeError, match="unexpected keyword argument 'foo'"):
         read_raw_bids(bids_path=bids_path, extra_params=dict(foo='bar'))
 
-    bids_fname = _bids_path.copy().update(run=run2)
+    bids_fname = bids_path.copy().update(run=run2)
     # add data in as a montage
     ch_names = raw.ch_names
     elec_locs = np.random.random((len(ch_names), 3))
@@ -957,8 +957,8 @@ def test_edf(_bids_validate):
                        anonymize=dict(daysback=33000),
                        overwrite=True)
         data = _from_tsv(scans_tsv)
-        bids_fname = _bids_path.copy().update(suffix='eeg',
-                                              extension='.vhdr')
+        bids_fname = bids_path.copy().update(suffix='eeg',
+                                             extension='.vhdr')
         assert any([bids_fname.basename in fname
                     for fname in data['filename']])
 
@@ -1048,8 +1048,8 @@ def test_bdf(_bids_validate):
     assert coil_type(raw.info, test_ch_idx) != 'misc'
 
     # we will change the channel type to MISC and overwrite the channels file
-    bids_fname = _bids_path.copy().update(suffix='eeg',
-                                          extension='.bdf')
+    bids_fname = bids_path.copy().update(suffix='eeg',
+                                         extension='.bdf')
     channels_fname = _find_matching_sidecar(bids_fname,
                                             suffix='channels',
                                             extension='.tsv')
