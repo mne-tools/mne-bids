@@ -408,8 +408,8 @@ class BIDSPath(object):
     def match(self):
         """Get a list of all matching paths in the root directory.
 
-        Performs a search based on the entities that are set in the
-        ``BIDSPath`` object. Requires a ``root`` attribute to be set.
+        Performs a recursive search, starting in ``.root`` (if set), based on
+        `BIDSPath.entities` object.
 
         Returns
         -------
