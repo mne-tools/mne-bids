@@ -269,10 +269,10 @@ def test_fif(_bids_validate):
     # Events and bad channel information was read through JSON sidecar files.
     with pytest.raises(TypeError, match="unexpected keyword argument 'foo'"):
         read_raw_bids(bids_path=bids_path, bids_root=bids_root,
-                      modality='meg', extra_params=dict(foo='bar'))
+                      datatype='meg', extra_params=dict(foo='bar'))
 
     raw2 = read_raw_bids(bids_path=bids_path, bids_root=bids_root,
-                         modality='meg',
+                         datatype='meg',
                          extra_params=dict(allow_maxshield=True))
     assert set(raw.info['bads']) == set(raw2.info['bads'])
     events, _ = mne.events_from_annotations(raw2)
@@ -317,7 +317,7 @@ def test_fif(_bids_validate):
         assert op.isfile(op.join(bids_dir, sidecar_basename.basename))
 
     raw2 = read_raw_bids(bids_path=bids_path, bids_root=bids_root,
-                         modality='eeg')
+                         datatype='eeg')
     os.remove(op.join(bids_root, 'test-raw.fif'))
 
     events2 = mne.find_events(raw2)
@@ -603,7 +603,7 @@ def test_kit(_bids_validate):
     assert op.exists(op.join(bids_root, 'participants.tsv'))
 
     read_raw_bids(bids_path=kit_bids_path, bids_root=bids_root,
-                  modality='meg')
+                  datatype='meg')
 
     # ensure the marker file is produced in the right place
     marker_fname = BIDSPath(
@@ -623,7 +623,7 @@ def test_kit(_bids_validate):
                                           events_fname, event_id)
 
     # ensure the channels file has no STI 014 channel:
-    channels_tsv = marker_fname.copy().update(modality='meg',
+    channels_tsv = marker_fname.copy().update(datatype='meg',
                                               suffix='channels',
                                               extension='.tsv')
     data = _from_tsv(channels_tsv)
@@ -691,7 +691,7 @@ def test_ctf(_bids_validate):
     _bids_validate(bids_root)
     with pytest.warns(RuntimeWarning, match='Did not find any events'):
         raw = read_raw_bids(bids_path=bids_path, bids_root=bids_root,
-                            modality='meg',
+                            datatype='meg',
                             extra_params=dict(clean_names=False))
 
     # test to check that running again with overwrite == False raises an error
@@ -734,11 +734,11 @@ def test_bti(_bids_validate):
     _bids_validate(bids_root)
 
     raw = read_raw_bids(bids_path=bids_path, bids_root=bids_root,
-                        modality='meg')
+                        datatype='meg')
 
     with pytest.raises(TypeError, match="unexpected keyword argument 'foo'"):
         read_raw_bids(bids_path=bids_path, bids_root=bids_root,
-                      modality='meg', extra_params=dict(foo='bar'))
+                      datatype='meg', extra_params=dict(foo='bar'))
 
     if check_version('mne', '0.20'):
         # test anonymize
@@ -773,11 +773,11 @@ def test_vhdr(_bids_validate):
 
     # read and also get the bad channels
     raw = read_raw_bids(bids_path=bids_path_minimal,
-                        bids_root=bids_root, modality='eeg')
+                        bids_root=bids_root, datatype='eeg')
 
     with pytest.raises(TypeError, match="unexpected keyword argument 'foo'"):
         read_raw_bids(bids_path=bids_path_minimal, bids_root=bids_root,
-                      modality='eeg', extra_params=dict(foo='bar'))
+                      datatype='eeg', extra_params=dict(foo='bar'))
 
     # Check that injected bad channel shows up in raw after reading
     np.testing.assert_array_equal(np.asarray(raw.info['bads']),
@@ -787,7 +787,7 @@ def test_vhdr(_bids_validate):
     # is in channels.tsv
     suffix, ext = 'channels', '.tsv'
     channels_tsv_name = bids_path_minimal.copy().update(
-        modality='eeg', root=bids_root, suffix=suffix, extension=ext)
+        datatype='eeg', root=bids_root, suffix=suffix, extension=ext)
 
     data = _from_tsv(channels_tsv_name)
     assert data['units'][data['name'].index('FP1')] == 'µV'
@@ -802,7 +802,7 @@ def test_vhdr(_bids_validate):
 
     # create another bids folder with the overwrite command and check
     # no files are in the folder
-    data_path = make_bids_folders(subject=subject_id, modality='eeg',
+    data_path = make_bids_folders(subject=subject_id, datatype='eeg',
                                   bids_root=bids_root, overwrite=True)
     assert len([f for f in os.listdir(data_path) if op.isfile(f)]) == 0
 
@@ -881,11 +881,11 @@ def test_edf(_bids_validate):
     # in raw clash
     with pytest.raises(RuntimeError, match='Channels do not correspond'):
         read_raw_bids(bids_path=bids_path, bids_root=bids_root,
-                      modality='eeg')
+                      datatype='eeg')
 
     with pytest.raises(TypeError, match="unexpected keyword argument 'foo'"):
         read_raw_bids(bids_path=bids_path, bids_root=bids_root,
-                      modality='eeg', extra_params=dict(foo='bar'))
+                      datatype='eeg', extra_params=dict(foo='bar'))
 
     bids_fname = bids_path.copy().update(run=run2)
     # add data in as a montage
@@ -927,7 +927,7 @@ def test_edf(_bids_validate):
     channels_tsv = BIDSPath(
         subject=subject_id, session=session_id, task=task, run=run,
         suffix='channels', extension='.tsv', acquisition=acq,
-        root=bids_root, modality='eeg')
+        root=bids_root, datatype='eeg')
     data = _from_tsv(channels_tsv)
     assert 'ElectroMyoGram' in data['description']
 
@@ -1046,12 +1046,12 @@ def test_bdf(_bids_validate):
     # that the channels.tsv truly influences how read_raw_bids sets ch_types
     # in the raw data object
     raw = read_raw_bids(bids_path=bids_path, bids_root=bids_root,
-                        modality='eeg')
+                        datatype='eeg')
     assert coil_type(raw.info, test_ch_idx) == 'misc'
 
     with pytest.raises(TypeError, match="unexpected keyword argument 'foo'"):
         read_raw_bids(bids_path=bids_path, bids_root=bids_root,
-                      modality='eeg', extra_params=dict(foo='bar'))
+                      datatype='eeg', extra_params=dict(foo='bar'))
 
     # Test cropped assertion error
     raw = _read_raw_bdf(raw_fname)
@@ -1086,11 +1086,11 @@ def test_set(_bids_validate):
     # proceed with the actual test for EEGLAB data
     write_raw_bids(raw, bids_path, bids_root, overwrite=False)
     read_raw_bids(bids_path=bids_path, bids_root=bids_root,
-                  modality='eeg')
+                  datatype='eeg')
 
     with pytest.raises(TypeError, match="unexpected keyword argument 'foo'"):
         read_raw_bids(bids_path=bids_path, bids_root=bids_root,
-                      modality='eeg', extra_params=dict(foo='bar'))
+                      datatype='eeg', extra_params=dict(foo='bar'))
 
     with pytest.raises(FileExistsError, match="already exists"):  # noqa: F821
         write_raw_bids(raw, bids_path, bids_root=bids_root,

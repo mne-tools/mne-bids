@@ -16,7 +16,7 @@ from mne.utils import warn, logger
 from mne_bids.config import (
     ALLOWED_PATH_ENTITIES, ALLOWED_FILENAME_EXTENSIONS,
     ALLOWED_FILENAME_SUFFIX, ALLOWED_PATH_ENTITIES_SHORT,
-    ALLOWED_MODALITIES, SUFFIX_TO_MODALITY, ALLOWED_MODALITY_EXTENSIONS)
+    ALLOWED_DATATYPES, SUFFIX_TO_DATATYPE, ALLOWED_DATATYPE_EXTENSIONS)
 from mne_bids.utils import (_check_key_val, _check_empty_room_basename,
                             _check_types, param_regex,
                             _ensure_tuple)
@@ -68,8 +68,8 @@ class BIDSPath(object):
         'behav', 'phsyio', 'stim'
     extension : str | None
         The extension of the filename. E.g., ``'.json'``.
-    modality : str
-        The "modality" of folder being created at the end of the hierarchy.
+    datatype : str
+        The "datatype" of folder being created at the end of the hierarchy.
         E.g., "anat", "func", "eeg", "meg", "ieeg", etc.
     root : str | None
         The root for the filename to be created. E.g., a path to the folder
@@ -115,8 +115,8 @@ class BIDSPath(object):
     >>> print(new_bids_path)
     sub-test2/ses-one/ieeg/sub-test2_ses-one_task-mytask_ieeg.edf
     >>> new_bids_path.update(suffix='channels', extension='.tsv')
-    >>> # setting suffix without an identifiable modality will
-    >>> # result in a wildcard at the modality directory level
+    >>> # setting suffix without an identifiable datatype will
+    >>> # result in a wildcard at the datatype directory level
     >>> print(new_bids_path)
     sub-test2/ses-one/*/sub-test2_ses-one_task-mytask_channels.tsv
     >>> # set a bids_root
@@ -132,7 +132,7 @@ class BIDSPath(object):
     def __init__(self, subject=None, session=None,
                  task=None, acquisition=None, run=None, processing=None,
                  recording=None, space=None, split=None, root=None,
-                 suffix=None, extension=None, modality=None, check=True):
+                 suffix=None, extension=None, datatype=None, check=True):
         if all(ii is None for ii in [subject, session, task,
                                      acquisition, run, processing,
                                      recording, space, root, suffix,
@@ -144,7 +144,7 @@ class BIDSPath(object):
         self.update(subject=subject, session=session, task=task,
                     acquisition=acquisition, run=run, processing=processing,
                     recording=recording, space=space, split=split,
-                    root=root, modality=modality,
+                    root=root, datatype=datatype,
                     suffix=suffix, extension=extension)
 
     @property
@@ -160,7 +160,7 @@ class BIDSPath(object):
             ('space', self.space),
             ('recording', self.recording),
             ('split', self.split),
-            ('modality', self.modality)
+            ('datatype', self.datatype)
         ])
 
     @property
@@ -168,7 +168,7 @@ class BIDSPath(object):
         """Path basename."""
         basename = []
         for key, val in self.entities.items():
-            if val is not None and key != 'modality':
+            if val is not None and key != 'datatype':
                 # convert certain keys to shorthand
                 long_to_short_entity = {
                     val: key for key, val
@@ -242,11 +242,11 @@ class BIDSPath(object):
         if self.session is not None:
             data_path = op.join(data_path, f'ses-{self.session}')
         # file-suffix will allow 'meg', 'eeg', 'ieeg', 'anat'
-        if self.modality is not None:
-            data_path = op.join(data_path, self.modality)
-        elif self.suffix in SUFFIX_TO_MODALITY:
+        if self.datatype is not None:
+            data_path = op.join(data_path, self.datatype)
+        elif self.suffix in SUFFIX_TO_DATATYPE:
             # infers path suffix from the suffix
-            data_path = op.join(data_path, SUFFIX_TO_MODALITY[self.suffix])
+            data_path = op.join(data_path, SUFFIX_TO_DATATYPE[self.suffix])
 
         # account for MEG data that are directory-based
         # else, all other file paths attempt to match
@@ -269,9 +269,9 @@ class BIDSPath(object):
                 # FIXME e.g. with FIFF data split across multiple FIXME files.
                 # if extension is not specified and no unique file path
                 # return filepath of the actual dataset for MEG/EEG/iEEG data
-                if self.suffix in ALLOWED_MODALITIES:
-                    # now only use valid modality extension
-                    valid_exts = sum(ALLOWED_MODALITY_EXTENSIONS.values(), [])
+                if self.suffix in ALLOWED_DATATYPES:
+                    # now only use valid datatype extension
+                    valid_exts = sum(ALLOWED_DATATYPE_EXTENSIONS.values(), [])
                     matching_paths = [p for p in matching_paths
                                       if _parse_ext(p)[1] in valid_exts]
 
@@ -408,18 +408,18 @@ class BIDSPath(object):
                              'subject and session entities. BIDSPath '
                              f'currently contains {self.entities}.')
 
-        # error check modality
-        if self.modality is not None and \
-                self.modality not in ALLOWED_MODALITIES:
-            raise ValueError(f'"modality" can only be one of '
-                             f'{ALLOWED_MODALITIES}. You passed in '
-                             f'{self.modality}, which is not '
+        # error check datatype
+        if self.datatype is not None and \
+                self.datatype not in ALLOWED_DATATYPES:
+            raise ValueError(f'"datatype" can only be one of '
+                             f'{ALLOWED_DATATYPES}. You passed in '
+                             f'{self.datatype}, which is not '
                              f'BIDS compliant. ')
 
-        # infer modality if suffix is uniquely the modality
-        if self.modality is None and \
+        # infer datatype if suffix is uniquely the datatype
+        if self.datatype is None and \
                 self.suffix in ['eeg', 'meg', 'ieeg', 'T1w']:
-            self.modality = SUFFIX_TO_MODALITY[self.suffix]
+            self.datatype = SUFFIX_TO_DATATYPE[self.suffix]
 
         # perform deeper check if user has it turned on
         if self.check:
@@ -451,15 +451,15 @@ def _get_matching_bidspaths_from_filesystem(bids_path):
     """
     # extract relevant entities to find filepath
     sub, ses = bids_path.subject, bids_path.session
-    modality = bids_path.modality
+    datatype = bids_path.datatype
     basename, bids_root = bids_path.basename, bids_path.root
 
-    if modality is None:
-        modality = _infer_modality(bids_root=bids_root,
+    if datatype is None:
+        datatype = _infer_datatype(bids_root=bids_root,
                                    sub=sub, ses=ses)
 
     data_dir = make_bids_folders(subject=sub, session=ses,
-                                 modality=modality, bids_root=bids_root,
+                                 datatype=datatype, bids_root=bids_root,
                                  make_dir=False)
 
     # For BTI data, just return the directory with a '.pdf' extension
@@ -476,8 +476,8 @@ def _get_matching_bidspaths_from_filesystem(bids_path):
             search_str = op.join(search_str, f'sub-{sub}')
         if ses is not None:
             search_str = op.join(search_str, f'ses-{ses}')
-        if modality is not None:
-            search_str = op.join(search_str, modality)
+        if datatype is not None:
+            search_str = op.join(search_str, datatype)
         else:
             search_str = op.join(search_str, '**')
         search_str = op.join(search_str, f'{basename}*')
@@ -545,7 +545,7 @@ def print_dir_tree(folder, max_depth=None):
                     print('|{} {}'.format(branchlen * '---', file))
 
 
-def make_bids_folders(subject, session=None, modality=None, bids_root=None,
+def make_bids_folders(subject, session=None, datatype=None, bids_root=None,
                       make_dir=True, overwrite=False, verbose=False):
     """Create a BIDS folder hierarchy.
 
@@ -556,8 +556,8 @@ def make_bids_folders(subject, session=None, modality=None, bids_root=None,
     ----------
     subject : str
         The subject ID. Corresponds to "sub".
-    modality : str
-        The "modality" of folder being created at the end of the hierarchy. 
+    datatype : str
+        The "datatype" of folder being created at the end of the hierarchy.
         E.g., "anat", "func", "eeg", "meg", "ieeg", etc.
     session : str | None
         The session for a item. Corresponds to "ses".
@@ -584,12 +584,12 @@ def make_bids_folders(subject, session=None, modality=None, bids_root=None,
     Examples
     --------
     >>> make_bids_folders('sub_01', session='mysession',
-                          modality='meg', bids_root='/path/to/project',
+                          datatype='meg', bids_root='/path/to/project',
                           make_dir=False)
     '/path/to/project/sub-sub_01/ses-mysession/meg'
 
     """  # noqa
-    _check_types((subject, modality, session))
+    _check_types((subject, datatype, session))
     if bids_root is not None:
         bids_root = _path_to_str(bids_root)
 
@@ -599,8 +599,8 @@ def make_bids_folders(subject, session=None, modality=None, bids_root=None,
     path = [f'sub-{subject}']
     if isinstance(session, str):
         path.append(f'ses-{session}')
-    if isinstance(modality, str):
-        path.append(modality)
+    if isinstance(datatype, str):
+        path.append(datatype)
     path = op.join(*path)
     if isinstance(bids_root, str):
         path = op.join(bids_root, path)
@@ -797,12 +797,12 @@ def get_modalities(bids_root):
     """
     # Take all possible "modalities" from "entity" table
     # (Appendix in BIDS spec)
-    modality_list = ('anat', 'func', 'dwi', 'fmap', 'beh',
+    datatype_list = ('anat', 'func', 'dwi', 'fmap', 'beh',
                      'meg', 'eeg', 'ieeg')
     modalities = list()
     for root, dirs, files in os.walk(bids_root):
         for dir in dirs:
-            if dir in modality_list and dir not in modalities:
+            if dir in datatype_list and dir not in modalities:
                 modalities.append(dir)
 
     return modalities
@@ -1012,7 +1012,7 @@ def _get_modalities_for_sub(*, bids_root, sub, ses=None):
     return available_modalities
 
 
-def _infer_modality(*, bids_root, sub, ses):
+def _infer_datatype(*, bids_root, sub, ses):
     # Check which suffix is available for this particular
     # subject & session. If we get no or multiple hits, throw an error.
 
@@ -1025,7 +1025,7 @@ def _infer_modality(*, bids_root, sub, ses):
     if not modalities:
         raise ValueError('No electrophysiological data found.')
     elif len(modalities) >= 2:
-        msg = (f'Found data of more than one recording modality. Please '
+        msg = (f'Found data of more than one recording datatype. Please '
                f'pass the `suffix` parameter to specify which data to load. '
                f'Found the following modalitiess: {modalities}')
         raise RuntimeError(msg)

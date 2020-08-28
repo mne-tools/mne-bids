@@ -136,22 +136,22 @@ def test_make_folders():
     """Test that folders are created and named properly."""
     # Make sure folders are created properly
     bids_root = _TempDir()
-    make_bids_folders(subject='hi', session='foo', modality='ba',
+    make_bids_folders(subject='hi', session='foo', datatype='ba',
                       bids_root=bids_root)
     assert op.isdir(op.join(bids_root, 'sub-hi', 'ses-foo', 'ba'))
 
     # If we remove a kwarg the folder shouldn't be created
     bids_root = _TempDir()
-    make_bids_folders(subject='hi', modality='ba', bids_root=bids_root)
+    make_bids_folders(subject='hi', datatype='ba', bids_root=bids_root)
     assert op.isdir(op.join(bids_root, 'sub-hi', 'ba'))
 
     # check overwriting of folders
-    make_bids_folders(subject='hi', modality='ba', bids_root=bids_root,
+    make_bids_folders(subject='hi', datatype='ba', bids_root=bids_root,
                       overwrite=True, verbose=True)
 
     # Check if a pathlib.Path bids_root works.
     bids_root = Path(_TempDir())
-    make_bids_folders(subject='hi', session='foo', modality='ba',
+    make_bids_folders(subject='hi', session='foo', datatype='ba',
                       bids_root=bids_root)
     assert op.isdir(op.join(bids_root, 'sub-hi', 'ses-foo', 'ba'))
 
@@ -159,7 +159,7 @@ def test_make_folders():
     bids_root = _TempDir()
     curr_dir = os.getcwd()
     os.chdir(bids_root)
-    make_bids_folders(subject='hi', session='foo', modality='ba',
+    make_bids_folders(subject='hi', session='foo', datatype='ba',
                       bids_root=None)
     assert op.isdir(op.join(os.getcwd(), 'sub-hi', 'ses-foo', 'ba'))
     os.chdir(curr_dir)
@@ -299,8 +299,8 @@ def test_bids_path_inference(return_bids_test_dir):
     with pytest.raises(RuntimeError, match='Found data of more than one'):
         channels_fname.fpath
 
-    # if you set modality, now there is no ambiguity
-    channels_fname.update(modality='eeg')
+    # if you set datatype, now there is no ambiguity
+    channels_fname.update(datatype='eeg')
     assert str(channels_fname.fpath) == extra_file
     # set state back to original
     shutil.rmtree(Path(extra_file).parent)
@@ -326,7 +326,7 @@ def test_bids_path(return_bids_test_dir):
     assert op.dirname(bids_path.fpath).startswith(bids_root)
 
     # when bids root is not passed in, passes relative path
-    bids_path2 = bids_path.copy().update(modality='meg', root=None)
+    bids_path2 = bids_path.copy().update(datatype='meg', root=None)
     expected_relpath = op.join(
         f'sub-{subject_id}', f'ses-{session_id}', 'meg',
         expected_basename + '_meg')
@@ -364,7 +364,7 @@ def test_bids_path(return_bids_test_dir):
     assert all(bids_path.entities.get(entity) is None
                for entity in ['task', 'run', 'recording', 'acquisition',
                               'space', 'processing', 'split',
-                              'root', 'modality',
+                              'root', 'datatype',
                               'suffix', 'extension'])
 
     # test updating functionality
@@ -410,10 +410,10 @@ def test_bids_path(return_bids_test_dir):
     bids_path = BIDSPath(subject=subject_id, session=session_id,
                          suffix=suffix, check=False)
     # also inherits error check from instantiation
-    # always error check modality
-    with pytest.raises(ValueError, match='"modality" can only be '
+    # always error check datatype
+    with pytest.raises(ValueError, match='"datatype" can only be '
                                          'one of'):
-        bids_path.copy().update(modality=error_kind)
+        bids_path.copy().update(datatype=error_kind)
 
     # suffix won't be error checks if initial check was false
     bids_path.update(suffix=suffix)

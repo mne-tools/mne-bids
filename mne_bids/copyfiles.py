@@ -184,7 +184,7 @@ def copyfile_kit(src, dest, subject_id, session_id,
     # KIT data requires the marker file to be copied over too
     sh.copyfile(src, dest)
     data_path = op.split(dest)[0]
-    modality = 'meg'
+    datatype = 'meg'
     if 'mrk' in _init_kwargs:
         hpi = _init_kwargs['mrk']
         acq_map = dict()
@@ -200,7 +200,7 @@ def copyfile_kit(src, dest, subject_id, session_id,
             marker_path = BIDSPath(
                 subject=subject_id, session=session_id, task=task, run=run,
                 acquisition=key, suffix='markers', extension=marker_ext,
-                modality=modality)
+                datatype=datatype)
             sh.copyfile(value, op.join(data_path, marker_path.basename))
     for acq in ['elp', 'hsp']:
         if acq in _init_kwargs:
@@ -210,7 +210,7 @@ def copyfile_kit(src, dest, subject_id, session_id,
             position_path = BIDSPath(
                 subject=subject_id, session=session_id, task=task, run=run,
                 acquisition=acq, suffix='headshape', extension=position_ext,
-                modality=modality)
+                datatype=datatype)
             sh.copyfile(position_file,
                         op.join(data_path, position_path.basename))
 

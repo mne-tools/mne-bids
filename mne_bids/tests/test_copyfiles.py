@@ -21,7 +21,7 @@ with warnings.catch_warnings():
 from mne.datasets import testing
 from mne.utils import _TempDir
 from mne_bids import BIDSPath
-from mne_bids.utils import _handle_modality
+from mne_bids.utils import _handle_datatype
 from mne_bids.path import _parse_ext
 
 from mne_bids.copyfiles import (_get_brainvision_encoding,
@@ -154,16 +154,16 @@ def test_copyfile_kit():
         raw_fname, mrk=hpi_fname, elp=electrode_fname,
         hsp=headshape_fname)
     _, ext = _parse_ext(raw_fname, verbose=True)
-    modality = _handle_modality(raw)
+    datatype = _handle_datatype(raw)
 
     bids_path = BIDSPath(
         subject=subject_id, session=session_id, run=run, acquisition=acq,
         task=task)
     kit_bids_path = bids_path.copy().update(acquisition=None,
-                                            modality=modality,
+                                            datatype=datatype,
                                             root=output_path)
-    bids_fname = str(bids_path.copy().update(modality=modality,
-                                             suffix=modality,
+    bids_fname = str(bids_path.copy().update(datatype=datatype,
+                                             suffix=datatype,
                                              extension=ext,
                                              root=output_path))
 
@@ -184,7 +184,7 @@ def test_copyfile_kit():
         elp_fname = BIDSPath(
             subject=subject_id, session=session_id, task=task, run=run,
             acquisition=key, suffix='headshape', extension=elp_ext,
-            modality='meg', root=output_path)
+            datatype='meg', root=output_path)
         assert op.exists(elp_fname)
 
     if op.exists(headshape_fname):
@@ -193,5 +193,5 @@ def test_copyfile_kit():
         hsp_fname = BIDSPath(
             subject=subject_id, session=session_id, task=task, run=run,
             acquisition=key, suffix='headshape', extension=hsp_ext,
-            modality='meg', root=output_path)
+            datatype='meg', root=output_path)
         assert op.exists(hsp_fname)
