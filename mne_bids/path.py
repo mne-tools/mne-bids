@@ -413,7 +413,7 @@ class BIDSPath(object):
 
         Returns
         -------
-        paths : List[BIDSPath]
+        paths : list of BIDSPath
             All paths with matching basenames as a BIDSPath.
         """
         if self.root is None:
