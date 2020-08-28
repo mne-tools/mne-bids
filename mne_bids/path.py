@@ -69,8 +69,9 @@ class BIDSPath(object):
     extension : str | None
         The extension of the filename. E.g., ``'.json'``.
     datatype : str
-        The "datatype" of folder being created at the end of the hierarchy.
-        E.g., "anat", "func", "eeg", "meg", "ieeg", etc.
+        The "data type" of folder being created at the end of the folder
+        hierarchy. E.g., ``'anat'``, ``'func'``, ``'eeg'``, ``'meg'``,
+        ``'ieeg'``, etc.
     root : str | None
         The root for the filename to be created. E.g., a path to the folder
         in which you wish to create a file with this name.
