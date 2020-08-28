@@ -1083,7 +1083,7 @@ def _filter_fnames(fnames, *, subject=None, session=None, task=None,
     return fnames_filtered
 
 
-def _get_matched_basenames(bids_root, *, subject=None, session=None, task=None,
+def _get_matched_bids_paths(bids_root, *, subject=None, session=None, task=None,
                            acquisition=None, run=None, processing=None,
                            recording=None, space=None, suffix=None, split=None,
                            extension=None, datatype=None):
