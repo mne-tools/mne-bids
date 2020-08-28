@@ -414,7 +414,7 @@ class BIDSPath(object):
         Returns
         -------
         paths : list of BIDSPath
-            All paths with matching basenames as a BIDSPath.
+            The matching paths.
         """
         if self.root is None:
             raise RuntimeError('Cannot match basenames if `root` '
