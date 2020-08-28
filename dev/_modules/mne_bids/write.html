@@ -149,8 +149,7 @@
                             <span class="n">_handle_datatype</span><span class="p">,</span> <span class="n">_get_ch_type_mapping</span><span class="p">,</span>
                             <span class="n">_check_anonymize</span><span class="p">,</span> <span class="n">_stamp_to_dt</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">mne_bids</span> <span class="kn">import</span> <span class="n">make_bids_folders</span>
-<span class="kn">from</span> <span class="nn">mne_bids.path</span> <span class="kn">import</span> <span class="p">(</span><span class="n">BIDSPath</span><span class="p">,</span> <span class="n">_parse_ext</span><span class="p">,</span> <span class="n">_mkdir_p</span><span class="p">,</span> <span class="n">_path_to_str</span><span class="p">,</span>
-                           <span class="n">_convert_str_to_bids_path</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">mne_bids.path</span> <span class="kn">import</span> <span class="p">(</span><span class="n">BIDSPath</span><span class="p">,</span> <span class="n">_parse_ext</span><span class="p">,</span> <span class="n">_mkdir_p</span><span class="p">,</span> <span class="n">_path_to_str</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">mne_bids.copyfiles</span> <span class="kn">import</span> <span class="p">(</span><span class="n">copyfile_brainvision</span><span class="p">,</span> <span class="n">copyfile_eeglab</span><span class="p">,</span>
                                 <span class="n">copyfile_ctf</span><span class="p">,</span> <span class="n">copyfile_bti</span><span class="p">,</span> <span class="n">copyfile_kit</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">mne_bids.tsv_handler</span> <span class="kn">import</span> <span class="p">(</span><span class="n">_from_tsv</span><span class="p">,</span> <span class="n">_drop</span><span class="p">,</span> <span class="n">_contains_row</span><span class="p">,</span>
@@ -913,7 +912,7 @@
     <span class="n">_write_json</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="write_raw_bids"><a class="viewcode-back" href="../../generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids">[docs]</a><span class="k">def</span> <span class="nf">write_raw_bids</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_path</span><span class="p">,</span> <span class="n">bids_root</span><span class="p">,</span> <span class="n">events_data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<div class="viewcode-block" id="write_raw_bids"><a class="viewcode-back" href="../../generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids">[docs]</a><span class="k">def</span> <span class="nf">write_raw_bids</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_path</span><span class="p">,</span> <span class="n">events_data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                    <span class="n">event_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">anonymize</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                    <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Save raw data to a BIDS-compliant folder structure.</span>
@@ -933,22 +932,27 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    raw : instance of mne.io.Raw</span>
-<span class="sd">        The raw data. It must be an instance of mne.Raw. The data should not be</span>
-<span class="sd">        loaded from disk, i.e., raw.preload must be False.</span>
-<span class="sd">    bids_path : str | BIDSPath</span>
-<span class="sd">        The base filename of the BIDS compatible files. Typically, this can be</span>
-<span class="sd">        generated using :func:`mne_bids.BIDSPath`, and then calling</span>
-<span class="sd">        ``basename`` property.</span>
-<span class="sd">        Example: `sub-01_ses-01_task-testing_acq-01_run-01`.</span>
-<span class="sd">        This will write the following files in the correct subfolder of the</span>
-<span class="sd">        bids_root::</span>
+<span class="sd">        The raw data. It must be an instance of `mne.io.Raw`. The data</span>
+<span class="sd">        should not be loaded from disk, i.e., ``raw.preload`` must be</span>
+<span class="sd">        ``False``.</span>
+<span class="sd">    bids_path : BIDSPath</span>
+<span class="sd">        The file to write. The `mne_bids.BIDSPath` instance passed here</span>
+<span class="sd">        **must** have the ``.root`` attribute set. If the ``.datatype``</span>
+<span class="sd">        attribute is not set, it will be inferred from the recording data type</span>
+<span class="sd">        found in ``raw``.</span>
+<span class="sd">        Example::</span>
+
+<span class="sd">            bids_path = BIDSPath(subject=&#39;01&#39;, session=&#39;01&#39;, task=&#39;testing&#39;,</span>
+<span class="sd">                                 acquisition=&#39;01&#39;, run=&#39;01&#39;, root=&#39;/data/BIDS&#39;)</span>
+
+<span class="sd">        This will write the following files in the correct subfolder ``root``::</span>
 
 <span class="sd">            sub-01_ses-01_task-testing_acq-01_run-01_meg.fif</span>
 <span class="sd">            sub-01_ses-01_task-testing_acq-01_run-01_meg.json</span>
 <span class="sd">            sub-01_ses-01_task-testing_acq-01_run-01_channels.tsv</span>
 <span class="sd">            sub-01_ses-01_task-testing_acq-01_run-01_coordsystem.json</span>
 
-<span class="sd">        and the following one if events_data is not None::</span>
+<span class="sd">        and the following one if ``events_data`` is not ``None``::</span>
 
 <span class="sd">            sub-01_ses-01_task-testing_acq-01_run-01_events.tsv</span>
 
@@ -957,65 +961,62 @@
 <span class="sd">            participants.tsv</span>
 <span class="sd">            scans.tsv</span>
 
-<span class="sd">        Note that the datatype &#39;meg&#39; is automatically inferred from the raw</span>
-<span class="sd">        object and extension &#39;.fif&#39; is copied from raw.filenames.</span>
-<span class="sd">    bids_root : str | pathlib.Path</span>
-<span class="sd">        The path of the root of the BIDS compatible folder. The session and</span>
-<span class="sd">        subject specific folders will be populated automatically by parsing</span>
-<span class="sd">        bids_path.</span>
+<span class="sd">        Note that the datatype ``&#39;meg&#39;`` is automatically inferred from the raw</span>
+<span class="sd">        object and extension ``&#39;.fif&#39;`` is copied from ``raw.filenames``.</span>
 <span class="sd">    events_data : str | pathlib.Path | array | None</span>
 <span class="sd">        The events file. If a string or a Path object, specifies the path of</span>
-<span class="sd">        the events file. If an array, the MNE events array (shape n_events, 3).</span>
-<span class="sd">        If None, events will be inferred from the stim channel using</span>
+<span class="sd">        the events file. If an array, the MNE events array</span>
+<span class="sd">        (shape: ``(n_events, 3)``).</span>
+<span class="sd">        If ``None``, events will be inferred from the stim channel using</span>
 <span class="sd">        `mne.find_events`.</span>
 <span class="sd">    event_id : dict | None</span>
-<span class="sd">        The event id dict used to create a &#39;trial_type&#39; column in events.tsv</span>
+<span class="sd">        The event ID dictionary used to create a `trial_type` column in</span>
+<span class="sd">        ``*_events.tsv``.</span>
 <span class="sd">    anonymize : dict | None</span>
-<span class="sd">        If None (default), no anonymization is performed.</span>
-<span class="sd">        If dict, data will be anonymized depending on the keys provided with</span>
-<span class="sd">        the dict: `daysback` is a required key, `keep_his` is an optional key.</span>
+<span class="sd">        If `None` (default), no anonymization is performed.</span>
+<span class="sd">        If a dictionary, data will be anonymized depending on the dictionary</span>
+<span class="sd">        keys: ``daysback`` is a required key, ``keep_his`` is optional.</span>
 
-<span class="sd">        `daysback` : int</span>
+<span class="sd">        ``daysback`` : int</span>
 <span class="sd">            Number of days by which to move back the recording date in time.</span>
 <span class="sd">            In studies with multiple subjects the relative recording date</span>
 <span class="sd">            differences between subjects can be kept by using the same number</span>
-<span class="sd">            of `daysback` for all subject anonymizations. `daysback` should be</span>
-<span class="sd">            great enough to shift the date prior to 1925 to conform with BIDS</span>
-<span class="sd">            anonymization rules.</span>
+<span class="sd">            of ``daysback`` for all subject anonymizations. ``daysback`` should</span>
+<span class="sd">            be great enough to shift the date prior to 1925 to conform with</span>
+<span class="sd">            BIDS anonymization rules.</span>
 
-<span class="sd">        `keep_his` : bool</span>
-<span class="sd">            By default (False), all subject information next to the recording</span>
-<span class="sd">            date will be overwritten as well. If True, keep subject information</span>
-<span class="sd">            apart from the recording date.</span>
+<span class="sd">        ``keep_his`` : bool</span>
+<span class="sd">            If ``False`` (default), all subject information next to the</span>
+<span class="sd">            recording date will be overwritten as well. If True, keep subject</span>
+<span class="sd">            information apart from the recording date.</span>
 
 <span class="sd">    overwrite : bool</span>
 <span class="sd">        Whether to overwrite existing files or data in files.</span>
-<span class="sd">        Defaults to False.</span>
+<span class="sd">        Defaults to ``False``.</span>
 
-<span class="sd">        If overwrite is True, any existing files with the same BIDS parameters</span>
-<span class="sd">        will be overwritten with the exception of the `participants.tsv` and</span>
-<span class="sd">        `scans.tsv` files. For these files, parts of pre-existing data that</span>
-<span class="sd">        match the current data will be replaced. For `participants.tsv`,</span>
-<span class="sd">        specifically, age, sex and hand fields will be overwritten, while</span>
-<span class="sd">        any added fields in the `participants.json` and `participants.tsv`</span>
-<span class="sd">        by a user will be kept.</span>
-
-<span class="sd">        If overwrite is False, no existing data will be overwritten or</span>
+<span class="sd">        If ``True``, any existing files with the same BIDS parameters</span>
+<span class="sd">        will be overwritten with the exception of the ``*_participants.tsv``</span>
+<span class="sd">        and ``*_scans.tsv`` files. For these files, parts of pre-existing data</span>
+<span class="sd">        that match the current data will be replaced. For</span>
+<span class="sd">        ``*_participants.tsv``, specifically, age, sex and hand fields will be</span>
+<span class="sd">        overwritten, while any manually added fields in ``participants.json``</span>
+<span class="sd">        and ``participants.tsv`` by a user will be retained.</span>
+<span class="sd">        If ``False``, no existing data will be overwritten or</span>
 <span class="sd">        replaced.</span>
 <span class="sd">    verbose : bool</span>
-<span class="sd">        If verbose is True, this will print a snippet of the sidecar files. If</span>
-<span class="sd">        False, no content will be printed.</span>
+<span class="sd">        If ``True``, this will print a snippet of the sidecar files. Otherwise,</span>
+<span class="sd">        no content will be printed.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    bids_root : str</span>
-<span class="sd">        The path of the root of the BIDS compatible folder.</span>
+<span class="sd">        The path of the root of the BIDS-compatible folder.</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    For the participants.tsv file, the raw.info[&#39;subject_info&#39;] should be</span>
-<span class="sd">    updated and raw.info[&#39;meas_date&#39;] should not be None to compute the age</span>
-<span class="sd">    of the participant correctly.</span>
+<span class="sd">    For the ``*_participants.tsv`` file, ``raw.info[&#39;subject_info&#39;]`` should be</span>
+<span class="sd">    updated and ``raw.info[&#39;meas_date&#39;]`` should not be ``None`` to allow</span>
+<span class="sd">    computation of each participant&#39;s age correctly.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -1042,7 +1043,17 @@
     <span class="k">if</span> <span class="n">raw</span><span class="o">.</span><span class="n">preload</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">False</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;The data should not be preloaded.&#39;</span><span class="p">)</span>
 
-    <span class="n">bids_root</span> <span class="o">=</span> <span class="n">_path_to_str</span><span class="p">(</span><span class="n">bids_root</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">BIDSPath</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;&quot;bids_path&quot; must be a BIDSPath object. Please &#39;</span>
+                           <span class="s1">&#39;instantiate using mne_bids.BIDSPath().&#39;</span><span class="p">)</span>
+
+    <span class="c1"># check root available</span>
+    <span class="n">bids_root</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">root</span>
+    <span class="k">if</span> <span class="n">bids_root</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;The root of the &quot;bids_path&quot; must be set. &#39;</span>
+                         <span class="s1">&#39;Please use `bids_path.update(root=&quot;&lt;root&gt;&quot;)` &#39;</span>
+                         <span class="s1">&#39;to set the root of the BIDS folder to read.&#39;</span><span class="p">)</span>
+
     <span class="n">raw</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
     <span class="n">raw_fname</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">filenames</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -1061,10 +1072,6 @@
     <span class="n">assert_array_equal</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">times</span><span class="p">,</span> <span class="n">raw_orig</span><span class="o">.</span><span class="n">times</span><span class="p">,</span>
                        <span class="s2">&quot;raw.times should not have changed since reading&quot;</span>
                        <span class="s2">&quot; in from the file. It may have been cropped.&quot;</span><span class="p">)</span>
-
-    <span class="c1"># convert to BIDS Path</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="n">bids_path</span> <span class="o">=</span> <span class="n">_convert_str_to_bids_path</span><span class="p">(</span><span class="n">bids_path</span><span class="p">)</span>
 
     <span class="n">bids_path</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
     <span class="n">subject_id</span><span class="p">,</span> <span class="n">session_id</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">subject</span><span class="p">,</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">session</span>

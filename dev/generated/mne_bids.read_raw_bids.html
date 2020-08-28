@@ -112,20 +112,17 @@
 <h1>mne_bids.read_raw_bids<a class="headerlink" href="#mne-bids-read-raw-bids" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt id="mne_bids.read_raw_bids">
-<code class="sig-prename descclassname">mne_bids.</code><code class="sig-name descname">read_raw_bids</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">bids_path</span></em>, <em class="sig-param"><span class="n">bids_root</span></em>, <em class="sig-param"><span class="n">datatype</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">extra_params</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/read.html#read_raw_bids"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.read_raw_bids" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">mne_bids.</code><code class="sig-name descname">read_raw_bids</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">bids_path</span></em>, <em class="sig-param"><span class="n">extra_params</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/read.html#read_raw_bids"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.read_raw_bids" title="Permalink to this definition">¶</a></dt>
 <dd><p>Read BIDS compatible data.</p>
 <p>Will attempt to read associated events.tsv and channels.tsv files to
 populate the returned raw object with raw.annotations and raw.info[‘bads’].</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>bids_path</strong><span class="classifier">str | BIDSPath</span></dt><dd><p>The base filename of the BIDS compatible files. Typically, this can be
-generated using <a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.BIDSPath()</span></code></a>.</p>
-</dd>
-<dt><strong>bids_root</strong><span class="classifier">str | pathlib.Path</span></dt><dd><p>Path to root of the BIDS folder</p>
-</dd>
-<dt><strong>datatype</strong><span class="classifier">str | None</span></dt><dd><p>The kind of recording to read. If <code class="docutils literal notranslate"><span class="pre">None</span></code> and only one datatype (e.g.,
-only EEG or only MEG data) is present in the dataset, it will be
+<dt><strong>bids_path</strong><span class="classifier">BIDSPath</span></dt><dd><p>The file to read. The <a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a> instance passed here
+<strong>must</strong> have the <code class="docutils literal notranslate"><span class="pre">.root</span></code> attribute set. The <code class="docutils literal notranslate"><span class="pre">.datatype</span></code> attribute
+<strong>may</strong> be set. If <code class="docutils literal notranslate"><span class="pre">.datatype</span></code> is not set and only one data type
+(e.g., only EEG or MEG data) is present in the dataset, it will be
 selected automatically.</p>
 </dd>
 <dt><strong>extra_params</strong><span class="classifier">None | dict</span></dt><dd><p>Extra parameters to be passed to MNE read_raw_* functions.
@@ -143,7 +140,7 @@ If a dict, for example: <code class="docutils literal notranslate"><span class="
 </dd>
 <dt class="field-odd">Raises</dt>
 <dd class="field-odd"><dl class="simple">
-<dt>RuntimeError</dt><dd><p>If multiple recording modalities are present in the dataset, but
+<dt>RuntimeError</dt><dd><p>If multiple recording data types are present in the dataset, but
 <code class="docutils literal notranslate"><span class="pre">datatype=None</span></code>.</p>
 </dd>
 <dt>RuntimeError</dt><dd><p>If more than one data files exist for the specified recording.</p>

@@ -43,8 +43,8 @@ raw = mne.io.read_raw_fif(raw_fname)
 raw.info['line_freq'] = 60  # specify power line frequency as required by BIDS
 
 bids_path = BIDSPath(subject='01', session='01',
-                     task='audiovisual', run='01')
-write_raw_bids(raw, bids_path, bids_root, overwrite=True)
+                     task='audiovisual', run='01', root=bids_root)
+write_raw_bids(raw, bids_path, overwrite=True)
 
 ###############################################################################
 # Specify some empty room data and run BIDS conversion on it.
@@ -65,9 +65,9 @@ print(raw_date)
 ###############################################################################
 # We also need to specify that the subject ID is 'emptyroom', and that the
 # task is 'noise' (these are BIDS rules).
-er_bids_basename = BIDSPath(subject='emptyroom', session=er_date,
-                            task='noise')
-write_raw_bids(er_raw, er_bids_basename, bids_root, overwrite=True)
+er_bids_path = BIDSPath(subject='emptyroom', session=er_date,
+                        task='noise', root=bids_root)
+write_raw_bids(er_raw, er_bids_path, overwrite=True)
 
 ###############################################################################
 # Just to illustrate, we can save more than one empty room file for different
@@ -76,11 +76,10 @@ write_raw_bids(er_raw, er_bids_basename, bids_root, overwrite=True)
 dates = ['20021204', '20021201', '20021001']
 
 for date in dates:
-    er_bids_basename = BIDSPath(subject='emptyroom', session=date,
-                                task='noise')
+    er_bids_path.update(session=date)
     er_meas_date = datetime.strptime(date, '%Y%m%d')
     er_raw.set_meas_date(er_meas_date.replace(tzinfo=timezone.utc))
-    write_raw_bids(er_raw, er_bids_basename, bids_root, overwrite=True)
+    write_raw_bids(er_raw, er_bids_path, overwrite=True)
 
 ###############################################################################
 # Let us look at the directory structure
@@ -94,10 +93,9 @@ print_dir_tree(bids_root)
 # recording that is closest in time to the experimental measurement.
 from mne_bids import get_matched_empty_room # noqa
 
-best_er_basename = get_matched_empty_room(bids_path=bids_path,
-                                          bids_root=bids_root)
+best_er_basename = get_matched_empty_room(bids_path=bids_path)
 print(best_er_basename)
 
 ###############################################################################
 # Finally, we can read the empty room file using
-raw = read_raw_bids(bids_path=best_er_basename, bids_root=bids_root)
+raw = read_raw_bids(bids_path=best_er_basename)

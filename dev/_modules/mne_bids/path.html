@@ -180,8 +180,9 @@
 <span class="sd">    extension : str | None</span>
 <span class="sd">        The extension of the filename. E.g., ``&#39;.json&#39;``.</span>
 <span class="sd">    datatype : str</span>
-<span class="sd">        The &quot;datatype&quot; of folder being created at the end of the hierarchy.</span>
-<span class="sd">        E.g., &quot;anat&quot;, &quot;func&quot;, &quot;eeg&quot;, &quot;meg&quot;, &quot;ieeg&quot;, etc.</span>
+<span class="sd">        The &quot;data type&quot; of folder being created at the end of the folder</span>
+<span class="sd">        hierarchy. E.g., ``&#39;anat&#39;``, ``&#39;func&#39;``, ``&#39;eeg&#39;``, ``&#39;meg&#39;``,</span>
+<span class="sd">        ``&#39;ieeg&#39;``, etc.</span>
 <span class="sd">    root : str | None</span>
 <span class="sd">        The root for the filename to be created. E.g., a path to the folder</span>
 <span class="sd">        in which you wish to create a file with this name.</span>
@@ -305,6 +306,7 @@
         <span class="sd">&quot;&quot;&quot;Representation in the style of `pathlib.Path`.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1">(</span><span class="se">\n</span><span class="s1">&#39;</span> \
                <span class="sa">f</span><span class="s1">&#39;root: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span> \
+               <span class="sa">f</span><span class="s1">&#39;datatype: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">datatype</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span> \
                <span class="sa">f</span><span class="s1">&#39;basename: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">basename</span><span class="si">}</span><span class="s1">)&#39;</span>
 
     <span class="k">def</span> <span class="nf">__fspath__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -355,9 +357,6 @@
         <span class="c1"># file-suffix will allow &#39;meg&#39;, &#39;eeg&#39;, &#39;ieeg&#39;, &#39;anat&#39;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">data_path</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">suffix</span> <span class="ow">in</span> <span class="n">SUFFIX_TO_DATATYPE</span><span class="p">:</span>
-            <span class="c1"># infers path suffix from the suffix</span>
-            <span class="n">data_path</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="n">SUFFIX_TO_DATATYPE</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">suffix</span><span class="p">])</span>
 
         <span class="c1"># account for MEG data that are directory-based</span>
         <span class="c1"># else, all other file paths attempt to match</span>
@@ -502,6 +501,15 @@
                 <span class="n">val</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
             <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
 
+        <span class="c1"># infer datatype if suffix is uniquely the datatype</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> \
+                <span class="bp">self</span><span class="o">.</span><span class="n">suffix</span> <span class="ow">in</span> <span class="n">SUFFIX_TO_DATATYPE</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="n">SUFFIX_TO_DATATYPE</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">suffix</span><span class="p">]</span>
+        <span class="c1"># set datatype based on suffix if calling update</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">suffix</span> <span class="ow">in</span> <span class="n">SUFFIX_TO_DATATYPE</span> <span class="ow">and</span> \
+                <span class="s1">&#39;datatype&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">entities</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="n">SUFFIX_TO_DATATYPE</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">suffix</span><span class="p">]</span>
+
         <span class="c1"># Update .check attribute and perform a check of the entities.</span>
         <span class="k">if</span> <span class="n">check</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">check</span> <span class="o">=</span> <span class="n">check</span>
@@ -526,11 +534,6 @@
                              <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">ALLOWED_DATATYPES</span><span class="si">}</span><span class="s1">. You passed in &#39;</span>
                              <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">datatype</span><span class="si">}</span><span class="s1">, which is not &#39;</span>
                              <span class="sa">f</span><span class="s1">&#39;BIDS compliant. &#39;</span><span class="p">)</span>
-
-        <span class="c1"># infer datatype if suffix is uniquely the datatype</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> \
-                <span class="bp">self</span><span class="o">.</span><span class="n">suffix</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;eeg&#39;</span><span class="p">,</span> <span class="s1">&#39;meg&#39;</span><span class="p">,</span> <span class="s1">&#39;ieeg&#39;</span><span class="p">,</span> <span class="s1">&#39;T1w&#39;</span><span class="p">]:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="n">SUFFIX_TO_DATATYPE</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">suffix</span><span class="p">]</span>
 
         <span class="c1"># perform deeper check if user has it turned on</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">check</span><span class="p">:</span>
@@ -609,13 +612,6 @@
             <span class="n">bids_path</span><span class="o">.</span><span class="n">processing</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">True</span>
     <span class="k">return</span> <span class="kc">False</span>
-
-
-<span class="k">def</span> <span class="nf">_convert_str_to_bids_path</span><span class="p">(</span><span class="n">bids_basename</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Convert string of bids basename to BIDSPath object.&quot;&quot;&quot;</span>
-    <span class="n">params</span> <span class="o">=</span> <span class="n">get_entities_from_fname</span><span class="p">(</span><span class="n">bids_basename</span><span class="p">)</span>
-    <span class="n">bids_path</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span><span class="o">**</span><span class="n">params</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">bids_path</span>
 
 
 <div class="viewcode-block" id="print_dir_tree"><a class="viewcode-back" href="../../generated/mne_bids.print_dir_tree.html#mne_bids.print_dir_tree">[docs]</a><span class="k">def</span> <span class="nf">print_dir_tree</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="n">max_depth</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>

@@ -137,8 +137,7 @@
 <span class="kn">from</span> <span class="nn">mne_bids.utils</span> <span class="kn">import</span> <span class="n">_extract_landmarks</span><span class="p">,</span> <span class="n">_get_ch_type_mapping</span>
 <span class="kn">from</span> <span class="nn">mne_bids</span> <span class="kn">import</span> <span class="n">make_bids_folders</span>
 <span class="kn">from</span> <span class="nn">mne_bids.path</span> <span class="kn">import</span> <span class="p">(</span><span class="n">BIDSPath</span><span class="p">,</span> <span class="n">_parse_ext</span><span class="p">,</span> <span class="n">get_entities_from_fname</span><span class="p">,</span>
-                           <span class="n">_find_matching_sidecar</span><span class="p">,</span> <span class="n">_infer_datatype</span><span class="p">,</span>
-                           <span class="n">_convert_str_to_bids_path</span><span class="p">)</span>
+                           <span class="n">_find_matching_sidecar</span><span class="p">,</span> <span class="n">_infer_datatype</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">_read_raw</span><span class="p">(</span><span class="n">raw_fpath</span><span class="p">,</span> <span class="n">electrode</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hsp</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hpi</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -390,8 +389,7 @@
     <span class="k">return</span> <span class="n">raw</span>
 
 
-<div class="viewcode-block" id="read_raw_bids"><a class="viewcode-back" href="../../generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids">[docs]</a><span class="k">def</span> <span class="nf">read_raw_bids</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">bids_root</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">extra_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                  <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="read_raw_bids"><a class="viewcode-back" href="../../generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids">[docs]</a><span class="k">def</span> <span class="nf">read_raw_bids</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">extra_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Read BIDS compatible data.</span>
 
 <span class="sd">    Will attempt to read associated events.tsv and channels.tsv files to</span>
@@ -399,14 +397,11 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    bids_path : str | BIDSPath</span>
-<span class="sd">        The base filename of the BIDS compatible files. Typically, this can be</span>
-<span class="sd">        generated using :func:`mne_bids.BIDSPath`.</span>
-<span class="sd">    bids_root : str | pathlib.Path</span>
-<span class="sd">        Path to root of the BIDS folder</span>
-<span class="sd">    datatype : str | None</span>
-<span class="sd">        The kind of recording to read. If ``None`` and only one datatype (e.g.,</span>
-<span class="sd">        only EEG or only MEG data) is present in the dataset, it will be</span>
+<span class="sd">    bids_path : BIDSPath</span>
+<span class="sd">        The file to read. The :class:`mne_bids.BIDSPath` instance passed here</span>
+<span class="sd">        **must** have the ``.root`` attribute set. The ``.datatype`` attribute</span>
+<span class="sd">        **may** be set. If ``.datatype`` is not set and only one data type</span>
+<span class="sd">        (e.g., only EEG or MEG data) is present in the dataset, it will be</span>
 <span class="sd">        selected automatically.</span>
 <span class="sd">    extra_params : None | dict</span>
 <span class="sd">        Extra parameters to be passed to MNE read_raw_* functions.</span>
@@ -422,7 +417,7 @@
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
 <span class="sd">    RuntimeError</span>
-<span class="sd">        If multiple recording modalities are present in the dataset, but</span>
+<span class="sd">        If multiple recording data types are present in the dataset, but</span>
 <span class="sd">        ``datatype=None``.</span>
 
 <span class="sd">    RuntimeError</span>
@@ -435,12 +430,21 @@
 <span class="sd">        If the specified ``datatype`` cannot be found in the dataset.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># convert to BIDS Path</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="n">bids_path</span> <span class="o">=</span> <span class="n">_convert_str_to_bids_path</span><span class="p">(</span><span class="n">bids_path</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">BIDSPath</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;&quot;bids_path&quot; must be a BIDSPath object. Please &#39;</span>
+                           <span class="s1">&#39;instantiate using mne_bids.BIDSPath().&#39;</span><span class="p">)</span>
+
     <span class="n">bids_path</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
     <span class="n">sub</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">subject</span>
     <span class="n">ses</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">session</span>
+    <span class="n">bids_root</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">root</span>
+    <span class="n">datatype</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span>
+
+    <span class="c1"># check root available</span>
+    <span class="k">if</span> <span class="n">bids_root</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;The root of the &quot;bids_path&quot; must be set. &#39;</span>
+                         <span class="s1">&#39;Please use `bids_path.update(root=&quot;&lt;root&gt;&quot;)` &#39;</span>
+                         <span class="s1">&#39;to set the root of the BIDS folder to read.&#39;</span><span class="p">)</span>
 
     <span class="c1"># set root, infer the datatype and</span>
     <span class="c1"># then set it to the datatype and suffix of the BIDSPath</span>
@@ -527,16 +531,15 @@
     <span class="k">return</span> <span class="n">raw</span></div>
 
 
-<div class="viewcode-block" id="get_matched_empty_room"><a class="viewcode-back" href="../../generated/mne_bids.get_matched_empty_room.html#mne_bids.get_matched_empty_room">[docs]</a><span class="k">def</span> <span class="nf">get_matched_empty_room</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">bids_root</span><span class="p">):</span>
+<div class="viewcode-block" id="get_matched_empty_room"><a class="viewcode-back" href="../../generated/mne_bids.get_matched_empty_room.html#mne_bids.get_matched_empty_room">[docs]</a><span class="k">def</span> <span class="nf">get_matched_empty_room</span><span class="p">(</span><span class="n">bids_path</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Get matching empty-room file for an MEG recording.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    bids_path : str | BIDSPath</span>
-<span class="sd">        The base filename of the BIDS-compatible file. Typically, this can be</span>
-<span class="sd">        generated using :func:`mne_bids.BIDSPath`.</span>
-<span class="sd">    bids_root : str | pathlib.Path</span>
-<span class="sd">        Path to the BIDS root folder.</span>
+<span class="sd">    bids_path : BIDSPath</span>
+<span class="sd">        The path of the experimental recording for which to retrieve the</span>
+<span class="sd">        corresponding empty-room recording. The :class:`mne_bids.BIDSPath`</span>
+<span class="sd">        instance passed here **must** have the ``.root`` attribute set.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -545,9 +548,17 @@
 <span class="sd">        Returns None if none was found.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># convert to BIDS Path</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="n">bids_path</span> <span class="o">=</span> <span class="n">_convert_str_to_bids_path</span><span class="p">(</span><span class="n">bids_path</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">BIDSPath</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;&quot;bids_path&quot; must be a BIDSPath object. Please &#39;</span>
+                           <span class="s1">&#39;instantiate using mne_bids.BIDSPath().&#39;</span><span class="p">)</span>
+
+    <span class="c1"># check root available</span>
+    <span class="n">bids_root</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">root</span>
+    <span class="k">if</span> <span class="n">bids_root</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;The root of the &quot;bids_path&quot; must be set. &#39;</span>
+                         <span class="s1">&#39;Please use `bids_path.update(root=&quot;&lt;root&gt;&quot;)` &#39;</span>
+                         <span class="s1">&#39;to set the root of the BIDS folder to read.&#39;</span><span class="p">)</span>
+
     <span class="n">bids_path</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
     <span class="n">datatype</span> <span class="o">=</span> <span class="s1">&#39;meg&#39;</span>  <span class="c1"># We&#39;re only concerned about MEG data here</span>
@@ -559,8 +570,7 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">extra_params</span> <span class="o">=</span> <span class="kc">None</span>
 
-    <span class="n">raw</span> <span class="o">=</span> <span class="n">read_raw_bids</span><span class="p">(</span><span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">bids_root</span><span class="o">=</span><span class="n">bids_root</span><span class="p">,</span>
-                        <span class="n">datatype</span><span class="o">=</span><span class="n">datatype</span><span class="p">,</span> <span class="n">extra_params</span><span class="o">=</span><span class="n">extra_params</span><span class="p">)</span>
+    <span class="n">raw</span> <span class="o">=</span> <span class="n">read_raw_bids</span><span class="p">(</span><span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">extra_params</span><span class="o">=</span><span class="n">extra_params</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;meas_date&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;The provided recording does not have a measurement &#39;</span>
                          <span class="s1">&#39;date set. Cannot get matching empty-room file.&#39;</span><span class="p">)</span>
@@ -631,8 +641,6 @@
                 <span class="n">extra_params</span> <span class="o">=</span> <span class="kc">None</span>
 
             <span class="n">er_raw</span> <span class="o">=</span> <span class="n">read_raw_bids</span><span class="p">(</span><span class="n">bids_path</span><span class="o">=</span><span class="n">er_bids_path</span><span class="p">,</span>
-                                   <span class="n">bids_root</span><span class="o">=</span><span class="n">bids_root</span><span class="p">,</span>
-                                   <span class="n">datatype</span><span class="o">=</span><span class="n">datatype</span><span class="p">,</span>
                                    <span class="n">extra_params</span><span class="o">=</span><span class="n">extra_params</span><span class="p">)</span>
 
             <span class="n">er_meas_date</span> <span class="o">=</span> <span class="n">er_raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;meas_date&#39;</span><span class="p">]</span>
@@ -663,7 +671,7 @@
     <span class="k">return</span> <span class="n">best_er_bids_path</span></div>
 
 
-<div class="viewcode-block" id="get_head_mri_trans"><a class="viewcode-back" href="../../generated/mne_bids.get_head_mri_trans.html#mne_bids.get_head_mri_trans">[docs]</a><span class="k">def</span> <span class="nf">get_head_mri_trans</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">bids_root</span><span class="p">):</span>
+<div class="viewcode-block" id="get_head_mri_trans"><a class="viewcode-back" href="../../generated/mne_bids.get_head_mri_trans.html#mne_bids.get_head_mri_trans">[docs]</a><span class="k">def</span> <span class="nf">get_head_mri_trans</span><span class="p">(</span><span class="n">bids_path</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Produce transformation matrix from MEG and MRI landmark points.</span>
 
 <span class="sd">    Will attempt to read the landmarks of Nasion, LPA, and RPA from the sidecar</span>
@@ -673,11 +681,10 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    bids_path : str | BIDSPath</span>
-<span class="sd">        The base filename of the BIDS-compatible file. Typically, this can be</span>
-<span class="sd">        generated using :func:`mne_bids.BIDSPath`.</span>
-<span class="sd">    bids_root : str | pathlib.Path</span>
-<span class="sd">        Path to root of the BIDS folder</span>
+<span class="sd">    bids_path : BIDSPath</span>
+<span class="sd">        The path of the recording for which to retrieve the transformation. The</span>
+<span class="sd">        :class:`mne_bids.BIDSPath` instance passed here **must** have the</span>
+<span class="sd">        ``.root`` attribute set.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -689,9 +696,18 @@
         <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s1">&#39;This function requires nibabel.&#39;</span><span class="p">)</span>
     <span class="kn">import</span> <span class="nn">nibabel</span> <span class="k">as</span> <span class="nn">nib</span>
 
-    <span class="c1"># convert to BIDS Path</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="n">bids_path</span> <span class="o">=</span> <span class="n">_convert_str_to_bids_path</span><span class="p">(</span><span class="n">bids_path</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">BIDSPath</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;&quot;bids_path&quot; must be a BIDSPath object. Please &#39;</span>
+                           <span class="s1">&#39;instantiate using mne_bids.BIDSPath().&#39;</span><span class="p">)</span>
+
+    <span class="c1"># check root available</span>
+    <span class="n">bids_root</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">root</span>
+    <span class="k">if</span> <span class="n">bids_root</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;The root of the &quot;bids_path&quot; must be set. &#39;</span>
+                         <span class="s1">&#39;Please use `bids_path.update(root=&quot;&lt;root&gt;&quot;)` &#39;</span>
+                         <span class="s1">&#39;to set the root of the BIDS folder to read.&#39;</span><span class="p">)</span>
+    <span class="c1"># only get this for MEG data</span>
+    <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">datatype</span><span class="o">=</span><span class="s1">&#39;meg&#39;</span><span class="p">)</span>
 
     <span class="c1"># Get the sidecar file for MRI landmarks</span>
     <span class="n">bids_fname</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;meg&#39;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">bids_root</span><span class="p">)</span>
@@ -738,8 +754,7 @@
     <span class="k">if</span> <span class="n">ext</span> <span class="o">==</span> <span class="s1">&#39;.fif&#39;</span><span class="p">:</span>
         <span class="n">extra_params</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">allow_maxshield</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-    <span class="n">raw</span> <span class="o">=</span> <span class="n">read_raw_bids</span><span class="p">(</span><span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">bids_root</span><span class="o">=</span><span class="n">bids_root</span><span class="p">,</span>
-                        <span class="n">extra_params</span><span class="o">=</span><span class="n">extra_params</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="s1">&#39;meg&#39;</span><span class="p">)</span>
+    <span class="n">raw</span> <span class="o">=</span> <span class="n">read_raw_bids</span><span class="p">(</span><span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">extra_params</span><span class="o">=</span><span class="n">extra_params</span><span class="p">)</span>
     <span class="n">meg_coords_dict</span> <span class="o">=</span> <span class="n">_extract_landmarks</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;dig&#39;</span><span class="p">])</span>
     <span class="n">meg_landmarks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">((</span><span class="n">meg_coords_dict</span><span class="p">[</span><span class="s1">&#39;LPA&#39;</span><span class="p">],</span>
                                 <span class="n">meg_coords_dict</span><span class="p">[</span><span class="s1">&#39;NAS&#39;</span><span class="p">],</span>

@@ -179,15 +179,15 @@ of the directory tree.</p>
 |--- files/
 |------ eegmmidb/
 |--------- 1.0.0/
-|------------ S002/
-|--------------- S002R04.edf
-|--------------- S002R12.edf
-|--------------- S002R08.edf
 |------------ S001/
 |--------------- S001R04.edf
-|--------------- S001R08.edf
 |--------------- S001R12.edf
+|--------------- S001R08.edf
 |--------------- S001R02.edf
+|------------ S002/
+|--------------- S002R12.edf
+|--------------- S002R08.edf
+|--------------- S002R04.edf
 </pre></div>
 </div>
 <p>The data are in the <a class="reference external" href="https://www.edfplus.info/">European Data Format</a> with
@@ -295,22 +295,27 @@ which are however optional. The required inputs are:</p>
     Parameters
     ----------
     raw : instance of mne.io.Raw
-        The raw data. It must be an instance of mne.Raw. The data should not be
-        loaded from disk, i.e., raw.preload must be False.
-    bids_path : str | BIDSPath
-        The base filename of the BIDS compatible files. Typically, this can be
-        generated using :func:`mne_bids.BIDSPath`, and then calling
-        ``basename`` property.
-        Example: `sub-01_ses-01_task-testing_acq-01_run-01`.
-        This will write the following files in the correct subfolder of the
-        bids_root::
+        The raw data. It must be an instance of `mne.io.Raw`. The data
+        should not be loaded from disk, i.e., ``raw.preload`` must be
+        ``False``.
+    bids_path : BIDSPath
+        The file to write. The `mne_bids.BIDSPath` instance passed here
+        **must** have the ``.root`` attribute set. If the ``.datatype``
+        attribute is not set, it will be inferred from the recording data type
+        found in ``raw``.
+        Example::
+
+            bids_path = BIDSPath(subject=&#39;01&#39;, session=&#39;01&#39;, task=&#39;testing&#39;,
+                                 acquisition=&#39;01&#39;, run=&#39;01&#39;, root=&#39;/data/BIDS&#39;)
+
+        This will write the following files in the correct subfolder ``root``::
 
             sub-01_ses-01_task-testing_acq-01_run-01_meg.fif
             sub-01_ses-01_task-testing_acq-01_run-01_meg.json
             sub-01_ses-01_task-testing_acq-01_run-01_channels.tsv
             sub-01_ses-01_task-testing_acq-01_run-01_coordsystem.json
 
-        and the following one if events_data is not None::
+        and the following one if ``events_data`` is not ``None``::
 
             sub-01_ses-01_task-testing_acq-01_run-01_events.tsv
 
@@ -319,65 +324,62 @@ which are however optional. The required inputs are:</p>
             participants.tsv
             scans.tsv
 
-        Note that the datatype &#39;meg&#39; is automatically inferred from the raw
-        object and extension &#39;.fif&#39; is copied from raw.filenames.
-    bids_root : str | pathlib.Path
-        The path of the root of the BIDS compatible folder. The session and
-        subject specific folders will be populated automatically by parsing
-        bids_path.
+        Note that the datatype ``&#39;meg&#39;`` is automatically inferred from the raw
+        object and extension ``&#39;.fif&#39;`` is copied from ``raw.filenames``.
     events_data : str | pathlib.Path | array | None
         The events file. If a string or a Path object, specifies the path of
-        the events file. If an array, the MNE events array (shape n_events, 3).
-        If None, events will be inferred from the stim channel using
+        the events file. If an array, the MNE events array
+        (shape: ``(n_events, 3)``).
+        If ``None``, events will be inferred from the stim channel using
         `mne.find_events`.
     event_id : dict | None
-        The event id dict used to create a &#39;trial_type&#39; column in events.tsv
+        The event ID dictionary used to create a `trial_type` column in
+        ``*_events.tsv``.
     anonymize : dict | None
-        If None (default), no anonymization is performed.
-        If dict, data will be anonymized depending on the keys provided with
-        the dict: `daysback` is a required key, `keep_his` is an optional key.
+        If `None` (default), no anonymization is performed.
+        If a dictionary, data will be anonymized depending on the dictionary
+        keys: ``daysback`` is a required key, ``keep_his`` is optional.
 
-        `daysback` : int
+        ``daysback`` : int
             Number of days by which to move back the recording date in time.
             In studies with multiple subjects the relative recording date
             differences between subjects can be kept by using the same number
-            of `daysback` for all subject anonymizations. `daysback` should be
-            great enough to shift the date prior to 1925 to conform with BIDS
-            anonymization rules.
+            of ``daysback`` for all subject anonymizations. ``daysback`` should
+            be great enough to shift the date prior to 1925 to conform with
+            BIDS anonymization rules.
 
-        `keep_his` : bool
-            By default (False), all subject information next to the recording
-            date will be overwritten as well. If True, keep subject information
-            apart from the recording date.
+        ``keep_his`` : bool
+            If ``False`` (default), all subject information next to the
+            recording date will be overwritten as well. If True, keep subject
+            information apart from the recording date.
 
     overwrite : bool
         Whether to overwrite existing files or data in files.
-        Defaults to False.
+        Defaults to ``False``.
 
-        If overwrite is True, any existing files with the same BIDS parameters
-        will be overwritten with the exception of the `participants.tsv` and
-        `scans.tsv` files. For these files, parts of pre-existing data that
-        match the current data will be replaced. For `participants.tsv`,
-        specifically, age, sex and hand fields will be overwritten, while
-        any added fields in the `participants.json` and `participants.tsv`
-        by a user will be kept.
-
-        If overwrite is False, no existing data will be overwritten or
+        If ``True``, any existing files with the same BIDS parameters
+        will be overwritten with the exception of the ``*_participants.tsv``
+        and ``*_scans.tsv`` files. For these files, parts of pre-existing data
+        that match the current data will be replaced. For
+        ``*_participants.tsv``, specifically, age, sex and hand fields will be
+        overwritten, while any manually added fields in ``participants.json``
+        and ``participants.tsv`` by a user will be retained.
+        If ``False``, no existing data will be overwritten or
         replaced.
     verbose : bool
-        If verbose is True, this will print a snippet of the sidecar files. If
-        False, no content will be printed.
+        If ``True``, this will print a snippet of the sidecar files. Otherwise,
+        no content will be printed.
 
     Returns
     -------
     bids_root : str
-        The path of the root of the BIDS compatible folder.
+        The path of the root of the BIDS-compatible folder.
 
     Notes
     -----
-    For the participants.tsv file, the raw.info[&#39;subject_info&#39;] should be
-    updated and raw.info[&#39;meas_date&#39;] should not be None to compute the age
-    of the participant correctly.
+    For the ``*_participants.tsv`` file, ``raw.info[&#39;subject_info&#39;]`` should be
+    updated and ``raw.info[&#39;meas_date&#39;]`` should not be ``None`` to allow
+    computation of each participant&#39;s age correctly.
 
     See Also
     --------
@@ -405,8 +407,8 @@ In the second run of the experiment, the task was to rest with closed eyes.</p>
 <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">event_id</span></a> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;rest&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
 
 <span class="c1"># Now convert our data to be in a new BIDS dataset.</span>
-<a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a> <span class="o">=</span> <a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class"><span class="n">BIDSPath</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject_id</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">task</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">task</span></a><span class="p">)</span>
-<a href="../generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">write_raw_bids</span></a><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">event_id</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">event_id</span></a><span class="p">,</span>
+<a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a> <span class="o">=</span> <a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class"><span class="n">BIDSPath</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/functions.html#int" title="builtins.int" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject_id</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">task</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">task</span></a><span class="p">,</span> <span class="n">root</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">)</span>
+<a href="../generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">write_raw_bids</span></a><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">event_id</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#dict" title="builtins.dict" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">event_id</span></a><span class="p">,</span>
                <span class="n">events_data</span><span class="o">=</span><a href="https://numpy.org/devdocs/reference/generated/numpy.ndarray.html#numpy.ndarray" title="numpy.ndarray" class="sphx-glr-backref-module-numpy sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">events</span></a><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -559,19 +561,19 @@ Wrote /home/circleci/mne_data/eegmmidb_bids_eeg_example/sub-001/sub-001_scans.ts
 </div>
 <p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>|eegmmidb_bids_eeg_example/
-|--- participants.tsv
 |--- README
-|--- participants.json
 |--- dataset_description.json
+|--- participants.tsv
+|--- participants.json
 |--- sub-001/
 |------ sub-001_scans.tsv
 |------ eeg/
 |--------- sub-001_coordsystem.json
 |--------- sub-001_task-RestEyesClosed_channels.tsv
-|--------- sub-001_task-RestEyesClosed_eeg.edf
-|--------- sub-001_task-RestEyesClosed_eeg.json
-|--------- sub-001_electrodes.tsv
 |--------- sub-001_task-RestEyesClosed_events.tsv
+|--------- sub-001_task-RestEyesClosed_eeg.edf
+|--------- sub-001_electrodes.tsv
+|--------- sub-001_task-RestEyesClosed_eeg.json
 </pre></div>
 </div>
 <p>We can see that MNE-BIDS wrote several important files related to subject 1
