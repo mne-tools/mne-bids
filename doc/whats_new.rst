@@ -78,7 +78,7 @@ API
 - Add ``datatype`` to replace ``kind`` parameter to :func:`mne_bids.make_bids_folders` and :func:`mne_bids.read_raw_bids` that allows users to specify EEG, MEG, or iEEG datasets by `Adam Li`_ (`#514 <https://github.com/mne-tools/mne-bids/pull/514>`_)
 - In :func:`mne_bids.write_raw_bids`, :func:`mne_bids.read_raw_bids`, :func:`mne_bids.get_matched_empty_room`, and :func:`mne_bids.get_head_mri_trans`, the ``bids_basename`` and ``bids_root`` keyword arguments have been removed. The functions now expect ``bids_path``, an instance of :class:`mne_bids.BIDSPath`, by `Adam Li`_ (`#525 <https://github.com/mne-tools/mne-bids/pull/525>`_)
 - The new function :func:`mne_bids.BIDSPath.match` allows uers to retrieve a list of :class:`mne_bids.BIDSPath` objects matching a specified set of entity values in the dataset, by `Richard Höchenberger`_ (`#507 <https://github.com/mne-tools/mne-bids/pull/507>`_)
-- :class:`mne_bids.BIDSPath` now has a function ``match``, which will get all matched basenames under the ``root`` directory by `Adam Li`_ (`#532 <https://github.com/mne-tools/mne-bids/pull/532>`_)
+- :class:`mne_bids.BIDSPath` now has the function ``match``, instead of ``get_matched_basenames``, by `Adam Li`_ (`#532 <https://github.com/mne-tools/mne-bids/pull/532>`_)
 
 
 .. _changes_0_4:
