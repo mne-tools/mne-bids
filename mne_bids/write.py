@@ -830,8 +830,8 @@ def write_raw_bids(raw, bids_path, events_data=None,
         found in ``raw``.
         Example::
 
-            bids_path = BIDSPath(subject='01', session='01',
-                                 task='testing', acquisition='01', run='01')
+            bids_path = BIDSPath(subject='01',
+            session='01', task='testing', acquisition='01', run='01')
 
         This will write the following files in the correct subfolder of the
         bids_root::
