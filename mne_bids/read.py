@@ -7,10 +7,8 @@
 #
 # License: BSD (3-clause)
 import os.path as op
-from datetime import datetime
 import glob
 import json
-import pathlib
 
 import numpy as np
 import mne
@@ -25,8 +23,8 @@ from mne_bids.config import (ALLOWED_DATATYPE_EXTENSIONS, reader,
                              _convert_hand_options, _convert_sex_options)
 from mne_bids.utils import _extract_landmarks, _get_ch_type_mapping
 from mne_bids import make_bids_folders
-from mne_bids.path import (BIDSPath, _parse_ext, get_entities_from_fname,
-                           _find_matching_sidecar, _infer_datatype)
+from mne_bids.path import (BIDSPath, _parse_ext, _find_matching_sidecar,
+                           _infer_datatype)
 
 
 def _read_raw(raw_fpath, electrode=None, hsp=None, hpi=None,
@@ -418,146 +416,6 @@ def read_raw_bids(bids_path, extra_params=None, verbose=True):
              "in any particpants.tsv data.".format(bids_fname))
 
     return raw
-
-
-def get_matched_empty_room(bids_path):
-    """Get matching empty-room file for an MEG recording.
-
-    Parameters
-    ----------
-    bids_path : BIDSPath
-        The path of the experimental recording for which to retrieve the
-        corresponding empty-room recording. The :class:`mne_bids.BIDSPath`
-        instance passed here **must** have the ``.root`` attribute set.
-
-    Returns
-    -------
-    BIDSPath | None
-        The path corresponding to the best-matching empty-room measurement.
-        Returns None if none was found.
-
-    """
-    if not isinstance(bids_path, BIDSPath):
-        raise RuntimeError('"bids_path" must be a BIDSPath object. Please '
-                           'instantiate using mne_bids.BIDSPath().')
-
-    # check root available
-    bids_root = bids_path.root
-    if bids_root is None:
-        raise ValueError('The root of the "bids_path" must be set. '
-                         'Please use `bids_path.update(root="<root>")` '
-                         'to set the root of the BIDS folder to read.')
-
-    bids_path = bids_path.copy()
-
-    datatype = 'meg'  # We're only concerned about MEG data here
-    bids_fname = bids_path.update(suffix=datatype,
-                                  root=bids_root).fpath
-    _, ext = _parse_ext(bids_fname)
-    if ext == '.fif':
-        extra_params = dict(allow_maxshield=True)
-    else:
-        extra_params = None
-
-    raw = read_raw_bids(bids_path=bids_path, extra_params=extra_params)
-    if raw.info['meas_date'] is None:
-        raise ValueError('The provided recording does not have a measurement '
-                         'date set. Cannot get matching empty-room file.')
-
-    ref_date = raw.info['meas_date']
-    if not isinstance(ref_date, datetime):
-        # for MNE < v0.20
-        ref_date = datetime.fromtimestamp(raw.info['meas_date'][0])
-
-    emptyroom_dir = pathlib.Path(make_bids_folders(bids_root=bids_root,
-                                                   subject='emptyroom',
-                                                   make_dir=False))
-
-    if not emptyroom_dir.exists():
-        return None
-
-    # Find the empty-room recording sessions.
-    emptyroom_session_dirs = [x for x in emptyroom_dir.iterdir()
-                              if x.is_dir() and str(x.name).startswith('ses-')]
-    if not emptyroom_session_dirs:  # No session sub-directories found
-        emptyroom_session_dirs = [emptyroom_dir]
-
-    # Now try to discover all recordings inside the session directories.
-
-    allowed_extensions = list(reader.keys())
-    # `.pdf` is just a "virtual" extension for BTi data (which is stored inside
-    # a dedicated directory that doesn't have an extension)
-    del allowed_extensions[allowed_extensions.index('.pdf')]
-
-    candidate_er_fnames = []
-    for session_dir in emptyroom_session_dirs:
-        dir_contents = glob.glob(op.join(session_dir, datatype,
-                                         f'sub-emptyroom_*_{datatype}*'))
-        for item in dir_contents:
-            item = pathlib.Path(item)
-            if ((item.suffix in allowed_extensions) or
-                    (not item.suffix and item.is_dir())):  # Hopefully BTi?
-                candidate_er_fnames.append(item.name)
-
-    # Walk through recordings, trying to extract the recording date:
-    # First, from the filename; and if that fails, from `info['meas_date']`.
-    best_er_bids_path = None
-    min_delta_t = np.inf
-    date_tie = False
-
-    failed_to_get_er_date_count = 0
-    for er_fname in candidate_er_fnames:
-        params = get_entities_from_fname(er_fname)
-        er_meas_date = None
-        params.pop('subject')  # er subject entity is different
-        er_bids_path = BIDSPath(subject='emptyroom', **params, datatype='meg',
-                                root=bids_root, check=False)
-
-        # Try to extract date from filename.
-        if params['session'] is not None:
-            try:
-                er_meas_date = datetime.strptime(params['session'], '%Y%m%d')
-            except (ValueError, TypeError):
-                # There is a session in the filename, but it doesn't encode a
-                # valid date.
-                pass
-
-        if er_meas_date is None:  # No luck so far! Check info['meas_date']
-            _, ext = _parse_ext(er_fname)
-            if ext == '.fif':
-                extra_params = dict(allow_maxshield=True)
-            else:
-                extra_params = None
-
-            er_raw = read_raw_bids(bids_path=er_bids_path,
-                                   extra_params=extra_params)
-
-            er_meas_date = er_raw.info['meas_date']
-            if er_meas_date is None:  # There's nothing we can do.
-                failed_to_get_er_date_count += 1
-                continue
-
-        er_meas_date = er_meas_date.replace(tzinfo=ref_date.tzinfo)
-        delta_t = er_meas_date - ref_date
-
-        if abs(delta_t.total_seconds()) == min_delta_t:
-            date_tie = True
-        elif abs(delta_t.total_seconds()) < min_delta_t:
-            min_delta_t = abs(delta_t.total_seconds())
-            best_er_bids_path = er_bids_path
-            date_tie = False
-
-    if failed_to_get_er_date_count > 0:
-        msg = (f'Could not retrieve the empty-room measurement date from '
-               f'a total of {failed_to_get_er_date_count} recording(s).')
-        warn(msg)
-
-    if date_tie:
-        msg = ('Found more than one matching empty-room measurement with the '
-               'same recording date. Selecting the first match.')
-        warn(msg)
-
-    return best_er_bids_path
 
 
 def get_head_mri_trans(bids_path):

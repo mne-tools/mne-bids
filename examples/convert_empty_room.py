@@ -91,11 +91,11 @@ print_dir_tree(bids_root)
 # room recording be as close in date as the raw data.
 # We can retrieve the basename corresponding to the empty room
 # recording that is closest in time to the experimental measurement.
-from mne_bids import get_matched_empty_room # noqa
 
-best_er_basename = get_matched_empty_room(bids_path=bids_path)
-print(best_er_basename)
+er_bids_path = bids_path.find_empty_room()
+print(er_bids_path)
 
 ###############################################################################
 # Finally, we can read the empty room file using
-raw = read_raw_bids(bids_path=best_er_basename)
+raw = read_raw_bids(bids_path=er_bids_path)
+print(raw)
