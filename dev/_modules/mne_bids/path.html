@@ -121,16 +121,141 @@
 <span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
 <span class="kn">from</span> <span class="nn">os</span> <span class="kn">import</span> <span class="n">path</span> <span class="k">as</span> <span class="n">op</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
 
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="n">warn</span><span class="p">,</span> <span class="n">logger</span>
 
 <span class="kn">from</span> <span class="nn">mne_bids.config</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">ALLOWED_PATH_ENTITIES</span><span class="p">,</span> <span class="n">ALLOWED_FILENAME_EXTENSIONS</span><span class="p">,</span>
     <span class="n">ALLOWED_FILENAME_SUFFIX</span><span class="p">,</span> <span class="n">ALLOWED_PATH_ENTITIES_SHORT</span><span class="p">,</span>
-    <span class="n">ALLOWED_DATATYPES</span><span class="p">,</span> <span class="n">SUFFIX_TO_DATATYPE</span><span class="p">,</span> <span class="n">ALLOWED_DATATYPE_EXTENSIONS</span><span class="p">)</span>
+    <span class="n">ALLOWED_DATATYPES</span><span class="p">,</span> <span class="n">SUFFIX_TO_DATATYPE</span><span class="p">,</span> <span class="n">ALLOWED_DATATYPE_EXTENSIONS</span><span class="p">,</span>
+    <span class="n">reader</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">mne_bids.utils</span> <span class="kn">import</span> <span class="p">(</span><span class="n">_check_key_val</span><span class="p">,</span> <span class="n">_check_empty_room_basename</span><span class="p">,</span>
                             <span class="n">_check_types</span><span class="p">,</span> <span class="n">param_regex</span><span class="p">,</span>
                             <span class="n">_ensure_tuple</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_get_matched_empty_room</span><span class="p">(</span><span class="n">bids_path</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Get matching empty-room file for an MEG recording.&quot;&quot;&quot;</span>
+    <span class="c1"># Check whether we have a BIDS root.</span>
+    <span class="n">bids_root</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">root</span>
+    <span class="k">if</span> <span class="n">bids_root</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;The root of the &quot;bids_path&quot; must be set. &#39;</span>
+                         <span class="s1">&#39;Please use `bids_path.update(root=&quot;&lt;root&gt;&quot;)` &#39;</span>
+                         <span class="s1">&#39;to set the root of the BIDS folder to read.&#39;</span><span class="p">)</span>
+
+    <span class="kn">from</span> <span class="nn">mne_bids</span> <span class="kn">import</span> <span class="n">read_raw_bids</span>  <span class="c1"># avoid circular import.</span>
+    <span class="n">bids_path</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+    <span class="n">datatype</span> <span class="o">=</span> <span class="s1">&#39;meg&#39;</span>  <span class="c1"># We&#39;re only concerned about MEG data here</span>
+    <span class="n">bids_fname</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="n">datatype</span><span class="p">,</span>
+                                  <span class="n">root</span><span class="o">=</span><span class="n">bids_root</span><span class="p">)</span><span class="o">.</span><span class="n">fpath</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">ext</span> <span class="o">=</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">ext</span> <span class="o">==</span> <span class="s1">&#39;.fif&#39;</span><span class="p">:</span>
+        <span class="n">extra_params</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">allow_maxshield</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">extra_params</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">raw</span> <span class="o">=</span> <span class="n">read_raw_bids</span><span class="p">(</span><span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">extra_params</span><span class="o">=</span><span class="n">extra_params</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;meas_date&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;The provided recording does not have a measurement &#39;</span>
+                         <span class="s1">&#39;date set. Cannot get matching empty-room file.&#39;</span><span class="p">)</span>
+
+    <span class="n">ref_date</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;meas_date&#39;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ref_date</span><span class="p">,</span> <span class="n">datetime</span><span class="p">):</span>
+        <span class="c1"># for MNE &lt; v0.20</span>
+        <span class="n">ref_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;meas_date&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="n">emptyroom_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">make_bids_folders</span><span class="p">(</span><span class="n">bids_root</span><span class="o">=</span><span class="n">bids_root</span><span class="p">,</span>
+                                           <span class="n">subject</span><span class="o">=</span><span class="s1">&#39;emptyroom&#39;</span><span class="p">,</span>
+                                           <span class="n">make_dir</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">emptyroom_dir</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="c1"># Find the empty-room recording sessions.</span>
+    <span class="n">emptyroom_session_dirs</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">emptyroom_dir</span><span class="o">.</span><span class="n">iterdir</span><span class="p">()</span>
+                              <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">is_dir</span><span class="p">()</span> <span class="ow">and</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;ses-&#39;</span><span class="p">)]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">emptyroom_session_dirs</span><span class="p">:</span>  <span class="c1"># No session sub-directories found</span>
+        <span class="n">emptyroom_session_dirs</span> <span class="o">=</span> <span class="p">[</span><span class="n">emptyroom_dir</span><span class="p">]</span>
+
+    <span class="c1"># Now try to discover all recordings inside the session directories.</span>
+
+    <span class="n">allowed_extensions</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">reader</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+    <span class="c1"># `.pdf` is just a &quot;virtual&quot; extension for BTi data (which is stored inside</span>
+    <span class="c1"># a dedicated directory that doesn&#39;t have an extension)</span>
+    <span class="k">del</span> <span class="n">allowed_extensions</span><span class="p">[</span><span class="n">allowed_extensions</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s1">&#39;.pdf&#39;</span><span class="p">)]</span>
+
+    <span class="n">candidate_er_fnames</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">session_dir</span> <span class="ow">in</span> <span class="n">emptyroom_session_dirs</span><span class="p">:</span>
+        <span class="n">dir_contents</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">session_dir</span><span class="p">,</span> <span class="n">datatype</span><span class="p">,</span>
+                                         <span class="sa">f</span><span class="s1">&#39;sub-emptyroom_*_</span><span class="si">{</span><span class="n">datatype</span><span class="si">}</span><span class="s1">*&#39;</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">dir_contents</span><span class="p">:</span>
+            <span class="n">item</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+            <span class="k">if</span> <span class="p">((</span><span class="n">item</span><span class="o">.</span><span class="n">suffix</span> <span class="ow">in</span> <span class="n">allowed_extensions</span><span class="p">)</span> <span class="ow">or</span>
+                    <span class="p">(</span><span class="ow">not</span> <span class="n">item</span><span class="o">.</span><span class="n">suffix</span> <span class="ow">and</span> <span class="n">item</span><span class="o">.</span><span class="n">is_dir</span><span class="p">())):</span>  <span class="c1"># Hopefully BTi?</span>
+                <span class="n">candidate_er_fnames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+    <span class="c1"># Walk through recordings, trying to extract the recording date:</span>
+    <span class="c1"># First, from the filename; and if that fails, from `info[&#39;meas_date&#39;]`.</span>
+    <span class="n">best_er_bids_path</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">min_delta_t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span>
+    <span class="n">date_tie</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="n">failed_to_get_er_date_count</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">er_fname</span> <span class="ow">in</span> <span class="n">candidate_er_fnames</span><span class="p">:</span>
+        <span class="n">params</span> <span class="o">=</span> <span class="n">get_entities_from_fname</span><span class="p">(</span><span class="n">er_fname</span><span class="p">)</span>
+        <span class="n">er_meas_date</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">params</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;subject&#39;</span><span class="p">)</span>  <span class="c1"># er subject entity is different</span>
+        <span class="n">er_bids_path</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="s1">&#39;emptyroom&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="s1">&#39;meg&#39;</span><span class="p">,</span>
+                                <span class="n">root</span><span class="o">=</span><span class="n">bids_root</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="c1"># Try to extract date from filename.</span>
+        <span class="k">if</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;session&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">er_meas_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;session&#39;</span><span class="p">],</span> <span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+                <span class="c1"># There is a session in the filename, but it doesn&#39;t encode a</span>
+                <span class="c1"># valid date.</span>
+                <span class="k">pass</span>
+
+        <span class="k">if</span> <span class="n">er_meas_date</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># No luck so far! Check info[&#39;meas_date&#39;]</span>
+            <span class="n">_</span><span class="p">,</span> <span class="n">ext</span> <span class="o">=</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">er_fname</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">ext</span> <span class="o">==</span> <span class="s1">&#39;.fif&#39;</span><span class="p">:</span>
+                <span class="n">extra_params</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">allow_maxshield</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">extra_params</span> <span class="o">=</span> <span class="kc">None</span>
+
+            <span class="n">er_raw</span> <span class="o">=</span> <span class="n">read_raw_bids</span><span class="p">(</span><span class="n">bids_path</span><span class="o">=</span><span class="n">er_bids_path</span><span class="p">,</span>
+                                   <span class="n">extra_params</span><span class="o">=</span><span class="n">extra_params</span><span class="p">)</span>
+
+            <span class="n">er_meas_date</span> <span class="o">=</span> <span class="n">er_raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;meas_date&#39;</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">er_meas_date</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># There&#39;s nothing we can do.</span>
+                <span class="n">failed_to_get_er_date_count</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">continue</span>
+
+        <span class="n">er_meas_date</span> <span class="o">=</span> <span class="n">er_meas_date</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">tzinfo</span><span class="o">=</span><span class="n">ref_date</span><span class="o">.</span><span class="n">tzinfo</span><span class="p">)</span>
+        <span class="n">delta_t</span> <span class="o">=</span> <span class="n">er_meas_date</span> <span class="o">-</span> <span class="n">ref_date</span>
+
+        <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">delta_t</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">())</span> <span class="o">==</span> <span class="n">min_delta_t</span><span class="p">:</span>
+            <span class="n">date_tie</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">elif</span> <span class="nb">abs</span><span class="p">(</span><span class="n">delta_t</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">())</span> <span class="o">&lt;</span> <span class="n">min_delta_t</span><span class="p">:</span>
+            <span class="n">min_delta_t</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">delta_t</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">())</span>
+            <span class="n">best_er_bids_path</span> <span class="o">=</span> <span class="n">er_bids_path</span>
+            <span class="n">date_tie</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">if</span> <span class="n">failed_to_get_er_date_count</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Could not retrieve the empty-room measurement date from &#39;</span>
+               <span class="sa">f</span><span class="s1">&#39;a total of </span><span class="si">{</span><span class="n">failed_to_get_er_date_count</span><span class="si">}</span><span class="s1"> recording(s).&#39;</span><span class="p">)</span>
+        <span class="n">warn</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">date_tie</span><span class="p">:</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;Found more than one matching empty-room measurement with the &#39;</span>
+               <span class="s1">&#39;same recording date. Selecting the first match.&#39;</span><span class="p">)</span>
+        <span class="n">warn</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">best_er_bids_path</span>
 
 
 <div class="viewcode-block" id="BIDSPath"><a class="viewcode-back" href="../../generated/mne_bids.path.BIDSPath.html#mne_bids.BIDSPath">[docs]</a><span class="k">class</span> <span class="nc">BIDSPath</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -597,7 +722,22 @@
                     <span class="n">suffix</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ALLOWED_FILENAME_SUFFIX</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Suffix </span><span class="si">{</span><span class="n">suffix</span><span class="si">}</span><span class="s1"> is not allowed. &#39;</span>
                                  <span class="sa">f</span><span class="s1">&#39;Use one of these suffixes &#39;</span>
-                                 <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">ALLOWED_FILENAME_SUFFIX</span><span class="si">}</span><span class="s1">.&#39;</span><span class="p">)</span></div>
+                                 <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">ALLOWED_FILENAME_SUFFIX</span><span class="si">}</span><span class="s1">.&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="BIDSPath.find_empty_room"><a class="viewcode-back" href="../../generated/mne_bids.path.BIDSPath.html#mne_bids.BIDSPath.find_empty_room">[docs]</a>    <span class="k">def</span> <span class="nf">find_empty_room</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Find the corresponding empty-room file of an MEG recording.</span>
+
+<span class="sd">        This will only work if the ``.root`` attribute of the</span>
+<span class="sd">        :class:`mne_bids.BIDSPath` instance has been set.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        BIDSPath | None</span>
+<span class="sd">            The path corresponding to the best-matching empty-room measurement.</span>
+<span class="sd">            Returns None if none was found.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">_get_matched_empty_room</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div></div>
 
 
 <span class="k">def</span> <span class="nf">_get_matching_bidspaths_from_filesystem</span><span class="p">(</span><span class="n">bids_path</span><span class="p">):</span>

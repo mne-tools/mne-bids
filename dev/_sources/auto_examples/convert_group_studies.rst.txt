@@ -89,6 +89,25 @@ And fetch the data for several subjects and runs of a single task.
 
 
 
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    Downloading https://physionet.org/files/eegmmidb/1.0.0/S001/S001R04.edf (2.5 MB)
+      0%|          | Downloading : 0.00/2.48M [00:00<?,        ?B/s]      2%|2         | Downloading : 56.0k/2.48M [00:00<00:01,    2.21MB/s]      3%|3         | Downloading : 88.0k/2.48M [00:00<00:01,    2.18MB/s]     12%|#2        | Downloading : 312k/2.48M [00:00<00:01,    2.27MB/s]      27%|##7       | Downloading : 696k/2.48M [00:00<00:00,    2.37MB/s]     48%|####7     | Downloading : 1.18M/2.48M [00:00<00:00,    2.48MB/s]     68%|######7   | Downloading : 1.68M/2.48M [00:00<00:00,    2.59MB/s]     88%|########8 | Downloading : 2.18M/2.48M [00:00<00:00,    2.71MB/s]    100%|##########| Downloading : 2.48M/2.48M [00:00<00:00,    13.9MB/s]
+    Downloading https://physionet.org/files/eegmmidb/1.0.0/S001/S001R08.edf (2.5 MB)
+      0%|          | Downloading : 0.00/2.48M [00:00<?,        ?B/s]      2%|2         | Downloading : 56.0k/2.48M [00:00<00:00,    3.25MB/s]      6%|5         | Downloading : 152k/2.48M [00:00<00:00,    3.29MB/s]       9%|8         | Downloading : 216k/2.48M [00:00<00:00,    2.57MB/s]     17%|#7        | Downloading : 440k/2.48M [00:00<00:00,    2.68MB/s]     43%|####2     | Downloading : 1.05M/2.48M [00:00<00:00,    2.81MB/s]     83%|########2 | Downloading : 2.05M/2.48M [00:00<00:00,    2.95MB/s]    100%|##########| Downloading : 2.48M/2.48M [00:00<00:00,    10.6MB/s]
+    Downloading https://physionet.org/files/eegmmidb/1.0.0/S001/S001R12.edf (2.5 MB)
+      0%|          | Downloading : 0.00/2.48M [00:00<?,        ?B/s]      2%|2         | Downloading : 56.0k/2.48M [00:00<00:00,    3.20MB/s]      6%|5         | Downloading : 152k/2.48M [00:00<00:00,    3.26MB/s]      11%|#1        | Downloading : 280k/2.48M [00:00<00:00,    3.33MB/s]     14%|#3        | Downloading : 344k/2.48M [00:00<00:00,    2.82MB/s]     19%|#8        | Downloading : 472k/2.48M [00:00<00:00,    2.87MB/s]     24%|##3       | Downloading : 600k/2.48M [00:00<00:00,    2.95MB/s]     31%|###1      | Downloading : 792k/2.48M [00:00<00:00,    3.05MB/s]     41%|####1     | Downloading : 1.02M/2.48M [00:00<00:00,    3.15MB/s]     51%|#####1    | Downloading : 1.27M/2.48M [00:00<00:00,    3.26MB/s]     62%|######1   | Downloading : 1.52M/2.48M [00:00<00:00,    3.37MB/s]     72%|#######1  | Downloading : 1.77M/2.48M [00:00<00:00,    3.49MB/s]     82%|########1 | Downloading : 2.02M/2.48M [00:00<00:00,    3.61MB/s]     97%|#########6| Downloading : 2.40M/2.48M [00:00<00:00,    3.74MB/s]    100%|##########| Downloading : 2.48M/2.48M [00:00<00:00,    6.48MB/s]
+    Downloading https://physionet.org/files/eegmmidb/1.0.0/S002/S002R04.edf (2.4 MB)
+      0%|          | Downloading : 0.00/2.44M [00:00<?,        ?B/s]      2%|2         | Downloading : 56.0k/2.44M [00:00<00:00,    3.28MB/s]      4%|3         | Downloading : 88.0k/2.44M [00:00<00:00,    3.18MB/s]      7%|7         | Downloading : 184k/2.44M [00:00<00:00,    3.19MB/s]      10%|9         | Downloading : 248k/2.44M [00:00<00:00,    3.22MB/s]     13%|#2        | Downloading : 312k/2.44M [00:00<00:00,    3.25MB/s]     18%|#7        | Downloading : 440k/2.44M [00:00<00:00,    3.25MB/s]     20%|##        | Downloading : 504k/2.44M [00:00<00:00,    3.24MB/s]     25%|##5       | Downloading : 632k/2.44M [00:00<00:00,    3.26MB/s]     28%|##7       | Downloading : 696k/2.44M [00:00<00:00,    3.29MB/s]     30%|###       | Downloading : 760k/2.44M [00:00<00:00,    3.26MB/s]     36%|###5      | Downloading : 888k/2.44M [00:00<00:00,    3.31MB/s]     41%|####      | Downloading : 0.99M/2.44M [00:00<00:00,    3.38MB/s]     46%|####5     | Downloading : 1.12M/2.44M [00:00<00:00,    3.46MB/s]     51%|#####     | Downloading : 1.24M/2.44M [00:00<00:00,    3.55MB/s]     56%|#####6    | Downloading : 1.37M/2.44M [00:00<00:00,    3.62MB/s]     61%|######1   | Downloading : 1.49M/2.44M [00:00<00:00,    3.65MB/s]     66%|######6   | Downloading : 1.62M/2.44M [00:00<00:00,    3.65MB/s]     71%|#######1  | Downloading : 1.74M/2.44M [00:00<00:00,    3.70MB/s]     77%|#######6  | Downloading : 1.87M/2.44M [00:00<00:00,    3.79MB/s]     82%|########1 | Downloading : 1.99M/2.44M [00:00<00:00,    3.89MB/s]     87%|########6 | Downloading : 2.12M/2.44M [00:00<00:00,    3.99MB/s]     97%|#########7| Downloading : 2.37M/2.44M [00:00<00:00,    4.11MB/s]    100%|##########| Downloading : 2.44M/2.44M [00:00<00:00,    4.88MB/s]
+    Downloading https://physionet.org/files/eegmmidb/1.0.0/S002/S002R08.edf (2.4 MB)
+      0%|          | Downloading : 0.00/2.44M [00:00<?,        ?B/s]      2%|2         | Downloading : 56.0k/2.44M [00:00<00:00,    3.01MB/s]      6%|6         | Downloading : 152k/2.44M [00:00<00:00,    2.68MB/s]      10%|9         | Downloading : 248k/2.44M [00:00<00:00,    2.75MB/s]     15%|#5        | Downloading : 376k/2.44M [00:00<00:00,    2.81MB/s]     23%|##2       | Downloading : 568k/2.44M [00:00<00:00,    2.89MB/s]     28%|##7       | Downloading : 696k/2.44M [00:00<00:00,    2.97MB/s]     33%|###3      | Downloading : 824k/2.44M [00:00<00:00,    3.07MB/s]     38%|###8      | Downloading : 952k/2.44M [00:00<00:00,    3.16MB/s]     43%|####3     | Downloading : 1.05M/2.44M [00:00<00:00,    3.24MB/s]     54%|#####3    | Downloading : 1.30M/2.44M [00:00<00:00,    3.33MB/s]     59%|#####8    | Downloading : 1.43M/2.44M [00:00<00:00,    3.43MB/s]     69%|######8   | Downloading : 1.68M/2.44M [00:00<00:00,    3.54MB/s]     79%|#######9  | Downloading : 1.93M/2.44M [00:00<00:00,    3.63MB/s]     84%|########4 | Downloading : 2.05M/2.44M [00:00<00:00,    3.72MB/s]     89%|########9 | Downloading : 2.18M/2.44M [00:00<00:00,    3.79MB/s]     95%|#########4| Downloading : 2.30M/2.44M [00:00<00:00,    3.89MB/s]    100%|##########| Downloading : 2.44M/2.44M [00:00<00:00,    5.38MB/s]
+    Downloading https://physionet.org/files/eegmmidb/1.0.0/S002/S002R12.edf (2.4 MB)
+      0%|          | Downloading : 0.00/2.44M [00:00<?,        ?B/s]      2%|2         | Downloading : 56.0k/2.44M [00:00<00:00,    2.91MB/s]      6%|6         | Downloading : 152k/2.44M [00:00<00:00,    2.72MB/s]      14%|#3        | Downloading : 344k/2.44M [00:00<00:00,    2.75MB/s]     29%|##9       | Downloading : 728k/2.44M [00:00<00:00,    2.86MB/s]     39%|###9      | Downloading : 984k/2.44M [00:00<00:00,    2.98MB/s]     50%|####9     | Downloading : 1.21M/2.44M [00:00<00:00,    3.10MB/s]     60%|#####9    | Downloading : 1.46M/2.44M [00:00<00:00,    3.21MB/s]     70%|#######   | Downloading : 1.71M/2.44M [00:00<00:00,    3.33MB/s]     80%|########  | Downloading : 1.96M/2.44M [00:00<00:00,    3.46MB/s]     91%|######### | Downloading : 2.21M/2.44M [00:00<00:00,    3.58MB/s]    100%|##########| Downloading : 2.44M/2.44M [00:00<00:00,    3.72MB/s]    100%|##########| Downloading : 2.44M/2.44M [00:00<00:00,    7.57MB/s]
+
 
 
 
@@ -205,7 +224,6 @@ Let us loop over the subjects and create BIDS-compatible folder
 
     participant_id  age     sex     hand
     sub-001 n/a     n/a     n/a
-    sub-002 n/a     n/a     n/a
 
     Writing '/home/circleci/mne_data/eegmmidb_bids_group_conversion/participants.json'...
 
@@ -284,8 +302,6 @@ Let us loop over the subjects and create BIDS-compatible folder
 
     filename        acq_time
     eeg/sub-001_ses-01_task-MotorImagery_run-01_eeg.vhdr    1919-03-16T16:15:00
-    eeg/sub-001_ses-01_task-MotorImagery_run-02_eeg.vhdr    1919-03-16T16:15:00
-    eeg/sub-001_ses-01_task-MotorImagery_run-03_eeg.vhdr    1919-03-16T16:15:00
     Wrote /home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-01/sub-001_ses-01_scans.tsv entry with eeg/sub-001_ses-01_task-MotorImagery_run-01_eeg.vhdr.
     Extracting EDF parameters from /home/circleci/mne_data/MNE-eegbci-data/files/eegmmidb/1.0.0/S001/S001R08.edf...
     EDF file detected
@@ -308,7 +324,6 @@ Let us loop over the subjects and create BIDS-compatible folder
 
     participant_id  age     sex     hand
     sub-001 n/a     n/a     n/a
-    sub-002 n/a     n/a     n/a
 
     Writing '/home/circleci/mne_data/eegmmidb_bids_group_conversion/participants.json'...
 
@@ -388,7 +403,6 @@ Let us loop over the subjects and create BIDS-compatible folder
     filename        acq_time
     eeg/sub-001_ses-01_task-MotorImagery_run-01_eeg.vhdr    1919-03-16T16:15:00
     eeg/sub-001_ses-01_task-MotorImagery_run-02_eeg.vhdr    1919-03-16T16:15:00
-    eeg/sub-001_ses-01_task-MotorImagery_run-03_eeg.vhdr    1919-03-16T16:15:00
     Wrote /home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-01/sub-001_ses-01_scans.tsv entry with eeg/sub-001_ses-01_task-MotorImagery_run-02_eeg.vhdr.
     Extracting EDF parameters from /home/circleci/mne_data/MNE-eegbci-data/files/eegmmidb/1.0.0/S001/S001R12.edf...
     EDF file detected
@@ -411,7 +425,6 @@ Let us loop over the subjects and create BIDS-compatible folder
 
     participant_id  age     sex     hand
     sub-001 n/a     n/a     n/a
-    sub-002 n/a     n/a     n/a
 
     Writing '/home/circleci/mne_data/eegmmidb_bids_group_conversion/participants.json'...
 
@@ -593,8 +606,6 @@ Let us loop over the subjects and create BIDS-compatible folder
 
     filename        acq_time
     eeg/sub-002_ses-01_task-MotorImagery_run-01_eeg.vhdr    1919-03-16T16:15:00
-    eeg/sub-002_ses-01_task-MotorImagery_run-02_eeg.vhdr    1919-03-16T16:15:00
-    eeg/sub-002_ses-01_task-MotorImagery_run-03_eeg.vhdr    1919-03-16T16:15:00
     Wrote /home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/sub-002_ses-01_scans.tsv entry with eeg/sub-002_ses-01_task-MotorImagery_run-01_eeg.vhdr.
     Extracting EDF parameters from /home/circleci/mne_data/MNE-eegbci-data/files/eegmmidb/1.0.0/S002/S002R08.edf...
     EDF file detected
@@ -697,7 +708,6 @@ Let us loop over the subjects and create BIDS-compatible folder
     filename        acq_time
     eeg/sub-002_ses-01_task-MotorImagery_run-01_eeg.vhdr    1919-03-16T16:15:00
     eeg/sub-002_ses-01_task-MotorImagery_run-02_eeg.vhdr    1919-03-16T16:15:00
-    eeg/sub-002_ses-01_task-MotorImagery_run-03_eeg.vhdr    1919-03-16T16:15:00
     Wrote /home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/sub-002_ses-01_scans.tsv entry with eeg/sub-002_ses-01_task-MotorImagery_run-02_eeg.vhdr.
     Extracting EDF parameters from /home/circleci/mne_data/MNE-eegbci-data/files/eegmmidb/1.0.0/S002/S002R12.edf...
     EDF file detected
@@ -825,48 +835,48 @@ Now let's see the structure of the BIDS folder we created.
  .. code-block:: none
 
     |eegmmidb_bids_group_conversion/
-    |--- README
-    |--- participants.json
-    |--- dataset_description.json
     |--- participants.tsv
+    |--- dataset_description.json
+    |--- participants.json
+    |--- README
     |--- sub-002/
     |------ ses-01/
     |--------- sub-002_ses-01_scans.tsv
     |--------- eeg/
-    |------------ sub-002_ses-01_task-MotorImagery_run-01_channels.tsv
-    |------------ sub-002_ses-01_task-MotorImagery_run-03_eeg.json
-    |------------ sub-002_ses-01_task-MotorImagery_run-03_eeg.vhdr
-    |------------ sub-002_ses-01_task-MotorImagery_run-02_channels.tsv
     |------------ sub-002_ses-01_task-MotorImagery_run-03_eeg.vmrk
-    |------------ sub-002_ses-01_task-MotorImagery_run-01_eeg.vhdr
+    |------------ sub-002_ses-01_task-MotorImagery_run-02_eeg.json
+    |------------ sub-002_ses-01_task-MotorImagery_run-01_eeg.eeg
+    |------------ sub-002_ses-01_task-MotorImagery_run-01_eeg.vmrk
+    |------------ sub-002_ses-01_task-MotorImagery_run-03_eeg.vhdr
+    |------------ sub-002_ses-01_task-MotorImagery_run-01_eeg.json
     |------------ sub-002_ses-01_task-MotorImagery_run-02_eeg.vmrk
     |------------ sub-002_ses-01_task-MotorImagery_run-03_channels.tsv
-    |------------ sub-002_ses-01_task-MotorImagery_run-01_eeg.vmrk
-    |------------ sub-002_ses-01_task-MotorImagery_run-02_eeg.eeg
-    |------------ sub-002_ses-01_task-MotorImagery_run-02_eeg.json
-    |------------ sub-002_ses-01_task-MotorImagery_run-02_eeg.vhdr
+    |------------ sub-002_ses-01_task-MotorImagery_run-01_eeg.vhdr
     |------------ sub-002_ses-01_task-MotorImagery_run-03_eeg.eeg
-    |------------ sub-002_ses-01_task-MotorImagery_run-01_eeg.eeg
-    |------------ sub-002_ses-01_task-MotorImagery_run-01_eeg.json
+    |------------ sub-002_ses-01_task-MotorImagery_run-02_channels.tsv
+    |------------ sub-002_ses-01_task-MotorImagery_run-02_eeg.vhdr
+    |------------ sub-002_ses-01_task-MotorImagery_run-02_eeg.eeg
+    |------------ sub-002_ses-01_task-MotorImagery_run-01_channels.tsv
+    |------------ sub-002_ses-01_task-MotorImagery_run-03_eeg.json
     |--- sub-001/
     |------ ses-01/
     |--------- sub-001_ses-01_scans.tsv
     |--------- eeg/
+    |------------ sub-001_ses-01_task-MotorImagery_run-03_eeg.json
+    |------------ sub-001_ses-01_task-MotorImagery_run-03_eeg.vmrk
+    |------------ sub-001_ses-01_task-MotorImagery_run-01_eeg.json
+    |------------ sub-001_ses-01_task-MotorImagery_run-02_channels.tsv
+    |------------ sub-001_ses-01_task-MotorImagery_run-02_eeg.vmrk
+    |------------ sub-001_ses-01_task-MotorImagery_run-03_channels.tsv
+    |------------ sub-001_ses-01_task-MotorImagery_run-01_eeg.vmrk
+    |------------ sub-001_ses-01_task-MotorImagery_run-03_eeg.vhdr
     |------------ sub-001_ses-01_task-MotorImagery_run-03_eeg.eeg
     |------------ sub-001_ses-01_task-MotorImagery_run-01_channels.tsv
-    |------------ sub-001_ses-01_task-MotorImagery_run-01_eeg.vhdr
-    |------------ sub-001_ses-01_task-MotorImagery_run-01_eeg.eeg
-    |------------ sub-001_ses-01_task-MotorImagery_run-03_eeg.vhdr
-    |------------ sub-001_ses-01_task-MotorImagery_run-03_eeg.json
-    |------------ sub-001_ses-01_task-MotorImagery_run-02_channels.tsv
-    |------------ sub-001_ses-01_task-MotorImagery_run-02_eeg.json
     |------------ sub-001_ses-01_task-MotorImagery_run-02_eeg.eeg
-    |------------ sub-001_ses-01_task-MotorImagery_run-01_eeg.vmrk
-    |------------ sub-001_ses-01_task-MotorImagery_run-01_eeg.json
-    |------------ sub-001_ses-01_task-MotorImagery_run-03_channels.tsv
-    |------------ sub-001_ses-01_task-MotorImagery_run-02_eeg.vmrk
+    |------------ sub-001_ses-01_task-MotorImagery_run-01_eeg.eeg
     |------------ sub-001_ses-01_task-MotorImagery_run-02_eeg.vhdr
-    |------------ sub-001_ses-01_task-MotorImagery_run-03_eeg.vmrk
+    |------------ sub-001_ses-01_task-MotorImagery_run-02_eeg.json
+    |------------ sub-001_ses-01_task-MotorImagery_run-01_eeg.vhdr
 
 
 
@@ -910,7 +920,7 @@ Now let's generate a report on the dataset.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  0.595 seconds)
+   **Total running time of the script:** ( 0 minutes  4.397 seconds)
 
 
 .. _sphx_glr_download_auto_examples_convert_group_studies.py:

@@ -232,10 +232,13 @@ latter).</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="#mne_bids.BIDSPath.copy" title="mne_bids.BIDSPath.copy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy</span></code></a>()</p></td>
 <td><p>Copy the instance.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#mne_bids.BIDSPath.match" title="mne_bids.BIDSPath.match"><code class="xref py py-obj docutils literal notranslate"><span class="pre">match</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#mne_bids.BIDSPath.find_empty_room" title="mne_bids.BIDSPath.find_empty_room"><code class="xref py py-obj docutils literal notranslate"><span class="pre">find_empty_room</span></code></a>()</p></td>
+<td><p>Find the corresponding empty-room file of an MEG recording.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mne_bids.BIDSPath.match" title="mne_bids.BIDSPath.match"><code class="xref py py-obj docutils literal notranslate"><span class="pre">match</span></code></a>()</p></td>
 <td><p>Get a list of all matching paths in the root directory.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#mne_bids.BIDSPath.update" title="mne_bids.BIDSPath.update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code></a>(*[, check])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#mne_bids.BIDSPath.update" title="mne_bids.BIDSPath.update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code></a>(*[, check])</p></td>
 <td><p>Update inplace BIDS entity key/value pairs in object.</p></td>
 </tr>
 </tbody>
@@ -264,6 +267,23 @@ latter).</p>
 <dt id="mne_bids.BIDSPath.entities">
 <em class="property">property </em><code class="sig-name descname">entities</code><a class="headerlink" href="#mne_bids.BIDSPath.entities" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return dictionary of the BIDS entities.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mne_bids.BIDSPath.find_empty_room">
+<code class="sig-name descname">find_empty_room</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/path.html#BIDSPath.find_empty_room"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.BIDSPath.find_empty_room" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the corresponding empty-room file of an MEG recording.</p>
+<p>This will only work if the <code class="docutils literal notranslate"><span class="pre">.root</span></code> attribute of the
+<a class="reference internal" href="#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a> instance has been set.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><dl class="simple">
+<dt>BIDSPath | None</dt><dd><p>The path corresponding to the best-matching empty-room measurement.
+Returns None if none was found.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
