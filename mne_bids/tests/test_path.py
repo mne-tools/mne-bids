@@ -542,7 +542,6 @@ def test_get_matched_basenames(return_bids_test_dir):
     paths = bids_path_01.match()
     assert len(paths) == 0
 
-    # now test it with BIDSPath
     bids_path_01 = bids_path.copy().update(root=None)
     with pytest.raises(RuntimeError, match='Cannot match'):
         bids_path_01.match()
