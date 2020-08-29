@@ -196,6 +196,9 @@
 <span class="sd">        The dictionary of the BIDS entities and their values:</span>
 <span class="sd">        ``subject``, ``session``, ``task``, ``acquisition``,</span>
 <span class="sd">        ``run``, ``processing``, ``space``, ``recording`` and ``suffix``.</span>
+<span class="sd">    datatype : str | None</span>
+<span class="sd">        The data type, i.e., one of ``&#39;meg&#39;``, ``&#39;eeg&#39;``, ``&#39;ieeg&#39;``,</span>
+<span class="sd">        ``&#39;anat&#39;``.</span>
 <span class="sd">    basename : str</span>
 <span class="sd">        The basename of the file path. Similar to `os.path.basename(fpath)`.</span>
 <span class="sd">    root : str</span>
@@ -271,8 +274,7 @@
             <span class="p">(</span><span class="s1">&#39;processing&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">processing</span><span class="p">),</span>
             <span class="p">(</span><span class="s1">&#39;space&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">space</span><span class="p">),</span>
             <span class="p">(</span><span class="s1">&#39;recording&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">recording</span><span class="p">),</span>
-            <span class="p">(</span><span class="s1">&#39;split&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">split</span><span class="p">),</span>
-            <span class="p">(</span><span class="s1">&#39;datatype&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span><span class="p">)</span>
+            <span class="p">(</span><span class="s1">&#39;split&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">split</span><span class="p">)</span>
         <span class="p">])</span>
 
     <span class="nd">@property</span>
@@ -412,7 +414,7 @@
         <span class="n">bids_fpath</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">bids_fpath</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">bids_fpath</span>
 
-<div class="viewcode-block" id="BIDSPath.update"><a class="viewcode-back" href="../../generated/mne_bids.path.BIDSPath.html#mne_bids.BIDSPath.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">entities</span><span class="p">):</span>
+<div class="viewcode-block" id="BIDSPath.update"><a class="viewcode-back" href="../../generated/mne_bids.path.BIDSPath.html#mne_bids.BIDSPath.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Update inplace BIDS entity key/value pairs in object.</span>
 
 <span class="sd">        ``run`` and ``split`` are auto-parsed to have two</span>
@@ -440,17 +442,16 @@
 <span class="sd">            ``.check`` attribute accordingly. If ``None``, rely on the existing</span>
 <span class="sd">            ``.check`` attribute instead, which is set upon ``BIDSPath``</span>
 <span class="sd">            instantiation. Defaults to ``None``.</span>
-
-<span class="sd">        entities : dict | kwarg</span>
-<span class="sd">            Allowed BIDS path entities:</span>
-<span class="sd">            &#39;subject&#39;, &#39;session&#39;, &#39;task&#39;, &#39;acquisition&#39;,</span>
-<span class="sd">            &#39;processing&#39;, &#39;run&#39;, &#39;recording&#39;, &#39;space&#39;,</span>
-<span class="sd">            &#39;suffix&#39;</span>
+<span class="sd">        **kwargs : dict</span>
+<span class="sd">            It can contain updates for valid BIDS path entities:</span>
+<span class="sd">            &#39;subject&#39;, &#39;session&#39;, &#39;task&#39;, &#39;acquisition&#39;, &#39;processing&#39;, &#39;run&#39;,</span>
+<span class="sd">            &#39;recording&#39;, &#39;space&#39;, &#39;suffix&#39;</span>
+<span class="sd">            or updates for &#39;root&#39; or &#39;datatype&#39;.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        bidspath : instance of BIDSPath</span>
-<span class="sd">            The current instance of BIDSPath.</span>
+<span class="sd">            The updated instance of BIDSPath.</span>
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
@@ -464,31 +465,33 @@
 <span class="sd">        sub-test_ses-two_task-mytask_channels.tsv</span>
 <span class="sd">        &gt;&gt;&gt; # Then, one can update this `BIDSPath` object in place</span>
 <span class="sd">        &gt;&gt;&gt; bids_path.update(acquisition=&#39;test&#39;, suffix=&#39;ieeg&#39;,</span>
-<span class="sd">                                 extension=&#39;.vhdr&#39;, task=None)</span>
+<span class="sd">                             extension=&#39;.vhdr&#39;, task=None)</span>
 <span class="sd">        &gt;&gt;&gt; print(bids_path.basename)</span>
 <span class="sd">        sub-test_ses-two_acq-test_ieeg.vhdr</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">run</span> <span class="o">=</span> <span class="n">entities</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;run&#39;</span><span class="p">)</span>
+        <span class="n">run</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;run&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">run</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">run</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="c1"># Ensure that run is a string</span>
-            <span class="n">entities</span><span class="p">[</span><span class="s1">&#39;run&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{:02}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">run</span><span class="p">)</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;run&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{:02}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">run</span><span class="p">)</span>
 
-        <span class="n">split</span> <span class="o">=</span> <span class="n">entities</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;split&#39;</span><span class="p">)</span>
+        <span class="n">split</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;split&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">split</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">split</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="c1"># Ensure that run is a string</span>
-            <span class="n">entities</span><span class="p">[</span><span class="s1">&#39;split&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{:02}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">split</span><span class="p">)</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;split&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{:02}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">split</span><span class="p">)</span>
 
         <span class="c1"># ensure extension starts with a &#39;.&#39;</span>
-        <span class="n">extension</span> <span class="o">=</span> <span class="n">entities</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;extension&#39;</span><span class="p">)</span>
+        <span class="n">extension</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;extension&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">extension</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">extension</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">):</span>
                 <span class="n">extension</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;.</span><span class="si">{</span><span class="n">extension</span><span class="si">}</span><span class="s1">&#39;</span>
-                <span class="n">entities</span><span class="p">[</span><span class="s1">&#39;extension&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">extension</span>
+                <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;extension&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">extension</span>
 
         <span class="c1"># error check entities</span>
-        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">entities</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="c1"># error check allowed BIDS entity keywords</span>
-            <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ALLOWED_PATH_ENTITIES</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;root&#39;</span><span class="p">,</span> <span class="s1">&#39;datatype&#39;</span><span class="p">):</span>
+                <span class="k">pass</span>
+            <span class="k">elif</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ALLOWED_PATH_ENTITIES</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Key must be one of &#39;</span>
                                  <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">ALLOWED_PATH_ENTITIES</span><span class="si">}</span><span class="s1">, got </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 
@@ -505,16 +508,55 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> \
                 <span class="bp">self</span><span class="o">.</span><span class="n">suffix</span> <span class="ow">in</span> <span class="n">SUFFIX_TO_DATATYPE</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="n">SUFFIX_TO_DATATYPE</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">suffix</span><span class="p">]</span>
-        <span class="c1"># set datatype based on suffix if calling update</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">suffix</span> <span class="ow">in</span> <span class="n">SUFFIX_TO_DATATYPE</span> <span class="ow">and</span> \
-                <span class="s1">&#39;datatype&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">entities</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="n">SUFFIX_TO_DATATYPE</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">suffix</span><span class="p">]</span>
+        <span class="c1"># # set datatype based on suffix if calling update</span>
+        <span class="c1"># elif self.suffix in SUFFIX_TO_DATATYPE and \</span>
+        <span class="c1">#         &#39;datatype&#39; not in kwargs:</span>
+        <span class="c1">#     self.datatype = SUFFIX_TO_DATATYPE[self.suffix]</span>
 
         <span class="c1"># Update .check attribute and perform a check of the entities.</span>
         <span class="k">if</span> <span class="n">check</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">check</span> <span class="o">=</span> <span class="n">check</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span></div>
+
+<div class="viewcode-block" id="BIDSPath.match"><a class="viewcode-back" href="../../generated/mne_bids.path.BIDSPath.html#mne_bids.BIDSPath.match">[docs]</a>    <span class="k">def</span> <span class="nf">match</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get a list of all matching paths in the root directory.</span>
+
+<span class="sd">        Performs a recursive search, starting in ``.root`` (if set), based on</span>
+<span class="sd">        `BIDSPath.entities` object.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        paths : list of BIDSPath</span>
+<span class="sd">            The matching paths.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Cannot match basenames if `root` &#39;</span>
+                               <span class="s1">&#39;attribute is not set. Please set the&#39;</span>
+                               <span class="s1">&#39;BIDS root directory path to `root` via &#39;</span>
+                               <span class="s1">&#39;BIDSPath.update().&#39;</span><span class="p">)</span>
+
+        <span class="c1"># allow searching by datatype</span>
+        <span class="c1"># all other entities are filtered below</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">search_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;*/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">datatype</span><span class="si">}</span><span class="s1">/*&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">search_str</span> <span class="o">=</span> <span class="s1">&#39;*.*&#39;</span>
+
+        <span class="n">fnames</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">)</span><span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="n">search_str</span><span class="p">)</span>
+        <span class="c1"># Only keep files (not directories), and omit the JSON sidecars.</span>
+        <span class="n">fnames</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fnames</span>
+                  <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">is_file</span><span class="p">()</span> <span class="ow">and</span> <span class="n">f</span><span class="o">.</span><span class="n">suffix</span> <span class="o">!=</span> <span class="s1">&#39;.json&#39;</span><span class="p">]</span>
+        <span class="n">fnames</span> <span class="o">=</span> <span class="n">_filter_fnames</span><span class="p">(</span><span class="n">fnames</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">entities</span><span class="p">)</span>
+
+        <span class="n">paths</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">fname</span> <span class="ow">in</span> <span class="n">fnames</span><span class="p">:</span>
+            <span class="n">entities</span> <span class="o">=</span> <span class="n">get_entities_from_fname</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">datatype</span><span class="p">,</span>
+                            <span class="o">**</span><span class="n">entities</span><span class="p">)</span>
+            <span class="n">paths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">paths</span></div>
 
     <span class="k">def</span> <span class="nf">_check</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Deep check or not of the instance.&quot;&quot;&quot;</span>
@@ -1173,74 +1215,6 @@
     <span class="c1"># https://stackoverflow.com/a/51246151/1944216</span>
     <span class="n">fnames_filtered</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">regexp</span><span class="p">)</span><span class="o">.</span><span class="n">match</span><span class="p">,</span> <span class="n">fnames</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">fnames_filtered</span>
-
-
-<div class="viewcode-block" id="get_matched_basenames"><a class="viewcode-back" href="../../generated/mne_bids.path.get_matched_basenames.html#mne_bids.get_matched_basenames">[docs]</a><span class="k">def</span> <span class="nf">get_matched_basenames</span><span class="p">(</span><span class="n">bids_root</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">subject</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                          <span class="n">acquisition</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">run</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">processing</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                          <span class="n">recording</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">space</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                          <span class="n">extension</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Retrieve a list of BIDSPaths matching the specified entities.</span>
-
-<span class="sd">    The entity values you pass act as a filter: only those basenames that</span>
-<span class="sd">    include the specified entity values will be returned. Passing ``None``</span>
-<span class="sd">    (default for all entities) means that **all** values for this entity</span>
-<span class="sd">    will be included.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    bids_root : str</span>
-<span class="sd">        The BIDS root directory.</span>
-<span class="sd">    subject : str | None</span>
-<span class="sd">        The subject ID. Corresponds to &quot;sub&quot;.</span>
-<span class="sd">    session : str | None</span>
-<span class="sd">        The session identifier. Corresponds to &quot;ses&quot;. Must be a date in</span>
-<span class="sd">        format &quot;YYYYMMDD&quot; if subject is &quot;emptyroom&quot;.</span>
-<span class="sd">    task : str | None</span>
-<span class="sd">        The task identifier. Corresponds to &quot;task&quot;. Must be &quot;noise&quot; if</span>
-<span class="sd">        subject is &quot;emptyroom&quot;.</span>
-<span class="sd">    acquisition: str | None</span>
-<span class="sd">        The acquisition parameters. Corresponds to &quot;acq&quot;.</span>
-<span class="sd">    run : int | None</span>
-<span class="sd">        The run number. Corresponds to &quot;run&quot;.</span>
-<span class="sd">    processing : str | None</span>
-<span class="sd">        The processing label. Corresponds to &quot;proc&quot;.</span>
-<span class="sd">    recording : str | None</span>
-<span class="sd">        The recording name. Corresponds to &quot;rec&quot;.</span>
-<span class="sd">    space : str | None</span>
-<span class="sd">        The coordinate space for an anatomical file. Corresponds to &quot;space&quot;.</span>
-<span class="sd">    suffix : str | None</span>
-<span class="sd">        The data suffix. E.g. &#39;meg&#39;, or &#39;channels&#39;</span>
-<span class="sd">    split : int | None</span>
-<span class="sd">        The split number.</span>
-<span class="sd">    extension : str | None</span>
-<span class="sd">        The filename extension.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    paths : list of BIDSPath</span>
-<span class="sd">        The matching BIDSPaths from the dataset. Returns an empty list if no</span>
-<span class="sd">        matches were found.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">bids_root</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">bids_root</span><span class="p">)</span>
-
-    <span class="n">fnames</span> <span class="o">=</span> <span class="n">bids_root</span><span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="s1">&#39;*.*&#39;</span><span class="p">)</span>
-    <span class="c1"># Only keep files (not directories), and omit the JSON sidecars.</span>
-    <span class="n">fnames</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fnames</span>
-              <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">is_file</span><span class="p">()</span> <span class="ow">and</span> <span class="n">f</span><span class="o">.</span><span class="n">suffix</span> <span class="o">!=</span> <span class="s1">&#39;.json&#39;</span><span class="p">]</span>
-    <span class="n">fnames</span> <span class="o">=</span> <span class="n">_filter_fnames</span><span class="p">(</span><span class="n">fnames</span><span class="p">,</span> <span class="n">subject</span><span class="o">=</span><span class="n">subject</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span>
-                            <span class="n">task</span><span class="o">=</span><span class="n">task</span><span class="p">,</span> <span class="n">acquisition</span><span class="o">=</span><span class="n">acquisition</span><span class="p">,</span> <span class="n">run</span><span class="o">=</span><span class="n">run</span><span class="p">,</span>
-                            <span class="n">processing</span><span class="o">=</span><span class="n">processing</span><span class="p">,</span> <span class="n">recording</span><span class="o">=</span><span class="n">recording</span><span class="p">,</span>
-                            <span class="n">space</span><span class="o">=</span><span class="n">space</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="n">split</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="n">suffix</span><span class="p">,</span>
-                            <span class="n">extension</span><span class="o">=</span><span class="n">extension</span><span class="p">)</span>
-
-    <span class="n">paths</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">fname</span> <span class="ow">in</span> <span class="n">fnames</span><span class="p">:</span>
-        <span class="n">entity</span> <span class="o">=</span> <span class="n">get_entities_from_fname</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
-        <span class="n">path</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="n">bids_root</span><span class="p">,</span> <span class="o">**</span><span class="n">entity</span><span class="p">)</span>
-        <span class="n">paths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">paths</span></div>
 </pre></div>
 
     </div>
@@ -1254,7 +1228,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-08-28.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-08-29.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
     </p>
   </div>

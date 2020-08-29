@@ -205,6 +205,9 @@ current BIDS standard. Defaults to True.</p>
 <dd class="field-odd"><dl class="simple">
 <dt><a class="reference internal" href="#mne_bids.path.BIDSPath.entities" title="mne_bids.path.BIDSPath.entities"><code class="xref py py-obj docutils literal notranslate"><span class="pre">entities</span></code></a><span class="classifier">dict</span></dt><dd><p>Return dictionary of the BIDS entities.</p>
 </dd>
+<dt><strong>datatype</strong><span class="classifier">str | None</span></dt><dd><p>The data type, i.e., one of <code class="docutils literal notranslate"><span class="pre">'meg'</span></code>, <code class="docutils literal notranslate"><span class="pre">'eeg'</span></code>, <code class="docutils literal notranslate"><span class="pre">'ieeg'</span></code>,
+<code class="docutils literal notranslate"><span class="pre">'anat'</span></code>.</p>
+</dd>
 <dt><a class="reference internal" href="#mne_bids.path.BIDSPath.basename" title="mne_bids.path.BIDSPath.basename"><code class="xref py py-obj docutils literal notranslate"><span class="pre">basename</span></code></a><span class="classifier">str</span></dt><dd><p>Path basename.</p>
 </dd>
 <dt><strong>root</strong><span class="classifier">str</span></dt><dd><p>The root of the BIDS path.</p>
@@ -229,7 +232,10 @@ latter).</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="#mne_bids.path.BIDSPath.copy" title="mne_bids.path.BIDSPath.copy"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copy</span></code></a>()</p></td>
 <td><p>Copy the instance.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#mne_bids.path.BIDSPath.update" title="mne_bids.path.BIDSPath.update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code></a>([check])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#mne_bids.path.BIDSPath.match" title="mne_bids.path.BIDSPath.match"><code class="xref py py-obj docutils literal notranslate"><span class="pre">match</span></code></a>()</p></td>
+<td><p>Get a list of all matching paths in the root directory.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mne_bids.path.BIDSPath.update" title="mne_bids.path.BIDSPath.update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code></a>(*[, check])</p></td>
 <td><p>Update inplace BIDS entity key/value pairs in object.</p></td>
 </tr>
 </tbody>
@@ -278,8 +284,24 @@ path.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt id="mne_bids.path.BIDSPath.match">
+<code class="sig-name descname">match</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/path.html#BIDSPath.match"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.path.BIDSPath.match" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a list of all matching paths in the root directory.</p>
+<p>Performs a recursive search, starting in <code class="docutils literal notranslate"><span class="pre">.root</span></code> (if set), based on
+<a class="reference internal" href="#mne_bids.path.BIDSPath.entities" title="mne_bids.path.BIDSPath.entities"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BIDSPath.entities</span></code></a> object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>paths</strong><span class="classifier">list of BIDSPath</span></dt><dd><p>The matching paths.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt id="mne_bids.path.BIDSPath.update">
-<code class="sig-name descname">update</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">check</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">entities</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/path.html#BIDSPath.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.path.BIDSPath.update" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">update</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">check</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/path.html#BIDSPath.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.path.BIDSPath.update" title="Permalink to this definition">¶</a></dt>
 <dd><p>Update inplace BIDS entity key/value pairs in object.</p>
 <p><code class="docutils literal notranslate"><span class="pre">run</span></code> and <code class="docutils literal notranslate"><span class="pre">split</span></code> are auto-parsed to have two
 numbers when passed in. For example, if <code class="docutils literal notranslate"><span class="pre">run=1</span></code>, then it will
@@ -305,16 +327,16 @@ according to the BIDS specification. This will set the
 <code class="docutils literal notranslate"><span class="pre">.check</span></code> attribute instead, which is set upon <code class="docutils literal notranslate"><span class="pre">BIDSPath</span></code>
 instantiation. Defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 </dd>
-<dt><strong>entities</strong><span class="classifier">dict | kwarg</span></dt><dd><p>Allowed BIDS path entities:
-‘subject’, ‘session’, ‘task’, ‘acquisition’,
-‘processing’, ‘run’, ‘recording’, ‘space’,
-‘suffix’</p>
+<dt><strong>**kwargs</strong><span class="classifier">dict</span></dt><dd><p>It can contain updates for valid BIDS path entities:
+‘subject’, ‘session’, ‘task’, ‘acquisition’, ‘processing’, ‘run’,
+‘recording’, ‘space’, ‘suffix’
+or updates for ‘root’ or ‘datatype’.</p>
 </dd>
 </dl>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt><strong>bidspath</strong><span class="classifier">instance of BIDSPath</span></dt><dd><p>The current instance of BIDSPath.</p>
+<dt><strong>bidspath</strong><span class="classifier">instance of BIDSPath</span></dt><dd><p>The updated instance of BIDSPath.</p>
 </dd>
 </dl>
 </dd>
@@ -329,7 +351,7 @@ instantiation. Defaults to <code class="docutils literal notranslate"><span clas
 <span class="go">sub-test_ses-two_task-mytask_channels.tsv</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># Then, one can update this `BIDSPath` object in place</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">acquisition</span><span class="o">=</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;ieeg&#39;</span><span class="p">,</span>
-<span class="go">                         extension=&#39;.vhdr&#39;, task=None)</span>
+<span class="go">                     extension=&#39;.vhdr&#39;, task=None)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">bids_path</span><span class="o">.</span><span class="n">basename</span><span class="p">)</span>
 <span class="go">sub-test_ses-two_acq-test_ieeg.vhdr</span>
 </pre></div>
@@ -355,7 +377,7 @@ instantiation. Defaults to <code class="docutils literal notranslate"><span clas
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-08-28.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-08-29.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
     </p>
   </div>
