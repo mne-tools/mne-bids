@@ -76,8 +76,9 @@ API
 - Add ``check`` parameter and attribute to :class:`mne_bids.BIDSPath` that allows users to turn off entity checks by `Adam Li`_ (`#511 <https://github.com/mne-tools/mne-bids/pull/511>`_)
 - Add ``datatype`` parameter and attribute to :class:`mne_bids.BIDSPath` that allows users to specify EEG, MEG, or iEEG datasets by `Adam Li`_ (`#514 <https://github.com/mne-tools/mne-bids/pull/514>`_)
 - Add ``datatype`` to replace ``kind`` parameter to :func:`mne_bids.make_bids_folders` and :func:`mne_bids.read_raw_bids` that allows users to specify EEG, MEG, or iEEG datasets by `Adam Li`_ (`#514 <https://github.com/mne-tools/mne-bids/pull/514>`_)
-- In :func:`mne_bids.write_raw_bids`, :func:`mne_bids.read_raw_bids`, :func:`mne_bids.get_matched_empty_room`, and :func:`mne_bids.get_head_mri_trans`, the ``bids_basename`` and ``bids_root`` keyword arguments have been removed. The functions now expect ``bids_path``, an instance of :class:`mne_bids.BIDSPath`, by `Adam Li`_ (`#525 <https://github.com/mne-tools/mne-bids/pull/525>`_)
-- The new function :func:`mne_bids.BIDSPath.match` allows to retrieve a list of :class:`mne_bids.BIDSPath` objects matching a specified set of entity values in the dataset, by `Richard Höchenberger`_ (`#507 <https://github.com/mne-tools/mne-bids/pull/507>`_)
+- In :func:`mne_bids.write_raw_bids`, :func:`mne_bids.read_raw_bids`, and :func:`mne_bids.get_head_mri_trans`, the ``bids_basename`` and ``bids_root`` keyword arguments have been removed. The functions now expect ``bids_path``, an instance of :class:`mne_bids.BIDSPath`, by `Adam Li`_ (`#525 <https://github.com/mne-tools/mne-bids/pull/525>`_)
+- :meth:`mne_bids.BIDSPath.match` allows to retrieve a list of :class:`mne_bids.BIDSPath` objects matching a specified set of entity values in the dataset, by `Richard Höchenberger`_ (`#507 <https://github.com/mne-tools/mne-bids/pull/507>`_)
+- ``mne_bids.get_matched_empty_room`` has been removed. Use :meth:`mne_bids.BIDSPath.find_empty_room` instead, by `Richard Höchenberger`_ (`#535 <https://github.com/mne-tools/mne-bids/pull/535>`_)
 
 .. _changes_0_4:
 

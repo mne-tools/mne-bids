@@ -35,7 +35,6 @@ MNE BIDS
    make_report
    write_anat
    get_head_mri_trans
-   get_matched_empty_room
    get_anonymization_daysback
    print_dir_tree
    get_entity_vals
