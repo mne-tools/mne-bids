@@ -57,7 +57,6 @@ Path
 
    BIDSPath
    get_entities_from_fname
-   get_matched_basenames
 
 Copyfiles
 =========
