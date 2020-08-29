@@ -86,7 +86,8 @@ class BIDSPath(object):
         ``subject``, ``session``, ``task``, ``acquisition``,
         ``run``, ``processing``, ``space``, ``recording`` and ``suffix``.
     datatype : str | None
-        The datatype.
+        The data type, i.e., one of ``'meg'``, ``'eeg'``, ``'ieeg'``,
+        ``'anat'``.
     basename : str
         The basename of the file path. Similar to `os.path.basename(fpath)`.
     root : str
