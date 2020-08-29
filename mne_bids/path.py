@@ -85,6 +85,8 @@ class BIDSPath(object):
         The dictionary of the BIDS entities and their values:
         ``subject``, ``session``, ``task``, ``acquisition``,
         ``run``, ``processing``, ``space``, ``recording`` and ``suffix``.
+    datatype : str | None
+        The datatype.
     basename : str
         The basename of the file path. Similar to `os.path.basename(fpath)`.
     root : str
@@ -160,8 +162,7 @@ class BIDSPath(object):
             ('processing', self.processing),
             ('space', self.space),
             ('recording', self.recording),
-            ('split', self.split),
-            ('datatype', self.datatype)
+            ('split', self.split)
         ])
 
     @property
@@ -301,7 +302,7 @@ class BIDSPath(object):
         bids_fpath = Path(bids_fpath)
         return bids_fpath
 
-    def update(self, check=None, **entities):
+    def update(self, *, check=None, **kwargs):
         """Update inplace BIDS entity key/value pairs in object.
 
         ``run`` and ``split`` are auto-parsed to have two
@@ -329,17 +330,16 @@ class BIDSPath(object):
             ``.check`` attribute accordingly. If ``None``, rely on the existing
             ``.check`` attribute instead, which is set upon ``BIDSPath``
             instantiation. Defaults to ``None``.
-
-        entities : dict | kwarg
-            Allowed BIDS path entities:
-            'subject', 'session', 'task', 'acquisition',
-            'processing', 'run', 'recording', 'space',
-            'suffix'
+        **kwargs : dict
+            It can contain updates for valid BIDS path entities:
+            'subject', 'session', 'task', 'acquisition', 'processing', 'run',
+            'recording', 'space', 'suffix'
+            or updates for 'root' or 'datatype'.
 
         Returns
         -------
         bidspath : instance of BIDSPath
-            The current instance of BIDSPath.
+            The updated instance of BIDSPath.
 
         Examples
         --------
@@ -353,31 +353,33 @@ class BIDSPath(object):
         sub-test_ses-two_task-mytask_channels.tsv
         >>> # Then, one can update this `BIDSPath` object in place
         >>> bids_path.update(acquisition='test', suffix='ieeg',
-                                 extension='.vhdr', task=None)
+                             extension='.vhdr', task=None)
         >>> print(bids_path.basename)
         sub-test_ses-two_acq-test_ieeg.vhdr
         """
-        run = entities.get('run')
+        run = kwargs.get('run')
         if run is not None and not isinstance(run, str):
             # Ensure that run is a string
-            entities['run'] = '{:02}'.format(run)
+            kwargs['run'] = '{:02}'.format(run)
 
-        split = entities.get('split')
+        split = kwargs.get('split')
         if split is not None and not isinstance(split, str):
             # Ensure that run is a string
-            entities['split'] = '{:02}'.format(split)
+            kwargs['split'] = '{:02}'.format(split)
 
         # ensure extension starts with a '.'
-        extension = entities.get('extension')
+        extension = kwargs.get('extension')
         if extension is not None:
             if not extension.startswith('.'):
                 extension = f'.{extension}'
-                entities['extension'] = extension
+                kwargs['extension'] = extension
 
         # error check entities
-        for key, val in entities.items():
+        for key, val in kwargs.items():
             # error check allowed BIDS entity keywords
-            if key not in ALLOWED_PATH_ENTITIES:
+            if key in ('root', 'datatype'):
+                pass
+            elif key not in ALLOWED_PATH_ENTITIES:
                 raise ValueError(f'Key must be one of '
                                  f'{ALLOWED_PATH_ENTITIES}, got {key}')
 
@@ -394,10 +396,10 @@ class BIDSPath(object):
         if self.datatype is None and \
                 self.suffix in SUFFIX_TO_DATATYPE:
             self.datatype = SUFFIX_TO_DATATYPE[self.suffix]
-        # set datatype based on suffix if calling update
-        elif self.suffix in SUFFIX_TO_DATATYPE and \
-                'datatype' not in entities:
-            self.datatype = SUFFIX_TO_DATATYPE[self.suffix]
+        # # set datatype based on suffix if calling update
+        # elif self.suffix in SUFFIX_TO_DATATYPE and \
+        #         'datatype' not in kwargs:
+        #     self.datatype = SUFFIX_TO_DATATYPE[self.suffix]
 
         # Update .check attribute and perform a check of the entities.
         if check is not None:
@@ -421,7 +423,27 @@ class BIDSPath(object):
                                'attribute is not set. Please set the'
                                'BIDS root directory path to `root` via '
                                'BIDSPath.update().')
-        paths = _get_matched_bids_paths(self.root, **self.entities)
+
+        # allow searching by datatype
+        # all other entities are filtered below
+        if self.datatype is not None:
+            search_str = f'*/{self.datatype}/*'
+        else:
+            search_str = '*.*'
+
+        fnames = Path(self.root).rglob(search_str)
+        # Only keep files (not directories), and omit the JSON sidecars.
+        fnames = [str(f.name) for f in fnames
+                  if f.is_file() and f.suffix != '.json']
+        fnames = _filter_fnames(fnames, **self.entities)
+
+        paths = []
+        for fname in fnames:
+            entities = get_entities_from_fname(fname)
+            path = BIDSPath(root=self.root, datatype=self.datatype,
+                            **entities)
+            paths.append(path)
+
         return paths
 
     def _check(self):
@@ -1081,78 +1103,3 @@ def _filter_fnames(fnames, *, subject=None, session=None, task=None,
     # https://stackoverflow.com/a/51246151/1944216
     fnames_filtered = sorted(filter(re.compile(regexp).match, fnames))
     return fnames_filtered
-
-
-def _get_matched_bids_paths(bids_root, *, subject=None, session=None,
-                            task=None, acquisition=None, run=None,
-                            processing=None, recording=None, space=None,
-                            suffix=None, split=None, extension=None,
-                            datatype=None):
-    """Retrieve a list of BIDSPaths matching the specified entities.
-
-    The entity values you pass act as a filter: only those basenames that
-    include the specified entity values will be returned. Passing ``None``
-    (default for all entities) means that **all** values for this entity
-    will be included.
-
-    Parameters
-    ----------
-    bids_root : str
-        The BIDS root directory.
-    subject : str | None
-        The subject ID. Corresponds to "sub".
-    session : str | None
-        The session identifier. Corresponds to "ses". Must be a date in
-        format "YYYYMMDD" if subject is "emptyroom".
-    task : str | None
-        The task identifier. Corresponds to "task". Must be "noise" if
-        subject is "emptyroom".
-    acquisition: str | None
-        The acquisition parameters. Corresponds to "acq".
-    run : int | None
-        The run number. Corresponds to "run".
-    processing : str | None
-        The processing label. Corresponds to "proc".
-    recording : str | None
-        The recording name. Corresponds to "rec".
-    space : str | None
-        The coordinate space for an anatomical file. Corresponds to "space".
-    suffix : str | None
-        The data suffix. E.g. 'meg', or 'channels'
-    split : int | None
-        The split number.
-    extension : str | None
-        The filename extension.
-
-    Returns
-    -------
-    paths : list of BIDSPath
-        The matching BIDSPaths from the dataset. Returns an empty list if no
-        matches were found.
-
-    """
-    bids_root = Path(bids_root)
-    # allow searching by datatype
-    # all other entities are filtered below
-    if datatype is not None:
-        search_str = f'*/{datatype}/*'
-    else:
-        search_str = '*.*'
-
-    fnames = bids_root.rglob(search_str)
-    # Only keep files (not directories), and omit the JSON sidecars.
-    fnames = [str(f.name) for f in fnames
-              if f.is_file() and f.suffix != '.json']
-    fnames = _filter_fnames(fnames, subject=subject, session=session,
-                            task=task, acquisition=acquisition, run=run,
-                            processing=processing, recording=recording,
-                            space=space, split=split, suffix=suffix,
-                            extension=extension)
-
-    paths = []
-    for fname in fnames:
-        entity = get_entities_from_fname(fname)
-        path = BIDSPath(root=bids_root, **entity)
-        paths.append(path)
-
-    return paths

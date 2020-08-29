@@ -348,8 +348,7 @@ def test_bids_path(return_bids_test_dir):
     # should find the correct filename if suffix was passed
     bids_path.update(suffix='meg', extension='.fif')
     bids_fpath = bids_path.fpath
-    assert op.basename(bids_fpath) == \
-           bids_path.basename
+    assert op.basename(bids_fpath) == bids_path.basename
     # Same test, but exploiting the fact that bids_fpath is a pathlib.Path
     assert bids_fpath.name == bids_path.basename
 

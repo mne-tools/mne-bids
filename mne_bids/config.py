@@ -94,8 +94,7 @@ ALLOWED_FILENAME_EXTENSIONS = (
 ALLOWED_PATH_ENTITIES = ('subject', 'session', 'task', 'run',
                          'processing', 'recording', 'space',
                          'acquisition', 'split',
-                         'suffix', 'extension',
-                         'datatype', 'root')
+                         'suffix', 'extension')
 ALLOWED_PATH_ENTITIES_SHORT = {'sub': 'subject', 'ses': 'session',
                                'task': 'task', 'acq': 'acquisition',
                                'run': 'run', 'proc': 'processing',
