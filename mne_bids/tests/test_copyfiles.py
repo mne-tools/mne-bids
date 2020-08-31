@@ -20,8 +20,8 @@ with warnings.catch_warnings():
 
 from mne.datasets import testing
 from mne.utils import _TempDir
-from mne_bids import make_bids_basename
-from mne_bids.utils import _handle_kind
+from mne_bids import BIDSPath
+from mne_bids.utils import _handle_datatype
 from mne_bids.path import _parse_ext
 
 from mne_bids.copyfiles import (_get_brainvision_encoding,
@@ -150,46 +150,48 @@ def test_copyfile_kit():
     acq = '01'
     task = 'testing'
 
-    bids_basename = make_bids_basename(
-        subject=subject_id, session=session_id, run=run, acquisition=acq,
-        task=task)
-
-    kit_bids_basename = bids_basename.copy().update(acquisition=None,
-                                                    prefix=output_path)
-
     raw = mne.io.read_raw_kit(
         raw_fname, mrk=hpi_fname, elp=electrode_fname,
         hsp=headshape_fname)
     _, ext = _parse_ext(raw_fname, verbose=True)
-    kind = _handle_kind(raw)
-    bids_fname = str(bids_basename.copy().update(suffix=f'{kind}{ext}',
-                                                 prefix=output_path))
+    datatype = _handle_datatype(raw)
+
+    bids_path = BIDSPath(
+        subject=subject_id, session=session_id, run=run, acquisition=acq,
+        task=task)
+    kit_bids_path = bids_path.copy().update(acquisition=None,
+                                            datatype=datatype,
+                                            root=output_path)
+    bids_fname = str(bids_path.copy().update(datatype=datatype,
+                                             suffix=datatype,
+                                             extension=ext,
+                                             root=output_path))
 
     copyfile_kit(raw_fname, bids_fname, subject_id, session_id,
                  task, run, raw._init_kwargs)
     assert op.exists(bids_fname)
     _, ext = _parse_ext(hpi_fname, verbose=True)
     if ext == '.sqd':
-        kit_bids_basename.suffix = 'markers.sqd'
-        assert op.exists(kit_bids_basename)
+        kit_bids_path.update(suffix='markers', extension='.sqd')
+        assert op.exists(kit_bids_path)
     elif ext == '.mrk':
-        kit_bids_basename.suffix = 'markers.mrk'
-        assert op.exists(kit_bids_basename)
+        kit_bids_path.update(suffix='markers', extension='.mrk')
+        assert op.exists(kit_bids_path)
 
     if op.exists(electrode_fname):
         task, run, key = None, None, 'ELP'
         elp_ext = '.pos'
-        elp_fname = make_bids_basename(
+        elp_fname = BIDSPath(
             subject=subject_id, session=session_id, task=task, run=run,
-            acquisition=key, suffix='headshape%s' % elp_ext,
-            prefix=output_path)
+            acquisition=key, suffix='headshape', extension=elp_ext,
+            datatype='meg', root=output_path)
         assert op.exists(elp_fname)
 
     if op.exists(headshape_fname):
         task, run, key = None, None, 'HSP'
         hsp_ext = '.pos'
-        hsp_fname = make_bids_basename(
+        hsp_fname = BIDSPath(
             subject=subject_id, session=session_id, task=task, run=run,
-            acquisition=key, suffix='headshape%s' % hsp_ext,
-            prefix=output_path)
+            acquisition=key, suffix='headshape', extension=hsp_ext,
+            datatype='meg', root=output_path)
         assert op.exists(hsp_fname)

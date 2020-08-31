@@ -19,9 +19,9 @@ with warnings.catch_warnings():
                             category=ImportWarning)
     import mne
 
-from mne_bids import make_bids_basename
+from mne_bids import BIDSPath
 from mne_bids.utils import (_check_types, _age_on_date,
-                            _infer_eeg_placement_scheme, _handle_kind,
+                            _infer_eeg_placement_scheme, _handle_datatype,
                             _get_ch_type_mapping)
 from mne_bids.path import _path_to_str
 
@@ -32,7 +32,7 @@ run = '01'
 acq = None
 task = 'testing'
 
-bids_basename = make_bids_basename(
+bids_path = BIDSPath(
     subject=subject_id, session=session_id, run=run, acquisition=acq,
     task=task)
 
@@ -43,59 +43,32 @@ def test_get_ch_type_mapping():
         _get_ch_type_mapping(fro='bogus', to='mne')
 
 
-def test_handle_kind():
-    """Test the automatic extraction of kind from the data."""
+def test_handle_datatype():
+    """Test the automatic extraction of datatype from the data."""
     # Create a dummy raw
     n_channels = 1
     sampling_rate = 100
     data = random((n_channels, sampling_rate))
     channel_types = ['grad', 'eeg', 'ecog']
-    expected_kinds = ['meg', 'eeg', 'ieeg']
+    expected_modalities = ['meg', 'eeg', 'ieeg']
     # do it once for each type ... and once for "no type"
-    for chtype, kind in zip(channel_types, expected_kinds):
+    for chtype, datatype in zip(channel_types, expected_modalities):
         info = mne.create_info(n_channels, sampling_rate, ch_types=[chtype])
         raw = mne.io.RawArray(data, info)
-        assert _handle_kind(raw) == kind
+        assert _handle_datatype(raw) == datatype
 
     # if the situation is ambiguous (EEG and iEEG channels both), raise error
     with pytest.raises(ValueError, match='Both EEG and iEEG channels found'):
         info = mne.create_info(2, sampling_rate,
                                ch_types=['eeg', 'ecog'])
         raw = mne.io.RawArray(random((2, sampling_rate)), info)
-        _handle_kind(raw)
+        _handle_datatype(raw)
 
     # if we cannot find a proper channel type, we raise an error
     with pytest.raises(ValueError, match='Neither MEG/EEG/iEEG channels'):
         info = mne.create_info(n_channels, sampling_rate, ch_types=['misc'])
         raw = mne.io.RawArray(data, info)
-        _handle_kind(raw)
-
-
-def test_make_filenames():
-    """Test that we create filenames according to the BIDS spec."""
-    # All keys work
-    prefix_data = dict(subject='one', session='two', task='three',
-                       acquisition='four', run='five', processing='six',
-                       recording='seven', suffix='suffix.csv')
-    assert str(make_bids_basename(**prefix_data)) == 'sub-one_ses-two_task-three_acq-four_run-five_proc-six_rec-seven_suffix.csv'  # noqa
-
-    # subsets of keys works
-    assert make_bids_basename(subject='one', task='three', run=4) == 'sub-one_task-three_run-04'  # noqa
-    assert make_bids_basename(subject='one', task='three', suffix='hi.csv') == 'sub-one_task-three_hi.csv'  # noqa
-
-    with pytest.raises(ValueError):
-        make_bids_basename(subject='one-two', suffix='there.csv')
-
-    with pytest.raises(ValueError, match='At least one'):
-        make_bids_basename()
-
-    # emptyroom checks
-    with pytest.raises(ValueError, match='empty-room session should be a '
-                                         'string of format YYYYMMDD'):
-        make_bids_basename(subject='emptyroom', session='12345', task='noise')
-    with pytest.raises(ValueError, match='task must be'):
-        make_bids_basename(subject='emptyroom', session='20131201',
-                           task='blah')
+        _handle_datatype(raw)
 
 
 def test_check_types():

@@ -9,7 +9,7 @@ example usage:  $ mne_bids raw_to_bids --subject_id sub01 --task rest
 #
 # License: BSD (3-clause)
 import mne_bids
-from mne_bids import write_raw_bids, make_bids_basename
+from mne_bids import write_raw_bids, BIDSPath
 from mne_bids.read import _read_raw
 
 
@@ -53,6 +53,8 @@ def run():
     parser.add_option('--allow_maxshield', dest='allow_maxshield',
                       help="whether to allow non maxfiltered data (BOOLEAN)",
                       action='store_true')
+    parser.add_option('--line_freq', dest='line_freq',
+                      help="The frequency of the line noise (e.g. 50 or 60).")
 
     opt, args = parser.parse_args()
 
@@ -66,13 +68,15 @@ def run():
         parser.error('Arguments missing. You need to specify at least the'
                      'following: --subject_id, --task, --raw, --bids_root.')
 
-    bids_basename = make_bids_basename(
+    bids_path = BIDSPath(
         subject=opt.subject_id, session=opt.session_id, run=opt.run,
-        acquisition=opt.acq, task=opt.task)
+        acquisition=opt.acq, task=opt.task, root=opt.bids_root)
     raw = _read_raw(opt.raw_fname, hpi=opt.hpi, electrode=opt.electrode,
                     hsp=opt.hsp, config=opt.config,
                     allow_maxshield=opt.allow_maxshield)
-    write_raw_bids(raw, bids_basename, opt.bids_root, event_id=opt.event_id,
+    if opt.line_freq is not None:
+        raw.info['line_freq'] = opt.line_freq
+    write_raw_bids(raw, bids_path, event_id=opt.event_id,
                    events_data=opt.events_data, overwrite=opt.overwrite,
                    verbose=True)
 

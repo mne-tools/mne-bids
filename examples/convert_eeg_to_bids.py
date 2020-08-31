@@ -34,7 +34,7 @@ import shutil as sh
 import mne
 from mne.datasets import eegbci
 
-from mne_bids import write_raw_bids, make_bids_basename, print_dir_tree
+from mne_bids import write_raw_bids, BIDSPath, print_dir_tree
 
 ###############################################################################
 # Download the data
@@ -97,6 +97,7 @@ print_dir_tree(data_dir)
 # Load the data from "2 minutes eyes closed rest"
 edf_path = eegbci.load_data(subject=subject, runs=run)[0]
 raw = mne.io.read_raw_edf(edf_path, preload=False)
+raw.info['line_freq'] = 50  # specify power line frequency as required by BIDS
 
 # For converting the data to BIDS, we need to convert the the annotations
 # stored in the file to a 2D numpy array of events.
@@ -174,8 +175,8 @@ sh.rmtree(bids_root, ignore_errors=True)
 event_id = {'rest': 0}
 
 # Now convert our data to be in a new BIDS dataset.
-bids_basename = make_bids_basename(subject=subject_id, task=task)
-write_raw_bids(raw, bids_basename, bids_root, event_id=event_id,
+bids_path = BIDSPath(subject=subject_id, task=task, root=bids_root)
+write_raw_bids(raw, bids_path, event_id=event_id,
                events_data=events, overwrite=True)
 
 ###############################################################################

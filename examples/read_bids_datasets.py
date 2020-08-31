@@ -26,7 +26,7 @@ and to display the data that is saved within the accompanying sidecars.
 # We are importing everything we need for this example:
 from mne.datasets import somato
 
-from mne_bids import (make_bids_basename, read_raw_bids,
+from mne_bids import (BIDSPath, read_raw_bids,
                       print_dir_tree)
 
 ###############################################################################
@@ -43,12 +43,14 @@ from mne_bids import (make_bids_basename, read_raw_bids,
 bids_root = somato.data_path()
 subject_id = '01'
 task = 'somato'
-kind = 'meg'
+datatype = 'meg'
 
-bids_basename = make_bids_basename(subject=subject_id, task=task)
+bids_path = BIDSPath(subject=subject_id, task=task,
+                     datatype=datatype, suffix=datatype,
+                     root=bids_root)
 
 # bids basename is nicely formatted
-print(bids_basename)
+print(bids_path)
 
 ###############################################################################
 # Print the directory tree
@@ -60,8 +62,7 @@ print_dir_tree(bids_root)
 #
 # Let's read in the dataset and show off a few features of the
 # loading function `read_raw_bids`. Note, this is just one line of code.
-raw = read_raw_bids(bids_basename=bids_basename, bids_root=bids_root,
-                    kind=kind, verbose=True)
+raw = read_raw_bids(bids_path=bids_path, verbose=True)
 
 ###############################################################################
 # `raw.info` has the basic subject metadata

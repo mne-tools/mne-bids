@@ -46,7 +46,7 @@ import mne
 from mne.datasets import sample
 from mne.source_space import head_to_mri
 
-from mne_bids import (write_raw_bids, make_bids_basename, write_anat,
+from mne_bids import (write_raw_bids, BIDSPath, write_anat,
                       get_head_mri_trans, print_dir_tree)
 
 ###############################################################################
@@ -63,13 +63,15 @@ output_path = op.abspath(op.join(data_path, '..', 'MNE-sample-data-bids'))
 if op.exists(output_path):
     sh.rmtree(output_path)
 raw = mne.io.read_raw_fif(raw_fname)
+raw.info['line_freq'] = 60  # specify power line frequency as required by BIDS
+
 sub = '01'
 ses = '01'
 task = 'audiovisual'
 run = '01'
-bids_basename = make_bids_basename(subject=sub, session=ses, task=task,
-                                   run=run)
-write_raw_bids(raw, bids_basename, output_path, events_data=events_data,
+bids_path = BIDSPath(subject=sub, session=ses, task=task,
+                     run=run, root=output_path)
+write_raw_bids(raw, bids_path, events_data=events_data,
                event_id=event_id, overwrite=True)
 
 ###############################################################################
@@ -113,9 +115,7 @@ print_dir_tree(output_path)
 ###############################################################################
 # Our BIDS dataset is now ready to be shared. We can easily estimate the
 # transformation matrix using ``MNE-BIDS`` and the BIDS dataset.
-estim_trans = get_head_mri_trans(bids_basename=bids_basename,
-                                 bids_root=output_path  # root of our BIDS dir
-                                 )
+estim_trans = get_head_mri_trans(bids_path=bids_path)
 
 ###############################################################################
 # Finally, let's use the T1 weighted MRI image and plot the anatomical

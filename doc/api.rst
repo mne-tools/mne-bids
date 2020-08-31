@@ -30,17 +30,16 @@ MNE BIDS
    write_raw_bids
    read_raw_bids
    make_bids_folders
-   make_bids_basename
+   BIDSPath
    make_dataset_description
    make_report
    write_anat
    mark_bad_channels
    get_head_mri_trans
-   get_matched_empty_room
    get_anonymization_daysback
    print_dir_tree
    get_entity_vals
-   get_kinds
+   get_modalities
 
 Path
 ====
@@ -57,7 +56,7 @@ Path
    :toctree: generated/
 
    BIDSPath
-   parse_bids_filename
+   get_entities_from_fname
 
 Copyfiles
 =========

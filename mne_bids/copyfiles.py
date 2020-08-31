@@ -23,7 +23,7 @@ import shutil as sh
 from mne.io import read_raw_brainvision, anonymize_info
 from scipy.io import loadmat, savemat
 
-from mne_bids.path import _parse_ext
+from mne_bids.path import BIDSPath, _parse_ext, _mkdir_p
 from mne_bids.utils import _get_mrk_meas_date, _check_anonymize
 
 
@@ -67,7 +67,7 @@ def _get_brainvision_encoding(vhdr_file, verbose=False):
             enc = 'UTF-8'
             src = '(default)'
         if verbose is True:
-            print('Detected file encoding: %s %s.' % (enc, src))
+            print(f'Detected file encoding: {enc} {src}.')
     return enc
 
 
@@ -88,8 +88,8 @@ def _get_brainvision_paths(vhdr_path):
     """
     fname, ext = _parse_ext(vhdr_path)
     if ext != '.vhdr':
-        raise ValueError('Expecting file ending in ".vhdr",'
-                         ' but got {}'.format(ext))
+        raise ValueError(f'Expecting file ending in ".vhdr",'
+                         f' but got {ext}')
 
     # Header file seems fine
     # extract encoding from brainvision header file, or default to utf-8
@@ -103,7 +103,7 @@ def _get_brainvision_paths(vhdr_path):
     eeg_file_match = re.search(r'DataFile=(.*\.eeg)', ' '.join(lines))
     if not eeg_file_match:
         raise ValueError('Could not find a .eeg file link in'
-                         ' {}'.format(vhdr_path))
+                         f' {vhdr_path}')
     else:
         eeg_file = eeg_file_match.groups()[0]
 
@@ -111,7 +111,7 @@ def _get_brainvision_paths(vhdr_path):
     vmrk_file_match = re.search(r'MarkerFile=(.*\.vmrk)', ' '.join(lines))
     if not vmrk_file_match:
         raise ValueError('Could not find a .vmrk file link in'
-                         ' {}'.format(vhdr_path))
+                         f' {vhdr_path}')
     else:
         vmrk_file = vmrk_file_match.groups()[0]
 
@@ -178,10 +178,13 @@ def copyfile_kit(src, dest, subject_id, session_id,
         Extract information of marker and headpoints
 
     """
-    from mne_bids import make_bids_basename
+    # create parent directories in case it does not exist yet
+    _mkdir_p(op.dirname(dest))
+
     # KIT data requires the marker file to be copied over too
     sh.copyfile(src, dest)
     data_path = op.split(dest)[0]
+    datatype = 'meg'
     if 'mrk' in _init_kwargs:
         hpi = _init_kwargs['mrk']
         acq_map = dict()
@@ -194,21 +197,22 @@ def copyfile_kit(src, dest, subject_id, session_id,
             _, marker_ext = _parse_ext(hpi)
             acq_map[None] = hpi
         for key, value in acq_map.items():
-            marker_fname = make_bids_basename(
+            marker_path = BIDSPath(
                 subject=subject_id, session=session_id, task=task, run=run,
-                acquisition=key, suffix='markers%s' % marker_ext,
-                prefix=data_path)
-            sh.copyfile(value, marker_fname)
+                acquisition=key, suffix='markers', extension=marker_ext,
+                datatype=datatype)
+            sh.copyfile(value, op.join(data_path, marker_path.basename))
     for acq in ['elp', 'hsp']:
         if acq in _init_kwargs:
             position_file = _init_kwargs[acq]
             task, run, acq = None, None, acq.upper()
             position_ext = '.pos'
-            position_fname = make_bids_basename(
+            position_path = BIDSPath(
                 subject=subject_id, session=session_id, task=task, run=run,
-                acquisition=acq, suffix='headshape%s' % position_ext,
-                prefix=data_path)
-            sh.copyfile(position_file, position_fname)
+                acquisition=acq, suffix='headshape', extension=position_ext,
+                datatype=datatype)
+            sh.copyfile(position_file,
+                        op.join(data_path, position_path.basename))
 
 
 def _replace_file(fname, pattern, replace):
@@ -283,8 +287,8 @@ def copyfile_brainvision(vhdr_src, vhdr_dest, anonymize=None, verbose=False):
     fname_src, ext_src = _parse_ext(vhdr_src)
     fname_dest, ext_dest = _parse_ext(vhdr_dest)
     if ext_src != ext_dest:
-        raise ValueError('Need to move data with same extension'
-                         ' but got "{}", "{}"'.format(ext_src, ext_dest))
+        raise ValueError(f'Need to move data with same extension'
+                         f' but got "{ext_src}", "{ext_dest}"')
 
     eeg_file_path, vmrk_file_path = _get_brainvision_paths(vhdr_src)
 
@@ -356,13 +360,13 @@ def copyfile_eeglab(src, dest):
     fname_dest, ext_dest = _parse_ext(dest)
     if ext_src != ext_dest:
         raise ValueError('Need to move data with same extension'
-                         ' but got {}, {}'.format(ext_src, ext_dest))
+                         f' but got {ext_src}, {ext_dest}')
 
     # Extract matlab struct "EEG" from EEGLAB file
     mat = loadmat(src, squeeze_me=False, chars_as_strings=False,
                   mat_dtype=False, struct_as_record=True)
     if 'EEG' not in mat:
-        raise ValueError('Could not find "EEG" field in {}'.format(src))
+        raise ValueError(f'Could not find "EEG" field in {src}')
     eeg = mat['EEG']
 
     # If the data field is a string, it points to a .fdt file in src dir
@@ -373,8 +377,8 @@ def copyfile_eeglab(src, dest):
         fdt_path = op.join(head, fdt_pointer)
         fdt_name, fdt_ext = _parse_ext(fdt_path)
         if fdt_ext != '.fdt':
-            raise IOError('Expected extension {} for linked data but found'
-                          ' {}'.format('.fdt', fdt_ext))
+            raise IOError('Expected extension .fdt for linked data but found'
+                          f' {fdt_ext}')
 
         # Copy the fdt file and give it a new name
         sh.copyfile(fdt_path, fname_dest + '.fdt')

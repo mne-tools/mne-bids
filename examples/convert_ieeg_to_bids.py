@@ -46,7 +46,7 @@ import shutil
 import numpy as np
 
 import mne
-from mne_bids import (write_raw_bids, make_bids_basename,
+from mne_bids import (write_raw_bids, BIDSPath,
                       read_raw_bids, print_dir_tree)
 
 ###############################################################################
@@ -95,6 +95,7 @@ print(dict(zip(ch_names, elec)))
 # use the montage we created.
 info = mne.create_info(ch_names, 1000., 'ecog')
 raw = mne.io.read_raw_edf(misc_path + '/ecog/sample_ecog.edf')
+raw.info['line_freq'] = 60  # specify power line frequency as required by BIDS
 raw.set_channel_types({ch: 'ecog' for ch in raw.ch_names})
 
 # set the bad channels
@@ -164,13 +165,12 @@ shutil.rmtree(bids_root, ignore_errors=True)
 # temporarily save the data to disc before reading it back in.
 
 # Now convert our data to be in a new BIDS dataset.
-bids_basename = make_bids_basename(subject=subject_id,
-                                   task=task,
-                                   acquisition="ecog")
+bids_path = BIDSPath(subject=subject_id,
+                     task=task, acquisition="ecog", root=bids_root)
 
 # write `raw` to BIDS and anonymize it into BrainVision format
-write_raw_bids(raw, bids_basename, bids_root=bids_root,
-               anonymize=dict(daysback=30000), overwrite=True)
+write_raw_bids(raw, bids_path, anonymize=dict(daysback=30000),
+               overwrite=True)
 
 ###############################################################################
 # Step 3: Check and compare with standard
@@ -218,7 +218,7 @@ print(text)
 # :func:`read_raw_bids` to read in the data.
 
 # read in the BIDS dataset and plot the coordinates
-raw = read_raw_bids(bids_basename=bids_basename, bids_root=bids_root)
+raw = read_raw_bids(bids_path=bids_path)
 
 # get the first 5 channels and show their locations
 # this should match what was printed earlier.

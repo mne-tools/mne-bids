@@ -11,12 +11,11 @@ import numpy as np
 from mne.externals.tempita import Template
 from mne.utils import warn
 
-from mne_bids.config import DOI, ALLOWED_KINDS
+from mne_bids.config import DOI, ALLOWED_DATATYPES
 from mne_bids.tsv_handler import _from_tsv
-from mne_bids.path import (make_bids_basename, get_kinds,
-                           get_entity_vals, _parse_ext,
-                           _find_matching_sidecar, parse_bids_filename,
-                           BIDSPath)
+from mne_bids.path import (get_modalities, get_entity_vals, BIDSPath,
+                           _parse_ext, _find_matching_sidecar,
+                           get_entities_from_fname)
 
 # functions to be used inside Template strings
 FUNCTION_TEMPLATE = """{{py:  
@@ -111,7 +110,7 @@ PARTICIPANTS_TEMPLATE = \
     """{{_summarize_participant_sex(sexs)}};
 {{_summarize_participant_hand(hands)}}; {{_range_str(min_age, max_age, mean_age, std_age, n_age_unknown, 'age')}}"""  # noqa
 
-MODALITY_AGNOSTIC_TEMPLATE = \
+DATATYPE_AGNOSTIC_TEMPLATE = \
     """Data was recorded using a {{_pretty_str(system)}} system
 {{if manufacturer}}({{_pretty_str(manufacturer)}} manufacturer){{endif}}
 sampled at {{_pretty_str(sfreq)}} Hz
@@ -152,8 +151,8 @@ def _summarize_dataset(bids_root):
     template_dict : dict
         A dictionary of values for various template strings.
     """
-    dataset_descrip_fpath = make_bids_basename(
-        prefix=bids_root, suffix='dataset_description.json')
+    dataset_descrip_fpath = op.join(bids_root,
+                                    'dataset_description.json')
     if not op.exists(dataset_descrip_fpath):
         return dict()
 
@@ -190,8 +189,7 @@ def _summarize_participants_tsv(bids_root, verbose=True):
     template_dict : dict
         A dictionary of values for various template strings.
     """
-    participants_tsv_fpath = make_bids_basename(prefix=bids_root,
-                                                suffix='participants.tsv')
+    participants_tsv_fpath = op.join(bids_root, 'participants.tsv')
     if not op.exists(participants_tsv_fpath):
         return dict()
 
@@ -325,32 +323,24 @@ def _summarize_sidecar_json(bids_root, scans_fpaths, verbose=True):
         scans = scans_tsv['filename']
         for scan in scans:
             # summarize metadata of recordings
-            bids_basename, ext = _parse_ext(scan)
-            kind = op.dirname(scan)
-            if kind not in ALLOWED_KINDS:
+            bids_path, ext = _parse_ext(scan)
+            datatype = op.dirname(scan)
+            if datatype not in ALLOWED_DATATYPES:
                 continue
 
             n_scans += 1
 
             # convert to BIDS Path
-            params = parse_bids_filename(bids_basename)
-            bids_basename = BIDSPath(subject=params.get('sub'),
-                                     session=params.get('ses'),
-                                     recording=params.get('rec'),
-                                     acquisition=params.get('acq'),
-                                     processing=params.get('proc'),
-                                     space=params.get('space'),
-                                     run=params.get('run'),
-                                     task=params.get('task'),
-                                     )
+            params = get_entities_from_fname(bids_path)
+            bids_path = BIDSPath(root=bids_root, **params)
 
             # XXX: improve to allow emptyroom
-            if bids_basename.subject == 'emptyroom':
+            if bids_path.subject == 'emptyroom':
                 continue
 
-            sidecar_fname = _find_matching_sidecar(bids_fname=bids_basename,
-                                                   bids_root=bids_root,
-                                                   suffix=f'{kind}.json')
+            sidecar_fname = _find_matching_sidecar(bids_path=bids_path,
+                                                   suffix=datatype,
+                                                   extension='.json')
             with open(sidecar_fname, 'r') as fin:
                 sidecar_json = json.load(fin)
 
@@ -421,30 +411,22 @@ def _summarize_channels_tsv(bids_root, scans_fpaths, verbose=True):
         scans = scans_tsv['filename']
         for scan in scans:
             # summarize metadata of recordings
-            bids_basename, _ = _parse_ext(scan)
-            kind = op.dirname(scan)
-            if kind not in ['meg', 'eeg', 'ieeg']:
+            bids_path, _ = _parse_ext(scan)
+            datatype = op.dirname(scan)
+            if datatype not in ['meg', 'eeg', 'ieeg']:
                 continue
 
             # convert to BIDS Path
-            params = parse_bids_filename(bids_basename)
-            bids_basename = BIDSPath(subject=params.get('sub'),
-                                     session=params.get('ses'),
-                                     recording=params.get('rec'),
-                                     acquisition=params.get('acq'),
-                                     processing=params.get('proc'),
-                                     space=params.get('space'),
-                                     run=params.get('run'),
-                                     task=params.get('task'),
-                                     prefix=bids_root)
+            params = get_entities_from_fname(bids_path)
+            bids_path = BIDSPath(root=bids_root, **params)
 
             # XXX: improve to allow emptyroom
-            if bids_basename.subject == 'emptyroom':
+            if bids_path.subject == 'emptyroom':
                 continue
 
-            channels_fname = _find_matching_sidecar(bids_fname=bids_basename,
-                                                    bids_root=bids_root,
-                                                    suffix='channels.tsv')
+            channels_fname = _find_matching_sidecar(bids_path=bids_path,
+                                                    suffix='channels',
+                                                    extension='.tsv')
 
             # summarize channels.tsv
             channels_tsv = _from_tsv(channels_fname)
@@ -477,7 +459,7 @@ def make_report(bids_root, session=None, verbose=True):
 
       - dataset_description.json file
       - (optional) participants.tsv file
-      - (optional) modality-agnostic files for (M/I)EEG data,
+      - (optional) datatype-agnostic files for (M/I)EEG data,
         which reads files from the ``*_scans.tsv`` file.
 
     Parameters
@@ -496,12 +478,19 @@ def make_report(bids_root, session=None, verbose=True):
         describing the summary of the subjects.
     """
     # high level summary
-    subjects = get_entity_vals(bids_root, entity_key='sub')
-    sessions = get_entity_vals(bids_root, entity_key='ses')
-    kinds = get_kinds(bids_root)
+    subjects = get_entity_vals(bids_root, entity_key='subject')
+    sessions = get_entity_vals(bids_root, entity_key='session')
+    modalities = get_modalities(bids_root)
 
-    # only summarize allowed kinds (MEEG data)
-    kinds = [kind.upper() for kind in kinds if kind in ALLOWED_KINDS]
+    # only summarize allowed modalities (MEG/EEG/iEEG) data
+    # map them to a pretty looking string
+    datatype_map = {
+        'meg': 'MEG',
+        'eeg': 'EEG',
+        'ieeg': 'iEEG',
+    }
+    modalities = [datatype_map[datatype] for datatype in modalities
+                  if datatype in datatype_map.keys()]
 
     # REQUIRED: dataset_description.json summary
     dataset_summary = _summarize_dataset(bids_root)
@@ -528,23 +517,23 @@ def make_report(bids_root, session=None, verbose=True):
     dataset_summary['PARTICIPANTS_TEMPLATE'] = str(participant_template)
 
     if not scans_summary:
-        modality_agnostic_template = ''
+        datatype_agnostic_template = ''
     else:
-        modality_agnostic_template = MODALITY_AGNOSTIC_TEMPLATE
+        datatype_agnostic_template = DATATYPE_AGNOSTIC_TEMPLATE
 
     dataset_summary.update({
-        'system': kinds,
+        'system': modalities,
         'n_subjects': len(subjects),
         'n_sessions': len(sessions),
         'sessions': sessions,
     })
 
-    # XXX: add channel summary for kinds (ieeg, meg, eeg)
+    # XXX: add channel summary for modalities (ieeg, meg, eeg)
     # create the content and mne Template
     # lower-case templates are "Recommended",
     # while upper-case templates are "Required".
     content = f'{FUNCTION_TEMPLATE}{BIDS_DATASET_TEMPLATE}' \
-              f'{modality_agnostic_template}'
+              f'{datatype_agnostic_template}'
 
     paragraph = Template(content=content)
     paragraph = paragraph.substitute(**dataset_summary,
