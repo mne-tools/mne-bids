@@ -35,7 +35,7 @@ def run():
                       default=[],
                       help='Descriptions as to why the channels are bad. '
                            'Must match the number of bad channels provided. '
-                           'Pass multiple times to suplly more than one '
+                           'Pass multiple times to supply more than one '
                            'value in that case.')
     parser.add_option('--bids_root', dest='bids_root',
                       help='The path of the folder containing the BIDS '
