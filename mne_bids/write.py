@@ -939,7 +939,7 @@ def write_raw_bids(raw, bids_path, events_data=None,
         raise RuntimeError('"bids_path" must be a BIDSPath object. Please '
                            'instantiate using mne_bids.BIDSPath().')
 
-    # check root available
+    # Check if the root is available
     if bids_path.root is None:
         raise ValueError('The root of the "bids_path" must be set. '
                          'Please use `bids_path.update(root="<root>")` '
