@@ -1107,7 +1107,7 @@ def write_raw_bids(raw, bids_path, events_data=None,
     if convert:
         if bids_path.datatype == 'meg':
             _write_raw_fif(
-                raw, (data_path / bids_path.fpath.name
+                raw, (op.join(data_path, bids_path.basename)
                       if ext == '.pdf' else bids_path.fpath))
         else:
             if verbose:
