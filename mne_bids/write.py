@@ -1087,8 +1087,9 @@ def write_raw_bids(raw, bids_path, events_data=None,
     _mkdir_p(os.path.dirname(data_path))
 
     if os.path.exists(bids_path.fpath) and not overwrite:
-        raise FileExistsError(f'"{bids_path.fpath}" already exists. '  # noqa: F821
-                              f'Please set overwrite to True.')
+        raise FileExistsError(
+            f'"{bids_path.fpath}" already exists. '  # noqa: F821
+            'Please set overwrite to True.')
 
     # If not already converting for anonymization, we may still need to do it
     # if current format not BIDS compliant
