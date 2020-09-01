@@ -711,3 +711,8 @@ def test_find_emptyroom_no_meas_date():
 
     with pytest.warns(RuntimeWarning, match='Could not retrieve .* date'):
         bids_path.find_empty_room()
+
+
+def test_bids_path_str():
+    with pytest.raises(ValueError, match="type <class 'int'>"):
+        BIDSPath(subject=1)

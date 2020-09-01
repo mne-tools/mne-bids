@@ -483,6 +483,8 @@ class BIDSPath(object):
         >>> print(bids_path.basename)
         sub-test_ses-two_acq-test_ieeg.vhdr
         """
+        _check_types(kwargs.values())
+
         run = kwargs.get('run')
         if run is not None and not isinstance(run, str):
             # Ensure that run is a string
