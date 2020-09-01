@@ -26,8 +26,7 @@ from mne.utils import _TempDir, check_version
 from mne.io import anonymize_info
 
 from mne_bids import (get_modalities, get_entity_vals, print_dir_tree,
-                      make_bids_folders, BIDSPath, write_raw_bids,
-                      read_raw_bids)
+                      BIDSPath, write_raw_bids, read_raw_bids)
 from mne_bids.path import (_parse_ext, get_entities_from_fname,
                            _find_best_candidates, _find_matching_sidecar,
                            _filter_fnames)
@@ -144,31 +143,32 @@ def test_make_folders():
     """Test that folders are created and named properly."""
     # Make sure folders are created properly
     bids_root = _TempDir()
-    make_bids_folders(subject='hi', session='foo', datatype='ba',
-                      bids_root=bids_root)
+    bids_path = BIDSPath(subject='hi', session='foo',
+                         datatype='eeg', root=bids_root)
+    bids_path.mkdir()
     assert op.isdir(op.join(bids_root, 'sub-hi', 'ses-foo', 'ba'))
 
     # If we remove a kwarg the folder shouldn't be created
     bids_root = _TempDir()
-    make_bids_folders(subject='hi', datatype='ba', bids_root=bids_root)
+    bids_path = BIDSPath(subject='hi', datatype='eeg',
+                         root=bids_root)
+    bids_path.mkdir()
     assert op.isdir(op.join(bids_root, 'sub-hi', 'ba'))
-
-    # check overwriting of folders
-    make_bids_folders(subject='hi', datatype='ba', bids_root=bids_root,
-                      overwrite=True, verbose=True)
 
     # Check if a pathlib.Path bids_root works.
     bids_root = Path(_TempDir())
-    make_bids_folders(subject='hi', session='foo', datatype='ba',
-                      bids_root=bids_root)
+    bids_path = BIDSPath(subject='hi', session='foo',
+                         datatype='eeg', root=bids_root)
+    bids_path.mkdir()
     assert op.isdir(op.join(bids_root, 'sub-hi', 'ses-foo', 'ba'))
 
     # Check if bids_root=None creates folders in the current working directory
     bids_root = _TempDir()
     curr_dir = os.getcwd()
     os.chdir(bids_root)
-    make_bids_folders(subject='hi', session='foo', datatype='ba',
-                      bids_root=None)
+    bids_path = BIDSPath(subject='hi', session='foo',
+                         datatype='eeg')
+    bids_path.mkdir()
     assert op.isdir(op.join(os.getcwd(), 'sub-hi', 'ses-foo', 'ba'))
     os.chdir(curr_dir)
 
@@ -659,8 +659,9 @@ def test_find_emptyroom_ties():
     bids_root = _TempDir()
     bids_path.update(root=bids_root)
     session = '20010101'
-    er_dir = make_bids_folders(subject='emptyroom', session=session,
-                               datatype='meg', bids_root=bids_root)
+    er_dir_path = BIDSPath(subject='emptyroom', session=session,
+                           datatype='meg', root=bids_root)
+    er_dir = er_dir_path.mkdir()
 
     meas_date = (datetime
                  .strptime(session, '%Y%m%d')
@@ -705,8 +706,10 @@ def test_find_emptyroom_no_meas_date():
     er_session = 'mysession'
     er_meas_date = None
 
-    er_dir = make_bids_folders(subject='emptyroom', session=er_session,
-                               datatype='meg', bids_root=bids_root)
+    er_dir_path = BIDSPath(subject='emptyroom', session=er_session,
+                           datatype='meg', root=bids_root)
+    er_dir = er_dir_path.mkdir()
+
     er_bids_path = BIDSPath(subject='emptyroom', session=er_session,
                             task='noise', check=False)
     er_basename = er_bids_path.basename

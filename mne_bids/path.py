@@ -55,9 +55,7 @@ def _get_matched_empty_room(bids_path):
         # for MNE < v0.20
         ref_date = datetime.fromtimestamp(raw.info['meas_date'][0])
 
-    emptyroom_dir = Path(make_bids_folders(bids_root=bids_root,
-                                           subject='emptyroom',
-                                           make_dir=False))
+    emptyroom_dir = BIDSPath(root=bids_root, subject='emptyroom').directory
 
     if not emptyroom_dir.exists():
         return None
@@ -314,8 +312,19 @@ class BIDSPath(object):
 
     @property
     def directory(self):
+        """Construct BIDS directory.
+
+        If ``subject``, ``session`` and ``datatype`` are
+        set then they will be used to construct the
+        directory.
+
+        Returns
+        -------
+        data_path : pathlib.Path
+            The directory path of a BIDS-compliant dataset.
+        """
         # create the data path based on entities available
-        # bids_root, subject, session and suffix
+        # bids_root, subject, session and datatype
         if self.root is not None:
             data_path = self.root
         else:
@@ -324,10 +333,10 @@ class BIDSPath(object):
             data_path = op.join(data_path, f'sub-{self.subject}')
         if self.session is not None:
             data_path = op.join(data_path, f'ses-{self.session}')
-        # file-suffix will allow 'meg', 'eeg', 'ieeg', 'anat'
+        # dattype will allow 'meg', 'eeg', 'ieeg', 'anat'
         if self.datatype is not None:
             data_path = op.join(data_path, self.datatype)
-        return data_path
+        return Path(data_path)
 
     def __str__(self):
         """Return the string representation of the path."""
@@ -364,7 +373,7 @@ class BIDSPath(object):
 
     def mkdir(self, exist_ok=True, parents=True):
         """Creates the BIDS path directory.
-        
+
         Parameters
         ----------
         exist_ok : bool
@@ -372,6 +381,7 @@ class BIDSPath(object):
         """
         bids_path = Path(self.directory)
         bids_path.mkdir(exist_ok=exist_ok, parents=parents)
+        return bids_path
 
     @property
     def fpath(self):
@@ -667,9 +677,8 @@ def _get_matching_bidspaths_from_filesystem(bids_path):
         datatype = _infer_datatype(bids_root=bids_root,
                                    sub=sub, ses=ses)
 
-    data_dir = make_bids_folders(subject=sub, session=ses,
-                                 datatype=datatype, bids_root=bids_root,
-                                 make_dir=False)
+    data_dir = BIDSPath(subject=sub, session=ses,
+                        datatype=datatype, root=bids_root).mkdir()
 
     # For BTI data, just return the directory with a '.pdf' extension
     # to facilitate reading in mne-bids
