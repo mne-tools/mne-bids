@@ -1250,7 +1250,7 @@ def _filter_fnames(fnames, *, subject=None, session=None, task=None,
     regexp = (sub_str + ses_str + task_str + acq_str + run_str + proc_str +
               rec_str + space_str + split_str + suffix_str + ext_str)
 
-    # Convert to str for we can apply the regexp ...
+    # Convert to str so we can apply the regexp ...
     fnames = [str(f) for f in fnames]
 
     # https://stackoverflow.com/a/51246151/1944216
