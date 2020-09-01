@@ -1598,7 +1598,7 @@ def test_mark_bad_channels(_bids_validate,
         expected_descriptions = (_ensure_list(descriptions) +
                                  _ensure_list(existing_descriptions))
 
-    # XXX Order is not preserved
+    # Order is not preserved
     assert len(expected_bads) == len(raw.info['bads'])
     assert set(expected_bads) == set(raw.info['bads'])
 
