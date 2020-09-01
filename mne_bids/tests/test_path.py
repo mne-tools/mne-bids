@@ -571,7 +571,6 @@ def test_match(return_bids_test_dir):
     assert paths[0].extension == '.fif'
 
 
-
 @pytest.mark.filterwarnings(warning_str['meas_date_set_to_none'])
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_find_empty_room(return_bids_test_dir):
