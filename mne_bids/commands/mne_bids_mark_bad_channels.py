@@ -33,8 +33,8 @@ def run():
                            'multiple times.')
     parser.add_option('--description', dest='descriptions', action='append',
                       default=[],
-                      help='Descriptions as to why the channels are bad.
-                           'Must match the number of bad channels provided.'
+                      help='Descriptions as to why the channels are bad. '
+                           'Must match the number of bad channels provided. '
                            'Pass multiple times to suplly more than one '
                            'value in that case.')
     parser.add_option('--bids_root', dest='bids_root',
