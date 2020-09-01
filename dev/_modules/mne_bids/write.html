@@ -148,12 +148,13 @@
                             <span class="n">_infer_eeg_placement_scheme</span><span class="p">,</span>
                             <span class="n">_handle_datatype</span><span class="p">,</span> <span class="n">_get_ch_type_mapping</span><span class="p">,</span>
                             <span class="n">_check_anonymize</span><span class="p">,</span> <span class="n">_stamp_to_dt</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">mne_bids</span> <span class="kn">import</span> <span class="n">make_bids_folders</span>
-<span class="kn">from</span> <span class="nn">mne_bids.path</span> <span class="kn">import</span> <span class="p">(</span><span class="n">BIDSPath</span><span class="p">,</span> <span class="n">_parse_ext</span><span class="p">,</span> <span class="n">_mkdir_p</span><span class="p">,</span> <span class="n">_path_to_str</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">mne_bids</span> <span class="kn">import</span> <span class="n">make_bids_folders</span><span class="p">,</span> <span class="n">read_raw_bids</span>
+<span class="kn">from</span> <span class="nn">mne_bids.path</span> <span class="kn">import</span> <span class="n">BIDSPath</span><span class="p">,</span> <span class="n">_parse_ext</span><span class="p">,</span> <span class="n">_mkdir_p</span><span class="p">,</span> <span class="n">_path_to_str</span>
 <span class="kn">from</span> <span class="nn">mne_bids.copyfiles</span> <span class="kn">import</span> <span class="p">(</span><span class="n">copyfile_brainvision</span><span class="p">,</span> <span class="n">copyfile_eeglab</span><span class="p">,</span>
                                 <span class="n">copyfile_ctf</span><span class="p">,</span> <span class="n">copyfile_bti</span><span class="p">,</span> <span class="n">copyfile_kit</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">mne_bids.tsv_handler</span> <span class="kn">import</span> <span class="p">(</span><span class="n">_from_tsv</span><span class="p">,</span> <span class="n">_drop</span><span class="p">,</span> <span class="n">_contains_row</span><span class="p">,</span>
                                   <span class="n">_combine_rows</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">mne_bids.read</span> <span class="kn">import</span> <span class="n">_get_bads_from_tsv_data</span><span class="p">,</span> <span class="n">_find_matching_sidecar</span>
 
 <span class="kn">from</span> <span class="nn">mne_bids.config</span> <span class="kn">import</span> <span class="p">(</span><span class="n">ORIENTATION</span><span class="p">,</span> <span class="n">UNITS</span><span class="p">,</span> <span class="n">MANUFACTURERS</span><span class="p">,</span>
                              <span class="n">IGNORED_CHANNELS</span><span class="p">,</span> <span class="n">ALLOWED_DATATYPE_EXTENSIONS</span><span class="p">,</span>
@@ -1465,6 +1466,153 @@
     <span class="n">nib</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">t1w</span><span class="p">,</span> <span class="n">t1w_basename</span><span class="o">.</span><span class="n">fpath</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">anat_dir</span></div>
+
+
+<div class="viewcode-block" id="mark_bad_channels"><a class="viewcode-back" href="../../generated/mne_bids.mark_bad_channels.html#mne_bids.mark_bad_channels">[docs]</a><span class="k">def</span> <span class="nf">mark_bad_channels</span><span class="p">(</span><span class="n">ch_names</span><span class="p">,</span> <span class="n">descriptions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">bids_path</span><span class="p">,</span>
+                      <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Update which channels are marked as &quot;bad&quot; in an existing BIDS dataset.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ch_names : str | list of str</span>
+<span class="sd">        The names of the channel(s) to mark as bad. Pass an empty list in</span>
+<span class="sd">        combination with ``overwrite=True`` to mark all channels as good.</span>
+<span class="sd">    descriptions : None | str | list of str</span>
+<span class="sd">        Descriptions of the reasons that lead to the exclusion of the</span>
+<span class="sd">        channel(s). If a list, it must match the length of ``ch_names``.</span>
+<span class="sd">        If ``None``, no descriptions are added.</span>
+<span class="sd">    bids_path : BIDSPath</span>
+<span class="sd">        The recording to update. The :class:`mne_bids.BIDSPath` instance passed</span>
+<span class="sd">        here **must** have the ``.root`` attribute set. The ``.datatype``</span>
+<span class="sd">        attribute **may** be set. If ``.datatype`` is not set and only one data</span>
+<span class="sd">        type (e.g., only EEG or MEG data) is present in the dataset, it will be</span>
+<span class="sd">        selected automatically.</span>
+<span class="sd">    overwrite : bool</span>
+<span class="sd">        If ``False``, only update the information of the channels passed via</span>
+<span class="sd">        ``ch_names``, and leave the rest untouched. If ``True``, update the</span>
+<span class="sd">        information of **all** channels: mark the channels passed via</span>
+<span class="sd">        ``ch_names`` as bad, and all remaining channels as good, also</span>
+<span class="sd">        discarding their descriptions.</span>
+<span class="sd">    verbose : bool</span>
+<span class="sd">        The verbosity level.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Mark a single channel as bad.</span>
+
+<span class="sd">    &gt;&gt;&gt; mark_bad_channels(&#39;MEG 0112&#39;, bids_path=bids_path)</span>
+
+<span class="sd">    Mark multiple channels as bad.</span>
+
+<span class="sd">    &gt;&gt;&gt; bads = [&#39;MEG 0112&#39;, &#39;MEG 0131&#39;]</span>
+<span class="sd">    &gt;&gt;&gt; mark_bad_channels(bads, bids_path=bids_path)</span>
+
+<span class="sd">    Mark channels as bad, and add a description as to why.</span>
+
+<span class="sd">    &gt;&gt;&gt; ch_names = [&#39;MEG 0112&#39;, &#39;MEG 0131&#39;]</span>
+<span class="sd">    &gt;&gt;&gt; descriptions = [&#39;Only produced noise&#39;, &#39;Continuously flat&#39;]</span>
+<span class="sd">    &gt;&gt;&gt; mark_bad_channels(bads, descriptions, bbids_path=bids_path)</span>
+
+<span class="sd">    Mark two channels as bad, and mark all others as good by setting</span>
+<span class="sd">    ``overwrite=True``.</span>
+
+<span class="sd">    &gt;&gt;&gt; bads = [&#39;MEG 0112&#39;, &#39;MEG 0131&#39;]</span>
+<span class="sd">    &gt;&gt;&gt; mark_bad_channels(bads, bids_path=bids_path, overwrite=True)</span>
+
+<span class="sd">    Mark all channels as good by passing an empty list of bad channels, and</span>
+<span class="sd">    setting ``overwrite=True``.</span>
+
+<span class="sd">    &gt;&gt;&gt; mark_bad_channels([], bids_path=bids_path, overwrite=True)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">ch_names</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">overwrite</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;You did not pass a channel name, but set &#39;</span>
+                         <span class="s1">&#39;overwrite=False. If you wish to mark all channels &#39;</span>
+                         <span class="s1">&#39;as good, please pass overwrite=True&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">descriptions</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">ch_names</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;You passed descriptions, but no channels.&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">ch_names</span><span class="p">:</span>
+        <span class="n">descriptions</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ch_names</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">ch_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">ch_names</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">descriptions</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">descriptions</span> <span class="o">=</span> <span class="p">[</span><span class="n">descriptions</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="ow">not</span> <span class="n">descriptions</span><span class="p">:</span>
+        <span class="n">descriptions</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;n/a&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">ch_names</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ch_names</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">descriptions</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Number of channels and descriptions must match.&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">BIDSPath</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;&quot;bids_path&quot; must be a BIDSPath object. Please &#39;</span>
+                           <span class="s1">&#39;instantiate using mne_bids.BIDSPath().&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">root</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;The root of the &quot;bids_path&quot; must be set. &#39;</span>
+                         <span class="s1">&#39;Please use `bids_path.update(root=&quot;&lt;root&gt;&quot;)` &#39;</span>
+                         <span class="s1">&#39;to set the root of the BIDS folder to read.&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Read raw and sidecar file.</span>
+    <span class="n">raw</span> <span class="o">=</span> <span class="n">read_raw_bids</span><span class="p">(</span><span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span><span class="p">,</span>
+                        <span class="n">extra_params</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">allow_maxshield</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">preload</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+                        <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">bads_raw</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;bads&#39;</span><span class="p">]</span>
+
+    <span class="n">channels_fname</span> <span class="o">=</span> <span class="n">_find_matching_sidecar</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;channels&#39;</span><span class="p">,</span>
+                                            <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.tsv&#39;</span><span class="p">)</span>
+    <span class="n">tsv_data</span> <span class="o">=</span> <span class="n">_from_tsv</span><span class="p">(</span><span class="n">channels_fname</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s1">&#39;status&#39;</span> <span class="ow">in</span> <span class="n">tsv_data</span><span class="p">:</span>
+        <span class="n">bads_tsv</span> <span class="o">=</span> <span class="n">_get_bads_from_tsv_data</span><span class="p">(</span><span class="n">tsv_data</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">bads_tsv</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="c1"># Read sidecar and create required columns if they do not exist.</span>
+    <span class="k">if</span> <span class="s1">&#39;status&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">tsv_data</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;No &quot;status&quot; column found in input file. Creating.&#39;</span><span class="p">)</span>
+        <span class="n">tsv_data</span><span class="p">[</span><span class="s1">&#39;status&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;good&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">tsv_data</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="s1">&#39;status_description&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">tsv_data</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;No &quot;status_description&quot; column found in input file. &#39;</span>
+                    <span class="s1">&#39;Creating.&#39;</span><span class="p">)</span>
+        <span class="n">tsv_data</span><span class="p">[</span><span class="s1">&#39;status_description&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;n/a&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">tsv_data</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">])</span>
+
+    <span class="c1"># Update the sidecar data.</span>
+    <span class="k">if</span> <span class="n">overwrite</span><span class="p">:</span>
+        <span class="c1"># In cases where the &quot;status&quot; and / or &quot;status_description&quot;</span>
+        <span class="c1"># columns were just created by us, we overwrite them again</span>
+        <span class="c1"># here. This is not optimal in terms of performance, but</span>
+        <span class="c1"># probably doesn&#39;t hurt anyone.</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Resetting status and description for all channels.&#39;</span><span class="p">)</span>
+        <span class="n">tsv_data</span><span class="p">[</span><span class="s1">&#39;status&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;good&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">tsv_data</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">])</span>
+        <span class="n">tsv_data</span><span class="p">[</span><span class="s1">&#39;status_description&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;n/a&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">tsv_data</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="ow">not</span> <span class="n">overwrite</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">bads_tsv</span> <span class="ow">and</span> <span class="n">bads_raw</span><span class="p">:</span>
+        <span class="c1"># No bads are marked in channels.tsv, but in raw.info[&#39;bads&#39;], and</span>
+        <span class="c1"># the user requested to UPDATE (overwrite=False) the channel status.</span>
+        <span class="c1"># -&gt; Inject bads from info[&#39;bads&#39;] into channels.tsv before proceeding!</span>
+        <span class="k">for</span> <span class="n">ch_name</span> <span class="ow">in</span> <span class="n">bads_raw</span><span class="p">:</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="n">tsv_data</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">ch_name</span><span class="p">)</span>
+            <span class="n">tsv_data</span><span class="p">[</span><span class="s1">&#39;status&#39;</span><span class="p">][</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;bad&#39;</span>
+
+    <span class="c1"># Now actually mark the user-requested channels as bad.</span>
+    <span class="k">for</span> <span class="n">ch_name</span><span class="p">,</span> <span class="n">description</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">ch_names</span><span class="p">,</span> <span class="n">descriptions</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">ch_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">tsv_data</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Channel </span><span class="si">{</span><span class="n">ch_name</span><span class="si">}</span><span class="s1"> not found in dataset!&#39;</span><span class="p">)</span>
+
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">tsv_data</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">ch_name</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Processing channel </span><span class="si">{</span><span class="n">ch_name</span><span class="si">}</span><span class="s1">:</span><span class="se">\n</span><span class="s1">&#39;</span>
+                    <span class="sa">f</span><span class="s1">&#39;    status: bad</span><span class="se">\n</span><span class="s1">&#39;</span>
+                    <span class="sa">f</span><span class="s1">&#39;    description: </span><span class="si">{</span><span class="n">description</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">tsv_data</span><span class="p">[</span><span class="s1">&#39;status&#39;</span><span class="p">][</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;bad&#39;</span>
+        <span class="n">tsv_data</span><span class="p">[</span><span class="s1">&#39;status_description&#39;</span><span class="p">][</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">description</span>
+
+    <span class="n">_write_tsv</span><span class="p">(</span><span class="n">channels_fname</span><span class="p">,</span> <span class="n">tsv_data</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+
+    <span class="c1"># Update info[&#39;bads&#39;]</span>
+    <span class="n">bads</span> <span class="o">=</span> <span class="n">_get_bads_from_tsv_data</span><span class="p">(</span><span class="n">tsv_data</span><span class="p">)</span>
+    <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;bads&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bads</span>
+    <span class="c1"># XXX (How) will this handle split files?</span>
+    <span class="n">raw</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">filenames</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
 </pre></div>
 
     </div>

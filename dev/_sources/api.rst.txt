@@ -34,6 +34,7 @@ MNE BIDS
    make_dataset_description
    make_report
    write_anat
+   mark_bad_channels
    get_head_mri_trans
    get_anonymization_daysback
    print_dir_tree
