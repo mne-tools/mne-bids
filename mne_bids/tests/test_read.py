@@ -24,7 +24,7 @@ from mne.utils import _TempDir, requires_nibabel, object_diff
 from mne.utils import assert_dig_allclose
 from mne.datasets import testing, somato
 
-from mne_bids import BIDSPath, make_bids_folders
+from mne_bids import BIDSPath
 from mne_bids.config import MNE_STR_TO_FRAME
 from mne_bids.read import (read_raw_bids,
                            _read_raw, get_head_mri_trans,
@@ -610,9 +610,9 @@ def test_handle_channel_type_casing():
 def test_bads_reading():
     bids_root = _TempDir()
     bids_path.update(root=bids_root)
-    data_path = make_bids_folders(
+    data_path = BIDSPath(
         subject=subject_id, session=session_id, datatype='meg',
-        bids_root=bids_root, make_dir=False)
+        root=bids_root).mkdir()
     ch_path = (bids_path.copy().update(suffix='channels',
                                        extension='.tsv'))
     channels_fname = op.join(data_path, ch_path.basename)

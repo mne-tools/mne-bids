@@ -37,7 +37,7 @@ from mne_bids.utils import (_write_json, _write_tsv, _write_text,
                             _infer_eeg_placement_scheme,
                             _handle_datatype, _get_ch_type_mapping,
                             _check_anonymize, _stamp_to_dt)
-from mne_bids import make_bids_folders, read_raw_bids
+from mne_bids import read_raw_bids
 from mne_bids.path import BIDSPath, _parse_ext, _mkdir_p, _path_to_str
 from mne_bids.copyfiles import (copyfile_brainvision, copyfile_eeglab,
                                 copyfile_ctf, copyfile_bti, copyfile_kit)
@@ -986,10 +986,7 @@ def write_raw_bids(raw, bids_path, events_data=None,
                 raise ValueError("Date provided for session doesn't match "
                                  "session date.")
 
-    data_path = make_bids_folders(
-        subject=bids_path.subject, session=bids_path.session,
-        datatype=bids_path.datatype, bids_root=bids_path.root,
-        overwrite=False, verbose=verbose)
+    data_path = bids_path.mkdir()
 
     # In case of an "emptyroom" subject, BIDSPath() will raise
     # an exception if we don't provide a valid task ("noise"). Now,

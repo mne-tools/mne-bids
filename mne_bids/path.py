@@ -21,8 +21,7 @@ from mne_bids.config import (
     ALLOWED_DATATYPES, SUFFIX_TO_DATATYPE, ALLOWED_DATATYPE_EXTENSIONS,
     reader, ENTITY_VALUE_TYPE)
 from mne_bids.utils import (_check_key_val, _check_empty_room_basename,
-                            _check_types, param_regex,
-                            _ensure_tuple)
+                            param_regex, _ensure_tuple)
 
 
 def _get_matched_empty_room(bids_path):
@@ -372,12 +371,21 @@ class BIDSPath(object):
         return deepcopy(self)
 
     def mkdir(self, exist_ok=True, parents=True):
-        """Creates the BIDS path directory.
+        """Create the BIDS path directory.
 
         Parameters
         ----------
         exist_ok : bool
+            Whether it is okay that the directory
+            already exists (default is True).
         parents : bool
+            Whether or not to create parent directories
+             (default is True).
+
+        Returns
+        -------
+        bids_path : pathlib.Path
+            The created directory.
         """
         bids_path = Path(self.directory)
         bids_path.mkdir(exist_ok=exist_ok, parents=parents)
@@ -754,71 +762,6 @@ def print_dir_tree(folder, max_depth=None):
             if branchlen < max_depth:
                 for file in files:
                     print('|{} {}'.format(branchlen * '---', file))
-
-
-def make_bids_folders(subject, session=None, datatype=None, bids_root=None,
-                      make_dir=True, overwrite=False, verbose=False):
-    """Create a BIDS folder hierarchy.
-
-    This creates a hierarchy of folders *within* a BIDS dataset. You should
-    plan to create these folders *inside* the bids_root folder of the dataset.
-
-    Parameters
-    ----------
-    subject : str
-        The subject ID. Corresponds to "sub".
-    datatype : str
-        The "datatype" of folder being created at the end of the hierarchy.
-        E.g., "anat", "func", "eeg", "meg", "ieeg", etc.
-    session : str | None
-        The session for a item. Corresponds to "ses".
-    bids_root : str | pathlib.Path | None
-        The bids_root for the folders to be created. If None, folders will be
-        created in the current working directory.
-    make_dir : bool
-        Whether to actually create the folders specified. If False, only a
-        path will be generated but no folders will be created.
-    overwrite : bool
-        How to handle overwriting previously generated data.
-        If overwrite == False then no existing folders will be removed, however
-        if overwrite == True then any existing folders at the session level
-        or lower will be removed, including any contained data.
-    verbose : bool
-        If verbose is True, print status updates
-        as folders are created.
-
-    Returns
-    -------
-    path : str
-        The (relative) path to the folder that was created.
-
-    Examples
-    --------
-    >>> make_bids_folders('sub_01', session='mysession',
-                          datatype='meg', bids_root='/path/to/project',
-                          make_dir=False)
-    '/path/to/project/sub-sub_01/ses-mysession/meg'
-
-    """  # noqa
-    _check_types((subject, datatype, session))
-    if bids_root is not None:
-        bids_root = _path_to_str(bids_root)
-
-    if session is not None:
-        _check_key_val('ses', session)
-
-    path = [f'sub-{subject}']
-    if isinstance(session, str):
-        path.append(f'ses-{session}')
-    if isinstance(datatype, str):
-        path.append(datatype)
-    path = op.join(*path)
-    if isinstance(bids_root, str):
-        path = op.join(bids_root, path)
-
-    if make_dir is True:
-        _mkdir_p(path, overwrite=overwrite, verbose=verbose)
-    return path
 
 
 def _parse_ext(raw_fname, verbose=False):
