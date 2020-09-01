@@ -1126,9 +1126,9 @@ def write_raw_bids(raw, bids_path, events_data=None,
     elif ext == '.set':
         copyfile_eeglab(raw_fname, bids_path)
     elif ext == '.pdf':
-        bids_path = op.join(data_path, op.splitext(bids_path.basename)[0])
-        _mkdir_p(bids_path)
-        copyfile_bti(raw_orig, bids_path)
+        raw_dir = op.join(data_path, op.splitext(bids_path.basename)[0])
+        _mkdir_p(raw_dir)
+        copyfile_bti(raw_orig, raw_dir)
     elif ext in ['.con', '.sqd']:
         copyfile_kit(raw_fname, bids_path.fpath, bids_path.subject,
                      bids_path.session, bids_path.task, bids_path.run,
