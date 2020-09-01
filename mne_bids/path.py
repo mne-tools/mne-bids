@@ -13,7 +13,7 @@ from pathlib import Path
 from datetime import datetime
 
 import numpy as np
-from mne.utils import warn, logger
+from mne.utils import warn, logger, _validate_type
 
 from mne_bids.config import (
     ALLOWED_PATH_ENTITIES, ALLOWED_FILENAME_EXTENSIONS,
@@ -483,7 +483,8 @@ class BIDSPath(object):
         >>> print(bids_path.basename)
         sub-test_ses-two_acq-test_ieeg.vhdr
         """
-        _check_types(kwargs.values())
+        for v in kwargs.values():
+            _validate_type(v, types=(None, str, 'path-like'))
 
         run = kwargs.get('run')
         if run is not None and not isinstance(run, str):

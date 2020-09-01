@@ -714,5 +714,6 @@ def test_find_emptyroom_no_meas_date():
 
 
 def test_bids_path_str():
-    with pytest.raises(ValueError, match="type <class 'int'>"):
+    with pytest.raises(TypeError,
+                       match="None, str, or path-like, got <class 'int'>"):
         BIDSPath(subject=1)
