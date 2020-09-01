@@ -851,9 +851,9 @@ def write_raw_bids(raw, bids_path, events_data=None,
             participants.tsv
             scans.tsv
 
-        Note that the datatype is automatically inferred from the raw
-        object as well as the extension. Data with meg and other
-        electrophysiology data in the same file will be stored as meg.
+        Note that the data type is automatically inferred from the raw
+        object, as well as the extension. Data with MEG and other
+        electrophysiology data in the same file will be stored as ``'meg'``.
     events_data : str | pathlib.Path | array | None
         The events file. If a string or a Path object, specifies the path of
         the events file. If an array, the MNE events array
