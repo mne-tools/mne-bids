@@ -312,6 +312,23 @@ class BIDSPath(object):
         basename = '_'.join(basename)
         return basename
 
+    @property
+    def directory(self):
+        # create the data path based on entities available
+        # bids_root, subject, session and suffix
+        if self.root is not None:
+            data_path = self.root
+        else:
+            data_path = ''
+        if self.subject is not None:
+            data_path = op.join(data_path, f'sub-{self.subject}')
+        if self.session is not None:
+            data_path = op.join(data_path, f'ses-{self.session}')
+        # file-suffix will allow 'meg', 'eeg', 'ieeg', 'anat'
+        if self.datatype is not None:
+            data_path = op.join(data_path, self.datatype)
+        return data_path
+
     def __str__(self):
         """Return the string representation of the path."""
         return str(self.fpath)
@@ -344,6 +361,17 @@ class BIDSPath(object):
             The copied bidspath.
         """
         return deepcopy(self)
+
+    def mkdir(self, exist_ok=True, parents=True):
+        """Creates the BIDS path directory.
+        
+        Parameters
+        ----------
+        exist_ok : bool
+        parents : bool
+        """
+        bids_path = Path(self.directory)
+        bids_path.mkdir(exist_ok=exist_ok, parents=parents)
 
     @property
     def fpath(self):
