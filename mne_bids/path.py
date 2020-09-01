@@ -41,10 +41,9 @@ def _get_matched_empty_room(bids_path):
     bids_fname = bids_path.update(suffix=datatype,
                                   root=bids_root).fpath
     _, ext = _parse_ext(bids_fname)
+    extra_params = None
     if ext == '.fif':
         extra_params = dict(allow_maxshield=True)
-    else:
-        extra_params = None
 
     raw = read_raw_bids(bids_path=bids_path, extra_params=extra_params)
     if raw.info['meas_date'] is None:
@@ -111,10 +110,9 @@ def _get_matched_empty_room(bids_path):
 
         if er_meas_date is None:  # No luck so far! Check info['meas_date']
             _, ext = _parse_ext(er_fname)
+            extra_params = None
             if ext == '.fif':
                 extra_params = dict(allow_maxshield=True)
-            else:
-                extra_params = None
 
             er_raw = read_raw_bids(bids_path=er_bids_path,
                                    extra_params=extra_params)

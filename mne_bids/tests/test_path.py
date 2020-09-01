@@ -618,6 +618,10 @@ def test_find_empty_room(return_bids_test_dir):
     best_er_basename = bids_path.find_empty_room()
     assert best_er_basename.session == '20021204'
 
+    with pytest.raises(ValueError,
+                       match='The root of the "bids_path" must be set'):
+        bids_path.copy().update(root=None).find_empty_room()
+
     # assert that we get error if meas_date is not available.
     raw = read_raw_bids(bids_path=bids_path)
     if check_version('mne', '0.20'):
