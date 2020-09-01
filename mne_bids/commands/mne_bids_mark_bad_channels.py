@@ -28,10 +28,15 @@ def run():
 
     parser.add_option('--ch_name', dest='ch_names', action='append',
                       default=[],
-                      help='The names of the channels, separated by commas')
+                      help='The names of the bad channels. If multiple '
+                           'channels are bad, pass the --ch_name parameter '
+                           'multiple times.')
     parser.add_option('--description', dest='descriptions', action='append',
                       default=[],
-                      help='Descriptions as to why the channels are bad')
+                      help='Descriptions as to why the channels are bad.
+                           'Must match the number of bad channels provided.'
+                           'Pass multiple times to suplly more than one '
+                           'value in that case.')
     parser.add_option('--bids_root', dest='bids_root',
                       help='The path of the folder containing the BIDS '
                            'dataset')
@@ -50,7 +55,7 @@ def run():
     parser.add_option('--rec', dest='recording',
                       help='Recording name')
     parser.add_option('--type', dest='datatype',
-                      help='Recording type, e.g. meg or eeg')
+                      help='Recording data type, e.g. meg, ieeg or eeg')
     parser.add_option('--suffix', dest='suffix',
                       help='The filename suffix, i.e. the last part before '
                            'the extension')
@@ -73,7 +78,7 @@ def run():
         parser.error('You must specify bids_root')
     if opt.ch_names is None:
         parser.print_help()
-        parser.error('You must specify ch_names')
+        parser.error('You must specify some --ch_name parameters.')
 
     ch_names = [] if opt.ch_names == [''] else opt.ch_names
     bids_path = BIDSPath(subject=opt.subject, session=opt.session,

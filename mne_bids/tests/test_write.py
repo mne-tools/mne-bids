@@ -1573,7 +1573,7 @@ def test_mark_bad_channels(_bids_validate,
                           bids_path=bids_path, overwrite=True)
         _bids_validate(bids_root)
         raw = read_raw_bids(bids_path=bids_path, verbose=False)
-        # XXX Order is not preserved
+        # Order is not preserved
         assert set(existing_ch_names) == set(raw.info['bads'])
         del raw
 

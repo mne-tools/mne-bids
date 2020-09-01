@@ -4,7 +4,7 @@
 ===============================================
 
 You can use MNE-BIDS to mark MEG or (i)EEG recording channels as "bad", for
-example if the connected ensor continuously produced noise – or no signal at
+example if the connected sensor produced mostly noise – or no signal at
 all.
 
 Similarly, you can declare channels as "good", should you discover they were

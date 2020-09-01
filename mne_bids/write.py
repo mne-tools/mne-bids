@@ -1468,10 +1468,10 @@ def mark_bad_channels(ch_names, descriptions=None, *, bids_path,
 
     # Update the sidecar data.
     if overwrite:
-        # XXX In cases where the "status" and / or "status_description"
-        # XXX columns were just created by us, we overwrite them again
-        # XXX here. This is not optimal in terms of performance, but
-        # XXX probably doesn't hurt anyone.
+        # In cases where the "status" and / or "status_description"
+        # columns were just created by us, we overwrite them again
+        # here. This is not optimal in terms of performance, but
+        # probably doesn't hurt anyone.
         logger.info('Resetting status and description for all channels.')
         tsv_data['status'] = ['good'] * len(tsv_data['name'])
         tsv_data['status_description'] = ['n/a'] * len(tsv_data['name'])
