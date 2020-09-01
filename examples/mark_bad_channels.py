@@ -23,27 +23,25 @@ incorrectly marked as bad.
 
 import os.path as op
 import mne
-from mne_bids import (make_bids_basename, write_raw_bids, read_raw_bids,
-                      mark_bad_channels)
+from mne_bids import BIDSPath, write_raw_bids, read_raw_bids, mark_bad_channels
 
 mne.set_log_level('error')  # Suppress distracting log messages.
 
 data_path = mne.datasets.sample.data_path()
 raw_fname = op.join(data_path, 'MEG', 'sample', 'sample_audvis_raw.fif')
 bids_root = op.join(data_path, '..', 'MNE-sample-data-bids')
-bids_basename = make_bids_basename(subject='01', session='01',
-                                   task='audiovisual', run='01')
+bids_path = BIDSPath(subject='01', session='01', task='audiovisual', run='01',
+                     root=bids_root)
 
 raw = mne.io.read_raw_fif(raw_fname, verbose=False)
-write_raw_bids(raw, bids_basename=bids_basename, bids_root=bids_root,
-               overwrite=True, verbose=False)
+raw.info['line_freq'] = 60  # Specify power line frequency as required by BIDS.
+write_raw_bids(raw, bids_path=bids_path, overwrite=True, verbose=False)
 
 ###############################################################################
 # Read the (now BIDS-formatted) data and print a list of channels currently
 # marked as bad.
 
-raw = read_raw_bids(bids_basename=bids_basename, bids_root=bids_root,
-                    verbose=False)
+raw = read_raw_bids(bids_path=bids_path, verbose=False)
 print(f'The following channels are currently marked as bad:\n'
       f'    {", ".join(raw.info["bads"])}\n')
 
@@ -55,14 +53,12 @@ print(f'The following channels are currently marked as bad:\n'
 # :func:`mne_bids.mark_bad_channels`:
 
 bads = ['MEG 0112', 'MEG 0131']
-mark_bad_channels(ch_names=bads, bids_basename=bids_basename,
-                  bids_root=bids_root, verbose=False)
+mark_bad_channels(ch_names=bads, bids_path=bids_path, verbose=False)
 
 ###############################################################################
 # That's it! Let's verify the result.
 
-raw = read_raw_bids(bids_basename=bids_basename, bids_root=bids_root,
-                    verbose=False)
+raw = read_raw_bids(bids_path=bids_path, verbose=False)
 print(f'After marking MEG 0112 and MEG 0131 as bad, the following channels '
       f'are now marked as bad:\n    {", ".join(raw.info["bads"])}\n')
 
@@ -79,11 +75,10 @@ print(f'After marking MEG 0112 and MEG 0131 as bad, the following channels '
 # entirely, pass the argument ``overwrite=True``:
 
 bads = ['MEG 0112', 'MEG 0131']
-mark_bad_channels(ch_names=bads, bids_basename=bids_basename,
-                  bids_root=bids_root, overwrite=True, verbose=False)
+mark_bad_channels(ch_names=bads, bids_path=bids_path, overwrite=True,
+                  verbose=False)
 
-raw = read_raw_bids(bids_basename=bids_basename, bids_root=bids_root,
-                    verbose=False)
+raw = read_raw_bids(bids_path=bids_path, verbose=False)
 print(f'After marking MEG 0112 and MEG 0131 as bad and passing '
       f'`overwrite=True`, the following channels '
       f'are now marked as bad:\n    {", ".join(raw.info["bads"])}\n')
@@ -93,10 +88,9 @@ print(f'After marking MEG 0112 and MEG 0131 as bad and passing '
 # pass an empty list as ``ch_names``, combined with ``overwrite=True``:
 
 bads = []
-mark_bad_channels(ch_names=bads, bids_basename=bids_basename,
-                  bids_root=bids_root, overwrite=True, verbose=False)
+mark_bad_channels(ch_names=bads, bids_path=bids_path, overwrite=True,
+                  verbose=False)
 
-raw = read_raw_bids(bids_basename=bids_basename, bids_root=bids_root,
-                    verbose=False)
+raw = read_raw_bids(bids_path=bids_path, verbose=False)
 print(f'After passing `ch_names=[]` and `overwrite=True`, the following '
       f'channels are now marked as bad:\n    {", ".join(raw.info["bads"])}\n')
