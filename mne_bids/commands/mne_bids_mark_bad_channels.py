@@ -11,7 +11,10 @@ $ mne_bids mark_bad_channels --ch_name="MEG 0112" --description="noisy" \
 #
 # License: BSD (3-clause)
 
+from mne.utils import logger
+
 import mne_bids
+from mne_bids.config import reader
 from mne_bids import BIDSPath, mark_bad_channels
 
 
@@ -56,6 +59,8 @@ def run():
                            'period, e.g. .fif')
     parser.add_option('--overwrite', dest='overwrite', action='store_true',
                       help='Replace existing channel status entries')
+    parser.add_option('--verbose', dest='verbose', action='store_true',
+                      help='Whether do generate additional diagnostic output')
 
     opt, args = parser.parse_args()
     if args:
@@ -69,20 +74,33 @@ def run():
     if opt.ch_names is None:
         parser.print_help()
         parser.error('You must specify ch_names')
-    if opt.subject is None:
-        parser.print_help()
-        parser.error('You must specify subject_id')
 
     ch_names = [] if opt.ch_names == [''] else opt.ch_names
-
     bids_path = BIDSPath(subject=opt.subject, session=opt.session,
                          task=opt.task, acquisition=opt.acquisition,
                          run=opt.run, processing=opt.processing,
                          recording=opt.recording, datatype=opt.datatype,
                          suffix=opt.suffix, extension=opt.extension,
                          root=opt.bids_root)
-    mark_bad_channels(ch_names=ch_names, descriptions=opt.descriptions,
-                      bids_path=bids_path, overwrite=opt.overwrite)
+
+    bids_paths = bids_path.match()
+    # Only keep data we can actually read & write.
+    allowed_extensions = list(reader.keys())
+    bids_paths = [p for p in bids_paths
+                  if p.extension in allowed_extensions]
+
+    if not bids_paths:
+        logger.info('No matching files found. Please consider using a less '
+                    'restrictive set of entities to broaden the search.')
+        return  # XXX should be return with an error code?
+
+    logger.info(f'Marking channels {", ".join(ch_names)} as bad in '
+                f'{len(bids_paths)} recording(s) …')
+    for bids_path in bids_paths:
+        logger.info(f'Processing: {bids_path.basename}')
+        mark_bad_channels(ch_names=ch_names, descriptions=opt.descriptions,
+                          bids_path=bids_path, overwrite=opt.overwrite,
+                          verbose=opt.verbose)
 
 
 if __name__ == '__main__':  # pragma: no cover

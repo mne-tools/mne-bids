@@ -20,6 +20,7 @@ from mne.utils import run_tests_if_main, ArgvSetter
 
 from mne_bids.commands import (mne_bids_raw_to_bids, mne_bids_cp,
                                mne_bids_mark_bad_channels)
+from mne_bids import BIDSPath, read_raw_bids
 
 
 base_path = op.join(op.dirname(mne.__file__), 'io')
@@ -88,7 +89,7 @@ def test_cp(tmpdir):
             mne_bids_cp.run()
 
 
-def test_mark_bad_chanels(tmpdir):
+def test_mark_bad_chanels_single_file(tmpdir):
     """Test mne_bids mark_bad_channels."""
 
     # Check that help is printed
@@ -99,6 +100,9 @@ def test_mark_bad_chanels(tmpdir):
     data_path = testing.data_path()
     raw_fname = op.join(data_path, 'MEG', 'sample',
                         'sample_audvis_trunc_raw.fif')
+    old_bads = mne.io.read_raw_fif(raw_fname).info['bads']
+    bids_path = BIDSPath(subject=subject_id, task=task, root=output_path,
+                         datatype=datatype)
 
     with ArgvSetter(('--subject_id', subject_id, '--task', task,
                      '--raw', raw_fname, '--bids_root', output_path,
@@ -120,12 +124,61 @@ def test_mark_bad_chanels(tmpdir):
         with pytest.warns(RuntimeWarning, match='The unit for chann*'):
             mne_bids_mark_bad_channels.run()
 
+    # Check the data was properly written
+    raw = read_raw_bids(bids_path=bids_path)
+    assert set(old_bads + ch_names) == set(raw.info['bads'])
+
     # Test resettig bad channels.
     args = ('--subject_id', subject_id, '--task', task,
             '--bids_root', output_path, '--type', datatype,
             '--ch_name', '', '--overwrite')
     with ArgvSetter(args):
         mne_bids_mark_bad_channels.run()
+
+    # Check the data was properly written
+    raw = read_raw_bids(bids_path=bids_path)
+    assert raw.info['bads'] == []
+
+
+def test_mark_bad_chanels_multiple_files(tmpdir):
+    """Test mne_bids mark_bad_channels."""
+
+    # Check that help is printed
+    check_usage(mne_bids_mark_bad_channels)
+
+    # Create test dataset.
+    output_path = str(tmpdir)
+    data_path = testing.data_path()
+    raw_fname = op.join(data_path, 'MEG', 'sample',
+                        'sample_audvis_trunc_raw.fif')
+    old_bads = mne.io.read_raw_fif(raw_fname).info['bads']
+    bids_path = BIDSPath(task=task, root=output_path, datatype=datatype)
+
+    subjects = ['01', '02', '03']
+    for subject in subjects:
+        with ArgvSetter(('--subject_id', subject, '--task', task,
+                         '--raw', raw_fname, '--bids_root', output_path,
+                         '--line_freq', 60)):
+            mne_bids_raw_to_bids.run()
+
+    # Update the dataset.
+    ch_names = ['MEG 0112', 'MEG 0131']
+    descriptions = ['Really bad!', 'Even worse.']
+
+    args = ['--task', task, '--bids_root', output_path, '--type', datatype]
+    for ch_name, description in zip(ch_names, descriptions):
+        args.extend(['--ch_name', ch_name])
+        args.extend(['--description', description])
+
+    args = tuple(args)
+    with ArgvSetter(args):
+        with pytest.warns(RuntimeWarning, match='The unit for chann*'):
+            mne_bids_mark_bad_channels.run()
+
+    # Check the data was properly written
+    for subject in subjects:
+        raw = read_raw_bids(bids_path=bids_path.copy().update(subject=subject))
+        assert set(old_bads + ch_names) == set(raw.info['bads'])
 
 
 run_tests_if_main()
