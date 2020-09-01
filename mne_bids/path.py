@@ -546,7 +546,7 @@ class BIDSPath(object):
 
         Returns
         -------
-        paths : list of BIDSPath
+        bids_paths : list of BIDSPath
             The matching paths.
         """
         if self.root is None:
@@ -564,18 +564,20 @@ class BIDSPath(object):
 
         fnames = Path(self.root).rglob(search_str)
         # Only keep files (not directories), and omit the JSON sidecars.
-        fnames = [str(f.name) for f in fnames
+        fnames = [f.name for f in fnames
                   if f.is_file() and f.suffix != '.json']
-        fnames = _filter_fnames(fnames, **self.entities)
+        fnames = _filter_fnames(fnames, extension=self.extension,
+                                **self.entities)
 
-        paths = []
+        bids_paths = []
         for fname in fnames:
             entities = get_entities_from_fname(fname)
-            path = BIDSPath(root=self.root, datatype=self.datatype,
-                            **entities)
-            paths.append(path)
+            extension = fname.suffix if fname.suffix else None
+            bids_path = BIDSPath(root=self.root, datatype=self.datatype,
+                                 extension=extension, **entities)
+            bids_paths.append(bids_path)
 
-        return paths
+        return bids_paths
 
     def _check(self):
         """Deep check or not of the instance."""
@@ -1221,7 +1223,17 @@ def _path_to_str(var):
 def _filter_fnames(fnames, *, subject=None, session=None, task=None,
                    acquisition=None, run=None, processing=None, recording=None,
                    space=None, split=None, suffix=None, extension=None):
-    """Filter a list of BIDS filenames based on BIDS entity values."""
+    """Filter a list of BIDS filenames based on BIDS entity values.
+
+    Parameters
+    ----------
+    fnames : iterable of pathlib.Path | iterable of str
+
+    Returns
+    -------
+    list of pathlib.Path
+
+    """
     sub_str = f'sub-{subject}' if subject else r'sub-([^_]+)'
     ses_str = f'_ses-{session}' if session else r'(|_ses-([^_]+))'
     task_str = f'_task-{task}' if task else r'(|_task-([^_]+))'
@@ -1238,6 +1250,12 @@ def _filter_fnames(fnames, *, subject=None, session=None, task=None,
     regexp = (sub_str + ses_str + task_str + acq_str + run_str + proc_str +
               rec_str + space_str + split_str + suffix_str + ext_str)
 
+    # Convert to str so we can apply the regexp ...
+    fnames = [str(f) for f in fnames]
+
     # https://stackoverflow.com/a/51246151/1944216
     fnames_filtered = sorted(filter(re.compile(regexp).match, fnames))
+
+    # ... and return Paths.
+    fnames_filtered = [Path(f) for f in fnames_filtered]
     return fnames_filtered
