@@ -19,7 +19,7 @@ from mne_bids.config import (
     ALLOWED_PATH_ENTITIES, ALLOWED_FILENAME_EXTENSIONS,
     ALLOWED_FILENAME_SUFFIX, ALLOWED_PATH_ENTITIES_SHORT,
     ALLOWED_DATATYPES, SUFFIX_TO_DATATYPE, ALLOWED_DATATYPE_EXTENSIONS,
-    reader)
+    reader, ENTITY_INDEX_OR_LABEL)
 from mne_bids.utils import (_check_key_val, _check_empty_room_basename,
                             _check_types, param_regex,
                             _ensure_tuple)
@@ -483,18 +483,33 @@ class BIDSPath(object):
         >>> print(bids_path.basename)
         sub-test_ses-two_acq-test_ieeg.vhdr
         """
-        for v in kwargs.values():
-            _validate_type(v, types=(None, str, 'path-like'))
+        for key, val in kwargs.items():
+            if key == 'root':
+                _validate_type(val, types=('path-like', None), item_name=key)
+                continue
 
-        run = kwargs.get('run')
-        if run is not None and not isinstance(run, str):
-            # Ensure that run is a string
-            kwargs['run'] = '{:02}'.format(run)
+            if key == 'datatype':
+                if val is not None and val not in ALLOWED_DATATYPES:
+                    raise ValueError(f'datatype ({val}) is not valid. '
+                                     f'Should be one of '
+                                     f'{ALLOWED_DATATYPES}')
+                else:
+                    continue
 
-        split = kwargs.get('split')
-        if split is not None and not isinstance(split, str):
-            # Ensure that run is a string
-            kwargs['split'] = '{:02}'.format(split)
+            if key not in ENTITY_INDEX_OR_LABEL:
+                raise ValueError(f'Key must be one of '
+                                 f'{ALLOWED_PATH_ENTITIES}, got {key}')
+
+            if ENTITY_INDEX_OR_LABEL[key] == 'label':
+                _validate_type(val, types=(None, str),
+                               item_name=key)
+            else:
+                assert ENTITY_INDEX_OR_LABEL[key] == 'index'
+                _validate_type(val, types=(int, str, None), item_name=key)
+                if isinstance(val, str) and not val.isdigit():
+                    raise ValueError(f'{key} is not an index (Got {val})')
+                elif isinstance(val, int):
+                    kwargs[key] = '{:02}'.format(val)
 
         # ensure extension starts with a '.'
         extension = kwargs.get('extension')
@@ -505,13 +520,6 @@ class BIDSPath(object):
 
         # error check entities
         for key, val in kwargs.items():
-            # error check allowed BIDS entity keywords
-            if key in ('root', 'datatype'):
-                pass
-            elif key not in ALLOWED_PATH_ENTITIES:
-                raise ValueError(f'Key must be one of '
-                                 f'{ALLOWED_PATH_ENTITIES}, got {key}')
-
             # check if there are any characters not allowed
             if val is not None and key != 'root':
                 _check_key_val(key, val)
@@ -525,10 +533,6 @@ class BIDSPath(object):
         if self.datatype is None and \
                 self.suffix in SUFFIX_TO_DATATYPE:
             self.datatype = SUFFIX_TO_DATATYPE[self.suffix]
-        # # set datatype based on suffix if calling update
-        # elif self.suffix in SUFFIX_TO_DATATYPE and \
-        #         'datatype' not in kwargs:
-        #     self.datatype = SUFFIX_TO_DATATYPE[self.suffix]
 
         # Update .check attribute and perform a check of the entities.
         if check is not None:
@@ -585,14 +589,6 @@ class BIDSPath(object):
             raise ValueError('scans.tsv file name can only contain '
                              'subject and session entities. BIDSPath '
                              f'currently contains {self.entities}.')
-
-        # error check datatype
-        if self.datatype is not None and \
-                self.datatype not in ALLOWED_DATATYPES:
-            raise ValueError(f'"datatype" can only be one of '
-                             f'{ALLOWED_DATATYPES}. You passed in '
-                             f'{self.datatype}, which is not '
-                             f'BIDS compliant. ')
 
         # perform deeper check if user has it turned on
         if self.check:

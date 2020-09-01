@@ -418,8 +418,7 @@ def test_bids_path(return_bids_test_dir):
                          suffix=suffix, check=False)
     # also inherits error check from instantiation
     # always error check datatype
-    with pytest.raises(ValueError, match='"datatype" can only be '
-                                         'one of'):
+    with pytest.raises(ValueError, match='datatype .* is not valid'):
         bids_path.copy().update(datatype=error_kind)
 
     # suffix won't be error checks if initial check was false
@@ -456,9 +455,9 @@ def test_make_filenames():
     """Test that we create filenames according to the BIDS spec."""
     # All keys work
     prefix_data = dict(subject='one', session='two', task='three',
-                       acquisition='four', run='five', processing='six',
+                       acquisition='four', run=1, processing='six',
                        recording='seven', suffix='ieeg', extension='.json')
-    expected_str = 'sub-one_ses-two_task-three_acq-four_run-five_proc-six_rec-seven_ieeg.json'  # noqa
+    expected_str = 'sub-one_ses-two_task-three_acq-four_run-01_proc-six_rec-seven_ieeg.json'  # noqa
     assert BIDSPath(**prefix_data).basename == expected_str
     assert BIDSPath(**prefix_data) == op.join('sub-one', 'ses-two',
                                               'ieeg', expected_str)
@@ -491,7 +490,7 @@ def test_make_filenames():
     with pytest.raises(ValueError, match='Extension .h5 is not allowed'):
         BIDSPath(**prefix_data)
     basename = BIDSPath(**prefix_data, check=False)
-    assert basename.basename == 'sub-one_ses-two_task-three_acq-four_run-five_proc-six_rec-seven_ieeg.h5'  # noqa
+    assert basename.basename == 'sub-one_ses-two_task-three_acq-four_run-01_proc-six_rec-seven_ieeg.h5'  # noqa
 
     # what happens with scans.tsv file
     with pytest.raises(ValueError, match='scans.tsv file name '
@@ -713,7 +712,12 @@ def test_find_emptyroom_no_meas_date():
         bids_path.find_empty_room()
 
 
-def test_bids_path_str():
-    with pytest.raises(TypeError,
-                       match="None, str, or path-like, got <class 'int'>"):
+def test_bids_path_label_vs_index_entity():
+    match = "subject must be an instance of None or str"
+    with pytest.raises(TypeError, match=match):
         BIDSPath(subject=1)
+    match = "root must be an instance of path-like or None"
+    with pytest.raises(TypeError, match=match):
+        BIDSPath(root=1, subject='01')
+    BIDSPath(subject='01', run=1)  # ok as <index> entity
+    BIDSPath(subject='01', split=1)  # ok as <index> entity
