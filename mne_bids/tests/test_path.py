@@ -530,7 +530,7 @@ def test_filter_fnames(entities, expected_n_matches):
     assert len(output) == expected_n_matches
 
 
-def test_get_matched_basenames(return_bids_test_dir):
+def test_match(return_bids_test_dir):
     """Test retrieval of matching basenames."""
     bids_root = return_bids_test_dir
 
@@ -543,7 +543,8 @@ def test_get_matched_basenames(return_bids_test_dir):
     bids_path_01 = BIDSPath(root=bids_root, run='01')
     paths = bids_path_01.match()
     assert len(paths) == 3
-    assert paths[0].basename == 'sub-01_ses-01_task-testing_run-01_channels'
+    assert paths[0].basename == ('sub-01_ses-01_task-testing_run-01_'
+                                 'channels.tsv')
 
     bids_path_01 = BIDSPath(root=bids_root, subject='unknown')
     paths = bids_path_01.match()
@@ -556,6 +557,19 @@ def test_get_matched_basenames(return_bids_test_dir):
     bids_path_01.update(datatype='meg', root=bids_root)
     same_paths = bids_path_01.match()
     assert len(same_paths) == 3
+
+    # Check handling of `extension`, part 1: no extension specified.
+    bids_path_01 = BIDSPath(root=bids_root, run='01')
+    paths = bids_path_01.match()
+    assert [p.extension for p in paths] == ['.tsv', '.tsv', '.fif']
+
+    # Check handling of `extension`, part 2: extension specified.
+    bids_path_01 = BIDSPath(root=bids_root, run='01', extension='.fif',
+                            datatype='meg')
+    paths = bids_path_01.match()
+    assert len(paths) == 1
+    assert paths[0].extension == '.fif'
+
 
 
 @pytest.mark.filterwarnings(warning_str['meas_date_set_to_none'])
