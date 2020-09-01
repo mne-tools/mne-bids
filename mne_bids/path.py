@@ -546,7 +546,7 @@ class BIDSPath(object):
 
         Returns
         -------
-        paths : list of BIDSPath
+        bids_paths : list of BIDSPath
             The matching paths.
         """
         if self.root is None:
@@ -569,15 +569,15 @@ class BIDSPath(object):
         fnames = _filter_fnames(fnames, extension=self.extension,
                                 **self.entities)
 
-        paths = []
+        bids_paths = []
         for fname in fnames:
             entities = get_entities_from_fname(fname)
             extension = fname.suffix if fname.suffix else None
-            path = BIDSPath(root=self.root, datatype=self.datatype,
-                            extension=extension, **entities)
-            paths.append(path)
+            bids_path = BIDSPath(root=self.root, datatype=self.datatype,
+                                 extension=extension, **entities)
+            bids_paths.append(bids_path)
 
-        return paths
+        return bids_paths
 
     def _check(self):
         """Deep check or not of the instance."""
