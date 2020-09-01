@@ -132,8 +132,9 @@ def _check_types(variables):
     """Make sure all vars are str or None."""
     for var in variables:
         if not isinstance(var, (str, type(None))):
-            raise ValueError(f"You supplied a value of type {type(var)}, "
-                             f"where a string or None was expected.")
+            raise ValueError(f"You supplied a value ({var}) of type "
+                             f"{type(var)}, where a string or None was "
+                             f"expected.")
 
 
 def _write_json(fname, dictionary, overwrite=False, verbose=False):
