@@ -999,12 +999,12 @@ def write_raw_bids(raw, bids_path, events_data=None,
     # as it does not make any advanced check.
 
     # create *_scans.tsv
-    scans_path = BIDSPath(
-        subject=bids_path.subject, session=bids_path.session,
-        root=bids_path.root, suffix='scans', extension='.tsv')
+    session_path = BIDSPath(subject=bids_path.subject,
+                            session=bids_path.session, root=bids_path.root)
+    scans_path = session_path.copy().update(suffix='scans', extension='.tsv')
 
     # create *_coordsystem.json
-    coordsystem_path = bids_path.copy().update(
+    coordsystem_path = session_path.copy().update(
         acquisition=bids_path.acquisition, space=bids_path.space,
         datatype=bids_path.datatype, suffix='coordsystem', extension='.json')
 
@@ -1130,7 +1130,7 @@ def write_raw_bids(raw, bids_path, events_data=None,
     elif ext == '.set':
         copyfile_eeglab(raw_fname, bids_path)
     elif ext == '.pdf':
-        bids_path = op.join(data_path, bids_path.root)
+        bids_path = op.join(data_path, op.splitext(bids_path.basename)[0])
         _mkdir_p(bids_path)
         copyfile_bti(raw_orig, bids_path)
     elif ext in ['.con', '.sqd']:

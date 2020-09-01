@@ -1113,8 +1113,7 @@ def test_set(_bids_validate):
     # is broken for earlier versions
     events_tsv_fname = op.join(bids_root, 'sub-' + subject_id,
                                'ses-' + session_id, 'eeg',
-                               bids_path.basename.stem.replace(
-                                   'eeg', 'events.tsv'))
+                               bids_path.basename + '_events.tsv')
     if check_version('mne', '0.18'):
         assert op.exists(events_tsv_fname)
 
@@ -1429,8 +1428,8 @@ def test_write_raw_no_dig():
     bids_path_ = write_raw_bids(raw=raw, bids_path=bids_path,
                                 overwrite=True)
     assert bids_path_.root == str(bids_root)
-    assert bids_path.suffix == 'meg'
-    assert bids_path.extension == '.fif'
+    assert bids_path_.suffix == 'meg'
+    assert bids_path_.extension == '.fif'
 
 
 @requires_nibabel()
