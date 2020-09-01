@@ -40,7 +40,8 @@ from mne.io.constants import FIFF
 from mne.io.kit.kit import get_kit_info
 
 from mne_bids import (write_raw_bids, read_raw_bids, BIDSPath,
-                      make_bids_folders, write_anat, make_dataset_description)
+                      make_bids_folders, write_anat, make_dataset_description,
+                      mark_bad_channels)
 from mne_bids.utils import (_stamp_to_dt, _get_anonymization_daysback,
                             get_anonymization_daysback)
 from mne_bids.tsv_handler import _from_tsv, _to_tsv
@@ -1469,3 +1470,142 @@ def test_write_does_not_alter_events_inplace():
                    events_data=events, overwrite=True)
 
     assert np.array_equal(events, events_orig)
+
+
+def _ensure_list(x):
+    """Return a list representation of the input."""
+    if isinstance(x, str):
+        return [x]
+    elif x is None:
+        return []
+    else:
+        return list(x)
+
+
+@pytest.mark.parametrize(
+    'ch_names, descriptions, drop_status_col, drop_description_col, '
+    'existing_ch_names, existing_descriptions, datatype, overwrite',
+    [
+        # Only mark channels, do not set descriptions.
+        (['MEG 0112', 'MEG 0131', 'EEG 053'], None, False, False, [], [], None,
+         False),
+        ('MEG 0112', None, False, False, [], [], None, False),
+        ('nonsense', None, False, False, [], [], None, False),
+        # Now also set descriptions.
+        (['MEG 0112', 'MEG 0131'], ['Really bad!', 'Even worse.'], False,
+         False, [], [], None, False),
+        ('MEG 0112', 'Really bad!', False, False, [], [], None, False),
+        (['MEG 0112', 'MEG 0131'], ['Really bad!'], False, False, [], [], None,
+         False),  # Should raise.
+        # `datatype='meg`
+        (['MEG 0112'], ['Really bad!'], False, False, [], [], 'meg', False),
+        # Enure we create missing columns.
+        ('MEG 0112', 'Really bad!', True, True, [], [], None, False),
+        # Ensure existing entries are left untouched if `overwrite=False`
+        (['EEG 053'], ['Just testing'], False, False, ['MEG 0112', 'MEG 0131'],
+         ['Really bad!', 'Even worse.'], None, False),
+        # Ensure existing entries are discarded if `overwrite=True`.
+        (['EEG 053'], ['Just testing'], False, False, ['MEG 0112', 'MEG 0131'],
+         ['Really bad!', 'Even worse.'], None, True)
+    ])
+@pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+def test_mark_bad_channels(_bids_validate,
+                           ch_names, descriptions,
+                           drop_status_col, drop_description_col,
+                           existing_ch_names, existing_descriptions,
+                           datatype, overwrite):
+    """Test marking channels of an existing BIDS dataset as "bad"."""
+
+    # Setup: Create a fresh BIDS dataset.
+    bids_root = _TempDir()
+    bids_path = _bids_path.copy().update(root=bids_root, datatype='meg',
+                                         suffix='meg')
+    data_path = testing.data_path()
+    raw_fname = op.join(data_path, 'MEG', 'sample',
+                        'sample_audvis_trunc_raw.fif')
+    event_id = {'Auditory/Left': 1, 'Auditory/Right': 2, 'Visual/Left': 3,
+                'Visual/Right': 4, 'Smiley': 5, 'Button': 32}
+    events_fname = op.join(data_path, 'MEG', 'sample',
+                           'sample_audvis_trunc_raw-eve.fif')
+    raw = _read_raw_fif(raw_fname, verbose=False)
+    raw.info['bads'] = []
+    write_raw_bids(raw, bids_path=bids_path, events_data=events_fname,
+                   event_id=event_id, verbose=False)
+
+    channels_fname = _find_matching_sidecar(bids_path, suffix='channels',
+                                            extension='.tsv')
+
+    if drop_status_col:
+        # Remove `status` column from the sidecare TSV file.
+        tsv_data = _from_tsv(channels_fname)
+        del tsv_data['status']
+        _to_tsv(tsv_data, channels_fname)
+
+    if drop_description_col:
+        # Remove `status_description` column from the sidecare TSV file.
+        tsv_data = _from_tsv(channels_fname)
+        del tsv_data['status_description']
+        _to_tsv(tsv_data, channels_fname)
+
+    # Test that we raise if number of channels doesn't match number of
+    # descriptions.
+    if (descriptions is not None and
+            len(_ensure_list(ch_names)) != len(_ensure_list(descriptions))):
+        with pytest.raises(ValueError, match='must match'):
+            mark_bad_channels(ch_names=ch_names, descriptions=descriptions,
+                              bids_path=bids_path, overwrite=overwrite)
+        return
+
+    # Test that we raise if we encounter an unknown channel name.
+    if any([ch_name not in raw.ch_names
+            for ch_name in _ensure_list(ch_names)]):
+        with pytest.raises(ValueError, match='not found in dataset'):
+            mark_bad_channels(ch_names=ch_names, descriptions=descriptions,
+                              bids_path=bids_path, overwrite=overwrite)
+        return
+
+    if not overwrite:
+        # Mark `existing_ch_names` as bad in raw and sidecar TSV before we
+        # begin our actual tests, which should then add additional channels
+        # to the list of bads, retaining the ones we're specifying here.
+        mark_bad_channels(ch_names=existing_ch_names,
+                          descriptions=existing_descriptions,
+                          bids_path=bids_path, overwrite=True)
+        _bids_validate(bids_root)
+        raw = read_raw_bids(bids_path=bids_path, verbose=False)
+        # Order is not preserved
+        assert set(existing_ch_names) == set(raw.info['bads'])
+        del raw
+
+    mark_bad_channels(ch_names=ch_names, descriptions=descriptions,
+                      bids_path=bids_path, overwrite=overwrite)
+    _bids_validate(bids_root)
+    raw = read_raw_bids(bids_path=bids_path, verbose=False)
+
+    if drop_status_col or overwrite:
+        # Existing column values should have been discarded, so only the new
+        # ones should be present.
+        expected_bads = _ensure_list(ch_names)
+    else:
+        expected_bads = (_ensure_list(ch_names) +
+                         _ensure_list(existing_ch_names))
+
+    if drop_description_col or overwrite:
+        # Existing column values should have been discarded, so only the new
+        # ones should be present.
+        expected_descriptions = _ensure_list(descriptions)
+    else:
+        expected_descriptions = (_ensure_list(descriptions) +
+                                 _ensure_list(existing_descriptions))
+
+    # Order is not preserved
+    assert len(expected_bads) == len(raw.info['bads'])
+    assert set(expected_bads) == set(raw.info['bads'])
+
+    # Descriptions are not mapped to Raw, so let's check the TSV contents
+    # directly.
+    tsv_data = _from_tsv(channels_fname)
+    assert 'status' in tsv_data
+    assert 'status_description' in tsv_data
+    for description in expected_descriptions:
+        assert description in tsv_data['status_description']
