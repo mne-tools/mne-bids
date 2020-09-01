@@ -101,6 +101,21 @@ ALLOWED_PATH_ENTITIES_SHORT = {'sub': 'subject', 'ses': 'session',
                                'space': 'space', 'rec': 'recording',
                                'split': 'split', 'suffix': 'suffix'}
 
+# See: https://bids-specification.readthedocs.io/en/latest/99-appendices/04-entity-table.html#encephalography-eeg-ieeg-and-meg  # noqa
+ENTITY_VALUE_TYPE = {
+    'subject': 'label',
+    'session': 'label',
+    'task': 'label',
+    'run': 'index',
+    'processing': 'label',
+    'recording': 'label',
+    'space': 'label',
+    'acquisition': 'label',
+    'split': 'index',
+    'suffix': 'label',
+    'extension': 'label'
+}
+
 # accepted BIDS formats, which may be subject to change
 # depending on the specification
 BIDS_IEEG_COORDINATE_FRAMES = ['acpc', 'pixels', 'other']
