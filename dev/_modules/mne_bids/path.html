@@ -124,13 +124,13 @@
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="n">warn</span><span class="p">,</span> <span class="n">logger</span>
+<span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="n">warn</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">_validate_type</span>
 
 <span class="kn">from</span> <span class="nn">mne_bids.config</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">ALLOWED_PATH_ENTITIES</span><span class="p">,</span> <span class="n">ALLOWED_FILENAME_EXTENSIONS</span><span class="p">,</span>
     <span class="n">ALLOWED_FILENAME_SUFFIX</span><span class="p">,</span> <span class="n">ALLOWED_PATH_ENTITIES_SHORT</span><span class="p">,</span>
     <span class="n">ALLOWED_DATATYPES</span><span class="p">,</span> <span class="n">SUFFIX_TO_DATATYPE</span><span class="p">,</span> <span class="n">ALLOWED_DATATYPE_EXTENSIONS</span><span class="p">,</span>
-    <span class="n">reader</span><span class="p">)</span>
+    <span class="n">reader</span><span class="p">,</span> <span class="n">ENTITY_VALUE_TYPE</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">mne_bids.utils</span> <span class="kn">import</span> <span class="p">(</span><span class="n">_check_key_val</span><span class="p">,</span> <span class="n">_check_empty_room_basename</span><span class="p">,</span>
                             <span class="n">_check_types</span><span class="p">,</span> <span class="n">param_regex</span><span class="p">,</span>
                             <span class="n">_ensure_tuple</span><span class="p">)</span>
@@ -152,10 +152,9 @@
     <span class="n">bids_fname</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="n">datatype</span><span class="p">,</span>
                                   <span class="n">root</span><span class="o">=</span><span class="n">bids_root</span><span class="p">)</span><span class="o">.</span><span class="n">fpath</span>
     <span class="n">_</span><span class="p">,</span> <span class="n">ext</span> <span class="o">=</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">)</span>
+    <span class="n">extra_params</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="k">if</span> <span class="n">ext</span> <span class="o">==</span> <span class="s1">&#39;.fif&#39;</span><span class="p">:</span>
         <span class="n">extra_params</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">allow_maxshield</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">extra_params</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="n">raw</span> <span class="o">=</span> <span class="n">read_raw_bids</span><span class="p">(</span><span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">extra_params</span><span class="o">=</span><span class="n">extra_params</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;meas_date&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -222,10 +221,9 @@
 
         <span class="k">if</span> <span class="n">er_meas_date</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># No luck so far! Check info[&#39;meas_date&#39;]</span>
             <span class="n">_</span><span class="p">,</span> <span class="n">ext</span> <span class="o">=</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">er_fname</span><span class="p">)</span>
+            <span class="n">extra_params</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="k">if</span> <span class="n">ext</span> <span class="o">==</span> <span class="s1">&#39;.fif&#39;</span><span class="p">:</span>
                 <span class="n">extra_params</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">allow_maxshield</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">extra_params</span> <span class="o">=</span> <span class="kc">None</span>
 
             <span class="n">er_raw</span> <span class="o">=</span> <span class="n">read_raw_bids</span><span class="p">(</span><span class="n">bids_path</span><span class="o">=</span><span class="n">er_bids_path</span><span class="p">,</span>
                                    <span class="n">extra_params</span><span class="o">=</span><span class="n">extra_params</span><span class="p">)</span>
@@ -594,15 +592,33 @@
 <span class="sd">        &gt;&gt;&gt; print(bids_path.basename)</span>
 <span class="sd">        sub-test_ses-two_acq-test_ieeg.vhdr</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">run</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;run&#39;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">run</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">run</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="c1"># Ensure that run is a string</span>
-            <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;run&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{:02}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">run</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;root&#39;</span><span class="p">:</span>
+                <span class="n">_validate_type</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">types</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;path-like&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="n">item_name</span><span class="o">=</span><span class="n">key</span><span class="p">)</span>
+                <span class="k">continue</span>
 
-        <span class="n">split</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;split&#39;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">split</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">split</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="c1"># Ensure that run is a string</span>
-            <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;split&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{:02}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">split</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;datatype&#39;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">val</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">val</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ALLOWED_DATATYPES</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;datatype (</span><span class="si">{</span><span class="n">val</span><span class="si">}</span><span class="s1">) is not valid. &#39;</span>
+                                     <span class="sa">f</span><span class="s1">&#39;Should be one of &#39;</span>
+                                     <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">ALLOWED_DATATYPES</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ENTITY_VALUE_TYPE</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Key must be one of &#39;</span>
+                                 <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">ALLOWED_PATH_ENTITIES</span><span class="si">}</span><span class="s1">, got </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">ENTITY_VALUE_TYPE</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;label&#39;</span><span class="p">:</span>
+                <span class="n">_validate_type</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">types</span><span class="o">=</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="nb">str</span><span class="p">),</span>
+                               <span class="n">item_name</span><span class="o">=</span><span class="n">key</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">assert</span> <span class="n">ENTITY_VALUE_TYPE</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;index&#39;</span>
+                <span class="n">_validate_type</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">types</span><span class="o">=</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span> <span class="n">item_name</span><span class="o">=</span><span class="n">key</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">val</span><span class="o">.</span><span class="n">isdigit</span><span class="p">():</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s1"> is not an index (Got </span><span class="si">{</span><span class="n">val</span><span class="si">}</span><span class="s1">)&#39;</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+                    <span class="n">kwargs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{:02}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
 
         <span class="c1"># ensure extension starts with a &#39;.&#39;</span>
         <span class="n">extension</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;extension&#39;</span><span class="p">)</span>
@@ -613,13 +629,6 @@
 
         <span class="c1"># error check entities</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="c1"># error check allowed BIDS entity keywords</span>
-            <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;root&#39;</span><span class="p">,</span> <span class="s1">&#39;datatype&#39;</span><span class="p">):</span>
-                <span class="k">pass</span>
-            <span class="k">elif</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ALLOWED_PATH_ENTITIES</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Key must be one of &#39;</span>
-                                 <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">ALLOWED_PATH_ENTITIES</span><span class="si">}</span><span class="s1">, got </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-
             <span class="c1"># check if there are any characters not allowed</span>
             <span class="k">if</span> <span class="n">val</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">key</span> <span class="o">!=</span> <span class="s1">&#39;root&#39;</span><span class="p">:</span>
                 <span class="n">_check_key_val</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
@@ -633,10 +642,6 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> \
                 <span class="bp">self</span><span class="o">.</span><span class="n">suffix</span> <span class="ow">in</span> <span class="n">SUFFIX_TO_DATATYPE</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="o">=</span> <span class="n">SUFFIX_TO_DATATYPE</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">suffix</span><span class="p">]</span>
-        <span class="c1"># # set datatype based on suffix if calling update</span>
-        <span class="c1"># elif self.suffix in SUFFIX_TO_DATATYPE and \</span>
-        <span class="c1">#         &#39;datatype&#39; not in kwargs:</span>
-        <span class="c1">#     self.datatype = SUFFIX_TO_DATATYPE[self.suffix]</span>
 
         <span class="c1"># Update .check attribute and perform a check of the entities.</span>
         <span class="k">if</span> <span class="n">check</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -693,14 +698,6 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;scans.tsv file name can only contain &#39;</span>
                              <span class="s1">&#39;subject and session entities. BIDSPath &#39;</span>
                              <span class="sa">f</span><span class="s1">&#39;currently contains </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">entities</span><span class="si">}</span><span class="s1">.&#39;</span><span class="p">)</span>
-
-        <span class="c1"># error check datatype</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> \
-                <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ALLOWED_DATATYPES</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;&quot;datatype&quot; can only be one of &#39;</span>
-                             <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">ALLOWED_DATATYPES</span><span class="si">}</span><span class="s1">. You passed in &#39;</span>
-                             <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">datatype</span><span class="si">}</span><span class="s1">, which is not &#39;</span>
-                             <span class="sa">f</span><span class="s1">&#39;BIDS compliant. &#39;</span><span class="p">)</span>
 
         <span class="c1"># perform deeper check if user has it turned on</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">check</span><span class="p">:</span>
@@ -1368,7 +1365,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-08-29.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-09-01.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
     </p>
   </div>

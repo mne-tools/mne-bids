@@ -243,8 +243,9 @@
     <span class="sd">&quot;&quot;&quot;Make sure all vars are str or None.&quot;&quot;&quot;</span>
     <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">variables</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">))):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You supplied a value of type </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">var</span><span class="p">)</span><span class="si">}</span><span class="s2">, &quot;</span>
-                             <span class="sa">f</span><span class="s2">&quot;where a string or None was expected.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;You supplied a value (</span><span class="si">{</span><span class="n">var</span><span class="si">}</span><span class="s2">) of type &quot;</span>
+                             <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">var</span><span class="p">)</span><span class="si">}</span><span class="s2">, where a string or None was &quot;</span>
+                             <span class="sa">f</span><span class="s2">&quot;expected.&quot;</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">_write_json</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">dictionary</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
@@ -577,7 +578,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-08-29.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-09-01.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
     </p>
   </div>
