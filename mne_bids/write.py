@@ -902,7 +902,7 @@ def write_raw_bids(raw, bids_path, events_data=None,
     -------
     bids_path : BIDSPath
         The modified path to the file written, including the root of the
-        BIDS-compatible folder under `bids_path.root`
+        BIDS-compatible folder in ``bids_path.root``.
 
     Notes
     -----
