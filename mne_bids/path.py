@@ -360,10 +360,7 @@ class BIDSPath(object):
         """
         # create the data path based on entities available
         # bids_root, subject, session and suffix
-        if self.root is not None:
-            data_path = self.root
-        else:
-            data_path = ''
+        data_path = '' if self.root is None else self.root
         if self.subject is not None:
             data_path = op.join(data_path, f'sub-{self.subject}')
         if self.session is not None:
@@ -393,7 +390,7 @@ class BIDSPath(object):
                 # FIXME e.g. with FIFF data split across multiple FIXME files.
                 # if extension is not specified and no unique file path
                 # return filepath of the actual dataset for MEG/EEG/iEEG data
-                if self.suffix in ALLOWED_DATATYPES:
+                if self.suffix is None or self.suffix in ALLOWED_DATATYPES:
                     # now only use valid datatype extension
                     valid_exts = sum(ALLOWED_DATATYPE_EXTENSIONS.values(), [])
                     matching_paths = [p for p in matching_paths
