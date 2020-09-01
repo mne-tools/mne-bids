@@ -146,21 +146,21 @@ def test_make_folders():
     bids_path = BIDSPath(subject='hi', session='foo',
                          datatype='eeg', root=bids_root)
     bids_path.mkdir()
-    assert op.isdir(op.join(bids_root, 'sub-hi', 'ses-foo', 'ba'))
+    assert op.isdir(op.join(bids_root, 'sub-hi', 'ses-foo', 'eeg'))
 
     # If we remove a kwarg the folder shouldn't be created
     bids_root = _TempDir()
     bids_path = BIDSPath(subject='hi', datatype='eeg',
                          root=bids_root)
     bids_path.mkdir()
-    assert op.isdir(op.join(bids_root, 'sub-hi', 'ba'))
+    assert op.isdir(op.join(bids_root, 'sub-hi', 'eeg'))
 
     # Check if a pathlib.Path bids_root works.
     bids_root = Path(_TempDir())
     bids_path = BIDSPath(subject='hi', session='foo',
                          datatype='eeg', root=bids_root)
     bids_path.mkdir()
-    assert op.isdir(op.join(bids_root, 'sub-hi', 'ses-foo', 'ba'))
+    assert op.isdir(op.join(bids_root, 'sub-hi', 'ses-foo', 'eeg'))
 
     # Check if bids_root=None creates folders in the current working directory
     bids_root = _TempDir()
@@ -169,7 +169,7 @@ def test_make_folders():
     bids_path = BIDSPath(subject='hi', session='foo',
                          datatype='eeg')
     bids_path.mkdir()
-    assert op.isdir(op.join(os.getcwd(), 'sub-hi', 'ses-foo', 'ba'))
+    assert op.isdir(op.join(os.getcwd(), 'sub-hi', 'ses-foo', 'eeg'))
     os.chdir(curr_dir)
 
 
