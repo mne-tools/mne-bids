@@ -1072,7 +1072,7 @@ def write_raw_bids(raw, bids_path, events_data=None,
                             overwrite, verbose)
     else:
         logger.warning(f'Writing of electrodes.tsv is not supported '
-                       f'for datatype "{bids_path.datatype}". Skipping ...')
+                       f'for data type "{bids_path.datatype}". Skipping ...')
 
     events, event_id = _read_events(events_data, event_id, raw, ext,
                                     verbose=verbose)
