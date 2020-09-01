@@ -25,7 +25,7 @@ from mne_bids.commands import (mne_bids_raw_to_bids, mne_bids_cp,
 base_path = op.join(op.dirname(mne.__file__), 'io')
 subject_id = '01'
 task = 'testing'
-kind = 'meg'
+datatype = 'meg'
 
 
 def check_usage(module, force_help=False):
@@ -51,7 +51,7 @@ def test_raw_to_bids(tmpdir):
     # Should work
     with ArgvSetter(('--subject_id', subject_id, '--task', task, '--raw',
                      raw_fname, '--bids_root', output_path,
-                     '--line_freq', '60')):
+                     '--line_freq', 60)):
         mne_bids_raw_to_bids.run()
 
     # Test EDF files as well
@@ -59,7 +59,7 @@ def test_raw_to_bids(tmpdir):
     edf_fname = op.join(edf_data_path, 'test.edf')
     with ArgvSetter(('--subject_id', subject_id, '--task', task, '--raw',
                      edf_fname, '--bids_root', output_path,
-                     '--line_freq', '60')):
+                     '--line_freq', 60)):
         mne_bids_raw_to_bids.run()
 
     # Too few input args
@@ -100,8 +100,9 @@ def test_mark_bad_chanels(tmpdir):
     raw_fname = op.join(data_path, 'MEG', 'sample',
                         'sample_audvis_trunc_raw.fif')
 
-    with ArgvSetter(('--subject_id', subject_id, '--task', task, '--raw',
-                     raw_fname, '--bids_root', output_path)):
+    with ArgvSetter(('--subject_id', subject_id, '--task', task,
+                     '--raw', raw_fname, '--bids_root', output_path,
+                     '--line_freq', 60)):
         mne_bids_raw_to_bids.run()
 
     # Update the dataset.
@@ -109,18 +110,19 @@ def test_mark_bad_chanels(tmpdir):
     descriptions = ['Really bad!', 'Even worse.']
 
     args = ['--subject_id', subject_id, '--task', task,
-            '--bids_root', output_path, '--kind', kind]
+            '--bids_root', output_path, '--type', datatype]
     for ch_name, description in zip(ch_names, descriptions):
         args.extend(['--ch_name', ch_name])
         args.extend(['--description', description])
 
     args = tuple(args)
     with ArgvSetter(args):
-        mne_bids_mark_bad_channels.run()
+        with pytest.warns(RuntimeWarning, match='The unit for chann*'):
+            mne_bids_mark_bad_channels.run()
 
     # Test resettig bad channels.
     args = ('--subject_id', subject_id, '--task', task,
-            '--bids_root', output_path, '--kind', kind,
+            '--bids_root', output_path, '--type', datatype,
             '--ch_name', '', '--overwrite')
     with ArgvSetter(args):
         mne_bids_mark_bad_channels.run()

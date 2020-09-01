@@ -12,7 +12,7 @@ $ mne_bids mark_bad_channels --ch_name="MEG 0112" --description="noisy" \
 # License: BSD (3-clause)
 
 import mne_bids
-from mne_bids import make_bids_basename, mark_bad_channels
+from mne_bids import BIDSPath, mark_bad_channels
 
 
 def run():
@@ -46,8 +46,14 @@ def run():
                       help='Processing label.')
     parser.add_option('--rec', dest='recording',
                       help='Recording name')
-    parser.add_option('--kind', dest='kind',
-                      help='Recording kind, e.g. meg or eeg')
+    parser.add_option('--type', dest='datatype',
+                      help='Recording type, e.g. meg or eeg')
+    parser.add_option('--suffix', dest='suffix',
+                      help='The filename suffix, i.e. the last part before '
+                           'the extension')
+    parser.add_option('--ext', dest='extension',
+                      help='The filename extension, including the leading '
+                           'period, e.g. .fif')
     parser.add_option('--overwrite', dest='overwrite', action='store_true',
                       help='Replace existing channel status entries')
 
@@ -69,14 +75,14 @@ def run():
 
     ch_names = [] if opt.ch_names == [''] else opt.ch_names
 
-    bids_basename = make_bids_basename(subject=opt.subject,
-                                       session=opt.session, task=opt.task,
-                                       acquisition=opt.acquisition,
-                                       run=opt.run, processing=opt.processing,
-                                       recording=opt.recording)
+    bids_path = BIDSPath(subject=opt.subject, session=opt.session,
+                         task=opt.task, acquisition=opt.acquisition,
+                         run=opt.run, processing=opt.processing,
+                         recording=opt.recording, datatype=opt.datatype,
+                         suffix=opt.suffix, extension=opt.extension,
+                         root=opt.bids_root)
     mark_bad_channels(ch_names=ch_names, descriptions=opt.descriptions,
-                      bids_basename=bids_basename, bids_root=opt.bids_root,
-                      kind=opt.kind, overwrite=opt.overwrite)
+                      bids_path=bids_path, overwrite=opt.overwrite)
 
 
 if __name__ == '__main__':  # pragma: no cover

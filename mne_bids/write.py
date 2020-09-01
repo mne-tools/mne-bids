@@ -1358,8 +1358,8 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
     return anat_dir
 
 
-def mark_bad_channels(ch_names, descriptions=None, *, bids_basename,
-                      bids_root, kind=None, overwrite=False, verbose=True):
+def mark_bad_channels(ch_names, descriptions=None, *, bids_path,
+                      overwrite=False, verbose=True):
     """Update which channels are marked as "bad" in an existing BIDS dataset.
 
     Parameters
@@ -1371,14 +1371,11 @@ def mark_bad_channels(ch_names, descriptions=None, *, bids_basename,
         Descriptions of the reasons that lead to the exclusion of the
         channel(s). If a list, it must match the length of ``ch_names``.
         If ``None``, no descriptions are added.
-    bids_basename : BIDSPath | str
-        The base filename of the BIDS compatible files. Typically, this can be
-        generated using :func:`mne_bids.make_bids_basename`.
-    bids_root : str | pathlib.Path
-        Path to root of the BIDS folder.
-    kind : str | None
-        The kind of recording to update. If ``None`` and only one kind (e.g.,
-        only EEG or only MEG data) is present in the dataset, it will be
+    bids_path : BIDSPath
+        The recording to update. The :class:`mne_bids.BIDSPath` instance passed
+        here **must** have the ``.root`` attribute set. The ``.datatype``
+        attribute **may** be set. If ``.datatype`` is not set and only one data
+        type (e.g., only EEG or MEG data) is present in the dataset, it will be
         selected automatically.
     overwrite : bool
         If ``False``, only update the information of the channels passed via
@@ -1393,32 +1390,29 @@ def mark_bad_channels(ch_names, descriptions=None, *, bids_basename,
     --------
     Mark a single channel as bad.
 
-    >>> mark_bad_channels('MEG 0112', bids_basename=bids_basename,
-                          bids_root=bids_root)
+    >>> mark_bad_channels('MEG 0112', bids_path=bids_path)
 
     Mark multiple channels as bad.
 
     >>> bads = ['MEG 0112', 'MEG 0131']
-    >>> mark_bad_channels(bads, bids_basename=bids_basename,
-                          bids_root=bids_root)
+    >>> mark_bad_channels(bads, bids_path=bids_path)
 
     Mark channels as bad, and add a description as to why.
 
     >>> ch_names = ['MEG 0112', 'MEG 0131']
     >>> descriptions = ['Only produced noise', 'Continuously flat']
-    >>> mark_bad_channels(bads, descriptions, bids_basename=bids_basename,
-                          bids_root=bids_root)
+    >>> mark_bad_channels(bads, descriptions, bbids_path=bids_path)
 
-    Mark channels as bad, and mark all others as good.
+    Mark two channels as bad, and mark all others as good by setting
+    ``overwrite=True``.
 
     >>> bads = ['MEG 0112', 'MEG 0131']
-    >>> mark_bad_channels(bads, bids_basename=bids_basename,
-                          bids_root=bids_root, overwrite=True)
+    >>> mark_bad_channels(bads, bids_path=bids_path, overwrite=True)
 
-    Mark all channels as good.
+    Mark all channels as good by passing an empty list of bad channels, and
+    setting ``overwrite=True``.
 
-    >>> mark_bad_channels([], bids_basename=bids_basename, bids_root=bids_root,
-                          overwrite=True)
+    >>> mark_bad_channels([], bids_path=bids_path, overwrite=True)
 
     """
     if not ch_names and not overwrite:
@@ -1440,29 +1434,29 @@ def mark_bad_channels(ch_names, descriptions=None, *, bids_basename,
     if len(ch_names) != len(descriptions):
         raise ValueError('Number of channels and descriptions must match.')
 
-    # convert to BIDSPath
-    if isinstance(bids_basename, str):
-        params = get_entities_from_fname(bids_basename)
-        bids_basename = BIDSPath(subject=params.get('sub'),
-                                 session=params.get('ses'),
-                                 recording=params.get('rec'),
-                                 acquisition=params.get('acq'),
-                                 processing=params.get('proc'),
-                                 space=params.get('space'),
-                                 run=params.get('run'),
-                                 task=params.get('task'))
-    sub = bids_basename.subject
-    ses = bids_basename.session
+    if not isinstance(bids_path, BIDSPath):
+        raise RuntimeError('"bids_path" must be a BIDSPath object. Please '
+                           'instantiate using mne_bids.BIDSPath().')
 
-    if kind is None:
-        kind = _infer_datatype(bids_root=bids_root, sub=sub, ses=ses)
+    if bids_path.root is None:
+        raise ValueError('The root of the "bids_path" must be set. '
+                         'Please use `bids_path.update(root="<root>")` '
+                         'to set the root of the BIDS folder to read.')
 
-    bids_fname = bids_basename.get_bids_fname(kind=kind, bids_root=bids_root)
-    channels_fname = _find_matching_sidecar(bids_fname, bids_root,
-                                            'channels.tsv')
+    # sub = bids_path.subject
+    # ses = bids_path.session
+
+    # if bids_path.datatype is None:
+    #     datatype = _infer_datatype(bids_root=bids_path.root, sub=sub, ses=ses)
+    # else:
+    #     datatype = bids_path.datatype
+
+    # bids_fname = bids_path.fpath()
+    channels_fname = _find_matching_sidecar(bids_path, suffix='channels',
+                                            extension='.tsv')
 
     # Read raw and sidecar file.
-    raw = read_raw_bids(bids_path=bids_basename,
+    raw = read_raw_bids(bids_path=bids_path,
                         extra_params=dict(allow_maxshield=True, preload=True),
                         verbose=False)
     bads_raw = raw.info['bads']

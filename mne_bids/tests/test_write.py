@@ -1484,7 +1484,7 @@ def _ensure_list(x):
 
 @pytest.mark.parametrize(
     'ch_names, descriptions, drop_status_col, drop_description_col, '
-    'existing_ch_names, existing_descriptions, kind, overwrite',
+    'existing_ch_names, existing_descriptions, datatype, overwrite',
     [
         # Only mark channels, do not set descriptions.
         (['MEG 0112', 'MEG 0131', 'EEG 053'], None, False, False, [], [], None,
@@ -1497,7 +1497,7 @@ def _ensure_list(x):
         ('MEG 0112', 'Really bad!', False, False, [], [], None, False),
         (['MEG 0112', 'MEG 0131'], ['Really bad!'], False, False, [], [], None,
          False),  # Should raise.
-        # `kind='meg`
+        # `datatype='meg`
         (['MEG 0112'], ['Really bad!'], False, False, [], [], 'meg', False),
         # Enure we create missing columns.
         ('MEG 0112', 'Really bad!', True, True, [], [], None, False),
@@ -1513,12 +1513,13 @@ def test_mark_bad_channels(_bids_validate,
                            ch_names, descriptions,
                            drop_status_col, drop_description_col,
                            existing_ch_names, existing_descriptions,
-                           kind, overwrite):
+                           datatype, overwrite):
     """Test marking channels of an existing BIDS dataset as "bad"."""
 
     # Setup: Create a fresh BIDS dataset.
     bids_root = _TempDir()
-    bids_path = _bids_path.copy()
+    bids_path = _bids_path.copy().update(root=bids_root, datatype='meg',
+                                         suffix='meg')
     data_path = testing.data_path()
     raw_fname = op.join(data_path, 'MEG', 'sample',
                         'sample_audvis_trunc_raw.fif')
@@ -1526,14 +1527,13 @@ def test_mark_bad_channels(_bids_validate,
                 'Visual/Right': 4, 'Smiley': 5, 'Button': 32}
     events_fname = op.join(data_path, 'MEG', 'sample',
                            'sample_audvis_trunc_raw-eve.fif')
-    raw = mne.io.read_raw_fif(raw_fname, verbose=False)
+    raw = _read_raw_fif(raw_fname, verbose=False)
     raw.info['bads'] = []
     write_raw_bids(raw, bids_path=bids_path, events_data=events_fname,
                    event_id=event_id, verbose=False)
 
-    bids_fname = bids_path.get_bids_fname(kind='meg', bids_root=bids_root)
-    channels_fname = _find_matching_sidecar(bids_fname, bids_root,
-                                            'channels.tsv')
+    channels_fname = _find_matching_sidecar(bids_path, suffix='channels',
+                                            extension='.tsv')
 
     if drop_status_col:
         # Remove `status` column from the sidecare TSV file.
@@ -1553,8 +1553,7 @@ def test_mark_bad_channels(_bids_validate,
             len(_ensure_list(ch_names)) != len(_ensure_list(descriptions))):
         with pytest.raises(ValueError, match='must match'):
             mark_bad_channels(ch_names=ch_names, descriptions=descriptions,
-                              bids_basename=bids_path, bids_root=bids_root,
-                              kind=kind, overwrite=overwrite)
+                              bids_path=bids_path, overwrite=overwrite)
         return
 
     # Test that we raise if we encounter an unknown channel name.
@@ -1562,8 +1561,7 @@ def test_mark_bad_channels(_bids_validate,
             for ch_name in _ensure_list(ch_names)]):
         with pytest.raises(ValueError, match='not found in dataset'):
             mark_bad_channels(ch_names=ch_names, descriptions=descriptions,
-                              bids_basename=bids_path, bids_root=bids_root,
-                              kind=kind, overwrite=overwrite)
+                              bids_path=bids_path, overwrite=overwrite)
         return
 
     if not overwrite:
@@ -1572,21 +1570,17 @@ def test_mark_bad_channels(_bids_validate,
         # to the list of bads, retaining the ones we're specifying here.
         mark_bad_channels(ch_names=existing_ch_names,
                           descriptions=existing_descriptions,
-                          bids_basename=bids_path, bids_root=bids_root,
-                          kind=kind, overwrite=True)
+                          bids_path=bids_path, overwrite=True)
         _bids_validate(bids_root)
-        raw = read_raw_bids(bids_basename=bids_path, bids_root=bids_root,
-                            kind=kind, verbose=False)
+        raw = read_raw_bids(bids_path=bids_path, verbose=False)
         # XXX Order is not preserved
         assert set(existing_ch_names) == set(raw.info['bads'])
         del raw
 
     mark_bad_channels(ch_names=ch_names, descriptions=descriptions,
-                      bids_basename=bids_path, bids_root=bids_root,
-                      kind=kind, overwrite=overwrite)
+                      bids_path=bids_path, overwrite=overwrite)
     _bids_validate(bids_root)
-    raw = read_raw_bids(bids_basename=bids_path, bids_root=bids_root,
-                        kind=kind, verbose=False)
+    raw = read_raw_bids(bids_path=bids_path, verbose=False)
 
     if drop_status_col or overwrite:
         # Existing column values should have been discarded, so only the new
