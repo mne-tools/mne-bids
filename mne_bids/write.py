@@ -38,8 +38,7 @@ from mne_bids.utils import (_write_json, _write_tsv, _write_text,
                             _handle_datatype, _get_ch_type_mapping,
                             _check_anonymize, _stamp_to_dt)
 from mne_bids import make_bids_folders, read_raw_bids
-from mne_bids.path import (BIDSPath, _parse_ext, _mkdir_p, _path_to_str,
-                           _infer_datatype, get_entities_from_fname)
+from mne_bids.path import BIDSPath, _parse_ext, _mkdir_p, _path_to_str
 from mne_bids.copyfiles import (copyfile_brainvision, copyfile_eeglab,
                                 copyfile_ctf, copyfile_bti, copyfile_kit)
 from mne_bids.tsv_handler import (_from_tsv, _drop, _contains_row,
@@ -1443,24 +1442,14 @@ def mark_bad_channels(ch_names, descriptions=None, *, bids_path,
                          'Please use `bids_path.update(root="<root>")` '
                          'to set the root of the BIDS folder to read.')
 
-    # sub = bids_path.subject
-    # ses = bids_path.session
-
-    # if bids_path.datatype is None:
-    #     datatype = _infer_datatype(bids_root=bids_path.root, sub=sub, ses=ses)
-    # else:
-    #     datatype = bids_path.datatype
-
-    # bids_fname = bids_path.fpath()
-    channels_fname = _find_matching_sidecar(bids_path, suffix='channels',
-                                            extension='.tsv')
-
     # Read raw and sidecar file.
     raw = read_raw_bids(bids_path=bids_path,
                         extra_params=dict(allow_maxshield=True, preload=True),
                         verbose=False)
     bads_raw = raw.info['bads']
 
+    channels_fname = _find_matching_sidecar(bids_path, suffix='channels',
+                                            extension='.tsv')
     tsv_data = _from_tsv(channels_fname)
     if 'status' in tsv_data:
         bads_tsv = _get_bads_from_tsv_data(tsv_data)
