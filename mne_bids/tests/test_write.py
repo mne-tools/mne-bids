@@ -1428,6 +1428,8 @@ def test_write_raw_no_dig():
     bids_path_ = write_raw_bids(raw=raw, bids_path=bids_path,
                                 overwrite=True)
     assert bids_path_.root == str(bids_root)
+    assert bids_path.suffix == 'meg'
+    assert bids_path.extension == '.fif'
 
 
 @requires_nibabel()
