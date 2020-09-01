@@ -657,7 +657,7 @@
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        paths : list of BIDSPath</span>
+<span class="sd">        bids_paths : list of BIDSPath</span>
 <span class="sd">            The matching paths.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -675,18 +675,20 @@
 
         <span class="n">fnames</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">)</span><span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="n">search_str</span><span class="p">)</span>
         <span class="c1"># Only keep files (not directories), and omit the JSON sidecars.</span>
-        <span class="n">fnames</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fnames</span>
+        <span class="n">fnames</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fnames</span>
                   <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">is_file</span><span class="p">()</span> <span class="ow">and</span> <span class="n">f</span><span class="o">.</span><span class="n">suffix</span> <span class="o">!=</span> <span class="s1">&#39;.json&#39;</span><span class="p">]</span>
-        <span class="n">fnames</span> <span class="o">=</span> <span class="n">_filter_fnames</span><span class="p">(</span><span class="n">fnames</span><span class="p">,</span> <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">entities</span><span class="p">)</span>
+        <span class="n">fnames</span> <span class="o">=</span> <span class="n">_filter_fnames</span><span class="p">(</span><span class="n">fnames</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">extension</span><span class="p">,</span>
+                                <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">entities</span><span class="p">)</span>
 
-        <span class="n">paths</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">bids_paths</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">fname</span> <span class="ow">in</span> <span class="n">fnames</span><span class="p">:</span>
             <span class="n">entities</span> <span class="o">=</span> <span class="n">get_entities_from_fname</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
-            <span class="n">path</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">datatype</span><span class="p">,</span>
-                            <span class="o">**</span><span class="n">entities</span><span class="p">)</span>
-            <span class="n">paths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+            <span class="n">extension</span> <span class="o">=</span> <span class="n">fname</span><span class="o">.</span><span class="n">suffix</span> <span class="k">if</span> <span class="n">fname</span><span class="o">.</span><span class="n">suffix</span> <span class="k">else</span> <span class="kc">None</span>
+            <span class="n">bids_path</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">datatype</span><span class="p">,</span>
+                                 <span class="n">extension</span><span class="o">=</span><span class="n">extension</span><span class="p">,</span> <span class="o">**</span><span class="n">entities</span><span class="p">)</span>
+            <span class="n">bids_paths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bids_path</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">paths</span></div>
+        <span class="k">return</span> <span class="n">bids_paths</span></div>
 
     <span class="k">def</span> <span class="nf">_check</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Deep check or not of the instance.&quot;&quot;&quot;</span>
@@ -1332,7 +1334,17 @@
 <span class="k">def</span> <span class="nf">_filter_fnames</span><span class="p">(</span><span class="n">fnames</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">subject</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                    <span class="n">acquisition</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">run</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">processing</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">recording</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                    <span class="n">space</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">split</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Filter a list of BIDS filenames based on BIDS entity values.&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;Filter a list of BIDS filenames based on BIDS entity values.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    fnames : iterable of pathlib.Path | iterable of str</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    list of pathlib.Path</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">sub_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;sub-</span><span class="si">{</span><span class="n">subject</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">if</span> <span class="n">subject</span> <span class="k">else</span> <span class="sa">r</span><span class="s1">&#39;sub-([^_]+)&#39;</span>
     <span class="n">ses_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;_ses-</span><span class="si">{</span><span class="n">session</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">if</span> <span class="n">session</span> <span class="k">else</span> <span class="sa">r</span><span class="s1">&#39;(|_ses-([^_]+))&#39;</span>
     <span class="n">task_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;_task-</span><span class="si">{</span><span class="n">task</span><span class="si">}</span><span class="s1">&#39;</span> <span class="k">if</span> <span class="n">task</span> <span class="k">else</span> <span class="sa">r</span><span class="s1">&#39;(|_task-([^_]+))&#39;</span>
@@ -1349,8 +1361,14 @@
     <span class="n">regexp</span> <span class="o">=</span> <span class="p">(</span><span class="n">sub_str</span> <span class="o">+</span> <span class="n">ses_str</span> <span class="o">+</span> <span class="n">task_str</span> <span class="o">+</span> <span class="n">acq_str</span> <span class="o">+</span> <span class="n">run_str</span> <span class="o">+</span> <span class="n">proc_str</span> <span class="o">+</span>
               <span class="n">rec_str</span> <span class="o">+</span> <span class="n">space_str</span> <span class="o">+</span> <span class="n">split_str</span> <span class="o">+</span> <span class="n">suffix_str</span> <span class="o">+</span> <span class="n">ext_str</span><span class="p">)</span>
 
+    <span class="c1"># Convert to str so we can apply the regexp ...</span>
+    <span class="n">fnames</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fnames</span><span class="p">]</span>
+
     <span class="c1"># https://stackoverflow.com/a/51246151/1944216</span>
     <span class="n">fnames_filtered</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">regexp</span><span class="p">)</span><span class="o">.</span><span class="n">match</span><span class="p">,</span> <span class="n">fnames</span><span class="p">))</span>
+
+    <span class="c1"># ... and return Paths.</span>
+    <span class="n">fnames_filtered</span> <span class="o">=</span> <span class="p">[</span><span class="n">Path</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fnames_filtered</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">fnames_filtered</span>
 </pre></div>
 
