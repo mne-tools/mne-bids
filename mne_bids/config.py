@@ -102,7 +102,7 @@ ALLOWED_PATH_ENTITIES_SHORT = {'sub': 'subject', 'ses': 'session',
                                'split': 'split', 'suffix': 'suffix'}
 
 # See: https://bids-specification.readthedocs.io/en/latest/99-appendices/04-entity-table.html#encephalography-eeg-ieeg-and-meg  # noqa
-ENTITY_INDEX_OR_LABEL = {
+ENTITY_VALUE_TYPE = {
     'subject': 'label',
     'session': 'label',
     'task': 'label',

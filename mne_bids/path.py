@@ -19,7 +19,7 @@ from mne_bids.config import (
     ALLOWED_PATH_ENTITIES, ALLOWED_FILENAME_EXTENSIONS,
     ALLOWED_FILENAME_SUFFIX, ALLOWED_PATH_ENTITIES_SHORT,
     ALLOWED_DATATYPES, SUFFIX_TO_DATATYPE, ALLOWED_DATATYPE_EXTENSIONS,
-    reader, ENTITY_INDEX_OR_LABEL)
+    reader, ENTITY_VALUE_TYPE)
 from mne_bids.utils import (_check_key_val, _check_empty_room_basename,
                             _check_types, param_regex,
                             _ensure_tuple)
@@ -494,15 +494,15 @@ class BIDSPath(object):
                 else:
                     continue
 
-            if key not in ENTITY_INDEX_OR_LABEL:
+            if key not in ENTITY_VALUE_TYPE:
                 raise ValueError(f'Key must be one of '
                                  f'{ALLOWED_PATH_ENTITIES}, got {key}')
 
-            if ENTITY_INDEX_OR_LABEL[key] == 'label':
+            if ENTITY_VALUE_TYPE[key] == 'label':
                 _validate_type(val, types=(None, str),
                                item_name=key)
             else:
-                assert ENTITY_INDEX_OR_LABEL[key] == 'index'
+                assert ENTITY_VALUE_TYPE[key] == 'index'
                 _validate_type(val, types=(int, str, None), item_name=key)
                 if isinstance(val, str) and not val.isdigit():
                     raise ValueError(f'{key} is not an index (Got {val})')
