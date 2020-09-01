@@ -1024,10 +1024,6 @@ def write_raw_bids(raw, bids_path, events_data=None,
     channels_path = bids_path.copy().update(
         suffix='channels', extension='.tsv')
 
-    if ext not in ['.fif', '.ds', '.vhdr', '.edf', '.bdf', '.set', '.con',
-                   '.sqd']:
-        bids_path.update(root=str(bids_path).split(".")[0])
-
     # Anonymize
     convert = False
     if anonymize is not None:
