@@ -1113,7 +1113,8 @@ def test_set(_bids_validate):
     # is broken for earlier versions
     events_tsv_fname = op.join(bids_root, 'sub-' + subject_id,
                                'ses-' + session_id, 'eeg',
-                               str(bids_path.basename) + '_events.tsv')
+                               bids_path.basename.stem.replace(
+                                   'eeg', 'events.tsv'))
     if check_version('mne', '0.18'):
         assert op.exists(events_tsv_fname)
 
@@ -1400,8 +1401,8 @@ def test_write_raw_pathlike():
     raw = _read_raw_fif(raw_fname)
 
     bids_root = Path(_TempDir())
-    events_fname = Path(data_path) / 'MEG' / 'sample' /\
-        'sample_audvis_trunc_raw-eve.fif'
+    events_fname = \
+        Path(data_path) / 'MEG' / 'sample' / 'sample_audvis_trunc_raw-eve.fif'
     bids_path = _bids_path.copy().update(root=bids_root)
     bids_path_ = write_raw_bids(raw=raw, bids_path=bids_path,
                                 events_data=events_fname,

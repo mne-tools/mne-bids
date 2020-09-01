@@ -851,9 +851,9 @@ def write_raw_bids(raw, bids_path, events_data=None,
             participants.tsv
             scans.tsv
 
-        Note that ``bids_path`` will be modified in place as well as returned
-        and that the datatype ``'meg'`` is automatically inferred from the raw
-        object and extension ``'.fif'`` is copied from ``raw.filenames``.
+        Note that the datatype is automatically inferred from the raw
+        object as well as the extension. Data with meg and other
+        electrophysiology data in the same file will be stored as meg.
     events_data : str | pathlib.Path | array | None
         The events file. If a string or a Path object, specifies the path of
         the events file. If an array, the MNE events array
@@ -966,6 +966,7 @@ def write_raw_bids(raw, bids_path, events_data=None,
 
     datatype = _handle_datatype(raw)
 
+    bids_path = bids_path.copy()
     bids_path = bids_path.update(
         datatype=datatype, suffix=datatype, extension=ext)
 
@@ -1003,7 +1004,7 @@ def write_raw_bids(raw, bids_path, events_data=None,
         root=bids_path.root, suffix='scans', extension='.tsv')
 
     # create *_coordsystem.json
-    coordsystem_path = scans_path.copy().update(
+    coordsystem_path = bids_path.copy().update(
         acquisition=bids_path.acquisition, space=bids_path.space,
         datatype=bids_path.datatype, suffix='coordsystem', extension='.json')
 
@@ -1019,8 +1020,8 @@ def write_raw_bids(raw, bids_path, events_data=None,
 
     sidecar_path = bids_path.copy().update(suffix=bids_path.datatype,
                                            extension='.json')
-    events_path = sidecar_path.copy().update(suffix='events', extension='.tsv')
-    channels_path = sidecar_path.copy().update(
+    events_path = bids_path.copy().update(suffix='events', extension='.tsv')
+    channels_path = bids_path.copy().update(
         suffix='channels', extension='.tsv')
 
     if ext not in ['.fif', '.ds', '.vhdr', '.edf', '.bdf', '.set', '.con',
@@ -1104,13 +1105,13 @@ def write_raw_bids(raw, bids_path, events_data=None,
                          f"{ALLOWED_DATATYPE_EXTENSIONS['meg']}")
 
     if not convert and verbose:
-        print('Copying data files to %s' % op.splitext(bids_path.fpath)[0])
+        print('Copying data files to %s' % bids_path.fpath.name)
 
     # File saving branching logic
     if convert:
         if bids_path.datatype == 'meg':
             _write_raw_fif(
-                raw, (op.join(data_path, op.basename(bids_path.fpath))
+                raw, (data_path / bids_path.fpath.name
                       if ext == '.pdf' else bids_path.fpath))
         else:
             if verbose:
