@@ -387,7 +387,7 @@ class BIDSPath(object):
                     _get_matching_bidspaths_from_filesystem(self)
 
                 # FIXME This will break
-                # FIXME e.g. with FIFF data split across multiple FIXME files.
+                # FIXME e.g. with FIFF data split across multiple files.
                 # if extension is not specified and no unique file path
                 # return filepath of the actual dataset for MEG/EEG/iEEG data
                 if self.suffix is None or self.suffix in ALLOWED_DATATYPES:
