@@ -212,6 +212,8 @@ class BIDSPath(object):
         The basename of the file path. Similar to `os.path.basename(fpath)`.
     root : str
         The root of the BIDS path.
+    directory : pathlib.Path
+        The directory path.
     fpath : str
         The full file path.
     check : bool
@@ -251,6 +253,8 @@ class BIDSPath(object):
     sub-test2_ses-one_task-mytask_ieeg.edf
     >>> print(new_bids_path)
     /bids_dataset/sub-test2/ses-one/ieeg/sub-test2_ses-one_task-mytask_ieeg.edf
+    >>> print(new_bids_path.directory)
+    /bids_dataset/sub-test2/ses-one/ieeg/
     """
 
     def __init__(self, subject=None, session=None,
@@ -315,7 +319,11 @@ class BIDSPath(object):
 
         If ``subject``, ``session`` and ``datatype`` are
         set then they will be used to construct the
-        directory.
+        directory. For example if ``subject='01'``,
+        ``session='02'`` and ``datatype='ieeg'``, then
+        directory would be::
+
+            <root>/sub-01/ses-02/ieeg
 
         Returns
         -------
@@ -324,15 +332,12 @@ class BIDSPath(object):
         """
         # create the data path based on entities available
         # bids_root, subject, session and datatype
-        if self.root is not None:
-            data_path = self.root
-        else:
-            data_path = ''
+        data_path = '' if self.root is None else self.root
         if self.subject is not None:
             data_path = op.join(data_path, f'sub-{self.subject}')
         if self.session is not None:
             data_path = op.join(data_path, f'ses-{self.session}')
-        # dattype will allow 'meg', 'eeg', 'ieeg', 'anat'
+        # datatype will allow 'meg', 'eeg', 'ieeg', 'anat'
         if self.datatype is not None:
             data_path = op.join(data_path, self.datatype)
         return Path(data_path)
@@ -404,16 +409,8 @@ class BIDSPath(object):
         bids_fpath : pathlib.Path
             Either the relative, or full path to the dataset.
         """
-        # create the data path based on entities available
-        # bids_root, subject, session and suffix
-        data_path = '' if self.root is None else self.root
-        if self.subject is not None:
-            data_path = op.join(data_path, f'sub-{self.subject}')
-        if self.session is not None:
-            data_path = op.join(data_path, f'ses-{self.session}')
-        # file-suffix will allow 'meg', 'eeg', 'ieeg', 'anat'
-        if self.datatype is not None:
-            data_path = op.join(data_path, self.datatype)
+        # get the inner-most BIDS directory for this file path
+        data_path = self.directory
 
         # account for MEG data that are directory-based
         # else, all other file paths attempt to match
