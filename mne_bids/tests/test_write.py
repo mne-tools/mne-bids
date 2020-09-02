@@ -1113,7 +1113,7 @@ def test_set(_bids_validate):
     # is broken for earlier versions
     events_tsv_fname = op.join(bids_root, 'sub-' + subject_id,
                                'ses-' + session_id, 'eeg',
-                               str(bids_path.basename) + '_events.tsv')
+                               bids_path.basename + '_events.tsv')
     if check_version('mne', '0.18'):
         assert op.exists(events_tsv_fname)
 
@@ -1400,16 +1400,16 @@ def test_write_raw_pathlike():
     raw = _read_raw_fif(raw_fname)
 
     bids_root = Path(_TempDir())
-    events_fname = (Path(data_path) / 'MEG' / 'sample' /
-                    'sample_audvis_trunc_raw-eve.fif')
+    events_fname = \
+        Path(data_path) / 'MEG' / 'sample' / 'sample_audvis_trunc_raw-eve.fif'
     bids_path = _bids_path.copy().update(root=bids_root)
-    bids_root_ = write_raw_bids(raw=raw, bids_path=bids_path,
+    bids_path_ = write_raw_bids(raw=raw, bids_path=bids_path,
                                 events_data=events_fname,
                                 event_id=event_id, overwrite=False)
 
     # write_raw_bids() should return a string.
-    assert isinstance(bids_root_, str)
-    assert bids_root_ == str(bids_root)
+    assert isinstance(bids_path_, BIDSPath)
+    assert bids_path_.root == str(bids_root)
 
 
 def test_write_raw_no_dig():
@@ -1419,15 +1419,17 @@ def test_write_raw_no_dig():
     raw = _read_raw_fif(raw_fname)
     bids_root = Path(_TempDir())
     bids_path = _bids_path.copy().update(root=bids_root)
-    bids_root_ = write_raw_bids(raw=raw, bids_path=bids_path,
+    bids_path_ = write_raw_bids(raw=raw, bids_path=bids_path,
                                 overwrite=True)
-    assert bids_root_ == str(bids_root)
+    assert bids_path_.root == str(bids_root)
     raw.info['dig'] = None
     raw.save(str(bids_root / 'tmp_raw.fif'))
     raw = _read_raw_fif(bids_root / 'tmp_raw.fif')
-    bids_root_ = write_raw_bids(raw=raw, bids_path=bids_path,
+    bids_path_ = write_raw_bids(raw=raw, bids_path=bids_path,
                                 overwrite=True)
-    assert bids_root_ == str(bids_root)
+    assert bids_path_.root == str(bids_root)
+    assert bids_path_.suffix == 'meg'
+    assert bids_path_.extension == '.fif'
 
 
 @requires_nibabel()

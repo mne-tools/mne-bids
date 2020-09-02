@@ -402,7 +402,7 @@ def _scans_tsv(raw, raw_fname, fname, overwrite=False, verbose=True):
         acq_time = meas_date.strftime('%Y-%m-%dT%H:%M:%S')
 
     data = OrderedDict([('filename', ['%s' % raw_fname.replace(os.sep, '/')]),
-                       ('acq_time', [acq_time])])
+                        ('acq_time', [acq_time])])
 
     if os.path.exists(fname):
         orig_data = _from_tsv(fname)
@@ -680,7 +680,7 @@ def _write_raw_brainvision(raw, bids_fname, events):
 
     """
     if not check_version('pybv', '0.2'):
-        raise ImportError('pybv >=0.2.0 is required for converting ' +
+        raise ImportError('pybv >=0.2.0 is required for converting '
                           'file to Brainvision format')
     from pybv import write_brainvision
     # Subtract raw.first_samp because brainvision marks events starting from
@@ -851,8 +851,9 @@ def write_raw_bids(raw, bids_path, events_data=None,
             participants.tsv
             scans.tsv
 
-        Note that the datatype ``'meg'`` is automatically inferred from the raw
-        object and extension ``'.fif'`` is copied from ``raw.filenames``.
+        Note that the data type is automatically inferred from the raw
+        object, as well as the extension. Data with MEG and other
+        electrophysiology data in the same file will be stored as ``'meg'``.
     events_data : str | pathlib.Path | array | None
         The events file. If a string or a Path object, specifies the path of
         the events file. If an array, the MNE events array
@@ -899,8 +900,9 @@ def write_raw_bids(raw, bids_path, events_data=None,
 
     Returns
     -------
-    bids_root : str
-        The path of the root of the BIDS-compatible folder.
+    bids_path : BIDSPath
+        The modified path to the file written, including the root of the
+        BIDS-compatible folder in ``bids_path.root``.
 
     Notes
     -----
@@ -937,9 +939,8 @@ def write_raw_bids(raw, bids_path, events_data=None,
         raise RuntimeError('"bids_path" must be a BIDSPath object. Please '
                            'instantiate using mne_bids.BIDSPath().')
 
-    # check root available
-    bids_root = bids_path.root
-    if bids_root is None:
+    # Check if the root is available
+    if bids_path.root is None:
         raise ValueError('The root of the "bids_path" must be set. '
                          'Please use `bids_path.update(root="<root>")` '
                          'to set the root of the BIDS folder to read.')
@@ -963,20 +964,16 @@ def write_raw_bids(raw, bids_path, events_data=None,
                        "raw.times should not have changed since reading"
                        " in from the file. It may have been cropped.")
 
-    bids_path = bids_path.copy()
-    subject_id, session_id = bids_path.subject, bids_path.session
-    task, run = bids_path.task, bids_path.run
-    acquisition, space = bids_path.acquisition, bids_path.space
     datatype = _handle_datatype(raw)
 
-    bids_fname = bids_path.copy().update(
-        datatype=datatype, suffix=datatype, extension=ext,
-        root=bids_root)
+    bids_path = bids_path.copy()
+    bids_path = bids_path.update(
+        datatype=datatype, suffix=datatype, extension=ext)
 
     # check whether the info provided indicates that the data is emptyroom
     # data
     emptyroom = False
-    if subject_id == 'emptyroom' and task == 'noise':
+    if bids_path.subject == 'emptyroom' and bids_path.task == 'noise':
         emptyroom = True
         # check the session date provided is consistent with the value in raw
         meas_date = raw.info.get('meas_date', None)
@@ -985,13 +982,14 @@ def write_raw_bids(raw, bids_path, events_data=None,
                 meas_date = datetime.fromtimestamp(meas_date[0],
                                                    tz=timezone.utc)
             er_date = meas_date.strftime('%Y%m%d')
-            if er_date != session_id:
+            if er_date != bids_path.session:
                 raise ValueError("Date provided for session doesn't match "
                                  "session date.")
 
-    data_path = make_bids_folders(subject=subject_id, session=session_id,
-                                  datatype=datatype, bids_root=bids_root,
-                                  overwrite=False, verbose=verbose)
+    data_path = make_bids_folders(
+        subject=bids_path.subject, session=bids_path.session,
+        datatype=bids_path.datatype, bids_root=bids_path.root,
+        overwrite=False, verbose=verbose)
 
     # In case of an "emptyroom" subject, BIDSPath() will raise
     # an exception if we don't provide a valid task ("noise"). Now,
@@ -1001,39 +999,30 @@ def write_raw_bids(raw, bids_path, events_data=None,
     # as it does not make any advanced check.
 
     # create *_scans.tsv
-    bids_path = BIDSPath(subject=subject_id, session=session_id,
-                         root=bids_root,
-                         suffix='scans', extension='.tsv')
-    scans_fname = bids_path.fpath
+    session_path = BIDSPath(subject=bids_path.subject,
+                            session=bids_path.session, root=bids_path.root)
+    scans_path = session_path.copy().update(suffix='scans', extension='.tsv')
 
     # create *_coordsystem.json
-    bids_path.update(acquisition=acquisition, space=space,
-                     datatype=datatype,
-                     suffix='coordsystem', extension='.json')
-    coordsystem_fname = bids_path.fpath
+    coordsystem_path = session_path.copy().update(
+        acquisition=bids_path.acquisition, space=bids_path.space,
+        datatype=bids_path.datatype, suffix='coordsystem', extension='.json')
 
     # create *_electrodes.tsv
-    bids_path.update(suffix='electrodes', extension='.tsv')
-    electrodes_fname = bids_path.fpath
+    electrodes_path = bids_path.copy().update(
+        suffix='electrodes', extension='.tsv')
 
     # For the remaining files, we can use BIDSPath to alter.
-    readme_fname = op.join(bids_root, 'README')
-    participants_tsv_fname = op.join(bids_root, 'participants.tsv')
+    readme_fname = op.join(bids_path.root, 'README')
+    participants_tsv_fname = op.join(bids_path.root, 'participants.tsv')
     participants_json_fname = participants_tsv_fname.replace('tsv',
                                                              'json')
 
-    sidecar_path = bids_fname.copy().update(suffix=datatype,
-                                            extension='.json')
-    sidecar_fname = sidecar_path.fpath
-    sidecar_path.update(suffix='events', extension='.tsv')
-    events_fname = sidecar_path.fpath
-    sidecar_path.update(suffix='channels', extension='.tsv')
-    channels_fname = sidecar_path.fpath
-
-    if ext not in ['.fif', '.ds', '.vhdr', '.edf', '.bdf', '.set', '.con',
-                   '.sqd']:
-        bids_raw_folder = str(bids_fname).split(".")[0]
-        bids_fname.update(root=bids_raw_folder)
+    sidecar_path = bids_path.copy().update(suffix=bids_path.datatype,
+                                           extension='.json')
+    events_path = bids_path.copy().update(suffix='events', extension='.tsv')
+    channels_path = bids_path.copy().update(
+        suffix='channels', extension='.tsv')
 
     # Anonymize
     convert = False
@@ -1041,16 +1030,16 @@ def write_raw_bids(raw, bids_path, events_data=None,
         daysback, keep_his = _check_anonymize(anonymize, raw, ext)
         raw.anonymize(daysback=daysback, keep_his=keep_his, verbose=verbose)
 
-        if datatype == 'meg' and ext != '.fif':
+        if bids_path.datatype == 'meg' and ext != '.fif':
             if verbose:
                 warn('Converting to FIF for anonymization')
             convert = True
-            bids_fname.update(extension='.fif')
-        elif datatype in ['eeg', 'ieeg'] and ext != '.vhdr':
+            bids_path.update(extension='.fif')
+        elif bids_path.datatype in ['eeg', 'ieeg'] and ext != '.vhdr':
             if verbose:
                 warn('Converting to BV for anonymization')
             convert = True
-            bids_fname.update(extension='.vhdr')
+            bids_path.update(extension='.vhdr')
 
     # Read in Raw object and extract metadata from Raw object if needed
     orient = ORIENTATION.get(ext, 'n/a')
@@ -1058,100 +1047,104 @@ def write_raw_bids(raw, bids_path, events_data=None,
     manufacturer = MANUFACTURERS.get(ext, 'n/a')
 
     # save all participants meta data and readme file
-    _readme(datatype, readme_fname, overwrite, verbose)
+    _readme(bids_path.datatype, readme_fname, overwrite, verbose)
 
     # save all participants meta data
-    _participants_tsv(raw, subject_id, participants_tsv_fname, overwrite,
-                      verbose)
+    _participants_tsv(raw, bids_path.subject, participants_tsv_fname,
+                      overwrite, verbose)
     _participants_json(participants_json_fname, True, verbose)
 
     # for MEG, we only write coordinate system
-    if datatype == 'meg' and not emptyroom:
-        _coordsystem_json(raw, unit, orient,
-                          manufacturer, coordsystem_fname, datatype,
+    if bids_path.datatype == 'meg' and not emptyroom:
+        _coordsystem_json(raw, unit, orient, manufacturer,
+                          coordsystem_path.fpath, bids_path.datatype,
                           overwrite, verbose)
-    elif datatype in ['eeg', 'ieeg']:
+    elif bids_path.datatype in ['eeg', 'ieeg']:
         # We only write electrodes.tsv and accompanying coordsystem.json
         # if we have an available DigMontage
         if raw.info['dig'] is not None and raw.info['dig']:
-            _write_dig_bids(electrodes_fname, coordsystem_fname, bids_root,
-                            raw, datatype, overwrite, verbose)
+            _write_dig_bids(electrodes_path.fpath, coordsystem_path.fpath,
+                            bids_path.root, raw, bids_path.datatype,
+                            overwrite, verbose)
     else:
-        logger.warning(f'Writing of electrodes.tsv '
-                       f'is not supported for datatype "{datatype}". '
-                       f'Skipping ...')
+        logger.warning(f'Writing of electrodes.tsv is not supported '
+                       f'for data type "{bids_path.datatype}". Skipping ...')
 
     events, event_id = _read_events(events_data, event_id, raw, ext,
                                     verbose=verbose)
     if events is not None and len(events) > 0 and not emptyroom:
-        _events_tsv(events, raw, events_fname, event_id, overwrite, verbose)
+        _events_tsv(events, raw, events_path.fpath, event_id,
+                    overwrite, verbose)
 
-    make_dataset_description(bids_root, name=" ", overwrite=overwrite,
+    make_dataset_description(bids_path.root, name=" ", overwrite=overwrite,
                              verbose=verbose)
 
-    _sidecar_json(raw, task, manufacturer, sidecar_fname, datatype, overwrite,
-                  verbose)
-    _channels_tsv(raw, channels_fname, overwrite, verbose)
+    _sidecar_json(raw, bids_path.task, manufacturer, sidecar_path.fpath,
+                  bids_path.datatype, overwrite, verbose)
+    _channels_tsv(raw, channels_path.fpath, overwrite, verbose)
 
     # create parent directories if needed
     _mkdir_p(os.path.dirname(data_path))
 
-    if os.path.exists(bids_fname) and not overwrite:
-        raise FileExistsError(f'"{bids_fname}" already exists. '  # noqa: F821
-                              f'Please set overwrite to True.')
+    if os.path.exists(bids_path.fpath) and not overwrite:
+        raise FileExistsError(
+            f'"{bids_path.fpath}" already exists. '  # noqa: F821
+            'Please set overwrite to True.')
 
     # If not already converting for anonymization, we may still need to do it
     # if current format not BIDS compliant
     if not convert:
-        convert = ext not in ALLOWED_DATATYPE_EXTENSIONS[datatype]
+        convert = ext not in ALLOWED_DATATYPE_EXTENSIONS[bids_path.datatype]
 
-    if datatype == 'meg' and convert and not anonymize:
+    if bids_path.datatype == 'meg' and convert and not anonymize:
         raise ValueError(f"Got file extension {convert} for MEG data, "
                          f"expected one of "
                          f"{ALLOWED_DATATYPE_EXTENSIONS['meg']}")
 
     if not convert and verbose:
-        print('Copying data files to %s' % op.splitext(bids_fname)[0])
+        print('Copying data files to %s' % bids_path.fpath.name)
 
     # File saving branching logic
     if convert:
-        if datatype == 'meg':
-            if ext == '.pdf':
-                bids_fname = op.join(data_path, op.basename(bids_fname))
-            _write_raw_fif(raw, bids_fname)
+        if bids_path.datatype == 'meg':
+            _write_raw_fif(
+                raw, (op.join(data_path, bids_path.basename)
+                      if ext == '.pdf' else bids_path.fpath))
         else:
             if verbose:
                 warn('Converting data files to BrainVision format')
-            bids_fname.update(suffix=datatype, extension='.vhdr')
-            _write_raw_brainvision(raw, bids_fname, events)
+            bids_path.update(suffix=bids_path.datatype, extension='.vhdr')
+            _write_raw_brainvision(raw, bids_path.fpath, events)
     elif ext == '.fif':
-        _write_raw_fif(raw, bids_fname)
+        _write_raw_fif(raw, bids_path)
     # CTF data is saved and renamed in a directory
     elif ext == '.ds':
-        copyfile_ctf(raw_fname, bids_fname)
+        copyfile_ctf(raw_fname, bids_path)
     # BrainVision is multifile, copy over all of them and fix pointers
     elif ext == '.vhdr':
-        copyfile_brainvision(raw_fname, bids_fname, anonymize=anonymize)
+        copyfile_brainvision(raw_fname, bids_path, anonymize=anonymize)
     # EEGLAB .set might be accompanied by a .fdt - find out and copy it too
     elif ext == '.set':
-        copyfile_eeglab(raw_fname, bids_fname)
+        copyfile_eeglab(raw_fname, bids_path)
     elif ext == '.pdf':
-        bids_path = op.join(data_path, bids_raw_folder)
-        _mkdir_p(bids_path)
-        copyfile_bti(raw_orig, bids_path)
+        raw_dir = op.join(data_path, op.splitext(bids_path.basename)[0])
+        _mkdir_p(raw_dir)
+        copyfile_bti(raw_orig, raw_dir)
     elif ext in ['.con', '.sqd']:
-        copyfile_kit(raw_fname, bids_fname, subject_id, session_id,
-                     task, run, raw._init_kwargs)
+        copyfile_kit(raw_fname, bids_path.fpath, bids_path.subject,
+                     bids_path.session, bids_path.task, bids_path.run,
+                     raw._init_kwargs)
     else:
-        sh.copyfile(raw_fname, bids_fname)
+        sh.copyfile(raw_fname, bids_path)
 
     # write to the scans.tsv file the output file written
-    scan_relative_fpath = op.join(datatype, op.basename(bids_fname))
-    _scans_tsv(raw, scan_relative_fpath, scans_fname, overwrite, verbose)
+    scan_relative_fpath = op.join(bids_path.datatype,
+                                  op.basename(bids_path.fpath))
+    _scans_tsv(raw, scan_relative_fpath, scans_path.fpath, overwrite, verbose)
     if verbose:
-        print(f'Wrote {scans_fname} entry with {scan_relative_fpath}.')
+        print(f'Wrote {scans_path.fpath} entry with {scan_relative_fpath}.')
 
-    return bids_root
+    return bids_path
 
 
 def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
@@ -1276,7 +1269,7 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
 
         if landmarks is not None:
             if raw is not None:
-                raise ValueError('Please use either `landmarks` or `raw`, ' +
+                raise ValueError('Please use either `landmarks` or `raw`, '
                                  'which digitization to use is ambiguous.')
             if isinstance(landmarks, str):
                 landmarks, coord_frame = read_fiducials(landmarks)
@@ -1289,7 +1282,7 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
                                         coords_dict['rpa']))
             if coord_frame == FIFF.FIFFV_COORD_HEAD:
                 if trans is None:
-                    raise ValueError('Head space landmarks provided, ' +
+                    raise ValueError('Head space landmarks provided, '
                                      '`trans` required')
                 mri_landmarks = _meg_landmarks_to_mri_landmarks(
                     landmarks, trans)
@@ -1298,22 +1291,22 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
             elif coord_frame in (FIFF.FIFFV_MNE_COORD_MRI_VOXEL,
                                  FIFF.FIFFV_COORD_MRI):
                 if trans is not None:
-                    raise ValueError('`trans` was provided but `landmark` ' +
-                                     'data is in mri space. Please use ' +
+                    raise ValueError('`trans` was provided but `landmark` '
+                                     'data is in mri space. Please use '
                                      'only one of these.')
                 if coord_frame == FIFF.FIFFV_COORD_MRI:
                     landmarks = _mri_landmarks_to_mri_voxels(landmarks * 1e3,
                                                              t1_mgh)
                 mri_landmarks = landmarks
             else:
-                raise ValueError('Coordinate frame not recognized, ' +
+                raise ValueError('Coordinate frame not recognized, '
                                  f'found {coord_frame}')
         elif trans is not None:
             # get trans and ensure it is from head to MRI
             trans, _ = _get_trans(trans, fro='head', to='mri')
 
             if not isinstance(raw, BaseRaw):
-                raise ValueError('`raw` must be specified if `trans` ' +
+                raise ValueError('`raw` must be specified if `trans` '
                                  'is not None')
 
             # Prepare to write the sidecar JSON
