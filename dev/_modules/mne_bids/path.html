@@ -471,10 +471,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># create the data path based on entities available</span>
         <span class="c1"># bids_root, subject, session and suffix</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">data_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">data_path</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+        <span class="n">data_path</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">subject</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">data_path</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;sub-</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">subject</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -501,10 +498,10 @@
                     <span class="n">_get_matching_bidspaths_from_filesystem</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
                 <span class="c1"># FIXME This will break</span>
-                <span class="c1"># FIXME e.g. with FIFF data split across multiple FIXME files.</span>
+                <span class="c1"># FIXME e.g. with FIFF data split across multiple files.</span>
                 <span class="c1"># if extension is not specified and no unique file path</span>
                 <span class="c1"># return filepath of the actual dataset for MEG/EEG/iEEG data</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">suffix</span> <span class="ow">in</span> <span class="n">ALLOWED_DATATYPES</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">suffix</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">suffix</span> <span class="ow">in</span> <span class="n">ALLOWED_DATATYPES</span><span class="p">:</span>
                     <span class="c1"># now only use valid datatype extension</span>
                     <span class="n">valid_exts</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">ALLOWED_DATATYPE_EXTENSIONS</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="p">[])</span>
                     <span class="n">matching_paths</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">matching_paths</span>
@@ -1383,7 +1380,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-09-01.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-09-02.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
     </p>
   </div>

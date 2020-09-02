@@ -161,8 +161,9 @@ Example:</p>
 <span class="n">scans</span><span class="o">.</span><span class="n">tsv</span>
 </pre></div>
 </div>
-<p>Note that the datatype <code class="docutils literal notranslate"><span class="pre">'meg'</span></code> is automatically inferred from the raw
-object and extension <code class="docutils literal notranslate"><span class="pre">'.fif'</span></code> is copied from <code class="docutils literal notranslate"><span class="pre">raw.filenames</span></code>.</p>
+<p>Note that the data type is automatically inferred from the raw
+object, as well as the extension. Data with MEG and other
+electrophysiology data in the same file will be stored as <code class="docutils literal notranslate"><span class="pre">'meg'</span></code>.</p>
 </dd>
 <dt><strong>events_data</strong><span class="classifier">str | pathlib.Path | array | None</span></dt><dd><p>The events file. If a string or a Path object, specifies the path of
 the events file. If an array, the MNE events array
@@ -209,7 +210,8 @@ no content will be printed.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt><strong>bids_root</strong><span class="classifier">str</span></dt><dd><p>The path of the root of the BIDS-compatible folder.</p>
+<dt><strong>bids_path</strong><span class="classifier">BIDSPath</span></dt><dd><p>The modified path to the file written, including the root of the
+BIDS-compatible folder in <code class="docutils literal notranslate"><span class="pre">bids_path.root</span></code>.</p>
 </dd>
 </dl>
 </dd>
@@ -271,7 +273,7 @@ computation of each participant’s age correctly.</p>
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-09-01.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-09-02.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
     </p>
   </div>
