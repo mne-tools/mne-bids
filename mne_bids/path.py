@@ -392,9 +392,8 @@ class BIDSPath(object):
         bids_path : pathlib.Path
             The created directory.
         """
-        bids_path = Path(self.directory)
-        bids_path.mkdir(parents=parents, exist_ok=exist_ok)
-        return bids_path
+        self.directory.mkdir(parents=parents, exist_ok=exist_ok)
+        return self
 
     @property
     def fpath(self):
