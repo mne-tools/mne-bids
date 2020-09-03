@@ -375,14 +375,11 @@ class BIDSPath(object):
         """
         return deepcopy(self)
 
-    def mkdir(self, parents=True, exist_ok=True):
+    def mkdir(self, exist_ok=True):
         """Create the BIDS path directory.
 
         Parameters
         ----------
-        parents : bool
-            Whether or not to create parent directories
-             (default is True).
         exist_ok : bool
             Whether it is okay that the directory
             already exists (default is True).
@@ -392,9 +389,8 @@ class BIDSPath(object):
         bids_path : pathlib.Path
             The created directory.
         """
-        bids_path = Path(self.directory)
-        bids_path.mkdir(parents=parents, exist_ok=exist_ok)
-        return bids_path
+        self.directory.mkdir(parents=True, exist_ok=exist_ok)
+        return self
 
     @property
     def fpath(self):

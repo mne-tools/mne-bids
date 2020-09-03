@@ -340,7 +340,7 @@ def read_raw_bids(bids_path, extra_params=None, verbose=True):
                                    sub=sub, ses=ses)
     bids_path.update(datatype=datatype, suffix=datatype)
 
-    data_dir = bids_path.mkdir()
+    data_dir = bids_path.mkdir().directory
     bids_fname = op.basename(bids_path.fpath)
 
     if op.splitext(bids_fname)[1] == '.pdf':
