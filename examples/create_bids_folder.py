@@ -48,11 +48,5 @@ print(bids_path)
 # You can also use MNE-BIDS to create folder hierarchies.
 
 bids_path = BIDSPath(subject='01', session='mysession',
-                     datatype='meg', root='path/to/project')
+                     datatype='meg', root='path/to/project').mkdir()
 print(bids_path.directory)
-
-# Note that passing `make_dir=True` will create the folder hierarchy. If that
-# path already exists, you can make use of the `overwrite` parameter.
-# If `overwrite=False` then no existing folders will be removed, however
-# if `overwrite=True` then any existing folders at the session level
-# or lower will be removed, including any contained data.

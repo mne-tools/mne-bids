@@ -145,21 +145,21 @@ def test_make_folders():
     bids_root = _TempDir()
     bids_path = BIDSPath(subject='hi', session='foo',
                          datatype='eeg', root=bids_root)
-    bids_path.mkdir()
+    bids_path.mkdir().directory
     assert op.isdir(op.join(bids_root, 'sub-hi', 'ses-foo', 'eeg'))
 
     # If we remove a kwarg the folder shouldn't be created
     bids_root = _TempDir()
     bids_path = BIDSPath(subject='hi', datatype='eeg',
                          root=bids_root)
-    bids_path.mkdir()
+    bids_path.mkdir().directory
     assert op.isdir(op.join(bids_root, 'sub-hi', 'eeg'))
 
     # Check if a pathlib.Path bids_root works.
     bids_root = Path(_TempDir())
     bids_path = BIDSPath(subject='hi', session='foo',
                          datatype='eeg', root=bids_root)
-    bids_path.mkdir()
+    bids_path.mkdir().directory
     assert op.isdir(op.join(bids_root, 'sub-hi', 'ses-foo', 'eeg'))
 
     # Check if bids_root=None creates folders in the current working directory
@@ -168,7 +168,7 @@ def test_make_folders():
     os.chdir(bids_root)
     bids_path = BIDSPath(subject='hi', session='foo',
                          datatype='eeg')
-    bids_path.mkdir()
+    bids_path.mkdir().directory
     assert op.isdir(op.join(os.getcwd(), 'sub-hi', 'ses-foo', 'eeg'))
     os.chdir(curr_dir)
 
@@ -661,7 +661,7 @@ def test_find_emptyroom_ties():
     session = '20010101'
     er_dir_path = BIDSPath(subject='emptyroom', session=session,
                            datatype='meg', root=bids_root)
-    er_dir = er_dir_path.mkdir()
+    er_dir = er_dir_path.mkdir().directory
 
     meas_date = (datetime
                  .strptime(session, '%Y%m%d')
@@ -708,7 +708,7 @@ def test_find_emptyroom_no_meas_date():
 
     er_dir_path = BIDSPath(subject='emptyroom', session=er_session,
                            datatype='meg', root=bids_root)
-    er_dir = er_dir_path.mkdir()
+    er_dir = er_dir_path.mkdir().directory
 
     er_bids_path = BIDSPath(subject='emptyroom', session=er_session,
                             task='noise', check=False)

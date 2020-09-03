@@ -816,7 +816,7 @@ def test_vhdr(_bids_validate):
     # create another bids folder with the overwrite command and check
     # no files are in the folder
     data_path = BIDSPath(subject=subject_id, datatype='eeg',
-                         root=bids_root).mkdir()
+                         root=bids_root).mkdir().directory
     assert len([f for f in os.listdir(data_path) if op.isfile(f)]) == 0
 
     # test anonymize and convert

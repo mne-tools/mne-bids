@@ -612,7 +612,7 @@ def test_bads_reading():
     bids_path.update(root=bids_root)
     data_path = BIDSPath(
         subject=subject_id, session=session_id, datatype='meg',
-        root=bids_root).mkdir()
+        root=bids_root).mkdir().directory
     ch_path = (bids_path.copy().update(suffix='channels',
                                        extension='.tsv'))
     channels_fname = op.join(data_path, ch_path.basename)

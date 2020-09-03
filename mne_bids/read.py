@@ -341,7 +341,7 @@ def read_raw_bids(bids_path, extra_params=None, verbose=True):
     bids_path.update(datatype=datatype, suffix=datatype)
 
     data_dir = bids_path.mkdir().directory
-    bids_fname = op.basename(bids_path.fpath)
+    bids_fname = bids_path.fpath.name
 
     if op.splitext(bids_fname)[1] == '.pdf':
         bids_raw_folder = op.join(bids_root, data_dir,

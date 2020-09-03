@@ -986,7 +986,7 @@ def write_raw_bids(raw, bids_path, events_data=None,
                 raise ValueError("Date provided for session doesn't match "
                                  "session date.")
 
-    data_path = bids_path.mkdir()
+    data_path = bids_path.mkdir().directory
 
     # In case of an "emptyroom" subject, BIDSPath() will raise
     # an exception if we don't provide a valid task ("noise"). Now,
@@ -1135,8 +1135,7 @@ def write_raw_bids(raw, bids_path, events_data=None,
         sh.copyfile(raw_fname, bids_path)
 
     # write to the scans.tsv file the output file written
-    scan_relative_fpath = op.join(bids_path.datatype,
-                                  op.basename(bids_path.fpath))
+    scan_relative_fpath = op.join(bids_path.datatype, bids_path.fpath.name)
     _scans_tsv(raw, scan_relative_fpath, scans_path.fpath, overwrite, verbose)
     if verbose:
         print(f'Wrote {scans_path.fpath} entry with {scan_relative_fpath}.')
