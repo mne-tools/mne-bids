@@ -42,7 +42,7 @@ from mne_bids.path import BIDSPath, _parse_ext, _mkdir_p, _path_to_str
 from mne_bids.copyfiles import (copyfile_brainvision, copyfile_eeglab,
                                 copyfile_ctf, copyfile_bti, copyfile_kit)
 from mne_bids.tsv_handler import (_from_tsv, _drop, _contains_row,
-                                  _combine_rows)
+                                  _combine_rows, _to_tsv)
 from mne_bids.read import _get_bads_from_tsv_data, _find_matching_sidecar
 
 from mne_bids.config import (ORIENTATION, UNITS, MANUFACTURERS,
@@ -1492,16 +1492,19 @@ def mark_bad_channels(ch_names, descriptions=None, *, bids_path,
     # XXX (How) will this handle split files?
     raw.save(raw.filenames[0], overwrite=True, verbose=False)
 
+
 def delete_matching_entities(root, subject=None, session=None, task=None,
                              acquisition=None, run=None, processing=None,
                              recording=None, space=None, split=None,
-                             suffix=None, extension=None, datatype=None,
-                             verbose=True):
-    """Safely delete a scan inside bids root.
+                             datatype=None, verbose=True):
+    """Safely delete a set of files inside BIDS dataset.
 
     Deleting a scan that conforms to the bids-validator, will
-    delete both the row in the `*scans.tsv` file, and also
+    delete both the row in the ``*scans.tsv`` file, and also
     the corresponding sidecar files and the data file itself.
+
+    Deleting all files of a subject will update the
+    ``*participants.tsv`` file.
 
     Parameters
     ----------
@@ -1526,16 +1529,6 @@ def delete_matching_entities(root, subject=None, session=None, task=None,
     split : int | None
         The split of the continuous recording file for ``.fif`` data.
         Corresponds to "split".
-    suffix : str | None
-        The filename suffix. This is the entity after the
-        last ``_`` before the extension. E.g., ``'channels'``.
-        The following filename suffix's are accepted:
-        'meg', 'markers', 'eeg', 'ieeg', 'T1w',
-        'participants', 'scans', 'electrodes', 'coordsystem',
-        'channels', 'events', 'headshape', 'digitizer',
-        'behav', 'phsyio', 'stim'
-    extension : str | None
-        The extension of the filename. E.g., ``'.json'``.
     datatype : str
         The "data type" of folder being created at the end of the folder
         hierarchy. E.g., ``'anat'``, ``'func'``, ``'eeg'``, ``'meg'``,
@@ -1547,45 +1540,49 @@ def delete_matching_entities(root, subject=None, session=None, task=None,
                          acquisition=acquisition, run=run,
                          processing=processing, recording=recording,
                          space=space, split=split,
-                         suffix=suffix, extension=extension,
                          root=root, datatype=datatype)
+    # bids_basename = bids_path.basename
 
-    if bids_basename.subject is None:
-        raise RuntimeError(f'Deleting a scan requires the bids_basename '
-                           f'to have at least subject defined. '
-                           f'You passed in {bids_basename}')
+    # get file paths to delete
+    paths_to_delete = bids_path.match()
 
-    scans_fpath = _find_matching_sidecar(bids_basename, bids_root,
-                                         suffix='scans.tsv',
-                                         allow_fail=False)
-    scans_tsv = _from_tsv(scans_fpath)
-    scans_fnames = scans_tsv['filename']
+    if verbose:
+        pretty_paths = '\n'.join(paths_to_delete)
+        print(f'Deleting the following files:\n '
+              f'{pretty_paths}')
 
-    # find the full filename to delete
-    matching_basenames = [fname for fname in scans_fnames
-                          if str(bids_basename) in fname]
-    if len(matching_basenames) > 1:
-        raise RuntimeError(f'Deleting scan requires a unique bids_basename '
-                           f'to parse in the scans.tsv file. '
-                           f'Found more than 1 ({matching_basenames})...')
-    elif len(matching_basenames) == 0:
-        raise RuntimeError(f'Trying to delete {bids_basename} '
-                           f'from scans.tsv, but no files were found...')
-    else:
-        bids_fname = matching_basenames[0]
+    # remove files one by one
+    for bids_path in paths_to_delete:
+        bids_path.fpath.unlink()
 
-    # delete the file and its sidecar files
-    parent_path = Path(op.dirname(scans_fpath))
-    scans_fpaths = parent_path.rglob(f'*{bids_basename}*')
-    for fpath in scans_fpaths:
-        os.remove(fpath)
+        # if a datatype is present, then check
+        # if a scan is deleted or not
+        datatype = bids_path.datatype
+        if datatype is not None:
+            # read in the corresponding scans file
+            scans_fpath = _find_matching_sidecar(bids_path,
+                                                 suffix='scans.tsv',
+                                                 allow_fail=False)
+            scans_tsv = _from_tsv(scans_fpath)
+            scans_fnames = scans_tsv['filename']
 
-    if [fpath for fpath in parent_path.rglob('*')] == []:
-        # remove the entire subject if there is nothing there
-        delete_participant(bids_basename.subject,
-                           bids_root=bids_root,
-                           verbose=verbose)
-    else:
-        # resave the scans.tsv file
-        scans_tsv = _drop(scans_tsv, bids_fname, 'filename')
-        _to_tsv(scans_tsv, scans_fpath)
+            # get the relative datatype of this bids file
+            bids_fname = op.join(datatype, bids_path.fpath.name)
+            if bids_fname in scans_fnames:
+                scans_tsv = _drop(scans_tsv, bids_fname, 'filename')
+                _to_tsv(scans_tsv, scans_fpath)
+
+    # check existence of files in the sub dir
+    subj_path = BIDSPath(root=root, subject=subject).directory
+    subj_files = [fpath for fpath in subj_path.rglob('*') if fpath.is_file()]
+    if len(subj_files) == 0:
+        # update the participants tsv
+        participants_tsv_fpath = op.join(root, 'participants.tsv')
+        participants_tsv = _from_tsv(participants_tsv_fpath)
+
+        # delete the subject data directory
+        sh.rmtree(subj_path)
+
+        # resave the participants.tsv file
+        participants_tsv = _drop(participants_tsv, subject, 'participant_id')
+        _to_tsv(participants_tsv, participants_tsv_fpath)

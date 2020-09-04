@@ -37,6 +37,7 @@ bids_path = BIDSPath(
     subject=subject_id, session=session_id, run=run, acquisition=acq,
     task=task)
 
+
 @pytest.fixture(scope='function')
 def return_bids_test_dir(tmpdir_factory):
     """Return path to a written test BIDS dir."""
@@ -60,6 +61,7 @@ def return_bids_test_dir(tmpdir_factory):
                        event_id=event_id, overwrite=True)
 
     return bids_root
+
 
 def test_get_ch_type_mapping():
     """Test getting a correct channel mapping."""
