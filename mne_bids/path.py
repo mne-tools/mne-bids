@@ -941,17 +941,18 @@ def get_datatypes(bids_root):
         `bids_root`.
 
     """
-    # Take all possible "modalities" from "entity" table
+    # Take all possible data types from "entity" table
     # (Appendix in BIDS spec)
+    # https://bids-specification.readthedocs.io/en/stable/99-appendices/04-entity-table.html  # noqa
     datatype_list = ('anat', 'func', 'dwi', 'fmap', 'beh',
                      'meg', 'eeg', 'ieeg')
-    modalities = list()
+    datatypes = list()
     for root, dirs, files in os.walk(bids_root):
         for dir in dirs:
-            if dir in datatype_list and dir not in modalities:
-                modalities.append(dir)
+            if dir in datatype_list and dir not in datatypes:
+                datatypes.append(dir)
 
-    return modalities
+    return datatypes
 
 
 def get_entity_vals(bids_root, entity_key, *, ignore_subjects='emptyroom',
