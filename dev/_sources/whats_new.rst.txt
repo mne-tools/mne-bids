@@ -81,6 +81,8 @@ API
 - :meth:`mne_bids.BIDSPath.match` allows to retrieve a list of :class:`mne_bids.BIDSPath` objects matching a specified set of entity values in the dataset, by `Richard Höchenberger`_ (`#507 <https://github.com/mne-tools/mne-bids/pull/507>`_)
 - ``mne_bids.get_matched_empty_room`` has been removed. Use :meth:`mne_bids.BIDSPath.find_empty_room` instead, by `Richard Höchenberger`_ (`#535 <https://github.com/mne-tools/mne-bids/pull/535>`_)
 - ``mne_bids.make_bids_folders`` has been removed. Use :meth:`mne_bids.BIDSPath.mkdir` instead, by `Adam Li`_ (`#543 <https://github.com/mne-tools/mne-bids/pull/543>`_)
+- Rename ``mne_bids.get_modalities`` to :func:`mne_bids.get_datatypes` for getting data types from a BIDS dataset, by `Alexandre Gramfort`_ (`#253 <https://github.com/mne-tools/mne-bids/pull/253>`_)
+
 
 .. _changes_0_4:
 
@@ -144,7 +146,7 @@ Version 0.3
 Changelog
 ~~~~~~~~~
 
-- New function :func:`mne_bids.get_modalities` for getting data types from a BIDS dataset, by `Stefan Appelhoff`_ (`#253 <https://github.com/mne-tools/mne-bids/pull/253>`_)
+- New function ``mne_bids.get_modalities`` for getting data types from a BIDS dataset, by `Stefan Appelhoff`_ (`#253 <https://github.com/mne-tools/mne-bids/pull/253>`_)
 - New function :func:`mne_bids.get_entity_vals` allows to get a list of instances of a certain entity in a BIDS directory, by `Mainak Jas`_ and `Stefan Appelhoff`_ (`#252 <https://github.com/mne-tools/mne-bids/pull/252>`_)
 - :func:`mne_bids.print_dir_tree` now accepts an argument :code:`max_depth` which can limit the depth until which the directory tree is printed, by `Stefan Appelhoff`_ (`#245 <https://github.com/mne-tools/mne-bids/pull/245>`_)
 - New command line function exposed :code:`cp` for renaming/copying files including automatic doc generation "CLI", by `Stefan Appelhoff`_ (`#225 <https://github.com/mne-tools/mne-bids/pull/225>`_)

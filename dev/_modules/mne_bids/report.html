@@ -124,7 +124,7 @@
 
 <span class="kn">from</span> <span class="nn">mne_bids.config</span> <span class="kn">import</span> <span class="n">DOI</span><span class="p">,</span> <span class="n">ALLOWED_DATATYPES</span>
 <span class="kn">from</span> <span class="nn">mne_bids.tsv_handler</span> <span class="kn">import</span> <span class="n">_from_tsv</span>
-<span class="kn">from</span> <span class="nn">mne_bids.path</span> <span class="kn">import</span> <span class="p">(</span><span class="n">get_modalities</span><span class="p">,</span> <span class="n">get_entity_vals</span><span class="p">,</span> <span class="n">BIDSPath</span><span class="p">,</span>
+<span class="kn">from</span> <span class="nn">mne_bids.path</span> <span class="kn">import</span> <span class="p">(</span><span class="n">get_datatypes</span><span class="p">,</span> <span class="n">get_entity_vals</span><span class="p">,</span> <span class="n">BIDSPath</span><span class="p">,</span>
                            <span class="n">_parse_ext</span><span class="p">,</span> <span class="n">_find_matching_sidecar</span><span class="p">,</span>
                            <span class="n">get_entities_from_fname</span><span class="p">)</span>
 
@@ -591,7 +591,7 @@
     <span class="c1"># high level summary</span>
     <span class="n">subjects</span> <span class="o">=</span> <span class="n">get_entity_vals</span><span class="p">(</span><span class="n">bids_root</span><span class="p">,</span> <span class="n">entity_key</span><span class="o">=</span><span class="s1">&#39;subject&#39;</span><span class="p">)</span>
     <span class="n">sessions</span> <span class="o">=</span> <span class="n">get_entity_vals</span><span class="p">(</span><span class="n">bids_root</span><span class="p">,</span> <span class="n">entity_key</span><span class="o">=</span><span class="s1">&#39;session&#39;</span><span class="p">)</span>
-    <span class="n">modalities</span> <span class="o">=</span> <span class="n">get_modalities</span><span class="p">(</span><span class="n">bids_root</span><span class="p">)</span>
+    <span class="n">modalities</span> <span class="o">=</span> <span class="n">get_datatypes</span><span class="p">(</span><span class="n">bids_root</span><span class="p">)</span>
 
     <span class="c1"># only summarize allowed modalities (MEG/EEG/iEEG) data</span>
     <span class="c1"># map them to a pretty looking string</span>
