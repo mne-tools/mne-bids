@@ -82,7 +82,7 @@ API
 - ``mne_bids.get_matched_empty_room`` has been removed. Use :meth:`mne_bids.BIDSPath.find_empty_room` instead, by `Richard Höchenberger`_ (`#535 <https://github.com/mne-tools/mne-bids/pull/535>`_)
 - ``mne_bids.make_bids_folders`` has been removed. Use :meth:`mne_bids.BIDSPath.mkdir` instead, by `Adam Li`_ (`#543 <https://github.com/mne-tools/mne-bids/pull/543>`_)
 - Rename ``mne_bids.get_modalities`` to :func:`mne_bids.get_datatypes` for getting data types from a BIDS dataset, by `Alexandre Gramfort`_ (`#253 <https://github.com/mne-tools/mne-bids/pull/253>`_)
-
+- The :func:`mne_bids.delete_participant` function will safely delete a participant from the BIDS dataset, by `Adam Li`_ (`#443 <https://github.com/mne-tools/mne-bids/pull/443>`_)
 
 .. _changes_0_4:
 

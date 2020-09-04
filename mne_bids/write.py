@@ -1491,3 +1491,101 @@ def mark_bad_channels(ch_names, descriptions=None, *, bids_path,
     raw.info['bads'] = bads
     # XXX (How) will this handle split files?
     raw.save(raw.filenames[0], overwrite=True, verbose=False)
+
+def delete_matching_entities(root, subject=None, session=None, task=None,
+                             acquisition=None, run=None, processing=None,
+                             recording=None, space=None, split=None,
+                             suffix=None, extension=None, datatype=None,
+                             verbose=True):
+    """Safely delete a scan inside bids root.
+
+    Deleting a scan that conforms to the bids-validator, will
+    delete both the row in the `*scans.tsv` file, and also
+    the corresponding sidecar files and the data file itself.
+
+    Parameters
+    ----------
+    root : str | pathlib.Path
+        Path to the root of the BIDS directory.
+    subject : str | None
+        The subject ID. Corresponds to "sub".
+    session : str | None
+        The session for a item. Corresponds to "ses".
+    task : str | None
+        The task for a item. Corresponds to "task".
+    acquisition: str | None
+        The acquisition parameters for the item. Corresponds to "acq".
+    run : int | None
+        The run number for this item. Corresponds to "run".
+    processing : str | None
+        The processing label for this item. Corresponds to "proc".
+    recording : str | None
+        The recording name for this item. Corresponds to "rec".
+    space : str | None
+        The coordinate space for an anatomical file. Corresponds to "space".
+    split : int | None
+        The split of the continuous recording file for ``.fif`` data.
+        Corresponds to "split".
+    suffix : str | None
+        The filename suffix. This is the entity after the
+        last ``_`` before the extension. E.g., ``'channels'``.
+        The following filename suffix's are accepted:
+        'meg', 'markers', 'eeg', 'ieeg', 'T1w',
+        'participants', 'scans', 'electrodes', 'coordsystem',
+        'channels', 'events', 'headshape', 'digitizer',
+        'behav', 'phsyio', 'stim'
+    extension : str | None
+        The extension of the filename. E.g., ``'.json'``.
+    datatype : str
+        The "data type" of folder being created at the end of the folder
+        hierarchy. E.g., ``'anat'``, ``'func'``, ``'eeg'``, ``'meg'``,
+        ``'ieeg'``, etc.
+    verbose : bool
+        If verbose is True, this will print which files were removed.
+    """
+    bids_path = BIDSPath(subject=subject, session=session, task=task,
+                         acquisition=acquisition, run=run,
+                         processing=processing, recording=recording,
+                         space=space, split=split,
+                         suffix=suffix, extension=extension,
+                         root=root, datatype=datatype)
+
+    if bids_basename.subject is None:
+        raise RuntimeError(f'Deleting a scan requires the bids_basename '
+                           f'to have at least subject defined. '
+                           f'You passed in {bids_basename}')
+
+    scans_fpath = _find_matching_sidecar(bids_basename, bids_root,
+                                         suffix='scans.tsv',
+                                         allow_fail=False)
+    scans_tsv = _from_tsv(scans_fpath)
+    scans_fnames = scans_tsv['filename']
+
+    # find the full filename to delete
+    matching_basenames = [fname for fname in scans_fnames
+                          if str(bids_basename) in fname]
+    if len(matching_basenames) > 1:
+        raise RuntimeError(f'Deleting scan requires a unique bids_basename '
+                           f'to parse in the scans.tsv file. '
+                           f'Found more than 1 ({matching_basenames})...')
+    elif len(matching_basenames) == 0:
+        raise RuntimeError(f'Trying to delete {bids_basename} '
+                           f'from scans.tsv, but no files were found...')
+    else:
+        bids_fname = matching_basenames[0]
+
+    # delete the file and its sidecar files
+    parent_path = Path(op.dirname(scans_fpath))
+    scans_fpaths = parent_path.rglob(f'*{bids_basename}*')
+    for fpath in scans_fpaths:
+        os.remove(fpath)
+
+    if [fpath for fpath in parent_path.rglob('*')] == []:
+        # remove the entire subject if there is nothing there
+        delete_participant(bids_basename.subject,
+                           bids_root=bids_root,
+                           verbose=verbose)
+    else:
+        # resave the scans.tsv file
+        scans_tsv = _drop(scans_tsv, bids_fname, 'filename')
+        _to_tsv(scans_tsv, scans_fpath)
