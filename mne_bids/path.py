@@ -315,7 +315,7 @@ class BIDSPath(object):
 
     @property
     def directory(self):
-        """The BIDS parent directory.
+        """Get the BIDS parent directory.
 
         If ``subject``, ``session`` and ``datatype`` are
         set then they will be used to construct the
