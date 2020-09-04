@@ -22,7 +22,6 @@ from mne_bids.tsv_handler import _from_tsv, _drop
 from mne_bids.config import (ALLOWED_DATATYPE_EXTENSIONS, reader,
                              _convert_hand_options, _convert_sex_options)
 from mne_bids.utils import _extract_landmarks, _get_ch_type_mapping
-from mne_bids import make_bids_folders
 from mne_bids.path import (BIDSPath, _parse_ext, _find_matching_sidecar,
                            _infer_datatype)
 
@@ -341,9 +340,8 @@ def read_raw_bids(bids_path, extra_params=None, verbose=True):
                                    sub=sub, ses=ses)
     bids_path.update(datatype=datatype, suffix=datatype)
 
-    data_dir = make_bids_folders(subject=sub, session=ses, datatype=datatype,
-                                 make_dir=False)
-    bids_fname = op.basename(bids_path.fpath)
+    data_dir = bids_path.mkdir().directory
+    bids_fname = bids_path.fpath.name
 
     if op.splitext(bids_fname)[1] == '.pdf':
         bids_raw_folder = op.join(bids_root, data_dir,
