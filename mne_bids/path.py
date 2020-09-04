@@ -926,7 +926,7 @@ def _get_bids_suffix_and_ext(str_suffix):
     return suffix, ext
 
 
-def get_modalities(bids_root):
+def get_datatypes(bids_root):
     """Get list of data types ("modalities") present in a BIDS dataset.
 
     Parameters
@@ -941,17 +941,18 @@ def get_modalities(bids_root):
         `bids_root`.
 
     """
-    # Take all possible "modalities" from "entity" table
+    # Take all possible data types from "entity" table
     # (Appendix in BIDS spec)
+    # https://bids-specification.readthedocs.io/en/stable/99-appendices/04-entity-table.html  # noqa
     datatype_list = ('anat', 'func', 'dwi', 'fmap', 'beh',
                      'meg', 'eeg', 'ieeg')
-    modalities = list()
+    datatypes = list()
     for root, dirs, files in os.walk(bids_root):
         for dir in dirs:
-            if dir in datatype_list and dir not in modalities:
-                modalities.append(dir)
+            if dir in datatype_list and dir not in datatypes:
+                datatypes.append(dir)
 
-    return modalities
+    return datatypes
 
 
 def get_entity_vals(bids_root, entity_key, *, ignore_subjects='emptyroom',
@@ -1144,7 +1145,7 @@ def _find_best_candidates(params, candidate_list):
     return best_candidates
 
 
-def _get_modalities_for_sub(*, bids_root, sub, ses=None):
+def _get_datatypes_for_sub(*, bids_root, sub, ses=None):
     """Retrieve data modalities for a specific subject and session."""
     subject_dir = op.join(bids_root, f'sub-{sub}')
     if ses is not None:
@@ -1152,7 +1153,7 @@ def _get_modalities_for_sub(*, bids_root, sub, ses=None):
 
     # TODO We do this to ensure we don't accidentally pick up any "spurious"
     # TODO sub-directories. But is that really necessary with valid BIDS data?
-    modalities_in_dataset = get_modalities(bids_root=bids_root)
+    modalities_in_dataset = get_datatypes(bids_root=bids_root)
     subdirs = [f.name for f in os.scandir(subject_dir) if f.is_dir()]
     available_modalities = [s for s in subdirs if s in modalities_in_dataset]
     return available_modalities
@@ -1162,8 +1163,8 @@ def _infer_datatype(*, bids_root, sub, ses):
     # Check which suffix is available for this particular
     # subject & session. If we get no or multiple hits, throw an error.
 
-    modalities = _get_modalities_for_sub(bids_root=bids_root, sub=sub,
-                                         ses=ses)
+    modalities = _get_datatypes_for_sub(bids_root=bids_root, sub=sub,
+                                        ses=ses)
 
     # We only want to handle electrophysiological data here.
     allowed_recording_modalities = ['meg', 'eeg', 'ieeg']

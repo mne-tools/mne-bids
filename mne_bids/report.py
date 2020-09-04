@@ -13,7 +13,7 @@ from mne.utils import warn
 
 from mne_bids.config import DOI, ALLOWED_DATATYPES
 from mne_bids.tsv_handler import _from_tsv
-from mne_bids.path import (get_modalities, get_entity_vals, BIDSPath,
+from mne_bids.path import (get_datatypes, get_entity_vals, BIDSPath,
                            _parse_ext, _find_matching_sidecar,
                            get_entities_from_fname)
 
@@ -480,7 +480,7 @@ def make_report(bids_root, session=None, verbose=True):
     # high level summary
     subjects = get_entity_vals(bids_root, entity_key='subject')
     sessions = get_entity_vals(bids_root, entity_key='session')
-    modalities = get_modalities(bids_root)
+    modalities = get_datatypes(bids_root)
 
     # only summarize allowed modalities (MEG/EEG/iEEG) data
     # map them to a pretty looking string

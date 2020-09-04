@@ -25,7 +25,7 @@ from mne.datasets import testing
 from mne.utils import _TempDir, check_version
 from mne.io import anonymize_info
 
-from mne_bids import (get_modalities, get_entity_vals, print_dir_tree,
+from mne_bids import (get_datatypes, get_entity_vals, print_dir_tree,
                       BIDSPath, write_raw_bids, read_raw_bids)
 from mne_bids.path import (_parse_ext, get_entities_from_fname,
                            _find_best_candidates, _find_matching_sidecar,
@@ -72,7 +72,7 @@ def return_bids_test_dir(tmpdir_factory):
 
 def test_get_keys(return_bids_test_dir):
     """Test getting the datatypes (=modalities) of a dir."""
-    modalities = get_modalities(return_bids_test_dir)
+    modalities = get_datatypes(return_bids_test_dir)
     assert modalities == ['meg']
 
 
