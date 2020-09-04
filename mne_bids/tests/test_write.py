@@ -89,6 +89,7 @@ _read_raw_edf = _wrap_read_raw(mne.io.read_raw_edf)
 _read_raw_bdf = _wrap_read_raw(mne.io.read_raw_bdf)
 _read_raw_eeglab = _wrap_read_raw(mne.io.read_raw_eeglab)
 _read_raw_brainvision = _wrap_read_raw(mne.io.read_raw_brainvision)
+_read_raw_persyst = _wrap_read_raw(mne.io.read_raw_persyst)
 
 
 # WINDOWS issues:
@@ -1611,3 +1612,92 @@ def test_mark_bad_channels(_bids_validate,
     assert 'status_description' in tsv_data
     for description in expected_descriptions:
         assert description in tsv_data['status_description']
+
+
+def test_persyst(_bids_validate):
+    """Test writing to BIDS from Persyst files."""
+    bids_root = _TempDir()
+    data_path = op.join(testing.data_path(), 'Persyst')
+    raw_fname = op.join(
+        data_path, 'sub-pt1_ses-02_task-monitor_acq-ecog_run-01_clip2.lay')
+
+    # read in the Raw file
+    raw = _read_raw_persyst(raw_fname)
+
+    # start by assuming datatype is eeg
+    bids_path = _bids_path.copy().update(root=bids_root, datatype='eeg')
+
+    # write from fresh start w/ overwrite
+    # new files written should pass validator
+    write_raw_bids(raw, bids_path, overwrite=True)
+    _bids_validate(bids_root)
+
+    # write it a second time
+    bids_fname = bids_path.copy().update(run=run2)
+    write_raw_bids(raw, bids_fname, overwrite=True)
+
+    # check that the scans list contains two scans
+    scans_tsv = BIDSPath(
+        subject=subject_id, session=session_id,
+        suffix='scans', extension='.tsv',
+        root=bids_root)
+    data = _from_tsv(scans_tsv)
+    assert len(list(data.values())[0]) == 2
+
+    # check that scans list is properly converted to brainvision
+    if check_version('mne', '0.20') and check_version('pybv', '0.2.0'):
+        write_raw_bids(raw, bids_path,
+                       anonymize=dict(daysback=33000),
+                       overwrite=True)
+        data = _from_tsv(scans_tsv)
+        bids_fname = bids_path.copy().update(suffix='eeg',
+                                             extension='.vhdr')
+        assert any([bids_fname.basename in fname
+                    for fname in data['filename']])
+
+    # Also cover iEEG
+    # We use the same data and pretend that eeg channels are ecog
+    ieeg_raw = raw.copy()
+
+    # convert channel types to ECoG and write BIDS
+    eeg_picks = mne.pick_types(ieeg_raw.info, eeg=True)
+    ieeg_raw.set_channel_types({raw.ch_names[i]: 'ecog'
+                                for i in eeg_picks})
+    bids_root = _TempDir()
+    bids_path.update(root=bids_root)
+    write_raw_bids(ieeg_raw, bids_path)
+    _bids_validate(bids_root)
+
+    # test writing electrode coordinates (.tsv)
+    # and coordinate system (.json)
+    ch_names = ieeg_raw.ch_names
+    elec_locs = np.random.random((len(ch_names), 3)).tolist()
+    ch_pos = dict(zip(ch_names, elec_locs))
+    ecog_montage = mne.channels.make_dig_montage(ch_pos=ch_pos,
+                                                 coord_frame='mri')
+    ieeg_raw.set_montage(ecog_montage)
+    bids_root = _TempDir()
+    bids_path.update(root=bids_root)
+    write_raw_bids(ieeg_raw, bids_path)
+    _bids_validate(bids_root)
+
+    # XXX: Should be improved with additional coordinate system descriptions
+    # iEEG montages written from mne-python end up as "Other"
+    bids_fname.update(root=bids_root)
+    electrodes_fname = _find_matching_sidecar(bids_fname,
+                                              suffix='electrodes',
+                                              extension='.tsv')
+    coordsystem_fname = _find_matching_sidecar(bids_fname,
+                                               suffix='coordsystem',
+                                               extension='.json')
+    assert 'space-mri' in electrodes_fname
+    assert 'space-mri' in coordsystem_fname
+    with open(coordsystem_fname, 'r') as fin:
+        coordsystem_json = json.load(fin)
+    assert coordsystem_json['iEEGCoordinateSystem'] == 'Other'
+
+    # test anonymize and convert
+    if check_version('mne', '0.20') and check_version('pybv', '0.2.0'):
+        raw = _read_raw_edf(raw_fname)
+        output_path = _test_anonymize(raw, bids_path)
+        _bids_validate(output_path)
