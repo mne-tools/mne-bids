@@ -317,10 +317,9 @@ class BIDSPath(object):
     def directory(self):
         """Get the BIDS parent directory.
 
-        If ``subject``, ``session`` and ``datatype`` are
-        set then they will be used to construct the
-        directory. For example if ``subject='01'``,
-        ``session='02'`` and ``datatype='ieeg'``, then
+        If ``subject``, ``session`` and ``datatype`` are set, then they will be
+        used to construct the directory location. For example, if
+        ``subject='01'``, ``session='02'`` and ``datatype='ieeg'``, then the
         directory would be::
 
             <root>/sub-01/ses-02/ieeg
@@ -328,10 +327,10 @@ class BIDSPath(object):
         Returns
         -------
         data_path : pathlib.Path
-            The directory path of a BIDS-compliant dataset.
+            The path of the BIDS directory.
         """
-        # create the data path based on entities available
-        # bids_root, subject, session and datatype
+        # Create the data path based on the available entities:
+        # bids_root, subject, session, and datatype
         data_path = '' if self.root is None else self.root
         if self.subject is not None:
             data_path = op.join(data_path, f'sub-{self.subject}')
@@ -376,13 +375,13 @@ class BIDSPath(object):
         return deepcopy(self)
 
     def mkdir(self, exist_ok=True):
-        """Create the BIDS path directory.
+        """Create the directory structure of the BIDS path.
 
         Parameters
         ----------
         exist_ok : bool
-            Whether it is okay that the directory
-            already exists (default is True).
+            If ``False``, raise an exception if the directory already exists.
+            Otherwise, do nothing (default).
 
         Returns
         -------
