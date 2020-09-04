@@ -42,7 +42,7 @@ First we will import the relevant functions
 .. code-block:: default
 
 
-    from mne_bids import make_bids_folders, BIDSPath
+    from mne_bids import BIDSPath
 
 
 
@@ -116,16 +116,9 @@ You can also use MNE-BIDS to create folder hierarchies.
 .. code-block:: default
 
 
-    path_folder = make_bids_folders(subject='01', session='mysession',
-                                    datatype='meg', bids_root='path/to/project',
-                                    make_dir=False)
-    print(path_folder)
-
-    # Note that passing `make_dir=True` will create the folder hierarchy. If that
-    # path already exists, you can make use of the `overwrite` parameter.
-    # If `overwrite=False` then no existing folders will be removed, however
-    # if `overwrite=True` then any existing folders at the session level
-    # or lower will be removed, including any contained data.
+    bids_path = BIDSPath(subject='01', session='mysession',
+                         datatype='meg', root='path/to/project').mkdir()
+    print(bids_path.directory)
 
 
 
@@ -144,7 +137,7 @@ You can also use MNE-BIDS to create folder hierarchies.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  0.002 seconds)
+   **Total running time of the script:** ( 0 minutes  0.004 seconds)
 
 
 .. _sphx_glr_download_auto_examples_create_bids_folder.py:
@@ -158,7 +151,7 @@ You can also use MNE-BIDS to create folder hierarchies.
 
   .. container:: binder-badge
 
-    .. image:: https://mybinder.org/badge_logo.svg
+    .. image:: /../../.local/lib/python3.8/site-packages/sphinx_gallery/_static/binder_badge_logo.svg
       :target: https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/create_bids_folder.ipynb
       :width: 150 px
 

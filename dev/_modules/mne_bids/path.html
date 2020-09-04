@@ -132,8 +132,7 @@
     <span class="n">ALLOWED_DATATYPES</span><span class="p">,</span> <span class="n">SUFFIX_TO_DATATYPE</span><span class="p">,</span> <span class="n">ALLOWED_DATATYPE_EXTENSIONS</span><span class="p">,</span>
     <span class="n">reader</span><span class="p">,</span> <span class="n">ENTITY_VALUE_TYPE</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">mne_bids.utils</span> <span class="kn">import</span> <span class="p">(</span><span class="n">_check_key_val</span><span class="p">,</span> <span class="n">_check_empty_room_basename</span><span class="p">,</span>
-                            <span class="n">_check_types</span><span class="p">,</span> <span class="n">param_regex</span><span class="p">,</span>
-                            <span class="n">_ensure_tuple</span><span class="p">)</span>
+                            <span class="n">param_regex</span><span class="p">,</span> <span class="n">_ensure_tuple</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">_get_matched_empty_room</span><span class="p">(</span><span class="n">bids_path</span><span class="p">):</span>
@@ -166,9 +165,7 @@
         <span class="c1"># for MNE &lt; v0.20</span>
         <span class="n">ref_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;meas_date&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
 
-    <span class="n">emptyroom_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">make_bids_folders</span><span class="p">(</span><span class="n">bids_root</span><span class="o">=</span><span class="n">bids_root</span><span class="p">,</span>
-                                           <span class="n">subject</span><span class="o">=</span><span class="s1">&#39;emptyroom&#39;</span><span class="p">,</span>
-                                           <span class="n">make_dir</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+    <span class="n">emptyroom_dir</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="n">bids_root</span><span class="p">,</span> <span class="n">subject</span><span class="o">=</span><span class="s1">&#39;emptyroom&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">directory</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">emptyroom_dir</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
         <span class="k">return</span> <span class="kc">None</span>
@@ -326,6 +323,8 @@
 <span class="sd">        The basename of the file path. Similar to `os.path.basename(fpath)`.</span>
 <span class="sd">    root : str</span>
 <span class="sd">        The root of the BIDS path.</span>
+<span class="sd">    directory : pathlib.Path</span>
+<span class="sd">        The directory path.</span>
 <span class="sd">    fpath : str</span>
 <span class="sd">        The full file path.</span>
 <span class="sd">    check : bool</span>
@@ -365,6 +364,8 @@
 <span class="sd">    sub-test2_ses-one_task-mytask_ieeg.edf</span>
 <span class="sd">    &gt;&gt;&gt; print(new_bids_path)</span>
 <span class="sd">    /bids_dataset/sub-test2/ses-one/ieeg/sub-test2_ses-one_task-mytask_ieeg.edf</span>
+<span class="sd">    &gt;&gt;&gt; print(new_bids_path.directory)</span>
+<span class="sd">    /bids_dataset/sub-test2/ses-one/ieeg/</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subject</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -423,6 +424,34 @@
         <span class="n">basename</span> <span class="o">=</span> <span class="s1">&#39;_&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">basename</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">basename</span>
 
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">directory</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get the BIDS parent directory.</span>
+
+<span class="sd">        If ``subject``, ``session`` and ``datatype`` are set, then they will be</span>
+<span class="sd">        used to construct the directory location. For example, if</span>
+<span class="sd">        ``subject=&#39;01&#39;``, ``session=&#39;02&#39;`` and ``datatype=&#39;ieeg&#39;``, then the</span>
+<span class="sd">        directory would be::</span>
+
+<span class="sd">            &lt;root&gt;/sub-01/ses-02/ieeg</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        data_path : pathlib.Path</span>
+<span class="sd">            The path of the BIDS directory.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Create the data path based on the available entities:</span>
+        <span class="c1"># bids_root, subject, session, and datatype</span>
+        <span class="n">data_path</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">subject</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">data_path</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;sub-</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">subject</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">data_path</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;ses-</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="c1"># datatype will allow &#39;meg&#39;, &#39;eeg&#39;, &#39;ieeg&#39;, &#39;anat&#39;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">data_path</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Path</span><span class="p">(</span><span class="n">data_path</span><span class="p">)</span>
+
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return the string representation of the path.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fpath</span><span class="p">)</span>
@@ -456,6 +485,23 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
+<div class="viewcode-block" id="BIDSPath.mkdir"><a class="viewcode-back" href="../../generated/mne_bids.path.BIDSPath.html#mne_bids.BIDSPath.mkdir">[docs]</a>    <span class="k">def</span> <span class="nf">mkdir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create the directory structure of the BIDS path.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        exist_ok : bool</span>
+<span class="sd">            If ``False``, raise an exception if the directory already exists.</span>
+<span class="sd">            Otherwise, do nothing (default).</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        self : instance of BIDSPath</span>
+<span class="sd">            The BIDSPath object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">directory</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="n">exist_ok</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">fpath</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Full filepath for this BIDS file.</span>
@@ -469,16 +515,8 @@
 <span class="sd">        bids_fpath : pathlib.Path</span>
 <span class="sd">            Either the relative, or full path to the dataset.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># create the data path based on entities available</span>
-        <span class="c1"># bids_root, subject, session and suffix</span>
-        <span class="n">data_path</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">subject</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">data_path</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;sub-</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">subject</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">data_path</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;ses-</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-        <span class="c1"># file-suffix will allow &#39;meg&#39;, &#39;eeg&#39;, &#39;ieeg&#39;, &#39;anat&#39;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">data_path</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">datatype</span><span class="p">)</span>
+        <span class="c1"># get the inner-most BIDS directory for this file path</span>
+        <span class="n">data_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">directory</span>
 
         <span class="c1"># account for MEG data that are directory-based</span>
         <span class="c1"># else, all other file paths attempt to match</span>
@@ -750,9 +788,8 @@
         <span class="n">datatype</span> <span class="o">=</span> <span class="n">_infer_datatype</span><span class="p">(</span><span class="n">bids_root</span><span class="o">=</span><span class="n">bids_root</span><span class="p">,</span>
                                    <span class="n">sub</span><span class="o">=</span><span class="n">sub</span><span class="p">,</span> <span class="n">ses</span><span class="o">=</span><span class="n">ses</span><span class="p">)</span>
 
-    <span class="n">data_dir</span> <span class="o">=</span> <span class="n">make_bids_folders</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="n">sub</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">ses</span><span class="p">,</span>
-                                 <span class="n">datatype</span><span class="o">=</span><span class="n">datatype</span><span class="p">,</span> <span class="n">bids_root</span><span class="o">=</span><span class="n">bids_root</span><span class="p">,</span>
-                                 <span class="n">make_dir</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">data_dir</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="n">sub</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">ses</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">datatype</span><span class="p">,</span>
+                        <span class="n">root</span><span class="o">=</span><span class="n">bids_root</span><span class="p">)</span><span class="o">.</span><span class="n">mkdir</span><span class="p">()</span><span class="o">.</span><span class="n">directory</span>
 
     <span class="c1"># For BTI data, just return the directory with a &#39;.pdf&#39; extension</span>
     <span class="c1"># to facilitate reading in mne-bids</span>
@@ -828,71 +865,6 @@
             <span class="k">if</span> <span class="n">branchlen</span> <span class="o">&lt;</span> <span class="n">max_depth</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
                     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;|</span><span class="si">{}</span><span class="s1"> </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">branchlen</span> <span class="o">*</span> <span class="s1">&#39;---&#39;</span><span class="p">,</span> <span class="n">file</span><span class="p">))</span></div>
-
-
-<div class="viewcode-block" id="make_bids_folders"><a class="viewcode-back" href="../../generated/mne_bids.make_bids_folders.html#mne_bids.make_bids_folders">[docs]</a><span class="k">def</span> <span class="nf">make_bids_folders</span><span class="p">(</span><span class="n">subject</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bids_root</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                      <span class="n">make_dir</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Create a BIDS folder hierarchy.</span>
-
-<span class="sd">    This creates a hierarchy of folders *within* a BIDS dataset. You should</span>
-<span class="sd">    plan to create these folders *inside* the bids_root folder of the dataset.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    subject : str</span>
-<span class="sd">        The subject ID. Corresponds to &quot;sub&quot;.</span>
-<span class="sd">    datatype : str</span>
-<span class="sd">        The &quot;datatype&quot; of folder being created at the end of the hierarchy.</span>
-<span class="sd">        E.g., &quot;anat&quot;, &quot;func&quot;, &quot;eeg&quot;, &quot;meg&quot;, &quot;ieeg&quot;, etc.</span>
-<span class="sd">    session : str | None</span>
-<span class="sd">        The session for a item. Corresponds to &quot;ses&quot;.</span>
-<span class="sd">    bids_root : str | pathlib.Path | None</span>
-<span class="sd">        The bids_root for the folders to be created. If None, folders will be</span>
-<span class="sd">        created in the current working directory.</span>
-<span class="sd">    make_dir : bool</span>
-<span class="sd">        Whether to actually create the folders specified. If False, only a</span>
-<span class="sd">        path will be generated but no folders will be created.</span>
-<span class="sd">    overwrite : bool</span>
-<span class="sd">        How to handle overwriting previously generated data.</span>
-<span class="sd">        If overwrite == False then no existing folders will be removed, however</span>
-<span class="sd">        if overwrite == True then any existing folders at the session level</span>
-<span class="sd">        or lower will be removed, including any contained data.</span>
-<span class="sd">    verbose : bool</span>
-<span class="sd">        If verbose is True, print status updates</span>
-<span class="sd">        as folders are created.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    path : str</span>
-<span class="sd">        The (relative) path to the folder that was created.</span>
-
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; make_bids_folders(&#39;sub_01&#39;, session=&#39;mysession&#39;,</span>
-<span class="sd">                          datatype=&#39;meg&#39;, bids_root=&#39;/path/to/project&#39;,</span>
-<span class="sd">                          make_dir=False)</span>
-<span class="sd">    &#39;/path/to/project/sub-sub_01/ses-mysession/meg&#39;</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>  <span class="c1"># noqa</span>
-    <span class="n">_check_types</span><span class="p">((</span><span class="n">subject</span><span class="p">,</span> <span class="n">datatype</span><span class="p">,</span> <span class="n">session</span><span class="p">))</span>
-    <span class="k">if</span> <span class="n">bids_root</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">bids_root</span> <span class="o">=</span> <span class="n">_path_to_str</span><span class="p">(</span><span class="n">bids_root</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">session</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">_check_key_val</span><span class="p">(</span><span class="s1">&#39;ses&#39;</span><span class="p">,</span> <span class="n">session</span><span class="p">)</span>
-
-    <span class="n">path</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s1">&#39;sub-</span><span class="si">{</span><span class="n">subject</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">]</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;ses-</span><span class="si">{</span><span class="n">session</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">datatype</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">datatype</span><span class="p">)</span>
-    <span class="n">path</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="o">*</span><span class="n">path</span><span class="p">)</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bids_root</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="n">path</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bids_root</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">make_dir</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-        <span class="n">_mkdir_p</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">path</span></div>
 
 
 <span class="k">def</span> <span class="nf">_parse_ext</span><span class="p">(</span><span class="n">raw_fname</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
@@ -1380,7 +1352,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-09-02.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-09-04.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
     </p>
   </div>

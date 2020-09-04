@@ -198,6 +198,8 @@ current BIDS standard. Defaults to True.</p>
 <span class="go">sub-test2_ses-one_task-mytask_ieeg.edf</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">new_bids_path</span><span class="p">)</span>
 <span class="go">/bids_dataset/sub-test2/ses-one/ieeg/sub-test2_ses-one_task-mytask_ieeg.edf</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">new_bids_path</span><span class="o">.</span><span class="n">directory</span><span class="p">)</span>
+<span class="go">/bids_dataset/sub-test2/ses-one/ieeg/</span>
 </pre></div>
 </div>
 <dl class="field-list simple">
@@ -211,6 +213,8 @@ current BIDS standard. Defaults to True.</p>
 <dt><a class="reference internal" href="#mne_bids.path.BIDSPath.basename" title="mne_bids.path.BIDSPath.basename"><code class="xref py py-obj docutils literal notranslate"><span class="pre">basename</span></code></a><span class="classifier">str</span></dt><dd><p>Path basename.</p>
 </dd>
 <dt><strong>root</strong><span class="classifier">str</span></dt><dd><p>The root of the BIDS path.</p>
+</dd>
+<dt><a class="reference internal" href="#mne_bids.path.BIDSPath.directory" title="mne_bids.path.BIDSPath.directory"><code class="xref py py-obj docutils literal notranslate"><span class="pre">directory</span></code></a><span class="classifier">pathlib.Path</span></dt><dd><p>Get the BIDS parent directory.</p>
 </dd>
 <dt><a class="reference internal" href="#mne_bids.path.BIDSPath.fpath" title="mne_bids.path.BIDSPath.fpath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fpath</span></code></a><span class="classifier">str</span></dt><dd><p>Full filepath for this BIDS file.</p>
 </dd>
@@ -238,7 +242,10 @@ latter).</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="#mne_bids.path.BIDSPath.match" title="mne_bids.path.BIDSPath.match"><code class="xref py py-obj docutils literal notranslate"><span class="pre">match</span></code></a>()</p></td>
 <td><p>Get a list of all matching paths in the root directory.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#mne_bids.path.BIDSPath.update" title="mne_bids.path.BIDSPath.update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code></a>(*[, check])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#mne_bids.path.BIDSPath.mkdir" title="mne_bids.path.BIDSPath.mkdir"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mkdir</span></code></a>([exist_ok])</p></td>
+<td><p>Create the directory structure of the BIDS path.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mne_bids.path.BIDSPath.update" title="mne_bids.path.BIDSPath.update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code></a>(*[, check])</p></td>
 <td><p>Update inplace BIDS entity key/value pairs in object.</p></td>
 </tr>
 </tbody>
@@ -257,6 +264,27 @@ latter).</p>
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>bidspath</strong><span class="classifier">instance of BIDSPath</span></dt><dd><p>The copied bidspath.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mne_bids.path.BIDSPath.directory">
+<em class="property">property </em><code class="sig-name descname">directory</code><a class="headerlink" href="#mne_bids.path.BIDSPath.directory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the BIDS parent directory.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">subject</span></code>, <code class="docutils literal notranslate"><span class="pre">session</span></code> and <code class="docutils literal notranslate"><span class="pre">datatype</span></code> are set, then they will be
+used to construct the directory location. For example, if
+<code class="docutils literal notranslate"><span class="pre">subject='01'</span></code>, <code class="docutils literal notranslate"><span class="pre">session='02'</span></code> and <code class="docutils literal notranslate"><span class="pre">datatype='ieeg'</span></code>, then the
+directory would be:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">root</span><span class="o">&gt;/</span><span class="n">sub</span><span class="o">-</span><span class="mi">01</span><span class="o">/</span><span class="n">ses</span><span class="o">-</span><span class="mi">02</span><span class="o">/</span><span class="n">ieeg</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>data_path</strong><span class="classifier">pathlib.Path</span></dt><dd><p>The path of the BIDS directory.</p>
 </dd>
 </dl>
 </dd>
@@ -313,6 +341,27 @@ path.</p>
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>bids_paths</strong><span class="classifier">list of BIDSPath</span></dt><dd><p>The matching paths.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mne_bids.path.BIDSPath.mkdir">
+<code class="sig-name descname">mkdir</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">exist_ok</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/path.html#BIDSPath.mkdir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.path.BIDSPath.mkdir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create the directory structure of the BIDS path.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>exist_ok</strong><span class="classifier">bool</span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">False</span></code>, raise an exception if the directory already exists.
+Otherwise, do nothing (default).</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt><strong>self</strong><span class="classifier">instance of BIDSPath</span></dt><dd><p>The BIDSPath object.</p>
 </dd>
 </dl>
 </dd>
@@ -397,7 +446,7 @@ or updates for ‘root’ or ‘datatype’.</p>
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-09-02.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-09-04.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
     </p>
   </div>

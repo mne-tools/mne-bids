@@ -136,37 +136,34 @@
 <tr class="row-even"><td><p><a class="reference internal" href="generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids"><code class="xref py py-obj docutils literal notranslate"><span class="pre">read_raw_bids</span></code></a>(bids_path[, extra_params, verbose])</p></td>
 <td><p>Read BIDS compatible data.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/mne_bids.make_bids_folders.html#mne_bids.make_bids_folders" title="mne_bids.make_bids_folders"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_bids_folders</span></code></a>(subject[, session, …])</p></td>
-<td><p>Create a BIDS folder hierarchy.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BIDSPath</span></code></a>([subject, session, task, …])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BIDSPath</span></code></a>([subject, session, task, …])</p></td>
 <td><p>Create a partial/full BIDS filepath from its component parts.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/mne_bids.make_dataset_description.html#mne_bids.make_dataset_description" title="mne_bids.make_dataset_description"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_dataset_description</span></code></a>(path, name[, …])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/mne_bids.make_dataset_description.html#mne_bids.make_dataset_description" title="mne_bids.make_dataset_description"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_dataset_description</span></code></a>(path, name[, …])</p></td>
 <td><p>Create json for a dataset description.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/mne_bids.make_report.html#mne_bids.make_report" title="mne_bids.make_report"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_report</span></code></a>(bids_root[, session, verbose])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/mne_bids.make_report.html#mne_bids.make_report" title="mne_bids.make_report"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_report</span></code></a>(bids_root[, session, verbose])</p></td>
 <td><p>Create a methods paragraph string from BIDS dataset.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/mne_bids.write_anat.html#mne_bids.write_anat" title="mne_bids.write_anat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_anat</span></code></a>(bids_root, subject, t1w[, …])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/mne_bids.write_anat.html#mne_bids.write_anat" title="mne_bids.write_anat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_anat</span></code></a>(bids_root, subject, t1w[, …])</p></td>
 <td><p>Put anatomical MRI data into a BIDS format.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/mne_bids.mark_bad_channels.html#mne_bids.mark_bad_channels" title="mne_bids.mark_bad_channels"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mark_bad_channels</span></code></a>(ch_names[, descriptions, …])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/mne_bids.mark_bad_channels.html#mne_bids.mark_bad_channels" title="mne_bids.mark_bad_channels"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mark_bad_channels</span></code></a>(ch_names[, descriptions, …])</p></td>
 <td><p>Update which channels are marked as “bad” in an existing BIDS dataset.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/mne_bids.get_head_mri_trans.html#mne_bids.get_head_mri_trans" title="mne_bids.get_head_mri_trans"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_head_mri_trans</span></code></a>(bids_path)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/mne_bids.get_head_mri_trans.html#mne_bids.get_head_mri_trans" title="mne_bids.get_head_mri_trans"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_head_mri_trans</span></code></a>(bids_path)</p></td>
 <td><p>Produce transformation matrix from MEG and MRI landmark points.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/mne_bids.get_anonymization_daysback.html#mne_bids.get_anonymization_daysback" title="mne_bids.get_anonymization_daysback"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_anonymization_daysback</span></code></a>(raws)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/mne_bids.get_anonymization_daysback.html#mne_bids.get_anonymization_daysback" title="mne_bids.get_anonymization_daysback"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_anonymization_daysback</span></code></a>(raws)</p></td>
 <td><p>Get the group min and max number of daysback necessary for BIDS specs.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/mne_bids.print_dir_tree.html#mne_bids.print_dir_tree" title="mne_bids.print_dir_tree"><code class="xref py py-obj docutils literal notranslate"><span class="pre">print_dir_tree</span></code></a>(folder[, max_depth])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/mne_bids.print_dir_tree.html#mne_bids.print_dir_tree" title="mne_bids.print_dir_tree"><code class="xref py py-obj docutils literal notranslate"><span class="pre">print_dir_tree</span></code></a>(folder[, max_depth])</p></td>
 <td><p>Recursively print dir tree starting from <em class="xref py py-obj">folder</em> up to <em class="xref py py-obj">max_depth</em>.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/mne_bids.get_entity_vals.html#mne_bids.get_entity_vals" title="mne_bids.get_entity_vals"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_entity_vals</span></code></a>(bids_root, entity_key, *[, …])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/mne_bids.get_entity_vals.html#mne_bids.get_entity_vals" title="mne_bids.get_entity_vals"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_entity_vals</span></code></a>(bids_root, entity_key, *[, …])</p></td>
 <td><p>Get list of values associated with an <em class="xref py py-obj">entity_key</em> in a BIDS dataset.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/mne_bids.get_modalities.html#mne_bids.get_modalities" title="mne_bids.get_modalities"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_modalities</span></code></a>(bids_root)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/mne_bids.get_modalities.html#mne_bids.get_modalities" title="mne_bids.get_modalities"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_modalities</span></code></a>(bids_root)</p></td>
 <td><p>Get list of data types (“modalities”) present in a BIDS dataset.</p></td>
 </tr>
 </tbody>
@@ -253,7 +250,7 @@ due to internal pointers that are not being updated.</p>
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-09-02.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-09-04.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
     </p>
   </div>
