@@ -38,7 +38,7 @@ MNE BIDS
    get_anonymization_daysback
    print_dir_tree
    get_entity_vals
-   get_modalities
+   get_datatypes
 
 Path
 ====
