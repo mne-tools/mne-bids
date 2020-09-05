@@ -22,7 +22,7 @@ from mne_bids.config import (
     reader, ENTITY_VALUE_TYPE)
 from mne_bids.utils import (_check_key_val, _check_empty_room_basename,
                             param_regex, _ensure_tuple)
-
+from mne_bids.tsv_handler import (_from_tsv, _drop, _to_tsv)
 
 def _get_matched_empty_room(bids_path):
     """Get matching empty-room file for an MEG recording."""
@@ -661,6 +661,78 @@ class BIDSPath(object):
 
         """
         return _get_matched_empty_room(self)
+
+    def rm(self, safe_remove=True, verbose=True):
+        """Safely delete a set of files inside BIDS dataset.
+
+        Deleting a scan that conforms to the bids-validator, will
+        delete both the row in the ``*scans.tsv`` file, and also
+        the corresponding sidecar files and the data file itself.
+
+        Deleting all files of a subject will update the
+        ``*participants.tsv`` file.
+        """
+        # only proceed if root is defined
+        if self.root is None:
+            raise RuntimeError('Cannot remove files from BIDS dataset')
+
+        # get file paths to delete
+        paths_to_delete = self.match()
+        pretty_paths = '\n'.join(paths_to_delete)
+
+        if verbose:
+            print(f'Deleting the following files:\n '
+                  f'{pretty_paths}')
+
+        if safe_remove:
+            proceed = input(f'Do you want to delete the '
+                            f'following files (Y/n): \n{pretty_paths}')
+            if proceed.lower() != 'y':
+                return
+
+        subjects = set()
+        # remove files one by one
+        for bids_path in paths_to_delete:
+            bids_path.fpath.unlink()
+
+            # if a datatype is present, then check
+            # if a scan is deleted or not
+            datatype = bids_path.datatype
+            if datatype is not None:
+                # read in the corresponding scans file
+                scans_fpath = _find_matching_sidecar(bids_path,
+                                                     suffix='scans.tsv',
+                                                     allow_fail=False)
+                scans_tsv = _from_tsv(scans_fpath)
+                scans_fnames = scans_tsv['filename']
+
+                # get the relative datatype of this bids file
+                bids_fname = op.join(datatype, bids_path.fpath.name)
+                if bids_fname in scans_fnames:
+                    scans_tsv = _drop(scans_tsv, bids_fname, 'filename')
+                    _to_tsv(scans_tsv, scans_fpath)
+            subjects.add(bids_path.subject)
+
+        for subject in subjects:
+            # check existence of files in the sub dir
+            subj_path = BIDSPath(root=self.root,
+                                 subject=subject).directory
+            subj_files = [fpath for fpath in subj_path.rglob('*')
+                          if fpath.is_file()]
+            if len(subj_files) == 0:
+                # update the participants tsv
+                participants_tsv_fpath = op.join(
+                    self.root, 'participants.tsv')
+                participants_tsv = _from_tsv(participants_tsv_fpath)
+
+                # delete the subject data directory
+                sh.rmtree(subj_path)
+
+                # resave the participants.tsv file
+                participants_tsv = _drop(participants_tsv, self.subject,
+                                         'participant_id')
+                _to_tsv(participants_tsv, participants_tsv_fpath)
+
 
 
 def _get_matching_bidspaths_from_filesystem(bids_path):
