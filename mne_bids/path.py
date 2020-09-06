@@ -192,7 +192,7 @@ class BIDSPath(object):
         The "data type" of folder being created at the end of the folder
         hierarchy. E.g., ``'anat'``, ``'func'``, ``'eeg'``, ``'meg'``,
         ``'ieeg'``, etc.
-    root : str | None
+    root : str | pathlib.Path | None
         The root for the filename to be created. E.g., a path to the folder
         in which you wish to create a file with this name.
     check : bool
@@ -210,11 +210,11 @@ class BIDSPath(object):
         ``'anat'``.
     basename : str
         The basename of the file path. Similar to `os.path.basename(fpath)`.
-    root : str
+    root : pathlib.Path
         The root of the BIDS path.
     directory : pathlib.Path
         The directory path.
-    fpath : str
+    fpath : pathlib.Path
         The full file path.
     check : bool
         If ``True``, enforces the entities to be valid according to the
@@ -557,9 +557,9 @@ class BIDSPath(object):
             if val is not None and key != 'root':
                 _check_key_val(key, val)
 
-            # set entity value, ensuring `root` is a string
+            # set entity value, ensuring `root` is a Path
             if key == 'root' and val is not None:
-                val = str(val)
+                val = Path(val)
             setattr(self, key, val)
 
         # infer datatype if suffix is uniquely the datatype
@@ -597,7 +597,7 @@ class BIDSPath(object):
         else:
             search_str = '*.*'
 
-        fnames = Path(self.root).rglob(search_str)
+        fnames = self.root.rglob(search_str)
         # Only keep files (not directories), and omit the JSON sidecars.
         fnames = [f.name for f in fnames
                   if f.is_file() and f.suffix != '.json']

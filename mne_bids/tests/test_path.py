@@ -532,7 +532,7 @@ def test_filter_fnames(entities, expected_n_matches):
 
 def test_match(return_bids_test_dir):
     """Test retrieval of matching basenames."""
-    bids_root = return_bids_test_dir
+    bids_root = Path(return_bids_test_dir)
 
     bids_path_01 = BIDSPath(root=bids_root)
     paths = bids_path_01.match()
