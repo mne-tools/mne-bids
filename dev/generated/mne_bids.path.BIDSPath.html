@@ -159,7 +159,7 @@ The following filename suffix’s are accepted:
 hierarchy. E.g., <code class="docutils literal notranslate"><span class="pre">'anat'</span></code>, <code class="docutils literal notranslate"><span class="pre">'func'</span></code>, <code class="docutils literal notranslate"><span class="pre">'eeg'</span></code>, <code class="docutils literal notranslate"><span class="pre">'meg'</span></code>,
 <code class="docutils literal notranslate"><span class="pre">'ieeg'</span></code>, etc.</p>
 </dd>
-<dt><strong>root</strong><span class="classifier">str | None</span></dt><dd><p>The root for the filename to be created. E.g., a path to the folder
+<dt><strong>root</strong><span class="classifier">str | pathlib.Path | None</span></dt><dd><p>The root for the filename to be created. E.g., a path to the folder
 in which you wish to create a file with this name.</p>
 </dd>
 <dt><strong>check</strong><span class="classifier">bool</span></dt><dd><p>If True enforces the entities to be valid according to the
@@ -212,11 +212,11 @@ current BIDS standard. Defaults to True.</p>
 </dd>
 <dt><a class="reference internal" href="#mne_bids.path.BIDSPath.basename" title="mne_bids.path.BIDSPath.basename"><code class="xref py py-obj docutils literal notranslate"><span class="pre">basename</span></code></a><span class="classifier">str</span></dt><dd><p>Path basename.</p>
 </dd>
-<dt><strong>root</strong><span class="classifier">str</span></dt><dd><p>The root of the BIDS path.</p>
+<dt><strong>root</strong><span class="classifier">pathlib.Path</span></dt><dd><p>The root of the BIDS path.</p>
 </dd>
 <dt><a class="reference internal" href="#mne_bids.path.BIDSPath.directory" title="mne_bids.path.BIDSPath.directory"><code class="xref py py-obj docutils literal notranslate"><span class="pre">directory</span></code></a><span class="classifier">pathlib.Path</span></dt><dd><p>Get the BIDS parent directory.</p>
 </dd>
-<dt><a class="reference internal" href="#mne_bids.path.BIDSPath.fpath" title="mne_bids.path.BIDSPath.fpath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fpath</span></code></a><span class="classifier">str</span></dt><dd><p>Full filepath for this BIDS file.</p>
+<dt><a class="reference internal" href="#mne_bids.path.BIDSPath.fpath" title="mne_bids.path.BIDSPath.fpath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fpath</span></code></a><span class="classifier">pathlib.Path</span></dt><dd><p>Full filepath for this BIDS file.</p>
 </dd>
 <dt><strong>check</strong><span class="classifier">bool</span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, enforces the entities to be valid according to the
 BIDS specification. The check is performed on instantiation
@@ -446,7 +446,7 @@ or updates for ‘root’ or ‘datatype’.</p>
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-09-04.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-09-06.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
     </p>
   </div>

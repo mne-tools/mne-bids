@@ -303,7 +303,7 @@
 <span class="sd">        The &quot;data type&quot; of folder being created at the end of the folder</span>
 <span class="sd">        hierarchy. E.g., ``&#39;anat&#39;``, ``&#39;func&#39;``, ``&#39;eeg&#39;``, ``&#39;meg&#39;``,</span>
 <span class="sd">        ``&#39;ieeg&#39;``, etc.</span>
-<span class="sd">    root : str | None</span>
+<span class="sd">    root : str | pathlib.Path | None</span>
 <span class="sd">        The root for the filename to be created. E.g., a path to the folder</span>
 <span class="sd">        in which you wish to create a file with this name.</span>
 <span class="sd">    check : bool</span>
@@ -321,11 +321,11 @@
 <span class="sd">        ``&#39;anat&#39;``.</span>
 <span class="sd">    basename : str</span>
 <span class="sd">        The basename of the file path. Similar to `os.path.basename(fpath)`.</span>
-<span class="sd">    root : str</span>
+<span class="sd">    root : pathlib.Path</span>
 <span class="sd">        The root of the BIDS path.</span>
 <span class="sd">    directory : pathlib.Path</span>
 <span class="sd">        The directory path.</span>
-<span class="sd">    fpath : str</span>
+<span class="sd">    fpath : pathlib.Path</span>
 <span class="sd">        The full file path.</span>
 <span class="sd">    check : bool</span>
 <span class="sd">        If ``True``, enforces the entities to be valid according to the</span>
@@ -668,9 +668,9 @@
             <span class="k">if</span> <span class="n">val</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">key</span> <span class="o">!=</span> <span class="s1">&#39;root&#39;</span><span class="p">:</span>
                 <span class="n">_check_key_val</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
 
-            <span class="c1"># set entity value, ensuring `root` is a string</span>
+            <span class="c1"># set entity value, ensuring `root` is a Path</span>
             <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;root&#39;</span> <span class="ow">and</span> <span class="n">val</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">val</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+                <span class="n">val</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
             <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span>
 
         <span class="c1"># infer datatype if suffix is uniquely the datatype</span>
@@ -708,7 +708,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">search_str</span> <span class="o">=</span> <span class="s1">&#39;*.*&#39;</span>
 
-        <span class="n">fnames</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">)</span><span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="n">search_str</span><span class="p">)</span>
+        <span class="n">fnames</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="n">search_str</span><span class="p">)</span>
         <span class="c1"># Only keep files (not directories), and omit the JSON sidecars.</span>
         <span class="n">fnames</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fnames</span>
                   <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">is_file</span><span class="p">()</span> <span class="ow">and</span> <span class="n">f</span><span class="o">.</span><span class="n">suffix</span> <span class="o">!=</span> <span class="s1">&#39;.json&#39;</span><span class="p">]</span>
@@ -1353,7 +1353,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-09-04.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-09-06.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
     </p>
   </div>
