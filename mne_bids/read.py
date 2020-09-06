@@ -325,6 +325,7 @@ def read_raw_bids(bids_path, extra_params=None, verbose=True):
     ses = bids_path.session
     bids_root = bids_path.root
     datatype = bids_path.datatype
+    suffix = bids_path.suffix
 
     # check root available
     if bids_root is None:
@@ -332,24 +333,22 @@ def read_raw_bids(bids_path, extra_params=None, verbose=True):
                          'Please use `bids_path.update(root="<root>")` '
                          'to set the root of the BIDS folder to read.')
 
-    # set root, infer the datatype and
-    # then set it to the datatype and suffix of the BIDSPath
-    bids_path.update(root=bids_root)
+    # infer the datatype and suffix if they are not present in the BIDSPath
     if datatype is None:
-        datatype = _infer_datatype(bids_root=bids_root,
-                                   sub=sub, ses=ses)
-    bids_path.update(datatype=datatype, suffix=datatype)
+        datatype = _infer_datatype(bids_root=bids_root, sub=sub, ses=ses)
+        bids_path.update(datatype=datatype)
+    if suffix is None:
+        bids_path.update(suffix=datatype)
 
     data_dir = bids_path.mkdir().directory
     bids_fname = bids_path.fpath.name
 
     if op.splitext(bids_fname)[1] == '.pdf':
-        bids_raw_folder = op.join(bids_root, data_dir,
-                                  f'{bids_path.basename}')
+        bids_raw_folder = op.join(data_dir, f'{bids_path.basename}')
         bids_fpath = glob.glob(op.join(bids_raw_folder, 'c,rf*'))[0]
         config = op.join(bids_raw_folder, 'config')
     else:
-        bids_fpath = op.join(bids_root, data_dir, bids_fname)
+        bids_fpath = op.join(data_dir, bids_fname)
         config = None
 
     if extra_params is None:
