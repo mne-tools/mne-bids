@@ -1409,7 +1409,7 @@ def test_write_raw_pathlike():
 
     # write_raw_bids() should return a string.
     assert isinstance(bids_path_, BIDSPath)
-    assert bids_path_.root == str(bids_root)
+    assert bids_path_.root == bids_root
 
 
 def test_write_raw_no_dig():
@@ -1421,13 +1421,13 @@ def test_write_raw_no_dig():
     bids_path = _bids_path.copy().update(root=bids_root)
     bids_path_ = write_raw_bids(raw=raw, bids_path=bids_path,
                                 overwrite=True)
-    assert bids_path_.root == str(bids_root)
+    assert bids_path_.root == bids_root
     raw.info['dig'] = None
     raw.save(str(bids_root / 'tmp_raw.fif'))
     raw = _read_raw_fif(bids_root / 'tmp_raw.fif')
     bids_path_ = write_raw_bids(raw=raw, bids_path=bids_path,
                                 overwrite=True)
-    assert bids_path_.root == str(bids_root)
+    assert bids_path_.root == bids_root
     assert bids_path_.suffix == 'meg'
     assert bids_path_.extension == '.fif'
 
