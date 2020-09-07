@@ -47,8 +47,7 @@ from mne_bids.read import _get_bads_from_tsv_data, _find_matching_sidecar
 
 from mne_bids.config import (ORIENTATION, UNITS, MANUFACTURERS,
                              IGNORED_CHANNELS, ALLOWED_DATATYPE_EXTENSIONS,
-                             BIDS_VERSION, REFERENCES, _convert_hand_options,
-                             _convert_sex_options, reader)
+                             BIDS_VERSION, REFERENCES, _map_options, reader)
 
 
 def _is_numeric(n):

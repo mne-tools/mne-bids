@@ -19,8 +19,7 @@ from mne.transforms import apply_trans
 
 from mne_bids.dig import _read_dig_bids
 from mne_bids.tsv_handler import _from_tsv, _drop
-from mne_bids.config import (ALLOWED_DATATYPE_EXTENSIONS, reader,
-                             _convert_hand_options, _convert_sex_options)
+from mne_bids.config import (ALLOWED_DATATYPE_EXTENSIONS, reader, _map_options)
 from mne_bids.utils import _extract_landmarks, _get_ch_type_mapping
 from mne_bids.path import (BIDSPath, _parse_ext, _find_matching_sidecar,
                            _infer_datatype)
@@ -72,20 +71,17 @@ def _handle_participants_reading(participants_fname, raw,
 
     # set data from participants tsv into subject_info
     for infokey, infovalue in participants_tsv.items():
-        if infokey == 'sex':
-            value = _convert_sex_options(infovalue[row_ind],
-                                         fro='bids', to='mne')
+        if infokey == 'sex' or infokey == 'hand':
+            value = _map_options(what=infokey, key=infovalue[row_ind],
+                                 fro='bids', to='mne')
             # We don't know how to translate to MNE, so skip.
             if value is None:
-                warn('Unable to map `sex` value to MNE. '
-                     'Not setting subject sex.')
-        elif infokey == 'hand':
-            value = _convert_hand_options(infovalue[row_ind],
-                                          fro='bids', to='mne')
-            # We don't know how to translate to MNE, so skip.
-            if value is None:
-                warn('Unable to map `hand` value to MNE. '
-                     'Not setting subject handedness.')
+                if infokey == 'sex':
+                    info_str = 'subject sex'
+                else:
+                    info_str = 'subject handedness'
+                warn(f'Unable to map `{infokey}` value to MNE. '
+                     f'Not setting {info_str}.')
         else:
             value = infovalue[row_ind]
         # add data into raw.Info
