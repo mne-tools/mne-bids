@@ -215,29 +215,32 @@ REFERENCES = {'mne-bids':
               '6, 102. https://doi.org/10.1038/s41597-019-0105-7'}
 
 
-# mapping subject information back to mne-python
+# Mapping subject information between MNE-BIDS and MNE-Python.
+HAND_BIDS_TO_MNE = {
+    ('n/a',): 0,
+    ('right', 'r', 'R', 'RIGHT', 'Right'): 1,
+    ('left', 'l', 'L', 'LEFT', 'Left'): 2,
+    ('ambidextrous', 'a', 'A', 'AMBIDEXTROUS', 'Ambidextrous'): 3
+}
+
+HAND_MNE_TO_BIDS = {0: 'n/a', 1: 'R', 2: 'L', 3: 'A'}
+
+SEX_BIDS_TO_MNE = {
+    ('n/a', 'other', 'o', 'O', 'OTHER', 'Other'): 0,
+    ('male', 'm', 'M', 'MALE', 'Male'): 1,
+    ('female', 'f', 'F', 'FEMALE', 'Female'): 2
+}
+
+SEX_MNE_TO_BIDS = {0: 'n/a', 1: 'M', 2: 'F'}
+
+
 def _map_options(what, key, fro, to):
-    hand_options_bids_to_mne = {
-        ('n/a',): 0,
-        ('right', 'r', 'R', 'RIGHT', 'Right'): 1,
-        ('left', 'l', 'L', 'LEFT', 'Left'): 2,
-        ('ambidextrous', 'a', 'A', 'AMBIDEXTROUS', 'Ambidextrous'): 3
-    }
-    hand_options_mne_to_bids = {0: 'n/a', 1: 'R', 2: 'L', 3: 'A'}
-
-    sex_options_bids_to_mne = {
-        ('n/a', 'other', 'o', 'O', 'OTHER', 'Other'): 0,
-        ('male', 'm', 'M', 'MALE', 'Male'): 1,
-        ('female', 'f', 'F', 'FEMALE', 'Female'): 2
-    }
-    sex_options_mne_to_bids = {0: 'n/a', 1: 'M', 2: 'F'}
-
     if what == 'sex':
-        mapping_bids_mne = sex_options_bids_to_mne
-        mapping_mne_bids = sex_options_mne_to_bids
+        mapping_bids_mne = SEX_BIDS_TO_MNE
+        mapping_mne_bids = SEX_MNE_TO_BIDS
     elif what == 'hand':
-        mapping_bids_mne = hand_options_bids_to_mne
-        mapping_mne_bids = hand_options_mne_to_bids
+        mapping_bids_mne = HAND_BIDS_TO_MNE
+        mapping_mne_bids = HAND_MNE_TO_BIDS
     else:
         raise ValueError('Can only map `sex` and `hand`.')
 
