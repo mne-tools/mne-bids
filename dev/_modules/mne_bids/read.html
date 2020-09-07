@@ -130,8 +130,7 @@
 
 <span class="kn">from</span> <span class="nn">mne_bids.dig</span> <span class="kn">import</span> <span class="n">_read_dig_bids</span>
 <span class="kn">from</span> <span class="nn">mne_bids.tsv_handler</span> <span class="kn">import</span> <span class="n">_from_tsv</span><span class="p">,</span> <span class="n">_drop</span>
-<span class="kn">from</span> <span class="nn">mne_bids.config</span> <span class="kn">import</span> <span class="p">(</span><span class="n">ALLOWED_DATATYPE_EXTENSIONS</span><span class="p">,</span> <span class="n">reader</span><span class="p">,</span>
-                             <span class="n">_convert_hand_options</span><span class="p">,</span> <span class="n">_convert_sex_options</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">mne_bids.config</span> <span class="kn">import</span> <span class="n">ALLOWED_DATATYPE_EXTENSIONS</span><span class="p">,</span> <span class="n">reader</span><span class="p">,</span> <span class="n">_map_options</span>
 <span class="kn">from</span> <span class="nn">mne_bids.utils</span> <span class="kn">import</span> <span class="n">_extract_landmarks</span><span class="p">,</span> <span class="n">_get_ch_type_mapping</span>
 <span class="kn">from</span> <span class="nn">mne_bids.path</span> <span class="kn">import</span> <span class="p">(</span><span class="n">BIDSPath</span><span class="p">,</span> <span class="n">_parse_ext</span><span class="p">,</span> <span class="n">_find_matching_sidecar</span><span class="p">,</span>
                            <span class="n">_infer_datatype</span><span class="p">)</span>
@@ -183,20 +182,17 @@
 
     <span class="c1"># set data from participants tsv into subject_info</span>
     <span class="k">for</span> <span class="n">infokey</span><span class="p">,</span> <span class="n">infovalue</span> <span class="ow">in</span> <span class="n">participants_tsv</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="k">if</span> <span class="n">infokey</span> <span class="o">==</span> <span class="s1">&#39;sex&#39;</span><span class="p">:</span>
-            <span class="n">value</span> <span class="o">=</span> <span class="n">_convert_sex_options</span><span class="p">(</span><span class="n">infovalue</span><span class="p">[</span><span class="n">row_ind</span><span class="p">],</span>
-                                         <span class="n">fro</span><span class="o">=</span><span class="s1">&#39;bids&#39;</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="s1">&#39;mne&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">infokey</span> <span class="o">==</span> <span class="s1">&#39;sex&#39;</span> <span class="ow">or</span> <span class="n">infokey</span> <span class="o">==</span> <span class="s1">&#39;hand&#39;</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">_map_options</span><span class="p">(</span><span class="n">what</span><span class="o">=</span><span class="n">infokey</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">infovalue</span><span class="p">[</span><span class="n">row_ind</span><span class="p">],</span>
+                                 <span class="n">fro</span><span class="o">=</span><span class="s1">&#39;bids&#39;</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="s1">&#39;mne&#39;</span><span class="p">)</span>
             <span class="c1"># We don&#39;t know how to translate to MNE, so skip.</span>
             <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Unable to map `sex` value to MNE. &#39;</span>
-                     <span class="s1">&#39;Not setting subject sex.&#39;</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">infokey</span> <span class="o">==</span> <span class="s1">&#39;hand&#39;</span><span class="p">:</span>
-            <span class="n">value</span> <span class="o">=</span> <span class="n">_convert_hand_options</span><span class="p">(</span><span class="n">infovalue</span><span class="p">[</span><span class="n">row_ind</span><span class="p">],</span>
-                                          <span class="n">fro</span><span class="o">=</span><span class="s1">&#39;bids&#39;</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="s1">&#39;mne&#39;</span><span class="p">)</span>
-            <span class="c1"># We don&#39;t know how to translate to MNE, so skip.</span>
-            <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Unable to map `hand` value to MNE. &#39;</span>
-                     <span class="s1">&#39;Not setting subject handedness.&#39;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">infokey</span> <span class="o">==</span> <span class="s1">&#39;sex&#39;</span><span class="p">:</span>
+                    <span class="n">info_str</span> <span class="o">=</span> <span class="s1">&#39;subject sex&#39;</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">info_str</span> <span class="o">=</span> <span class="s1">&#39;subject handedness&#39;</span>
+                <span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Unable to map `</span><span class="si">{</span><span class="n">infokey</span><span class="si">}</span><span class="s1">` value to MNE. &#39;</span>
+                     <span class="sa">f</span><span class="s1">&#39;Not setting </span><span class="si">{</span><span class="n">info_str</span><span class="si">}</span><span class="s1">.&#39;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">value</span> <span class="o">=</span> <span class="n">infovalue</span><span class="p">[</span><span class="n">row_ind</span><span class="p">]</span>
         <span class="c1"># add data into raw.Info</span>

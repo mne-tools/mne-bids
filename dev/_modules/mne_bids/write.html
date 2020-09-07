@@ -158,8 +158,7 @@
 
 <span class="kn">from</span> <span class="nn">mne_bids.config</span> <span class="kn">import</span> <span class="p">(</span><span class="n">ORIENTATION</span><span class="p">,</span> <span class="n">UNITS</span><span class="p">,</span> <span class="n">MANUFACTURERS</span><span class="p">,</span>
                              <span class="n">IGNORED_CHANNELS</span><span class="p">,</span> <span class="n">ALLOWED_DATATYPE_EXTENSIONS</span><span class="p">,</span>
-                             <span class="n">BIDS_VERSION</span><span class="p">,</span> <span class="n">REFERENCES</span><span class="p">,</span> <span class="n">_convert_hand_options</span><span class="p">,</span>
-                             <span class="n">_convert_sex_options</span><span class="p">,</span> <span class="n">reader</span><span class="p">)</span>
+                             <span class="n">BIDS_VERSION</span><span class="p">,</span> <span class="n">REFERENCES</span><span class="p">,</span> <span class="n">_map_options</span><span class="p">,</span> <span class="n">reader</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">_is_numeric</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
@@ -377,12 +376,12 @@
     <span class="n">subject_info</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;subject_info&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">subject_info</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># add sex</span>
-        <span class="n">sex</span> <span class="o">=</span> <span class="n">_convert_sex_options</span><span class="p">(</span><span class="n">subject_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;sex&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
-                                   <span class="n">fro</span><span class="o">=</span><span class="s1">&#39;mne&#39;</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="s1">&#39;bids&#39;</span><span class="p">)</span>
+        <span class="n">sex</span> <span class="o">=</span> <span class="n">_map_options</span><span class="p">(</span><span class="n">what</span><span class="o">=</span><span class="s1">&#39;sex&#39;</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">subject_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;sex&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+                           <span class="n">fro</span><span class="o">=</span><span class="s1">&#39;mne&#39;</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="s1">&#39;bids&#39;</span><span class="p">)</span>
 
         <span class="c1"># add handedness</span>
-        <span class="n">hand</span> <span class="o">=</span> <span class="n">_convert_hand_options</span><span class="p">(</span><span class="n">subject_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;hand&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
-                                     <span class="n">fro</span><span class="o">=</span><span class="s1">&#39;mne&#39;</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="s1">&#39;bids&#39;</span><span class="p">)</span>
+        <span class="n">hand</span> <span class="o">=</span> <span class="n">_map_options</span><span class="p">(</span><span class="n">what</span><span class="o">=</span><span class="s1">&#39;hand&#39;</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">subject_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;hand&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+                            <span class="n">fro</span><span class="o">=</span><span class="s1">&#39;mne&#39;</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="s1">&#39;bids&#39;</span><span class="p">)</span>
 
         <span class="c1"># determine the age of the participant</span>
         <span class="n">age</span> <span class="o">=</span> <span class="n">subject_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;birthday&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
