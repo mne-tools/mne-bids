@@ -216,25 +216,54 @@ REFERENCES = {'mne-bids':
 
 
 # mapping subject information back to mne-python
-# XXX: MNE currently only handles R/L,
-# follow https://github.com/mne-tools/mne-python/issues/7347
 def _convert_hand_options(key, fro, to):
+    hand_options_bids_to_mne = {
+        ('n/a',): 0,
+        ('right', 'r', 'R', 'RIGHT', 'Right'): 1,
+        ('left', 'l', 'L', 'LEFT', 'Left'): 2,
+        ('ambidextrous', 'a', 'A', 'AMBIDEXTROUS', 'Ambidextrous'): 3
+    }
+
+    hand_options_mne_to_bids = {0: 'n/a', 1: 'R', 2: 'L', 3: 'A'}
+
     if fro == 'bids' and to == 'mne':
-        hand_options = {'n/a': 0, 'R': 1, 'L': 2, 'A': 3}
+        # Many-to-one mapping
+        mapped_option = None
+        for bids_keys, mne_option in hand_options_bids_to_mne.items():
+            if key in bids_keys:
+                mapped_option = mne_option
+                break
     elif fro == 'mne' and to == 'bids':
-        hand_options = {0: 'n/a', 1: 'R', 2: 'L', 3: 'A'}
+        # One-to-one mapping
+        mapped_option = hand_options_mne_to_bids.get(key, None)
     else:
         raise RuntimeError("fro value {} and to value {} are not "
                            "accepted. Use 'mne', or 'bids'.".format(fro, to))
-    return hand_options.get(key, None)
+
+    return mapped_option
 
 
 def _convert_sex_options(key, fro, to):
+    sex_options_bids_to_mne = {
+        ('n/a', 'other', 'o', 'O', 'OTHER', 'Other'): 0,
+        ('male', 'm', 'M', 'MALE', 'Male'): 1,
+        ('female', 'f', 'F', 'FEMALE', 'Female'): 2
+    }
+
+    sex_options_mne_to_bids = {0: 'n/a', 1: 'M', 2: 'F'}
+
     if fro == 'bids' and to == 'mne':
-        sex_options = {'n/a': 0, 'M': 1, 'F': 2}
+        # Many-to-one mapping
+        mapped_option = None
+        for bids_keys, mne_option in sex_options_bids_to_mne.items():
+            if key in bids_keys:
+                mapped_option = mne_option
+                break
     elif fro == 'mne' and to == 'bids':
-        sex_options = {0: 'n/a', 1: 'M', 2: 'F'}
+        # One-to-one mapping
+        mapped_option = sex_options_mne_to_bids.get(key, None)
     else:
         raise RuntimeError("fro value {} and to value {} are not "
                            "accepted. Use 'mne', or 'bids'.".format(fro, to))
-    return sex_options.get(key, None)
+
+    return mapped_option
