@@ -19,7 +19,7 @@ from mne.transforms import apply_trans
 
 from mne_bids.dig import _read_dig_bids
 from mne_bids.tsv_handler import _from_tsv, _drop
-from mne_bids.config import (ALLOWED_DATATYPE_EXTENSIONS, reader, _map_options)
+from mne_bids.config import ALLOWED_DATATYPE_EXTENSIONS, reader, _map_options
 from mne_bids.utils import _extract_landmarks, _get_ch_type_mapping
 from mne_bids.path import (BIDSPath, _parse_ext, _find_matching_sidecar,
                            _infer_datatype)
