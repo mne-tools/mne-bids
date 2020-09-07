@@ -160,6 +160,40 @@ def test_read_participants_data():
         assert raw.info['subject_info'] is None
 
 
+@pytest.mark.parametrize(
+    ('hand_bids', 'hand_mne', 'sex_bids', 'sex_mne'),
+    [('Right', 1, 'Female', 2),
+     ('RIGHT', 1, 'FEMALE', 2),
+     ('R', 1, 'F', 2),
+     ('left', 2, 'male', 1),
+     ('l', 2, 'm', 1)]
+)
+@pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+def test_read_participants_handedness_and_sex_mapping(hand_bids, hand_mne,
+                                                      sex_bids, sex_mne):
+    """Test we're correctly mapping handedness and sex between BIDS and MNE."""
+    bids_root = _TempDir()
+    participants_tsv_fpath = op.join(bids_root, 'participants.tsv')
+    raw = _read_raw_fif(raw_fname, verbose=False)
+
+    subject_info = {
+        'hand': 1,
+        'sex': 2,
+    }
+    raw.info['subject_info'] = subject_info
+    bids_path.update(root=bids_root, datatype='meg')
+    write_raw_bids(raw, bids_path, overwrite=True, verbose=False)
+
+    participants_tsv = _from_tsv(participants_tsv_fpath)
+    participants_tsv['hand'][0] = hand_bids
+    participants_tsv['sex'][0] = sex_bids
+    _to_tsv(participants_tsv, participants_tsv_fpath)
+
+    raw = read_raw_bids(bids_path=bids_path)
+    assert raw.info['subject_info']['hand'] is hand_mne
+    assert raw.info['subject_info']['sex'] is sex_mne
+
+
 @requires_nibabel()
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_get_head_mri_trans():
