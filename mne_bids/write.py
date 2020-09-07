@@ -265,12 +265,12 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False,
     subject_info = raw.info.get('subject_info', None)
     if subject_info is not None:
         # add sex
-        sex = _convert_sex_options(subject_info.get('sex', 0),
-                                   fro='mne', to='bids')
+        sex = _map_options(what='sex', key=subject_info.get('sex', 0),
+                           fro='mne', to='bids')
 
         # add handedness
-        hand = _convert_hand_options(subject_info.get('hand', 0),
-                                     fro='mne', to='bids')
+        hand = _map_options(what='hand', subject_info.get('hand', 0),
+                            fro='mne', to='bids')
 
         # determine the age of the participant
         age = subject_info.get('birthday', None)
