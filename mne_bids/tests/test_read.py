@@ -177,11 +177,8 @@ def test_read_participants_handedness_and_sex_mapping(hand_bids, hand_mne,
     participants_tsv_fpath = op.join(bids_root, 'participants.tsv')
     raw = _read_raw_fif(raw_fname, verbose=False)
 
-    subject_info = {
-        'hand': 1,
-        'sex': 2,
-    }
-    raw.info['subject_info'] = subject_info
+    # Avoid that we end up with subject information stored in the raw data.
+    raw.info['subject_info'] = {}
     write_raw_bids(raw, bids_path, overwrite=True, verbose=False)
 
     participants_tsv = _from_tsv(participants_tsv_fpath)
