@@ -269,7 +269,7 @@ def _participants_tsv(raw, subject_id, fname, overwrite=False,
                            fro='mne', to='bids')
 
         # add handedness
-        hand = _map_options(what='hand', subject_info.get('hand', 0),
+        hand = _map_options(what='hand', key=subject_info.get('hand', 0),
                             fro='mne', to='bids')
 
         # determine the age of the participant
