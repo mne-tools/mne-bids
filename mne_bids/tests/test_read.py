@@ -41,11 +41,11 @@ run = '01'
 acq = '01'
 task = 'testing'
 
-bids_path = BIDSPath(
+_bids_path = BIDSPath(
     subject=subject_id, session=session_id, run=run, acquisition=acq,
     task=task)
 
-bids_path_minimal = BIDSPath(subject=subject_id, task=task)
+_bids_path_minimal = BIDSPath(subject=subject_id, task=task)
 
 # Get the MNE testing sample data - USA
 data_path = testing.data_path()
@@ -114,6 +114,7 @@ def test_read_correct_inputs():
 def test_read_participants_data():
     """Test reading information from a BIDS sidecar.json file."""
     bids_root = _TempDir()
+    bids_path = _bids_path.copy().update(root=bids_root, datatype='meg')
     raw = _read_raw_fif(raw_fname, verbose=False)
 
     # if subject info was set, we don't roundtrip birthday
@@ -123,7 +124,6 @@ def test_read_participants_data():
         'sex': 2,
     }
     raw.info['subject_info'] = subject_info
-    bids_path.update(root=bids_root, datatype='meg')
     write_raw_bids(raw, bids_path, overwrite=True, verbose=False)
     raw = read_raw_bids(bids_path=bids_path)
     print(raw.info['subject_info'])
@@ -160,6 +160,37 @@ def test_read_participants_data():
         assert raw.info['subject_info'] is None
 
 
+@pytest.mark.parametrize(
+    ('hand_bids', 'hand_mne', 'sex_bids', 'sex_mne'),
+    [('Right', 1, 'Female', 2),
+     ('RIGHT', 1, 'FEMALE', 2),
+     ('R', 1, 'F', 2),
+     ('left', 2, 'male', 1),
+     ('l', 2, 'm', 1)]
+)
+@pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+def test_read_participants_handedness_and_sex_mapping(hand_bids, hand_mne,
+                                                      sex_bids, sex_mne):
+    """Test we're correctly mapping handedness and sex between BIDS and MNE."""
+    bids_root = _TempDir()
+    bids_path = _bids_path.copy().update(root=bids_root, datatype='meg')
+    participants_tsv_fpath = op.join(bids_root, 'participants.tsv')
+    raw = _read_raw_fif(raw_fname, verbose=False)
+
+    # Avoid that we end up with subject information stored in the raw data.
+    raw.info['subject_info'] = {}
+    write_raw_bids(raw, bids_path, overwrite=True, verbose=False)
+
+    participants_tsv = _from_tsv(participants_tsv_fpath)
+    participants_tsv['hand'][0] = hand_bids
+    participants_tsv['sex'][0] = sex_bids
+    _to_tsv(participants_tsv, participants_tsv_fpath)
+
+    raw = read_raw_bids(bids_path=bids_path)
+    assert raw.info['subject_info']['hand'] is hand_mne
+    assert raw.info['subject_info']['sex'] is sex_mne
+
+
 @requires_nibabel()
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_get_head_mri_trans():
@@ -174,7 +205,7 @@ def test_get_head_mri_trans():
     # Write it to BIDS
     raw = _read_raw_fif(raw_fname)
     bids_root = _TempDir()
-    bids_path.update(root=bids_root)
+    bids_path = _bids_path.copy().update(root=bids_root)
     write_raw_bids(raw, bids_path, events_data=events_fname,
                    event_id=event_id, overwrite=False)
 
@@ -360,7 +391,7 @@ def test_handle_eeg_coords_reading():
 
 
 @pytest.mark.parametrize('bids_path',
-                         [bids_path, bids_path_minimal])
+                         [_bids_path, _bids_path_minimal])
 @pytest.mark.filterwarnings(warning_str['nasion_not_found'])
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_handle_ieeg_coords_reading(bids_path):
@@ -531,7 +562,7 @@ def test_get_head_mri_trans_ctf():
     raw_ctf_fname = op.join(ctf_data_path, 'testdata_ctf.ds')
     raw_ctf = _read_raw_ctf(raw_ctf_fname)
     bids_root = _TempDir()
-    bids_path.update(root=bids_root)
+    bids_path = _bids_path.copy().update(root=bids_root)
     write_raw_bids(raw_ctf, bids_path, overwrite=False)
 
     # Take a fake trans
@@ -555,7 +586,7 @@ def test_get_head_mri_trans_ctf():
 def test_read_raw_bids_pathlike():
     """Test that read_raw_bids() can handle a Path-like bids_root."""
     bids_root = _TempDir()
-    bids_path.update(root=bids_root, datatype='meg')
+    bids_path = _bids_path.copy().update(root=bids_root, datatype='meg')
     raw = _read_raw_fif(raw_fname, verbose=False)
     write_raw_bids(raw, bids_path, overwrite=True, verbose=False)
     raw = read_raw_bids(bids_path=bids_path)
@@ -565,7 +596,7 @@ def test_read_raw_bids_pathlike():
 def test_read_raw_datatype():
     """Test that read_raw_bids() can infer the str_suffix if need be."""
     bids_root = _TempDir()
-    bids_path.update(root=bids_root, datatype='meg')
+    bids_path = _bids_path.copy().update(root=bids_root, datatype='meg')
     raw = _read_raw_fif(raw_fname, verbose=False)
     write_raw_bids(raw, bids_path, overwrite=True, verbose=False)
 
@@ -585,7 +616,7 @@ def test_read_raw_datatype():
 def test_handle_channel_type_casing():
     """Test that non-uppercase entries in the `type` column are accepted."""
     bids_root = _TempDir()
-    bids_path.update(root=bids_root)
+    bids_path = _bids_path.copy().update(root=bids_root)
     raw = _read_raw_fif(raw_fname, verbose=False)
 
     write_raw_bids(raw, bids_path, overwrite=True,
@@ -609,7 +640,7 @@ def test_handle_channel_type_casing():
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_bads_reading():
     bids_root = _TempDir()
-    bids_path.update(root=bids_root)
+    bids_path = _bids_path.copy().update(root=bids_root)
     data_path = BIDSPath(
         subject=subject_id, session=session_id, datatype='meg',
         root=bids_root).mkdir().directory
