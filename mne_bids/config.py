@@ -1,7 +1,15 @@
 """Configuration values for MNE-BIDS."""
 from mne import io
 from mne.io.constants import FIFF
-from mne.utils import check_version
+
+
+def read_raw_persyst_func():
+    try:
+        from mne.io import read_raw_persyst
+        return read_raw_persyst
+    except ImportError as e:
+        raise ImportError(e)
+
 
 BIDS_VERSION = "1.4.0"
 
@@ -32,9 +40,7 @@ reader = {'.con': io.read_raw_kit, '.sqd': io.read_raw_kit,
           '.fif': io.read_raw_fif, '.pdf': io.read_raw_bti,
           '.ds': io.read_raw_ctf, '.vhdr': io.read_raw_brainvision,
           '.edf': io.read_raw_edf, '.bdf': io.read_raw_bdf,
-          '.set': io.read_raw_eeglab}
-if check_version('mne', '0.20.dev0'):
-    reader['lay'] = io.read_raw_persyst
+          '.set': io.read_raw_eeglab, '.lay': read_raw_persyst_func()}
 
 # Merge the manufacturer dictionaries in a python2 / python3 compatible way
 MANUFACTURERS = dict()
@@ -66,6 +72,13 @@ allowed_extensions_ieeg = ['.vhdr',  # BrainVision, accompanied by .vmrk, .eeg
 ALLOWED_DATATYPE_EXTENSIONS = {'meg': allowed_extensions_meg,
                                'eeg': allowed_extensions_eeg,
                                'ieeg': allowed_extensions_ieeg}
+
+# allow additional extensions that are not BIDS
+# compliant, but we will convert to the
+# recommended formats
+ALLOWED_INPUT_EXTENSIONS = allowed_extensions_meg + \
+                           allowed_extensions_eeg + \
+                           allowed_extensions_ieeg + ['.lay']
 
 # allowed suffixes (i.e. last "_" delimiter in the BIDS filenames before
 # the extension)
