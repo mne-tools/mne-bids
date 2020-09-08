@@ -870,6 +870,8 @@ def test_vhdr(_bids_validate):
     assert tsv['impedance'][:3] == ['5.0', '2.0', '4.0']
 
 
+@pytest.mark.skipif(LooseVersion(mne.__version__) < LooseVersion('0.20'),
+                    reason="requires mne 0.20.dev0 or higher")
 @pytest.mark.parametrize('dir_name, fname', test_eegieeg_data)
 @pytest.mark.filterwarnings(warning_str['nasion_not_found'])
 def test_eegieeg(dir_name, fname, reader, _bids_validate):
