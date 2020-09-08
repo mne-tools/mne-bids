@@ -61,6 +61,7 @@ allowed_extensions_ieeg = ['.vhdr',  # BrainVision, accompanied by .vmrk, .eeg
                            '.nwb',  # Neurodata without borders
                            ]
 
+# allowed extensions (data formats) in BIDS spec
 ALLOWED_DATATYPE_EXTENSIONS = {'meg': allowed_extensions_meg,
                                'eeg': allowed_extensions_eeg,
                                'ieeg': allowed_extensions_ieeg}
@@ -68,9 +69,9 @@ ALLOWED_DATATYPE_EXTENSIONS = {'meg': allowed_extensions_meg,
 # allow additional extensions that are not BIDS
 # compliant, but we will convert to the
 # recommended formats
-ALLOWED_INPUT_EXTENSIONS = allowed_extensions_meg + \
-                           allowed_extensions_eeg + \
-                           allowed_extensions_ieeg + ['.lay']
+ALLOWED_INPUT_EXTENSIONS = \
+    allowed_extensions_meg + allowed_extensions_eeg + \
+    allowed_extensions_ieeg + ['.lay']
 
 # allowed suffixes (i.e. last "_" delimiter in the BIDS filenames before
 # the extension)
