@@ -89,7 +89,7 @@ _read_raw_edf = _wrap_read_raw(mne.io.read_raw_edf)
 _read_raw_bdf = _wrap_read_raw(mne.io.read_raw_bdf)
 _read_raw_eeglab = _wrap_read_raw(mne.io.read_raw_eeglab)
 _read_raw_brainvision = _wrap_read_raw(mne.io.read_raw_brainvision)
-_read_raw_persyst = _wrap_read_raw(reader['lay'])
+_read_raw_persyst = _wrap_read_raw(reader['.lay'])
 
 # parametrized directory, filename and reader for EEG/iEEG data formats
 test_eegieeg_data = [
