@@ -195,6 +195,9 @@ class BIDSPath(object):
     root : str | pathlib.Path | None
         The root for the filename to be created. E.g., a path to the folder
         in which you wish to create a file with this name.
+    description : str | None
+        The description for the filepath. This corresponds to the ``desc``
+        entity reserved for ``derivatives`` files.
     check : bool
         If True enforces the entities to be valid according to the
         current BIDS standard. Defaults to True.
@@ -260,7 +263,8 @@ class BIDSPath(object):
     def __init__(self, subject=None, session=None,
                  task=None, acquisition=None, run=None, processing=None,
                  recording=None, space=None, split=None, root=None,
-                 suffix=None, extension=None, datatype=None, check=True):
+                 suffix=None, extension=None, datatype=None,
+                 description=None, check=True):
         if all(ii is None for ii in [subject, session, task,
                                      acquisition, run, processing,
                                      recording, space, root, suffix,
@@ -272,7 +276,7 @@ class BIDSPath(object):
         self.update(subject=subject, session=session, task=task,
                     acquisition=acquisition, run=run, processing=processing,
                     recording=recording, space=space, split=split,
-                    root=root, datatype=datatype,
+                    root=root, datatype=datatype, description=description,
                     suffix=suffix, extension=extension)
 
     @property
@@ -287,7 +291,9 @@ class BIDSPath(object):
             ('processing', self.processing),
             ('space', self.space),
             ('recording', self.recording),
-            ('split', self.split)
+            ('split', self.split),
+            # start of derivative entities
+            ('description', self.description)
         ])
 
     @property

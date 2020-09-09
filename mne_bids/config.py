@@ -90,16 +90,22 @@ ALLOWED_FILENAME_EXTENSIONS = (
     ['.pos', '.eeg', '.vmrk']  # extra datatype-specific metadata files
 )
 
+# allowed path entities from general derivatives extension
+ALLOWED_PATH_DERIVATIVE_ENTITIES = ('description')
 # allowed BIDS path entities
 ALLOWED_PATH_ENTITIES = ('subject', 'session', 'task', 'run',
                          'processing', 'recording', 'space',
                          'acquisition', 'split',
                          'suffix', 'extension')
+ALLOWED_PATH_ENTITIES = set(ALLOWED_PATH_ENTITIES).union(
+    ALLOWED_PATH_DERIVATIVE_ENTITIES)
+# short hand notation for entities
 ALLOWED_PATH_ENTITIES_SHORT = {'sub': 'subject', 'ses': 'session',
                                'task': 'task', 'acq': 'acquisition',
                                'run': 'run', 'proc': 'processing',
                                'space': 'space', 'rec': 'recording',
-                               'split': 'split', 'suffix': 'suffix'}
+                               'split': 'split', 'suffix': 'suffix',
+                               'desc': 'description'}
 
 # See: https://bids-specification.readthedocs.io/en/latest/99-appendices/04-entity-table.html#encephalography-eeg-ieeg-and-meg  # noqa
 ENTITY_VALUE_TYPE = {
@@ -113,7 +119,8 @@ ENTITY_VALUE_TYPE = {
     'acquisition': 'label',
     'split': 'index',
     'suffix': 'label',
-    'extension': 'label'
+    'extension': 'label',
+    'description': 'label'
 }
 
 # accepted BIDS formats, which may be subject to change

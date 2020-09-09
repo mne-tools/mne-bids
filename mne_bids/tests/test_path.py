@@ -741,3 +741,15 @@ def test_bids_path_label_vs_index_entity():
         BIDSPath(root=1, subject='01')
     BIDSPath(subject='01', run=1)  # ok as <index> entity
     BIDSPath(subject='01', split=1)  # ok as <index> entity
+
+
+@pytest.mark.parametrize('description', [
+    'tfr',
+    'newlymade',
+])
+def test_bids_path_derivatives(description):
+    deriv_path = BIDSPath(subject=subject_id, session=session_id,
+                          task=task, run=run, suffix='ieeg',
+                          extension='.json', description=description)
+    expected_str = f'sub-{subject_id}_ses-{session_id}_task-{task}_run-{run}_desc-{description}_ieeg.json'  # noqa
+    assert deriv_path.basename == expected_str
