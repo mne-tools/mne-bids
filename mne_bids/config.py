@@ -3,7 +3,7 @@ from mne import io
 from mne.io.constants import FIFF
 
 try:
-    from io import read_raw_persyst
+    from mne.io import read_raw_persyst
 except ImportError:
     print('Reading Persyst files requires latest mne dev '
           'version or 0.21 release.')
@@ -28,11 +28,13 @@ meg_manufacturers = {'.sqd': 'KIT/Yokogawa', '.con': 'KIT/Yokogawa',
 
 eeg_manufacturers = {'.vhdr': 'BrainProducts', '.eeg': 'BrainProducts',
                      '.edf': 'n/a', '.bdf': 'Biosemi', '.set': 'n/a',
-                     '.fdt': 'n/a'}
+                     '.fdt': 'n/a',
+                     '.lay': 'Persyst', '.dat': 'Persyst'}
 
 ieeg_manufacturers = {'.vhdr': 'BrainProducts', '.eeg': 'BrainProducts',
                       '.edf': 'n/a', '.set': 'n/a', '.fdt': 'n/a',
-                      '.mef': 'n/a', '.nwb': 'n/a'}
+                      '.mef': 'n/a', '.nwb': 'n/a',
+                      '.lay': 'Persyst', '.dat': 'Persyst'}
 
 # file-extension map to mne-python readers
 reader = {'.con': io.read_raw_kit, '.sqd': io.read_raw_kit,
@@ -99,9 +101,7 @@ SUFFIX_TO_DATATYPE = {
 
 # allowed BIDS extensions (extension in the BIDS filename)
 ALLOWED_FILENAME_EXTENSIONS = (
-    allowed_extensions_meg +
-    allowed_extensions_eeg +
-    allowed_extensions_ieeg +
+    ALLOWED_INPUT_EXTENSIONS +
     ['.json', '.tsv', '.tsv.gz', '.nii', '.nii.gz'] +
     ['.pos', '.eeg', '.vmrk']  # extra datatype-specific metadata files
 )

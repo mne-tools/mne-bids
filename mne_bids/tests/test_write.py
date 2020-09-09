@@ -877,7 +877,7 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate):
 
     raw = reader(raw_fname)
 
-    raw.rename_channels({raw.info['ch_names'][0]: 'EOG'})
+    raw.rename_channels({raw.info['ch_names'][0]: 'EOGtest'})
     raw.info['chs'][0]['coil_type'] = FIFF.FIFFV_COIL_EEG_BIPOLAR
     raw.rename_channels({raw.info['ch_names'][1]: 'EMG'})
     raw.set_channel_types({'EMG': 'emg'})
@@ -905,8 +905,11 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate):
     # in `raw` and used that information to write a channels.tsv. Yet, we
     # saved the unchanged `raw` in the BIDS folder, so channels in the TSV and
     # in raw clash
-    with pytest.raises(RuntimeError, match='Channels do not correspond'):
-        read_raw_bids(bids_path=bids_path)
+    # Note: only needed for data files that store channel names
+    # alongside the data
+    if dir_name != 'Persyst':
+        with pytest.raises(RuntimeError, match='Channels do not correspond'):
+            read_raw_bids(bids_path=bids_path)
 
     with pytest.raises(TypeError, match="unexpected keyword argument 'foo'"):
         read_raw_bids(bids_path=bids_path, extra_params=dict(foo='bar'))
@@ -1027,7 +1030,7 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate):
 
     # test anonymize and convert
     if check_version('mne', '0.20') and check_version('pybv', '0.2.0'):
-        raw = _read_raw_edf(raw_fname)
+        raw = reader(raw_fname)
         output_path = _test_anonymize(raw, bids_path)
         _bids_validate(output_path)
 

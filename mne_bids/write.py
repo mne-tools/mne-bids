@@ -953,6 +953,7 @@ def write_raw_bids(raw, bids_path, events_data=None,
     # point to file containing header info for multifile systems
     raw_fname = raw_fname.replace('.eeg', '.vhdr')
     raw_fname = raw_fname.replace('.fdt', '.set')
+    raw_fname = raw_fname.replace('.dat', '.lay')
     _, ext = _parse_ext(raw_fname, verbose=verbose)
 
     if ext not in ALLOWED_INPUT_EXTENSIONS:
