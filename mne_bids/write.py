@@ -1042,8 +1042,9 @@ def write_raw_bids(raw, bids_path, events_data=None,
     unit = UNITS.get(ext, 'n/a')
     manufacturer = MANUFACTURERS.get(ext, 'n/a')
 
+    # save readme file unless it already exists
     # XXX: can include README overwrite in future if using a template API
-    # save all participants meta data and readme file
+    # XXX: see https://github.com/mne-tools/mne-bids/issues/551
     _readme(bids_path.datatype, readme_fname, False, verbose)
 
     # save all participants meta data
