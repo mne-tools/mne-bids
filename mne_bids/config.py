@@ -5,6 +5,8 @@ from mne.io.constants import FIFF
 try:
     from io import read_raw_persyst
 except ImportError:
+    print('Reading Persyst files requires latest mne dev '
+          'version or 0.21 release.')
     read_raw_persyst = None
 
 BIDS_VERSION = "1.4.0"
