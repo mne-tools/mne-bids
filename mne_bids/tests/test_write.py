@@ -482,7 +482,7 @@ def test_fif(_bids_validate):
 
     with open(readme, 'r') as fid:
         text = fid.read()
-        assert 'Welcome to my dataset\n' not in text
+        assert 'Welcome to my dataset\n' in text
         assert REFERENCES['mne-bids'] in text
         assert REFERENCES['meg'] in text
 
