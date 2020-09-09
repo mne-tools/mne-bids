@@ -1153,8 +1153,10 @@
     <span class="n">unit</span> <span class="o">=</span> <span class="n">UNITS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ext</span><span class="p">,</span> <span class="s1">&#39;n/a&#39;</span><span class="p">)</span>
     <span class="n">manufacturer</span> <span class="o">=</span> <span class="n">MANUFACTURERS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ext</span><span class="p">,</span> <span class="s1">&#39;n/a&#39;</span><span class="p">)</span>
 
-    <span class="c1"># save all participants meta data and readme file</span>
-    <span class="n">_readme</span><span class="p">(</span><span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span><span class="p">,</span> <span class="n">readme_fname</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
+    <span class="c1"># save readme file unless it already exists</span>
+    <span class="c1"># XXX: can include README overwrite in future if using a template API</span>
+    <span class="c1"># XXX: see https://github.com/mne-tools/mne-bids/issues/551</span>
+    <span class="n">_readme</span><span class="p">(</span><span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span><span class="p">,</span> <span class="n">readme_fname</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
 
     <span class="c1"># save all participants meta data</span>
     <span class="n">_participants_tsv</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">subject</span><span class="p">,</span> <span class="n">participants_tsv_fname</span><span class="p">,</span>
@@ -1614,7 +1616,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-09-07.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-09-09.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
     </p>
   </div>
