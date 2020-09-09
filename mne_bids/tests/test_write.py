@@ -48,7 +48,7 @@ from mne_bids.tsv_handler import _from_tsv, _to_tsv
 from mne_bids.utils import _update_sidecar
 from mne_bids.path import _find_matching_sidecar
 from mne_bids.pick import coil_type
-from mne_bids.config import REFERENCES
+from mne_bids.config import REFERENCES, reader
 
 base_path = op.join(op.dirname(mne.__file__), 'io')
 subject_id = '01'
@@ -94,7 +94,7 @@ _read_raw_brainvision = _wrap_read_raw(mne.io.read_raw_brainvision)
 # parametrized directory, filename and reader for EEG/iEEG data formats
 test_eegieeg_data = [
     ('EDF', 'test_reduced.edf', _read_raw_edf),
-    ('Persyst', 'sub-pt1_ses-02_task-monitor_acq-ecog_run-01_clip2.lay', _read_raw_persyst),  # noqa
+    ('Persyst', 'sub-pt1_ses-02_task-monitor_acq-ecog_run-01_clip2.lay', reader['lay']),  # noqa
 ]
 
 
