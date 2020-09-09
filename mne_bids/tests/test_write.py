@@ -75,6 +75,8 @@ warning_str = dict(
 
 def _wrap_read_raw(read_raw):
     def fn(fname, *args, **kwargs):
+        if read_raw is None:
+            return None
         raw = read_raw(fname, *args, **kwargs)
         raw.info['line_freq'] = 60
         return raw

@@ -9,6 +9,7 @@ except ImportError:
           'version or 0.21 release.')
     read_raw_persyst = None
 
+
 BIDS_VERSION = "1.4.0"
 
 DOI = """https://doi.org/10.21105/joss.01896"""
