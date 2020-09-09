@@ -1042,8 +1042,9 @@ def write_raw_bids(raw, bids_path, events_data=None,
     unit = UNITS.get(ext, 'n/a')
     manufacturer = MANUFACTURERS.get(ext, 'n/a')
 
+    # XXX: can include README overwrite in future if using a template API
     # save all participants meta data and readme file
-    _readme(bids_path.datatype, readme_fname, overwrite, verbose)
+    _readme(bids_path.datatype, readme_fname, False, verbose)
 
     # save all participants meta data
     _participants_tsv(raw, bids_path.subject, participants_tsv_fname,
