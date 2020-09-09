@@ -199,6 +199,7 @@ def test_parse_ext():
     'sub-01_ses-02_task-test_run-3_split-01',
     ('/bids_root/sub-01/ses-02/meg/' +
      'sub-01_ses-02_task-test_run-3_split-01_meg.fif'),
+    'sub-01_ses-02_task-test_run-3_split-01_desc-tfr_meg.npy',
 ])
 def test_parse_bids_filename(fname):
     """Test parsing entities from a bids filename."""
@@ -209,11 +210,14 @@ def test_parse_bids_filename(fname):
     assert params['run'] == '3'
     assert params['task'] == 'test'
     assert params['split'] == '01'
+    if 'desc' in fname:
+        assert params['description'] == 'tfr'
     if 'meg' in fname:
         assert params['suffix'] == 'meg'
     assert list(params.keys()) == ['subject', 'session', 'task',
                                    'acquisition', 'run', 'processing',
-                                   'space', 'recording', 'split', 'suffix']
+                                   'space', 'recording', 'split', 'suffix',
+                                   'description']
 
 
 @pytest.mark.parametrize('candidate_list, best_candidates', [
@@ -372,7 +376,7 @@ def test_bids_path(return_bids_test_dir):
                for entity in ['task', 'run', 'recording', 'acquisition',
                               'space', 'processing', 'split',
                               'root', 'datatype',
-                              'suffix', 'extension'])
+                              'suffix', 'extension', 'description'])
 
     # test updating functionality
     bids_path.update(acquisition='03', run='2', session='02',
@@ -753,3 +757,5 @@ def test_bids_path_derivatives(description):
                           extension='.json', description=description)
     expected_str = f'sub-{subject_id}_ses-{session_id}_task-{task}_run-{run}_desc-{description}_ieeg.json'  # noqa
     assert deriv_path.basename == expected_str
+
+    assert deriv_path.description == description
