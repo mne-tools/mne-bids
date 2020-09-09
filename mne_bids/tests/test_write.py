@@ -75,8 +75,6 @@ warning_str = dict(
 
 def _wrap_read_raw(read_raw):
     def fn(fname, *args, **kwargs):
-        if read_raw is None:
-            return None
         raw = read_raw(fname, *args, **kwargs)
         raw.info['line_freq'] = 60
         return raw
@@ -868,7 +866,7 @@ def test_vhdr(_bids_validate):
 
 
 @pytest.mark.parametrize('dir_name, fname, reader', test_eegieeg_data)
-@pytest.mark.skipif(LooseVersion(mne.__version__) < LooseVersion('0.20'),
+@pytest.mark.skipif(LooseVersion(mne.__version__) < LooseVersion('0.21'),
                     reason="requires mne 0.20.dev0 or higher")
 @pytest.mark.filterwarnings(warning_str['nasion_not_found'])
 def test_eegieeg(dir_name, fname, reader, _bids_validate):
