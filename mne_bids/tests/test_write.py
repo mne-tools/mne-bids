@@ -94,13 +94,8 @@ _read_raw_brainvision = _wrap_read_raw(mne.io.read_raw_brainvision)
 # parametrized directory, filename and reader for EEG/iEEG data formats
 test_eegieeg_data = [
     ('EDF', 'test_reduced.edf', _read_raw_edf),
+    ('Persyst', 'sub-pt1_ses-02_task-monitor_acq-ecog_run-01_clip2.lay', _read_raw_persyst),  # noqa
 ]
-# TODO: merge this in when mne releases 0.21 Sept 15
-if check_version('mne', '0.20.dev0'):
-    _read_raw_persyst = _wrap_read_raw(mne.io.read_raw_persyst)
-    test_eegieeg_data.append(
-        ('Persyst', 'sub-pt1_ses-02_task-monitor_acq-ecog_run-01_clip2.lay', _read_raw_persyst),  # noqa
-    )
 
 
 # WINDOWS issues:
