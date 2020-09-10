@@ -367,7 +367,6 @@ def read_raw_bids(bids_path, extra_params=None, verbose=True):
                                             extension='.tsv',
                                             allow_fail=True)
     if channels_fname is not None:
-        print('TRYING TO ATTACH CHANNELS TSV')
         raw = _handle_channels_reading(channels_fname, bids_fname, raw)
 
     # Try to find an associated electrodes.tsv and coordsystem.json
