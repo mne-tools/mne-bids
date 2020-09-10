@@ -757,5 +757,4 @@ def test_bids_path_derivatives(description):
                           extension='.json', description=description)
     expected_str = f'sub-{subject_id}_ses-{session_id}_task-{task}_run-{run}_desc-{description}_ieeg.json'  # noqa
     assert deriv_path.basename == expected_str
-
     assert deriv_path.description == description

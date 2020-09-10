@@ -1198,7 +1198,8 @@ def _path_to_str(var):
 
 def _filter_fnames(fnames, *, subject=None, session=None, task=None,
                    acquisition=None, run=None, processing=None, recording=None,
-                   space=None, split=None, suffix=None, extension=None):
+                   space=None, split=None, suffix=None, extension=None,
+                   description=None):
     """Filter a list of BIDS filenames based on BIDS entity values.
 
     Parameters
@@ -1219,12 +1220,14 @@ def _filter_fnames(fnames, *, subject=None, session=None, task=None,
     rec_str = f'_rec-{recording}' if recording else r'(|_rec-([^_]+))'
     space_str = f'_space-{space}' if space else r'(|_space-([^_]+))'
     split_str = f'_split-{split}' if split else r'(|_split-([^_]+))'
+    desc_str = f'_desc-{description}' if description else r'(|_desc-([^_]+))'
     suffix_str = (f'_{suffix}' if suffix
                   else r'_(' + '|'.join(ALLOWED_FILENAME_SUFFIX) + ')')
     ext_str = extension if extension else r'.([^_]+)'
 
     regexp = (sub_str + ses_str + task_str + acq_str + run_str + proc_str +
-              rec_str + space_str + split_str + suffix_str + ext_str)
+              rec_str + space_str + split_str + desc_str +
+              suffix_str + ext_str)
 
     # Convert to str so we can apply the regexp ...
     fnames = [str(f) for f in fnames]
