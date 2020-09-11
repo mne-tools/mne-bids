@@ -39,6 +39,7 @@ Changelog
 - Added a new function :func:`mne_bids.mark_bad_channels` and command line interface ``mark_bad_channels`` which allows updating of the channel status (bad, good) and description of an existing BIDS dataset, by `Richard Höchenberger`_ (`#491 <https://github.com/mne-tools/mne-bids/pull/491>`_)
 - :func:`mne_bids.read_raw_bids` correctly maps all specified ``handedness`` and ``sex`` options to MNE-Python, instead of only an incomplete subset, by `Richard Höchenberger`_ (`#550 <https://github.com/mne-tools/mne-bids/pull/550>`_)
 - :func:`mne_bids.write_raw_bids` only writes a README if it does not already exist, by `Adam Li`_ (`#489 <https://github.com/mne-tools/mne-bids/pull/489>`_)
+- All functions :func:`mne_bids.write_anat`, :func:`mne_bids.make_report`, :func:`mne_bids.get_entity_vals` and :func:`mne_bids.get_datatypes` use now kwarg ``root`` instead of ``bids_root``, `Adam Li`_ (`#489 <https://github.com/mne-tools/mne-bids/pull/489>`_)
 
 
 Bug
