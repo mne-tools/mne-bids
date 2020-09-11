@@ -1444,7 +1444,7 @@ def test_write_anat_pathlike():
 
     bids_root = Path(_TempDir())
     t1w_mgh_fname = Path(data_path) / 'subjects' / 'sample' / 'mri' / 'T1.mgz'
-    anat_dir = write_anat(bids_root=bids_root, subject=subject_id,
+    anat_dir = write_anat(root=bids_root, subject=subject_id,
                           t1w=t1w_mgh_fname,
                           session=session_id, acquisition=acq,
                           raw=raw, trans=trans, deface=True, verbose=True,

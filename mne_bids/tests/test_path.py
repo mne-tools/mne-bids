@@ -100,9 +100,9 @@ def test_get_entity_vals(entity, expected_vals, kwargs, return_bids_test_dir):
 
     if entity == 'bogus':
         with pytest.raises(ValueError, match='`key` must be one of'):
-            get_entity_vals(bids_root=bids_root, entity_key=entity, **kwargs)
+            get_entity_vals(root=bids_root, entity_key=entity, **kwargs)
     else:
-        vals = get_entity_vals(bids_root=bids_root, entity_key=entity,
+        vals = get_entity_vals(root=bids_root, entity_key=entity,
                                **kwargs)
         assert vals == expected_vals
 
