@@ -138,6 +138,9 @@ def test_print_dir_tree(capsys):
     captured = capsys.readouterr()
     assert captured.out == '|tests{}\n'.format(os.sep)
 
+    # test if pathlib.Path object
+    print_dir_tree(Path(test_dir))
+
 
 def test_make_folders():
     """Test that folders are created and named properly."""
