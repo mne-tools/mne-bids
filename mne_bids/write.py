@@ -47,7 +47,8 @@ from mne_bids.read import _get_bads_from_tsv_data, _find_matching_sidecar
 
 from mne_bids.config import (ORIENTATION, UNITS, MANUFACTURERS,
                              IGNORED_CHANNELS, ALLOWED_DATATYPE_EXTENSIONS,
-                             BIDS_VERSION, REFERENCES, _map_options, reader)
+                             BIDS_VERSION, REFERENCES, _map_options, reader,
+                             ALLOWED_INPUT_EXTENSIONS)
 
 
 def _is_numeric(n):
@@ -952,10 +953,10 @@ def write_raw_bids(raw, bids_path, events_data=None,
     # point to file containing header info for multifile systems
     raw_fname = raw_fname.replace('.eeg', '.vhdr')
     raw_fname = raw_fname.replace('.fdt', '.set')
+    raw_fname = raw_fname.replace('.dat', '.lay')
     _, ext = _parse_ext(raw_fname, verbose=verbose)
 
-    if ext not in [this_ext for data_type in ALLOWED_DATATYPE_EXTENSIONS
-                   for this_ext in ALLOWED_DATATYPE_EXTENSIONS[data_type]]:
+    if ext not in ALLOWED_INPUT_EXTENSIONS:
         raise ValueError(f'Unrecognized file format {ext}')
 
     raw_orig = reader[ext](**raw._init_kwargs)
