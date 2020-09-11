@@ -41,6 +41,7 @@ Changelog
 - :func:`mne_bids.write_raw_bids` only writes a README if it does not already exist, by `Adam Li`_ (`#489 <https://github.com/mne-tools/mne-bids/pull/489>`_)
 - Allow :func:`mne_bids.write_raw_bids` to write EEG/iEEG files from Persyst using ``mne.io.read_raw_persyst`` function, by `Adam Li`_ (`#546 <https://github.com/mne-tools/mne-bids/pull/546>`_)
 
+
 Bug
 ~~~
 
