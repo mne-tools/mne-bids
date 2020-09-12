@@ -331,7 +331,7 @@ def read_raw_bids(bids_path, extra_params=None, verbose=True):
 
     # infer the datatype and suffix if they are not present in the BIDSPath
     if datatype is None:
-        datatype = _infer_datatype(bids_root=bids_root, sub=sub, ses=ses)
+        datatype = _infer_datatype(root=bids_root, sub=sub, ses=ses)
         bids_path.update(datatype=datatype)
     if suffix is None:
         bids_path.update(suffix=datatype)
