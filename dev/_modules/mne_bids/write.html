@@ -1256,7 +1256,7 @@
     <span class="k">return</span> <span class="n">bids_path</span></div>
 
 
-<div class="viewcode-block" id="write_anat"><a class="viewcode-back" href="../../generated/mne_bids.write_anat.html#mne_bids.write_anat">[docs]</a><span class="k">def</span> <span class="nf">write_anat</span><span class="p">(</span><span class="n">bids_root</span><span class="p">,</span> <span class="n">subject</span><span class="p">,</span> <span class="n">t1w</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">acquisition</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<div class="viewcode-block" id="write_anat"><a class="viewcode-back" href="../../generated/mne_bids.write_anat.html#mne_bids.write_anat">[docs]</a><span class="k">def</span> <span class="nf">write_anat</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">subject</span><span class="p">,</span> <span class="n">t1w</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">acquisition</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                <span class="n">raw</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">trans</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">landmarks</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">deface</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Put anatomical MRI data into a BIDS format.</span>
@@ -1268,7 +1268,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    bids_root : str | pathlib.Path</span>
+<span class="sd">    root : str | pathlib.Path</span>
 <span class="sd">        Path to root of the BIDS folder</span>
 <span class="sd">    subject : str</span>
 <span class="sd">        Subject label as in &#39;sub-&lt;label&gt;&#39;, for example: &#39;01&#39;</span>
@@ -1334,7 +1334,7 @@
                          <span class="s1">&#39;must be provided to deface the T1&#39;</span><span class="p">)</span>
 
     <span class="c1"># Make directory for anatomical data</span>
-    <span class="n">anat_dir</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bids_root</span><span class="p">,</span> <span class="s1">&#39;sub-</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">subject</span><span class="p">))</span>
+    <span class="n">anat_dir</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="s1">&#39;sub-</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">subject</span><span class="p">))</span>
     <span class="c1"># Session is optional</span>
     <span class="k">if</span> <span class="n">session</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">anat_dir</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">anat_dir</span><span class="p">,</span> <span class="s1">&#39;ses-</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">session</span><span class="p">))</span>
@@ -1369,7 +1369,7 @@
     <span class="c1"># this needs to be a string, since nibabel assumes a string input</span>
     <span class="n">t1w_basename</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="n">subject</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span>
                             <span class="n">acquisition</span><span class="o">=</span><span class="n">acquisition</span><span class="p">,</span>
-                            <span class="n">root</span><span class="o">=</span><span class="n">bids_root</span><span class="p">,</span>
+                            <span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">,</span>
                             <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;T1w&#39;</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.nii.gz&#39;</span><span class="p">)</span>
 
     <span class="c1"># Check if we have necessary conditions for writing a sidecar JSON</span>
@@ -1617,7 +1617,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-09-11.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-09-12.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
     </p>
   </div>

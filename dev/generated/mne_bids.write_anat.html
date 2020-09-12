@@ -112,7 +112,7 @@
 <h1>mne_bids.write_anat<a class="headerlink" href="#mne-bids-write-anat" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt id="mne_bids.write_anat">
-<code class="sig-prename descclassname">mne_bids.</code><code class="sig-name descname">write_anat</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">bids_root</span></em>, <em class="sig-param"><span class="n">subject</span></em>, <em class="sig-param"><span class="n">t1w</span></em>, <em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">acquisition</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">raw</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">trans</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">landmarks</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">deface</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">overwrite</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/write.html#write_anat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.write_anat" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">mne_bids.</code><code class="sig-name descname">write_anat</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">root</span></em>, <em class="sig-param"><span class="n">subject</span></em>, <em class="sig-param"><span class="n">t1w</span></em>, <em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">acquisition</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">raw</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">trans</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">landmarks</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">deface</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">overwrite</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/write.html#write_anat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.write_anat" title="Permalink to this definition">¶</a></dt>
 <dd><p>Put anatomical MRI data into a BIDS format.</p>
 <p>Given a BIDS directory and a T1 weighted MRI scan for a certain subject,
 format the MRI scan to be in BIDS format and put it into the correct
@@ -121,7 +121,7 @@ sidecar JSON file will be written for the T1 weighted data.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>bids_root</strong><span class="classifier">str | pathlib.Path</span></dt><dd><p>Path to root of the BIDS folder</p>
+<dt><strong>root</strong><span class="classifier">str | pathlib.Path</span></dt><dd><p>Path to root of the BIDS folder</p>
 </dd>
 <dt><strong>subject</strong><span class="classifier">str</span></dt><dd><p>Subject label as in ‘sub-&lt;label&gt;’, for example: ‘01’</p>
 </dd>
@@ -202,7 +202,7 @@ False, no content will be printed.</p>
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-09-11.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-09-12.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
     </p>
   </div>

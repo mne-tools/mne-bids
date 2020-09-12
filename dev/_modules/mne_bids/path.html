@@ -356,7 +356,7 @@
 <span class="sd">    &gt;&gt;&gt; # result in a wildcard at the datatype directory level</span>
 <span class="sd">    &gt;&gt;&gt; print(new_bids_path)</span>
 <span class="sd">    sub-test2/ses-one/*/sub-test2_ses-one_task-mytask_channels.tsv</span>
-<span class="sd">    &gt;&gt;&gt; # set a bids_root</span>
+<span class="sd">    &gt;&gt;&gt; # set a root for the BIDS dataset</span>
 <span class="sd">    &gt;&gt;&gt; new_bids_path.update(root=&#39;/bids_dataset&#39;)</span>
 <span class="sd">    &gt;&gt;&gt; print(new_bids_path.root)</span>
 <span class="sd">    /bids_dataset</span>
@@ -441,7 +441,7 @@
 <span class="sd">            The path of the BIDS directory.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Create the data path based on the available entities:</span>
-        <span class="c1"># bids_root, subject, session, and datatype</span>
+        <span class="c1"># root, subject, session, and datatype</span>
         <span class="n">data_path</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">subject</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">data_path</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;sub-</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">subject</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
@@ -507,7 +507,7 @@
         <span class="sd">&quot;&quot;&quot;Full filepath for this BIDS file.</span>
 
 <span class="sd">        Getting the file path consists of the entities passed in</span>
-<span class="sd">        and will get the relative (or full if ``bids_root`` is passed)</span>
+<span class="sd">        and will get the relative (or full if ``root`` is passed)</span>
 <span class="sd">        path.</span>
 
 <span class="sd">        Returns</span>
@@ -526,7 +526,7 @@
             <span class="n">bids_fpath</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_path</span><span class="p">,</span>
                                  <span class="n">op</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">basename</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># if suffix and/or extension is missing, and bids_root is</span>
+            <span class="c1"># if suffix and/or extension is missing, and root is</span>
             <span class="c1"># not None, then BIDSPath will infer the dataset</span>
             <span class="c1"># else, return the relative path with the basename</span>
             <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">suffix</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">extension</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> \
@@ -785,7 +785,7 @@
     <span class="n">basename</span><span class="p">,</span> <span class="n">bids_root</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">basename</span><span class="p">,</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">root</span>
 
     <span class="k">if</span> <span class="n">datatype</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">datatype</span> <span class="o">=</span> <span class="n">_infer_datatype</span><span class="p">(</span><span class="n">bids_root</span><span class="o">=</span><span class="n">bids_root</span><span class="p">,</span>
+        <span class="n">datatype</span> <span class="o">=</span> <span class="n">_infer_datatype</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="n">bids_root</span><span class="p">,</span>
                                    <span class="n">sub</span><span class="o">=</span><span class="n">sub</span><span class="p">,</span> <span class="n">ses</span><span class="o">=</span><span class="n">ses</span><span class="p">)</span>
 
     <span class="n">data_dir</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="n">sub</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">ses</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">datatype</span><span class="p">,</span>
@@ -1037,19 +1037,19 @@
     <span class="k">return</span> <span class="n">suffix</span><span class="p">,</span> <span class="n">ext</span>
 
 
-<div class="viewcode-block" id="get_datatypes"><a class="viewcode-back" href="../../generated/mne_bids.get_datatypes.html#mne_bids.get_datatypes">[docs]</a><span class="k">def</span> <span class="nf">get_datatypes</span><span class="p">(</span><span class="n">bids_root</span><span class="p">):</span>
+<div class="viewcode-block" id="get_datatypes"><a class="viewcode-back" href="../../generated/mne_bids.get_datatypes.html#mne_bids.get_datatypes">[docs]</a><span class="k">def</span> <span class="nf">get_datatypes</span><span class="p">(</span><span class="n">root</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Get list of data types (&quot;modalities&quot;) present in a BIDS dataset.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    bids_root : str | pathlib.Path</span>
+<span class="sd">    root : str | pathlib.Path</span>
 <span class="sd">        Path to the root of the BIDS directory.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    modalities : list of str</span>
 <span class="sd">        List of the data types present in the BIDS dataset pointed to by</span>
-<span class="sd">        `bids_root`.</span>
+<span class="sd">        `root`.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Take all possible data types from &quot;entity&quot; table</span>
@@ -1058,7 +1058,7 @@
     <span class="n">datatype_list</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;anat&#39;</span><span class="p">,</span> <span class="s1">&#39;func&#39;</span><span class="p">,</span> <span class="s1">&#39;dwi&#39;</span><span class="p">,</span> <span class="s1">&#39;fmap&#39;</span><span class="p">,</span> <span class="s1">&#39;beh&#39;</span><span class="p">,</span>
                      <span class="s1">&#39;meg&#39;</span><span class="p">,</span> <span class="s1">&#39;eeg&#39;</span><span class="p">,</span> <span class="s1">&#39;ieeg&#39;</span><span class="p">)</span>
     <span class="n">datatypes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
-    <span class="k">for</span> <span class="n">root</span><span class="p">,</span> <span class="n">dirs</span><span class="p">,</span> <span class="n">files</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">bids_root</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">root</span><span class="p">,</span> <span class="n">dirs</span><span class="p">,</span> <span class="n">files</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">root</span><span class="p">):</span>
         <span class="k">for</span> <span class="nb">dir</span> <span class="ow">in</span> <span class="n">dirs</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">dir</span> <span class="ow">in</span> <span class="n">datatype_list</span> <span class="ow">and</span> <span class="nb">dir</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">datatypes</span><span class="p">:</span>
                 <span class="n">datatypes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">dir</span><span class="p">)</span>
@@ -1066,7 +1066,7 @@
     <span class="k">return</span> <span class="n">datatypes</span></div>
 
 
-<div class="viewcode-block" id="get_entity_vals"><a class="viewcode-back" href="../../generated/mne_bids.get_entity_vals.html#mne_bids.get_entity_vals">[docs]</a><span class="k">def</span> <span class="nf">get_entity_vals</span><span class="p">(</span><span class="n">bids_root</span><span class="p">,</span> <span class="n">entity_key</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">ignore_subjects</span><span class="o">=</span><span class="s1">&#39;emptyroom&#39;</span><span class="p">,</span>
+<div class="viewcode-block" id="get_entity_vals"><a class="viewcode-back" href="../../generated/mne_bids.get_entity_vals.html#mne_bids.get_entity_vals">[docs]</a><span class="k">def</span> <span class="nf">get_entity_vals</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">entity_key</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">ignore_subjects</span><span class="o">=</span><span class="s1">&#39;emptyroom&#39;</span><span class="p">,</span>
                     <span class="n">ignore_sessions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ignore_tasks</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ignore_runs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                     <span class="n">ignore_processings</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ignore_spaces</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                     <span class="n">ignore_acquisitions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ignore_splits</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -1079,7 +1079,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    bids_root : str | pathlib.Path</span>
+<span class="sd">    root : str | pathlib.Path</span>
 <span class="sd">        Path to the root of the BIDS directory.</span>
 <span class="sd">    entity_key : str</span>
 <span class="sd">        The name of the entity key to search for.</span>
@@ -1107,19 +1107,19 @@
 <span class="sd">    -------</span>
 <span class="sd">    entity_vals : list of str</span>
 <span class="sd">        List of the values associated with an `entity_key` in the BIDS dataset</span>
-<span class="sd">        pointed to by `bids_root`.</span>
+<span class="sd">        pointed to by `root`.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; bids_root = os.path.expanduser(&#39;~/mne_data/eeg_matchingpennies&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; root = os.path.expanduser(&#39;~/mne_data/eeg_matchingpennies&#39;)</span>
 <span class="sd">    &gt;&gt;&gt; entity_key = &#39;sub&#39;</span>
-<span class="sd">    &gt;&gt;&gt; get_entity_vals(bids_root, entity_key)</span>
+<span class="sd">    &gt;&gt;&gt; get_entity_vals(root, entity_key)</span>
 <span class="sd">    [&#39;05&#39;, &#39;06&#39;, &#39;07&#39;, &#39;08&#39;, &#39;09&#39;, &#39;10&#39;, &#39;11&#39;]</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    This function will scan the entire ``bids_root``, except for a</span>
-<span class="sd">    ``derivatives`` subfolder placed directly under ``bids_root``.</span>
+<span class="sd">    This function will scan the entire ``root``, except for a</span>
+<span class="sd">    ``derivatives`` subfolder placed directly under ``root``.</span>
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
@@ -1148,11 +1148,11 @@
 
     <span class="n">p</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">-(.*?)_&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">entity_long_abbr_map</span><span class="p">[</span><span class="n">entity_key</span><span class="p">]))</span>
     <span class="n">values</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
-    <span class="n">filenames</span> <span class="o">=</span> <span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">bids_root</span><span class="p">)</span>
+    <span class="n">filenames</span> <span class="o">=</span> <span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
                  <span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;*</span><span class="si">{</span><span class="n">entity_long_abbr_map</span><span class="p">[</span><span class="n">entity_key</span><span class="p">]</span><span class="si">}</span><span class="s1">-*_*&#39;</span><span class="p">))</span>
     <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">filenames</span><span class="p">:</span>
         <span class="c1"># Ignore `derivatives` folder.</span>
-        <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bids_root</span><span class="p">,</span> <span class="s1">&#39;derivatives&#39;</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="s1">&#39;derivatives&#39;</span><span class="p">)):</span>
             <span class="k">continue</span>
 
         <span class="k">if</span> <span class="n">ignore_subjects</span> <span class="ow">and</span> <span class="nb">any</span><span class="p">([</span><span class="n">filename</span><span class="o">.</span><span class="n">stem</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;sub-</span><span class="si">{</span><span class="n">s</span><span class="si">}</span><span class="s1">_&#39;</span><span class="p">)</span>
@@ -1256,25 +1256,25 @@
     <span class="k">return</span> <span class="n">best_candidates</span>
 
 
-<span class="k">def</span> <span class="nf">_get_datatypes_for_sub</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">bids_root</span><span class="p">,</span> <span class="n">sub</span><span class="p">,</span> <span class="n">ses</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_get_datatypes_for_sub</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">sub</span><span class="p">,</span> <span class="n">ses</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Retrieve data modalities for a specific subject and session.&quot;&quot;&quot;</span>
-    <span class="n">subject_dir</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bids_root</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">subject_dir</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;sub-</span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">ses</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">subject_dir</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">subject_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;ses-</span><span class="si">{</span><span class="n">ses</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 
     <span class="c1"># TODO We do this to ensure we don&#39;t accidentally pick up any &quot;spurious&quot;</span>
     <span class="c1"># TODO sub-directories. But is that really necessary with valid BIDS data?</span>
-    <span class="n">modalities_in_dataset</span> <span class="o">=</span> <span class="n">get_datatypes</span><span class="p">(</span><span class="n">bids_root</span><span class="o">=</span><span class="n">bids_root</span><span class="p">)</span>
+    <span class="n">modalities_in_dataset</span> <span class="o">=</span> <span class="n">get_datatypes</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">)</span>
     <span class="n">subdirs</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">scandir</span><span class="p">(</span><span class="n">subject_dir</span><span class="p">)</span> <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">is_dir</span><span class="p">()]</span>
     <span class="n">available_modalities</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">subdirs</span> <span class="k">if</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">modalities_in_dataset</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">available_modalities</span>
 
 
-<span class="k">def</span> <span class="nf">_infer_datatype</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">bids_root</span><span class="p">,</span> <span class="n">sub</span><span class="p">,</span> <span class="n">ses</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_infer_datatype</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">sub</span><span class="p">,</span> <span class="n">ses</span><span class="p">):</span>
     <span class="c1"># Check which suffix is available for this particular</span>
     <span class="c1"># subject &amp; session. If we get no or multiple hits, throw an error.</span>
 
-    <span class="n">modalities</span> <span class="o">=</span> <span class="n">_get_datatypes_for_sub</span><span class="p">(</span><span class="n">bids_root</span><span class="o">=</span><span class="n">bids_root</span><span class="p">,</span> <span class="n">sub</span><span class="o">=</span><span class="n">sub</span><span class="p">,</span>
+    <span class="n">modalities</span> <span class="o">=</span> <span class="n">_get_datatypes_for_sub</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">,</span> <span class="n">sub</span><span class="o">=</span><span class="n">sub</span><span class="p">,</span>
                                         <span class="n">ses</span><span class="o">=</span><span class="n">ses</span><span class="p">)</span>
 
     <span class="c1"># We only want to handle electrophysiological data here.</span>
@@ -1353,7 +1353,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-09-11.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-09-12.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
     </p>
   </div>

@@ -190,7 +190,7 @@ current BIDS standard. Defaults to True.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># result in a wildcard at the datatype directory level</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">new_bids_path</span><span class="p">)</span>
 <span class="go">sub-test2/ses-one/*/sub-test2_ses-one_task-mytask_channels.tsv</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c1"># set a bids_root</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># set a root for the BIDS dataset</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">new_bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;/bids_dataset&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">new_bids_path</span><span class="o">.</span><span class="n">root</span><span class="p">)</span>
 <span class="go">/bids_dataset</span>
@@ -319,7 +319,7 @@ Returns None if none was found.</p>
 <em class="property">property </em><code class="sig-name descname">fpath</code><a class="headerlink" href="#mne_bids.BIDSPath.fpath" title="Permalink to this definition">¶</a></dt>
 <dd><p>Full filepath for this BIDS file.</p>
 <p>Getting the file path consists of the entities passed in
-and will get the relative (or full if <code class="docutils literal notranslate"><span class="pre">bids_root</span></code> is passed)
+and will get the relative (or full if <code class="docutils literal notranslate"><span class="pre">root</span></code> is passed)
 path.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -482,7 +482,7 @@ or updates for ‘root’ or ‘datatype’.</p>
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-09-11.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-09-12.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
     </p>
   </div>

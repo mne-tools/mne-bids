@@ -442,7 +442,7 @@
 
     <span class="c1"># infer the datatype and suffix if they are not present in the BIDSPath</span>
     <span class="k">if</span> <span class="n">datatype</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">datatype</span> <span class="o">=</span> <span class="n">_infer_datatype</span><span class="p">(</span><span class="n">bids_root</span><span class="o">=</span><span class="n">bids_root</span><span class="p">,</span> <span class="n">sub</span><span class="o">=</span><span class="n">sub</span><span class="p">,</span> <span class="n">ses</span><span class="o">=</span><span class="n">ses</span><span class="p">)</span>
+        <span class="n">datatype</span> <span class="o">=</span> <span class="n">_infer_datatype</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="n">bids_root</span><span class="p">,</span> <span class="n">sub</span><span class="o">=</span><span class="n">sub</span><span class="p">,</span> <span class="n">ses</span><span class="o">=</span><span class="n">ses</span><span class="p">)</span>
         <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">datatype</span><span class="o">=</span><span class="n">datatype</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">suffix</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="n">datatype</span><span class="p">)</span>
@@ -629,7 +629,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-09-11.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-09-12.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
     </p>
   </div>

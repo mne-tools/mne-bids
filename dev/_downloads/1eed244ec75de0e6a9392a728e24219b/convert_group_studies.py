@@ -104,5 +104,5 @@ print_dir_tree(bids_root)
 
 ###############################################################################
 # Now let's generate a report on the dataset.
-dataset_report = make_report(bids_root=bids_root)
+dataset_report = make_report(root=bids_root)
 print(dataset_report)

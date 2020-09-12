@@ -99,7 +99,7 @@ print(trans)
 # retrieve our transformation matrix :code:`trans`.
 
 # We use the write_anat function
-anat_dir = write_anat(bids_root=output_path,  # the BIDS dir we wrote earlier
+anat_dir = write_anat(root=output_path,  # the BIDS dir we wrote earlier
                       subject=sub,
                       t1w=t1_mgh_fname,  # path to the MRI scan
                       session=ses,
@@ -154,7 +154,7 @@ plt.show()
 
 ###############################################################################
 # We can deface the MRI for anonymization
-anat_dir = write_anat(bids_root=output_path,  # the BIDS dir we wrote earlier
+anat_dir = write_anat(root=output_path,  # the BIDS dir we wrote earlier
                       subject=sub,
                       t1w=t1_mgh_fname,  # path to the MRI scan
                       session=ses,

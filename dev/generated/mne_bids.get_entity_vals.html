@@ -112,7 +112,7 @@
 <h1>mne_bids.get_entity_vals<a class="headerlink" href="#mne-bids-get-entity-vals" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt id="mne_bids.get_entity_vals">
-<code class="sig-prename descclassname">mne_bids.</code><code class="sig-name descname">get_entity_vals</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">bids_root</span></em>, <em class="sig-param"><span class="n">entity_key</span></em>, <em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">ignore_subjects</span><span class="o">=</span><span class="default_value">'emptyroom'</span></em>, <em class="sig-param"><span class="n">ignore_sessions</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ignore_tasks</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ignore_runs</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ignore_processings</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ignore_spaces</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ignore_acquisitions</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ignore_splits</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ignore_modalities</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/path.html#get_entity_vals"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.get_entity_vals" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">mne_bids.</code><code class="sig-name descname">get_entity_vals</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">root</span></em>, <em class="sig-param"><span class="n">entity_key</span></em>, <em class="sig-param"><span class="o">*</span></em>, <em class="sig-param"><span class="n">ignore_subjects</span><span class="o">=</span><span class="default_value">'emptyroom'</span></em>, <em class="sig-param"><span class="n">ignore_sessions</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ignore_tasks</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ignore_runs</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ignore_processings</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ignore_spaces</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ignore_acquisitions</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ignore_splits</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ignore_modalities</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/path.html#get_entity_vals"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.get_entity_vals" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get list of values associated with an <em class="xref py py-obj">entity_key</em> in a BIDS dataset.</p>
 <p>BIDS file names are organized by key-value pairs called “entities” <a class="reference internal" href="#rc14c75f75c01-1" id="id1">[1]</a>.
 With this function, you can get all values for an entity indexed by its
@@ -120,7 +120,7 @@ key.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>bids_root</strong><span class="classifier">str | pathlib.Path</span></dt><dd><p>Path to the root of the BIDS directory.</p>
+<dt><strong>root</strong><span class="classifier">str | pathlib.Path</span></dt><dd><p>Path to the root of the BIDS directory.</p>
 </dd>
 <dt><strong>entity_key</strong><span class="classifier">str</span></dt><dd><p>The name of the entity key to search for.</p>
 </dd>
@@ -148,14 +148,14 @@ mock-subject are not returned. If <code class="docutils literal notranslate"><sp
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
 <dt><strong>entity_vals</strong><span class="classifier">list of str</span></dt><dd><p>List of the values associated with an <em class="xref py py-obj">entity_key</em> in the BIDS dataset
-pointed to by <em class="xref py py-obj">bids_root</em>.</p>
+pointed to by <em class="xref py py-obj">root</em>.</p>
 </dd>
 </dl>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>This function will scan the entire <code class="docutils literal notranslate"><span class="pre">bids_root</span></code>, except for a
-<code class="docutils literal notranslate"><span class="pre">derivatives</span></code> subfolder placed directly under <code class="docutils literal notranslate"><span class="pre">bids_root</span></code>.</p>
+<p>This function will scan the entire <code class="docutils literal notranslate"><span class="pre">root</span></code>, except for a
+<code class="docutils literal notranslate"><span class="pre">derivatives</span></code> subfolder placed directly under <code class="docutils literal notranslate"><span class="pre">root</span></code>.</p>
 <p class="rubric">References</p>
 <dl class="citation">
 <dt class="label" id="rc14c75f75c01-1"><span class="brackets"><a class="fn-backref" href="#id1">1</a></span></dt>
@@ -163,9 +163,9 @@ pointed to by <em class="xref py py-obj">bids_root</em>.</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">bids_root</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s1">&#39;~/mne_data/eeg_matchingpennies&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">root</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s1">&#39;~/mne_data/eeg_matchingpennies&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">entity_key</span> <span class="o">=</span> <span class="s1">&#39;sub&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">get_entity_vals</span><span class="p">(</span><span class="n">bids_root</span><span class="p">,</span> <span class="n">entity_key</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">get_entity_vals</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">entity_key</span><span class="p">)</span>
 <span class="go">[&#39;05&#39;, &#39;06&#39;, &#39;07&#39;, &#39;08&#39;, &#39;09&#39;, &#39;10&#39;, &#39;11&#39;]</span>
 </pre></div>
 </div>
@@ -188,7 +188,7 @@ pointed to by <em class="xref py py-obj">bids_root</em>.</p>
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-09-11.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-09-12.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
     </p>
   </div>

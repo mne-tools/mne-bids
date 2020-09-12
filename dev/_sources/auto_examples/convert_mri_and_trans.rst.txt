@@ -306,19 +306,19 @@ Print the directory tree
  .. code-block:: none
 
     |MNE-sample-data-bids/
-    |--- participants.tsv
-    |--- participants.json
-    |--- dataset_description.json
     |--- README
+    |--- participants.json
+    |--- participants.tsv
+    |--- dataset_description.json
     |--- sub-01/
     |------ ses-01/
     |--------- sub-01_ses-01_scans.tsv
     |--------- meg/
     |------------ sub-01_ses-01_task-audiovisual_run-01_meg.fif
-    |------------ sub-01_ses-01_task-audiovisual_run-01_events.tsv
+    |------------ sub-01_ses-01_task-audiovisual_run-01_channels.tsv
     |------------ sub-01_ses-01_coordsystem.json
     |------------ sub-01_ses-01_task-audiovisual_run-01_meg.json
-    |------------ sub-01_ses-01_task-audiovisual_run-01_channels.tsv
+    |------------ sub-01_ses-01_task-audiovisual_run-01_events.tsv
 
 
 
@@ -369,7 +369,7 @@ retrieve our transformation matrix :code:`trans`.
 
 
     # We use the write_anat function
-    anat_dir = write_anat(bids_root=output_path,  # the BIDS dir we wrote earlier
+    anat_dir = write_anat(root=output_path,  # the BIDS dir we wrote earlier
                           subject=sub,
                           t1w=t1_mgh_fname,  # path to the MRI scan
                           session=ses,
@@ -432,22 +432,22 @@ Let's have another look at our BIDS directory
  .. code-block:: none
 
     |MNE-sample-data-bids/
-    |--- participants.tsv
-    |--- participants.json
-    |--- dataset_description.json
     |--- README
+    |--- participants.json
+    |--- participants.tsv
+    |--- dataset_description.json
     |--- sub-01/
     |------ ses-01/
     |--------- sub-01_ses-01_scans.tsv
     |--------- anat/
-    |------------ sub-01_ses-01_T1w.nii.gz
     |------------ sub-01_ses-01_T1w.json
+    |------------ sub-01_ses-01_T1w.nii.gz
     |--------- meg/
     |------------ sub-01_ses-01_task-audiovisual_run-01_meg.fif
-    |------------ sub-01_ses-01_task-audiovisual_run-01_events.tsv
+    |------------ sub-01_ses-01_task-audiovisual_run-01_channels.tsv
     |------------ sub-01_ses-01_coordsystem.json
     |------------ sub-01_ses-01_task-audiovisual_run-01_meg.json
-    |------------ sub-01_ses-01_task-audiovisual_run-01_channels.tsv
+    |------------ sub-01_ses-01_task-audiovisual_run-01_events.tsv
 
 
 
@@ -543,7 +543,7 @@ We can deface the MRI for anonymization
 
 .. code-block:: default
 
-    anat_dir = write_anat(bids_root=output_path,  # the BIDS dir we wrote earlier
+    anat_dir = write_anat(root=output_path,  # the BIDS dir we wrote earlier
                           subject=sub,
                           t1w=t1_mgh_fname,  # path to the MRI scan
                           session=ses,
@@ -615,7 +615,7 @@ We can deface the MRI for anonymization
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  11.267 seconds)
+   **Total running time of the script:** ( 0 minutes  13.818 seconds)
 
 
 .. _sphx_glr_download_auto_examples_convert_mri_and_trans.py:
