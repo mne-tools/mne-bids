@@ -40,7 +40,7 @@ Changelog
 - :func:`mne_bids.read_raw_bids` correctly maps all specified ``handedness`` and ``sex`` options to MNE-Python, instead of only an incomplete subset, by `Richard Höchenberger`_ (`#550 <https://github.com/mne-tools/mne-bids/pull/550>`_)
 - :func:`mne_bids.write_raw_bids` only writes a README if it does not already exist, by `Adam Li`_ (`#489 <https://github.com/mne-tools/mne-bids/pull/489>`_)
 - Allow :func:`mne_bids.write_raw_bids` to write EEG/iEEG files from Persyst using ``mne.io.read_raw_persyst`` function, by `Adam Li`_ (`#546 <https://github.com/mne-tools/mne-bids/pull/546>`_)
-- :func:`mne_bids.print_dir_tree` now works if a :func:`pathlib.Path` object is passed in, by `Adam Li`_ (`#555 <https://github.com/mne-tools/mne-bids/pull/555>`_)
+- :func:`mne_bids.print_dir_tree` now works if a ``pathlib.Path`` object is passed in, by `Adam Li`_ (`#555 <https://github.com/mne-tools/mne-bids/pull/555>`_)
 
 
 Bug
