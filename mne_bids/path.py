@@ -734,7 +734,7 @@ def print_dir_tree(folder, max_depth=None):
     max_depth += 1
 
     # Base length of a tree branch, to normalize each tree's start to 0
-    baselen = len(folder.split(os.sep)) - 1
+    baselen = len(str(folder).split(os.sep)) - 1
 
     # Recursively walk through all directories
     for root, dirs, files in os.walk(folder):
