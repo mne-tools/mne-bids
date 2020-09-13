@@ -130,7 +130,7 @@ def _pretty_dict(template_dict):
             template_dict[key] = 'n/a'
 
 
-def _summarize_dataset(bids_root):
+def _summarize_dataset(root):
     """Summarize the dataset_desecription.json file.
 
     Required dataset descriptors include:
@@ -143,7 +143,7 @@ def _summarize_dataset(bids_root):
 
     Parameters
     ----------
-    bids_root : str | pathlib.Path
+    root : str | pathlib.Path
         The path of the root of the BIDS compatible folder.
 
     Returns
@@ -151,7 +151,7 @@ def _summarize_dataset(bids_root):
     template_dict : dict
         A dictionary of values for various template strings.
     """
-    dataset_descrip_fpath = op.join(bids_root,
+    dataset_descrip_fpath = op.join(root,
                                     'dataset_description.json')
     if not op.exists(dataset_descrip_fpath):
         return dict()
@@ -174,12 +174,12 @@ def _summarize_dataset(bids_root):
     return template_dict
 
 
-def _summarize_participants_tsv(bids_root, verbose=True):
+def _summarize_participants_tsv(root, verbose=True):
     """Summarize `participants.tsv` file in BIDS root directory.
 
     Parameters
     ----------
-    bids_root : str | pathlib.Path
+    root : str | pathlib.Path
         The path of the root of the BIDS compatible folder.
     verbose: bool
         Set verbose output to true or false.
@@ -189,7 +189,7 @@ def _summarize_participants_tsv(bids_root, verbose=True):
     template_dict : dict
         A dictionary of values for various template strings.
     """
-    participants_tsv_fpath = op.join(bids_root, 'participants.tsv')
+    participants_tsv_fpath = op.join(root, 'participants.tsv')
     if not op.exists(participants_tsv_fpath):
         return dict()
 
@@ -246,14 +246,14 @@ def _summarize_participants_tsv(bids_root, verbose=True):
     return template_dict
 
 
-def _summarize_scans(bids_root, session=None, verbose=True):
+def _summarize_scans(root, session=None, verbose=True):
     """Summarize scans in BIDS root directory.
 
     Summarizes scans only if there is a *_scans.tsv file.
 
     Parameters
     ----------
-    bids_root : str | pathlib.Path
+    root : str | pathlib.Path
         The path of the root of the BIDS compatible folder.
     session : str, optional
         The session for a item. Corresponds to "ses".
@@ -265,13 +265,13 @@ def _summarize_scans(bids_root, session=None, verbose=True):
     template_dict : dict
         A dictionary of values for various template strings.
     """
-    bids_root = Path(bids_root)
+    root = Path(root)
     if session is None:
         search_str = '*_scans.tsv'
     else:
         search_str = f'*ses-{session}' \
                      f'*_scans.tsv'
-    scans_fpaths = list(bids_root.rglob(search_str))
+    scans_fpaths = list(root.rglob(search_str))
     if len(scans_fpaths) == 0:
         warn('No *scans.tsv files found. Currently, '
              'we do not generate a report without the scans.tsv files.')
@@ -281,9 +281,9 @@ def _summarize_scans(bids_root, session=None, verbose=True):
         print(f'Summarizing scans.tsv files {scans_fpaths}...')
 
     # summarize sidecar.json, channels.tsv template
-    sidecar_dict = _summarize_sidecar_json(bids_root, scans_fpaths,
+    sidecar_dict = _summarize_sidecar_json(root, scans_fpaths,
                                            verbose=verbose)
-    channels_dict = _summarize_channels_tsv(bids_root, scans_fpaths,
+    channels_dict = _summarize_channels_tsv(root, scans_fpaths,
                                             verbose=verbose)
     template_dict = dict()
     template_dict.update(**sidecar_dict)
@@ -292,15 +292,15 @@ def _summarize_scans(bids_root, session=None, verbose=True):
     return template_dict
 
 
-def _summarize_sidecar_json(bids_root, scans_fpaths, verbose=True):
+def _summarize_sidecar_json(root, scans_fpaths, verbose=True):
     """Summarize scans in BIDS root directory.
 
     Parameters
     ----------
-    bids_root : str | pathlib.Path
+    root : str | pathlib.Path
         The path of the root of the BIDS compatible folder.
     scans_fpaths : list
-        A list of all *_scans.tsv files in bids_root. The summary
+        A list of all *_scans.tsv files in ``root``. The summary
         will occur for all scans listed in the *_scans.tsv files.
     verbose : bool
         Set verbose output to true or false.
@@ -332,7 +332,7 @@ def _summarize_sidecar_json(bids_root, scans_fpaths, verbose=True):
 
             # convert to BIDS Path
             params = get_entities_from_fname(bids_path)
-            bids_path = BIDSPath(root=bids_root, **params)
+            bids_path = BIDSPath(root=root, **params)
 
             # XXX: improve to allow emptyroom
             if bids_path.subject == 'emptyroom':
@@ -377,7 +377,7 @@ def _summarize_sidecar_json(bids_root, scans_fpaths, verbose=True):
     return template_dict
 
 
-def _summarize_channels_tsv(bids_root, scans_fpaths, verbose=True):
+def _summarize_channels_tsv(root, scans_fpaths, verbose=True):
     """Summarize channels.tsv data in BIDS root directory.
 
     Currently, summarizes all REQUIRED components of channels
@@ -385,10 +385,10 @@ def _summarize_channels_tsv(bids_root, scans_fpaths, verbose=True):
 
     Parameters
     ----------
-    bids_root : str | pathlib.Path
+    root : str | pathlib.Path
         The path of the root of the BIDS compatible folder.
     scans_fpaths : list
-        A list of all *_scans.tsv files in bids_root. The summary
+        A list of all *_scans.tsv files in ``root``. The summary
         will occur for all scans listed in the *_scans.tsv files.
     verbose : bool
 
@@ -397,7 +397,7 @@ def _summarize_channels_tsv(bids_root, scans_fpaths, verbose=True):
     template_dict : dict
         A dictionary of values for various template strings.
     """
-    bids_root = Path(bids_root)
+    root = Path(root)
 
     # keep track of channel type, status
     ch_status_count = {'bad': [], 'good': []}
@@ -418,7 +418,7 @@ def _summarize_channels_tsv(bids_root, scans_fpaths, verbose=True):
 
             # convert to BIDS Path
             params = get_entities_from_fname(bids_path)
-            bids_path = BIDSPath(root=bids_root, **params)
+            bids_path = BIDSPath(root=root, **params)
 
             # XXX: improve to allow emptyroom
             if bids_path.subject == 'emptyroom':
@@ -450,7 +450,7 @@ def _summarize_channels_tsv(bids_root, scans_fpaths, verbose=True):
     return template_dict
 
 
-def make_report(bids_root, session=None, verbose=True):
+def make_report(root, session=None, verbose=True):
     """Create a methods paragraph string from BIDS dataset.
 
     Summarizes the REQUIRED components in the BIDS specification
@@ -464,7 +464,7 @@ def make_report(bids_root, session=None, verbose=True):
 
     Parameters
     ----------
-    bids_root : str | pathlib.Path
+    root : str | pathlib.Path
         The path of the root of the BIDS compatible folder.
     session : str , optional
             The session for a item. Corresponds to "ses".
@@ -478,9 +478,9 @@ def make_report(bids_root, session=None, verbose=True):
         describing the summary of the subjects.
     """
     # high level summary
-    subjects = get_entity_vals(bids_root, entity_key='subject')
-    sessions = get_entity_vals(bids_root, entity_key='session')
-    modalities = get_datatypes(bids_root)
+    subjects = get_entity_vals(root, entity_key='subject')
+    sessions = get_entity_vals(root, entity_key='session')
+    modalities = get_datatypes(root)
 
     # only summarize allowed modalities (MEG/EEG/iEEG) data
     # map them to a pretty looking string
@@ -493,13 +493,13 @@ def make_report(bids_root, session=None, verbose=True):
                   if datatype in datatype_map.keys()]
 
     # REQUIRED: dataset_description.json summary
-    dataset_summary = _summarize_dataset(bids_root)
+    dataset_summary = _summarize_dataset(root)
 
     # RECOMMENDED: participants summary
-    participant_summary = _summarize_participants_tsv(bids_root)
+    participant_summary = _summarize_participants_tsv(root)
 
     # RECOMMENDED: scans summary
-    scans_summary = _summarize_scans(bids_root, session=session,
+    scans_summary = _summarize_scans(root, session=session,
                                      verbose=verbose)
 
     # turn off 'recommended' report summary

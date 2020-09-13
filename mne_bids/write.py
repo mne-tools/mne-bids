@@ -1145,7 +1145,7 @@ def write_raw_bids(raw, bids_path, events_data=None,
     return bids_path
 
 
-def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
+def write_anat(root, subject, t1w, session=None, acquisition=None,
                raw=None, trans=None, landmarks=None, deface=False,
                overwrite=False, verbose=False):
     """Put anatomical MRI data into a BIDS format.
@@ -1157,7 +1157,7 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
 
     Parameters
     ----------
-    bids_root : str | pathlib.Path
+    root : str | pathlib.Path
         Path to root of the BIDS folder
     subject : str
         Subject label as in 'sub-<label>', for example: '01'
@@ -1223,7 +1223,7 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
                          'must be provided to deface the T1')
 
     # Make directory for anatomical data
-    anat_dir = op.join(bids_root, 'sub-{}'.format(subject))
+    anat_dir = op.join(root, 'sub-{}'.format(subject))
     # Session is optional
     if session is not None:
         anat_dir = op.join(anat_dir, 'ses-{}'.format(session))
@@ -1258,7 +1258,7 @@ def write_anat(bids_root, subject, t1w, session=None, acquisition=None,
     # this needs to be a string, since nibabel assumes a string input
     t1w_basename = BIDSPath(subject=subject, session=session,
                             acquisition=acquisition,
-                            root=bids_root,
+                            root=root,
                             suffix='T1w', extension='.nii.gz')
 
     # Check if we have necessary conditions for writing a sidecar JSON
