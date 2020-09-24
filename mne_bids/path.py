@@ -834,7 +834,7 @@ def get_entities_from_fname(fname):
 
 
 def _find_matching_sidecar(bids_path, suffix=None,
-                           extension=None, allow_fail=False):
+                           extension=None, on_fail='raise'):
     """Try to find a sidecar file with a given suffix for a data file.
 
     Parameters
@@ -846,17 +846,23 @@ def _find_matching_sidecar(bids_path, suffix=None,
         before the extension. E.g., ``'ieeg'``.
     extension : str | None
         The extension of the filename. E.g., ``'.json'``.
-    allow_fail : bool
-        If False, will raise RuntimeError if not exactly one matching sidecar
-        was found. If True, will return None in that case. Defaults to False
+    on_fail : 'raise' | 'warn' | 'ignore'
+        If no matching sidecar file was found and this is set to ``'raise'``,
+        raise a ``RuntimeError``. If ``'warn'``, emit a warning, and if
+        ``'ignore'``, neither raise an exception nor a warning, and return
+        ``None`` in both cases.
 
     Returns
     -------
     sidecar_fname : str | None
-        Path to the identified sidecar file, or None, if `allow_fail` is True
-        and no sidecar_fname was found
+        Path to the identified sidecar file, or ``None`` if none could be found
+        and ``on_fail`` was set to ``'warn'`` or ``'ignore'``.
 
     """
+    if on_fail not in ('warn', 'raise', 'ignore'):
+        raise ValueError(f'Acceptable values for on_fail are: warn, raise, '
+                         f'ignore, but got: {on_fail}')
+
     bids_root = bids_path.root
 
     # search suffix is BIDS-suffix and extension
@@ -906,11 +912,12 @@ def _find_matching_sidecar(bids_path, suffix=None,
                f'associated with {bids_path.basename}, '
                f'but found {len(candidate_list)}: "{candidate_list}".')
     msg += '\n\nThe search_str was "{}"'.format(search_str)
-    if allow_fail:
-        warn(msg)
-        return None
-    else:
+    if on_fail == 'raise':
         raise RuntimeError(msg)
+    elif on_fail == 'warn':
+        warn(msg)
+
+    return None
 
 
 def _get_bids_suffix_and_ext(str_suffix):

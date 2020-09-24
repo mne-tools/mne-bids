@@ -929,11 +929,12 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate):
     with pytest.warns(RuntimeWarning, match='Skipping EEG electrodes.tsv... '
                                             'Setting montage not possible'):
         write_raw_bids(raw, bids_fname, overwrite=True)
-        electrodes_fpath = _find_matching_sidecar(bids_fname,
-                                                  suffix='electrodes',
-                                                  extension='.tsv',
-                                                  allow_fail=True)
-        assert electrodes_fpath is None
+
+    electrodes_fpath = _find_matching_sidecar(bids_fname,
+                                              suffix='electrodes',
+                                              extension='.tsv',
+                                              on_fail='ignore')
+    assert electrodes_fpath is None
 
     # with landmarks, eeg montage is written
     eeg_montage = mne.channels.make_dig_montage(ch_pos=ch_pos,

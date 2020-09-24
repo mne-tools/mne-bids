@@ -281,9 +281,8 @@ def test_handle_info_reading():
 
     # find sidecar JSON fname
     bids_fname.update(datatype=suffix)
-    sidecar_fname = _find_matching_sidecar(bids_fname,
-                                           suffix=suffix, extension='.json',
-                                           allow_fail=True)
+    sidecar_fname = _find_matching_sidecar(bids_fname, suffix=suffix,
+                                           extension='.json')
 
     # assert that we get the same line frequency set
     raw = read_raw_bids(bids_path=bids_path)
@@ -345,17 +344,18 @@ def test_handle_eeg_coords_reading():
     raw.set_montage(montage)
     with pytest.warns(RuntimeWarning, match="Skipping EEG electrodes.tsv"):
         write_raw_bids(raw, bids_path, overwrite=True)
-        bids_path.update(root=bids_root)
-        coordsystem_fname = _find_matching_sidecar(bids_path,
-                                                   suffix='coordsystem',
-                                                   extension='.json',
-                                                   allow_fail=True)
-        electrodes_fname = _find_matching_sidecar(bids_path,
-                                                  suffix='electrodes',
-                                                  extension='.tsv',
-                                                  allow_fail=True)
-        assert coordsystem_fname is None
-        assert electrodes_fname is None
+
+    bids_path.update(root=bids_root)
+    coordsystem_fname = _find_matching_sidecar(bids_path,
+                                               suffix='coordsystem',
+                                               extension='.json',
+                                               on_fail='warn')
+    electrodes_fname = _find_matching_sidecar(bids_path,
+                                              suffix='electrodes',
+                                              extension='.tsv',
+                                              on_fail='warn')
+    assert coordsystem_fname is None
+    assert electrodes_fname is None
 
     # create montage in head frame and set should result in
     # warning if landmarks not set
@@ -381,8 +381,7 @@ def test_handle_eeg_coords_reading():
     # modify coordinate frame to not-captrak
     coordsystem_fname = _find_matching_sidecar(bids_path,
                                                suffix='coordsystem',
-                                               extension='.json',
-                                               allow_fail=True)
+                                               extension='.json')
     _update_sidecar(coordsystem_fname, 'EEGCoordinateSystem', 'besa')
     with pytest.warns(RuntimeWarning, match='EEG Coordinate frame is not '
                                             'accepted BIDS keyword'):
@@ -448,12 +447,10 @@ def test_handle_ieeg_coords_reading(bids_path):
     bids_fname.update(root=bids_root)
     coordsystem_fname = _find_matching_sidecar(bids_fname,
                                                suffix='coordsystem',
-                                               extension='.json',
-                                               allow_fail=True)
+                                               extension='.json')
     electrodes_fname = _find_matching_sidecar(bids_fname,
                                               suffix='electrodes',
-                                              extension='.tsv',
-                                              allow_fail=True)
+                                              extension='.tsv')
     orig_electrodes_dict = _from_tsv(electrodes_fname,
                                      [str, float, float, float, str])
 
