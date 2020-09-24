@@ -356,7 +356,7 @@ def read_raw_bids(bids_path, extra_params=None, verbose=True):
     # events in the recorded data
     events_fname = _find_matching_sidecar(bids_path, suffix='events',
                                           extension='.tsv',
-                                          allow_fail=True)
+                                          on_fail='warn')
     if events_fname is not None:
         raw = _handle_events_reading(events_fname, raw)
 
@@ -365,20 +365,21 @@ def read_raw_bids(bids_path, extra_params=None, verbose=True):
     channels_fname = _find_matching_sidecar(bids_path,
                                             suffix='channels',
                                             extension='.tsv',
-                                            allow_fail=True)
+                                            on_fail='warn')
     if channels_fname is not None:
         raw = _handle_channels_reading(channels_fname, bids_fname, raw)
 
     # Try to find an associated electrodes.tsv and coordsystem.json
     # to get information about the status and type of present channels
+    on_fail = 'warn' if suffix == 'ieeg' else 'ignore'
     electrodes_fname = _find_matching_sidecar(bids_path,
                                               suffix='electrodes',
                                               extension='.tsv',
-                                              allow_fail=True)
+                                              on_fail=on_fail)
     coordsystem_fname = _find_matching_sidecar(bids_path,
                                                suffix='coordsystem',
                                                extension='.json',
-                                               allow_fail=True)
+                                               on_fail='warn')
     if electrodes_fname is not None:
         if coordsystem_fname is None:
             raise RuntimeError(f"BIDS mandates that the coordsystem.json "
@@ -389,12 +390,12 @@ def read_raw_bids(bids_path, extra_params=None, verbose=True):
             raw = _read_dig_bids(electrodes_fname, coordsystem_fname,
                                  raw, datatype, verbose)
 
-    # Try to find an associated sidecar.json to get information about the
+    # Try to find an associated sidecar .json to get information about the
     # recording snapshot
     sidecar_fname = _find_matching_sidecar(bids_path,
                                            suffix=datatype,
                                            extension='.json',
-                                           allow_fail=True)
+                                           on_fail='warn')
     if sidecar_fname is not None:
         raw = _handle_info_reading(sidecar_fname, raw, verbose=verbose)
 
