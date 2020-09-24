@@ -945,7 +945,7 @@
 
 
 <span class="k">def</span> <span class="nf">_find_matching_sidecar</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                           <span class="n">extension</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">allow_fail</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+                           <span class="n">extension</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">on_fail</span><span class="o">=</span><span class="s1">&#39;raise&#39;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Try to find a sidecar file with a given suffix for a data file.</span>
 
 <span class="sd">    Parameters</span>
@@ -957,17 +957,23 @@
 <span class="sd">        before the extension. E.g., ``&#39;ieeg&#39;``.</span>
 <span class="sd">    extension : str | None</span>
 <span class="sd">        The extension of the filename. E.g., ``&#39;.json&#39;``.</span>
-<span class="sd">    allow_fail : bool</span>
-<span class="sd">        If False, will raise RuntimeError if not exactly one matching sidecar</span>
-<span class="sd">        was found. If True, will return None in that case. Defaults to False</span>
+<span class="sd">    on_fail : &#39;raise&#39; | &#39;warn&#39; | &#39;ignore&#39;</span>
+<span class="sd">        If no matching sidecar file was found and this is set to ``&#39;raise&#39;``,</span>
+<span class="sd">        raise a ``RuntimeError``. If ``&#39;warn&#39;``, emit a warning, and if</span>
+<span class="sd">        ``&#39;ignore&#39;``, neither raise an exception nor a warning, and return</span>
+<span class="sd">        ``None`` in both cases.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    sidecar_fname : str | None</span>
-<span class="sd">        Path to the identified sidecar file, or None, if `allow_fail` is True</span>
-<span class="sd">        and no sidecar_fname was found</span>
+<span class="sd">        Path to the identified sidecar file, or ``None`` if none could be found</span>
+<span class="sd">        and ``on_fail`` was set to ``&#39;warn&#39;`` or ``&#39;ignore&#39;``.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">on_fail</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;warn&#39;</span><span class="p">,</span> <span class="s1">&#39;raise&#39;</span><span class="p">,</span> <span class="s1">&#39;ignore&#39;</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Acceptable values for on_fail are: warn, raise, &#39;</span>
+                         <span class="sa">f</span><span class="s1">&#39;ignore, but got: </span><span class="si">{</span><span class="n">on_fail</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
     <span class="n">bids_root</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">root</span>
 
     <span class="c1"># search suffix is BIDS-suffix and extension</span>
@@ -1017,11 +1023,12 @@
                <span class="sa">f</span><span class="s1">&#39;associated with </span><span class="si">{</span><span class="n">bids_path</span><span class="o">.</span><span class="n">basename</span><span class="si">}</span><span class="s1">, &#39;</span>
                <span class="sa">f</span><span class="s1">&#39;but found </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">candidate_list</span><span class="p">)</span><span class="si">}</span><span class="s1">: &quot;</span><span class="si">{</span><span class="n">candidate_list</span><span class="si">}</span><span class="s1">&quot;.&#39;</span><span class="p">)</span>
     <span class="n">msg</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1">The search_str was &quot;</span><span class="si">{}</span><span class="s1">&quot;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">search_str</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">allow_fail</span><span class="p">:</span>
-        <span class="n">warn</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-        <span class="k">return</span> <span class="kc">None</span>
-    <span class="k">else</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">on_fail</span> <span class="o">==</span> <span class="s1">&#39;raise&#39;</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">on_fail</span> <span class="o">==</span> <span class="s1">&#39;warn&#39;</span><span class="p">:</span>
+        <span class="n">warn</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="kc">None</span>
 
 
 <span class="k">def</span> <span class="nf">_get_bids_suffix_and_ext</span><span class="p">(</span><span class="n">str_suffix</span><span class="p">):</span>
@@ -1353,7 +1360,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-09-13.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-09-24.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
     </p>
   </div>

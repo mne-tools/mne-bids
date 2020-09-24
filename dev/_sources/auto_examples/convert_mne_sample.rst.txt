@@ -312,47 +312,47 @@ Now let's see the structure of the BIDS folder we created.
  .. code-block:: none
 
     |MNE-sample-data-bids/
+    |--- participants.json
+    |--- dataset_description.json
     |--- README
     |--- participants.tsv
-    |--- dataset_description.json
-    |--- participants.json
     |--- sub-01/
     |------ ses-01/
     |--------- sub-01_ses-01_scans.tsv
     |--------- meg/
-    |------------ sub-01_ses-01_coordsystem.json
-    |------------ sub-01_ses-01_task-audiovisual_run-01_meg.fif
-    |------------ sub-01_ses-01_task-audiovisual_run-01_channels.tsv
     |------------ sub-01_ses-01_task-audiovisual_run-01_events.tsv
+    |------------ sub-01_ses-01_coordsystem.json
     |------------ sub-01_ses-01_task-audiovisual_run-01_meg.json
+    |------------ sub-01_ses-01_task-audiovisual_run-01_channels.tsv
+    |------------ sub-01_ses-01_task-audiovisual_run-01_meg.fif
     |--------- anat/
-    |------------ sub-01_ses-01_T1w.json
     |------------ sub-01_ses-01_T1w.nii.gz
+    |------------ sub-01_ses-01_T1w.json
     |--- sub-emptyroom/
+    |------ ses-20021201/
+    |--------- sub-emptyroom_ses-20021201_scans.tsv
+    |--------- meg/
+    |------------ sub-emptyroom_ses-20021201_task-noise_meg.json
+    |------------ sub-emptyroom_ses-20021201_task-noise_channels.tsv
+    |------------ sub-emptyroom_ses-20021201_task-noise_meg.fif
+    |------ ses-20021001/
+    |--------- sub-emptyroom_ses-20021001_scans.tsv
+    |--------- meg/
+    |------------ sub-emptyroom_ses-20021001_task-noise_meg.fif
+    |------------ sub-emptyroom_ses-20021001_task-noise_channels.tsv
+    |------------ sub-emptyroom_ses-20021001_task-noise_meg.json
     |------ ses-20021206/
     |--------- sub-emptyroom_ses-20021206_scans.tsv
     |--------- meg/
     |------------ sub-emptyroom_ses-20021206_task-noise_meg.json
     |------------ sub-emptyroom_ses-20021206_task-noise_channels.tsv
     |------------ sub-emptyroom_ses-20021206_task-noise_meg.fif
-    |------ ses-20021001/
-    |--------- sub-emptyroom_ses-20021001_scans.tsv
-    |--------- meg/
-    |------------ sub-emptyroom_ses-20021001_task-noise_meg.json
-    |------------ sub-emptyroom_ses-20021001_task-noise_channels.tsv
-    |------------ sub-emptyroom_ses-20021001_task-noise_meg.fif
     |------ ses-20021204/
     |--------- sub-emptyroom_ses-20021204_scans.tsv
     |--------- meg/
+    |------------ sub-emptyroom_ses-20021204_task-noise_meg.json
     |------------ sub-emptyroom_ses-20021204_task-noise_meg.fif
     |------------ sub-emptyroom_ses-20021204_task-noise_channels.tsv
-    |------------ sub-emptyroom_ses-20021204_task-noise_meg.json
-    |------ ses-20021201/
-    |--------- sub-emptyroom_ses-20021201_scans.tsv
-    |--------- meg/
-    |------------ sub-emptyroom_ses-20021201_task-noise_channels.tsv
-    |------------ sub-emptyroom_ses-20021201_task-noise_meg.json
-    |------------ sub-emptyroom_ses-20021201_task-noise_meg.fif
 
 
 
@@ -388,10 +388,6 @@ into MNE-Python can easily be done using :func:`read_raw_bids`.
     Reading channel info from /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_channels.tsv.
     /home/circleci/project/mne_bids/read.py:246: RuntimeWarning: The unit for channel(s) STI 001, STI 002, STI 003, STI 004, STI 005, STI 006, STI 014, STI 015, STI 016 has changed from V to NA.
       raw.set_channel_types(channel_type_dict)
-    /home/circleci/project/mne_bids/path.py:910: RuntimeWarning: Did not find any electrodes.tsv associated with sub-01_ses-01_task-audiovisual_run-01.
-
-    The search_str was "/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/**/sub-01_ses-01*electrodes.tsv"
-      warn(msg)
 
 
 
@@ -468,7 +464,7 @@ cite MNE-BIDS there.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  11.451 seconds)
+   **Total running time of the script:** ( 0 minutes  8.371 seconds)
 
 
 .. _sphx_glr_download_auto_examples_convert_mne_sample.py:
