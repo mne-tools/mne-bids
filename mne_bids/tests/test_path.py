@@ -281,6 +281,12 @@ def test_find_matching_sidecar(return_bids_test_dir):
                                    extension='.bogus', on_fail=on_fail)
     assert fname is None
 
+    # Invalid on_fail.
+    on_fail = 'hello'
+    with pytest.raises(ValueError, match='Acceptable values for on_fail are'):
+        _find_matching_sidecar(bids_fpath, suffix='coordsystem',
+                               extension='.json', on_fail=on_fail)
+
 
 def test_bids_path_inference(return_bids_test_dir):
     """Test usage of BIDSPath object and fpath."""
