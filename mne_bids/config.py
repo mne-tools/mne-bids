@@ -110,7 +110,8 @@ SUFFIX_TO_DATATYPE = {
 ALLOWED_FILENAME_EXTENSIONS = (
     ALLOWED_INPUT_EXTENSIONS +
     ['.json', '.tsv', '.tsv.gz', '.nii', '.nii.gz'] +
-    ['.pos', '.eeg', '.vmrk']  # extra datatype-specific metadata files
+    ['.pos', '.eeg', '.vmrk'] +  # extra datatype-specific metadata files.
+    ['.dat']  # Elekta/Neuromag fine-calibration files.
 )
 
 # allowed BIDS path entities

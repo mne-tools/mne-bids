@@ -3,7 +3,8 @@
 #          Stefan Appelhoff <stefan.appelhoff@mailbox.org>
 #
 # License: BSD (3-clause)
-from os import path as op
+import os.path as op
+from pathlib import Path
 
 import pytest
 
@@ -19,7 +20,9 @@ from mne.datasets import testing
 from mne.utils import run_tests_if_main, ArgvSetter
 
 from mne_bids.commands import (mne_bids_raw_to_bids, mne_bids_cp,
-                               mne_bids_mark_bad_channels)
+                               mne_bids_mark_bad_channels,
+                               mne_bids_calibration_to_bids,
+                               mne_bids_crosstalk_to_bids)
 from mne_bids import BIDSPath, read_raw_bids
 
 
@@ -179,6 +182,46 @@ def test_mark_bad_chanels_multiple_files(tmpdir):
     for subject in subjects:
         raw = read_raw_bids(bids_path=bids_path.copy().update(subject=subject))
         assert set(old_bads + ch_names) == set(raw.info['bads'])
+
+
+def test_calibration_to_bids(tmpdir):
+    """Test mne_bids calibration_to_bids."""
+
+    # Check that help is printed
+    check_usage(mne_bids_calibration_to_bids)
+
+    output_path = str(tmpdir)
+    data_path = Path(testing.data_path())
+    fine_cal_fname = data_path / 'SSS' / 'sss_cal_mgh.dat'
+    bids_path = BIDSPath(subject=subject_id, root=output_path)
+
+    # Write fine-calibration file and check that it was actually written.
+    args = ('--file', fine_cal_fname, '--subject', subject_id,
+            '--bids_root', output_path)
+    with ArgvSetter(args):
+        mne_bids_calibration_to_bids.run()
+
+    assert bids_path.fine_calibration_fpath.exists()
+
+
+def test_crosstalk_to_bids(tmpdir):
+    """Test mne_bids crosstalk_to_bids."""
+
+    # Check that help is printed
+    check_usage(mne_bids_crosstalk_to_bids)
+
+    output_path = str(tmpdir)
+    data_path = Path(testing.data_path())
+    cross_talk_fname = data_path / 'SSS' / 'ct_sparse.fif'
+    bids_path = BIDSPath(subject=subject_id, root=output_path)
+
+    # Write fine-calibration file and check that it was actually written.
+    # Write fine-calibration file and check that it was actually written.
+    args = ('--file', cross_talk_fname, '--subject', subject_id,
+            '--bids_root', output_path)
+    with ArgvSetter(args):
+        mne_bids_crosstalk_to_bids.run()
+    assert bids_path.cross_talk_fpath.exists()
 
 
 run_tests_if_main()

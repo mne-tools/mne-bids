@@ -17,6 +17,7 @@ In a second step we will read the organized dataset using MNE-BIDS.
 #          Alexandre Gramfort <alexandre.gramfort@telecom-paristech.fr>
 #          Teon Brooks <teon.brooks@gmail.com>
 #          Stefan Appelhoff <stefan.appelhoff@mailbox.org>
+#          Richard Höchenberger <richard.hoechenberger@gmail.com>
 #
 # License: BSD (3-clause)
 
@@ -29,14 +30,14 @@ import os.path as op
 import mne
 from mne.datasets import sample
 
-from mne_bids import (write_raw_bids, read_raw_bids,
-                      BIDSPath, print_dir_tree)
+from mne_bids import (write_raw_bids, read_raw_bids, write_fine_calibration,
+                      write_cross_talk, BIDSPath, print_dir_tree)
 
 ###############################################################################
 # Now we can read the MNE sample data. We define an `event_id` based on our
 # knowledge of the data, to give meaning to events in the data.
 #
-# With `raw_fname` and `events_data` we determine where to get the sample data
+# With `raw_fname` and `events_data`, we determine where to get the sample data
 # from. `output_path` determines where we will write the BIDS conversion to.
 
 data_path = sample.data_path()
@@ -52,7 +53,7 @@ output_path = op.join(data_path, '..', 'MNE-sample-data-bids')
 # .. note::
 #
 #   ``mne-bids`` will try to infer as much information from the data as
-#   possible to then save this data in BIDS specific "sidecar" files. For
+#   possible to then save this data in BIDS-specific "sidecar" files. For
 #   example the manufacturer information, which is inferred from the data file
 #   extension. However, sometimes inferring is ambiguous (e.g., if your file
 #   format is non-standard for the manufacturer). In these cases, MNE-BIDS does
@@ -68,6 +69,17 @@ bids_path = BIDSPath(subject='01', session='01',
                      task='audiovisual', run='01', root=output_path)
 write_raw_bids(raw, bids_path, events_data=events_data,
                event_id=event_id, overwrite=True)
+
+###############################################################################
+# The sample MEG dataset comes with fine-calibration and cross-talk files that
+# are required when processing Elekta/Neuromag/MEGIN data using MaxFilter®.
+# Let's store these data in appropriate places, too.
+
+fine_cal_fname = op.join(data_path, 'SSS', 'sss_cal_mgh.dat')
+cross_talk_fname = op.join(data_path, 'SSS', 'ct_sparse_mgh.fif')
+
+write_fine_calibration(fine_cal_fname, bids_path)
+write_cross_talk(cross_talk_fname, bids_path)
 
 ###############################################################################
 # Now let's see the structure of the BIDS folder we created.
@@ -88,6 +100,13 @@ raw = read_raw_bids(bids_path=bids_path)
 events, event_id = mne.events_from_annotations(raw)
 epochs = mne.Epochs(raw, events, event_id)
 epochs['Auditory'].average().plot()
+
+###############################################################################
+# It is trivial to retrieve the path of the fine-calibration and cross-talk
+# files, too.
+
+print(bids_path.fine_calibration_fpath)
+print(bids_path.cross_talk_fpath)
 
 ###############################################################################
 # The README created by :func:`write_raw_bids` also takes care of the citation

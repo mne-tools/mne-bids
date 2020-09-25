@@ -41,7 +41,8 @@ from mne.io.kit.kit import get_kit_info
 
 from mne_bids import (write_raw_bids, read_raw_bids, BIDSPath,
                       write_anat, make_dataset_description,
-                      mark_bad_channels)
+                      mark_bad_channels, write_fine_calibration,
+                      write_cross_talk)
 from mne_bids.utils import (_stamp_to_dt, _get_anonymization_daysback,
                             get_anonymization_daysback)
 from mne_bids.tsv_handler import _from_tsv, _to_tsv
@@ -1625,3 +1626,71 @@ def test_mark_bad_channels(_bids_validate,
     assert 'status_description' in tsv_data
     for description in expected_descriptions:
         assert description in tsv_data['status_description']
+
+
+def test_write_fine_calibration(_bids_validate):
+    """Test writing of the Elekta/Neuromag fine-calibration file."""
+    bids_root = _TempDir()
+    bids_path = _bids_path.copy().update(root=bids_root)
+
+    data_path = Path(testing.data_path())
+
+    raw_fname = op.join(data_path, 'MEG', 'sample',
+                        'sample_audvis_trunc_raw.fif')
+    raw = _read_raw_fif(raw_fname, verbose=False)
+    write_raw_bids(raw, bids_path=bids_path, verbose=False)
+
+    fine_cal_fname = data_path / 'SSS' / 'sss_cal_mgh.dat'
+
+    write_fine_calibration(fine_calibration=fine_cal_fname,
+                           bids_path=bids_path)
+    _bids_validate(bids_root)
+
+    # subject not set.
+    bids_path = bids_path.copy().update(root=bids_root, subject=None)
+    with pytest.raises(ValueError, match='must have root and subject set'):
+        write_fine_calibration(fine_cal_fname, bids_path)
+
+    # root not set.
+    bids_path = bids_path.copy().update(subject='01', root=None)
+    with pytest.raises(ValueError, match='must have root and subject set'):
+        write_fine_calibration(fine_cal_fname, bids_path)
+
+    # datatype is not 'meg.
+    bids_path = bids_path.copy().update(subject='01', root=bids_root,
+                                        datatype='eeg')
+    with pytest.raises(ValueError, match='Can only write .* for MEG'):
+        write_fine_calibration(fine_cal_fname, bids_path)
+
+
+def test_write_cross_talk(_bids_validate):
+    """Test writing of the Elekta/Neuromag fine-calibration file."""
+    bids_root = _TempDir()
+    bids_path = _bids_path.copy().update(root=bids_root)
+    data_path = Path(testing.data_path())
+
+    raw_fname = op.join(data_path, 'MEG', 'sample',
+                        'sample_audvis_trunc_raw.fif')
+    raw = _read_raw_fif(raw_fname, verbose=False)
+    write_raw_bids(raw, bids_path=bids_path, verbose=False)
+
+    cross_talk_fname = data_path / 'SSS' / 'ct_sparse.fif'
+
+    write_cross_talk(fname=cross_talk_fname, bids_path=bids_path)
+    _bids_validate(bids_root)
+
+    # subject not set.
+    bids_path = bids_path.copy().update(root=bids_root, subject=None)
+    with pytest.raises(ValueError, match='must have root and subject set'):
+        write_cross_talk(cross_talk_fname, bids_path)
+
+    # root not set.
+    bids_path = bids_path.copy().update(subject='01', root=None)
+    with pytest.raises(ValueError, match='must have root and subject set'):
+        write_cross_talk(cross_talk_fname, bids_path)
+
+    # datatype is not 'meg'.
+    bids_path = bids_path.copy().update(subject='01', root=bids_root,
+                                        datatype='eeg')
+    with pytest.raises(ValueError, match='Can only write .* for MEG'):
+        write_cross_talk(cross_talk_fname, bids_path)

@@ -662,6 +662,60 @@ class BIDSPath(object):
         """
         return _get_matched_empty_room(self)
 
+    @property
+    def fine_calibration_fpath(self):
+        """Find the matching Elekta/Neuromag/MEGIN fine-calibration file.
+
+        This requires that at least ``root`` and ``subject`` are set, and that
+        ``datatype`` is either ``'meg'`` or ``None``.
+
+        Returns
+        -------
+        path : pathlib.Path | None
+            The path of the fine-calibration file, or ``None`` if it couldn't
+            be found.
+        """
+        if self.root is None or self.subject is None:
+            raise ValueError('root and subject must be set.')
+        if self.datatype not in (None, 'meg'):
+            raise ValueError('Can only find fine-calibration file for MEG '
+                             'datasets.')
+
+        path = BIDSPath(subject=self.subject, session=self.session,
+                        acquisition='calibration', suffix='meg',
+                        extension='.dat', datatype='meg', root=self.root).fpath
+        if not path.exists():
+            path = None
+
+        return path
+
+    @property
+    def cross_talk_fpath(self):
+        """Find the matching Elekta/Neuromag/MEGIN cross-talk file.
+
+        This requires that at least ``root`` and ``subject`` are set, and that
+        ``datatype`` is either ``'meg'`` or ``None``.
+
+        Returns
+        -------
+        path : pathlib.Path | None
+            The path of the cross-talk file, or ``None`` if it couldn't be
+            found.
+        """
+        if self.root is None or self.subject is None:
+            raise ValueError('root and subject must be set.')
+        if self.datatype not in (None, 'meg'):
+            raise ValueError('Can only find cross-talk file for MEG '
+                             'datasets.')
+
+        path = BIDSPath(subject=self.subject, session=self.session,
+                        acquisition='crosstalk', suffix='meg',
+                        extension='.fif', datatype='meg', root=self.root).fpath
+        if not path.exists():
+            path = None
+
+        return path
+
 
 def _get_matching_bidspaths_from_filesystem(bids_path):
     """Get matching file paths for a BIDS path.
