@@ -737,12 +737,19 @@ def print_dir_tree(folder, max_depth=None):
     baselen = len(str(folder).split(os.sep)) - 1
 
     # Recursively walk through all directories
-    for root, dirs, files in os.walk(folder):
+    for root, dirs, files in os.walk(folder, topdown=True):
+        # Since we're using `topdown=True`, sorting `dirs` ensures that
+        # `os.walk` will continue walking through directories in alphabetical
+        # order. So although we're not actually using `dirs` anywhere below,
+        # sorting it here is imperative to ensure the correct (alphabetical)
+        # directory sort order in the output.
+        dirs.sort()
+        files.sort()
 
         # Check how far we have walked
         branchlen = len(root.split(os.sep)) - baselen
 
-        # Only print, if this is up to the depth we asked
+        # Only print if this is up to the depth we asked
         if branchlen <= max_depth:
             if branchlen <= 1:
                 print('|{}'.format(op.basename(root) + os.sep))

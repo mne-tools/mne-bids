@@ -41,7 +41,7 @@ Changelog
 - :func:`mne_bids.write_raw_bids` only writes a README if it does not already exist, by `Adam Li`_ (`#489 <https://github.com/mne-tools/mne-bids/pull/489>`_)
 - Allow :func:`mne_bids.write_raw_bids` to write EEG/iEEG files from Persyst using ``mne.io.read_raw_persyst`` function, by `Adam Li`_ (`#546 <https://github.com/mne-tools/mne-bids/pull/546>`_)
 - All functions :func:`mne_bids.write_anat`, :func:`mne_bids.make_report`, :func:`mne_bids.get_entity_vals` and :func:`mne_bids.get_datatypes` use now kwarg ``root`` instead of ``bids_root``, `Adam Li`_ (`#556 <https://github.com/mne-tools/mne-bids/pull/556>`_)
-- :func:`mne_bids.print_dir_tree` now works if a ``pathlib.Path`` object is passed in, by `Adam Li`_ (`#555 <https://github.com/mne-tools/mne-bids/pull/555>`_)
+- :func:`mne_bids.print_dir_tree` now works if a ``pathlib.Path`` object is passed, by `Adam Li`_ (`#555 <https://github.com/mne-tools/mne-bids/pull/555>`_)
 
 Bug
 ~~~
@@ -62,6 +62,7 @@ Bug
 - :func:`mne_bids.write_raw_bids` now ensures that **all** parts of the :class:`mne.io.Raw` instance stay in sync when using anonymization to shift dates, e.g. ``raw.annotations``, by `Richard Höchenberger`_ (`#504 <https://github.com/mne-tools/mne-bids/pull/504>`_)
 - Fix :func:`mne_bids.write_raw_bids` failed BIDS validator for ``raw.info['dig'] = []`` by `Alex Rockhill`_ (`#505 <https://github.com/mne-tools/mne-bids/pull/505>`_)
 - Fix bug in :func:`mne_bids.BIDSPath.fpath` where no data file was returned when the suffix was not assigned, by `Alex Rockhill`_ (`#542 <https://github.com/mne-tools/mne-bids/pull/542>`_)
+- Ensure :func:`mne_bids.print_dir_tree` prints files and directories in alphabetical order, by `Richard Höchenberger`_ (`#563 <https://github.com/mne-tools/mne-bids/pull/563>`_)
 
 API
 ~~~
