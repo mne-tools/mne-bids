@@ -848,12 +848,19 @@
     <span class="n">baselen</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">folder</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span>
 
     <span class="c1"># Recursively walk through all directories</span>
-    <span class="k">for</span> <span class="n">root</span><span class="p">,</span> <span class="n">dirs</span><span class="p">,</span> <span class="n">files</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">folder</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">root</span><span class="p">,</span> <span class="n">dirs</span><span class="p">,</span> <span class="n">files</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="n">topdown</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="c1"># Since we&#39;re using `topdown=True`, sorting `dirs` ensures that</span>
+        <span class="c1"># `os.walk` will continue walking through directories in alphabetical</span>
+        <span class="c1"># order. So although we&#39;re not actually using `dirs` anywhere below,</span>
+        <span class="c1"># sorting it here is imperative to ensure the correct (alphabetical)</span>
+        <span class="c1"># directory sort order in the output.</span>
+        <span class="n">dirs</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+        <span class="n">files</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
 
         <span class="c1"># Check how far we have walked</span>
         <span class="n">branchlen</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">root</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">))</span> <span class="o">-</span> <span class="n">baselen</span>
 
-        <span class="c1"># Only print, if this is up to the depth we asked</span>
+        <span class="c1"># Only print if this is up to the depth we asked</span>
         <span class="k">if</span> <span class="n">branchlen</span> <span class="o">&lt;=</span> <span class="n">max_depth</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">branchlen</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
                 <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;|</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">root</span><span class="p">)</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">))</span>
@@ -1360,7 +1367,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-09-24.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-09-26.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
     </p>
   </div>
