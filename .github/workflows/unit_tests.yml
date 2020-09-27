@@ -48,7 +48,7 @@ jobs:
         git clone --depth 1 https://github.com/mne-tools/mne-python.git -b master
         pip install --no-deps -e ./mne-python
 
-    # XXX Revert once bids-validator 1.5.3 has been released
+    # XXX Revert once bids-validator 1.5.4 has been released
     # - name: Install BIDS validator (stable)
     #   if: "matrix.os != 'ubuntu-latest'"
     #   run: |
