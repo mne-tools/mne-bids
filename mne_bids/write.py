@@ -11,7 +11,7 @@ import json
 import os
 import os.path as op
 from datetime import datetime, timezone
-import shutil as sh
+import shutil
 from collections import defaultdict, OrderedDict
 
 import numpy as np
@@ -28,7 +28,8 @@ try:
 except ImportError:
     from mne._digitization._utils import _get_fid_coords
 from mne.channels.channels import _unit2human
-from mne.utils import check_version, has_nibabel, logger, warn
+from mne.utils import check_version, has_nibabel, logger, warn, _validate_type
+import mne.preprocessing
 
 from mne_bids.pick import coil_type
 from mne_bids.dig import _write_dig_bids, _coordsystem_json
@@ -1134,7 +1135,7 @@ def write_raw_bids(raw, bids_path, events_data=None,
                      bids_path.session, bids_path.task, bids_path.run,
                      raw._init_kwargs)
     else:
-        sh.copyfile(raw_fname, bids_path)
+        shutil.copyfile(raw_fname, bids_path)
 
     # write to the scans.tsv file the output file written
     scan_relative_fpath = op.join(bids_path.datatype, bids_path.fpath.name)
@@ -1493,3 +1494,100 @@ def mark_bad_channels(ch_names, descriptions=None, *, bids_path,
     raw.info['bads'] = bads
     # XXX (How) will this handle split files?
     raw.save(raw.filenames[0], overwrite=True, verbose=False)
+
+
+def write_meg_calibration(calibration, bids_path, verbose=None):
+    """Write the Elekta/Neuromag/MEGIN fine-calibration matrix to disk.
+
+    Parameters
+    ----------
+    calibration : path-like | dict
+        Either the path of the ``.dat`` file containing the file-calibration
+        matrix, or the dictionary returned by
+        :func:`mne.preprocessing.read_fine_calibration`.
+    bids_path : BIDSPath
+        A :class:`mne_bids.BIDSPath` instance with at least ``root`` and
+        ``subject`` set,  and that ``datatype`` is either ``'meg'`` or
+        ``None``.
+    verbose : bool | None
+         If a boolean, whether or not to produce verbose output. If ``None``,
+         use the default log level.
+
+    Examples
+    --------
+    >>> calibration = mne.preprocessing.read_fine_calibration('sss_cal.dat')
+    >>> bids_path = BIDSPath(subject='01', session='test', root='/data')
+    >>> write_meg_calibration(calibration, bids_path)
+    """
+    if bids_path.root is None or bids_path.subject is None:
+        raise ValueError('bids_path must have root and subject set.')
+    if bids_path.datatype not in (None, 'meg'):
+        raise ValueError('Can only write fine-calibration information for MEG '
+                         'datasets.')
+
+    _validate_type(calibration, types=('path-like', dict),
+                   item_name='calibration',
+                   type_name='path or dictionary')
+
+    if (isinstance(calibration, dict) and
+            ('ch_names' not in calibration or
+             'locs' not in calibration or
+             'imb_cals' not in calibration)):
+        raise ValueError('The dictionary you passed does not appear to be a '
+                         'proper fine-calibration dict. Please only pass the '
+                         'output of '
+                         'mne.preprocessing.read_fine_calibration(), or a '
+                         'filename.')
+
+    if not isinstance(calibration, dict):
+        calibration = mne.preprocessing.read_fine_calibration(calibration)
+
+    out_path = BIDSPath(subject=bids_path.subject, session=bids_path.session,
+                        acquisition='calibration', suffix='meg',
+                        extension='.dat', datatype='meg', root=bids_path.root)
+
+    logger.info(f'Writing fine-calibration file to {out_path}')
+    out_path.mkdir()
+    mne.preprocessing.write_fine_calibration(fname=str(out_path),
+                                             calibration=calibration)
+
+
+def write_meg_crosstalk(fname, bids_path, verbose=None):
+    """Write the Elekta/Neuromag/MEGIN crosstalk information to disk.
+
+    Parameters
+    ----------
+    fname : path-like
+        The path of the ``FIFF`` file containing the crosstalk information.
+    bids_path : BIDSPath
+        A :class:`mne_bids.BIDSPath` instance with at least ``root`` and
+        ``subject`` set,  and that ``datatype`` is either ``'meg'`` or
+        ``None``.
+    verbose : bool | None
+         If a boolean, whether or not to produce verbose output. If ``None``,
+         use the default log level.
+
+    Examples
+    --------
+    >>> crosstalk_fname = 'ct_sparse.fif'
+    >>> bids_path = BIDSPath(subject='01', session='test', root='/data')
+    >>> write_megcrosstalk(crosstalk_fname, bids_path)
+    """
+    if bids_path.root is None or bids_path.subject is None:
+        raise ValueError('bids_path must have root and subject set.')
+    if bids_path.datatype not in (None, 'meg'):
+        raise ValueError('Can only write fine-calibration information for MEG '
+                         'datasets.')
+
+    _validate_type(fname, types=('path-like',), item_name='fname')
+
+    # MNE doesn't have public reader and writer functions for crosstalk data,
+    # so just copy the original file. Use shutil.copyfile() to only copy file
+    # contents, but not metadata & permissions.
+    out_path = BIDSPath(subject=bids_path.subject, session=bids_path.session,
+                        acquisition='crosstalk', suffix='meg',
+                        extension='.fif', datatype='meg', root=bids_path.root)
+
+    logger.info(f'Writing crosstalk file to {out_path}')
+    out_path.mkdir()
+    shutil.copyfile(src=fname, dst=str(out_path))

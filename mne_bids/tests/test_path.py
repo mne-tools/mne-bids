@@ -26,7 +26,8 @@ from mne.utils import _TempDir, check_version
 from mne.io import anonymize_info
 
 from mne_bids import (get_datatypes, get_entity_vals, print_dir_tree,
-                      BIDSPath, write_raw_bids, read_raw_bids)
+                      BIDSPath, write_raw_bids, read_raw_bids,
+                      write_meg_calibration, write_meg_crosstalk)
 from mne_bids.path import (_parse_ext, get_entities_from_fname,
                            _find_best_candidates, _find_matching_sidecar,
                            _filter_fnames)
@@ -57,6 +58,8 @@ def return_bids_test_dir(tmpdir_factory):
                 'Visual/Right': 4, 'Smiley': 5, 'Button': 32}
     events_fname = op.join(data_path, 'MEG', 'sample',
                            'sample_audvis_trunc_raw-eve.fif')
+    cal_fname = op.join(data_path, 'SSS', 'sss_cal_mgh.dat')
+    crosstalk_fname = op.join(data_path, 'SSS', 'ct_sparse.fif')
 
     raw = mne.io.read_raw_fif(raw_fname)
     raw.info['line_freq'] = 60
@@ -67,6 +70,8 @@ def return_bids_test_dir(tmpdir_factory):
         write_raw_bids(raw, name, events_data=events_fname,
                        event_id=event_id, overwrite=True)
 
+    write_meg_calibration(cal_fname, bids_path=bids_path)
+    write_meg_crosstalk(crosstalk_fname, bids_path=bids_path)
     return bids_root
 
 
@@ -81,7 +86,7 @@ def test_get_keys(return_bids_test_dir):
                           ('subject', [subject_id], None),
                           ('session', [session_id], None),
                           ('run', [run, '02'], None),
-                          ('acquisition', [], None),
+                          ('acquisition', ['calibration', 'crosstalk'], None),
                           ('task', [task], None),
                           ('subject', [], dict(ignore_subjects=[subject_id])),
                           ('subject', [], dict(ignore_subjects=subject_id)),
@@ -557,7 +562,7 @@ def test_match(return_bids_test_dir):
 
     bids_path_01 = BIDSPath(root=bids_root)
     paths = bids_path_01.match()
-    assert len(paths) == 7
+    assert len(paths) == 9
     assert all('sub-01_ses-01' in p.basename for p in paths)
     assert all([p.root == bids_root for p in paths])
 
@@ -762,3 +767,65 @@ def test_bids_path_label_vs_index_entity():
         BIDSPath(root=1, subject='01')
     BIDSPath(subject='01', run=1)  # ok as <index> entity
     BIDSPath(subject='01', split=1)  # ok as <index> entity
+
+
+def test_meg_calibration_fpath(return_bids_test_dir):
+    bids_root = return_bids_test_dir
+
+    # File exists, so BIDSPath.meg_calibration_fpath should return a non-None
+    # value.
+    bids_path_ = bids_path.copy().update(subject='01', root=bids_root)
+    assert bids_path_.meg_calibration_fpath is not None
+
+    # subject not set.
+    bids_path_ = bids_path.copy().update(root=bids_root, subject=None)
+    with pytest.raises(ValueError, match='root and subject must be set'):
+        bids_path_.meg_calibration_fpath
+
+    # root not set.
+    bids_path_ = bids_path.copy().update(subject='01', root=None)
+    with pytest.raises(ValueError, match='root and subject must be set'):
+        bids_path_.meg_calibration_fpath
+
+    # datatype is not 'meg''.
+    bids_path_ = bids_path.copy().update(subject='01', root=bids_root,
+                                         datatype='eeg')
+    with pytest.raises(ValueError, match='Can only find .* for MEG'):
+        bids_path_.meg_calibration_fpath
+
+    # Delete the fine-calibration file. BIDSPath.meg_calibration_fpath
+    # should then return None.
+    bids_path_ = bids_path.copy().update(subject='01', root=bids_root)
+    Path(bids_path_.meg_calibration_fpath).unlink()
+    assert bids_path_.meg_calibration_fpath is None
+
+
+def test_meg_crosstalk_fpath(return_bids_test_dir):
+    bids_root = return_bids_test_dir
+
+    # File exists, so BIDSPath.crosstalk_fpath should return a non-None
+    # value.
+    bids_path_ = bids_path.copy().update(subject='01', root=bids_root)
+    assert bids_path_.meg_crosstalk_fpath is not None
+
+    # subject not set.
+    bids_path_ = bids_path.copy().update(root=bids_root, subject=None)
+    with pytest.raises(ValueError, match='root and subject must be set'):
+        bids_path_.meg_crosstalk_fpath
+
+    # root not set.
+    bids_path_ = bids_path.copy().update(subject='01', root=None)
+    with pytest.raises(ValueError, match='root and subject must be set'):
+        bids_path_.meg_crosstalk_fpath
+
+    # datatype is not 'meg''.
+    bids_path_ = bids_path.copy().update(subject='01', root=bids_root,
+                                         datatype='eeg')
+    with pytest.raises(ValueError, match='Can only find .* for MEG'):
+        bids_path_.meg_crosstalk_fpath
+
+    # Delete the crosstalk file. BIDSPath.meg_crosstalk_fpath should then
+    # return None.
+    bids_path_ = bids_path.copy().update(subject='01', root=bids_root)
+    Path(bids_path_.meg_crosstalk_fpath).unlink()
+    assert bids_path_.meg_crosstalk_fpath is None
