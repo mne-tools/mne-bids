@@ -59,10 +59,8 @@ jobs:
       run: |
         cd ..
         git clone --depth 1 https://github.com/bids-standard/bids-validator
-        cd bids-validator/bids-validator
-        git checkout master
-        npm install -g
-        cd ../../mne-bids
+        npm install -g bids-validator/bids-validator
+        cd mne-bids
 
     - name: Display versions and environment information
       run: |
