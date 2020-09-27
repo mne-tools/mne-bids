@@ -212,16 +212,16 @@ def test_crosstalk_to_bids(tmpdir):
 
     output_path = str(tmpdir)
     data_path = Path(testing.data_path())
-    cross_talk_fname = data_path / 'SSS' / 'ct_sparse.fif'
+    crosstalk_fname = data_path / 'SSS' / 'ct_sparse.fif'
     bids_path = BIDSPath(subject=subject_id, root=output_path)
 
     # Write fine-calibration file and check that it was actually written.
     # Write fine-calibration file and check that it was actually written.
-    args = ('--file', cross_talk_fname, '--subject', subject_id,
+    args = ('--file', crosstalk_fname, '--subject', subject_id,
             '--bids_root', output_path)
     with ArgvSetter(args):
         mne_bids_crosstalk_to_bids.run()
-    assert bids_path.meg_cross_talk_fpath.exists()
+    assert bids_path.meg_crosstalk_fpath.exists()
 
 
 run_tests_if_main()

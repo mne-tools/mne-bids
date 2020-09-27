@@ -29,8 +29,8 @@ MNE BIDS
 
    write_raw_bids
    read_raw_bids
-   write_fine_calibration
-   write_cross_talk
+   write_meg_calibration
+   write_meg_crosstalk
    BIDSPath
    make_dataset_description
    make_report

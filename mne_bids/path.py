@@ -690,8 +690,8 @@ class BIDSPath(object):
         return path
 
     @property
-    def meg_cross_talk_fpath(self):
-        """Find the matching Elekta/Neuromag/MEGIN cross-talk file.
+    def meg_crosstalk_fpath(self):
+        """Find the matching Elekta/Neuromag/MEGIN crosstalk file.
 
         This requires that at least ``root`` and ``subject`` are set, and that
         ``datatype`` is either ``'meg'`` or ``None``.
@@ -699,14 +699,13 @@ class BIDSPath(object):
         Returns
         -------
         path : pathlib.Path | None
-            The path of the cross-talk file, or ``None`` if it couldn't be
+            The path of the crosstalk file, or ``None`` if it couldn't be
             found.
         """
         if self.root is None or self.subject is None:
             raise ValueError('root and subject must be set.')
         if self.datatype not in (None, 'meg'):
-            raise ValueError('Can only find cross-talk file for MEG '
-                             'datasets.')
+            raise ValueError('Can only find crosstalk file for MEG datasets.')
 
         path = BIDSPath(subject=self.subject, session=self.session,
                         acquisition='crosstalk', suffix='meg',

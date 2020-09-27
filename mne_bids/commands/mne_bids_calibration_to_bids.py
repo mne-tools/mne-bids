@@ -31,7 +31,7 @@ def run():
     parser.add_option('--session_id', dest='session',
                       help='Session name')
     parser.add_option('--file', dest='fname',
-                      help='The path of the cross-talk file')
+                      help='The path of the crosstalk file')
     parser.add_option('--verbose', dest='verbose', action='store_true',
                       help='Whether do generate additional diagnostic output')
 
@@ -52,8 +52,8 @@ def run():
                          root=opt.bids_root)
 
     logger.info(f'Writing fine-calibration file {bids_path.basename} …')
-    write_meg_calibration(fine_calibration=opt.fname, bids_path=bids_path,
-                           verbose=opt.verbose)
+    write_meg_calibration(calibration=opt.fname, bids_path=bids_path,
+                          verbose=opt.verbose)
 
 
 if __name__ == '__main__':  # pragma: no cover

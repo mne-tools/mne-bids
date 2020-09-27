@@ -1,4 +1,4 @@
-"""Write Elekta/Neuromag/MEGIN cross-talk data to BIDS.
+"""Write Elekta/Neuromag/MEGIN crosstalk data to BIDS.
 
 example usage:
 $ mne_bids crosstalk_to_bids --subject_id=01 --session=test
@@ -12,7 +12,7 @@ $ mne_bids crosstalk_to_bids --subject_id=01 --session=test
 from mne.utils import logger
 
 import mne_bids
-from mne_bids import BIDSPath, write_meg_cross_talk
+from mne_bids import BIDSPath, write_meg_crosstalk
 
 
 def run():
@@ -31,7 +31,7 @@ def run():
     parser.add_option('--session_id', dest='session',
                       help='Session name')
     parser.add_option('--file', dest='fname',
-                      help='The path of the cross-talk file')
+                      help='The path of the crosstalk file')
     parser.add_option('--verbose', dest='verbose', action='store_true',
                       help='Whether do generate additional diagnostic output')
 
@@ -51,8 +51,9 @@ def run():
     bids_path = BIDSPath(subject=opt.subject, session=opt.session,
                          root=opt.bids_root)
 
-    logger.info(f'Writing cross-talk file {bids_path.basename} …')
-    write_meg_cross_talk(fname=opt.fname, bids_path=bids_path, verbose=opt.verbose)
+    logger.info(f'Writing crosstalk file {bids_path.basename} …')
+    write_meg_crosstalk(fname=opt.fname, bids_path=bids_path,
+                        verbose=opt.verbose)
 
 
 if __name__ == '__main__':  # pragma: no cover
