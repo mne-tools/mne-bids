@@ -1529,6 +1529,16 @@ def write_fine_calibration(fine_calibration, bids_path, verbose=None):
                    item_name='fine_calibration',
                    type_name='path or dictionary')
 
+    if (isinstance(fine_calibration, dict) and
+            ('ch_names' not in fine_calibration or
+             'locs' not in fine_calibration or
+             'imb_cals' not in fine_calibration)):
+        raise ValueError('The dictionary you passed does not appear to be a '
+                         'proper fine-calibration dict. Please only pass the '
+                         'output of '
+                         'mne.preprocessing.read_fine_calibration(), or a '
+                         'filename.')
+
     if not isinstance(fine_calibration, dict):
         fine_calibration = (mne.preprocessing
                             .read_fine_calibration(fine_calibration))

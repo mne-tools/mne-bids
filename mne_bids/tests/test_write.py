@@ -1642,9 +1642,23 @@ def test_write_fine_calibration(_bids_validate):
 
     fine_cal_fname = data_path / 'SSS' / 'sss_cal_mgh.dat'
 
+    # Test passing a filename.
     write_fine_calibration(fine_calibration=fine_cal_fname,
                            bids_path=bids_path)
     _bids_validate(bids_root)
+
+    # Test passing a dict.
+    fine_calibration = mne.preprocessing.read_fine_calibration(fine_cal_fname)
+    write_fine_calibration(fine_calibration=fine_calibration,
+                           bids_path=bids_path)
+    _bids_validate(bids_root)
+
+    # Test passing in incompatible dict.
+    fine_calibration = mne.preprocessing.read_fine_calibration(fine_cal_fname)
+    del fine_calibration['locs']
+    with pytest.raises(ValueError, match='not .* proper fine-calibration'):
+        write_fine_calibration(fine_calibration=fine_calibration,
+                               bids_path=bids_path)
 
     # subject not set.
     bids_path = bids_path.copy().update(root=bids_root, subject=None)

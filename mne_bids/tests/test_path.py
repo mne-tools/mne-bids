@@ -800,7 +800,7 @@ def test_fine_calibration_fpath(return_bids_test_dir):
     assert bids_path_.fine_calibration_fpath is None
 
 
-def cross_talk_fpath(return_bids_test_dir):
+def test_cross_talk_fpath(return_bids_test_dir):
     bids_root = return_bids_test_dir
 
     # File exists, so BIDSPath.cross_talk_fpath should return a non-None
