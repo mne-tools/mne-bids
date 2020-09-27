@@ -59,11 +59,10 @@ jobs:
       run: |
         cd ..
         git clone --depth 1 https://github.com/bids-standard/bids-validator
-        cd bids-validator
+        cd bids-validator/bids-validator
         git checkout master
-        yarn
-        echo "::add-path::$(pwd)/bids-validator/bin"
-        cd ../mne-bids
+        npm install -g
+        cd ../../mne-bids
 
     - name: Display versions and environment information
       run: |
