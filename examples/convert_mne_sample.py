@@ -30,8 +30,8 @@ import os.path as op
 import mne
 from mne.datasets import sample
 
-from mne_bids import (write_raw_bids, read_raw_bids, write_fine_calibration,
-                      write_cross_talk, BIDSPath, print_dir_tree)
+from mne_bids import (write_raw_bids, read_raw_bids, write_meg_calibration,
+                      write_meg_cross_talk, BIDSPath, print_dir_tree)
 
 ###############################################################################
 # Now we can read the MNE sample data. We define an `event_id` based on our
@@ -78,8 +78,8 @@ write_raw_bids(raw, bids_path, events_data=events_data,
 fine_cal_fname = op.join(data_path, 'SSS', 'sss_cal_mgh.dat')
 cross_talk_fname = op.join(data_path, 'SSS', 'ct_sparse_mgh.fif')
 
-write_fine_calibration(fine_cal_fname, bids_path)
-write_cross_talk(cross_talk_fname, bids_path)
+write_meg_calibration(fine_cal_fname, bids_path)
+write_meg_cross_talk(cross_talk_fname, bids_path)
 
 ###############################################################################
 # Now let's see the structure of the BIDS folder we created.
@@ -105,8 +105,8 @@ epochs['Auditory'].average().plot()
 # It is trivial to retrieve the path of the fine-calibration and cross-talk
 # files, too.
 
-print(bids_path.fine_calibration_fpath)
-print(bids_path.cross_talk_fpath)
+print(bids_path.meg_calibration_fpath)
+print(bids_path.meg_cross_talk_fpath)
 
 ###############################################################################
 # The README created by :func:`write_raw_bids` also takes care of the citation

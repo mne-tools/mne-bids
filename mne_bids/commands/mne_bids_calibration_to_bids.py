@@ -12,7 +12,7 @@ $ mne_bids calibration_to_bids --subject_id=01 --session=test
 from mne.utils import logger
 
 import mne_bids
-from mne_bids import BIDSPath, write_fine_calibration
+from mne_bids import BIDSPath, write_meg_calibration
 
 
 def run():
@@ -52,7 +52,7 @@ def run():
                          root=opt.bids_root)
 
     logger.info(f'Writing fine-calibration file {bids_path.basename} …')
-    write_fine_calibration(fine_calibration=opt.fname, bids_path=bids_path,
+    write_meg_calibration(fine_calibration=opt.fname, bids_path=bids_path,
                            verbose=opt.verbose)
 
 

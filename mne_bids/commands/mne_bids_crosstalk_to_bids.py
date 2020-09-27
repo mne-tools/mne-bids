@@ -1,7 +1,7 @@
 """Write Elekta/Neuromag/MEGIN cross-talk data to BIDS.
 
 example usage:
-$ mne_bids crosstsalk_to_bids --subject_id=01 --session=test
+$ mne_bids crosstalk_to_bids --subject_id=01 --session=test
 --bids_root=bids_root --file=ct_sparse.fif
 
 """
@@ -12,7 +12,7 @@ $ mne_bids crosstsalk_to_bids --subject_id=01 --session=test
 from mne.utils import logger
 
 import mne_bids
-from mne_bids import BIDSPath, write_cross_talk
+from mne_bids import BIDSPath, write_meg_cross_talk
 
 
 def run():
@@ -52,7 +52,7 @@ def run():
                          root=opt.bids_root)
 
     logger.info(f'Writing cross-talk file {bids_path.basename} …')
-    write_cross_talk(fname=opt.fname, bids_path=bids_path, verbose=opt.verbose)
+    write_meg_cross_talk(fname=opt.fname, bids_path=bids_path, verbose=opt.verbose)
 
 
 if __name__ == '__main__':  # pragma: no cover

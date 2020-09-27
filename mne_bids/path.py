@@ -663,7 +663,7 @@ class BIDSPath(object):
         return _get_matched_empty_room(self)
 
     @property
-    def fine_calibration_fpath(self):
+    def meg_calibration_fpath(self):
         """Find the matching Elekta/Neuromag/MEGIN fine-calibration file.
 
         This requires that at least ``root`` and ``subject`` are set, and that
@@ -690,7 +690,7 @@ class BIDSPath(object):
         return path
 
     @property
-    def cross_talk_fpath(self):
+    def meg_cross_talk_fpath(self):
         """Find the matching Elekta/Neuromag/MEGIN cross-talk file.
 
         This requires that at least ``root`` and ``subject`` are set, and that

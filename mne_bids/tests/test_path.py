@@ -27,7 +27,7 @@ from mne.io import anonymize_info
 
 from mne_bids import (get_datatypes, get_entity_vals, print_dir_tree,
                       BIDSPath, write_raw_bids, read_raw_bids,
-                      write_fine_calibration, write_cross_talk)
+                      write_meg_calibration, write_meg_cross_talk)
 from mne_bids.path import (_parse_ext, get_entities_from_fname,
                            _find_best_candidates, _find_matching_sidecar,
                            _filter_fnames)
@@ -70,8 +70,8 @@ def return_bids_test_dir(tmpdir_factory):
         write_raw_bids(raw, name, events_data=events_fname,
                        event_id=event_id, overwrite=True)
 
-    write_fine_calibration(fine_cal_fname, bids_path=bids_path)
-    write_cross_talk(cross_talk_fname, bids_path=bids_path)
+    write_meg_calibration(fine_cal_fname, bids_path=bids_path)
+    write_meg_cross_talk(cross_talk_fname, bids_path=bids_path)
     return bids_root
 
 
@@ -775,29 +775,29 @@ def test_fine_calibration_fpath(return_bids_test_dir):
     # File exists, so BIDSPath.fine_calibration_fpath should return a non-None
     # value.
     bids_path_ = bids_path.copy().update(subject='01', root=bids_root)
-    assert bids_path_.fine_calibration_fpath is not None
+    assert bids_path_.meg_calibration_fpath is not None
 
     # subject not set.
     bids_path_ = bids_path.copy().update(root=bids_root, subject=None)
     with pytest.raises(ValueError, match='root and subject must be set'):
-        bids_path_.fine_calibration_fpath
+        bids_path_.meg_calibration_fpath
 
     # root not set.
     bids_path_ = bids_path.copy().update(subject='01', root=None)
     with pytest.raises(ValueError, match='root and subject must be set'):
-        bids_path_.fine_calibration_fpath
+        bids_path_.meg_calibration_fpath
 
     # datatype is not 'meg''.
     bids_path_ = bids_path.copy().update(subject='01', root=bids_root,
                                          datatype='eeg')
     with pytest.raises(ValueError, match='Can only find .* for MEG'):
-        bids_path_.fine_calibration_fpath
+        bids_path_.meg_calibration_fpath
 
     # Delete the fine-calibration file. BIDSPath.fine_calibration_file should
     # then return None.
     bids_path_ = bids_path.copy().update(subject='01', root=bids_root)
-    Path(bids_path_.fine_calibration_fpath).unlink()
-    assert bids_path_.fine_calibration_fpath is None
+    Path(bids_path_.meg_calibration_fpath).unlink()
+    assert bids_path_.meg_calibration_fpath is None
 
 
 def test_cross_talk_fpath(return_bids_test_dir):
@@ -806,26 +806,26 @@ def test_cross_talk_fpath(return_bids_test_dir):
     # File exists, so BIDSPath.cross_talk_fpath should return a non-None
     # value.
     bids_path_ = bids_path.copy().update(subject='01', root=bids_root)
-    assert bids_path_.cross_talk_fpath is not None
+    assert bids_path_.meg_cross_talk_fpath is not None
 
     # subject not set.
     bids_path_ = bids_path.copy().update(root=bids_root, subject=None)
     with pytest.raises(ValueError, match='root and subject must be set'):
-        bids_path_.cross_talk_fpath
+        bids_path_.meg_cross_talk_fpath
 
     # root not set.
     bids_path_ = bids_path.copy().update(subject='01', root=None)
     with pytest.raises(ValueError, match='root and subject must be set'):
-        bids_path_.cross_talk_fpath
+        bids_path_.meg_cross_talk_fpath
 
     # datatype is not 'meg''.
     bids_path_ = bids_path.copy().update(subject='01', root=bids_root,
                                          datatype='eeg')
     with pytest.raises(ValueError, match='Can only find .* for MEG'):
-        bids_path_.cross_talk_fpath
+        bids_path_.meg_cross_talk_fpath
 
     # Delete the cross-talk file. BIDSPath.cross_talk_file should then return
     # None.
     bids_path_ = bids_path.copy().update(subject='01', root=bids_root)
-    Path(bids_path_.cross_talk_fpath).unlink()
-    assert bids_path_.cross_talk_fpath is None
+    Path(bids_path_.meg_cross_talk_fpath).unlink()
+    assert bids_path_.meg_cross_talk_fpath is None

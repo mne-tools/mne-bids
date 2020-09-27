@@ -201,7 +201,7 @@ def test_calibration_to_bids(tmpdir):
     with ArgvSetter(args):
         mne_bids_calibration_to_bids.run()
 
-    assert bids_path.fine_calibration_fpath.exists()
+    assert bids_path.meg_calibration_fpath.exists()
 
 
 def test_crosstalk_to_bids(tmpdir):
@@ -221,7 +221,7 @@ def test_crosstalk_to_bids(tmpdir):
             '--bids_root', output_path)
     with ArgvSetter(args):
         mne_bids_crosstalk_to_bids.run()
-    assert bids_path.cross_talk_fpath.exists()
+    assert bids_path.meg_cross_talk_fpath.exists()
 
 
 run_tests_if_main()

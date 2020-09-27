@@ -1496,7 +1496,7 @@ def mark_bad_channels(ch_names, descriptions=None, *, bids_path,
     raw.save(raw.filenames[0], overwrite=True, verbose=False)
 
 
-def write_fine_calibration(fine_calibration, bids_path, verbose=None):
+def write_meg_calibration(fine_calibration, bids_path, verbose=None):
     """Write the Elekta/Neuromag/MEGIN fine-calibration matrix to disk.
 
     Parameters
@@ -1517,7 +1517,7 @@ def write_fine_calibration(fine_calibration, bids_path, verbose=None):
     --------
     >>> fine_cal = mne.preprocessing.read_fine_calibration('sss_cal.dat')
     >>> bids_path = BIDSPath(subject='01', session='test', root='/data')
-    >>> write_fine_calibration(fine_cal, bids_path)
+    >>> write_meg_calibration(fine_cal, bids_path)
     """
     if bids_path.root is None or bids_path.subject is None:
         raise ValueError('bids_path must have root and subject set.')
@@ -1553,7 +1553,7 @@ def write_fine_calibration(fine_calibration, bids_path, verbose=None):
                                              calibration=fine_calibration)
 
 
-def write_cross_talk(fname, bids_path, verbose=None):
+def write_meg_cross_talk(fname, bids_path, verbose=None):
     """Write the Elekta/Neuromag/MEGIN cross-talk information to disk.
 
     Parameters
@@ -1572,7 +1572,7 @@ def write_cross_talk(fname, bids_path, verbose=None):
     --------
     >>> cross_talk = mne.preprocessing.read_fine_calibration('ct_sparse.fif')
     >>> bids_path = BIDSPath(subject='01', session='test', root='/data')
-    >>> write_cross_talk(cross_talk, bids_path)
+    >>> write_meg_cross_talk(cross_talk, bids_path)
     """
     if bids_path.root is None or bids_path.subject is None:
         raise ValueError('bids_path must have root and subject set.')
