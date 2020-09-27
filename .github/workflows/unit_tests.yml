@@ -48,12 +48,14 @@ jobs:
         git clone --depth 1 https://github.com/mne-tools/mne-python.git -b master
         pip install --no-deps -e ./mne-python
 
-    - name: Install BIDS validator (stable)
-      if: "matrix.os != 'ubuntu-latest'"
-      run: |
-        npm install -g bids-validator
+    # XXX Revert once bids-validator 1.5.3 has been released
+    # - name: Install BIDS validator (stable)
+    #   if: "matrix.os != 'ubuntu-latest'"
+    #   run: |
+    #     npm install -g bids-validator
+    # - name: Install BIDS validator (master)
+    #   if: "matrix.os == 'ubuntu-latest'"
     - name: Install BIDS validator (master)
-      if: "matrix.os == 'ubuntu-latest'"
       run: |
         cd ..
         git clone --depth 1 https://github.com/bids-standard/bids-validator
