@@ -76,8 +76,10 @@ jobs:
       run: pip install --no-deps .
     - name: Run pytest
       run: |
-        echo "bids-validator"; bids-validator --version
+        export BIDS_VALIDATOR_VERSION=`bids-validator --version`
+        echo $BIDS_VALIDATOR_VERSION
         python -m pytest . --cov=mne_bids mne_bids/tests/ mne_bids/commands/tests/ --cov-report=xml --cov-config=setup.cfg --verbose --ignore mne-python
+      shell: bash  
     - name: Run style & documentation tests
       if: "matrix.os == 'ubuntu-latest'"
       run: make pep
