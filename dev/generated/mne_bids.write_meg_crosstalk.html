@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Computation times &#8212; mne_bids 0.5.dev0 documentation</title>
+    <title>mne_bids.write_meg_crosstalk &#8212; mne_bids 0.5.dev0 documentation</title>
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css" />
@@ -46,9 +46,9 @@
         <div class="collapse navbar-collapse nav-collapse">
           <ul class="nav navbar-nav">
             
-                <li><a href="index.html">Examples</a></li>
+                <li><a href="../auto_examples/index.html">Examples</a></li>
                 <li><a href="../api.html">API</a></li>
-                <li><a href="../generated/cli.html">CLI</a></li>
+                <li><a href="cli.html">CLI</a></li>
                 <li><a href="../whats_new.html">What's new</a></li>
                 <li><a href="https://github.com/mne-tools/mne-bids">GitHub</a></li>
             
@@ -108,58 +108,42 @@
   <div class="row">
     <div class="body col-md-12 content" role="main">
       
-  <div class="section" id="computation-times">
-<span id="sphx-glr-auto-examples-sg-execution-times"></span><h1>Computation times<a class="headerlink" href="#computation-times" title="Permalink to this headline">¶</a></h1>
-<p><strong>04:22.121</strong> total execution time for <strong>auto_examples</strong> files:</p>
-<table class="docutils align-default">
-<colgroup>
-<col style="width: 83%" />
-<col style="width: 10%" />
-<col style="width: 7%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="convert_eeg_to_bids.html#sphx-glr-auto-examples-convert-eeg-to-bids-py"><span class="std std-ref">04. Convert EEG data to BIDS format</span></a> (<code class="docutils literal notranslate"><span class="pre">convert_eeg_to_bids.py</span></code>)</p></td>
-<td><p>02:35.629</p></td>
-<td><p>0.0 MB</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="convert_mne_sample.html#sphx-glr-auto-examples-convert-mne-sample-py"><span class="std std-ref">03. Convert MNE sample data to BIDS format</span></a> (<code class="docutils literal notranslate"><span class="pre">convert_mne_sample.py</span></code>)</p></td>
-<td><p>00:51.742</p></td>
-<td><p>0.0 MB</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="read_bids_datasets.html#sphx-glr-auto-examples-read-bids-datasets-py"><span class="std std-ref">02. Read and load datasets in BIDS format</span></a> (<code class="docutils literal notranslate"><span class="pre">read_bids_datasets.py</span></code>)</p></td>
-<td><p>00:16.432</p></td>
-<td><p>0.0 MB</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="convert_mri_and_trans.html#sphx-glr-auto-examples-convert-mri-and-trans-py"><span class="std std-ref">07. Save and load T1-weighted MRI scan along with anatomical landmarks in BIDS</span></a> (<code class="docutils literal notranslate"><span class="pre">convert_mri_and_trans.py</span></code>)</p></td>
-<td><p>00:16.013</p></td>
-<td><p>0.0 MB</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="mark_bad_channels.html#sphx-glr-auto-examples-mark-bad-channels-py"><span class="std std-ref">10. Changing which channels are marked as “bad”</span></a> (<code class="docutils literal notranslate"><span class="pre">mark_bad_channels.py</span></code>)</p></td>
-<td><p>00:09.151</p></td>
-<td><p>0.0 MB</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="convert_empty_room.html#sphx-glr-auto-examples-convert-empty-room-py"><span class="std std-ref">09. Storing empty room data in BIDS format</span></a> (<code class="docutils literal notranslate"><span class="pre">convert_empty_room.py</span></code>)</p></td>
-<td><p>00:05.783</p></td>
-<td><p>0.0 MB</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="convert_ieeg_to_bids.html#sphx-glr-auto-examples-convert-ieeg-to-bids-py"><span class="std std-ref">08. Convert iEEG data to BIDS format</span></a> (<code class="docutils literal notranslate"><span class="pre">convert_ieeg_to_bids.py</span></code>)</p></td>
-<td><p>00:03.675</p></td>
-<td><p>0.0 MB</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="convert_group_studies.html#sphx-glr-auto-examples-convert-group-studies-py"><span class="std std-ref">05. BIDS conversion for group studies</span></a> (<code class="docutils literal notranslate"><span class="pre">convert_group_studies.py</span></code>)</p></td>
-<td><p>00:03.653</p></td>
-<td><p>0.0 MB</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="rename_brainvision_files.html#sphx-glr-auto-examples-rename-brainvision-files-py"><span class="std std-ref">06. Rename BrainVision EEG data files</span></a> (<code class="docutils literal notranslate"><span class="pre">rename_brainvision_files.py</span></code>)</p></td>
-<td><p>00:00.040</p></td>
-<td><p>0.0 MB</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="create_bids_folder.html#sphx-glr-auto-examples-create-bids-folder-py"><span class="std std-ref">01. Creating BIDS-compatible folder names and filenames</span></a> (<code class="docutils literal notranslate"><span class="pre">create_bids_folder.py</span></code>)</p></td>
-<td><p>00:00.003</p></td>
-<td><p>0.0 MB</p></td>
-</tr>
-</tbody>
-</table>
+  <div class="section" id="mne-bids-write-meg-crosstalk">
+<h1>mne_bids.write_meg_crosstalk<a class="headerlink" href="#mne-bids-write-meg-crosstalk" title="Permalink to this headline">¶</a></h1>
+<dl class="py function">
+<dt id="mne_bids.write_meg_crosstalk">
+<code class="sig-prename descclassname">mne_bids.</code><code class="sig-name descname">write_meg_crosstalk</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fname</span></em>, <em class="sig-param"><span class="n">bids_path</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/write.html#write_meg_crosstalk"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.write_meg_crosstalk" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write the Elekta/Neuromag/MEGIN crosstalk information to disk.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>fname</strong><span class="classifier">path-like</span></dt><dd><p>The path of the <code class="docutils literal notranslate"><span class="pre">FIFF</span></code> file containing the crosstalk information.</p>
+</dd>
+<dt><strong>bids_path</strong><span class="classifier">BIDSPath</span></dt><dd><p>A <a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a> instance with at least <code class="docutils literal notranslate"><span class="pre">root</span></code> and
+<code class="docutils literal notranslate"><span class="pre">subject</span></code> set,  and that <code class="docutils literal notranslate"><span class="pre">datatype</span></code> is either <code class="docutils literal notranslate"><span class="pre">'meg'</span></code> or
+<code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</dd>
+<dt><strong>verbose</strong><span class="classifier">bool | None</span></dt><dd><p>If a boolean, whether or not to produce verbose output. If <code class="docutils literal notranslate"><span class="pre">None</span></code>,
+use the default log level.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">crosstalk_fname</span> <span class="o">=</span> <span class="s1">&#39;ct_sparse.fif&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bids_path</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="s1">&#39;01&#39;</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="s1">&#39;test&#39;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="s1">&#39;/data&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">write_megcrosstalk</span><span class="p">(</span><span class="n">crosstalk_fname</span><span class="p">,</span> <span class="n">bids_path</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<div class="section" id="examples-using-mne-bids-write-meg-crosstalk">
+<span id="sphx-glr-backreferences-mne-bids-write-meg-crosstalk"></span><h2>Examples using <code class="docutils literal notranslate"><span class="pre">mne_bids.write_meg_crosstalk</span></code><a class="headerlink" href="#examples-using-mne-bids-write-meg-crosstalk" title="Permalink to this headline">¶</a></h2>
+<div class="sphx-glr-thumbcontainer" tooltip="In this example we will use MNE-BIDS to organize the MNE sample data according to the BIDS stan..."><div class="figure align-default" id="id1">
+<img alt="03. Convert MNE sample data to BIDS format" src="../_images/sphx_glr_convert_mne_sample_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/convert_mne_sample.html#sphx-glr-auto-examples-convert-mne-sample-py"><span class="std std-ref">03. Convert MNE sample data to BIDS format</span></a></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-clear"></div></div>
 </div>
 
 

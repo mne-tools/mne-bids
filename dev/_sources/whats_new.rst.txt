@@ -42,6 +42,7 @@ Changelog
 - Allow :func:`mne_bids.write_raw_bids` to write EEG/iEEG files from Persyst using ``mne.io.read_raw_persyst`` function, by `Adam Li`_ (`#546 <https://github.com/mne-tools/mne-bids/pull/546>`_)
 - All functions :func:`mne_bids.write_anat`, :func:`mne_bids.make_report`, :func:`mne_bids.get_entity_vals` and :func:`mne_bids.get_datatypes` use now kwarg ``root`` instead of ``bids_root``, `Adam Li`_ (`#556 <https://github.com/mne-tools/mne-bids/pull/556>`_)
 - :func:`mne_bids.print_dir_tree` now works if a ``pathlib.Path`` object is passed, by `Adam Li`_ (`#555 <https://github.com/mne-tools/mne-bids/pull/555>`_)
+- Allow writing of Elekta/Neuromag/MEGIN fine-calibration and crosstalk data via the new functions :func:`mne_bids.write_meg_calibration` and :func:`mne_bids.write_meg_crosstalk`, and retrieval of the file locations via :attr:`BIDSPath.meg_calibration_fpath` and :attr:`BIDSPath.meg_crosstalk_fpath`, by `Richard Höchenberger`_ (`#562 <https://github.com/mne-tools/mne-bids/pull/562>`_)
 
 Bug
 ~~~

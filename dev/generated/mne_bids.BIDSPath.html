@@ -348,6 +348,40 @@ path.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt id="mne_bids.BIDSPath.meg_calibration_fpath">
+<em class="property">property </em><code class="sig-name descname">meg_calibration_fpath</code><a class="headerlink" href="#mne_bids.BIDSPath.meg_calibration_fpath" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the matching Elekta/Neuromag/MEGIN fine-calibration file.</p>
+<p>This requires that at least <code class="docutils literal notranslate"><span class="pre">root</span></code> and <code class="docutils literal notranslate"><span class="pre">subject</span></code> are set, and that
+<code class="docutils literal notranslate"><span class="pre">datatype</span></code> is either <code class="docutils literal notranslate"><span class="pre">'meg'</span></code> or <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>path</strong><span class="classifier">pathlib.Path | None</span></dt><dd><p>The path of the fine-calibration file, or <code class="docutils literal notranslate"><span class="pre">None</span></code> if it couldn’t
+be found.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mne_bids.BIDSPath.meg_crosstalk_fpath">
+<em class="property">property </em><code class="sig-name descname">meg_crosstalk_fpath</code><a class="headerlink" href="#mne_bids.BIDSPath.meg_crosstalk_fpath" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the matching Elekta/Neuromag/MEGIN crosstalk file.</p>
+<p>This requires that at least <code class="docutils literal notranslate"><span class="pre">root</span></code> and <code class="docutils literal notranslate"><span class="pre">subject</span></code> are set, and that
+<code class="docutils literal notranslate"><span class="pre">datatype</span></code> is either <code class="docutils literal notranslate"><span class="pre">'meg'</span></code> or <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>path</strong><span class="classifier">pathlib.Path | None</span></dt><dd><p>The path of the crosstalk file, or <code class="docutils literal notranslate"><span class="pre">None</span></code> if it couldn’t be
+found.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt id="mne_bids.BIDSPath.mkdir">
 <code class="sig-name descname">mkdir</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">exist_ok</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/path.html#BIDSPath.mkdir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.BIDSPath.mkdir" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create the directory structure of the BIDS path.</p>

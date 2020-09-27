@@ -122,7 +122,7 @@
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">os.path</span> <span class="k">as</span> <span class="nn">op</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timezone</span>
-<span class="kn">import</span> <span class="nn">shutil</span> <span class="k">as</span> <span class="nn">sh</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span><span class="p">,</span> <span class="n">OrderedDict</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
@@ -139,7 +139,8 @@
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">mne._digitization._utils</span> <span class="kn">import</span> <span class="n">_get_fid_coords</span>
 <span class="kn">from</span> <span class="nn">mne.channels.channels</span> <span class="kn">import</span> <span class="n">_unit2human</span>
-<span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="n">check_version</span><span class="p">,</span> <span class="n">has_nibabel</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">warn</span>
+<span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="n">check_version</span><span class="p">,</span> <span class="n">has_nibabel</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">warn</span><span class="p">,</span> <span class="n">_validate_type</span>
+<span class="kn">import</span> <span class="nn">mne.preprocessing</span>
 
 <span class="kn">from</span> <span class="nn">mne_bids.pick</span> <span class="kn">import</span> <span class="n">coil_type</span>
 <span class="kn">from</span> <span class="nn">mne_bids.dig</span> <span class="kn">import</span> <span class="n">_write_dig_bids</span><span class="p">,</span> <span class="n">_coordsystem_json</span>
@@ -1245,7 +1246,7 @@
                      <span class="n">bids_path</span><span class="o">.</span><span class="n">session</span><span class="p">,</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">task</span><span class="p">,</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">run</span><span class="p">,</span>
                      <span class="n">raw</span><span class="o">.</span><span class="n">_init_kwargs</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">sh</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">raw_fname</span><span class="p">,</span> <span class="n">bids_path</span><span class="p">)</span>
+        <span class="n">shutil</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">raw_fname</span><span class="p">,</span> <span class="n">bids_path</span><span class="p">)</span>
 
     <span class="c1"># write to the scans.tsv file the output file written</span>
     <span class="n">scan_relative_fpath</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span><span class="p">,</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
@@ -1604,6 +1605,103 @@
     <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;bads&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bads</span>
     <span class="c1"># XXX (How) will this handle split files?</span>
     <span class="n">raw</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">filenames</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="write_meg_calibration"><a class="viewcode-back" href="../../generated/mne_bids.write_meg_calibration.html#mne_bids.write_meg_calibration">[docs]</a><span class="k">def</span> <span class="nf">write_meg_calibration</span><span class="p">(</span><span class="n">calibration</span><span class="p">,</span> <span class="n">bids_path</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Write the Elekta/Neuromag/MEGIN fine-calibration matrix to disk.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    calibration : path-like | dict</span>
+<span class="sd">        Either the path of the ``.dat`` file containing the file-calibration</span>
+<span class="sd">        matrix, or the dictionary returned by</span>
+<span class="sd">        :func:`mne.preprocessing.read_fine_calibration`.</span>
+<span class="sd">    bids_path : BIDSPath</span>
+<span class="sd">        A :class:`mne_bids.BIDSPath` instance with at least ``root`` and</span>
+<span class="sd">        ``subject`` set,  and that ``datatype`` is either ``&#39;meg&#39;`` or</span>
+<span class="sd">        ``None``.</span>
+<span class="sd">    verbose : bool | None</span>
+<span class="sd">         If a boolean, whether or not to produce verbose output. If ``None``,</span>
+<span class="sd">         use the default log level.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; calibration = mne.preprocessing.read_fine_calibration(&#39;sss_cal.dat&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; bids_path = BIDSPath(subject=&#39;01&#39;, session=&#39;test&#39;, root=&#39;/data&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; write_meg_calibration(calibration, bids_path)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">root</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">subject</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;bids_path must have root and subject set.&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;meg&#39;</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Can only write fine-calibration information for MEG &#39;</span>
+                         <span class="s1">&#39;datasets.&#39;</span><span class="p">)</span>
+
+    <span class="n">_validate_type</span><span class="p">(</span><span class="n">calibration</span><span class="p">,</span> <span class="n">types</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;path-like&#39;</span><span class="p">,</span> <span class="nb">dict</span><span class="p">),</span>
+                   <span class="n">item_name</span><span class="o">=</span><span class="s1">&#39;calibration&#39;</span><span class="p">,</span>
+                   <span class="n">type_name</span><span class="o">=</span><span class="s1">&#39;path or dictionary&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">calibration</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span>
+            <span class="p">(</span><span class="s1">&#39;ch_names&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">calibration</span> <span class="ow">or</span>
+             <span class="s1">&#39;locs&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">calibration</span> <span class="ow">or</span>
+             <span class="s1">&#39;imb_cals&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">calibration</span><span class="p">)):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;The dictionary you passed does not appear to be a &#39;</span>
+                         <span class="s1">&#39;proper fine-calibration dict. Please only pass the &#39;</span>
+                         <span class="s1">&#39;output of &#39;</span>
+                         <span class="s1">&#39;mne.preprocessing.read_fine_calibration(), or a &#39;</span>
+                         <span class="s1">&#39;filename.&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">calibration</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="n">calibration</span> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">preprocessing</span><span class="o">.</span><span class="n">read_fine_calibration</span><span class="p">(</span><span class="n">calibration</span><span class="p">)</span>
+
+    <span class="n">out_path</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="n">bids_path</span><span class="o">.</span><span class="n">subject</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">bids_path</span><span class="o">.</span><span class="n">session</span><span class="p">,</span>
+                        <span class="n">acquisition</span><span class="o">=</span><span class="s1">&#39;calibration&#39;</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;meg&#39;</span><span class="p">,</span>
+                        <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.dat&#39;</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="s1">&#39;meg&#39;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">bids_path</span><span class="o">.</span><span class="n">root</span><span class="p">)</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Writing fine-calibration file to </span><span class="si">{</span><span class="n">out_path</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">out_path</span><span class="o">.</span><span class="n">mkdir</span><span class="p">()</span>
+    <span class="n">mne</span><span class="o">.</span><span class="n">preprocessing</span><span class="o">.</span><span class="n">write_fine_calibration</span><span class="p">(</span><span class="n">fname</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">out_path</span><span class="p">),</span>
+                                             <span class="n">calibration</span><span class="o">=</span><span class="n">calibration</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="write_meg_crosstalk"><a class="viewcode-back" href="../../generated/mne_bids.write_meg_crosstalk.html#mne_bids.write_meg_crosstalk">[docs]</a><span class="k">def</span> <span class="nf">write_meg_crosstalk</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">bids_path</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Write the Elekta/Neuromag/MEGIN crosstalk information to disk.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    fname : path-like</span>
+<span class="sd">        The path of the ``FIFF`` file containing the crosstalk information.</span>
+<span class="sd">    bids_path : BIDSPath</span>
+<span class="sd">        A :class:`mne_bids.BIDSPath` instance with at least ``root`` and</span>
+<span class="sd">        ``subject`` set,  and that ``datatype`` is either ``&#39;meg&#39;`` or</span>
+<span class="sd">        ``None``.</span>
+<span class="sd">    verbose : bool | None</span>
+<span class="sd">         If a boolean, whether or not to produce verbose output. If ``None``,</span>
+<span class="sd">         use the default log level.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; crosstalk_fname = &#39;ct_sparse.fif&#39;</span>
+<span class="sd">    &gt;&gt;&gt; bids_path = BIDSPath(subject=&#39;01&#39;, session=&#39;test&#39;, root=&#39;/data&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; write_megcrosstalk(crosstalk_fname, bids_path)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">root</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">subject</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;bids_path must have root and subject set.&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;meg&#39;</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Can only write fine-calibration information for MEG &#39;</span>
+                         <span class="s1">&#39;datasets.&#39;</span><span class="p">)</span>
+
+    <span class="n">_validate_type</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">types</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;path-like&#39;</span><span class="p">,),</span> <span class="n">item_name</span><span class="o">=</span><span class="s1">&#39;fname&#39;</span><span class="p">)</span>
+
+    <span class="c1"># MNE doesn&#39;t have public reader and writer functions for crosstalk data,</span>
+    <span class="c1"># so just copy the original file. Use shutil.copyfile() to only copy file</span>
+    <span class="c1"># contents, but not metadata &amp; permissions.</span>
+    <span class="n">out_path</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="n">bids_path</span><span class="o">.</span><span class="n">subject</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">bids_path</span><span class="o">.</span><span class="n">session</span><span class="p">,</span>
+                        <span class="n">acquisition</span><span class="o">=</span><span class="s1">&#39;crosstalk&#39;</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;meg&#39;</span><span class="p">,</span>
+                        <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.fif&#39;</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="s1">&#39;meg&#39;</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="n">bids_path</span><span class="o">.</span><span class="n">root</span><span class="p">)</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Writing crosstalk file to </span><span class="si">{</span><span class="n">out_path</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">out_path</span><span class="o">.</span><span class="n">mkdir</span><span class="p">()</span>
+    <span class="n">shutil</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">src</span><span class="o">=</span><span class="n">fname</span><span class="p">,</span> <span class="n">dst</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">out_path</span><span class="p">))</span></div>
 </pre></div>
 
     </div>
