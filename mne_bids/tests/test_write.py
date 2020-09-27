@@ -1630,8 +1630,8 @@ def test_mark_bad_channels(_bids_validate,
 
 @pytest.mark.skipif('BIDS_VALIDATOR_VERSION' in os.environ and
                     LooseVersion(os.environ['BIDS_VALIDATOR_VERSION']) <
-                    LooseVersion('1.5.4'),
-                    reason=('requires bids-validator 1.5.4 or newer'))
+                    LooseVersion('1.5.5'),
+                    reason=('requires bids-validator 1.5.5 or newer'))
 def test_write_fine_calibration(_bids_validate):
     """Test writing of the Elekta/Neuromag fine-calibration file."""
     bids_root = _TempDir()
@@ -1683,8 +1683,8 @@ def test_write_fine_calibration(_bids_validate):
 
 @pytest.mark.skipif('BIDS_VALIDATOR_VERSION' in os.environ and
                     LooseVersion(os.environ['BIDS_VALIDATOR_VERSION']) <
-                    LooseVersion('1.5.4'),
-                    reason=('requires bids-validator 1.5.4 or newer'))
+                    LooseVersion('1.5.5'),
+                    reason=('requires bids-validator 1.5.5 or newer'))
 def test_write_cross_talk(_bids_validate):
     """Test writing of the Elekta/Neuromag fine-calibration file."""
     bids_root = _TempDir()
