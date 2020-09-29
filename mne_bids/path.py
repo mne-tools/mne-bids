@@ -854,7 +854,7 @@ def _infer_datatype_from_path(fname):
     return datatype
 
 
-def get_entities_from_fname(fname):
+def get_entities_from_fname(fname, on_fail='raise'):
     """Retrieve a dictionary of BIDS entities from a filename.
 
     Entities not present in ``fname`` will be assigned the value of ``None``.
@@ -863,6 +863,11 @@ def get_entities_from_fname(fname):
     ----------
     fname : BIDSPath | str
         The path to parse.
+    on_fail : 'raise' | 'warn' | 'ignore'
+        If not allowed entities in the filename are found and this is set
+        to ``'raise'``, raise a ``RuntimeError``. If ``'warn'``, emit a warning,
+        and if ``'ignore'``, neither raise an exception nor a warning, and
+        continue to return the entity dictionary.
 
     Returns
     -------
@@ -896,12 +901,17 @@ def get_entities_from_fname(fname):
     for match in re.finditer(param_regex, op.basename(fname)):
         key, value = match.groups()
         if key not in fname_vals:
-            raise KeyError(f'Unexpected entity "{key}" found in '
-                           f'filename "{fname}"')
+            msg = f'Unexpected entity "{key}" found in '\
+                  f'filename "{fname}"'
+            if on_fail == 'raise':
+                raise KeyError(msg)
+            elif on_fail == 'warn':
+                warn(msg)
         if fname_vals.index(key) < idx_key:
-            raise ValueError(f'Entities in filename not ordered correctly.'
-                             f' "{key}" should have occurred earlier in the '
-                             f'filename "{fname}"')
+            msg = f'Entities in filename not ordered correctly.'\
+                  f' "{key}" should have occurred earlier in the '\
+                  f'filename "{fname}"'
+            raise ValueError(msg)
         idx_key = fname_vals.index(key)
         params[ALLOWED_PATH_ENTITIES_SHORT[key]] = value
 

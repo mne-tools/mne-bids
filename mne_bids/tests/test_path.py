@@ -208,7 +208,7 @@ def test_parse_ext():
     ('/bids_root/sub-01/ses-02/meg/' +
      'sub-01_ses-02_task-test_run-3_split-01_meg.fif'),
 ])
-def test_parse_bids_filename(fname):
+def test_get_entities_from_fname(fname):
     """Test parsing entities from a bids filename."""
     params = get_entities_from_fname(fname)
     print(params)
@@ -219,6 +219,41 @@ def test_parse_bids_filename(fname):
     assert params['split'] == '01'
     if 'meg' in fname:
         assert params['suffix'] == 'meg'
+    assert list(params.keys()) == ['subject', 'session', 'task',
+                                   'acquisition', 'run', 'processing',
+                                   'space', 'recording', 'split', 'suffix']
+
+
+@pytest.mark.parametrize('fname', [
+    'sub-01_ses-02_task-test_run-3_split-01_meg.fif',
+    ('/bids_root/sub-01/ses-02/meg/' +
+     'sub-01_ses-02_task-test_run-3_split-01_meg.fif'),
+    'sub-01_ses-02_task-test_run-3_split-01_desc-tfr_meg.fif',
+])
+def test_get_entities_from_fname_errors(fname):
+    """Test parsing entities from bids filename.
+
+    Extends utility for not supported BIDS entities, such
+    as 'description'.
+    """
+    if 'desc' in fname:
+        with pytest.raises(RuntimeError, match='Unexpected entity'):
+            params = get_entities_from_fname(fname, on_fail='raise')
+
+        params = get_entities_from_fname(fname, on_fail='ignore')
+    else:
+        params = get_entities_from_fname(fname, on_fail='raise')
+
+    print(params)
+    assert params['subject'] == '01'
+    assert params['session'] == '02'
+    assert params['run'] == '3'
+    assert params['task'] == 'test'
+    assert params['split'] == '01'
+    if 'meg' in fname:
+        assert params['suffix'] == 'meg'
+    if 'desc' in fname:
+        assert params['desc'] == 'tfr'
     assert list(params.keys()) == ['subject', 'session', 'task',
                                    'acquisition', 'run', 'processing',
                                    'space', 'recording', 'split', 'suffix']
