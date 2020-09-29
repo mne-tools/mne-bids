@@ -865,9 +865,9 @@ def get_entities_from_fname(fname, on_fail='raise'):
         The path to parse.
     on_fail : 'raise' | 'warn' | 'ignore'
         If not allowed entities in the filename are found and this is set
-        to ``'raise'``, raise a ``RuntimeError``. If ``'warn'``, emit a warning,
-        and if ``'ignore'``, neither raise an exception nor a warning, and
-        continue to return the entity dictionary.
+        to ``'raise'``, raise a ``RuntimeError``. If ``'warn'``,
+        emit a warning, and if ``'ignore'``, neither raise an exception
+        nor a warning, and continue to return the entity dictionary.
 
     Returns
     -------
