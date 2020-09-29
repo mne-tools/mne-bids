@@ -2,6 +2,20 @@
 from mne import io
 from mne.io.constants import FIFF
 
+try:
+    from mne.io import read_raw_persyst
+except ImportError:
+    read_raw_persyst = None
+
+
+def _read_raw_persyst_func():
+    if read_raw_persyst is None:
+        print('Reading Persyst files requires latest mne dev '
+              'version or 0.21 release.')
+        return None
+    else:
+        return read_raw_persyst
+
 
 BIDS_VERSION = "1.4.0"
 
@@ -34,7 +48,7 @@ reader = {'.con': io.read_raw_kit, '.sqd': io.read_raw_kit,
           '.fif': io.read_raw_fif, '.pdf': io.read_raw_bti,
           '.ds': io.read_raw_ctf, '.vhdr': io.read_raw_brainvision,
           '.edf': io.read_raw_edf, '.bdf': io.read_raw_bdf,
-          '.set': io.read_raw_eeglab, '.lay': io.read_raw_persyst}
+          '.set': io.read_raw_eeglab, '.lay': _read_raw_persyst_func()}
 
 
 # Merge the manufacturer dictionaries in a python2 / python3 compatible way
