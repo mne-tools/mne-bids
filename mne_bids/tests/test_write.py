@@ -49,7 +49,7 @@ from mne_bids.tsv_handler import _from_tsv, _to_tsv
 from mne_bids.utils import _update_sidecar
 from mne_bids.path import _find_matching_sidecar
 from mne_bids.pick import coil_type
-from mne_bids.config import REFERENCES, reader
+from mne_bids.config import REFERENCES
 
 base_path = op.join(op.dirname(mne.__file__), 'io')
 subject_id = '01'
@@ -90,12 +90,14 @@ _read_raw_edf = _wrap_read_raw(mne.io.read_raw_edf)
 _read_raw_bdf = _wrap_read_raw(mne.io.read_raw_bdf)
 _read_raw_eeglab = _wrap_read_raw(mne.io.read_raw_eeglab)
 _read_raw_brainvision = _wrap_read_raw(mne.io.read_raw_brainvision)
-_read_raw_persyst = _wrap_read_raw(reader['.lay'])
+_read_raw_persyst = _wrap_read_raw(mne.io.read_raw_persyst)
+_read_raw_nihon = _wrap_read_raw(mne.io.read_raw_nihon)
 
 # parametrized directory, filename and reader for EEG/iEEG data formats
 test_eegieeg_data = [
     ('EDF', 'test_reduced.edf', _read_raw_edf),
     ('Persyst', 'sub-pt1_ses-02_task-monitor_acq-ecog_run-01_clip2.lay', _read_raw_persyst),  # noqa
+    ('NihonKohden', 'MB0400FU.EEG', _read_raw_nihon)
 ]
 
 
@@ -908,7 +910,7 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate):
     # in raw clash
     # Note: only needed for data files that store channel names
     # alongside the data
-    if dir_name != 'Persyst':
+    if dir_name == 'EDF':
         with pytest.raises(RuntimeError, match='Channels do not correspond'):
             read_raw_bids(bids_path=bids_path)
 
@@ -969,8 +971,10 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate):
 
     # check that scans list is properly converted to brainvision
     if check_version('mne', '0.20') and check_version('pybv', '0.2.0'):
+        daysback_min, daysback_max = _get_anonymization_daysback(raw)
+        daysback = (daysback_min + daysback_max) // 2
         write_raw_bids(raw, bids_path,
-                       anonymize=dict(daysback=33000),
+                       anonymize=dict(daysback=daysback),
                        overwrite=True)
         data = _from_tsv(scans_tsv)
         bids_fname = bids_path.copy().update(suffix='eeg',
