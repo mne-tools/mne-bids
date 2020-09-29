@@ -244,7 +244,10 @@ def test_get_entities_from_fname_errors(fname):
     else:
         params = get_entities_from_fname(fname, on_fail='raise')
 
-    print(params)
+    expected_keys = ['subject', 'session', 'task',
+                     'acquisition', 'run', 'processing',
+                     'space', 'recording', 'split', 'suffix']
+
     assert params['subject'] == '01'
     assert params['session'] == '02'
     assert params['run'] == '3'
@@ -254,9 +257,8 @@ def test_get_entities_from_fname_errors(fname):
         assert params['suffix'] == 'meg'
     if 'desc' in fname:
         assert params['desc'] == 'tfr'
-    assert list(params.keys()) == ['subject', 'session', 'task',
-                                   'acquisition', 'run', 'processing',
-                                   'space', 'recording', 'split', 'suffix']
+        expected_keys.append('desc')
+    assert list(params.keys()) == expected_keys
 
 
 @pytest.mark.parametrize('candidate_list, best_candidates', [

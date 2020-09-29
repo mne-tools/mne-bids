@@ -900,20 +900,24 @@ def get_entities_from_fname(fname, on_fail='raise'):
     idx_key = 0
     for match in re.finditer(param_regex, op.basename(fname)):
         key, value = match.groups()
-        if key not in fname_vals:
-            msg = f'Unexpected entity "{key}" found in '\
-                  f'filename "{fname}"'
-            if on_fail == 'raise':
-                raise KeyError(msg)
-            elif on_fail == 'warn':
-                warn(msg)
-        if fname_vals.index(key) < idx_key:
-            msg = f'Entities in filename not ordered correctly.'\
-                  f' "{key}" should have occurred earlier in the '\
-                  f'filename "{fname}"'
-            raise ValueError(msg)
-        idx_key = fname_vals.index(key)
-        params[ALLOWED_PATH_ENTITIES_SHORT[key]] = value
+
+        if on_fail in ['raise', 'warn']:
+            if key not in fname_vals:
+                msg = f'Unexpected entity "{key}" found in '\
+                      f'filename "{fname}"'
+                if on_fail == 'raise':
+                    raise KeyError(msg)
+                elif on_fail == 'warn':
+                    warn(msg)
+            if fname_vals.index(key) < idx_key:
+                msg = f'Entities in filename not ordered correctly.'\
+                      f' "{key}" should have occurred earlier in the '\
+                      f'filename "{fname}"'
+                raise ValueError(msg)
+            idx_key = fname_vals.index(key)
+
+        key_short_hand = ALLOWED_PATH_ENTITIES_SHORT.get(key, key)
+        params[key_short_hand] = value
 
     # parse suffix last
     last_entity = fname.split('-')[-1]
