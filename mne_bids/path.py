@@ -866,8 +866,9 @@ def get_entities_from_fname(fname, on_fail='raise'):
     on_fail : 'raise' | 'warn' | 'ignore'
         If not allowed entities in the filename are found and this is set
         to ``'raise'``, raise a ``RuntimeError``. If ``'warn'``,
-        emit a warning, and if ``'ignore'``, neither raise an exception
-        nor a warning, and continue to return the entity dictionary.
+        emit a warning and continue, and if ``'ignore'``,
+        neither raise an exception nor a warning, and
+        return all entities found.
 
     Returns
     -------
@@ -909,6 +910,7 @@ def get_entities_from_fname(fname, on_fail='raise'):
                     raise KeyError(msg)
                 elif on_fail == 'warn':
                     warn(msg)
+                    continue
             if fname_vals.index(key) < idx_key:
                 msg = f'Entities in filename not ordered correctly.'\
                       f' "{key}" should have occurred earlier in the '\

@@ -239,7 +239,8 @@ def test_get_entities_from_fname_errors(fname):
     if 'desc' in fname:
         with pytest.raises(KeyError, match='Unexpected entity'):
             params = get_entities_from_fname(fname, on_fail='raise')
-
+        with pytest.warns(RuntimeWarning, match='Unexpected entity'):
+            params = get_entities_from_fname(fname, on_fail='warn')
         params = get_entities_from_fname(fname, on_fail='ignore')
     else:
         params = get_entities_from_fname(fname, on_fail='raise')
