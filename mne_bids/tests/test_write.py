@@ -132,8 +132,9 @@ def _bids_validate():
 def _test_anonymize(raw, bids_path, events_fname=None, event_id=None):
     bids_root = _TempDir()
     bids_path = _bids_path.copy().update(root=bids_root)
+    daysback, _ = _get_anonymization_daysback(raw)
     write_raw_bids(raw, bids_path, events_data=events_fname,
-                   event_id=event_id, anonymize=dict(daysback=33000),
+                   event_id=event_id, anonymize=dict(daysback=daysback),
                    overwrite=False)
     scans_tsv = BIDSPath(
         subject=subject_id, session=session_id,
