@@ -864,11 +864,14 @@ def get_entities_from_fname(fname, on_error='raise'):
     fname : BIDSPath | str
         The path to parse.
     on_error : 'raise' | 'warn' | 'ignore'
-        If not allowed entities in the filename are found and this is set
+        If any unsupported labels in the filename are found and this is set
         to ``'raise'``, raise a ``RuntimeError``. If ``'warn'``,
         emit a warning and continue, and if ``'ignore'``,
         neither raise an exception nor a warning, and
-        return all entities found.
+        return all entities found. For example, currently mne-bids does not
+        support derivatives yet, but the ``desc`` entity label is used to
+        differentiate different derivatives and will work with this function
+        if ``on_error='ignore'``.
 
     Returns
     -------

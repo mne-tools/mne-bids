@@ -371,11 +371,11 @@ def read_raw_bids(bids_path, extra_params=None, verbose=True):
 
     # Try to find an associated electrodes.tsv and coordsystem.json
     # to get information about the status and type of present channels
-    on_fail = 'warn' if suffix == 'ieeg' else 'ignore'
+    on_error = 'warn' if suffix == 'ieeg' else 'ignore'
     electrodes_fname = _find_matching_sidecar(bids_path,
                                               suffix='electrodes',
                                               extension='.tsv',
-                                              on_error=on_fail)
+                                              on_error=on_error)
     coordsystem_fname = _find_matching_sidecar(bids_path,
                                                suffix='coordsystem',
                                                extension='.json',
