@@ -37,7 +37,7 @@ eeg_manufacturers = {'.vhdr': 'BrainProducts', '.eeg': 'BrainProducts',
                      '.edf': 'n/a', '.bdf': 'Biosemi', '.set': 'n/a',
                      '.fdt': 'n/a',
                      '.lay': 'Persyst', '.dat': 'Persyst',
-                     '.EEG': 'NihonKohden'}
+                     '.EEG': 'Nihon Kohden'}
 
 ieeg_manufacturers = {'.vhdr': 'BrainProducts', '.eeg': 'BrainProducts',
                       '.edf': 'n/a', '.set': 'n/a', '.fdt': 'n/a',
