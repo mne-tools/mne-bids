@@ -43,7 +43,7 @@ ieeg_manufacturers = {'.vhdr': 'BrainProducts', '.eeg': 'BrainProducts',
                       '.edf': 'n/a', '.set': 'n/a', '.fdt': 'n/a',
                       '.mef': 'n/a', '.nwb': 'n/a',
                       '.lay': 'Persyst', '.dat': 'Persyst',
-                      '.EEG': 'NihonKohden'}
+                      '.EEG': 'Nihon Kohden'}
 
 # file-extension map to mne-python readers
 reader = {'.con': io.read_raw_kit, '.sqd': io.read_raw_kit,
