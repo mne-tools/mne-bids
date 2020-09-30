@@ -906,7 +906,7 @@ def get_entities_from_fname(fname, on_error='raise'):
     for match in re.finditer(param_regex, op.basename(fname)):
         key, value = match.groups()
 
-        if on_error in ['raise', 'warn']:
+        if on_error in ('raise', 'warn'):
             if key not in fname_vals:
                 msg = f'Unexpected entity "{key}" found in '\
                       f'filename "{fname}"'
