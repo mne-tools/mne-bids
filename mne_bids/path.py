@@ -854,7 +854,7 @@ def _infer_datatype_from_path(fname):
     return datatype
 
 
-def get_entities_from_fname(fname, on_fail='raise'):
+def get_entities_from_fname(fname, on_error='raise'):
     """Retrieve a dictionary of BIDS entities from a filename.
 
     Entities not present in ``fname`` will be assigned the value of ``None``.
@@ -863,7 +863,7 @@ def get_entities_from_fname(fname, on_fail='raise'):
     ----------
     fname : BIDSPath | str
         The path to parse.
-    on_fail : 'raise' | 'warn' | 'ignore'
+    on_error : 'raise' | 'warn' | 'ignore'
         If not allowed entities in the filename are found and this is set
         to ``'raise'``, raise a ``RuntimeError``. If ``'warn'``,
         emit a warning and continue, and if ``'ignore'``,
@@ -891,6 +891,10 @@ def get_entities_from_fname(fname, on_fail='raise'):
     'split': None,
     'suffix': 'meg'}
     """
+    if on_error not in ('warn', 'raise', 'ignore'):
+        raise ValueError(f'Acceptable values for on_error are: warn, raise, '
+                         f'ignore, but got: {on_error}')
+
     fname = str(fname)  # to accept also BIDSPath or Path instances
 
     # filename keywords to the BIDS entity mapping
@@ -902,13 +906,13 @@ def get_entities_from_fname(fname, on_fail='raise'):
     for match in re.finditer(param_regex, op.basename(fname)):
         key, value = match.groups()
 
-        if on_fail in ['raise', 'warn']:
+        if on_error in ['raise', 'warn']:
             if key not in fname_vals:
                 msg = f'Unexpected entity "{key}" found in '\
                       f'filename "{fname}"'
-                if on_fail == 'raise':
+                if on_error == 'raise':
                     raise KeyError(msg)
-                elif on_fail == 'warn':
+                elif on_error == 'warn':
                     warn(msg)
                     continue
             if fname_vals.index(key) < idx_key:
@@ -932,7 +936,7 @@ def get_entities_from_fname(fname, on_fail='raise'):
 
 
 def _find_matching_sidecar(bids_path, suffix=None,
-                           extension=None, on_fail='raise'):
+                           extension=None, on_error='raise'):
     """Try to find a sidecar file with a given suffix for a data file.
 
     Parameters
@@ -944,7 +948,7 @@ def _find_matching_sidecar(bids_path, suffix=None,
         before the extension. E.g., ``'ieeg'``.
     extension : str | None
         The extension of the filename. E.g., ``'.json'``.
-    on_fail : 'raise' | 'warn' | 'ignore'
+    on_error : 'raise' | 'warn' | 'ignore'
         If no matching sidecar file was found and this is set to ``'raise'``,
         raise a ``RuntimeError``. If ``'warn'``, emit a warning, and if
         ``'ignore'``, neither raise an exception nor a warning, and return
@@ -954,12 +958,12 @@ def _find_matching_sidecar(bids_path, suffix=None,
     -------
     sidecar_fname : str | None
         Path to the identified sidecar file, or ``None`` if none could be found
-        and ``on_fail`` was set to ``'warn'`` or ``'ignore'``.
+        and ``on_error`` was set to ``'warn'`` or ``'ignore'``.
 
     """
-    if on_fail not in ('warn', 'raise', 'ignore'):
-        raise ValueError(f'Acceptable values for on_fail are: warn, raise, '
-                         f'ignore, but got: {on_fail}')
+    if on_error not in ('warn', 'raise', 'ignore'):
+        raise ValueError(f'Acceptable values for on_error are: warn, raise, '
+                         f'ignore, but got: {on_error}')
 
     bids_root = bids_path.root
 
@@ -1010,9 +1014,9 @@ def _find_matching_sidecar(bids_path, suffix=None,
                f'associated with {bids_path.basename}, '
                f'but found {len(candidate_list)}: "{candidate_list}".')
     msg += '\n\nThe search_str was "{}"'.format(search_str)
-    if on_fail == 'raise':
+    if on_error == 'raise':
         raise RuntimeError(msg)
-    elif on_fail == 'warn':
+    elif on_error == 'warn':
         warn(msg)
 
     return None

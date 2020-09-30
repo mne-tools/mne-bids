@@ -356,7 +356,7 @@ def read_raw_bids(bids_path, extra_params=None, verbose=True):
     # events in the recorded data
     events_fname = _find_matching_sidecar(bids_path, suffix='events',
                                           extension='.tsv',
-                                          on_fail='warn')
+                                          on_error='warn')
     if events_fname is not None:
         raw = _handle_events_reading(events_fname, raw)
 
@@ -365,7 +365,7 @@ def read_raw_bids(bids_path, extra_params=None, verbose=True):
     channels_fname = _find_matching_sidecar(bids_path,
                                             suffix='channels',
                                             extension='.tsv',
-                                            on_fail='warn')
+                                            on_error='warn')
     if channels_fname is not None:
         raw = _handle_channels_reading(channels_fname, bids_fname, raw)
 
@@ -375,11 +375,11 @@ def read_raw_bids(bids_path, extra_params=None, verbose=True):
     electrodes_fname = _find_matching_sidecar(bids_path,
                                               suffix='electrodes',
                                               extension='.tsv',
-                                              on_fail=on_fail)
+                                              on_error=on_fail)
     coordsystem_fname = _find_matching_sidecar(bids_path,
                                                suffix='coordsystem',
                                                extension='.json',
-                                               on_fail='warn')
+                                               on_error='warn')
     if electrodes_fname is not None:
         if coordsystem_fname is None:
             raise RuntimeError(f"BIDS mandates that the coordsystem.json "
@@ -395,7 +395,7 @@ def read_raw_bids(bids_path, extra_params=None, verbose=True):
     sidecar_fname = _find_matching_sidecar(bids_path,
                                            suffix=datatype,
                                            extension='.json',
-                                           on_fail='warn')
+                                           on_error='warn')
     if sidecar_fname is not None:
         raw = _handle_info_reading(sidecar_fname, raw, verbose=verbose)
 

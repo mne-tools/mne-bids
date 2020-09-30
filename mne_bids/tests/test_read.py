@@ -349,11 +349,11 @@ def test_handle_eeg_coords_reading():
     coordsystem_fname = _find_matching_sidecar(bids_path,
                                                suffix='coordsystem',
                                                extension='.json',
-                                               on_fail='warn')
+                                               on_error='warn')
     electrodes_fname = _find_matching_sidecar(bids_path,
                                               suffix='electrodes',
                                               extension='.tsv',
-                                              on_fail='warn')
+                                              on_error='warn')
     assert coordsystem_fname is None
     assert electrodes_fname is None
 

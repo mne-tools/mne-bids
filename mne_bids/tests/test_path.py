@@ -238,12 +238,12 @@ def test_get_entities_from_fname_errors(fname):
     """
     if 'desc' in fname:
         with pytest.raises(KeyError, match='Unexpected entity'):
-            params = get_entities_from_fname(fname, on_fail='raise')
+            params = get_entities_from_fname(fname, on_error='raise')
         with pytest.warns(RuntimeWarning, match='Unexpected entity'):
-            params = get_entities_from_fname(fname, on_fail='warn')
-        params = get_entities_from_fname(fname, on_fail='ignore')
+            params = get_entities_from_fname(fname, on_error='warn')
+        params = get_entities_from_fname(fname, on_error='ignore')
     else:
-        params = get_entities_from_fname(fname, on_fail='raise')
+        params = get_entities_from_fname(fname, on_error='raise')
 
     expected_keys = ['subject', 'session', 'task',
                      'acquisition', 'run', 'processing',
@@ -312,23 +312,23 @@ def test_find_matching_sidecar(return_bids_test_dir):
                                        extension='.bogus')
 
     # Find nothing and receive None and a warning.
-    on_fail = 'warn'
+    on_error = 'warn'
     with pytest.warns(RuntimeWarning, match='Did not find any'):
         fname = _find_matching_sidecar(bids_fpath, suffix='foo',
-                                       extension='.bogus', on_fail=on_fail)
+                                       extension='.bogus', on_error=on_error)
     assert fname is None
 
     # Find nothing and receive None.
-    on_fail = 'ignore'
+    on_error = 'ignore'
     fname = _find_matching_sidecar(bids_fpath, suffix='foo',
-                                   extension='.bogus', on_fail=on_fail)
+                                   extension='.bogus', on_error=on_error)
     assert fname is None
 
-    # Invalid on_fail.
-    on_fail = 'hello'
-    with pytest.raises(ValueError, match='Acceptable values for on_fail are'):
+    # Invalid on_error.
+    on_error = 'hello'
+    with pytest.raises(ValueError, match='Acceptable values for on_error are'):
         _find_matching_sidecar(bids_fpath, suffix='coordsystem',
-                               extension='.json', on_fail=on_fail)
+                               extension='.json', on_error=on_error)
 
 
 def test_bids_path_inference(return_bids_test_dir):

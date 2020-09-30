@@ -934,7 +934,7 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate):
     electrodes_fpath = _find_matching_sidecar(bids_fname,
                                               suffix='electrodes',
                                               extension='.tsv',
-                                              on_fail='ignore')
+                                              on_error='ignore')
     assert electrodes_fpath is None
 
     # with landmarks, eeg montage is written
