@@ -868,7 +868,7 @@ def get_entities_from_fname(fname, on_error='raise'):
         to ``'raise'``, raise a ``RuntimeError``. If ``'warn'``,
         emit a warning and continue, and if ``'ignore'``,
         neither raise an exception nor a warning, and
-        return all entities found. For example, currently mne-bids does not
+        return all entities found. For example, currently MNE-BIDS does not
         support derivatives yet, but the ``desc`` entity label is used to
         differentiate different derivatives and will work with this function
         if ``on_error='ignore'``.
