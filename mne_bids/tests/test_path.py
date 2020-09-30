@@ -226,7 +226,7 @@ def test_get_entities_from_fname(fname):
 
 @pytest.mark.parametrize('fname', [
     'sub-01_ses-02_task-test_run-3_split-01_meg.fif',
-    ('/bids_root/sub-01/ses-02/meg/',
+    ('/bids_root/sub-01/ses-02/meg/'
      'sub-01_ses-02_task-test_run-3_split-01_meg.fif'),
     'sub-01_ses-02_task-test_run-3_split-01_desc-tfr_meg.fif',
 ])
