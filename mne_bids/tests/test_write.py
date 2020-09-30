@@ -132,7 +132,11 @@ def _bids_validate():
 def _test_anonymize(raw, bids_path, events_fname=None, event_id=None):
     bids_root = _TempDir()
     bids_path = _bids_path.copy().update(root=bids_root)
-    daysback, _ = _get_anonymization_daysback(raw)
+    if raw.info['meas_date'] is not None:
+        daysback, _ = get_anonymization_daysback(raw)
+    else:
+        # just pass back any arbitrary number if no measurement date
+        daysback = 3300
     write_raw_bids(raw, bids_path, events_data=events_fname,
                    event_id=event_id, anonymize=dict(daysback=daysback),
                    overwrite=False)
