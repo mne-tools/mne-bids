@@ -601,13 +601,15 @@ class BIDSPath(object):
         # Only keep files (not directories), and omit the JSON sidecars.
         fnames = [f.name for f in fnames
                   if f.is_file() and f.suffix != '.json']
-        fnames = _filter_fnames(fnames, extension=self.extension,
+        fnames = _filter_fnames(fnames, suffix=self.suffix,
+                                extension=self.extension,
                                 **self.entities)
 
         bids_paths = []
         for fname in fnames:
             entities = get_entities_from_fname(fname)
-            extension = fname.suffix if fname.suffix else None
+            _, extension = _parse_ext(fname, verbose=False)
+            # suffix = fname.suffix if fname.suffix else None
             bids_path = BIDSPath(root=self.root, datatype=self.datatype,
                                  extension=extension, **entities)
             bids_paths.append(bids_path)

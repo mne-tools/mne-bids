@@ -596,6 +596,22 @@ def test_match(return_bids_test_dir):
     assert len(paths) == 1
     assert paths[0].extension == '.fif'
 
+    # Check handling of `extension` and `suffix`, part 1: no suffix
+    bids_path_01 = BIDSPath(root=bids_root, run='01', extension='.tsv',
+                            datatype='meg')
+    paths = bids_path_01.match()
+    assert len(paths) == 2
+    assert paths[0].extension == '.tsv'
+
+    # Check handling of `extension` and `suffix`, part 1: no suffix
+    bids_path_01 = BIDSPath(root=bids_root, run='01',
+                            suffix='channels', extension='.tsv',
+                            datatype='meg')
+    paths = bids_path_01.match()
+    assert len(paths) == 1
+    assert paths[0].extension == '.tsv'
+    assert paths[0].suffix == 'channels'
+
 
 @pytest.mark.filterwarnings(warning_str['meas_date_set_to_none'])
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
