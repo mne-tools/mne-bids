@@ -603,7 +603,7 @@ def test_match(return_bids_test_dir):
     assert len(paths) == 2
     assert paths[0].extension == '.tsv'
 
-    # Check handling of `extension` and `suffix`, part 1: no suffix
+    # Check handling of `extension` and `suffix`, part 1: suffix passed
     bids_path_01 = BIDSPath(root=bids_root, run='01',
                             suffix='channels', extension='.tsv',
                             datatype='meg')
@@ -612,7 +612,7 @@ def test_match(return_bids_test_dir):
     assert paths[0].extension == '.tsv'
     assert paths[0].suffix == 'channels'
 
-    # Check handling of `datatype`
+    # Check handling of `datatype` when explicitly passe din
     print_dir_tree(bids_root)
     bids_path_01 = BIDSPath(root=bids_root, run='01',
                             suffix='channels', extension='.tsv',
@@ -625,6 +625,8 @@ def test_match(return_bids_test_dir):
     assert Path(paths[0]).parent.name == 'meg'
 
     # Check handling of `datatype`, no datatype passed in
+    # should be exactly the same if there is only one datatype
+    # present in the dataset
     bids_path_01 = BIDSPath(root=bids_root, run='01',
                             suffix='channels', extension='.tsv')
     paths = bids_path_01.match()
