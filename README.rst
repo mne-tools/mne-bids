@@ -231,5 +231,6 @@ then call ``mne_bids.write_raw_bids`` and it will convert the dataset for you to
 the file format to BrainVision (the RECOMMENDED BIDS format for iEEG).
 
 If there is a manufacturer that is not currently supported in ``mne-bids``, then one must add a reader
-function, ``io.read_raw_<manufacturer>``, in ``mne-python``. If you are having problems,
-then please open up an issue.
+function, ``io.read_raw_<manufacturer>``, in ``mne-python``. Please first submit an issue and
+pull request at ``mne-python <https://github.com/mne-tools/mne-python/issues>``_. Then when the reader is merged, submit an issue and pull request
+here at ``mne-bids <https://github.com/mne-tools/mne-bids/issues>``_. 
