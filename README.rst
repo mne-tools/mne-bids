@@ -222,7 +222,7 @@ Contributing
 Please see our `contributing guide <https://github.com/mne-tools/mne-bids/blob/master/CONTRIBUTING.md>`_.
 
 MEG, EEG, iEEG Data From Non-BIDS Acquisition Systems
---------------------------------------------------------
+-----------------------------------------------------
 
 Currently, we support the file formats that are in the BIDS specification for MEG, EEG, and iEEG data.
 We also support a range of manufacturer formats to facilitate converting them to their BIDS RECOMMENDED
