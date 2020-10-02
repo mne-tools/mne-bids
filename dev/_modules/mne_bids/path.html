@@ -712,14 +712,23 @@
         <span class="c1"># Only keep files (not directories), and omit the JSON sidecars.</span>
         <span class="n">fnames</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">fnames</span>
                   <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">is_file</span><span class="p">()</span> <span class="ow">and</span> <span class="n">f</span><span class="o">.</span><span class="n">suffix</span> <span class="o">!=</span> <span class="s1">&#39;.json&#39;</span><span class="p">]</span>
-        <span class="n">fnames</span> <span class="o">=</span> <span class="n">_filter_fnames</span><span class="p">(</span><span class="n">fnames</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">extension</span><span class="p">,</span>
+        <span class="n">fnames</span> <span class="o">=</span> <span class="n">_filter_fnames</span><span class="p">(</span><span class="n">fnames</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">suffix</span><span class="p">,</span>
+                                <span class="n">extension</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">extension</span><span class="p">,</span>
                                 <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">entities</span><span class="p">)</span>
 
         <span class="n">bids_paths</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">fname</span> <span class="ow">in</span> <span class="n">fnames</span><span class="p">:</span>
+            <span class="c1"># get all BIDS entities from the filename</span>
             <span class="n">entities</span> <span class="o">=</span> <span class="n">get_entities_from_fname</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
-            <span class="n">extension</span> <span class="o">=</span> <span class="n">fname</span><span class="o">.</span><span class="n">suffix</span> <span class="k">if</span> <span class="n">fname</span><span class="o">.</span><span class="n">suffix</span> <span class="k">else</span> <span class="kc">None</span>
-            <span class="n">bids_path</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">datatype</span><span class="p">,</span>
+
+            <span class="c1"># extension is not an entity, so get it explicitly</span>
+            <span class="n">_</span><span class="p">,</span> <span class="n">extension</span> <span class="o">=</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+            <span class="c1"># get datatype</span>
+            <span class="n">fpath</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;*</span><span class="si">{</span><span class="n">fname</span><span class="si">}</span><span class="s1">*&#39;</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">datatype</span> <span class="o">=</span> <span class="n">_infer_datatype_from_path</span><span class="p">(</span><span class="n">fpath</span><span class="p">)</span>
+
+            <span class="n">bids_path</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="n">datatype</span><span class="o">=</span><span class="n">datatype</span><span class="p">,</span>
                                  <span class="n">extension</span><span class="o">=</span><span class="n">extension</span><span class="p">,</span> <span class="o">**</span><span class="n">entities</span><span class="p">)</span>
             <span class="n">bids_paths</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bids_path</span><span class="p">)</span>
 
@@ -941,6 +950,19 @@
         <span class="n">ext</span> <span class="o">=</span> <span class="s1">&#39;.nii.gz&#39;</span>
         <span class="n">fname</span> <span class="o">=</span> <span class="n">fname</span><span class="p">[:</span><span class="o">-</span><span class="mi">4</span><span class="p">]</span>  <span class="c1"># cut off the .nii</span>
     <span class="k">return</span> <span class="n">fname</span><span class="p">,</span> <span class="n">ext</span>
+
+
+<span class="k">def</span> <span class="nf">_infer_datatype_from_path</span><span class="p">(</span><span class="n">fname</span><span class="p">):</span>
+    <span class="c1"># get the parent</span>
+    <span class="n">datatype</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">name</span>
+
+    <span class="k">if</span> <span class="nb">any</span><span class="p">([</span><span class="n">datatype</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">entity</span><span class="p">)</span> <span class="k">for</span> <span class="n">entity</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;sub&#39;</span><span class="p">,</span> <span class="s1">&#39;ses&#39;</span><span class="p">]]):</span>
+        <span class="n">datatype</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">datatype</span><span class="p">:</span>
+        <span class="n">datatype</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">return</span> <span class="n">datatype</span>
 
 
 <div class="viewcode-block" id="get_entities_from_fname"><a class="viewcode-back" href="../../generated/mne_bids.path.get_entities_from_fname.html#mne_bids.get_entities_from_fname">[docs]</a><span class="k">def</span> <span class="nf">get_entities_from_fname</span><span class="p">(</span><span class="n">fname</span><span class="p">):</span>
@@ -1420,7 +1442,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-09-27.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-10-02.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
     </p>
   </div>
