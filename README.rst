@@ -221,9 +221,15 @@ Contributing
 
 Please see our `contributing guide <https://github.com/mne-tools/mne-bids/blob/master/CONTRIBUTING.md>`_.
 
-MEG, EEG, iEEG Data From Unsupported Acquisition Systems
+MEG, EEG, iEEG Data From Non-BIDS Acquisition Systems
 --------------------------------------------------------
 
-Currently, we support the file formats that are in the BIDS specification, and certain manufacturer
-formats that have a corresponding ``io.read_raw_<manufacturer>`` function in ``mne-python``. If you are
-dealing with another acquisitions system with a different file format, then please open up an issue.
+Currently, we support the file formats that are in the BIDS specification for MEG, EEG, and iEEG data.
+We also support a range of manufacturer formats to facilitate converting them to their BIDS RECOMMENDED
+format. For example, if you have a Nihon Kohden file, you can read that file in using ``mne-python``, and
+then call ``mne_bids.write_raw_bids`` and it will convert the dataset for you to BIDS and also convert
+the file format to BrainVision (the RECOMMENDED BIDS format for iEEG).
+
+If there is a manufacturer that is not currently supported in ``mne-bids``, then one must add a reader
+function, ``io.read_raw_<manufacturer>``, in ``mne-python``. If you are having problems,
+then please open up an issue.
