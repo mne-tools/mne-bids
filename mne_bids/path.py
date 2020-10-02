@@ -601,14 +601,23 @@ class BIDSPath(object):
         # Only keep files (not directories), and omit the JSON sidecars.
         fnames = [f.name for f in fnames
                   if f.is_file() and f.suffix != '.json']
-        fnames = _filter_fnames(fnames, extension=self.extension,
+        fnames = _filter_fnames(fnames, suffix=self.suffix,
+                                extension=self.extension,
                                 **self.entities)
 
         bids_paths = []
         for fname in fnames:
+            # get all BIDS entities from the filename
             entities = get_entities_from_fname(fname)
-            extension = fname.suffix if fname.suffix else None
-            bids_path = BIDSPath(root=self.root, datatype=self.datatype,
+
+            # extension is not an entity, so get it explicitly
+            _, extension = _parse_ext(fname, verbose=False)
+
+            # get datatype
+            fpath = list(self.root.rglob(f'*{fname}*'))[0]
+            datatype = _infer_datatype_from_path(fpath)
+
+            bids_path = BIDSPath(root=self.root, datatype=datatype,
                                  extension=extension, **entities)
             bids_paths.append(bids_path)
 
@@ -830,6 +839,19 @@ def _parse_ext(raw_fname, verbose=False):
         ext = '.nii.gz'
         fname = fname[:-4]  # cut off the .nii
     return fname, ext
+
+
+def _infer_datatype_from_path(fname):
+    # get the parent
+    datatype = Path(fname).parent.name
+
+    if any([datatype.startswith(entity) for entity in ['sub', 'ses']]):
+        datatype = None
+
+    if not datatype:
+        datatype = None
+
+    return datatype
 
 
 def get_entities_from_fname(fname):

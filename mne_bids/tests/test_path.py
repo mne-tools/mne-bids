@@ -596,6 +596,45 @@ def test_match(return_bids_test_dir):
     assert len(paths) == 1
     assert paths[0].extension == '.fif'
 
+    # Check handling of `extension` and `suffix`, part 1: no suffix
+    bids_path_01 = BIDSPath(root=bids_root, run='01', extension='.tsv',
+                            datatype='meg')
+    paths = bids_path_01.match()
+    assert len(paths) == 2
+    assert paths[0].extension == '.tsv'
+
+    # Check handling of `extension` and `suffix`, part 1: suffix passed
+    bids_path_01 = BIDSPath(root=bids_root, run='01',
+                            suffix='channels', extension='.tsv',
+                            datatype='meg')
+    paths = bids_path_01.match()
+    assert len(paths) == 1
+    assert paths[0].extension == '.tsv'
+    assert paths[0].suffix == 'channels'
+
+    # Check handling of `datatype` when explicitly passed in
+    print_dir_tree(bids_root)
+    bids_path_01 = BIDSPath(root=bids_root, run='01',
+                            suffix='channels', extension='.tsv',
+                            datatype='meg')
+    paths = bids_path_01.match()
+    print(paths)
+    assert len(paths) == 1
+    assert paths[0].extension == '.tsv'
+    assert paths[0].suffix == 'channels'
+    assert Path(paths[0]).parent.name == 'meg'
+
+    # Check handling of `datatype`, no datatype passed in
+    # should be exactly the same if there is only one datatype
+    # present in the dataset
+    bids_path_01 = BIDSPath(root=bids_root, run='01',
+                            suffix='channels', extension='.tsv')
+    paths = bids_path_01.match()
+    assert len(paths) == 1
+    assert paths[0].extension == '.tsv'
+    assert paths[0].suffix == 'channels'
+    assert Path(paths[0]).parent.name == 'meg'
+
 
 @pytest.mark.filterwarnings(warning_str['meas_date_set_to_none'])
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
