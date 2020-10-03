@@ -37,14 +37,12 @@ See the documentation pages in the MNE docs for more information on
 import os.path as op
 import shutil as sh
 
-import numpy as np
 import matplotlib.pyplot as plt
-
-from nilearn.plotting import plot_anat
-
 import mne
+import numpy as np
 from mne.datasets import sample
 from mne.source_space import head_to_mri
+from nilearn.plotting import plot_anat
 
 from mne_bids import (write_raw_bids, BIDSPath, write_anat,
                       get_head_mri_trans, print_dir_tree)
@@ -99,15 +97,16 @@ print(trans)
 # retrieve our transformation matrix :code:`trans`.
 
 # first create the BIDS Path object
-bids_path = BIDSPath(subject=sub, session=ses, root=output_path)
+t1w_bids_path = BIDSPath(subject=sub, session=ses, root=output_path)
 
 # We use the write_anat function
-anat_dir = write_anat(t1w=t1_mgh_fname,  # path to the MRI scan
-                      bids_path=bids_path,
-                      raw=raw,  # the raw MEG data file connected to the MRI
-                      trans=trans,  # our transformation matrix
-                      verbose=True  # this will print out the sidecar file
-                      )
+t1w_bids_path = write_anat(t1w=t1_mgh_fname,  # path to the MRI scan
+                           bids_path=t1w_bids_path,
+                           raw=raw,  # the raw MEG data file connected to the MRI
+                           trans=trans,  # our transformation matrix
+                           verbose=True  # this will print out the sidecar file
+                           )
+anat_dir = t1w_bids_path.directory
 
 ###############################################################################
 # Let's have another look at our BIDS directory
@@ -155,14 +154,15 @@ plt.show()
 
 ###############################################################################
 # We can deface the MRI for anonymization
-anat_dir = write_anat(t1w=t1_mgh_fname,  # path to the MRI scan
-                      bids_path=bids_path,
-                      raw=raw,  # the raw MEG data file connected to the MRI
-                      trans=trans,  # our transformation matrix
-                      deface=True,
-                      overwrite=True,
-                      verbose=True  # this will print out the sidecar file
-                      )
+t1w_bids_path = write_anat(t1w=t1_mgh_fname,  # path to the MRI scan
+                           bids_path=bids_path,
+                           raw=raw,  # the raw MEG data file connected to the MRI
+                           trans=trans,  # our transformation matrix
+                           deface=True,
+                           overwrite=True,
+                           verbose=True  # this will print out the sidecar file
+                           )
+anat_dir = t1w_bids_path.directory
 
 # Our MRI written to BIDS, we got `anat_dir` from our `write_anat` function
 t1_nii_fname = op.join(anat_dir, 'sub-01_ses-01_T1w.nii.gz')
