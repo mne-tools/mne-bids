@@ -136,7 +136,7 @@ def _test_anonymize(raw, bids_path, events_fname=None, event_id=None):
         daysback, _ = get_anonymization_daysback(raw)
     else:
         # just pass back any arbitrary number if no measurement date
-        daysback = 33000
+        daysback = 3300
     write_raw_bids(raw, bids_path, events_data=events_fname,
                    event_id=event_id, anonymize=dict(daysback=daysback),
                    overwrite=False)
