@@ -911,17 +911,17 @@ def get_entities_from_fname(fname, on_error='raise'):
 
         if on_error in ('raise', 'warn'):
             if key not in fname_vals:
-                msg = f'Unexpected entity "{key}" found in '\
-                      f'filename "{fname}"'
+                msg = (f'Unexpected entity "{key}" found in '
+                       f'filename "{fname}"')
                 if on_error == 'raise':
                     raise KeyError(msg)
                 elif on_error == 'warn':
                     warn(msg)
                     continue
             if fname_vals.index(key) < idx_key:
-                msg = f'Entities in filename not ordered correctly.'\
-                      f' "{key}" should have occurred earlier in the '\
-                      f'filename "{fname}"'
+                msg = (f'Entities in filename not ordered correctly.'
+                       f' "{key}" should have occurred earlier in the '
+                       f'filename "{fname}"')
                 raise ValueError(msg)
             idx_key = fname_vals.index(key)
 
