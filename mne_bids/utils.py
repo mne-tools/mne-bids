@@ -62,11 +62,13 @@ def _get_ch_type_mapping(fro='mne', to='bids'):
     Furthermore, this is not a one-to-one mapping: Incomplete and partially
     one-to-many/many-to-one.
 
+    Bio channels are supported in mne-python and are converted to MISC
+    because there is no "Bio" supported channel in BIDS.
     """
     if fro == 'mne' and to == 'bids':
         mapping = dict(eeg='EEG', misc='MISC', stim='TRIG', emg='EMG',
                        ecog='ECOG', seeg='SEEG', eog='EOG', ecg='ECG',
-                       resp='RESP',
+                       resp='RESP', bio='MISC',
                        # MEG channels
                        meggradaxial='MEGGRADAXIAL', megmag='MEGMAG',
                        megrefgradaxial='MEGREFGRADAXIAL',

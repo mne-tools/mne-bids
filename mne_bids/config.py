@@ -36,22 +36,28 @@ meg_manufacturers = {'.sqd': 'KIT/Yokogawa', '.con': 'KIT/Yokogawa',
 eeg_manufacturers = {'.vhdr': 'BrainProducts', '.eeg': 'BrainProducts',
                      '.edf': 'n/a', '.bdf': 'Biosemi', '.set': 'n/a',
                      '.fdt': 'n/a',
-                     '.lay': 'Persyst', '.dat': 'Persyst'}
+                     '.lay': 'Persyst', '.dat': 'Persyst',
+                     '.EEG': 'Nihon Kohden'}
 
 ieeg_manufacturers = {'.vhdr': 'BrainProducts', '.eeg': 'BrainProducts',
                       '.edf': 'n/a', '.set': 'n/a', '.fdt': 'n/a',
                       '.mef': 'n/a', '.nwb': 'n/a',
-                      '.lay': 'Persyst', '.dat': 'Persyst'}
+                      '.lay': 'Persyst', '.dat': 'Persyst',
+                      '.EEG': 'Nihon Kohden'}
 
 # file-extension map to mne-python readers
 reader = {'.con': io.read_raw_kit, '.sqd': io.read_raw_kit,
           '.fif': io.read_raw_fif, '.pdf': io.read_raw_bti,
           '.ds': io.read_raw_ctf, '.vhdr': io.read_raw_brainvision,
           '.edf': io.read_raw_edf, '.bdf': io.read_raw_bdf,
-          '.set': io.read_raw_eeglab, '.lay': _read_raw_persyst_func()}
+          '.set': io.read_raw_eeglab, '.lay': io.read_raw_persyst,
+          '.EEG': io.read_raw_nihon}
 
 
 # Merge the manufacturer dictionaries in a python2 / python3 compatible way
+# MANUFACTURERS dictionary only includes the extension of the input filename
+# that mne-python accepts (e.g. BrainVision has three files, but the reader
+# takes the filename for `.vhdr`)
 MANUFACTURERS = dict()
 MANUFACTURERS.update(meg_manufacturers)
 MANUFACTURERS.update(eeg_manufacturers)
@@ -88,7 +94,7 @@ ALLOWED_DATATYPE_EXTENSIONS = {'meg': allowed_extensions_meg,
 # recommended formats
 ALLOWED_INPUT_EXTENSIONS = \
     allowed_extensions_meg + allowed_extensions_eeg + \
-    allowed_extensions_ieeg + ['.lay']
+    allowed_extensions_ieeg + ['.lay', '.EEG']
 
 # allowed suffixes (i.e. last "_" delimiter in the BIDS filenames before
 # the extension)
@@ -111,7 +117,7 @@ ALLOWED_FILENAME_EXTENSIONS = (
     ALLOWED_INPUT_EXTENSIONS +
     ['.json', '.tsv', '.tsv.gz', '.nii', '.nii.gz'] +
     ['.pos', '.eeg', '.vmrk'] +  # extra datatype-specific metadata files.
-    ['.dat']  # Elekta/Neuromag fine-calibration files.
+    ['.dat', '.EEG']  # extra eeg extensions
 )
 
 # allowed BIDS path entities
