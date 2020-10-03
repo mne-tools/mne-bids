@@ -272,6 +272,19 @@ to report bugs.</p>
 <h2>Contributing<a class="headerlink" href="#contributing" title="Permalink to this headline">¶</a></h2>
 <p>Please see our <a class="reference external" href="https://github.com/mne-tools/mne-bids/blob/master/CONTRIBUTING.md">contributing guide</a>.</p>
 </div>
+<div class="section" id="meg-eeg-ieeg-data-from-non-bids-acquisition-systems">
+<h2>MEG, EEG, iEEG Data From Non-BIDS Acquisition Systems<a class="headerlink" href="#meg-eeg-ieeg-data-from-non-bids-acquisition-systems" title="Permalink to this headline">¶</a></h2>
+<p>Currently, we support the file formats that are in the BIDS specification for MEG, EEG, and iEEG data.
+We also support a range of manufacturer formats to facilitate converting them to their BIDS RECOMMENDED
+format. For example, if you have a Nihon Kohden file, you can read that file in using <code class="docutils literal notranslate"><span class="pre">mne-python</span></code>, and
+then call <code class="docutils literal notranslate"><span class="pre">mne_bids.write_raw_bids</span></code> and it will convert the dataset for you to BIDS and also convert
+the file format to BrainVision (the RECOMMENDED BIDS format for iEEG). If there is a manufacturer that is
+not currently supported in <code class="docutils literal notranslate"><span class="pre">mne-bids</span></code>, then one must add a reader
+function, <code class="docutils literal notranslate"><span class="pre">io.read_raw_&lt;manufacturer&gt;</span></code>, in <code class="docutils literal notranslate"><span class="pre">mne-python</span></code>. Please first submit an issue and
+pull request at <a class="reference external" href="https://github.com/mne-tools/mne-python/issues">mne-python Issues</a>.
+Then when the reader is merged, submit an issue and pull request
+here at <a class="reference external" href="https://github.com/mne-tools/mne-bids/issues">mne-bids Issues</a>.</p>
+</div>
 </div>
 
 
@@ -286,7 +299,7 @@ to report bugs.</p>
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-10-02.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-10-03.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
     </p>
   </div>

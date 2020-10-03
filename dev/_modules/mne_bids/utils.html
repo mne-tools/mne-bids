@@ -173,11 +173,13 @@
 <span class="sd">    Furthermore, this is not a one-to-one mapping: Incomplete and partially</span>
 <span class="sd">    one-to-many/many-to-one.</span>
 
+<span class="sd">    Bio channels are supported in mne-python and are converted to MISC</span>
+<span class="sd">    because there is no &quot;Bio&quot; supported channel in BIDS.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">fro</span> <span class="o">==</span> <span class="s1">&#39;mne&#39;</span> <span class="ow">and</span> <span class="n">to</span> <span class="o">==</span> <span class="s1">&#39;bids&#39;</span><span class="p">:</span>
         <span class="n">mapping</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">eeg</span><span class="o">=</span><span class="s1">&#39;EEG&#39;</span><span class="p">,</span> <span class="n">misc</span><span class="o">=</span><span class="s1">&#39;MISC&#39;</span><span class="p">,</span> <span class="n">stim</span><span class="o">=</span><span class="s1">&#39;TRIG&#39;</span><span class="p">,</span> <span class="n">emg</span><span class="o">=</span><span class="s1">&#39;EMG&#39;</span><span class="p">,</span>
                        <span class="n">ecog</span><span class="o">=</span><span class="s1">&#39;ECOG&#39;</span><span class="p">,</span> <span class="n">seeg</span><span class="o">=</span><span class="s1">&#39;SEEG&#39;</span><span class="p">,</span> <span class="n">eog</span><span class="o">=</span><span class="s1">&#39;EOG&#39;</span><span class="p">,</span> <span class="n">ecg</span><span class="o">=</span><span class="s1">&#39;ECG&#39;</span><span class="p">,</span>
-                       <span class="n">resp</span><span class="o">=</span><span class="s1">&#39;RESP&#39;</span><span class="p">,</span>
+                       <span class="n">resp</span><span class="o">=</span><span class="s1">&#39;RESP&#39;</span><span class="p">,</span> <span class="n">bio</span><span class="o">=</span><span class="s1">&#39;MISC&#39;</span><span class="p">,</span>
                        <span class="c1"># MEG channels</span>
                        <span class="n">meggradaxial</span><span class="o">=</span><span class="s1">&#39;MEGGRADAXIAL&#39;</span><span class="p">,</span> <span class="n">megmag</span><span class="o">=</span><span class="s1">&#39;MEGMAG&#39;</span><span class="p">,</span>
                        <span class="n">megrefgradaxial</span><span class="o">=</span><span class="s1">&#39;MEGREFGRADAXIAL&#39;</span><span class="p">,</span>
@@ -578,7 +580,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-10-02.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-10-03.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
     </p>
   </div>
