@@ -1637,6 +1637,50 @@ def test_mark_bad_channels(_bids_validate,
         assert description in tsv_data['status_description']
 
 
+@pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+def test_mark_bad_channels_files():
+    """Test validity of bad channel writing."""
+    # BV
+    bids_root = _TempDir()
+    data_path = op.join(base_path, 'brainvision', 'tests', 'data')
+    raw_fname = op.join(data_path, 'test.vhdr')
+
+    raw = _read_raw_brainvision(raw_fname)
+
+    # inject a bad channel
+    assert not raw.info['bads']
+    injected_bad = ['FP1']
+    raw.info['bads'] = injected_bad
+
+    bids_path = _bids_path.copy().update(root=bids_root)
+
+    # write with injected bad channels
+    write_raw_bids(raw, bids_path, overwrite=True)
+
+    # mark bad channels to all None, and the raw data should match
+    mark_bad_channels([], bids_path=bids_path, overwrite=True)
+    raw.info['bads'] = []
+    raw_2 = read_raw_bids(bids_path)
+    assert_array_almost_equal(raw.get_data(), raw_2.get_data())
+
+    # EDF won't work
+    dir_name = 'EDF'
+    fname = 'test_reduced.edf'
+    bids_root = _TempDir()
+    bids_path = _bids_path.copy().update(root=bids_root)
+    data_path = op.join(testing.data_path(), dir_name)
+    raw_fname = op.join(data_path, fname)
+    raw = _read_raw_edf(raw_fname)
+
+    # write edf
+    write_raw_bids(raw, bids_path, overwrite=True)
+
+    # try to mark bad channels
+    with pytest.raises(RuntimeError, match='Can only mark bad'):
+        mark_bad_channels(raw.ch_names[0], bids_path=bids_path)
+
+
+
 @pytest.mark.skipif('BIDS_VALIDATOR_VERSION' in os.environ and
                     LooseVersion(os.environ['BIDS_VALIDATOR_VERSION']) <
                     LooseVersion('1.5.5'),

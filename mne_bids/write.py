@@ -1502,6 +1502,10 @@ def mark_bad_channels(ch_names, descriptions=None, *, bids_path,
         _write_raw_brainvision(raw, bids_path.fpath, events)
     elif isinstance(raw, mne.io.RawFIF):
         raw.save(raw.filenames[0], overwrite=True, verbose=False)
+    else:
+        raise RuntimeError('Can only mark bad channels for '
+                           'FIF and BV files right now. Please '
+                           'mark bad channels manually.')
 
 
 def write_meg_calibration(calibration, bids_path, verbose=None):
