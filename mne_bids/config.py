@@ -2,20 +2,6 @@
 from mne import io
 from mne.io.constants import FIFF
 
-try:
-    from mne.io import read_raw_persyst
-except ImportError:
-    read_raw_persyst = None
-
-
-def _read_raw_persyst_func():
-    if read_raw_persyst is None:
-        print('Reading Persyst files requires latest mne dev '
-              'version or 0.21 release.')
-        return None
-    else:
-        return read_raw_persyst
-
 
 BIDS_VERSION = "1.4.0"
 
