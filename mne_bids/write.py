@@ -1494,7 +1494,8 @@ def mark_bad_channels(ch_names, descriptions=None, *, bids_path,
     bads = _get_bads_from_tsv_data(tsv_data)
     raw.info['bads'] = bads
     # XXX (How) will this handle split files?
-    raw.save(raw.filenames[0], overwrite=True, verbose=False)
+    if raw.filenames[0].endswith('.fif'):
+        raw.save(raw.filenames[0], overwrite=True, verbose=False)
 
 
 def write_meg_calibration(calibration, bids_path, verbose=None):
