@@ -98,11 +98,12 @@ print(trans)
 # create a JSON sidecar file that contains metadata, we will later use to
 # retrieve our transformation matrix :code:`trans`.
 
+# first create the BIDS Path object
+bids_path = BIDSPath(subject=sub, session=ses, root=output_path)
+
 # We use the write_anat function
-anat_dir = write_anat(root=output_path,  # the BIDS dir we wrote earlier
-                      subject=sub,
-                      t1w=t1_mgh_fname,  # path to the MRI scan
-                      session=ses,
+anat_dir = write_anat(t1w=t1_mgh_fname,  # path to the MRI scan
+                      bids_path=bids_path,
                       raw=raw,  # the raw MEG data file connected to the MRI
                       trans=trans,  # our transformation matrix
                       verbose=True  # this will print out the sidecar file
@@ -154,10 +155,8 @@ plt.show()
 
 ###############################################################################
 # We can deface the MRI for anonymization
-anat_dir = write_anat(root=output_path,  # the BIDS dir we wrote earlier
-                      subject=sub,
-                      t1w=t1_mgh_fname,  # path to the MRI scan
-                      session=ses,
+anat_dir = write_anat(t1w=t1_mgh_fname,  # path to the MRI scan
+                      bids_path=bids_path,
                       raw=raw,  # the raw MEG data file connected to the MRI
                       trans=trans,  # our transformation matrix
                       deface=True,
