@@ -965,7 +965,7 @@
     <span class="k">return</span> <span class="n">datatype</span>
 
 
-<div class="viewcode-block" id="get_entities_from_fname"><a class="viewcode-back" href="../../generated/mne_bids.path.get_entities_from_fname.html#mne_bids.get_entities_from_fname">[docs]</a><span class="k">def</span> <span class="nf">get_entities_from_fname</span><span class="p">(</span><span class="n">fname</span><span class="p">):</span>
+<div class="viewcode-block" id="get_entities_from_fname"><a class="viewcode-back" href="../../generated/mne_bids.path.get_entities_from_fname.html#mne_bids.get_entities_from_fname">[docs]</a><span class="k">def</span> <span class="nf">get_entities_from_fname</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">on_error</span><span class="o">=</span><span class="s1">&#39;raise&#39;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Retrieve a dictionary of BIDS entities from a filename.</span>
 
 <span class="sd">    Entities not present in ``fname`` will be assigned the value of ``None``.</span>
@@ -974,6 +974,15 @@
 <span class="sd">    ----------</span>
 <span class="sd">    fname : BIDSPath | str</span>
 <span class="sd">        The path to parse.</span>
+<span class="sd">    on_error : &#39;raise&#39; | &#39;warn&#39; | &#39;ignore&#39;</span>
+<span class="sd">        If any unsupported labels in the filename are found and this is set</span>
+<span class="sd">        to ``&#39;raise&#39;``, raise a ``RuntimeError``. If ``&#39;warn&#39;``,</span>
+<span class="sd">        emit a warning and continue, and if ``&#39;ignore&#39;``,</span>
+<span class="sd">        neither raise an exception nor a warning, and</span>
+<span class="sd">        return all entities found. For example, currently MNE-BIDS does not</span>
+<span class="sd">        support derivatives yet, but the ``desc`` entity label is used to</span>
+<span class="sd">        differentiate different derivatives and will work with this function</span>
+<span class="sd">        if ``on_error=&#39;ignore&#39;``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -996,6 +1005,10 @@
 <span class="sd">    &#39;split&#39;: None,</span>
 <span class="sd">    &#39;suffix&#39;: &#39;meg&#39;}</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">on_error</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;warn&#39;</span><span class="p">,</span> <span class="s1">&#39;raise&#39;</span><span class="p">,</span> <span class="s1">&#39;ignore&#39;</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Acceptable values for on_error are: warn, raise, &#39;</span>
+                         <span class="sa">f</span><span class="s1">&#39;ignore, but got: </span><span class="si">{</span><span class="n">on_error</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
     <span class="n">fname</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>  <span class="c1"># to accept also BIDSPath or Path instances</span>
 
     <span class="c1"># filename keywords to the BIDS entity mapping</span>
@@ -1006,15 +1019,25 @@
     <span class="n">idx_key</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">re</span><span class="o">.</span><span class="n">finditer</span><span class="p">(</span><span class="n">param_regex</span><span class="p">,</span> <span class="n">op</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">fname</span><span class="p">)):</span>
         <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">groups</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">fname_vals</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Unexpected entity &quot;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s1">&quot; found in &#39;</span>
-                           <span class="sa">f</span><span class="s1">&#39;filename &quot;</span><span class="si">{</span><span class="n">fname</span><span class="si">}</span><span class="s1">&quot;&#39;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">fname_vals</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">idx_key</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Entities in filename not ordered correctly.&#39;</span>
-                             <span class="sa">f</span><span class="s1">&#39; &quot;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s1">&quot; should have occurred earlier in the &#39;</span>
-                             <span class="sa">f</span><span class="s1">&#39;filename &quot;</span><span class="si">{</span><span class="n">fname</span><span class="si">}</span><span class="s1">&quot;&#39;</span><span class="p">)</span>
-        <span class="n">idx_key</span> <span class="o">=</span> <span class="n">fname_vals</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
-        <span class="n">params</span><span class="p">[</span><span class="n">ALLOWED_PATH_ENTITIES_SHORT</span><span class="p">[</span><span class="n">key</span><span class="p">]]</span> <span class="o">=</span> <span class="n">value</span>
+
+        <span class="k">if</span> <span class="n">on_error</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;raise&#39;</span><span class="p">,</span> <span class="s1">&#39;warn&#39;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">fname_vals</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Unexpected entity &quot;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s1">&quot; found in &#39;</span>
+                       <span class="sa">f</span><span class="s1">&#39;filename &quot;</span><span class="si">{</span><span class="n">fname</span><span class="si">}</span><span class="s1">&quot;&#39;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">on_error</span> <span class="o">==</span> <span class="s1">&#39;raise&#39;</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">on_error</span> <span class="o">==</span> <span class="s1">&#39;warn&#39;</span><span class="p">:</span>
+                    <span class="n">warn</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+                    <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">fname_vals</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">key</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">idx_key</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Entities in filename not ordered correctly.&#39;</span>
+                       <span class="sa">f</span><span class="s1">&#39; &quot;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s1">&quot; should have occurred earlier in the &#39;</span>
+                       <span class="sa">f</span><span class="s1">&#39;filename &quot;</span><span class="si">{</span><span class="n">fname</span><span class="si">}</span><span class="s1">&quot;&#39;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="n">idx_key</span> <span class="o">=</span> <span class="n">fname_vals</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+
+        <span class="n">key_short_hand</span> <span class="o">=</span> <span class="n">ALLOWED_PATH_ENTITIES_SHORT</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+        <span class="n">params</span><span class="p">[</span><span class="n">key_short_hand</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
 
     <span class="c1"># parse suffix last</span>
     <span class="n">last_entity</span> <span class="o">=</span> <span class="n">fname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
@@ -1027,7 +1050,7 @@
 
 
 <span class="k">def</span> <span class="nf">_find_matching_sidecar</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                           <span class="n">extension</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">on_fail</span><span class="o">=</span><span class="s1">&#39;raise&#39;</span><span class="p">):</span>
+                           <span class="n">extension</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">on_error</span><span class="o">=</span><span class="s1">&#39;raise&#39;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Try to find a sidecar file with a given suffix for a data file.</span>
 
 <span class="sd">    Parameters</span>
@@ -1039,7 +1062,7 @@
 <span class="sd">        before the extension. E.g., ``&#39;ieeg&#39;``.</span>
 <span class="sd">    extension : str | None</span>
 <span class="sd">        The extension of the filename. E.g., ``&#39;.json&#39;``.</span>
-<span class="sd">    on_fail : &#39;raise&#39; | &#39;warn&#39; | &#39;ignore&#39;</span>
+<span class="sd">    on_error : &#39;raise&#39; | &#39;warn&#39; | &#39;ignore&#39;</span>
 <span class="sd">        If no matching sidecar file was found and this is set to ``&#39;raise&#39;``,</span>
 <span class="sd">        raise a ``RuntimeError``. If ``&#39;warn&#39;``, emit a warning, and if</span>
 <span class="sd">        ``&#39;ignore&#39;``, neither raise an exception nor a warning, and return</span>
@@ -1049,12 +1072,12 @@
 <span class="sd">    -------</span>
 <span class="sd">    sidecar_fname : str | None</span>
 <span class="sd">        Path to the identified sidecar file, or ``None`` if none could be found</span>
-<span class="sd">        and ``on_fail`` was set to ``&#39;warn&#39;`` or ``&#39;ignore&#39;``.</span>
+<span class="sd">        and ``on_error`` was set to ``&#39;warn&#39;`` or ``&#39;ignore&#39;``.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">on_fail</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;warn&#39;</span><span class="p">,</span> <span class="s1">&#39;raise&#39;</span><span class="p">,</span> <span class="s1">&#39;ignore&#39;</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Acceptable values for on_fail are: warn, raise, &#39;</span>
-                         <span class="sa">f</span><span class="s1">&#39;ignore, but got: </span><span class="si">{</span><span class="n">on_fail</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">on_error</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;warn&#39;</span><span class="p">,</span> <span class="s1">&#39;raise&#39;</span><span class="p">,</span> <span class="s1">&#39;ignore&#39;</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Acceptable values for on_error are: warn, raise, &#39;</span>
+                         <span class="sa">f</span><span class="s1">&#39;ignore, but got: </span><span class="si">{</span><span class="n">on_error</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 
     <span class="n">bids_root</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">root</span>
 
@@ -1105,9 +1128,9 @@
                <span class="sa">f</span><span class="s1">&#39;associated with </span><span class="si">{</span><span class="n">bids_path</span><span class="o">.</span><span class="n">basename</span><span class="si">}</span><span class="s1">, &#39;</span>
                <span class="sa">f</span><span class="s1">&#39;but found </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">candidate_list</span><span class="p">)</span><span class="si">}</span><span class="s1">: &quot;</span><span class="si">{</span><span class="n">candidate_list</span><span class="si">}</span><span class="s1">&quot;.&#39;</span><span class="p">)</span>
     <span class="n">msg</span> <span class="o">+=</span> <span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1">The search_str was &quot;</span><span class="si">{}</span><span class="s1">&quot;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">search_str</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">on_fail</span> <span class="o">==</span> <span class="s1">&#39;raise&#39;</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">on_error</span> <span class="o">==</span> <span class="s1">&#39;raise&#39;</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">on_fail</span> <span class="o">==</span> <span class="s1">&#39;warn&#39;</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="n">on_error</span> <span class="o">==</span> <span class="s1">&#39;warn&#39;</span><span class="p">:</span>
         <span class="n">warn</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="kc">None</span>

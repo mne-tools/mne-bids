@@ -112,13 +112,22 @@
 <h1>mne_bids.path.get_entities_from_fname<a class="headerlink" href="#mne-bids-path-get-entities-from-fname" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt id="mne_bids.path.get_entities_from_fname">
-<code class="sig-prename descclassname">mne_bids.path.</code><code class="sig-name descname">get_entities_from_fname</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fname</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/path.html#get_entities_from_fname"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.path.get_entities_from_fname" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">mne_bids.path.</code><code class="sig-name descname">get_entities_from_fname</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fname</span></em>, <em class="sig-param"><span class="n">on_error</span><span class="o">=</span><span class="default_value">'raise'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/path.html#get_entities_from_fname"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.path.get_entities_from_fname" title="Permalink to this definition">¶</a></dt>
 <dd><p>Retrieve a dictionary of BIDS entities from a filename.</p>
 <p>Entities not present in <code class="docutils literal notranslate"><span class="pre">fname</span></code> will be assigned the value of <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
 <dt><strong>fname</strong><span class="classifier">BIDSPath | str</span></dt><dd><p>The path to parse.</p>
+</dd>
+<dt><strong>on_error</strong><span class="classifier">‘raise’ | ‘warn’ | ‘ignore’</span></dt><dd><p>If any unsupported labels in the filename are found and this is set
+to <code class="docutils literal notranslate"><span class="pre">'raise'</span></code>, raise a <code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code>. If <code class="docutils literal notranslate"><span class="pre">'warn'</span></code>,
+emit a warning and continue, and if <code class="docutils literal notranslate"><span class="pre">'ignore'</span></code>,
+neither raise an exception nor a warning, and
+return all entities found. For example, currently MNE-BIDS does not
+support derivatives yet, but the <code class="docutils literal notranslate"><span class="pre">desc</span></code> entity label is used to
+differentiate different derivatives and will work with this function
+if <code class="docutils literal notranslate"><span class="pre">on_error='ignore'</span></code>.</p>
 </dd>
 </dl>
 </dd>
