@@ -224,7 +224,7 @@ def test_get_head_mri_trans():
     t1w_bidspath = BIDSPath(subject=subject_id, session=session_id,
                             acquisition=acq, root=bids_root)
     t1w_bidspath = write_anat(t1w_mgh, bids_path=t1w_bidspath,
-                           raw=raw, trans=trans, verbose=True)
+                              raw=raw, trans=trans, verbose=True)
     anat_dir = t1w_bidspath.directory
 
     # Try to get trans back through fitting points
@@ -574,7 +574,7 @@ def test_get_head_mri_trans_ctf():
     t1w_mgh = nib.load(t1w_mgh)
 
     t1w_bids_path = BIDSPath(subject=subject_id, session=session_id,
-                         acquisition=acq, root=bids_root)
+                             acquisition=acq, root=bids_root)
     write_anat(t1w_mgh, bids_path=t1w_bids_path,
                raw=raw_ctf, trans=trans)
 
