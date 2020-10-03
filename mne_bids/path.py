@@ -827,6 +827,7 @@ def print_dir_tree(folder, max_depth=None):
 
 def _parse_ext(raw_fname, verbose=False):
     """Split a filename into its name and extension."""
+    raw_fname = str(raw_fname)
     fname, ext = os.path.splitext(raw_fname)
     # BTi data is the only file format that does not have a file extension
     if ext == '' or 'c,rf' in fname:

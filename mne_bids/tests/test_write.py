@@ -1272,7 +1272,7 @@ def test_write_anat(_bids_validate):
     bids_path.update(session=None, acquisition=None)
     bids_path = write_anat(t1w_mgh, bids_path=bids_path)
     anat_dir2 = bids_path.directory
-    assert 'ses-None' not in anat_dir2
+    assert 'ses-None' not in anat_dir2.as_posix()
     assert op.exists(op.join(anat_dir2, 'sub-01_T1w.nii.gz'))
 
     # specify trans but not raw
