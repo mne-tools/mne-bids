@@ -1498,7 +1498,7 @@ def mark_bad_channels(ch_names, descriptions=None, *, bids_path,
     if isinstance(raw, mne.io.brainvision.brainvision.RawBrainVision):
         events, event_id = _read_events(events_data=None, event_id=None,
                                         raw=raw,
-                                        ext='.vhdr', verbose=verbose)
+                                        ext='.vhdr', verbose=False)
         _write_raw_brainvision(raw, bids_path.fpath, events)
     elif isinstance(raw, mne.io.RawFIF):
         raw.save(raw.filenames[0], overwrite=True, verbose=False)
