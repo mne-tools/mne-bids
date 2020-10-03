@@ -136,7 +136,7 @@ def _test_anonymize(raw, bids_path, events_fname=None, event_id=None):
         daysback, _ = get_anonymization_daysback(raw)
     else:
         # just pass back any arbitrary number if no measurement date
-        daysback = 33000
+        daysback = 3300
     write_raw_bids(raw, bids_path, events_data=events_fname,
                    event_id=event_id, anonymize=dict(daysback=daysback),
                    overwrite=False)
@@ -941,7 +941,7 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate):
     electrodes_fpath = _find_matching_sidecar(bids_fname,
                                               suffix='electrodes',
                                               extension='.tsv',
-                                              on_fail='ignore')
+                                              on_error='ignore')
     assert electrodes_fpath is None
 
     # with landmarks, eeg montage is written

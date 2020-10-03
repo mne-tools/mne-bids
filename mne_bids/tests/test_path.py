@@ -208,7 +208,7 @@ def test_parse_ext():
     ('/bids_root/sub-01/ses-02/meg/' +
      'sub-01_ses-02_task-test_run-3_split-01_meg.fif'),
 ])
-def test_parse_bids_filename(fname):
+def test_get_entities_from_fname(fname):
     """Test parsing entities from a bids filename."""
     params = get_entities_from_fname(fname)
     print(params)
@@ -222,6 +222,44 @@ def test_parse_bids_filename(fname):
     assert list(params.keys()) == ['subject', 'session', 'task',
                                    'acquisition', 'run', 'processing',
                                    'space', 'recording', 'split', 'suffix']
+
+
+@pytest.mark.parametrize('fname', [
+    'sub-01_ses-02_task-test_run-3_split-01_meg.fif',
+    ('/bids_root/sub-01/ses-02/meg/'
+     'sub-01_ses-02_task-test_run-3_split-01_meg.fif'),
+    'sub-01_ses-02_task-test_run-3_split-01_desc-tfr_meg.fif',
+])
+def test_get_entities_from_fname_errors(fname):
+    """Test parsing entities from bids filename.
+
+    Extends utility for not supported BIDS entities, such
+    as 'description'.
+    """
+    if 'desc' in fname:
+        with pytest.raises(KeyError, match='Unexpected entity'):
+            params = get_entities_from_fname(fname, on_error='raise')
+        with pytest.warns(RuntimeWarning, match='Unexpected entity'):
+            params = get_entities_from_fname(fname, on_error='warn')
+        params = get_entities_from_fname(fname, on_error='ignore')
+    else:
+        params = get_entities_from_fname(fname, on_error='raise')
+
+    expected_keys = ['subject', 'session', 'task',
+                     'acquisition', 'run', 'processing',
+                     'space', 'recording', 'split', 'suffix']
+
+    assert params['subject'] == '01'
+    assert params['session'] == '02'
+    assert params['run'] == '3'
+    assert params['task'] == 'test'
+    assert params['split'] == '01'
+    if 'meg' in fname:
+        assert params['suffix'] == 'meg'
+    if 'desc' in fname:
+        assert params['desc'] == 'tfr'
+        expected_keys.append('desc')
+    assert list(params.keys()) == expected_keys
 
 
 @pytest.mark.parametrize('candidate_list, best_candidates', [
@@ -274,23 +312,23 @@ def test_find_matching_sidecar(return_bids_test_dir):
                                        extension='.bogus')
 
     # Find nothing and receive None and a warning.
-    on_fail = 'warn'
+    on_error = 'warn'
     with pytest.warns(RuntimeWarning, match='Did not find any'):
         fname = _find_matching_sidecar(bids_fpath, suffix='foo',
-                                       extension='.bogus', on_fail=on_fail)
+                                       extension='.bogus', on_error=on_error)
     assert fname is None
 
     # Find nothing and receive None.
-    on_fail = 'ignore'
+    on_error = 'ignore'
     fname = _find_matching_sidecar(bids_fpath, suffix='foo',
-                                   extension='.bogus', on_fail=on_fail)
+                                   extension='.bogus', on_error=on_error)
     assert fname is None
 
-    # Invalid on_fail.
-    on_fail = 'hello'
-    with pytest.raises(ValueError, match='Acceptable values for on_fail are'):
+    # Invalid on_error.
+    on_error = 'hello'
+    with pytest.raises(ValueError, match='Acceptable values for on_error are'):
         _find_matching_sidecar(bids_fpath, suffix='coordsystem',
-                               extension='.json', on_fail=on_fail)
+                               extension='.json', on_error=on_error)
 
 
 def test_bids_path_inference(return_bids_test_dir):
