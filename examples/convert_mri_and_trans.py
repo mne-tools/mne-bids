@@ -154,7 +154,7 @@ for point_idx, label in enumerate(('LPA', 'NAS', 'RPA')):
 plt.show()
 
 ###############################################################################
-# We can deface the MRI for anonymization
+# We can deface the MRI for anonymization by passing ``deface=True``.
 t1w_bids_path = write_anat(
     t1w=t1_mgh_fname,  # path to the MRI scan
     bids_path=bids_path,
