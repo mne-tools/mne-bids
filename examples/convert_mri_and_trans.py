@@ -96,7 +96,7 @@ print(trans)
 # create a JSON sidecar file that contains metadata, we will later use to
 # retrieve our transformation matrix :code:`trans`.
 
-# first create the BIDS Path object
+# First create the BIDSPath object.
 t1w_bids_path = BIDSPath(subject=sub, session=ses, root=output_path)
 
 # We use the write_anat function
