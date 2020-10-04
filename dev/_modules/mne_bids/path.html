@@ -938,6 +938,7 @@
 
 <span class="k">def</span> <span class="nf">_parse_ext</span><span class="p">(</span><span class="n">raw_fname</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Split a filename into its name and extension.&quot;&quot;&quot;</span>
+    <span class="n">raw_fname</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">raw_fname</span><span class="p">)</span>
     <span class="n">fname</span><span class="p">,</span> <span class="n">ext</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">raw_fname</span><span class="p">)</span>
     <span class="c1"># BTi data is the only file format that does not have a file extension</span>
     <span class="k">if</span> <span class="n">ext</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span> <span class="ow">or</span> <span class="s1">&#39;c,rf&#39;</span> <span class="ow">in</span> <span class="n">fname</span><span class="p">:</span>
@@ -1465,7 +1466,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-10-03.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-10-04.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
     </p>
   </div>

@@ -112,7 +112,7 @@
 <h1>mne_bids.write_anat<a class="headerlink" href="#mne-bids-write-anat" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt id="mne_bids.write_anat">
-<code class="sig-prename descclassname">mne_bids.</code><code class="sig-name descname">write_anat</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">root</span></em>, <em class="sig-param"><span class="n">subject</span></em>, <em class="sig-param"><span class="n">t1w</span></em>, <em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">acquisition</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">raw</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">trans</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">landmarks</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">deface</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">overwrite</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/write.html#write_anat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.write_anat" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">mne_bids.</code><code class="sig-name descname">write_anat</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">t1w</span></em>, <em class="sig-param"><span class="n">bids_path</span></em>, <em class="sig-param"><span class="n">raw</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">trans</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">landmarks</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">deface</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">overwrite</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/write.html#write_anat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.write_anat" title="Permalink to this definition">¶</a></dt>
 <dd><p>Put anatomical MRI data into a BIDS format.</p>
 <p>Given a BIDS directory and a T1 weighted MRI scan for a certain subject,
 format the MRI scan to be in BIDS format and put it into the correct
@@ -121,17 +121,12 @@ sidecar JSON file will be written for the T1 weighted data.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>root</strong><span class="classifier">str | pathlib.Path</span></dt><dd><p>Path to root of the BIDS folder</p>
-</dd>
-<dt><strong>subject</strong><span class="classifier">str</span></dt><dd><p>Subject label as in ‘sub-&lt;label&gt;’, for example: ‘01’</p>
+<dt><strong>bids_path</strong><span class="classifier">BIDSPath</span></dt><dd><p>The file to write. The <a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a> instance passed here
+<strong>must</strong> have the <code class="docutils literal notranslate"><span class="pre">root</span></code> and <code class="docutils literal notranslate"><span class="pre">subject</span></code> attributes set.</p>
 </dd>
 <dt><strong>t1w</strong><span class="classifier">str | pathlib.Path | nibabel image object</span></dt><dd><p>Path to a T1 weighted MRI scan of the subject. Can be in any format
 readable by nibabel. Can also be a nibabel image object of a T1
 weighted MRI scan. Will be written as a .nii.gz file.</p>
-</dd>
-<dt><strong>session</strong><span class="classifier">str | None</span></dt><dd><p>The session for <em class="xref py py-obj">t1w</em>. Corresponds to “ses”</p>
-</dd>
-<dt><strong>acquisition: str | None</strong></dt><dd><p>The acquisition parameters for <em class="xref py py-obj">t1w</em>. Corresponds to “acq”</p>
 </dd>
 <dt><strong>raw</strong><span class="classifier">instance of Raw | None</span></dt><dd><p>The raw data of <em class="xref py py-obj">subject</em> corresponding to <em class="xref py py-obj">t1w</em>. If <em class="xref py py-obj">raw</em> is None,
 <em class="xref py py-obj">trans</em> has to be None as well</p>
@@ -174,7 +169,7 @@ False, no content will be printed.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt><strong>anat_dir</strong><span class="classifier">str</span></dt><dd><p>Path to the anatomical scan in the <em class="xref py py-obj">bids_dir</em></p>
+<dt><strong>bids_path</strong><span class="classifier">BIDSPath</span></dt><dd><p>Path to the anatomical scan in the BIDS directory.</p>
 </dd>
 </dl>
 </dd>
@@ -202,7 +197,7 @@ False, no content will be printed.</p>
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-10-03.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-10-04.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
     </p>
   </div>

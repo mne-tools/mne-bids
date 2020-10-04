@@ -1258,9 +1258,8 @@
     <span class="k">return</span> <span class="n">bids_path</span></div>
 
 
-<div class="viewcode-block" id="write_anat"><a class="viewcode-back" href="../../generated/mne_bids.write_anat.html#mne_bids.write_anat">[docs]</a><span class="k">def</span> <span class="nf">write_anat</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">subject</span><span class="p">,</span> <span class="n">t1w</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">acquisition</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-               <span class="n">raw</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">trans</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">landmarks</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">deface</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-               <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="write_anat"><a class="viewcode-back" href="../../generated/mne_bids.write_anat.html#mne_bids.write_anat">[docs]</a><span class="k">def</span> <span class="nf">write_anat</span><span class="p">(</span><span class="n">t1w</span><span class="p">,</span> <span class="n">bids_path</span><span class="p">,</span> <span class="n">raw</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">trans</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">landmarks</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+               <span class="n">deface</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Put anatomical MRI data into a BIDS format.</span>
 
 <span class="sd">    Given a BIDS directory and a T1 weighted MRI scan for a certain subject,</span>
@@ -1270,18 +1269,13 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    root : str | pathlib.Path</span>
-<span class="sd">        Path to root of the BIDS folder</span>
-<span class="sd">    subject : str</span>
-<span class="sd">        Subject label as in &#39;sub-&lt;label&gt;&#39;, for example: &#39;01&#39;</span>
+<span class="sd">    bids_path : BIDSPath</span>
+<span class="sd">        The file to write. The `mne_bids.BIDSPath` instance passed here</span>
+<span class="sd">        **must** have the ``root`` and ``subject`` attributes set.</span>
 <span class="sd">    t1w : str | pathlib.Path | nibabel image object</span>
 <span class="sd">        Path to a T1 weighted MRI scan of the subject. Can be in any format</span>
 <span class="sd">        readable by nibabel. Can also be a nibabel image object of a T1</span>
 <span class="sd">        weighted MRI scan. Will be written as a .nii.gz file.</span>
-<span class="sd">    session : str | None</span>
-<span class="sd">        The session for `t1w`. Corresponds to &quot;ses&quot;</span>
-<span class="sd">    acquisition: str | None</span>
-<span class="sd">        The acquisition parameters for `t1w`. Corresponds to &quot;acq&quot;</span>
 <span class="sd">    raw : instance of Raw | None</span>
 <span class="sd">        The raw data of `subject` corresponding to `t1w`. If `raw` is None,</span>
 <span class="sd">        `trans` has to be None as well</span>
@@ -1323,8 +1317,8 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    anat_dir : str</span>
-<span class="sd">        Path to the anatomical scan in the `bids_dir`</span>
+<span class="sd">    bids_path : BIDSPath</span>
+<span class="sd">        Path to the anatomical scan in the BIDS directory.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">has_nibabel</span><span class="p">():</span>  <span class="c1"># pragma: no cover</span>
@@ -1335,14 +1329,22 @@
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;The raw object, trans and raw or the landmarks &#39;</span>
                          <span class="s1">&#39;must be provided to deface the T1&#39;</span><span class="p">)</span>
 
-    <span class="c1"># Make directory for anatomical data</span>
-    <span class="n">anat_dir</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="s1">&#39;sub-</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">subject</span><span class="p">))</span>
-    <span class="c1"># Session is optional</span>
-    <span class="k">if</span> <span class="n">session</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">anat_dir</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">anat_dir</span><span class="p">,</span> <span class="s1">&#39;ses-</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">session</span><span class="p">))</span>
-    <span class="n">anat_dir</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">anat_dir</span><span class="p">,</span> <span class="s1">&#39;anat&#39;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">op</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">anat_dir</span><span class="p">):</span>
-        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">anat_dir</span><span class="p">)</span>
+    <span class="c1"># Check if the root is available</span>
+    <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">root</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;The root of the &quot;bids_path&quot; must be set. &#39;</span>
+                         <span class="s1">&#39;Please use `bids_path.update(root=&quot;&lt;root&gt;&quot;)` &#39;</span>
+                         <span class="s1">&#39;to set the root of the BIDS folder to read.&#39;</span><span class="p">)</span>
+    <span class="c1"># create a copy</span>
+    <span class="n">bids_path</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="c1"># this file is anat</span>
+    <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">datatype</span><span class="o">=</span><span class="s1">&#39;anat&#39;</span><span class="p">)</span>
+
+    <span class="c1"># set extension and suffix hard-coded to T1w and compressed Nifti</span>
+    <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;T1w&#39;</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.nii.gz&#39;</span><span class="p">)</span>
+
+    <span class="c1"># create the directory for the T1w dataset</span>
+    <span class="n">bids_path</span><span class="o">.</span><span class="n">directory</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="c1"># Try to read our T1 file and convert to MGH representation</span>
     <span class="k">try</span><span class="p">:</span>
@@ -1366,13 +1368,6 @@
     <span class="c1"># https://nifti.nimh.nih.gov/nifti-1/documentation/nifti1fields/nifti1fields_pages/xyzt_units.html</span>
     <span class="k">if</span> <span class="n">t1w</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s1">&#39;xyzt_units&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">t1w</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s1">&#39;xyzt_units&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;uint8&#39;</span><span class="p">)</span>
-
-    <span class="c1"># Now give the NIfTI file a BIDS name and write it to the BIDS location</span>
-    <span class="c1"># this needs to be a string, since nibabel assumes a string input</span>
-    <span class="n">t1w_basename</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="n">subject</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span>
-                            <span class="n">acquisition</span><span class="o">=</span><span class="n">acquisition</span><span class="p">,</span>
-                            <span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">,</span>
-                            <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;T1w&#39;</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.nii.gz&#39;</span><span class="p">)</span>
 
     <span class="c1"># Check if we have necessary conditions for writing a sidecar JSON</span>
     <span class="k">if</span> <span class="n">trans</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">landmarks</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -1437,7 +1432,7 @@
             <span class="p">{</span><span class="s1">&#39;LPA&#39;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">mri_landmarks</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]),</span>
              <span class="s1">&#39;NAS&#39;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">mri_landmarks</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]),</span>
              <span class="s1">&#39;RPA&#39;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">mri_landmarks</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="p">:])}</span>
-        <span class="n">fname</span> <span class="o">=</span> <span class="n">t1w_basename</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.json&#39;</span><span class="p">)</span>
+        <span class="n">fname</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.json&#39;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">op</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">overwrite</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="s1">&#39;Wanted to write a file but it already exists and &#39;</span>
                           <span class="s1">&#39;`overwrite` is set to False. File: &quot;</span><span class="si">{}</span><span class="s1">&quot;&#39;</span>
@@ -1448,17 +1443,16 @@
             <span class="n">t1w</span> <span class="o">=</span> <span class="n">_deface</span><span class="p">(</span><span class="n">t1w</span><span class="p">,</span> <span class="n">mri_landmarks</span><span class="p">,</span> <span class="n">deface</span><span class="p">)</span>
 
     <span class="c1"># Save anatomical data</span>
-    <span class="k">if</span> <span class="n">op</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">t1w_basename</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">op</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">bids_path</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">overwrite</span><span class="p">:</span>
-            <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">t1w_basename</span><span class="p">)</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">bids_path</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="s1">&#39;Wanted to write a file but it already exists and &#39;</span>
-                          <span class="s1">&#39;`overwrite` is set to False. File: &quot;</span><span class="si">{}</span><span class="s1">&quot;&#39;</span>
-                          <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">t1w_basename</span><span class="p">))</span>
+            <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Wanted to write a file but it already exists and &#39;</span>
+                          <span class="sa">f</span><span class="s1">&#39;`overwrite` is set to False. File: &quot;</span><span class="si">{</span><span class="n">bids_path</span><span class="si">}</span><span class="s1">&quot;&#39;</span><span class="p">)</span>
 
-    <span class="n">nib</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">t1w</span><span class="p">,</span> <span class="n">t1w_basename</span><span class="o">.</span><span class="n">fpath</span><span class="p">)</span>
+    <span class="n">nib</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">t1w</span><span class="p">,</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">anat_dir</span></div>
+    <span class="k">return</span> <span class="n">bids_path</span></div>
 
 
 <div class="viewcode-block" id="mark_bad_channels"><a class="viewcode-back" href="../../generated/mne_bids.mark_bad_channels.html#mne_bids.mark_bad_channels">[docs]</a><span class="k">def</span> <span class="nf">mark_bad_channels</span><span class="p">(</span><span class="n">ch_names</span><span class="p">,</span> <span class="n">descriptions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">bids_path</span><span class="p">,</span>
@@ -1716,7 +1710,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-10-03.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-10-04.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
     </p>
   </div>

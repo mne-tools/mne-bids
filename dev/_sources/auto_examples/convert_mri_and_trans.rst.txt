@@ -368,15 +368,18 @@ retrieve our transformation matrix :code:`trans`.
 .. code-block:: default
 
 
+    # First create the BIDSPath object.
+    t1w_bids_path = BIDSPath(subject=sub, session=ses, root=output_path)
+
     # We use the write_anat function
-    anat_dir = write_anat(root=output_path,  # the BIDS dir we wrote earlier
-                          subject=sub,
-                          t1w=t1_mgh_fname,  # path to the MRI scan
-                          session=ses,
-                          raw=raw,  # the raw MEG data file connected to the MRI
-                          trans=trans,  # our transformation matrix
-                          verbose=True  # this will print out the sidecar file
-                          )
+    t1w_bids_path = write_anat(
+        t1w=t1_mgh_fname,  # path to the MRI scan
+        bids_path=t1w_bids_path,
+        raw=raw,  # the raw MEG data file connected to the MRI
+        trans=trans,  # our transformation matrix
+        verbose=True  # this will print out the sidecar file
+    )
+    anat_dir = t1w_bids_path.directory
 
 
 
@@ -534,21 +537,21 @@ plot the results.
 
 
 
-We can deface the MRI for anonymization
+We can deface the MRI for anonymization by passing ``deface=True``.
 
 
 .. code-block:: default
 
-    anat_dir = write_anat(root=output_path,  # the BIDS dir we wrote earlier
-                          subject=sub,
-                          t1w=t1_mgh_fname,  # path to the MRI scan
-                          session=ses,
-                          raw=raw,  # the raw MEG data file connected to the MRI
-                          trans=trans,  # our transformation matrix
-                          deface=True,
-                          overwrite=True,
-                          verbose=True  # this will print out the sidecar file
-                          )
+    t1w_bids_path = write_anat(
+        t1w=t1_mgh_fname,  # path to the MRI scan
+        bids_path=bids_path,
+        raw=raw,  # the raw MEG data file connected to the MRI
+        trans=trans,  # our transformation matrix
+        deface=True,
+        overwrite=True,
+        verbose=True  # this will print out the sidecar file
+    )
+    anat_dir = t1w_bids_path.directory
 
     # Our MRI written to BIDS, we got `anat_dir` from our `write_anat` function
     t1_nii_fname = op.join(anat_dir, 'sub-01_ses-01_T1w.nii.gz')
@@ -573,7 +576,7 @@ We can deface the MRI for anonymization
  .. code-block:: none
 
 
-    Writing '/home/circleci/mne_data/MNE-sample-data-bids/sub-01/ses-01/anat/sub-01_ses-01_T1w.json'...
+    Writing '/home/circleci/mne_data/MNE-sample-data-bids/sub-01/ses-01/anat/sub-01_ses-01_task-audiovisual_run-01_T1w.json'...
 
     {
         "AnatomicalLandmarkCoordinates": {
@@ -611,7 +614,7 @@ We can deface the MRI for anonymization
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  9.190 seconds)
+   **Total running time of the script:** ( 0 minutes  18.203 seconds)
 
 
 .. _sphx_glr_download_auto_examples_convert_mri_and_trans.py:
