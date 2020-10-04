@@ -90,7 +90,7 @@ API
 - ``mne_bids.get_matched_empty_room`` has been removed. Use :meth:`mne_bids.BIDSPath.find_empty_room` instead, by `Richard Höchenberger`_ (`#535 <https://github.com/mne-tools/mne-bids/pull/535>`_)
 - ``mne_bids.make_bids_folders`` has been removed. Use :meth:`mne_bids.BIDSPath.mkdir` instead, by `Adam Li`_ (`#543 <https://github.com/mne-tools/mne-bids/pull/543>`_)
 - Rename ``mne_bids.get_modalities`` to :func:`mne_bids.get_datatypes` for getting data types from a BIDS dataset, by `Alexandre Gramfort`_ (`#253 <https://github.com/mne-tools/mne-bids/pull/253>`_)
-- :func:`mne_bids.write_anat` to now take in :class:`mne_bids.BIDSPath` instead of entities as key word arguments, by `Adam Li`_ (`#575 <https://github.com/mne-tools/mne-bids/pull/575>`_)
+- :func:`mne_bids.write_anat` now accepts a :class:`mne_bids.BIDSPath` instead of entities as keyword arguments, by `Adam Li`_ (`#575 <https://github.com/mne-tools/mne-bids/pull/575>`_)
 
 .. _changes_0_4:
 
