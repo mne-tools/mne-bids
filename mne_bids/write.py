@@ -1160,7 +1160,7 @@ def write_anat(t1w, bids_path, raw=None, trans=None, landmarks=None,
     ----------
     bids_path : BIDSPath
         The file to write. The `mne_bids.BIDSPath` instance passed here
-        **must** have the ``.root`` attribute set.
+        **must** have the ``root`` and ``subject`` attributes set.
     t1w : str | pathlib.Path | nibabel image object
         Path to a T1 weighted MRI scan of the subject. Can be in any format
         readable by nibabel. Can also be a nibabel image object of a T1

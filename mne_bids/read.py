@@ -496,7 +496,6 @@ def get_head_mri_trans(bids_path):
     if ext == '.fif':
         extra_params = dict(allow_maxshield=True)
 
-    # make sure reading in the MEG file
     raw = read_raw_bids(bids_path=bids_path, extra_params=extra_params)
     meg_coords_dict = _extract_landmarks(raw.info['dig'])
     meg_landmarks = np.asarray((meg_coords_dict['LPA'],

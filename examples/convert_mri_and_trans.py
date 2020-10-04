@@ -37,12 +37,14 @@ See the documentation pages in the MNE docs for more information on
 import os.path as op
 import shutil as sh
 
-import matplotlib.pyplot as plt
-import mne
 import numpy as np
+import matplotlib.pyplot as plt
+
+from nilearn.plotting import plot_anat
+
+import mne
 from mne.datasets import sample
 from mne.source_space import head_to_mri
-from nilearn.plotting import plot_anat
 
 from mne_bids import (write_raw_bids, BIDSPath, write_anat,
                       get_head_mri_trans, print_dir_tree)
