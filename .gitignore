@@ -5,6 +5,7 @@ dist/
 build
 coverage
 *.xml
+.venv
 
 # Sphinx documentation
 doc/_build/

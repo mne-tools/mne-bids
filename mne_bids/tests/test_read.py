@@ -221,8 +221,11 @@ def test_get_head_mri_trans():
     t1w_mgh = op.join(data_path, 'subjects', 'sample', 'mri', 'T1.mgz')
     t1w_mgh = nib.load(t1w_mgh)
 
-    anat_dir = write_anat(bids_root, subject_id, t1w_mgh, session_id, acq,
-                          raw=raw, trans=trans, verbose=True)
+    t1w_bidspath = BIDSPath(subject=subject_id, session=session_id,
+                            acquisition=acq, root=bids_root)
+    t1w_bidspath = write_anat(t1w_mgh, bids_path=t1w_bidspath,
+                              raw=raw, trans=trans, verbose=True)
+    anat_dir = t1w_bidspath.directory
 
     # Try to get trans back through fitting points
     estimated_trans = get_head_mri_trans(bids_path=bids_path)
@@ -237,8 +240,8 @@ def test_get_head_mri_trans():
     with pytest.raises(RuntimeError, match='AnatomicalLandmarkCoordinates'):
         raw.info['dig'][0]['r'] = np.ones(3) * np.nan
         sh.rmtree(anat_dir)
-        write_anat(bids_root, subject_id, t1w_mgh, session_id, acq, raw=raw,
-                   trans=trans, verbose=True)
+        bids_path = write_anat(t1w_mgh, bids_path=t1w_bidspath, raw=raw,
+                               trans=trans, verbose=True)
         estimated_trans = get_head_mri_trans(bids_path=bids_path)
 
 
@@ -570,7 +573,9 @@ def test_get_head_mri_trans_ctf():
     t1w_mgh = op.join(data_path, 'subjects', 'sample', 'mri', 'T1.mgz')
     t1w_mgh = nib.load(t1w_mgh)
 
-    write_anat(bids_root, subject_id, t1w_mgh, session_id, acq,
+    t1w_bids_path = BIDSPath(subject=subject_id, session=session_id,
+                             acquisition=acq, root=bids_root)
+    write_anat(t1w_mgh, bids_path=t1w_bids_path,
                raw=raw_ctf, trans=trans)
 
     # Try to get trans back through fitting points

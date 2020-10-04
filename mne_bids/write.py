@@ -1147,9 +1147,8 @@ def write_raw_bids(raw, bids_path, events_data=None,
     return bids_path
 
 
-def write_anat(root, subject, t1w, session=None, acquisition=None,
-               raw=None, trans=None, landmarks=None, deface=False,
-               overwrite=False, verbose=False):
+def write_anat(t1w, bids_path, raw=None, trans=None, landmarks=None,
+               deface=False, overwrite=False, verbose=False):
     """Put anatomical MRI data into a BIDS format.
 
     Given a BIDS directory and a T1 weighted MRI scan for a certain subject,
@@ -1159,18 +1158,13 @@ def write_anat(root, subject, t1w, session=None, acquisition=None,
 
     Parameters
     ----------
-    root : str | pathlib.Path
-        Path to root of the BIDS folder
-    subject : str
-        Subject label as in 'sub-<label>', for example: '01'
+    bids_path : BIDSPath
+        The file to write. The `mne_bids.BIDSPath` instance passed here
+        **must** have the ``root`` and ``subject`` attributes set.
     t1w : str | pathlib.Path | nibabel image object
         Path to a T1 weighted MRI scan of the subject. Can be in any format
         readable by nibabel. Can also be a nibabel image object of a T1
         weighted MRI scan. Will be written as a .nii.gz file.
-    session : str | None
-        The session for `t1w`. Corresponds to "ses"
-    acquisition: str | None
-        The acquisition parameters for `t1w`. Corresponds to "acq"
     raw : instance of Raw | None
         The raw data of `subject` corresponding to `t1w`. If `raw` is None,
         `trans` has to be None as well
@@ -1212,8 +1206,8 @@ def write_anat(root, subject, t1w, session=None, acquisition=None,
 
     Returns
     -------
-    anat_dir : str
-        Path to the anatomical scan in the `bids_dir`
+    bids_path : BIDSPath
+        Path to the anatomical scan in the BIDS directory.
 
     """
     if not has_nibabel():  # pragma: no cover
@@ -1224,14 +1218,22 @@ def write_anat(root, subject, t1w, session=None, acquisition=None,
         raise ValueError('The raw object, trans and raw or the landmarks '
                          'must be provided to deface the T1')
 
-    # Make directory for anatomical data
-    anat_dir = op.join(root, 'sub-{}'.format(subject))
-    # Session is optional
-    if session is not None:
-        anat_dir = op.join(anat_dir, 'ses-{}'.format(session))
-    anat_dir = op.join(anat_dir, 'anat')
-    if not op.exists(anat_dir):
-        os.makedirs(anat_dir)
+    # Check if the root is available
+    if bids_path.root is None:
+        raise ValueError('The root of the "bids_path" must be set. '
+                         'Please use `bids_path.update(root="<root>")` '
+                         'to set the root of the BIDS folder to read.')
+    # create a copy
+    bids_path = bids_path.copy()
+    # this file is anat
+    if bids_path.datatype is None:
+        bids_path.update(datatype='anat')
+
+    # set extension and suffix hard-coded to T1w and compressed Nifti
+    bids_path.update(suffix='T1w', extension='.nii.gz')
+
+    # create the directory for the T1w dataset
+    bids_path.directory.mkdir(exist_ok=True, parents=True)
 
     # Try to read our T1 file and convert to MGH representation
     try:
@@ -1255,13 +1257,6 @@ def write_anat(root, subject, t1w, session=None, acquisition=None,
     # https://nifti.nimh.nih.gov/nifti-1/documentation/nifti1fields/nifti1fields_pages/xyzt_units.html
     if t1w.header['xyzt_units'] == 0:
         t1w.header['xyzt_units'] = np.array(10, dtype='uint8')
-
-    # Now give the NIfTI file a BIDS name and write it to the BIDS location
-    # this needs to be a string, since nibabel assumes a string input
-    t1w_basename = BIDSPath(subject=subject, session=session,
-                            acquisition=acquisition,
-                            root=root,
-                            suffix='T1w', extension='.nii.gz')
 
     # Check if we have necessary conditions for writing a sidecar JSON
     if trans is not None or landmarks is not None:
@@ -1326,7 +1321,7 @@ def write_anat(root, subject, t1w, session=None, acquisition=None,
             {'LPA': list(mri_landmarks[0, :]),
              'NAS': list(mri_landmarks[1, :]),
              'RPA': list(mri_landmarks[2, :])}
-        fname = t1w_basename.copy().update(extension='.json')
+        fname = bids_path.copy().update(extension='.json')
         if op.isfile(fname) and not overwrite:
             raise IOError('Wanted to write a file but it already exists and '
                           '`overwrite` is set to False. File: "{}"'
@@ -1337,17 +1332,16 @@ def write_anat(root, subject, t1w, session=None, acquisition=None,
             t1w = _deface(t1w, mri_landmarks, deface)
 
     # Save anatomical data
-    if op.exists(t1w_basename):
+    if op.exists(bids_path):
         if overwrite:
-            os.remove(t1w_basename)
+            os.remove(bids_path)
         else:
-            raise IOError('Wanted to write a file but it already exists and '
-                          '`overwrite` is set to False. File: "{}"'
-                          .format(t1w_basename))
+            raise IOError(f'Wanted to write a file but it already exists and '
+                          f'`overwrite` is set to False. File: "{bids_path}"')
 
-    nib.save(t1w, t1w_basename.fpath)
+    nib.save(t1w, bids_path.fpath)
 
-    return anat_dir
+    return bids_path
 
 
 def mark_bad_channels(ch_names, descriptions=None, *, bids_path,

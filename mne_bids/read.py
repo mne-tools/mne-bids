@@ -442,6 +442,7 @@ def get_head_mri_trans(bids_path):
                            'instantiate using mne_bids.BIDSPath().')
 
     # check root available
+    bids_path = bids_path.copy()
     bids_root = bids_path.root
     if bids_root is None:
         raise ValueError('The root of the "bids_path" must be set. '
