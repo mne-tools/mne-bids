@@ -1657,10 +1657,18 @@ def test_mark_bad_channels_files():
     # write with injected bad channels
     write_raw_bids(raw, bids_path, overwrite=True)
 
-    # mark bad channels to all None, and the raw data should match
-    mark_bad_channels([], bids_path=bids_path, overwrite=True)
-    raw.info['bads'] = []
+    # TODO: allow write_brain_vision to write different units
+    # mark bad channels that get stored as uV in write_brain_vision
+    bads = ['CP5', 'CP6', 'HL', 'HR', 'Vb', 'ReRef']
+    mark_bad_channels(bads, bids_path=bids_path, overwrite=False)
+    raw.info['bads'].extend(bads)
+
+    # the raw data should match without the bads
     raw_2 = read_raw_bids(bids_path)
+
+    # if you drop the bads they should match
+    raw.drop_channels(raw.info['bads'])
+    raw_2.drop_channels(raw_2.info['bads'])
     assert_array_almost_equal(raw.get_data(), raw_2.get_data())
 
     # EDF won't work
