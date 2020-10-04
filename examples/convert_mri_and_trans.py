@@ -98,7 +98,7 @@ print(trans)
 # create a JSON sidecar file that contains metadata, we will later use to
 # retrieve our transformation matrix :code:`trans`.
 
-# first create the BIDS Path object
+# First create the BIDSPath object.
 t1w_bids_path = BIDSPath(subject=sub, session=ses, root=output_path)
 
 # We use the write_anat function
@@ -156,7 +156,7 @@ for point_idx, label in enumerate(('LPA', 'NAS', 'RPA')):
 plt.show()
 
 ###############################################################################
-# We can deface the MRI for anonymization
+# We can deface the MRI for anonymization by passing ``deface=True``.
 t1w_bids_path = write_anat(
     t1w=t1_mgh_fname,  # path to the MRI scan
     bids_path=bids_path,
