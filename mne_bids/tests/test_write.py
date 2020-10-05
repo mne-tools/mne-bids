@@ -1688,7 +1688,6 @@ def test_mark_bad_channels_files():
         mark_bad_channels(raw.ch_names[0], bids_path=bids_path)
 
 
-
 @pytest.mark.skipif('BIDS_VALIDATOR_VERSION' in os.environ and
                     LooseVersion(os.environ['BIDS_VALIDATOR_VERSION']) <
                     LooseVersion('1.5.5'),
