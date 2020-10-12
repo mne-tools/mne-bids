@@ -17,6 +17,7 @@ from collections import defaultdict, OrderedDict
 import numpy as np
 from scipy import linalg
 from numpy.testing import assert_array_equal
+import mne
 from mne.transforms import (_get_trans, apply_trans, get_ras_to_neuromag_trans,
                             rotation, translation)
 from mne import Epochs
@@ -1488,7 +1489,17 @@ def mark_bad_channels(ch_names, descriptions=None, *, bids_path,
     bads = _get_bads_from_tsv_data(tsv_data)
     raw.info['bads'] = bads
     # XXX (How) will this handle split files?
-    raw.save(raw.filenames[0], overwrite=True, verbose=False)
+    if isinstance(raw, mne.io.brainvision.brainvision.RawBrainVision):
+        events, event_id = _read_events(events_data=None, event_id=None,
+                                        raw=raw,
+                                        ext='.vhdr', verbose=False)
+        _write_raw_brainvision(raw, bids_path.fpath, events)
+    elif isinstance(raw, mne.io.RawFIF):
+        raw.save(raw.filenames[0], overwrite=True, verbose=False)
+    else:
+        raise RuntimeError('Can only mark bad channels for '
+                           'FIFF and BrainVision files for now. Please '
+                           'mark bad channels manually.')
 
 
 def write_meg_calibration(calibration, bids_path, verbose=None):
