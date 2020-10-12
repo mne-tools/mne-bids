@@ -1504,7 +1504,7 @@ def mark_bad_channels(ch_names, descriptions=None, *, bids_path,
         raw.save(raw.filenames[0], overwrite=True, verbose=False)
     else:
         raise RuntimeError('Can only mark bad channels for '
-                           'FIF and BV files right now. Please '
+                           'FIFF and BrainVision files for now. Please '
                            'mark bad channels manually.')
 
 
