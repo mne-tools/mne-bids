@@ -1183,7 +1183,7 @@
                     <span class="n">ignore_sessions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ignore_tasks</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ignore_runs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                     <span class="n">ignore_processings</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ignore_spaces</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                     <span class="n">ignore_acquisitions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ignore_splits</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                    <span class="n">ignore_modalities</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+                    <span class="n">ignore_modalities</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ignore_datatypes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Get list of values associated with an `entity_key` in a BIDS dataset.</span>
 
 <span class="sd">    BIDS file names are organized by key-value pairs called &quot;entities&quot; [1]_.</span>
@@ -1215,6 +1215,9 @@
 <span class="sd">        Split(s) to ignore. If ``None``, include all splits.</span>
 <span class="sd">    ignore_modalities : str | iterable | None</span>
 <span class="sd">        Modalities(s) to ignore. If ``None``, include all modalities.</span>
+<span class="sd">    ignore_datatypes : str | iterable | None</span>
+<span class="sd">        Datatype(s) to ignore. If ``None``, include all datatypes (i.e.</span>
+<span class="sd">        ``anat``, ``ieeg``, ``eeg``, ``meg``, ``func``, etc.)</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -1268,6 +1271,8 @@
         <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="s1">&#39;derivatives&#39;</span><span class="p">)):</span>
             <span class="k">continue</span>
 
+        <span class="k">if</span> <span class="n">ignore_datatypes</span> <span class="ow">and</span> <span class="n">filename</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">ignore_datatypes</span><span class="p">:</span>
+            <span class="k">continue</span>
         <span class="k">if</span> <span class="n">ignore_subjects</span> <span class="ow">and</span> <span class="nb">any</span><span class="p">([</span><span class="n">filename</span><span class="o">.</span><span class="n">stem</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;sub-</span><span class="si">{</span><span class="n">s</span><span class="si">}</span><span class="s1">_&#39;</span><span class="p">)</span>
                                     <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">ignore_subjects</span><span class="p">]):</span>
             <span class="k">continue</span>
@@ -1467,7 +1472,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-10-12.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-10-14.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
     </p>
   </div>
