@@ -1105,9 +1105,9 @@ def get_entity_vals(root, entity_key, *, ignore_subjects='emptyroom',
     ignore_modalities : str | iterable | None
         Modalities(s) to ignore. If ``None``, include all modalities.
     with_key : bool
-        If True returns the full entity with the key and the value. This
+        If ``True``, returns the full entity with the key and the value. This
         will for example look like ``['sub-001', 'sub-002']``.
-        If False (default), then just returns the entity values. This
+        If ``False`` (default), just returns the entity values. This
         will for example look like ``['001', '002']``.
 
     Returns
