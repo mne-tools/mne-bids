@@ -31,6 +31,7 @@ from mne_bids import (get_datatypes, get_entity_vals, print_dir_tree,
 from mne_bids.path import (_parse_ext, get_entities_from_fname,
                            _find_best_candidates, _find_matching_sidecar,
                            _filter_fnames)
+from mne_bids.config import ALLOWED_PATH_ENTITIES_SHORT
 
 from test_read import _read_raw_fif, warning_str
 
@@ -110,6 +111,15 @@ def test_get_entity_vals(entity, expected_vals, kwargs, return_bids_test_dir):
         vals = get_entity_vals(root=bids_root, entity_key=entity,
                                **kwargs)
         assert vals == expected_vals
+
+        # test using ``with_key`` kwarg
+        entities = get_entity_vals(root=bids_root, entity_key=entity,
+                                   with_key=True, **kwargs)
+        entity_long_to_short = {
+            val: key for key, val in ALLOWED_PATH_ENTITIES_SHORT.items()
+        }
+        assert entities == [f'{entity_long_to_short[entity]}-{val}'
+                            for val in expected_vals]
 
 
 def test_print_dir_tree(capsys):

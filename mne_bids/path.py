@@ -1072,7 +1072,7 @@ def get_entity_vals(root, entity_key, *, ignore_subjects='emptyroom',
                     ignore_sessions=None, ignore_tasks=None, ignore_runs=None,
                     ignore_processings=None, ignore_spaces=None,
                     ignore_acquisitions=None, ignore_splits=None,
-                    ignore_modalities=None):
+                    ignore_modalities=None, with_key=False):
     """Get list of values associated with an `entity_key` in a BIDS dataset.
 
     BIDS file names are organized by key-value pairs called "entities" [1]_.
@@ -1104,6 +1104,11 @@ def get_entity_vals(root, entity_key, *, ignore_subjects='emptyroom',
         Split(s) to ignore. If ``None``, include all splits.
     ignore_modalities : str | iterable | None
         Modalities(s) to ignore. If ``None``, include all modalities.
+    with_key : bool
+        If True returns the full entity with the key and the value. This
+        will for example look like ``['sub-001', 'sub-002']``.
+        If False (default), then just returns the entity values. This
+        will for example look like ``['001', '002']``.
 
     Returns
     -------
@@ -1117,6 +1122,8 @@ def get_entity_vals(root, entity_key, *, ignore_subjects='emptyroom',
     >>> entity_key = 'sub'
     >>> get_entity_vals(root, entity_key)
     ['05', '06', '07', '08', '09', '10', '11']
+    >>> get_entity_vals(root, entity_key, with_key=True)
+    ['sub-05', 'sub-06', 'sub-07', 'sub-08', 'sub-09', 'sub-10', 'sub-11']
 
     Notes
     -----
@@ -1187,6 +1194,8 @@ def get_entity_vals(root, entity_key, *, ignore_subjects='emptyroom',
 
         match = p.search(filename.stem)
         value = match.group(1)
+        if with_key:
+            value = f'{entity_long_abbr_map[entity_key]}-{value}'
         if value not in values:
             values.append(value)
     return sorted(values)
