@@ -1072,7 +1072,7 @@ def get_entity_vals(root, entity_key, *, ignore_subjects='emptyroom',
                     ignore_sessions=None, ignore_tasks=None, ignore_runs=None,
                     ignore_processings=None, ignore_spaces=None,
                     ignore_acquisitions=None, ignore_splits=None,
-                    ignore_modalities=None):
+                    ignore_modalities=None, ignore_datatypes=None):
     """Get list of values associated with an `entity_key` in a BIDS dataset.
 
     BIDS file names are organized by key-value pairs called "entities" [1]_.
@@ -1104,6 +1104,9 @@ def get_entity_vals(root, entity_key, *, ignore_subjects='emptyroom',
         Split(s) to ignore. If ``None``, include all splits.
     ignore_modalities : str | iterable | None
         Modalities(s) to ignore. If ``None``, include all modalities.
+    ignore_datatypes : str | iterable | None
+        Datatype(s) to ignore. If ``None``, include all datatypes (i.e.
+        ``anat``, ``ieeg``, ``eeg``, ``meg``, ``func``, etc.)
 
     Returns
     -------
@@ -1157,6 +1160,8 @@ def get_entity_vals(root, entity_key, *, ignore_subjects='emptyroom',
         if str(filename).startswith(op.join(root, 'derivatives')):
             continue
 
+        if ignore_datatypes and filename.parent.name in ignore_datatypes:
+            continue
         if ignore_subjects and any([filename.stem.startswith(f'sub-{s}_')
                                     for s in ignore_subjects]):
             continue
