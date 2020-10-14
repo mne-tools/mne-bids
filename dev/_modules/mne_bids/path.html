@@ -1183,7 +1183,8 @@
                     <span class="n">ignore_sessions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ignore_tasks</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ignore_runs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                     <span class="n">ignore_processings</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ignore_spaces</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                     <span class="n">ignore_acquisitions</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ignore_splits</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                    <span class="n">ignore_modalities</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ignore_datatypes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+                    <span class="n">ignore_modalities</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ignore_datatypes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                    <span class="n">with_key</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Get list of values associated with an `entity_key` in a BIDS dataset.</span>
 
 <span class="sd">    BIDS file names are organized by key-value pairs called &quot;entities&quot; [1]_.</span>
@@ -1218,6 +1219,11 @@
 <span class="sd">    ignore_datatypes : str | iterable | None</span>
 <span class="sd">        Datatype(s) to ignore. If ``None``, include all datatypes (i.e.</span>
 <span class="sd">        ``anat``, ``ieeg``, ``eeg``, ``meg``, ``func``, etc.)</span>
+<span class="sd">    with_key : bool</span>
+<span class="sd">        If ``True``, returns the full entity with the key and the value. This</span>
+<span class="sd">        will for example look like ``[&#39;sub-001&#39;, &#39;sub-002&#39;]``.</span>
+<span class="sd">        If ``False`` (default), just returns the entity values. This</span>
+<span class="sd">        will for example look like ``[&#39;001&#39;, &#39;002&#39;]``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -1231,6 +1237,8 @@
 <span class="sd">    &gt;&gt;&gt; entity_key = &#39;sub&#39;</span>
 <span class="sd">    &gt;&gt;&gt; get_entity_vals(root, entity_key)</span>
 <span class="sd">    [&#39;05&#39;, &#39;06&#39;, &#39;07&#39;, &#39;08&#39;, &#39;09&#39;, &#39;10&#39;, &#39;11&#39;]</span>
+<span class="sd">    &gt;&gt;&gt; get_entity_vals(root, entity_key, with_key=True)</span>
+<span class="sd">    [&#39;sub-05&#39;, &#39;sub-06&#39;, &#39;sub-07&#39;, &#39;sub-08&#39;, &#39;sub-09&#39;, &#39;sub-10&#39;, &#39;sub-11&#39;]</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
@@ -1303,6 +1311,8 @@
 
         <span class="n">match</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">filename</span><span class="o">.</span><span class="n">stem</span><span class="p">)</span>
         <span class="n">value</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">with_key</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">entity_long_abbr_map</span><span class="p">[</span><span class="n">entity_key</span><span class="p">]</span><span class="si">}</span><span class="s1">-</span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s1">&#39;</span>
         <span class="k">if</span> <span class="n">value</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">values</span><span class="p">:</span>
             <span class="n">values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
     <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">values</span><span class="p">)</span></div>
