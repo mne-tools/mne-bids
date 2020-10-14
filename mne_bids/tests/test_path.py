@@ -97,7 +97,8 @@ def test_get_keys(return_bids_test_dir):
                           ('run', [run], dict(ignore_runs='02')),
                           ('task', [], dict(ignore_tasks=[task])),
                           ('task', [], dict(ignore_tasks=task)),
-                          ('run', [run, '02'], dict(ignore_runs=['bogus']))])
+                          ('run', [run, '02'], dict(ignore_runs=['bogus'])),
+                          ('run', [], dict(ignore_datatypes=['meg']))])
 def test_get_entity_vals(entity, expected_vals, kwargs, return_bids_test_dir):
     """Test getting a list of entities."""
     bids_root = return_bids_test_dir
