@@ -913,6 +913,14 @@ def write_raw_bids(raw, bids_path, events_data=None,
     updated and ``raw.info['meas_date']`` should not be ``None`` to allow
     computation of each participant's age correctly.
 
+    If an events file is not passed in, then events are looked for in the
+    ``stim`` channel and then the annotations. If you have events in both
+    the ``stim`` channel and annotations, it will not write both.
+
+    If your raw file has events encoded in the annotations that you would
+    not like to write, then you should explicitly set annotations to None by
+    ``raw.set_annotations(None)``.
+
     See Also
     --------
     mne.io.Raw.anonymize
