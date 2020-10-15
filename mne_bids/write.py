@@ -914,8 +914,15 @@ def write_raw_bids(raw, bids_path, events_data=None,
     computation of each participant's age correctly.
 
     Events will be taken as the union of an events file (if passed in through
-    the ``events_data`` kwarg), ``stim`` channel and annotations of the raw
-    file.
+    the ``events_data`` kwarg), and annotations of the raw file. If you have
+    events encoded in the ``stim`` channel, then please extract it first.
+    For example, you might use
+
+    ..
+        # get events from the stim channel
+        events_stim = mne.find_events(raw, min_duration=0.001,
+                                      initial_event=True, verbose=verbose)
+
 
     If your raw file has events encoded in the annotations that you would
     not like to write, then you should explicitly set annotations to None by
@@ -1080,7 +1087,7 @@ def write_raw_bids(raw, bids_path, events_data=None,
         logger.warning(f'Writing of electrodes.tsv is not supported '
                        f'for data type "{bids_path.datatype}". Skipping ...')
 
-    events, event_id = _read_events(events_data, event_id, raw, ext,
+    events, event_id = _read_events(events_data, event_id, raw,
                                     verbose=verbose)
     if events is not None and len(events) > 0 and not emptyroom:
         _events_tsv(events, raw, events_path.fpath, event_id,
@@ -1499,8 +1506,7 @@ def mark_bad_channels(ch_names, descriptions=None, *, bids_path,
     # XXX (How) will this handle split files?
     if isinstance(raw, mne.io.brainvision.brainvision.RawBrainVision):
         events, event_id = _read_events(events_data=None, event_id=None,
-                                        raw=raw,
-                                        ext='.vhdr', verbose=False)
+                                        raw=raw, verbose=False)
         _write_raw_brainvision(raw, bids_path.fpath, events)
     elif isinstance(raw, mne.io.RawFIF):
         raw.save(raw.filenames[0], overwrite=True, verbose=False)

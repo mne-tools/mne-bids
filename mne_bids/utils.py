@@ -14,12 +14,12 @@ from datetime import datetime, date, timedelta, timezone
 from os import path as op
 
 import numpy as np
-from mne import read_events, find_events, events_from_annotations
+from mne import (read_events, events_from_annotations)
 from mne.channels import make_standard_montage
 from mne.io.constants import FIFF
 from mne.io.kit.kit import get_kit_info
 from mne.io.pick import pick_types
-from mne.utils import check_version, warn, logger
+from mne.utils import warn, logger
 
 from mne_bids.tsv_handler import _to_tsv, _tsv_to_str
 
@@ -189,7 +189,7 @@ def _check_key_val(key, val):
     return key, val
 
 
-def _read_events(events_data, event_id, raw, ext, verbose=None):
+def _read_events(events_data, event_id, raw, verbose=None):
     """Read in events data.
 
     Parameters
@@ -203,8 +203,6 @@ def _read_events(events_data, event_id, raw, ext, verbose=None):
         mapping a description key to an integer valued event code.
     raw : instance of Raw
         The data as MNE-Python Raw object.
-    ext : str
-        The extension of the original data file.
     verbose : bool | str | int | None
         If not None, override default verbose level (see :func:`mne.verbose`).
 
@@ -231,29 +229,21 @@ def _read_events(events_data, event_id, raw, ext, verbose=None):
     else:
         events = np.empty(shape=(0, 3))
 
-    # get events from the stim channel
-    if 'stim' in raw:
-        events_stim = find_events(raw, min_duration=0.001,
-                                  initial_event=True, verbose=verbose)
-        events = np.concatenate((events, events_stim), axis =0)
-
     # get events from annotations
     events_annot, event_id_annot = events_from_annotations(raw, event_id,
                                                            verbose=verbose)
-    events = np.concatenate((events, events_annot))
-    if event_id is None:
-        event_id = event_id_annot
-    else:
+    if event_id is not None:
+        events = np.concatenate((events, events_annot), axis=0)
         event_id.update(event_id_annot)
+    else:
+        events = events_annot
+        event_id = event_id_annot
 
     if events.size == 0:
         warn('No events found or provided. Please make sure to'
              ' set channel type using raw.set_channel_types'
              ' or provide events_data.')
         events = None
-
-    print('Events data structure!', events)
-    print(event_id)
 
     return events, event_id
 
