@@ -15,15 +15,17 @@ Here we list a changelog of MNE-BIDS.
 
 .. currentmodule:: mne_bids
 
-.. _current:
+.. _changes_0_5:
 
-Current
--------
+Version 0.5 (2020-10-xx)
+------------------------
 
 Changelog
 ~~~~~~~~~
 
-- :func:`read_raw_bids` now reads participants tsv data, by `Adam Li`_ (`#392 <https://github.com/mne-tools/mne-bids/pull/392>`_)
+- Introduce :class:`mne_bids.BIDSPath`, the new universal MNE-BIDS working horse for file operations, by `Adam Li`_, `Alex Rockhill`_, and `Richard Höchenberger`_ (`#496 <https://github.com/mne-tools/mne-bids/pull/496>`_, `#507 <https://github.com/mne-tools/mne-bids/pull/507>`_, `#511 <https://github.com/mne-tools/mne-bids/pull/511>`_, `#514 <https://github.com/mne-tools/mne-bids/pull/514>`_, `#542 <https://github.com/mne-tools/mne-bids/pull/542>`_)
+- The new function :func:`mne_bids.make_report` and its corresponding CLI function, ``make_report``, produce human-readable summary of the BIDS dataset, by `Adam Li`_ (`#457 <https://github.com/mne-tools/mne-bids/pull/457>`_)
+- :func:`read_raw_bids` now reads ``participants.tsv`` data, by `Adam Li`_ (`#392 <https://github.com/mne-tools/mne-bids/pull/392>`_)
 - :func:`mne_bids.get_entity_vals` has gained ``ignore_*`` keyword arguments to exclude specific values from the list of results, e.g. the entities for a particular subject or task, by `Richard Höchenberger`_ (`#409 <https://github.com/mne-tools/mne-bids/pull/409>`_)
 - :func:`mne_bids.write_raw_bids` now uses the ``space`` BIDS entity when writing iEEG electrodes and coordinate frames, by `Adam Li`_ (`#390 <https://github.com/mne-tools/mne-bids/pull/390>`_)
 - :code:`convert_ieeg_to_bids` to now use sample ECoG EDF data, by `Adam Li`_ (`#390 <https://github.com/mne-tools/mne-bids/pull/390>`_)
@@ -46,7 +48,6 @@ Changelog
 - Allow :func:`mne_bids.write_raw_bids` to write EEG/iEEG files from Nihon Kohden using ``mne.io.read_raw_nihon`` function, by `Adam Li`_ (`#567 <https://github.com/mne-tools/mne-bids/pull/567>`_)
 - Allow :func:`mne_bids.get_entity_vals` to ignore datatypes using ``ignore_datatypes`` kwarg, by `Adam Li`_ (`#578 <https://github.com/mne-tools/mne-bids/pull/578>`_)
 
-
 Bug
 ~~~
 
@@ -65,34 +66,33 @@ Bug
 - Ensure that ``Raw.info['bads']`` returned by :func:`mne_bids.read_raw_bids` is always a list, by `Richard Höchenberger`_ (`#501 <https://github.com/mne-tools/mne-bids/pull/501>`_)
 - :func:`mne_bids.write_raw_bids` now ensures that **all** parts of the :class:`mne.io.Raw` instance stay in sync when using anonymization to shift dates, e.g. ``raw.annotations``, by `Richard Höchenberger`_ (`#504 <https://github.com/mne-tools/mne-bids/pull/504>`_)
 - Fix :func:`mne_bids.write_raw_bids` failed BIDS validator for ``raw.info['dig'] = []``, by `Alex Rockhill`_ (`#505 <https://github.com/mne-tools/mne-bids/pull/505>`_)
-- Fix bug in :func:`mne_bids.BIDSPath.fpath` where no data file was returned when the suffix was not assigned, by `Alex Rockhill`_ (`#542 <https://github.com/mne-tools/mne-bids/pull/542>`_)
 - Ensure :func:`mne_bids.print_dir_tree` prints files and directories in alphabetical order, by `Richard Höchenberger`_ (`#563 <https://github.com/mne-tools/mne-bids/pull/563>`_)
 
 API
 ~~~
 
-- :func:`read_raw_bids` now expects ``bids_basename`` as the first argument and gains a ``kind`` parameter. The name of the file to read will be inferred automatically, and can no longer be passed to the function directly. This ensures better API consistency with :func:`write_raw_bids`, by `Richard Höchenberger`_ (`#410 <https://github.com/mne-tools/mne-bids/pull/410>`_)
-- ``get_matched_empty_room`` now expects ``bids_basename`` as the first argument and returns the :class:`mne_bids.BIDSPath` of the best-matching empty-room recording (instead of its filename before). The ``bids_fname`` argument has been dropped, by `Richard Höchenberger`_ (`#410 <https://github.com/mne-tools/mne-bids/pull/410>`_, `#521 <https://github.com/mne-tools/mne-bids/pull/521>`_)
-- :func:`get_head_mri_trans` now expects ``bids_basename`` as the first argument. The ``bids_fname`` argument has been dropped, by `Richard Höchenberger`_ (`#410 <https://github.com/mne-tools/mne-bids/pull/410>`_)
-- BIDS conformity: The ``_part-%d`` entity is now called ``_split-`` throughout BIDS, MNE, and MNE-BIDS, by `Stefan Appelhoff`_ (`#417 <https://github.com/mne-tools/mne-bids/pull/417>`_)
-- The ``datasets.py`` module was removed from ``MNE-BIDS`` and its utility was replaced by ``mne.datasets``, by `Stefan Appelhoff`_ (`#471 <https://github.com/mne-tools/mne-bids/pull/471>`_)
-- :func:`mne_bids.make_dataset_description` now accepts the argument ``overwrite``, which will reset all fields if ``True``. If ``False``, user-provided fields will no longer be overwritten by :func:`mne_bids.write_raw_bids` when its ``overwrite`` argument is ``True``, unless new values are supplied, by `Alex Rockhill`_ (`#478 <https://github.com/mne-tools/mne-bids/pull/478>`_)
-- The new function :func:`mne_bids.make_report` and its corresponding CLI function, ``make_report``, produce human-readable summary of the BIDS dataset, by `Adam Li`_ (`#457 <https://github.com/mne-tools/mne-bids/pull/457>`_)
-- Added namespace :code:`mne_bids.path` which hosts path-like functionality for MNE-BIDS, by `Adam Li`_ (`#483 <https://github.com/mne-tools/mne-bids/pull/483>`_)
-- A function for retrieval of BIDS entity values from a filename, :func:`mne_bids.path.get_entities_from_fname`, is now part of the public API (it used to be a private function called ``mne_bids.path._parse_bids_filename``), by `Richard Höchenberger`_ (`#487 <https://github.com/mne-tools/mne-bids/pull/487>`_)
-- Entity names passed to :func:`mne_bids.get_entity_vals` must now be in the "long" format, e.g. ``subject`` instead of ``sub`` etc., by `Richard Höchenberger`_ (`#501 <https://github.com/mne-tools/mne-bids/pull/501>`_)
-- Change :func:`mne_bids.path.get_entities_from_fname` to use full entity kwargs (e.g. 'subject' instead of 'sub') in the return dictionary structure, by `Adam Li`_ (`#496 <https://github.com/mne-tools/mne-bids/pull/496>`_)
-- Change :class:`mne_bids.BIDSPath` to explicitly use  ``suffix`` and ``extension`` instead of just ``suffix`` in kwargs, by `Adam Li`_ (`#496 <https://github.com/mne-tools/mne-bids/pull/496>`_)
-- It is now required to specify the Power Line Frequency to use :func:`write_raw_bids`, while in 0.4 it could be estimated, by `Alexandre Gramfort`_ and `Alex Rockhill`_ (`#506 <https://github.com/mne-tools/mne-bids/pull/506>`_)
-- :code:`mne_bids.make_bids_basename` has been removed. Use :class:`mne_bids.BIDSPath` directly, by `Adam Li`_ (`#511 <https://github.com/mne-tools/mne-bids/pull/511>`_)
-- Add ``check`` parameter and attribute to :class:`mne_bids.BIDSPath` that allows users to turn off entity checks by `Adam Li`_ (`#511 <https://github.com/mne-tools/mne-bids/pull/511>`_)
-- Add ``datatype`` parameter and attribute to :class:`mne_bids.BIDSPath` that allows users to specify EEG, MEG, or iEEG datasets by `Adam Li`_ (`#514 <https://github.com/mne-tools/mne-bids/pull/514>`_)
+In the transition to using `mne_bids.BIDSPath`, the following functions have been updated:
+
+- :func:`mne_bids.write_anat` now accepts a :class:`mne_bids.BIDSPath` instead of entities as keyword arguments, by `Adam Li`_ (`#575 <https://github.com/mne-tools/mne-bids/pull/575>`_)
 - In :func:`mne_bids.write_raw_bids`, :func:`mne_bids.read_raw_bids`, and :func:`mne_bids.get_head_mri_trans`, the ``bids_basename`` and ``bids_root`` keyword arguments have been removed. The functions now expect ``bids_path``, an instance of :class:`mne_bids.BIDSPath`, by `Adam Li`_ (`#525 <https://github.com/mne-tools/mne-bids/pull/525>`_)
-- :meth:`mne_bids.BIDSPath.match` allows to retrieve a list of :class:`mne_bids.BIDSPath` objects matching a specified set of entity values in the dataset, by `Richard Höchenberger`_ (`#507 <https://github.com/mne-tools/mne-bids/pull/507>`_)
+
+The following functions have been removed:
+
+- ``mne_bids.make_bids_basename`` has been removed. Use :class:`mne_bids.BIDSPath` directly, by `Adam Li`_ (`#511 <https://github.com/mne-tools/mne-bids/pull/511>`_)
 - ``mne_bids.get_matched_empty_room`` has been removed. Use :meth:`mne_bids.BIDSPath.find_empty_room` instead, by `Richard Höchenberger`_ (`#535 <https://github.com/mne-tools/mne-bids/pull/535>`_)
 - ``mne_bids.make_bids_folders`` has been removed. Use :meth:`mne_bids.BIDSPath.mkdir` instead, by `Adam Li`_ (`#543 <https://github.com/mne-tools/mne-bids/pull/543>`_)
+
+Further API changes:
+
+- Added namespace :code:`mne_bids.path` which hosts path-like functionality for MNE-BIDS, by `Adam Li`_ (`#483 <https://github.com/mne-tools/mne-bids/pull/483>`_)
+- The ``datasets.py`` module was removed from ``MNE-BIDS`` and its utility was replaced by ``mne.datasets``, by `Stefan Appelhoff`_ (`#471 <https://github.com/mne-tools/mne-bids/pull/471>`_)
+- :func:`mne_bids.make_dataset_description` now accepts the argument ``overwrite``, which will reset all fields if ``True``. If ``False``, user-provided fields will no longer be overwritten by :func:`mne_bids.write_raw_bids` when its ``overwrite`` argument is ``True``, unless new values are supplied, by `Alex Rockhill`_ (`#478 <https://github.com/mne-tools/mne-bids/pull/478>`_)
+- A function for retrieval of BIDS entity values from a filename, :func:`mne_bids.path.get_entities_from_fname`, is now part of the public API (it used to be a private function called ``mne_bids.path._parse_bids_filename``), by `Richard Höchenberger`_ (`#487 <https://github.com/mne-tools/mne-bids/pull/487>`_)
+- Entity names passed to :func:`mne_bids.get_entity_vals` must now be in the "long" format, e.g. ``subject`` instead of ``sub`` etc., by `Richard Höchenberger`_ (`#501 <https://github.com/mne-tools/mne-bids/pull/501>`_)
+- Change :func:`mne_bids.path.get_entities_from_fname` to use full entity kwargs (e.g. ``subject`` instead of ``sub``) in the return dictionary structure, by `Adam Li`_ (`#496 <https://github.com/mne-tools/mne-bids/pull/496>`_)
+- It is now required to specify the Power Line Frequency to use :func:`write_raw_bids`, while in 0.4 it could be estimated, by `Alexandre Gramfort`_ and `Alex Rockhill`_ (`#506 <https://github.com/mne-tools/mne-bids/pull/506>`_)
 - Rename ``mne_bids.get_modalities`` to :func:`mne_bids.get_datatypes` for getting data types from a BIDS dataset, by `Alexandre Gramfort`_ (`#253 <https://github.com/mne-tools/mne-bids/pull/253>`_)
-- :func:`mne_bids.write_anat` now accepts a :class:`mne_bids.BIDSPath` instead of entities as keyword arguments, by `Adam Li`_ (`#575 <https://github.com/mne-tools/mne-bids/pull/575>`_)
+- BIDS conformity: The ``_part-%d`` entity is now called ``_split-`` throughout BIDS, MNE, and MNE-BIDS, by `Stefan Appelhoff`_ (`#417 <https://github.com/mne-tools/mne-bids/pull/417>`_)
 
 .. _changes_0_4:
 
