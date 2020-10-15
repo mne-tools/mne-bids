@@ -1695,10 +1695,6 @@ def test_mark_bad_channels_files():
         mark_bad_channels(raw.ch_names[0], bids_path=bids_path)
 
 
-@pytest.mark.skipif('BIDS_VALIDATOR_VERSION' in os.environ and
-                    LooseVersion(os.environ['BIDS_VALIDATOR_VERSION']) <
-                    LooseVersion('1.5.5'),
-                    reason=('requires bids-validator 1.5.5 or newer'))
 def test_write_meg_calibration(_bids_validate):
     """Test writing of the Elekta/Neuromag fine-calibration file."""
     bids_root = _TempDir()
@@ -1748,10 +1744,6 @@ def test_write_meg_calibration(_bids_validate):
         write_meg_calibration(fine_cal_fname, bids_path)
 
 
-@pytest.mark.skipif('BIDS_VALIDATOR_VERSION' in os.environ and
-                    LooseVersion(os.environ['BIDS_VALIDATOR_VERSION']) <
-                    LooseVersion('1.5.5'),
-                    reason=('requires bids-validator 1.5.5 or newer'))
 def test_write_meg_crosstalk(_bids_validate):
     """Test writing of the Elekta/Neuromag fine-calibration file."""
     bids_root = _TempDir()
