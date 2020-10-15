@@ -99,7 +99,7 @@ html_theme_options = {
     'bootswatch_theme': "flatly",
     'navbar_sidebarrel': False,  # no "previous / next" navigation
     'navbar_pagenav': False,  # no "Page" navigation in sidebar
-    'bootstrap_version': "4",
+    'bootstrap_version': "3",
     'navbar_links': [
         ("Examples", "auto_examples/index"),
         ("API", "api"),
