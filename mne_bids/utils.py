@@ -217,6 +217,7 @@ def _read_events(events_data, event_id, raw, ext, verbose=None):
         before the event or immediately after.
 
     """
+    # get events from the events_data passed in
     if isinstance(events_data, str):
         events = read_events(events_data, verbose=verbose).astype(int)
     elif isinstance(events_data, np.ndarray):
@@ -227,23 +228,33 @@ def _read_events(events_data, event_id, raw, ext, verbose=None):
             raise ValueError('Events must have second dimension of length 3, '
                              f'found {events_data.shape[1]}')
         events = events_data
-    elif 'stim' in raw:
-        print('USING STIM FOR EVENTS!!!! \n\n\n')
-        events = find_events(raw, min_duration=0.001, initial_event=True,
-                             verbose=verbose)
-    elif ext in ['.vhdr', '.set'] and check_version('mne', '0.18'):
-        events, event_id = events_from_annotations(raw, event_id,
-                                                   verbose=verbose)
     else:
-        # any other file extension should try to get events from
-        # annotations
-        events, events_id = events_from_annotations(raw, event_id,
-                                                    verbose=verbose)
-    if events is None:
+        events = np.empty(shape=(0, 3))
+
+    # get events from the stim channel
+    if 'stim' in raw:
+        events_stim = find_events(raw, min_duration=0.001,
+                                  initial_event=True, verbose=verbose)
+        events = np.concatenate((events, events_stim), axis =0)
+
+    # get events from annotations
+    events_annot, event_id_annot = events_from_annotations(raw, event_id,
+                                                           verbose=verbose)
+    events = np.concatenate((events, events_annot))
+    if event_id is None:
+        event_id = event_id_annot
+    else:
+        event_id.update(event_id_annot)
+
+    if events.size == 0:
         warn('No events found or provided. Please make sure to'
              ' set channel type using raw.set_channel_types'
              ' or provide events_data.')
         events = None
+
+    print('Events data structure!', events)
+    print(event_id)
+
     return events, event_id
 
 

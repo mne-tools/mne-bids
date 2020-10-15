@@ -46,6 +46,7 @@ Changelog
 - Allow :func:`mne_bids.write_raw_bids` to write EEG/iEEG files from Nihon Kohden using ``mne.io.read_raw_nihon`` function, by `Adam Li`_ (`#567 <https://github.com/mne-tools/mne-bids/pull/567>`_)
 - Allow :func:`mne_bids.get_entity_vals` to ignore datatypes using ``ignore_datatypes`` kwarg, by `Adam Li`_ (`#578 <https://github.com/mne-tools/mne-bids/pull/578>`_)
 - Add ``with_key`` keyword argument to :func:`mne_bids.get_entity_vals` to allow returning the full entity strings, by `Adam Li`_ (`#578 <https://github.com/mne-tools/mne-bids/pull/578>`_)
+- :func:`mne_bids.write_raw_bids` now also writes  :class:`mne.Annotations` if present in the raw file, by `Adam Li`_ (`#582 <https://github.com/mne-tools/mne-bids/pull/582>`_)
 
 Bug
 ~~~
@@ -67,8 +68,6 @@ Bug
 - Fix :func:`mne_bids.write_raw_bids` failed BIDS validator for ``raw.info['dig'] = []`` by `Alex Rockhill`_ (`#505 <https://github.com/mne-tools/mne-bids/pull/505>`_)
 - Fix bug in :func:`mne_bids.BIDSPath.fpath` where no data file was returned when the suffix was not assigned, by `Alex Rockhill`_ (`#542 <https://github.com/mne-tools/mne-bids/pull/542>`_)
 - Ensure :func:`mne_bids.print_dir_tree` prints files and directories in alphabetical order, by `Richard Höchenberger`_ (`#563 <https://github.com/mne-tools/mne-bids/pull/563>`_)
-- :func:`mne_bids.write_raw_bids` now also writes  :class:`mne.Annotations` if present in the raw file, by `Adam Li`_ (`#582 <https://github.com/mne-tools/mne-bids/pull/582>`_)
-
 
 API
 ~~~
