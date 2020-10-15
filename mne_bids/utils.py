@@ -228,12 +228,18 @@ def _read_events(events_data, event_id, raw, ext, verbose=None):
                              f'found {events_data.shape[1]}')
         events = events_data
     elif 'stim' in raw:
+        print('USING STIM FOR EVENTS!!!! \n\n\n')
         events = find_events(raw, min_duration=0.001, initial_event=True,
                              verbose=verbose)
     elif ext in ['.vhdr', '.set'] and check_version('mne', '0.18'):
         events, event_id = events_from_annotations(raw, event_id,
                                                    verbose=verbose)
     else:
+        # any other file extension should try to get events from
+        # annotations
+        events, events_id = events_from_annotations(raw, event_id,
+                                                    verbose=verbose)
+    if events is None:
         warn('No events found or provided. Please make sure to'
              ' set channel type using raw.set_channel_types'
              ' or provide events_data.')

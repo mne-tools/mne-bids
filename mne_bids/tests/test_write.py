@@ -883,13 +883,37 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate):
     data_path = op.join(testing.data_path(), dir_name)
     raw_fname = op.join(data_path, fname)
 
+    # the BIDS path for test datasets to get written to
+    bids_path = _bids_path.copy().update(root=bids_root, datatype='eeg')
+
+    # read in the source raw file
     raw = reader(raw_fname)
 
+    # if there were events in the original raw dataset that
+    # were not encoded in the stim channel,
+    # they should be written even if write_raw_bids does not
+    # pass in events
+    events, events_id = mne.events_from_annotations(raw, event_id=None)
+    if events_id != {} and 'stim' not in raw:
+        temp_bids_root = _TempDir()
+        test_events_bids_path = bids_path.copy().update(root=temp_bids_root)
+        bids_output_path = write_raw_bids(raw, test_events_bids_path,
+                                          overwrite=True)
+
+        # check events.tsv is written
+        events_tsv_fname = bids_output_path.copy().update(suffix='events',
+                                                          extension='.tsv')
+        assert op.exists(events_tsv_fname)
+
+        raw2 = read_raw_bids(bids_path=bids_output_path)
+        events2, _ = mne.events_from_annotations(raw2)
+        assert_array_equal(events2[:, 0], events[:, 0])
+
+    # alter some channels manually
     raw.rename_channels({raw.info['ch_names'][0]: 'EOGtest'})
     raw.info['chs'][0]['coil_type'] = FIFF.FIFFV_COIL_EEG_BIPOLAR
     raw.rename_channels({raw.info['ch_names'][1]: 'EMG'})
     raw.set_channel_types({'EMG': 'emg'})
-    bids_path = _bids_path.copy().update(root=bids_root, datatype='eeg')
 
     # test dataset description overwrites with the authors set
     make_dataset_description(bids_root, name="test",
