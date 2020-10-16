@@ -234,6 +234,7 @@ def _read_events(events_data, event_id, raw, verbose=None):
                                                            verbose=verbose)
     if event_id is not None:
         events = np.concatenate((events, events_annot), axis=0)
+        events.sort(axis=0)
         event_id.update(event_id_annot)
     else:
         events = events_annot
