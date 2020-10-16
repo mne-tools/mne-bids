@@ -1088,7 +1088,7 @@ def write_raw_bids(raw, bids_path, events_data=None,
                        f'for data type "{bids_path.datatype}". Skipping ...')
 
     events, event_id = _read_events(events_data, event_id, raw,
-                                    verbose=verbose)
+                                    verbose=False)
     if events is not None and len(events) > 0 and not emptyroom:
         _events_tsv(events, raw, events_path.fpath, event_id,
                     overwrite, verbose)
