@@ -7,12 +7,6 @@
 What's new?
 ===========
 
-Here we list a changelog of MNE-BIDS.
-
-.. contents:: Contents
-   :local:
-   :depth: 3
-
 .. currentmodule:: mne_bids
 
 .. _changes_0_5:
@@ -20,8 +14,16 @@ Here we list a changelog of MNE-BIDS.
 Version 0.5 (2020-10-xx)
 ------------------------
 
-Changelog
-~~~~~~~~~
+This is a **big** release with lots of changes, many of them breaking existing
+code. But do not fear: migration is easy, and you will **love** what we have
+been cooking for you!
+
+Notable changes
+~~~~~~~~~~~~~~~
+xxx
+
+Enhancements
+~~~~~~~~~~~~
 
 - Introduce :class:`mne_bids.BIDSPath`, the new universal MNE-BIDS working horse for file operations, by `Adam Li`_, `Alex Rockhill`_, and `Richard Höchenberger`_ (`#496 <https://github.com/mne-tools/mne-bids/pull/496>`_, `#507 <https://github.com/mne-tools/mne-bids/pull/507>`_, `#511 <https://github.com/mne-tools/mne-bids/pull/511>`_, `#514 <https://github.com/mne-tools/mne-bids/pull/514>`_, `#542 <https://github.com/mne-tools/mne-bids/pull/542>`_)
 - The new function :func:`mne_bids.make_report` and its corresponding CLI function, ``make_report``, produce human-readable summary of the BIDS dataset, by `Adam Li`_ (`#457 <https://github.com/mne-tools/mne-bids/pull/457>`_)
@@ -42,7 +44,6 @@ Changelog
 - :func:`mne_bids.read_raw_bids` correctly maps all specified ``handedness`` and ``sex`` options to MNE-Python, instead of only an incomplete subset, by `Richard Höchenberger`_ (`#550 <https://github.com/mne-tools/mne-bids/pull/550>`_)
 - :func:`mne_bids.write_raw_bids` only writes a ``README`` if it does not already exist, by `Adam Li`_ (`#489 <https://github.com/mne-tools/mne-bids/pull/489>`_)
 - Allow :func:`mne_bids.write_raw_bids` to write EEG/iEEG files from Persyst using ``mne.io.read_raw_persyst`` function, by `Adam Li`_ (`#546 <https://github.com/mne-tools/mne-bids/pull/546>`_)
-- All functions :func:`mne_bids.write_anat`, :func:`mne_bids.make_report`, :func:`mne_bids.get_entity_vals` and :func:`mne_bids.get_datatypes` use now kwarg ``root`` instead of ``bids_root``, `Adam Li`_ (`#556 <https://github.com/mne-tools/mne-bids/pull/556>`_)
 - :func:`mne_bids.print_dir_tree` now works if a ``pathlib.Path`` object is passed, by `Adam Li`_ (`#555 <https://github.com/mne-tools/mne-bids/pull/555>`_)
 - Allow writing of Elekta/Neuromag/MEGIN fine-calibration and crosstalk data via the new functions :func:`mne_bids.write_meg_calibration` and :func:`mne_bids.write_meg_crosstalk`, and retrieval of the file locations via :attr:`BIDSPath.meg_calibration_fpath` and :attr:`BIDSPath.meg_crosstalk_fpath`, by `Richard Höchenberger`_ (`#562 <https://github.com/mne-tools/mne-bids/pull/562>`_)
 - Allow :func:`mne_bids.write_raw_bids` to write EEG/iEEG files from Nihon Kohden using ``mne.io.read_raw_nihon`` function, by `Adam Li`_ (`#567 <https://github.com/mne-tools/mne-bids/pull/567>`_)
@@ -84,6 +85,7 @@ The following functions have been removed:
 
 Further API changes:
 
+- The functions :func:`mne_bids.write_anat`, :func:`mne_bids.make_report`, :func:`mne_bids.get_entity_vals` and :func:`mne_bids.get_datatypes` use now expect a ``root`` keyword argument instead of ``bids_root``, `Adam Li`_ (`#556 <https://github.com/mne-tools/mne-bids/pull/556>`_)
 - Added namespace :code:`mne_bids.path` which hosts path-like functionality for MNE-BIDS, by `Adam Li`_ (`#483 <https://github.com/mne-tools/mne-bids/pull/483>`_)
 - The ``datasets.py`` module was removed from ``MNE-BIDS`` and its utility was replaced by ``mne.datasets``, by `Stefan Appelhoff`_ (`#471 <https://github.com/mne-tools/mne-bids/pull/471>`_)
 - :func:`mne_bids.make_dataset_description` now accepts the argument ``overwrite``, which will reset all fields if ``True``. If ``False``, user-provided fields will no longer be overwritten by :func:`mne_bids.write_raw_bids` when its ``overwrite`` argument is ``True``, unless new values are supplied, by `Alex Rockhill`_ (`#478 <https://github.com/mne-tools/mne-bids/pull/478>`_)
