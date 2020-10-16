@@ -14,7 +14,7 @@ from datetime import datetime, date, timedelta, timezone
 from os import path as op
 
 import numpy as np
-from mne import (read_events, events_from_annotations)
+from mne import read_events, events_from_annotations
 from mne.channels import make_standard_montage
 from mne.io.constants import FIFF
 from mne.io.kit.kit import get_kit_info
@@ -215,7 +215,7 @@ def _read_events(events_data, event_id, raw, verbose=None):
         before the event or immediately after.
 
     """
-    # get events from the events_data passed in
+    # get events from events_data
     if isinstance(events_data, str):
         events = read_events(events_data, verbose=verbose).astype(int)
     elif isinstance(events_data, np.ndarray):
