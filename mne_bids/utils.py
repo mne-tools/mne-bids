@@ -237,7 +237,9 @@ def _read_events(events_data, event_id, raw, verbose=None):
         event_id = event_id_annot
     else:
         events = np.concatenate((events, events_annot), axis=0)
-        events.sort(axis=0)
+        # Sort rows by onset sample.
+        # See https://stackoverflow.com/a/2828121/1944216
+        events = events[events[:, 0].argsort()]
         event_id.update(event_id_annot)
 
     if events.size == 0:
