@@ -899,6 +899,9 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate):
     bids_output_path = write_raw_bids(raw, test_events_bids_path,
                                       overwrite=True)
 
+    with pytest.raises(RuntimeError, match='Events data passed'):
+        write_raw_bids(raw, test_events_bids_path, events_data=events)
+
     # check events.tsv is written
     events_tsv_fname = bids_output_path.copy().update(suffix='events',
                                                       extension='.tsv')

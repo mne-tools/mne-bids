@@ -963,6 +963,10 @@ def write_raw_bids(raw, bids_path, events_data=None,
                          'Please use `bids_path.update(root="<root>")` '
                          'to set the root of the BIDS folder to read.')
 
+    if events_data is not None and event_id is None:
+        raise RuntimeError('Events data passed in also requires '
+                           'event id to be passed in.')
+
     raw = raw.copy()
 
     raw_fname = raw.filenames[0]
