@@ -237,6 +237,7 @@ def _read_events(events_data, event_id, raw, verbose=None):
         event_id = event_id_annot
     else:
         events = np.concatenate((events, events_annot), axis=0)
+        events.sort(axis=0)
         event_id.update(event_id_annot)
 
     if events.size == 0:
