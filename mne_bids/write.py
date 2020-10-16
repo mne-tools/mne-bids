@@ -861,8 +861,8 @@ def write_raw_bids(raw, bids_path, events_data=None,
         The events file. If a string or a Path object, specifies the path of
         the events file. If an array, the MNE events array
         (shape: ``(n_events, 3)``).
-        If ``None``, events will be inferred from the stim channel using
-        `mne.find_events`.
+        If ``None``, events will be inferred from the annotations using
+        `mne.events_from_annotations`.
     event_id : dict | None
         The event ID dictionary used to create a `trial_type` column in
         ``*_events.tsv``.
