@@ -1525,11 +1525,13 @@ def test_write_does_not_alter_events_inplace():
     raw = _read_raw_fif(raw_fname)
     events = mne.read_events(events_fname)
     events_orig = events.copy()
+    event_id = {'Auditory/Left': 1, 'Auditory/Right': 2, 'Visual/Left': 3,
+                'Visual/Right': 4, 'Smiley': 5, 'Button': 32}
 
     bids_root = _TempDir()
     bids_path = _bids_path.copy().update(root=bids_root)
     write_raw_bids(raw=raw, bids_path=bids_path,
-                   events_data=events, overwrite=True)
+                   events_data=events, event_id=event_id, overwrite=True)
 
     assert np.array_equal(events, events_orig)
 
