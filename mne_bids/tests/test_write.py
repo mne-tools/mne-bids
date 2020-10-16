@@ -894,20 +894,22 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate):
     # they should be written even if write_raw_bids does not
     # pass in events
     events, events_id = mne.events_from_annotations(raw, event_id=None)
-    if events_id != {} and 'stim' not in raw:
-        temp_bids_root = _TempDir()
-        test_events_bids_path = bids_path.copy().update(root=temp_bids_root)
-        bids_output_path = write_raw_bids(raw, test_events_bids_path,
-                                          overwrite=True)
+    temp_bids_root = _TempDir()
+    test_events_bids_path = bids_path.copy().update(root=temp_bids_root)
+    bids_output_path = write_raw_bids(raw, test_events_bids_path,
+                                      overwrite=True)
 
-        # check events.tsv is written
-        events_tsv_fname = bids_output_path.copy().update(suffix='events',
-                                                          extension='.tsv')
+    # check events.tsv is written
+    events_tsv_fname = bids_output_path.copy().update(suffix='events',
+                                                      extension='.tsv')
+    if events.size == 0:
+        assert not op.exists(events_tsv_fname)
+    else:
         assert op.exists(events_tsv_fname)
 
-        raw2 = read_raw_bids(bids_path=bids_output_path)
-        events2, _ = mne.events_from_annotations(raw2)
-        assert_array_equal(events2[:, 0], events[:, 0])
+    raw2 = read_raw_bids(bids_path=bids_output_path)
+    events2, _ = mne.events_from_annotations(raw2)
+    assert_array_equal(events2[:, 0], events[:, 0])
 
     # alter some channels manually
     raw.rename_channels({raw.info['ch_names'][0]: 'EOGtest'})
