@@ -232,12 +232,12 @@ def _read_events(events_data, event_id, raw, verbose=None):
     # get events from annotations
     events_annot, event_id_annot = events_from_annotations(raw, event_id,
                                                            verbose=verbose)
-    if event_id is not None:
-        events = np.concatenate((events, events_annot), axis=0)
-        event_id.update(event_id_annot)
-    else:
+    if event_id is None:
         events = events_annot
         event_id = event_id_annot
+    else:
+        events = np.concatenate((events, events_annot), axis=0)
+        event_id.update(event_id_annot)
 
     if events.size == 0:
         warn('No events found or provided. Please make sure to'
