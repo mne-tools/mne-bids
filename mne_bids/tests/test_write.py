@@ -883,26 +883,54 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate):
     data_path = op.join(testing.data_path(), dir_name)
     raw_fname = op.join(data_path, fname)
 
-    raw = reader(raw_fname)
+    # the BIDS path for test datasets to get written to
+    bids_path = _bids_path.copy().update(root=bids_root, datatype='eeg')
 
+    raw = reader(raw_fname)
+    events, events_id = mne.events_from_annotations(raw, event_id=None)
+    bids_output_path = write_raw_bids(raw, bids_path, overwrite=True)
+    event_id = {'Auditory/Left': 1, 'Auditory/Right': 2, 'Visual/Left': 3,
+                'Visual/Right': 4, 'Smiley': 5, 'Button': 32}
+
+    with pytest.raises(RuntimeError,
+                       match='You passed events_data, but no event_id '):
+        write_raw_bids(raw, bids_path, events_data=events)
+
+    with pytest.raises(RuntimeError,
+                       match='You passed event_id, but no events_data'):
+        write_raw_bids(raw, bids_path, event_id=event_id)
+
+    # check events.tsv is written
+    events_tsv_fname = bids_output_path.copy().update(suffix='events',
+                                                      extension='.tsv')
+    if events.size == 0:
+        assert not events_tsv_fname.fpath.exists()
+    else:
+        assert events_tsv_fname.fpath.exists()
+
+    raw2 = read_raw_bids(bids_path=bids_output_path)
+    events2, _ = mne.events_from_annotations(raw2)
+    assert_array_equal(events2[:, 0], events[:, 0])
+    del raw2, events2
+
+    # alter some channels manually
     raw.rename_channels({raw.info['ch_names'][0]: 'EOGtest'})
     raw.info['chs'][0]['coil_type'] = FIFF.FIFFV_COIL_EEG_BIPOLAR
     raw.rename_channels({raw.info['ch_names'][1]: 'EMG'})
     raw.set_channel_types({'EMG': 'emg'})
-    bids_path = _bids_path.copy().update(root=bids_root, datatype='eeg')
 
-    # test dataset description overwrites with the authors set
+    # Test we can overwrite dataset_description.json
+    write_raw_bids(raw, bids_path, overwrite=True)
     make_dataset_description(bids_root, name="test",
-                             authors=["test1", "test2"])
-    write_raw_bids(raw, bids_path, overwrite=False)
+                             authors=["test1", "test2"], overwrite=True)
     dataset_description_fpath = op.join(bids_root, "dataset_description.json")
     with open(dataset_description_fpath, 'r') as f:
         dataset_description_json = json.load(f)
         assert dataset_description_json["Authors"] == ["test1", "test2"]
 
-    # write from fresh start w/ overwrite
+    # After writing the entire dataset again, dataset_description.json should
+    # contain the default values.
     write_raw_bids(raw, bids_path, overwrite=True)
-    # after overwrite, the dataset description if defaulted to MNE-BIDS
     with open(dataset_description_fpath, 'r') as f:
         dataset_description_json = json.load(f)
         assert dataset_description_json["Authors"] == \
@@ -1496,11 +1524,13 @@ def test_write_does_not_alter_events_inplace():
     raw = _read_raw_fif(raw_fname)
     events = mne.read_events(events_fname)
     events_orig = events.copy()
+    event_id = {'Auditory/Left': 1, 'Auditory/Right': 2, 'Visual/Left': 3,
+                'Visual/Right': 4, 'Smiley': 5, 'Button': 32}
 
     bids_root = _TempDir()
     bids_path = _bids_path.copy().update(root=bids_root)
     write_raw_bids(raw=raw, bids_path=bids_path,
-                   events_data=events, overwrite=True)
+                   events_data=events, event_id=event_id, overwrite=True)
 
     assert np.array_equal(events, events_orig)
 
@@ -1695,10 +1725,6 @@ def test_mark_bad_channels_files():
         mark_bad_channels(raw.ch_names[0], bids_path=bids_path)
 
 
-@pytest.mark.skipif('BIDS_VALIDATOR_VERSION' in os.environ and
-                    LooseVersion(os.environ['BIDS_VALIDATOR_VERSION']) <
-                    LooseVersion('1.5.5'),
-                    reason=('requires bids-validator 1.5.5 or newer'))
 def test_write_meg_calibration(_bids_validate):
     """Test writing of the Elekta/Neuromag fine-calibration file."""
     bids_root = _TempDir()
@@ -1748,10 +1774,6 @@ def test_write_meg_calibration(_bids_validate):
         write_meg_calibration(fine_cal_fname, bids_path)
 
 
-@pytest.mark.skipif('BIDS_VALIDATOR_VERSION' in os.environ and
-                    LooseVersion(os.environ['BIDS_VALIDATOR_VERSION']) <
-                    LooseVersion('1.5.5'),
-                    reason=('requires bids-validator 1.5.5 or newer'))
 def test_write_meg_crosstalk(_bids_validate):
     """Test writing of the Elekta/Neuromag fine-calibration file."""
     bids_root = _TempDir()

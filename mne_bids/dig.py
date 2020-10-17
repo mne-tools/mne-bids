@@ -208,8 +208,8 @@ def _electrodes_tsv(raw, fname, datatype, overwrite=False, verbose=True):
     _write_tsv(fname, data, overwrite=overwrite, verbose=verbose)
 
 
-def _coordsystem_json(raw, unit, orient, coordsystem_name, fname,
-                      datatype, overwrite=False, verbose=True):
+def _coordsystem_json(*, raw, unit, hpi_coord_system, sensor_coord_system,
+                      fname, datatype, overwrite=False, verbose=True):
     """Create a coordsystem.json file and save it.
 
     Parameters
@@ -219,9 +219,9 @@ def _coordsystem_json(raw, unit, orient, coordsystem_name, fname,
     unit : str
         Units to be used in the coordsystem specification,
         as in BIDS_COORDINATE_UNITS.
-    orient : str
-        Used to define the coordinate system for the head coils.
-    coordsystem_name : str
+    hpi_coord_system : str
+        Name of the coordinate system for the head coils.
+    sensor_coord_system : str
         Name of the coordinate system for the sensor positions.
     fname : str
         Filename to save the coordsystem.json to.
@@ -251,8 +251,9 @@ def _coordsystem_json(raw, unit, orient, coordsystem_name, fname,
                          .format(coord_frame))
 
     # get the coordinate frame description
-    coordsystem_desc = COORD_FRAME_DESCRIPTIONS.get(coordsystem_name, "n/a")
-    if coordsystem_name == 'Other' and verbose:
+    sensor_coord_system_descr = (COORD_FRAME_DESCRIPTIONS
+                                 .get(sensor_coord_system, "n/a"))
+    if sensor_coord_system == 'Other' and verbose:
         print('Using the `Other` keyword for the CoordinateSystem field. '
               'Please specify the CoordinateSystemDescription field manually.')
 
@@ -264,26 +265,27 @@ def _coordsystem_json(raw, unit, orient, coordsystem_name, fname,
                 coords['coil%d' % ident] = hpi[ident]['r'].tolist()
 
         fid_json = {
-            'MEGCoordinateSystem': coordsystem_name,
+            'MEGCoordinateSystem': sensor_coord_system,
             'MEGCoordinateUnits': unit,  # XXX validate this
-            'MEGCoordinateSystemDescription': coordsystem_desc,
+            'MEGCoordinateSystemDescription': sensor_coord_system_descr,
             'HeadCoilCoordinates': coords,
-            'HeadCoilCoordinateSystem': orient,
+            'HeadCoilCoordinateSystem': hpi_coord_system,
             'HeadCoilCoordinateUnits': unit  # XXX validate this
         }
     elif datatype == 'eeg':
         fid_json = {
-            'EEGCoordinateSystem': coordsystem_name,
+            'EEGCoordinateSystem': sensor_coord_system,
             'EEGCoordinateUnits': unit,
-            'EEGCoordinateSystemDescription': coordsystem_desc,
+            'EEGCoordinateSystemDescription': sensor_coord_system_descr,
             'AnatomicalLandmarkCoordinates': coords,
-            'AnatomicalLandmarkCoordinateSystem': coordsystem_name,
+            'AnatomicalLandmarkCoordinateSystem': sensor_coord_system,
             'AnatomicalLandmarkCoordinateUnits': unit,
         }
     elif datatype == "ieeg":
         fid_json = {
-            'iEEGCoordinateSystem': coordsystem_name,  # (Other, Pixels, ACPC)
-            'iEEGCoordinateSystemDescription': coordsystem_desc,
+            # (Other, Pixels, ACPC)
+            'iEEGCoordinateSystem': sensor_coord_system,
+            'iEEGCoordinateSystemDescription': sensor_coord_system_descr,
             'iEEGCoordinateUnits': unit,  # m (MNE), mm, cm , or pixels
         }
 
@@ -360,9 +362,10 @@ def _write_dig_bids(electrodes_path, coordsystem_path, root,
             # Now write the data to the elec coords and the coordsystem
             _electrodes_tsv(raw, electrodes_path,
                             datatype, overwrite, verbose)
-            _coordsystem_json(raw, unit, 'n/a',
-                              coord_frame, coordsystem_path, datatype,
-                              overwrite, verbose)
+            _coordsystem_json(raw=raw, unit=unit, hpi_coord_system='n/a',
+                              sensor_coord_system=coord_frame,
+                              fname=coordsystem_path, datatype=datatype,
+                              overwrite=overwrite, verbose=verbose)
         else:
             # default coordinate frame to mri if not available
             warn("Coordinate frame of iEEG coords missing/unknown "
@@ -381,9 +384,10 @@ def _write_dig_bids(electrodes_path, coordsystem_path, root,
             # Now write the data
             _electrodes_tsv(raw, electrodes_path, datatype,
                             overwrite, verbose)
-            _coordsystem_json(raw, 'm', 'RAS', 'CapTrak',
-                              coordsystem_path, datatype,
-                              overwrite, verbose)
+            _coordsystem_json(raw=raw, unit='m', hpi_coord_system='n/a',
+                              sensor_coord_system='CapTrak',
+                              fname=coordsystem_path, datatype=datatype,
+                              overwrite=overwrite, verbose=verbose)
         else:
             warn("Skipping EEG electrodes.tsv... "
                  "Setting montage not possible if anatomical "
