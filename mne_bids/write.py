@@ -814,8 +814,8 @@ def write_raw_bids(raw, bids_path, events_data=None,
                    file format is BIDS-supported for that datatype. Otherwise,
                    this function will convert to a BIDS-supported file format
                    while warning the user. For EEG and iEEG data, conversion
-                   will be to BrainVision format, for MEG conversion will be
-                   to FIF.
+                   will be to BrainVision format; for MEG, conversion will be
+                   to FIFF.
 
                  * ``mne-bids`` will infer the manufacturer information
                    from the file extension. If your file format is non-standard
@@ -857,8 +857,8 @@ def write_raw_bids(raw, bids_path, events_data=None,
         Note that the data type is automatically inferred from the raw
         object, as well as the extension. Data with MEG and other
         electrophysiology data in the same file will be stored as ``'meg'``.
-    events_data : str | pathlib.Path | array | None
-        The events file. If a string or a Path object, specifies the path of
+    events_data : path-like | array | None
+        If a string or a Path object, specifies the path of
         the events file. If an array, the MNE events array
         (shape: ``(n_events, 3)``).
         If ``None``, events will be inferred from the annotations using
@@ -956,6 +956,10 @@ def write_raw_bids(raw, bids_path, events_data=None,
     if not isinstance(bids_path, BIDSPath):
         raise RuntimeError('"bids_path" must be a BIDSPath object. Please '
                            'instantiate using mne_bids.BIDSPath().')
+
+    _validate_type(events_data, types=('path-like', np.ndarray, None),
+                   item_name='events_data',
+                   type_name='path-like, NumPy array, or None')
 
     # Check if the root is available
     if bids_path.root is None:
