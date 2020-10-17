@@ -886,33 +886,25 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate):
     # the BIDS path for test datasets to get written to
     bids_path = _bids_path.copy().update(root=bids_root, datatype='eeg')
 
-    # read in the source raw file
     raw = reader(raw_fname)
-
-    # if there were events in the original raw dataset that
-    # were not encoded in the stim channel,
-    # they should be written even if write_raw_bids does not
-    # pass in events
     events, events_id = mne.events_from_annotations(raw, event_id=None)
-    temp_bids_root = _TempDir()
-    test_events_bids_path = bids_path.copy().update(root=temp_bids_root)
-    bids_output_path = write_raw_bids(raw, test_events_bids_path,
-                                      overwrite=True)
+    bids_output_path = write_raw_bids(raw, bids_path, overwrite=True)
 
     with pytest.raises(RuntimeError, match='Events data passed'):
-        write_raw_bids(raw, test_events_bids_path, events_data=events)
+        write_raw_bids(raw, bids_path, events_data=events)
 
     # check events.tsv is written
     events_tsv_fname = bids_output_path.copy().update(suffix='events',
                                                       extension='.tsv')
     if events.size == 0:
-        assert not op.exists(events_tsv_fname)
+        assert not events_tsv_fname.fpath.exists()
     else:
-        assert op.exists(events_tsv_fname)
+        assert events_tsv_fname.fpath.exists()
 
     raw2 = read_raw_bids(bids_path=bids_output_path)
     events2, _ = mne.events_from_annotations(raw2)
     assert_array_equal(events2[:, 0], events[:, 0])
+    del raw2, events2
 
     # alter some channels manually
     raw.rename_channels({raw.info['ch_names'][0]: 'EOGtest'})
@@ -920,18 +912,18 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate):
     raw.rename_channels({raw.info['ch_names'][1]: 'EMG'})
     raw.set_channel_types({'EMG': 'emg'})
 
-    # test dataset description overwrites with the authors set
+    # Test we can overwrite dataset_description.json
+    write_raw_bids(raw, bids_path, overwrite=True)
     make_dataset_description(bids_root, name="test",
-                             authors=["test1", "test2"])
-    write_raw_bids(raw, bids_path, overwrite=False)
+                             authors=["test1", "test2"], overwrite=True)
     dataset_description_fpath = op.join(bids_root, "dataset_description.json")
     with open(dataset_description_fpath, 'r') as f:
         dataset_description_json = json.load(f)
         assert dataset_description_json["Authors"] == ["test1", "test2"]
 
-    # write from fresh start w/ overwrite
+    # After writing the entire dataset again, dataset_description.json should
+    # contain the default values.
     write_raw_bids(raw, bids_path, overwrite=True)
-    # after overwrite, the dataset description if defaulted to MNE-BIDS
     with open(dataset_description_fpath, 'r') as f:
         dataset_description_json = json.load(f)
         assert dataset_description_json["Authors"] == \
