@@ -162,7 +162,7 @@ bids_root = os.path.join(mne_data_dir, 'eegmmidb_bids_eeg_example')
 sh.rmtree(bids_root, ignore_errors=True)
 
 ###############################################################################
-# The data contains annotations; therefore, which will be converted to events
+# The data contains annotations; which will be converted to events
 # automatically by MNE-BIDS when writing the BIDS data:
 
 print(raw.annotations)
