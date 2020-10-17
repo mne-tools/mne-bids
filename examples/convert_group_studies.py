@@ -53,15 +53,6 @@ mne_data_dir = mne.get_config('MNE_DATASETS_EEGBCI_PATH')
 data_dir = op.join(mne_data_dir, 'MNE-eegbci-data')
 
 ###############################################################################
-# Define event_ids, this is knowledge we get from the online documentation of
-# the data as well.
-
-event_id = {
-    'imagine_motion_fist/left': 1,
-    'imagine_motion_fist/right': 2,
-}
-
-###############################################################################
 # Let us loop over the subjects and create BIDS-compatible folder
 
 # Make a path where we can save the data to
@@ -93,7 +84,11 @@ for raw, bids_path in zip(raw_list, bids_list):
     # single subject and the relation between subjects. Be sure to
     # change or delete this number before putting code online, you
     # wouldn't want to inadvertently de-anonymize your data.
-    write_raw_bids(raw, bids_path, event_id=event_id,
+    #
+    # Note that we do not need to pass any events, as teh dataset is already
+    # equipped witn annotations, which wll be converted to BIDS events
+    # automatically.
+    write_raw_bids(raw, bids_path,
                    anonymize=dict(daysback=daysback_min + 2117),
                    overwrite=True)
 
