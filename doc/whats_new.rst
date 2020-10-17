@@ -68,6 +68,7 @@ Bug
 - Fix :func:`mne_bids.write_raw_bids` failed BIDS validator for ``raw.info['dig'] = []`` by `Alex Rockhill`_ (`#505 <https://github.com/mne-tools/mne-bids/pull/505>`_)
 - Fix bug in :func:`mne_bids.BIDSPath.fpath` where no data file was returned when the suffix was not assigned, by `Alex Rockhill`_ (`#542 <https://github.com/mne-tools/mne-bids/pull/542>`_)
 - Ensure :func:`mne_bids.print_dir_tree` prints files and directories in alphabetical order, by `Richard Höchenberger`_ (`#563 <https://github.com/mne-tools/mne-bids/pull/563>`_)
+- :func:`mne_bids.write_raw_bids` now writes the correct coordinate system names to the JSON sidecars, by `Richard Höchenberger`_ (`#585 <https://github.com/mne-tools/mne-bids/pull/585>`_)
 
 API
 ~~~

@@ -10,14 +10,30 @@ DOI = """https://doi.org/10.21105/joss.01896"""
 ALLOWED_DATATYPES = ['meg', 'eeg', 'ieeg', 'anat', 'beh']
 
 # Orientation of the coordinate system dependent on manufacturer
-ORIENTATION = {'.sqd': 'ALS', '.con': 'ALS', '.fif': 'RAS', '.pdf': 'ALS',
-               '.ds': 'ALS'}
+ORIENTATION = {
+    '.con': 'KitYokogawa',
+    '.ds': 'CTF',
+    '.fif': 'ElektaNeuromag',
+    '.pdf': '4DBti',
+    '.sqd': 'KitYokogawa',
+}
 
-UNITS = {'.sqd': 'm', '.con': 'm', '.fif': 'm', '.pdf': 'm', '.ds': 'cm'}
+UNITS = {
+    '.con': 'm',
+    '.ds': 'cm',
+    '.fif': 'm',
+    '.pdf': 'm',
+    '.sqd': 'm'
+}
 
-meg_manufacturers = {'.sqd': 'KIT/Yokogawa', '.con': 'KIT/Yokogawa',
-                     '.fif': 'Elekta', '.pdf': '4D Magnes', '.ds': 'CTF',
-                     '.meg4': 'CTF'}
+meg_manufacturers = {
+    '.con': 'KIT/Yokogawa',
+    '.ds': 'CTF',
+    '.fif': 'Elekta',
+    '.meg4': 'CTF',
+    '.pdf': '4D Magnes',
+    '.sqd': 'KIT/Yokogawa'
+}
 
 eeg_manufacturers = {'.vhdr': 'BrainProducts', '.eeg': 'BrainProducts',
                      '.edf': 'n/a', '.bdf': 'Biosemi', '.set': 'n/a',
