@@ -971,8 +971,12 @@ def write_raw_bids(raw, bids_path, events_data=None,
                          'to set the root of the BIDS folder to read.')
 
     if events_data is not None and event_id is None:
-        raise RuntimeError('Events data passed in also requires '
-                           'event id to be passed in.')
+        raise RuntimeError('You passed events_data, but no event_id '
+                           'dictionary. You need to pass both, or neither.')
+
+    if event_id is not None and events_data is None:
+        raise RuntimeError('You passed event_id, but no events_data NumPy '
+                           'array. You need to pass both, or neither.')
 
     raw = raw.copy()
 

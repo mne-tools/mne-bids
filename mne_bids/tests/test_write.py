@@ -889,9 +889,16 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate):
     raw = reader(raw_fname)
     events, events_id = mne.events_from_annotations(raw, event_id=None)
     bids_output_path = write_raw_bids(raw, bids_path, overwrite=True)
+    event_id = {'Auditory/Left': 1, 'Auditory/Right': 2, 'Visual/Left': 3,
+                'Visual/Right': 4, 'Smiley': 5, 'Button': 32}
 
-    with pytest.raises(RuntimeError, match='Events data passed'):
+    with pytest.raises(RuntimeError,
+                       match='You passed events_data, but no event_id '):
         write_raw_bids(raw, bids_path, events_data=events)
+
+    with pytest.raises(RuntimeError,
+                       match='You passed event_id, but no events_data'):
+        write_raw_bids(raw, bids_path, event_id=event_id)
 
     # check events.tsv is written
     events_tsv_fname = bids_output_path.copy().update(suffix='events',
