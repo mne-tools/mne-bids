@@ -814,8 +814,8 @@ def write_raw_bids(raw, bids_path, events_data=None,
                    file format is BIDS-supported for that datatype. Otherwise,
                    this function will convert to a BIDS-supported file format
                    while warning the user. For EEG and iEEG data, conversion
-                   will be to BrainVision format, for MEG conversion will be
-                   to FIF.
+                   will be to BrainVision format; for MEG, conversion will be
+                   to FIFF.
 
                  * ``mne-bids`` will infer the manufacturer information
                    from the file extension. If your file format is non-standard
@@ -857,12 +857,11 @@ def write_raw_bids(raw, bids_path, events_data=None,
         Note that the data type is automatically inferred from the raw
         object, as well as the extension. Data with MEG and other
         electrophysiology data in the same file will be stored as ``'meg'``.
-    events_data : str | pathlib.Path | array | None
-        The events file. If a string or a Path object, specifies the path of
-        the events file. If an array, the MNE events array
-        (shape: ``(n_events, 3)``).
-        If ``None``, events will be inferred from the stim channel using
-        `mne.find_events`.
+    events_data : path-like | array | None
+        If a path, specifies the location of an MNE events file.
+        If an array, the MNE events array (shape: ``(n_events, 3)``).
+        If ``None``, events will be inferred from the the raw object's
+        `mne.Annotations` using `mne.events_from_annotations`.
     event_id : dict | None
         The event ID dictionary used to create a `trial_type` column in
         ``*_events.tsv``.
@@ -904,18 +903,37 @@ def write_raw_bids(raw, bids_path, events_data=None,
     Returns
     -------
     bids_path : BIDSPath
-        The modified path to the file written, including the root of the
-        BIDS-compatible folder in ``bids_path.root``.
+        The path of the created data file.
 
     Notes
     -----
-    For the ``*_participants.tsv`` file, ``raw.info['subject_info']`` should be
-    updated and ``raw.info['meas_date']`` should not be ``None`` to allow
-    computation of each participant's age correctly.
+    You should ensure that ``raw.info['subject_info']`` and
+    ``raw.info['meas_date']`` are set to proper (not-``None``) values to allow
+    for the correct computation of each participant's age when creating
+    ``*_participants.tsv``.
+
+    This function will convert existing `mne.Annotations` from
+    ``raw.annotations`` to events. Additionally, any events supplied via
+    ``events_data`` will be written too. To avoid writing of annotations,
+    remove them from the raw file via ``raw.set_annotations(None)`` before
+    invoking ``write_raw_bids``.
+
+    To write events encoded in a ``STIM`` channel, you first need to create the
+    events array manually and pass it to this function:
+
+    ..
+        events = mne.find_events(raw, min_duration=0.002)
+        write_raw_bids(..., events_data=events)
+
+    See the documentation of `mne.find_events` for more information on event
+    extraction from ``STIM`` channels.
 
     See Also
     --------
     mne.io.Raw.anonymize
+    mne.find_events
+    mne.Annotations
+    mne.events_from_annotations
 
     """
     if not check_version('mne', '0.17'):
@@ -942,11 +960,23 @@ def write_raw_bids(raw, bids_path, events_data=None,
         raise RuntimeError('"bids_path" must be a BIDSPath object. Please '
                            'instantiate using mne_bids.BIDSPath().')
 
+    _validate_type(events_data, types=('path-like', np.ndarray, None),
+                   item_name='events_data',
+                   type_name='path-like, NumPy array, or None')
+
     # Check if the root is available
     if bids_path.root is None:
         raise ValueError('The root of the "bids_path" must be set. '
                          'Please use `bids_path.update(root="<root>")` '
                          'to set the root of the BIDS folder to read.')
+
+    if events_data is not None and event_id is None:
+        raise RuntimeError('You passed events_data, but no event_id '
+                           'dictionary. You need to pass both, or neither.')
+
+    if event_id is not None and events_data is None:
+        raise RuntimeError('You passed event_id, but no events_data NumPy '
+                           'array. You need to pass both, or neither.')
 
     raw = raw.copy()
 
@@ -1072,8 +1102,8 @@ def write_raw_bids(raw, bids_path, events_data=None,
         logger.warning(f'Writing of electrodes.tsv is not supported '
                        f'for data type "{bids_path.datatype}". Skipping ...')
 
-    events, event_id = _read_events(events_data, event_id, raw, ext,
-                                    verbose=verbose)
+    events, event_id = _read_events(events_data, event_id, raw,
+                                    verbose=False)
     if events is not None and len(events) > 0 and not emptyroom:
         _events_tsv(events, raw, events_path.fpath, event_id,
                     overwrite, verbose)
@@ -1491,8 +1521,7 @@ def mark_bad_channels(ch_names, descriptions=None, *, bids_path,
     # XXX (How) will this handle split files?
     if isinstance(raw, mne.io.brainvision.brainvision.RawBrainVision):
         events, event_id = _read_events(events_data=None, event_id=None,
-                                        raw=raw,
-                                        ext='.vhdr', verbose=False)
+                                        raw=raw, verbose=False)
         _write_raw_brainvision(raw, bids_path.fpath, events)
     elif isinstance(raw, mne.io.RawFIF):
         raw.save(raw.filenames[0], overwrite=True, verbose=False)
