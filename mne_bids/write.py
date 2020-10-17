@@ -1088,8 +1088,8 @@ def write_raw_bids(raw, bids_path, events_data=None,
 
     # for MEG, we only write coordinate system
     if bids_path.datatype == 'meg' and not emptyroom:
-        _coordsystem_json(raw=raw, unit=unit, orient=orient,
-                          coordsystem_name=orient,
+        _coordsystem_json(raw=raw, unit=unit, hpi_coord_system=orient,
+                          sensor_coord_system=orient,
                           fname=coordsystem_path.fpath,
                           datatype=bids_path.datatype,
                           overwrite=overwrite, verbose=verbose)
