@@ -382,9 +382,7 @@ def _write_dig_bids(electrodes_path, coordsystem_path, root,
             # Now write the data
             _electrodes_tsv(raw, electrodes_path, datatype,
                             overwrite, verbose)
-            # XXX Shoud be refactored such that we don't have to pass
-            # XXX orient for EEG data.
-            _coordsystem_json(raw=raw, unit='m', orient=None,
+            _coordsystem_json(raw=raw, unit='m', orient='n/a',
                               coordsystem_name='CapTrak',
                               fname=coordsystem_path, datatype=datatype,
                               overwrite=overwrite, verbose=verbose)
