@@ -925,8 +925,8 @@
 <span class="sd">                   file format is BIDS-supported for that datatype. Otherwise,</span>
 <span class="sd">                   this function will convert to a BIDS-supported file format</span>
 <span class="sd">                   while warning the user. For EEG and iEEG data, conversion</span>
-<span class="sd">                   will be to BrainVision format, for MEG conversion will be</span>
-<span class="sd">                   to FIF.</span>
+<span class="sd">                   will be to BrainVision format; for MEG, conversion will be</span>
+<span class="sd">                   to FIFF.</span>
 
 <span class="sd">                 * ``mne-bids`` will infer the manufacturer information</span>
 <span class="sd">                   from the file extension. If your file format is non-standard</span>
@@ -968,12 +968,11 @@
 <span class="sd">        Note that the data type is automatically inferred from the raw</span>
 <span class="sd">        object, as well as the extension. Data with MEG and other</span>
 <span class="sd">        electrophysiology data in the same file will be stored as ``&#39;meg&#39;``.</span>
-<span class="sd">    events_data : str | pathlib.Path | array | None</span>
-<span class="sd">        The events file. If a string or a Path object, specifies the path of</span>
-<span class="sd">        the events file. If an array, the MNE events array</span>
-<span class="sd">        (shape: ``(n_events, 3)``).</span>
-<span class="sd">        If ``None``, events will be inferred from the stim channel using</span>
-<span class="sd">        `mne.find_events`.</span>
+<span class="sd">    events_data : path-like | array | None</span>
+<span class="sd">        If a path, specifies the location of an MNE events file.</span>
+<span class="sd">        If an array, the MNE events array (shape: ``(n_events, 3)``).</span>
+<span class="sd">        If ``None``, events will be inferred from the the raw object&#39;s</span>
+<span class="sd">        `mne.Annotations` using `mne.events_from_annotations`.</span>
 <span class="sd">    event_id : dict | None</span>
 <span class="sd">        The event ID dictionary used to create a `trial_type` column in</span>
 <span class="sd">        ``*_events.tsv``.</span>
@@ -1015,18 +1014,37 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    bids_path : BIDSPath</span>
-<span class="sd">        The modified path to the file written, including the root of the</span>
-<span class="sd">        BIDS-compatible folder in ``bids_path.root``.</span>
+<span class="sd">        The path of the created data file.</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    For the ``*_participants.tsv`` file, ``raw.info[&#39;subject_info&#39;]`` should be</span>
-<span class="sd">    updated and ``raw.info[&#39;meas_date&#39;]`` should not be ``None`` to allow</span>
-<span class="sd">    computation of each participant&#39;s age correctly.</span>
+<span class="sd">    You should ensure that ``raw.info[&#39;subject_info&#39;]`` and</span>
+<span class="sd">    ``raw.info[&#39;meas_date&#39;]`` are set to proper (not-``None``) values to allow</span>
+<span class="sd">    for the correct computation of each participant&#39;s age when creating</span>
+<span class="sd">    ``*_participants.tsv``.</span>
+
+<span class="sd">    This function will convert existing `mne.Annotations` from</span>
+<span class="sd">    ``raw.annotations`` to events. Additionally, any events supplied via</span>
+<span class="sd">    ``events_data`` will be written too. To avoid writing of annotations,</span>
+<span class="sd">    remove them from the raw file via ``raw.set_annotations(None)`` before</span>
+<span class="sd">    invoking ``write_raw_bids``.</span>
+
+<span class="sd">    To write events encoded in a ``STIM`` channel, you first need to create the</span>
+<span class="sd">    events array manually and pass it to this function:</span>
+
+<span class="sd">    ..</span>
+<span class="sd">        events = mne.find_events(raw, min_duration=0.002)</span>
+<span class="sd">        write_raw_bids(..., events_data=events)</span>
+
+<span class="sd">    See the documentation of `mne.find_events` for more information on event</span>
+<span class="sd">    extraction from ``STIM`` channels.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
 <span class="sd">    mne.io.Raw.anonymize</span>
+<span class="sd">    mne.find_events</span>
+<span class="sd">    mne.Annotations</span>
+<span class="sd">    mne.events_from_annotations</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">check_version</span><span class="p">(</span><span class="s1">&#39;mne&#39;</span><span class="p">,</span> <span class="s1">&#39;0.17&#39;</span><span class="p">):</span>
@@ -1053,11 +1071,23 @@
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;&quot;bids_path&quot; must be a BIDSPath object. Please &#39;</span>
                            <span class="s1">&#39;instantiate using mne_bids.BIDSPath().&#39;</span><span class="p">)</span>
 
+    <span class="n">_validate_type</span><span class="p">(</span><span class="n">events_data</span><span class="p">,</span> <span class="n">types</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;path-like&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+                   <span class="n">item_name</span><span class="o">=</span><span class="s1">&#39;events_data&#39;</span><span class="p">,</span>
+                   <span class="n">type_name</span><span class="o">=</span><span class="s1">&#39;path-like, NumPy array, or None&#39;</span><span class="p">)</span>
+
     <span class="c1"># Check if the root is available</span>
     <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">root</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;The root of the &quot;bids_path&quot; must be set. &#39;</span>
                          <span class="s1">&#39;Please use `bids_path.update(root=&quot;&lt;root&gt;&quot;)` &#39;</span>
                          <span class="s1">&#39;to set the root of the BIDS folder to read.&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">events_data</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">event_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;You passed events_data, but no event_id &#39;</span>
+                           <span class="s1">&#39;dictionary. You need to pass both, or neither.&#39;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">event_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">events_data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;You passed event_id, but no events_data NumPy &#39;</span>
+                           <span class="s1">&#39;array. You need to pass both, or neither.&#39;</span><span class="p">)</span>
 
     <span class="n">raw</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 
@@ -1183,8 +1213,8 @@
         <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Writing of electrodes.tsv is not supported &#39;</span>
                        <span class="sa">f</span><span class="s1">&#39;for data type &quot;</span><span class="si">{</span><span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span><span class="si">}</span><span class="s1">&quot;. Skipping ...&#39;</span><span class="p">)</span>
 
-    <span class="n">events</span><span class="p">,</span> <span class="n">event_id</span> <span class="o">=</span> <span class="n">_read_events</span><span class="p">(</span><span class="n">events_data</span><span class="p">,</span> <span class="n">event_id</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">ext</span><span class="p">,</span>
-                                    <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+    <span class="n">events</span><span class="p">,</span> <span class="n">event_id</span> <span class="o">=</span> <span class="n">_read_events</span><span class="p">(</span><span class="n">events_data</span><span class="p">,</span> <span class="n">event_id</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span>
+                                    <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">events</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">events</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">emptyroom</span><span class="p">:</span>
         <span class="n">_events_tsv</span><span class="p">(</span><span class="n">events</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">events_path</span><span class="o">.</span><span class="n">fpath</span><span class="p">,</span> <span class="n">event_id</span><span class="p">,</span>
                     <span class="n">overwrite</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
@@ -1602,8 +1632,7 @@
     <span class="c1"># XXX (How) will this handle split files?</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">brainvision</span><span class="o">.</span><span class="n">brainvision</span><span class="o">.</span><span class="n">RawBrainVision</span><span class="p">):</span>
         <span class="n">events</span><span class="p">,</span> <span class="n">event_id</span> <span class="o">=</span> <span class="n">_read_events</span><span class="p">(</span><span class="n">events_data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">event_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                                        <span class="n">raw</span><span class="o">=</span><span class="n">raw</span><span class="p">,</span>
-                                        <span class="n">ext</span><span class="o">=</span><span class="s1">&#39;.vhdr&#39;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                                        <span class="n">raw</span><span class="o">=</span><span class="n">raw</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="n">_write_raw_brainvision</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span><span class="p">,</span> <span class="n">events</span><span class="p">)</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">RawFIF</span><span class="p">):</span>
         <span class="n">raw</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">filenames</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -1722,7 +1751,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-10-15.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-10-17.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
     </p>
   </div>

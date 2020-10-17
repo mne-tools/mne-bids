@@ -121,8 +121,8 @@
 file format is BIDS-supported for that datatype. Otherwise,
 this function will convert to a BIDS-supported file format
 while warning the user. For EEG and iEEG data, conversion
-will be to BrainVision format, for MEG conversion will be
-to FIF.</p></li>
+will be to BrainVision format; for MEG, conversion will be
+to FIFF.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">mne-bids</span></code> will infer the manufacturer information
 from the file extension. If your file format is non-standard
 for the manufacturer, please update the manufacturer field
@@ -165,11 +165,10 @@ Example:</p>
 object, as well as the extension. Data with MEG and other
 electrophysiology data in the same file will be stored as <code class="docutils literal notranslate"><span class="pre">'meg'</span></code>.</p>
 </dd>
-<dt><strong>events_data</strong><span class="classifier">str | pathlib.Path | array | None</span></dt><dd><p>The events file. If a string or a Path object, specifies the path of
-the events file. If an array, the MNE events array
-(shape: <code class="docutils literal notranslate"><span class="pre">(n_events,</span> <span class="pre">3)</span></code>).
-If <code class="docutils literal notranslate"><span class="pre">None</span></code>, events will be inferred from the stim channel using
-<a class="reference external" href="https://mne.tools/dev/generated/mne.find_events.html#mne.find_events" title="(in MNE v0.22.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.find_events</span></code></a>.</p>
+<dt><strong>events_data</strong><span class="classifier">path-like | array | None</span></dt><dd><p>If a path, specifies the location of an MNE events file.
+If an array, the MNE events array (shape: <code class="docutils literal notranslate"><span class="pre">(n_events,</span> <span class="pre">3)</span></code>).
+If <code class="docutils literal notranslate"><span class="pre">None</span></code>, events will be inferred from the the raw object’s
+<a class="reference external" href="https://mne.tools/dev/generated/mne.Annotations.html#mne.Annotations" title="(in MNE v0.22.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.Annotations</span></code></a> using <a class="reference external" href="https://mne.tools/dev/generated/mne.events_from_annotations.html#mne.events_from_annotations" title="(in MNE v0.22.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.events_from_annotations</span></code></a>.</p>
 </dd>
 <dt><strong>event_id</strong><span class="classifier">dict | None</span></dt><dd><p>The event ID dictionary used to create a <em class="xref py py-obj">trial_type</em> column in
 <code class="docutils literal notranslate"><span class="pre">*_events.tsv</span></code>.</p>
@@ -210,8 +209,7 @@ no content will be printed.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt><strong>bids_path</strong><span class="classifier">BIDSPath</span></dt><dd><p>The modified path to the file written, including the root of the
-BIDS-compatible folder in <code class="docutils literal notranslate"><span class="pre">bids_path.root</span></code>.</p>
+<dt><strong>bids_path</strong><span class="classifier">BIDSPath</span></dt><dd><p>The path of the created data file.</p>
 </dd>
 </dl>
 </dd>
@@ -220,12 +218,25 @@ BIDS-compatible folder in <code class="docutils literal notranslate"><span class
 <p class="admonition-title">See also</p>
 <dl class="simple">
 <dt><a class="reference external" href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw.anonymize" title="(in MNE v0.22.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.io.Raw.anonymize</span></code></a></dt><dd></dd>
+<dt><a class="reference external" href="https://mne.tools/dev/generated/mne.find_events.html#mne.find_events" title="(in MNE v0.22.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.find_events</span></code></a></dt><dd></dd>
+<dt><a class="reference external" href="https://mne.tools/dev/generated/mne.Annotations.html#mne.Annotations" title="(in MNE v0.22.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.Annotations</span></code></a></dt><dd></dd>
+<dt><a class="reference external" href="https://mne.tools/dev/generated/mne.events_from_annotations.html#mne.events_from_annotations" title="(in MNE v0.22.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.events_from_annotations</span></code></a></dt><dd></dd>
 </dl>
 </div>
 <p class="rubric">Notes</p>
-<p>For the <code class="docutils literal notranslate"><span class="pre">*_participants.tsv</span></code> file, <code class="docutils literal notranslate"><span class="pre">raw.info['subject_info']</span></code> should be
-updated and <code class="docutils literal notranslate"><span class="pre">raw.info['meas_date']</span></code> should not be <code class="docutils literal notranslate"><span class="pre">None</span></code> to allow
-computation of each participant’s age correctly.</p>
+<p>You should ensure that <code class="docutils literal notranslate"><span class="pre">raw.info['subject_info']</span></code> and
+<code class="docutils literal notranslate"><span class="pre">raw.info['meas_date']</span></code> are set to proper (not-<code class="docutils literal notranslate"><span class="pre">None</span></code>) values to allow
+for the correct computation of each participant’s age when creating
+<code class="docutils literal notranslate"><span class="pre">*_participants.tsv</span></code>.</p>
+<p>This function will convert existing <a class="reference external" href="https://mne.tools/dev/generated/mne.Annotations.html#mne.Annotations" title="(in MNE v0.22.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.Annotations</span></code></a> from
+<code class="docutils literal notranslate"><span class="pre">raw.annotations</span></code> to events. Additionally, any events supplied via
+<code class="docutils literal notranslate"><span class="pre">events_data</span></code> will be written too. To avoid writing of annotations,
+remove them from the raw file via <code class="docutils literal notranslate"><span class="pre">raw.set_annotations(None)</span></code> before
+invoking <code class="docutils literal notranslate"><span class="pre">write_raw_bids</span></code>.</p>
+<p>To write events encoded in a <code class="docutils literal notranslate"><span class="pre">STIM</span></code> channel, you first need to create the
+events array manually and pass it to this function:</p>
+<p>See the documentation of <a class="reference external" href="https://mne.tools/dev/generated/mne.find_events.html#mne.find_events" title="(in MNE v0.22.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.find_events</span></code></a> for more information on event
+extraction from <code class="docutils literal notranslate"><span class="pre">STIM</span></code> channels.</p>
 </dd></dl>
 
 <div class="section" id="examples-using-mne-bids-write-raw-bids">
@@ -274,7 +285,7 @@ computation of each participant’s age correctly.</p>
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-10-15.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-10-17.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
     </p>
   </div>

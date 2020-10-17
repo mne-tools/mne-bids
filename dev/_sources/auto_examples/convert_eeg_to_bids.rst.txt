@@ -179,10 +179,6 @@ It prevents the data from being loaded and modified when converting to BIDS.
     raw = mne.io.read_raw_edf(edf_path, preload=False)
     raw.info['line_freq'] = 50  # specify power line frequency as required by BIDS
 
-    # For converting the data to BIDS, we need to convert the the annotations
-    # stored in the file to a 2D numpy array of events.
-    events, event_id = mne.events_from_annotations(raw)
-
 
 
 
@@ -197,7 +193,6 @@ It prevents the data from being loaded and modified when converting to BIDS.
     EDF file detected
     Setting channel info structure...
     Creating raw.info structure...
-    Used Annotations descriptions: ['T0']
 
 
 
@@ -292,8 +287,8 @@ which are however optional. The required inputs are:
                        file format is BIDS-supported for that datatype. Otherwise,
                        this function will convert to a BIDS-supported file format
                        while warning the user. For EEG and iEEG data, conversion
-                       will be to BrainVision format, for MEG conversion will be
-                       to FIF.
+                       will be to BrainVision format; for MEG, conversion will be
+                       to FIFF.
 
                      * ``mne-bids`` will infer the manufacturer information
                        from the file extension. If your file format is non-standard
@@ -335,12 +330,11 @@ which are however optional. The required inputs are:
             Note that the data type is automatically inferred from the raw
             object, as well as the extension. Data with MEG and other
             electrophysiology data in the same file will be stored as ``'meg'``.
-        events_data : str | pathlib.Path | array | None
-            The events file. If a string or a Path object, specifies the path of
-            the events file. If an array, the MNE events array
-            (shape: ``(n_events, 3)``).
-            If ``None``, events will be inferred from the stim channel using
-            `mne.find_events`.
+        events_data : path-like | array | None
+            If a path, specifies the location of an MNE events file.
+            If an array, the MNE events array (shape: ``(n_events, 3)``).
+            If ``None``, events will be inferred from the the raw object's
+            `mne.Annotations` using `mne.events_from_annotations`.
         event_id : dict | None
             The event ID dictionary used to create a `trial_type` column in
             ``*_events.tsv``.
@@ -382,18 +376,37 @@ which are however optional. The required inputs are:
         Returns
         -------
         bids_path : BIDSPath
-            The modified path to the file written, including the root of the
-            BIDS-compatible folder in ``bids_path.root``.
+            The path of the created data file.
 
         Notes
         -----
-        For the ``*_participants.tsv`` file, ``raw.info['subject_info']`` should be
-        updated and ``raw.info['meas_date']`` should not be ``None`` to allow
-        computation of each participant's age correctly.
+        You should ensure that ``raw.info['subject_info']`` and
+        ``raw.info['meas_date']`` are set to proper (not-``None``) values to allow
+        for the correct computation of each participant's age when creating
+        ``*_participants.tsv``.
+
+        This function will convert existing `mne.Annotations` from
+        ``raw.annotations`` to events. Additionally, any events supplied via
+        ``events_data`` will be written too. To avoid writing of annotations,
+        remove them from the raw file via ``raw.set_annotations(None)`` before
+        invoking ``write_raw_bids``.
+
+        To write events encoded in a ``STIM`` channel, you first need to create the
+        events array manually and pass it to this function:
+
+        ..
+            events = mne.find_events(raw, min_duration=0.002)
+            write_raw_bids(..., events_data=events)
+
+        See the documentation of `mne.find_events` for more information on event
+        extraction from ``STIM`` channels.
 
         See Also
         --------
         mne.io.Raw.anonymize
+        mne.find_events
+        mne.Annotations
+        mne.events_from_annotations
 
     
 
@@ -424,22 +437,38 @@ In the second run of the experiment, the task was to rest with closed eyes.
 
 
 
-Now we just need to specify a few more EEG details to get something sensible:
+The data contains annotations; which will be converted to events
+automatically by MNE-BIDS when writing the BIDS data:
 
 
 .. code-block:: default
 
 
-    # Brief description of the event markers present in the data. This will become
-    # the ``trial_type`` column in our BIDS ```events.tsv``.
-    # From the online documentation of our downloaded data we know that in the
-    # rest "eyes closed" task, there is only a single event marker: "0"
-    event_id = {'rest': 0}
+    print(raw.annotations)
 
-    # Now convert our data to be in a new BIDS dataset.
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    <Annotations | 1 segment: T0 (1)>
+
+
+
+
+Finally, let's write the BIDS data!
+
+
+.. code-block:: default
+
+
     bids_path = BIDSPath(subject=subject_id, task=task, root=bids_root)
-    write_raw_bids(raw, bids_path, event_id=event_id,
-                   events_data=events, overwrite=True)
+    write_raw_bids(raw, bids_path, overwrite=True)
 
 
 
@@ -538,7 +567,7 @@ Now we just need to specify a few more EEG details to get something sensible:
     Writing '/home/circleci/mne_data/eegmmidb_bids_eeg_example/sub-001/eeg/sub-001_task-RestEyesClosed_events.tsv'...
 
     onset   duration        trial_type      value   sample
-    0.0     0.0     n/a     1       0
+    0.0     0.0     T0      1       0
 
     Writing '/home/circleci/mne_data/eegmmidb_bids_eeg_example/dataset_description.json'...
 
@@ -705,7 +734,7 @@ Command line tool: https://www.npmjs.com/package/bids-validator
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  0.131 seconds)
+   **Total running time of the script:** ( 0 minutes  0.119 seconds)
 
 
 .. _sphx_glr_download_auto_examples_convert_eeg_to_bids.py:

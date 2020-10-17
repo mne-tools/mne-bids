@@ -182,17 +182,8 @@ And define the paths and event_id dictionary.
         "HeadCoilCoordinateSystem": "RAS",
         "HeadCoilCoordinateUnits": "m"
     }
-    320 events found
-    Event IDs: [ 1  2  3  4  5 32]
-
-    Writing '/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_events.tsv'...
-
-    onset   duration        value   sample
-    3.6246181587150867      0.0     2       2177
-    4.237323479067476       0.0     3       2545
-    4.946596485779753       0.0     1       2971
-    5.692498614904401       0.0     4       3419
-    6.41342634238425        0.0     2       3852
+    /home/circleci/project/mne_bids/utils.py:246: RuntimeWarning: No events found or provided. Please make sure to set channel type using raw.set_channel_types or provide events_data.
+      warn('No events found or provided. Please make sure to'
 
     Writing '/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/dataset_description.json'...
 
@@ -377,6 +368,8 @@ task is 'noise' (these are BIDS rules).
         }
     }
     Writing of electrodes.tsv is not supported for data type "meg". Skipping ...
+    /home/circleci/project/mne_bids/utils.py:246: RuntimeWarning: No events found or provided. Please make sure to set channel type using raw.set_channel_types or provide events_data.
+      warn('No events found or provided. Please make sure to'
 
     Writing '/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/dataset_description.json'...
 
@@ -504,6 +497,8 @@ will be different on different days.
         }
     }
     Writing of electrodes.tsv is not supported for data type "meg". Skipping ...
+    /home/circleci/project/mne_bids/utils.py:246: RuntimeWarning: No events found or provided. Please make sure to set channel type using raw.set_channel_types or provide events_data.
+      warn('No events found or provided. Please make sure to'
 
     Writing '/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/dataset_description.json'...
 
@@ -598,6 +593,8 @@ will be different on different days.
         }
     }
     Writing of electrodes.tsv is not supported for data type "meg". Skipping ...
+    /home/circleci/project/mne_bids/utils.py:246: RuntimeWarning: No events found or provided. Please make sure to set channel type using raw.set_channel_types or provide events_data.
+      warn('No events found or provided. Please make sure to'
 
     Writing '/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/dataset_description.json'...
 
@@ -692,6 +689,8 @@ will be different on different days.
         }
     }
     Writing of electrodes.tsv is not supported for data type "meg". Skipping ...
+    /home/circleci/project/mne_bids/utils.py:246: RuntimeWarning: No events found or provided. Please make sure to set channel type using raw.set_channel_types or provide events_data.
+      warn('No events found or provided. Please make sure to'
 
     Writing '/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/dataset_description.json'...
 
@@ -896,7 +895,7 @@ Finally, we can read the empty room file using
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  4.198 seconds)
+   **Total running time of the script:** ( 0 minutes  3.892 seconds)
 
 
 .. _sphx_glr_download_auto_examples_convert_empty_room.py:
