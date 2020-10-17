@@ -139,7 +139,7 @@ And define the paths and event_id dictionary.
     Writing '/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_coordsystem.json'...
 
     {
-        "MEGCoordinateSystem": "Elekta",
+        "MEGCoordinateSystem": "ElektaNeuromag",
         "MEGCoordinateUnits": "m",
         "MEGCoordinateSystemDescription": "n/a",
         "HeadCoilCoordinates": {
@@ -179,7 +179,7 @@ And define the paths and event_id dictionary.
                 0.1228904277086258
             ]
         },
-        "HeadCoilCoordinateSystem": "RAS",
+        "HeadCoilCoordinateSystem": "ElektaNeuromag",
         "HeadCoilCoordinateUnits": "m"
     }
     /home/circleci/project/mne_bids/utils.py:246: RuntimeWarning: No events found or provided. Please make sure to set channel type using raw.set_channel_types or provide events_data.
@@ -895,7 +895,7 @@ Finally, we can read the empty room file using
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  3.892 seconds)
+   **Total running time of the script:** ( 0 minutes  3.904 seconds)
 
 
 .. _sphx_glr_download_auto_examples_convert_empty_room.py:

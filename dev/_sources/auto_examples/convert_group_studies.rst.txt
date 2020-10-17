@@ -259,7 +259,7 @@ Let us loop over the subjects and create BIDS-compatible folder
     Fc1.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
     Fcz.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
     Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
-    /home/circleci/project/mne_bids/write.py:1147: RuntimeWarning: Converting data files to BrainVision format
+    /home/circleci/project/mne_bids/write.py:1149: RuntimeWarning: Converting data files to BrainVision format
       warn('Converting data files to BrainVision format')
 
     Writing '/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-01/sub-001_ses-01_scans.tsv'...
@@ -359,7 +359,7 @@ Let us loop over the subjects and create BIDS-compatible folder
     Fc1.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
     Fcz.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
     Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
-    /home/circleci/project/mne_bids/write.py:1147: RuntimeWarning: Converting data files to BrainVision format
+    /home/circleci/project/mne_bids/write.py:1149: RuntimeWarning: Converting data files to BrainVision format
       warn('Converting data files to BrainVision format')
 
     Writing '/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-01/sub-001_ses-01_scans.tsv'...
@@ -459,7 +459,7 @@ Let us loop over the subjects and create BIDS-compatible folder
     Fc1.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
     Fcz.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
     Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
-    /home/circleci/project/mne_bids/write.py:1147: RuntimeWarning: Converting data files to BrainVision format
+    /home/circleci/project/mne_bids/write.py:1149: RuntimeWarning: Converting data files to BrainVision format
       warn('Converting data files to BrainVision format')
 
     Writing '/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-01/sub-001_ses-01_scans.tsv'...
@@ -559,7 +559,7 @@ Let us loop over the subjects and create BIDS-compatible folder
     Fc1.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
     Fcz.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
     Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
-    /home/circleci/project/mne_bids/write.py:1147: RuntimeWarning: Converting data files to BrainVision format
+    /home/circleci/project/mne_bids/write.py:1149: RuntimeWarning: Converting data files to BrainVision format
       warn('Converting data files to BrainVision format')
 
     Writing '/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/sub-002_ses-01_scans.tsv'...
@@ -659,7 +659,7 @@ Let us loop over the subjects and create BIDS-compatible folder
     Fc1.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
     Fcz.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
     Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
-    /home/circleci/project/mne_bids/write.py:1147: RuntimeWarning: Converting data files to BrainVision format
+    /home/circleci/project/mne_bids/write.py:1149: RuntimeWarning: Converting data files to BrainVision format
       warn('Converting data files to BrainVision format')
 
     Writing '/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/sub-002_ses-01_scans.tsv'...
@@ -759,7 +759,7 @@ Let us loop over the subjects and create BIDS-compatible folder
     Fc1.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
     Fcz.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
     Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
-    /home/circleci/project/mne_bids/write.py:1147: RuntimeWarning: Converting data files to BrainVision format
+    /home/circleci/project/mne_bids/write.py:1149: RuntimeWarning: Converting data files to BrainVision format
       warn('Converting data files to BrainVision format')
 
     Writing '/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/sub-002_ses-01_scans.tsv'...
@@ -883,7 +883,7 @@ Now let's generate a report on the dataset.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  0.485 seconds)
+   **Total running time of the script:** ( 0 minutes  0.479 seconds)
 
 
 .. _sphx_glr_download_auto_examples_convert_group_studies.py:

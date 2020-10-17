@@ -180,7 +180,7 @@ a new BIDS name for it, and then run the automatic BIDS conversion.
     Writing '/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_coordsystem.json'...
 
     {
-        "MEGCoordinateSystem": "Elekta",
+        "MEGCoordinateSystem": "ElektaNeuromag",
         "MEGCoordinateUnits": "m",
         "MEGCoordinateSystemDescription": "n/a",
         "HeadCoilCoordinates": {
@@ -220,7 +220,7 @@ a new BIDS name for it, and then run the automatic BIDS conversion.
                 0.1228904277086258
             ]
         },
-        "HeadCoilCoordinateSystem": "RAS",
+        "HeadCoilCoordinateSystem": "ElektaNeuromag",
         "HeadCoilCoordinateUnits": "m"
     }
 
@@ -523,7 +523,7 @@ cite MNE-BIDS there.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  7.794 seconds)
+   **Total running time of the script:** ( 0 minutes  8.805 seconds)
 
 
 .. _sphx_glr_download_auto_examples_convert_mne_sample.py:
