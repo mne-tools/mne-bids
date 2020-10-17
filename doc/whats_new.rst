@@ -46,7 +46,7 @@ Changelog
 - Allow :func:`mne_bids.write_raw_bids` to write EEG/iEEG files from Nihon Kohden using ``mne.io.read_raw_nihon`` function, by `Adam Li`_ (`#567 <https://github.com/mne-tools/mne-bids/pull/567>`_)
 - Allow :func:`mne_bids.get_entity_vals` to ignore datatypes using ``ignore_datatypes`` kwarg, by `Adam Li`_ (`#578 <https://github.com/mne-tools/mne-bids/pull/578>`_)
 - Add ``with_key`` keyword argument to :func:`mne_bids.get_entity_vals` to allow returning the full entity strings, by `Adam Li`_ (`#578 <https://github.com/mne-tools/mne-bids/pull/578>`_)
-- :func:`mne_bids.write_raw_bids` now also writes :attr:`mne.io.Raw.annotations` to ``*_events.tsv``, by `Adam Li`_ (`#582 <https://github.com/mne-tools/mne-bids/pull/582>`_)
+- :func:`mne_bids.write_raw_bids` now also writes :attr:`mne.io.Raw.annotations` to ``*_events.tsv``, by `Adam Li`_ and `Richard Höchenberger`_ (`#582 <https://github.com/mne-tools/mne-bids/pull/582>`_)
 
 Bug
 ~~~

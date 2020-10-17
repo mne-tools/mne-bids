@@ -227,7 +227,7 @@ def _read_events(events_data, event_id, raw, verbose=None):
                              f'found {events_data.shape[1]}')
         events = events_data
     else:
-        events = np.empty(shape=(0, 3))
+        events = np.empty(shape=(0, 3), dtype=int)
 
     # get events from annotations
     events_annot, event_id_annot = events_from_annotations(raw, event_id,
