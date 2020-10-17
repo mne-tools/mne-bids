@@ -208,7 +208,7 @@ def _electrodes_tsv(raw, fname, datatype, overwrite=False, verbose=True):
     _write_tsv(fname, data, overwrite=overwrite, verbose=verbose)
 
 
-def _coordsystem_json(raw, unit, orient, coordsystem_name, fname,
+def _coordsystem_json(*, raw, unit, orient, coordsystem_name, fname,
                       datatype, overwrite=False, verbose=True):
     """Create a coordsystem.json file and save it.
 
@@ -360,9 +360,10 @@ def _write_dig_bids(electrodes_path, coordsystem_path, root,
             # Now write the data to the elec coords and the coordsystem
             _electrodes_tsv(raw, electrodes_path,
                             datatype, overwrite, verbose)
-            _coordsystem_json(raw, unit, 'n/a',
-                              coord_frame, coordsystem_path, datatype,
-                              overwrite, verbose)
+            _coordsystem_json(raw=raw, unit=unit, orient='n/a',
+                              coordsystem_name=coord_frame,
+                              fname=coordsystem_path, datatype=datatype,
+                              overwrite=overwrite, verbose=verbose)
         else:
             # default coordinate frame to mri if not available
             warn("Coordinate frame of iEEG coords missing/unknown "
@@ -381,9 +382,12 @@ def _write_dig_bids(electrodes_path, coordsystem_path, root,
             # Now write the data
             _electrodes_tsv(raw, electrodes_path, datatype,
                             overwrite, verbose)
-            _coordsystem_json(raw, 'm', 'RAS', 'CapTrak',
-                              coordsystem_path, datatype,
-                              overwrite, verbose)
+            # XXX Shoud be refactored such that we don't have to pass
+            # XXX orient for EEG data.
+            _coordsystem_json(raw=raw, unit='m', orient=None,
+                              coordsystem_name='CapTrak',
+                              fname=coordsystem_path, datatype=datatype,
+                              overwrite=overwrite, verbose=verbose)
         else:
             warn("Skipping EEG electrodes.tsv... "
                  "Setting montage not possible if anatomical "
