@@ -18,7 +18,6 @@ from datetime import datetime, timezone
 import platform
 import shutil as sh
 import json
-from distutils.version import LooseVersion
 from pathlib import Path
 
 import numpy as np
@@ -543,8 +542,6 @@ def test_fif(_bids_validate):
         write_raw_bids(raw, bids_path)
 
 
-@pytest.mark.skipif(LooseVersion(mne.__version__) < LooseVersion('0.20'),
-                    reason="requires mne 0.20.dev0 or higher")
 def test_fif_anonymize(_bids_validate):
     """Test write_raw_bids() with anonymization fif."""
     bids_root = _TempDir()
@@ -776,9 +773,6 @@ def test_bti(_bids_validate):
         _bids_validate(output_path)
 
 
-# XXX: vhdr test currently passes only on MNE master. Skip until next release.
-@pytest.mark.skipif(LooseVersion(mne.__version__) < LooseVersion('0.21'),
-                    reason='requires mne 0.21.dev0 or higher')
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_vhdr(_bids_validate):
     """Test write_raw_bids conversion for BrainVision data."""
@@ -835,7 +829,7 @@ def test_vhdr(_bids_validate):
     assert len([f for f in os.listdir(data_path) if op.isfile(f)]) == 0
 
     # test anonymize and convert
-    if check_version('mne', '0.20') and check_version('pybv', '0.2.0'):
+    if check_version('pybv', '0.2.0'):
         raw = _read_raw_brainvision(raw_fname)
         output_path = _test_anonymize(raw, bids_path)
         _bids_validate(output_path)
@@ -874,8 +868,6 @@ def test_vhdr(_bids_validate):
 
 
 @pytest.mark.parametrize('dir_name, fname, reader', test_eegieeg_data)
-@pytest.mark.skipif(LooseVersion(mne.__version__) < LooseVersion('0.21'),
-                    reason="requires mne 0.20.dev0 or higher")
 @pytest.mark.filterwarnings(warning_str['nasion_not_found'])
 def test_eegieeg(dir_name, fname, reader, _bids_validate):
     """Test write_raw_bids conversion for European Data Format data."""
@@ -1003,7 +995,7 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate):
     assert len(list(data.values())[0]) == 2
 
     # check that scans list is properly converted to brainvision
-    if check_version('mne', '0.20') and check_version('pybv', '0.2.0'):
+    if check_version('pybv', '0.2.0'):
         daysback_min, daysback_max = _get_anonymization_daysback(raw)
         daysback = (daysback_min + daysback_max) // 2
         write_raw_bids(raw, bids_path,
@@ -1068,7 +1060,7 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate):
     assert coordsystem_json['iEEGCoordinateSystem'] == 'Other'
 
     # test anonymize and convert
-    if check_version('mne', '0.20') and check_version('pybv', '0.2.0'):
+    if check_version('pybv', '0.2.0'):
         raw = reader(raw_fname)
         output_path = _test_anonymize(raw, bids_path)
         _bids_validate(output_path)
@@ -1126,7 +1118,7 @@ def test_bdf(_bids_validate):
         write_raw_bids(raw, bids_path)
 
     # test anonymize and convert
-    if check_version('mne', '0.20') and check_version('pybv', '0.2.0'):
+    if check_version('pybv', '0.2.0'):
         raw = _read_raw_bdf(raw_fname)
         output_path = _test_anonymize(raw, bids_path)
         _bids_validate(output_path)
@@ -1179,7 +1171,7 @@ def test_set(_bids_validate):
     _bids_validate(bids_root)
 
     # test anonymize and convert
-    if check_version('mne', '0.20') and check_version('pybv', '0.2.0'):
+    if check_version('pybv', '0.2.0'):
         output_path = _test_anonymize(raw, bids_path)
         _bids_validate(output_path)
 

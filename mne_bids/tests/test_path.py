@@ -11,7 +11,6 @@ import warnings
 from pathlib import Path
 import shutil
 from datetime import datetime, timezone
-from distutils.version import LooseVersion
 
 import pytest
 
@@ -806,8 +805,6 @@ def test_find_emptyroom_ties():
         bids_path.find_empty_room()
 
 
-@pytest.mark.skipif(LooseVersion(mne.__version__) < LooseVersion('0.21'),
-                    reason="requires mne 0.21.dev0 or higher")
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_find_emptyroom_no_meas_date():
     """Test that we warn if measurement date can be read or inferred."""
