@@ -858,11 +858,10 @@ def write_raw_bids(raw, bids_path, events_data=None,
         object, as well as the extension. Data with MEG and other
         electrophysiology data in the same file will be stored as ``'meg'``.
     events_data : path-like | array | None
-        If a string or a Path object, specifies the path of
-        the events file. If an array, the MNE events array
-        (shape: ``(n_events, 3)``).
-        If ``None``, events will be inferred from the annotations using
-        `mne.events_from_annotations`.
+        If a path, specifies the location of an MNE events file.
+        If an array, the MNE events array (shape: ``(n_events, 3)``).
+        If ``None``, events will be inferred from the the raw object's
+        `mne.Annotations` using `mne.events_from_annotations`.
     event_id : dict | None
         The event ID dictionary used to create a `trial_type` column in
         ``*_events.tsv``.
@@ -904,33 +903,37 @@ def write_raw_bids(raw, bids_path, events_data=None,
     Returns
     -------
     bids_path : BIDSPath
-        The modified path to the file written, including the root of the
-        BIDS-compatible folder in ``bids_path.root``.
+        The path of the created data file.
 
     Notes
     -----
-    For the ``*_participants.tsv`` file, ``raw.info['subject_info']`` should be
-    updated and ``raw.info['meas_date']`` should not be ``None`` to allow
-    computation of each participant's age correctly.
+    You should ensure that ``raw.info['subject_info']`` and
+    ``raw.info['meas_date']`` are set to proper (not-``None``) values to allow
+    for the correct computation of each participant's age when creating
+    ``*_participants.tsv``.
 
-    Events will be taken as the union of an events file (if passed in through
-    the ``events_data`` kwarg), and annotations of the raw file. If you have
-    events encoded in the ``stim`` channel, then please extract it first.
-    For example, you might use
+    This function will convert existing `mne.Annotations` from
+    ``raw.annotations`` to events. Additionally, any events supplied via
+    ``events_data`` will be written too. To avoid writing of annotations,
+    remove them from the raw file via ``raw.set_annotations(None)`` before
+    invoking ``write_raw_bids``.
+
+    To write events encoded in a ``STIM`` channel, you first need to create the
+    events array manually and pass it to this function:
 
     ..
-        # get events from the stim channel
-        events_stim = mne.find_events(raw, min_duration=0.001,
-                                      initial_event=True, verbose=verbose)
+        events = mne.find_events(raw, min_duration=0.002)
+        write_raw_bids(..., events_data=events)
 
-
-    If your raw file has events encoded in the annotations that you would
-    not like to write, then you should explicitly set annotations to None by
-    ``raw.set_annotations(None)``.
+    See the documentation of `mne.find_events` for more information on event
+    extraction from ``STIM`` channels.
 
     See Also
     --------
     mne.io.Raw.anonymize
+    mne.find_events
+    mne.Annotations
+    mne.events_from_annotations
 
     """
     if not check_version('mne', '0.17'):
