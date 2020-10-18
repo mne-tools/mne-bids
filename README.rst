@@ -92,7 +92,7 @@ Dependencies
 * scipy (>=0.18.1)
 * mne (>=0.21)
 * nibabel (>=2.2, optional)
-* pybv (optional)
+* pybv (>=0.2, optional)
 
 Installation
 ------------
