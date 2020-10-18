@@ -1,4 +1,10 @@
 a[class^="sphx-glr-backref-module-mne_bids"] {
-    /* make all MNE-BIDS backrefs bold */
-    font-weight: 800;
+  /* make all MNE-BIDS backrefs bold */
+  font-weight: 800;
+}
+
+/* Disable hyphenation in API reference table for Webkit-based browsers
+   to work around alignment bug */
+#api-documentation table p {
+  -webkit-hyphens: none;
 }
