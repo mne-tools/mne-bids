@@ -90,15 +90,15 @@ Dependencies
 
 * numpy (>=1.14)
 * scipy (>=0.18.1)
-* mne (>=0.19.1)
+* mne (>=0.21)
 * nibabel (>=2.2, optional)
-* pybv (optional)
+* pybv (>=0.2, optional)
 
 Installation
 ------------
 
 We recommend the `Anaconda <https://www.anaconda.com/download/>`_ Python
-distribution. We require that you use Python 3.5 or higher.
+distribution. We require that you use Python 3.6 or higher.
 You may choose to install ``mne-bids``
 `via pip <#Installation via pip>`_ or
 `via conda <#Installation via conda>`_.
