@@ -39,3 +39,15 @@ h4 {
   margin-top: 3em;
   padding-top: 1em;
 }
+
+/* Links in the Note boxes */
+.note a {
+  color: white;
+  text-decoration: underline;
+}
+
+.note a:hover {
+  color: white;
+  font-weight: bold;
+  text-decoration: underline;
+}
