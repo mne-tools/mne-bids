@@ -31,8 +31,9 @@ Notable changes
   Consequently, you will need to update your existing code, too.
   See the `API changes`_ section for an overview of which functions have
   changed or have been removed, and follow
-  :ref:`this introduction<bidspath-intro>` to ``BIDSPath``
-  to learn how to change your code. Don't worry – it's going to be a breeze! 🤗
+  :ref:`this introduction<bidspath-intro>`
+  to learn about the basics of ``BIDSPath``. Don't worry – it's going to be a
+  breeze! 🤗
 
 - MNE-BIDS now requires MNE-Python 0.21.
 
