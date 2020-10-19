@@ -17,8 +17,6 @@ See the :doc:`CLI documentation <generated/cli>`.
 
 Quickstart
 ----------
-MNE-BIDS fully supports writing of BIDS datasets for MEG and EEG. Support for
-iEEG is experimental at the moment.
 
 Python
 ~~~~~~
