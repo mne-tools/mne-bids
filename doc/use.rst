@@ -26,24 +26,33 @@ Python
 .. code:: python
 
     >>> import mne
-    >>> from mne_bids import write_raw_bids
+    >>> from mne_bids import BIDSPath, write_raw_bids
     >>> raw = mne.io.read_raw_fif('my_old_file.fif')
-    >>> write_raw_bids(raw, 'sub-01_ses-01_run-05', bids_root='./bids_dataset')
+    >>> bids_path = BIDSPath(subject='01', session='01, run='05',
+                             datatype='meg', bids_root='./bids_dataset')
+    >>> write_raw_bids(raw, bids_path=bids_path)
 
 Command Line Interface
 ~~~~~~~~~~~~~~~~~~~~~~
 
-In addition to ``import mne_bids``, you can use the command line interface.
-Simply type ``mne_bids`` in your command line and press enter, to see the
+Simply type ``mne_bids`` in your command line and press enter to see a list of
 accepted commands. Then type ``mne_bids <command> --help``, where ``<command>``
-is one of the accepted commands, to get more information about that
-``<command>``.
+is one of the accepted commands, to get more information about it.
 
 Example:
 
 .. code-block:: bash
 
   $ mne_bids raw_to_bids --subject_id sub01 --task rest --raw data.edf --bids_root new_path
+
+
+.. _bidspath-intro:
+
+Mastering BIDSPath
+------------------
+To be able to effectively use MNE-BIDS, you need to understand how to work with
+the ``BIDSPath`` object. Follow `this example <auto_examples/bidspath.html>`_
+to learn everything you need!
 
 
 .. include:: auto_examples/index.rst

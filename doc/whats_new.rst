@@ -24,7 +24,31 @@ been cooking for you!
 
 Notable changes
 ~~~~~~~~~~~~~~~
-xxx
+- We introduce `mne_bids.BIDSPath`, a new class for all BIDS file and folder
+  operations. All functions in MNE-BIDS that previously accepted filenames
+  and folder locations (e.g. ``bids_root``) have been updated to work with
+  ``BIDSPath``. Others have been removed.
+  Consequently, you will need to update your existing code, too.
+  See the `API changes`_ section for an overview of which functions have
+  changed or have been removed, and follow
+  :ref:`this introduction<bidspath-intro>` to ``BIDSPath``
+  to learn how to change your code. Don't worry – it's going to be a breeze! 🤗
+
+- MNE-BIDS now requires MNE-Python 0.21.
+
+- The new function :func:`mne_bids.make_report` can help you populate a
+  paragraph of your next paper's methods section!
+
+- You can now interactively mark channels as bad using
+  :func:`mne_bids.mark_bad_channels`.
+
+- Elekta/Neuromag/MEGIN fine-calibration and crosstalk files can now be stored
+  in your BIDS dataset via :func:`mne_bids.write_meg_calibration` and
+  :func:`mne_bids.write_meg_crosstalk`.
+
+- When writing a raw file that contains annotations, these will now be
+  converted to and stored as events by :func:`mne_bids.write_raw_bids`.
+
 
 Authors
 ~~~~~~~
@@ -50,7 +74,6 @@ Enhancements
 - :code:`convert_ieeg_to_bids` to now use sample ECoG EDF data, by `Adam Li`_ (`#390 <https://github.com/mne-tools/mne-bids/pull/390>`_)
 - :func:`mne_bids.write_raw_bids` now writes ``CoordinateSystemDescription`` as specified in BIDS Specification if CoordinateSystem is MNE-compatible, by `Adam Li`_ (`#416 <https://github.com/mne-tools/mne-bids/pull/416>`_)
 - :func:`mne_bids.write_raw_bids` and :func:`mne_bids.read_raw_bids` now handle scalp EEG if Captrak coordinate system and NAS/LPA/RPA landmarks are present, by `Adam Li`_ (`#416 <https://github.com/mne-tools/mne-bids/pull/416>`_)
-- ``mne_bids.get_matched_empty_room`` now implements an algorithm for discovering empty-room recordings that do not have the recording date set as their session, by `Richard Höchenberger`_ (`#421 <https://github.com/mne-tools/mne-bids/pull/421>`_)
 - :func:`write_raw_bids` now adds citations to the ``README``, by `Alex Rockhill`_ (`#463 <https://github.com/mne-tools/mne-bids/pull/463>`_)
 - :func:`make_dataset_description` now has an additional parameter ``dataset_type`` to set the recommended field ``DatasetType`` (defaults to ``"raw"``), by `Stefan Appelhoff`_ (`#472 <https://github.com/mne-tools/mne-bids/pull/472>`_)
 - :func:`mne_bids.copyfiles.copyfile_brainvision` now has an ``anonymize`` parameter to control anonymization, by `Stefan Appelhoff`_ (`#475 <https://github.com/mne-tools/mne-bids/pull/475>`_)
@@ -101,7 +124,7 @@ In the transition to using `mne_bids.BIDSPath`, the following functions have bee
 The following functions have been removed:
 
 - ``mne_bids.make_bids_basename`` has been removed. Use :class:`mne_bids.BIDSPath` directly, by `Adam Li`_ (`#511 <https://github.com/mne-tools/mne-bids/pull/511>`_)
-- ``mne_bids.get_matched_empty_room`` has been removed. Use :meth:`mne_bids.BIDSPath.find_empty_room` instead, by `Richard Höchenberger`_ (`#535 <https://github.com/mne-tools/mne-bids/pull/535>`_)
+- ``mne_bids.get_matched_empty_room`` has been removed. Use :meth:`mne_bids.BIDSPath.find_empty_room` instead, by `Richard Höchenberger`_ (`#421 <https://github.com/mne-tools/mne-bids/pull/421>`_, `#535 <https://github.com/mne-tools/mne-bids/pull/535>`_)
 - ``mne_bids.make_bids_folders`` has been removed. Use :meth:`mne_bids.BIDSPath.mkdir` instead, by `Adam Li`_ (`#543 <https://github.com/mne-tools/mne-bids/pull/543>`_)
 
 Further API changes:
