@@ -3,18 +3,18 @@ channels:
 - defaults
 - conda-forge
 dependencies:
-- python<3.7
-- pip=19
+- python<=3.8
+- pip
 - mkl
-- numpy>=1.14
-- scipy>=0.18.1
-- scikit-learn
+- numpy>=1.15.4
+- scipy>=1.1.0
+- scikit-learn>=0.20.2
 - matplotlib
 - pip:
   - mne_bids
-  - mne>=0.19.1
+  - mne>=0.21.0
   - nibabel
-  - pybv
+  - pybv>=0.2.0
   - nilearn
   - flake8
   - pytest<5.4
