@@ -58,6 +58,7 @@ The following people have contributed to this release of MNE-BIDS:
 - `Adam Li`_
 - `Alexandre Gramfort`_
 - `Alex Rockhill`_
+- `Mainak Jas`_
 - `Richard Höchenberger`_ 
 - `Stefan Appelhoff`_
 
