@@ -9,11 +9,11 @@ Using MNE-BIDS
 
 Python API reference
 --------------------
-See the `API documentation <api>`_.
+See the :doc:`API documentation <api>`.
 
 Command line interface reference
 --------------------------------
-See the `CLI documentation <generated/cli>`_.
+See the :doc:`CLI documentation <generated/cli>`.
 
 Quickstart
 ----------
