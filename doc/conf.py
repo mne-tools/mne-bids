@@ -76,7 +76,8 @@ release = version
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This patterns also effect to html_static_path and html_extra_path
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+exclude_patterns = ['auto_examples/index.rst', '_build', 'Thumbs.db',
+                    '.DS_Store']
 
 # HTML options (e.g., theme)
 # see: https://sphinx-bootstrap-theme.readthedocs.io/en/latest/README.html
@@ -101,11 +102,12 @@ html_theme_options = {
     'navbar_pagenav': False,  # no "Page" navigation in sidebar
     'bootstrap_version': "3",
     'navbar_links': [
-        ("Examples", "auto_examples/index"),
-        ("API", "api"),
-        ("CLI", "generated/cli"),
-        ("What's new", "whats_new"),
-        ("GitHub", "https://github.com/mne-tools/mne-bids", True),
+        ("News", "whats_new"),
+        ("Install", "install"),
+        ("Use", "use"),
+        # ("API", "api"),
+        # ("CLI", "generated/cli"),
+        ("Contribute!", "contribute")
     ]}
 
 

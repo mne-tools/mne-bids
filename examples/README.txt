@@ -1,7 +1,7 @@
 .. _general_examples:
 
-Examples Gallery
-================
+Examples
+--------
 
 Here we show some exemplary use cases for MNE-BIDS. Each example has a badge
 called "Binder" at the end. By clicking on that badge, you can interactively

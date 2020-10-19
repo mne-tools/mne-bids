@@ -8,3 +8,30 @@ a[class^="sphx-glr-backref-module-mne_bids"] {
 #api-documentation table p {
   -webkit-hyphens: none;
 }
+
+/* Hide version number from top-left location in the navbar */
+.navbar-version {
+  display: none;
+}
+
+html {
+  font-size: 16px;
+}
+
+h1 {
+  font-size: 1.6rem;
+}
+
+h2 {
+  font-size: 1.3rem;
+}
+
+h3 {
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+.footer {
+  margin-top: 3em;
+  padding-top: 1em;
+}
