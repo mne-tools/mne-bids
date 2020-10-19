@@ -39,25 +39,9 @@ MNE BIDS
    get_head_mri_trans
    get_anonymization_daysback
    print_dir_tree
+   get_entities_from_fname
    get_entity_vals
    get_datatypes
-
-Path
-====
-
-:py:mod:`mne_bids.path`:
-
-.. automodule:: mne_bids.path
-   :no-members:
-   :no-inherited-members:
-
-.. currentmodule:: mne_bids.path
-
-.. autosummary::
-   :toctree: generated/
-
-   BIDSPath
-   get_entities_from_fname
 
 Copyfiles
 =========
@@ -78,20 +62,3 @@ Copyfiles
    copyfile_ctf
    copyfile_bti
    copyfile_kit
-
-
-Utils
-=====
-
-:py:mod:`mne_bids.utils`:
-
-.. automodule:: mne_bids.utils
-   :no-members:
-   :no-inherited-members:
-
-.. currentmodule:: mne_bids.utils
-
-.. autosummary::
-   :toctree: generated/
-
-   get_anonymization_daysback
