@@ -3,14 +3,17 @@
 Using MNE-BIDS
 ==============
 
-Contents
---------
+.. contents:: Contents
+   :local:
+   :depth: 1
 
-- `Quickstart`_
-- `Examples`_
-- :doc:`Python API reference <api>`
-- :doc:`Command-line interface (CLI) reference<generated/cli>`
+Python API reference
+--------------------
+See the `API documentation <api>`_.
 
+Command line interface reference
+--------------------------------
+See the `CLI documentation <generated/cli>`_.
 
 Quickstart
 ----------
