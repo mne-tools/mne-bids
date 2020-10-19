@@ -106,9 +106,8 @@ bids_path
 
 bids_path.basename
 
-# The two
-# entities you can see here are the ``subject`` entity (``sub``) and the
-# ``session`` entity (``ses``). Each entity name also has a value; for
+# The two entities you can see here are the ``subject`` entity (``sub``) and
+# the ``session`` entity (``ses``). Each entity name also has a value; for
 # ``sub``, this is ``123``, and for ``ses``, it is ``test`` in our example.
 # Entity names (or "keys") and values are separated via hyphens.
 # BIDS knows a much larger number of entities, and MNE-BIDS allows you to make
