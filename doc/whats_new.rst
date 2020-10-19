@@ -18,12 +18,29 @@ This is a **big** release with lots of changes, many of them breaking existing
 code. But do not fear: migration is easy, and you will **love** what we have
 been cooking for you!
 
+.. contents:: Contents
+   :local:
+   :depth: 3
+
 Notable changes
 ~~~~~~~~~~~~~~~
 xxx
 
+Authors
+~~~~~~~
+The following people have contributed to this release of MNE-BIDS:
+
+- `Adam Li`_
+- `Alexandre Gramfort`_
+- `Alex Rockhill`_
+- `Richard Höchenberger`_ 
+- `Stefan Appelhoff`_
+
+Detailed list of changes
+~~~~~~~~~~~~~~~~~~~~~~~~
+
 Enhancements
-~~~~~~~~~~~~
+^^^^^^^^^^^^
 
 - Introduce :class:`mne_bids.BIDSPath`, the new universal MNE-BIDS working horse for file operations, by `Adam Li`_, `Alex Rockhill`_, and `Richard Höchenberger`_ (`#496 <https://github.com/mne-tools/mne-bids/pull/496>`_, `#507 <https://github.com/mne-tools/mne-bids/pull/507>`_, `#511 <https://github.com/mne-tools/mne-bids/pull/511>`_, `#514 <https://github.com/mne-tools/mne-bids/pull/514>`_, `#542 <https://github.com/mne-tools/mne-bids/pull/542>`_)
 - The new function :func:`mne_bids.make_report` and its corresponding CLI function, ``make_report``, produce human-readable summary of the BIDS dataset, by `Adam Li`_ (`#457 <https://github.com/mne-tools/mne-bids/pull/457>`_)
@@ -52,8 +69,8 @@ Enhancements
 - :func:`mne_bids.write_raw_bids` now also writes :attr:`mne.io.Raw.annotations` to ``*_events.tsv``, by `Adam Li`_ and `Richard Höchenberger`_ (`#582 <https://github.com/mne-tools/mne-bids/pull/582>`_)
 - BIDS conformity: The ``_part-%d`` entity is now called ``_split-`` throughout BIDS, MNE, and MNE-BIDS, by `Stefan Appelhoff`_ (`#417 <https://github.com/mne-tools/mne-bids/pull/417>`_)
 
-Bug
-~~~
+Bug fixes
+^^^^^^^^^
 
 - Fix bug in :func:`write_raw_bids` where raw.info['subject_info'] can be ``None``, by `Adam Li`_ (`#392 <https://github.com/mne-tools/mne-bids/pull/392>`_)
 - :func:`read_raw_bids` will now read all channels from ``electrodes.tsv``. Channels with coordinates ``'n/a'`` will also be included but their location set to ``np.nan`` in the ``raw`` object, by `Adam Li`_ (`#393 <https://github.com/mne-tools/mne-bids/pull/393>`_)
@@ -73,8 +90,8 @@ Bug
 - Ensure :func:`mne_bids.print_dir_tree` prints files and directories in alphabetical order, by `Richard Höchenberger`_ (`#563 <https://github.com/mne-tools/mne-bids/pull/563>`_)
 - :func:`mne_bids.write_raw_bids` now writes the correct coordinate system names to the JSON sidecars, by `Richard Höchenberger`_ (`#585 <https://github.com/mne-tools/mne-bids/pull/585>`_)
 
-API
-~~~
+API changes
+^^^^^^^^^^^
 
 In the transition to using `mne_bids.BIDSPath`, the following functions have been updated:
 

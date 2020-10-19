@@ -7,6 +7,10 @@
 What was new in previous releases?
 ==================================
 
+.. contents:: Contents
+   :local:
+   :depth: 3
+
 .. currentmodule:: mne_bids
 .. _changes_0_4:
 
