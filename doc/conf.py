@@ -105,8 +105,8 @@ html_theme_options = {
         ("News", "whats_new"),
         ("Install", "install"),
         ("Use", "use"),
-        # ("API", "api"),
-        # ("CLI", "generated/cli"),
+        ("API", "api"),
+        ("CLI", "generated/cli"),
         ("Contribute!", "contribute")
     ]}
 
