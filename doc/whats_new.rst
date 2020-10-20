@@ -58,8 +58,11 @@ The following people have contributed to this release of MNE-BIDS:
 - `Adam Li`_
 - `Alexandre Gramfort`_
 - `Alex Rockhill`_
+- `Austin Hurst`_
+- `Evgenii Kalenkovich`_
 - `Mainak Jas`_
-- `Richard Höchenberger`_ 
+- `Richard Höchenberger`_
+- `Robert Luke`_
 - `Stefan Appelhoff`_
 
 Detailed list of changes
