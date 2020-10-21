@@ -31,7 +31,7 @@ Notable changes
   Consequently, you will need to update your existing code, too.
   See the `API changes`_ section for an overview of which functions have
   changed or have been removed, and follow
-  :ref:`this introduction<bidspath-intro>`
+  :ref:`this introduction<bidspath-intro>` and our 
   to learn about the basics of ``BIDSPath``. Don't worry – it's going to be a
   breeze! 🤗
 

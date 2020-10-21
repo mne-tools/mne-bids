@@ -49,7 +49,10 @@ Example:
 Mastering BIDSPath
 ------------------
 To be able to effectively use MNE-BIDS, you need to understand how to work with
-the ``BIDSPath`` object. Follow `this example <auto_examples/bidspath.html>`_
+the ``BIDSPath`` object. Follow 
+`our basic example <auto_examples/read_bids_datasets.html>`_ on how to read a
+BIDS dataset, and have a look at
+`this introduction <auto_examples/bidspath.html>`_
 to learn everything you need!
 
 

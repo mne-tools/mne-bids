@@ -1,6 +1,6 @@
 """
 ===============================================
-10. Changing which channels are marked as "bad"
+03. Changing which channels are marked as "bad"
 ===============================================
 
 You can use MNE-BIDS to mark MEG or (i)EEG recording channels as "bad", for
