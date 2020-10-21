@@ -5,7 +5,7 @@ MNE-BIDS is a Python package that allows you to read and write
 `BIDS <https://bids.neuroimaging.io/>`_\ -compatible datasets with the help of
 `MNE-Python <https://mne.tools/stable/index.html>`_.
 
-.. image:: assets/MNE-BIDS.png
+.. image:: _static/MNE-BIDS.png
    :alt: Schematic: From raw data to BIDS using MNE-BIDS
 
 Why?

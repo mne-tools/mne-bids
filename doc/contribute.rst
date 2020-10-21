@@ -10,7 +10,7 @@ writing documentation, or contributing code.
 Development takes place on the collaborative platform GitHub at
 `github.com/mne-tools/mne-bids <https://github.com/mne-tools/mne-bids>`_.
 
-.. image:: assets/GitHub.png
+.. image:: _static/GitHub.png
    :width: 400
    :alt: GitHub Logo
    :target: https://github.com/mne-tools/mne-bids

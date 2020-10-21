@@ -1,7 +1,7 @@
 """
-===========================
-An introduction to BIDSPath
-===========================
+===============================
+10. An introduction to BIDSPath
+===============================
 
 BIDSPath is MNE-BIDS's working horse when it comes to file and folder
 operations. Learn here how to use it.
