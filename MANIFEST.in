@@ -3,7 +3,7 @@ include LICENSE
 include mne_bids/__init__.py
 
 recursive-include examples *.py
-recursive-include examples *.txt
+recursive-include examples README.rst
 
 recursive-include mne_bids *.py
 

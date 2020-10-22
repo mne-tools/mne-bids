@@ -1,6 +1,6 @@
 """
 ===============================================
-10. Changing which channels are marked as "bad"
+03. Changing which channels are marked as "bad"
 ===============================================
 
 You can use MNE-BIDS to mark MEG or (i)EEG recording channels as "bad", for
@@ -24,8 +24,6 @@ incorrectly marked as bad.
 import os.path as op
 import mne
 from mne_bids import BIDSPath, write_raw_bids, read_raw_bids, mark_bad_channels
-
-mne.set_log_level('error')  # Suppress distracting log messages.
 
 data_path = mne.datasets.sample.data_path()
 raw_fname = op.join(data_path, 'MEG', 'sample', 'sample_audvis_raw.fif')

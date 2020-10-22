@@ -1,6 +1,6 @@
 """
 =======================================================
-01. Creating BIDS-compatible folder names and filenames
+11. Creating BIDS-compatible folder names and filenames
 =======================================================
 
 The Brain Imaging Data Structure (BIDS) has standard conventions for file
@@ -10,7 +10,7 @@ wish to create these files/folders on your own.
 .. note::
 
    You may automatically convert Raw objects to BIDS-compatible files with
-   `write_raw_bids`. This example is for manually creating files/folders.
+   ``write_raw_bids``. This example is for manually creating files/folders.
 """
 
 # Authors: Chris Holdgraf <choldgraf@berkeley.edu>
