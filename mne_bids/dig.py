@@ -350,11 +350,13 @@ def _write_dig_bids(electrodes_path, coordsystem_path, root,
                 coordsystem_path = BIDSPath(
                     subject=subject_id, session=session_id,
                     acquisition=acquisition, space=coord_frame,
+                    datatype=datatype,
                     suffix='coordsystem', extension='.json',
                     root=root)
                 electrodes_path = BIDSPath(
                     subject=subject_id, session=session_id,
                     acquisition=acquisition, space=coord_frame,
+                    datatype=datatype,
                     suffix='electrodes', extension='.tsv',
                     root=root)
                 coord_frame = 'Other'
