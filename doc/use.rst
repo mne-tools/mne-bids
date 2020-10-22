@@ -7,14 +7,6 @@ Using MNE-BIDS
    :local:
    :depth: 1
 
-Python API reference
---------------------
-See the :doc:`API documentation <api>`.
-
-Command line interface reference
---------------------------------
-See the :doc:`CLI documentation <generated/cli>`.
-
 Quickstart
 ----------
 
