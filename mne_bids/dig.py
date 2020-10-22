@@ -20,7 +20,6 @@ from mne_bids.config import (BIDS_IEEG_COORDINATE_FRAMES,
 from mne_bids.tsv_handler import _from_tsv
 from mne_bids.utils import (_extract_landmarks, _scale_coord_to_meters,
                             _write_json, _write_tsv)
-from mne_bids import BIDSPath
 from mne_bids.path import get_entities_from_fname
 
 
