@@ -27,7 +27,6 @@ def update_sidecars(bids_path, sidecar_template_fpath, verbose=True):
     >>> bids_path = BIDSPath(root='./')
     >>> update_sidecars(bids_path, sidecar_template_fpath)
     """
-
     # get all matching json files
     bids_path.update(extension='.json')
     sidecar_paths = bids_path.match()
@@ -59,11 +58,11 @@ def update_sidecars(bids_path, sidecar_template_fpath, verbose=True):
         only_in_template = template_fields.difference(default_fields)
         in_both = template_fields.intersection(default_fields)
         for field in only_in_template:
-            if sidecar_tmp[field] == None:
+            if sidecar_tmp[field] is None:
                 sidecar_tmp.pop(field)
         field_order = list(not_in_template) + list(sidecar_tmp.keys())
         for field in in_both:
-            if sidecar_tmp[field] == None:
+            if sidecar_tmp[field] is None:
                 sidecar_tmp.pop(field)
 
         # Update values in generate sidecar with non-None values in template
