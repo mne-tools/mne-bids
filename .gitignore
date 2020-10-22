@@ -1,3 +1,5 @@
-.vscode
-.pytest_cache
+.vscode/
+.pytest_cache/
+build/
+dist/
 junit-results.xml
