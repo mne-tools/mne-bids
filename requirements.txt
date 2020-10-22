@@ -1,9 +1,9 @@
 numpy>=1.14
 scipy>=0.18.1
-mne>=0.19.1
+mne>=0.21
 nibabel>=2.2
-pybv
-pytest<5.4
+pybv>=0.2
+pytest
 pytest-cov
 pytest-sugar
 check-manifest
