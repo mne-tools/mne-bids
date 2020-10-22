@@ -3,4 +3,6 @@
 build/
 dist/
 doc/
+mne-bids/
+examples/
 junit-results.xml
