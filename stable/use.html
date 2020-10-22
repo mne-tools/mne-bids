@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Using MNE-BIDS &#8212; mne_bids 0.5 documentation</title>
+    <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/style.css" />
+    <link rel="stylesheet" type="text/css" href="_static/gallery.css" />
+    <link rel="stylesheet" type="text/css" href="_static/gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="_static/gallery-dataframe.css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="index.html">
+          MNE-BIDS</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.5</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="whats_new.html">News</a></li>
+                <li><a href="install.html">Install</a></li>
+                <li><a href="#">Use</a></li>
+                <li><a href="api.html">API</a></li>
+                <li><a href="generated/cli.html">CLI</a></li>
+                <li><a href="contribute.html">Contribute!</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"></ul>
+</li>
+              
+            
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+<div class="navbar-form navbar-right navbar-btn dropdown btn-group-sm" style="margin-left: 20px; margin-top: 5px; margin-bottom: 5px">
+  <button type="button" class="btn btn-primary navbar-btn dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown">
+    v0.5
+    <span class="caret"></span>
+  </button>
+  <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+    <li><a href="https://mne.tools/mne-bids/dev/index.html">Development</a></li>
+    <li><a href="https://mne.tools/mne-bids/stable/index.html">Stable</a></li>
+    <li><a href="https://mne.tools/mne-bids/v0.5/index.html">v0.5</a></li>
+    <li><a href="https://mne.tools/mne-bids/v0.4/index.html">v0.4</a></li>
+    <li><a href="https://mne.tools/mne-bids/v0.3/index.html">v0.3</a></li>
+    <li><a href="https://mne.tools/mne-bids/v0.2/index.html">v0.2</a></li>
+    <li><a href="https://mne.tools/mne-bids/v0.1/index.html">v0.1</a></li>
+  </ul>
+</div>
+
+
+            
+<form class="navbar-form navbar-right" action="search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <div class="section" id="using-mne-bids">
+<h1>Using MNE-BIDS<a class="headerlink" href="#using-mne-bids" title="Permalink to this headline">¶</a></h1>
+<div class="contents local topic" id="contents">
+<p class="topic-title">Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#quickstart" id="id12">Quickstart</a></p></li>
+<li><p><a class="reference internal" href="#mastering-bidspath" id="id13">Mastering BIDSPath</a></p></li>
+<li><p><a class="reference internal" href="#examples" id="id14">Examples</a></p></li>
+</ul>
+</div>
+<div class="section" id="quickstart">
+<h2><a class="toc-backref" href="#id12">Quickstart</a><a class="headerlink" href="#quickstart" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="python">
+<h3>Python<a class="headerlink" href="#python" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">mne</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">mne_bids</span> <span class="kn">import</span> <span class="n">BIDSPath</span><span class="p">,</span> <span class="n">write_raw_bids</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">raw</span> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_raw_fif</span><span class="p">(</span><span class="s1">&#39;my_old_file.fif&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bids_path</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="s1">&#39;01&#39;</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="s1">&#39;01, run=&#39;</span><span class="mi">05</span><span class="s1">&#39;,</span>
+<span class="go">                         datatype=&#39;meg&#39;, bids_root=&#39;./bids_dataset&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">write_raw_bids</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="command-line-interface">
+<h3>Command Line Interface<a class="headerlink" href="#command-line-interface" title="Permalink to this headline">¶</a></h3>
+<p>Simply type <code class="docutils literal notranslate"><span class="pre">mne_bids</span></code> in your command line and press enter to see a list of
+accepted commands. Then type <code class="docutils literal notranslate"><span class="pre">mne_bids</span> <span class="pre">&lt;command&gt;</span> <span class="pre">--help</span></code>, where <code class="docutils literal notranslate"><span class="pre">&lt;command&gt;</span></code>
+is one of the accepted commands, to get more information about it.</p>
+<p>Example:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ mne_bids raw_to_bids --subject_id sub01 --task rest --raw data.edf --bids_root new_path
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="mastering-bidspath">
+<span id="bidspath-intro"></span><h2><a class="toc-backref" href="#id13">Mastering BIDSPath</a><a class="headerlink" href="#mastering-bidspath" title="Permalink to this headline">¶</a></h2>
+<p>To be able to effectively use MNE-BIDS, you need to understand how to work with
+the <code class="docutils literal notranslate"><span class="pre">BIDSPath</span></code> object. Follow
+<a class="reference external" href="auto_examples/read_bids_datasets.html">our basic example</a> on how to read a
+BIDS dataset, and have a look at
+<a class="reference external" href="auto_examples/bidspath.html">this introduction</a>
+to learn everything you need!</p>
+</div>
+<div class="section" id="examples">
+<span id="sphx-glr-auto-examples"></span><h2><a class="toc-backref" href="#id14">Examples</a><a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>The following examples demonstrate some common use-cases of MNE-BIDS.
+Each example has a badge called “Binder” at the end. By clicking on that badge,
+you can interactively run the examples in your browser.</p>
+<p>The examples are loosely ordered from basic to more advanced use cases.</p>
+<div class="sphx-glr-thumbcontainer" tooltip="When working with electrophysiological data in the BIDS format, we usually have varying data ty..."><div class="figure align-default" id="id1">
+<img alt="01. Read BIDS datasets" src="_images/sphx_glr_read_bids_datasets_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="auto_examples/read_bids_datasets.html#sphx-glr-auto-examples-read-bids-datasets-py"><span class="std std-ref">01. Read BIDS datasets</span></a></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="toctree-wrapper compound">
+</div>
+<div class="sphx-glr-thumbcontainer" tooltip="In this example we will use MNE-BIDS to organize the MNE sample data according to the BIDS stan..."><div class="figure align-default" id="id2">
+<img alt="02. Convert MNE sample data to BIDS format" src="_images/sphx_glr_convert_mne_sample_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="auto_examples/convert_mne_sample.html#sphx-glr-auto-examples-convert-mne-sample-py"><span class="std std-ref">02. Convert MNE sample data to BIDS format</span></a></span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="toctree-wrapper compound">
+</div>
+<div class="sphx-glr-thumbcontainer" tooltip="You can use MNE-BIDS to mark MEG or (i)EEG recording channels as &quot;bad&quot;, for example if the conn..."><div class="figure align-default" id="id3">
+<img alt="03. Changing which channels are marked as &quot;bad&quot;" src="_images/sphx_glr_mark_bad_channels_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="auto_examples/mark_bad_channels.html#sphx-glr-auto-examples-mark-bad-channels-py"><span class="std std-ref">03. Changing which channels are marked as “bad”</span></a></span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="toctree-wrapper compound">
+</div>
+<div class="sphx-glr-thumbcontainer" tooltip="In this example, we use MNE-BIDS to create a BIDS-compatible directory of EEG data. Specificall..."><div class="figure align-default" id="id4">
+<img alt="04. Convert EEG data to BIDS format" src="_images/sphx_glr_convert_eeg_to_bids_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="auto_examples/convert_eeg_to_bids.html#sphx-glr-auto-examples-convert-eeg-to-bids-py"><span class="std std-ref">04. Convert EEG data to BIDS format</span></a></span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="toctree-wrapper compound">
+</div>
+<div class="sphx-glr-thumbcontainer" tooltip="05. BIDS conversion for group studies"><div class="figure align-default" id="id5">
+<img alt="05. BIDS conversion for group studies" src="_images/sphx_glr_convert_group_studies_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="auto_examples/convert_group_studies.html#sphx-glr-auto-examples-convert-group-studies-py"><span class="std std-ref">05. BIDS conversion for group studies</span></a></span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="toctree-wrapper compound">
+</div>
+<div class="sphx-glr-thumbcontainer" tooltip="According to the EEG extension to BIDS [1]_, the `BrainVision data format`_ is one of the recom..."><div class="figure align-default" id="id6">
+<img alt="06. Rename BrainVision EEG data files" src="_images/sphx_glr_rename_brainvision_files_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="auto_examples/rename_brainvision_files.html#sphx-glr-auto-examples-rename-brainvision-files-py"><span class="std std-ref">06. Rename BrainVision EEG data files</span></a></span><a class="headerlink" href="#id6" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="toctree-wrapper compound">
+</div>
+<div class="sphx-glr-thumbcontainer" tooltip="When working with MEEG data in the domain of source localization, we usually have to deal with ..."><div class="figure align-default" id="id7">
+<img alt="07. Save and load T1-weighted MRI scan along with anatomical landmarks in BIDS" src="_images/sphx_glr_convert_mri_and_trans_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="auto_examples/convert_mri_and_trans.html#sphx-glr-auto-examples-convert-mri-and-trans-py"><span class="std std-ref">07. Save and load T1-weighted MRI scan along with anatomical landmarks in BIDS</span></a></span><a class="headerlink" href="#id7" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="toctree-wrapper compound">
+</div>
+<div class="sphx-glr-thumbcontainer" tooltip="In this example, we use MNE-BIDS to create a BIDS-compatible directory of iEEG data. Specifical..."><div class="figure align-default" id="id8">
+<img alt="08. Convert iEEG data to BIDS format" src="_images/sphx_glr_convert_ieeg_to_bids_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="auto_examples/convert_ieeg_to_bids.html#sphx-glr-auto-examples-convert-ieeg-to-bids-py"><span class="std std-ref">08. Convert iEEG data to BIDS format</span></a></span><a class="headerlink" href="#id8" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="toctree-wrapper compound">
+</div>
+<div class="sphx-glr-thumbcontainer" tooltip="This example demonstrates how to store empty room data in BIDS format and how to retrieve them."><div class="figure align-default" id="id9">
+<img alt="09. Storing empty room data in BIDS format" src="_images/sphx_glr_convert_empty_room_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="auto_examples/convert_empty_room.html#sphx-glr-auto-examples-convert-empty-room-py"><span class="std std-ref">09. Storing empty room data in BIDS format</span></a></span><a class="headerlink" href="#id9" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="toctree-wrapper compound">
+</div>
+<div class="sphx-glr-thumbcontainer" tooltip="BIDSPath is MNE-BIDS&#x27;s working horse when it comes to file and folder operations. Learn here ho..."><div class="figure align-default" id="id10">
+<img alt="10. An introduction to BIDSPath" src="_images/sphx_glr_bidspath_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="auto_examples/bidspath.html#sphx-glr-auto-examples-bidspath-py"><span class="std std-ref">10. An introduction to BIDSPath</span></a></span><a class="headerlink" href="#id10" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="toctree-wrapper compound">
+</div>
+<div class="sphx-glr-thumbcontainer" tooltip="The Brain Imaging Data Structure (BIDS) has standard conventions for file names and folder hier..."><div class="figure align-default" id="id11">
+<img alt="11. Creating BIDS-compatible folder names and filenames" src="_images/sphx_glr_create_bids_folder_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="auto_examples/create_bids_folder.html#sphx-glr-auto-examples-create-bids-folder-py"><span class="std std-ref">11. Creating BIDS-compatible folder names and filenames</span></a></span><a class="headerlink" href="#id11" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="toctree-wrapper compound">
+</div>
+<div class="sphx-glr-clear"></div><div class="sphx-glr-footer class sphx-glr-footer-gallery docutils container">
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="_downloads/07fcc19ba03226cd3d83d4e40ec44385/auto_examples_python.zip"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">all</span> <span class="pre">examples</span> <span class="pre">in</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">auto_examples_python.zip</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="_downloads/6f1e7a639e0699d6164445b55e6c116d/auto_examples_jupyter.zip"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">all</span> <span class="pre">examples</span> <span class="pre">in</span> <span class="pre">Jupyter</span> <span class="pre">notebooks:</span> <span class="pre">auto_examples_jupyter.zip</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-10-22.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
+    </p>
+  </div>
+</footer>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-37225609-2"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-37225609-2');
+</script>
+
+  </body>
+</html>

@@ -1,0 +1,10 @@
+.vscode/
+.pytest_cache/
+__pycache__
+build/
+dist/
+doc/
+mne-bids/
+mne_bids.egg-info/
+examples/
+junit-results.xml

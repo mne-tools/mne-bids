@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>mne_bids.report &#8212; mne_bids 0.5 documentation</title>
+    <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/style.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/gallery-dataframe.css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../../_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../index.html">
+          MNE-BIDS</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.5</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../../whats_new.html">News</a></li>
+                <li><a href="../../install.html">Install</a></li>
+                <li><a href="../../use.html">Use</a></li>
+                <li><a href="../../api.html">API</a></li>
+                <li><a href="../../generated/cli.html">CLI</a></li>
+                <li><a href="../../contribute.html">Contribute!</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"></ul>
+</li>
+              
+            
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+<div class="navbar-form navbar-right navbar-btn dropdown btn-group-sm" style="margin-left: 20px; margin-top: 5px; margin-bottom: 5px">
+  <button type="button" class="btn btn-primary navbar-btn dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown">
+    v0.5
+    <span class="caret"></span>
+  </button>
+  <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+    <li><a href="https://mne.tools/mne-bids/dev/index.html">Development</a></li>
+    <li><a href="https://mne.tools/mne-bids/stable/index.html">Stable</a></li>
+    <li><a href="https://mne.tools/mne-bids/v0.5/index.html">v0.5</a></li>
+    <li><a href="https://mne.tools/mne-bids/v0.4/index.html">v0.4</a></li>
+    <li><a href="https://mne.tools/mne-bids/v0.3/index.html">v0.3</a></li>
+    <li><a href="https://mne.tools/mne-bids/v0.2/index.html">v0.2</a></li>
+    <li><a href="https://mne.tools/mne-bids/v0.1/index.html">v0.1</a></li>
+  </ul>
+</div>
+
+
+            
+<form class="navbar-form navbar-right" action="../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <h1>Source code for mne_bids.report</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Make BIDS report from dataset and sidecar files.&quot;&quot;&quot;</span>
+<span class="c1"># Authors: Adam Li &lt;adam2392@gmail.com&gt;</span>
+<span class="c1">#</span>
+<span class="c1"># License: BSD (3-clause)</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">os.path</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="kn">import</span> <span class="nn">textwrap</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">mne.externals.tempita</span> <span class="kn">import</span> <span class="n">Template</span>
+<span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="n">warn</span>
+
+<span class="kn">from</span> <span class="nn">mne_bids.config</span> <span class="kn">import</span> <span class="n">DOI</span><span class="p">,</span> <span class="n">ALLOWED_DATATYPES</span>
+<span class="kn">from</span> <span class="nn">mne_bids.tsv_handler</span> <span class="kn">import</span> <span class="n">_from_tsv</span>
+<span class="kn">from</span> <span class="nn">mne_bids.path</span> <span class="kn">import</span> <span class="p">(</span><span class="n">get_datatypes</span><span class="p">,</span> <span class="n">get_entity_vals</span><span class="p">,</span> <span class="n">BIDSPath</span><span class="p">,</span>
+                           <span class="n">_parse_ext</span><span class="p">,</span> <span class="n">_find_matching_sidecar</span><span class="p">,</span>
+                           <span class="n">get_entities_from_fname</span><span class="p">)</span>
+
+<span class="c1"># functions to be used inside Template strings</span>
+<span class="n">FUNCTION_TEMPLATE</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;{{py:  </span>
+<span class="s2">def _pretty_str(listed):</span>
+<span class="s2">    # make strings a sequence of &#39;,&#39; and &#39;and&#39;</span>
+<span class="s2">    if not isinstance(listed, list):</span>
+<span class="s2">        listed = list(listed)</span>
+<span class="s2">    </span>
+<span class="s2">    if len(listed) &lt;= 1:</span>
+<span class="s2">        return &#39;,&#39;.join(listed)</span>
+<span class="s2">    return &#39;</span><span class="si">{}</span><span class="s2">, and </span><span class="si">{}</span><span class="s2">&#39;.format(&#39;, &#39;.join(listed[:-1]), listed[-1])</span>
+
+<span class="s2">def _range_str(minval, maxval, meanval, stdval, n_unknown, type):</span>
+<span class="s2">    if minval == &#39;n/a&#39;:</span>
+<span class="s2">        return &#39;ages all unknown&#39;</span>
+<span class="s2">        </span>
+<span class="s2">    if n_unknown &gt; 0:</span>
+<span class="s2">        unknown_str = f&#39;; </span><span class="si">{n_unknown}</span><span class="s2"> with unknown </span><span class="si">{type}</span><span class="s2">&#39;</span>
+<span class="s2">    else:</span>
+<span class="s2">        unknown_str = &#39;&#39;</span>
+<span class="s2">    return f&#39;ages ranged from {round(minval, 2)} to {round(maxval, 2)} &#39;</span><span class="se">\</span>
+<span class="s2">           f&#39;(mean = {round(meanval, 2)}, std = {round(stdval, 2)}</span><span class="si">{unknown_str}</span><span class="s2">)&#39;</span>
+<span class="s2">           </span>
+<span class="s2">def _summarize_participant_hand(hands):</span>
+<span class="s2">    n_unknown = len([hand for hand in hands if hand == &#39;n/a&#39;])</span>
+
+<span class="s2">    if n_unknown == len(hands):</span>
+<span class="s2">        return f&#39;handedness were all unknown&#39;</span>
+<span class="s2">    n_rhand = len([hand for hand in hands if hand == &#39;R&#39;])</span>
+<span class="s2">    n_lhand = len([hand for hand in hands if hand == &#39;L&#39;])</span>
+<span class="s2">    n_ambidex = len([hand for hand in hands if hand == &#39;A&#39;])</span>
+
+<span class="s2">    return f&#39;comprised of </span><span class="si">{n_rhand}</span><span class="s2"> right hand, </span><span class="si">{n_lhand}</span><span class="s2"> left hand &#39; </span><span class="se">\</span>
+<span class="s2">           f&#39;and </span><span class="si">{n_ambidex}</span><span class="s2"> ambidextrous&#39;</span>
+
+<span class="s2">def _summarize_participant_sex(sexs):</span>
+<span class="s2">    n_unknown = len([sex for sex in sexs if sex == &#39;n/a&#39;])</span>
+
+<span class="s2">    if n_unknown == len(sexs):</span>
+<span class="s2">        return f&#39;sex were all unknown&#39;</span>
+<span class="s2">    n_males = len([sex for sex in sexs if sex == &#39;M&#39;])</span>
+<span class="s2">    n_females = len([sex for sex in sexs if sex == &#39;F&#39;])</span>
+
+<span class="s2">    return f&#39;comprised of </span><span class="si">{n_males}</span><span class="s2"> men and </span><span class="si">{n_females}</span><span class="s2"> women&#39;        </span>
+
+<span class="s2">def _length_recording_str(length_recordings):</span>
+<span class="s2">    import numpy as np</span>
+<span class="s2">    if length_recordings is None:</span>
+<span class="s2">        return &#39;&#39;</span>
+<span class="s2">    </span>
+<span class="s2">    min_record_length = round(np.min(length_recordings), 2)</span>
+<span class="s2">    max_record_length = round(np.max(length_recordings), 2)</span>
+<span class="s2">    mean_record_length = round(np.mean(length_recordings), 2)</span>
+<span class="s2">    std_record_length = round(np.std(length_recordings), 2)</span>
+<span class="s2">    total_record_length = round(sum(length_recordings), 2)</span>
+<span class="s2">    </span>
+<span class="s2">    return f&#39; Recording durations ranged from </span><span class="si">{min_record_length}</span><span class="s2"> to </span><span class="si">{max_record_length}</span><span class="s2"> seconds &#39;</span><span class="se">\</span>
+<span class="s2">           f&#39;(mean = </span><span class="si">{mean_record_length}</span><span class="s2">, std = </span><span class="si">{std_record_length}</span><span class="s2">), &#39;</span><span class="se">\</span>
+<span class="s2">           f&#39;for a total of </span><span class="si">{total_record_length}</span><span class="s2"> seconds of data recorded &#39;</span><span class="se">\</span>
+<span class="s2">           f&#39;over all scans.&#39;</span>
+
+<span class="s2">def _summarize_software_filters(software_filters):</span>
+<span class="s2">    if software_filters in [</span><span class="si">{}</span><span class="s2">, &#39;n/a&#39;]:</span>
+<span class="s2">        return &#39;&#39;</span>
+<span class="s2">    </span>
+<span class="s2">    msg = &#39;&#39;</span>
+<span class="s2">    for key, value in software_filters.items():</span>
+<span class="s2">        msg += f&#39;</span><span class="si">{key}</span><span class="s2">&#39;</span>
+<span class="s2">        </span>
+<span class="s2">        if isinstance(value, dict) and value:</span>
+<span class="s2">            parameters = []</span>
+<span class="s2">            for param_name, param_value in value.items():</span>
+<span class="s2">                if param_name and param_value:</span>
+<span class="s2">                    parameters.append(f&#39;</span><span class="si">{param_value}</span><span class="s2"> </span><span class="si">{param_name}</span><span class="s2">&#39;)</span>
+<span class="s2">            if parameters:</span>
+<span class="s2">                msg += &#39; with parameters &#39;</span>
+<span class="s2">                msg += &#39;, &#39;.join(parameters)</span>
+<span class="s2">    return msg</span>
+<span class="s2">    </span>
+<span class="s2">}}&quot;&quot;&quot;</span>  <span class="c1"># noqa</span>
+
+<span class="n">BIDS_DATASET_TEMPLATE</span> <span class="o">=</span> \
+    <span class="sd">&quot;&quot;&quot;{{if name == &#39;n/a&#39;}}This{{else}}The {{name}}{{endif}}</span>
+<span class="sd">dataset was created with BIDS version {{bids_version}}</span>
+<span class="sd">by {{_pretty_str(authors)}}. This report was generated with</span>
+<span class="sd">MNE-BIDS ({{mne_bids_doi}}). &quot;&quot;&quot;</span>
+<span class="n">BIDS_DATASET_TEMPLATE</span> <span class="o">+=</span> \
+    <span class="sd">&quot;&quot;&quot;The dataset consists of</span>
+<span class="sd">{{n_subjects}} participants ({{PARTICIPANTS_TEMPLATE}}){{if n_sessions}}and {{n_sessions}} recording sessions: {{(_pretty_str(sessions))}}.{{else}}.{{endif}} &quot;&quot;&quot;</span>  <span class="c1"># noqa</span>
+
+<span class="n">PARTICIPANTS_TEMPLATE</span> <span class="o">=</span> \
+    <span class="sd">&quot;&quot;&quot;{{_summarize_participant_sex(sexs)}};</span>
+<span class="sd">{{_summarize_participant_hand(hands)}}; {{_range_str(min_age, max_age, mean_age, std_age, n_age_unknown, &#39;age&#39;)}}&quot;&quot;&quot;</span>  <span class="c1"># noqa</span>
+
+<span class="n">DATATYPE_AGNOSTIC_TEMPLATE</span> <span class="o">=</span> \
+    <span class="sd">&quot;&quot;&quot;Data was recorded using a {{_pretty_str(system)}} system</span>
+<span class="sd">{{if manufacturer}}({{_pretty_str(manufacturer)}} manufacturer){{endif}}</span>
+<span class="sd">sampled at {{_pretty_str(sfreq)}} Hz</span>
+<span class="sd">with line noise at {{_pretty_str(powerlinefreq)}} Hz{{if _summarize_software_filters(software_filters)}} using</span>
+<span class="sd">{{_summarize_software_filters(software_filters)}}.{{else}}.{{endif}}</span>
+<span class="sd">{{if n_scans &gt; 1}}There were {{n_scans}} scans in total.</span>
+<span class="sd">{{else}}There was {{n_scans}} scan in total.{{endif}}{{_length_recording_str(length_recordings)}}</span>
+<span class="sd">For each dataset, there were on average {{mean_chs}} (std = {{std_chs}}) recording channels per scan,</span>
+<span class="sd">out of which {{mean_good_chs}} (std = {{std_good_chs}}) were used in analysis</span>
+<span class="sd">({{mean_bad_chs}} +/- {{std_bad_chs}} were removed from analysis). &quot;&quot;&quot;</span>  <span class="c1"># noqa</span>
+
+
+<span class="k">def</span> <span class="nf">_pretty_dict</span><span class="p">(</span><span class="n">template_dict</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Remove problematic blank spaces.&quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">template_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">val</span> <span class="o">==</span> <span class="s1">&#39; &#39;</span><span class="p">:</span>
+            <span class="n">template_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;n/a&#39;</span>
+
+
+<span class="k">def</span> <span class="nf">_summarize_dataset</span><span class="p">(</span><span class="n">root</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Summarize the dataset_desecription.json file.</span>
+
+<span class="sd">    Required dataset descriptors include:</span>
+<span class="sd">        - Name</span>
+<span class="sd">        - BIDSVersion</span>
+
+<span class="sd">    Added descriptors include:</span>
+<span class="sd">        - Authors</span>
+<span class="sd">        - DOI</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    root : str | pathlib.Path</span>
+<span class="sd">        The path of the root of the BIDS compatible folder.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    template_dict : dict</span>
+<span class="sd">        A dictionary of values for various template strings.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">dataset_descrip_fpath</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span>
+                                    <span class="s1">&#39;dataset_description.json&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">op</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">dataset_descrip_fpath</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">dict</span><span class="p">()</span>
+
+    <span class="c1"># read file and &#39;REQUIRED&#39; components of it</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">dataset_descrip_fpath</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fin</span><span class="p">:</span>
+        <span class="n">dataset_description</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fin</span><span class="p">)</span>
+
+    <span class="c1"># create dictionary to pass into template string</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">dataset_description</span><span class="p">[</span><span class="s1">&#39;Name&#39;</span><span class="p">]</span>
+    <span class="n">bids_version</span> <span class="o">=</span> <span class="n">dataset_description</span><span class="p">[</span><span class="s1">&#39;BIDSVersion&#39;</span><span class="p">]</span>
+    <span class="n">authors</span> <span class="o">=</span> <span class="n">dataset_description</span><span class="p">[</span><span class="s1">&#39;Authors&#39;</span><span class="p">]</span>
+    <span class="n">template_dict</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
+        <span class="s1">&#39;bids_version&#39;</span><span class="p">:</span> <span class="n">bids_version</span><span class="p">,</span>
+        <span class="s1">&#39;mne_bids_doi&#39;</span><span class="p">:</span> <span class="n">DOI</span><span class="p">,</span>
+        <span class="s1">&#39;authors&#39;</span><span class="p">:</span> <span class="n">authors</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="n">_pretty_dict</span><span class="p">(</span><span class="n">template_dict</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">template_dict</span>
+
+
+<span class="k">def</span> <span class="nf">_summarize_participants_tsv</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Summarize `participants.tsv` file in BIDS root directory.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    root : str | pathlib.Path</span>
+<span class="sd">        The path of the root of the BIDS compatible folder.</span>
+<span class="sd">    verbose: bool</span>
+<span class="sd">        Set verbose output to true or false.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    template_dict : dict</span>
+<span class="sd">        A dictionary of values for various template strings.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">participants_tsv_fpath</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="s1">&#39;participants.tsv&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">op</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">participants_tsv_fpath</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">dict</span><span class="p">()</span>
+
+    <span class="n">participants_tsv</span> <span class="o">=</span> <span class="n">_from_tsv</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">participants_tsv_fpath</span><span class="p">))</span>
+    <span class="n">p_ids</span> <span class="o">=</span> <span class="n">participants_tsv</span><span class="p">[</span><span class="s1">&#39;participant_id&#39;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Summarizing participants.tsv </span><span class="si">{</span><span class="n">participants_tsv_fpath</span><span class="si">}</span><span class="s1">...&#39;</span><span class="p">)</span>
+
+    <span class="c1"># summarize sex count statistics</span>
+    <span class="n">keys</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;M&#39;</span><span class="p">,</span> <span class="s1">&#39;F&#39;</span><span class="p">,</span> <span class="s1">&#39;n/a&#39;</span><span class="p">]</span>
+    <span class="n">p_sex</span> <span class="o">=</span> <span class="n">participants_tsv</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;sex&#39;</span><span class="p">)</span>
+    <span class="n">sexs</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;n/a&#39;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">p_sex</span><span class="p">:</span>
+        <span class="c1"># only summarize sex if it conforms to</span>
+        <span class="c1"># mne-bids handedness</span>
+        <span class="k">if</span> <span class="nb">all</span><span class="p">([</span><span class="n">sex</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="ow">in</span> <span class="n">keys</span>
+                <span class="k">for</span> <span class="n">sex</span> <span class="ow">in</span> <span class="n">p_sex</span> <span class="k">if</span> <span class="n">sex</span> <span class="o">!=</span> <span class="s1">&#39;n/a&#39;</span><span class="p">]):</span>
+            <span class="n">sexs</span> <span class="o">=</span> <span class="n">p_sex</span>
+
+    <span class="c1"># summarize hand count statistics</span>
+    <span class="n">keys</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;R&#39;</span><span class="p">,</span> <span class="s1">&#39;L&#39;</span><span class="p">,</span> <span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="s1">&#39;n/a&#39;</span><span class="p">]</span>
+    <span class="n">p_hands</span> <span class="o">=</span> <span class="n">participants_tsv</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;hand&#39;</span><span class="p">)</span>
+    <span class="n">hands</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;n/a&#39;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">p_hands</span><span class="p">:</span>
+        <span class="c1"># only summarize handedness if it conforms to</span>
+        <span class="c1"># mne-bids handedness</span>
+        <span class="k">if</span> <span class="nb">all</span><span class="p">([</span><span class="n">hand</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="ow">in</span> <span class="n">keys</span>
+                <span class="k">for</span> <span class="n">hand</span> <span class="ow">in</span> <span class="n">p_hands</span> <span class="k">if</span> <span class="n">hand</span> <span class="o">!=</span> <span class="s1">&#39;n/a&#39;</span><span class="p">]):</span>
+            <span class="n">hands</span> <span class="o">=</span> <span class="n">p_hands</span>
+
+    <span class="c1"># summarize age statistics: mean, std, min, max</span>
+    <span class="n">p_ages</span> <span class="o">=</span> <span class="n">participants_tsv</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;age&#39;</span><span class="p">)</span>
+    <span class="n">min_age</span><span class="p">,</span> <span class="n">max_age</span> <span class="o">=</span> <span class="s1">&#39;n/a&#39;</span><span class="p">,</span> <span class="s1">&#39;n/a&#39;</span>
+    <span class="n">mean_age</span><span class="p">,</span> <span class="n">std_age</span> <span class="o">=</span> <span class="s1">&#39;n/a&#39;</span><span class="p">,</span> <span class="s1">&#39;n/a&#39;</span>
+    <span class="n">n_age_unknown</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">p_ages</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">p_ages</span><span class="p">:</span>
+        <span class="c1"># only summarize age if they are numerics</span>
+        <span class="k">if</span> <span class="nb">all</span><span class="p">([</span><span class="n">age</span><span class="o">.</span><span class="n">isnumeric</span><span class="p">()</span> <span class="k">for</span> <span class="n">age</span> <span class="ow">in</span> <span class="n">p_ages</span> <span class="k">if</span> <span class="n">age</span> <span class="o">!=</span> <span class="s1">&#39;n/a&#39;</span><span class="p">]):</span>
+            <span class="n">age_list</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">age</span><span class="p">)</span> <span class="k">for</span> <span class="n">age</span> <span class="ow">in</span> <span class="n">p_ages</span> <span class="k">if</span> <span class="n">age</span> <span class="o">!=</span> <span class="s1">&#39;n/a&#39;</span><span class="p">]</span>
+            <span class="n">n_age_unknown</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">p_ids</span><span class="p">)</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">age_list</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">age_list</span><span class="p">:</span>
+                <span class="n">min_age</span><span class="p">,</span> <span class="n">max_age</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">age_list</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">age_list</span><span class="p">)</span>
+                <span class="n">mean_age</span><span class="p">,</span> <span class="n">std_age</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">age_list</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">age_list</span><span class="p">)</span>
+
+    <span class="n">template_dict</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;sexs&#39;</span><span class="p">:</span> <span class="n">sexs</span><span class="p">,</span>
+        <span class="s1">&#39;hands&#39;</span><span class="p">:</span> <span class="n">hands</span><span class="p">,</span>
+        <span class="s1">&#39;n_age_unknown&#39;</span><span class="p">:</span> <span class="n">n_age_unknown</span><span class="p">,</span>
+        <span class="s1">&#39;mean_age&#39;</span><span class="p">:</span> <span class="n">mean_age</span><span class="p">,</span>
+        <span class="s1">&#39;std_age&#39;</span><span class="p">:</span> <span class="n">std_age</span><span class="p">,</span>
+        <span class="s1">&#39;min_age&#39;</span><span class="p">:</span> <span class="n">min_age</span><span class="p">,</span>
+        <span class="s1">&#39;max_age&#39;</span><span class="p">:</span> <span class="n">max_age</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">template_dict</span>
+
+
+<span class="k">def</span> <span class="nf">_summarize_scans</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Summarize scans in BIDS root directory.</span>
+
+<span class="sd">    Summarizes scans only if there is a *_scans.tsv file.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    root : str | pathlib.Path</span>
+<span class="sd">        The path of the root of the BIDS compatible folder.</span>
+<span class="sd">    session : str, optional</span>
+<span class="sd">        The session for a item. Corresponds to &quot;ses&quot;.</span>
+<span class="sd">    verbose : bool</span>
+<span class="sd">        Set verbose output to true or false.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    template_dict : dict</span>
+<span class="sd">        A dictionary of values for various template strings.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">root</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">session</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">search_str</span> <span class="o">=</span> <span class="s1">&#39;*_scans.tsv&#39;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">search_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;*ses-</span><span class="si">{</span><span class="n">session</span><span class="si">}</span><span class="s1">&#39;</span> \
+                     <span class="sa">f</span><span class="s1">&#39;*_scans.tsv&#39;</span>
+    <span class="n">scans_fpaths</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">root</span><span class="o">.</span><span class="n">rglob</span><span class="p">(</span><span class="n">search_str</span><span class="p">))</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">scans_fpaths</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">warn</span><span class="p">(</span><span class="s1">&#39;No *scans.tsv files found. Currently, &#39;</span>
+             <span class="s1">&#39;we do not generate a report without the scans.tsv files.&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">dict</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Summarizing scans.tsv files </span><span class="si">{</span><span class="n">scans_fpaths</span><span class="si">}</span><span class="s1">...&#39;</span><span class="p">)</span>
+
+    <span class="c1"># summarize sidecar.json, channels.tsv template</span>
+    <span class="n">sidecar_dict</span> <span class="o">=</span> <span class="n">_summarize_sidecar_json</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">scans_fpaths</span><span class="p">,</span>
+                                           <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+    <span class="n">channels_dict</span> <span class="o">=</span> <span class="n">_summarize_channels_tsv</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">scans_fpaths</span><span class="p">,</span>
+                                            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+    <span class="n">template_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="n">template_dict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="o">**</span><span class="n">sidecar_dict</span><span class="p">)</span>
+    <span class="n">template_dict</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="o">**</span><span class="n">channels_dict</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">template_dict</span>
+
+
+<span class="k">def</span> <span class="nf">_summarize_sidecar_json</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">scans_fpaths</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Summarize scans in BIDS root directory.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    root : str | pathlib.Path</span>
+<span class="sd">        The path of the root of the BIDS compatible folder.</span>
+<span class="sd">    scans_fpaths : list</span>
+<span class="sd">        A list of all *_scans.tsv files in ``root``. The summary</span>
+<span class="sd">        will occur for all scans listed in the *_scans.tsv files.</span>
+<span class="sd">    verbose : bool</span>
+<span class="sd">        Set verbose output to true or false.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    template_dict : dict</span>
+<span class="sd">        A dictionary of values for various template strings.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">n_scans</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">powerlinefreqs</span><span class="p">,</span> <span class="n">sfreqs</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(),</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="n">manufacturers</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="n">length_recordings</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="c1"># loop through each scan</span>
+    <span class="k">for</span> <span class="n">scan_fpath</span> <span class="ow">in</span> <span class="n">scans_fpaths</span><span class="p">:</span>
+        <span class="c1"># load in the scans.tsv file</span>
+        <span class="c1"># and read metadata for each scan</span>
+        <span class="n">scans_tsv</span> <span class="o">=</span> <span class="n">_from_tsv</span><span class="p">(</span><span class="n">scan_fpath</span><span class="p">)</span>
+        <span class="n">scans</span> <span class="o">=</span> <span class="n">scans_tsv</span><span class="p">[</span><span class="s1">&#39;filename&#39;</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">scan</span> <span class="ow">in</span> <span class="n">scans</span><span class="p">:</span>
+            <span class="c1"># summarize metadata of recordings</span>
+            <span class="n">bids_path</span><span class="p">,</span> <span class="n">ext</span> <span class="o">=</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">scan</span><span class="p">)</span>
+            <span class="n">datatype</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">scan</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">datatype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ALLOWED_DATATYPES</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="n">n_scans</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="c1"># convert to BIDS Path</span>
+            <span class="n">params</span> <span class="o">=</span> <span class="n">get_entities_from_fname</span><span class="p">(</span><span class="n">bids_path</span><span class="p">)</span>
+            <span class="n">bids_path</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">)</span>
+
+            <span class="c1"># XXX: improve to allow emptyroom</span>
+            <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">subject</span> <span class="o">==</span> <span class="s1">&#39;emptyroom&#39;</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="n">sidecar_fname</span> <span class="o">=</span> <span class="n">_find_matching_sidecar</span><span class="p">(</span><span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span><span class="p">,</span>
+                                                   <span class="n">suffix</span><span class="o">=</span><span class="n">datatype</span><span class="p">,</span>
+                                                   <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.json&#39;</span><span class="p">)</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">sidecar_fname</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fin</span><span class="p">:</span>
+                <span class="n">sidecar_json</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">fin</span><span class="p">)</span>
+
+            <span class="c1"># aggregate metadata from each scan</span>
+            <span class="c1"># REQUIRED kwargs</span>
+            <span class="n">sfreq</span> <span class="o">=</span> <span class="n">sidecar_json</span><span class="p">[</span><span class="s1">&#39;SamplingFrequency&#39;</span><span class="p">]</span>
+            <span class="n">powerlinefreq</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">sidecar_json</span><span class="p">[</span><span class="s1">&#39;PowerLineFrequency&#39;</span><span class="p">])</span>
+            <span class="n">software_filters</span> <span class="o">=</span> <span class="n">sidecar_json</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;SoftwareFilters&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">software_filters</span><span class="p">:</span>
+                <span class="n">software_filters</span> <span class="o">=</span> <span class="s1">&#39;n/a&#39;</span>
+
+            <span class="c1"># RECOMMENDED kwargs</span>
+            <span class="n">manufacturer</span> <span class="o">=</span> <span class="n">sidecar_json</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;Manufacturer&#39;</span><span class="p">,</span> <span class="s1">&#39;n/a&#39;</span><span class="p">)</span>
+            <span class="n">record_duration</span> <span class="o">=</span> <span class="n">sidecar_json</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;RecordingDuration&#39;</span><span class="p">,</span> <span class="s1">&#39;n/a&#39;</span><span class="p">)</span>
+
+            <span class="n">sfreqs</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">sfreq</span><span class="p">,</span> <span class="mi">2</span><span class="p">)))</span>
+            <span class="n">powerlinefreqs</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">powerlinefreq</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">manufacturer</span> <span class="o">!=</span> <span class="s1">&#39;n/a&#39;</span><span class="p">:</span>
+                <span class="n">manufacturers</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">manufacturer</span><span class="p">)</span>
+            <span class="n">length_recordings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">record_duration</span><span class="p">)</span>
+
+    <span class="c1"># XXX: length summary is only allowed, if no &#39;n/a&#39; was found</span>
+    <span class="k">if</span> <span class="nb">any</span><span class="p">([</span><span class="n">dur</span> <span class="o">==</span> <span class="s1">&#39;n/a&#39;</span> <span class="k">for</span> <span class="n">dur</span> <span class="ow">in</span> <span class="n">length_recordings</span><span class="p">]):</span>
+        <span class="n">length_recordings</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">template_dict</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;n_scans&#39;</span><span class="p">:</span> <span class="n">n_scans</span><span class="p">,</span>
+        <span class="s1">&#39;manufacturer&#39;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">manufacturers</span><span class="p">),</span>
+        <span class="s1">&#39;sfreq&#39;</span><span class="p">:</span> <span class="n">sfreqs</span><span class="p">,</span>
+        <span class="s1">&#39;powerlinefreq&#39;</span><span class="p">:</span> <span class="n">powerlinefreqs</span><span class="p">,</span>
+        <span class="s1">&#39;software_filters&#39;</span><span class="p">:</span> <span class="n">software_filters</span><span class="p">,</span>
+        <span class="s1">&#39;length_recordings&#39;</span><span class="p">:</span> <span class="n">length_recordings</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">template_dict</span>
+
+
+<span class="k">def</span> <span class="nf">_summarize_channels_tsv</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">scans_fpaths</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Summarize channels.tsv data in BIDS root directory.</span>
+
+<span class="sd">    Currently, summarizes all REQUIRED components of channels</span>
+<span class="sd">    data, and some RECOMMENDED and OPTIONAL components.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    root : str | pathlib.Path</span>
+<span class="sd">        The path of the root of the BIDS compatible folder.</span>
+<span class="sd">    scans_fpaths : list</span>
+<span class="sd">        A list of all *_scans.tsv files in ``root``. The summary</span>
+<span class="sd">        will occur for all scans listed in the *_scans.tsv files.</span>
+<span class="sd">    verbose : bool</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    template_dict : dict</span>
+<span class="sd">        A dictionary of values for various template strings.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">root</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
+
+    <span class="c1"># keep track of channel type, status</span>
+    <span class="n">ch_status_count</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;bad&#39;</span><span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;good&#39;</span><span class="p">:</span> <span class="p">[]}</span>
+    <span class="n">ch_count</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="c1"># loop through each scan</span>
+    <span class="k">for</span> <span class="n">scan_fpath</span> <span class="ow">in</span> <span class="n">scans_fpaths</span><span class="p">:</span>
+        <span class="c1"># load in the scans.tsv file</span>
+        <span class="c1"># and read metadata for each scan</span>
+        <span class="n">scans_tsv</span> <span class="o">=</span> <span class="n">_from_tsv</span><span class="p">(</span><span class="n">scan_fpath</span><span class="p">)</span>
+        <span class="n">scans</span> <span class="o">=</span> <span class="n">scans_tsv</span><span class="p">[</span><span class="s1">&#39;filename&#39;</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">scan</span> <span class="ow">in</span> <span class="n">scans</span><span class="p">:</span>
+            <span class="c1"># summarize metadata of recordings</span>
+            <span class="n">bids_path</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">scan</span><span class="p">)</span>
+            <span class="n">datatype</span> <span class="o">=</span> <span class="n">op</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">scan</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">datatype</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;meg&#39;</span><span class="p">,</span> <span class="s1">&#39;eeg&#39;</span><span class="p">,</span> <span class="s1">&#39;ieeg&#39;</span><span class="p">]:</span>
+                <span class="k">continue</span>
+
+            <span class="c1"># convert to BIDS Path</span>
+            <span class="n">params</span> <span class="o">=</span> <span class="n">get_entities_from_fname</span><span class="p">(</span><span class="n">bids_path</span><span class="p">)</span>
+            <span class="n">bids_path</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">,</span> <span class="o">**</span><span class="n">params</span><span class="p">)</span>
+
+            <span class="c1"># XXX: improve to allow emptyroom</span>
+            <span class="k">if</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">subject</span> <span class="o">==</span> <span class="s1">&#39;emptyroom&#39;</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="n">channels_fname</span> <span class="o">=</span> <span class="n">_find_matching_sidecar</span><span class="p">(</span><span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span><span class="p">,</span>
+                                                    <span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;channels&#39;</span><span class="p">,</span>
+                                                    <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.tsv&#39;</span><span class="p">)</span>
+
+            <span class="c1"># summarize channels.tsv</span>
+            <span class="n">channels_tsv</span> <span class="o">=</span> <span class="n">_from_tsv</span><span class="p">(</span><span class="n">channels_fname</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">status</span> <span class="ow">in</span> <span class="n">ch_status_count</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">ch_status</span> <span class="o">=</span> <span class="p">[</span><span class="n">ch</span> <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">channels_tsv</span><span class="p">[</span><span class="s1">&#39;status&#39;</span><span class="p">]</span>
+                             <span class="k">if</span> <span class="n">ch</span> <span class="o">==</span> <span class="n">status</span><span class="p">]</span>
+                <span class="n">ch_status_count</span><span class="p">[</span><span class="n">status</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ch_status</span><span class="p">))</span>
+            <span class="n">ch_count</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">channels_tsv</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]))</span>
+
+    <span class="c1"># create summary template strings for status</span>
+    <span class="n">template_dict</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;mean_chs&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">ch_count</span><span class="p">),</span>
+        <span class="s1">&#39;std_chs&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">ch_count</span><span class="p">),</span>
+        <span class="s1">&#39;mean_good_chs&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">ch_status_count</span><span class="p">[</span><span class="s1">&#39;good&#39;</span><span class="p">]),</span>
+        <span class="s1">&#39;std_good_chs&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">ch_status_count</span><span class="p">[</span><span class="s1">&#39;good&#39;</span><span class="p">]),</span>
+        <span class="s1">&#39;mean_bad_chs&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">ch_status_count</span><span class="p">[</span><span class="s1">&#39;bad&#39;</span><span class="p">]),</span>
+        <span class="s1">&#39;std_bad_chs&#39;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">ch_status_count</span><span class="p">[</span><span class="s1">&#39;bad&#39;</span><span class="p">]),</span>
+    <span class="p">}</span>
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">template_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">template_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">template_dict</span>
+
+
+<div class="viewcode-block" id="make_report"><a class="viewcode-back" href="../../generated/mne_bids.make_report.html#mne_bids.make_report">[docs]</a><span class="k">def</span> <span class="nf">make_report</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create a methods paragraph string from BIDS dataset.</span>
+
+<span class="sd">    Summarizes the REQUIRED components in the BIDS specification</span>
+<span class="sd">    and also some RECOMMENDED components. Currently, the methods</span>
+<span class="sd">    paragraph summarize the:</span>
+
+<span class="sd">      - dataset_description.json file</span>
+<span class="sd">      - (optional) participants.tsv file</span>
+<span class="sd">      - (optional) datatype-agnostic files for (M/I)EEG data,</span>
+<span class="sd">        which reads files from the ``*_scans.tsv`` file.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    root : str | pathlib.Path</span>
+<span class="sd">        The path of the root of the BIDS compatible folder.</span>
+<span class="sd">    session : str , optional</span>
+<span class="sd">            The session for a item. Corresponds to &quot;ses&quot;.</span>
+<span class="sd">    verbose : bool</span>
+<span class="sd">        Set verbose output to true or false.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    paragraph : str</span>
+<span class="sd">        The paragraph wrapped with 80 characters per line</span>
+<span class="sd">        describing the summary of the subjects.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># high level summary</span>
+    <span class="n">subjects</span> <span class="o">=</span> <span class="n">get_entity_vals</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">entity_key</span><span class="o">=</span><span class="s1">&#39;subject&#39;</span><span class="p">)</span>
+    <span class="n">sessions</span> <span class="o">=</span> <span class="n">get_entity_vals</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">entity_key</span><span class="o">=</span><span class="s1">&#39;session&#39;</span><span class="p">)</span>
+    <span class="n">modalities</span> <span class="o">=</span> <span class="n">get_datatypes</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
+
+    <span class="c1"># only summarize allowed modalities (MEG/EEG/iEEG) data</span>
+    <span class="c1"># map them to a pretty looking string</span>
+    <span class="n">datatype_map</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;meg&#39;</span><span class="p">:</span> <span class="s1">&#39;MEG&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;eeg&#39;</span><span class="p">:</span> <span class="s1">&#39;EEG&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;ieeg&#39;</span><span class="p">:</span> <span class="s1">&#39;iEEG&#39;</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="n">modalities</span> <span class="o">=</span> <span class="p">[</span><span class="n">datatype_map</span><span class="p">[</span><span class="n">datatype</span><span class="p">]</span> <span class="k">for</span> <span class="n">datatype</span> <span class="ow">in</span> <span class="n">modalities</span>
+                  <span class="k">if</span> <span class="n">datatype</span> <span class="ow">in</span> <span class="n">datatype_map</span><span class="o">.</span><span class="n">keys</span><span class="p">()]</span>
+
+    <span class="c1"># REQUIRED: dataset_description.json summary</span>
+    <span class="n">dataset_summary</span> <span class="o">=</span> <span class="n">_summarize_dataset</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
+
+    <span class="c1"># RECOMMENDED: participants summary</span>
+    <span class="n">participant_summary</span> <span class="o">=</span> <span class="n">_summarize_participants_tsv</span><span class="p">(</span><span class="n">root</span><span class="p">)</span>
+
+    <span class="c1"># RECOMMENDED: scans summary</span>
+    <span class="n">scans_summary</span> <span class="o">=</span> <span class="n">_summarize_scans</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span>
+                                     <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+
+    <span class="c1"># turn off &#39;recommended&#39; report summary</span>
+    <span class="c1"># if files are not available to summarize</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">participant_summary</span><span class="p">:</span>
+        <span class="n">participant_template</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">content</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">FUNCTION_TEMPLATE</span><span class="si">}{</span><span class="n">PARTICIPANTS_TEMPLATE</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="n">participant_template</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="n">content</span><span class="p">)</span>
+        <span class="n">participant_template</span> <span class="o">=</span> <span class="n">participant_template</span><span class="o">.</span><span class="n">substitute</span><span class="p">(</span>
+            <span class="o">**</span><span class="n">participant_summary</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;The participant template found: </span><span class="si">{</span><span class="n">participant_template</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="n">dataset_summary</span><span class="p">[</span><span class="s1">&#39;PARTICIPANTS_TEMPLATE&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">participant_template</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">scans_summary</span><span class="p">:</span>
+        <span class="n">datatype_agnostic_template</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">datatype_agnostic_template</span> <span class="o">=</span> <span class="n">DATATYPE_AGNOSTIC_TEMPLATE</span>
+
+    <span class="n">dataset_summary</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
+        <span class="s1">&#39;system&#39;</span><span class="p">:</span> <span class="n">modalities</span><span class="p">,</span>
+        <span class="s1">&#39;n_subjects&#39;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">subjects</span><span class="p">),</span>
+        <span class="s1">&#39;n_sessions&#39;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">sessions</span><span class="p">),</span>
+        <span class="s1">&#39;sessions&#39;</span><span class="p">:</span> <span class="n">sessions</span><span class="p">,</span>
+    <span class="p">})</span>
+
+    <span class="c1"># XXX: add channel summary for modalities (ieeg, meg, eeg)</span>
+    <span class="c1"># create the content and mne Template</span>
+    <span class="c1"># lower-case templates are &quot;Recommended&quot;,</span>
+    <span class="c1"># while upper-case templates are &quot;Required&quot;.</span>
+    <span class="n">content</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">FUNCTION_TEMPLATE</span><span class="si">}{</span><span class="n">BIDS_DATASET_TEMPLATE</span><span class="si">}</span><span class="s1">&#39;</span> \
+              <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">datatype_agnostic_template</span><span class="si">}</span><span class="s1">&#39;</span>
+
+    <span class="n">paragraph</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="n">content</span><span class="p">)</span>
+    <span class="n">paragraph</span> <span class="o">=</span> <span class="n">paragraph</span><span class="o">.</span><span class="n">substitute</span><span class="p">(</span><span class="o">**</span><span class="n">dataset_summary</span><span class="p">,</span>
+                                     <span class="o">**</span><span class="n">scans_summary</span><span class="p">)</span>
+
+    <span class="c1"># Clean paragraph</span>
+    <span class="n">paragraph</span> <span class="o">=</span> <span class="n">paragraph</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">)</span>
+    <span class="n">paragraph</span> <span class="o">=</span> <span class="n">paragraph</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;  &#39;</span><span class="p">,</span> <span class="s1">&#39; &#39;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">textwrap</span><span class="o">.</span><span class="n">wrap</span><span class="p">(</span><span class="n">paragraph</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">80</span><span class="p">))</span></div>
+</pre></div>
+
+    </div>
+      
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-10-22.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
+    </p>
+  </div>
+</footer>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-37225609-2"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-37225609-2');
+</script>
+
+  </body>
+</html>
