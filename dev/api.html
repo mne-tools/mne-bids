@@ -46,11 +46,12 @@
         <div class="collapse navbar-collapse nav-collapse">
           <ul class="nav navbar-nav">
             
-                <li><a href="auto_examples/index.html">Examples</a></li>
+                <li><a href="whats_new.html">News</a></li>
+                <li><a href="install.html">Install</a></li>
+                <li><a href="use.html">Use</a></li>
                 <li><a href="#">API</a></li>
                 <li><a href="generated/cli.html">CLI</a></li>
-                <li><a href="whats_new.html">What's new</a></li>
-                <li><a href="https://github.com/mne-tools/mne-bids">GitHub</a></li>
+                <li><a href="contribute.html">Contribute!</a></li>
             
             
               <li class="dropdown globaltoc-container">
@@ -82,6 +83,7 @@
   <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
     <li><a href="https://mne.tools/mne-bids/dev/index.html">Development</a></li>
     <li><a href="https://mne.tools/mne-bids/stable/index.html">Stable</a></li>
+    <li><a href="https://mne.tools/mne-bids/v0.5/index.html">v0.5</a></li>
     <li><a href="https://mne.tools/mne-bids/v0.4/index.html">v0.4</a></li>
     <li><a href="https://mne.tools/mne-bids/v0.3/index.html">v0.3</a></li>
     <li><a href="https://mne.tools/mne-bids/v0.2/index.html">v0.2</a></li>
@@ -110,18 +112,15 @@
       
   <div class="section" id="api-documentation">
 <span id="id1"></span><h1>API Documentation<a class="headerlink" href="#api-documentation" title="Permalink to this headline">¶</a></h1>
-<p>Here we list the Application Programming Interface (API) for MNE-BIDS.</p>
 <div class="contents local topic" id="contents">
 <p class="topic-title">Contents</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="#mne-bids" id="id2">MNE BIDS</a></p></li>
-<li><p><a class="reference internal" href="#path" id="id3">Path</a></p></li>
-<li><p><a class="reference internal" href="#copyfiles" id="id4">Copyfiles</a></p></li>
-<li><p><a class="reference internal" href="#utils" id="id5">Utils</a></p></li>
+<li><p><a class="reference internal" href="#mne-bids" id="id2">mne_bids</a></p></li>
+<li><p><a class="reference internal" href="#mne-bids-copyfiles" id="id3">mne_bids.copyfiles</a></p></li>
 </ul>
 </div>
 <div class="section" id="mne-bids">
-<h2><a class="toc-backref" href="#id2">MNE BIDS</a><a class="headerlink" href="#mne-bids" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id2">mne_bids</a><a class="headerlink" href="#mne-bids" title="Permalink to this headline">¶</a></h2>
 <p><a class="reference internal" href="#module-mne_bids" title="mne_bids"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mne_bids</span></code></a>:</p>
 <span class="target" id="module-mne_bids"></span><p>MNE software for easily interacting with BIDS compatible datasets.</p>
 <table class="longtable docutils align-default">
@@ -143,7 +142,7 @@
 <td><p>Write the Elekta/Neuromag/MEGIN crosstalk information to disk.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BIDSPath</span></code></a>([subject, session, task, …])</p></td>
-<td><p>Create a partial/full BIDS filepath from its component parts.</p></td>
+<td><p>Create a BIDS path.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/mne_bids.make_dataset_description.html#mne_bids.make_dataset_description" title="mne_bids.make_dataset_description"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_dataset_description</span></code></a>(path, name[, …])</p></td>
 <td><p>Create json for a dataset description.</p></td>
@@ -166,36 +165,20 @@
 <tr class="row-even"><td><p><a class="reference internal" href="generated/mne_bids.print_dir_tree.html#mne_bids.print_dir_tree" title="mne_bids.print_dir_tree"><code class="xref py py-obj docutils literal notranslate"><span class="pre">print_dir_tree</span></code></a>(folder[, max_depth])</p></td>
 <td><p>Recursively print dir tree starting from <em class="xref py py-obj">folder</em> up to <em class="xref py py-obj">max_depth</em>.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/mne_bids.get_entity_vals.html#mne_bids.get_entity_vals" title="mne_bids.get_entity_vals"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_entity_vals</span></code></a>(root, entity_key, *[, …])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/mne_bids.get_entities_from_fname.html#mne_bids.get_entities_from_fname" title="mne_bids.get_entities_from_fname"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_entities_from_fname</span></code></a>(fname[, on_error])</p></td>
+<td><p>Retrieve a dictionary of BIDS entities from a filename.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/mne_bids.get_entity_vals.html#mne_bids.get_entity_vals" title="mne_bids.get_entity_vals"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_entity_vals</span></code></a>(root, entity_key, *[, …])</p></td>
 <td><p>Get list of values associated with an <em class="xref py py-obj">entity_key</em> in a BIDS dataset.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/mne_bids.get_datatypes.html#mne_bids.get_datatypes" title="mne_bids.get_datatypes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_datatypes</span></code></a>(root)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/mne_bids.get_datatypes.html#mne_bids.get_datatypes" title="mne_bids.get_datatypes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_datatypes</span></code></a>(root)</p></td>
 <td><p>Get list of data types (“modalities”) present in a BIDS dataset.</p></td>
 </tr>
 </tbody>
 </table>
 </div>
-<div class="section" id="path">
-<h2><a class="toc-backref" href="#id3">Path</a><a class="headerlink" href="#path" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference internal" href="#module-mne_bids.path" title="mne_bids.path"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mne_bids.path</span></code></a>:</p>
-<span class="target" id="module-mne_bids.path"></span><p>BIDS compatible path functionality.</p>
-<table class="longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/mne_bids.path.BIDSPath.html#mne_bids.path.BIDSPath" title="mne_bids.path.BIDSPath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BIDSPath</span></code></a>([subject, session, task, …])</p></td>
-<td><p>Create a partial/full BIDS filepath from its component parts.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/mne_bids.path.get_entities_from_fname.html#mne_bids.path.get_entities_from_fname" title="mne_bids.path.get_entities_from_fname"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_entities_from_fname</span></code></a>(fname[, on_error])</p></td>
-<td><p>Retrieve a dictionary of BIDS entities from a filename.</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="section" id="copyfiles">
-<h2><a class="toc-backref" href="#id4">Copyfiles</a><a class="headerlink" href="#copyfiles" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="mne-bids-copyfiles">
+<h2><a class="toc-backref" href="#id3">mne_bids.copyfiles</a><a class="headerlink" href="#mne-bids-copyfiles" title="Permalink to this headline">¶</a></h2>
 <p><a class="reference internal" href="#module-mne_bids.copyfiles" title="mne_bids.copyfiles"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mne_bids.copyfiles</span></code></a>:</p>
 <span class="target" id="module-mne_bids.copyfiles"></span><p>Utility functions to copy raw data files.</p>
 <p>When writing BIDS datasets, we often move and/or rename raw data files. several
@@ -222,22 +205,6 @@ due to internal pointers that are not being updated.</p>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/mne_bids.copyfiles.copyfile_kit.html#mne_bids.copyfiles.copyfile_kit" title="mne_bids.copyfiles.copyfile_kit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copyfile_kit</span></code></a>(src, dest, subject_id, …)</p></td>
 <td><p>Copy and rename KIT files to a new location.</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="section" id="utils">
-<h2><a class="toc-backref" href="#id5">Utils</a><a class="headerlink" href="#utils" title="Permalink to this headline">¶</a></h2>
-<p><a class="reference internal" href="#module-mne_bids.utils" title="mne_bids.utils"><code class="xref py py-mod docutils literal notranslate"><span class="pre">mne_bids.utils</span></code></a>:</p>
-<span class="target" id="module-mne_bids.utils"></span><p>Utility and helper functions for MNE-BIDS.</p>
-<table class="longtable docutils align-default">
-<colgroup>
-<col style="width: 10%" />
-<col style="width: 90%" />
-</colgroup>
-<tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/mne_bids.utils.get_anonymization_daysback.html#mne_bids.utils.get_anonymization_daysback" title="mne_bids.utils.get_anonymization_daysback"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_anonymization_daysback</span></code></a>(raws)</p></td>
-<td><p>Get the group min and max number of daysback necessary for BIDS specs.</p></td>
 </tr>
 </tbody>
 </table>

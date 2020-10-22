@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MNE-BIDS &#8212; mne_bids 0.5.dev0 documentation</title>
+    <title>What is MNE-BIDS? &#8212; mne_bids 0.5.dev0 documentation</title>
     <link rel="stylesheet" href="_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="_static/style.css" />
@@ -46,11 +46,12 @@
         <div class="collapse navbar-collapse nav-collapse">
           <ul class="nav navbar-nav">
             
-                <li><a href="auto_examples/index.html">Examples</a></li>
+                <li><a href="whats_new.html">News</a></li>
+                <li><a href="install.html">Install</a></li>
+                <li><a href="use.html">Use</a></li>
                 <li><a href="api.html">API</a></li>
                 <li><a href="generated/cli.html">CLI</a></li>
-                <li><a href="whats_new.html">What's new</a></li>
-                <li><a href="https://github.com/mne-tools/mne-bids">GitHub</a></li>
+                <li><a href="contribute.html">Contribute!</a></li>
             
             
               <li class="dropdown globaltoc-container">
@@ -82,6 +83,7 @@
   <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
     <li><a href="https://mne.tools/mne-bids/dev/index.html">Development</a></li>
     <li><a href="https://mne.tools/mne-bids/stable/index.html">Stable</a></li>
+    <li><a href="https://mne.tools/mne-bids/v0.5/index.html">v0.5</a></li>
     <li><a href="https://mne.tools/mne-bids/v0.4/index.html">v0.4</a></li>
     <li><a href="https://mne.tools/mne-bids/v0.3/index.html">v0.3</a></li>
     <li><a href="https://mne.tools/mne-bids/v0.2/index.html">v0.2</a></li>
@@ -108,182 +110,56 @@
   <div class="row">
     <div class="body col-md-12 content" role="main">
       
-  <a class="reference external image-reference" href="https://github.com/mne-tools/mne-bids/actions"><img alt="gh-actions" src="https://github.com/mne-tools/mne-bids/workflows/build/badge.svg" /></a>
-<a class="reference external image-reference" href="https://gitter.im/mne-tools/mne-bids?utm_source=badge&amp;utm_medium=badge&amp;utm_campaign=pr-badge&amp;utm_content=badge"><img alt="Gitter" src="https://badges.gitter.im/mne-tools/mne-bids.svg" /></a>
-<a class="reference external image-reference" href="https://codecov.io/gh/mne-tools/mne-bids"><img alt="codecov" src="https://codecov.io/gh/mne-tools/mne-bids/branch/master/graph/badge.svg" /></a>
-<a class="reference external image-reference" href="https://circleci.com/gh/mne-tools/mne-bids"><img alt="CircleCi" src="https://circleci.com/gh/mne-tools/mne-bids.svg?style=svg" /></a>
-<a class="reference external image-reference" href="https://pepy.tech/project/mne-bids"><img alt="Downloads" src="https://pepy.tech/badge/mne-bids" /></a>
-<a class="reference external image-reference" href="https://pypi.org/project/mne-bids/"><img alt="Latest PyPI release" src="https://img.shields.io/pypi/v/mne-bids.svg" /></a>
-<a class="reference external image-reference" href="https://anaconda.org/conda-forge/mne-bids/"><img alt="Latest conda-forge release" src="https://img.shields.io/conda/vn/conda-forge/mne-bids.svg" /></a>
-<a class="reference external image-reference" href="https://joss.theoj.org/papers/5b9024503f7bea324d5e738a12b0a108"><img alt="JOSS publication" src="https://joss.theoj.org/papers/5b9024503f7bea324d5e738a12b0a108/status.svg" /></a>
-<div class="section" id="mne-bids">
-<h1>MNE-BIDS<a class="headerlink" href="#mne-bids" title="Permalink to this headline">¶</a></h1>
-<p>This is a repository for creating
-<a class="reference external" href="https://bids.neuroimaging.io/">BIDS</a>-compatible datasets with
+  <div class="section" id="what-is-mne-bids">
+<h1>What is MNE-BIDS?<a class="headerlink" href="#what-is-mne-bids" title="Permalink to this headline">¶</a></h1>
+<p>MNE-BIDS is a Python package that allows you to read and write
+<a class="reference external" href="https://bids.neuroimaging.io/">BIDS</a>-compatible datasets with the help of
 <a class="reference external" href="https://mne.tools/stable/index.html">MNE-Python</a>.</p>
-<p>BIDS (Brain Imaging Data Structure) is a standard to organize data
-according to a set of rules that describe:</p>
+<img alt="Schematic: From raw data to BIDS using MNE-BIDS" src="http://mne.tools/mne-bids/assets/MNE-BIDS.png" />
+<div class="section" id="why">
+<h2>Why?<a class="headerlink" href="#why" title="Permalink to this headline">¶</a></h2>
+<p>MNE-BIDS links BIDS and MNE-Python with the goal to make your analyses faster
+to code, more robust, and facilitate data and code sharing with co-workers
+and collaborators.</p>
+</div>
+<div class="section" id="what-is-this-bids-thing-anyway">
+<h2>What is this BIDS thing, anyway?<a class="headerlink" href="#what-is-this-bids-thing-anyway" title="Permalink to this headline">¶</a></h2>
+<p>BIDS, the Brain Imaging Data Structure, is a standard that describes how to
+organize neuroimaging and electrophysiological data. In particular, it defines:</p>
 <ul class="simple">
+<li><p>which file formats to use</p></li>
 <li><p>how to name your files</p></li>
 <li><p>where to place your files within a directory structure</p></li>
-<li><p>what additional metadata to store, and how to store it in sidecar json and tsv files</p></li>
+<li><p>what additional metadata to store</p></li>
 </ul>
 <p>The complete set of rules is written down in the
-<a class="reference external" href="https://bids-specification.readthedocs.io/en/stable/">BIDS specification</a>.
-A BIDS-compatible dataset conforms to these rules and passes the
-<a class="reference external" href="https://github.com/bids-standard/bids-validator">BIDS-validator</a>.</p>
-<p>MNE-Python is a software package for analyzing neurophysiology data.</p>
-<p><strong>MNE-BIDS links BIDS and MNE with the goal to make your analyses faster to code,
-more robust to errors, and easily shareable with colleagues.</strong></p>
+<a class="reference external" href="https://bids-specification.readthedocs.io/">BIDS specification</a>.</p>
+</div>
+<div class="section" id="supported-file-formats">
+<h2>Supported file formats<a class="headerlink" href="#supported-file-formats" title="Permalink to this headline">¶</a></h2>
+<p>Currently, we support all file formats that are in the BIDS specification for MEG, EEG, and iEEG data.
+We also support a range of additional manufacturer formats to facilitate converting them to their BIDS-recommended
+formats. For example, if you have a Nihon Kohden file, you can read that file using MNE-Python, and
+then use MNE-BIDS convert it to the BrainVision format and store it according to BIDS.</p>
+</div>
 <div class="section" id="citing-mne-bids">
 <h2>Citing MNE-BIDS<a class="headerlink" href="#citing-mne-bids" title="Permalink to this headline">¶</a></h2>
-<p>If you use <code class="docutils literal notranslate"><span class="pre">mne-bids</span></code> in your work, please cite our
+<p>If you use MNE-BIDS in your work, please cite our
 <a class="reference external" href="https://doi.org/10.21105/joss.01896">publication in JOSS</a>.</p>
-<div class="highlight-Text notranslate"><div class="highlight"><pre><span></span>Appelhoff, S., Sanderson, M., Brooks, T., Vliet, M., Quentin, R., Holdgraf, C.,
+<p>Appelhoff, S., Sanderson, M., Brooks, T., Vliet, M., Quentin, R., Holdgraf, C.,
 Chaumon, M., Mikulan, E., Tavabi, K., Höchenberger, R., Welke, D., Brunner, C.,
-Rockhill, A., Larson, E., Gramfort, A. and Jas, M. (2019). MNE-BIDS: Organizing
-electrophysiological data into the BIDS format and facilitating their analysis.
-Journal of Open Source Software 4: (1896). https://doi.org/10.21105/joss.01896
-</pre></div>
-</div>
-<p>If you use <code class="docutils literal notranslate"><span class="pre">mne-bids</span></code>, the chances are high that you are also using BIDS. So
-please cite one of the following papers to credit BIDS, depending on which
-datatype you used:</p>
+Rockhill, A., Larson, E., Gramfort, A., &amp; Jas, M. (2019). <strong>MNE-BIDS:
+Organizing electrophysiological data into the BIDS format and facilitating
+their analysis.</strong>
+<em>Journal of Open Source Software,</em> 4:1896.
+DOI: <a class="reference external" href="https://doi.org/10.21105/joss.01896">10.21105/joss.01896</a></p>
+<p>Please also cite one of the following papers to credit BIDS, depending on which
+data type you used:</p>
 <ul class="simple">
-<li><p>MEG (<a class="reference external" href="http://doi.org/10.1038/sdata.2018.110">http://doi.org/10.1038/sdata.2018.110</a>)</p></li>
-<li><p>EEG (<a class="reference external" href="https://doi.org/10.1038/s41597-019-0104-8">https://doi.org/10.1038/s41597-019-0104-8</a>)</p></li>
-<li><p>iEEG (<a class="reference external" href="https://doi.org/10.1038/s41597-019-0105-7">https://doi.org/10.1038/s41597-019-0105-7</a>)</p></li>
+<li><p><a class="reference external" href="http://doi.org/10.1038/sdata.2018.110">BIDS-MEG</a></p></li>
+<li><p><a class="reference external" href="https://doi.org/10.1038/s41597-019-0104-8">BIDS-EEG</a></p></li>
+<li><p><a class="reference external" href="https://doi.org/10.1038/s41597-019-0105-7">BIDS-iEEG</a></p></li>
 </ul>
-</div>
-<div class="section" id="documentation">
-<h2>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h2>
-<p>The documentation can be found under the following links:</p>
-<ul class="simple">
-<li><p>for the <a class="reference external" href="https://mne.tools/mne-bids/">stable release</a></p></li>
-<li><p>for the <a class="reference external" href="https://mne.tools/mne-bids/dev/index.html">latest (development) version</a></p></li>
-</ul>
-</div>
-<div class="section" id="dependencies">
-<h2>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h2>
-<ul class="simple">
-<li><p>numpy (&gt;=1.14)</p></li>
-<li><p>scipy (&gt;=0.18.1)</p></li>
-<li><p>mne (&gt;=0.21)</p></li>
-<li><p>nibabel (&gt;=2.2, optional)</p></li>
-<li><p>pybv (&gt;=0.2, optional)</p></li>
-</ul>
-</div>
-<div class="section" id="installation">
-<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
-<p>We recommend the <a class="reference external" href="https://www.anaconda.com/download/">Anaconda</a> Python
-distribution. We require that you use Python 3.6 or higher.
-You may choose to install <code class="docutils literal notranslate"><span class="pre">mne-bids</span></code>
-<a class="reference external" href="#Installationviapip">via pip</a> or
-<a class="reference external" href="#Installationviaconda">via conda</a>.</p>
-<div class="section" id="installation-via-pip">
-<h3>Installation via pip<a class="headerlink" href="#installation-via-pip" title="Permalink to this headline">¶</a></h3>
-<p>Besides <code class="docutils literal notranslate"><span class="pre">numpy</span></code> and <code class="docutils literal notranslate"><span class="pre">scipy</span></code> (which are included in the standard Anaconda
-installation), you will need to install the most recent version of <code class="docutils literal notranslate"><span class="pre">MNE</span></code>
-using the <code class="docutils literal notranslate"><span class="pre">pip</span></code> tool:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ pip install -U mne
-</pre></div>
-</div>
-<p>Then install <code class="docutils literal notranslate"><span class="pre">mne-bids</span></code>:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ pip install -U mne-bids
-</pre></div>
-</div>
-<p>These <code class="docutils literal notranslate"><span class="pre">pip</span></code> commands also work if you want to upgrade if a newer version of
-<code class="docutils literal notranslate"><span class="pre">mne-bids</span></code> is available. If you do not have administrator privileges on the
-computer, use the <code class="docutils literal notranslate"><span class="pre">--user</span></code> flag with <code class="docutils literal notranslate"><span class="pre">pip</span></code>.</p>
-<p>To check if everything worked fine, the following command should not give any
-error messages:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python -c <span class="s1">&#39;import mne_bids&#39;</span>
-</pre></div>
-</div>
-<p>For full functionality of <code class="docutils literal notranslate"><span class="pre">mne-bids</span></code>, you will also need to <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span></code>
-the following packages:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">nibabel</span></code>, for interacting with MRI data</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">pybv</span></code>, to convert EEG data to BrainVision if input format is not valid according to EEG BIDS specifications</p></li>
-</ul>
-<p>If you want to use the latest development version of <code class="docutils literal notranslate"><span class="pre">mne-bids</span></code>, use the
-following command:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ pip install https://api.github.com/repos/mne-tools/mne-bids/zipball/master
-</pre></div>
-</div>
-</div>
-<div class="section" id="installation-via-conda">
-<h3>Installation via conda<a class="headerlink" href="#installation-via-conda" title="Permalink to this headline">¶</a></h3>
-<p>If you have followed the
-<a class="reference external" href="https://mne.tools/stable/install_mne_python.html#installing-mne-python-and-its-dependencies">MNE-Python installation instructions</a>,
-all that’s left to do is to install <code class="docutils literal notranslate"><span class="pre">mne-bids</span></code> without its dependencies, as
-they’ve already been installed during the <code class="docutils literal notranslate"><span class="pre">MNE</span></code> installation process.</p>
-<p>Activate the correct <code class="docutils literal notranslate"><span class="pre">conda</span></code> environment and install <code class="docutils literal notranslate"><span class="pre">mne-bids</span></code>:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ conda activate mne
-$ conda install --channel conda-forge --no-deps mne-bids
-</pre></div>
-</div>
-<p>This approach ensures that the installation of <code class="docutils literal notranslate"><span class="pre">mne-bids</span></code> doesn’t alter any
-other packages in your existing <code class="docutils literal notranslate"><span class="pre">conda</span></code> environment.</p>
-<p>Alternatively, you may wish to take advantage of the fact that the
-<code class="docutils literal notranslate"><span class="pre">mne-bids</span></code> package on <code class="docutils literal notranslate"><span class="pre">conda-forge</span></code> in fact depends on <code class="docutils literal notranslate"><span class="pre">mne</span></code>,
-meaning that a “full” installation of <code class="docutils literal notranslate"><span class="pre">mne-bids</span></code> (i.e., including its
-dependencies) will provide you with a working copy of of both <code class="docutils literal notranslate"><span class="pre">mne</span></code> and
-<code class="docutils literal notranslate"><span class="pre">mne-bids</span></code> at once:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ conda create --name mne --channel conda-forge mne-bids
-</pre></div>
-</div>
-<p>After activating the environment, you should be ready to use <code class="docutils literal notranslate"><span class="pre">mne-bids</span></code>:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ conda activate mne
-$ python -c <span class="s1">&#39;import mne_bids&#39;</span>
-</pre></div>
-</div>
-</div>
-</div>
-<div class="section" id="quickstart">
-<h2>Quickstart<a class="headerlink" href="#quickstart" title="Permalink to this headline">¶</a></h2>
-<p>Currently, we support writing of BIDS datasets for MEG and EEG. Support for
-iEEG is experimental at the moment.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">mne</span> <span class="kn">import</span> <span class="n">io</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">mne_bids</span> <span class="kn">import</span> <span class="n">write_raw_bids</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">raw</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">read_raw_fif</span><span class="p">(</span><span class="s1">&#39;my_old_file.fif&#39;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">write_raw_bids</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="s1">&#39;sub-01_ses-01_run-05&#39;</span><span class="p">,</span> <span class="n">bids_root</span><span class="o">=</span><span class="s1">&#39;./bids_dataset&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<div class="section" id="command-line-interface">
-<h2>Command Line Interface<a class="headerlink" href="#command-line-interface" title="Permalink to this headline">¶</a></h2>
-<p>In addition to <code class="docutils literal notranslate"><span class="pre">import</span> <span class="pre">mne_bids</span></code>, you can use the command line interface.
-Simply type <code class="docutils literal notranslate"><span class="pre">mne_bids</span></code> in your command line and press enter, to see the
-accepted commands. Then type <code class="docutils literal notranslate"><span class="pre">mne_bids</span> <span class="pre">&lt;command&gt;</span> <span class="pre">--help</span></code>, where <code class="docutils literal notranslate"><span class="pre">&lt;command&gt;</span></code>
-is one of the accepted commands, to get more information about that
-<code class="docutils literal notranslate"><span class="pre">&lt;command&gt;</span></code>.</p>
-<p>Example:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ mne_bids raw_to_bids --subject_id sub01 --task rest --raw data.edf --bids_root new_path
-</pre></div>
-</div>
-</div>
-<div class="section" id="bug-reports">
-<h2>Bug reports<a class="headerlink" href="#bug-reports" title="Permalink to this headline">¶</a></h2>
-<p>Use the <a class="reference external" href="https://github.com/mne-tools/mne-bids/issues">GitHub issue tracker</a>
-to report bugs.</p>
-</div>
-<div class="section" id="contributing">
-<h2>Contributing<a class="headerlink" href="#contributing" title="Permalink to this headline">¶</a></h2>
-<p>Please see our <a class="reference external" href="https://github.com/mne-tools/mne-bids/blob/master/CONTRIBUTING.md">contributing guide</a>.</p>
-</div>
-<div class="section" id="meg-eeg-ieeg-data-from-non-bids-acquisition-systems">
-<h2>MEG, EEG, iEEG Data From Non-BIDS Acquisition Systems<a class="headerlink" href="#meg-eeg-ieeg-data-from-non-bids-acquisition-systems" title="Permalink to this headline">¶</a></h2>
-<p>Currently, we support the file formats that are in the BIDS specification for MEG, EEG, and iEEG data.
-We also support a range of manufacturer formats to facilitate converting them to their BIDS RECOMMENDED
-format. For example, if you have a Nihon Kohden file, you can read that file in using <code class="docutils literal notranslate"><span class="pre">mne-python</span></code>, and
-then call <code class="docutils literal notranslate"><span class="pre">mne_bids.write_raw_bids</span></code> and it will convert the dataset for you to BIDS and also convert
-the file format to BrainVision (the RECOMMENDED BIDS format for iEEG). If there is a manufacturer that is
-not currently supported in <code class="docutils literal notranslate"><span class="pre">mne-bids</span></code>, then one must add a reader
-function, <code class="docutils literal notranslate"><span class="pre">io.read_raw_&lt;manufacturer&gt;</span></code>, in <code class="docutils literal notranslate"><span class="pre">mne-python</span></code>. Please first submit an issue and
-pull request at <a class="reference external" href="https://github.com/mne-tools/mne-python/issues">mne-python Issues</a>.
-Then when the reader is merged, submit an issue and pull request
-here at <a class="reference external" href="https://github.com/mne-tools/mne-bids/issues">mne-bids Issues</a>.</p>
 </div>
 </div>
 

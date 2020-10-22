@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.utils.get_anonymization_daysback &#8212; mne_bids 0.5.dev0 documentation</title>
+    <title>mne_bids.get_entities_from_fname &#8212; mne_bids 0.5.dev0 documentation</title>
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css" />
@@ -46,11 +46,12 @@
         <div class="collapse navbar-collapse nav-collapse">
           <ul class="nav navbar-nav">
             
-                <li><a href="../auto_examples/index.html">Examples</a></li>
+                <li><a href="../whats_new.html">News</a></li>
+                <li><a href="../install.html">Install</a></li>
+                <li><a href="../use.html">Use</a></li>
                 <li><a href="../api.html">API</a></li>
                 <li><a href="cli.html">CLI</a></li>
-                <li><a href="../whats_new.html">What's new</a></li>
-                <li><a href="https://github.com/mne-tools/mne-bids">GitHub</a></li>
+                <li><a href="../contribute.html">Contribute!</a></li>
             
             
               <li class="dropdown globaltoc-container">
@@ -82,6 +83,7 @@
   <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
     <li><a href="https://mne.tools/mne-bids/dev/index.html">Development</a></li>
     <li><a href="https://mne.tools/mne-bids/stable/index.html">Stable</a></li>
+    <li><a href="https://mne.tools/mne-bids/v0.5/index.html">v0.5</a></li>
     <li><a href="https://mne.tools/mne-bids/v0.4/index.html">v0.4</a></li>
     <li><a href="https://mne.tools/mne-bids/v0.3/index.html">v0.3</a></li>
     <li><a href="https://mne.tools/mne-bids/v0.2/index.html">v0.2</a></li>
@@ -108,45 +110,56 @@
   <div class="row">
     <div class="body col-md-12 content" role="main">
       
-  <div class="section" id="mne-bids-utils-get-anonymization-daysback">
-<h1>mne_bids.utils.get_anonymization_daysback<a class="headerlink" href="#mne-bids-utils-get-anonymization-daysback" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="mne-bids-get-entities-from-fname">
+<h1>mne_bids.get_entities_from_fname<a class="headerlink" href="#mne-bids-get-entities-from-fname" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt id="mne_bids.utils.get_anonymization_daysback">
-<code class="sig-prename descclassname">mne_bids.utils.</code><code class="sig-name descname">get_anonymization_daysback</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">raws</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/utils.html#get_anonymization_daysback"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.utils.get_anonymization_daysback" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the group min and max number of daysback necessary for BIDS specs.</p>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>It is important that you remember the anonymization
-number if you would ever like to de-anonymize but
-that it is not included in the code publication
-as that would break the anonymization.</p>
-</div>
-<p>BIDS requires that anonymized dates be before 1925. In order to
-preserve the longitudinal structure and ensure anonymization, the
-user is asked to provide the same <em class="xref py py-obj">daysback</em> argument to each call
-of <em class="xref py py-obj">write_raw_bids</em>. To determine the miniumum number of daysback
-necessary, this function will calculate the minimum number based on
-the most recent measurement date of raw objects.</p>
+<dt id="mne_bids.get_entities_from_fname">
+<code class="sig-prename descclassname">mne_bids.</code><code class="sig-name descname">get_entities_from_fname</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fname</span></em>, <em class="sig-param"><span class="n">on_error</span><span class="o">=</span><span class="default_value">'raise'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/path.html#get_entities_from_fname"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.get_entities_from_fname" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve a dictionary of BIDS entities from a filename.</p>
+<p>Entities not present in <code class="docutils literal notranslate"><span class="pre">fname</span></code> will be assigned the value of <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>raw</strong><span class="classifier">mne.io.Raw | list of Raw</span></dt><dd><p>Subject raw data or list of raw data from several subjects.</p>
+<dt><strong>fname</strong><span class="classifier">BIDSPath | str</span></dt><dd><p>The path to parse.</p>
+</dd>
+<dt><strong>on_error</strong><span class="classifier">‘raise’ | ‘warn’ | ‘ignore’</span></dt><dd><p>If any unsupported labels in the filename are found and this is set
+to <code class="docutils literal notranslate"><span class="pre">'raise'</span></code>, raise a <code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code>. If <code class="docutils literal notranslate"><span class="pre">'warn'</span></code>,
+emit a warning and continue, and if <code class="docutils literal notranslate"><span class="pre">'ignore'</span></code>,
+neither raise an exception nor a warning, and
+return all entities found. For example, currently MNE-BIDS does not
+support derivatives yet, but the <code class="docutils literal notranslate"><span class="pre">desc</span></code> entity label is used to
+differentiate different derivatives and will work with this function
+if <code class="docutils literal notranslate"><span class="pre">on_error='ignore'</span></code>.</p>
 </dd>
 </dl>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><dl class="simple">
-<dt><strong>daysback_min</strong><span class="classifier">int</span></dt><dd><p>The minimum number of daysback necessary to be compatible with BIDS.</p>
-</dd>
-<dt><strong>daysback_max</strong><span class="classifier">int</span></dt><dd><p>The maximum number of daysback that MNE can store.</p>
-</dd>
-</dl>
+<dt><strong>params</strong><span class="classifier">dict</span></dt><dd><p>A dictionary with the keys corresponding to the BIDS entity names, and
+the values to the entity values encoded in the filename.</p>
 </dd>
 </dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">fname</span> <span class="o">=</span> <span class="s1">&#39;sub-01_ses-exp_run-02_meg.fif&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">get_entities_from_fname</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+<span class="go">{&#39;subject&#39;: &#39;01&#39;,</span>
+<span class="go">&#39;session&#39;: &#39;exp&#39;,</span>
+<span class="go">&#39;task&#39;: None,</span>
+<span class="go">&#39;acquisition&#39;: None,</span>
+<span class="go">&#39;run&#39;: &#39;02&#39;,</span>
+<span class="go">&#39;processing&#39;: None,</span>
+<span class="go">&#39;space&#39;: None,</span>
+<span class="go">&#39;recording&#39;: None,</span>
+<span class="go">&#39;split&#39;: None,</span>
+<span class="go">&#39;suffix&#39;: &#39;meg&#39;}</span>
+</pre></div>
+</div>
 </dd></dl>
 
-<div class="section" id="examples-using-mne-bids-utils-get-anonymization-daysback">
-<span id="sphx-glr-backreferences-mne-bids-utils-get-anonymization-daysback"></span><h2>Examples using <code class="docutils literal notranslate"><span class="pre">mne_bids.utils.get_anonymization_daysback</span></code><a class="headerlink" href="#examples-using-mne-bids-utils-get-anonymization-daysback" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="examples-using-mne-bids-get-entities-from-fname">
+<span id="sphx-glr-backreferences-mne-bids-get-entities-from-fname"></span><h2>Examples using <code class="docutils literal notranslate"><span class="pre">mne_bids.get_entities_from_fname</span></code><a class="headerlink" href="#examples-using-mne-bids-get-entities-from-fname" title="Permalink to this headline">¶</a></h2>
 <div class="sphx-glr-clear"></div></div>
 </div>
 

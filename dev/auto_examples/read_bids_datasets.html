@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>02. Read and load datasets in BIDS format &#8212; mne_bids 0.5.dev0 documentation</title>
+    <title>01. Read BIDS datasets &#8212; mne_bids 0.5.dev0 documentation</title>
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css" />
@@ -46,11 +46,12 @@
         <div class="collapse navbar-collapse nav-collapse">
           <ul class="nav navbar-nav">
             
-                <li><a href="index.html">Examples</a></li>
+                <li><a href="../whats_new.html">News</a></li>
+                <li><a href="../install.html">Install</a></li>
+                <li><a href="../use.html">Use</a></li>
                 <li><a href="../api.html">API</a></li>
                 <li><a href="../generated/cli.html">CLI</a></li>
-                <li><a href="../whats_new.html">What's new</a></li>
-                <li><a href="https://github.com/mne-tools/mne-bids">GitHub</a></li>
+                <li><a href="../contribute.html">Contribute!</a></li>
             
             
               <li class="dropdown globaltoc-container">
@@ -82,6 +83,7 @@
   <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
     <li><a href="https://mne.tools/mne-bids/dev/index.html">Development</a></li>
     <li><a href="https://mne.tools/mne-bids/stable/index.html">Stable</a></li>
+    <li><a href="https://mne.tools/mne-bids/v0.5/index.html">v0.5</a></li>
     <li><a href="https://mne.tools/mne-bids/v0.4/index.html">v0.4</a></li>
     <li><a href="https://mne.tools/mne-bids/v0.3/index.html">v0.3</a></li>
     <li><a href="https://mne.tools/mne-bids/v0.2/index.html">v0.2</a></li>
@@ -112,61 +114,69 @@
 <p class="admonition-title">Note</p>
 <p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-read-bids-datasets-py"><span class="std std-ref">here</span></a>     to download the full example code or to run this example in your browser via Binder</p>
 </div>
-<div class="sphx-glr-example-title section" id="read-and-load-datasets-in-bids-format">
-<span id="sphx-glr-auto-examples-read-bids-datasets-py"></span><h1>02. Read and load datasets in BIDS format<a class="headerlink" href="#read-and-load-datasets-in-bids-format" title="Permalink to this headline">¶</a></h1>
-<p>When working with neural data in the BIDS format, we usually have
-varying types of data, which can be loaded in via <em class="xref py py-obj">read_raw_bids</em> function.</p>
+<div class="sphx-glr-example-title section" id="read-bids-datasets">
+<span id="sphx-glr-auto-examples-read-bids-datasets-py"></span><h1>01. Read BIDS datasets<a class="headerlink" href="#read-bids-datasets" title="Permalink to this headline">¶</a></h1>
+<p>When working with electrophysiological data in the BIDS format, we usually have
+varying data types, which can be loaded via the <code class="docutils literal notranslate"><span class="pre">read_raw_bids</span></code> function.</p>
 <ul class="simple">
 <li><p>MEG</p></li>
-<li><p>EEG (scalp)</p></li>
+<li><p>EEG (scalp electrodes)</p></li>
 <li><p>iEEG (ECoG and SEEG)</p></li>
 <li><p>the anatomical MRI scan of a study participant</p></li>
 </ul>
-<p>In order to check if your dataset is compliant with BIDS, you can first
-run the BIDS validator online.</p>
-<p>In this tutorial, we show how <em class="xref py py-obj">read_raw_bids</em>
-can be used to load any BIDS format data,
-and to display the data that is saved within the accompanying sidecars.</p>
+<p>In this tutorial, we show how <code class="docutils literal notranslate"><span class="pre">read_raw_bids</span></code> can be used to load and
+inspect BIDS-formatted data.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Authors: Adam Li &lt;adam2392@gmail.com&gt;</span>
+<span class="c1">#          Richard Höchenberger &lt;richard.hoechenberger@gmail.com&gt;</span>
+<span class="c1">#</span>
 <span class="c1"># License: BSD (3-clause)</span>
 </pre></div>
 </div>
+<div class="contents local topic" id="contents">
+<p class="topic-title">Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#imports" id="id1">Imports</a></p></li>
+<li><p><a class="reference internal" href="#download-the-somato-bids-dataset" id="id2">Download the <code class="docutils literal notranslate"><span class="pre">somato</span></code> BIDS dataset</a></p></li>
+<li><p><a class="reference internal" href="#explore-the-dataset-contents" id="id3">Explore the dataset contents</a></p></li>
+<li><p><a class="reference internal" href="#prepare-reading-the-data" id="id4">Prepare reading the data</a></p></li>
+<li><p><a class="reference internal" href="#read-the-data" id="id5">Read the data</a></p></li>
+</ul>
+</div>
+<div class="section" id="imports">
+<h2><a class="toc-backref" href="#id1">Imports</a><a class="headerlink" href="#imports" title="Permalink to this headline">¶</a></h2>
 <p>We are importing everything we need for this example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mne.datasets</span> <span class="kn">import</span> <span class="n">somato</span>
 
-<span class="kn">from</span> <span class="nn">mne_bids</span> <span class="kn">import</span> <span class="p">(</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class"><span class="n">BIDSPath</span></a><span class="p">,</span> <a href="../generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">read_raw_bids</span></a><span class="p">,</span>
-                      <a href="../generated/mne_bids.print_dir_tree.html#mne_bids.print_dir_tree" title="mne_bids.print_dir_tree" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">print_dir_tree</span></a><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">mne_bids</span> <span class="kn">import</span> <a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class"><span class="n">BIDSPath</span></a><span class="p">,</span> <a href="../generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">read_raw_bids</span></a><span class="p">,</span> <a href="../generated/mne_bids.print_dir_tree.html#mne_bids.print_dir_tree" title="mne_bids.print_dir_tree" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">print_dir_tree</span></a><span class="p">,</span> <a href="../generated/mne_bids.make_report.html#mne_bids.make_report" title="mne_bids.make_report" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">make_report</span></a>
 </pre></div>
 </div>
 <p>We will be using the <a class="reference external" href="https://mne.tools/dev/generated/mne.datasets.somato.data_path.html">MNE somato data</a>, which
 is already stored in BIDS format.
-For more information, you can checkout the
+For more information, you can check out the
 respective <a class="reference internal" href="convert_mne_sample.html#ex-convert-mne-sample"><span class="std std-ref">example</span></a>.</p>
-<div class="section" id="step-1-download-get-a-bids-dataset">
-<h2>Step 1: Download/Get a BIDS dataset<a class="headerlink" href="#step-1-download-get-a-bids-dataset" title="Permalink to this headline">¶</a></h2>
-<p>Get the MNE somato data</p>
+</div>
+<div class="section" id="download-the-somato-bids-dataset">
+<h2><a class="toc-backref" href="#id2">Download the <code class="docutils literal notranslate"><span class="pre">somato</span></code> BIDS dataset</a><a class="headerlink" href="#download-the-somato-bids-dataset" title="Permalink to this headline">¶</a></h2>
+<p>Download the data if it hasn’t been downloaded already, and return the path
+to the download directory. This directory is the so-called <em class="xref py py-obj">root</em> of this
+BIDS dataset.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.datasets.somato.data_path.html#mne.datasets.somato.data_path" title="mne.datasets.somato.data_path" class="sphx-glr-backref-module-mne-datasets-somato sphx-glr-backref-type-py-function"><span class="n">somato</span><span class="o">.</span><span class="n">data_path</span></a><span class="p">()</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject_id</span></a> <span class="o">=</span> <span class="s1">&#39;01&#39;</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">task</span></a> <span class="o">=</span> <span class="s1">&#39;somato&#39;</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">datatype</span></a> <span class="o">=</span> <span class="s1">&#39;meg&#39;</span>
-
-<a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a> <span class="o">=</span> <a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class"><span class="n">BIDSPath</span></a><span class="p">(</span><span class="n">subject</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject_id</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">task</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">task</span></a><span class="p">,</span>
-                     <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">datatype</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">datatype</span></a><span class="p">,</span> <span class="n">suffix</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">datatype</span></a><span class="p">,</span>
-                     <span class="n">root</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">)</span>
-
-<span class="c1"># bids basename is nicely formatted</span>
-<span class="nb">print</span><span class="p">(</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="p">)</span>
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Using default location ~/mne_data for somato...
 Attempting to create new mne-python configuration file:
 /home/circleci/.mne/mne-python.json
-/home/circleci/mne_data/MNE-somato-data/sub-01/meg/sub-01_task-somato_meg.fif
 </pre></div>
 </div>
-<p>Print the directory tree</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="../generated/mne_bids.print_dir_tree.html#mne_bids.print_dir_tree" title="mne_bids.print_dir_tree" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">print_dir_tree</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">)</span>
+</div>
+<div class="section" id="explore-the-dataset-contents">
+<h2><a class="toc-backref" href="#id3">Explore the dataset contents</a><a class="headerlink" href="#explore-the-dataset-contents" title="Permalink to this headline">¶</a></h2>
+<p>We can use MNE-BIDS to print a tree of all
+included files and folders. We pass the <code class="docutils literal notranslate"><span class="pre">max_depth</span></code> parameter to
+<a class="reference internal" href="../generated/mne_bids.print_dir_tree.html#mne_bids.print_dir_tree" title="mne_bids.print_dir_tree"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne_bids.print_dir_tree</span></code></a> to the output to three levels of folders, for
+better readability in this example.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="../generated/mne_bids.print_dir_tree.html#mne_bids.print_dir_tree" title="mne_bids.print_dir_tree" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">print_dir_tree</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">,</span> <span class="n">max_depth</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
@@ -182,610 +192,6 @@ Attempting to create new mne-python configuration file:
 |--- derivatives/
 |------ freesurfer/
 |--------- subjects/
-|------------ fsaverage
-|------------ 01/
-|--------------- bem/
-|------------------ 01-5120-bem-sol.fif
-|------------------ 01-5120-bem.fif
-|------------------ 01-head-dense.fif
-|------------------ 01-head-medium.fif
-|------------------ 01-head-sparse.fif
-|------------------ 01-head.fif
-|------------------ brain.surf
-|------------------ inner_skull.surf
-|------------------ outer_skin.surf
-|------------------ outer_skull.surf
-|------------------ watershed/
-|--------------------- 01_brain_surface
-|--------------------- 01_inner_skull_surface
-|--------------------- 01_outer_skin_surface
-|--------------------- 01_outer_skull_surface
-|--------------------- ws/
-|------------------------ COR-.info
-|------------------------ COR-001
-|------------------------ COR-002
-|------------------------ COR-003
-|------------------------ COR-004
-|------------------------ COR-005
-|------------------------ COR-006
-|------------------------ COR-007
-|------------------------ COR-008
-|------------------------ COR-009
-|------------------------ COR-010
-|------------------------ COR-011
-|------------------------ COR-012
-|------------------------ COR-013
-|------------------------ COR-014
-|------------------------ COR-015
-|------------------------ COR-016
-|------------------------ COR-017
-|------------------------ COR-018
-|------------------------ COR-019
-|------------------------ COR-020
-|------------------------ COR-021
-|------------------------ COR-022
-|------------------------ COR-023
-|------------------------ COR-024
-|------------------------ COR-025
-|------------------------ COR-026
-|------------------------ COR-027
-|------------------------ COR-028
-|------------------------ COR-029
-|------------------------ COR-030
-|------------------------ COR-031
-|------------------------ COR-032
-|------------------------ COR-033
-|------------------------ COR-034
-|------------------------ COR-035
-|------------------------ COR-036
-|------------------------ COR-037
-|------------------------ COR-038
-|------------------------ COR-039
-|------------------------ COR-040
-|------------------------ COR-041
-|------------------------ COR-042
-|------------------------ COR-043
-|------------------------ COR-044
-|------------------------ COR-045
-|------------------------ COR-046
-|------------------------ COR-047
-|------------------------ COR-048
-|------------------------ COR-049
-|------------------------ COR-050
-|------------------------ COR-051
-|------------------------ COR-052
-|------------------------ COR-053
-|------------------------ COR-054
-|------------------------ COR-055
-|------------------------ COR-056
-|------------------------ COR-057
-|------------------------ COR-058
-|------------------------ COR-059
-|------------------------ COR-060
-|------------------------ COR-061
-|------------------------ COR-062
-|------------------------ COR-063
-|------------------------ COR-064
-|------------------------ COR-065
-|------------------------ COR-066
-|------------------------ COR-067
-|------------------------ COR-068
-|------------------------ COR-069
-|------------------------ COR-070
-|------------------------ COR-071
-|------------------------ COR-072
-|------------------------ COR-073
-|------------------------ COR-074
-|------------------------ COR-075
-|------------------------ COR-076
-|------------------------ COR-077
-|------------------------ COR-078
-|------------------------ COR-079
-|------------------------ COR-080
-|------------------------ COR-081
-|------------------------ COR-082
-|------------------------ COR-083
-|------------------------ COR-084
-|------------------------ COR-085
-|------------------------ COR-086
-|------------------------ COR-087
-|------------------------ COR-088
-|------------------------ COR-089
-|------------------------ COR-090
-|------------------------ COR-091
-|------------------------ COR-092
-|------------------------ COR-093
-|------------------------ COR-094
-|------------------------ COR-095
-|------------------------ COR-096
-|------------------------ COR-097
-|------------------------ COR-098
-|------------------------ COR-099
-|------------------------ COR-100
-|------------------------ COR-101
-|------------------------ COR-102
-|------------------------ COR-103
-|------------------------ COR-104
-|------------------------ COR-105
-|------------------------ COR-106
-|------------------------ COR-107
-|------------------------ COR-108
-|------------------------ COR-109
-|------------------------ COR-110
-|------------------------ COR-111
-|------------------------ COR-112
-|------------------------ COR-113
-|------------------------ COR-114
-|------------------------ COR-115
-|------------------------ COR-116
-|------------------------ COR-117
-|------------------------ COR-118
-|------------------------ COR-119
-|------------------------ COR-120
-|------------------------ COR-121
-|------------------------ COR-122
-|------------------------ COR-123
-|------------------------ COR-124
-|------------------------ COR-125
-|------------------------ COR-126
-|------------------------ COR-127
-|------------------------ COR-128
-|------------------------ COR-129
-|------------------------ COR-130
-|------------------------ COR-131
-|------------------------ COR-132
-|------------------------ COR-133
-|------------------------ COR-134
-|------------------------ COR-135
-|------------------------ COR-136
-|------------------------ COR-137
-|------------------------ COR-138
-|------------------------ COR-139
-|------------------------ COR-140
-|------------------------ COR-141
-|------------------------ COR-142
-|------------------------ COR-143
-|------------------------ COR-144
-|------------------------ COR-145
-|------------------------ COR-146
-|------------------------ COR-147
-|------------------------ COR-148
-|------------------------ COR-149
-|------------------------ COR-150
-|------------------------ COR-151
-|------------------------ COR-152
-|------------------------ COR-153
-|------------------------ COR-154
-|------------------------ COR-155
-|------------------------ COR-156
-|------------------------ COR-157
-|------------------------ COR-158
-|------------------------ COR-159
-|------------------------ COR-160
-|------------------------ COR-161
-|------------------------ COR-162
-|------------------------ COR-163
-|------------------------ COR-164
-|------------------------ COR-165
-|------------------------ COR-166
-|------------------------ COR-167
-|------------------------ COR-168
-|------------------------ COR-169
-|------------------------ COR-170
-|------------------------ COR-171
-|------------------------ COR-172
-|------------------------ COR-173
-|------------------------ COR-174
-|------------------------ COR-175
-|------------------------ COR-176
-|------------------------ COR-177
-|------------------------ COR-178
-|------------------------ COR-179
-|------------------------ COR-180
-|------------------------ COR-181
-|------------------------ COR-182
-|------------------------ COR-183
-|------------------------ COR-184
-|------------------------ COR-185
-|------------------------ COR-186
-|------------------------ COR-187
-|------------------------ COR-188
-|------------------------ COR-189
-|------------------------ COR-190
-|------------------------ COR-191
-|------------------------ COR-192
-|------------------------ COR-193
-|------------------------ COR-194
-|------------------------ COR-195
-|------------------------ COR-196
-|------------------------ COR-197
-|------------------------ COR-198
-|------------------------ COR-199
-|------------------------ COR-200
-|------------------------ COR-201
-|------------------------ COR-202
-|------------------------ COR-203
-|------------------------ COR-204
-|------------------------ COR-205
-|------------------------ COR-206
-|------------------------ COR-207
-|------------------------ COR-208
-|------------------------ COR-209
-|------------------------ COR-210
-|------------------------ COR-211
-|------------------------ COR-212
-|------------------------ COR-213
-|------------------------ COR-214
-|------------------------ COR-215
-|------------------------ COR-216
-|------------------------ COR-217
-|------------------------ COR-218
-|------------------------ COR-219
-|------------------------ COR-220
-|------------------------ COR-221
-|------------------------ COR-222
-|------------------------ COR-223
-|------------------------ COR-224
-|------------------------ COR-225
-|------------------------ COR-226
-|------------------------ COR-227
-|------------------------ COR-228
-|------------------------ COR-229
-|------------------------ COR-230
-|------------------------ COR-231
-|------------------------ COR-232
-|------------------------ COR-233
-|------------------------ COR-234
-|------------------------ COR-235
-|------------------------ COR-236
-|------------------------ COR-237
-|------------------------ COR-238
-|------------------------ COR-239
-|------------------------ COR-240
-|------------------------ COR-241
-|------------------------ COR-242
-|------------------------ COR-243
-|------------------------ COR-244
-|------------------------ COR-245
-|------------------------ COR-246
-|------------------------ COR-247
-|------------------------ COR-248
-|------------------------ COR-249
-|------------------------ COR-250
-|------------------------ COR-251
-|------------------------ COR-252
-|------------------------ COR-253
-|------------------------ COR-254
-|------------------------ COR-255
-|------------------------ COR-256
-|--------------- label/
-|------------------ BA_exvivo.ctab
-|------------------ BA_exvivo.thresh.ctab
-|------------------ aparc.annot.DKTatlas.ctab
-|------------------ aparc.annot.a2009s.ctab
-|------------------ aparc.annot.ctab
-|------------------ lh.BA1_exvivo.label
-|------------------ lh.BA1_exvivo.thresh.label
-|------------------ lh.BA2_exvivo.label
-|------------------ lh.BA2_exvivo.thresh.label
-|------------------ lh.BA3a_exvivo.label
-|------------------ lh.BA3a_exvivo.thresh.label
-|------------------ lh.BA3b_exvivo.label
-|------------------ lh.BA3b_exvivo.thresh.label
-|------------------ lh.BA44_exvivo.label
-|------------------ lh.BA44_exvivo.thresh.label
-|------------------ lh.BA45_exvivo.label
-|------------------ lh.BA45_exvivo.thresh.label
-|------------------ lh.BA4a_exvivo.label
-|------------------ lh.BA4a_exvivo.thresh.label
-|------------------ lh.BA4p_exvivo.label
-|------------------ lh.BA4p_exvivo.thresh.label
-|------------------ lh.BA6_exvivo.label
-|------------------ lh.BA6_exvivo.thresh.label
-|------------------ lh.BA_exvivo.annot
-|------------------ lh.BA_exvivo.thresh.annot
-|------------------ lh.MT_exvivo.label
-|------------------ lh.MT_exvivo.thresh.label
-|------------------ lh.V1_exvivo.label
-|------------------ lh.V1_exvivo.thresh.label
-|------------------ lh.V2_exvivo.label
-|------------------ lh.V2_exvivo.thresh.label
-|------------------ lh.aparc.DKTatlas.annot
-|------------------ lh.aparc.a2009s.annot
-|------------------ lh.aparc.annot
-|------------------ lh.cortex.label
-|------------------ lh.entorhinal_exvivo.label
-|------------------ lh.entorhinal_exvivo.thresh.label
-|------------------ lh.perirhinal_exvivo.label
-|------------------ lh.perirhinal_exvivo.thresh.label
-|------------------ rh.BA1_exvivo.label
-|------------------ rh.BA1_exvivo.thresh.label
-|------------------ rh.BA2_exvivo.label
-|------------------ rh.BA2_exvivo.thresh.label
-|------------------ rh.BA3a_exvivo.label
-|------------------ rh.BA3a_exvivo.thresh.label
-|------------------ rh.BA3b_exvivo.label
-|------------------ rh.BA3b_exvivo.thresh.label
-|------------------ rh.BA44_exvivo.label
-|------------------ rh.BA44_exvivo.thresh.label
-|------------------ rh.BA45_exvivo.label
-|------------------ rh.BA45_exvivo.thresh.label
-|------------------ rh.BA4a_exvivo.label
-|------------------ rh.BA4a_exvivo.thresh.label
-|------------------ rh.BA4p_exvivo.label
-|------------------ rh.BA4p_exvivo.thresh.label
-|------------------ rh.BA6_exvivo.label
-|------------------ rh.BA6_exvivo.thresh.label
-|------------------ rh.BA_exvivo.annot
-|------------------ rh.BA_exvivo.thresh.annot
-|------------------ rh.MT_exvivo.label
-|------------------ rh.MT_exvivo.thresh.label
-|------------------ rh.V1_exvivo.label
-|------------------ rh.V1_exvivo.thresh.label
-|------------------ rh.V2_exvivo.label
-|------------------ rh.V2_exvivo.thresh.label
-|------------------ rh.aparc.DKTatlas.annot
-|------------------ rh.aparc.a2009s.annot
-|------------------ rh.aparc.annot
-|------------------ rh.cortex.label
-|------------------ rh.entorhinal_exvivo.label
-|------------------ rh.entorhinal_exvivo.thresh.label
-|------------------ rh.perirhinal_exvivo.label
-|------------------ rh.perirhinal_exvivo.thresh.label
-|--------------- mri/
-|------------------ T1.mgz
-|------------------ aparc+aseg.mgz
-|------------------ aparc.DKTatlas+aseg.mgz
-|------------------ aparc.a2009s+aseg.mgz
-|------------------ aseg.auto.mgz
-|------------------ aseg.auto_noCCseg.label_intensities.txt
-|------------------ aseg.auto_noCCseg.mgz
-|------------------ aseg.mgz
-|------------------ aseg.presurf.hypos.mgz
-|------------------ aseg.presurf.mgz
-|------------------ brain.finalsurfs.mgz
-|------------------ brain.mgz
-|------------------ brainmask.auto.mgz
-|------------------ brainmask.mgz
-|------------------ ctrl_pts.mgz
-|------------------ filled.mgz
-|------------------ lh.ribbon.mgz
-|------------------ mri_nu_correct.mni.log
-|------------------ mri_nu_correct.mni.log.bak
-|------------------ norm.mgz
-|------------------ nu.mgz
-|------------------ orig.mgz
-|------------------ orig_nu.mgz
-|------------------ rawavg.mgz
-|------------------ rh.ribbon.mgz
-|------------------ ribbon.mgz
-|------------------ seghead.mgz
-|------------------ segment.dat
-|------------------ talairach.label_intensities.txt
-|------------------ talairach.log
-|------------------ talairach_with_skull.log
-|------------------ wm.asegedit.mgz
-|------------------ wm.mgz
-|------------------ wm.seg.mgz
-|------------------ wmparc.mgz
-|------------------ orig/
-|--------------------- 001.mgz
-|------------------ transforms/
-|--------------------- cc_up.lta
-|--------------------- talairach.auto.xfm
-|--------------------- talairach.auto.xfm.lta
-|--------------------- talairach.lta
-|--------------------- talairach.m3z
-|--------------------- talairach.xfm
-|--------------------- talairach_avi.log
-|--------------------- talairach_avi_QA.log
-|--------------------- talairach_with_skull.lta
-|--------------------- talsrcimg_to_711-2C_as_mni_average_305_t4_vox2vox.txt
-|--------------------- bak/
-|--------------- scripts/
-|------------------ build-stamp.txt
-|------------------ lastcall.build-stamp.txt
-|------------------ mkheadsurf.log
-|------------------ patchdir.txt
-|------------------ pctsurfcon.log
-|------------------ pctsurfcon.log.old
-|------------------ ponscc.cut.log
-|------------------ recon-all-status.log
-|------------------ recon-all.cmd
-|------------------ recon-all.done
-|------------------ recon-all.env
-|------------------ recon-all.local-copy
-|------------------ recon-all.log
-|--------------- stats/
-|------------------ aseg.stats
-|------------------ lh.BA_exvivo.stats
-|------------------ lh.BA_exvivo.thresh.stats
-|------------------ lh.aparc.DKTatlas.stats
-|------------------ lh.aparc.a2009s.stats
-|------------------ lh.aparc.pial.stats
-|------------------ lh.aparc.stats
-|------------------ lh.curv.stats
-|------------------ lh.w-g.pct.stats
-|------------------ rh.BA_exvivo.stats
-|------------------ rh.BA_exvivo.thresh.stats
-|------------------ rh.aparc.DKTatlas.stats
-|------------------ rh.aparc.a2009s.stats
-|------------------ rh.aparc.pial.stats
-|------------------ rh.aparc.stats
-|------------------ rh.curv.stats
-|------------------ rh.w-g.pct.stats
-|------------------ wmparc.stats
-|--------------- surf/
-|------------------ lh.area
-|------------------ lh.area.mid
-|------------------ lh.area.pial
-|------------------ lh.area.seghead
-|------------------ lh.avg_curv
-|------------------ lh.curv
-|------------------ lh.curv.pial
-|------------------ lh.curv.seghead
-|------------------ lh.defect_borders
-|------------------ lh.defect_chull
-|------------------ lh.defect_labels
-|------------------ lh.inflated
-|------------------ lh.inflated.H
-|------------------ lh.inflated.K
-|------------------ lh.inflated.nofix
-|------------------ lh.jacobian_white
-|------------------ lh.orig
-|------------------ lh.orig.nofix
-|------------------ lh.pial
-|------------------ lh.qsphere.nofix
-|------------------ lh.seghead
-|------------------ lh.seghead.inflated
-|------------------ lh.smoothwm
-|------------------ lh.smoothwm.BE.crv
-|------------------ lh.smoothwm.C.crv
-|------------------ lh.smoothwm.FI.crv
-|------------------ lh.smoothwm.H.crv
-|------------------ lh.smoothwm.K.crv
-|------------------ lh.smoothwm.K1.crv
-|------------------ lh.smoothwm.K2.crv
-|------------------ lh.smoothwm.S.crv
-|------------------ lh.smoothwm.nofix
-|------------------ lh.sphere
-|------------------ lh.sphere.reg
-|------------------ lh.sulc
-|------------------ lh.sulc.seghead
-|------------------ lh.thickness
-|------------------ lh.volume
-|------------------ lh.w-g.pct.mgh
-|------------------ lh.white
-|------------------ lh.white.H
-|------------------ lh.white.K
-|------------------ lh.white.preaparc
-|------------------ lh.white.preaparc.H
-|------------------ lh.white.preaparc.K
-|------------------ rh.area
-|------------------ rh.area.mid
-|------------------ rh.area.pial
-|------------------ rh.avg_curv
-|------------------ rh.curv
-|------------------ rh.curv.pial
-|------------------ rh.defect_borders
-|------------------ rh.defect_chull
-|------------------ rh.defect_labels
-|------------------ rh.inflated
-|------------------ rh.inflated.H
-|------------------ rh.inflated.K
-|------------------ rh.inflated.nofix
-|------------------ rh.jacobian_white
-|------------------ rh.orig
-|------------------ rh.orig.nofix
-|------------------ rh.pial
-|------------------ rh.qsphere.nofix
-|------------------ rh.smoothwm
-|------------------ rh.smoothwm.BE.crv
-|------------------ rh.smoothwm.C.crv
-|------------------ rh.smoothwm.FI.crv
-|------------------ rh.smoothwm.H.crv
-|------------------ rh.smoothwm.K.crv
-|------------------ rh.smoothwm.K1.crv
-|------------------ rh.smoothwm.K2.crv
-|------------------ rh.smoothwm.S.crv
-|------------------ rh.smoothwm.nofix
-|------------------ rh.sphere
-|------------------ rh.sphere.reg
-|------------------ rh.sulc
-|------------------ rh.thickness
-|------------------ rh.volume
-|------------------ rh.w-g.pct.mgh
-|------------------ rh.white
-|------------------ rh.white.H
-|------------------ rh.white.K
-|------------------ rh.white.preaparc
-|------------------ rh.white.preaparc.H
-|------------------ rh.white.preaparc.K
-|--------------- tmp/
-|--------------- touch/
-|------------------ aparc.DKTatlas2aseg.touch
-|------------------ aparc.a2009s2aseg.touch
-|------------------ apas2aseg.touch
-|------------------ asegmerge.touch
-|------------------ ca_label.touch
-|------------------ ca_normalize.touch
-|------------------ ca_register.touch
-|------------------ conform.touch
-|------------------ cortical_ribbon.touch
-|------------------ em_register.touch
-|------------------ fill.touch
-|------------------ inorm1.touch
-|------------------ inorm2.touch
-|------------------ lh.aparc.touch
-|------------------ lh.aparc2.touch
-|------------------ lh.aparcstats.touch
-|------------------ lh.aparcstats2.touch
-|------------------ lh.aparcstats3.touch
-|------------------ lh.avgcurv.touch
-|------------------ lh.curvstats.touch
-|------------------ lh.final_surfaces.touch
-|------------------ lh.inflate.H.K.touch
-|------------------ lh.inflate1.touch
-|------------------ lh.inflate2.touch
-|------------------ lh.jacobian_white.touch
-|------------------ lh.pctsurfcon.touch
-|------------------ lh.pial_surface.touch
-|------------------ lh.qsphere.touch
-|------------------ lh.smoothwm1.touch
-|------------------ lh.smoothwm2.touch
-|------------------ lh.sphmorph.touch
-|------------------ lh.sphreg.touch
-|------------------ lh.surfvolume.touch
-|------------------ lh.tessellate.touch
-|------------------ lh.topofix.touch
-|------------------ lh.white.H.K.touch
-|------------------ lh.white_surface.touch
-|------------------ nu.touch
-|------------------ relabelhypos.touch
-|------------------ rh.aparc.touch
-|------------------ rh.aparc2.touch
-|------------------ rh.aparcstats.touch
-|------------------ rh.aparcstats2.touch
-|------------------ rh.aparcstats3.touch
-|------------------ rh.avgcurv.touch
-|------------------ rh.curvstats.touch
-|------------------ rh.final_surfaces.touch
-|------------------ rh.inflate.H.K.touch
-|------------------ rh.inflate1.touch
-|------------------ rh.inflate2.touch
-|------------------ rh.jacobian_white.touch
-|------------------ rh.pctsurfcon.touch
-|------------------ rh.pial_surface.touch
-|------------------ rh.qsphere.touch
-|------------------ rh.smoothwm1.touch
-|------------------ rh.smoothwm2.touch
-|------------------ rh.sphmorph.touch
-|------------------ rh.sphreg.touch
-|------------------ rh.surfvolume.touch
-|------------------ rh.tessellate.touch
-|------------------ rh.topofix.touch
-|------------------ rh.white.H.K.touch
-|------------------ rh.white_surface.touch
-|------------------ rusage.mri_ca_register.dat
-|------------------ rusage.mri_em_register.dat
-|------------------ rusage.mri_em_register.skull.dat
-|------------------ rusage.mri_watershed.dat
-|------------------ rusage.mris_fix_topology.lh.dat
-|------------------ rusage.mris_fix_topology.rh.dat
-|------------------ rusage.mris_inflate.lh.dat
-|------------------ rusage.mris_inflate.rh.dat
-|------------------ rusage.mris_register.lh.dat
-|------------------ rusage.mris_register.rh.dat
-|------------------ rusage.mris_sphere.lh.dat
-|------------------ rusage.mris_sphere.rh.dat
-|------------------ segstats.touch
-|------------------ skull.lta.touch
-|------------------ skull_strip.touch
-|------------------ talairach.touch
-|------------------ wmaparc.stats.touch
-|------------------ wmaparc.touch
-|------------------ wmsegment.touch
-|--------------- trash/
 |------ sub-01/
 |--------- sub-01_task-somato-fwd.fif
 |--- sub-01/
@@ -801,12 +207,130 @@ Attempting to create new mne-python configuration file:
 |--------- sub-01_task-somato_meg.json
 </pre></div>
 </div>
+<p>We can even ask MNE-BIDS to produce a human-readbale summary report
+on the dataset contents.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><a href="../generated/mne_bids.make_report.html#mne_bids.make_report" title="mne_bids.make_report" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">make_report</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">))</span>
+</pre></div>
 </div>
-<div class="section" id="step-2-read-a-bids-dataset">
-<h2>Step 2: Read a BIDS dataset<a class="headerlink" href="#step-2-read-a-bids-dataset" title="Permalink to this headline">¶</a></h2>
-<p>Let’s read in the dataset and show off a few features of the
-loading function <em class="xref py py-obj">read_raw_bids</em>. Note, this is just one line of code.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw" title="mne.io.Raw" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span></a> <span class="o">=</span> <a href="../generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">read_raw_bids</span></a><span class="p">(</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="o">=</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Summarizing participants.tsv /home/circleci/mne_data/MNE-somato-data/participants.tsv...
+Summarizing scans.tsv files [PosixPath(&#39;/home/circleci/mne_data/MNE-somato-data/sub-01/sub-01_scans.tsv&#39;)]...
+The participant template found: comprised of 1 men and 0 women;
+handedness were all unknown; ages all unknown
+The MNE-somato-data-bids dataset was created with BIDS version 1.2.0 by Lauri
+Parkkonen. This report was generated with MNE-BIDS
+(https://doi.org/10.21105/joss.01896). The dataset consists of 1 participants
+(comprised of 1 men and 0 women; handedness were all unknown; ages all unknown).
+Data was recorded using a MEG system (Elekta manufacturer) sampled at 300.31 Hz
+with line noise at 50 Hz. There was 1 scan in total. Recording durations ranged
+from 897.08 to 897.08 seconds (mean = 897.08, std = 0.0), for a total of 897.08
+seconds of data recorded over all scans. For each dataset, there were on average
+316.0 (std = 0.0) recording channels per scan, out of which 316.0 (std = 0.0)
+were used in analysis (0.0 +/- 0.0 were removed from analysis).
+</pre></div>
+</div>
+<p>Now it’s time to get ready for reading some of the data! First, we need to
+create a <a class="reference internal" href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a>, which is the working horse object of MNE-BIDS
+when it comes to file and folder operations.</p>
+<p>For now, we’re interested only in the MEG data in the BIDS root directory
+of the <code class="docutils literal notranslate"><span class="pre">somato</span></code> dataset.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">datatype</span></a> <span class="o">=</span> <span class="s1">&#39;meg&#39;</span>
+<a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a> <span class="o">=</span> <a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class"><span class="n">BIDSPath</span></a><span class="p">(</span><span class="n">root</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">datatype</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">datatype</span></a><span class="p">)</span>
+</pre></div>
+</div>
+<p>We can now retrieve a list of all MEG-related files in the dataset:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.match" title="mne_bids.BIDSPath.match" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-method"><span class="n">bids_path</span><span class="o">.</span><span class="n">match</span></a><span class="p">())</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>[BIDSPath(
+root: /home/circleci/mne_data/MNE-somato-data
+datatype: meg
+basename: sub-01_task-somato_channels.tsv), BIDSPath(
+root: /home/circleci/mne_data/MNE-somato-data
+datatype: meg
+basename: sub-01_task-somato_events.tsv), BIDSPath(
+root: /home/circleci/mne_data/MNE-somato-data
+datatype: meg
+basename: sub-01_task-somato_meg.fif)]
+</pre></div>
+</div>
+<p>The returned list contains <code class="docutils literal notranslate"><span class="pre">BIDSpaths</span></code> of 3 files:
+<code class="docutils literal notranslate"><span class="pre">sub-01_task-somato_channels.tsv</span></code>, <code class="docutils literal notranslate"><span class="pre">sub-01_task-somato_events.tsv</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">sub-01_task-somato_meg.fif</span></code>.
+The first two are so-called sidecar files that contain information on the
+recording channels and experimental events, and the third one is the actual
+MEG data file.</p>
+</div>
+<div class="section" id="prepare-reading-the-data">
+<h2><a class="toc-backref" href="#id4">Prepare reading the data</a><a class="headerlink" href="#prepare-reading-the-data" title="Permalink to this headline">¶</a></h2>
+<p>There is obviously only one subject (<code class="docutils literal notranslate"><span class="pre">01</span></code>) and one experimental task
+(<code class="docutils literal notranslate"><span class="pre">somato</span></code>). Let’s use this knowledge to create a new <code class="docutils literal notranslate"><span class="pre">BIDSPath</span></code> with
+all the information required to actually read the MEG data. We also need to
+pass a <code class="docutils literal notranslate"><span class="pre">suffix</span></code>, which is the last part of the filename just before the
+extension – <code class="docutils literal notranslate"><span class="pre">'channels'</span></code> and <code class="docutils literal notranslate"><span class="pre">'events'</span></code> for the two TSV files in
+our example, and <code class="docutils literal notranslate"><span class="pre">'meg'</span></code> for MEG raw data. For MEG and EEG raw data, the
+suffix is identical to the datatype, so don’t let yourselve be confused here!</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.datasets.somato.data_path.html#mne.datasets.somato.data_path" title="mne.datasets.somato.data_path" class="sphx-glr-backref-module-mne-datasets-somato sphx-glr-backref-type-py-function"><span class="n">somato</span><span class="o">.</span><span class="n">data_path</span></a><span class="p">()</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">datatype</span></a> <span class="o">=</span> <span class="s1">&#39;meg&#39;</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject</span></a> <span class="o">=</span> <span class="s1">&#39;01&#39;</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">task</span></a> <span class="o">=</span> <span class="s1">&#39;somato&#39;</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">suffix</span></a> <span class="o">=</span> <span class="s1">&#39;meg&#39;</span>
+
+<a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a> <span class="o">=</span> <a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class"><span class="n">BIDSPath</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">task</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">task</span></a><span class="p">,</span> <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">suffix</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">suffix</span></a><span class="p">,</span>
+                     <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">datatype</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">datatype</span></a><span class="p">,</span> <span class="n">root</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">)</span>
+</pre></div>
+</div>
+<p>Now let’s print the contents of <code class="docutils literal notranslate"><span class="pre">bids_path</span></code>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="p">)</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/home/circleci/mne_data/MNE-somato-data/sub-01/meg/sub-01_task-somato_meg.fif
+</pre></div>
+</div>
+<p>You probably noticed two things: Firstly, this looks like an ordinary string
+now, not like the more-or-less neatly formatted output we saw before. And
+secondly, that there’s suddenly a filename extension which we never specified
+anywhere!</p>
+<p>The reason is that when you call <code class="docutils literal notranslate"><span class="pre">print(bids_path)</span></code>, <code class="docutils literal notranslate"><span class="pre">BIDSPath</span></code> returns
+a string representation of <code class="docutils literal notranslate"><span class="pre">BIDSPath.fpath</span></code>, which looks different. If,
+instead, you simply typed <code class="docutils literal notranslate"><span class="pre">bids_path</span></code> (or <code class="docutils literal notranslate"><span class="pre">print(repr(bids_path))</span></code>, which
+is the same) into your Python console, you would get the nicely formatted
+output:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>BIDSPath(
+root: /home/circleci/mne_data/MNE-somato-data
+datatype: meg
+basename: sub-01_task-somato_meg)
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">root</span></code> here is – you guessed it – the directory we passed via the
+<code class="docutils literal notranslate"><span class="pre">root</span></code> parameter: the “home” of our BIDS dataset. The <code class="docutils literal notranslate"><span class="pre">datatype</span></code>, again,
+is self-explanatory. The <code class="docutils literal notranslate"><span class="pre">basename</span></code>, on the other hand, is created
+automatically based on the suffix and <strong>BIDS entities</strong>  we passed to
+<code class="docutils literal notranslate"><span class="pre">BIDSPath</span></code>: in our case, <code class="docutils literal notranslate"><span class="pre">subject</span></code> and <code class="docutils literal notranslate"><span class="pre">task</span></code>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>There are many more supported entities, the most-commonly used among them
+probably being <code class="docutils literal notranslate"><span class="pre">session</span></code>. Please see
+<a class="reference external" href="bidspath">our introduction to BIDSPath</a> to learn more
+about entities, <code class="docutils literal notranslate"><span class="pre">basename</span></code>, and <code class="docutils literal notranslate"><span class="pre">BIDSPath</span></code> in general.</p>
+</div>
+<p>But what about that filename extension, now? <code class="docutils literal notranslate"><span class="pre">BIDSPath.fpath</span></code>, which –
+as you hopefully remember – is invoked when you run <code class="docutils literal notranslate"><span class="pre">print(bids_path)</span></code> –
+employs some heuristics to auto-detect some missing filename components.
+Omitting the filename extension in your script can make your code
+more portable. Note that, however, you <strong>can</strong> explicitly specify an
+extension too, by passing e.g. <code class="docutils literal notranslate"><span class="pre">extension='.fif'</span></code> to <code class="docutils literal notranslate"><span class="pre">BIDSPath</span></code>.</p>
+</div>
+<div class="section" id="read-the-data">
+<h2><a class="toc-backref" href="#id5">Read the data</a><a class="headerlink" href="#read-the-data" title="Permalink to this headline">¶</a></h2>
+<p>Let’s read the data! It’s just a single line of code.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw" title="mne.io.Raw" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span></a> <span class="o">=</span> <a href="../generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">read_raw_bids</span></a><span class="p">(</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="o">=</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
@@ -819,27 +343,50 @@ Reading channel info from /home/circleci/mne_data/MNE-somato-data/sub-01/meg/sub
   raw.set_channel_types(channel_type_dict)
 </pre></div>
 </div>
-<p><em class="xref py py-obj">raw.info</em> has the basic subject metadata</p>
+<p>Now we can inspect the <code class="docutils literal notranslate"><span class="pre">raw</span></code> object to check that it contains to correct
+metadata.</p>
+<p>Basic subject metadata is here.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne.Info" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s1">&#39;subject_info&#39;</span><span class="p">])</span>
-
-<span class="c1"># `raw.info` has the PowerLineFrequency loaded in, which should be 50 Hz here</span>
-<span class="nb">print</span><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne.Info" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s1">&#39;line_freq&#39;</span><span class="p">])</span>
-
-<span class="c1"># `raw.info` has the sampling frequency loaded in</span>
-<span class="nb">print</span><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne.Info" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s1">&#39;sfreq&#39;</span><span class="p">])</span>
-
-<span class="c1"># annotations</span>
-<span class="nb">print</span><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw.annotations" title="mne.io.Raw.annotations" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-method"><span class="n">raw</span><span class="o">.</span><span class="n">annotations</span></a><span class="p">)</span>
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>{&#39;id&#39;: 175, &#39;sex&#39;: 1, &#39;participant_id&#39;: &#39;sub-01&#39;, &#39;age&#39;: &#39;n/a&#39;}
-50
-300.3074951171875
-&lt;Annotations | 111 segments: somato_event1 (111)&gt;
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.053 seconds)</p>
+<p>Power line frequency is here.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne.Info" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s1">&#39;line_freq&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>50
+</pre></div>
+</div>
+<p>Sampling frequency is here.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne.Info" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s1">&#39;sfreq&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>300.3074951171875
+</pre></div>
+</div>
+<p>Events are now Annotations</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw.annotations" title="mne.io.Raw.annotations" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-method"><span class="n">raw</span><span class="o">.</span><span class="n">annotations</span></a><span class="p">)</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;Annotations | 111 segments: somato_event1 (111)&gt;
+</pre></div>
+</div>
+<p>Plot the raw data.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw.plot" title="mne.io.Raw.plot" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-method"><span class="n">raw</span><span class="o">.</span><span class="n">plot</span></a><span class="p">()</span>
+</pre></div>
+</div>
+<img alt="read bids datasets" class="sphx-glr-single-img" src="../_images/sphx_glr_read_bids_datasets_001.png" />
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;MNEBrowseFigure size 640x480 with 4 Axes&gt;
+</pre></div>
+</div>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.781 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-read-bids-datasets-py">
 <div class="binder-badge docutils container">
 <a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/read_bids_datasets.ipynb"><img alt="Launch binder" src="../_images/binder_badge_logo.svg" width="150px" /></a>

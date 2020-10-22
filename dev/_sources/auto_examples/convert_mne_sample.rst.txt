@@ -14,7 +14,7 @@
 .. _ex-convert-mne-sample:
 
 ==========================================
-03. Convert MNE sample data to BIDS format
+02. Convert MNE sample data to BIDS format
 ==========================================
 
 In this example we will use MNE-BIDS to organize the MNE sample data according
@@ -525,7 +525,7 @@ cite MNE-BIDS there.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  13.817 seconds)
+   **Total running time of the script:** ( 0 minutes  13.167 seconds)
 
 
 .. _sphx_glr_download_auto_examples_convert_mne_sample.py:

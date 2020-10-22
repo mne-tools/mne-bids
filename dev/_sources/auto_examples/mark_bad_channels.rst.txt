@@ -10,7 +10,7 @@
 
 
 ===============================================
-10. Changing which channels are marked as "bad"
+03. Changing which channels are marked as "bad"
 ===============================================
 
 You can use MNE-BIDS to mark MEG or (i)EEG recording channels as "bad", for
@@ -48,8 +48,6 @@ Let's start by importing the required modules and functions, reading the
     import mne
     from mne_bids import BIDSPath, write_raw_bids, read_raw_bids, mark_bad_channels
 
-    mne.set_log_level('error')  # Suppress distracting log messages.
-
     data_path = mne.datasets.sample.data_path()
     raw_fname = op.join(data_path, 'MEG', 'sample', 'sample_audvis_raw.fif')
     bids_root = op.join(data_path, '..', 'MNE-sample-data-bids')
@@ -70,6 +68,8 @@ Let's start by importing the required modules and functions, reading the
 
  .. code-block:: none
 
+    /home/circleci/project/mne_bids/utils.py:246: RuntimeWarning: No events found or provided. Please make sure to set channel type using raw.set_channel_types or provide events_data.
+      warn('No events found or provided. Please make sure to'
 
     BIDSPath(
     root: /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids
@@ -99,6 +99,17 @@ marked as bad.
 
  .. code-block:: none
 
+    Opening raw data file /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif...
+        Read a total of 3 projection items:
+            PCA-v1 (1 x 102)  idle
+            PCA-v2 (1 x 102)  idle
+            PCA-v3 (1 x 102)  idle
+        Range : 25800 ... 192599 =     42.956 ...   320.670 secs
+    Ready.
+    Reading events from /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_events.tsv.
+    Reading channel info from /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_channels.tsv.
+    /home/circleci/project/mne_bids/read.py:246: RuntimeWarning: The unit for channel(s) STI 001, STI 002, STI 003, STI 004, STI 005, STI 006, STI 014, STI 015, STI 016 has changed from V to NA.
+      raw.set_channel_types(channel_type_dict)
     The following channels are currently marked as bad:
         MEG 2443, EEG 053
 
@@ -123,6 +134,31 @@ To do that, we simply add them to a list, which we then pass to
 
 
 
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    Opening raw data file /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif...
+        Read a total of 3 projection items:
+            PCA-v1 (1 x 102)  idle
+            PCA-v2 (1 x 102)  idle
+            PCA-v3 (1 x 102)  idle
+        Range : 25800 ... 192599 =     42.956 ...   320.670 secs
+    Ready.
+    Reading 0 ... 166799  =      0.000 ...   277.714 secs...
+    Reading events from /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_events.tsv.
+    Reading channel info from /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_channels.tsv.
+    /home/circleci/project/mne_bids/read.py:246: RuntimeWarning: The unit for channel(s) STI 001, STI 002, STI 003, STI 004, STI 005, STI 006, STI 014, STI 015, STI 016 has changed from V to NA.
+      raw.set_channel_types(channel_type_dict)
+    Processing channel MEG 0112:
+        status: bad
+        description: n/a
+    Processing channel MEG 0131:
+        status: bad
+        description: n/a
+
 
 
 
@@ -146,6 +182,15 @@ That's it! Let's verify the result.
 
  .. code-block:: none
 
+    Opening raw data file /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif...
+        Read a total of 3 projection items:
+            PCA-v1 (1 x 102)  idle
+            PCA-v2 (1 x 102)  idle
+            PCA-v3 (1 x 102)  idle
+        Range : 25800 ... 192599 =     42.956 ...   320.670 secs
+    Ready.
+    Reading events from /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_events.tsv.
+    Reading channel info from /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_channels.tsv.
     After marking MEG 0112 and MEG 0131 as bad, the following channels are now marked as bad:
         MEG 0112, MEG 0131, MEG 2443, EEG 053
 
@@ -187,6 +232,32 @@ entirely, pass the argument ``overwrite=True``:
 
  .. code-block:: none
 
+    Opening raw data file /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif...
+        Read a total of 3 projection items:
+            PCA-v1 (1 x 102)  idle
+            PCA-v2 (1 x 102)  idle
+            PCA-v3 (1 x 102)  idle
+        Range : 25800 ... 192599 =     42.956 ...   320.670 secs
+    Ready.
+    Reading 0 ... 166799  =      0.000 ...   277.714 secs...
+    Reading events from /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_events.tsv.
+    Reading channel info from /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_channels.tsv.
+    Resetting status and description for all channels.
+    Processing channel MEG 0112:
+        status: bad
+        description: n/a
+    Processing channel MEG 0131:
+        status: bad
+        description: n/a
+    Opening raw data file /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif...
+        Read a total of 3 projection items:
+            PCA-v1 (1 x 102)  idle
+            PCA-v2 (1 x 102)  idle
+            PCA-v3 (1 x 102)  idle
+        Range : 25800 ... 192599 =     42.956 ...   320.670 secs
+    Ready.
+    Reading events from /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_events.tsv.
+    Reading channel info from /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_channels.tsv.
     After marking MEG 0112 and MEG 0131 as bad and passing `overwrite=True`, the following channels are now marked as bad:
         MEG 0112, MEG 0131
 
@@ -218,6 +289,26 @@ pass an empty list as ``ch_names``, combined with ``overwrite=True``:
 
  .. code-block:: none
 
+    Opening raw data file /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif...
+        Read a total of 3 projection items:
+            PCA-v1 (1 x 102)  idle
+            PCA-v2 (1 x 102)  idle
+            PCA-v3 (1 x 102)  idle
+        Range : 25800 ... 192599 =     42.956 ...   320.670 secs
+    Ready.
+    Reading 0 ... 166799  =      0.000 ...   277.714 secs...
+    Reading events from /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_events.tsv.
+    Reading channel info from /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_channels.tsv.
+    Resetting status and description for all channels.
+    Opening raw data file /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif...
+        Read a total of 3 projection items:
+            PCA-v1 (1 x 102)  idle
+            PCA-v2 (1 x 102)  idle
+            PCA-v3 (1 x 102)  idle
+        Range : 25800 ... 192599 =     42.956 ...   320.670 secs
+    Ready.
+    Reading events from /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_events.tsv.
+    Reading channel info from /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_channels.tsv.
     After passing `ch_names=[]` and `overwrite=True`, the following channels are now marked as bad:
     
 
@@ -228,7 +319,7 @@ pass an empty list as ``ch_names``, combined with ``overwrite=True``:
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  7.321 seconds)
+   **Total running time of the script:** ( 0 minutes  8.260 seconds)
 
 
 .. _sphx_glr_download_auto_examples_mark_bad_channels.py:

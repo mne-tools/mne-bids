@@ -46,11 +46,12 @@
         <div class="collapse navbar-collapse nav-collapse">
           <ul class="nav navbar-nav">
             
-                <li><a href="../../auto_examples/index.html">Examples</a></li>
+                <li><a href="../../whats_new.html">News</a></li>
+                <li><a href="../../install.html">Install</a></li>
+                <li><a href="../../use.html">Use</a></li>
                 <li><a href="../../api.html">API</a></li>
                 <li><a href="../../generated/cli.html">CLI</a></li>
-                <li><a href="../../whats_new.html">What's new</a></li>
-                <li><a href="https://github.com/mne-tools/mne-bids">GitHub</a></li>
+                <li><a href="../../contribute.html">Contribute!</a></li>
             
             
               <li class="dropdown globaltoc-container">
@@ -82,6 +83,7 @@
   <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
     <li><a href="https://mne.tools/mne-bids/dev/index.html">Development</a></li>
     <li><a href="https://mne.tools/mne-bids/stable/index.html">Stable</a></li>
+    <li><a href="https://mne.tools/mne-bids/v0.5/index.html">v0.5</a></li>
     <li><a href="https://mne.tools/mne-bids/v0.4/index.html">v0.4</a></li>
     <li><a href="https://mne.tools/mne-bids/v0.3/index.html">v0.3</a></li>
     <li><a href="https://mne.tools/mne-bids/v0.2/index.html">v0.2</a></li>
@@ -253,8 +255,8 @@
     <span class="k">return</span> <span class="n">best_er_bids_path</span>
 
 
-<div class="viewcode-block" id="BIDSPath"><a class="viewcode-back" href="../../generated/mne_bids.path.BIDSPath.html#mne_bids.BIDSPath">[docs]</a><span class="k">class</span> <span class="nc">BIDSPath</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Create a partial/full BIDS filepath from its component parts.</span>
+<div class="viewcode-block" id="BIDSPath"><a class="viewcode-back" href="../../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath">[docs]</a><span class="k">class</span> <span class="nc">BIDSPath</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create a BIDS path.</span>
 
 <span class="sd">    BIDS filename prefixes have one or more pieces of metadata in them. They</span>
 <span class="sd">    must follow a particular order, which is followed by this function. This</span>
@@ -475,7 +477,7 @@
         <span class="sd">&quot;&quot;&quot;Compare str representations.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">str</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
 
-<div class="viewcode-block" id="BIDSPath.copy"><a class="viewcode-back" href="../../generated/mne_bids.path.BIDSPath.html#mne_bids.BIDSPath.copy">[docs]</a>    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="BIDSPath.copy"><a class="viewcode-back" href="../../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.copy">[docs]</a>    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Copy the instance.</span>
 
 <span class="sd">        Returns</span>
@@ -485,7 +487,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="BIDSPath.mkdir"><a class="viewcode-back" href="../../generated/mne_bids.path.BIDSPath.html#mne_bids.BIDSPath.mkdir">[docs]</a>    <span class="k">def</span> <span class="nf">mkdir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="BIDSPath.mkdir"><a class="viewcode-back" href="../../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.mkdir">[docs]</a>    <span class="k">def</span> <span class="nf">mkdir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Create the directory structure of the BIDS path.</span>
 
 <span class="sd">        Parameters</span>
@@ -572,7 +574,7 @@
         <span class="n">bids_fpath</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">bids_fpath</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">bids_fpath</span>
 
-<div class="viewcode-block" id="BIDSPath.update"><a class="viewcode-back" href="../../generated/mne_bids.path.BIDSPath.html#mne_bids.BIDSPath.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="BIDSPath.update"><a class="viewcode-back" href="../../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">check</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Update inplace BIDS entity key/value pairs in object.</span>
 
 <span class="sd">        ``run`` and ``split`` are auto-parsed to have two</span>
@@ -684,7 +686,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_check</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span></div>
 
-<div class="viewcode-block" id="BIDSPath.match"><a class="viewcode-back" href="../../generated/mne_bids.path.BIDSPath.html#mne_bids.BIDSPath.match">[docs]</a>    <span class="k">def</span> <span class="nf">match</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="BIDSPath.match"><a class="viewcode-back" href="../../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.match">[docs]</a>    <span class="k">def</span> <span class="nf">match</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Get a list of all matching paths in the root directory.</span>
 
 <span class="sd">        Performs a recursive search, starting in ``.root`` (if set), based on</span>
@@ -767,7 +769,7 @@
                                  <span class="sa">f</span><span class="s1">&#39;Use one of these suffixes &#39;</span>
                                  <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">ALLOWED_FILENAME_SUFFIX</span><span class="si">}</span><span class="s1">.&#39;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="BIDSPath.find_empty_room"><a class="viewcode-back" href="../../generated/mne_bids.path.BIDSPath.html#mne_bids.BIDSPath.find_empty_room">[docs]</a>    <span class="k">def</span> <span class="nf">find_empty_room</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="BIDSPath.find_empty_room"><a class="viewcode-back" href="../../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.find_empty_room">[docs]</a>    <span class="k">def</span> <span class="nf">find_empty_room</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Find the corresponding empty-room file of an MEG recording.</span>
 
 <span class="sd">        This will only work if the ``.root`` attribute of the</span>
@@ -966,7 +968,7 @@
     <span class="k">return</span> <span class="n">datatype</span>
 
 
-<div class="viewcode-block" id="get_entities_from_fname"><a class="viewcode-back" href="../../generated/mne_bids.path.get_entities_from_fname.html#mne_bids.get_entities_from_fname">[docs]</a><span class="k">def</span> <span class="nf">get_entities_from_fname</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">on_error</span><span class="o">=</span><span class="s1">&#39;raise&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="get_entities_from_fname"><a class="viewcode-back" href="../../generated/mne_bids.get_entities_from_fname.html#mne_bids.get_entities_from_fname">[docs]</a><span class="k">def</span> <span class="nf">get_entities_from_fname</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">on_error</span><span class="o">=</span><span class="s1">&#39;raise&#39;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Retrieve a dictionary of BIDS entities from a filename.</span>
 
 <span class="sd">    Entities not present in ``fname`` will be assigned the value of ``None``.</span>
