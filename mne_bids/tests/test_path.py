@@ -156,6 +156,17 @@ def test_print_dir_tree(capsys):
     # test if pathlib.Path object
     print_dir_tree(Path(test_dir))
 
+    # test returning a string
+    out = print_dir_tree(test_dir, return_str=True, max_depth=1)
+    assert isinstance(out, str)
+    assert '|--- test_utils.py' in out.split('\n')
+    assert '|--- __pycache__{}'.format(os.sep) in out.split('\n')
+    assert '.pyc' not in out
+
+    # errors if return_str not a bool
+    with pytest.raises(ValueError, match='must be either True or False.'):
+        print_dir_tree(test_dir, return_str='yes')
+
 
 def test_make_folders():
     """Test that folders are created and named properly."""

@@ -5,6 +5,7 @@
 import glob
 import os
 import re
+from io import StringIO
 import shutil as sh
 from collections import OrderedDict
 from copy import deepcopy
@@ -780,10 +781,29 @@ def _check_non_sub_ses_entity(bids_path):
     return False
 
 
-def print_dir_tree(folder, max_depth=None):
-    """Recursively print dir tree starting from `folder` up to `max_depth`."""
+def print_dir_tree(folder, max_depth=None, return_str=False):
+    """Recursively print a directory tree.
+
+    Parameters
+    ----------
+    folder : str | pathlib.Path
+        The folder for which to print the directory tree.
+    max_depth : int
+        The maximum depth into which to descend recursively for printing
+        the directory tree.
+    return_str : bool
+        If ``True``, return the directory tree as a str instead of
+        printing it.
+
+    Returns
+    -------
+    str | None
+        If `return_str` is ``True``, the directory tree is returned as a
+        str. Else, ``None`` is returned and the directory tree is printed.
+    """
     if not op.exists(folder):
         raise ValueError('Directory does not exist: {}'.format(folder))
+
     msg = '`max_depth` must be a positive integer or None'
     if not isinstance(max_depth, (int, type(None))):
         raise ValueError(msg)
@@ -791,6 +811,12 @@ def print_dir_tree(folder, max_depth=None):
         max_depth = float('inf')
     if max_depth < 0:
         raise ValueError(msg)
+
+    if not isinstance(return_str, bool):
+        raise ValueError('`return_str` must be either True or False.')
+    outfile = None
+    if return_str is True:
+        outfile = StringIO()
 
     # Use max_depth same as the -L param in the unix `tree` command
     max_depth += 1
@@ -814,15 +840,20 @@ def print_dir_tree(folder, max_depth=None):
         # Only print if this is up to the depth we asked
         if branchlen <= max_depth:
             if branchlen <= 1:
-                print('|{}'.format(op.basename(root) + os.sep))
+                print('|{}'.format(op.basename(root) + os.sep), file=outfile)
             else:
                 print('|{} {}'.format((branchlen - 1) * '---',
-                                      op.basename(root) + os.sep))
+                                      op.basename(root) + os.sep),
+                      file=outfile)
 
             # Only print files if we are NOT yet up to max_depth or beyond
             if branchlen < max_depth:
                 for file in files:
-                    print('|{} {}'.format(branchlen * '---', file))
+                    print('|{} {}'.format(branchlen * '---', file),
+                          file=outfile)
+
+    if outfile is not None:
+        return outfile.getvalue()
 
 
 def _parse_ext(raw_fname, verbose=False):
