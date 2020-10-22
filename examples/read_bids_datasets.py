@@ -86,7 +86,7 @@ print(bids_path.match())
 # ------------------------
 #
 # There is obviously only one subject (``01``) and one experimental task
-# (``somato```). Let's use this knowledge to create a new ``BIDSPath`` with
+# (``somato``). Let's use this knowledge to create a new ``BIDSPath`` with
 # all the information required to actually read the MEG data. We also need to
 # pass a ``suffix``, which is the last part of the filename just before the
 # extension -- ``'channels'`` and ``'events'`` for the two TSV files in
