@@ -1,0 +1,357 @@
+.. only:: html
+
+    .. note::
+        :class: sphx-glr-download-link-note
+
+        Click :ref:`here <sphx_glr_download_auto_examples_mark_bad_channels.py>`     to download the full example code or to run this example in your browser via Binder
+    .. rst-class:: sphx-glr-example-title
+
+    .. _sphx_glr_auto_examples_mark_bad_channels.py:
+
+
+===============================================
+03. Changing which channels are marked as "bad"
+===============================================
+
+You can use MNE-BIDS to mark MEG or (i)EEG recording channels as "bad", for
+example if the connected sensor produced mostly noise – or no signal at
+all.
+
+Similarly, you can declare channels as "good", should you discover they were
+incorrectly marked as bad.
+
+
+.. code-block:: default
+
+
+    # Authors: Richard Höchenberger <richard.hoechenberger@gmail.com>
+    # License: BSD (3-clause)
+
+
+
+
+
+
+
+
+We will demonstrate how to mark individual channels as bad on the MNE
+"sample" dataset. After that, we will mark channels as good again.
+
+Let's start by importing the required modules and functions, reading the
+"sample" data, and writing it in the BIDS format.
+
+
+.. code-block:: default
+
+
+    import os.path as op
+    import mne
+    from mne_bids import BIDSPath, write_raw_bids, read_raw_bids, mark_bad_channels
+
+    data_path = mne.datasets.sample.data_path()
+    raw_fname = op.join(data_path, 'MEG', 'sample', 'sample_audvis_raw.fif')
+    bids_root = op.join(data_path, '..', 'MNE-sample-data-bids')
+    bids_path = BIDSPath(subject='01', session='01', task='audiovisual', run='01',
+                         root=bids_root)
+
+    raw = mne.io.read_raw_fif(raw_fname, verbose=False)
+    raw.info['line_freq'] = 60  # Specify power line frequency as required by BIDS.
+    write_raw_bids(raw, bids_path=bids_path, overwrite=True, verbose=False)
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    /Users/hoechenberger/Development/mne-bids/mne_bids/utils.py:246: RuntimeWarning: No events found or provided. Please make sure to set channel type using raw.set_channel_types or provide events_data.
+      warn('No events found or provided. Please make sure to'
+
+    BIDSPath(
+    root: /Users/hoechenberger/mne_data/MNE-sample-data/../MNE-sample-data-bids
+    datatype: meg
+    basename: sub-01_ses-01_task-audiovisual_run-01_meg.fif)
+
+
+
+Read the (now BIDS-formatted) data and print a list of channels currently
+marked as bad.
+
+
+.. code-block:: default
+
+
+    raw = read_raw_bids(bids_path=bids_path, verbose=False)
+    print(f'The following channels are currently marked as bad:\n'
+          f'    {", ".join(raw.info["bads"])}\n')
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    Opening raw data file /Users/hoechenberger/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif...
+        Read a total of 3 projection items:
+            PCA-v1 (1 x 102)  idle
+            PCA-v2 (1 x 102)  idle
+            PCA-v3 (1 x 102)  idle
+        Range : 25800 ... 192599 =     42.956 ...   320.670 secs
+    Ready.
+    Reading events from /Users/hoechenberger/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_events.tsv.
+    Reading channel info from /Users/hoechenberger/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_channels.tsv.
+    /Users/hoechenberger/Development/mne-bids/mne_bids/read.py:246: RuntimeWarning: The unit for channel(s) STI 001, STI 002, STI 003, STI 004, STI 005, STI 006, STI 014, STI 015, STI 016 has changed from V to NA.
+      raw.set_channel_types(channel_type_dict)
+    The following channels are currently marked as bad:
+        MEG 2443, EEG 053
+
+
+
+
+
+So currently, two channels are maked as bad: ``EEG 053`` and ``MEG 2443``.
+Let's assume that through visual data inspection, we found that two more
+MEG channels are problematic, and we would like to mark them as bad as well.
+To do that, we simply add them to a list, which we then pass to
+:func:`mne_bids.mark_bad_channels`:
+
+
+.. code-block:: default
+
+
+    bads = ['MEG 0112', 'MEG 0131']
+    mark_bad_channels(ch_names=bads, bids_path=bids_path, verbose=False)
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    Opening raw data file /Users/hoechenberger/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif...
+        Read a total of 3 projection items:
+            PCA-v1 (1 x 102)  idle
+            PCA-v2 (1 x 102)  idle
+            PCA-v3 (1 x 102)  idle
+        Range : 25800 ... 192599 =     42.956 ...   320.670 secs
+    Ready.
+    Reading 0 ... 166799  =      0.000 ...   277.714 secs...
+    Reading events from /Users/hoechenberger/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_events.tsv.
+    Reading channel info from /Users/hoechenberger/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_channels.tsv.
+    /Users/hoechenberger/Development/mne-bids/mne_bids/read.py:246: RuntimeWarning: The unit for channel(s) STI 001, STI 002, STI 003, STI 004, STI 005, STI 006, STI 014, STI 015, STI 016 has changed from V to NA.
+      raw.set_channel_types(channel_type_dict)
+    Processing channel MEG 0112:
+        status: bad
+        description: n/a
+    Processing channel MEG 0131:
+        status: bad
+        description: n/a
+
+
+
+
+That's it! Let's verify the result.
+
+
+.. code-block:: default
+
+
+    raw = read_raw_bids(bids_path=bids_path, verbose=False)
+    print(f'After marking MEG 0112 and MEG 0131 as bad, the following channels '
+          f'are now marked as bad:\n    {", ".join(raw.info["bads"])}\n')
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    Opening raw data file /Users/hoechenberger/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif...
+        Read a total of 3 projection items:
+            PCA-v1 (1 x 102)  idle
+            PCA-v2 (1 x 102)  idle
+            PCA-v3 (1 x 102)  idle
+        Range : 25800 ... 192599 =     42.956 ...   320.670 secs
+    Ready.
+    Reading events from /Users/hoechenberger/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_events.tsv.
+    Reading channel info from /Users/hoechenberger/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_channels.tsv.
+    After marking MEG 0112 and MEG 0131 as bad, the following channels are now marked as bad:
+        MEG 0112, MEG 0131, MEG 2443, EEG 053
+
+
+
+
+
+As you can see, now a total of **four** channels is marked as bad: the ones
+that were already bad when we started – ``EEG 053`` and ``MEG 2443`` – and
+the two channels we passed to :func:`mne_bids.mark_bad_channels` –
+``MEG 0112`` and ``MEG 0131``. This shows that marking bad channels via
+:func:`mne_bids.mark_bad_channels`, by default, is an **additive** procedure,
+which allows you to mark additional channels as bad while retaining the
+information about all channels that had *previously* been marked as bad.
+
+If you instead would like to **replace** the collection of bad channels
+entirely, pass the argument ``overwrite=True``:
+
+
+.. code-block:: default
+
+
+    bads = ['MEG 0112', 'MEG 0131']
+    mark_bad_channels(ch_names=bads, bids_path=bids_path, overwrite=True,
+                      verbose=False)
+
+    raw = read_raw_bids(bids_path=bids_path, verbose=False)
+    print(f'After marking MEG 0112 and MEG 0131 as bad and passing '
+          f'`overwrite=True`, the following channels '
+          f'are now marked as bad:\n    {", ".join(raw.info["bads"])}\n')
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    Opening raw data file /Users/hoechenberger/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif...
+        Read a total of 3 projection items:
+            PCA-v1 (1 x 102)  idle
+            PCA-v2 (1 x 102)  idle
+            PCA-v3 (1 x 102)  idle
+        Range : 25800 ... 192599 =     42.956 ...   320.670 secs
+    Ready.
+    Reading 0 ... 166799  =      0.000 ...   277.714 secs...
+    Reading events from /Users/hoechenberger/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_events.tsv.
+    Reading channel info from /Users/hoechenberger/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_channels.tsv.
+    Resetting status and description for all channels.
+    Processing channel MEG 0112:
+        status: bad
+        description: n/a
+    Processing channel MEG 0131:
+        status: bad
+        description: n/a
+    Opening raw data file /Users/hoechenberger/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif...
+        Read a total of 3 projection items:
+            PCA-v1 (1 x 102)  idle
+            PCA-v2 (1 x 102)  idle
+            PCA-v3 (1 x 102)  idle
+        Range : 25800 ... 192599 =     42.956 ...   320.670 secs
+    Ready.
+    Reading events from /Users/hoechenberger/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_events.tsv.
+    Reading channel info from /Users/hoechenberger/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_channels.tsv.
+    After marking MEG 0112 and MEG 0131 as bad and passing `overwrite=True`, the following channels are now marked as bad:
+        MEG 0112, MEG 0131
+
+
+
+
+
+Lastly, if you're looking for a way to mark all channels as good, simply
+pass an empty list as ``ch_names``, combined with ``overwrite=True``:
+
+
+.. code-block:: default
+
+
+    bads = []
+    mark_bad_channels(ch_names=bads, bids_path=bids_path, overwrite=True,
+                      verbose=False)
+
+    raw = read_raw_bids(bids_path=bids_path, verbose=False)
+    print(f'After passing `ch_names=[]` and `overwrite=True`, the following '
+          f'channels are now marked as bad:\n    {", ".join(raw.info["bads"])}\n')
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    Opening raw data file /Users/hoechenberger/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif...
+        Read a total of 3 projection items:
+            PCA-v1 (1 x 102)  idle
+            PCA-v2 (1 x 102)  idle
+            PCA-v3 (1 x 102)  idle
+        Range : 25800 ... 192599 =     42.956 ...   320.670 secs
+    Ready.
+    Reading 0 ... 166799  =      0.000 ...   277.714 secs...
+    Reading events from /Users/hoechenberger/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_events.tsv.
+    Reading channel info from /Users/hoechenberger/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_channels.tsv.
+    Resetting status and description for all channels.
+    Opening raw data file /Users/hoechenberger/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif...
+        Read a total of 3 projection items:
+            PCA-v1 (1 x 102)  idle
+            PCA-v2 (1 x 102)  idle
+            PCA-v3 (1 x 102)  idle
+        Range : 25800 ... 192599 =     42.956 ...   320.670 secs
+    Ready.
+    Reading events from /Users/hoechenberger/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_events.tsv.
+    Reading channel info from /Users/hoechenberger/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_channels.tsv.
+    After passing `ch_names=[]` and `overwrite=True`, the following channels are now marked as bad:
+    
+
+
+
+
+
+
+.. rst-class:: sphx-glr-timing
+
+   **Total running time of the script:** ( 0 minutes  5.232 seconds)
+
+
+.. _sphx_glr_download_auto_examples_mark_bad_channels.py:
+
+
+.. only :: html
+
+ .. container:: sphx-glr-footer
+    :class: sphx-glr-footer-example
+
+
+  .. container:: binder-badge
+
+    .. image:: images/binder_badge_logo.svg
+      :target: https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=v0.5/notebooks/auto_examples/mark_bad_channels.ipynb
+      :alt: Launch binder
+      :width: 150 px
+
+
+  .. container:: sphx-glr-download sphx-glr-download-python
+
+     :download:`Download Python source code: mark_bad_channels.py <mark_bad_channels.py>`
+
+
+
+  .. container:: sphx-glr-download sphx-glr-download-jupyter
+
+     :download:`Download Jupyter notebook: mark_bad_channels.ipynb <mark_bad_channels.ipynb>`
+
+
+.. only:: html
+
+ .. rst-class:: sphx-glr-signature
+
+    `Gallery generated by Sphinx-Gallery <https://sphinx-gallery.github.io>`_

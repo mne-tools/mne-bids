@@ -1,0 +1,23 @@
+
+
+Examples using ``mne_bids.mark_bad_channels``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. raw:: html
+
+    <div class="sphx-glr-thumbcontainer" tooltip="You can use MNE-BIDS to mark MEG or (i)EEG recording channels as &quot;bad&quot;, for example if the conn...">
+
+.. only:: html
+
+ .. figure:: /auto_examples/images/thumb/sphx_glr_mark_bad_channels_thumb.png
+     :alt: 03. Changing which channels are marked as "bad"
+
+     :ref:`sphx_glr_auto_examples_mark_bad_channels.py`
+
+.. raw:: html
+
+    </div>
+
+.. only:: not html
+
+ * :ref:`sphx_glr_auto_examples_mark_bad_channels.py`

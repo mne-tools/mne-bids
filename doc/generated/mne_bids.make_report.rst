@@ -1,0 +1,11 @@
+﻿mne\_bids.make\_report
+======================
+
+.. currentmodule:: mne_bids
+
+.. autofunction:: make_report
+
+.. _sphx_glr_backreferences_mne_bids.make_report:
+
+.. minigallery:: mne_bids.make_report
+    :add-heading:

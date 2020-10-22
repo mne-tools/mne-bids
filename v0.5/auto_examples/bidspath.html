@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>10. An introduction to BIDSPath &#8212; mne_bids 0.5 documentation</title>
+    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/style.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery-dataframe.css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          MNE-BIDS</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.5</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../whats_new.html">News</a></li>
+                <li><a href="../install.html">Install</a></li>
+                <li><a href="../use.html">Use</a></li>
+                <li><a href="../api.html">API</a></li>
+                <li><a href="../generated/cli.html">CLI</a></li>
+                <li><a href="../contribute.html">Contribute!</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"></ul>
+</li>
+              
+            
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+<div class="navbar-form navbar-right navbar-btn dropdown btn-group-sm" style="margin-left: 20px; margin-top: 5px; margin-bottom: 5px">
+  <button type="button" class="btn btn-primary navbar-btn dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown">
+    v0.5
+    <span class="caret"></span>
+  </button>
+  <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+    <li><a href="https://mne.tools/mne-bids/dev/index.html">Development</a></li>
+    <li><a href="https://mne.tools/mne-bids/stable/index.html">Stable</a></li>
+    <li><a href="https://mne.tools/mne-bids/v0.5/index.html">v0.5</a></li>
+    <li><a href="https://mne.tools/mne-bids/v0.4/index.html">v0.4</a></li>
+    <li><a href="https://mne.tools/mne-bids/v0.3/index.html">v0.3</a></li>
+    <li><a href="https://mne.tools/mne-bids/v0.2/index.html">v0.2</a></li>
+    <li><a href="https://mne.tools/mne-bids/v0.1/index.html">v0.1</a></li>
+  </ul>
+</div>
+
+
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p>Click <a class="reference internal" href="#sphx-glr-download-auto-examples-bidspath-py"><span class="std std-ref">here</span></a>     to download the full example code or to run this example in your browser via Binder</p>
+</div>
+<div class="sphx-glr-example-title section" id="an-introduction-to-bidspath">
+<span id="sphx-glr-auto-examples-bidspath-py"></span><h1>10. An introduction to BIDSPath<a class="headerlink" href="#an-introduction-to-bidspath" title="Permalink to this headline">¶</a></h1>
+<p>BIDSPath is MNE-BIDS’s working horse when it comes to file and folder
+operations. Learn here how to use it.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Author: Richard Höchenberger &lt;richard.hoechenberger@gmail.com&gt;</span>
+<span class="c1"># License: BSD (3-clause)</span>
+</pre></div>
+</div>
+<p>Obviously, to start exploring BIDSPath, we first need to import it.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mne_bids</span> <span class="kn">import</span> <a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class"><span class="n">BIDSPath</span></a>
+</pre></div>
+</div>
+<p>Now let’s discuss a little bit of background on the BIDS file and folder
+naming scheme. The first term we are going to introduce is the <strong>BIDS root</strong>.
+The BIDS root is simply the root folder of your BIDS dataset. For
+example, if the BIDS data of one of your studies is stored in
+<em class="xref py py-obj">/Users/me/Studies/Study_01</em>, then this will be the BIDS root.</p>
+<p>Similarly, if you have <strong>no</strong> BIDS dataset to begin with, you need to
+consider where to store your data upon BIDS conversion. Again, the intended
+target folder will be the BIDS root of your data.</p>
+<p>Let’s just pick an arbitrary BIDS root, for the purpose of this
+demonstration.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a> <span class="o">=</span> <span class="s1">&#39;./my_bids_root&#39;</span>
+</pre></div>
+</div>
+<p>This refers to a folder named <em class="xref py py-obj">my_bids_root</em> in the current working
+directory. Finally, let is create a <code class="docutils literal notranslate"><span class="pre">BIDSPath</span></code>, and tell it about our
+BIDS root. We can then also query the <code class="docutils literal notranslate"><span class="pre">BIDSPath</span></code> for its root.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a> <span class="o">=</span> <a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class"><span class="n">BIDSPath</span></a><span class="p">(</span><span class="n">root</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span><span class="o">.</span><span class="n">root</span></a><span class="p">)</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>my_bids_root
+</pre></div>
+</div>
+<p>Great! But not really useful so far. BIDS also asks us to specify <strong>subject
+identifiers</strong>. We can either create a new <code class="docutils literal notranslate"><span class="pre">BIDSPath</span></code>, or update our
+existing one. The value can be retrieved via the <code class="docutils literal notranslate"><span class="pre">.subject</span></code> attribute.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject</span></a> <span class="o">=</span> <span class="s1">&#39;123&#39;</span>
+
+<span class="c1"># Option 1: Create an entirely new BIDSPath.</span>
+<a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path_new</span></a> <span class="o">=</span> <a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class"><span class="n">BIDSPath</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject</span></a><span class="p">,</span> <span class="n">root</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path_new</span><span class="o">.</span><span class="n">subject</span></a><span class="p">)</span>
+
+<span class="c1"># Option 2: Update the existing BIDSPath in-place.</span>
+<a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.update" title="mne_bids.BIDSPath.update" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-method"><span class="n">bids_path</span><span class="o">.</span><span class="n">update</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">subject</span></a><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span><span class="o">.</span><span class="n">subject</span></a><span class="p">)</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>123
+123
+</pre></div>
+</div>
+<p>In this example, we are going to update the existing <code class="docutils literal notranslate"><span class="pre">BIDSPath</span></code> using its
+<code class="docutils literal notranslate"><span class="pre">update()</span></code> method. But note that all parameters we pass to this method can
+also be used when creating a <code class="docutils literal notranslate"><span class="pre">BIDSPath</span></code>.</p>
+<p>Many studies consist of multiple <strong>sessions</strong>. As you may have guessed,
+BIDS specifies how to store data for each session, and consequently,
+<code class="docutils literal notranslate"><span class="pre">BIDSPath</span></code> handles this for you too! Let’s update our <code class="docutils literal notranslate"><span class="pre">BIDSPath</span></code> with
+information on our experimental session, and try to retrieve it again via
+<code class="docutils literal notranslate"><span class="pre">.session</span></code>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">session</span> <span class="o">=</span> <span class="s1">&#39;test&#39;</span>
+<a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.update" title="mne_bids.BIDSPath.update" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-method"><span class="n">bids_path</span><span class="o">.</span><span class="n">update</span></a><span class="p">(</span><span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="o">.</span><span class="n">session</span><span class="p">)</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>test
+</pre></div>
+</div>
+<p>Now that was easy! We’re almost there! We also need to specify a
+<strong>data type</strong>, i.e., <code class="docutils literal notranslate"><span class="pre">meg</span></code> for MEG data, <code class="docutils literal notranslate"><span class="pre">eeg</span></code> and <code class="docutils literal notranslate"><span class="pre">ieeg</span></code> for EEG and
+iEEG data, or <code class="docutils literal notranslate"><span class="pre">anat</span></code> for anatomical MRI scans. Typically, MNE-BIDS will
+infer the data type of your data automatically, for example when writing data
+using <a class="reference internal" href="../generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne_bids.write_raw_bids</span></code></a>. For the sake of this example, however, we
+are going to specify the data type explicitly.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">datatype</span></a> <span class="o">=</span> <span class="s1">&#39;meg&#39;</span>
+<a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.update" title="mne_bids.BIDSPath.update" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-method"><span class="n">bids_path</span><span class="o">.</span><span class="n">update</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">datatype</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">datatype</span></a><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span></a><span class="p">)</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>meg
+</pre></div>
+</div>
+<p>Excellent! Let’s have a look at the path we have constructed!</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="p">)</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/Users/hoechenberger/Development/mne-bids/mne_bids/path.py:445: RuntimeWarning: Could not locate a data file of a supported format. This is likely a problem with your BIDS dataset. Please run the BIDS validator on your data. (root=my_bids_root, basename=sub-123_ses-test). []
+  warn(msg)
+my_bids_root/sub-123/ses-test/meg/sub-123_ses-test
+</pre></div>
+</div>
+<p>As you can see, <code class="docutils literal notranslate"><span class="pre">BIDSPath</span></code> automatically arranged all the information we
+provided such that it creates a valid BIDS folder structure. You can also
+retrieve a <a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pathlib.Path</span></code></a> object of this path:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pathlib_path</span></a> <span class="o">=</span> <a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.fpath" title="mne_bids.BIDSPath.fpath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-method"><span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span></a>
+<a href="https://docs.python.org/3/library/pathlib.html#pathlib.PosixPath" title="pathlib.PosixPath" class="sphx-glr-backref-module-pathlib sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">pathlib_path</span></a>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/Users/hoechenberger/Development/mne-bids/mne_bids/path.py:445: RuntimeWarning: Could not locate a data file of a supported format. This is likely a problem with your BIDS dataset. Please run the BIDS validator on your data. (root=my_bids_root, basename=sub-123_ses-test). []
+  warn(msg)
+
+PosixPath(&#39;my_bids_root/sub-123/ses-test/meg/sub-123_ses-test&#39;)
+</pre></div>
+</div>
+<p>Let’s have a closer look at the components of our <code class="docutils literal notranslate"><span class="pre">BIDSPath</span></code> again.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>BIDSPath(
+root: my_bids_root
+datatype: meg
+basename: sub-123_ses-test)
+</pre></div>
+</div>
+<p>The most interesting thing here is probably the <strong>basename</strong>. It’s what
+MNE-BIDS uses to name individual files. The basename consists of a set of
+so-called <strong>entities</strong>, which are concatenated using underscores. You can
+access it directly:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.basename" title="mne_bids.BIDSPath.basename" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-method"><span class="n">bids_path</span><span class="o">.</span><span class="n">basename</span></a>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>&#39;sub-123_ses-test&#39;
+</pre></div>
+</div>
+<p>The two entities you can see here are the <code class="docutils literal notranslate"><span class="pre">subject</span></code> entity (<code class="docutils literal notranslate"><span class="pre">sub</span></code>) and
+the <code class="docutils literal notranslate"><span class="pre">session</span></code> entity (<code class="docutils literal notranslate"><span class="pre">ses</span></code>). Each entity name also has a value; for
+<code class="docutils literal notranslate"><span class="pre">sub</span></code>, this is <code class="docutils literal notranslate"><span class="pre">123</span></code>, and for <code class="docutils literal notranslate"><span class="pre">ses</span></code>, it is <code class="docutils literal notranslate"><span class="pre">test</span></code> in our example.
+Entity names (or “keys”) and values are separated via hyphens.
+BIDS knows a much larger number of entities, and MNE-BIDS allows you to make
+use of them. To get a list of all supported entities, use:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.entities" title="mne_bids.BIDSPath.entities" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-method"><span class="n">bids_path</span><span class="o">.</span><span class="n">entities</span></a>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>OrderedDict([(&#39;subject&#39;, &#39;123&#39;), (&#39;session&#39;, &#39;test&#39;), (&#39;task&#39;, None), (&#39;acquisition&#39;, None), (&#39;run&#39;, None), (&#39;processing&#39;, None), (&#39;space&#39;, None), (&#39;recording&#39;, None), (&#39;split&#39;, None)])
+</pre></div>
+</div>
+<p>As you can see, most entity keys are set to <code class="docutils literal notranslate"><span class="pre">None</span></code>, which is the default
+and implies that no value has been set. Let us add a <code class="docutils literal notranslate"><span class="pre">run</span></code> entity, and
+remove the <code class="docutils literal notranslate"><span class="pre">session</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">run</span></a> <span class="o">=</span> <span class="s1">&#39;01&#39;</span>
+<span class="n">session</span> <span class="o">=</span> <span class="kc">None</span>
+<a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.update" title="mne_bids.BIDSPath.update" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-method"><span class="n">bids_path</span><span class="o">.</span><span class="n">update</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">run</span></a><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">run</span></a><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">)</span>
+<a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>BIDSPath(
+root: my_bids_root
+datatype: meg
+basename: sub-123_run-01)
+</pre></div>
+</div>
+<p>As you can see, the <code class="docutils literal notranslate"><span class="pre">basename</span></code> has been updated. In fact, the entire
+<strong>path</strong> has been updated, and the <code class="docutils literal notranslate"><span class="pre">ses-test</span></code> folder has been dropped from
+the path:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.fpath" title="mne_bids.BIDSPath.fpath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-method"><span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span></a><span class="p">)</span>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>/Users/hoechenberger/Development/mne-bids/mne_bids/path.py:445: RuntimeWarning: Could not locate a data file of a supported format. This is likely a problem with your BIDS dataset. Please run the BIDS validator on your data. (root=my_bids_root, basename=sub-123_run-01). []
+  warn(msg)
+my_bids_root/sub-123/meg/sub-123_run-01
+</pre></div>
+</div>
+<p>Awesome! We’re almost done! Two important things are still missing, though:
+the so-called <strong>suffix</strong> and the filename <strong>extension</strong>. Sometimes these
+terms are used interchangably, but in BIDS, they have a very specific
+and different meaning!</p>
+<p>The <strong>suffix</strong> is the last part of a BIDS filename before the extension. It
+is the same as the datatype for MEG, EEG, and iEEG recordings (i.e.
+<code class="docutils literal notranslate"><span class="pre">meg</span></code>, <code class="docutils literal notranslate"><span class="pre">eeg</span></code>, and <code class="docutils literal notranslate"><span class="pre">ieeg</span></code>, respectively) and <code class="docutils literal notranslate"><span class="pre">T1w</span></code> for T1-weighted
+MRI scans. But the suffix is also used to create the names of sidecar files
+like <code class="docutils literal notranslate"><span class="pre">*_events.tsv</span></code>.</p>
+<p>Which brings us directly to the <strong>extension</strong>: the very last part of a
+filename. In MNE-BIDS, the extension contains a leading period, e.g.
+<code class="docutils literal notranslate"><span class="pre">.tsv</span></code>.
+Let’s put our new knowledge to use!</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.update" title="mne_bids.BIDSPath.update" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-method"><span class="n">bids_path</span><span class="o">.</span><span class="n">update</span></a><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;meg&#39;</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;fif&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath.fpath" title="mne_bids.BIDSPath.fpath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-method"><span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span></a><span class="p">)</span>
+<a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a>
+</pre></div>
+</div>
+<p class="sphx-glr-script-out">Out:</p>
+<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>my_bids_root/sub-123/meg/sub-123_run-01_meg.fif
+
+BIDSPath(
+root: my_bids_root
+datatype: meg
+basename: sub-123_run-01_meg.fif)
+</pre></div>
+</div>
+<p>By default, most MNE-BIDS functions will try to infer to correct
+suffix and extension for your data, and you don’t need to specify them
+manually.</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.008 seconds)</p>
+<div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-bidspath-py">
+<div class="binder-badge docutils container">
+<a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=v0.5/notebooks/auto_examples/bidspath.ipynb"><img alt="Launch binder" src="../_images/binder_badge_logo.svg" width="150px" /></a>
+</div>
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/4b11a3ce6cfd9d8cf2b976f8386a2f8f/bidspath.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">bidspath.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/0c7e85abda2fce1fe2c484ad9f9aaa81/bidspath.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">bidspath.ipynb</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-10-22.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
+    </p>
+  </div>
+</footer>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-37225609-2"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-37225609-2');
+</script>
+
+  </body>
+</html>

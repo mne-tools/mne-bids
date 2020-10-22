@@ -1,0 +1,3 @@
+[console_scripts]
+mne_bids = mne_bids.commands.run:main
+

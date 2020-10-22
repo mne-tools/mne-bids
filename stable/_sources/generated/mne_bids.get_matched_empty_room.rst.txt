@@ -1,6 +1,0 @@
-mne\_bids.get\_matched\_empty\_room
-===================================
-
-.. currentmodule:: mne_bids
-
-.. autofunction:: get_matched_empty_room
