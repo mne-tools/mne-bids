@@ -887,7 +887,7 @@ Finally, we can read the empty room file using
 
     The search_str was "/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-emptyroom/**/sub-emptyroom_ses-20021204*coordsystem.json"
       warn(msg)
-    <Raw | sub-emptyroom_ses-20021204_task-noise_meg.fif, 315 x 66068 (110.0 s), ~637 kB, data not loaded>
+    <Raw | sub-emptyroom_ses-20021204_task-noise_meg.fif, 315 x 66068 (110.0 s), ~366 kB, data not loaded>
 
 
 
@@ -895,7 +895,7 @@ Finally, we can read the empty room file using
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  4.216 seconds)
+   **Total running time of the script:** ( 0 minutes  5.196 seconds)
 
 
 .. _sphx_glr_download_auto_examples_convert_empty_room.py:
@@ -910,7 +910,7 @@ Finally, we can read the empty room file using
   .. container:: binder-badge
 
     .. image:: images/binder_badge_logo.svg
-      :target: https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=v0.5/notebooks/auto_examples/convert_empty_room.ipynb
+      :target: https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/convert_empty_room.ipynb
       :alt: Launch binder
       :width: 150 px
 

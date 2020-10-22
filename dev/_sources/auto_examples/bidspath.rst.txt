@@ -448,7 +448,7 @@ manually.
   .. container:: binder-badge
 
     .. image:: images/binder_badge_logo.svg
-      :target: https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=v0.5/notebooks/auto_examples/bidspath.ipynb
+      :target: https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/bidspath.ipynb
       :alt: Launch binder
       :width: 150 px
 

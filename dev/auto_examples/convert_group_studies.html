@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>05. BIDS conversion for group studies &#8212; mne_bids 0.5 documentation</title>
+    <title>05. BIDS conversion for group studies &#8212; mne_bids 0.6.dev0 documentation</title>
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css" />
@@ -40,7 +40,7 @@
         </button>
         <a class="navbar-brand" href="../index.html">
           MNE-BIDS</a>
-        <span class="navbar-text navbar-version pull-left"><b>0.5</b></span>
+        <span class="navbar-text navbar-version pull-left"><b>0.6.dev0</b></span>
       </div>
 
         <div class="collapse navbar-collapse nav-collapse">
@@ -77,7 +77,7 @@
           
 <div class="navbar-form navbar-right navbar-btn dropdown btn-group-sm" style="margin-left: 20px; margin-top: 5px; margin-bottom: 5px">
   <button type="button" class="btn btn-primary navbar-btn dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown">
-    v0.5
+    v0.6.dev0
     <span class="caret"></span>
   </button>
   <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
@@ -167,53 +167,54 @@ checking out this group conversion example: <a class="reference internal" href="
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Downloading https://physionet.org/files/eegmmidb/1.0.0/S001/S001R04.edf (2.5 MB)
 
   0%|          | Downloading : 0.00/2.48M [00:00&lt;?,        ?B/s]
-  3%|3         | Downloading : 88.0k/2.48M [00:00&lt;00:00,    3.88MB/s]
- 15%|#4        | Downloading : 376k/2.48M [00:00&lt;00:00,    4.01MB/s]
- 40%|####      | Downloading : 0.99M/2.48M [00:00&lt;00:00,    4.20MB/s]
- 60%|######    | Downloading : 1.49M/2.48M [00:00&lt;00:00,    4.38MB/s]
-100%|##########| Downloading : 2.48M/2.48M [00:00&lt;00:00,    4.59MB/s]
-100%|##########| Downloading : 2.48M/2.48M [00:00&lt;00:00,    22.3MB/s]
+  3%|3         | Downloading : 88.0k/2.48M [00:00&lt;00:00,    3.83MB/s]
+ 15%|#4        | Downloading : 376k/2.48M [00:00&lt;00:00,    3.97MB/s]
+ 50%|#####     | Downloading : 1.24M/2.48M [00:00&lt;00:00,    4.15MB/s]
+100%|##########| Downloading : 2.48M/2.48M [00:00&lt;00:00,    4.35MB/s]
+100%|##########| Downloading : 2.48M/2.48M [00:00&lt;00:00,    26.8MB/s]
 Downloading https://physionet.org/files/eegmmidb/1.0.0/S001/S001R08.edf (2.5 MB)
 
   0%|          | Downloading : 0.00/2.48M [00:00&lt;?,        ?B/s]
-  3%|3         | Downloading : 88.0k/2.48M [00:00&lt;00:00,    3.84MB/s]
- 15%|#4        | Downloading : 376k/2.48M [00:00&lt;00:00,    3.97MB/s]
- 30%|##9       | Downloading : 760k/2.48M [00:00&lt;00:00,    4.15MB/s]
- 60%|######    | Downloading : 1.49M/2.48M [00:00&lt;00:00,    4.34MB/s]
-100%|##########| Downloading : 2.48M/2.48M [00:00&lt;00:00,    4.55MB/s]
-100%|##########| Downloading : 2.48M/2.48M [00:00&lt;00:00,    23.8MB/s]
+  3%|3         | Downloading : 88.0k/2.48M [00:00&lt;00:00,    3.77MB/s]
+ 15%|#4        | Downloading : 376k/2.48M [00:00&lt;00:00,    3.90MB/s]
+ 40%|####      | Downloading : 0.99M/2.48M [00:00&lt;00:00,    4.08MB/s]
+100%|##########| Downloading : 2.48M/2.48M [00:00&lt;00:00,    4.27MB/s]
+100%|##########| Downloading : 2.48M/2.48M [00:00&lt;00:00,    26.2MB/s]
 Downloading https://physionet.org/files/eegmmidb/1.0.0/S001/S001R12.edf (2.5 MB)
 
   0%|          | Downloading : 0.00/2.48M [00:00&lt;?,        ?B/s]
-  3%|3         | Downloading : 88.0k/2.48M [00:00&lt;00:00,    3.73MB/s]
- 15%|#4        | Downloading : 376k/2.48M [00:00&lt;00:00,    3.86MB/s]
- 40%|####      | Downloading : 0.99M/2.48M [00:00&lt;00:00,    4.04MB/s]
-100%|##########| Downloading : 2.48M/2.48M [00:00&lt;00:00,    4.23MB/s]
-100%|##########| Downloading : 2.48M/2.48M [00:00&lt;00:00,    25.2MB/s]
+  3%|3         | Downloading : 88.0k/2.48M [00:00&lt;00:00,    3.86MB/s]
+ 15%|#4        | Downloading : 376k/2.48M [00:00&lt;00:00,    4.00MB/s]
+ 40%|####      | Downloading : 0.99M/2.48M [00:00&lt;00:00,    4.18MB/s]
+ 60%|######    | Downloading : 1.49M/2.48M [00:00&lt;00:00,    4.37MB/s]
+100%|##########| Downloading : 2.48M/2.48M [00:00&lt;00:00,    4.58MB/s]
+100%|##########| Downloading : 2.48M/2.48M [00:00&lt;00:00,    25.4MB/s]
 Downloading https://physionet.org/files/eegmmidb/1.0.0/S002/S002R04.edf (2.4 MB)
 
   0%|          | Downloading : 0.00/2.44M [00:00&lt;?,        ?B/s]
-  4%|3         | Downloading : 88.0k/2.44M [00:00&lt;00:00,    3.77MB/s]
- 14%|#3        | Downloading : 344k/2.44M [00:00&lt;00:00,    3.89MB/s]
- 39%|###9      | Downloading : 984k/2.44M [00:00&lt;00:00,    4.07MB/s]
- 80%|########  | Downloading : 1.96M/2.44M [00:00&lt;00:00,    4.27MB/s]
-100%|##########| Downloading : 2.44M/2.44M [00:00&lt;00:00,    25.3MB/s]
+  4%|3         | Downloading : 88.0k/2.44M [00:00&lt;00:00,    3.76MB/s]
+ 15%|#5        | Downloading : 376k/2.44M [00:00&lt;00:00,    3.89MB/s]
+ 46%|####5     | Downloading : 1.12M/2.44M [00:00&lt;00:00,    4.08MB/s]
+ 87%|########6 | Downloading : 2.12M/2.44M [00:00&lt;00:00,    4.27MB/s]
+100%|##########| Downloading : 2.44M/2.44M [00:00&lt;00:00,    25.9MB/s]
 Downloading https://physionet.org/files/eegmmidb/1.0.0/S002/S002R08.edf (2.4 MB)
 
   0%|          | Downloading : 0.00/2.44M [00:00&lt;?,        ?B/s]
-  4%|3         | Downloading : 88.0k/2.44M [00:00&lt;00:00,    3.64MB/s]
- 15%|#5        | Downloading : 376k/2.44M [00:00&lt;00:00,    3.77MB/s]
- 36%|###5      | Downloading : 888k/2.44M [00:00&lt;00:00,    3.93MB/s]
- 77%|#######6  | Downloading : 1.87M/2.44M [00:00&lt;00:00,    4.12MB/s]
-100%|##########| Downloading : 2.44M/2.44M [00:00&lt;00:00,    24.0MB/s]
+  4%|3         | Downloading : 88.0k/2.44M [00:00&lt;00:00,    3.88MB/s]
+ 15%|#5        | Downloading : 376k/2.44M [00:00&lt;00:00,    4.01MB/s]
+ 61%|######1   | Downloading : 1.49M/2.44M [00:00&lt;00:00,    4.20MB/s]
+100%|##########| Downloading : 2.44M/2.44M [00:00&lt;00:00,    4.40MB/s]
+100%|##########| Downloading : 2.44M/2.44M [00:00&lt;00:00,    25.3MB/s]
 Downloading https://physionet.org/files/eegmmidb/1.0.0/S002/S002R12.edf (2.4 MB)
 
   0%|          | Downloading : 0.00/2.44M [00:00&lt;?,        ?B/s]
-  4%|3         | Downloading : 88.0k/2.44M [00:00&lt;00:00,    3.90MB/s]
- 15%|#5        | Downloading : 376k/2.44M [00:00&lt;00:00,    4.03MB/s]
- 51%|#####     | Downloading : 1.24M/2.44M [00:00&lt;00:00,    4.22MB/s]
- 92%|#########1| Downloading : 2.24M/2.44M [00:00&lt;00:00,    4.42MB/s]
-100%|##########| Downloading : 2.44M/2.44M [00:00&lt;00:00,    24.6MB/s]
+  4%|3         | Downloading : 88.0k/2.44M [00:00&lt;00:00,    3.75MB/s]
+ 15%|#5        | Downloading : 376k/2.44M [00:00&lt;00:00,    3.88MB/s]
+ 25%|##5       | Downloading : 632k/2.44M [00:00&lt;00:00,    4.03MB/s]
+ 56%|#####6    | Downloading : 1.37M/2.44M [00:00&lt;00:00,    4.21MB/s]
+ 77%|#######6  | Downloading : 1.87M/2.44M [00:00&lt;00:00,    4.39MB/s]
+ 97%|#########7| Downloading : 2.37M/2.44M [00:00&lt;00:00,    4.56MB/s]
+100%|##########| Downloading : 2.44M/2.44M [00:00&lt;00:00,    17.3MB/s]
 </pre></div>
 </div>
 <p>Let us loop over the subjects and create BIDS-compatible folder</p>
@@ -961,10 +962,10 @@ scan, out of which 64.0 (std = 0.0) were used in analysis (0.0 +/- 0.0 were
 removed from analysis).
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  2.441 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  1.710 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-group-studies-py">
 <div class="binder-badge docutils container">
-<a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=v0.5/notebooks/auto_examples/convert_group_studies.ipynb"><img alt="Launch binder" src="../_images/binder_badge_logo.svg" width="150px" /></a>
+<a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/convert_group_studies.ipynb"><img alt="Launch binder" src="../_images/binder_badge_logo.svg" width="150px" /></a>
 </div>
 <div class="sphx-glr-download sphx-glr-download-python docutils container">
 <p><a class="reference download internal" download="" href="../_downloads/1eed244ec75de0e6a9392a728e24219b/convert_group_studies.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">convert_group_studies.py</span></code></a></p>
