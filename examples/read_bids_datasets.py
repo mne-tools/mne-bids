@@ -123,14 +123,11 @@ bids_path
 
 ###############################################################################
 # But what about that filename extension, now? ``BIDSPath.fpath``, which –
-# as you hopefully remember – is invoked when you to ``print(bids_path)`` –
+# as you hopefully remember – is invoked when you run ``print(bids_path)`` –
 # employs some heuristics to auto-detect some missing filename components.
-# This can come in handy if, for example, you intend to re-use the same
-# MNE-BIDS script on data acquired with different acquisition systems, and
-# accordinly stored in different formats and with different filename
-# extensions. Omitting the filename extension in your script makes your code
-# more portable. (Note that, however, you **can** explicitly specify an
-# extension too, by passing e.g. ``extension='.fif'`` to ``BIDSPath``).
+# Omitting the filename extension in your script can make your code
+# more portable. Note that, however, you **can** explicitly specify an
+# extension too, by passing e.g. ``extension='.fif'`` to ``BIDSPath``.
 
 ###############################################################################
 # Read the data
