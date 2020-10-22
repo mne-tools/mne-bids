@@ -2,4 +2,5 @@
 .pytest_cache/
 build/
 dist/
+doc/
 junit-results.xml
