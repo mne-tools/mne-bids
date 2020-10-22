@@ -1097,7 +1097,7 @@ def write_raw_bids(raw, bids_path, events_data=None,
         # We only write electrodes.tsv and accompanying coordsystem.json
         # if we have an available DigMontage
         if raw.info['dig'] is not None and raw.info['dig']:
-            _write_dig_bids(electrodes_path.fpath, coordsystem_path.fpath,
+            _write_dig_bids(electrodes_path, coordsystem_path,
                             bids_path.root, raw, bids_path.datatype,
                             overwrite, verbose)
     else:
