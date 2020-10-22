@@ -11,7 +11,7 @@ What's new?
 
 .. _changes_0_5:
 
-Version 0.5 (2020-10-xx)
+Version 0.5 (2020-10-22)
 ------------------------
 
 This is a **big** release with lots of changes, many of them breaking existing
