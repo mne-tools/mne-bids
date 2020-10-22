@@ -301,9 +301,9 @@ def _write_dig_bids(electrodes_path, coordsystem_path, root,
 
     Parameters
     ----------
-    electrodes_path : str
+    electrodes_path : BIDSPath
         Filename to save the electrodes.tsv to.
-    coordsystem_path : str
+    coordsystem_path : BIDSPath
         Filename to save the coordsystem.json to.
     root : str | pathlib.Path
         Path to the data directory
@@ -320,11 +320,6 @@ def _write_dig_bids(electrodes_path, coordsystem_path, root,
     """
     # write electrodes data for iEEG and EEG
     unit = "m"  # defaults to meters
-
-    params = get_entities_from_fname(electrodes_path)
-    subject_id = params['subject']
-    session_id = params['session']
-    acquisition = params['acquisition']
 
     # get coordinate frame from digMontage
     digpoint = raw.info['dig'][0]
@@ -347,18 +342,8 @@ def _write_dig_bids(electrodes_path, coordsystem_path, root,
         if coord_frame is not None:
             # XXX: To improve when mne-python allows coord_frame='unknown'
             if coord_frame not in BIDS_IEEG_COORDINATE_FRAMES:
-                coordsystem_path = BIDSPath(
-                    subject=subject_id, session=session_id,
-                    acquisition=acquisition, space=coord_frame,
-                    datatype=datatype,
-                    suffix='coordsystem', extension='.json',
-                    root=root)
-                electrodes_path = BIDSPath(
-                    subject=subject_id, session=session_id,
-                    acquisition=acquisition, space=coord_frame,
-                    datatype=datatype,
-                    suffix='electrodes', extension='.tsv',
-                    root=root)
+                coordsystem_path.update(space=coord_frame)
+                electrodes_path.update(space=coord_frame)
                 coord_frame = 'Other'
 
             # Now write the data to the elec coords and the coordsystem
