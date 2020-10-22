@@ -25,13 +25,17 @@ xxx
 Authors
 ~~~~~~~
 * `Stefan Appelhoff`_
+* `Austin Hurst`_
+* `Adam Li`_
 
 Detailed list of changes
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
 Enhancements
 ^^^^^^^^^^^^
+
 - The function :func:`mne_bids.print_dir_tree` has a new parameter ``return_str`` which allows it to return a str of the dir tree instead of printing it, by `Stefan Appelhoff`_ (`#600 <https://github.com/mne-tools/mne-bids/pull/600>`_)
+- Add :func:`mne_bids.update.update_sidecars` to allow updating sidecar json files with a template JSON by `Adam Li`_ and `Austin Hurst`_ (`#601 <https://github.com/mne-tools/mne-bids/pull/601>`_)
 
 Bug fixes
 ^^^^^^^^^
