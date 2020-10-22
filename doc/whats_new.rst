@@ -8,7 +8,7 @@ What's new?
 ===========
 
 .. currentmodule:: mne_bids
-.. _changes_0_5:
+.. _changes_0_6:
 
 Version 0.6 (unreleased)
 ------------------------
