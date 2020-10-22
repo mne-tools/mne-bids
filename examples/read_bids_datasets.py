@@ -21,6 +21,12 @@ inspect BIDS-formatted data.
 # License: BSD (3-clause)
 
 ###############################################################################
+# .. contents:: Contents
+#    :local:
+#    :depth: 1
+#
+# Imports
+# -------
 # We are importing everything we need for this example:
 from mne.datasets import somato
 
@@ -122,6 +128,18 @@ print(bids_path)
 bids_path
 
 ###############################################################################
+# The ``root`` here is – you guessed it – the directory we passed via the
+# ``root`` parameter: the "home" of our BIDS dataset. The ``datatype``, again,
+# is self-explanatory. The ``basename``, on the other hand, is created
+# automatically based on the suffix and **BIDS entities**  we passed to
+# ``BIDSPath``: in our case, ``subject`` and ``task``.
+#
+# .. note::
+#   There are many more supported entities, the most-commonly used among them
+#   probably being ``session``. Please see
+#   `our introduction to BIDSPath <bidspath>`_ to learn more
+#   about entities, ``basename``, and ``BIDSPath`` in general.
+#
 # But what about that filename extension, now? ``BIDSPath.fpath``, which –
 # as you hopefully remember – is invoked when you run ``print(bids_path)`` –
 # employs some heuristics to auto-detect some missing filename components.
