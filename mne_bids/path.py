@@ -600,8 +600,7 @@ class BIDSPath(object):
 
         fnames = self.root.rglob(search_str)
         # Only keep files (not directories), and omit the JSON sidecars.
-        fnames = [f.name for f in fnames
-                  if f.is_file() and f.suffix != '.json']
+        fnames = [f.name for f in fnames if f.is_file()]
         fnames = _filter_fnames(fnames, suffix=self.suffix,
                                 extension=self.extension,
                                 **self.entities)
