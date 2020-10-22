@@ -25,8 +25,6 @@ import os.path as op
 import mne
 from mne_bids import BIDSPath, write_raw_bids, read_raw_bids, mark_bad_channels
 
-mne.set_log_level('error')  # Suppress distracting log messages.
-
 data_path = mne.datasets.sample.data_path()
 raw_fname = op.join(data_path, 'MEG', 'sample', 'sample_audvis_raw.fif')
 bids_root = op.join(data_path, '..', 'MNE-sample-data-bids')
