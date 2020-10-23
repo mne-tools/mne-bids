@@ -1,4 +1,4 @@
-"""Test for the MNE BIDS path functions."""
+"""Test for the MNE BIDS updating of BIDS datasets."""
 # Authors: Adam Li <adam2392@gmail.com>
 #
 # License: BSD (3-clause)
@@ -12,7 +12,7 @@ from mne.datasets import testing
 from mne_bids import (BIDSPath, write_raw_bids,
                       write_meg_calibration, write_meg_crosstalk)
 from mne_bids.path import _mkdir_p
-from mne_bids.update import update_sidecars
+from mne_bids.sidecar_updates import update_sidecars
 from mne_bids.utils import _write_json
 
 subject_id = '01'

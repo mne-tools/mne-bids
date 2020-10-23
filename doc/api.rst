@@ -58,3 +58,19 @@ mne_bids.copyfiles
    copyfile_ctf
    copyfile_bti
    copyfile_kit
+
+mne_bids.sidecar_updates
+------------------------
+
+:py:mode:`mne_bids.sidecar_updates`:
+
+.. automodule:: mne_bids.sidecar_updates
+   :no-members:
+   :no-inherited-members:
+
+.. currentmodule:: mne_bids.sidecar_updates
+
+.. autosummary::
+   :toctree: generated/
+
+   update_sidecars

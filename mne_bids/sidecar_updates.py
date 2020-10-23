@@ -1,6 +1,6 @@
-"""Update BIDS compatible directory structures and meta data."""
+"""Update BIDS directory structures and sidecar files meta data."""
 # Authors: Adam Li <adam2392@gmail.com>
-#
+#          Austin Hurst
 # License: BSD (3-clause)
 
 import json
@@ -73,24 +73,3 @@ def update_sidecars(bids_path, sidecar_template_fpath, verbose=True):
         sidecar_json = OrderedDict(sorted_info)
 
         _write_json(fpath, sidecar_json, overwrite=True, verbose=verbose)
-
-
-if __name__ == '__main__':
-    from pathlib import Path
-    from mne_bids import BIDSPath, get_entity_vals
-    WORKSTATION = "home"
-
-    if WORKSTATION == "home":
-        # bids root to write BIDS data to
-        bids_root = Path("/Users/adam2392/OneDrive - Johns Hopkins/sickkids/")
-        source_dir = bids_root / 'sourcedata'
-
-    elif WORKSTATION == "lab":
-        bids_root = Path("/home/adam2392/hdd2/epilepsy_bids/")
-        source_dir = Path("/home/adam2392/hdd2/epilepsy_bids/sourcedata")
-
-    subjects = get_entity_vals(bids_root, 'subject')
-    for subject in subjects:
-        bids_path = BIDSPath(subject=subject, datatype='ieeg', root=bids_root)
-        json_template = bids_root / 'sample_scripts' / 'json_template.json'
-        update_sidecars(bids_path, json_template)
