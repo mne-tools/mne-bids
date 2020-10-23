@@ -118,6 +118,7 @@
 <span class="kn">import</span> <span class="nn">glob</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">StringIO</span>
 <span class="kn">import</span> <span class="nn">shutil</span> <span class="k">as</span> <span class="nn">sh</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
 <span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
@@ -893,10 +894,29 @@
     <span class="k">return</span> <span class="kc">False</span>
 
 
-<div class="viewcode-block" id="print_dir_tree"><a class="viewcode-back" href="../../generated/mne_bids.print_dir_tree.html#mne_bids.print_dir_tree">[docs]</a><span class="k">def</span> <span class="nf">print_dir_tree</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="n">max_depth</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Recursively print dir tree starting from `folder` up to `max_depth`.&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="print_dir_tree"><a class="viewcode-back" href="../../generated/mne_bids.print_dir_tree.html#mne_bids.print_dir_tree">[docs]</a><span class="k">def</span> <span class="nf">print_dir_tree</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span> <span class="n">max_depth</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">return_str</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Recursively print a directory tree.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    folder : str | pathlib.Path</span>
+<span class="sd">        The folder for which to print the directory tree.</span>
+<span class="sd">    max_depth : int</span>
+<span class="sd">        The maximum depth into which to descend recursively for printing</span>
+<span class="sd">        the directory tree.</span>
+<span class="sd">    return_str : bool</span>
+<span class="sd">        If ``True``, return the directory tree as a str instead of</span>
+<span class="sd">        printing it.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    str | None</span>
+<span class="sd">        If `return_str` is ``True``, the directory tree is returned as a</span>
+<span class="sd">        str. Else, ``None`` is returned and the directory tree is printed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">op</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">folder</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Directory does not exist: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">folder</span><span class="p">))</span>
+
     <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;`max_depth` must be a positive integer or None&#39;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">max_depth</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="kc">None</span><span class="p">))):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
@@ -904,6 +924,12 @@
         <span class="n">max_depth</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="s1">&#39;inf&#39;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">max_depth</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">return_str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;`return_str` must be either True or False.&#39;</span><span class="p">)</span>
+    <span class="n">outfile</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">return_str</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">outfile</span> <span class="o">=</span> <span class="n">StringIO</span><span class="p">()</span>
 
     <span class="c1"># Use max_depth same as the -L param in the unix `tree` command</span>
     <span class="n">max_depth</span> <span class="o">+=</span> <span class="mi">1</span>
@@ -927,15 +953,20 @@
         <span class="c1"># Only print if this is up to the depth we asked</span>
         <span class="k">if</span> <span class="n">branchlen</span> <span class="o">&lt;=</span> <span class="n">max_depth</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">branchlen</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;|</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">root</span><span class="p">)</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">))</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;|</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">root</span><span class="p">)</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">),</span> <span class="n">file</span><span class="o">=</span><span class="n">outfile</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;|</span><span class="si">{}</span><span class="s1"> </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">((</span><span class="n">branchlen</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="s1">&#39;---&#39;</span><span class="p">,</span>
-                                      <span class="n">op</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">root</span><span class="p">)</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">))</span>
+                                      <span class="n">op</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">root</span><span class="p">)</span> <span class="o">+</span> <span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">),</span>
+                      <span class="n">file</span><span class="o">=</span><span class="n">outfile</span><span class="p">)</span>
 
             <span class="c1"># Only print files if we are NOT yet up to max_depth or beyond</span>
             <span class="k">if</span> <span class="n">branchlen</span> <span class="o">&lt;</span> <span class="n">max_depth</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;|</span><span class="si">{}</span><span class="s1"> </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">branchlen</span> <span class="o">*</span> <span class="s1">&#39;---&#39;</span><span class="p">,</span> <span class="n">file</span><span class="p">))</span></div>
+                    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;|</span><span class="si">{}</span><span class="s1"> </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">branchlen</span> <span class="o">*</span> <span class="s1">&#39;---&#39;</span><span class="p">,</span> <span class="n">file</span><span class="p">),</span>
+                          <span class="n">file</span><span class="o">=</span><span class="n">outfile</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">outfile</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">outfile</span><span class="o">.</span><span class="n">getvalue</span><span class="p">()</span></div>
 
 
 <span class="k">def</span> <span class="nf">_parse_ext</span><span class="p">(</span><span class="n">raw_fname</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
@@ -1484,7 +1515,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-10-22.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-10-23.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
     </p>
   </div>

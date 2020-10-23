@@ -114,8 +114,29 @@
 <h1>mne_bids.print_dir_tree<a class="headerlink" href="#mne-bids-print-dir-tree" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt id="mne_bids.print_dir_tree">
-<code class="sig-prename descclassname">mne_bids.</code><code class="sig-name descname">print_dir_tree</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">folder</span></em>, <em class="sig-param"><span class="n">max_depth</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/path.html#print_dir_tree"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.print_dir_tree" title="Permalink to this definition">¶</a></dt>
-<dd><p>Recursively print dir tree starting from <em class="xref py py-obj">folder</em> up to <em class="xref py py-obj">max_depth</em>.</p>
+<code class="sig-prename descclassname">mne_bids.</code><code class="sig-name descname">print_dir_tree</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">folder</span></em>, <em class="sig-param"><span class="n">max_depth</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">return_str</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/path.html#print_dir_tree"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.print_dir_tree" title="Permalink to this definition">¶</a></dt>
+<dd><p>Recursively print a directory tree.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>folder</strong><span class="classifier">str | pathlib.Path</span></dt><dd><p>The folder for which to print the directory tree.</p>
+</dd>
+<dt><strong>max_depth</strong><span class="classifier">int</span></dt><dd><p>The maximum depth into which to descend recursively for printing
+the directory tree.</p>
+</dd>
+<dt><strong>return_str</strong><span class="classifier">bool</span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, return the directory tree as a str instead of
+printing it.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><dl class="simple">
+<dt>str | None</dt><dd><p>If <em class="xref py py-obj">return_str</em> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, the directory tree is returned as a
+str. Else, <code class="docutils literal notranslate"><span class="pre">None</span></code> is returned and the directory tree is printed.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd></dl>
 
 <div class="section" id="examples-using-mne-bids-print-dir-tree">
@@ -164,7 +185,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-10-22.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-10-23.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
     </p>
   </div>
