@@ -254,9 +254,8 @@ def _read_events(events_data, event_id, raw, verbose=None):
     # Now convert the Annotations to events.
     all_events, all_desc = events_from_annotations(raw, verbose=verbose)
     if all_events.size == 0:
-        warn('No events found or provided. Please make sure to set the '
-             'channel type using raw.set_channel_types, or provide '
-             'events_data.')
+        warn('No events found or provided. Please add annotations to the raw '
+             'data, or provide the events_data and event_id parameters.')
 
     return all_events, all_desc
 
