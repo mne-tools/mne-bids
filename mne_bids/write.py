@@ -35,8 +35,7 @@ import mne.preprocessing
 from mne_bids.pick import coil_type
 from mne_bids.dig import _write_dig_bids, _coordsystem_json
 from mne_bids.utils import (_write_json, _write_tsv, _write_text,
-                            _read_events, _age_on_date,
-                            _infer_eeg_placement_scheme,
+                            _age_on_date, _infer_eeg_placement_scheme,
                             _handle_datatype, _get_ch_type_mapping,
                             _check_anonymize, _stamp_to_dt)
 from mne_bids import read_raw_bids
@@ -45,7 +44,8 @@ from mne_bids.copyfiles import (copyfile_brainvision, copyfile_eeglab,
                                 copyfile_ctf, copyfile_bti, copyfile_kit)
 from mne_bids.tsv_handler import (_from_tsv, _drop, _contains_row,
                                   _combine_rows)
-from mne_bids.read import _get_bads_from_tsv_data, _find_matching_sidecar
+from mne_bids.read import (_get_bads_from_tsv_data, _find_matching_sidecar,
+                           _read_events)
 
 from mne_bids.config import (ORIENTATION, UNITS, MANUFACTURERS,
                              IGNORED_CHANNELS, ALLOWED_DATATYPE_EXTENSIONS,
