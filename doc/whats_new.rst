@@ -25,6 +25,7 @@ xxx
 Authors
 ~~~~~~~
 * `Stefan Appelhoff`_
+* `Adam Li`_
 
 Detailed list of changes
 ~~~~~~~~~~~~~~~~~~~~~~~~
