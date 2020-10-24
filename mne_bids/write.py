@@ -1104,11 +1104,16 @@ def write_raw_bids(raw, bids_path, events_data=None,
         logger.warning(f'Writing of electrodes.tsv is not supported '
                        f'for data type "{bids_path.datatype}". Skipping ...')
 
-    events, event_id = _read_events(events_data, event_id, raw,
-                                    verbose=False)
-    if events is not None and len(events) > 0 and not emptyroom:
-        _events_tsv(events, raw, events_path.fpath, event_id,
-                    overwrite, verbose)
+    # Write events.
+    if not emptyroom:
+        events_array, event_desc_id_map = _read_events(events_data, event_id,
+                                                       raw, verbose=False)
+        if events_array.size != 0:
+            _events_tsv(events=events_array, raw=raw, fname=events_path.fpath,
+                        trial_type=event_desc_id_map, overwrite=overwrite,
+                        verbose=verbose)
+        # Kepp events_array around for BrainVision writing below.
+        del event_desc_id_map, events_data, event_id
 
     make_dataset_description(bids_path.root, name=" ", overwrite=overwrite,
                              verbose=verbose)
@@ -1148,7 +1153,7 @@ def write_raw_bids(raw, bids_path, events_data=None,
             if verbose:
                 warn('Converting data files to BrainVision format')
             bids_path.update(suffix=bids_path.datatype, extension='.vhdr')
-            _write_raw_brainvision(raw, bids_path.fpath, events)
+            _write_raw_brainvision(raw, bids_path.fpath, events=events_array)
     elif ext == '.fif':
         _write_raw_fif(raw, bids_path)
     # CTF data is saved and renamed in a directory

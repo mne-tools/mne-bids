@@ -190,7 +190,7 @@ def _check_key_val(key, val):
 
 
 def _read_events(events_data, event_id, raw, verbose=None):
-    """Read in events data.
+    """Retrieve events (for use in *_events.tsv) from FIFF/array & Annoations.
 
     Parameters
     ----------
@@ -213,6 +213,9 @@ def _read_events(events_data, event_id, raw, verbose=None):
         column contains the event id. The second column is ignored for now but
         typically contains the value of the trigger channel either immediately
         before the event or immediately after.
+    descriptions : dict
+        A dictionary with the keys corresponding to the event descriptions and
+        the values to the event IDs.
 
     """
     # get events from events_data
@@ -229,26 +232,33 @@ def _read_events(events_data, event_id, raw, verbose=None):
     else:
         events = np.empty(shape=(0, 3), dtype=int)
 
-    # get events from annotations
-    events_annot, event_id_annot = events_from_annotations(raw, event_id,
-                                                           verbose=verbose)
-    if event_id is None:
-        events = events_annot
-        event_id = event_id_annot
-    else:
-        events = np.concatenate((events, events_annot), axis=0)
-        # Sort rows by onset sample.
-        # See https://stackoverflow.com/a/2828121/1944216
-        events = events[events[:, 0].argsort()]
-        event_id.update(event_id_annot)
+    # Only keep events for which we have an ID <> description mapping.
+    # XXX Should we emit a warning if we drop events?
+    mask = [e in list(event_id.values()) for e in events[:, 2]]
+    events = events[mask]
 
-    if events.size == 0:
-        warn('No events found or provided. Please make sure to'
-             ' set channel type using raw.set_channel_types'
-             ' or provide events_data.')
-        events = None
+    # Append events to raw.annotations.
+    #
+    # Appending to the existing Annotations object frees us from the
+    # requirement to pass the `orig_time` parameter, as it's already been set
+    # correctly. All event onsets are relative to measurement beginning.
+    if events.size > 0:
+        id_to_desc_map = dict(zip(event_id.values(), event_id.keys()))
+        onsets = events[:, 0] / raw.info['sfreq']
+        durations = np.zeros_like(onsets)  # Instantaneous events.
+        descriptions = [id_to_desc_map[event_id] for event_id in events[:, 2]]
+        for onset, dur, desc in zip(onsets, durations, descriptions):
+            raw.annotations.append(onset=onset, duration=dur, description=desc)
+        del id_to_desc_map, onsets, durations, descriptions
 
-    return events, event_id
+    # Now convert the Annotations to events.
+    all_events, all_descr = events_from_annotations(raw, verbose=verbose)
+    if all_events.size == 0:
+        warn('No events found or provided. Please make sure to set the '
+             'channel type using raw.set_channel_types, or provide '
+             'events_data.')
+
+    return all_events, all_descr
 
 
 def _get_mrk_meas_date(mrk):
