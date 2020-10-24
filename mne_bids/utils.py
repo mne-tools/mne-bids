@@ -252,13 +252,13 @@ def _read_events(events_data, event_id, raw, verbose=None):
         del id_to_desc_map, onsets, durations, descriptions
 
     # Now convert the Annotations to events.
-    all_events, all_descr = events_from_annotations(raw, verbose=verbose)
+    all_events, all_desc = events_from_annotations(raw, verbose=verbose)
     if all_events.size == 0:
         warn('No events found or provided. Please make sure to set the '
              'channel type using raw.set_channel_types, or provide '
              'events_data.')
 
-    return all_events, all_descr
+    return all_events, all_desc
 
 
 def _get_mrk_meas_date(mrk):
