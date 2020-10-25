@@ -342,7 +342,7 @@ def _write_dig_bids(bids_path, raw, overwrite=False, verbose=True):
     electrodes_path = BIDSPath(**coord_file_entities, suffix='electrodes',
                                extension='.tsv')
     coordsystem_path = BIDSPath(**coord_file_entities, suffix='coordsystem',
-                               extension='.json')
+                                extension='.json')
 
     if verbose:
         print("Writing electrodes file to... ", electrodes_path)
