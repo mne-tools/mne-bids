@@ -69,10 +69,10 @@ def _read_events(events_data, event_id, raw, verbose=None):
     Parameters
     ----------
     events_data : str | array | None
-        The events file. If a string, a path to the events file. If an array,
-        the MNE events array (shape n_events, 3). If None, events will be
-        inferred from the stim channel using `find_events`.
-    event_id : dict
+        If a string, a path to an events file. If an array, an MNE events array
+        (shape n_events, 3). If None, events will be generated from
+        ``raw.annotations``.
+    event_id : dict | None
         The event id dict used to create a 'trial_type' column in events.tsv,
         mapping a description key to an integer valued event code.
     raw : instance of Raw
@@ -106,17 +106,26 @@ def _read_events(events_data, event_id, raw, verbose=None):
     else:
         events = np.empty(shape=(0, 3), dtype=int)
 
-    # Only keep events for which we have an ID <> description mapping.
-    # XXX Should we emit a warning if we drop events?
-    mask = [e in list(event_id.values()) for e in events[:, 2]]
-    events = events[mask]
-
-    # Append events to raw.annotations.
-    #
-    # Appending to the existing Annotations object frees us from the
-    # requirement to pass the `orig_time` parameter, as it's already been set
-    # correctly. All event onsets are relative to measurement beginning.
     if events.size > 0:
+        # Only keep events for which we have an ID <> description mapping.
+        event_ids_without_desc = set(events[:, 2]) - set(event_id.values())
+        if event_ids_without_desc:
+            raise ValueError(
+                f'No description was specified for the following event(s): '
+                f'{", ".join([x for x in sorted(event_ids_without_desc)])}. '
+                f'Please add them to the event_id dictionary, or drop them '
+                f'from the events_data array.'
+            )
+        del event_ids_without_desc
+        mask = [e in list(event_id.values()) for e in events[:, 2]]
+        events = events[mask]
+
+        # Append events to raw.annotations.
+        #
+        # Appending to the existing Annotations object frees us from the
+        # requirement to pass the `orig_time` parameter, as it's already been
+        # set correctly. All event onsets are relative to measurement
+        # beginning.
         id_to_desc_map = dict(zip(event_id.values(), event_id.keys()))
         onsets = events[:, 0] / raw.info['sfreq']
         durations = np.zeros_like(onsets)  # Instantaneous events.

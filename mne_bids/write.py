@@ -858,13 +858,27 @@ def write_raw_bids(raw, bids_path, events_data=None,
         object, as well as the extension. Data with MEG and other
         electrophysiology data in the same file will be stored as ``'meg'``.
     events_data : path-like | array | None
+        Use this parameter to specify events to write to the ``*_events.tsv``
+        sidecar file, additionally to the object's `mne.Annotations` (which
+        are always written).
         If a path, specifies the location of an MNE events file.
         If an array, the MNE events array (shape: ``(n_events, 3)``).
-        If ``None``, events will be inferred from the the raw object's
-        `mne.Annotations` using `mne.events_from_annotations`.
+        If a path or an array and ``raw.annotations`` exist, the union of
+        ``event_data`` and ``raw.annotations`` will be written.
+        If ``None``, events will only be inferred from the the raw object's
+        `mne.Annotations`.
+
+        .. note::
+           If ``not None``, writes the union of ``events_data`` and
+           ``raw.annotations``. If you wish to **only** write
+           ``raw.annotations``, pass ``events_data=None``. If you want to
+           **exclude** ``raw.annotations``, call ``raw.set_annotations(None)``
+           before invoking this function.
+
     event_id : dict | None
         The event ID dictionary used to create a `trial_type` column in
-        ``*_events.tsv``.
+        ``*_events.tsv``. The dictionary keys correspond to the event
+        descriptions and the values to the event IDs.
     anonymize : dict | None
         If `None` (default), no anonymization is performed.
         If a dictionary, data will be anonymized depending on the dictionary
