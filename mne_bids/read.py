@@ -120,19 +120,23 @@ def _read_events(events_data, event_id, raw, verbose=None):
         mask = [e in list(event_id.values()) for e in events[:, 2]]
         events = events[mask]
 
-        # Append events to raw.annotations.
-        #
-        # Appending to the existing Annotations object frees us from the
-        # requirement to pass the `orig_time` parameter, as it's already been
-        # set correctly. All event onsets are relative to measurement
-        # beginning.
+        # Append events to raw.annotations. All event onsets are relative to
+        # measurement beginning.
         id_to_desc_map = dict(zip(event_id.values(), event_id.keys()))
-        onsets = events[:, 0] / raw.info['sfreq']
-        durations = np.zeros_like(onsets)  # Instantaneous events.
-        descriptions = [id_to_desc_map[event_id] for event_id in events[:, 2]]
-        for onset, dur, desc in zip(onsets, durations, descriptions):
-            raw.annotations.append(onset=onset, duration=dur, description=desc)
-        del id_to_desc_map, onsets, durations, descriptions
+        # We don't pass `first_samp`, as set_annotations() below will take
+        # care of this shift automatically.
+        new_annotations = mne.annotations_from_events(
+            events=events, sfreq=raw.info['sfreq'], event_desc=id_to_desc_map,
+            orig_time=raw.annotations.orig_time, verbose=verbose)
+
+        raw = raw.copy()  # Don't alter the original.
+        annotations = raw.annotations.copy()
+
+        # We use `+=` here because `Annotations.__iadd__()` does the right
+        # thing and also performs a sanity check on `Annotations.orig_time`.
+        annotations += new_annotations
+        raw.set_annotations(annotations)
+        del id_to_desc_map, annotations, new_annotations
 
     # Now convert the Annotations to events.
     all_events, all_desc = events_from_annotations(raw, verbose=verbose)
