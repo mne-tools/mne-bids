@@ -64,7 +64,7 @@ def _read_raw(raw_fpath, electrode=None, hsp=None, hpi=None,
 
 
 def _read_events(events_data, event_id, raw, verbose=None):
-    """Retrieve events (for use in *_events.tsv) from FIFF/array & Annoations.
+    """Retrieve events (for use in *_events.tsv) from FIFF/array & Annotations.
 
     Parameters
     ----------
