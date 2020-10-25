@@ -565,7 +565,7 @@ def test_fif_anonymize(_bids_validate):
     # test keyword mne-bids anonymize
     raw = _read_raw_fif(raw_fname)
     with pytest.raises(ValueError, match='`daysback` argument required'):
-        write_raw_bids(raw, bids_path, events_data=events,  event_id=event_id,
+        write_raw_bids(raw, bids_path, events_data=events, event_id=event_id,
                        anonymize=dict(), overwrite=True)
 
     bids_root = _TempDir()
@@ -585,7 +585,7 @@ def test_fif_anonymize(_bids_validate):
     bids_root = _TempDir()
     bids_path.update(root=bids_root)
     raw = _read_raw_fif(raw_fname)
-    write_raw_bids(raw, bids_path, events_data=events,  event_id=event_id,
+    write_raw_bids(raw, bids_path, events_data=events, event_id=event_id,
                    anonymize=dict(daysback=30000, keep_his=True),
                    overwrite=False)
     scans_tsv = BIDSPath(

@@ -865,6 +865,9 @@ def write_raw_bids(raw, bids_path, events_data=None,
         If an array, the MNE events array (shape: ``(n_events, 3)``).
         If a path or an array and ``raw.annotations`` exist, the union of
         ``event_data`` and ``raw.annotations`` will be written.
+        Corresponding descriptions for all event IDs (listed in the third
+        column of the MNE events array) must be specified via the ``event_id``
+        parameter; otherwise, an exception is raised.
         If ``None``, events will only be inferred from the the raw object's
         `mne.Annotations`.
 
@@ -872,13 +875,19 @@ def write_raw_bids(raw, bids_path, events_data=None,
            If ``not None``, writes the union of ``events_data`` and
            ``raw.annotations``. If you wish to **only** write
            ``raw.annotations``, pass ``events_data=None``. If you want to
-           **exclude** ``raw.annotations``, call ``raw.set_annotations(None)``
-           before invoking this function.
+           **exclude** the events in ``raw.annotations`` from being written,
+           call ``raw.set_annotations(None)`` before invoking this function.
+
+        .. note::
+           Descriptions of all event IDs must be specified via the ``event_id``
+           parameter.
 
     event_id : dict | None
-        The event ID dictionary used to create a `trial_type` column in
+        Descriptions of all event IDs, if you passed ``events_data``.
+        The descriptions will be written to the ``trial_type`` column in
         ``*_events.tsv``. The dictionary keys correspond to the event
-        descriptions and the values to the event IDs.
+        descriptions and the values to the event IDs. You must specify a
+        description for all event IDs in ``events_data``.
     anonymize : dict | None
         If `None` (default), no anonymization is performed.
         If a dictionary, data will be anonymized depending on the dictionary
