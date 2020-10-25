@@ -288,6 +288,10 @@ def test_fif(_bids_validate):
     events_fname = op.join(data_path, 'MEG', 'sample',
                            'sample_audvis_trunc_raw-eve.fif')
 
+    # Drop unknown events.
+    events = mne.read_events(events_fname)
+    events = events[events[:, 2] != 0]
+
     raw = _read_raw_fif(raw_fname)
     # add data in as a montage for MEG
     ch_names = raw.ch_names
@@ -297,8 +301,8 @@ def test_fif(_bids_validate):
                                                 coord_frame='head')
     raw.set_montage(meg_montage)
 
-    write_raw_bids(raw, bids_path, events_data=events_fname,
-                   event_id=event_id, overwrite=False)
+    write_raw_bids(raw, bids_path, events_data=events, event_id=event_id,
+                   overwrite=False)
 
     # Read the file back in to check that the data has come through cleanly.
     # Events and bad channel information was read through JSON sidecar files.
@@ -340,7 +344,7 @@ def test_fif(_bids_validate):
     with pytest.warns(RuntimeWarning,
                       match='Converting data files to BrainVision format'):
         write_raw_bids(raw2, bids_path,
-                       events_data=events_fname, event_id=event_id,
+                       events_data=events, event_id=event_id,
                        verbose=True, overwrite=False)
     bids_dir = op.join(bids_root, 'sub-%s' % subject_id,
                        'ses-%s' % session_id, 'eeg')
@@ -394,7 +398,7 @@ def test_fif(_bids_validate):
     raw = _read_raw_fif(raw_fname)
     raw.info['subject_info'] = {'his_id': subject_id2,
                                 'birthday': (1993, 1, 26), 'sex': 1, 'hand': 2}
-    write_raw_bids(raw, bids_path, events_data=events_fname,
+    write_raw_bids(raw, bids_path, events_data=events,
                    event_id=event_id, overwrite=True)
     # assert age of participant is correct
     participants_tsv = op.join(bids_root, 'participants.tsv')
@@ -448,7 +452,7 @@ def test_fif(_bids_validate):
     # try and write preloaded data
     raw = _read_raw_fif(raw_fname, preload=True)
     with pytest.raises(ValueError, match='preloaded'):
-        write_raw_bids(raw, bids_path, events_data=events_fname,
+        write_raw_bids(raw, bids_path, events_data=events,
                        event_id=event_id, overwrite=False)
 
     # test anonymize
@@ -467,7 +471,7 @@ def test_fif(_bids_validate):
     bids_path2 = bids_path.copy().update(subject=subject_id2)
     raw = _read_raw_fif(raw_fname2)
     bids_output_path = write_raw_bids(raw, bids_path2,
-                                      events_data=events_fname,
+                                      events_data=events,
                                       event_id=event_id, overwrite=False)
 
     # check that the overwrite parameters work correctly for the participant
@@ -478,8 +482,7 @@ def test_fif(_bids_validate):
                                 'birthday': (1994, 1, 26), 'sex': 2, 'hand': 1}
     with pytest.raises(FileExistsError, match="already exists"):  # noqa: F821
         write_raw_bids(raw, bids_path2,
-                       events_data=events_fname, event_id=event_id,
-                       overwrite=False)
+                       events_data=events, event_id=event_id, overwrite=False)
 
     # assert README has references in it
     with open(readme, 'r') as fid:
@@ -491,8 +494,8 @@ def test_fif(_bids_validate):
         assert REFERENCES['ieeg'] not in text
 
     # now force the overwrite
-    write_raw_bids(raw, bids_path2, events_data=events_fname,
-                   event_id=event_id, overwrite=True)
+    write_raw_bids(raw, bids_path2, events_data=events, event_id=event_id,
+                   overwrite=True)
 
     with open(readme, 'r') as fid:
         text = fid.read()
@@ -555,37 +558,34 @@ def test_fif_anonymize(_bids_validate):
     events_fname = op.join(data_path, 'MEG', 'sample',
                            'sample_audvis_trunc_raw-eve.fif')
 
+    # Drop unknown events.
+    events = mne.read_events(events_fname)
+    events = events[events[:, 2] != 0]
+
     # test keyword mne-bids anonymize
     raw = _read_raw_fif(raw_fname)
     with pytest.raises(ValueError, match='`daysback` argument required'):
-        write_raw_bids(raw, bids_path, events_data=events_fname,
-                       event_id=event_id,
-                       anonymize=dict(),
-                       overwrite=True)
+        write_raw_bids(raw, bids_path, events_data=events,  event_id=event_id,
+                       anonymize=dict(), overwrite=True)
 
     bids_root = _TempDir()
     bids_path.update(root=bids_root)
     raw = _read_raw_fif(raw_fname)
     with pytest.warns(RuntimeWarning, match='daysback` is too small'):
-        write_raw_bids(raw, bids_path, events_data=events_fname,
-                       event_id=event_id,
-                       anonymize=dict(daysback=400),
-                       overwrite=False)
+        write_raw_bids(raw, bids_path, events_data=events, event_id=event_id,
+                       anonymize=dict(daysback=400), overwrite=False)
 
     bids_root = _TempDir()
     bids_path.update(root=bids_root)
     raw = _read_raw_fif(raw_fname)
     with pytest.raises(ValueError, match='`daysback` exceeds maximum value'):
-        write_raw_bids(raw, bids_path, events_data=events_fname,
-                       event_id=event_id,
-                       anonymize=dict(daysback=40000),
-                       overwrite=False)
+        write_raw_bids(raw, bids_path, events_data=events, event_id=event_id,
+                       anonymize=dict(daysback=40000), overwrite=False)
 
     bids_root = _TempDir()
     bids_path.update(root=bids_root)
     raw = _read_raw_fif(raw_fname)
-    write_raw_bids(raw, bids_path, events_data=events_fname,
-                   event_id=event_id,
+    write_raw_bids(raw, bids_path, events_data=events,  event_id=event_id,
                    anonymize=dict(daysback=30000, keep_his=True),
                    overwrite=False)
     scans_tsv = BIDSPath(
@@ -613,7 +613,7 @@ def test_kit(_bids_validate):
     hpi_post_fname = op.join(data_path, 'test_mrk_post.sqd')
     electrode_fname = op.join(data_path, 'test.elp')
     headshape_fname = op.join(data_path, 'test.hsp')
-    event_id = dict(cond=1)
+    event_id = dict(cond=128)
 
     kit_bids_path = _bids_path.copy().update(acquisition=None,
                                              root=bids_root,
@@ -1191,10 +1191,14 @@ def test_write_anat(_bids_validate):
     events_fname = op.join(data_path, 'MEG', 'sample',
                            'sample_audvis_trunc_raw-eve.fif')
 
+    # Drop unknown events.
+    events = mne.read_events(events_fname)
+    events = events[events[:, 2] != 0]
+
     raw = _read_raw_fif(raw_fname)
     bids_path = _bids_path.copy().update(root=bids_root)
-    write_raw_bids(raw, bids_path, events_data=events_fname,
-                   event_id=event_id, overwrite=False)
+    write_raw_bids(raw, bids_path, events_data=events, event_id=event_id,
+                   overwrite=False)
 
     # Write some MRI data and supply a `trans`
     trans_fname = raw_fname.replace('_raw.fif', '-trans.fif')
@@ -1515,6 +1519,10 @@ def test_write_does_not_alter_events_inplace():
 
     raw = _read_raw_fif(raw_fname)
     events = mne.read_events(events_fname)
+    # Drop unknown events.
+    events = mne.read_events(events_fname)
+    events = events[events[:, 2] != 0]
+
     events_orig = events.copy()
     event_id = {'Auditory/Left': 1, 'Auditory/Right': 2, 'Visual/Left': 3,
                 'Visual/Right': 4, 'Smiley': 5, 'Button': 32}
@@ -1582,9 +1590,14 @@ def test_mark_bad_channels(_bids_validate,
                 'Visual/Right': 4, 'Smiley': 5, 'Button': 32}
     events_fname = op.join(data_path, 'MEG', 'sample',
                            'sample_audvis_trunc_raw-eve.fif')
+
+    # Drop unknown events.
+    events = mne.read_events(events_fname)
+    events = events[events[:, 2] != 0]
+
     raw = _read_raw_fif(raw_fname, verbose=False)
     raw.info['bads'] = []
-    write_raw_bids(raw, bids_path=bids_path, events_data=events_fname,
+    write_raw_bids(raw, bids_path=bids_path, events_data=events,
                    event_id=event_id, verbose=False)
 
     channels_fname = _find_matching_sidecar(bids_path, suffix='channels',
