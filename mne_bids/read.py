@@ -82,12 +82,14 @@ def _read_events(events_data, event_id, raw, verbose=None):
 
     Returns
     -------
-    events : array, shape = (n_events, 3)
+    all_events : array, shape = (n_events, 3)
         The first column contains the event time in samples and the third
         column contains the event id. The second column is ignored for now but
         typically contains the value of the trigger channel either immediately
         before the event or immediately after.
-    descriptions : dict
+    all_dur : array, shape (n_events,)
+        The event durations.
+    all_desc : dict
         A dictionary with the keys corresponding to the event descriptions and
         the values to the event IDs.
 
@@ -144,11 +146,12 @@ def _read_events(events_data, event_id, raw, verbose=None):
         regexp=None,  # Include `BAD_` or `EDGE_` Annotations.
         verbose=verbose
     )
+    all_dur = raw.annotations.duration
     if all_events.size == 0:
         warn('No events found or provided. Please add annotations to the raw '
              'data, or provide the events_data and event_id parameters.')
 
-    return all_events, all_desc
+    return all_events, all_dur, all_desc
 
 
 def _handle_participants_reading(participants_fname, raw,

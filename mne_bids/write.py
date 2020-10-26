@@ -138,7 +138,7 @@ def _channels_tsv(raw, fname, overwrite=False, verbose=True):
     _write_tsv(fname, ch_data, overwrite, verbose)
 
 
-def _events_tsv(events, raw, fname, trial_type, overwrite=False,
+def _events_tsv(events, durations, raw, fname, trial_type, overwrite=False,
                 verbose=True):
     """Create an events.tsv file and save it.
 
@@ -154,6 +154,7 @@ def _events_tsv(events, raw, fname, trial_type, overwrite=False,
         column contains the event id. The second column is ignored for now but
         typically contains the value of the trigger channel either immediately
         before the event or immediately after.
+    durations : array, shape (n_events,)
     raw : instance of Raw
         The data as MNE-Python Raw object.
     fname : str | BIDSPath
@@ -180,7 +181,7 @@ def _events_tsv(events, raw, fname, trial_type, overwrite=False,
 
     # Onset column needs to be specified in seconds
     data = OrderedDict([('onset', events[:, 0] / sfreq),
-                        ('duration', np.zeros(events.shape[0])),
+                        ('duration', durations),
                         ('trial_type', None),
                         ('value', events[:, 2]),
                         ('sample', events[:, 0])])
@@ -1129,14 +1130,15 @@ def write_raw_bids(raw, bids_path, events_data=None,
 
     # Write events.
     if not emptyroom:
-        events_array, event_desc_id_map = _read_events(events_data, event_id,
-                                                       raw, verbose=False)
+        events_array, event_dur, event_desc_id_map = _read_events(
+            events_data, event_id, raw, verbose=False
+        )
         if events_array.size != 0:
-            _events_tsv(events=events_array, raw=raw, fname=events_path.fpath,
-                        trial_type=event_desc_id_map, overwrite=overwrite,
-                        verbose=verbose)
+            _events_tsv(events=events_array, durations=event_dur, raw=raw,
+                        fname=events_path.fpath, trial_type=event_desc_id_map,
+                        overwrite=overwrite, verbose=verbose)
         # Kepp events_array around for BrainVision writing below.
-        del event_desc_id_map, events_data, event_id
+        del event_desc_id_map, events_data, event_id, event_dur
 
     make_dataset_description(bids_path.root, name=" ", overwrite=overwrite,
                              verbose=verbose)
@@ -1550,8 +1552,8 @@ def mark_bad_channels(ch_names, descriptions=None, *, bids_path,
     raw.info['bads'] = bads
     # XXX (How) will this handle split files?
     if isinstance(raw, mne.io.brainvision.brainvision.RawBrainVision):
-        events, event_id = _read_events(events_data=None, event_id=None,
-                                        raw=raw, verbose=False)
+        events, _, _ = _read_events(events_data=None, event_id=None,
+                                    raw=raw, verbose=False)
         _write_raw_brainvision(raw, bids_path.fpath, events)
     elif isinstance(raw, mne.io.RawFIF):
         raw.save(raw.filenames[0], overwrite=True, verbose=False)

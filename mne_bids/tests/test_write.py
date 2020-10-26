@@ -1830,7 +1830,7 @@ def test_annotations(_bids_validate, drop_unknown_events, bad_segments):
     events = mne.read_events(events_fname)
     if drop_unknown_events:
         mask = events[:, 2] != 0
-        assert sum(mask) > 0  # Make sure we're actually about to drop sth!
+        assert sum(mask) > 0  # Make sure we're actually about to drop sth.!
         events = events[mask]
         del mask
 
@@ -1862,18 +1862,11 @@ def test_annotations(_bids_validate, drop_unknown_events, bad_segments):
         del bad_annots
 
     raw.set_annotations(annotations)
-
     write_raw_bids(raw, bids_path, events_data=None, event_id=None,
                    overwrite=False)
 
     annotations_read = read_raw_bids(bids_path=bids_path).annotations
     assert_array_almost_equal(annotations.onset, annotations_read.onset)
-    if bad_segments:
-        # XXX MNE-BIDS currently sets all durations to 0. Remove this
-        # XXX `if` branch once this has been resolved.
-        assert annotations.duration.shape == annotations_read.duration.shape
-    else:
-        assert_array_almost_equal(annotations.duration,
-                                  annotations_read.duration)
+    assert_array_almost_equal(annotations.duration, annotations_read.duration)
     assert_array_equal(annotations.description, annotations_read.description)
     assert annotations.orig_time == annotations_read.orig_time
