@@ -139,7 +139,11 @@ def _read_events(events_data, event_id, raw, verbose=None):
         del id_to_desc_map, annotations, new_annotations
 
     # Now convert the Annotations to events.
-    all_events, all_desc = events_from_annotations(raw, verbose=verbose)
+    all_events, all_desc = events_from_annotations(
+        raw,
+        regexp=None,  # Include `BAD_` or `EDGE_` Annotations.
+        verbose=verbose
+    )
     if all_events.size == 0:
         warn('No events found or provided. Please add annotations to the raw '
              'data, or provide the events_data and event_id parameters.')
