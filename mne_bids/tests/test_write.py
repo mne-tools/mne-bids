@@ -1819,14 +1819,12 @@ def test_write_meg_crosstalk(_bids_validate):
 
 
 @pytest.mark.parametrize(
-    ('drop_unknown_events', 'bad_segments'),
-    [(False, False),
-     (True, False),
-     (True, 'add'),
-     (True, 'only')]
+    'bad_segments',
+    [False, 'add', 'only']
 )
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
-def test_annotations(_bids_validate, drop_unknown_events, bad_segments):
+def test_annotations(_bids_validate, bad_segments):
+    """Test that Annoations are stored as events."""
     bids_root = _TempDir()
     bids_path = _bids_path.copy().update(root=bids_root, datatype='meg')
     data_path = testing.data_path()
@@ -1836,12 +1834,6 @@ def test_annotations(_bids_validate, drop_unknown_events, bad_segments):
                            'sample_audvis_trunc_raw-eve.fif')
 
     events = mne.read_events(events_fname)
-    if drop_unknown_events:
-        mask = events[:, 2] != 0
-        assert sum(mask) > 0  # Make sure we're actually about to drop sth.!
-        events = events[mask]
-        del mask
-
     event_id = {'Auditory/Left': 1, 'Auditory/Right': 2, 'Visual/Left': 3,
                 'Visual/Right': 4, 'Smiley': 5, 'Button': 32}
     event_desc = dict(zip(event_id.values(), event_id.keys()))
@@ -1878,4 +1870,51 @@ def test_annotations(_bids_validate, drop_unknown_events, bad_segments):
     assert_array_almost_equal(annotations.duration, annotations_read.duration)
     assert_array_equal(annotations.description, annotations_read.description)
     assert annotations.orig_time == annotations_read.orig_time
+    _bids_validate(bids_root)
+
+
+@pytest.mark.parametrize(
+    'drop_undescribed_events',
+    [True, False]
+)
+@pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+def test_undescribed_events(_bids_validate, drop_undescribed_events):
+    """Test we're behaving correctly if event descriptions are missing."""
+    bids_root = _TempDir()
+    bids_path = _bids_path.copy().update(root=bids_root, datatype='meg')
+    data_path = testing.data_path()
+    raw_fname = op.join(data_path, 'MEG', 'sample',
+                        'sample_audvis_trunc_raw.fif')
+    events_fname = op.join(data_path, 'MEG', 'sample',
+                           'sample_audvis_trunc_raw-eve.fif')
+
+    events = mne.read_events(events_fname)
+    if drop_undescribed_events:
+        mask = events[:, 2] != 0
+        assert sum(mask) > 0  # Make sure we're actually about to drop sth.!
+        events = events[mask]
+        del mask
+
+    event_id = {'Auditory/Left': 1, 'Auditory/Right': 2, 'Visual/Left': 3,
+                'Visual/Right': 4, 'Smiley': 5, 'Button': 32}
+
+    raw = _read_raw_fif(raw_fname)
+    raw.set_annotations(None)  # Make sure it's clean.
+    kwargs = dict(raw=raw, bids_path=bids_path, events_data=events,
+                  event_id=event_id, overwrite=False)
+
+    if not drop_undescribed_events:
+        with pytest.raises(ValueError, match='No description was specified'):
+            write_raw_bids(**kwargs)
+            return
+    else:
+        write_raw_bids(**kwargs)
+
+    raw_read = read_raw_bids(bids_path=bids_path)
+    events_read, event_id_read = mne.events_from_annotations(
+        raw=raw_read, event_id=event_id, regexp=None
+    )
+
+    assert_array_equal(events, events_read)
+    assert event_id == event_id_read
     _bids_validate(bids_root)

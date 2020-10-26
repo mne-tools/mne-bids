@@ -110,15 +110,15 @@ def _read_events(events_data, event_id, raw, verbose=None):
 
     if events.size > 0:
         # Only keep events for which we have an ID <> description mapping.
-        event_ids_without_desc = set(events[:, 2]) - set(event_id.values())
-        if event_ids_without_desc:
+        ids_without_desc = set(events[:, 2]) - set(event_id.values())
+        if ids_without_desc:
             raise ValueError(
                 f'No description was specified for the following event(s): '
-                f'{", ".join([x for x in sorted(event_ids_without_desc)])}. '
+                f'{", ".join([str(x) for x in sorted(ids_without_desc)])}. '
                 f'Please add them to the event_id dictionary, or drop them '
                 f'from the events_data array.'
             )
-        del event_ids_without_desc
+        del ids_without_desc
         mask = [e in list(event_id.values()) for e in events[:, 2]]
         events = events[mask]
 
