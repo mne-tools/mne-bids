@@ -25,6 +25,7 @@ xxx
 Authors
 ~~~~~~~
 * `Stefan Appelhoff`_
+* `Adam Li`_
 
 Detailed list of changes
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -35,7 +36,7 @@ Enhancements
 
 Bug fixes
 ^^^^^^^^^
-xxx
+- The function :func:`mne_bids.write_raw_bids` now outputs ``electrodes.tsv`` and ``coordsystem.json`` files for EEG/iEEG data that are BIDS compliant (only contain subject, session, acquisition, and space entities), by `Adam Li`_ (`#601 <https://github.com/mne-tools/mne-bids/pull/601>`_)
 
 API changes
 ^^^^^^^^^^^
