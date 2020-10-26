@@ -1179,6 +1179,7 @@ def write_raw_bids(raw, bids_path, events_data=None,
             if verbose:
                 warn('Converting data files to BrainVision format')
             bids_path.update(suffix=bids_path.datatype, extension='.vhdr')
+            # XXX Should we write durations here too?
             _write_raw_brainvision(raw, bids_path.fpath, events=events_array)
     elif ext == '.fif':
         _write_raw_fif(raw, bids_path)
@@ -1551,12 +1552,13 @@ def mark_bad_channels(ch_names, descriptions=None, *, bids_path,
     # Update info['bads']
     bads = _get_bads_from_tsv_data(tsv_data)
     raw.info['bads'] = bads
-    # XXX (How) will this handle split files?
     if isinstance(raw, mne.io.brainvision.brainvision.RawBrainVision):
+        # XXX We should write durations too, this is supported by pybv.
         events, _, _ = _read_events(events_data=None, event_id=None,
                                     raw=raw, verbose=False)
         _write_raw_brainvision(raw, bids_path.fpath, events)
     elif isinstance(raw, mne.io.RawFIF):
+        # XXX (How) will this handle split files?
         raw.save(raw.filenames[0], overwrite=True, verbose=False)
     else:
         raise RuntimeError('Can only mark bad channels for '
