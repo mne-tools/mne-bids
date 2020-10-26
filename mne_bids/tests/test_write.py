@@ -69,7 +69,6 @@ warning_str = dict(
     meas_date_set_to_none="ignore:.*'meas_date' set to None:RuntimeWarning:"
                           "mne",
     nasion_not_found='ignore:.*nasion not found:RuntimeWarning:mne',
-    annotations_omitted='ignore:Omitted .* annot.*:RuntimeWarning:mne',
 )
 
 
@@ -273,7 +272,6 @@ def test_create_fif(_bids_validate):
 
 
 @requires_version('pybv', '0.2.0')
-@pytest.mark.filterwarnings(warning_str['annotations_omitted'])
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_fif(_bids_validate):
     """Test functionality of the write_raw_bids conversion for fif."""
@@ -1810,3 +1808,69 @@ def test_write_meg_crosstalk(_bids_validate):
                                         datatype='eeg')
     with pytest.raises(ValueError, match='Can only write .* for MEG'):
         write_meg_crosstalk(crosstalk_fname, bids_path)
+
+
+@pytest.mark.parametrize(
+    ('drop_unknown_events', 'bad_segments'),
+    [(False, False),
+     (True, False),
+     (True, 'add'),
+     (True, 'only')]
+)
+@pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+def test_annotations(_bids_validate, drop_unknown_events, bad_segments):
+    bids_root = _TempDir()
+    bids_path = _bids_path.copy().update(root=bids_root, datatype='meg')
+    data_path = testing.data_path()
+    raw_fname = op.join(data_path, 'MEG', 'sample',
+                        'sample_audvis_trunc_raw.fif')
+    events_fname = op.join(data_path, 'MEG', 'sample',
+                           'sample_audvis_trunc_raw-eve.fif')
+
+    events = mne.read_events(events_fname)
+    if drop_unknown_events:
+        mask = events[:, 2] != 0
+        assert sum(mask) > 0  # Make sure we're actually about to drop sth!
+        events = events[mask]
+        del mask
+
+    event_id = {'Auditory/Left': 1, 'Auditory/Right': 2, 'Visual/Left': 3,
+                'Visual/Right': 4, 'Smiley': 5, 'Button': 32}
+    event_desc = dict(zip(event_id.values(), event_id.keys()))
+
+    raw = _read_raw_fif(raw_fname)
+    annotations = mne.annotations_from_events(
+        events=events, sfreq=raw.info['sfreq'], event_desc=event_desc,
+        orig_time=raw.info['meas_date']
+    )
+    if bad_segments:
+        bad_annots = mne.Annotations(
+            onset=(annotations.onset[0] + 1 / raw.info['sfreq'] * 600,
+                   annotations.onset[0] + 1 / raw.info['sfreq'] * 3000),
+            duration=(1 / raw.info['sfreq'] * 750,
+                      1 / raw.info['sfreq'] * 550),
+            description=('BAD_segment', 'BAD_segment'),
+            orig_time=annotations.orig_time)
+
+        if bad_segments == 'add':
+            annotations += bad_annots
+        elif bad_annots == 'only':
+            annotations = bad_annots
+        del bad_annots
+
+    raw.set_annotations(annotations)
+
+    write_raw_bids(raw, bids_path, events_data=None, event_id=None,
+                   overwrite=False)
+
+    annotations_read = read_raw_bids(bids_path=bids_path).annotations
+    assert_array_almost_equal(annotations.onset, annotations_read.onset)
+    if bad_segments:
+        # XXX MNE-BIDS currently sets all durations to 0. Remove this
+        # XXX `if` branch once this has been resolved.
+        assert annotations.duration.shape == annotations_read.duration.shape
+    else:
+        assert_array_almost_equal(annotations.duration,
+                                  annotations_read.duration)
+    assert_array_equal(annotations.description, annotations_read.description)
+    assert annotations.orig_time == annotations_read.orig_time
