@@ -41,7 +41,7 @@ from mne.io.kit.kit import get_kit_info
 from mne_bids import (write_raw_bids, read_raw_bids, BIDSPath,
                       write_anat, make_dataset_description,
                       mark_bad_channels, write_meg_calibration,
-                      write_meg_crosstalk)
+                      write_meg_crosstalk, get_entities_from_fname)
 from mne_bids.utils import (_stamp_to_dt, _get_anonymization_daysback,
                             get_anonymization_daysback)
 from mne_bids.tsv_handler import _from_tsv, _to_tsv
@@ -863,6 +863,14 @@ def test_vhdr(_bids_validate):
     assert len(tsv.get('impedance', {})) > 0
     assert tsv['impedance'][-3:] == ['n/a', 'n/a', 'n/a']
     assert tsv['impedance'][:3] == ['5.0', '2.0', '4.0']
+
+    # electrodes file path should only contain
+    # sub/ses/acq/space at most
+    entities = get_entities_from_fname(electrodes_fpath)
+    assert all([entity is None for key, entity in entities.items()
+                if key not in ['subject', 'session',
+                               'acquisition', 'space',
+                               'suffix']])
 
 
 @pytest.mark.parametrize('dir_name, fname, reader', test_eegieeg_data)

@@ -1063,10 +1063,6 @@ def write_raw_bids(raw, bids_path, events_data=None,
         acquisition=bids_path.acquisition, space=bids_path.space,
         datatype=bids_path.datatype, suffix='coordsystem', extension='.json')
 
-    # create *_electrodes.tsv
-    electrodes_path = bids_path.copy().update(
-        suffix='electrodes', extension='.tsv')
-
     # For the remaining files, we can use BIDSPath to alter.
     readme_fname = op.join(bids_path.root, 'README')
     participants_tsv_fname = op.join(bids_path.root, 'participants.tsv')
@@ -1122,9 +1118,7 @@ def write_raw_bids(raw, bids_path, events_data=None,
         # We only write electrodes.tsv and accompanying coordsystem.json
         # if we have an available DigMontage
         if raw.info['dig'] is not None and raw.info['dig']:
-            _write_dig_bids(electrodes_path, coordsystem_path,
-                            bids_path.root, raw, bids_path.datatype,
-                            overwrite, verbose)
+            _write_dig_bids(bids_path, raw, overwrite, verbose)
     else:
         logger.warning(f'Writing of electrodes.tsv is not supported '
                        f'for data type "{bids_path.datatype}". Skipping ...')
