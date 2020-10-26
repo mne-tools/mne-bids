@@ -155,6 +155,7 @@ def _events_tsv(events, durations, raw, fname, trial_type, overwrite=False,
         typically contains the value of the trigger channel either immediately
         before the event or immediately after.
     durations : array, shape (n_events,)
+        The event durations in seconds.
     raw : instance of Raw
         The data as MNE-Python Raw object.
     fname : str | BIDSPath

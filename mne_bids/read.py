@@ -88,7 +88,7 @@ def _read_events(events_data, event_id, raw, verbose=None):
         typically contains the value of the trigger channel either immediately
         before the event or immediately after.
     all_dur : array, shape (n_events,)
-        The event durations.
+        The event durations in seconds.
     all_desc : dict
         A dictionary with the keys corresponding to the event descriptions and
         the values to the event IDs.
