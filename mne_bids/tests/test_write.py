@@ -1845,6 +1845,7 @@ def test_annotations(_bids_validate, drop_unknown_events, bad_segments):
     )
     if bad_segments:
         bad_annots = mne.Annotations(
+            # Try to avoid rounding errors.
             onset=(annotations.onset[0] + 1 / raw.info['sfreq'] * 600,
                    annotations.onset[0] + 1 / raw.info['sfreq'] * 3000),
             duration=(1 / raw.info['sfreq'] * 750,
@@ -1854,8 +1855,10 @@ def test_annotations(_bids_validate, drop_unknown_events, bad_segments):
 
         if bad_segments == 'add':
             annotations += bad_annots
-        elif bad_annots == 'only':
+        elif bad_segments == 'only':
             annotations = bad_annots
+        else:
+            raise ValueError('Unknown `bad_segments` test parameter passed.')
         del bad_annots
 
     raw.set_annotations(annotations)
