@@ -37,7 +37,7 @@ Enhancements
 
 Bug fixes
 ^^^^^^^^^
-- Fix a bug in :func:`mne_bids.write_raw_bids`, where passing raw data with :class:`mne.Annotations` set and and ``event_id`` dictionary not containing the :class:`mne.Annotations` descriptions as keys would raise an error, by `Richard Höchenberger`_ (`#603 <https://github.com/mne-tools/mne-bids/pull/603>`_)
+- Fix a bug in :func:`mne_bids.write_raw_bids`, where passing raw data with :class:`mne.Annotations` set and ``event_id`` dictionary not containing the :class:`mne.Annotations` descriptions as keys would raise an error, by `Richard Höchenberger`_ (`#603 <https://github.com/mne-tools/mne-bids/pull/603>`_)
 
 API changes
 ^^^^^^^^^^^
