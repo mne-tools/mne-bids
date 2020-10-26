@@ -1870,3 +1870,4 @@ def test_annotations(_bids_validate, drop_unknown_events, bad_segments):
     assert_array_almost_equal(annotations.duration, annotations_read.duration)
     assert_array_equal(annotations.description, annotations_read.description)
     assert annotations.orig_time == annotations_read.orig_time
+    _bids_validate(bids_root)
