@@ -143,7 +143,7 @@ def _read_events(events_data, event_id, raw, verbose=None):
     # Now convert the Annotations to events.
     all_events, all_desc = events_from_annotations(
         raw,
-        regexp=None,  # Include `BAD_` or `EDGE_` Annotations.
+        regexp=None,  # Include `BAD_` and `EDGE_` Annotations, too.
         verbose=verbose
     )
     all_dur = raw.annotations.duration
