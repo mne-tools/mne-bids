@@ -1824,7 +1824,7 @@ def test_write_meg_crosstalk(_bids_validate):
 )
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_annotations(_bids_validate, bad_segments):
-    """Test that Annoations are stored as events."""
+    """Test that Annotations are stored as events."""
     bids_root = _TempDir()
     bids_path = _bids_path.copy().update(root=bids_root, datatype='meg')
     data_path = testing.data_path()
@@ -1917,4 +1917,4 @@ def test_undescribed_events(_bids_validate, drop_undescribed_events):
 
     assert_array_equal(events, events_read)
     assert event_id == event_id_read
-    # _bids_validate(bids_root)
+    _bids_validate(bids_root)
