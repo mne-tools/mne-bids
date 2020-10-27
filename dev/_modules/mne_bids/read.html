@@ -125,7 +125,7 @@
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">mne</span>
-<span class="kn">from</span> <span class="nn">mne</span> <span class="kn">import</span> <span class="n">io</span>
+<span class="kn">from</span> <span class="nn">mne</span> <span class="kn">import</span> <span class="n">io</span><span class="p">,</span> <span class="n">read_events</span><span class="p">,</span> <span class="n">events_from_annotations</span>
 <span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="n">has_nibabel</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">warn</span>
 <span class="kn">from</span> <span class="nn">mne.coreg</span> <span class="kn">import</span> <span class="n">fit_matched_points</span>
 <span class="kn">from</span> <span class="nn">mne.transforms</span> <span class="kn">import</span> <span class="n">apply_trans</span>
@@ -174,6 +174,97 @@
                          <span class="sa">f</span><span class="s1">&#39;of </span><span class="si">{</span><span class="n">ALLOWED_DATATYPE_EXTENSIONS</span><span class="si">}</span><span class="se">\n</span><span class="s1">&#39;</span>
                          <span class="sa">f</span><span class="s1">&#39;Got </span><span class="si">{</span><span class="n">ext</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">raw</span>
+
+
+<span class="k">def</span> <span class="nf">_read_events</span><span class="p">(</span><span class="n">events_data</span><span class="p">,</span> <span class="n">event_id</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Retrieve events (for use in *_events.tsv) from FIFF/array &amp; Annotations.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    events_data : str | array | None</span>
+<span class="sd">        If a string, a path to an events file. If an array, an MNE events array</span>
+<span class="sd">        (shape n_events, 3). If None, events will be generated from</span>
+<span class="sd">        ``raw.annotations``.</span>
+<span class="sd">    event_id : dict | None</span>
+<span class="sd">        The event id dict used to create a &#39;trial_type&#39; column in events.tsv,</span>
+<span class="sd">        mapping a description key to an integer valued event code.</span>
+<span class="sd">    raw : instance of Raw</span>
+<span class="sd">        The data as MNE-Python Raw object.</span>
+<span class="sd">    verbose : bool | str | int | None</span>
+<span class="sd">        If not None, override default verbose level (see :func:`mne.verbose`).</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    all_events : array, shape = (n_events, 3)</span>
+<span class="sd">        The first column contains the event time in samples and the third</span>
+<span class="sd">        column contains the event id. The second column is ignored for now but</span>
+<span class="sd">        typically contains the value of the trigger channel either immediately</span>
+<span class="sd">        before the event or immediately after.</span>
+<span class="sd">    all_dur : array, shape (n_events,)</span>
+<span class="sd">        The event durations in seconds.</span>
+<span class="sd">    all_desc : dict</span>
+<span class="sd">        A dictionary with the keys corresponding to the event descriptions and</span>
+<span class="sd">        the values to the event IDs.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># get events from events_data</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">events_data</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">events</span> <span class="o">=</span> <span class="n">read_events</span><span class="p">(</span><span class="n">events_data</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">events_data</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">events_data</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Events must have two dimensions, &#39;</span>
+                             <span class="sa">f</span><span class="s1">&#39;found </span><span class="si">{</span><span class="n">events_data</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">events_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Events must have second dimension of length 3, &#39;</span>
+                             <span class="sa">f</span><span class="s1">&#39;found </span><span class="si">{</span><span class="n">events_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">events</span> <span class="o">=</span> <span class="n">events_data</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">events</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">events</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="c1"># Only keep events for which we have an ID &lt;&gt; description mapping.</span>
+        <span class="n">ids_without_desc</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">events</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">])</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">event_id</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+        <span class="k">if</span> <span class="n">ids_without_desc</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;No description was specified for the following event(s): &#39;</span>
+                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">ids_without_desc</span><span class="p">)])</span><span class="si">}</span><span class="s1">. &#39;</span>
+                <span class="sa">f</span><span class="s1">&#39;Please add them to the event_id dictionary, or drop them &#39;</span>
+                <span class="sa">f</span><span class="s1">&#39;from the events_data array.&#39;</span>
+            <span class="p">)</span>
+        <span class="k">del</span> <span class="n">ids_without_desc</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">event_id</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">events</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]]</span>
+        <span class="n">events</span> <span class="o">=</span> <span class="n">events</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
+
+        <span class="c1"># Append events to raw.annotations. All event onsets are relative to</span>
+        <span class="c1"># measurement beginning.</span>
+        <span class="n">id_to_desc_map</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">event_id</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="n">event_id</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+        <span class="c1"># We don&#39;t pass `first_samp`, as set_annotations() below will take</span>
+        <span class="c1"># care of this shift automatically.</span>
+        <span class="n">new_annotations</span> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">annotations_from_events</span><span class="p">(</span>
+            <span class="n">events</span><span class="o">=</span><span class="n">events</span><span class="p">,</span> <span class="n">sfreq</span><span class="o">=</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;sfreq&#39;</span><span class="p">],</span> <span class="n">event_desc</span><span class="o">=</span><span class="n">id_to_desc_map</span><span class="p">,</span>
+            <span class="n">orig_time</span><span class="o">=</span><span class="n">raw</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">orig_time</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+
+        <span class="n">raw</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>  <span class="c1"># Don&#39;t alter the original.</span>
+        <span class="n">annotations</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="c1"># We use `+=` here because `Annotations.__iadd__()` does the right</span>
+        <span class="c1"># thing and also performs a sanity check on `Annotations.orig_time`.</span>
+        <span class="n">annotations</span> <span class="o">+=</span> <span class="n">new_annotations</span>
+        <span class="n">raw</span><span class="o">.</span><span class="n">set_annotations</span><span class="p">(</span><span class="n">annotations</span><span class="p">)</span>
+        <span class="k">del</span> <span class="n">id_to_desc_map</span><span class="p">,</span> <span class="n">annotations</span><span class="p">,</span> <span class="n">new_annotations</span>
+
+    <span class="c1"># Now convert the Annotations to events.</span>
+    <span class="n">all_events</span><span class="p">,</span> <span class="n">all_desc</span> <span class="o">=</span> <span class="n">events_from_annotations</span><span class="p">(</span>
+        <span class="n">raw</span><span class="p">,</span>
+        <span class="n">regexp</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>  <span class="c1"># Include `BAD_` and `EDGE_` Annotations, too.</span>
+        <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span>
+    <span class="p">)</span>
+    <span class="n">all_dur</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">annotations</span><span class="o">.</span><span class="n">duration</span>
+    <span class="k">if</span> <span class="n">all_events</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">warn</span><span class="p">(</span><span class="s1">&#39;No events found or provided. Please add annotations to the raw &#39;</span>
+             <span class="s1">&#39;data, or provide the events_data and event_id parameters.&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">all_events</span><span class="p">,</span> <span class="n">all_dur</span><span class="p">,</span> <span class="n">all_desc</span>
 
 
 <span class="k">def</span> <span class="nf">_handle_participants_reading</span><span class="p">(</span><span class="n">participants_fname</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span>
@@ -634,7 +725,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-10-26.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-10-27.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
     </p>
   </div>

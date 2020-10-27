@@ -331,13 +331,36 @@ which are however optional. The required inputs are:
             object, as well as the extension. Data with MEG and other
             electrophysiology data in the same file will be stored as ``'meg'``.
         events_data : path-like | array | None
+            Use this parameter to specify events to write to the ``*_events.tsv``
+            sidecar file, additionally to the object's `mne.Annotations` (which
+            are always written).
             If a path, specifies the location of an MNE events file.
             If an array, the MNE events array (shape: ``(n_events, 3)``).
-            If ``None``, events will be inferred from the the raw object's
-            `mne.Annotations` using `mne.events_from_annotations`.
+            If a path or an array and ``raw.annotations`` exist, the union of
+            ``event_data`` and ``raw.annotations`` will be written.
+            Corresponding descriptions for all event IDs (listed in the third
+            column of the MNE events array) must be specified via the ``event_id``
+            parameter; otherwise, an exception is raised.
+            If ``None``, events will only be inferred from the the raw object's
+            `mne.Annotations`.
+
+            .. note::
+               If ``not None``, writes the union of ``events_data`` and
+               ``raw.annotations``. If you wish to **only** write
+               ``raw.annotations``, pass ``events_data=None``. If you want to
+               **exclude** the events in ``raw.annotations`` from being written,
+               call ``raw.set_annotations(None)`` before invoking this function.
+
+            .. note::
+               Descriptions of all event IDs must be specified via the ``event_id``
+               parameter.
+
         event_id : dict | None
-            The event ID dictionary used to create a `trial_type` column in
-            ``*_events.tsv``.
+            Descriptions of all event IDs, if you passed ``events_data``.
+            The descriptions will be written to the ``trial_type`` column in
+            ``*_events.tsv``. The dictionary keys correspond to the event
+            descriptions and the values to the event IDs. You must specify a
+            description for all event IDs in ``events_data``.
         anonymize : dict | None
             If `None` (default), no anonymization is performed.
             If a dictionary, data will be anonymized depending on the dictionary
@@ -567,7 +590,7 @@ Finally, let's write the BIDS data!
     Writing '/home/circleci/mne_data/eegmmidb_bids_eeg_example/sub-001/eeg/sub-001_task-RestEyesClosed_events.tsv'...
 
     onset   duration        trial_type      value   sample
-    0.0     0.0     T0      1       0
+    0.0     60.2    T0      1       0
 
     Writing '/home/circleci/mne_data/eegmmidb_bids_eeg_example/dataset_description.json'...
 
@@ -734,7 +757,7 @@ Command line tool: https://www.npmjs.com/package/bids-validator
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  0.112 seconds)
+   **Total running time of the script:** ( 0 minutes  0.160 seconds)
 
 
 .. _sphx_glr_download_auto_examples_convert_eeg_to_bids.py:

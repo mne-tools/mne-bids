@@ -167,13 +167,37 @@ Example:</p>
 object, as well as the extension. Data with MEG and other
 electrophysiology data in the same file will be stored as <code class="docutils literal notranslate"><span class="pre">'meg'</span></code>.</p>
 </dd>
-<dt><strong>events_data</strong><span class="classifier">path-like | array | None</span></dt><dd><p>If a path, specifies the location of an MNE events file.
+<dt><strong>events_data</strong><span class="classifier">path-like | array | None</span></dt><dd><p>Use this parameter to specify events to write to the <code class="docutils literal notranslate"><span class="pre">*_events.tsv</span></code>
+sidecar file, additionally to the object’s <a class="reference external" href="https://mne.tools/dev/generated/mne.Annotations.html#mne.Annotations" title="(in MNE v0.22.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.Annotations</span></code></a> (which
+are always written).
+If a path, specifies the location of an MNE events file.
 If an array, the MNE events array (shape: <code class="docutils literal notranslate"><span class="pre">(n_events,</span> <span class="pre">3)</span></code>).
-If <code class="docutils literal notranslate"><span class="pre">None</span></code>, events will be inferred from the the raw object’s
-<a class="reference external" href="https://mne.tools/dev/generated/mne.Annotations.html#mne.Annotations" title="(in MNE v0.22.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.Annotations</span></code></a> using <a class="reference external" href="https://mne.tools/dev/generated/mne.events_from_annotations.html#mne.events_from_annotations" title="(in MNE v0.22.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.events_from_annotations</span></code></a>.</p>
+If a path or an array and <code class="docutils literal notranslate"><span class="pre">raw.annotations</span></code> exist, the union of
+<code class="docutils literal notranslate"><span class="pre">event_data</span></code> and <code class="docutils literal notranslate"><span class="pre">raw.annotations</span></code> will be written.
+Corresponding descriptions for all event IDs (listed in the third
+column of the MNE events array) must be specified via the <code class="docutils literal notranslate"><span class="pre">event_id</span></code>
+parameter; otherwise, an exception is raised.
+If <code class="docutils literal notranslate"><span class="pre">None</span></code>, events will only be inferred from the the raw object’s
+<a class="reference external" href="https://mne.tools/dev/generated/mne.Annotations.html#mne.Annotations" title="(in MNE v0.22.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.Annotations</span></code></a>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">not</span> <span class="pre">None</span></code>, writes the union of <code class="docutils literal notranslate"><span class="pre">events_data</span></code> and
+<code class="docutils literal notranslate"><span class="pre">raw.annotations</span></code>. If you wish to <strong>only</strong> write
+<code class="docutils literal notranslate"><span class="pre">raw.annotations</span></code>, pass <code class="docutils literal notranslate"><span class="pre">events_data=None</span></code>. If you want to
+<strong>exclude</strong> the events in <code class="docutils literal notranslate"><span class="pre">raw.annotations</span></code> from being written,
+call <code class="docutils literal notranslate"><span class="pre">raw.set_annotations(None)</span></code> before invoking this function.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Descriptions of all event IDs must be specified via the <code class="docutils literal notranslate"><span class="pre">event_id</span></code>
+parameter.</p>
+</div>
 </dd>
-<dt><strong>event_id</strong><span class="classifier">dict | None</span></dt><dd><p>The event ID dictionary used to create a <em class="xref py py-obj">trial_type</em> column in
-<code class="docutils literal notranslate"><span class="pre">*_events.tsv</span></code>.</p>
+<dt><strong>event_id</strong><span class="classifier">dict | None</span></dt><dd><p>Descriptions of all event IDs, if you passed <code class="docutils literal notranslate"><span class="pre">events_data</span></code>.
+The descriptions will be written to the <code class="docutils literal notranslate"><span class="pre">trial_type</span></code> column in
+<code class="docutils literal notranslate"><span class="pre">*_events.tsv</span></code>. The dictionary keys correspond to the event
+descriptions and the values to the event IDs. You must specify a
+description for all event IDs in <code class="docutils literal notranslate"><span class="pre">events_data</span></code>.</p>
 </dd>
 <dt><strong>anonymize</strong><span class="classifier">dict | None</span></dt><dd><p>If <em class="xref py py-obj">None</em> (default), no anonymization is performed.
 If a dictionary, data will be anonymized depending on the dictionary
@@ -287,7 +311,7 @@ extraction from <code class="docutils literal notranslate"><span class="pre">STI
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-10-26.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-10-27.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
     </p>
   </div>

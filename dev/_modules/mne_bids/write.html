@@ -148,8 +148,7 @@
 <span class="kn">from</span> <span class="nn">mne_bids.pick</span> <span class="kn">import</span> <span class="n">coil_type</span>
 <span class="kn">from</span> <span class="nn">mne_bids.dig</span> <span class="kn">import</span> <span class="n">_write_dig_bids</span><span class="p">,</span> <span class="n">_coordsystem_json</span>
 <span class="kn">from</span> <span class="nn">mne_bids.utils</span> <span class="kn">import</span> <span class="p">(</span><span class="n">_write_json</span><span class="p">,</span> <span class="n">_write_tsv</span><span class="p">,</span> <span class="n">_write_text</span><span class="p">,</span>
-                            <span class="n">_read_events</span><span class="p">,</span> <span class="n">_age_on_date</span><span class="p">,</span>
-                            <span class="n">_infer_eeg_placement_scheme</span><span class="p">,</span>
+                            <span class="n">_age_on_date</span><span class="p">,</span> <span class="n">_infer_eeg_placement_scheme</span><span class="p">,</span>
                             <span class="n">_handle_datatype</span><span class="p">,</span> <span class="n">_get_ch_type_mapping</span><span class="p">,</span>
                             <span class="n">_check_anonymize</span><span class="p">,</span> <span class="n">_stamp_to_dt</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">mne_bids</span> <span class="kn">import</span> <span class="n">read_raw_bids</span>
@@ -158,7 +157,8 @@
                                 <span class="n">copyfile_ctf</span><span class="p">,</span> <span class="n">copyfile_bti</span><span class="p">,</span> <span class="n">copyfile_kit</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">mne_bids.tsv_handler</span> <span class="kn">import</span> <span class="p">(</span><span class="n">_from_tsv</span><span class="p">,</span> <span class="n">_drop</span><span class="p">,</span> <span class="n">_contains_row</span><span class="p">,</span>
                                   <span class="n">_combine_rows</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">mne_bids.read</span> <span class="kn">import</span> <span class="n">_get_bads_from_tsv_data</span><span class="p">,</span> <span class="n">_find_matching_sidecar</span>
+<span class="kn">from</span> <span class="nn">mne_bids.read</span> <span class="kn">import</span> <span class="p">(</span><span class="n">_get_bads_from_tsv_data</span><span class="p">,</span> <span class="n">_find_matching_sidecar</span><span class="p">,</span>
+                           <span class="n">_read_events</span><span class="p">)</span>
 
 <span class="kn">from</span> <span class="nn">mne_bids.config</span> <span class="kn">import</span> <span class="p">(</span><span class="n">ORIENTATION</span><span class="p">,</span> <span class="n">UNITS</span><span class="p">,</span> <span class="n">MANUFACTURERS</span><span class="p">,</span>
                              <span class="n">IGNORED_CHANNELS</span><span class="p">,</span> <span class="n">ALLOWED_DATATYPE_EXTENSIONS</span><span class="p">,</span>
@@ -251,7 +251,7 @@
     <span class="n">_write_tsv</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">ch_data</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_events_tsv</span><span class="p">(</span><span class="n">events</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">trial_type</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="k">def</span> <span class="nf">_events_tsv</span><span class="p">(</span><span class="n">events</span><span class="p">,</span> <span class="n">durations</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">fname</span><span class="p">,</span> <span class="n">trial_type</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                 <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Create an events.tsv file and save it.</span>
 
@@ -267,6 +267,8 @@
 <span class="sd">        column contains the event id. The second column is ignored for now but</span>
 <span class="sd">        typically contains the value of the trigger channel either immediately</span>
 <span class="sd">        before the event or immediately after.</span>
+<span class="sd">    durations : array, shape (n_events,)</span>
+<span class="sd">        The event durations in seconds.</span>
 <span class="sd">    raw : instance of Raw</span>
 <span class="sd">        The data as MNE-Python Raw object.</span>
 <span class="sd">    fname : str | BIDSPath</span>
@@ -293,7 +295,7 @@
 
     <span class="c1"># Onset column needs to be specified in seconds</span>
     <span class="n">data</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">([(</span><span class="s1">&#39;onset&#39;</span><span class="p">,</span> <span class="n">events</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">sfreq</span><span class="p">),</span>
-                        <span class="p">(</span><span class="s1">&#39;duration&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">events</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])),</span>
+                        <span class="p">(</span><span class="s1">&#39;duration&#39;</span><span class="p">,</span> <span class="n">durations</span><span class="p">),</span>
                         <span class="p">(</span><span class="s1">&#39;trial_type&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
                         <span class="p">(</span><span class="s1">&#39;value&#39;</span><span class="p">,</span> <span class="n">events</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]),</span>
                         <span class="p">(</span><span class="s1">&#39;sample&#39;</span><span class="p">,</span> <span class="n">events</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])])</span>
@@ -971,13 +973,36 @@
 <span class="sd">        object, as well as the extension. Data with MEG and other</span>
 <span class="sd">        electrophysiology data in the same file will be stored as ``&#39;meg&#39;``.</span>
 <span class="sd">    events_data : path-like | array | None</span>
+<span class="sd">        Use this parameter to specify events to write to the ``*_events.tsv``</span>
+<span class="sd">        sidecar file, additionally to the object&#39;s `mne.Annotations` (which</span>
+<span class="sd">        are always written).</span>
 <span class="sd">        If a path, specifies the location of an MNE events file.</span>
 <span class="sd">        If an array, the MNE events array (shape: ``(n_events, 3)``).</span>
-<span class="sd">        If ``None``, events will be inferred from the the raw object&#39;s</span>
-<span class="sd">        `mne.Annotations` using `mne.events_from_annotations`.</span>
+<span class="sd">        If a path or an array and ``raw.annotations`` exist, the union of</span>
+<span class="sd">        ``event_data`` and ``raw.annotations`` will be written.</span>
+<span class="sd">        Corresponding descriptions for all event IDs (listed in the third</span>
+<span class="sd">        column of the MNE events array) must be specified via the ``event_id``</span>
+<span class="sd">        parameter; otherwise, an exception is raised.</span>
+<span class="sd">        If ``None``, events will only be inferred from the the raw object&#39;s</span>
+<span class="sd">        `mne.Annotations`.</span>
+
+<span class="sd">        .. note::</span>
+<span class="sd">           If ``not None``, writes the union of ``events_data`` and</span>
+<span class="sd">           ``raw.annotations``. If you wish to **only** write</span>
+<span class="sd">           ``raw.annotations``, pass ``events_data=None``. If you want to</span>
+<span class="sd">           **exclude** the events in ``raw.annotations`` from being written,</span>
+<span class="sd">           call ``raw.set_annotations(None)`` before invoking this function.</span>
+
+<span class="sd">        .. note::</span>
+<span class="sd">           Descriptions of all event IDs must be specified via the ``event_id``</span>
+<span class="sd">           parameter.</span>
+
 <span class="sd">    event_id : dict | None</span>
-<span class="sd">        The event ID dictionary used to create a `trial_type` column in</span>
-<span class="sd">        ``*_events.tsv``.</span>
+<span class="sd">        Descriptions of all event IDs, if you passed ``events_data``.</span>
+<span class="sd">        The descriptions will be written to the ``trial_type`` column in</span>
+<span class="sd">        ``*_events.tsv``. The dictionary keys correspond to the event</span>
+<span class="sd">        descriptions and the values to the event IDs. You must specify a</span>
+<span class="sd">        description for all event IDs in ``events_data``.</span>
 <span class="sd">    anonymize : dict | None</span>
 <span class="sd">        If `None` (default), no anonymization is performed.</span>
 <span class="sd">        If a dictionary, data will be anonymized depending on the dictionary</span>
@@ -1211,11 +1236,17 @@
         <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Writing of electrodes.tsv is not supported &#39;</span>
                        <span class="sa">f</span><span class="s1">&#39;for data type &quot;</span><span class="si">{</span><span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span><span class="si">}</span><span class="s1">&quot;. Skipping ...&#39;</span><span class="p">)</span>
 
-    <span class="n">events</span><span class="p">,</span> <span class="n">event_id</span> <span class="o">=</span> <span class="n">_read_events</span><span class="p">(</span><span class="n">events_data</span><span class="p">,</span> <span class="n">event_id</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span>
-                                    <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">events</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">events</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">emptyroom</span><span class="p">:</span>
-        <span class="n">_events_tsv</span><span class="p">(</span><span class="n">events</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">events_path</span><span class="o">.</span><span class="n">fpath</span><span class="p">,</span> <span class="n">event_id</span><span class="p">,</span>
-                    <span class="n">overwrite</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
+    <span class="c1"># Write events.</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">emptyroom</span><span class="p">:</span>
+        <span class="n">events_array</span><span class="p">,</span> <span class="n">event_dur</span><span class="p">,</span> <span class="n">event_desc_id_map</span> <span class="o">=</span> <span class="n">_read_events</span><span class="p">(</span>
+            <span class="n">events_data</span><span class="p">,</span> <span class="n">event_id</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">events_array</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">_events_tsv</span><span class="p">(</span><span class="n">events</span><span class="o">=</span><span class="n">events_array</span><span class="p">,</span> <span class="n">durations</span><span class="o">=</span><span class="n">event_dur</span><span class="p">,</span> <span class="n">raw</span><span class="o">=</span><span class="n">raw</span><span class="p">,</span>
+                        <span class="n">fname</span><span class="o">=</span><span class="n">events_path</span><span class="o">.</span><span class="n">fpath</span><span class="p">,</span> <span class="n">trial_type</span><span class="o">=</span><span class="n">event_desc_id_map</span><span class="p">,</span>
+                        <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+        <span class="c1"># Kepp events_array around for BrainVision writing below.</span>
+        <span class="k">del</span> <span class="n">event_desc_id_map</span><span class="p">,</span> <span class="n">events_data</span><span class="p">,</span> <span class="n">event_id</span><span class="p">,</span> <span class="n">event_dur</span>
 
     <span class="n">make_dataset_description</span><span class="p">(</span><span class="n">bids_path</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="n">overwrite</span><span class="p">,</span>
                              <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
@@ -1255,7 +1286,8 @@
             <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
                 <span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Converting data files to BrainVision format&#39;</span><span class="p">)</span>
             <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.vhdr&#39;</span><span class="p">)</span>
-            <span class="n">_write_raw_brainvision</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span><span class="p">,</span> <span class="n">events</span><span class="p">)</span>
+            <span class="c1"># XXX Should we write durations here too?</span>
+            <span class="n">_write_raw_brainvision</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span><span class="p">,</span> <span class="n">events</span><span class="o">=</span><span class="n">events_array</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">ext</span> <span class="o">==</span> <span class="s1">&#39;.fif&#39;</span><span class="p">:</span>
         <span class="n">_write_raw_fif</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_path</span><span class="p">)</span>
     <span class="c1"># CTF data is saved and renamed in a directory</span>
@@ -1627,12 +1659,13 @@
     <span class="c1"># Update info[&#39;bads&#39;]</span>
     <span class="n">bads</span> <span class="o">=</span> <span class="n">_get_bads_from_tsv_data</span><span class="p">(</span><span class="n">tsv_data</span><span class="p">)</span>
     <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;bads&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bads</span>
-    <span class="c1"># XXX (How) will this handle split files?</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">brainvision</span><span class="o">.</span><span class="n">brainvision</span><span class="o">.</span><span class="n">RawBrainVision</span><span class="p">):</span>
-        <span class="n">events</span><span class="p">,</span> <span class="n">event_id</span> <span class="o">=</span> <span class="n">_read_events</span><span class="p">(</span><span class="n">events_data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">event_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                                        <span class="n">raw</span><span class="o">=</span><span class="n">raw</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="c1"># XXX We should write durations too, this is supported by pybv.</span>
+        <span class="n">events</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_read_events</span><span class="p">(</span><span class="n">events_data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">event_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                                    <span class="n">raw</span><span class="o">=</span><span class="n">raw</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="n">_write_raw_brainvision</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span><span class="p">,</span> <span class="n">events</span><span class="p">)</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">RawFIF</span><span class="p">):</span>
+        <span class="c1"># XXX (How) will this handle split files?</span>
         <span class="n">raw</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">filenames</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;Can only mark bad channels for &#39;</span>
@@ -1749,7 +1782,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-10-26.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-10-27.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
     </p>
   </div>

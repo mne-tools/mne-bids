@@ -325,13 +325,36 @@ which are however optional. The required inputs are:</p>
         object, as well as the extension. Data with MEG and other
         electrophysiology data in the same file will be stored as ``&#39;meg&#39;``.
     events_data : path-like | array | None
+        Use this parameter to specify events to write to the ``*_events.tsv``
+        sidecar file, additionally to the object&#39;s `mne.Annotations` (which
+        are always written).
         If a path, specifies the location of an MNE events file.
         If an array, the MNE events array (shape: ``(n_events, 3)``).
-        If ``None``, events will be inferred from the the raw object&#39;s
-        `mne.Annotations` using `mne.events_from_annotations`.
+        If a path or an array and ``raw.annotations`` exist, the union of
+        ``event_data`` and ``raw.annotations`` will be written.
+        Corresponding descriptions for all event IDs (listed in the third
+        column of the MNE events array) must be specified via the ``event_id``
+        parameter; otherwise, an exception is raised.
+        If ``None``, events will only be inferred from the the raw object&#39;s
+        `mne.Annotations`.
+
+        .. note::
+           If ``not None``, writes the union of ``events_data`` and
+           ``raw.annotations``. If you wish to **only** write
+           ``raw.annotations``, pass ``events_data=None``. If you want to
+           **exclude** the events in ``raw.annotations`` from being written,
+           call ``raw.set_annotations(None)`` before invoking this function.
+
+        .. note::
+           Descriptions of all event IDs must be specified via the ``event_id``
+           parameter.
+
     event_id : dict | None
-        The event ID dictionary used to create a `trial_type` column in
-        ``*_events.tsv``.
+        Descriptions of all event IDs, if you passed ``events_data``.
+        The descriptions will be written to the ``trial_type`` column in
+        ``*_events.tsv``. The dictionary keys correspond to the event
+        descriptions and the values to the event IDs. You must specify a
+        description for all event IDs in ``events_data``.
     anonymize : dict | None
         If `None` (default), no anonymization is performed.
         If a dictionary, data will be anonymized depending on the dictionary
@@ -518,7 +541,7 @@ Writing &#39;/home/circleci/mne_data/eegmmidb_bids_eeg_example/sub-001/eeg/sub-0
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids_eeg_example/sub-001/eeg/sub-001_task-RestEyesClosed_events.tsv&#39;...
 
 onset   duration        trial_type      value   sample
-0.0     0.0     T0      1       0
+0.0     60.2    T0      1       0
 
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids_eeg_example/dataset_description.json&#39;...
 
@@ -644,7 +667,7 @@ directories called the “BIDS-validator”, available as a web version and a
 command line tool:</p>
 <p>Web version: <a class="reference external" href="https://bids-standard.github.io/bids-validator/">https://bids-standard.github.io/bids-validator/</a></p>
 <p>Command line tool: <a class="reference external" href="https://www.npmjs.com/package/bids-validator">https://www.npmjs.com/package/bids-validator</a></p>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.112 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.160 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-eeg-to-bids-py">
 <div class="binder-badge docutils container">
 <a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/convert_eeg_to_bids.ipynb"><img alt="Launch binder" src="../_images/binder_badge_logo.svg" width="150px" /></a>
@@ -673,7 +696,7 @@ command line tool:</p>
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-10-26.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-10-27.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
     </p>
   </div>

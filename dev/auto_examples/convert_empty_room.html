@@ -247,8 +247,8 @@ Writing &#39;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub
     &quot;HeadCoilCoordinateSystem&quot;: &quot;ElektaNeuromag&quot;,
     &quot;HeadCoilCoordinateUnits&quot;: &quot;m&quot;
 }
-/home/circleci/project/mne_bids/utils.py:246: RuntimeWarning: No events found or provided. Please make sure to set channel type using raw.set_channel_types or provide events_data.
-  warn(&#39;No events found or provided. Please make sure to&#39;
+/home/circleci/project/mne_bids/read.py:151: RuntimeWarning: No events found or provided. Please add annotations to the raw data, or provide the events_data and event_id parameters.
+  warn(&#39;No events found or provided. Please add annotations to the raw &#39;
 
 Writing &#39;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/dataset_description.json&#39;...
 
@@ -392,8 +392,6 @@ Writing &#39;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/par
     }
 }
 Writing of electrodes.tsv is not supported for data type &quot;meg&quot;. Skipping ...
-/home/circleci/project/mne_bids/utils.py:246: RuntimeWarning: No events found or provided. Please make sure to set channel type using raw.set_channel_types or provide events_data.
-  warn(&#39;No events found or provided. Please make sure to&#39;
 
 Writing &#39;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/dataset_description.json&#39;...
 
@@ -508,8 +506,6 @@ Writing &#39;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/par
     }
 }
 Writing of electrodes.tsv is not supported for data type &quot;meg&quot;. Skipping ...
-/home/circleci/project/mne_bids/utils.py:246: RuntimeWarning: No events found or provided. Please make sure to set channel type using raw.set_channel_types or provide events_data.
-  warn(&#39;No events found or provided. Please make sure to&#39;
 
 Writing &#39;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/dataset_description.json&#39;...
 
@@ -604,8 +600,6 @@ Writing &#39;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/par
     }
 }
 Writing of electrodes.tsv is not supported for data type &quot;meg&quot;. Skipping ...
-/home/circleci/project/mne_bids/utils.py:246: RuntimeWarning: No events found or provided. Please make sure to set channel type using raw.set_channel_types or provide events_data.
-  warn(&#39;No events found or provided. Please make sure to&#39;
 
 Writing &#39;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/dataset_description.json&#39;...
 
@@ -700,8 +694,6 @@ Writing &#39;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/par
     }
 }
 Writing of electrodes.tsv is not supported for data type &quot;meg&quot;. Skipping ...
-/home/circleci/project/mne_bids/utils.py:246: RuntimeWarning: No events found or provided. Please make sure to set channel type using raw.set_channel_types or provide events_data.
-  warn(&#39;No events found or provided. Please make sure to&#39;
 
 Writing &#39;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/dataset_description.json&#39;...
 
@@ -825,7 +817,7 @@ recording that is closest in time to the experimental measurement.</p>
 Ready.
 Reading events from /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_events.tsv.
 Reading channel info from /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_channels.tsv.
-/home/circleci/project/mne_bids/read.py:246: RuntimeWarning: The unit for channel(s) STI 001, STI 002, STI 003, STI 004, STI 005, STI 006, STI 014, STI 015, STI 016 has changed from V to NA.
+/home/circleci/project/mne_bids/read.py:337: RuntimeWarning: The unit for channel(s) STI 001, STI 002, STI 003, STI 004, STI 005, STI 006, STI 014, STI 015, STI 016 has changed from V to NA.
   raw.set_channel_types(channel_type_dict)
 /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-emptyroom/ses-20021204/meg/sub-emptyroom_ses-20021204_task-noise_meg.fif
 </pre></div>
@@ -849,7 +841,7 @@ Ready.
 The search_str was &quot;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-emptyroom/**/sub-emptyroom_ses-20021204*events.tsv&quot;
   warn(msg)
 Reading channel info from /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-emptyroom/ses-20021204/meg/sub-emptyroom_ses-20021204_task-noise_channels.tsv.
-/home/circleci/project/mne_bids/read.py:246: RuntimeWarning: The unit for channel(s) STI 001, STI 002, STI 003, STI 004, STI 005, STI 006, STI 014, STI 015, STI 016 has changed from V to NA.
+/home/circleci/project/mne_bids/read.py:337: RuntimeWarning: The unit for channel(s) STI 001, STI 002, STI 003, STI 004, STI 005, STI 006, STI 014, STI 015, STI 016 has changed from V to NA.
   raw.set_channel_types(channel_type_dict)
 /home/circleci/project/mne_bids/path.py:1055: RuntimeWarning: Did not find any coordsystem.json associated with sub-emptyroom_ses-20021204_task-noise.
 
@@ -858,7 +850,7 @@ The search_str was &quot;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-d
 &lt;Raw | sub-emptyroom_ses-20021204_task-noise_meg.fif, 315 x 66068 (110.0 s), ~366 kB, data not loaded&gt;
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  3.663 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  4.318 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-empty-room-py">
 <div class="binder-badge docutils container">
 <a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/convert_empty_room.ipynb"><img alt="Launch binder" src="../_images/binder_badge_logo.svg" width="150px" /></a>
@@ -886,7 +878,7 @@ The search_str was &quot;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-d
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-10-26.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-10-27.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
     </p>
   </div>

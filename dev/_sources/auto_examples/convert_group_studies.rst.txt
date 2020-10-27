@@ -173,7 +173,7 @@ Let us loop over the subjects and create BIDS-compatible folder
     EDF file detected
     Setting channel info structure...
     Creating raw.info structure...
-    /home/circleci/project/mne_bids/write.py:1066: RuntimeWarning: Converting to BV for anonymization
+    /home/circleci/project/mne_bids/write.py:1091: RuntimeWarning: Converting to BV for anonymization
       warn('Converting to BV for anonymization')
 
     Writing '/home/circleci/mne_data/eegmmidb_bids_group_conversion/participants.tsv'...
@@ -212,11 +212,11 @@ Let us loop over the subjects and create BIDS-compatible folder
     Writing '/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-01/eeg/sub-001_ses-01_task-MotorImagery_run-01_events.tsv'...
 
     onset   duration        trial_type      value   sample
-    0.0     0.0     T0      1       0
-    4.2     0.0     T2      3       672
-    8.3     0.0     T0      1       1328
-    12.5    0.0     T1      2       2000
-    16.6    0.0     T0      1       2656
+    0.0     4.2     T0      1       0
+    4.2     4.1     T2      3       672
+    8.3     4.2     T0      1       1328
+    12.5    4.1     T1      2       2000
+    16.6    4.2     T0      1       2656
 
     Writing '/home/circleci/mne_data/eegmmidb_bids_group_conversion/dataset_description.json'...
 
@@ -259,7 +259,7 @@ Let us loop over the subjects and create BIDS-compatible folder
     Fc1.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
     Fcz.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
     Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
-    /home/circleci/project/mne_bids/write.py:1143: RuntimeWarning: Converting data files to BrainVision format
+    /home/circleci/project/mne_bids/write.py:1174: RuntimeWarning: Converting data files to BrainVision format
       warn('Converting data files to BrainVision format')
 
     Writing '/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-01/sub-001_ses-01_scans.tsv'...
@@ -273,7 +273,7 @@ Let us loop over the subjects and create BIDS-compatible folder
     EDF file detected
     Setting channel info structure...
     Creating raw.info structure...
-    /home/circleci/project/mne_bids/write.py:1066: RuntimeWarning: Converting to BV for anonymization
+    /home/circleci/project/mne_bids/write.py:1091: RuntimeWarning: Converting to BV for anonymization
       warn('Converting to BV for anonymization')
 
     Writing '/home/circleci/mne_data/eegmmidb_bids_group_conversion/participants.tsv'...
@@ -312,11 +312,11 @@ Let us loop over the subjects and create BIDS-compatible folder
     Writing '/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-01/eeg/sub-001_ses-01_task-MotorImagery_run-02_events.tsv'...
 
     onset   duration        trial_type      value   sample
-    0.0     0.0     T0      1       0
-    4.2     0.0     T1      2       672
-    8.3     0.0     T0      1       1328
-    12.5    0.0     T2      3       2000
-    16.6    0.0     T0      1       2656
+    0.0     4.2     T0      1       0
+    4.2     4.1     T1      2       672
+    8.3     4.2     T0      1       1328
+    12.5    4.1     T2      3       2000
+    16.6    4.2     T0      1       2656
 
     Writing '/home/circleci/mne_data/eegmmidb_bids_group_conversion/dataset_description.json'...
 
@@ -359,7 +359,7 @@ Let us loop over the subjects and create BIDS-compatible folder
     Fc1.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
     Fcz.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
     Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
-    /home/circleci/project/mne_bids/write.py:1143: RuntimeWarning: Converting data files to BrainVision format
+    /home/circleci/project/mne_bids/write.py:1174: RuntimeWarning: Converting data files to BrainVision format
       warn('Converting data files to BrainVision format')
 
     Writing '/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-01/sub-001_ses-01_scans.tsv'...
@@ -373,7 +373,7 @@ Let us loop over the subjects and create BIDS-compatible folder
     EDF file detected
     Setting channel info structure...
     Creating raw.info structure...
-    /home/circleci/project/mne_bids/write.py:1066: RuntimeWarning: Converting to BV for anonymization
+    /home/circleci/project/mne_bids/write.py:1091: RuntimeWarning: Converting to BV for anonymization
       warn('Converting to BV for anonymization')
 
     Writing '/home/circleci/mne_data/eegmmidb_bids_group_conversion/participants.tsv'...
@@ -412,11 +412,11 @@ Let us loop over the subjects and create BIDS-compatible folder
     Writing '/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-01/eeg/sub-001_ses-01_task-MotorImagery_run-03_events.tsv'...
 
     onset   duration        trial_type      value   sample
-    0.0     0.0     T0      1       0
-    4.2     0.0     T2      3       672
-    8.3     0.0     T0      1       1328
-    12.5    0.0     T1      2       2000
-    16.6    0.0     T0      1       2656
+    0.0     4.2     T0      1       0
+    4.2     4.1     T2      3       672
+    8.3     4.2     T0      1       1328
+    12.5    4.1     T1      2       2000
+    16.6    4.2     T0      1       2656
 
     Writing '/home/circleci/mne_data/eegmmidb_bids_group_conversion/dataset_description.json'...
 
@@ -459,7 +459,7 @@ Let us loop over the subjects and create BIDS-compatible folder
     Fc1.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
     Fcz.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
     Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
-    /home/circleci/project/mne_bids/write.py:1143: RuntimeWarning: Converting data files to BrainVision format
+    /home/circleci/project/mne_bids/write.py:1174: RuntimeWarning: Converting data files to BrainVision format
       warn('Converting data files to BrainVision format')
 
     Writing '/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-01/sub-001_ses-01_scans.tsv'...
@@ -473,7 +473,7 @@ Let us loop over the subjects and create BIDS-compatible folder
     EDF file detected
     Setting channel info structure...
     Creating raw.info structure...
-    /home/circleci/project/mne_bids/write.py:1066: RuntimeWarning: Converting to BV for anonymization
+    /home/circleci/project/mne_bids/write.py:1091: RuntimeWarning: Converting to BV for anonymization
       warn('Converting to BV for anonymization')
 
     Writing '/home/circleci/mne_data/eegmmidb_bids_group_conversion/participants.tsv'...
@@ -512,11 +512,11 @@ Let us loop over the subjects and create BIDS-compatible folder
     Writing '/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/eeg/sub-002_ses-01_task-MotorImagery_run-01_events.tsv'...
 
     onset   duration        trial_type      value   sample
-    0.0     0.0     T0      1       0
-    4.1     0.0     T1      2       656
-    8.2     0.0     T0      1       1312
-    12.3    0.0     T2      3       1968
-    16.4    0.0     T0      1       2624
+    0.0     4.1     T0      1       0
+    4.1     4.1     T1      2       656
+    8.2     4.1     T0      1       1312
+    12.3    4.1     T2      3       1968
+    16.4    4.1     T0      1       2624
 
     Writing '/home/circleci/mne_data/eegmmidb_bids_group_conversion/dataset_description.json'...
 
@@ -559,7 +559,7 @@ Let us loop over the subjects and create BIDS-compatible folder
     Fc1.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
     Fcz.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
     Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
-    /home/circleci/project/mne_bids/write.py:1143: RuntimeWarning: Converting data files to BrainVision format
+    /home/circleci/project/mne_bids/write.py:1174: RuntimeWarning: Converting data files to BrainVision format
       warn('Converting data files to BrainVision format')
 
     Writing '/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/sub-002_ses-01_scans.tsv'...
@@ -573,7 +573,7 @@ Let us loop over the subjects and create BIDS-compatible folder
     EDF file detected
     Setting channel info structure...
     Creating raw.info structure...
-    /home/circleci/project/mne_bids/write.py:1066: RuntimeWarning: Converting to BV for anonymization
+    /home/circleci/project/mne_bids/write.py:1091: RuntimeWarning: Converting to BV for anonymization
       warn('Converting to BV for anonymization')
 
     Writing '/home/circleci/mne_data/eegmmidb_bids_group_conversion/participants.tsv'...
@@ -612,11 +612,11 @@ Let us loop over the subjects and create BIDS-compatible folder
     Writing '/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/eeg/sub-002_ses-01_task-MotorImagery_run-02_events.tsv'...
 
     onset   duration        trial_type      value   sample
-    0.0     0.0     T0      1       0
-    4.1     0.0     T1      2       656
-    8.2     0.0     T0      1       1312
-    12.3    0.0     T2      3       1968
-    16.4    0.0     T0      1       2624
+    0.0     4.1     T0      1       0
+    4.1     4.1     T1      2       656
+    8.2     4.1     T0      1       1312
+    12.3    4.1     T2      3       1968
+    16.4    4.1     T0      1       2624
 
     Writing '/home/circleci/mne_data/eegmmidb_bids_group_conversion/dataset_description.json'...
 
@@ -659,7 +659,7 @@ Let us loop over the subjects and create BIDS-compatible folder
     Fc1.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
     Fcz.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
     Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
-    /home/circleci/project/mne_bids/write.py:1143: RuntimeWarning: Converting data files to BrainVision format
+    /home/circleci/project/mne_bids/write.py:1174: RuntimeWarning: Converting data files to BrainVision format
       warn('Converting data files to BrainVision format')
 
     Writing '/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/sub-002_ses-01_scans.tsv'...
@@ -673,7 +673,7 @@ Let us loop over the subjects and create BIDS-compatible folder
     EDF file detected
     Setting channel info structure...
     Creating raw.info structure...
-    /home/circleci/project/mne_bids/write.py:1066: RuntimeWarning: Converting to BV for anonymization
+    /home/circleci/project/mne_bids/write.py:1091: RuntimeWarning: Converting to BV for anonymization
       warn('Converting to BV for anonymization')
 
     Writing '/home/circleci/mne_data/eegmmidb_bids_group_conversion/participants.tsv'...
@@ -712,11 +712,11 @@ Let us loop over the subjects and create BIDS-compatible folder
     Writing '/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/eeg/sub-002_ses-01_task-MotorImagery_run-03_events.tsv'...
 
     onset   duration        trial_type      value   sample
-    0.0     0.0     T0      1       0
-    4.1     0.0     T1      2       656
-    8.2     0.0     T0      1       1312
-    12.3    0.0     T2      3       1968
-    16.4    0.0     T0      1       2624
+    0.0     4.1     T0      1       0
+    4.1     4.1     T1      2       656
+    8.2     4.1     T0      1       1312
+    12.3    4.1     T2      3       1968
+    16.4    4.1     T0      1       2624
 
     Writing '/home/circleci/mne_data/eegmmidb_bids_group_conversion/dataset_description.json'...
 
@@ -759,7 +759,7 @@ Let us loop over the subjects and create BIDS-compatible folder
     Fc1.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
     Fcz.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
     Fc2.    EEG     µV      0.0     80.0    ElectroEncephaloGram    160.0   good    n/a
-    /home/circleci/project/mne_bids/write.py:1143: RuntimeWarning: Converting data files to BrainVision format
+    /home/circleci/project/mne_bids/write.py:1174: RuntimeWarning: Converting data files to BrainVision format
       warn('Converting data files to BrainVision format')
 
     Writing '/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/sub-002_ses-01_scans.tsv'...
@@ -862,7 +862,7 @@ Now let's generate a report on the dataset.
  .. code-block:: none
 
     Summarizing participants.tsv /home/circleci/mne_data/eegmmidb_bids_group_conversion/participants.tsv...
-    Summarizing scans.tsv files [PosixPath('/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-01/sub-001_ses-01_scans.tsv'), PosixPath('/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/sub-002_ses-01_scans.tsv')]...
+    Summarizing scans.tsv files [PosixPath('/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/sub-002_ses-01_scans.tsv'), PosixPath('/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-01/sub-001_ses-01_scans.tsv')]...
     The participant template found: sex were all unknown;
     handedness were all unknown; ages all unknown
     This dataset was created with BIDS version 1.4.0 by Please cite MNE-BIDS in your
@@ -883,7 +883,7 @@ Now let's generate a report on the dataset.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  0.427 seconds)
+   **Total running time of the script:** ( 0 minutes  0.608 seconds)
 
 
 .. _sphx_glr_download_auto_examples_convert_group_studies.py:
