@@ -63,11 +63,16 @@ def return_bids_test_dir(tmpdir_factory):
 
     raw = mne.io.read_raw_fif(raw_fname)
     raw.info['line_freq'] = 60
+
+    # Drop unknown events.
+    events = mne.read_events(events_fname)
+    events = events[events[:, 2] != 0]
+
     bids_path.update(root=bids_root)
     # Write multiple runs for test_purposes
     for run_idx in [run, '02']:
         name = bids_path.copy().update(run=run_idx)
-        write_raw_bids(raw, name, events_data=events_fname,
+        write_raw_bids(raw, name, events_data=events,
                        event_id=event_id, overwrite=True)
 
     write_meg_calibration(cal_fname, bids_path=bids_path)

@@ -12,7 +12,7 @@ import json
 
 import numpy as np
 import mne
-from mne import io
+from mne import io, read_events, events_from_annotations
 from mne.utils import has_nibabel, logger, warn
 from mne.coreg import fit_matched_points
 from mne.transforms import apply_trans
@@ -61,6 +61,97 @@ def _read_raw(raw_fpath, electrode=None, hsp=None, hpi=None,
                          f'of {ALLOWED_DATATYPE_EXTENSIONS}\n'
                          f'Got {ext}')
     return raw
+
+
+def _read_events(events_data, event_id, raw, verbose=None):
+    """Retrieve events (for use in *_events.tsv) from FIFF/array & Annotations.
+
+    Parameters
+    ----------
+    events_data : str | array | None
+        If a string, a path to an events file. If an array, an MNE events array
+        (shape n_events, 3). If None, events will be generated from
+        ``raw.annotations``.
+    event_id : dict | None
+        The event id dict used to create a 'trial_type' column in events.tsv,
+        mapping a description key to an integer valued event code.
+    raw : instance of Raw
+        The data as MNE-Python Raw object.
+    verbose : bool | str | int | None
+        If not None, override default verbose level (see :func:`mne.verbose`).
+
+    Returns
+    -------
+    all_events : array, shape = (n_events, 3)
+        The first column contains the event time in samples and the third
+        column contains the event id. The second column is ignored for now but
+        typically contains the value of the trigger channel either immediately
+        before the event or immediately after.
+    all_dur : array, shape (n_events,)
+        The event durations in seconds.
+    all_desc : dict
+        A dictionary with the keys corresponding to the event descriptions and
+        the values to the event IDs.
+
+    """
+    # get events from events_data
+    if isinstance(events_data, str):
+        events = read_events(events_data, verbose=verbose).astype(int)
+    elif isinstance(events_data, np.ndarray):
+        if events_data.ndim != 2:
+            raise ValueError('Events must have two dimensions, '
+                             f'found {events_data.ndim}')
+        if events_data.shape[1] != 3:
+            raise ValueError('Events must have second dimension of length 3, '
+                             f'found {events_data.shape[1]}')
+        events = events_data
+    else:
+        events = np.empty(shape=(0, 3), dtype=int)
+
+    if events.size > 0:
+        # Only keep events for which we have an ID <> description mapping.
+        ids_without_desc = set(events[:, 2]) - set(event_id.values())
+        if ids_without_desc:
+            raise ValueError(
+                f'No description was specified for the following event(s): '
+                f'{", ".join([str(x) for x in sorted(ids_without_desc)])}. '
+                f'Please add them to the event_id dictionary, or drop them '
+                f'from the events_data array.'
+            )
+        del ids_without_desc
+        mask = [e in list(event_id.values()) for e in events[:, 2]]
+        events = events[mask]
+
+        # Append events to raw.annotations. All event onsets are relative to
+        # measurement beginning.
+        id_to_desc_map = dict(zip(event_id.values(), event_id.keys()))
+        # We don't pass `first_samp`, as set_annotations() below will take
+        # care of this shift automatically.
+        new_annotations = mne.annotations_from_events(
+            events=events, sfreq=raw.info['sfreq'], event_desc=id_to_desc_map,
+            orig_time=raw.annotations.orig_time, verbose=verbose)
+
+        raw = raw.copy()  # Don't alter the original.
+        annotations = raw.annotations.copy()
+
+        # We use `+=` here because `Annotations.__iadd__()` does the right
+        # thing and also performs a sanity check on `Annotations.orig_time`.
+        annotations += new_annotations
+        raw.set_annotations(annotations)
+        del id_to_desc_map, annotations, new_annotations
+
+    # Now convert the Annotations to events.
+    all_events, all_desc = events_from_annotations(
+        raw,
+        regexp=None,  # Include `BAD_` and `EDGE_` Annotations, too.
+        verbose=verbose
+    )
+    all_dur = raw.annotations.duration
+    if all_events.size == 0:
+        warn('No events found or provided. Please add annotations to the raw '
+             'data, or provide the events_data and event_id parameters.')
+
+    return all_events, all_dur, all_desc
 
 
 def _handle_participants_reading(participants_fname, raw,
