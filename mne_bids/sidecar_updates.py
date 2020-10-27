@@ -10,7 +10,7 @@ from mne_bids.utils import _write_json
 
 
 # TODO: add support for tsv files
-def update_sidecars(bids_path, sidecar_template_fpath, verbose=True):
+def update_sidecars(bids_path, sidecar_template, verbose=True):
     """Update sidecar files using template JSON file.
 
     Currently, only works for JSON files.
@@ -18,7 +18,7 @@ def update_sidecars(bids_path, sidecar_template_fpath, verbose=True):
     Parameters
     ----------
     bids_path : BIDSPath
-    sidecar_template_fpath : str | pathlib.Path
+    sidecar_template : dict | str | pathlib.Path
     verbose : bool
 
     Examples
@@ -31,11 +31,15 @@ def update_sidecars(bids_path, sidecar_template_fpath, verbose=True):
     bids_path.update(extension='.json')
     sidecar_paths = bids_path.match()
 
-    # load sidecar template
-    with open(sidecar_template_fpath, 'r') as tmp_f:
-        sidecar_tmp = json.load(tmp_f,
-                                object_pairs_hook=OrderedDict
-                                )
+    if isinstance(sidecar_template, dict):
+        sidecar_tmp = sidecar_template
+    else:
+        # load sidecar template
+        with open(sidecar_template, 'r') as tmp_f:
+            sidecar_tmp = json.load(tmp_f,
+                                    object_pairs_hook=OrderedDict
+                                    )
+
     template_fields = set(sidecar_tmp.keys())
 
     if verbose:
