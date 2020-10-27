@@ -35,8 +35,7 @@ import mne.preprocessing
 from mne_bids.pick import coil_type
 from mne_bids.dig import _write_dig_bids, _coordsystem_json
 from mne_bids.utils import (_write_json, _write_tsv, _write_text,
-                            _read_events, _age_on_date,
-                            _infer_eeg_placement_scheme,
+                            _age_on_date, _infer_eeg_placement_scheme,
                             _handle_datatype, _get_ch_type_mapping,
                             _check_anonymize, _stamp_to_dt)
 from mne_bids import read_raw_bids
@@ -45,7 +44,8 @@ from mne_bids.copyfiles import (copyfile_brainvision, copyfile_eeglab,
                                 copyfile_ctf, copyfile_bti, copyfile_kit)
 from mne_bids.tsv_handler import (_from_tsv, _drop, _contains_row,
                                   _combine_rows)
-from mne_bids.read import _get_bads_from_tsv_data, _find_matching_sidecar
+from mne_bids.read import (_get_bads_from_tsv_data, _find_matching_sidecar,
+                           _read_events)
 
 from mne_bids.config import (ORIENTATION, UNITS, MANUFACTURERS,
                              IGNORED_CHANNELS, ALLOWED_DATATYPE_EXTENSIONS,
@@ -138,7 +138,7 @@ def _channels_tsv(raw, fname, overwrite=False, verbose=True):
     _write_tsv(fname, ch_data, overwrite, verbose)
 
 
-def _events_tsv(events, raw, fname, trial_type, overwrite=False,
+def _events_tsv(events, durations, raw, fname, trial_type, overwrite=False,
                 verbose=True):
     """Create an events.tsv file and save it.
 
@@ -154,6 +154,8 @@ def _events_tsv(events, raw, fname, trial_type, overwrite=False,
         column contains the event id. The second column is ignored for now but
         typically contains the value of the trigger channel either immediately
         before the event or immediately after.
+    durations : array, shape (n_events,)
+        The event durations in seconds.
     raw : instance of Raw
         The data as MNE-Python Raw object.
     fname : str | BIDSPath
@@ -180,7 +182,7 @@ def _events_tsv(events, raw, fname, trial_type, overwrite=False,
 
     # Onset column needs to be specified in seconds
     data = OrderedDict([('onset', events[:, 0] / sfreq),
-                        ('duration', np.zeros(events.shape[0])),
+                        ('duration', durations),
                         ('trial_type', None),
                         ('value', events[:, 2]),
                         ('sample', events[:, 0])])
@@ -858,13 +860,36 @@ def write_raw_bids(raw, bids_path, events_data=None,
         object, as well as the extension. Data with MEG and other
         electrophysiology data in the same file will be stored as ``'meg'``.
     events_data : path-like | array | None
+        Use this parameter to specify events to write to the ``*_events.tsv``
+        sidecar file, additionally to the object's `mne.Annotations` (which
+        are always written).
         If a path, specifies the location of an MNE events file.
         If an array, the MNE events array (shape: ``(n_events, 3)``).
-        If ``None``, events will be inferred from the the raw object's
-        `mne.Annotations` using `mne.events_from_annotations`.
+        If a path or an array and ``raw.annotations`` exist, the union of
+        ``event_data`` and ``raw.annotations`` will be written.
+        Corresponding descriptions for all event IDs (listed in the third
+        column of the MNE events array) must be specified via the ``event_id``
+        parameter; otherwise, an exception is raised.
+        If ``None``, events will only be inferred from the the raw object's
+        `mne.Annotations`.
+
+        .. note::
+           If ``not None``, writes the union of ``events_data`` and
+           ``raw.annotations``. If you wish to **only** write
+           ``raw.annotations``, pass ``events_data=None``. If you want to
+           **exclude** the events in ``raw.annotations`` from being written,
+           call ``raw.set_annotations(None)`` before invoking this function.
+
+        .. note::
+           Descriptions of all event IDs must be specified via the ``event_id``
+           parameter.
+
     event_id : dict | None
-        The event ID dictionary used to create a `trial_type` column in
-        ``*_events.tsv``.
+        Descriptions of all event IDs, if you passed ``events_data``.
+        The descriptions will be written to the ``trial_type`` column in
+        ``*_events.tsv``. The dictionary keys correspond to the event
+        descriptions and the values to the event IDs. You must specify a
+        description for all event IDs in ``events_data``.
     anonymize : dict | None
         If `None` (default), no anonymization is performed.
         If a dictionary, data will be anonymized depending on the dictionary
@@ -1038,10 +1063,6 @@ def write_raw_bids(raw, bids_path, events_data=None,
         acquisition=bids_path.acquisition, space=bids_path.space,
         datatype=bids_path.datatype, suffix='coordsystem', extension='.json')
 
-    # create *_electrodes.tsv
-    electrodes_path = bids_path.copy().update(
-        suffix='electrodes', extension='.tsv')
-
     # For the remaining files, we can use BIDSPath to alter.
     readme_fname = op.join(bids_path.root, 'README')
     participants_tsv_fname = op.join(bids_path.root, 'participants.tsv')
@@ -1097,18 +1118,22 @@ def write_raw_bids(raw, bids_path, events_data=None,
         # We only write electrodes.tsv and accompanying coordsystem.json
         # if we have an available DigMontage
         if raw.info['dig'] is not None and raw.info['dig']:
-            _write_dig_bids(electrodes_path, coordsystem_path,
-                            bids_path.root, raw, bids_path.datatype,
-                            overwrite, verbose)
+            _write_dig_bids(bids_path, raw, overwrite, verbose)
     else:
         logger.warning(f'Writing of electrodes.tsv is not supported '
                        f'for data type "{bids_path.datatype}". Skipping ...')
 
-    events, event_id = _read_events(events_data, event_id, raw,
-                                    verbose=False)
-    if events is not None and len(events) > 0 and not emptyroom:
-        _events_tsv(events, raw, events_path.fpath, event_id,
-                    overwrite, verbose)
+    # Write events.
+    if not emptyroom:
+        events_array, event_dur, event_desc_id_map = _read_events(
+            events_data, event_id, raw, verbose=False
+        )
+        if events_array.size != 0:
+            _events_tsv(events=events_array, durations=event_dur, raw=raw,
+                        fname=events_path.fpath, trial_type=event_desc_id_map,
+                        overwrite=overwrite, verbose=verbose)
+        # Kepp events_array around for BrainVision writing below.
+        del event_desc_id_map, events_data, event_id, event_dur
 
     make_dataset_description(bids_path.root, name=" ", overwrite=overwrite,
                              verbose=verbose)
@@ -1148,7 +1173,8 @@ def write_raw_bids(raw, bids_path, events_data=None,
             if verbose:
                 warn('Converting data files to BrainVision format')
             bids_path.update(suffix=bids_path.datatype, extension='.vhdr')
-            _write_raw_brainvision(raw, bids_path.fpath, events)
+            # XXX Should we write durations here too?
+            _write_raw_brainvision(raw, bids_path.fpath, events=events_array)
     elif ext == '.fif':
         _write_raw_fif(raw, bids_path)
     # CTF data is saved and renamed in a directory
@@ -1520,12 +1546,13 @@ def mark_bad_channels(ch_names, descriptions=None, *, bids_path,
     # Update info['bads']
     bads = _get_bads_from_tsv_data(tsv_data)
     raw.info['bads'] = bads
-    # XXX (How) will this handle split files?
     if isinstance(raw, mne.io.brainvision.brainvision.RawBrainVision):
-        events, event_id = _read_events(events_data=None, event_id=None,
-                                        raw=raw, verbose=False)
+        # XXX We should write durations too, this is supported by pybv.
+        events, _, _ = _read_events(events_data=None, event_id=None,
+                                    raw=raw, verbose=False)
         _write_raw_brainvision(raw, bids_path.fpath, events)
     elif isinstance(raw, mne.io.RawFIF):
+        # XXX (How) will this handle split files?
         raw.save(raw.filenames[0], overwrite=True, verbose=False)
     else:
         raise RuntimeError('Can only mark bad channels for '

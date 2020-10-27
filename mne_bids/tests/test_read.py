@@ -202,12 +202,16 @@ def test_get_head_mri_trans():
     events_fname = op.join(data_path, 'MEG', 'sample',
                            'sample_audvis_trunc_raw-eve.fif')
 
+    # Drop unknown events.
+    events = mne.read_events(events_fname)
+    events = events[events[:, 2] != 0]
+
     # Write it to BIDS
     raw = _read_raw_fif(raw_fname)
     bids_root = _TempDir()
     bids_path = _bids_path.copy().update(root=bids_root)
-    write_raw_bids(raw, bids_path, events_data=events_fname,
-                   event_id=event_id, overwrite=False)
+    write_raw_bids(raw, bids_path, events_data=events, event_id=event_id,
+                   overwrite=False)
 
     # We cannot recover trans, if no MRI has yet been written
     with pytest.raises(RuntimeError):

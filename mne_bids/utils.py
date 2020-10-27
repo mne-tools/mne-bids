@@ -14,7 +14,6 @@ from datetime import datetime, date, timedelta, timezone
 from os import path as op
 
 import numpy as np
-from mne import read_events, events_from_annotations
 from mne.channels import make_standard_montage
 from mne.io.constants import FIFF
 from mne.io.kit.kit import get_kit_info
@@ -187,68 +186,6 @@ def _check_key_val(key, val):
         raise ValueError("Unallowed `-`, `_`, or `/` found in key/value pair"
                          f" {key}: {val}")
     return key, val
-
-
-def _read_events(events_data, event_id, raw, verbose=None):
-    """Read in events data.
-
-    Parameters
-    ----------
-    events_data : str | array | None
-        The events file. If a string, a path to the events file. If an array,
-        the MNE events array (shape n_events, 3). If None, events will be
-        inferred from the stim channel using `find_events`.
-    event_id : dict
-        The event id dict used to create a 'trial_type' column in events.tsv,
-        mapping a description key to an integer valued event code.
-    raw : instance of Raw
-        The data as MNE-Python Raw object.
-    verbose : bool | str | int | None
-        If not None, override default verbose level (see :func:`mne.verbose`).
-
-    Returns
-    -------
-    events : array, shape = (n_events, 3)
-        The first column contains the event time in samples and the third
-        column contains the event id. The second column is ignored for now but
-        typically contains the value of the trigger channel either immediately
-        before the event or immediately after.
-
-    """
-    # get events from events_data
-    if isinstance(events_data, str):
-        events = read_events(events_data, verbose=verbose).astype(int)
-    elif isinstance(events_data, np.ndarray):
-        if events_data.ndim != 2:
-            raise ValueError('Events must have two dimensions, '
-                             f'found {events_data.ndim}')
-        if events_data.shape[1] != 3:
-            raise ValueError('Events must have second dimension of length 3, '
-                             f'found {events_data.shape[1]}')
-        events = events_data
-    else:
-        events = np.empty(shape=(0, 3), dtype=int)
-
-    # get events from annotations
-    events_annot, event_id_annot = events_from_annotations(raw, event_id,
-                                                           verbose=verbose)
-    if event_id is None:
-        events = events_annot
-        event_id = event_id_annot
-    else:
-        events = np.concatenate((events, events_annot), axis=0)
-        # Sort rows by onset sample.
-        # See https://stackoverflow.com/a/2828121/1944216
-        events = events[events[:, 0].argsort()]
-        event_id.update(event_id_annot)
-
-    if events.size == 0:
-        warn('No events found or provided. Please make sure to'
-             ' set channel type using raw.set_channel_types'
-             ' or provide events_data.')
-        events = None
-
-    return events, event_id
 
 
 def _get_mrk_meas_date(mrk):
