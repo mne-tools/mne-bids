@@ -58,6 +58,7 @@ def update_sidecars(bids_path, sidecar_template, verbose=True):
         # get the fields inside JSON
         default_fields = set(sidecar_json.keys())
 
+        # XXX: how to we do this if the fields are not in the sidecar file already?
         # Use field order in template to sort default keys, if values are None
         not_in_template = default_fields.difference(template_fields)
         only_in_template = template_fields.difference(default_fields)
