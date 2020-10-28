@@ -28,6 +28,7 @@ def update_sidecars(bids_path, sidecar_template, verbose=True):
     >>> update_sidecars(bids_path, sidecar_template_fpath)
     """
     # get all matching json files
+    bids_path = bids_path.copy()
     bids_path.update(extension='.json')
     sidecar_paths = bids_path.match()
 
