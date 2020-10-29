@@ -42,6 +42,7 @@ Bug fixes
 - The function :func:`mne_bids.write_raw_bids` now outputs ``*_electrodes.tsv`` and ``*_coordsystem.json`` files for EEG/iEEG data that are BIDS-compliant (only contain subject, session, acquisition, and space entities), by `Adam Li`_ (`#601 <https://github.com/mne-tools/mne-bids/pull/601>`_)
 - Make sure writing empty-room data with anonymization shifts the session back in time, by `Alexandre Gramfort`_ (`#611 <https://github.com/mne-tools/mne-bids/pull/611>`_)
 - Fix a bug in :func:`mne_bids.write_raw_bids`, where passing raw data with :class:`mne.Annotations` set and the ``event_id`` dictionary not containing the :class:`mne.Annotations` descriptions as keys would raise an error, by `Richard Höchenberger`_ (`#603 <https://github.com/mne-tools/mne-bids/pull/603>`_)
+- Fix a bug in :func:`mne_bids.write_raw_bids`, where original format of the data was not kept, by `Alex Gramfort`_ (`#610 <https://github.com/mne-tools/mne-bids/pull/610>`_)
 
 API changes
 ^^^^^^^^^^^

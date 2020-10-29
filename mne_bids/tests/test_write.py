@@ -543,6 +543,22 @@ def test_fif(_bids_validate):
         write_raw_bids(raw, bids_path)
 
 
+@pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+def test_fif_dtype(_bids_validate):
+    """Test functionality of the write_raw_bids conversion for fif."""
+    bids_root = _TempDir()
+    bids_path = _bids_path.copy().update(root=bids_root, datatype='meg')
+    data_path = testing.data_path()
+    raw_fname = op.join(data_path, 'MEG', 'sample',
+                        'sample_audvis_trunc_raw.fif')
+
+    raw = _read_raw_fif(raw_fname)
+    raw.orig_format = 'int'
+    write_raw_bids(raw, bids_path, overwrite=False)
+    raw = read_raw_bids(bids_path)
+    assert raw.orig_format == 'int'
+
+
 def test_fif_anonymize(_bids_validate):
     """Test write_raw_bids() with anonymization fif."""
     bids_root = _TempDir()
