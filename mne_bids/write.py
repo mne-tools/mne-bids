@@ -697,8 +697,8 @@ def _write_raw_brainvision(raw, bids_fname, events):
     elif raw.orig_format == 'short':
         fmt = 'binary_int16'
     else:
-        warn(f'Encountered data in {raw.orig_format}, which is not supported '
-             f'by the BrainVision format. Converting to float32.',
+        warn(f'Encountered data in "{raw.orig_format}" format, which is not '
+             f'supported by the BrainVision format. Converting to float32.',
              RuntimeWarning)
         fmt = 'binary_float32'
 
