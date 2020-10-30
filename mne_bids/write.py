@@ -696,7 +696,7 @@ def _write_raw_brainvision(raw, bids_fname, events):
     elif raw.orig_format == 'short':
         fmt = 'binary_int16'
     elif raw.orig_format == 'int':
-        raise RuntimeError('pybv currently does not support writing INT16 '
+        raise RuntimeError('pybv currently does not support writing INT32 '
                            'data')
     else:
         raise ValueError('Unknown data format encountered')
