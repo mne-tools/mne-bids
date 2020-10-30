@@ -691,15 +691,16 @@ def _write_raw_brainvision(raw, bids_fname, events):
     if meas_date is not None:
         meas_date = _stamp_to_dt(meas_date)
 
+    # Try to preserve original dtype, if possible.
     if raw.orig_format == 'single':
         fmt = 'binary_float32'
     elif raw.orig_format == 'short':
         fmt = 'binary_int16'
-    elif raw.orig_format == 'int':
-        raise RuntimeError('pybv currently does not support writing INT32 '
-                           'data')
     else:
-        raise ValueError('Unknown data format encountered')
+        warn(f'Encountered data in {raw.orig_format}, which is not supported '
+             f'by the BrainVision format. Converting to float32.',
+             RuntimeWarning)
+        fmt = 'binary_float32'
 
     # writing with a resolution 1e-9 should be precise enough to avoid loss of
     # resolution for any kind of data.
