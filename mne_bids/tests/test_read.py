@@ -5,6 +5,7 @@
 import json
 import os
 import os.path as op
+import pathlib
 
 import pytest
 import shutil as sh
@@ -706,3 +707,23 @@ def test_bads_reading():
         raw = read_raw_bids(bids_path=bids_path, verbose=False)
     assert type(raw.info['bads']) is list
     assert set(raw.info['bads']) == set(bads_bids)
+
+
+@pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+def test_write_read_big_file():
+    """Test that meaningful error on missing file."""
+    bids_root = _TempDir()
+    tmp_dir = _TempDir()
+    bids_path = _bids_path.copy().update(root=bids_root, datatype='meg')
+    raw = _read_raw_fif(raw_fname, verbose=False)
+    n_channels = len(raw.ch_names)
+    n_times = int(2.2e9 / (n_channels * 4))  # enough to produce a split
+    data = np.ones((n_channels, n_times), dtype=np.float32)
+    raw = mne.io.RawArray(data, raw.info)
+    big_fif_fname = pathlib.Path(tmp_dir) / 'test_raw.fif'
+    raw.save(big_fif_fname)
+    raw = _read_raw_fif(big_fif_fname, verbose=False)
+    write_raw_bids(raw, bids_path, verbose=False)
+
+    read_raw_bids(bids_path=bids_path)  # XXX crash
+    bids_path.fpath  # XXX crash

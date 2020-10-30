@@ -456,6 +456,7 @@ class BIDSPath(object):
                     raise RuntimeError(msg)
                 else:
                     bids_fpath = matching_paths[0]
+
             else:
                 bids_fpath = op.join(data_path, self.basename)
 
