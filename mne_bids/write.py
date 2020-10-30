@@ -678,8 +678,8 @@ def _write_raw_brainvision(raw, bids_fname, events):
         The events as MNE-Python format ndaray.
 
     """
-    if not check_version('pybv', '0.2'):
-        raise ImportError('pybv >=0.2.0 is required for converting '
+    if not check_version('pybv', '0.3'):
+        raise ImportError('pybv >=0.3 is required for converting '
                           'file to Brainvision format')
     from pybv import write_brainvision
     # Subtract raw.first_samp because brainvision marks events starting from
@@ -690,16 +690,30 @@ def _write_raw_brainvision(raw, bids_fname, events):
     meas_date = raw.info['meas_date']
     if meas_date is not None:
         meas_date = _stamp_to_dt(meas_date)
-    # writing with float32 and resolution 1e-9 should be precise enough
-    # to avoid loss of resolution for any kind of data.
+
+    if raw.orig_format == 'single':
+        fmt = 'binary_float32'
+    elif raw.orig_format == 'short':
+        fmt = 'binary_int16'
+    elif raw.orig_format == 'int':
+        raise RuntimeError('pybv currently does not support writing INT16 '
+                           'data')
+    else:
+        raise ValueError('Unknown data format encountered')
+
+    # writing with a resolution 1e-9 should be precise enough to avoid loss of
+    # resolution for any kind of data.
+    resolution = 1e-9
+    unit = 'µV'  # for compatibility with BrainVision software
     write_brainvision(data=raw.get_data(),
                       sfreq=raw.info['sfreq'],
                       ch_names=raw.ch_names,
                       fname_base=op.splitext(op.basename(bids_fname))[0],
                       folder_out=op.dirname(bids_fname),
                       events=events,
-                      resolution=1e-9,
-                      fmt='binary_float32',
+                      resolution=resolution,
+                      unit=unit,
+                      fmt=fmt,
                       meas_date=meas_date)
 
 
