@@ -1212,7 +1212,9 @@ def test_set(_bids_validate):
 
     # test anonymize and convert
     if check_version('pybv', '0.3'):
-        output_path = _test_anonymize(raw, bids_path)
+        with pytest.warns(RuntimeWarning,
+                          match='Encountered data in "double" format'):
+            output_path = _test_anonymize(raw, bids_path)
         _bids_validate(output_path)
 
 
