@@ -690,12 +690,16 @@ def _write_raw_brainvision(raw, bids_fname, events):
     meas_date = raw.info['meas_date']
     if meas_date is not None:
         meas_date = _stamp_to_dt(meas_date)
-    write_brainvision(data=raw.get_data(), sfreq=raw.info['sfreq'],
+    # writing with float32 and resolution 1e-9 should be precise enough
+    # to avoid loss of resolution for any kind of data.
+    write_brainvision(data=raw.get_data(),
+                      sfreq=raw.info['sfreq'],
                       ch_names=raw.ch_names,
                       fname_base=op.splitext(op.basename(bids_fname))[0],
                       folder_out=op.dirname(bids_fname),
                       events=events,
                       resolution=1e-9,
+                      fmt='binary_float32',
                       meas_date=meas_date)
 
 
@@ -1086,7 +1090,8 @@ def write_raw_bids(raw, bids_path, events_data=None,
             bids_path.update(extension='.fif')
         elif bids_path.datatype in ['eeg', 'ieeg'] and ext != '.vhdr':
             if verbose:
-                warn('Converting to BV for anonymization')
+                warn('Converting data files to BrainVision format '
+                     'for anonymization')
             convert = True
             bids_path.update(extension='.vhdr')
 
