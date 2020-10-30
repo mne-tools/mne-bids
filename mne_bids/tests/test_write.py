@@ -14,7 +14,7 @@ import os
 import os.path as op
 import pytest
 from glob import glob
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 import platform
 import shutil as sh
 import json
@@ -1918,3 +1918,29 @@ def test_undescribed_events(_bids_validate, drop_undescribed_events):
     assert_array_equal(events, events_read)
     assert event_id == event_id_read
     _bids_validate(bids_root)
+
+
+def test_anonymize_empty_room():
+    """Test writing anonymized empty room data."""
+    data_path = testing.data_path()
+    raw_fname = op.join(data_path, 'MEG', 'sample',
+                        'sample_audvis_trunc_raw.fif')
+
+    bids_root = _TempDir()
+    raw = _read_raw_fif(raw_fname)
+    er_date = raw.info['meas_date'].strftime('%Y%m%d')
+    er_bids_path = BIDSPath(subject='emptyroom', task='noise',
+                            session=er_date, suffix='meg',
+                            root=bids_root)
+    anonymize = dict(daysback=30000)
+    bids_path = \
+        write_raw_bids(raw, er_bids_path, overwrite=True,
+                       anonymize=anonymize)
+    assert (
+        bids_path.session ==
+        (raw.info['meas_date'] -
+         timedelta(days=anonymize['daysback'])).strftime('%Y%m%d')
+    )
+
+    raw2 = mne.io.read_raw_fif(bids_path)
+    assert raw2.info['meas_date'].year < 1925
