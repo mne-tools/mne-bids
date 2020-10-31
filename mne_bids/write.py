@@ -661,13 +661,7 @@ def _write_raw_fif(raw, bids_fname):
         should be saved.
 
     """
-    n_rawfiles = len(raw.filenames)
-    if n_rawfiles > 1:
-        split_naming = 'bids'
-        raw.save(bids_fname, split_naming=split_naming, overwrite=True)
-    else:
-        # This ensures that single FIF files do not have the split param
-        raw.save(bids_fname, split_naming='neuromag', overwrite=True)
+    raw.save(bids_fname, split_naming='bids', overwrite=True)
 
 
 def _write_raw_brainvision(raw, bids_fname, events):
