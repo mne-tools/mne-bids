@@ -123,7 +123,7 @@
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">os.path</span> <span class="k">as</span> <span class="nn">op</span>
-<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timezone</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timezone</span><span class="p">,</span> <span class="n">timedelta</span>
 <span class="kn">import</span> <span class="nn">shutil</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span><span class="p">,</span> <span class="n">OrderedDict</span>
 
@@ -1156,6 +1156,10 @@
             <span class="k">if</span> <span class="n">er_date</span> <span class="o">!=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">session</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Date provided for session doesn&#39;t match &quot;</span>
                                  <span class="s2">&quot;session date.&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">anonymize</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="s1">&#39;daysback&#39;</span> <span class="ow">in</span> <span class="n">anonymize</span><span class="p">:</span>
+                <span class="n">meas_date</span> <span class="o">=</span> <span class="n">meas_date</span> <span class="o">-</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">anonymize</span><span class="p">[</span><span class="s1">&#39;daysback&#39;</span><span class="p">])</span>
+                <span class="n">session</span> <span class="o">=</span> <span class="n">meas_date</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span>
+                <span class="n">bids_path</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">)</span>
 
     <span class="n">data_path</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">mkdir</span><span class="p">()</span><span class="o">.</span><span class="n">directory</span>
 
@@ -1782,7 +1786,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-10-27.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-10-31.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
     </p>
   </div>
