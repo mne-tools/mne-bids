@@ -435,6 +435,14 @@ class BIDSPath(object):
                     matching_paths = [p for p in matching_paths
                                       if _parse_ext(p)[1] in valid_exts]
 
+                if (self.split is None and
+                        (not matching_paths or
+                         '_split-' in matching_paths[0])):
+                    # try finding FIF split files (only first one)
+                    this_self = self.copy().update(split='01')
+                    matching_paths = \
+                        _get_matching_bidspaths_from_filesystem(this_self)
+
                 # found no matching paths
                 if not matching_paths:
                     msg = (f'Could not locate a data file of a supported '
