@@ -30,7 +30,7 @@ def update_sidecars(bids_path, sidecar_template, verbose=True):
     # get all matching json files
     bids_path = bids_path.copy()
     bids_path.update(extension='.json')
-    sidecar_paths = bids_path.match()
+    sidecar_paths = bids_path.match(return_json=True)
 
     if isinstance(sidecar_template, dict):
         sidecar_tmp = sidecar_template
@@ -58,7 +58,7 @@ def update_sidecars(bids_path, sidecar_template, verbose=True):
         # get the fields inside JSON
         default_fields = set(sidecar_json.keys())
 
-        # XXX: how to we do this if the fields are not in the sidecar file already?
+        # XXX: how to we do this if fields are not in the sidecar file already?
         # Use field order in template to sort default keys, if values are None
         not_in_template = default_fields.difference(template_fields)
         only_in_template = template_fields.difference(default_fields)
@@ -79,3 +79,22 @@ def update_sidecars(bids_path, sidecar_template, verbose=True):
         sidecar_json = OrderedDict(sorted_info)
 
         _write_json(fpath, sidecar_json, overwrite=True, verbose=verbose)
+
+
+def _update_sidecar(sidecar_fname, key, val):
+    """Update a sidecar JSON file with a given key/value pair.
+
+    Parameters
+    ----------
+    sidecar_fname : str | os.PathLike
+        Full name of the data file
+    key : str
+        The key in the sidecar JSON file. E.g. "PowerLineFrequency"
+    val : str
+        The corresponding value to change to in the sidecar JSON file.
+    """
+    with open(sidecar_fname, "r") as fin:
+        sidecar_json = json.load(fin)
+    sidecar_json[key] = val
+    with open(sidecar_fname, "w") as fout:
+        json.dump(sidecar_json, fout)

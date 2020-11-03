@@ -535,6 +535,16 @@ def _sidecar_json(raw, task, manufacturer, fname, datatype, overwrite=False,
     n_stimchan = len([ch for ch in raw.info['chs']
                       if ch['kind'] == FIFF.FIFFV_STIM_CH]) - n_ignored
 
+    # Define RECOMMENDED items that are written 'n/a'
+    # to allow grep and overwriting with template update
+    recommended_info_json_common = [
+        ('InstitutionName', 'n/a'),
+        ('InstitutionAddress', 'n/a'),
+        ('ManufacturersModelName', 'n/a'),
+        ('SoftwareVersions', 'n/a'),
+        ('TaskDescription', 'n/a'),
+    ]
+
     # Define datatype-specific JSON dictionaries
     ch_info_json_common = [
         ('TaskName', task),
@@ -569,6 +579,7 @@ def _sidecar_json(raw, task, manufacturer, fname, datatype, overwrite=False,
 
     # Stitch together the complete JSON dictionary
     ch_info_json = ch_info_json_common
+    ch_info_json += recommended_info_json_common
     if datatype == 'meg':
         append_datatype_json = ch_info_json_meg
     elif datatype == 'eeg':

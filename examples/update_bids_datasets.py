@@ -85,7 +85,6 @@ print(bids_path.match())
 # Define a sidecar template as a dictionary
 sidecar_template = {
     'PowerLineFrequency': 60,
-    'Institution': 'mne-bids',
     'Manufacturer': 'Captrak',
 }
 
