@@ -5,6 +5,7 @@
 import json
 import os
 import os.path as op
+import pathlib
 
 import pytest
 import shutil as sh
@@ -706,3 +707,31 @@ def test_bads_reading():
         raw = read_raw_bids(bids_path=bids_path, verbose=False)
     assert type(raw.info['bads']) is list
     assert set(raw.info['bads']) == set(bads_bids)
+
+
+@pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+def test_write_read_fif_split_file():
+    """Test split files are read correctly."""
+    bids_root = _TempDir()
+    tmp_dir = _TempDir()
+    bids_path = _bids_path.copy().update(root=bids_root, datatype='meg')
+    raw = _read_raw_fif(raw_fname, verbose=False)
+    n_channels = len(raw.ch_names)
+    n_times = int(2.2e9 / (n_channels * 4))  # enough to produce a split
+    data = np.empty((n_channels, n_times), dtype=np.float32)
+    raw = mne.io.RawArray(data, raw.info)
+    big_fif_fname = pathlib.Path(tmp_dir) / 'test_raw.fif'
+    raw.save(big_fif_fname)
+    raw = _read_raw_fif(big_fif_fname, verbose=False)
+    write_raw_bids(raw, bids_path, verbose=False)
+
+    raw1 = read_raw_bids(bids_path=bids_path)
+    assert 'split-01' in str(bids_path.fpath)
+
+    bids_path.update(split='01')
+    raw2 = read_raw_bids(bids_path=bids_path)
+    bids_path.update(split='02')
+    raw3 = read_raw_bids(bids_path=bids_path)
+    assert len(raw) == len(raw1)
+    assert len(raw) == len(raw2)
+    assert len(raw) > len(raw3)

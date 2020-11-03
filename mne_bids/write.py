@@ -10,7 +10,7 @@
 import json
 import os
 import os.path as op
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 import shutil
 from collections import defaultdict, OrderedDict
 
@@ -672,13 +672,7 @@ def _write_raw_fif(raw, bids_fname):
         should be saved.
 
     """
-    n_rawfiles = len(raw.filenames)
-    if n_rawfiles > 1:
-        split_naming = 'bids'
-        raw.save(bids_fname, split_naming=split_naming, overwrite=True)
-    else:
-        # This ensures that single FIF files do not have the split param
-        raw.save(bids_fname, split_naming='neuromag', overwrite=True)
+    raw.save(bids_fname, split_naming='bids', overwrite=True)
 
 
 def _write_raw_brainvision(raw, bids_fname, events):
@@ -1054,6 +1048,10 @@ def write_raw_bids(raw, bids_path, events_data=None,
             if er_date != bids_path.session:
                 raise ValueError("Date provided for session doesn't match "
                                  "session date.")
+            if anonymize is not None and 'daysback' in anonymize:
+                meas_date = meas_date - timedelta(anonymize['daysback'])
+                session = meas_date.strftime('%Y%m%d')
+                bids_path = bids_path.copy().update(session=session)
 
     data_path = bids_path.mkdir().directory
 
