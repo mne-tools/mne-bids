@@ -230,8 +230,10 @@ And define the paths and event_id dictionary.
     MEG 0123        MEGGRADPLANAR   T/m     0.10000000149011612     172.17630004882812      Planar Gradiometer      600.614990234375        good    n/a
     Copying data files to sub-01_ses-01_task-audiovisual_run-01_meg.fif
     Overwriting existing file.
+    Reserving possible split file sub-01_ses-01_task-audiovisual_run-01_split-01_meg.fif
     Writing /home/circleci/mne_data/MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif
-    Closing /home/circleci/mne_data/MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif [done]
+    Closing /home/circleci/mne_data/MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif
+    [done]
 
     Writing '/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/sub-01_ses-01_scans.tsv'...
 
@@ -412,8 +414,10 @@ task is 'noise' (these are BIDS rules).
     MEG 0122        MEGGRADPLANAR   T/m     0.10000000149011612     172.17630004882812      Planar Gradiometer      600.614990234375        good    n/a
     MEG 0123        MEGGRADPLANAR   T/m     0.10000000149011612     172.17630004882812      Planar Gradiometer      600.614990234375        good    n/a
     Copying data files to sub-emptyroom_ses-20021206_task-noise_meg.fif
+    Reserving possible split file sub-emptyroom_ses-20021206_task-noise_split-01_meg.fif
     Writing /home/circleci/mne_data/MNE-sample-data-bids/sub-emptyroom/ses-20021206/meg/sub-emptyroom_ses-20021206_task-noise_meg.fif
-    Closing /home/circleci/mne_data/MNE-sample-data-bids/sub-emptyroom/ses-20021206/meg/sub-emptyroom_ses-20021206_task-noise_meg.fif [done]
+    Closing /home/circleci/mne_data/MNE-sample-data-bids/sub-emptyroom/ses-20021206/meg/sub-emptyroom_ses-20021206_task-noise_meg.fif
+    [done]
 
     Writing '/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-emptyroom/ses-20021206/sub-emptyroom_ses-20021206_scans.tsv'...
 
@@ -539,8 +543,10 @@ will be different on different days.
     MEG 0122        MEGGRADPLANAR   T/m     0.10000000149011612     172.17630004882812      Planar Gradiometer      600.614990234375        good    n/a
     MEG 0123        MEGGRADPLANAR   T/m     0.10000000149011612     172.17630004882812      Planar Gradiometer      600.614990234375        good    n/a
     Copying data files to sub-emptyroom_ses-20021204_task-noise_meg.fif
+    Reserving possible split file sub-emptyroom_ses-20021204_task-noise_split-01_meg.fif
     Writing /home/circleci/mne_data/MNE-sample-data-bids/sub-emptyroom/ses-20021204/meg/sub-emptyroom_ses-20021204_task-noise_meg.fif
-    Closing /home/circleci/mne_data/MNE-sample-data-bids/sub-emptyroom/ses-20021204/meg/sub-emptyroom_ses-20021204_task-noise_meg.fif [done]
+    Closing /home/circleci/mne_data/MNE-sample-data-bids/sub-emptyroom/ses-20021204/meg/sub-emptyroom_ses-20021204_task-noise_meg.fif
+    [done]
 
     Writing '/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-emptyroom/ses-20021204/sub-emptyroom_ses-20021204_scans.tsv'...
 
@@ -633,8 +639,10 @@ will be different on different days.
     MEG 0122        MEGGRADPLANAR   T/m     0.10000000149011612     172.17630004882812      Planar Gradiometer      600.614990234375        good    n/a
     MEG 0123        MEGGRADPLANAR   T/m     0.10000000149011612     172.17630004882812      Planar Gradiometer      600.614990234375        good    n/a
     Copying data files to sub-emptyroom_ses-20021201_task-noise_meg.fif
+    Reserving possible split file sub-emptyroom_ses-20021201_task-noise_split-01_meg.fif
     Writing /home/circleci/mne_data/MNE-sample-data-bids/sub-emptyroom/ses-20021201/meg/sub-emptyroom_ses-20021201_task-noise_meg.fif
-    Closing /home/circleci/mne_data/MNE-sample-data-bids/sub-emptyroom/ses-20021201/meg/sub-emptyroom_ses-20021201_task-noise_meg.fif [done]
+    Closing /home/circleci/mne_data/MNE-sample-data-bids/sub-emptyroom/ses-20021201/meg/sub-emptyroom_ses-20021201_task-noise_meg.fif
+    [done]
 
     Writing '/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-emptyroom/ses-20021201/sub-emptyroom_ses-20021201_scans.tsv'...
 
@@ -727,8 +735,10 @@ will be different on different days.
     MEG 0122        MEGGRADPLANAR   T/m     0.10000000149011612     172.17630004882812      Planar Gradiometer      600.614990234375        good    n/a
     MEG 0123        MEGGRADPLANAR   T/m     0.10000000149011612     172.17630004882812      Planar Gradiometer      600.614990234375        good    n/a
     Copying data files to sub-emptyroom_ses-20021001_task-noise_meg.fif
+    Reserving possible split file sub-emptyroom_ses-20021001_task-noise_split-01_meg.fif
     Writing /home/circleci/mne_data/MNE-sample-data-bids/sub-emptyroom/ses-20021001/meg/sub-emptyroom_ses-20021001_task-noise_meg.fif
-    Closing /home/circleci/mne_data/MNE-sample-data-bids/sub-emptyroom/ses-20021001/meg/sub-emptyroom_ses-20021001_task-noise_meg.fif [done]
+    Closing /home/circleci/mne_data/MNE-sample-data-bids/sub-emptyroom/ses-20021001/meg/sub-emptyroom_ses-20021001_task-noise_meg.fif
+    [done]
 
     Writing '/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-emptyroom/ses-20021001/sub-emptyroom_ses-20021001_scans.tsv'...
 
@@ -887,7 +897,7 @@ Finally, we can read the empty room file using
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  3.762 seconds)
+   **Total running time of the script:** ( 0 minutes  4.145 seconds)
 
 
 .. _sphx_glr_download_auto_examples_convert_empty_room.py:

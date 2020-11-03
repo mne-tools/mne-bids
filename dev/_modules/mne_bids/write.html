@@ -5,8 +5,8 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>mne_bids.write &#8212; mne_bids 0.6.dev0 documentation</title>
-    <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../../_static/style.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/gallery.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/gallery-binder.css" />
@@ -774,13 +774,7 @@
 <span class="sd">        should be saved.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">n_rawfiles</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">filenames</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">n_rawfiles</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="n">split_naming</span> <span class="o">=</span> <span class="s1">&#39;bids&#39;</span>
-        <span class="n">raw</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">,</span> <span class="n">split_naming</span><span class="o">=</span><span class="n">split_naming</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="c1"># This ensures that single FIF files do not have the split param</span>
-        <span class="n">raw</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">,</span> <span class="n">split_naming</span><span class="o">=</span><span class="s1">&#39;neuromag&#39;</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">raw</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">,</span> <span class="n">split_naming</span><span class="o">=</span><span class="s1">&#39;bids&#39;</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">_write_raw_brainvision</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_fname</span><span class="p">,</span> <span class="n">events</span><span class="p">):</span>
@@ -1786,8 +1780,8 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-10-31.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.2.1.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-11-03.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.3.0.<br/>
     </p>
   </div>
 </footer>

@@ -278,8 +278,10 @@ a new BIDS name for it, and then run the automatic BIDS conversion.
     MEG 0123        MEGGRADPLANAR   T/m     0.10000000149011612     172.17630004882812      Planar Gradiometer      600.614990234375        good    n/a
     Copying data files to sub-01_ses-01_task-audiovisual_run-01_meg.fif
     Overwriting existing file.
+    Reserving possible split file sub-01_ses-01_task-audiovisual_run-01_split-01_meg.fif
     Writing /home/circleci/mne_data/MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif
-    Closing /home/circleci/mne_data/MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif [done]
+    Closing /home/circleci/mne_data/MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif
+    [done]
 
     Writing '/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/sub-01_ses-01_scans.tsv'...
 
@@ -525,7 +527,7 @@ cite MNE-BIDS there.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  8.923 seconds)
+   **Total running time of the script:** ( 0 minutes  8.718 seconds)
 
 
 .. _sphx_glr_download_auto_examples_convert_mne_sample.py:
