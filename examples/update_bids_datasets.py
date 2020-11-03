@@ -86,6 +86,7 @@ print(bids_path.match())
 sidecar_template = {
     'PowerLineFrequency': 60,
     'Manufacturer': 'Captrak',
+    'InstitutionName': 'Martinos Center'
 }
 
 # Now update all sidecar fields according to the template
