@@ -1,6 +1,7 @@
 """Update BIDS directory structures and sidecar files meta data."""
 # Authors: Adam Li <adam2392@gmail.com>
 #          Austin Hurst <mynameisaustinhurst@gmail.com>
+#          mne-bids developers
 # License: BSD (3-clause)
 
 import json
