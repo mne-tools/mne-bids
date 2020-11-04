@@ -12,6 +12,7 @@ modify BIDS-formatted data.
 
 """
 # Authors: Adam Li <adam2392@gmail.com>
+#          mne-bids developers
 #
 # License: BSD (3-clause)
 
@@ -23,10 +24,12 @@ modify BIDS-formatted data.
 # Imports
 # -------
 # We are importing everything we need for this example:
-import os.path as op
-from mne.datasets import somato
-import tempfile
 import json
+import os.path as op
+import tempfile
+
+from mne.datasets import somato
+
 from mne_bids import (BIDSPath, read_raw_bids,
                       print_dir_tree, make_report, update_sidecar_json)
 
@@ -75,8 +78,8 @@ task = 'somato'
 suffix = 'meg'
 
 bids_path = BIDSPath(subject=subject, task=task, suffix=suffix,
-                     datatype=datatype, extension='.json',
-                     root=bids_root)
+                     datatype=datatype, root=bids_root)
+sidecar_path = bids_path.copy().update(extension='.json')
 
 # We can now retrieve a list of all MEG-related files in the dataset:
 print(bids_path.match())
@@ -89,7 +92,7 @@ sidecar_template = {
 }
 
 # Now update all sidecar fields according to the template
-update_sidecar_json(bids_path=bids_path, sidecar_template=sidecar_template)
+update_sidecar_json(bids_path=sidecar_path, sidecar_template=sidecar_template)
 
 ###############################################################################
 # Read the updated dataset
@@ -124,7 +127,7 @@ with tempfile.TemporaryDirectory() as tempdir:
         json.dump(sidecar_template, fout)
 
     # Update sidecar files via a template defined as a JSON file.
-    update_sidecar_json(bids_path=bids_path,
+    update_sidecar_json(bids_path=sidecar_path,
                         sidecar_template=sidecar_template_fpath)
 
 ###############################################################################
