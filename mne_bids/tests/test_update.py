@@ -12,7 +12,7 @@ from mne.datasets import testing
 from mne_bids import (BIDSPath, write_raw_bids,
                       write_meg_calibration, write_meg_crosstalk)
 from mne_bids.path import _mkdir_p
-from mne_bids.sidecar_updates import update_sidecars
+from mne_bids.sidecar_updates import update_sidecar_json
 from mne_bids.utils import _write_json
 
 subject_id = '01'
@@ -43,11 +43,16 @@ def return_bids_test_dir(tmpdir_factory):
 
     raw = mne.io.read_raw_fif(raw_fname)
     raw.info['line_freq'] = 60
+
+    # Drop unknown events.
+    events = mne.read_events(events_fname)
+    events = events[events[:, 2] != 0]
+
     bids_path.update(root=bids_root)
     # Write multiple runs for test_purposes
     for run_idx in [run, '02']:
         name = bids_path.copy().update(run=run_idx)
-        write_raw_bids(raw, name, events_data=events_fname,
+        write_raw_bids(raw, name, events_data=events,
                        event_id=event_id, overwrite=True)
 
     write_meg_calibration(cal_fname, bids_path=bids_path)
@@ -84,8 +89,8 @@ def test_update_sidecar_jsons(return_bids_test_dir, _bids_validate,
         task=task, suffix='meg', root=return_bids_test_dir)
 
     # expected key, original value, and expected value after update
-    expected_checks = [('InstitutionName', None, 'mne-bids'),
-                       ('InstitutionAddress', None, 'Internet'),
+    expected_checks = [('InstitutionName', 'n/a', 'mne-bids'),
+                       ('InstitutionAddress', 'n/a', 'Internet'),
                        ('MEGChannelCount', 306, 300),
                        ('MEGREFChannelCount', 0, 6),
                        ('ECGChannelCount', 0, 0)]
@@ -100,7 +105,7 @@ def test_update_sidecar_jsons(return_bids_test_dir, _bids_validate,
     _bids_validate(bids_path.root)
 
     # update sidecars
-    update_sidecars(bids_path, sidecar_json_template)
+    update_sidecar_json(sidecar_path, sidecar_json_template)
     with open(sidecar_fpath, 'r') as fin:
         sidecar_json = json.load(fin)
     for key, _, val in expected_checks:

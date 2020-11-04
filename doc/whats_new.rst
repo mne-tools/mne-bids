@@ -37,7 +37,7 @@ Enhancements
 
 - The function :func:`mne_bids.print_dir_tree` has a new parameter ``return_str`` which allows it to return a str of the dir tree instead of printing it, by `Stefan Appelhoff`_ (`#600 <https://github.com/mne-tools/mne-bids/pull/600>`_)
 - :func:`mne_bids.write_raw_bids` now preserves event durations when writing :class:`mne.Annotations` to ``*_events.tsv`` files, and :func:`mne_bids.read_raw_bids` restores these durations upon reading, by `Richard Höchenberger`_ (`#603 <https://github.com/mne-tools/mne-bids/pull/603>`_)
-- Add :func:`mne_bids.update.update_sidecars` to allow updating sidecar JSON files with a template JSON by `Adam Li`_ and `Austin Hurst`_ (`#601 <https://github.com/mne-tools/mne-bids/pull/601>`_)
+- Add :func:`mne_bids.update.update_sidecar_json` to allow updating sidecar JSON files with a template JSON by `Adam Li`_ and `Austin Hurst`_ (`#601 <https://github.com/mne-tools/mne-bids/pull/601>`_)
 
 Bug fixes
 ^^^^^^^^^

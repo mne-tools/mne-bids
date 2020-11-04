@@ -73,4 +73,4 @@ mne_bids.sidecar_updates
 .. autosummary::
    :toctree: generated/
 
-   update_sidecars
+   update_sidecar_json
