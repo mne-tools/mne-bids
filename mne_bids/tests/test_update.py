@@ -73,6 +73,7 @@ def sidecar_json_template(return_bids_test_dir):
         'InstitutionAddress': 'Internet',
         'MEGChannelCount': 300,
         'MEGREFChannelCount': 6,
+        'SEEGChannelCount': 0,
     }
     _write_json(sidecar_fpath, template_json, overwrite=True)
 
@@ -89,11 +90,15 @@ def test_update_sidecar_jsons(return_bids_test_dir, _bids_validate,
         task=task, suffix='meg', root=return_bids_test_dir)
 
     # expected key, original value, and expected value after update
+    # Fields that are not `None` already are expected to exist
+    # in this sidecar file. Fields that are `None` will get
+    # written with the template value when update is called.
     expected_checks = [('InstitutionName', 'n/a', 'mne-bids'),
                        ('InstitutionAddress', 'n/a', 'Internet'),
                        ('MEGChannelCount', 306, 300),
                        ('MEGREFChannelCount', 0, 6),
-                       ('ECGChannelCount', 0, 0)]
+                       ('ECGChannelCount', 0, 0),
+                       ('SEEGChannelCount', None, 0)]
 
     # get the sidecar json
     sidecar_path = bids_path.copy().update(extension='.json')
@@ -111,3 +116,17 @@ def test_update_sidecar_jsons(return_bids_test_dir, _bids_validate,
     for key, _, val in expected_checks:
         assert sidecar_json.get(key) == val
     _bids_validate(bids_path.root)
+
+    # should result in error if you don't explicitly say
+    # its a json file
+    with pytest.raises(RuntimeError, match='Only works for ".json"'):
+        update_sidecar_json(sidecar_path.copy().update(
+            extension=None), sidecar_json_template)
+
+    # error should raise if the file path doesn't exist
+    error_bids_path = sidecar_path.copy().update(subject='02')
+    with pytest.raises(RuntimeError, match=f'Sidecar file '
+                                           f'{error_bids_path.fpath} '
+                                           'does not exist.'):
+        update_sidecar_json(error_bids_path,
+                            sidecar_json_template)
