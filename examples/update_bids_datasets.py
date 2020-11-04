@@ -68,7 +68,6 @@ print(make_report(bids_root))
 # We can use MNE-BIDS to update all sidecar files for a matching
 # ``BIDSPath`` object. We then pass in a sidecar template to update
 # all matching metadata fields within the BIDS dataset.
-###############################################################################
 
 # create a BIDSPath object
 bids_root = somato.data_path()
@@ -101,7 +100,6 @@ update_sidecar_json(bids_path=sidecar_path, sidecar_template=sidecar_template)
 # We can use MNE-BIDS to update all sidecar files for a matching
 # ``BIDSPath`` object. We then pass in a sidecar template to update
 # all matching metadata fields within the BIDS dataset.
-###############################################################################
 
 # new line frequency is now 60 Hz
 raw = read_raw_bids(bids_path=bids_path)
@@ -140,3 +138,10 @@ print(raw.info['line_freq'])
 
 # Generate the report with updated fields
 print(make_report(bids_root))
+
+###############################################################################
+# .. LINKS
+#
+# .. _mne_somato_data:
+#    https://mne.tools/dev/generated/mne.datasets.somato.data_path.html
+#
