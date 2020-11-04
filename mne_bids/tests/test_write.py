@@ -15,7 +15,6 @@ import os.path as op
 import pytest
 from glob import glob
 from datetime import datetime, timezone, timedelta
-import platform
 import shutil as sh
 import json
 from pathlib import Path

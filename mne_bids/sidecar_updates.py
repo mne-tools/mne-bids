@@ -11,9 +11,12 @@ from mne_bids.utils import _write_json
 # XXX: should we encode this, or let bids-validator do its job?
 # def _check_specification_compat(datatype):
 #     SIDECAR_JSON_FIELDS = {
-#         'meg': ['TaskName', 'InstitutionName', 'InstitutionAddress', 'Manufacturer',
-#                 'ManufacturersModelName', 'SoftwareVersions', 'TaskDescription',
-#                 'Instructions', 'CogAtlasID', 'CogPOID', 'DeviceSerialNumber',
+#         'meg': ['TaskName', 'InstitutionName', 'InstitutionAddress',
+#         'Manufacturer',
+#                 'ManufacturersModelName', 'SoftwareVersions',
+#                 'TaskDescription',
+#                 'Instructions', 'CogAtlasID', 'CogPOID',
+#                 'DeviceSerialNumber',
 #                 'SamplingFrequency', 'PowerLineFrequency',
 #                 'SoftwareFilters', 'HardwareFilters',
 #                 'DigitizedLandmarks', 'DigitizedHeadPoints',
@@ -26,18 +29,19 @@ from mne_bids.utils import _write_json
 #                 'ContinuousHeadLocalization', 'HeadCoilFrequency',
 #                 'MaxMovement', 'SubjectArtefactDescription',
 #                 'AssociatedEmptyRoom', 'EEGPlacementScheme',
-#                 'CapManufacturer', 'CapManufacturersModelName', 'EEGReference'
+#                 'CapManufacturer', 'CapManufacturersModelName',
+#                 'EEGReference'
 #                 'DewarPosition', ],
-#         'coordsystem': [f'{datatype}CoordinateSystem', f'{datatype}CoordinateUnits',
-#                         f'{datatype}CoordinateSystemDescription',
-#                         'HeadCoilCoordinates', 'HeadCoilCoordinateSystem',
-#                         'HeadCoilCoordinateUnits', 'HeadCoilCoordinateSystemDescription',
-#                         'DigitizedHeadPoints', 'DigitizedHeadPointsCoordinateSystem',
-#                         'DigitizedHeadPointsCoordinateUnits',
-#                         'DigitizedHeadPointsCoordinateSystemDescription',
+#         'coordsystem': [
+#         f'{datatype}CoordinateSystem', f'{datatype}CoordinateUnits',
+#             f'{datatype}CoordinateSystemDescription',
+#             'HeadCoilCoordinates', 'HeadCoilCoordinateSystem',
+#             'HeadCoilCoordinateUnits', 'HeadCoilCoordinateSystemDescription',
+#             'DigitizedHeadPoints', 'DigitizedHeadPointsCoordinateSystem',
+#             'DigitizedHeadPointsCoordinateUnits',
+#             'DigitizedHeadPointsCoordinateSystemDescription',
 #                         ]
 #     }
-
 
 
 # TODO: add support for tsv files
