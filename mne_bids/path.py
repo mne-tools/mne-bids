@@ -584,11 +584,11 @@ class BIDSPath(object):
         self._check()
         return self
 
-    def match(self, return_json=False):
+    def match(self):
         """Get a list of all matching paths in the root directory.
 
         Performs a recursive search, starting in ``.root`` (if set), based on
-        `BIDSPath.entities` object.
+        `BIDSPath.entities` object. Ignores ``.json`` files.
 
         Returns
         -------
@@ -610,9 +610,8 @@ class BIDSPath(object):
 
         fnames = self.root.rglob(search_str)
         # Only keep files (not directories), and omit the JSON sidecars.
-        fnames = [f.name for f in fnames if f.is_file()]
-        if not return_json:
-            fnames = [f for f in fnames if not f.endswith('.json')]
+        fnames = [f.name for f in fnames
+                  if f.is_file() and f.suffix != '.json']
 
         fnames = _filter_fnames(fnames, suffix=self.suffix,
                                 extension=self.extension,
