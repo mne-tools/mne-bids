@@ -38,6 +38,7 @@ mne_bids
    get_entities_from_fname
    get_entity_vals
    get_datatypes
+   update_sidecar_json
 
 mne_bids.copyfiles
 ------------------
@@ -58,19 +59,3 @@ mne_bids.copyfiles
    copyfile_ctf
    copyfile_bti
    copyfile_kit
-
-mne_bids.sidecar_updates
-------------------------
-
-:py:mod:`mne_bids.sidecar_updates`:
-
-.. automodule:: mne_bids.sidecar_updates
-   :no-members:
-   :no-inherited-members:
-
-.. currentmodule:: mne_bids.sidecar_updates
-
-.. autosummary::
-   :toctree: generated/
-
-   update_sidecar_json
