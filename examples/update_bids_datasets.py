@@ -5,7 +5,7 @@
 
 When working with electrophysiological data in the BIDS format, we usually
 do not have all the metadata stored in the ``Raw`` mne-python object.
-We can update the BIDS sidecare files via the ``update_sidecars`` function.
+We can update the BIDS sidecar files via the ``update_sidecars`` function.
 
 In this tutorial, we show how ``update_sidecars`` can be used to update and
 modify BIDS-formatted data.
