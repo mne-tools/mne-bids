@@ -62,7 +62,7 @@ mne_bids.copyfiles
 mne_bids.sidecar_updates
 ------------------------
 
-:py:mode:`mne_bids.sidecar_updates`:
+:py:mod:`mne_bids.sidecar_updates`:
 
 .. automodule:: mne_bids.sidecar_updates
    :no-members:
