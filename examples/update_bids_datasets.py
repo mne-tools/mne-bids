@@ -28,8 +28,7 @@ from mne.datasets import somato
 import tempfile
 import json
 from mne_bids import (BIDSPath, read_raw_bids,
-                      print_dir_tree, make_report)
-from mne_bids.sidecar_updates import update_sidecars
+                      print_dir_tree, make_report, update_sidecars)
 
 ###############################################################################
 # We will be using the `MNE somato data <mne_somato_data_>`_, which
