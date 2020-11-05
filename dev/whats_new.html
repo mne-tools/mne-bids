@@ -118,23 +118,23 @@
 <div class="contents local topic" id="contents">
 <p class="topic-title">Contents</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="#notable-changes" id="id8">Notable changes</a></p></li>
-<li><p><a class="reference internal" href="#authors" id="id9">Authors</a></p></li>
-<li><p><a class="reference internal" href="#detailed-list-of-changes" id="id10">Detailed list of changes</a></p>
+<li><p><a class="reference internal" href="#notable-changes" id="id9">Notable changes</a></p></li>
+<li><p><a class="reference internal" href="#authors" id="id10">Authors</a></p></li>
+<li><p><a class="reference internal" href="#detailed-list-of-changes" id="id11">Detailed list of changes</a></p>
 <ul>
-<li><p><a class="reference internal" href="#enhancements" id="id11">Enhancements</a></p></li>
-<li><p><a class="reference internal" href="#bug-fixes" id="id12">Bug fixes</a></p></li>
-<li><p><a class="reference internal" href="#api-changes" id="id13">API changes</a></p></li>
+<li><p><a class="reference internal" href="#enhancements" id="id12">Enhancements</a></p></li>
+<li><p><a class="reference internal" href="#bug-fixes" id="id13">Bug fixes</a></p></li>
+<li><p><a class="reference internal" href="#api-changes" id="id14">API changes</a></p></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="section" id="notable-changes">
-<h3><a class="toc-backref" href="#id8">Notable changes</a><a class="headerlink" href="#notable-changes" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id9">Notable changes</a><a class="headerlink" href="#notable-changes" title="Permalink to this headline">¶</a></h3>
 <p>xxx</p>
 </div>
 <div class="section" id="authors">
-<h3><a class="toc-backref" href="#id9">Authors</a><a class="headerlink" href="#authors" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id10">Authors</a><a class="headerlink" href="#authors" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p><a class="reference external" href="http://stefanappelhoff.com/">Stefan Appelhoff</a></p></li>
 <li><p><a class="reference external" href="https://github.com/adam2392">Adam Li</a></p></li>
@@ -142,25 +142,26 @@
 </ul>
 </div>
 <div class="section" id="detailed-list-of-changes">
-<h3><a class="toc-backref" href="#id10">Detailed list of changes</a><a class="headerlink" href="#detailed-list-of-changes" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id11">Detailed list of changes</a><a class="headerlink" href="#detailed-list-of-changes" title="Permalink to this headline">¶</a></h3>
 <div class="section" id="enhancements">
-<h4><a class="toc-backref" href="#id11">Enhancements</a><a class="headerlink" href="#enhancements" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id12">Enhancements</a><a class="headerlink" href="#enhancements" title="Permalink to this headline">¶</a></h4>
 <ul class="simple">
 <li><p>The function <a class="reference internal" href="generated/mne_bids.print_dir_tree.html#mne_bids.print_dir_tree" title="mne_bids.print_dir_tree"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.print_dir_tree()</span></code></a> has a new parameter <code class="docutils literal notranslate"><span class="pre">return_str</span></code> which allows it to return a str of the dir tree instead of printing it, by <a class="reference external" href="http://stefanappelhoff.com/">Stefan Appelhoff</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/pull/600">#600</a>)</p></li>
 <li><p><a class="reference internal" href="generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.write_raw_bids()</span></code></a> now preserves event durations when writing <a class="reference external" href="https://mne.tools/dev/generated/mne.Annotations.html#mne.Annotations" title="(in MNE v0.22.dev0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.Annotations</span></code></a> to <code class="docutils literal notranslate"><span class="pre">*_events.tsv</span></code> files, and <a class="reference internal" href="generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.read_raw_bids()</span></code></a> restores these durations upon reading, by <a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/pull/603">#603</a>)</p></li>
 </ul>
 </div>
 <div class="section" id="bug-fixes">
-<h4><a class="toc-backref" href="#id12">Bug fixes</a><a class="headerlink" href="#bug-fixes" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id13">Bug fixes</a><a class="headerlink" href="#bug-fixes" title="Permalink to this headline">¶</a></h4>
 <ul class="simple">
 <li><p>Make sure large FIF files with splits are handled transparently on read and write, by <a class="reference external" href="http://alexandre.gramfort.net">Alexandre Gramfort</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/pull/612">#612</a>)</p></li>
 <li><p>The function <a class="reference internal" href="generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.write_raw_bids()</span></code></a> now outputs <code class="docutils literal notranslate"><span class="pre">*_electrodes.tsv</span></code> and <code class="docutils literal notranslate"><span class="pre">*_coordsystem.json</span></code> files for EEG/iEEG data that are BIDS-compliant (only contain subject, session, acquisition, and space entities), by <a class="reference external" href="https://github.com/adam2392">Adam Li</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/pull/601">#601</a>)</p></li>
 <li><p>Make sure writing empty-room data with anonymization shifts the session back in time, by <a class="reference external" href="http://alexandre.gramfort.net">Alexandre Gramfort</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/pull/611">#611</a>)</p></li>
 <li><p>Fix a bug in <a class="reference internal" href="generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.write_raw_bids()</span></code></a>, where passing raw data with <a class="reference external" href="https://mne.tools/dev/generated/mne.Annotations.html#mne.Annotations" title="(in MNE v0.22.dev0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.Annotations</span></code></a> set and the <code class="docutils literal notranslate"><span class="pre">event_id</span></code> dictionary not containing the <a class="reference external" href="https://mne.tools/dev/generated/mne.Annotations.html#mne.Annotations" title="(in MNE v0.22.dev0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne.Annotations</span></code></a> descriptions as keys would raise an error, by <a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/pull/603">#603</a>)</p></li>
+<li><p>Fix a bug in <a class="reference internal" href="generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.write_raw_bids()</span></code></a> when passing raw MEG data with Internal Active Shielding (IAS) from Triux system, by <a class="reference external" href="http://alexandre.gramfort.net">Alexandre Gramfort</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/pull/616">#616</a>)</p></li>
 </ul>
 </div>
 <div class="section" id="api-changes">
-<h4><a class="toc-backref" href="#id13">API changes</a><a class="headerlink" href="#api-changes" title="Permalink to this headline">¶</a></h4>
+<h4><a class="toc-backref" href="#id14">API changes</a><a class="headerlink" href="#api-changes" title="Permalink to this headline">¶</a></h4>
 <ul class="simple">
 <li><p>When passing event IDs to <a class="reference internal" href="generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.write_raw_bids()</span></code></a> via <code class="docutils literal notranslate"><span class="pre">events_data</span></code> without an accompanying event description in <code class="docutils literal notranslate"><span class="pre">event_id</span></code>, we will now raise a <em class="xref py py-obj">ValueError</em>. This ensures that accidentally un-described events won’t get written unnoticed, by <a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/pull/603">#603</a>)</p></li>
 </ul>
@@ -183,7 +184,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-11-03.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-11-05.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.3.0.<br/>
     </p>
   </div>
