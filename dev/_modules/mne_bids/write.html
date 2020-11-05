@@ -775,7 +775,8 @@
 <span class="sd">        should be saved.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">raw</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">,</span> <span class="n">split_naming</span><span class="o">=</span><span class="s1">&#39;bids&#39;</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">raw</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="n">raw</span><span class="o">.</span><span class="n">orig_format</span><span class="p">,</span> <span class="n">split_naming</span><span class="o">=</span><span class="s1">&#39;bids&#39;</span><span class="p">,</span>
+             <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">_write_raw_brainvision</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">bids_fname</span><span class="p">,</span> <span class="n">events</span><span class="p">):</span>
@@ -792,8 +793,8 @@
 <span class="sd">        The events as MNE-Python format ndaray.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">check_version</span><span class="p">(</span><span class="s1">&#39;pybv&#39;</span><span class="p">,</span> <span class="s1">&#39;0.2&#39;</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s1">&#39;pybv &gt;=0.2.0 is required for converting &#39;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">check_version</span><span class="p">(</span><span class="s1">&#39;pybv&#39;</span><span class="p">,</span> <span class="s1">&#39;0.3&#39;</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s1">&#39;pybv &gt;=0.3 is required for converting &#39;</span>
                           <span class="s1">&#39;file to Brainvision format&#39;</span><span class="p">)</span>
     <span class="kn">from</span> <span class="nn">pybv</span> <span class="kn">import</span> <span class="n">write_brainvision</span>
     <span class="c1"># Subtract raw.first_samp because brainvision marks events starting from</span>
@@ -804,12 +805,27 @@
     <span class="n">meas_date</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;meas_date&#39;</span><span class="p">]</span>
     <span class="k">if</span> <span class="n">meas_date</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">meas_date</span> <span class="o">=</span> <span class="n">_stamp_to_dt</span><span class="p">(</span><span class="n">meas_date</span><span class="p">)</span>
-    <span class="n">write_brainvision</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">raw</span><span class="o">.</span><span class="n">get_data</span><span class="p">(),</span> <span class="n">sfreq</span><span class="o">=</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;sfreq&#39;</span><span class="p">],</span>
+
+    <span class="c1"># XXX Always write as float32 to avoid precision loss during I/O roundtrip.</span>
+    <span class="c1"># See https://github.com/bids-standard/pybv/issues/45</span>
+    <span class="n">fmt</span> <span class="o">=</span> <span class="s1">&#39;binary_float32&#39;</span>
+    <span class="k">if</span> <span class="n">raw</span><span class="o">.</span><span class="n">orig_format</span> <span class="o">!=</span> <span class="s1">&#39;single&#39;</span><span class="p">:</span>
+        <span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Encountered data in &quot;</span><span class="si">{</span><span class="n">raw</span><span class="o">.</span><span class="n">orig_format</span><span class="si">}</span><span class="s1">&quot; format. &#39;</span>
+             <span class="sa">f</span><span class="s1">&#39;Converting to float32.&#39;</span><span class="p">,</span> <span class="ne">RuntimeWarning</span><span class="p">)</span>
+
+    <span class="c1"># writing with a resolution 1e-9 should be precise enough to avoid loss of</span>
+    <span class="c1"># resolution for any kind of data.</span>
+    <span class="n">resolution</span> <span class="o">=</span> <span class="mf">1e-9</span>
+    <span class="n">unit</span> <span class="o">=</span> <span class="s1">&#39;µV&#39;</span>  <span class="c1"># for compatibility with BrainVision software</span>
+    <span class="n">write_brainvision</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">raw</span><span class="o">.</span><span class="n">get_data</span><span class="p">(),</span>
+                      <span class="n">sfreq</span><span class="o">=</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;sfreq&#39;</span><span class="p">],</span>
                       <span class="n">ch_names</span><span class="o">=</span><span class="n">raw</span><span class="o">.</span><span class="n">ch_names</span><span class="p">,</span>
                       <span class="n">fname_base</span><span class="o">=</span><span class="n">op</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">op</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">))[</span><span class="mi">0</span><span class="p">],</span>
                       <span class="n">folder_out</span><span class="o">=</span><span class="n">op</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">),</span>
                       <span class="n">events</span><span class="o">=</span><span class="n">events</span><span class="p">,</span>
-                      <span class="n">resolution</span><span class="o">=</span><span class="mf">1e-9</span><span class="p">,</span>
+                      <span class="n">resolution</span><span class="o">=</span><span class="n">resolution</span><span class="p">,</span>
+                      <span class="n">unit</span><span class="o">=</span><span class="n">unit</span><span class="p">,</span>
+                      <span class="n">fmt</span><span class="o">=</span><span class="n">fmt</span><span class="p">,</span>
                       <span class="n">meas_date</span><span class="o">=</span><span class="n">meas_date</span><span class="p">)</span>
 
 
@@ -1200,7 +1216,8 @@
             <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.fif&#39;</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;eeg&#39;</span><span class="p">,</span> <span class="s1">&#39;ieeg&#39;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">ext</span> <span class="o">!=</span> <span class="s1">&#39;.vhdr&#39;</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
-                <span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Converting to BV for anonymization&#39;</span><span class="p">)</span>
+                <span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Converting data files to BrainVision format &#39;</span>
+                     <span class="s1">&#39;for anonymization&#39;</span><span class="p">)</span>
             <span class="n">convert</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.vhdr&#39;</span><span class="p">)</span>
 
