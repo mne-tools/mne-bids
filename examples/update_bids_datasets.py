@@ -1,6 +1,6 @@
 """
 ========================
-11. Update BIDS datasets
+12. Update BIDS datasets
 ========================
 
 When working with electrophysiological data in the BIDS format, we usually
