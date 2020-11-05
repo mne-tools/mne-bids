@@ -1071,7 +1071,7 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate):
         daysback_min, daysback_max = _get_anonymization_daysback(raw)
         daysback = (daysback_min + daysback_max) // 2
         kwargs = dict(raw=raw, bids_path=bids_path,
-                      anonymize=dict(daysback=daysback), overwrite=True)                         
+                      anonymize=dict(daysback=daysback), overwrite=True)
         if dir_name == 'EDF':
             with pytest.warns(RuntimeWarning,
                               match='Encountered data in "int" format'):
