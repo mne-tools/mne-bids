@@ -89,6 +89,10 @@ entries = {
     'InstitutionName': 'Martinos Center'
 }
 
+# Note: ``update_sidecar_json`` will perform essentially a
+# dictionary update to your sidecar file, so be absolutely sure
+# that the ``entries`` are defined properly.
+#
 # Now update all sidecar fields according to the template
 update_sidecar_json(bids_path=sidecar_path, entries=entries)
 
