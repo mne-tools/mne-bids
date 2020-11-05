@@ -551,12 +551,18 @@ def test_fif_dtype(_bids_validate):
     data_path = testing.data_path()
     raw_fname = op.join(data_path, 'MEG', 'sample',
                         'sample_audvis_trunc_raw.fif')
-
+    desired_fmt = 'int'
     raw = _read_raw_fif(raw_fname)
-    raw.orig_format = 'int'
+
+    # Fiddle with raw.orig_format -- this should never be done in "real-life",
+    # but we do it here to test whether write_raw_bids() will actually stick
+    # to the format that's specified in that attribute.
+    assert raw.orig_format != desired_fmt  # We're actually changing something
+    raw.orig_format = desired_fmt
+
     write_raw_bids(raw, bids_path, overwrite=False)
     raw = read_raw_bids(bids_path)
-    assert raw.orig_format == 'int'
+    assert raw.orig_format == desired_fmt
 
 
 def test_fif_anonymize(_bids_validate):

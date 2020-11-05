@@ -661,7 +661,8 @@ def _write_raw_fif(raw, bids_fname):
         should be saved.
 
     """
-    raw.save(bids_fname, split_naming='bids', overwrite=True)
+    raw.save(bids_fname, fmt=raw.orig_format, split_naming='bids',
+             overwrite=True)
 
 
 def _write_raw_brainvision(raw, bids_fname, events):
