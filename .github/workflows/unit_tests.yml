@@ -23,6 +23,7 @@ jobs:
 
     env:
       TZ: Europe/Berlin
+      FORCE_COLOR: true
     steps:
     - uses: actions/checkout@v2
     - name: Set up Node.js
@@ -57,10 +58,10 @@ jobs:
     - name: Install BIDS validator (master)
       if: "matrix.bids-validator == 'master'"
       run: |
-        cd ..
+        pushd ..
         git clone --depth 1 https://github.com/bids-standard/bids-validator
         npm install -g bids-validator/bids-validator
-        cd mne-bids
+        popd
 
     - name: Display versions and environment information
       run: |
@@ -79,7 +80,7 @@ jobs:
         export BIDS_VALIDATOR_VERSION=`bids-validator --version`
         echo Using bids-validator $BIDS_VALIDATOR_VERSION
         python -m pytest . --cov=mne_bids mne_bids/tests/ mne_bids/commands/tests/ --cov-report=xml --cov-config=setup.cfg --verbose --ignore mne-python
-      shell: bash  
+      shell: bash
     - name: Run style & documentation tests
       if: "matrix.os == 'ubuntu-latest'"
       run: make pep

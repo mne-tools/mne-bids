@@ -91,7 +91,8 @@ def _channels_tsv(raw, fname, overwrite=False, verbose=True):
                     eog='ElectroOculoGram',
                     emg='ElectroMyoGram',
                     misc='Miscellaneous',
-                    bio='Biological')
+                    bio='Biological',
+                    ias='Internal Active Shielding')
     get_specific = ('mag', 'ref_meg', 'grad')
 
     # get the manufacturer from the file in the Raw object
@@ -672,7 +673,8 @@ def _write_raw_fif(raw, bids_fname):
         should be saved.
 
     """
-    raw.save(bids_fname, split_naming='bids', overwrite=True)
+    raw.save(bids_fname, fmt=raw.orig_format, split_naming='bids',
+             overwrite=True)
 
 
 def _write_raw_brainvision(raw, bids_fname, events):
@@ -689,8 +691,8 @@ def _write_raw_brainvision(raw, bids_fname, events):
         The events as MNE-Python format ndaray.
 
     """
-    if not check_version('pybv', '0.2'):
-        raise ImportError('pybv >=0.2.0 is required for converting '
+    if not check_version('pybv', '0.3'):
+        raise ImportError('pybv >=0.3 is required for converting '
                           'file to Brainvision format')
     from pybv import write_brainvision
     # Subtract raw.first_samp because brainvision marks events starting from
@@ -701,12 +703,27 @@ def _write_raw_brainvision(raw, bids_fname, events):
     meas_date = raw.info['meas_date']
     if meas_date is not None:
         meas_date = _stamp_to_dt(meas_date)
-    write_brainvision(data=raw.get_data(), sfreq=raw.info['sfreq'],
+
+    # XXX Always write as float32 to avoid precision loss during I/O roundtrip.
+    # See https://github.com/bids-standard/pybv/issues/45
+    fmt = 'binary_float32'
+    if raw.orig_format != 'single':
+        warn(f'Encountered data in "{raw.orig_format}" format. '
+             f'Converting to float32.', RuntimeWarning)
+
+    # writing with a resolution 1e-9 should be precise enough to avoid loss of
+    # resolution for any kind of data.
+    resolution = 1e-9
+    unit = 'µV'  # for compatibility with BrainVision software
+    write_brainvision(data=raw.get_data(),
+                      sfreq=raw.info['sfreq'],
                       ch_names=raw.ch_names,
                       fname_base=op.splitext(op.basename(bids_fname))[0],
                       folder_out=op.dirname(bids_fname),
                       events=events,
-                      resolution=1e-9,
+                      resolution=resolution,
+                      unit=unit,
+                      fmt=fmt,
                       meas_date=meas_date)
 
 
@@ -1097,7 +1114,8 @@ def write_raw_bids(raw, bids_path, events_data=None,
             bids_path.update(extension='.fif')
         elif bids_path.datatype in ['eeg', 'ieeg'] and ext != '.vhdr':
             if verbose:
-                warn('Converting to BV for anonymization')
+                warn('Converting data files to BrainVision format '
+                     'for anonymization')
             convert = True
             bids_path.update(extension='.vhdr')
 
