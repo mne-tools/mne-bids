@@ -10,11 +10,11 @@ Installation
 Dependencies
 ------------
 
-* numpy (>=1.14)
-* scipy (>=0.18.1)
-* mne (>=0.21)
-* nibabel (>=2.2, optional)
-* pybv (>=0.2, optional)
+* ``numpy`` (>=1.14)
+* ``scipy`` (>=0.18.1)
+* ``mne`` (>=0.21)
+* ``nibabel`` (>=2.2, optional)
+* ``pybv`` (>=0.3, optional)
 
 
 We recommend the `Anaconda <https://www.anaconda.com/download/>`_ Python
