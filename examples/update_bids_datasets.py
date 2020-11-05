@@ -115,21 +115,14 @@ print(raw.info['line_freq'])
 print(make_report(bids_root))
 
 ###############################################################################
-# We can also update sidecars by passing in a template JSON file.
+# We can reverse the changes by updating the sidecar again.
 
 # update the template to have a new PowerLineFrequency
 entries['Manufacturer'] = 'Elekta'
 entries['PowerLineFrequency'] = 50
 
-# create a temporary JSON file that contains the updated template
-with tempfile.TemporaryDirectory() as tempdir:
-    sidecar_template_fpath = op.join(tempdir, 'template.json')
-    with open(sidecar_template_fpath, 'w') as fout:
-        json.dump(entries, fout)
-
-    # Update sidecar files via a template defined as a JSON file.
-    update_sidecar_json(bids_path=sidecar_path,
-                        entries=sidecar_template_fpath)
+# Update sidecar files via a template defined as a JSON file.
+update_sidecar_json(bids_path=sidecar_path, entries=entries)
 
 ###############################################################################
 # Now let us inspect the dataset again by generating the report again. Now that

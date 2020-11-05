@@ -10,42 +10,6 @@ from collections import OrderedDict
 from mne_bids.utils import _write_json
 
 
-# XXX: should we encode this, or let bids-validator do its job?
-# def _check_specification_compat(datatype):
-#     SIDECAR_JSON_FIELDS = {
-#         'meg': ['TaskName', 'InstitutionName', 'InstitutionAddress',
-#         'Manufacturer',
-#                 'ManufacturersModelName', 'SoftwareVersions',
-#                 'TaskDescription',
-#                 'Instructions', 'CogAtlasID', 'CogPOID',
-#                 'DeviceSerialNumber',
-#                 'SamplingFrequency', 'PowerLineFrequency',
-#                 'SoftwareFilters', 'HardwareFilters',
-#                 'DigitizedLandmarks', 'DigitizedHeadPoints',
-#                 'MEGChannelCount', 'MEGREFChannelCount',
-#                 'EEGChannelCount', 'ECOGChannelCount',
-#                 'SEEGChanelCount', 'EOGChannelCount',
-#                 'EMGChannelCount', 'MiscChannelCount',
-#                 'TriggerChannelCount', 'RecordingDuration',
-#                 'RecordingType', 'EpochLength',
-#                 'ContinuousHeadLocalization', 'HeadCoilFrequency',
-#                 'MaxMovement', 'SubjectArtefactDescription',
-#                 'AssociatedEmptyRoom', 'EEGPlacementScheme',
-#                 'CapManufacturer', 'CapManufacturersModelName',
-#                 'EEGReference'
-#                 'DewarPosition', ],
-#         'coordsystem': [
-#         f'{datatype}CoordinateSystem', f'{datatype}CoordinateUnits',
-#             f'{datatype}CoordinateSystemDescription',
-#             'HeadCoilCoordinates', 'HeadCoilCoordinateSystem',
-#             'HeadCoilCoordinateUnits', 'HeadCoilCoordinateSystemDescription',
-#             'DigitizedHeadPoints', 'DigitizedHeadPointsCoordinateSystem',
-#             'DigitizedHeadPointsCoordinateUnits',
-#             'DigitizedHeadPointsCoordinateSystemDescription',
-#                         ]
-#     }
-
-
 # TODO: add support for tsv files
 def update_sidecar_json(bids_path, entries, verbose=True):
     """Update sidecar files using template JSON file.
