@@ -9,7 +9,6 @@ We can update the BIDS sidecar files via the ``update_sidecar_json`` function.
 
 In this tutorial, we show how ``update_sidecar_json`` can be used to update and
 modify BIDS-formatted data.
-
 """
 # Authors: Adam Li <adam2392@gmail.com>
 #          mne-bids developers
@@ -84,14 +83,14 @@ sidecar_path = bids_path.copy().update(extension='.json')
 print(bids_path.match())
 
 # Define a sidecar template as a dictionary
-sidecar_template = {
+entries = {
     'PowerLineFrequency': 60,
     'Manufacturer': 'Captrak',
     'InstitutionName': 'Martinos Center'
 }
 
 # Now update all sidecar fields according to the template
-update_sidecar_json(bids_path=sidecar_path, sidecar_template=sidecar_template)
+update_sidecar_json(bids_path=sidecar_path, entries=entries)
 
 ###############################################################################
 # Read the updated dataset
@@ -115,18 +114,18 @@ print(make_report(bids_root))
 # We can also update sidecars by passing in a template JSON file.
 
 # update the template to have a new PowerLineFrequency
-sidecar_template['Manufacturer'] = 'Elekta'
-sidecar_template['PowerLineFrequency'] = 50
+entries['Manufacturer'] = 'Elekta'
+entries['PowerLineFrequency'] = 50
 
 # create a temporary JSON file that contains the updated template
 with tempfile.TemporaryDirectory() as tempdir:
     sidecar_template_fpath = op.join(tempdir, 'template.json')
     with open(sidecar_template_fpath, 'w') as fout:
-        json.dump(sidecar_template, fout)
+        json.dump(entries, fout)
 
     # Update sidecar files via a template defined as a JSON file.
     update_sidecar_json(bids_path=sidecar_path,
-                        sidecar_template=sidecar_template_fpath)
+                        entries=sidecar_template_fpath)
 
 ###############################################################################
 # Now let us inspect the dataset again by generating the report again. Now that

@@ -9,6 +9,7 @@ from collections import OrderedDict
 
 from mne_bids.utils import _write_json
 
+
 # XXX: should we encode this, or let bids-validator do its job?
 # def _check_specification_compat(datatype):
 #     SIDECAR_JSON_FIELDS = {
@@ -46,11 +47,11 @@ from mne_bids.utils import _write_json
 
 
 # TODO: add support for tsv files
-def update_sidecar_json(bids_path, sidecar_template, verbose=True):
+def update_sidecar_json(bids_path, entries, verbose=True):
     """Update sidecar files using template JSON file.
 
     Will update metadata fields inside the path defined by
-    ``bids_path.fpath`` according to the ``sidecar_template``.
+    ``bids_path.fpath`` according to the ``entries``.
     If a field does not exist in the corresponding sidecar file,
     then that field will be created according to the template.
     If a field does exist in the corresponding sidecar file,
@@ -74,7 +75,7 @@ def update_sidecar_json(bids_path, sidecar_template, verbose=True):
         is present in the dataset, it will be
         selected automatically. This must uniquely identify
         an existing file path, else an error will be raised.
-    sidecar_template : dict | str | pathlib.Path
+    entries : dict | str | pathlib.Path
         A dictionary, or JSON file that defines the
         sidecar fields and corresponding values to be updated to.
     verbose : bool
@@ -105,13 +106,13 @@ def update_sidecar_json(bids_path, sidecar_template, verbose=True):
     >>> bids_path = BIDSPath(root='./', subject='001', session='001',
                              task='test', run='01', suffix='ieeg',
                              extension='.json')
-    >>> sidecar_template = {'PowerLineFrequency': 50}
-    >>> update_sidecar_json(bids_path, sidecar_template)
+    >>> entries = {'PowerLineFrequency': 50}
+    >>> update_sidecar_json(bids_path, entries)
     >>> # update sidecar coordsystem json file
     >>> bids_path = BIDSPath(root='./', subject='001', session='001',
                              suffix='coordsystem', extension='.json')
-    >>> sidecar_template = {'iEEGCoordinateSyste,': 'Other'}
-    >>> update_sidecar_json(bids_path, sidecar_template)
+    >>> entries = {'iEEGCoordinateSyste,': 'Other'}
+    >>> update_sidecar_json(bids_path, entries)
     """
     # get all matching json files
     bids_path = bids_path.copy()
@@ -127,10 +128,10 @@ def update_sidecar_json(bids_path, sidecar_template, verbose=True):
                            f'exist.')
 
     # sidecar template either from file, or as dictionary
-    if isinstance(sidecar_template, dict):
-        sidecar_tmp = sidecar_template
+    if isinstance(entries, dict):
+        sidecar_tmp = entries
     else:
-        with open(sidecar_template, 'r') as tmp_f:
+        with open(entries, 'r') as tmp_f:
             sidecar_tmp = json.load(
                 tmp_f, object_pairs_hook=OrderedDict)
 
