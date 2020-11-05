@@ -23,10 +23,6 @@ modify BIDS-formatted data.
 # Imports
 # -------
 # We are importing everything we need for this example:
-import json
-import os.path as op
-import tempfile
-
 from mne.datasets import somato
 
 from mne_bids import (BIDSPath, read_raw_bids,
