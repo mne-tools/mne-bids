@@ -622,6 +622,24 @@ def test_fif_anonymize(_bids_validate):
     _bids_validate(bids_root)
 
 
+@pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+def test_fif_ias():
+    """Test writing FIF files with internal active shielding."""
+    data_path = testing.data_path()
+    raw_fname = op.join(data_path, 'MEG', 'sample',
+                        'sample_audvis_trunc_raw.fif')
+    raw = _read_raw_fif(raw_fname)
+
+    raw.set_channel_types({raw.ch_names[0]: 'ias'})
+
+    bids_root = _TempDir()
+    data_path = BIDSPath(subject='sample', root=bids_root)
+
+    write_raw_bids(raw, data_path)
+    raw = read_raw_bids(data_path)
+    assert raw.info['chs'][0]['kind'] == FIFF.FIFFV_IAS_CH
+
+
 def test_kit(_bids_validate):
     """Test functionality of the write_raw_bids conversion for KIT data."""
     bids_root = _TempDir()
