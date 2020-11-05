@@ -909,8 +909,12 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate):
     raw = reader(raw_fname)
     events, events_id = mne.events_from_annotations(raw, event_id=None)
     kwargs = dict(raw=raw, bids_path=bids_path, overwrite=True)
-    if dir_name in ('EDF', 'NihonKohden'):
+    if dir_name == 'EDF':
         bids_output_path = write_raw_bids(**kwargs)
+    elif dir_name == 'NihonKohden':
+        with pytest.warns(RuntimeWarning,
+                          match='Encountered data in "short" format'):
+            bids_output_path = write_raw_bids(**kwargs)
     else:
         with pytest.warns(RuntimeWarning,
                           match='Encountered data in "double" format'):
@@ -948,8 +952,12 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate):
 
     # Test we can overwrite dataset_description.json
     kwargs = dict(raw=raw, bids_path=bids_path, overwrite=True)
-    if dir_name in ('EDF', 'NihonKohden'):
+    if dir_name == 'EDF':
         write_raw_bids(**kwargs)
+    elif dir_name == 'NihonKohden':
+        with pytest.warns(RuntimeWarning,
+                          match='Encountered data in "short" format'):
+            write_raw_bids(**kwargs)
     else:
         with pytest.warns(RuntimeWarning,
                           match='Encountered data in "double" format'):
@@ -965,8 +973,12 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate):
     # After writing the entire dataset again, dataset_description.json should
     # contain the default values.
     kwargs = dict(raw=raw, bids_path=bids_path, overwrite=True)
-    if dir_name in ('EDF', 'NihonKohden'):
+    if dir_name == 'EDF':
         write_raw_bids(**kwargs)
+    elif dir_name == 'NihonKohden':
+        with pytest.warns(RuntimeWarning,
+                          match='Encountered data in "short" format'):
+            write_raw_bids(**kwargs)
     else:
         with pytest.warns(RuntimeWarning,
                           match='Encountered data in "double" format'):
@@ -1021,8 +1033,12 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate):
                                                 rpa=[0, 0, 1])
     raw.set_montage(eeg_montage)
     kwargs = dict(raw=raw, bids_path=bids_path, overwrite=True)
-    if dir_name in ('EDF', 'NihonKohden'):
+    if dir_name == 'EDF':
         write_raw_bids(**kwargs)
+    elif dir_name == 'NihonKohden':
+        with pytest.warns(RuntimeWarning,
+                          match='Encountered data in "short" format'):
+            write_raw_bids(**kwargs)
     else:
         with pytest.warns(RuntimeWarning,
                           match='Encountered data in "double" format'):
@@ -1065,7 +1081,9 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate):
                               match='Encountered data in "double" format'):
                 write_raw_bids(**kwargs)
         else:
-            write_raw_bids(**kwargs)
+            with pytest.warns(RuntimeWarning,
+                              match='Encountered data in "short" format'):
+                write_raw_bids(**kwargs)
 
         data = _from_tsv(scans_tsv)
         bids_fname = bids_path.copy().update(suffix='eeg',
@@ -1087,8 +1105,12 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate):
     bids_root = _TempDir()
     bids_path.update(root=bids_root)
     kwargs = dict(raw=ieeg_raw, bids_path=bids_path, overwrite=True)
-    if dir_name in ('EDF', 'NihonKohden'):
+    if dir_name == 'EDF':
         write_raw_bids(**kwargs)
+    elif dir_name == 'NihonKohden':
+        with pytest.warns(RuntimeWarning,
+                          match='Encountered data in "short" format'):
+            write_raw_bids(**kwargs)
     else:
         with pytest.warns(RuntimeWarning,
                           match='Encountered data in "double" format'):
@@ -1115,8 +1137,12 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate):
     bids_root = _TempDir()
     bids_path.update(root=bids_root)
     kwargs = dict(raw=ieeg_raw, bids_path=bids_path, overwrite=True)
-    if dir_name in ('EDF', 'NihonKohden'):
+    if dir_name == 'EDF':
         write_raw_bids(**kwargs)
+    elif dir_name == 'NihonKohden':
+        with pytest.warns(RuntimeWarning,
+                          match='Encountered data in "short" format'):
+            write_raw_bids(**kwargs)
     else:
         with pytest.warns(RuntimeWarning,
                           match='Encountered data in "double" format'):
@@ -1144,8 +1170,10 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate):
         raw = reader(raw_fname)
         kwargs = dict(raw=raw, bids_path=bids_path, overwrite=True)
         if dir_name == 'NihonKohden':
-            write_raw_bids(**kwargs)
-            output_path = _test_anonymize(raw, bids_path)
+            with pytest.warns(RuntimeWarning,
+                              match='Encountered data in "short" format'):
+                write_raw_bids(**kwargs)
+                output_path = _test_anonymize(raw, bids_path)
         elif dir_name == 'EDF':
             write_raw_bids(**kwargs)  # Just copies.
             with pytest.warns(RuntimeWarning,
@@ -1799,7 +1827,10 @@ def test_mark_bad_channels_files():
     # TODO: allow write_brain_vision to write different units
     # mark bad channels that get stored as uV in write_brain_vision
     bads = ['CP5', 'CP6', 'HL', 'HR', 'Vb', 'ReRef']
-    mark_bad_channels(bads, bids_path=bids_path, overwrite=False)
+
+    with pytest.warns(RuntimeWarning,
+                      match='Encountered data in "short" format'):
+        mark_bad_channels(bads, bids_path=bids_path, overwrite=False)
     raw.info['bads'].extend(bads)
 
     # the raw data should match if you drop the bads
