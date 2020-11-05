@@ -81,8 +81,8 @@ print(bids_path.match())
 # Define a sidecar template as a dictionary
 entries = {
     'PowerLineFrequency': 60,
-    'Manufacturer': 'Captrak',
-    'InstitutionName': 'Martinos Center'
+    'Manufacturer': "Captrak",
+    'InstitutionName': "Martinos Center"
 }
 
 # Note: ``update_sidecar_json`` will perform essentially a
@@ -114,7 +114,7 @@ print(make_report(bids_root))
 # We can reverse the changes by updating the sidecar again.
 
 # update the template to have a new PowerLineFrequency
-entries['Manufacturer'] = 'Elekta'
+entries['Manufacturer'] = "Elekta"
 entries['PowerLineFrequency'] = 50
 
 # Update sidecar files via a template defined as a JSON file.
