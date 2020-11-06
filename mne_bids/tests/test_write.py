@@ -337,6 +337,13 @@ def test_fif(_bids_validate):
     events = mne.find_events(raw2)
     event_id = {'auditory/left': 1, 'auditory/right': 2, 'visual/left': 3,
                 'visual/right': 4, 'smiley': 5, 'button': 32}
+    # XXX: Need to remove "Status" channel until pybv supports
+    # channels that are non-Volt
+    idxs = mne.pick_types(raw.info, meg=False, stim=True)
+    stim_ch_names = np.array(raw.ch_names)[idxs]
+    raw2.drop_channels(stim_ch_names)
+    raw.drop_channels(stim_ch_names)
+
     epochs = mne.Epochs(raw2, events, event_id=event_id, tmin=-0.2, tmax=0.5,
                         preload=True)
     with pytest.warns(RuntimeWarning,
@@ -357,7 +364,7 @@ def test_fif(_bids_validate):
     raw2 = read_raw_bids(bids_path=bids_path)
     os.remove(op.join(bids_root, 'test-raw.fif'))
 
-    events2 = mne.find_events(raw2)
+    events2, _ = mne.events_from_annotations(raw2, event_id)
     epochs2 = mne.Epochs(raw2, events2, event_id=event_id, tmin=-0.2, tmax=0.5,
                          preload=True)
     assert_array_almost_equal(raw.get_data(), raw2.get_data())
@@ -1739,7 +1746,6 @@ def test_mark_bad_channels(_bids_validate,
                            existing_ch_names, existing_descriptions,
                            datatype, overwrite):
     """Test marking channels of an existing BIDS dataset as "bad"."""
-
     # Setup: Create a fresh BIDS dataset.
     bids_root = _TempDir()
     bids_path = _bids_path.copy().update(root=bids_root, datatype='meg',
