@@ -12,14 +12,14 @@ from mne_bids.utils import _write_json
 
 # TODO: add support for tsv files
 def update_sidecar_json(bids_path, entries, verbose=True):
-    """Update sidecar files using template JSON file.
+    """Update sidecar files using a dictionary or JSON file.
 
     Will update metadata fields inside the path defined by
     ``bids_path.fpath`` according to the ``entries``.
     If a field does not exist in the corresponding sidecar file,
-    then that field will be created according to the template.
+    then that field will be created according to the ``entries``.
     If a field does exist in the corresponding sidecar file,
-    then that field will be updated according to the template.
+    then that field will be updated according to the ``entries``.
 
     For example, if ``InstitutionName`` is
     not defined in the sidecar json file, then trying to update
@@ -52,10 +52,10 @@ def update_sidecar_json(bids_path, entries, verbose=True):
     Sidecar JSON files include files such as ``*_ieeg.json``,
     ``*_coordsystem.json``, ``*_scans.json``, etc.
 
-    You should double check that your template is correct for the
-    corresponding sidecar JSON file because it will perform
+    You should double check that your update dictionary is correct
+    for the corresponding sidecar JSON file because it will perform
     a dictionary update of the sidecar fields according to
-    the passed in template overwriting any information that was
+    the passed in dictionary overwriting any information that was
     previously there.
 
     Raises
@@ -91,7 +91,7 @@ def update_sidecar_json(bids_path, entries, verbose=True):
         raise RuntimeError(f'Sidecar file {fpath} does not '
                            f'exist.')
 
-    # sidecar template either from file, or as dictionary
+    # sidecar update either from file, or as dictionary
     if isinstance(entries, dict):
         sidecar_tmp = entries
     else:
@@ -108,7 +108,7 @@ def update_sidecar_json(bids_path, entries, verbose=True):
         sidecar_json = json.load(
             tmp_f, object_pairs_hook=OrderedDict)
 
-    # update sidecar JSON file with the template fields
+    # update sidecar JSON file with the fields passed in
     sidecar_json.update(**sidecar_tmp)
 
     # write back the sidecar JSON

@@ -27,7 +27,7 @@ bids_path = BIDSPath(
 
 
 @pytest.fixture(scope='session')
-def return_bids_test_dir(tmpdir_factory):
+def _get_bids_test_dir(tmpdir_factory):
     """Return path to a written test BIDS dir."""
     bids_root = str(tmpdir_factory.mktemp('mnebids_utils_test_bids_ds'))
     data_path = testing.data_path()
@@ -61,38 +61,38 @@ def return_bids_test_dir(tmpdir_factory):
 
 
 @pytest.fixture(scope='session')
-def sidecar_json_template(return_bids_test_dir):
-    """Return path to a sidecar JSON template."""
+def _get_sidecar_json_update_file(return_bids_test_dir):
+    """Return path to a sidecar JSON updating file."""
     bids_root = return_bids_test_dir
     sample_scripts = op.join(bids_root, 'sourcedata')
-    sidecar_fpath = op.join(sample_scripts, 'sidecarjson_template.json')
+    sidecar_fpath = op.join(sample_scripts, 'sidecarjson_update.json')
     _mkdir_p(sample_scripts)
 
-    template_json = {
+    update_json = {
         'InstitutionName': 'mne-bids',
         'InstitutionAddress': 'Internet',
         'MEGChannelCount': 300,
         'MEGREFChannelCount': 6,
         'SEEGChannelCount': 0,
     }
-    _write_json(sidecar_fpath, template_json, overwrite=True)
+    _write_json(sidecar_fpath, update_json, overwrite=True)
 
     return sidecar_fpath
 
 
-@pytest.mark.usefixtures('return_bids_test_dir', '_bids_validate',
-                         'sidecar_json_template')
-def test_update_sidecar_jsons(return_bids_test_dir, _bids_validate,
-                              sidecar_json_template):
-    """Test updating sidecar JSON files via template."""
+@pytest.mark.usefixtures('_get_bids_test_dir', '_bids_validate',
+                         '_get_sidecar_json_update_file')
+def test_update_sidecar_jsons(_get_bids_test_dir, _bids_validate,
+                              _get_sidecar_json_update_file):
+    """Test updating sidecar JSON files."""
     bids_path = BIDSPath(
         subject=subject_id, session=session_id, run=run, acquisition=acq,
-        task=task, suffix='meg', root=return_bids_test_dir)
+        task=task, suffix='meg', root=_get_bids_test_dir)
 
     # expected key, original value, and expected value after update
     # Fields that are not `None` already are expected to exist
     # in this sidecar file. Fields that are `None` will get
-    # written with the template value when update is called.
+    # written with the sidecar json value when update is called.
     expected_checks = [('InstitutionName', 'n/a', 'mne-bids'),
                        ('InstitutionAddress', 'n/a', 'Internet'),
                        ('MEGChannelCount', 306, 300),
@@ -110,7 +110,7 @@ def test_update_sidecar_jsons(return_bids_test_dir, _bids_validate,
     _bids_validate(bids_path.root)
 
     # update sidecars
-    update_sidecar_json(sidecar_path, sidecar_json_template)
+    update_sidecar_json(sidecar_path, _get_sidecar_json_update_file)
     with open(sidecar_fpath, 'r') as fin:
         sidecar_json = json.load(fin)
     for key, _, val in expected_checks:
@@ -121,12 +121,12 @@ def test_update_sidecar_jsons(return_bids_test_dir, _bids_validate,
     # its a json file
     with pytest.raises(RuntimeError, match='Only works for ".json"'):
         update_sidecar_json(sidecar_path.copy().update(
-            extension=None), sidecar_json_template)
+            extension=None), _get_sidecar_json_update_file)
 
     # error should raise if the file path doesn't exist
     error_bids_path = sidecar_path.copy().update(subject='02')
     with pytest.raises(RuntimeError, match=f'Sidecar file '
                                            f'{error_bids_path.fpath} '
                                            'does not exist.'):
-        update_sidecar_json(error_bids_path,
-                            sidecar_json_template)
+        update_sidecar_json(
+            error_bids_path, _get_sidecar_json_update_file)

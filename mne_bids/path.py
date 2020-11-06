@@ -154,7 +154,7 @@ class BIDSPath(object):
 
     BIDSPath allows dynamic updating of its entities in place, and operates
     similar to `pathlib.Path`. In addition, it can query multiple paths
-    with matching BIDS entities via the ``match`` function.
+    with matching BIDS entities via the ``match`` method.
 
     Note that not all parameters are applicable to each suffix of data. For
     example, electrode location TSV files do not need a "task" field.

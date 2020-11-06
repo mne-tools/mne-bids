@@ -61,7 +61,7 @@ print(make_report(bids_root))
 # ----------------------------------------
 #
 # We can use MNE-BIDS to update all sidecar files for a matching
-# ``BIDSPath`` object. We then pass in a sidecar template to update
+# ``BIDSPath`` object. We then pass in a dictionary (or JSON file) to update
 # all matching metadata fields within the BIDS dataset.
 
 # create a BIDSPath object
@@ -78,7 +78,7 @@ sidecar_path = bids_path.copy().update(extension='.json')
 # We can now retrieve a list of all MEG-related files in the dataset:
 print(bids_path.match())
 
-# Define a sidecar template as a dictionary
+# Define a sidecar update as a dictionary
 entries = {
     'PowerLineFrequency': 60,
     'Manufacturer': "Captrak",
@@ -89,7 +89,7 @@ entries = {
 # dictionary update to your sidecar file, so be absolutely sure
 # that the ``entries`` are defined properly.
 #
-# Now update all sidecar fields according to the template
+# Now update all sidecar fields according to our updating dictionary
 update_sidecar_json(bids_path=sidecar_path, entries=entries)
 
 ###############################################################################
@@ -97,8 +97,8 @@ update_sidecar_json(bids_path=sidecar_path, entries=entries)
 # ------------------------
 #
 # We can use MNE-BIDS to update all sidecar files for a matching
-# ``BIDSPath`` object. We then pass in a sidecar template to update
-# all matching metadata fields within the BIDS dataset.
+# ``BIDSPath`` object. We then update all matching metadata fields
+# within the BIDS dataset.
 
 # new line frequency is now 60 Hz
 raw = read_raw_bids(bids_path=bids_path)
@@ -113,11 +113,9 @@ print(make_report(bids_root))
 ###############################################################################
 # We can reverse the changes by updating the sidecar again.
 
-# update the template to have a new PowerLineFrequency
+# update the sidecar data to have a new PowerLineFrequency
 entries['Manufacturer'] = "Elekta"
 entries['PowerLineFrequency'] = 50
-
-# Update sidecar files via a template defined as a JSON file.
 update_sidecar_json(bids_path=sidecar_path, entries=entries)
 
 ###############################################################################
