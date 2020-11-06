@@ -1267,13 +1267,6 @@ def test_set(_bids_validate):
     raw = _read_raw_eeglab(raw_fname)
     bids_path = _bids_path.copy().update(root=bids_root, datatype='eeg')
 
-    # embedded - test mne-version assertion
-    tmp_version = mne.__version__
-    mne.__version__ = '0.16'
-    with pytest.raises(ValueError, match='Your version of MNE is too old.'):
-        write_raw_bids(raw, bids_path)
-    mne.__version__ = tmp_version
-
     # proceed with the actual test for EEGLAB data
     write_raw_bids(raw, bids_path, overwrite=False)
     read_raw_bids(bids_path=bids_path)
