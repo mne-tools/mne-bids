@@ -698,7 +698,7 @@ def _write_raw_brainvision(raw, bids_fname, events):
     chtype_units = _handle_default('units', None)
     chtypes_volt = {chtype: True for chtype, unit in chtype_units.items()
                     if unit[-1] == 'V' and not chtype.startswith('fnirs')}
-    ch_idxs = mne.pick_types(raw.info, meg=False, **chtypes_volt)
+    ch_idxs = mne.pick_types(raw.info, meg=False, **chtypes_volt, exclude=[])
     if len(ch_idxs) != len(raw.ch_names):
         non_volt_chs = set(raw.ch_names) - set(np.array(raw.ch_names)[ch_idxs])
         msg = ('Conversion to BrainVision format needed to be stopped, '

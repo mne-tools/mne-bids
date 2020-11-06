@@ -1827,14 +1827,15 @@ def test_mark_bad_channels_files():
     """Test validity of bad channel writing."""
     # BV
     bids_root = _TempDir()
-    data_path = op.join(base_path, 'brainvision', 'tests', 'data')
-    raw_fname = op.join(data_path, 'test.vhdr')
+    data_path = op.join(testing.data_path(), 'montage')
+    raw_fname = op.join(data_path, 'bv_dig_test.vhdr')
 
     raw = _read_raw_brainvision(raw_fname)
+    raw.set_channel_types({'HEOG': 'eog', 'VEOG': 'eog', 'ECG': 'ecg'})
 
     # inject a bad channel
     assert not raw.info['bads']
-    injected_bad = ['FP1']
+    injected_bad = ['Fp1']
     raw.info['bads'] = injected_bad
 
     bids_path = _bids_path.copy().update(root=bids_root)
@@ -1842,9 +1843,8 @@ def test_mark_bad_channels_files():
     # write with injected bad channels
     write_raw_bids(raw, bids_path, overwrite=True)
 
-    # TODO: allow write_brain_vision to write different units
     # mark bad channels that get stored as uV in write_brain_vision
-    bads = ['CP5', 'CP6', 'HL', 'HR', 'Vb', 'ReRef']
+    bads = ['CP5', 'CP6']
 
     with pytest.warns(RuntimeWarning,
                       match='Encountered data in "short" format'):
