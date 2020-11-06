@@ -1088,6 +1088,12 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate):
     if check_version('pybv', '0.3'):
         daysback_min, daysback_max = _get_anonymization_daysback(raw)
         daysback = (daysback_min + daysback_max) // 2
+
+        # XXX: Need to remove "Status" channel until pybv supports
+        # channels that are non-Volt
+        if dir_name == 'EDF':
+            raw.drop_channels("Status")
+
         kwargs = dict(raw=raw, bids_path=bids_path,
                       anonymize=dict(daysback=daysback), overwrite=True)
         if dir_name == 'EDF':
@@ -1186,6 +1192,12 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate):
     # test anonymize and convert
     if check_version('pybv', '0.3'):
         raw = reader(raw_fname)
+
+        # XXX: Need to remove "Status" channel until pybv supports
+        # channels that are non-Volt
+        if dir_name == 'EDF':
+            raw.drop_channels("Status")
+
         kwargs = dict(raw=raw, bids_path=bids_path, overwrite=True)
         if dir_name == 'NihonKohden':
             with pytest.warns(RuntimeWarning,
