@@ -1085,15 +1085,6 @@
 <span class="sd">    mne.events_from_annotations</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">check_version</span><span class="p">(</span><span class="s1">&#39;mne&#39;</span><span class="p">,</span> <span class="s1">&#39;0.17&#39;</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Your version of MNE is too old. &#39;</span>
-                         <span class="s1">&#39;Please update to 0.17 or newer.&#39;</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">check_version</span><span class="p">(</span><span class="s1">&#39;mne&#39;</span><span class="p">,</span> <span class="s1">&#39;0.20&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">anonymize</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Your version of MNE is too old to be able to &#39;</span>
-                         <span class="s1">&#39;anonymize the data on write. Please update to &#39;</span>
-                         <span class="s1">&#39;0.20.dev version or newer.&#39;</span><span class="p">)</span>
-
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">raw</span><span class="p">,</span> <span class="n">BaseRaw</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;raw_file must be an instance of BaseRaw, &#39;</span>
                          <span class="s1">&#39;got </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="nb">type</span><span class="p">(</span><span class="n">raw</span><span class="p">))</span>
@@ -1798,7 +1789,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-11-05.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-11-06.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.3.0.<br/>
     </p>
   </div>
