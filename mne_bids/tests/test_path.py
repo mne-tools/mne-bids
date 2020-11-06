@@ -750,11 +750,7 @@ def test_find_empty_room(return_bids_test_dir):
         er_bids_path.update(session=date)
         er_meas_date = datetime.strptime(date, '%Y%m%d')
         er_meas_date = er_meas_date.replace(tzinfo=timezone.utc)
-
-        if check_version('mne', '0.20'):
-            er_raw.set_meas_date(er_meas_date)
-        else:
-            er_raw.info['meas_date'] = (er_meas_date.timestamp(), 0)
+        er_raw.set_meas_date(er_meas_date)
         write_raw_bids(er_raw, er_bids_path)
 
     best_er_basename = bids_path.find_empty_room()
@@ -766,11 +762,7 @@ def test_find_empty_room(return_bids_test_dir):
 
     # assert that we get error if meas_date is not available.
     raw = read_raw_bids(bids_path=bids_path)
-    if check_version('mne', '0.20'):
-        raw.set_meas_date(None)
-    else:
-        raw.info['meas_date'] = None
-        raw.annotations.orig_time = None
+    raw.set_meas_date(None)
     anonymize_info(raw.info)
     write_raw_bids(raw, bids_path, overwrite=True)
     with pytest.raises(ValueError, match='The provided recording does not '
@@ -801,13 +793,8 @@ def test_find_emptyroom_ties():
     er_raw_fname = op.join(data_path, 'MEG', 'sample', 'ernoise_raw.fif')
     raw.copy().crop(0, 10).save(er_raw_fname, overwrite=True)
     er_raw = _read_raw_fif(er_raw_fname)
-
-    if check_version('mne', '0.20'):
-        raw.set_meas_date(meas_date)
-        er_raw.set_meas_date(meas_date)
-    else:
-        raw.info['meas_date'] = (meas_date.timestamp(), 0)
-        er_raw.info['meas_date'] = (meas_date.timestamp(), 0)
+    raw.set_meas_date(meas_date)
+    er_raw.set_meas_date(meas_date)
 
     write_raw_bids(raw, bids_path, overwrite=True)
     er_bids_path = BIDSPath(subject='emptyroom', session=session)

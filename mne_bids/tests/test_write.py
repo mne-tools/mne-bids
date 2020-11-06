@@ -676,14 +676,8 @@ def test_kit(_bids_validate):
     assert op.exists(marker_fname)
 
     # test anonymize
-    if check_version('mne', '0.20'):
-        output_path = _test_anonymize(raw, kit_bids_path,
-                                      events_fname, event_id)
-        _bids_validate(output_path)
-    else:
-        with pytest.raises(ValueError, match='MNE is too old.'):
-            output_path = _test_anonymize(raw, kit_bids_path,
-                                          events_fname, event_id)
+    output_path = _test_anonymize(raw, kit_bids_path, events_fname, event_id)
+    _bids_validate(output_path)
 
     # ensure the channels file has no STI 014 channel:
     channels_tsv = marker_fname.copy().update(datatype='meg',
@@ -762,17 +756,16 @@ def test_ctf(_bids_validate):
     assert op.exists(op.join(bids_root, 'participants.tsv'))
 
     # test anonymize
-    if check_version('mne', '0.20'):
-        raw = _read_raw_ctf(raw_fname)
-        with pytest.warns(RuntimeWarning,
-                          match='Converting to FIF for anonymization'):
-            output_path = _test_anonymize(raw, bids_path)
-        _bids_validate(output_path)
+    raw = _read_raw_ctf(raw_fname)
+    with pytest.warns(RuntimeWarning,
+                      match='Converting to FIF for anonymization'):
+        output_path = _test_anonymize(raw, bids_path)
+    _bids_validate(output_path)
 
-        raw.set_meas_date(None)
-        raw.anonymize()
-        with pytest.raises(ValueError, match='All measurement dates are None'):
-            get_anonymization_daysback(raw)
+    raw.set_meas_date(None)
+    raw.anonymize()
+    with pytest.raises(ValueError, match='All measurement dates are None'):
+        get_anonymization_daysback(raw)
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
@@ -801,14 +794,13 @@ def test_bti(_bids_validate):
     with pytest.raises(TypeError, match="unexpected keyword argument 'foo'"):
         read_raw_bids(bids_path=bids_path, extra_params=dict(foo='bar'))
 
-    if check_version('mne', '0.20'):
-        # test anonymize
-        raw = _read_raw_bti(raw_fname, config_fname=config_fname,
-                            head_shape_fname=headshape_fname)
-        with pytest.warns(RuntimeWarning,
-                          match='Converting to FIF for anonymization'):
-            output_path = _test_anonymize(raw, bids_path)
-        _bids_validate(output_path)
+    # test anonymize
+    raw = _read_raw_bti(raw_fname, config_fname=config_fname,
+                        head_shape_fname=headshape_fname)
+    with pytest.warns(RuntimeWarning,
+                      match='Converting to FIF for anonymization'):
+        output_path = _test_anonymize(raw, bids_path)
+    _bids_validate(output_path)
 
 
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
@@ -1299,8 +1291,7 @@ def test_set(_bids_validate):
     events_tsv_fname = op.join(bids_root, 'sub-' + subject_id,
                                'ses-' + session_id, 'eeg',
                                bids_path.basename + '_events.tsv')
-    if check_version('mne', '0.18'):
-        assert op.exists(events_tsv_fname)
+    assert op.exists(events_tsv_fname)
 
     # Also cover iEEG
     # We use the same data and pretend that eeg channels are ecog
@@ -1411,12 +1402,8 @@ def test_write_anat(_bids_validate):
 
     # trans has a wrong type
     wrong_type = 1
-    if check_version('mne', min_version='0.21'):
-        match = f'trans must be an instance of .*, got {type(wrong_type)} '
-        ex = TypeError
-    else:
-        match = f'transform type {type(wrong_type)} not known, must be'
-        ex = ValueError
+    match = f'trans must be an instance of .*, got {type(wrong_type)} '
+    ex = TypeError
 
     with pytest.raises(ex, match=match):
         write_anat(t1w_mgh, bids_path=bids_path, raw=raw,
