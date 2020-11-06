@@ -1259,6 +1259,12 @@ def test_bdf(_bids_validate):
     # test anonymize and convert
     if check_version('pybv', '0.3'):
         raw = _read_raw_bdf(raw_fname)
+        # XXX: Need to remove "Status" channel until pybv supports
+        # channels that are non-Volt
+        with pytest.raises(RuntimeError, match='''in Volts: "{'Status'}"'''):
+            output_path = _test_anonymize(raw, bids_path)
+
+        raw.pick_types(eeg=True, exclude=[])
         with pytest.warns(RuntimeWarning,
                           match='Encountered data in "int" format'):
             output_path = _test_anonymize(raw, bids_path)
