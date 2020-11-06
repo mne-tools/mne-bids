@@ -21,7 +21,7 @@ with warnings.catch_warnings():
     import mne
 
 from mne.datasets import testing
-from mne.utils import _TempDir, check_version
+from mne.utils import _TempDir
 from mne.io import anonymize_info
 
 from mne_bids import (get_datatypes, get_entity_vals, print_dir_tree,
