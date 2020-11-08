@@ -14,15 +14,17 @@ from mne_bids.utils import _write_json
 def update_sidecar_json(bids_path, entries, verbose=True):
     """Update sidecar files using a dictionary or JSON file.
 
-    Will update metadata fields inside the path defined by ``bids_path.fpath``
-    according to the ``entries``. If a field does not exist in the
-    corresponding sidecar file, then that field will be created according to
-    the ``entries``. If a field does exist in the corresponding sidecar file,
+    Will update metadata fields inside the path defined by
+    ``bids_path.fpath`` according to the ``entries``. If a
+    field does not exist in the corresponding sidecar file,
+    then that field will be created according to the ``entries``.
+    If a field does exist in the corresponding sidecar file,
     then that field will be updated according to the ``entries``.
 
-    For example, if ``InstitutionName`` is not defined in the sidecar json
-    file, then trying to update ``InstitutionName`` to ``Martinos Center``
-    will update the sidecar json file to have ``InstitutionName`` as
+    For example, if ``InstitutionName`` is not defined in
+    the sidecar json file, then trying to update
+    ``InstitutionName`` to ``Martinos Center`` will update
+    the sidecar json file to have ``InstitutionName`` as
     ``Martinos Center``.
 
     Note that
