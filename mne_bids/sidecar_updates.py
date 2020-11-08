@@ -27,8 +27,6 @@ def update_sidecar_json(bids_path, entries, verbose=True):
     the sidecar json file to have ``InstitutionName`` as
     ``Martinos Center``.
 
-    Note that
-
     Parameters
     ----------
     bids_path : BIDSPath
