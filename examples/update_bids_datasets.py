@@ -107,7 +107,7 @@ print(raw.info['line_freq'])
 ###############################################################################
 # Generate a new report based on the updated metadata.
 
-# The manufacturer was changed to ``Captrak``
+# The manufacturer was changed to ``MEGIN``
 print(make_report(bids_root))
 
 ###############################################################################
