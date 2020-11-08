@@ -111,7 +111,7 @@ print(raw.info['line_freq'])
 print(make_report(bids_root))
 
 ###############################################################################
-# We can reverse the changes by updating the sidecar again.
+# We can revert the changes by updating the sidecar again.
 
 # update the sidecar data to have a new PowerLineFrequency
 entries['Manufacturer'] = "Elekta"
