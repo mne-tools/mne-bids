@@ -62,6 +62,10 @@ def update_sidecar_json(bids_path, entries, verbose=True):
         If the specified ``bids_path.fpath`` cannot be found
         in the dataset.
 
+    RuntimeError
+        If the ``bids_path.fpath`` does not have ``.json``
+        extension.
+
     Examples
     --------
     >>> # update sidecar json file
