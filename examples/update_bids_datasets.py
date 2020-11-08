@@ -81,7 +81,7 @@ print(bids_path.match())
 # Define a sidecar update as a dictionary
 entries = {
     'PowerLineFrequency': 60,
-    'Manufacturer': "Captrak",
+    'Manufacturer': "MEGIN",
     'InstitutionName': "Martinos Center"
 }
 
