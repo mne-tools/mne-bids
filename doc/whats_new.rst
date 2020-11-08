@@ -45,7 +45,7 @@ Bug fixes
 - Fix a bug in :func:`mne_bids.write_raw_bids`, where passing raw data with :class:`mne.Annotations` set and the ``event_id`` dictionary not containing the :class:`mne.Annotations` descriptions as keys would raise an error, by `Richard Höchenberger`_ (`#603 <https://github.com/mne-tools/mne-bids/pull/603>`_)
 - Fix a bug in :func:`mne_bids.write_raw_bids` when passing raw MEG data with Internal Active Shielding (IAS) from Triux system, by `Alexandre Gramfort`_ (`#616 <https://github.com/mne-tools/mne-bids/pull/616>`_)
 - Fix a bug in :func:`mne_bids.write_raw_bids`, where original format of data was not kept when writing to FIFF, by `Alexandre Gramfort`_, `Stefan Appelhoff`_, and `Richard Höchenberger`_ (`#610 <https://github.com/mne-tools/mne-bids/pull/610>`_)
-- Fix a bug where conversion to BrainVision format was done even when non-Volt channel types were present in the data (BrainVision conversion is done by pybv, which currently only supports Volt channel types), by `Stefan Appelhoff`_ (`#619 <https://github.com/mne-tools/mne-bids/pull/619>`_)
+- Fix a bug where conversion to BrainVision format was done even when non-Volt channel types were present in the data (BrainVision conversion is done by `pybv`, which currently only supports Volt channel types), by `Stefan Appelhoff`_ (`#619 <https://github.com/mne-tools/mne-bids/pull/619>`_)
 
 API changes
 ^^^^^^^^^^^
