@@ -61,9 +61,9 @@ def _get_bids_test_dir(tmpdir_factory):
 
 
 @pytest.fixture(scope='session')
-def _get_sidecar_json_update_file(return_bids_test_dir):
+def _get_sidecar_json_update_file(_get_bids_test_dir):
     """Return path to a sidecar JSON updating file."""
-    bids_root = return_bids_test_dir
+    bids_root = _get_bids_test_dir
     sample_scripts = op.join(bids_root, 'sourcedata')
     sidecar_fpath = op.join(sample_scripts, 'sidecarjson_update.json')
     _mkdir_p(sample_scripts)
@@ -93,8 +93,8 @@ def test_update_sidecar_jsons(_get_bids_test_dir, _bids_validate,
     # Fields that are not `None` already are expected to exist
     # in this sidecar file. Fields that are `None` will get
     # written with the sidecar json value when update is called.
-    expected_checks = [('InstitutionName', 'n/a', 'mne-bids'),
-                       ('InstitutionAddress', 'n/a', 'Internet'),
+    expected_checks = [('InstitutionName', None, 'mne-bids'),
+                       ('InstitutionAddress', None, 'Internet'),
                        ('MEGChannelCount', 306, 300),
                        ('MEGREFChannelCount', 0, 6),
                        ('ECGChannelCount', 0, 0),
