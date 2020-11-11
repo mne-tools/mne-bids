@@ -319,7 +319,7 @@ pass an empty list as ``ch_names``, combined with ``overwrite=True``:
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  7.082 seconds)
+   **Total running time of the script:** ( 0 minutes  6.407 seconds)
 
 
 .. _sphx_glr_download_auto_examples_mark_bad_channels.py:

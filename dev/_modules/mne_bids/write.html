@@ -142,6 +142,7 @@
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">mne._digitization._utils</span> <span class="kn">import</span> <span class="n">_get_fid_coords</span>
 <span class="kn">from</span> <span class="nn">mne.channels.channels</span> <span class="kn">import</span> <span class="n">_unit2human</span>
+<span class="kn">from</span> <span class="nn">mne.defaults</span> <span class="kn">import</span> <span class="n">_handle_default</span>
 <span class="kn">from</span> <span class="nn">mne.utils</span> <span class="kn">import</span> <span class="n">check_version</span><span class="p">,</span> <span class="n">has_nibabel</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">warn</span><span class="p">,</span> <span class="n">_validate_type</span>
 <span class="kn">import</span> <span class="nn">mne.preprocessing</span>
 
@@ -805,6 +806,21 @@
     <span class="n">meas_date</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;meas_date&#39;</span><span class="p">]</span>
     <span class="k">if</span> <span class="n">meas_date</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">meas_date</span> <span class="o">=</span> <span class="n">_stamp_to_dt</span><span class="p">(</span><span class="n">meas_date</span><span class="p">)</span>
+
+    <span class="c1"># pybv currently only supports channels in Volts, except fNIRS</span>
+    <span class="n">chtype_units</span> <span class="o">=</span> <span class="n">_handle_default</span><span class="p">(</span><span class="s1">&#39;units&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">chtypes_volt</span> <span class="o">=</span> <span class="p">{</span><span class="n">chtype</span><span class="p">:</span> <span class="kc">True</span> <span class="k">for</span> <span class="n">chtype</span><span class="p">,</span> <span class="n">unit</span> <span class="ow">in</span> <span class="n">chtype_units</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                    <span class="k">if</span> <span class="n">unit</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;V&#39;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">chtype</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;fnirs&#39;</span><span class="p">)}</span>
+    <span class="n">ch_idxs</span> <span class="o">=</span> <span class="n">mne</span><span class="o">.</span><span class="n">pick_types</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">,</span> <span class="n">meg</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">chtypes_volt</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="p">[])</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ch_idxs</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">ch_names</span><span class="p">):</span>
+        <span class="n">non_volt_chs</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">ch_names</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">ch_names</span><span class="p">)[</span><span class="n">ch_idxs</span><span class="p">])</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;Conversion to BrainVision format needed to be stopped, &#39;</span>
+               <span class="s1">&#39;because your raw data contains channel types that are &#39;</span>
+               <span class="sa">f</span><span class="s1">&#39;not represented in Volts: &quot;</span><span class="si">{</span><span class="n">non_volt_chs</span><span class="si">}</span><span class="s1">&quot;&#39;</span>
+               <span class="s1">&#39;</span><span class="se">\n\n</span><span class="s1">Until BrainVision format conversion is improved, you &#39;</span>
+               <span class="s1">&#39;must drop these channels from your raw data before using &#39;</span>
+               <span class="s1">&#39;mne-bids. Please contact the mne-bids team about this.&#39;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
     <span class="c1"># XXX Always write as float32 to avoid precision loss during I/O roundtrip.</span>
     <span class="c1"># See https://github.com/bids-standard/pybv/issues/45</span>
@@ -1789,7 +1805,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-11-06.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-11-11.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.3.0.<br/>
     </p>
   </div>
