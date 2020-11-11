@@ -337,6 +337,13 @@ def test_fif(_bids_validate):
     events = mne.find_events(raw2)
     event_id = {'auditory/left': 1, 'auditory/right': 2, 'visual/left': 3,
                 'visual/right': 4, 'smiley': 5, 'button': 32}
+    # XXX: Need to remove "Status" channel until pybv supports
+    # channels that are non-Volt
+    idxs = mne.pick_types(raw.info, meg=False, stim=True)
+    stim_ch_names = np.array(raw.ch_names)[idxs]
+    raw2.drop_channels(stim_ch_names)
+    raw.drop_channels(stim_ch_names)
+
     epochs = mne.Epochs(raw2, events, event_id=event_id, tmin=-0.2, tmax=0.5,
                         preload=True)
     with pytest.warns(RuntimeWarning,
@@ -357,7 +364,7 @@ def test_fif(_bids_validate):
     raw2 = read_raw_bids(bids_path=bids_path)
     os.remove(op.join(bids_root, 'test-raw.fif'))
 
-    events2 = mne.find_events(raw2)
+    events2, _ = mne.events_from_annotations(raw2, event_id)
     epochs2 = mne.Epochs(raw2, events2, event_id=event_id, tmin=-0.2, tmax=0.5,
                          preload=True)
     assert_array_almost_equal(raw.get_data(), raw2.get_data())
@@ -1080,6 +1087,12 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate):
     if check_version('pybv', '0.3'):
         daysback_min, daysback_max = _get_anonymization_daysback(raw)
         daysback = (daysback_min + daysback_max) // 2
+
+        # XXX: Need to remove "Status" channel until pybv supports
+        # channels that are non-Volt
+        if dir_name == 'EDF':
+            raw.drop_channels("Status")
+
         kwargs = dict(raw=raw, bids_path=bids_path,
                       anonymize=dict(daysback=daysback), overwrite=True)
         if dir_name == 'EDF':
@@ -1178,6 +1191,12 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate):
     # test anonymize and convert
     if check_version('pybv', '0.3'):
         raw = reader(raw_fname)
+
+        # XXX: Need to remove "Status" channel until pybv supports
+        # channels that are non-Volt
+        if dir_name == 'EDF':
+            raw.drop_channels("Status")
+
         kwargs = dict(raw=raw, bids_path=bids_path, overwrite=True)
         if dir_name == 'NihonKohden':
             with pytest.warns(RuntimeWarning,
@@ -1251,6 +1270,12 @@ def test_bdf(_bids_validate):
     # test anonymize and convert
     if check_version('pybv', '0.3'):
         raw = _read_raw_bdf(raw_fname)
+        # XXX: Need to remove "Status" channel until pybv supports
+        # channels that are non-Volt
+        with pytest.raises(RuntimeError, match='''in Volts: "{'Status'}"'''):
+            output_path = _test_anonymize(raw, bids_path)
+
+        raw.pick_types(eeg=True, exclude=[])
         with pytest.warns(RuntimeWarning,
                           match='Encountered data in "int" format'):
             output_path = _test_anonymize(raw, bids_path)
@@ -1701,7 +1726,6 @@ def test_mark_bad_channels(_bids_validate,
                            existing_ch_names, existing_descriptions,
                            datatype, overwrite):
     """Test marking channels of an existing BIDS dataset as "bad"."""
-
     # Setup: Create a fresh BIDS dataset.
     bids_root = _TempDir()
     bids_path = _bids_path.copy().update(root=bids_root, datatype='meg',
@@ -1807,14 +1831,15 @@ def test_mark_bad_channels_files():
     """Test validity of bad channel writing."""
     # BV
     bids_root = _TempDir()
-    data_path = op.join(base_path, 'brainvision', 'tests', 'data')
-    raw_fname = op.join(data_path, 'test.vhdr')
+    data_path = op.join(testing.data_path(), 'montage')
+    raw_fname = op.join(data_path, 'bv_dig_test.vhdr')
 
     raw = _read_raw_brainvision(raw_fname)
+    raw.set_channel_types({'HEOG': 'eog', 'VEOG': 'eog', 'ECG': 'ecg'})
 
     # inject a bad channel
     assert not raw.info['bads']
-    injected_bad = ['FP1']
+    injected_bad = ['Fp1']
     raw.info['bads'] = injected_bad
 
     bids_path = _bids_path.copy().update(root=bids_root)
@@ -1822,9 +1847,8 @@ def test_mark_bad_channels_files():
     # write with injected bad channels
     write_raw_bids(raw, bids_path, overwrite=True)
 
-    # TODO: allow write_brain_vision to write different units
     # mark bad channels that get stored as uV in write_brain_vision
-    bads = ['CP5', 'CP6', 'HL', 'HR', 'Vb', 'ReRef']
+    bads = ['CP5', 'CP6']
 
     with pytest.warns(RuntimeWarning,
                       match='Encountered data in "short" format'):
