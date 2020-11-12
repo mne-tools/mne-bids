@@ -125,7 +125,7 @@ def test_update_sidecar_jsons(_get_bids_test_dir, _bids_validate,
 
     # error should raise if the file path doesn't exist
     error_bids_path = sidecar_path.copy().update(subject='02')
-    with pytest.raises(RuntimeError, match=f'Sidecar file '
-                                           f'does not exist.'):
+    with pytest.raises(RuntimeError, match='Sidecar file '
+                                           'does not exist.'):
         update_sidecar_json(
             error_bids_path, _get_sidecar_json_update_file)
