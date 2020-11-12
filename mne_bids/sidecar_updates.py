@@ -90,8 +90,8 @@ def update_sidecar_json(bids_path, entries, verbose=True):
     # get the file path
     fpath = bids_path.fpath
     if not fpath.exists():
-        raise RuntimeError(f'Sidecar file {fpath} does not '
-                           f'exist.')
+        raise RuntimeError(f'Sidecar file does not '
+                           f'exist for {fpath}.')
 
     # sidecar update either from file, or as dictionary
     if isinstance(entries, dict):
