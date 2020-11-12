@@ -77,7 +77,7 @@ def update_sidecar_json(bids_path, entries, verbose=True):
     >>> # update sidecar coordsystem json file
     >>> bids_path = BIDSPath(root='./', subject='001', session='001',
                              suffix='coordsystem', extension='.json')
-    >>> entries = {'iEEGCoordinateSyste,': 'Other'}
+    >>> entries = {'iEEGCoordinateSystem,': 'Other'}
     >>> update_sidecar_json(bids_path, entries)
     """
     # get all matching json files
