@@ -188,7 +188,7 @@ def _handle_info_reading(sidecar_fname, raw, verbose=None):
 
     Handle PowerLineFrequency of recording.
     """
-    with open(sidecar_fname, "r") as fin:
+    with open(sidecar_fname, "r", encoding='utf-8-sig') as fin:
         sidecar_json = json.load(fin)
 
     # read in the sidecar JSON's line frequency
@@ -548,7 +548,7 @@ def get_head_mri_trans(bids_path):
                                            extension='.json')
 
     # Get MRI landmarks from the JSON sidecar
-    with open(t1w_json_path, 'r') as f:
+    with open(t1w_json_path, 'r', encoding='utf-8-sig') as f:
         t1w_json = json.load(f)
     mri_coords_dict = t1w_json.get('AnatomicalLandmarkCoordinates', dict())
     mri_landmarks = np.asarray((mri_coords_dict.get('LPA', np.nan),

@@ -162,8 +162,8 @@ def _to_tsv(data, fname):
     n_rows = len(data[list(data.keys())[0]])
     output = _tsv_to_str(data, n_rows)
 
-    with open(fname, 'wb') as f:
-        f.write(output.encode('utf-8'))
+    with open(fname, 'w', encoding='utf-8') as f:
+        f.write(output)
 
 
 def _tsv_to_str(data, rows=5):
