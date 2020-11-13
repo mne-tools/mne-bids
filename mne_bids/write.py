@@ -681,7 +681,7 @@ def _write_raw_brainvision(raw, bids_fname, events):
         The events as MNE-Python format ndaray.
 
     """
-    if not check_version('pybv', '0.4'):
+    if not check_version('pybv', '0.4'):  # pragma: no cover
         raise ImportError('pybv >=0.4 is required for converting '
                           'file to Brainvision format')
     from pybv import write_brainvision
@@ -711,7 +711,7 @@ def _write_raw_brainvision(raw, bids_fname, events):
 
     # We enforce conversion to float32 format
     # XXX: pybv can also write to int16, to do that, we need to get
-    # original units of data prior to conversion, and add a optimization
+    # original units of data prior to conversion, and add an optimization
     # function to pybv that maximizes the resolution parameter while
     # ensuring that int16 can represent the data in original units.
     if raw.orig_format != 'single':
