@@ -46,7 +46,7 @@ Bug fixes
 - Fix a bug in :func:`mne_bids.write_raw_bids` when passing raw MEG data with Internal Active Shielding (IAS) from Triux system, by `Alexandre Gramfort`_ (`#616 <https://github.com/mne-tools/mne-bids/pull/616>`_)
 - Fix a bug in :func:`mne_bids.write_raw_bids`, where original format of data was not kept when writing to FIFF, by `Alexandre Gramfort`_, `Stefan Appelhoff`_, and `Richard Höchenberger`_ (`#610 <https://github.com/mne-tools/mne-bids/pull/610>`_)
 - Fix a bug where conversion to BrainVision format was done even when non-Volt channel types were present in the data (BrainVision conversion is done by ``pybv``, which currently only supports Volt channel types), by `Stefan Appelhoff`_ (`#619 <https://github.com/mne-tools/mne-bids/pull/619>`_)
-- Ensure sidecare files (`.tsv` and `.json`) are always read and written in UTF-8, by `Richard Höchenberger`_ (`#625 <https://github.com/mne-tools/mne-bids/pull/625>`_)
+- Ensure sidecar files (`.tsv` and `.json`) are always read and written in UTF-8, by `Richard Höchenberger`_ (`#625 <https://github.com/mne-tools/mne-bids/pull/625>`_)
 
 API changes
 ^^^^^^^^^^^
