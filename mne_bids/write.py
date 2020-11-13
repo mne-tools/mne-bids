@@ -681,8 +681,8 @@ def _write_raw_brainvision(raw, bids_fname, events):
         The events as MNE-Python format ndaray.
 
     """
-    if not check_version('pybv', '0.3'):
-        raise ImportError('pybv >=0.3 is required for converting '
+    if not check_version('pybv', '0.4'):
+        raise ImportError('pybv >=0.4 is required for converting '
                           'file to Brainvision format')
     from pybv import write_brainvision
     # Subtract raw.first_samp because brainvision marks events starting from
@@ -709,17 +709,20 @@ def _write_raw_brainvision(raw, bids_fname, events):
                'mne-bids. Please contact the mne-bids team about this.')
         raise RuntimeError(msg)
 
-    # XXX Always write as float32 to avoid precision loss during I/O roundtrip.
-    # See https://github.com/bids-standard/pybv/issues/45
-    fmt = 'binary_float32'
+    # We enforce conversion to float32 format
+    # XXX: pybv can also write to int16, to do that, we need to get
+    # original units of data prior to conversion, and add a optimization
+    # function to pybv that maximizes the resolution parameter while
+    # ensuring that int16 can represent the data in original units.
     if raw.orig_format != 'single':
         warn(f'Encountered data in "{raw.orig_format}" format. '
              f'Converting to float32.', RuntimeWarning)
 
-    # writing with a resolution 1e-9 should be precise enough to avoid loss of
-    # resolution for any kind of data.
-    resolution = 1e-9
-    unit = 'µV'  # for compatibility with BrainVision software
+    # Writing to float32 µV with 0.1 resolution are the pybv defaults,
+    # which guarantees accurate roundtrip for values >= 1e-7 µV
+    fmt = 'binary_float32'
+    resolution = 1e-1
+    unit = 'µV'
     write_brainvision(data=raw.get_data(),
                       sfreq=raw.info['sfreq'],
                       ch_names=raw.ch_names,

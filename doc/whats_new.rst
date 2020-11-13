@@ -54,7 +54,7 @@ API changes
 
 Requirements
 ^^^^^^^^^^^^
-- Writing BrainVision data now requires ``pybv`` 0.3 or later.
+- Writing BrainVision data now requires ``pybv`` 0.4 or later.
 
 :doc:`Find out what was new in previous releases <whats_new_previous_releases>`
 
