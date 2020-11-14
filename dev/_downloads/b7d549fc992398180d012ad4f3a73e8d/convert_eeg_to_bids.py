@@ -206,7 +206,7 @@ print_dir_tree(bids_root)
 # If you are preparing a manuscript, please make sure to also cite MNE-BIDS
 # there.
 readme = os.path.join(bids_root, 'README')
-with open(readme, 'r') as fid:
+with open(readme, 'r', encoding='utf-8-sig') as fid:
     text = fid.read()
 print(text)
 
