@@ -2127,8 +2127,8 @@ def test_sidecar_encoding(_bids_validate):
     assert x[0] == codecs.BOM_UTF8.decode('utf-8')
 
     # JSON files should be written without a BOM
-    for tsv_file in bids_path.root.rglob('*.json'):
-        with open(tsv_file, 'r', encoding='utf-8') as f:
+    for json_file in bids_path.root.rglob('*.json'):
+        with open(json_file, 'r', encoding='utf-8') as f:
             x = f.read()
         assert x[0] != codecs.BOM_UTF8.decode('utf-8')
 
