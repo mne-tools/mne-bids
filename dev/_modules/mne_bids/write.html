@@ -794,8 +794,8 @@
 <span class="sd">        The events as MNE-Python format ndaray.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">check_version</span><span class="p">(</span><span class="s1">&#39;pybv&#39;</span><span class="p">,</span> <span class="s1">&#39;0.3&#39;</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s1">&#39;pybv &gt;=0.3 is required for converting &#39;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">check_version</span><span class="p">(</span><span class="s1">&#39;pybv&#39;</span><span class="p">,</span> <span class="s1">&#39;0.4&#39;</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
+        <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s1">&#39;pybv &gt;=0.4 is required for converting &#39;</span>
                           <span class="s1">&#39;file to Brainvision format&#39;</span><span class="p">)</span>
     <span class="kn">from</span> <span class="nn">pybv</span> <span class="kn">import</span> <span class="n">write_brainvision</span>
     <span class="c1"># Subtract raw.first_samp because brainvision marks events starting from</span>
@@ -822,17 +822,20 @@
                <span class="s1">&#39;mne-bids. Please contact the mne-bids team about this.&#39;</span><span class="p">)</span>
         <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
-    <span class="c1"># XXX Always write as float32 to avoid precision loss during I/O roundtrip.</span>
-    <span class="c1"># See https://github.com/bids-standard/pybv/issues/45</span>
-    <span class="n">fmt</span> <span class="o">=</span> <span class="s1">&#39;binary_float32&#39;</span>
+    <span class="c1"># We enforce conversion to float32 format</span>
+    <span class="c1"># XXX: pybv can also write to int16, to do that, we need to get</span>
+    <span class="c1"># original units of data prior to conversion, and add an optimization</span>
+    <span class="c1"># function to pybv that maximizes the resolution parameter while</span>
+    <span class="c1"># ensuring that int16 can represent the data in original units.</span>
     <span class="k">if</span> <span class="n">raw</span><span class="o">.</span><span class="n">orig_format</span> <span class="o">!=</span> <span class="s1">&#39;single&#39;</span><span class="p">:</span>
         <span class="n">warn</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Encountered data in &quot;</span><span class="si">{</span><span class="n">raw</span><span class="o">.</span><span class="n">orig_format</span><span class="si">}</span><span class="s1">&quot; format. &#39;</span>
              <span class="sa">f</span><span class="s1">&#39;Converting to float32.&#39;</span><span class="p">,</span> <span class="ne">RuntimeWarning</span><span class="p">)</span>
 
-    <span class="c1"># writing with a resolution 1e-9 should be precise enough to avoid loss of</span>
-    <span class="c1"># resolution for any kind of data.</span>
-    <span class="n">resolution</span> <span class="o">=</span> <span class="mf">1e-9</span>
-    <span class="n">unit</span> <span class="o">=</span> <span class="s1">&#39;µV&#39;</span>  <span class="c1"># for compatibility with BrainVision software</span>
+    <span class="c1"># Writing to float32 µV with 0.1 resolution are the pybv defaults,</span>
+    <span class="c1"># which guarantees accurate roundtrip for values &gt;= 1e-7 µV</span>
+    <span class="n">fmt</span> <span class="o">=</span> <span class="s1">&#39;binary_float32&#39;</span>
+    <span class="n">resolution</span> <span class="o">=</span> <span class="mf">1e-1</span>
+    <span class="n">unit</span> <span class="o">=</span> <span class="s1">&#39;µV&#39;</span>
     <span class="n">write_brainvision</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">raw</span><span class="o">.</span><span class="n">get_data</span><span class="p">(),</span>
                       <span class="n">sfreq</span><span class="o">=</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;sfreq&#39;</span><span class="p">],</span>
                       <span class="n">ch_names</span><span class="o">=</span><span class="n">raw</span><span class="o">.</span><span class="n">ch_names</span><span class="p">,</span>
@@ -1805,8 +1808,8 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-11-11.<br/>
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.3.0.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-11-14.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.3.1.<br/>
     </p>
   </div>
 </footer>
