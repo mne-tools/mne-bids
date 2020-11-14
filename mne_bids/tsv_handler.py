@@ -162,7 +162,7 @@ def _to_tsv(data, fname):
     n_rows = len(data[list(data.keys())[0]])
     output = _tsv_to_str(data, n_rows)
 
-    with open(fname, 'w', encoding='utf-8') as f:
+    with open(fname, 'w', encoding='utf-8-sig') as f:
         f.write(output)
 
 

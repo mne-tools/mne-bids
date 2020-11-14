@@ -188,7 +188,7 @@ def _handle_info_reading(sidecar_fname, raw, verbose=None):
 
     Handle PowerLineFrequency of recording.
     """
-    with open(sidecar_fname, "r", encoding='utf-8-sig') as fin:
+    with open(sidecar_fname, 'r', encoding='utf-8-sig') as fin:
         sidecar_json = json.load(fin)
 
     # read in the sidecar JSON's line frequency

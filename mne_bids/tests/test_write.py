@@ -473,7 +473,7 @@ def test_fif(_bids_validate):
 
     # add some readme text
     readme = op.join(bids_root, 'README')
-    with open(readme, 'w', encoding='utf-8') as fid:
+    with open(readme, 'w', encoding='utf-8-sig') as fid:
         fid.write('Welcome to my dataset\n')
 
     bids_path2 = bids_path.copy().update(subject=subject_id2)
@@ -493,7 +493,7 @@ def test_fif(_bids_validate):
                        events_data=events, event_id=event_id, overwrite=False)
 
     # assert README has references in it
-    with open(readme, 'r', encoding='utf-8') as fid:
+    with open(readme, 'r', encoding='utf-8-sig') as fid:
         text = fid.read()
         assert 'Welcome to my dataset\n' in text
         assert REFERENCES['mne-bids'] in text
@@ -505,7 +505,7 @@ def test_fif(_bids_validate):
     write_raw_bids(raw, bids_path2, events_data=events, event_id=event_id,
                    overwrite=True)
 
-    with open(readme, 'r', encoding='utf-8') as fid:
+    with open(readme, 'r', encoding='utf-8-sig') as fid:
         text = fid.read()
         assert 'Welcome to my dataset\n' in text
         assert REFERENCES['mne-bids'] in text
@@ -1146,7 +1146,7 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate):
 
     # assert README has references in it
     readme = op.join(bids_root, 'README')
-    with open(readme, 'r', encoding='utf-8') as fid:
+    with open(readme, 'r', encoding='utf-8-sig') as fid:
         text = fid.read()
         assert REFERENCES['ieeg'] in text
         assert REFERENCES['meg'] not in text
@@ -1234,7 +1234,7 @@ def test_bdf(_bids_validate):
 
     # assert README has references in it
     readme = op.join(bids_root, 'README')
-    with open(readme, 'r', encoding='utf-8') as fid:
+    with open(readme, 'r', encoding='utf-8-sig') as fid:
         text = fid.read()
         assert REFERENCES['eeg'] in text
         assert REFERENCES['meg'] not in text

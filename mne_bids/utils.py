@@ -172,7 +172,7 @@ def _write_text(fname, text, overwrite=False, verbose=True):
     if op.exists(fname) and not overwrite:
         raise FileExistsError(f'"{fname}" already exists. '
                               'Please set overwrite to True.')
-    with open(fname, 'w', encoding='utf-8') as fid:
+    with open(fname, 'w', encoding='utf-8-sig') as fid:
         fid.write(text)
         fid.write('\n')
 
