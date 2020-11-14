@@ -2121,7 +2121,7 @@ def test_sidecar_encoding(_bids_validate):
             x = f.read()
         assert x[0] == codecs.BOM_UTF8.decode('utf-8')
 
-    # Readme be written with a BOM
+    # Readme should be written with a BOM
     with open(bids_path.root / 'README', 'r', encoding='utf-8') as f:
         x = f.read()
     assert x[0] == codecs.BOM_UTF8.decode('utf-8')
