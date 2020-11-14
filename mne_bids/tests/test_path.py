@@ -392,7 +392,7 @@ def test_bids_path_inference(return_bids_test_dir):
     Path(extra_file).parent.mkdir(exist_ok=True, parents=True)
     # Creates a new file and because of this new file, there is now
     # ambiguity
-    with open(extra_file, 'w'):
+    with open(extra_file, 'w', encoding='utf-8'):
         pass
     with pytest.raises(RuntimeError, match='Found data of more than one'):
         channels_fname.fpath

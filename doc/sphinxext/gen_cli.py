@@ -74,7 +74,7 @@ def generate_cli_rst(app=None):
         for fname in glob.glob(op.join(cli_path, 'mne_bids*.py'))])
     iterator = sphinx_compatibility.status_iterator(
         fnames, 'generating MNE-BIDS cli help ... ', length=len(fnames))
-    with open(out_fname, 'w') as f:
+    with open(out_fname, 'w', encoding='utf-8') as f:
         f.write(header)
         for fname in iterator:
             cmd_name = fname[:-3]

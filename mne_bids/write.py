@@ -223,7 +223,7 @@ def _readme(datatype, fname, overwrite=False, verbose=True):
         Set verbose output to True or False.
     """
     if os.path.isfile(fname) and not overwrite:
-        with open(fname, 'r') as fid:
+        with open(fname, 'r', encoding='utf-8-sig') as fid:
             orig_data = fid.read()
         mne_bids_ref = REFERENCES['mne-bids'] in orig_data
         datatype_ref = REFERENCES[datatype] in orig_data
@@ -368,7 +368,7 @@ def _participants_json(fname, overwrite=False, verbose=True):
     # Note: mne-bids will overwrite age, sex and hand fields
     # if `overwrite` is True
     if op.exists(fname):
-        with open(fname, 'r') as fin:
+        with open(fname, 'r', encoding='utf-8-sig') as fin:
             orig_cols = json.load(fin, object_pairs_hook=OrderedDict)
         for key, val in orig_cols.items():
             if key not in cols:
@@ -814,7 +814,7 @@ def make_dataset_description(path, name, data_license=None,
                                ('ReferencesAndLinks', references_and_links),
                                ('DatasetDOI', doi)])
     if op.isfile(fname):
-        with open(fname, 'r') as fin:
+        with open(fname, 'r', encoding='utf-8-sig') as fin:
             orig_cols = json.load(fin)
         if 'BIDSVersion' in orig_cols and \
                 orig_cols['BIDSVersion'] != BIDS_VERSION:

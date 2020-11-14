@@ -92,7 +92,7 @@ def test_not_implemented():
     for not_implemented_ext in ['.mef', '.nwb']:
         data_path = _TempDir()
         raw_fname = op.join(data_path, 'test' + not_implemented_ext)
-        with open(raw_fname, 'w'):
+        with open(raw_fname, 'w', encoding='utf-8'):
             pass
         with pytest.raises(ValueError, match=('there is no IO support for '
                                               'this file format yet')):
@@ -308,7 +308,7 @@ def test_handle_info_reading():
     deriv_dir = op.join(bids_root, "derivatives")
     sidecar_copy = op.join(deriv_dir, op.basename(sidecar_fname))
     os.mkdir(deriv_dir)
-    with open(sidecar_fname, "r") as fin:
+    with open(sidecar_fname, "r", encoding='utf-8') as fin:
         sidecar_json = json.load(fin)
         sidecar_json["PowerLineFrequency"] = 45
     _write_json(sidecar_copy, sidecar_json)
