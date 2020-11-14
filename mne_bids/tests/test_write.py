@@ -19,6 +19,7 @@ import platform
 import shutil as sh
 import json
 from pathlib import Path
+import codecs
 
 import numpy as np
 from numpy.testing import assert_array_equal, assert_array_almost_equal
@@ -2089,3 +2090,58 @@ def test_anonymize_empty_room():
 
     raw2 = mne.io.read_raw_fif(bids_path)
     assert raw2.info['meas_date'].year < 1925
+
+
+@pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+def test_sidecar_encoding(_bids_validate):
+    """Test we're properly encoding text as UTF8."""
+    bids_root = _TempDir()
+    bids_path = _bids_path.copy().update(root=bids_root, datatype='meg')
+    data_path = testing.data_path()
+    raw_fname = op.join(data_path, 'MEG', 'sample',
+                        'sample_audvis_trunc_raw.fif')
+    events_fname = op.join(data_path, 'MEG', 'sample',
+                           'sample_audvis_trunc_raw-eve.fif')
+
+    raw = _read_raw_fif(raw_fname)
+    events = mne.read_events(events_fname)
+    event_desc = {1: 'döner', 2: 'bøfsandwich'}
+    annotations = mne.annotations_from_events(
+        events=events, sfreq=raw.info['sfreq'], event_desc=event_desc,
+        orig_time=raw.info['meas_date']
+    )
+
+    raw.set_annotations(annotations)
+    write_raw_bids(raw, bids_path=bids_path, verbose=False)
+    _bids_validate(bids_root)
+
+    # TSV files should be written with a BOM
+    for tsv_file in bids_path.root.rglob('*.tsv'):
+        with open(tsv_file, 'r', encoding='utf-8') as f:
+            x = f.read()
+        assert x[0] == codecs.BOM_UTF8.decode('utf-8')
+
+    # Readme be written with a BOM
+    with open(bids_path.root / 'README', 'r', encoding='utf-8') as f:
+        x = f.read()
+    assert x[0] == codecs.BOM_UTF8.decode('utf-8')
+
+    # JSON files should be written without a BOM
+    for tsv_file in bids_path.root.rglob('*.json'):
+        with open(tsv_file, 'r', encoding='utf-8') as f:
+            x = f.read()
+        assert x[0] != codecs.BOM_UTF8.decode('utf-8')
+
+    # Unicode event names should be written correctly
+    events_tsv_fname = (bids_path.copy()
+                        .update(suffix='events', extension='.tsv')
+                        .match()[0])
+    with open(str(events_tsv_fname), 'r', encoding='utf-8-sig') as f:
+        x = f.read()
+    assert 'döner' in x
+    assert 'bøfsandwich' in x
+
+    # Read back the data
+    raw_read = read_raw_bids(bids_path)
+    assert_array_equal(raw.annotations.description,
+                       raw_read.annotations.description)
