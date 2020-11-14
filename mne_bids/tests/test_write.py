@@ -271,7 +271,7 @@ def test_create_fif(_bids_validate):
     _bids_validate(bids_root)
 
 
-@requires_version('pybv', '0.3')
+@requires_version('pybv', '0.4')
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_fif(_bids_validate):
     """Test functionality of the write_raw_bids conversion for fif."""
@@ -866,7 +866,7 @@ def test_vhdr(_bids_validate):
     assert len([f for f in os.listdir(data_path) if op.isfile(f)]) == 0
 
     # test anonymize and convert
-    if check_version('pybv', '0.3'):
+    if check_version('pybv', '0.4'):
         raw = _read_raw_brainvision(raw_fname)
         output_path = _test_anonymize(raw, bids_path)
         _bids_validate(output_path)
@@ -1084,7 +1084,7 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate):
     assert len(list(data.values())[0]) == 2
 
     # check that scans list is properly converted to brainvision
-    if check_version('pybv', '0.3'):
+    if check_version('pybv', '0.4'):
         daysback_min, daysback_max = _get_anonymization_daysback(raw)
         daysback = (daysback_min + daysback_max) // 2
 
@@ -1189,7 +1189,7 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate):
     assert coordsystem_json['iEEGCoordinateSystem'] == 'Other'
 
     # test anonymize and convert
-    if check_version('pybv', '0.3'):
+    if check_version('pybv', '0.4'):
         raw = reader(raw_fname)
 
         # XXX: Need to remove "Status" channel until pybv supports
@@ -1268,7 +1268,7 @@ def test_bdf(_bids_validate):
         write_raw_bids(raw, bids_path)
 
     # test anonymize and convert
-    if check_version('pybv', '0.3'):
+    if check_version('pybv', '0.4'):
         raw = _read_raw_bdf(raw_fname)
         # XXX: Need to remove "Status" channel until pybv supports
         # channels that are non-Volt
@@ -1321,7 +1321,7 @@ def test_set(_bids_validate):
     _bids_validate(bids_root)
 
     # test anonymize and convert
-    if check_version('pybv', '0.3'):
+    if check_version('pybv', '0.4'):
         with pytest.warns(RuntimeWarning,
                           match='Encountered data in "double" format'):
             output_path = _test_anonymize(raw, bids_path)
