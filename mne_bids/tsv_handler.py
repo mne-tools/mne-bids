@@ -132,7 +132,7 @@ def _from_tsv(fname, dtypes=None):
 
     """
     data = np.loadtxt(fname, dtype=str, delimiter='\t',
-                      comments=None, encoding='utf-8')
+                      comments=None, encoding='utf-8-sig')
     column_names = data[0, :]
     info = data[1:, :]
     data_dict = OrderedDict()
