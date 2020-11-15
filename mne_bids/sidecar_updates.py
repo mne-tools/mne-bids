@@ -7,6 +7,8 @@
 import json
 from collections import OrderedDict
 
+from mne.utils import logger
+
 from mne_bids.utils import _write_json
 
 
@@ -99,11 +101,11 @@ def update_sidecar_json(bids_path, entries, verbose=True):
     else:
         with open(entries, 'r') as tmp_f:
             sidecar_tmp = json.load(
-                tmp_f, object_pairs_hook=OrderedDict)
+                 tmp_f, object_pairs_hook=OrderedDict)
 
     if verbose:
-        print(sidecar_tmp)
-        print(f'Updating {fpath}...')
+        logger.debug(sidecar_tmp)
+        logger.debug(f'Updating {fpath}...')
 
     # load in sidecar filepath
     with open(fpath, 'r') as tmp_f:
