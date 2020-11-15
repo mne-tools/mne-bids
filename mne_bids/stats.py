@@ -11,7 +11,7 @@ from mne_bids.config import ALLOWED_DATATYPES
 
 def count_events(root, datatype='auto', subject=None, session=None,
                  task=None, run=None):
-    """Count events
+    """Count events present in dataset.
 
     Parameters
     ----------
