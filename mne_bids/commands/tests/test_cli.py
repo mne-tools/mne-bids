@@ -251,5 +251,8 @@ def test_count_events(tmpdir):
     with ArgvSetter(('--bids_root', output_path)):
         mne_bids_count_events.run()
 
+    with ArgvSetter(('--bids_root', output_path, '--describe')):
+        mne_bids_count_events.run()
+
 
 run_tests_if_main()
