@@ -46,9 +46,12 @@ def count_events(root, datatype='auto', subject=None, session=None,
     this_datatypes = list(set(datatypes).intersection(ALLOWED_DATATYPES))
 
     if datatype == 'auto':
-        if (len(this_datatypes) > 1):
+        if len(this_datatypes) > 1:
             raise ValueError(f'Multiple datatypes present ({this_datatypes}).'
                              f' You need to specity datatype got: {datatype})')
+        elif len(this_datatypes) == 0:
+            raise ValueError('No valid datatype present.')
+
         datatype = this_datatypes[0]
 
     bids_path.update(datatype=datatype)
