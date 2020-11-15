@@ -18,7 +18,7 @@ data. Specifically, we will follow these steps:
 .. currentmodule:: mne_bids
 
 .. _BrainVision format: https://www.brainproducts.com/productdetails.php?id=21&tab=5
-.. _CapTrak: http://www.fieldtriptoolbox.org/faq/how_are_the_different_head_and_mri_coordinate_systems_defined/#details-of-the-captrak-coordinate-system
+.. _CapTrak: https://www.fieldtriptoolbox.org/faq/how_are_the_different_head_and_mri_coordinate_systems_defined/#details-of-the-captrak-coordinate-system
 
 """  # noqa: E501
 
@@ -50,7 +50,7 @@ from mne_bids import write_raw_bids, BIDSPath, print_dir_tree
 #
 # In this example, we will download the data for a single subject doing the
 # baseline task "eyes closed" and format it to the Brain Imaging Data Structure
-# (`BIDS <http://bids.neuroimaging.io/>`_).
+# (`BIDS <https://bids.neuroimaging.io/>`_).
 #
 # Conveniently, there is already a data loading function available with
 # MNE-Python:

@@ -232,7 +232,7 @@ REFERENCES = {'mne-bids':
               'Wexler, J., Baillet, S. (2018). MEG-BIDS, the brain '
               'imaging data structure extended to magnetoencephalography. '
               'Scientific Data, 5, 180110. '
-              'http://doi.org/10.1038/sdata.2018.110',
+              'https://doi.org/10.1038/sdata.2018.110',
               'eeg':
               'Pernet, C. R., Appelhoff, S., Gorgolewski, K. J., '
               'Flandin, G., Phillips, C., Delorme, A., Oostenveld, R. (2019). '
