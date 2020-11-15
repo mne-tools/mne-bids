@@ -41,12 +41,12 @@ Example:
 Mastering BIDSPath
 ------------------
 To be able to effectively use MNE-BIDS, you need to understand how to work with
-the ``BIDSPath`` object. Follow 
-`our basic example <auto_examples/read_bids_datasets.html>`_ on how to read a
+the ``BIDSPath`` object. Follow
+:ref:`our basic example <read_bids_datasets-example>` on how to read a
 BIDS dataset, and have a look at
-`this introduction <auto_examples/bidspath.html>`_
+:ref:`this introduction <bidspath-example>`
 to learn everything you need!
 
 
 .. include:: auto_examples/index.rst
-   :start-after: :orphan: 
+   :start-after: :orphan:

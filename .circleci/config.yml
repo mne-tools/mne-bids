@@ -43,6 +43,7 @@ jobs:
         - run:
             name: Check links
             command: |
+              make -C doc clean
               make -C doc linkcheck
               make -C doc linkcheck-grep
 
