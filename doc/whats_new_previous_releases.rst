@@ -106,7 +106,7 @@ Bug fixes
 - Fix bug in :func:`write_raw_bids` where raw.info['subject_info'] can be ``None``, by `Adam Li`_ (:gh:`392`)
 - :func:`read_raw_bids` will now read all channels from ``electrodes.tsv``. Channels with coordinates ``'n/a'`` will also be included but their location set to ``np.nan`` in the ``raw`` object, by `Adam Li`_ (:gh:`393`)
 - Do not change an events array passed to :func:`write_raw_bids` via the ``events_data`` keyword argument, by `Alexandre Gramfort`_ (:gh:`402`)
-- Fix :func:`mne_bids.read_raw_bids` to correctly scale coordinate to meters in ``electrodes.tsv``, and also read possible iEEG coordinate frames via the 'space' BIDs-entity by `Adam Li`_ (:gh:`390`)
+- Fix :func:`mne_bids.read_raw_bids` to correctly scale coordinate to meters in ``electrodes.tsv``, and also read possible iEEG coordinate frames via the 'space' BIDs-entity, by `Adam Li`_ (:gh:`390`)
 - Fix coordystem reading in :func:`mne_bids.read_raw_bids` for cases where the ``acq`` is undefined, by `Stefan Appelhoff`_ (:gh:`440`)
 - Calling :func:`write_raw_bids` with ``overwrite==True`` will preserve existing entries in ``participants.tsv`` and ``participants.json`` if the **new** dataset does not contain these entries, by `Adam Li`_ (:gh:`442`)
 - BIDS entity ``recording`` should be represented as ``rec`` in filenames, by `Adam Li`_ (:gh:`446`)
@@ -178,7 +178,7 @@ Bug
 - Enforce that the name arg is a required field for :func:`mne_bids.make_dataset_description`, by `Teon Brooks`_ and `Stefan Appelhoff`_ (:gh:`342`)
 - Fix writing to scans.tsv file when anonymization is turned on, by `Adam Li`_ (:gh:`352`)
 - Fix :func:`read_raw_bids` to properly read in sidecar json even if a similarly named copy lives inside "derivatives/" sub-folder, by `Adam Li`_  (:gh:`350`)
-- Fix :func:`read_raw_bids` to properly read in events.tsv sidecar if the 'trial_type' description has a "#" character in it by `Adam Li`_ (:gh:`355`)
+- Fix :func:`read_raw_bids` to properly read in events.tsv sidecar if the 'trial_type' description has a "#" character in it, by `Adam Li`_ (:gh:`355`)
 - Avoid cases in which NumPy would raise a `FutureWarning` when populating TSV files, by `Richard Höchenberger`_ (:gh:`372`)
 - Remove events with an unknown onset, and assume unknown event durations to be zero, when reading BIDS data via :func:`read_raw_bids`, by `Richard Höchenberger`_ (:gh:`375`)
 
@@ -218,7 +218,7 @@ Changelog
 - :func:`write_anat` allows writing T1 weighted MRI scans for subjects and optionally creating a T1w.json sidecar from a supplied :code:`trans` object, by `Stefan Appelhoff`_ (:gh:`211`)
 - :func:`read_raw_bids` will return the the raw object with :code:`raw.info['bads']` already populated, whenever a :code:`channels.tsv` file is present, by `Stefan Appelhoff`_ (:gh:`209`)
 - :func:`read_raw_bids` is now more likely to find event and channel sidecar json files, by `Marijn van Vliet`_ (:gh:`233`)
-- Enhanced :func:`read_raw_bids` and :func:`write_raw_bids` for iEEG coordinates along with example and unit test, by `Adam Li`_ (`#335 <https://github.com/mne-tools/mne-bids/pull/335/>`_)
+- Enhanced :func:`read_raw_bids` and :func:`write_raw_bids` for iEEG coordinates along with example and unit test, by `Adam Li`_ (:gh:`335`)
 
 Bug
 ~~~
@@ -265,11 +265,11 @@ Bug
 - The original units present in the raw data will now correctly be written to channels.tsv files for BrainVision, EEGLAB, and EDF, by `Stefan Appelhoff`_ (:gh:`125`)
 - Fix logic with inferring unknown channel types for CTF data, by `Mainak Jas`_ (:gh:`129`)
 - Fix the file naming for FIF files to only expose the part key-value pair when files are split, by `Teon Brooks`_ (:gh:`137`)
-- Allow files with no stim channel, which could be the case for example in resting state data, by `Mainak Jas`_ (`#167 <https://github.com/mne-tools/mne-bids/pull/167/files>`_)
-- Better handling of unicode strings in TSV files, by `Mainak Jas`_ (`#172 <https://github.com/mne-tools/mne-bids/pull/172/files>`_)
+- Allow files with no stim channel, which could be the case for example in resting state data, by `Mainak Jas`_ (:gh:`167`)
+- Better handling of unicode strings in TSV files, by `Mainak Jas`_ (:gh:`172`)
 - Fix separator in scans.tsv to always be `/`, by `Matt Sanderson`_ (:gh:`176`)
-- Add seeg to :code:`mne_bids.utils._handle_datatype` when determining the kind of ieeg data, by `Ezequiel Mikulan`_ (`#180 <https://github.com/mne-tools/mne-bids/pull/180/files>`_)
-- Fix problem in copying CTF files on Network File System due to a bug upstream in Python by `Mainak Jas`_ (`#174 <https://github.com/mne-tools/mne-bids/pull/174/files>`_)
+- Add seeg to :code:`mne_bids.utils._handle_datatype` when determining the kind of ieeg data, by `Ezequiel Mikulan`_ (:gh:`180`)
+- Fix problem in copying CTF files on Network File System due to a bug upstream in Python, by `Mainak Jas`_ (:gh:`174`)
 - Fix problem in copying BTi files. Now, a utility function ensures that all the related files
   such as config and headshape are copied correctly, by `Mainak Jas`_ (:gh:`135`)
 - Fix name of "sample" and "value" columns on events.tsv files, by `Ezequiel Mikulan`_ (:gh:`185`)
@@ -278,12 +278,12 @@ Bug
 API
 ~~~
 
-- :func:`make_dataset_description` is now available from `mne_bids` main namespace, all copyfile functions are available from `mne_bids.copyfiles` namespace by `Stefan Appelhoff`_ (:gh:`196`)
+- :func:`make_dataset_description` is now available from `mne_bids` main namespace, all copyfile functions are available from `mne_bids.copyfiles` namespace, by `Stefan Appelhoff`_ (:gh:`196`)
 - Add support for non maxfiltered .fif files, by `Maximilien Chaumon`_ (:gh:`171`)
 - Remove support for Neuroscan ``.cnt`` data because its support is no longer planned in BIDS, by `Stefan Appelhoff`_ (:gh:`142`)
 - Remove support for Python 2 because it is no longer supported in MNE-Python, by `Teon Brooks`_ (:gh:`141`)
 - Remove Pandas requirement to reduce number of dependencies, by `Matt Sanderson`_ (:gh:`122`)
-- Use more modern API of event_from_annotations in MNE for extracting events in .vhdr and .set files, by `Mainak Jas`_ (`#167 <https://github.com/mne-tools/mne-bids/pull/167/files>`_)
+- Use more modern API of event_from_annotations in MNE for extracting events in .vhdr and .set files, by `Mainak Jas`_ (:gh:`167`)
 
 Authors
 ~~~~~~~
@@ -310,12 +310,12 @@ Version 0.1
 Changelog
 ~~~~~~~~~
 
-- Add example for how to rename BrainVision file triplets: `rename_brainvision_files.py` by `Stefan Appelhoff`_ (:gh:`104`)
-- Add function to fetch BrainVision testing data ``mne_bids.datasets.fetch_brainvision_testing_data`` by `Stefan Appelhoff`_ (:gh:`104`)
-- Add support for EEG and a corresponding example: `make_eeg_bids.py` by `Stefan Appelhoff`_ (:gh:`78`)
+- Add example for how to rename BrainVision file triplets: `rename_brainvision_files.py`, by `Stefan Appelhoff`_ (:gh:`104`)
+- Add function to fetch BrainVision testing data ``mne_bids.datasets.fetch_brainvision_testing_data``, by `Stefan Appelhoff`_ (:gh:`104`)
+- Add support for EEG and a corresponding example: `make_eeg_bids.py`, by `Stefan Appelhoff`_ (:gh:`78`)
 - Update :code:`mne_bids.raw_to_bids` to work for KIT and BTi systems, by `Teon Brooks`_ (:gh:`16`)
 - Add support for iEEG and add ``mne_bids.make_bids_folders`` and ``mne_bids.make_bids_folders``, by `Chris Holdgraf`_ (:gh:`28` and :gh:`37`)
-- Add command line interface by `Teon Brooks`_ (:gh:`31`)
+- Add command line interface, by `Teon Brooks`_ (:gh:`31`)
 - Add :func:`mne_bids.print_dir_tree` for visualizing directory structures and restructuring package to be more
   open towards integration of other modalities (iEEG, EEG), by `Stefan Appelhoff`_ (:gh:`55`)
 - Automatically generate participants.tsv, by `Matt Sanderson`_ (:gh:`70`)
