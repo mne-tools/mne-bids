@@ -144,6 +144,21 @@ a new BIDS name for it, and then run the automatic BIDS conversion.
         Range : 25800 ... 192599 =     42.956 ...   320.670 secs
     Ready.
 
+    Writing '/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/README'...
+
+    References
+    ----------
+    Appelhoff, S., Sanderson, M., Brooks, T., Vliet, M., Quentin, R., Holdgraf, C., Chaumon, M., Mikulan, E., Tavabi, K., Höchenberger, R., Welke, D., Brunner, C., Rockhill, A., Larson, E., Gramfort, A. and Jas, M. (2019). MNE-BIDS: Organizing electrophysiological data into the BIDS format and facilitating their analysis. Journal of Open Source Software 4: (1896). https://doi.org/10.21105/joss.01896
+
+    Niso, G., Gorgolewski, K. J., Bock, E., Brooks, T. L., Flandin, G., Gramfort, A., Henson, R. N., Jas, M., Litvak, V., Moreau, J., Oostenveld, R., Schoffelen, J., Tadel, F., Wexler, J., Baillet, S. (2018). MEG-BIDS, the brain imaging data structure extended to magnetoencephalography. Scientific Data, 5, 180110. http://doi.org/10.1038/sdata.2018.110
+
+
+
+    References
+    ----------
+    Niso, G., Gorgolewski, K. J., Bock, E., Brooks, T. L., Flandin, G., Gramfort, A., Henson, R. N., Jas, M., Litvak, V., Moreau, J., Oostenveld, R., Schoffelen, J., Tadel, F., Wexler, J., Baillet, S. (2018). MEG-BIDS, the brain imaging data structure extended to magnetoencephalography. Scientific Data, 5, 180110. https://doi.org/10.1038/sdata.2018.110
+
+
     Writing '/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/participants.tsv'...
 
     participant_id  age     sex     hand
@@ -521,13 +536,19 @@ cite MNE-BIDS there.
 
 
 
+    References
+    ----------
+    Niso, G., Gorgolewski, K. J., Bock, E., Brooks, T. L., Flandin, G., Gramfort, A., Henson, R. N., Jas, M., Litvak, V., Moreau, J., Oostenveld, R., Schoffelen, J., Tadel, F., Wexler, J., Baillet, S. (2018). MEG-BIDS, the brain imaging data structure extended to magnetoencephalography. Scientific Data, 5, 180110. https://doi.org/10.1038/sdata.2018.110
+
+
+
 
 
 
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  9.960 seconds)
+   **Total running time of the script:** ( 0 minutes  10.819 seconds)
 
 
 .. _sphx_glr_download_auto_examples_convert_mne_sample.py:

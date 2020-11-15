@@ -180,9 +180,9 @@ plt.show()
 # .. LINKS
 #
 # .. _coregistration GUI:
-#    https://martinos.org/mne/stable/auto_tutorials/source-modeling/plot_source_alignment.html#defining-the-headmri-trans-using-the-gui  # noqa: E501
+#    https://mne.tools/stable/auto_tutorials/source-modeling/plot_source_alignment.html#defining-the-headmri-trans-using-the-gui
 # .. _mne_source_coords:
-#    https://www.martinos.org/mne/stable/auto_tutorials/source-modeling/plot_source_alignment.html  # noqa: E501
+#    https://mne.tools/stable/auto_tutorials/source-modeling/plot_source_alignment.html
 # .. _mne_sample_data:
-#    https://martinos.org/mne/stable/manual/sample_dataset.html
+#    https://mne.tools/stable/overview/datasets_index.html#sample
 #

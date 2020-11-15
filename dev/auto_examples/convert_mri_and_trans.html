@@ -132,7 +132,7 @@ in a BIDS compatible way.</p>
 <p>Finally, we will automatically reproduce our <code class="docutils literal notranslate"><span class="pre">trans</span></code> object from a BIDS
 directory.</p>
 <p>See the documentation pages in the MNE docs for more information on
-<a class="reference external" href="https://www.martinos.org/mne/stable/auto_tutorials/source-modeling/plot_source_alignment.html#noqa:E501">source alignment and coordinate frames</a></p>
+<a class="reference external" href="https://mne.tools/stable/auto_tutorials/source-modeling/plot_source_alignment.html">source alignment and coordinate frames</a></p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>For this example you will need to install <code class="docutils literal notranslate"><span class="pre">matplotlib</span></code> and
@@ -159,7 +159,7 @@ directory.</p>
                       <a href="../generated/mne_bids.get_head_mri_trans.html#mne_bids.get_head_mri_trans" title="mne_bids.get_head_mri_trans" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">get_head_mri_trans</span></a><span class="p">,</span> <a href="../generated/mne_bids.print_dir_tree.html#mne_bids.print_dir_tree" title="mne_bids.print_dir_tree" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">print_dir_tree</span></a><span class="p">)</span>
 </pre></div>
 </div>
-<p>We will be using the <a class="reference external" href="https://martinos.org/mne/stable/manual/sample_dataset.html">MNE sample data</a> and write a basic
+<p>We will be using the <a class="reference external" href="https://mne.tools/stable/overview/datasets_index.html#sample">MNE sample data</a> and write a basic
 BIDS dataset. For more information, you can checkout the respective
 <a class="reference internal" href="convert_mne_sample.html#ex-convert-mne-sample"><span class="std std-ref">example</span></a>.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_path</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.datasets.sample.data_path.html#mne.datasets.sample.data_path" title="mne.datasets.sample.data_path" class="sphx-glr-backref-module-mne-datasets-sample sphx-glr-backref-type-py-function"><span class="n">sample</span><span class="o">.</span><span class="n">data_path</span></a><span class="p">()</span>
@@ -205,7 +205,7 @@ References
 ----------
 Appelhoff, S., Sanderson, M., Brooks, T., Vliet, M., Quentin, R., Holdgraf, C., Chaumon, M., Mikulan, E., Tavabi, K., Höchenberger, R., Welke, D., Brunner, C., Rockhill, A., Larson, E., Gramfort, A. and Jas, M. (2019). MNE-BIDS: Organizing electrophysiological data into the BIDS format and facilitating their analysis. Journal of Open Source Software 4: (1896). https://doi.org/10.21105/joss.01896
 
-Niso, G., Gorgolewski, K. J., Bock, E., Brooks, T. L., Flandin, G., Gramfort, A., Henson, R. N., Jas, M., Litvak, V., Moreau, J., Oostenveld, R., Schoffelen, J., Tadel, F., Wexler, J., Baillet, S. (2018). MEG-BIDS, the brain imaging data structure extended to magnetoencephalography. Scientific Data, 5, 180110. http://doi.org/10.1038/sdata.2018.110
+Niso, G., Gorgolewski, K. J., Bock, E., Brooks, T. L., Flandin, G., Gramfort, A., Henson, R. N., Jas, M., Litvak, V., Moreau, J., Oostenveld, R., Schoffelen, J., Tadel, F., Wexler, J., Baillet, S. (2018). MEG-BIDS, the brain imaging data structure extended to magnetoencephalography. Scientific Data, 5, 180110. https://doi.org/10.1038/sdata.2018.110
 
 
 Writing &#39;/home/circleci/mne_data/MNE-sample-data-bids/participants.tsv&#39;...
@@ -380,7 +380,7 @@ basename: sub-01_ses-01_task-audiovisual_run-01_meg.fif)
 </div>
 <p>Now let’s assume that we have also collected some T1 weighted MRI data for
 our subject. And furthermore, that we have already aligned our coordinate
-frames (using e.g., the <a class="reference external" href="https://martinos.org/mne/stable/auto_tutorials/source-modeling/plot_source_alignment.html#defining-the-headmri-trans-using-the-gui#noqa:E501">coregistration GUI</a>) and obtained a transformation
+frames (using e.g., the <a class="reference external" href="https://mne.tools/stable/auto_tutorials/source-modeling/plot_source_alignment.html#defining-the-headmri-trans-using-the-gui">coregistration GUI</a>) and obtained a transformation
 matrix <code class="code docutils literal notranslate"><span class="pre">trans</span></code>.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Get the path to our MRI scan</span>
 <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">t1_mgh_fname</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/os.path.html#os.path.join" title="os.path.join" class="sphx-glr-backref-module-os-path sphx-glr-backref-type-py-function"><span class="n">op</span><span class="o">.</span><span class="n">join</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_path</span></a><span class="p">,</span> <span class="s1">&#39;subjects&#39;</span><span class="p">,</span> <span class="s1">&#39;sample&#39;</span><span class="p">,</span> <span class="s1">&#39;mri&#39;</span><span class="p">,</span> <span class="s1">&#39;T1.mgz&#39;</span><span class="p">)</span>
@@ -565,7 +565,7 @@ plot the results.</p>
 }
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  18.930 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  15.224 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-mri-and-trans-py">
 <div class="binder-badge docutils container">
 <a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/convert_mri_and_trans.ipynb"><img alt="Launch binder" src="../_images/binder_badge_logo.svg" width="150px" /></a>
