@@ -17,7 +17,7 @@ with warnings.catch_warnings():
     import mne
 
 from mne.datasets import testing
-from mne.utils import run_tests_if_main, ArgvSetter
+from mne.utils import run_tests_if_main, ArgvSetter, requires_pandas
 
 from mne_bids.commands import (mne_bids_raw_to_bids, mne_bids_cp,
                                mne_bids_mark_bad_channels,
@@ -225,6 +225,7 @@ def test_crosstalk_to_bids(tmpdir):
     assert bids_path.meg_crosstalk_fpath.exists()
 
 
+@requires_pandas
 def test_count_events(tmpdir):
     """Test mne_bids count_events."""
 
