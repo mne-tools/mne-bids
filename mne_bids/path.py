@@ -144,7 +144,7 @@ def _get_matched_empty_room(bids_path):
 
 
 class BIDSPath(object):
-    """Create BIDS path object.
+    """A BIDS path object.
 
     BIDS filename prefixes have one or more pieces of metadata in them. They
     must follow a particular order, which is followed by this function. This
