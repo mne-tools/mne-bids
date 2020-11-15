@@ -1,3 +1,5 @@
+"""Some functions to extract stats from a BIDS dataset."""
+
 # Authors: Alex Gramfort <alexandre.gramfort@inria.fr>
 #
 # License: BSD (3-clause)
