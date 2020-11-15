@@ -157,7 +157,7 @@ def _summarize_dataset(root):
         return dict()
 
     # read file and 'REQUIRED' components of it
-    with open(dataset_descrip_fpath, 'r') as fin:
+    with open(dataset_descrip_fpath, 'r', encoding='utf-8-sig') as fin:
         dataset_description = json.load(fin)
 
     # create dictionary to pass into template string
@@ -341,7 +341,7 @@ def _summarize_sidecar_json(root, scans_fpaths, verbose=True):
             sidecar_fname = _find_matching_sidecar(bids_path=bids_path,
                                                    suffix=datatype,
                                                    extension='.json')
-            with open(sidecar_fname, 'r') as fin:
+            with open(sidecar_fname, 'r', encoding='utf-8-sig') as fin:
                 sidecar_json = json.load(fin)
 
             # aggregate metadata from each scan

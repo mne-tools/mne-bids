@@ -224,7 +224,7 @@ def _replace_file(fname, pattern, replace):
             line = match.group()[:-len(replace)] + replace + '\n'
         new_content.append(line)
 
-    with open(fname, 'w') as fout:
+    with open(fname, 'w', encoding='utf-8') as fout:
         fout.writelines(new_content)
 
 

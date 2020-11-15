@@ -106,7 +106,7 @@ def _handle_coordsystem_reading(coordsystem_fpath, datatype, verbose=True):
     of each electrode.
     """
     # open coordinate system sidecar json
-    with open(coordsystem_fpath, 'r') as fin:
+    with open(coordsystem_fpath, 'r', encoding='utf-8-sig') as fin:
         coordsystem_json = json.load(fin)
 
     if datatype == 'meg':

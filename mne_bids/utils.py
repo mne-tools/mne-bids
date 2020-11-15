@@ -146,7 +146,7 @@ def _write_json(fname, dictionary, overwrite=False, verbose=False):
                               'Please set overwrite to True.')
 
     json_output = json.dumps(dictionary, indent=4)
-    with open(fname, 'w') as fid:
+    with open(fname, 'w', encoding='utf-8') as fid:
         fid.write(json_output)
         fid.write('\n')
 
@@ -172,7 +172,7 @@ def _write_text(fname, text, overwrite=False, verbose=True):
     if op.exists(fname) and not overwrite:
         raise FileExistsError(f'"{fname}" already exists. '
                               'Please set overwrite to True.')
-    with open(fname, 'w') as fid:
+    with open(fname, 'w', encoding='utf-8-sig') as fid:
         fid.write(text)
         fid.write('\n')
 
