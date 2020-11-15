@@ -184,5 +184,5 @@ plt.show()
 # .. _mne_source_coords:
 #    https://mne.tools/stable/auto_tutorials/source-modeling/plot_source_alignment.html
 # .. _mne_sample_data:
-#    https://mne.tools/stable/overview/datasets_index.html?#sample
+#    https://mne.tools/stable/overview/datasets_index.html#sample
 #
