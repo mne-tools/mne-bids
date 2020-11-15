@@ -101,7 +101,7 @@ def update_sidecar_json(bids_path, entries, verbose=True):
     else:
         with open(entries, 'r') as tmp_f:
             sidecar_tmp = json.load(
-                 tmp_f, object_pairs_hook=OrderedDict)
+                tmp_f, object_pairs_hook=OrderedDict)
 
     if verbose:
         logger.debug(sidecar_tmp)
