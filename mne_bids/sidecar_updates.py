@@ -132,5 +132,5 @@ def _update_sidecar(sidecar_fname, key, val):
     with open(sidecar_fname, "r") as fin:
         sidecar_json = json.load(fin)
     sidecar_json[key] = val
-    with open(sidecar_fname, "w") as fout:
+    with open(sidecar_fname, 'w', encoding='utf-8') as fout:
         json.dump(sidecar_json, fout)
