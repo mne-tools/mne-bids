@@ -53,6 +53,9 @@ def count_events(root, subject=None, session=None, task=None, run=None):
                 df['run'] = bp.run
             all_df.append(df)
 
+        if len(all_df) == 0:
+            continue
+
         df = pd.concat(all_df)
         groups = ['subject']
         if bp.session is not None:
@@ -72,6 +75,9 @@ def count_events(root, subject=None, session=None, task=None, run=None):
         )
 
         all_counts.append(counts)
+
+    if len(all_counts) == 0:
+        raise ValueError('No events files found.')
 
     counts = pd.concat(all_counts, axis=1)
 

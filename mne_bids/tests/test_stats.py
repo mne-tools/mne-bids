@@ -79,3 +79,22 @@ def test_count_events(subjects, tasks, runs, sessions):
             counts.at[key, (tasks[0], k)] ==
             (events[:, 2] == v).sum()
         )
+
+
+@requires_pandas
+def test_count_no_events():
+    """Test count_events with no event present."""
+    data_path = testing.data_path()
+    raw_fname = \
+        Path(data_path) / 'MEG' / 'sample' / 'sample_audvis_trunc_raw.fif'
+    raw = mne.io.read_raw(raw_fname)
+    raw.info['line_freq'] = 60.
+    root = _TempDir()
+
+    bids_path = BIDSPath(
+        subject='01', task='task1', root=root,
+    )
+    write_raw_bids(raw, bids_path, overwrite=True, verbose=False)
+
+    with pytest.raises(ValueError, match='No events files found.'):
+        count_events(root)
