@@ -6,7 +6,7 @@
 
 
 from mne_bids import BIDSPath, get_datatypes
-from mne_bids.config import ALLOWED_DATATYPES
+from mne_bids.config import EPHY_ALLOWED_DATATYPES
 
 
 def count_events(root, datatype='auto', subject=None, session=None,
@@ -43,7 +43,7 @@ def count_events(root, datatype='auto', subject=None, session=None,
     )
 
     datatypes = get_datatypes(root)
-    this_datatypes = list(set(datatypes).intersection(ALLOWED_DATATYPES))
+    this_datatypes = list(set(datatypes).intersection(EPHY_ALLOWED_DATATYPES))
 
     if datatype == 'auto':
         if len(this_datatypes) > 1:
