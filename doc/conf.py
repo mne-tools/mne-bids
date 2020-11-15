@@ -37,7 +37,8 @@ extensions = [
     'sphinx.ext.intersphinx',
     'sphinx_gallery.gen_gallery',
     'numpydoc',
-    'gen_cli'  # custom extension, see ./sphinxext/gen_cli.py
+    'gen_cli',  # custom extension, see ./sphinxext/gen_cli.py
+    'gh_substitutions',  # custom extension, see ./sphinxext/gh_substitutions.py
 ]
 
 # generate autosummary even if no references
