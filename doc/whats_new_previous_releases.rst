@@ -218,7 +218,7 @@ Changelog
 - :func:`write_anat` allows writing T1 weighted MRI scans for subjects and optionally creating a T1w.json sidecar from a supplied :code:`trans` object, by `Stefan Appelhoff`_ (:gh:`211`)
 - :func:`read_raw_bids` will return the the raw object with :code:`raw.info['bads']` already populated, whenever a :code:`channels.tsv` file is present, by `Stefan Appelhoff`_ (:gh:`209`)
 - :func:`read_raw_bids` is now more likely to find event and channel sidecar json files, by `Marijn van Vliet`_ (:gh:`233`)
-- Enhanced :func:`read_raw_bids` and :func:`write_raw_bids` for iEEG coordinates along with example and unit test, by `Adam Li`_ (`#335 <https://github.com/mne-tools/mne-bids/pull/335/>`_)
+- Enhanced :func:`read_raw_bids` and :func:`write_raw_bids` for iEEG coordinates along with example and unit test, by `Adam Li`_ (:gh:`335`)
 
 Bug
 ~~~
@@ -265,11 +265,11 @@ Bug
 - The original units present in the raw data will now correctly be written to channels.tsv files for BrainVision, EEGLAB, and EDF, by `Stefan Appelhoff`_ (:gh:`125`)
 - Fix logic with inferring unknown channel types for CTF data, by `Mainak Jas`_ (:gh:`129`)
 - Fix the file naming for FIF files to only expose the part key-value pair when files are split, by `Teon Brooks`_ (:gh:`137`)
-- Allow files with no stim channel, which could be the case for example in resting state data, by `Mainak Jas`_ (`#167 <https://github.com/mne-tools/mne-bids/pull/167/files>`_)
-- Better handling of unicode strings in TSV files, by `Mainak Jas`_ (`#172 <https://github.com/mne-tools/mne-bids/pull/172/files>`_)
+- Allow files with no stim channel, which could be the case for example in resting state data, by `Mainak Jas`_ (:gh:`167`)
+- Better handling of unicode strings in TSV files, by `Mainak Jas`_ (:gh:`172`)
 - Fix separator in scans.tsv to always be `/`, by `Matt Sanderson`_ (:gh:`176`)
-- Add seeg to :code:`mne_bids.utils._handle_datatype` when determining the kind of ieeg data, by `Ezequiel Mikulan`_ (`#180 <https://github.com/mne-tools/mne-bids/pull/180/files>`_)
-- Fix problem in copying CTF files on Network File System due to a bug upstream in Python by `Mainak Jas`_ (`#174 <https://github.com/mne-tools/mne-bids/pull/174/files>`_)
+- Add seeg to :code:`mne_bids.utils._handle_datatype` when determining the kind of ieeg data, by `Ezequiel Mikulan`_ (:gh:`180`)
+- Fix problem in copying CTF files on Network File System due to a bug upstream in Python by `Mainak Jas`_ (:gh:`174`)
 - Fix problem in copying BTi files. Now, a utility function ensures that all the related files
   such as config and headshape are copied correctly, by `Mainak Jas`_ (:gh:`135`)
 - Fix name of "sample" and "value" columns on events.tsv files, by `Ezequiel Mikulan`_ (:gh:`185`)
@@ -283,7 +283,7 @@ API
 - Remove support for Neuroscan ``.cnt`` data because its support is no longer planned in BIDS, by `Stefan Appelhoff`_ (:gh:`142`)
 - Remove support for Python 2 because it is no longer supported in MNE-Python, by `Teon Brooks`_ (:gh:`141`)
 - Remove Pandas requirement to reduce number of dependencies, by `Matt Sanderson`_ (:gh:`122`)
-- Use more modern API of event_from_annotations in MNE for extracting events in .vhdr and .set files, by `Mainak Jas`_ (`#167 <https://github.com/mne-tools/mne-bids/pull/167/files>`_)
+- Use more modern API of event_from_annotations in MNE for extracting events in .vhdr and .set files, by `Mainak Jas`_ (:gh:`167`)
 
 Authors
 ~~~~~~~
