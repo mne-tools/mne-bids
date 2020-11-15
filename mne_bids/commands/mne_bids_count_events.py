@@ -24,6 +24,10 @@ def run():
     parser.add_option('--datatype', dest='datatype', default='auto',
                       help='The datatype to consider.')
 
+    parser.add_option('--describe', dest='describe', action="store_true",
+                      help=('If set print the descriptive statistics '
+                            '(min, max, etc.).'))
+
     opt, args = parser.parse_args()
 
     if len(args) > 0:
@@ -37,6 +41,10 @@ def run():
                      '--bids_root parameter.')
 
     counts = count_events(opt.bids_root, datatype=opt.datatype)
+
+    if opt.describe:
+        counts = counts.describe()
+
     print(counts)
 
 
