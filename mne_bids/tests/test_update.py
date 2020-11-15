@@ -111,7 +111,7 @@ def test_update_sidecar_jsons(_get_bids_test_dir, _bids_validate,
 
     # update sidecars
     update_sidecar_json(sidecar_path, _get_sidecar_json_update_file)
-    with open(sidecar_fpath, 'r') as fin:
+    with open(sidecar_fpath, 'r', encoding='utf-8') as fin:
         sidecar_json = json.load(fin)
     for key, _, val in expected_checks:
         assert sidecar_json.get(key) == val
