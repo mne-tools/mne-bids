@@ -45,7 +45,7 @@ def update_sidecar_json(bids_path, entries, verbose=True):
 
     Notes
     -----
-    This function only works for JSON files.
+    This function can only update JSON files.
 
     Sidecar JSON files include files such as ``*_ieeg.json``,
     ``*_coordsystem.json``, ``*_scans.json``, etc.
