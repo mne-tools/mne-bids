@@ -21,6 +21,9 @@ def run():
     parser.add_option('--bids_root', dest='bids_root',
                       help='The path of the BIDS compatible folder.')
 
+    parser.add_option('--datatype', dest='datatype', default='auto',
+                      help='The datatype to consider.')
+
     opt, args = parser.parse_args()
 
     if len(args) > 0:
@@ -33,7 +36,7 @@ def run():
         parser.error('Arguments missing. You need to specify the '
                      '--bids_root parameter.')
 
-    counts = count_events(opt.bids_root)
+    counts = count_events(opt.bids_root, datatype=opt.datatype)
     print(counts)
 
 

@@ -5,16 +5,22 @@
 # License: BSD (3-clause)
 
 
-from mne_bids import BIDSPath
+from mne_bids import BIDSPath, get_datatypes
+from mne_bids.config import ALLOWED_DATATYPES
 
 
-def count_events(root, subject=None, session=None, task=None, run=None):
+def count_events(root, datatype='auto', subject=None, session=None,
+                 task=None, run=None):
     """Count events
 
     Parameters
     ----------
     root : str | pathlib.Path | None
         The root folder of the BIDS dataset.
+    datatype : str
+        Type of the data recording. Can be ``meg``, ``eeg``,
+        ``ieeg`` or ``auto``. If ``auto`` only one datatype
+        should be present in the dataset to avoid any ambiguity.
     subject : str | None
         The subject ID to consider. If None all subjects are included.
     session : str | None
@@ -35,6 +41,17 @@ def count_events(root, subject=None, session=None, task=None, run=None):
         root=root, suffix='events', extension='tsv', subject=subject,
         session=session, task=task, run=run
     )
+
+    datatypes = get_datatypes(root)
+    this_datatypes = list(set(datatypes).intersection(ALLOWED_DATATYPES))
+
+    if datatype == 'auto':
+        if (len(this_datatypes) > 1):
+            raise ValueError(f'Multiple datatypes present ({this_datatypes}).'
+                             f' You need to specity datatype got: {datatype})')
+        datatype = this_datatypes[0]
+
+    bids_path.update(datatype=datatype)
 
     tasks = sorted(set([bp.task for bp in bids_path.match()]))
 
