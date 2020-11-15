@@ -76,6 +76,7 @@ bids_path = BIDSPath(subject=subject, task=task, suffix=suffix,
 sidecar_path = bids_path.copy().update(extension='.json')
 
 # We can now retrieve a list of all MEG-related files in the dataset:
+# we will specifically now update the sidecar json file.
 print(bids_path.match())
 
 # Define a sidecar update as a dictionary
@@ -86,8 +87,11 @@ entries = {
 }
 
 # Note: ``update_sidecar_json`` will perform essentially a
-# dictionary update to your sidecar file, so be absolutely sure
-# that the ``entries`` are defined properly.
+# dictionary update to your sidecar json file, so be absolutely sure
+# that the ``entries`` are defined with the proper fields specified
+# by BIDS. For example, if you are updating the ``coordsystem.json``
+# file, then you don't want to include ``PowerLineFrequency`` in
+# ``entries``.
 #
 # Now update all sidecar fields according to our updating dictionary
 update_sidecar_json(bids_path=sidecar_path, entries=entries)
@@ -95,10 +99,6 @@ update_sidecar_json(bids_path=sidecar_path, entries=entries)
 ###############################################################################
 # Read the updated dataset
 # ------------------------
-#
-# We can use MNE-BIDS to update all sidecar files for a matching
-# ``BIDSPath`` object. We then update all matching metadata fields
-# within the BIDS dataset.
 
 # new line frequency is now 60 Hz
 raw = read_raw_bids(bids_path=bids_path)
@@ -122,7 +122,7 @@ update_sidecar_json(bids_path=sidecar_path, entries=entries)
 # Now let us inspect the dataset again by generating the report again. Now that
 # ``update_sidecar_json`` was called, the metadata will be updated.
 
-# The power line frequency should now change back
+# The power line frequency should now change back to 50 Hz
 raw = read_raw_bids(bids_path=bids_path)
 print(raw.info['line_freq'])
 
