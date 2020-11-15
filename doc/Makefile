@@ -115,7 +115,7 @@ changes:
 
 .PHONY: linkcheck
 linkcheck:
-	@$(SPHINXBUILD) -b linkcheck -D nitpicky=0 -D plot_gallery=0 -D exclude_patterns="whats_new*.rst" -d _build/doctrees . _build/linkcheck
+	@$(SPHINXBUILD) -b linkcheck -D nitpicky=0 -D plot_gallery=0 -D exclude_patterns="whats_new*.rst, doc/auto_examples, doc/generated" -d _build/doctrees . _build/linkcheck
 
 .PHONY: linkcheck-grep
 linkcheck-grep:
