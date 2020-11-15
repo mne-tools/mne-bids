@@ -129,7 +129,7 @@ def _update_sidecar(sidecar_fname, key, val):
     val : str
         The corresponding value to change to in the sidecar JSON file.
     """
-    with open(sidecar_fname, "r") as fin:
+    with open(sidecar_fname, 'r', encoding='utf-8-sig') as fin:
         sidecar_json = json.load(fin)
     sidecar_json[key] = val
     with open(sidecar_fname, 'w', encoding='utf-8') as fout:
