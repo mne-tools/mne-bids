@@ -27,6 +27,7 @@ from mne.datasets import eegbci
 from mne_bids import (write_raw_bids, BIDSPath,
                       get_anonymization_daysback, make_report,
                       print_dir_tree)
+from mne_bids.stats import count_events
 
 ###############################################################################
 # And fetch the data for several subjects and runs of a single task.
@@ -96,6 +97,12 @@ for raw, bids_path in zip(raw_list, bids_list):
 # Now let's see the structure of the BIDS folder we created.
 
 print_dir_tree(bids_root)
+
+###############################################################################
+# Now let's get an overview of the events on the whole dataset
+
+counts = count_events(bids_root)
+counts
 
 ###############################################################################
 # Now let's generate a report on the dataset.

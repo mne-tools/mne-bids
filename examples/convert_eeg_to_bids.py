@@ -35,6 +35,7 @@ import mne
 from mne.datasets import eegbci
 
 from mne_bids import write_raw_bids, BIDSPath, print_dir_tree
+from mne_bids.stats import count_events
 
 ###############################################################################
 # Download the data
@@ -176,6 +177,12 @@ write_raw_bids(raw, bids_path, overwrite=True)
 ###############################################################################
 # What does our fresh BIDS directory look like?
 print_dir_tree(bids_root)
+
+###############################################################################
+# Finally let's get an overview of the events on the whole dataset
+
+counts = count_events(bids_root)
+counts
 
 ###############################################################################
 # We can see that MNE-BIDS wrote several important files related to subject 1
