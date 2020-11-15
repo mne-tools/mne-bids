@@ -43,8 +43,8 @@ jobs:
         - run:
             name: Check links
             command: |
-              cd doc/
-              make linkcheck
+              make -C doc linkcheck
+              make -C doc linkcheck-grep
 
         # Store the data cache
         - save_cache:
