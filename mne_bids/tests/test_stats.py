@@ -18,20 +18,7 @@ from mne_bids import BIDSPath, write_raw_bids
 from mne_bids.stats import count_events
 
 
-@pytest.mark.parametrize(
-    ('subjects', 'tasks', 'runs', 'sessions'),
-    [
-        (['01'], ['task1'], ['01'], ['01']),
-        (['01', '02'], ['task1'], ['01'], ['01']),
-        (['01', '02'], ['task1', 'task2'], ['01'], ['01']),
-        (['01'], ['task1', 'task2'], [None], ['01']),
-        (['01'], ['task1', 'task2'], ['01'], [None]),
-        (['01'], ['task1', 'task2'], [None], [None]),
-    ]
-)
-@requires_pandas
-def test_count_events(subjects, tasks, runs, sessions):
-    """Test the event counts."""
+def _make_dataset(subjects, tasks=(None,), runs=(None,), sessions=(None,)):
     data_path = testing.data_path()
     raw_fname = \
         Path(data_path) / 'MEG' / 'sample' / 'sample_audvis_trunc_raw.fif'
@@ -50,8 +37,11 @@ def test_count_events(subjects, tasks, runs, sessions):
         write_raw_bids(raw, bids_path, events, event_id, overwrite=True,
                        verbose=False)
 
-    counts = count_events(root)
+    return root, events, event_id
 
+
+def _check_counts(counts, events, event_id, subjects,
+                  tasks=(None,), runs=(None,), sessions=(None,)):
     if (sessions[0] is None) and (runs[0] is None):
         assert np.all(counts.index == subjects)
     else:
@@ -79,6 +69,45 @@ def test_count_events(subjects, tasks, runs, sessions):
             counts.at[key, (tasks[0], k)] ==
             (events[:, 2] == v).sum()
         )
+
+
+@pytest.mark.parametrize(
+    ('subjects', 'tasks', 'runs', 'sessions'),
+    [
+        (['01'], ['task1'], ['01'], ['01']),
+        (['01', '02'], ['task1'], ['01'], ['01']),
+        (['01', '02'], ['task1', 'task2'], ['01'], ['01']),
+        (['01'], ['task1', 'task2'], [None], ['01']),
+        (['01'], ['task1', 'task2'], ['01'], [None]),
+        (['01'], ['task1', 'task2'], [None], [None]),
+    ]
+)
+@requires_pandas
+def test_count_events(subjects, tasks, runs, sessions):
+    """Test the event counts."""
+
+    root, events, event_id = _make_dataset(subjects, tasks, runs, sessions)
+
+    counts = count_events(root)
+
+    _check_counts(counts, events, event_id, subjects, tasks, runs, sessions)
+
+
+@requires_pandas
+def test_count_events_bids_path():
+    """Test the event counts passing a BIDSPath."""
+
+    root, events, event_id = \
+        _make_dataset(subjects=['01', '02'])
+
+    with pytest.raises(ValueError, match='datatype .*anat.* is not supported'):
+        bids_path = BIDSPath(root=root, subject='01', datatype='anat')
+        count_events(bids_path)
+
+    bids_path = BIDSPath(root=root, subject='01', datatype='meg')
+    counts = count_events(bids_path)
+
+    _check_counts(counts, events, event_id, subjects=['01'])
 
 
 @requires_pandas

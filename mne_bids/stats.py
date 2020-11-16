@@ -9,26 +9,22 @@ from mne_bids import BIDSPath, get_datatypes
 from mne_bids.config import EPHY_ALLOWED_DATATYPES
 
 
-def count_events(root, datatype='auto', subject=None, session=None,
-                 task=None, run=None):
+def count_events(root_or_path, datatype='auto'):
     """Count events present in dataset.
 
     Parameters
     ----------
-    root : str | pathlib.Path | None
-        The root folder of the BIDS dataset.
+    root_or_path : str | pathlib.Path | BIDSPath
+        If str or Path it is the root folder of the BIDS dataset.
+        If a BIDSPath is passed it allows to limit the count
+        to a subject, a session or a run by only considering
+        the event files that match this BIDSPath.
     datatype : str
         Type of the data recording. Can be ``meg``, ``eeg``,
-        ``ieeg`` or ``auto``. If ``auto`` only one datatype
-        should be present in the dataset to avoid any ambiguity.
-    subject : str | None
-        The subject ID to consider. If None all subjects are included.
-    session : str | None
-        The session to consider. If None all sessions are included.
-    task : str | None
-        The task to consider. If None all tasks are included.
-    run : int | None
-        The run number to consider. If None all runs are included.
+        ``ieeg`` or ``auto``. If ``auto`` then either a BIDSPath
+        isinstance is passed as ``root_or_path`` and this is what is
+        used or otherwise only one datatype should be present in
+        the dataset to avoid any ambiguity.
 
     Returns
     -------
@@ -37,13 +33,19 @@ def count_events(root, datatype='auto', subject=None, session=None,
         in all matching events.tsv files.
     """
     import pandas as pd
-    bids_path = BIDSPath(
-        root=root, suffix='events', extension='tsv', subject=subject,
-        session=session, task=task, run=run
-    )
 
-    datatypes = get_datatypes(root)
+    if not isinstance(root_or_path, BIDSPath):
+        bids_path = BIDSPath(root=root_or_path)
+    else:
+        bids_path = root_or_path.copy()
+
+    bids_path.update(suffix='events', extension='tsv')
+
+    datatypes = get_datatypes(bids_path.root)
     this_datatypes = list(set(datatypes).intersection(EPHY_ALLOWED_DATATYPES))
+
+    if (datatype == 'auto') and bids_path.datatype is not None:
+        datatype = bids_path.datatype
 
     if datatype == 'auto':
         if len(this_datatypes) > 1:
@@ -53,6 +55,10 @@ def count_events(root, datatype='auto', subject=None, session=None,
             raise ValueError('No valid datatype present.')
 
         datatype = this_datatypes[0]
+
+    if datatype not in EPHY_ALLOWED_DATATYPES:
+        raise ValueError(f'datatype ({datatype}) is not supported.'
+                         f' It must be one of: {EPHY_ALLOWED_DATATYPES})')
 
     bids_path.update(datatype=datatype)
 
