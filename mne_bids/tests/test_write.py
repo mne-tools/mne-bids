@@ -49,7 +49,7 @@ from mne_bids.tsv_handler import _from_tsv, _to_tsv
 from mne_bids.utils import _update_sidecar
 from mne_bids.path import _find_matching_sidecar
 from mne_bids.pick import coil_type
-from mne_bids.config import REFERENCES
+from mne_bids.config import REFERENCES, COORD_FRAME_DESCRIPTIONS
 
 base_path = op.join(op.dirname(mne.__file__), 'io')
 subject_id = '01'
@@ -895,10 +895,12 @@ def test_vhdr(_bids_validate):
     montage = mne.channels.read_dig_captrak(fname_bvct)
     raw.set_montage(montage)
 
-    # convert to BIDS and check impedances
+    # convert to BIDS
     bids_root = _TempDir()
     bids_path.update(root=bids_root)
     write_raw_bids(raw, bids_path)
+
+    # check impedances
     electrodes_fpath = _find_matching_sidecar(
         bids_path.copy().update(root=bids_root),
         suffix='electrodes', extension='.tsv')
@@ -906,6 +908,15 @@ def test_vhdr(_bids_validate):
     assert len(tsv.get('impedance', {})) > 0
     assert tsv['impedance'][-3:] == ['n/a', 'n/a', 'n/a']
     assert tsv['impedance'][:3] == ['5.0', '2.0', '4.0']
+
+    # check coordsystem
+    coordsystem_fpath = _find_matching_sidecar(
+        bids_path.copy().update(root=bids_root),
+        suffix='coordsystem', extension='.json')
+    with open(coordsystem_fpath, 'r') as fin:
+        coordsys_data = json.load(fin)
+        descr = coordsys_data.get("EEGCoordinateSystemDescription", "")
+        assert descr == COORD_FRAME_DESCRIPTIONS["captrak"]
 
     # electrodes file path should only contain
     # sub/ses/acq/space at most
