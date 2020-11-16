@@ -98,7 +98,7 @@ def test_count_events_bids_path():
     """Test the event counts passing a BIDSPath."""
 
     root, events, event_id = \
-        _make_dataset(subjects=['01', '02'])
+        _make_dataset(subjects=['01', '02'], tasks=['task1'])
 
     with pytest.raises(ValueError, match='datatype .*anat.* is not supported'):
         bids_path = BIDSPath(root=root, subject='01', datatype='anat')
@@ -107,7 +107,7 @@ def test_count_events_bids_path():
     bids_path = BIDSPath(root=root, subject='01', datatype='meg')
     counts = count_events(bids_path)
 
-    _check_counts(counts, events, event_id, subjects=['01'])
+    _check_counts(counts, events, event_id, subjects=['01'], tasks=['task1'])
 
 
 @requires_pandas
