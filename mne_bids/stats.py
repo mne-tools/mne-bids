@@ -44,7 +44,7 @@ def count_events(root_or_path, datatype='auto'):
     datatypes = get_datatypes(bids_path.root)
     this_datatypes = list(set(datatypes).intersection(EPHY_ALLOWED_DATATYPES))
 
-    if (datatype == 'auto') and bids_path.datatype is not None:
+    if (datatype == 'auto') and (bids_path.datatype is not None):
         datatype = bids_path.datatype
 
     if datatype == 'auto':

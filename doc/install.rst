@@ -15,6 +15,7 @@ Dependencies
 * ``mne`` (>=0.21)
 * ``nibabel`` (>=2.2, optional)
 * ``pybv`` (>=0.4, optional)
+* ``pandas`` (>=0.23.4, optional)
 
 
 We recommend the `Anaconda <https://www.anaconda.com/download/>`_ Python
