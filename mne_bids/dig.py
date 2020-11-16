@@ -251,7 +251,7 @@ def _coordsystem_json(*, raw, unit, hpi_coord_system, sensor_coord_system,
 
     # get the coordinate frame description
     sensor_coord_system_descr = (COORD_FRAME_DESCRIPTIONS
-                                 .get(sensor_coord_system, "n/a"))
+                                 .get(sensor_coord_system.lower(), "n/a"))
     if sensor_coord_system == 'Other' and verbose:
         print('Using the `Other` keyword for the CoordinateSystem field. '
               'Please specify the CoordinateSystemDescription field manually.')
