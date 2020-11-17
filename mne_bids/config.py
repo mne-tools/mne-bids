@@ -7,7 +7,9 @@ BIDS_VERSION = "1.4.0"
 
 DOI = """https://doi.org/10.21105/joss.01896"""
 
-ALLOWED_DATATYPES = ['meg', 'eeg', 'ieeg', 'anat', 'beh']
+EPHY_ALLOWED_DATATYPES = ['meg', 'eeg', 'ieeg']
+
+ALLOWED_DATATYPES = EPHY_ALLOWED_DATATYPES + ['anat', 'beh']
 
 # Orientation of the coordinate system dependent on manufacturer
 ORIENTATION = {

@@ -75,6 +75,10 @@ jobs:
         mne sys_info
     - name: Install MNE-BIDS
       run: pip install --no-deps .
+    - name: Install pandas
+      if: "matrix.os == 'ubuntu-latest'"
+      run: |
+        pip install -U pandas
     - name: Run pytest
       run: |
         export BIDS_VALIDATOR_VERSION=`bids-validator --version`
