@@ -201,7 +201,15 @@ COORD_FRAME_DESCRIPTIONS = {
     '4dbti': 'ALS orientation and the origin between the ears',
     'kityokogawa': 'ALS orientation and the origin between the ears',
     'chietiitab': 'RAS orientation and the origin between the ears',
-    'captrak': 'RAS orientation and the origin between the ears',
+    'captrak': (
+        'The X-axis goes from the left preauricular point (LPA) through '
+        'the right preauricular point (RPA). '
+        'The Y-axis goes orthogonally to the X-axis through the nasion (NAS). '
+        'The Z-axis goes orthogonally to the XY-plane through the vertex of '
+        'the head. '
+        'This corresponds to a "RAS" orientation with the origin of the '
+        'coordinate system approximately between the ears. '
+        'See Appendix VIII in the BIDS specification.'),
     'mri': 'Defined by Freesurfer, the MRI (surface RAS) origin is at the '
            'center of a 256×256×256 1mm anisotropic volume '
            '(may not be in the center of the head).',
