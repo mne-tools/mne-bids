@@ -40,6 +40,23 @@ mne_bids
    get_datatypes
    update_sidecar_json
 
+mne_bids.stats
+--------------
+
+:py:mod:`mne_bids.stats`:
+
+.. automodule:: mne_bids.stats
+   :no-members:
+   :no-inherited-members:
+
+.. currentmodule:: mne_bids.stats
+
+.. autosummary::
+   :toctree: generated/
+
+   count_events
+
+
 mne_bids.copyfiles
 ------------------
 

@@ -138,6 +138,7 @@ checking out this group conversion example: <a class="reference internal" href="
 <span class="kn">from</span> <span class="nn">mne_bids</span> <span class="kn">import</span> <span class="p">(</span><a href="../generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">write_raw_bids</span></a><span class="p">,</span> <a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class"><span class="n">BIDSPath</span></a><span class="p">,</span>
                       <a href="../generated/mne_bids.get_anonymization_daysback.html#mne_bids.get_anonymization_daysback" title="mne_bids.get_anonymization_daysback" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">get_anonymization_daysback</span></a><span class="p">,</span> <a href="../generated/mne_bids.make_report.html#mne_bids.make_report" title="mne_bids.make_report" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">make_report</span></a><span class="p">,</span>
                       <a href="../generated/mne_bids.print_dir_tree.html#mne_bids.print_dir_tree" title="mne_bids.print_dir_tree" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">print_dir_tree</span></a><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">mne_bids.stats</span> <span class="kn">import</span> <a href="../generated/mne_bids.stats.count_events.html#mne_bids.stats.count_events" title="mne_bids.stats.count_events" class="sphx-glr-backref-module-mne_bids-stats sphx-glr-backref-type-py-function"><span class="n">count_events</span></a>
 </pre></div>
 </div>
 <p>And fetch the data for several subjects and runs of a single task.</p>
@@ -161,113 +162,6 @@ checking out this group conversion example: <a class="reference internal" href="
 <span class="c1"># get path to MNE directory with the downloaded example data</span>
 <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mne_data_dir</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.get_config.html#mne.get_config" title="mne.get_config" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">get_config</span></a><span class="p">(</span><span class="s1">&#39;MNE_DATASETS_EEGBCI_PATH&#39;</span><span class="p">)</span>
 <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_dir</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/os.path.html#os.path.join" title="os.path.join" class="sphx-glr-backref-module-os-path sphx-glr-backref-type-py-function"><span class="n">op</span><span class="o">.</span><span class="n">join</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mne_data_dir</span></a><span class="p">,</span> <span class="s1">&#39;MNE-eegbci-data&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p class="sphx-glr-script-out">Out:</p>
-<div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Downloading https://physionet.org/files/eegmmidb/1.0.0/S001/S001R04.edf (2.5 MB)
-
-  0%|          | Downloading : 0.00/2.48M [00:00&lt;?,        ?B/s]
-  3%|3         | Downloading : 88.0k/2.48M [00:00&lt;00:00,    3.66MB/s]
- 14%|#3        | Downloading : 344k/2.48M [00:00&lt;00:00,    3.78MB/s]
- 29%|##8       | Downloading : 728k/2.48M [00:00&lt;00:00,    3.93MB/s]
- 59%|#####8    | Downloading : 1.46M/2.48M [00:00&lt;00:00,    4.11MB/s]
- 79%|#######9  | Downloading : 1.96M/2.48M [00:00&lt;00:00,    4.29MB/s]
- 99%|#########9| Downloading : 2.46M/2.48M [00:00&lt;00:00,    4.48MB/s]
-100%|##########| Downloading : 2.48M/2.48M [00:00&lt;00:00,    18.9MB/s]
-Downloading https://physionet.org/files/eegmmidb/1.0.0/S001/S001R08.edf (2.5 MB)
-
-  0%|          | Downloading : 0.00/2.48M [00:00&lt;?,        ?B/s]
-  3%|3         | Downloading : 88.0k/2.48M [00:00&lt;00:00,    3.77MB/s]
- 15%|#4        | Downloading : 376k/2.48M [00:00&lt;00:00,    3.87MB/s]
- 40%|####      | Downloading : 0.99M/2.48M [00:00&lt;00:00,    4.03MB/s]
- 50%|#####     | Downloading : 1.24M/2.48M [00:00&lt;00:00,    4.15MB/s]
- 60%|######    | Downloading : 1.49M/2.48M [00:00&lt;00:00,    4.27MB/s]
- 70%|#######   | Downloading : 1.74M/2.48M [00:00&lt;00:00,    4.40MB/s]
- 80%|########  | Downloading : 1.99M/2.48M [00:00&lt;00:00,    4.54MB/s]
- 91%|######### | Downloading : 2.24M/2.48M [00:00&lt;00:00,    4.66MB/s]
-100%|##########| Downloading : 2.48M/2.48M [00:00&lt;00:00,    4.78MB/s]
-100%|##########| Downloading : 2.48M/2.48M [00:00&lt;00:00,    10.4MB/s]
-Downloading https://physionet.org/files/eegmmidb/1.0.0/S001/S001R12.edf (2.5 MB)
-
-  0%|          | Downloading : 0.00/2.48M [00:00&lt;?,        ?B/s]
-  2%|2         | Downloading : 56.0k/2.48M [00:00&lt;00:01,    2.23MB/s]
-  9%|8         | Downloading : 216k/2.48M [00:00&lt;00:01,    2.30MB/s]
- 14%|#3        | Downloading : 344k/2.48M [00:00&lt;00:00,    2.34MB/s]
- 19%|#8        | Downloading : 472k/2.48M [00:00&lt;00:00,    2.40MB/s]
- 24%|##3       | Downloading : 600k/2.48M [00:00&lt;00:00,    2.47MB/s]
- 29%|##8       | Downloading : 728k/2.48M [00:00&lt;00:00,    2.50MB/s]
- 34%|###3      | Downloading : 856k/2.48M [00:00&lt;00:00,    2.57MB/s]
- 39%|###8      | Downloading : 984k/2.48M [00:00&lt;00:00,    2.63MB/s]
- 44%|####3     | Downloading : 1.09M/2.48M [00:00&lt;00:00,    2.70MB/s]
- 49%|####8     | Downloading : 1.21M/2.48M [00:00&lt;00:00,    2.76MB/s]
- 54%|#####3    | Downloading : 1.34M/2.48M [00:00&lt;00:00,    2.83MB/s]
- 59%|#####8    | Downloading : 1.46M/2.48M [00:00&lt;00:00,    2.85MB/s]
- 67%|######6   | Downloading : 1.65M/2.48M [00:00&lt;00:00,    2.89MB/s]
- 72%|#######1  | Downloading : 1.77M/2.48M [00:00&lt;00:00,    2.91MB/s]
- 77%|#######6  | Downloading : 1.90M/2.48M [00:00&lt;00:00,    2.89MB/s]
- 82%|########1 | Downloading : 2.02M/2.48M [00:00&lt;00:00,    2.91MB/s]
- 87%|########6 | Downloading : 2.15M/2.48M [00:00&lt;00:00,    2.90MB/s]
- 92%|#########1| Downloading : 2.27M/2.48M [00:00&lt;00:00,    2.92MB/s]
- 97%|#########6| Downloading : 2.40M/2.48M [00:00&lt;00:00,    2.90MB/s]
-100%|##########| Downloading : 2.48M/2.48M [00:00&lt;00:00,    3.82MB/s]
-Downloading https://physionet.org/files/eegmmidb/1.0.0/S002/S002R04.edf (2.4 MB)
-
-  0%|          | Downloading : 0.00/2.44M [00:00&lt;?,        ?B/s]
-  4%|3         | Downloading : 88.0k/2.44M [00:00&lt;00:00,    3.63MB/s]
-  6%|6         | Downloading : 152k/2.44M [00:00&lt;00:00,    3.55MB/s]
-  9%|8         | Downloading : 216k/2.44M [00:00&lt;00:00,    3.49MB/s]
- 14%|#3        | Downloading : 344k/2.44M [00:00&lt;00:00,    3.48MB/s]
- 19%|#8        | Downloading : 472k/2.44M [00:00&lt;00:00,    3.49MB/s]
- 24%|##4       | Downloading : 600k/2.44M [00:00&lt;00:00,    3.53MB/s]
- 29%|##9       | Downloading : 728k/2.44M [00:00&lt;00:00,    3.58MB/s]
- 34%|###4      | Downloading : 856k/2.44M [00:00&lt;00:00,    3.64MB/s]
- 39%|###9      | Downloading : 984k/2.44M [00:00&lt;00:00,    3.70MB/s]
- 47%|####7     | Downloading : 1.15M/2.44M [00:00&lt;00:00,    3.79MB/s]
- 52%|#####2    | Downloading : 1.27M/2.44M [00:00&lt;00:00,    3.86MB/s]
- 63%|######2   | Downloading : 1.52M/2.44M [00:00&lt;00:00,    3.97MB/s]
- 68%|######7   | Downloading : 1.65M/2.44M [00:00&lt;00:00,    4.06MB/s]
- 73%|#######2  | Downloading : 1.77M/2.44M [00:00&lt;00:00,    4.16MB/s]
- 83%|########3 | Downloading : 2.02M/2.44M [00:00&lt;00:00,    4.28MB/s]
- 88%|########8 | Downloading : 2.15M/2.44M [00:00&lt;00:00,    4.33MB/s]
- 98%|#########8| Downloading : 2.40M/2.44M [00:00&lt;00:00,    4.40MB/s]
-100%|##########| Downloading : 2.44M/2.44M [00:00&lt;00:00,    5.51MB/s]
-Downloading https://physionet.org/files/eegmmidb/1.0.0/S002/S002R08.edf (2.4 MB)
-
-  0%|          | Downloading : 0.00/2.44M [00:00&lt;?,        ?B/s]
-  4%|3         | Downloading : 88.0k/2.44M [00:00&lt;00:00,    3.86MB/s]
- 10%|9         | Downloading : 248k/2.44M [00:00&lt;00:00,    3.93MB/s]
- 15%|#5        | Downloading : 376k/2.44M [00:00&lt;00:00,    3.99MB/s]
- 20%|##        | Downloading : 504k/2.44M [00:00&lt;00:00,    3.97MB/s]
- 28%|##7       | Downloading : 696k/2.44M [00:00&lt;00:00,    4.07MB/s]
- 33%|###3      | Downloading : 824k/2.44M [00:00&lt;00:00,    4.11MB/s]
- 38%|###8      | Downloading : 952k/2.44M [00:00&lt;00:00,    4.15MB/s]
- 43%|####3     | Downloading : 1.05M/2.44M [00:00&lt;00:00,    4.19MB/s]
- 48%|####8     | Downloading : 1.18M/2.44M [00:00&lt;00:00,    4.24MB/s]
- 54%|#####3    | Downloading : 1.30M/2.44M [00:00&lt;00:00,    4.22MB/s]
- 59%|#####8    | Downloading : 1.43M/2.44M [00:00&lt;00:00,    4.26MB/s]
- 64%|######3   | Downloading : 1.55M/2.44M [00:00&lt;00:00,    4.30MB/s]
- 74%|#######4  | Downloading : 1.80M/2.44M [00:00&lt;00:00,    4.38MB/s]
- 79%|#######9  | Downloading : 1.93M/2.44M [00:00&lt;00:00,    4.42MB/s]
- 84%|########4 | Downloading : 2.05M/2.44M [00:00&lt;00:00,    4.45MB/s]
- 89%|########9 | Downloading : 2.18M/2.44M [00:00&lt;00:00,    4.50MB/s]
-100%|#########9| Downloading : 2.43M/2.44M [00:00&lt;00:00,    4.57MB/s]
-100%|##########| Downloading : 2.44M/2.44M [00:00&lt;00:00,    5.40MB/s]
-Downloading https://physionet.org/files/eegmmidb/1.0.0/S002/S002R12.edf (2.4 MB)
-
-  0%|          | Downloading : 0.00/2.44M [00:00&lt;?,        ?B/s]
-  4%|3         | Downloading : 88.0k/2.44M [00:00&lt;00:00,    3.59MB/s]
-  7%|7         | Downloading : 184k/2.44M [00:00&lt;00:00,    3.60MB/s]
- 13%|#2        | Downloading : 312k/2.44M [00:00&lt;00:00,    3.66MB/s]
- 20%|##        | Downloading : 504k/2.44M [00:00&lt;00:00,    3.75MB/s]
- 25%|##5       | Downloading : 632k/2.44M [00:00&lt;00:00,    3.81MB/s]
- 36%|###5      | Downloading : 888k/2.44M [00:00&lt;00:00,    3.89MB/s]
- 46%|####5     | Downloading : 1.12M/2.44M [00:00&lt;00:00,    4.00MB/s]
- 56%|#####6    | Downloading : 1.37M/2.44M [00:00&lt;00:00,    4.08MB/s]
- 61%|######1   | Downloading : 1.49M/2.44M [00:00&lt;00:00,    4.18MB/s]
- 66%|######6   | Downloading : 1.62M/2.44M [00:00&lt;00:00,    4.28MB/s]
- 82%|########1 | Downloading : 1.99M/2.44M [00:00&lt;00:00,    4.43MB/s]
- 92%|#########1| Downloading : 2.24M/2.44M [00:00&lt;00:00,    4.57MB/s]
-100%|##########| Downloading : 2.44M/2.44M [00:00&lt;00:00,    7.57MB/s]
 </pre></div>
 </div>
 <p>Let us loop over the subjects and create BIDS-compatible folder</p>
@@ -341,19 +235,11 @@ Creating raw.info structure...
 /home/circleci/project/mne_bids/write.py:1117: RuntimeWarning: Converting data files to BrainVision format for anonymization
   warn(&#39;Converting data files to BrainVision format &#39;
 
-Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/README&#39;...
-
-References
-----------
-Appelhoff, S., Sanderson, M., Brooks, T., Vliet, M., Quentin, R., Holdgraf, C., Chaumon, M., Mikulan, E., Tavabi, K., Höchenberger, R., Welke, D., Brunner, C., Rockhill, A., Larson, E., Gramfort, A. and Jas, M. (2019). MNE-BIDS: Organizing electrophysiological data into the BIDS format and facilitating their analysis. Journal of Open Source Software 4: (1896). https://doi.org/10.21105/joss.01896
-
-Pernet, C. R., Appelhoff, S., Gorgolewski, K. J., Flandin, G., Phillips, C., Delorme, A., Oostenveld, R. (2019). EEG-BIDS, an extension to the brain imaging data structure for electroencephalography. Scientific Data, 6, 103. https://doi.org/10.1038/s41597-019-0104-8
-
-
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/participants.tsv&#39;...
 
 participant_id  age     sex     hand
 sub-001 n/a     n/a     n/a
+sub-002 n/a     n/a     n/a
 
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/participants.json&#39;...
 
@@ -441,6 +327,8 @@ Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-
 
 filename        acq_time
 eeg/sub-001_ses-01_task-MotorImagery_run-01_eeg.vhdr    1919-03-16T16:15:00.000000Z
+eeg/sub-001_ses-01_task-MotorImagery_run-02_eeg.vhdr    1919-03-16T16:15:00.000000Z
+eeg/sub-001_ses-01_task-MotorImagery_run-03_eeg.vhdr    1919-03-16T16:15:00.000000Z
 Wrote /home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-01/sub-001_ses-01_scans.tsv entry with eeg/sub-001_ses-01_task-MotorImagery_run-01_eeg.vhdr.
 Extracting EDF parameters from /home/circleci/mne_data/MNE-eegbci-data/files/eegmmidb/1.0.0/S001/S001R08.edf...
 EDF file detected
@@ -453,6 +341,7 @@ Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/participants
 
 participant_id  age     sex     hand
 sub-001 n/a     n/a     n/a
+sub-002 n/a     n/a     n/a
 
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/participants.json&#39;...
 
@@ -541,6 +430,7 @@ Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-
 filename        acq_time
 eeg/sub-001_ses-01_task-MotorImagery_run-01_eeg.vhdr    1919-03-16T16:15:00.000000Z
 eeg/sub-001_ses-01_task-MotorImagery_run-02_eeg.vhdr    1919-03-16T16:15:00.000000Z
+eeg/sub-001_ses-01_task-MotorImagery_run-03_eeg.vhdr    1919-03-16T16:15:00.000000Z
 Wrote /home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-01/sub-001_ses-01_scans.tsv entry with eeg/sub-001_ses-01_task-MotorImagery_run-02_eeg.vhdr.
 Extracting EDF parameters from /home/circleci/mne_data/MNE-eegbci-data/files/eegmmidb/1.0.0/S001/S001R12.edf...
 EDF file detected
@@ -553,6 +443,7 @@ Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/participants
 
 participant_id  age     sex     hand
 sub-001 n/a     n/a     n/a
+sub-002 n/a     n/a     n/a
 
 Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/participants.json&#39;...
 
@@ -742,6 +633,8 @@ Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-
 
 filename        acq_time
 eeg/sub-002_ses-01_task-MotorImagery_run-01_eeg.vhdr    1919-03-16T16:15:00.000000Z
+eeg/sub-002_ses-01_task-MotorImagery_run-02_eeg.vhdr    1919-03-16T16:15:00.000000Z
+eeg/sub-002_ses-01_task-MotorImagery_run-03_eeg.vhdr    1919-03-16T16:15:00.000000Z
 Wrote /home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/sub-002_ses-01_scans.tsv entry with eeg/sub-002_ses-01_task-MotorImagery_run-01_eeg.vhdr.
 Extracting EDF parameters from /home/circleci/mne_data/MNE-eegbci-data/files/eegmmidb/1.0.0/S002/S002R08.edf...
 EDF file detected
@@ -843,6 +736,7 @@ Writing &#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-
 filename        acq_time
 eeg/sub-002_ses-01_task-MotorImagery_run-01_eeg.vhdr    1919-03-16T16:15:00.000000Z
 eeg/sub-002_ses-01_task-MotorImagery_run-02_eeg.vhdr    1919-03-16T16:15:00.000000Z
+eeg/sub-002_ses-01_task-MotorImagery_run-03_eeg.vhdr    1919-03-16T16:15:00.000000Z
 Wrote /home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/sub-002_ses-01_scans.tsv entry with eeg/sub-002_ses-01_task-MotorImagery_run-02_eeg.vhdr.
 Extracting EDF parameters from /home/circleci/mne_data/MNE-eegbci-data/files/eegmmidb/1.0.0/S002/S002R12.edf...
 EDF file detected
@@ -1004,14 +898,107 @@ Wrote /home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/sub-
 |------------ sub-002_ses-01_task-MotorImagery_run-03_events.tsv
 </pre></div>
 </div>
-<p>Now let’s generate a report on the dataset.</p>
+<p>Now let’s get an overview of the events on the whole dataset</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">counts</span> <span class="o">=</span> <a href="../generated/mne_bids.stats.count_events.html#mne_bids.stats.count_events" title="mne_bids.stats.count_events" class="sphx-glr-backref-module-mne_bids-stats sphx-glr-backref-type-py-function"><span class="n">count_events</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">)</span>
+<span class="n">counts</span>
+</pre></div>
+</div>
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead tr th {
+        text-align: left;
+    }
+
+    .dataframe thead tr:last-of-type th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th colspan="3" halign="left">MotorImagery</th>
+    </tr>
+    <tr>
+      <th></th>
+      <th></th>
+      <th>trial_type</th>
+      <th>T0</th>
+      <th>T1</th>
+      <th>T2</th>
+    </tr>
+    <tr>
+      <th>subject</th>
+      <th>session</th>
+      <th>run</th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th rowspan="3" valign="top">001</th>
+      <th rowspan="3" valign="top">01</th>
+      <th>01</th>
+      <td>15</td>
+      <td>8</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <th>02</th>
+      <td>15</td>
+      <td>8</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <th>03</th>
+      <td>15</td>
+      <td>7</td>
+      <td>8</td>
+    </tr>
+    <tr>
+      <th rowspan="3" valign="top">002</th>
+      <th rowspan="3" valign="top">01</th>
+      <th>01</th>
+      <td>15</td>
+      <td>7</td>
+      <td>8</td>
+    </tr>
+    <tr>
+      <th>02</th>
+      <td>15</td>
+      <td>8</td>
+      <td>7</td>
+    </tr>
+    <tr>
+      <th>03</th>
+      <td>15</td>
+      <td>8</td>
+      <td>7</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<br />
+<br /><p>Now let’s generate a report on the dataset.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset_report</span></a> <span class="o">=</span> <a href="../generated/mne_bids.make_report.html#mne_bids.make_report" title="mne_bids.make_report" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">make_report</span></a><span class="p">(</span><span class="n">root</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">dataset_report</span></a><span class="p">)</span>
 </pre></div>
 </div>
 <p class="sphx-glr-script-out">Out:</p>
 <div class="sphx-glr-script-out highlight-none notranslate"><div class="highlight"><pre><span></span>Summarizing participants.tsv /home/circleci/mne_data/eegmmidb_bids_group_conversion/participants.tsv...
-Summarizing scans.tsv files [PosixPath(&#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/sub-002_ses-01_scans.tsv&#39;), PosixPath(&#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-01/sub-001_ses-01_scans.tsv&#39;)]...
+Summarizing scans.tsv files [PosixPath(&#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-01/sub-001_ses-01_scans.tsv&#39;), PosixPath(&#39;/home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/sub-002_ses-01_scans.tsv&#39;)]...
 The participant template found: sex were all unknown;
 handedness were all unknown; ages all unknown
 This dataset was created with BIDS version 1.4.0 by Please cite MNE-BIDS in your
@@ -1027,7 +1014,7 @@ scan, out of which 64.0 (std = 0.0) were used in analysis (0.0 +/- 0.0 were
 removed from analysis).
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  3.301 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  0.531 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-group-studies-py">
 <div class="binder-badge docutils container">
 <a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/convert_group_studies.ipynb"><img alt="Launch binder" src="../_images/binder_badge_logo.svg" width="150px" /></a>
