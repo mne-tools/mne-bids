@@ -147,9 +147,7 @@ def _read_events(events_data, event_id, raw, verbose=None):
         verbose=verbose
     )
     all_dur = raw.annotations.duration
-    if all_events.size == 0 and verbose:
-        # Confirm from filename dataset is not likely resting state
-        if '_task-rest' not in raw.filenames[0]:
+if all_events.size == 0 and `_task_rest` not in raw.filenames[0]:
             warn('No events found or provided. Please add annotations '
                  'to the raw data, or provide the events_data and '
                  'event_id parameters. If this is resting state data '
