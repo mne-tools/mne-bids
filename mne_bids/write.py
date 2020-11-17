@@ -402,7 +402,7 @@ def _scans_tsv(raw, raw_fname, fname, overwrite=False, verbose=True):
     if meas_date is None:
         acq_time = 'n/a'
     # The "Z" indicates UTC time
-    elif isinstance(meas_date, (tuple, list, np.ndarray)):
+    elif isinstance(meas_date, (tuple, list, np.ndarray)):  # pragma: no cover
         # for MNE < v0.20
         acq_time = _stamp_to_dt(meas_date).strftime('%Y-%m-%dT%H:%M:%S.%fZ')
     elif isinstance(meas_date, datetime):
