@@ -31,8 +31,8 @@ from mne_bids.read import (read_raw_bids,
                            _read_raw, get_head_mri_trans,
                            _handle_events_reading)
 from mne_bids.tsv_handler import _to_tsv, _from_tsv
-from mne_bids.utils import (_update_sidecar,
-                            _write_json)
+from mne_bids.utils import (_write_json)
+from mne_bids.sidecar_updates import _update_sidecar
 from mne_bids.path import _find_matching_sidecar
 from mne_bids.write import write_anat, write_raw_bids
 

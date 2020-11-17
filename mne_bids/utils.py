@@ -253,25 +253,6 @@ def _extract_landmarks(dig):
     return coords
 
 
-def _update_sidecar(sidecar_fname, key, val):
-    """Update a sidecar JSON file with a given key/value pair.
-
-    Parameters
-    ----------
-    sidecar_fname : str | os.PathLike
-        Full name of the data file
-    key : str
-        The key in the sidecar JSON file. E.g. "PowerLineFrequency"
-    val : str
-        The corresponding value to change to in the sidecar JSON file.
-    """
-    with open(sidecar_fname, 'r', encoding='utf-8-sig') as fin:
-        sidecar_json = json.load(fin)
-    sidecar_json[key] = val
-    with open(sidecar_fname, 'w', encoding='utf-8') as fout:
-        json.dump(sidecar_json, fout)
-
-
 def _scale_coord_to_meters(coord, unit):
     """Scale units to meters (mne-python default)."""
     if unit == 'cm':

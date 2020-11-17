@@ -144,7 +144,7 @@ def _get_matched_empty_room(bids_path):
 
 
 class BIDSPath(object):
-    """Create a BIDS path.
+    """A BIDS path object.
 
     BIDS filename prefixes have one or more pieces of metadata in them. They
     must follow a particular order, which is followed by this function. This
@@ -153,7 +153,8 @@ class BIDSPath(object):
     the file name.
 
     BIDSPath allows dynamic updating of its entities in place, and operates
-    similar to `pathlib.Path`.
+    similar to `pathlib.Path`. In addition, it can query multiple paths
+    with matching BIDS entities via the ``match`` method.
 
     Note that not all parameters are applicable to each suffix of data. For
     example, electrode location TSV files do not need a "task" field.
@@ -587,7 +588,7 @@ class BIDSPath(object):
         """Get a list of all matching paths in the root directory.
 
         Performs a recursive search, starting in ``.root`` (if set), based on
-        `BIDSPath.entities` object.
+        `BIDSPath.entities` object. Ignores ``.json`` files.
 
         Returns
         -------
