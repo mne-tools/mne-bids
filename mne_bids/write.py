@@ -397,16 +397,17 @@ def _scans_tsv(raw, raw_fname, fname, overwrite=False, verbose=True):
         Set verbose output to True or False.
 
     """
-    # get measurement date from the data info
+    # get measurement date in UTC from the data info
     meas_date = raw.info['meas_date']
     if meas_date is None:
         acq_time = 'n/a'
-    elif isinstance(meas_date, (tuple, list, np.ndarray)):  # noqa: E501
+    # The "Z" indicates UTC time
+    elif isinstance(meas_date, (tuple, list, np.ndarray)):  # pragma: no cover
         # for MNE < v0.20
-        acq_time = _stamp_to_dt(meas_date).strftime('%Y-%m-%dT%H:%M:%S')
+        acq_time = _stamp_to_dt(meas_date).strftime('%Y-%m-%dT%H:%M:%S.%fZ')
     elif isinstance(meas_date, datetime):
         # for MNE >= v0.20
-        acq_time = meas_date.strftime('%Y-%m-%dT%H:%M:%S')
+        acq_time = meas_date.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
 
     data = OrderedDict([('filename', ['%s' % raw_fname.replace(os.sep, '/')]),
                         ('acq_time', [acq_time])])
@@ -415,7 +416,7 @@ def _scans_tsv(raw, raw_fname, fname, overwrite=False, verbose=True):
         orig_data = _from_tsv(fname)
         # if the file name is already in the file raise an error
         if raw_fname in orig_data['filename'] and not overwrite:
-            raise FileExistsError(f'"{raw_fname}" already exists in '  # noqa: E501 F821
+            raise FileExistsError(f'"{raw_fname}" already exists in '
                                   f'the scans list. Please set '
                                   f'overwrite to True.')
         # otherwise add the new data

@@ -51,7 +51,7 @@ def _get_matched_empty_room(bids_path):
                          'date set. Cannot get matching empty-room file.')
 
     ref_date = raw.info['meas_date']
-    if not isinstance(ref_date, datetime):
+    if not isinstance(ref_date, datetime):  # pragma: no cover
         # for MNE < v0.20
         ref_date = datetime.fromtimestamp(raw.info['meas_date'][0])
 

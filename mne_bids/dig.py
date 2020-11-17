@@ -136,7 +136,7 @@ def _get_impedances(raw, names):
     """Get the impedance values in kOhm from raw.impedances."""
     if not hasattr(raw, 'impedances'):  # pragma: no cover
         return ['n/a'] * len(names)
-    no_info = {'imp': 'n/a', 'imp_unit': 'kOhm'}
+    no_info = {'imp': np.nan, 'imp_unit': 'kOhm'}
     impedance_dicts = [raw.impedances.get(name, no_info) for name in names]
     # If we encounter a unit not defined in `scalings`, return NaN
     scalings = {'kOhm': 1, 'Ohm': 0.001}
@@ -144,6 +144,8 @@ def _get_impedances(raw, names):
         imp_dict['imp'] * scalings.get(imp_dict['imp_unit'], np.nan)
         for imp_dict in impedance_dicts
     ]
+    # replace np.nan with BIDS 'n/a' representation
+    impedances = [i if not np.isnan(i) else "n/a" for i in impedances]
     return impedances
 
 
