@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>mne_bids.update_sidecar_json &#8212; mne_bids 0.6.dev0 documentation</title>
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/style.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/gallery-dataframe.css" />
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../index.html">
+          MNE-BIDS</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.6.dev0</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../whats_new.html">News</a></li>
+                <li><a href="../install.html">Install</a></li>
+                <li><a href="../use.html">Use</a></li>
+                <li><a href="../api.html">API</a></li>
+                <li><a href="cli.html">CLI</a></li>
+                <li><a href="../contribute.html">Contribute!</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"></ul>
+</li>
+              
+            
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+<div class="navbar-form navbar-right navbar-btn dropdown btn-group-sm" style="margin-left: 20px; margin-top: 5px; margin-bottom: 5px">
+  <button type="button" class="btn btn-primary navbar-btn dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown">
+    v0.6.dev0
+    <span class="caret"></span>
+  </button>
+  <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+    <li><a href="https://mne.tools/mne-bids/dev/index.html">Development</a></li>
+    <li><a href="https://mne.tools/mne-bids/stable/index.html">Stable</a></li>
+    <li><a href="https://mne.tools/mne-bids/v0.5/index.html">v0.5</a></li>
+    <li><a href="https://mne.tools/mne-bids/v0.4/index.html">v0.4</a></li>
+    <li><a href="https://mne.tools/mne-bids/v0.3/index.html">v0.3</a></li>
+    <li><a href="https://mne.tools/mne-bids/v0.2/index.html">v0.2</a></li>
+    <li><a href="https://mne.tools/mne-bids/v0.1/index.html">v0.1</a></li>
+  </ul>
+</div>
+
+
+            
+<form class="navbar-form navbar-right" action="../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <div class="section" id="mne-bids-update-sidecar-json">
+<h1>mne_bids.update_sidecar_json<a class="headerlink" href="#mne-bids-update-sidecar-json" title="Permalink to this headline">¶</a></h1>
+<dl class="py function">
+<dt id="mne_bids.update_sidecar_json">
+<code class="sig-prename descclassname">mne_bids.</code><code class="sig-name descname">update_sidecar_json</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">bids_path</span></em>, <em class="sig-param"><span class="n">entries</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/sidecar_updates.html#update_sidecar_json"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.update_sidecar_json" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update sidecar files using a dictionary or JSON file.</p>
+<p>Will update metadata fields inside the path defined by
+<code class="docutils literal notranslate"><span class="pre">bids_path.fpath</span></code> according to the <code class="docutils literal notranslate"><span class="pre">entries</span></code>. If a
+field does not exist in the corresponding sidecar file,
+then that field will be created according to the <code class="docutils literal notranslate"><span class="pre">entries</span></code>.
+If a field does exist in the corresponding sidecar file,
+then that field will be updated according to the <code class="docutils literal notranslate"><span class="pre">entries</span></code>.</p>
+<p>For example, if <code class="docutils literal notranslate"><span class="pre">InstitutionName</span></code> is not defined in
+the sidecar json file, then trying to update
+<code class="docutils literal notranslate"><span class="pre">InstitutionName</span></code> to <code class="docutils literal notranslate"><span class="pre">Martinos</span> <span class="pre">Center</span></code> will update
+the sidecar json file to have <code class="docutils literal notranslate"><span class="pre">InstitutionName</span></code> as
+<code class="docutils literal notranslate"><span class="pre">Martinos</span> <span class="pre">Center</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>bids_path</strong><span class="classifier">BIDSPath</span></dt><dd><p>The set of paths to update. The <a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a> instance
+passed here <strong>must</strong> have the <code class="docutils literal notranslate"><span class="pre">.root</span></code> attribute set. The
+<code class="docutils literal notranslate"><span class="pre">.datatype</span></code> attribute <strong>may</strong> be set. If <code class="docutils literal notranslate"><span class="pre">.datatype</span></code> is
+not set and only one data type (e.g., only EEG or MEG data)
+is present in the dataset, it will be
+selected automatically. This must uniquely identify
+an existing file path, else an error will be raised.</p>
+</dd>
+<dt><strong>entries</strong><span class="classifier">dict | str | pathlib.Path</span></dt><dd><p>A dictionary, or JSON file that defines the
+sidecar fields and corresponding values to be updated to.</p>
+</dd>
+<dt><strong>verbose</strong><span class="classifier">bool</span></dt><dd><p>The verbosity level.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><dl class="simple">
+<dt>RuntimeError</dt><dd><p>If the specified <code class="docutils literal notranslate"><span class="pre">bids_path.fpath</span></code> cannot be found
+in the dataset.</p>
+</dd>
+<dt>RuntimeError</dt><dd><p>If the <code class="docutils literal notranslate"><span class="pre">bids_path.fpath</span></code> does not have <code class="docutils literal notranslate"><span class="pre">.json</span></code>
+extension.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This function can only update JSON files.</p>
+<p>Sidecar JSON files include files such as <code class="docutils literal notranslate"><span class="pre">*_ieeg.json</span></code>,
+<code class="docutils literal notranslate"><span class="pre">*_coordsystem.json</span></code>, <code class="docutils literal notranslate"><span class="pre">*_scans.json</span></code>, etc.</p>
+<p>You should double check that your update dictionary is correct
+for the corresponding sidecar JSON file because it will perform
+a dictionary update of the sidecar fields according to
+the passed in dictionary overwriting any information that was
+previously there.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># update sidecar json file</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bids_path</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;./&#39;</span><span class="p">,</span> <span class="n">subject</span><span class="o">=</span><span class="s1">&#39;001&#39;</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="s1">&#39;001&#39;</span><span class="p">,</span>
+<span class="go">                         task=&#39;test&#39;, run=&#39;01&#39;, suffix=&#39;ieeg&#39;,</span>
+<span class="go">                         extension=&#39;.json&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">entries</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;PowerLineFrequency&#39;</span><span class="p">:</span> <span class="mi">50</span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">update_sidecar_json</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">entries</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># update sidecar coordsystem json file</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bids_path</span> <span class="o">=</span> <span class="n">BIDSPath</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;./&#39;</span><span class="p">,</span> <span class="n">subject</span><span class="o">=</span><span class="s1">&#39;001&#39;</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="s1">&#39;001&#39;</span><span class="p">,</span>
+<span class="go">                         suffix=&#39;coordsystem&#39;, extension=&#39;.json&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">entries</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;iEEGCoordinateSystem,&#39;</span><span class="p">:</span> <span class="s1">&#39;Other&#39;</span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">update_sidecar_json</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">entries</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<div class="section" id="examples-using-mne-bids-update-sidecar-json">
+<span id="sphx-glr-backreferences-mne-bids-update-sidecar-json"></span><h2>Examples using <code class="docutils literal notranslate"><span class="pre">mne_bids.update_sidecar_json</span></code><a class="headerlink" href="#examples-using-mne-bids-update-sidecar-json" title="Permalink to this headline">¶</a></h2>
+<div class="sphx-glr-thumbcontainer" tooltip="When working with electrophysiological data in the BIDS format, we usually do not have all the ..."><div class="figure align-default" id="id1">
+<img alt="12. Update BIDS datasets" src="../_images/sphx_glr_update_bids_datasets_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/update_bids_datasets.html#sphx-glr-auto-examples-update-bids-datasets-py"><span class="std std-ref">12. Update BIDS datasets</span></a></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-clear"></div></div>
+</div>
+
+
+    </div>
+      
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-11-17.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.3.1.<br/>
+    </p>
+  </div>
+</footer>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-37225609-2"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-37225609-2');
+</script>
+
+  </body>
+</html>

@@ -115,14 +115,15 @@
 <dl class="py class">
 <dt id="mne_bids.BIDSPath">
 <em class="property">class </em><code class="sig-prename descclassname">mne_bids.</code><code class="sig-name descname">BIDSPath</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">subject</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">session</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">task</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">acquisition</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">run</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">processing</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">recording</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">space</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">split</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">root</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">suffix</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">extension</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">datatype</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">check</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/path.html#BIDSPath"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.BIDSPath" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a BIDS path.</p>
+<dd><p>A BIDS path object.</p>
 <p>BIDS filename prefixes have one or more pieces of metadata in them. They
 must follow a particular order, which is followed by this function. This
 will generate the <em>prefix</em> for a BIDS filename that can be used with many
 subsequent files, or you may also give a suffix that will then complete
 the file name.</p>
 <p>BIDSPath allows dynamic updating of its entities in place, and operates
-similar to <a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pathlib.Path</span></code></a>.</p>
+similar to <a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pathlib.Path</span></code></a>. In addition, it can query multiple paths
+with matching BIDS entities via the <code class="docutils literal notranslate"><span class="pre">match</span></code> method.</p>
 <p>Note that not all parameters are applicable to each suffix of data. For
 example, electrode location TSV files do not need a “task” field.</p>
 <dl class="field-list simple">
@@ -338,7 +339,7 @@ path.</p>
 <code class="sig-name descname">match</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/path.html#BIDSPath.match"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.BIDSPath.match" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get a list of all matching paths in the root directory.</p>
 <p>Performs a recursive search, starting in <code class="docutils literal notranslate"><span class="pre">.root</span></code> (if set), based on
-<a class="reference internal" href="#mne_bids.BIDSPath.entities" title="mne_bids.BIDSPath.entities"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BIDSPath.entities</span></code></a> object.</p>
+<a class="reference internal" href="#mne_bids.BIDSPath.entities" title="mne_bids.BIDSPath.entities"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BIDSPath.entities</span></code></a> object. Ignores <code class="docutils literal notranslate"><span class="pre">.json</span></code> files.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><dl class="simple">
@@ -506,6 +507,10 @@ or updates for ‘root’ or ‘datatype’.</p>
 </div><div class="sphx-glr-thumbcontainer" tooltip="The Brain Imaging Data Structure (BIDS) has standard conventions for file names and folder hier..."><div class="figure align-default" id="id10">
 <img alt="11. Creating BIDS-compatible folder names and filenames" src="../_images/sphx_glr_create_bids_folder_thumb.png" />
 <p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/create_bids_folder.html#sphx-glr-auto-examples-create-bids-folder-py"><span class="std std-ref">11. Creating BIDS-compatible folder names and filenames</span></a></span><a class="headerlink" href="#id10" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-thumbcontainer" tooltip="When working with electrophysiological data in the BIDS format, we usually do not have all the ..."><div class="figure align-default" id="id11">
+<img alt="12. Update BIDS datasets" src="../_images/sphx_glr_update_bids_datasets_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/update_bids_datasets.html#sphx-glr-auto-examples-update-bids-datasets-py"><span class="std std-ref">12. Update BIDS datasets</span></a></span><a class="headerlink" href="#id11" title="Permalink to this image">¶</a></p>
 </div>
 </div><div class="sphx-glr-clear"></div></div>
 </div>

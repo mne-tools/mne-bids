@@ -257,7 +257,7 @@
 
 
 <div class="viewcode-block" id="BIDSPath"><a class="viewcode-back" href="../../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath">[docs]</a><span class="k">class</span> <span class="nc">BIDSPath</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Create a BIDS path.</span>
+    <span class="sd">&quot;&quot;&quot;A BIDS path object.</span>
 
 <span class="sd">    BIDS filename prefixes have one or more pieces of metadata in them. They</span>
 <span class="sd">    must follow a particular order, which is followed by this function. This</span>
@@ -266,7 +266,8 @@
 <span class="sd">    the file name.</span>
 
 <span class="sd">    BIDSPath allows dynamic updating of its entities in place, and operates</span>
-<span class="sd">    similar to `pathlib.Path`.</span>
+<span class="sd">    similar to `pathlib.Path`. In addition, it can query multiple paths</span>
+<span class="sd">    with matching BIDS entities via the ``match`` method.</span>
 
 <span class="sd">    Note that not all parameters are applicable to each suffix of data. For</span>
 <span class="sd">    example, electrode location TSV files do not need a &quot;task&quot; field.</span>
@@ -700,7 +701,7 @@
         <span class="sd">&quot;&quot;&quot;Get a list of all matching paths in the root directory.</span>
 
 <span class="sd">        Performs a recursive search, starting in ``.root`` (if set), based on</span>
-<span class="sd">        `BIDSPath.entities` object.</span>
+<span class="sd">        `BIDSPath.entities` object. Ignores ``.json`` files.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>

@@ -1,0 +1,11 @@
+﻿mne\_bids.update\_sidecar\_json
+===============================
+
+.. currentmodule:: mne_bids
+
+.. autofunction:: update_sidecar_json
+
+.. _sphx_glr_backreferences_mne_bids.update_sidecar_json:
+
+.. minigallery:: mne_bids.update_sidecar_json
+    :add-heading:
