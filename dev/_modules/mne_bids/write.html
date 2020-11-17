@@ -510,16 +510,17 @@
 <span class="sd">        Set verbose output to True or False.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># get measurement date from the data info</span>
+    <span class="c1"># get measurement date in UTC from the data info</span>
     <span class="n">meas_date</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;meas_date&#39;</span><span class="p">]</span>
     <span class="k">if</span> <span class="n">meas_date</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">acq_time</span> <span class="o">=</span> <span class="s1">&#39;n/a&#39;</span>
-    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">meas_date</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)):</span>  <span class="c1"># noqa: E501</span>
+    <span class="c1"># The &quot;Z&quot; indicates UTC time</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">meas_date</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)):</span>  <span class="c1"># pragma: no cover</span>
         <span class="c1"># for MNE &lt; v0.20</span>
-        <span class="n">acq_time</span> <span class="o">=</span> <span class="n">_stamp_to_dt</span><span class="p">(</span><span class="n">meas_date</span><span class="p">)</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">T%H:%M:%S&#39;</span><span class="p">)</span>
+        <span class="n">acq_time</span> <span class="o">=</span> <span class="n">_stamp_to_dt</span><span class="p">(</span><span class="n">meas_date</span><span class="p">)</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">T%H:%M:%S.</span><span class="si">%f</span><span class="s1">Z&#39;</span><span class="p">)</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">meas_date</span><span class="p">,</span> <span class="n">datetime</span><span class="p">):</span>
         <span class="c1"># for MNE &gt;= v0.20</span>
-        <span class="n">acq_time</span> <span class="o">=</span> <span class="n">meas_date</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">T%H:%M:%S&#39;</span><span class="p">)</span>
+        <span class="n">acq_time</span> <span class="o">=</span> <span class="n">meas_date</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">T%H:%M:%S.</span><span class="si">%f</span><span class="s1">Z&#39;</span><span class="p">)</span>
 
     <span class="n">data</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">([(</span><span class="s1">&#39;filename&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">raw_fname</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">sep</span><span class="p">,</span> <span class="s1">&#39;/&#39;</span><span class="p">)]),</span>
                         <span class="p">(</span><span class="s1">&#39;acq_time&#39;</span><span class="p">,</span> <span class="p">[</span><span class="n">acq_time</span><span class="p">])])</span>
@@ -528,7 +529,7 @@
         <span class="n">orig_data</span> <span class="o">=</span> <span class="n">_from_tsv</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
         <span class="c1"># if the file name is already in the file raise an error</span>
         <span class="k">if</span> <span class="n">raw_fname</span> <span class="ow">in</span> <span class="n">orig_data</span><span class="p">[</span><span class="s1">&#39;filename&#39;</span><span class="p">]</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">overwrite</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">FileExistsError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">raw_fname</span><span class="si">}</span><span class="s1">&quot; already exists in &#39;</span>  <span class="c1"># noqa: E501 F821</span>
+            <span class="k">raise</span> <span class="ne">FileExistsError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">raw_fname</span><span class="si">}</span><span class="s1">&quot; already exists in &#39;</span>
                                   <span class="sa">f</span><span class="s1">&#39;the scans list. Please set &#39;</span>
                                   <span class="sa">f</span><span class="s1">&#39;overwrite to True.&#39;</span><span class="p">)</span>
         <span class="c1"># otherwise add the new data</span>

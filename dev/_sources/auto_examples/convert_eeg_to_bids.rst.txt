@@ -638,7 +638,7 @@ Finally, let's write the BIDS data!
     Writing '/home/circleci/mne_data/eegmmidb_bids_eeg_example/sub-001/sub-001_scans.tsv'...
 
     filename        acq_time
-    eeg/sub-001_task-RestEyesClosed_eeg.edf 2009-08-12T16:15:00
+    eeg/sub-001_task-RestEyesClosed_eeg.edf 2009-08-12T16:15:00.000000Z
     Wrote /home/circleci/mne_data/eegmmidb_bids_eeg_example/sub-001/sub-001_scans.tsv entry with eeg/sub-001_task-RestEyesClosed_eeg.edf.
 
     BIDSPath(
@@ -757,7 +757,7 @@ Command line tool: https://www.npmjs.com/package/bids-validator
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  0.123 seconds)
+   **Total running time of the script:** ( 0 minutes  0.120 seconds)
 
 
 .. _sphx_glr_download_auto_examples_convert_eeg_to_bids.py:

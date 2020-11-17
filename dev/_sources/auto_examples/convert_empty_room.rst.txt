@@ -238,7 +238,7 @@ And define the paths and event_id dictionary.
     Writing '/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/sub-01_ses-01_scans.tsv'...
 
     filename        acq_time
-    meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif       2002-12-03T19:01:10
+    meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif       2002-12-03T19:01:10.720100Z
     Wrote /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/sub-01_ses-01_scans.tsv entry with meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif.
 
     BIDSPath(
@@ -422,7 +422,7 @@ task is 'noise' (these are BIDS rules).
     Writing '/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-emptyroom/ses-20021206/sub-emptyroom_ses-20021206_scans.tsv'...
 
     filename        acq_time
-    meg/sub-emptyroom_ses-20021206_task-noise_meg.fif       2002-12-06T15:16:18
+    meg/sub-emptyroom_ses-20021206_task-noise_meg.fif       2002-12-06T15:16:18.982786Z
     Wrote /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-emptyroom/ses-20021206/sub-emptyroom_ses-20021206_scans.tsv entry with meg/sub-emptyroom_ses-20021206_task-noise_meg.fif.
 
     BIDSPath(
@@ -551,7 +551,7 @@ will be different on different days.
     Writing '/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-emptyroom/ses-20021204/sub-emptyroom_ses-20021204_scans.tsv'...
 
     filename        acq_time
-    meg/sub-emptyroom_ses-20021204_task-noise_meg.fif       2002-12-04T00:00:00
+    meg/sub-emptyroom_ses-20021204_task-noise_meg.fif       2002-12-04T00:00:00.000000Z
     Wrote /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-emptyroom/ses-20021204/sub-emptyroom_ses-20021204_scans.tsv entry with meg/sub-emptyroom_ses-20021204_task-noise_meg.fif.
     Opening raw data file /home/circleci/mne_data/MNE-sample-data/MEG/sample/ernoise_raw.fif...
     Isotrak not found
@@ -647,7 +647,7 @@ will be different on different days.
     Writing '/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-emptyroom/ses-20021201/sub-emptyroom_ses-20021201_scans.tsv'...
 
     filename        acq_time
-    meg/sub-emptyroom_ses-20021201_task-noise_meg.fif       2002-12-01T00:00:00
+    meg/sub-emptyroom_ses-20021201_task-noise_meg.fif       2002-12-01T00:00:00.000000Z
     Wrote /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-emptyroom/ses-20021201/sub-emptyroom_ses-20021201_scans.tsv entry with meg/sub-emptyroom_ses-20021201_task-noise_meg.fif.
     Opening raw data file /home/circleci/mne_data/MNE-sample-data/MEG/sample/ernoise_raw.fif...
     Isotrak not found
@@ -743,7 +743,7 @@ will be different on different days.
     Writing '/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-emptyroom/ses-20021001/sub-emptyroom_ses-20021001_scans.tsv'...
 
     filename        acq_time
-    meg/sub-emptyroom_ses-20021001_task-noise_meg.fif       2002-10-01T00:00:00
+    meg/sub-emptyroom_ses-20021001_task-noise_meg.fif       2002-10-01T00:00:00.000000Z
     Wrote /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-emptyroom/ses-20021001/sub-emptyroom_ses-20021001_scans.tsv entry with meg/sub-emptyroom_ses-20021001_task-noise_meg.fif.
 
 
@@ -897,7 +897,7 @@ Finally, we can read the empty room file using
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  4.239 seconds)
+   **Total running time of the script:** ( 0 minutes  3.020 seconds)
 
 
 .. _sphx_glr_download_auto_examples_convert_empty_room.py:

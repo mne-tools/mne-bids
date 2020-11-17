@@ -164,7 +164,7 @@
                          <span class="s1">&#39;date set. Cannot get matching empty-room file.&#39;</span><span class="p">)</span>
 
     <span class="n">ref_date</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;meas_date&#39;</span><span class="p">]</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ref_date</span><span class="p">,</span> <span class="n">datetime</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ref_date</span><span class="p">,</span> <span class="n">datetime</span><span class="p">):</span>  <span class="c1"># pragma: no cover</span>
         <span class="c1"># for MNE &lt; v0.20</span>
         <span class="n">ref_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;meas_date&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
 
