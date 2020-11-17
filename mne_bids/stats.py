@@ -21,10 +21,11 @@ def count_events(root_or_path, datatype='auto'):
         the event files that match this BIDSPath.
     datatype : str
         Type of the data recording. Can be ``meg``, ``eeg``,
-        ``ieeg`` or ``auto``. If ``auto`` then either a BIDSPath
-        isinstance is passed as ``root_or_path`` and this is what is
-        used or otherwise only one datatype should be present in
-        the dataset to avoid any ambiguity.
+        ``ieeg`` or ``auto``. If ``auto`` and a :class:`mne_bids.BIDSPath`
+        isinstance is passed as ``root_or_path`` which has a ``datatype``
+        attribute set, then this data type will be used. Otherwise, only
+        one data type should be present in the dataset to avoid any
+        ambiguity.
 
     Returns
     -------
@@ -57,8 +58,8 @@ def count_events(root_or_path, datatype='auto'):
         datatype = this_datatypes[0]
 
     if datatype not in EPHY_ALLOWED_DATATYPES:
-        raise ValueError(f'datatype ({datatype}) is not supported.'
-                         f' It must be one of: {EPHY_ALLOWED_DATATYPES})')
+        raise ValueError(f'datatype ({datatype}) is not supported. '
+                         f'It must be one of: {EPHY_ALLOWED_DATATYPES})')
 
     bids_path.update(datatype=datatype)
 
@@ -79,7 +80,7 @@ def count_events(root_or_path, datatype='auto'):
                 df['run'] = bp.run
             all_df.append(df)
 
-        if len(all_df) == 0:
+        if not all_df:
             continue
 
         df = pd.concat(all_df)
@@ -102,7 +103,7 @@ def count_events(root_or_path, datatype='auto'):
 
         all_counts.append(counts)
 
-    if len(all_counts) == 0:
+    if not all_counts:
         raise ValueError('No events files found.')
 
     counts = pd.concat(all_counts, axis=1)
