@@ -145,7 +145,7 @@ def _test_anonymize(raw, bids_path, events_fname=None, event_id=None):
     data = _from_tsv(scans_tsv)
     if data['acq_time'] is not None and data['acq_time'][0] != 'n/a':
         assert datetime.strptime(data['acq_time'][0],
-                                 '%Y-%m-%dT%H:%M:%S').year < 1925
+                                 '%Y-%m-%dT%H:%M:%S.%fZ').year < 1925
 
     return bids_root
 
@@ -401,7 +401,7 @@ def test_fif(_bids_validate):
         subject=subject_id, session=session_id,
         suffix='scans', extension='.tsv', root=bids_root)
     data = _from_tsv(scans_tsv)
-    assert data['acq_time'][0] == meas_date.strftime('%Y-%m-%dT%H:%M:%S')
+    assert data['acq_time'][0] == meas_date.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
 
     # give the raw object some fake participant data (potentially overwriting)
     raw = _read_raw_fif(raw_fname)
@@ -628,7 +628,7 @@ def test_fif_anonymize(_bids_validate):
     # anonymize using MNE manually
     anonymized_info = anonymize_info(info=raw.info, daysback=30000,
                                      keep_his=True)
-    anon_date = anonymized_info['meas_date'].strftime("%Y-%m-%dT%H:%M:%S")
+    anon_date = anonymized_info['meas_date'].strftime("%Y-%m-%dT%H:%M:%S.%fZ")
     assert data['acq_time'][0] == anon_date
     _bids_validate(bids_root)
 
