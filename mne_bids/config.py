@@ -203,7 +203,15 @@ COORD_FRAME_DESCRIPTIONS = {
     '4dbti': 'ALS orientation and the origin between the ears',
     'kityokogawa': 'ALS orientation and the origin between the ears',
     'chietiitab': 'RAS orientation and the origin between the ears',
-    'captrak': 'RAS orientation and the origin between the ears',
+    'captrak': (
+        'The X-axis goes from the left preauricular point (LPA) through '
+        'the right preauricular point (RPA). '
+        'The Y-axis goes orthogonally to the X-axis through the nasion (NAS). '
+        'The Z-axis goes orthogonally to the XY-plane through the vertex of '
+        'the head. '
+        'This corresponds to a "RAS" orientation with the origin of the '
+        'coordinate system approximately between the ears. '
+        'See Appendix VIII in the BIDS specification.'),
     'mri': 'Defined by Freesurfer, the MRI (surface RAS) origin is at the '
            'center of a 256×256×256 1mm anisotropic volume '
            '(may not be in the center of the head).',
@@ -234,7 +242,7 @@ REFERENCES = {'mne-bids':
               'Wexler, J., Baillet, S. (2018). MEG-BIDS, the brain '
               'imaging data structure extended to magnetoencephalography. '
               'Scientific Data, 5, 180110. '
-              'http://doi.org/10.1038/sdata.2018.110',
+              'https://doi.org/10.1038/sdata.2018.110',
               'eeg':
               'Pernet, C. R., Appelhoff, S., Gorgolewski, K. J., '
               'Flandin, G., Phillips, C., Delorme, A., Oostenveld, R. (2019). '

@@ -115,10 +115,11 @@ changes:
 
 .PHONY: linkcheck
 linkcheck:
-	$(SPHINXBUILD) -b linkcheck $(ALLSPHINXOPTS) $(BUILDDIR)/linkcheck
-	@echo
-	@echo "Link check complete; look for any errors in the above output " \
-		  "or in $(BUILDDIR)/linkcheck/output.txt."
+	@$(SPHINXBUILD) -b linkcheck -D nitpicky=0 -D plot_gallery=0 -D exclude_patterns="whats_new*.rst, doc/auto_examples, doc/generated" -d _build/doctrees . _build/linkcheck
+
+.PHONY: linkcheck-grep
+linkcheck-grep:
+	@! grep -h "^.*:.*: \[\(\(local\)\|\(broken\)\)\]" _build/linkcheck/output.txt
 
 .PHONY: doctest
 doctest:

@@ -15,7 +15,7 @@ MNE-BIDS is a Python package that allows you to read and write
 [BIDS](https://bids.neuroimaging.io/)-compatible datasets with the help of
 [MNE-Python](https://mne.tools/stable/index.html).
 
-![Schematic: From raw data to BIDS using MNE-BIDS](http://mne.tools/mne-bids/assets/MNE-BIDS.png)
+![Schematic: From raw data to BIDS using MNE-BIDS](https://mne.tools/mne-bids/assets/MNE-BIDS.png)
 
 Why?
 ----
@@ -45,7 +45,7 @@ electrophysiological data into the BIDS format and facilitating their analysis.*
 
 Please also cite one of the following papers to credit BIDS, depending on which data type you used:
 
-- [MEG-BIDS](http://doi.org/10.1038/sdata.2018.110)
+- [MEG-BIDS](https://doi.org/10.1038/sdata.2018.110)
 - [EEG-BIDS](https://doi.org/10.1038/s41597-019-0104-8)
 - [iEEG-BIDS](https://doi.org/10.1038/s41597-019-0105-7)
 

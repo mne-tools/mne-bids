@@ -1,4 +1,6 @@
 """
+.. _read_bids_datasets-example:
+
 ======================
 01. Read BIDS datasets
 ======================
@@ -137,7 +139,7 @@ bids_path
 # .. note::
 #   There are many more supported entities, the most-commonly used among them
 #   probably being ``session``. Please see
-#   `our introduction to BIDSPath <bidspath>`_ to learn more
+#   :ref:`our introduction to BIDSPath <bidspath-example>` to learn more
 #   about entities, ``basename``, and ``BIDSPath`` in general.
 #
 # But what about that filename extension, now? ``BIDSPath.fpath``, which –

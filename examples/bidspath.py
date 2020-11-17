@@ -1,4 +1,6 @@
 """
+.. _bidspath-example:
+
 ===============================
 10. An introduction to BIDSPath
 ===============================

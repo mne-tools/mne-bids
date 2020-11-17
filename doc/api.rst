@@ -38,6 +38,7 @@ mne_bids
    get_entities_from_fname
    get_entity_vals
    get_datatypes
+   update_sidecar_json
 
 mne_bids.stats
 --------------

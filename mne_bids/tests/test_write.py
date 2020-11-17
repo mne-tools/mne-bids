@@ -15,7 +15,6 @@ import os.path as op
 import pytest
 from glob import glob
 from datetime import datetime, timezone, timedelta
-import platform
 import shutil as sh
 import json
 from pathlib import Path
@@ -33,7 +32,7 @@ with warnings.catch_warnings():
     import mne
 
 from mne.datasets import testing
-from mne.utils import (_TempDir, run_subprocess, check_version,
+from mne.utils import (_TempDir, check_version,
                        requires_nibabel, requires_version)
 from mne.io import anonymize_info
 from mne.io.constants import FIFF
@@ -46,10 +45,10 @@ from mne_bids import (write_raw_bids, read_raw_bids, BIDSPath,
 from mne_bids.utils import (_stamp_to_dt, _get_anonymization_daysback,
                             get_anonymization_daysback)
 from mne_bids.tsv_handler import _from_tsv, _to_tsv
-from mne_bids.utils import _update_sidecar
+from mne_bids.sidecar_updates import _update_sidecar
 from mne_bids.path import _find_matching_sidecar
 from mne_bids.pick import coil_type
-from mne_bids.config import REFERENCES
+from mne_bids.config import REFERENCES, COORD_FRAME_DESCRIPTIONS
 
 base_path = op.join(op.dirname(mne.__file__), 'io')
 subject_id = '01'
@@ -100,34 +99,6 @@ test_eegieeg_data = [
 ]
 
 
-# WINDOWS issues:
-# the bids-validator development version does not work properly on Windows as
-# of 2019-06-25 --> https://github.com/bids-standard/bids-validator/issues/790
-# As a workaround, we try to get the path to the executable from an environment
-# variable VALIDATOR_EXECUTABLE ... if this is not possible we assume to be
-# using the stable bids-validator and make a direct call of bids-validator
-# also: for windows, shell = True is needed to call npm, bids-validator etc.
-# see: https://stackoverflow.com/q/28891053/5201771
-@pytest.fixture(scope="session")
-def _bids_validate():
-    """Fixture to run BIDS validator."""
-    vadlidator_args = ['--config.error=41']
-    exe = os.getenv('VALIDATOR_EXECUTABLE', 'bids-validator')
-
-    if platform.system() == 'Windows':
-        shell = True
-    else:
-        shell = False
-
-    bids_validator_exe = [exe, *vadlidator_args]
-
-    def _validate(bids_root):
-        cmd = [*bids_validator_exe, bids_root]
-        run_subprocess(cmd, shell=shell)
-
-    return _validate
-
-
 def _test_anonymize(raw, bids_path, events_fname=None, event_id=None):
     bids_root = _TempDir()
     bids_path = _bids_path.copy().update(root=bids_root)
@@ -145,7 +116,7 @@ def _test_anonymize(raw, bids_path, events_fname=None, event_id=None):
     data = _from_tsv(scans_tsv)
     if data['acq_time'] is not None and data['acq_time'][0] != 'n/a':
         assert datetime.strptime(data['acq_time'][0],
-                                 '%Y-%m-%dT%H:%M:%S').year < 1925
+                                 '%Y-%m-%dT%H:%M:%S.%fZ').year < 1925
 
     return bids_root
 
@@ -401,7 +372,7 @@ def test_fif(_bids_validate):
         subject=subject_id, session=session_id,
         suffix='scans', extension='.tsv', root=bids_root)
     data = _from_tsv(scans_tsv)
-    assert data['acq_time'][0] == meas_date.strftime('%Y-%m-%dT%H:%M:%S')
+    assert data['acq_time'][0] == meas_date.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
 
     # give the raw object some fake participant data (potentially overwriting)
     raw = _read_raw_fif(raw_fname)
@@ -628,7 +599,7 @@ def test_fif_anonymize(_bids_validate):
     # anonymize using MNE manually
     anonymized_info = anonymize_info(info=raw.info, daysback=30000,
                                      keep_his=True)
-    anon_date = anonymized_info['meas_date'].strftime("%Y-%m-%dT%H:%M:%S")
+    anon_date = anonymized_info['meas_date'].strftime("%Y-%m-%dT%H:%M:%S.%fZ")
     assert data['acq_time'][0] == anon_date
     _bids_validate(bids_root)
 
@@ -895,10 +866,12 @@ def test_vhdr(_bids_validate):
     montage = mne.channels.read_dig_captrak(fname_bvct)
     raw.set_montage(montage)
 
-    # convert to BIDS and check impedances
+    # convert to BIDS
     bids_root = _TempDir()
     bids_path.update(root=bids_root)
     write_raw_bids(raw, bids_path)
+
+    # check impedances
     electrodes_fpath = _find_matching_sidecar(
         bids_path.copy().update(root=bids_root),
         suffix='electrodes', extension='.tsv')
@@ -906,6 +879,15 @@ def test_vhdr(_bids_validate):
     assert len(tsv.get('impedance', {})) > 0
     assert tsv['impedance'][-3:] == ['n/a', 'n/a', 'n/a']
     assert tsv['impedance'][:3] == ['5.0', '2.0', '4.0']
+
+    # check coordsystem
+    coordsystem_fpath = _find_matching_sidecar(
+        bids_path.copy().update(root=bids_root),
+        suffix='coordsystem', extension='.json')
+    with open(coordsystem_fpath, 'r') as fin:
+        coordsys_data = json.load(fin)
+        descr = coordsys_data.get("EEGCoordinateSystemDescription", "")
+        assert descr == COORD_FRAME_DESCRIPTIONS["captrak"]
 
     # electrodes file path should only contain
     # sub/ses/acq/space at most

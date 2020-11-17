@@ -40,6 +40,13 @@ jobs:
             path: doc/_build/html/
             destination: dev
 
+        - run:
+            name: Check links
+            command: |
+              make -C doc clean
+              make -C doc linkcheck
+              make -C doc linkcheck-grep
+
         # Store the data cache
         - save_cache:
             key: data-cache-0-{{ checksum "./mne_bids/__init__.py" }}
