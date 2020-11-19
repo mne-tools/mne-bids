@@ -37,9 +37,14 @@ extensions = [
     'sphinx.ext.intersphinx',
     'sphinx_gallery.gen_gallery',
     'numpydoc',
+    'sphinx_copybutton',
     'gen_cli',  # custom extension, see ./sphinxext/gen_cli.py
     'gh_substitutions',  # custom extension, see ./sphinxext/gh_substitutions.py
 ]
+
+# configure sphinx-copybutton
+copybutton_prompt_text = r">>> |\.\.\. |\$ "
+copybutton_prompt_is_regexp = True
 
 # generate autosummary even if no references
 autosummary_generate = True
