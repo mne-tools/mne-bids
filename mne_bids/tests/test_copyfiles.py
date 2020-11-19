@@ -158,8 +158,9 @@ def test_copyfile_edf():
         f.seek(8)
         id_info = f.read(80).decode('ascii').rstrip()
         rec_info = f.read(80).decode('ascii').rstrip()
+    rec_info_tmp = "Startdate {0} X mne-bids_anonymize X"
     assert id_info == "0 X X X"
-    assert rec_info == "Startdate {0} X mne_anonymize X".format(anon_startdate)
+    assert rec_info == rec_info_tmp.format(anon_startdate)
 
     # Test partial ID info anonymization
     outfile2 = op.join(bids_root2, 'test_copy_anon_partial.edf')

@@ -366,7 +366,8 @@ def copyfile_edf(src, dest, anonymize=None):
         `keep_his` : bool
             By default (False), all subject information next to the recording
             date will be overwritten as well. If True, keep subject information
-            apart from the recording date.
+            apart from the recording date. Participant names and birthdates
+            will always be anonymized if present, regardless of this setting.
 
     See Also
     --------
