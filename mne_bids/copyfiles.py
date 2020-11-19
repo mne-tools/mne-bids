@@ -19,7 +19,7 @@ import os.path as op
 import re
 
 import shutil as sh
-from datetime import datetime as dt
+from datetime import datetime
 
 from mne.io import read_raw_brainvision, read_raw_edf, anonymize_info
 from scipy.io import loadmat, savemat
@@ -341,8 +341,7 @@ def copyfile_brainvision(vhdr_src, vhdr_dest, anonymize=None, verbose=False):
 
 
 def copyfile_edf(src, dest, anonymize=None):
-    """Copy an EDF, EDF+, or BDF file to a new location, optionally anonymizing
-    participant/patient information.
+    """Copy an EDF, EDF+, or BDF file to a new location, optionally anonymize.
 
     Parameters
     ----------
@@ -404,15 +403,15 @@ def copyfile_edf(src, dest, anonymize=None):
         # Anonymize recording date, using 4-digit year from recording info
         # if possible (regular EDF year only stores last two digits)
         try:
-            actual_year = dt.datetime.strptime(startdate, "%d-%b-%Y").year
+            actual_year = datetime.datetime.strptime(startdate, "%d-%b-%Y").year
             newdate = raw.info['meas_date'].replace(year = actual_year)
             raw.info['meas_date'] = newdate
         except (ValueError, AttributeError):
             pass
         daysback, keep_his = _check_anonymize(anonymize, raw, '.edf')
         info = anonymize_info(raw.info, daysback=daysback, keep_his=keep_his)
-        startdate = dt.strftime(info['meas_date'], "%d-%b-%Y").upper()
-        meas_date = dt.strftime(info['meas_date'], "%d.%m.%y")
+        startdate = datetime.strftime(info['meas_date'], "%d-%b-%Y").upper()
+        meas_date = datetime.strftime(info['meas_date'], "%d.%m.%y")
 
         # Anonymize ID info and write to file
         if keep_his:
