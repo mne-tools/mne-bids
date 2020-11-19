@@ -124,6 +124,12 @@ def test_copyfile_edf():
         new_name = op.join(bids_root, 'test_copy' + ext)
         copyfile_edf(raw_fname, new_name)
 
+    # IO error testing
+    with pytest.raises(ValueError, match='Need to move data with same'):
+        raw_fname = op.join(data_path, 'test.edf')
+        new_name = op.join(bids_root, 'test_copy.bdf')
+        copyfile_edf(raw_fname, new_name)
+
     # Add some subject info to an EDF to test anonymization
     testfile = op.join(bids_root, 'test_copy.edf')
     raw_date = mne.io.read_raw_edf(testfile).info['meas_date']

@@ -412,11 +412,14 @@ def copyfile_edf(src, dest, anonymize=None):
         # Anonymize recording date, using 4-digit year from recording info
         # if possible (regular EDF year only stores last two digits)
         try:
-            real_year = datetime.datetime.strptime(startdate, "%d-%b-%Y").year
+            real_year = datetime.strptime(startdate, "%d-%b-%Y").year
             newdate = raw.info['meas_date'].replace(year=real_year)
             raw.info['meas_date'] = newdate
-        except (ValueError, AttributeError):
-            pass
+        except ValueError as e:
+            # If recording date can't be parsed by datetime (e.g. "X"), we
+            # default to the date specified in the 'meas_date' field
+            if not "does not match format '%d-%b-%Y'" in str(e):
+                raise e
         daysback, keep_his = _check_anonymize(anonymize, raw, '.edf')
         info = anonymize_info(raw.info, daysback=daysback, keep_his=keep_his)
         startdate = datetime.strftime(info['meas_date'], "%d-%b-%Y").upper()

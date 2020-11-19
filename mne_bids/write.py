@@ -1213,6 +1213,12 @@ def write_raw_bids(raw, bids_path, events_data=None,
     elif ext == '.vhdr':
         copyfile_brainvision(raw_fname, bids_path, anonymize=anonymize)
     elif ext in ['.edf', '.bdf']:
+        if anonymize is not None:
+            warn("Due to EDF/EDF+/BDF file limitations, anonymized dates can "
+                 "only be properly written to the 'starttime' field in the "
+                 "recording info of the file. Regardles of the chosen "
+                 "'daysback' value, the year of the file's meas_date will "
+                 "always be set to 1985 when anonymized.")
         copyfile_edf(raw_fname, bids_path, anonymize=anonymize)
     # EEGLAB .set might be accompanied by a .fdt - find out and copy it too
     elif ext == '.set':
