@@ -392,7 +392,7 @@ def copyfile_edf(src, dest, anonymize=None):
 
         # Get patient info, recording info, and recording date
         with open(dest, 'rb') as f:
-            f.seek(8) # id_info field starts 8 bytes in
+            f.seek(8)  # id_info field starts 8 bytes in
             id_info = f.read(80).decode('ascii').rstrip()
             rec_info = f.read(80).decode('ascii').rstrip()
 
@@ -407,8 +407,8 @@ def copyfile_edf(src, dest, anonymize=None):
         # Anonymize recording date, using 4-digit year from recording info
         # if possible (regular EDF year only stores last two digits)
         try:
-            actual_year = datetime.datetime.strptime(startdate, "%d-%b-%Y").year
-            newdate = raw.info['meas_date'].replace(year = actual_year)
+            real_year = datetime.datetime.strptime(startdate, "%d-%b-%Y").year
+            newdate = raw.info['meas_date'].replace(year=real_year)
             raw.info['meas_date'] = newdate
         except (ValueError, AttributeError):
             pass
@@ -419,13 +419,14 @@ def copyfile_edf(src, dest, anonymize=None):
 
         # Anonymize ID info and write to file
         if keep_his:
+            # Always remove participant birthdate and name to be safe
             id_info = [pid, sex, "X", "X"]
             rec_info = ["Startdate", startdate, admin_code, tech, equip]
         else:
             id_info = ["0", "X", "X", "X"]
-            rec_info = ["Startdate", startdate, "X", "mne_anonymize", "X"]
+            rec_info = ["Startdate", startdate, "X", "mne-bids_anonymize", "X"]
         with open(dest, 'r+b') as f:
-            f.seek(8) # id_info field starts 8 bytes in
+            f.seek(8)  # id_info field starts 8 bytes in
             f.write(bytes(" ".join(id_info).ljust(80), 'ascii'))
             f.write(bytes(" ".join(rec_info).ljust(80), 'ascii'))
             f.write(bytes(meas_date, 'ascii'))

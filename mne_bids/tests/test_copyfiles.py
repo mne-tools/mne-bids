@@ -126,8 +126,8 @@ def test_copyfile_edf():
 
     # Add some subject info to an EDF to test anonymization
     testfile = op.join(bids_root, 'test_copy.edf')
-    raw = mne.io.read_raw_edf(testfile)
-    date = datetime.datetime.strftime(raw.info['meas_date'], "%d-%b-%Y").upper()
+    raw_date = mne.io.read_raw_edf(testfile).info['meas_date']
+    date = datetime.datetime.strftime(raw_date, "%d-%b-%Y").upper()
     test_id_info = '023 F 02-AUG-1951 Jane'
     test_rec_info = 'Startdate {0} ID-123 John BioSemi_ActiveTwo'.format(date)
     with open(testfile, 'r+b') as f:
@@ -172,7 +172,7 @@ def test_copyfile_edf():
     rec = 'Startdate {0} ID-123 John BioSemi_ActiveTwo'.format(anon_startdate)
     assert id_info == "023 F X X"
     assert rec_info == rec
-    
+
 
 def test_copyfile_eeglab():
     """Test the copying of EEGlab set and fdt files."""
