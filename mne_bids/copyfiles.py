@@ -418,7 +418,7 @@ def copyfile_edf(src, dest, anonymize=None):
         except ValueError as e:
             # If recording date can't be parsed by datetime (e.g. "X"), we
             # default to the date specified in the 'meas_date' field
-            if not "does not match format '%d-%b-%Y'" in str(e):
+            if "does not match format '%d-%b-%Y'" not in str(e):
                 raise e
         daysback, keep_his = _check_anonymize(anonymize, raw, '.edf')
         info = anonymize_info(raw.info, daysback=daysback, keep_his=keep_his)
