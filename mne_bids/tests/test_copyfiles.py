@@ -136,15 +136,20 @@ def test_copyfile_edf():
         f.write(bytes(test_rec_info.ljust(80), 'ascii'))
 
     # Test date anonymization
+    def _edf_get_real_date(fpath):
+        with open(fpath, 'rb') as f:
+            f.seek(88)
+            rec_info = f.read(80).decode('ascii').rstrip()
+        startdate = rec_info.split(' ')[1]
+        return datetime.datetime.strptime(startdate, "%d-%b-%Y")
+
     bids_root2 = _TempDir()
     infile = op.join(bids_root, 'test_copy.edf')
     outfile = op.join(bids_root2, 'test_copy_anon.edf')
     anonymize = {'daysback': 32459, 'keep_his': False}
     copyfile_edf(infile, outfile, anonymize)
-    raw = mne.io.read_raw_edf(infile)
-    raw_anon = mne.io.read_raw_edf(outfile)
-    prev_date = raw.info['meas_date']
-    new_date = raw_anon.info['meas_date']
+    prev_date = _edf_get_real_date(infile)
+    new_date = _edf_get_real_date(outfile)
     assert new_date == (prev_date - datetime.timedelta(days=32459))
 
     # Test full ID info anonymization
@@ -168,7 +173,6 @@ def test_copyfile_edf():
     assert id_info == "023 F X X"
     assert rec_info == rec
     
-
 
 def test_copyfile_eeglab():
     """Test the copying of EEGlab set and fdt files."""
