@@ -150,7 +150,7 @@ def test_copyfile_edf():
     copyfile_edf(infile, outfile, anonymize)
     prev_date = _edf_get_real_date(infile)
     new_date = _edf_get_real_date(outfile)
-    assert new_date == (prev_date - datetime.timedelta(days=32459))
+    assert new_date == (prev_date - datetime.timedelta(days=33459))
 
     # Test full ID info anonymization
     anon_startdate = datetime.datetime.strftime(new_date, "%d-%b-%Y").upper()
