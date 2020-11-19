@@ -19,8 +19,9 @@ import os.path as op
 import re
 
 import shutil as sh
+from datetime import datetime as dt
 
-from mne.io import read_raw_brainvision, anonymize_info
+from mne.io import read_raw_brainvision, read_raw_edf, anonymize_info
 from scipy.io import loadmat, savemat
 
 from mne_bids.path import BIDSPath, _parse_ext, _mkdir_p
@@ -337,6 +338,94 @@ def copyfile_brainvision(vhdr_src, vhdr_dest, anonymize=None, verbose=False):
             print(f'Created "{fname}" in "{dirname}".')
         if anonymize:
             print('Anonymized all dates in VHDR and VMRK.')
+
+
+def copyfile_edf(src, dest, anonymize=None):
+    """Copy an EDF, EDF+, or BDF file to a new location, optionally anonymizing
+    participant/patient information.
+
+    Parameters
+    ----------
+    src : str
+        The src path of the .edf or .bdf file to be copied.
+    dest : str
+        The destination path of the .edf or .bdf file.
+    anonymize : dict | None
+        If None (default), no anonymization is performed.
+        If dict, data will be anonymized depending on the keys provided with
+        the dict: `daysback` is a required key, `keep_his` is an optional key.
+
+        `daysback` : int
+            Number of days by which to move back the recording date in time.
+            In studies with multiple subjects the relative recording date
+            differences between subjects can be kept by using the same number
+            of `daysback` for all subject anonymizations. `daysback` should be
+            great enough to shift the date prior to 1925 to conform with BIDS
+            anonymization rules.
+
+        `keep_his` : bool
+            By default (False), all subject information next to the recording
+            date will be overwritten as well. If True, keep subject information
+            apart from the recording date.
+
+    See Also
+    --------
+    mne.io.anonymize_info
+
+    """
+    # Ensure source & destination extensions are the same
+    fname_src, ext_src = _parse_ext(src)
+    fname_dest, ext_dest = _parse_ext(dest)
+    if ext_src != ext_dest:
+        raise ValueError(f'Need to move data with same extension'
+                         f' but got "{ext_src}", "{ext_dest}"')
+
+    # Copy data prior to any anonymization
+    sh.copyfile(src, dest)
+
+    # Anonymize EDF/BDF data, if requested
+    if anonymize is not None:
+        raw = read_raw_edf(dest, preload=False, verbose=0)
+
+        # Get patient info, recording info, and recording date
+        with open(dest, 'rb') as f:
+            f.seek(8) # id_info field starts 8 bytes in
+            id_info = f.read(80).decode('ascii').rstrip()
+            rec_info = f.read(80).decode('ascii').rstrip()
+
+        # Parse metadata from file
+        if len(id_info) == 0 or len(id_info.split(' ')) != 4:
+            id_info = "X X X X"
+        if len(rec_info) == 0 or len(rec_info.split(' ')) != 5:
+            rec_info = "Startdate X X X X"
+        pid, sex, birthdate, name = id_info.split(' ')
+        startdate, admin_code, tech, equip = rec_info.split(' ')[1:5]
+
+        # Anonymize recording date, using 4-digit year from recording info
+        # if possible (regular EDF year only stores last two digits)
+        try:
+            actual_year = dt.datetime.strptime(startdate, "%d-%b-%Y").year
+            newdate = raw.info['meas_date'].replace(year = actual_year)
+            raw.info['meas_date'] = newdate
+        except (ValueError, AttributeError):
+            pass
+        daysback, keep_his = _check_anonymize(anonymize, raw, '.edf')
+        info = anonymize_info(raw.info, daysback=daysback, keep_his=keep_his)
+        startdate = dt.strftime(info['meas_date'], "%d-%b-%Y").upper()
+        meas_date = dt.strftime(info['meas_date'], "%d.%m.%y")
+
+        # Anonymize ID info and write to file
+        if keep_his:
+            id_info = [pid, sex, "X", "X"]
+            rec_info = ["Startdate", startdate, admin_code, tech, equip]
+        else:
+            id_info = ["0", "X", "X", "X"]
+            rec_info = ["Startdate", startdate, "X", "mne_anonymize", "X"]
+        with open(dest, 'r+b') as f:
+            f.seek(8) # id_info field starts 8 bytes in
+            f.write(bytes(" ".join(id_info).ljust(80), 'ascii'))
+            f.write(bytes(" ".join(rec_info).ljust(80), 'ascii'))
+            f.write(bytes(meas_date, 'ascii'))
 
 
 def copyfile_eeglab(src, dest):

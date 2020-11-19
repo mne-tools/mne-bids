@@ -27,6 +27,7 @@ from mne_bids.path import _parse_ext
 from mne_bids.copyfiles import (_get_brainvision_encoding,
                                 _get_brainvision_paths,
                                 copyfile_brainvision,
+                                copyfile_edf,
                                 copyfile_eeglab,
                                 copyfile_kit)
 
@@ -110,6 +111,63 @@ def test_copyfile_brainvision():
     raw = mne.io.read_raw_brainvision(new_name)
     new_date = raw.info['meas_date']
     assert new_date == (prev_date - datetime.timedelta(days=32459))
+
+
+def test_copyfile_edf():
+    """Test the anonymization of EDF/BDF files"""
+    bids_root = _TempDir()
+    data_path = op.join(base_path, 'edf', 'tests', 'data')
+
+    # Test regular copying
+    for ext in ['.edf', '.bdf']:
+        raw_fname = op.join(data_path, 'test' + ext)
+        new_name = op.join(bids_root, 'test_copy' + ext)
+        copyfile_edf(raw_fname, new_name)
+
+    # Add some subject info to an EDF to test anonymization
+    testfile = op.join(bids_root, 'test_copy.edf')
+    raw = mne.io.read_raw_edf(testfile)
+    date = datetime.datetime.strftime(raw.info['meas_date'], "%d-%b-%Y").upper()
+    test_id_info = '023 F 02-AUG-1951 Jane'
+    test_rec_info = 'Startdate {0} ID-123 John BioSemi_ActiveTwo'.format(date)
+    with open(testfile, 'r+b') as f:
+        f.seek(8)
+        f.write(bytes(test_id_info.ljust(80), 'ascii'))
+        f.write(bytes(test_rec_info.ljust(80), 'ascii'))
+
+    # Test date anonymization
+    bids_root2 = _TempDir()
+    infile = op.join(bids_root, 'test_copy.edf')
+    outfile = op.join(bids_root2, 'test_copy_anon.edf')
+    anonymize = {'daysback': 32459, 'keep_his': False}
+    copyfile_edf(infile, outfile, anonymize)
+    raw = mne.io.read_raw_edf(infile)
+    raw_anon = mne.io.read_raw_edf(outfile)
+    prev_date = raw.info['meas_date']
+    new_date = raw_anon.info['meas_date']
+    assert new_date == (prev_date - datetime.timedelta(days=32459))
+
+    # Test full ID info anonymization
+    anon_startdate = datetime.datetime.strftime(new_date, "%d-%b-%Y").upper()
+    with open(outfile, 'rb') as f:
+        f.seek(8)
+        id_info = f.read(80).decode('ascii').rstrip()
+        rec_info = f.read(80).decode('ascii').rstrip()
+    assert id_info == "0 X X X"
+    assert rec_info == "Startdate {0} X mne_anonymize X".format(anon_startdate)
+
+    # Test partial ID info anonymization
+    outfile2 = op.join(bids_root2, 'test_copy_anon_partial.edf')
+    anonymize = {'daysback': 32459, 'keep_his': True}
+    copyfile_edf(infile, outfile2, anonymize)
+    with open(outfile2, 'rb') as f:
+        f.seek(8)
+        id_info = f.read(80).decode('ascii').rstrip()
+        rec_info = f.read(80).decode('ascii').rstrip()
+    rec = 'Startdate {0} ID-123 John BioSemi_ActiveTwo'.format(anon_startdate)
+    assert id_info == "023 F X X"
+    assert rec_info == rec
+    
 
 
 def test_copyfile_eeglab():
