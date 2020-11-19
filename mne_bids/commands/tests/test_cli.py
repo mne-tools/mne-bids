@@ -17,13 +17,14 @@ with warnings.catch_warnings():
     import mne
 
 from mne.datasets import testing
-from mne.utils import run_tests_if_main, ArgvSetter
+from mne.utils import run_tests_if_main, ArgvSetter, requires_pandas
 
 from mne_bids.commands import (mne_bids_raw_to_bids, mne_bids_cp,
                                mne_bids_mark_bad_channels,
                                mne_bids_calibration_to_bids,
-                               mne_bids_crosstalk_to_bids)
-from mne_bids import BIDSPath, read_raw_bids
+                               mne_bids_crosstalk_to_bids,
+                               mne_bids_count_events)
+from mne_bids import BIDSPath, read_raw_bids, write_raw_bids
 
 
 base_path = op.join(op.dirname(mne.__file__), 'io')
@@ -222,6 +223,36 @@ def test_crosstalk_to_bids(tmpdir):
     with ArgvSetter(args):
         mne_bids_crosstalk_to_bids.run()
     assert bids_path.meg_crosstalk_fpath.exists()
+
+
+@requires_pandas
+def test_count_events(tmpdir):
+    """Test mne_bids count_events."""
+
+    # Check that help is printed
+    check_usage(mne_bids_count_events)
+
+    # Create test dataset.
+    output_path = str(tmpdir)
+    data_path = testing.data_path()
+    raw_fname = op.join(data_path, 'MEG', 'sample',
+                        'sample_audvis_trunc_raw.fif')
+
+    raw = mne.io.read_raw(raw_fname)
+    raw.info['line_freq'] = 60.
+    events = mne.find_events(raw)
+    event_id = {'auditory/left': 1, 'auditory/right': 2, 'visual/left': 3,
+                'visual/right': 4, 'face': 5, 'button': 32}
+
+    bids_path = BIDSPath(subject='01', root=output_path)
+    write_raw_bids(raw, bids_path, events, event_id, overwrite=True,
+                   verbose=False)
+
+    with ArgvSetter(('--bids_root', output_path)):
+        mne_bids_count_events.run()
+
+    with ArgvSetter(('--bids_root', output_path, '--describe')):
+        mne_bids_count_events.run()
 
 
 run_tests_if_main()

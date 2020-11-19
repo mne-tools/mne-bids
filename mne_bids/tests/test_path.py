@@ -728,7 +728,7 @@ def test_find_empty_room(return_bids_test_dir):
     raw.copy().crop(0, 10).save(er_raw_fname, overwrite=True)
     er_raw = _read_raw_fif(er_raw_fname)
 
-    if not isinstance(er_raw.info['meas_date'], datetime):
+    if not isinstance(er_raw.info['meas_date'], datetime):  # pragma: no cover
         # mne < v0.20
         er_date = datetime.fromtimestamp(er_raw.info['meas_date'][0])
     else:

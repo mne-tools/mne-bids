@@ -32,6 +32,7 @@ from mne.datasets import sample
 
 from mne_bids import (write_raw_bids, read_raw_bids, write_meg_calibration,
                       write_meg_crosstalk, BIDSPath, print_dir_tree)
+from mne_bids.stats import count_events
 
 ###############################################################################
 # Now we can read the MNE sample data. We define an `event_id` based on our
@@ -85,6 +86,12 @@ write_meg_crosstalk(ct_fname, bids_path)
 # Now let's see the structure of the BIDS folder we created.
 
 print_dir_tree(output_path)
+
+###############################################################################
+# Now let's get an overview of the events on the whole dataset
+
+counts = count_events(output_path)
+counts
 
 ###############################################################################
 # A big advantage of having data organized according to BIDS is that software
