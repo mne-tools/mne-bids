@@ -1088,8 +1088,9 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate):
                 write_raw_bids(**kwargs)
 
         data = _from_tsv(scans_tsv)
-        bids_fname = bids_path.copy().update(suffix='eeg',
-                                             extension='.vhdr')
+        bids_fname = bids_path.copy()
+        if dir_name != 'EDF':
+            bids_fname = bids_fname.update(suffix='eeg', extension='.vhdr')
         assert any([bids_fname.basename in fname
                     for fname in data['filename']])
 

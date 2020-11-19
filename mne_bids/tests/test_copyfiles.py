@@ -146,7 +146,7 @@ def test_copyfile_edf():
     bids_root2 = _TempDir()
     infile = op.join(bids_root, 'test_copy.edf')
     outfile = op.join(bids_root2, 'test_copy_anon.edf')
-    anonymize = {'daysback': 32459, 'keep_his': False}
+    anonymize = {'daysback': 33459, 'keep_his': False}
     copyfile_edf(infile, outfile, anonymize)
     prev_date = _edf_get_real_date(infile)
     new_date = _edf_get_real_date(outfile)
@@ -163,7 +163,7 @@ def test_copyfile_edf():
 
     # Test partial ID info anonymization
     outfile2 = op.join(bids_root2, 'test_copy_anon_partial.edf')
-    anonymize = {'daysback': 32459, 'keep_his': True}
+    anonymize = {'daysback': 33459, 'keep_his': True}
     copyfile_edf(infile, outfile2, anonymize)
     with open(outfile2, 'rb') as f:
         f.seek(8)

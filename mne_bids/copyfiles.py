@@ -21,7 +21,8 @@ import re
 import shutil as sh
 from datetime import datetime
 
-from mne.io import read_raw_brainvision, read_raw_edf, anonymize_info
+from mne.io import (read_raw_brainvision, read_raw_edf, read_raw_bdf,
+                    anonymize_info)
 from scipy.io import loadmat, savemat
 
 from mne_bids.path import BIDSPath, _parse_ext, _mkdir_p
@@ -384,7 +385,10 @@ def copyfile_edf(src, dest, anonymize=None):
 
     # Anonymize EDF/BDF data, if requested
     if anonymize is not None:
-        raw = read_raw_edf(dest, preload=False, verbose=0)
+        if ext_src == '.bdf':
+            raw = read_raw_bdf(dest, preload=False, verbose=0)
+        else:
+            raw = read_raw_edf(dest, preload=False, verbose=0)
 
         # Get patient info, recording info, and recording date
         with open(dest, 'rb') as f:
