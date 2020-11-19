@@ -1070,21 +1070,14 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate):
     assert len(list(data.values())[0]) == 2
 
     # check that scans list is properly converted to brainvision
-    if check_version('pybv', '0.4'):
+    if check_version('pybv', '0.4') or dir_name == 'EDF':
         daysback_min, daysback_max = _get_anonymization_daysback(raw)
         daysback = (daysback_min + daysback_max) // 2
-
-        # XXX: Need to remove "Status" channel until pybv supports
-        # channels that are non-Volt
-        if dir_name == 'EDF':
-            raw.drop_channels("Status")
 
         kwargs = dict(raw=raw, bids_path=bids_path,
                       anonymize=dict(daysback=daysback), overwrite=True)
         if dir_name == 'EDF':
-            with pytest.warns(RuntimeWarning,
-                              match='Encountered data in "int" format'):
-                write_raw_bids(**kwargs)
+            write_raw_bids(**kwargs)
         elif dir_name == 'Persyst':
             with pytest.warns(RuntimeWarning,
                               match='Encountered data in "double" format'):
@@ -1175,13 +1168,8 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate):
     assert coordsystem_json['iEEGCoordinateSystem'] == 'Other'
 
     # test anonymize and convert
-    if check_version('pybv', '0.4'):
+    if check_version('pybv', '0.4') or dir_name == 'EDF':
         raw = reader(raw_fname)
-
-        # XXX: Need to remove "Status" channel until pybv supports
-        # channels that are non-Volt
-        if dir_name == 'EDF':
-            raw.drop_channels("Status")
 
         kwargs = dict(raw=raw, bids_path=bids_path, overwrite=True)
         if dir_name == 'NihonKohden':
@@ -1191,9 +1179,7 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate):
                 output_path = _test_anonymize(raw, bids_path)
         elif dir_name == 'EDF':
             write_raw_bids(**kwargs)  # Just copies.
-            with pytest.warns(RuntimeWarning,
-                              match='Encountered data in "int" format'):
-                output_path = _test_anonymize(raw, bids_path)
+            output_path = _test_anonymize(raw, bids_path)
         else:
             with pytest.warns(RuntimeWarning,
                               match='Encountered data in "double" format'):
@@ -1254,18 +1240,9 @@ def test_bdf(_bids_validate):
         write_raw_bids(raw, bids_path)
 
     # test anonymize and convert
-    if check_version('pybv', '0.4'):
-        raw = _read_raw_bdf(raw_fname)
-        # XXX: Need to remove "Status" channel until pybv supports
-        # channels that are non-Volt
-        with pytest.raises(RuntimeError, match='''in Volts: "{'Status'}"'''):
-            output_path = _test_anonymize(raw, bids_path)
-
-        raw.pick_types(eeg=True, exclude=[])
-        with pytest.warns(RuntimeWarning,
-                          match='Encountered data in "int" format'):
-            output_path = _test_anonymize(raw, bids_path)
-        _bids_validate(output_path)
+    raw = _read_raw_bdf(raw_fname)
+    output_path = _test_anonymize(raw, bids_path)
+    _bids_validate(output_path)
 
 
 @pytest.mark.filterwarnings(warning_str['meas_date_set_to_none'])

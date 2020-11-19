@@ -1113,12 +1113,13 @@ def write_raw_bids(raw, bids_path, events_data=None,
                 warn('Converting to FIF for anonymization')
             convert = True
             bids_path.update(extension='.fif')
-        elif bids_path.datatype in ['eeg', 'ieeg'] and ext != '.vhdr':
-            if verbose:
-                warn('Converting data files to BrainVision format '
-                     'for anonymization')
-            convert = True
-            bids_path.update(extension='.vhdr')
+        elif bids_path.datatype in ['eeg', 'ieeg']:
+            if ext not in ['.vhdr', '.edf', '.bdf']:
+                if verbose:
+                    warn('Converting data files to BrainVision format '
+                         'for anonymization')
+                convert = True
+                bids_path.update(extension='.vhdr')
 
     # Read in Raw object and extract metadata from Raw object if needed
     orient = ORIENTATION.get(ext, 'n/a')
