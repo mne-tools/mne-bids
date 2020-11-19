@@ -361,7 +361,11 @@ def copyfile_edf(src, dest, anonymize=None):
             differences between subjects can be kept by using the same number
             of `daysback` for all subject anonymizations. `daysback` should be
             great enough to shift the date prior to 1925 to conform with BIDS
-            anonymization rules.
+            anonymization rules. Due to limitations of the EDF/BDF format, the
+            year of the anonymized date will always be set to 1985 in the
+            'meas_date' region of the file. The correctly-shifted year will be
+            written to the 'recording info' region of the header, which may not
+            be parsed by all EDF/BDF reader software.
 
         `keep_his` : bool
             By default (False), all subject information next to the recording
@@ -416,7 +420,7 @@ def copyfile_edf(src, dest, anonymize=None):
         daysback, keep_his = _check_anonymize(anonymize, raw, '.edf')
         info = anonymize_info(raw.info, daysback=daysback, keep_his=keep_his)
         startdate = datetime.strftime(info['meas_date'], "%d-%b-%Y").upper()
-        meas_date = datetime.strftime(info['meas_date'], "%d.%m.%y")
+        meas_date = datetime.strftime(info['meas_date'], "%d.%m.85")
 
         # Anonymize ID info and write to file
         if keep_his:
