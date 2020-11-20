@@ -373,7 +373,7 @@ def copyfile_edf(src, dest, anonymize=None):
                  "startdate" field to 85 (i.e., 1985), the earliest possible
                  date for that field. However, the "Startdate" field in the
                  file's "local recording identification" and the date in the
-                 session's corresponding `scans.tsv` will be set correctly
+                 session's corresponding ``scans.tsv`` will be set correctly
                  according to the argument provided to the ``anonymize``
                  parameter. Note that it is possible that not all EDF/EDF+/BDF
                  reading software parses the accurate recording date, and
