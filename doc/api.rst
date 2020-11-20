@@ -72,6 +72,7 @@ mne_bids.copyfiles
    :toctree: generated/
 
    copyfile_brainvision
+   copyfile_edf
    copyfile_eeglab
    copyfile_ctf
    copyfile_bti
