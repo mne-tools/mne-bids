@@ -1077,7 +1077,8 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate):
         kwargs = dict(raw=raw, bids_path=bids_path,
                       anonymize=dict(daysback=daysback), overwrite=True)
         if dir_name == 'EDF':
-            with pytest.warns(RuntimeWarning, match=r'^Due to EDF.*'):
+            match = r"^EDF\/EDF\+\/BDF files contain two fields .*"
+            with pytest.warns(RuntimeWarning, match=match):
                 write_raw_bids(**kwargs)
         elif dir_name == 'Persyst':
             with pytest.warns(RuntimeWarning,
@@ -1180,7 +1181,8 @@ def test_eegieeg(dir_name, fname, reader, _bids_validate):
                 write_raw_bids(**kwargs)
                 output_path = _test_anonymize(raw, bids_path)
         elif dir_name == 'EDF':
-            with pytest.warns(RuntimeWarning, match=r'^Due to EDF.*'):
+            match = r"^EDF\/EDF\+\/BDF files contain two fields .*"
+            with pytest.warns(RuntimeWarning, match=match):
                 write_raw_bids(**kwargs)  # Just copies.
                 output_path = _test_anonymize(raw, bids_path)
         else:
@@ -1244,7 +1246,8 @@ def test_bdf(_bids_validate):
 
     # test anonymize and convert
     raw = _read_raw_bdf(raw_fname)
-    with pytest.warns(RuntimeWarning, match=r'^Due to EDF.*'):
+    match = r"^EDF\/EDF\+\/BDF files contain two fields .*"
+    with pytest.warns(RuntimeWarning, match=match):
         output_path = _test_anonymize(raw, bids_path)
     _bids_validate(output_path)
 

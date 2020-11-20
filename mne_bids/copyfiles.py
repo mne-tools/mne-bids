@@ -344,6 +344,17 @@ def copyfile_brainvision(vhdr_src, vhdr_dest, anonymize=None, verbose=False):
 def copyfile_edf(src, dest, anonymize=None):
     """Copy an EDF, EDF+, or BDF file to a new location, optionally anonymize.
 
+    .. warning:: EDF/EDF+/BDF files contain two fields for recording dates:
+                 A generic "startdate" field that supports only 2-digit years,
+                 and a "Startdate" field as part of the "local recording
+                 identification", which supports 4-digit years.
+                 If you want to anonymize your file, MNE-BIDS will set the
+                 "startdate" field to 85 (i.e., 1985), the earliest possible
+                 date for that field. The "Startdate" field from "local
+                 recording identification" however, will be set correctly
+                 according to the argument provided to the ``anonymize``
+                 parameter.
+
     Parameters
     ----------
     src : str
@@ -363,9 +374,10 @@ def copyfile_edf(src, dest, anonymize=None):
             great enough to shift the date prior to 1925 to conform with BIDS
             anonymization rules. Due to limitations of the EDF/BDF format, the
             year of the anonymized date will always be set to 1985 in the
-            'meas_date' region of the file. The correctly-shifted year will be
-            written to the 'recording info' region of the header, which may not
-            be parsed by all EDF/BDF reader software.
+            'startdate' field of the file. The correctly-shifted year will be
+            written to the 'local recording identification' region of the
+            file header, which may not be parsed by all EDF/EDF+/BDF reader
+            softwares.
 
         `keep_his` : bool
             By default (False), all subject information next to the recording
@@ -418,7 +430,7 @@ def copyfile_edf(src, dest, anonymize=None):
         # changed to defaulting to the 4-digit field, this try-except
         # clause can be removed. See:
         # https://github.com/mne-tools/mne-python/issues/8544
-        
+
         try:
             real_year = datetime.strptime(startdate, "%d-%b-%Y").year
             newdate = raw.info['meas_date'].replace(year=real_year)
