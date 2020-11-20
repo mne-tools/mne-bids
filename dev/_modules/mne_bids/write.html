@@ -158,7 +158,8 @@
 <span class="kn">from</span> <span class="nn">mne_bids</span> <span class="kn">import</span> <span class="n">read_raw_bids</span>
 <span class="kn">from</span> <span class="nn">mne_bids.path</span> <span class="kn">import</span> <span class="n">BIDSPath</span><span class="p">,</span> <span class="n">_parse_ext</span><span class="p">,</span> <span class="n">_mkdir_p</span><span class="p">,</span> <span class="n">_path_to_str</span>
 <span class="kn">from</span> <span class="nn">mne_bids.copyfiles</span> <span class="kn">import</span> <span class="p">(</span><span class="n">copyfile_brainvision</span><span class="p">,</span> <span class="n">copyfile_eeglab</span><span class="p">,</span>
-                                <span class="n">copyfile_ctf</span><span class="p">,</span> <span class="n">copyfile_bti</span><span class="p">,</span> <span class="n">copyfile_kit</span><span class="p">)</span>
+                                <span class="n">copyfile_ctf</span><span class="p">,</span> <span class="n">copyfile_bti</span><span class="p">,</span> <span class="n">copyfile_kit</span><span class="p">,</span>
+                                <span class="n">copyfile_edf</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">mne_bids.tsv_handler</span> <span class="kn">import</span> <span class="p">(</span><span class="n">_from_tsv</span><span class="p">,</span> <span class="n">_drop</span><span class="p">,</span> <span class="n">_contains_row</span><span class="p">,</span>
                                   <span class="n">_combine_rows</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">mne_bids.read</span> <span class="kn">import</span> <span class="p">(</span><span class="n">_get_bads_from_tsv_data</span><span class="p">,</span> <span class="n">_find_matching_sidecar</span><span class="p">,</span>
@@ -1228,12 +1229,13 @@
                 <span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Converting to FIF for anonymization&#39;</span><span class="p">)</span>
             <span class="n">convert</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.fif&#39;</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;eeg&#39;</span><span class="p">,</span> <span class="s1">&#39;ieeg&#39;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">ext</span> <span class="o">!=</span> <span class="s1">&#39;.vhdr&#39;</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
-                <span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Converting data files to BrainVision format &#39;</span>
-                     <span class="s1">&#39;for anonymization&#39;</span><span class="p">)</span>
-            <span class="n">convert</span> <span class="o">=</span> <span class="kc">True</span>
-            <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.vhdr&#39;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">datatype</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;eeg&#39;</span><span class="p">,</span> <span class="s1">&#39;ieeg&#39;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">ext</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;.vhdr&#39;</span><span class="p">,</span> <span class="s1">&#39;.edf&#39;</span><span class="p">,</span> <span class="s1">&#39;.bdf&#39;</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+                    <span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Converting data files to BrainVision format &#39;</span>
+                         <span class="s1">&#39;for anonymization&#39;</span><span class="p">)</span>
+                <span class="n">convert</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.vhdr&#39;</span><span class="p">)</span>
 
     <span class="c1"># Read in Raw object and extract metadata from Raw object if needed</span>
     <span class="n">orient</span> <span class="o">=</span> <span class="n">ORIENTATION</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ext</span><span class="p">,</span> <span class="s1">&#39;n/a&#39;</span><span class="p">)</span>
@@ -1326,6 +1328,16 @@
     <span class="c1"># BrainVision is multifile, copy over all of them and fix pointers</span>
     <span class="k">elif</span> <span class="n">ext</span> <span class="o">==</span> <span class="s1">&#39;.vhdr&#39;</span><span class="p">:</span>
         <span class="n">copyfile_brainvision</span><span class="p">(</span><span class="n">raw_fname</span><span class="p">,</span> <span class="n">bids_path</span><span class="p">,</span> <span class="n">anonymize</span><span class="o">=</span><span class="n">anonymize</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">ext</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;.edf&#39;</span><span class="p">,</span> <span class="s1">&#39;.bdf&#39;</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">anonymize</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;EDF/EDF+/BDF files contain two fields for recording dates.&quot;</span>
+                 <span class="s2">&quot;Due to file format limitations, one of these fields only &quot;</span>
+                 <span class="s2">&quot;supports 2-digit years. The date for that field will be &quot;</span>
+                 <span class="s2">&quot;set to 85 (i.e., 1985), the earliest possible date. &quot;</span>
+                 <span class="s2">&quot;EDF/EDF+/BDF reading software should parse the second &quot;</span>
+                 <span class="s2">&quot;field for recording dates, which contains the accurately &quot;</span>
+                 <span class="s2">&quot;anonymized date as calculated with `daysback`.&quot;</span><span class="p">)</span>
+        <span class="n">copyfile_edf</span><span class="p">(</span><span class="n">raw_fname</span><span class="p">,</span> <span class="n">bids_path</span><span class="p">,</span> <span class="n">anonymize</span><span class="o">=</span><span class="n">anonymize</span><span class="p">)</span>
     <span class="c1"># EEGLAB .set might be accompanied by a .fdt - find out and copy it too</span>
     <span class="k">elif</span> <span class="n">ext</span> <span class="o">==</span> <span class="s1">&#39;.set&#39;</span><span class="p">:</span>
         <span class="n">copyfile_eeglab</span><span class="p">(</span><span class="n">raw_fname</span><span class="p">,</span> <span class="n">bids_path</span><span class="p">)</span>
@@ -1812,7 +1824,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-11-19.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-11-20.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.3.1.<br/>
     </p>
   </div>

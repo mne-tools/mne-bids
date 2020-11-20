@@ -135,8 +135,10 @@
 <span class="kn">import</span> <span class="nn">re</span>
 
 <span class="kn">import</span> <span class="nn">shutil</span> <span class="k">as</span> <span class="nn">sh</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
 
-<span class="kn">from</span> <span class="nn">mne.io</span> <span class="kn">import</span> <span class="n">read_raw_brainvision</span><span class="p">,</span> <span class="n">anonymize_info</span>
+<span class="kn">from</span> <span class="nn">mne.io</span> <span class="kn">import</span> <span class="p">(</span><span class="n">read_raw_brainvision</span><span class="p">,</span> <span class="n">read_raw_edf</span><span class="p">,</span> <span class="n">read_raw_bdf</span><span class="p">,</span>
+                    <span class="n">anonymize_info</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">scipy.io</span> <span class="kn">import</span> <span class="n">loadmat</span><span class="p">,</span> <span class="n">savemat</span>
 
 <span class="kn">from</span> <span class="nn">mne_bids.path</span> <span class="kn">import</span> <span class="n">BIDSPath</span><span class="p">,</span> <span class="n">_parse_ext</span><span class="p">,</span> <span class="n">_mkdir_p</span>
@@ -253,10 +255,18 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    src : str</span>
+<span class="sd">    src : str | pathlib.Path</span>
 <span class="sd">        Path to the source raw .ds folder.</span>
-<span class="sd">    dest : str</span>
+<span class="sd">    dest : str | pathlib.Path</span>
 <span class="sd">        Path to the destination of the new bids folder.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    copyfile_brainvision</span>
+<span class="sd">    copyfile_bti</span>
+<span class="sd">    copyfile_edf</span>
+<span class="sd">    copyfile_eeglab</span>
+<span class="sd">    copyfile_kit</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_copytree</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dest</span><span class="p">)</span>
@@ -278,9 +288,9 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    src : str</span>
+<span class="sd">    src : str | pathlib.Path</span>
 <span class="sd">        Path to the source raw .con or .sqd folder.</span>
-<span class="sd">    dest : str</span>
+<span class="sd">    dest : str | pathlib.Path</span>
 <span class="sd">        Path to the destination of the new bids folder.</span>
 <span class="sd">    subject_id : str | None</span>
 <span class="sd">        The subject ID. Corresponds to &quot;sub&quot;.</span>
@@ -292,6 +302,14 @@
 <span class="sd">        The run number. Corresponds to &quot;run&quot;.</span>
 <span class="sd">    _init_kwargs : dict</span>
 <span class="sd">        Extract information of marker and headpoints</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    copyfile_brainvision</span>
+<span class="sd">    copyfile_bti</span>
+<span class="sd">    copyfile_ctf</span>
+<span class="sd">    copyfile_edf</span>
+<span class="sd">    copyfile_eeglab</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># create parent directories in case it does not exist yet</span>
@@ -369,9 +387,9 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    vhdr_src : str</span>
-<span class="sd">        The src path of the .vhdr file to be copied.</span>
-<span class="sd">    vhdr_dest : str</span>
+<span class="sd">    vhdr_src : str | pathlib.Path</span>
+<span class="sd">        The source path of the .vhdr file to be copied.</span>
+<span class="sd">    vhdr_dest : str | pathlib.Path</span>
 <span class="sd">        The destination path of the .vhdr file.</span>
 <span class="sd">    anonymize : dict | None</span>
 <span class="sd">        If None (default), no anonymization is performed.</span>
@@ -397,14 +415,19 @@
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
 <span class="sd">    mne.io.anonymize_info</span>
+<span class="sd">    copyfile_bti</span>
+<span class="sd">    copyfile_ctf</span>
+<span class="sd">    copyfile_edf</span>
+<span class="sd">    copyfile_eeglab</span>
+<span class="sd">    copyfile_kit</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Get extenstion of the brainvision file</span>
     <span class="n">fname_src</span><span class="p">,</span> <span class="n">ext_src</span> <span class="o">=</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">vhdr_src</span><span class="p">)</span>
     <span class="n">fname_dest</span><span class="p">,</span> <span class="n">ext_dest</span> <span class="o">=</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">vhdr_dest</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">ext_src</span> <span class="o">!=</span> <span class="n">ext_dest</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Need to move data with same extension&#39;</span>
-                         <span class="sa">f</span><span class="s1">&#39; but got &quot;</span><span class="si">{</span><span class="n">ext_src</span><span class="si">}</span><span class="s1">&quot;, &quot;</span><span class="si">{</span><span class="n">ext_dest</span><span class="si">}</span><span class="s1">&quot;&#39;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Need to move data with same extension, &#39;</span>
+                         <span class="sa">f</span><span class="s1">&#39; but got &quot;</span><span class="si">{</span><span class="n">ext_src</span><span class="si">}</span><span class="s1">&quot; and &quot;</span><span class="si">{</span><span class="n">ext_dest</span><span class="si">}</span><span class="s1">&quot;&#39;</span><span class="p">)</span>
 
     <span class="n">eeg_file_path</span><span class="p">,</span> <span class="n">vmrk_file_path</span> <span class="o">=</span> <span class="n">_get_brainvision_paths</span><span class="p">(</span><span class="n">vhdr_src</span><span class="p">)</span>
 
@@ -455,6 +478,140 @@
             <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Anonymized all dates in VHDR and VMRK.&#39;</span><span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="copyfile_edf"><a class="viewcode-back" href="../../generated/mne_bids.copyfiles.copyfile_edf.html#mne_bids.copyfiles.copyfile_edf">[docs]</a><span class="k">def</span> <span class="nf">copyfile_edf</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dest</span><span class="p">,</span> <span class="n">anonymize</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Copy an EDF, EDF+, or BDF file to a new location, optionally anonymize.</span>
+
+<span class="sd">    .. warning:: EDF/EDF+/BDF files contain two fields for recording dates:</span>
+<span class="sd">                 A generic &quot;startdate&quot; field that supports only 2-digit years,</span>
+<span class="sd">                 and a &quot;Startdate&quot; field as part of the &quot;local recording</span>
+<span class="sd">                 identification&quot;, which supports 4-digit years.</span>
+<span class="sd">                 If you want to anonymize your file, MNE-BIDS will set the</span>
+<span class="sd">                 &quot;startdate&quot; field to 85 (i.e., 1985), the earliest possible</span>
+<span class="sd">                 date for that field. However, the &quot;Startdate&quot; field in the</span>
+<span class="sd">                 file&#39;s &quot;local recording identification&quot; and the date in the</span>
+<span class="sd">                 session&#39;s corresponding ``scans.tsv`` will be set correctly</span>
+<span class="sd">                 according to the argument provided to the ``anonymize``</span>
+<span class="sd">                 parameter. Note that it is possible that not all EDF/EDF+/BDF</span>
+<span class="sd">                 reading software parses the accurate recording date, and</span>
+<span class="sd">                 that for some reading software, the wrong year (1985) may</span>
+<span class="sd">                 be parsed.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    src : str | pathlib.Path</span>
+<span class="sd">        The source path of the .edf or .bdf file to be copied.</span>
+<span class="sd">    dest : str | pathlib.Path</span>
+<span class="sd">        The destination path of the .edf or .bdf file.</span>
+<span class="sd">    anonymize : dict | None</span>
+<span class="sd">        If None (default), no anonymization is performed.</span>
+<span class="sd">        If dict, data will be anonymized depending on the keys provided with</span>
+<span class="sd">        the dict: `daysback` is a required key, `keep_his` is an optional key.</span>
+
+<span class="sd">        `daysback` : int</span>
+<span class="sd">            Number of days by which to move back the recording date in time.</span>
+<span class="sd">            In studies with multiple subjects the relative recording date</span>
+<span class="sd">            differences between subjects can be kept by using the same number</span>
+<span class="sd">            of `daysback` for all subject anonymizations. `daysback` should be</span>
+<span class="sd">            great enough to shift the date prior to 1925 to conform with BIDS</span>
+<span class="sd">            anonymization rules. Due to limitations of the EDF/BDF format, the</span>
+<span class="sd">            year of the anonymized date will always be set to 1985 in the</span>
+<span class="sd">            &#39;startdate&#39; field of the file. The correctly-shifted year will be</span>
+<span class="sd">            written to the &#39;local recording identification&#39; region of the</span>
+<span class="sd">            file header, which may not be parsed by all EDF/EDF+/BDF reader</span>
+<span class="sd">            softwares.</span>
+
+<span class="sd">        `keep_his` : bool</span>
+<span class="sd">            By default (False), all subject information next to the recording</span>
+<span class="sd">            date will be overwritten as well. If True, keep subject information</span>
+<span class="sd">            apart from the recording date. Participant names and birthdates</span>
+<span class="sd">            will always be anonymized if present, regardless of this setting.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    mne.io.anonymize_info</span>
+<span class="sd">    copyfile_brainvision</span>
+<span class="sd">    copyfile_bti</span>
+<span class="sd">    copyfile_ctf</span>
+<span class="sd">    copyfile_eeglab</span>
+<span class="sd">    copyfile_kit</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Ensure source &amp; destination extensions are the same</span>
+    <span class="n">fname_src</span><span class="p">,</span> <span class="n">ext_src</span> <span class="o">=</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
+    <span class="n">fname_dest</span><span class="p">,</span> <span class="n">ext_dest</span> <span class="o">=</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">dest</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">ext_src</span> <span class="o">!=</span> <span class="n">ext_dest</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Need to move data with same extension, &#39;</span>
+                         <span class="sa">f</span><span class="s1">&#39; but got &quot;</span><span class="si">{</span><span class="n">ext_src</span><span class="si">}</span><span class="s1">&quot; and &quot;</span><span class="si">{</span><span class="n">ext_dest</span><span class="si">}</span><span class="s1">&quot;&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Copy data prior to any anonymization</span>
+    <span class="n">sh</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dest</span><span class="p">)</span>
+
+    <span class="c1"># Anonymize EDF/BDF data, if requested</span>
+    <span class="k">if</span> <span class="n">anonymize</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">ext_src</span> <span class="o">==</span> <span class="s1">&#39;.bdf&#39;</span><span class="p">:</span>
+            <span class="n">raw</span> <span class="o">=</span> <span class="n">read_raw_bdf</span><span class="p">(</span><span class="n">dest</span><span class="p">,</span> <span class="n">preload</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">ext_src</span> <span class="o">==</span> <span class="s1">&#39;.edf&#39;</span><span class="p">:</span>
+            <span class="n">raw</span> <span class="o">=</span> <span class="n">read_raw_edf</span><span class="p">(</span><span class="n">dest</span><span class="p">,</span> <span class="n">preload</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Unsupported file type (</span><span class="si">{0}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ext_src</span><span class="p">))</span>
+
+        <span class="c1"># Get subject info, recording info, and recording date</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">dest</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span>  <span class="c1"># id_info field starts 8 bytes in</span>
+            <span class="n">id_info</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">80</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;ascii&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span>
+            <span class="n">rec_info</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">80</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;ascii&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span>
+
+        <span class="c1"># Parse metadata from file</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">id_info</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">id_info</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">))</span> <span class="o">!=</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="n">id_info</span> <span class="o">=</span> <span class="s2">&quot;X X X X&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">rec_info</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">rec_info</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">))</span> <span class="o">!=</span> <span class="mi">5</span><span class="p">:</span>
+            <span class="n">rec_info</span> <span class="o">=</span> <span class="s2">&quot;Startdate X X X X&quot;</span>
+        <span class="n">pid</span><span class="p">,</span> <span class="n">sex</span><span class="p">,</span> <span class="n">birthdate</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="n">id_info</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+        <span class="n">startdate</span><span class="p">,</span> <span class="n">admin_code</span><span class="p">,</span> <span class="n">tech</span><span class="p">,</span> <span class="n">equip</span> <span class="o">=</span> <span class="n">rec_info</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">:</span><span class="mi">5</span><span class="p">]</span>
+
+        <span class="c1"># Try to anonymize recording date using 4-digit year from</span>
+        <span class="c1"># &quot;Startdate&quot; field from &quot;local recording identification&quot;</span>
+        <span class="c1"># section, because the generic &quot;startdate&quot; field only</span>
+        <span class="c1"># supports 2-digit years.</span>
+        <span class="c1">#</span>
+        <span class="c1"># XXX: recording dates are specified twice in EDF/EDF+/BDF,</span>
+        <span class="c1"># MNE-Python currently parses the 2-digit year field. If that is</span>
+        <span class="c1"># changed to defaulting to the 4-digit field, this try-except</span>
+        <span class="c1"># clause can be removed. See:</span>
+        <span class="c1"># https://github.com/mne-tools/mne-python/issues/8544</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">true_year</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">startdate</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">%d</span><span class="s1">-%b-%Y&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">year</span>
+            <span class="n">newdate</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;meas_date&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">year</span><span class="o">=</span><span class="n">true_year</span><span class="p">)</span>
+            <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;meas_date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">newdate</span>
+        <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="c1"># We could not parse the &quot;Startdate&quot; field from &quot;local recording</span>
+            <span class="c1"># identification&quot; section (e.g., because it was &quot;X&quot;).</span>
+            <span class="c1"># So fall back to using the standard &quot;startdate&quot; field that only</span>
+            <span class="c1"># supports 2-digit years.</span>
+            <span class="c1"># This is what MNE-Python currently parses and puts into</span>
+            <span class="c1"># raw.info[&quot;meas_date&quot;]</span>
+            <span class="k">if</span> <span class="s2">&quot;does not match format &#39;</span><span class="si">%d</span><span class="s2">-%b-%Y&#39;&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="n">e</span>
+        <span class="n">daysback</span><span class="p">,</span> <span class="n">keep_his</span> <span class="o">=</span> <span class="n">_check_anonymize</span><span class="p">(</span><span class="n">anonymize</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="s1">&#39;.edf&#39;</span><span class="p">)</span>
+        <span class="n">info</span> <span class="o">=</span> <span class="n">anonymize_info</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">,</span> <span class="n">daysback</span><span class="o">=</span><span class="n">daysback</span><span class="p">,</span> <span class="n">keep_his</span><span class="o">=</span><span class="n">keep_his</span><span class="p">)</span>
+        <span class="n">startdate</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;meas_date&#39;</span><span class="p">],</span> <span class="s1">&#39;</span><span class="si">%d</span><span class="s1">-%b-%Y&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+        <span class="n">meas_date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;meas_date&#39;</span><span class="p">],</span> <span class="s1">&#39;</span><span class="si">%d</span><span class="s1">.%m.85&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Anonymize ID info and write to file</span>
+        <span class="k">if</span> <span class="n">keep_his</span><span class="p">:</span>
+            <span class="c1"># Always remove participant birthdate and name to be safe</span>
+            <span class="n">id_info</span> <span class="o">=</span> <span class="p">[</span><span class="n">pid</span><span class="p">,</span> <span class="n">sex</span><span class="p">,</span> <span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="s2">&quot;X&quot;</span><span class="p">]</span>
+            <span class="n">rec_info</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Startdate&quot;</span><span class="p">,</span> <span class="n">startdate</span><span class="p">,</span> <span class="n">admin_code</span><span class="p">,</span> <span class="n">tech</span><span class="p">,</span> <span class="n">equip</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">id_info</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;0&quot;</span><span class="p">,</span> <span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="s2">&quot;X&quot;</span><span class="p">]</span>
+            <span class="n">rec_info</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Startdate&quot;</span><span class="p">,</span> <span class="n">startdate</span><span class="p">,</span> <span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="s2">&quot;mne-bids_anonymize&quot;</span><span class="p">,</span> <span class="s2">&quot;X&quot;</span><span class="p">]</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">dest</span><span class="p">,</span> <span class="s1">&#39;r+b&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span>  <span class="c1"># id_info field starts 8 bytes in</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">bytes</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">id_info</span><span class="p">)</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="mi">80</span><span class="p">),</span> <span class="s1">&#39;ascii&#39;</span><span class="p">))</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">bytes</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rec_info</span><span class="p">)</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="mi">80</span><span class="p">),</span> <span class="s1">&#39;ascii&#39;</span><span class="p">))</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">bytes</span><span class="p">(</span><span class="n">meas_date</span><span class="p">,</span> <span class="s1">&#39;ascii&#39;</span><span class="p">))</span></div>
+
+
 <div class="viewcode-block" id="copyfile_eeglab"><a class="viewcode-back" href="../../generated/mne_bids.copyfiles.copyfile_eeglab.html#mne_bids.copyfiles.copyfile_eeglab">[docs]</a><span class="k">def</span> <span class="nf">copyfile_eeglab</span><span class="p">(</span><span class="n">src</span><span class="p">,</span> <span class="n">dest</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Copy a EEGLAB files to a new location and adjust pointer to &#39;.fdt&#39; file.</span>
 
@@ -465,10 +622,18 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    src : str</span>
+<span class="sd">    src : str | pathlib.Path</span>
 <span class="sd">        Path to the source raw .set file.</span>
-<span class="sd">    dest : str</span>
+<span class="sd">    dest : str | pathlib.Path</span>
 <span class="sd">        Path to the destination of the new .set file.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    copyfile_brainvision</span>
+<span class="sd">    copyfile_bti</span>
+<span class="sd">    copyfile_ctf</span>
+<span class="sd">    copyfile_edf</span>
+<span class="sd">    copyfile_kit</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Get extenstion of the EEGLAB file</span>
@@ -516,8 +681,16 @@
 <span class="sd">    ----------</span>
 <span class="sd">    raw : instance of Raw</span>
 <span class="sd">        An MNE-Python raw object of BTi data.</span>
-<span class="sd">    dest : str</span>
+<span class="sd">    dest : str | pathlib.Path</span>
 <span class="sd">        Destination to copy the BTi data to.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    copyfile_brainvision</span>
+<span class="sd">    copyfile_ctf</span>
+<span class="sd">    copyfile_edf</span>
+<span class="sd">    copyfile_eeglab</span>
+<span class="sd">    copyfile_kit</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">pdf_fname</span> <span class="o">=</span> <span class="s1">&#39;c,rfDC&#39;</span>
@@ -543,7 +716,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-11-19.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-11-20.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.3.1.<br/>
     </p>
   </div>

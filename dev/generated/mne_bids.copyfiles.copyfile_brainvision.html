@@ -126,9 +126,9 @@ fixed.</p>
 <dl class="field-list">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl>
-<dt><strong>vhdr_src</strong><span class="classifier">str</span></dt><dd><p>The src path of the .vhdr file to be copied.</p>
+<dt><strong>vhdr_src</strong><span class="classifier">str | pathlib.Path</span></dt><dd><p>The source path of the .vhdr file to be copied.</p>
 </dd>
-<dt><strong>vhdr_dest</strong><span class="classifier">str</span></dt><dd><p>The destination path of the .vhdr file.</p>
+<dt><strong>vhdr_dest</strong><span class="classifier">str | pathlib.Path</span></dt><dd><p>The destination path of the .vhdr file.</p>
 </dd>
 <dt><strong>anonymize</strong><span class="classifier">dict | None</span></dt><dd><p>If None (default), no anonymization is performed.
 If dict, data will be anonymized depending on the keys provided with
@@ -156,6 +156,11 @@ apart from the recording date.</p>
 <p class="admonition-title">See also</p>
 <dl class="simple">
 <dt><a class="reference external" href="https://mne.tools/dev/generated/mne.io.anonymize_info.html#mne.io.anonymize_info" title="(in MNE v0.22.dev0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mne.io.anonymize_info</span></code></a></dt><dd></dd>
+<dt><a class="reference internal" href="mne_bids.copyfiles.copyfile_bti.html#mne_bids.copyfiles.copyfile_bti" title="mne_bids.copyfiles.copyfile_bti"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copyfile_bti</span></code></a></dt><dd></dd>
+<dt><a class="reference internal" href="mne_bids.copyfiles.copyfile_ctf.html#mne_bids.copyfiles.copyfile_ctf" title="mne_bids.copyfiles.copyfile_ctf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copyfile_ctf</span></code></a></dt><dd></dd>
+<dt><a class="reference internal" href="mne_bids.copyfiles.copyfile_edf.html#mne_bids.copyfiles.copyfile_edf" title="mne_bids.copyfiles.copyfile_edf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copyfile_edf</span></code></a></dt><dd></dd>
+<dt><a class="reference internal" href="mne_bids.copyfiles.copyfile_eeglab.html#mne_bids.copyfiles.copyfile_eeglab" title="mne_bids.copyfiles.copyfile_eeglab"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copyfile_eeglab</span></code></a></dt><dd></dd>
+<dt><a class="reference internal" href="mne_bids.copyfiles.copyfile_kit.html#mne_bids.copyfiles.copyfile_kit" title="mne_bids.copyfiles.copyfile_kit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copyfile_kit</span></code></a></dt><dd></dd>
 </dl>
 </div>
 </dd></dl>
@@ -182,7 +187,7 @@ apart from the recording date.</p>
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-11-19.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-11-20.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.3.1.<br/>
     </p>
   </div>
