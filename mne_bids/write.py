@@ -1214,11 +1214,13 @@ def write_raw_bids(raw, bids_path, events_data=None,
         copyfile_brainvision(raw_fname, bids_path, anonymize=anonymize)
     elif ext in ['.edf', '.bdf']:
         if anonymize is not None:
-            warn("Due to EDF/EDF+/BDF file limitations, anonymized dates can "
-                 "only be properly written to the 'starttime' field in the "
-                 "recording info of the file. Regardles of the chosen "
-                 "'daysback' value, the year of the file's meas_date will "
-                 "always be set to 1985 when anonymized.")
+            warn("EDF/EDF+/BDF files contain two fields for recording dates."
+                  "Due to file format limitations, one of these fields only "
+                  "supports 2-digit years. The date for that field will be "
+                  "set to the year 1985, the earliest possible date. "
+                  "EDF/EDF+/BDF reading software should parse the second "
+                  "field for recording dates, which contains the properly "
+                  "anonymized date as calculated with `daysback`.")
         copyfile_edf(raw_fname, bids_path, anonymize=anonymize)
     # EEGLAB .set might be accompanied by a .fdt - find out and copy it too
     elif ext == '.set':
