@@ -146,11 +146,11 @@ def copyfile_ctf(src, dest):
 
     See Also
     --------
-    mne_bids.copyfiles.copyfile_brainvision
-    mne_bids.copyfiles.copyfile_bti
-    mne_bids.copyfiles.copyfile_edf
-    mne_bids.copyfiles.copyfile_eeglab
-    mne_bids.copyfiles.copyfile_kit
+    copyfile_brainvision
+    copyfile_bti
+    copyfile_edf
+    copyfile_eeglab
+    copyfile_kit
 
     """
     _copytree(src, dest)
@@ -189,11 +189,11 @@ def copyfile_kit(src, dest, subject_id, session_id,
 
     See Also
     --------
-    mne_bids.copyfiles.copyfile_brainvision
-    mne_bids.copyfiles.copyfile_bti
-    mne_bids.copyfiles.copyfile_ctf
-    mne_bids.copyfiles.copyfile_edf
-    mne_bids.copyfiles.copyfile_eeglab
+    copyfile_brainvision
+    copyfile_bti
+    copyfile_ctf
+    copyfile_edf
+    copyfile_eeglab
 
     """
     # create parent directories in case it does not exist yet
@@ -299,11 +299,11 @@ def copyfile_brainvision(vhdr_src, vhdr_dest, anonymize=None, verbose=False):
     See Also
     --------
     mne.io.anonymize_info
-    mne_bids.copyfiles.copyfile_bti
-    mne_bids.copyfiles.copyfile_ctf
-    mne_bids.copyfiles.copyfile_edf
-    mne_bids.copyfiles.copyfile_eeglab
-    mne_bids.copyfiles.copyfile_kit
+    copyfile_bti
+    copyfile_ctf
+    copyfile_edf
+    copyfile_eeglab
+    copyfile_kit
 
     """
     # Get extenstion of the brainvision file
@@ -413,11 +413,11 @@ def copyfile_edf(src, dest, anonymize=None):
     See Also
     --------
     mne.io.anonymize_info
-    mne_bids.copyfiles.copyfile_brainvision
-    mne_bids.copyfiles.copyfile_bti
-    mne_bids.copyfiles.copyfile_ctf
-    mne_bids.copyfiles.copyfile_eeglab
-    mne_bids.copyfiles.copyfile_kit
+    copyfile_brainvision
+    copyfile_bti
+    copyfile_ctf
+    copyfile_eeglab
+    copyfile_kit
 
     """
     # Ensure source & destination extensions are the same
@@ -513,11 +513,11 @@ def copyfile_eeglab(src, dest):
 
     See Also
     --------
-    mne_bids.copyfiles.copyfile_brainvision
-    mne_bids.copyfiles.copyfile_bti
-    mne_bids.copyfiles.copyfile_ctf
-    mne_bids.copyfiles.copyfile_edf
-    mne_bids.copyfiles.copyfile_kit
+    copyfile_brainvision
+    copyfile_bti
+    copyfile_ctf
+    copyfile_edf
+    copyfile_kit
 
     """
     # Get extenstion of the EEGLAB file
@@ -570,11 +570,11 @@ def copyfile_bti(raw, dest):
 
     See Also
     --------
-    mne_bids.copyfiles.copyfile_brainvision
-    mne_bids.copyfiles.copyfile_ctf
-    mne_bids.copyfiles.copyfile_edf
-    mne_bids.copyfiles.copyfile_eeglab
-    mne_bids.copyfiles.copyfile_kit
+    copyfile_brainvision
+    copyfile_ctf
+    copyfile_edf
+    copyfile_eeglab
+    copyfile_kit
 
     """
     pdf_fname = 'c,rfDC'
