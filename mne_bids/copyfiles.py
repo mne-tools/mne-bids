@@ -139,10 +139,18 @@ def copyfile_ctf(src, dest):
 
     Parameters
     ----------
-    src : str
+    src : str | pathlib.Path
         Path to the source raw .ds folder.
-    dest : str
+    dest : str | pathlib.Path
         Path to the destination of the new bids folder.
+
+    See Also
+    --------
+    mne_bids.copyfiles.copyfile_brainvision
+    mne_bids.copyfiles.copyfile_bti
+    mne_bids.copyfiles.copyfile_edf
+    mne_bids.copyfiles.copyfile_eeglab
+    mne_bids.copyfiles.copyfile_kit
 
     """
     _copytree(src, dest)
@@ -164,9 +172,9 @@ def copyfile_kit(src, dest, subject_id, session_id,
 
     Parameters
     ----------
-    src : str
+    src : str | pathlib.Path
         Path to the source raw .con or .sqd folder.
-    dest : str
+    dest : str | pathlib.Path
         Path to the destination of the new bids folder.
     subject_id : str | None
         The subject ID. Corresponds to "sub".
@@ -178,6 +186,14 @@ def copyfile_kit(src, dest, subject_id, session_id,
         The run number. Corresponds to "run".
     _init_kwargs : dict
         Extract information of marker and headpoints
+
+    See Also
+    --------
+    mne_bids.copyfiles.copyfile_brainvision
+    mne_bids.copyfiles.copyfile_bti
+    mne_bids.copyfiles.copyfile_ctf
+    mne_bids.copyfiles.copyfile_edf
+    mne_bids.copyfiles.copyfile_eeglab
 
     """
     # create parent directories in case it does not exist yet
@@ -255,9 +271,9 @@ def copyfile_brainvision(vhdr_src, vhdr_dest, anonymize=None, verbose=False):
 
     Parameters
     ----------
-    vhdr_src : str
-        The src path of the .vhdr file to be copied.
-    vhdr_dest : str
+    vhdr_src : str | pathlib.Path
+        The source path of the .vhdr file to be copied.
+    vhdr_dest : str | pathlib.Path
         The destination path of the .vhdr file.
     anonymize : dict | None
         If None (default), no anonymization is performed.
@@ -283,14 +299,19 @@ def copyfile_brainvision(vhdr_src, vhdr_dest, anonymize=None, verbose=False):
     See Also
     --------
     mne.io.anonymize_info
+    mne_bids.copyfiles.copyfile_bti
+    mne_bids.copyfiles.copyfile_ctf
+    mne_bids.copyfiles.copyfile_edf
+    mne_bids.copyfiles.copyfile_eeglab
+    mne_bids.copyfiles.copyfile_kit
 
     """
     # Get extenstion of the brainvision file
     fname_src, ext_src = _parse_ext(vhdr_src)
     fname_dest, ext_dest = _parse_ext(vhdr_dest)
     if ext_src != ext_dest:
-        raise ValueError(f'Need to move data with same extension'
-                         f' but got "{ext_src}", "{ext_dest}"')
+        raise ValueError(f'Need to move data with same extension, '
+                         f' but got "{ext_src}" and "{ext_dest}"')
 
     eeg_file_path, vmrk_file_path = _get_brainvision_paths(vhdr_src)
 
@@ -350,8 +371,9 @@ def copyfile_edf(src, dest, anonymize=None):
                  identification", which supports 4-digit years.
                  If you want to anonymize your file, MNE-BIDS will set the
                  "startdate" field to 85 (i.e., 1985), the earliest possible
-                 date for that field. The "Startdate" field from "local
-                 recording identification" however, will be set correctly
+                 date for that field. However, the "Startdate" field in the
+                 file's "local recording identification" and the date in the
+                 session's corresponding `scans.tsv` will be set correctly
                  according to the argument provided to the ``anonymize``
                  parameter. Note that it is possible that not all EDF/EDF+/BDF
                  reading software parses the accurate recording date, and
@@ -360,9 +382,9 @@ def copyfile_edf(src, dest, anonymize=None):
 
     Parameters
     ----------
-    src : str
-        The src path of the .edf or .bdf file to be copied.
-    dest : str
+    src : str | pathlib.Path
+        The source path of the .edf or .bdf file to be copied.
+    dest : str | pathlib.Path
         The destination path of the .edf or .bdf file.
     anonymize : dict | None
         If None (default), no anonymization is performed.
@@ -391,14 +413,19 @@ def copyfile_edf(src, dest, anonymize=None):
     See Also
     --------
     mne.io.anonymize_info
+    mne_bids.copyfiles.copyfile_brainvision
+    mne_bids.copyfiles.copyfile_bti
+    mne_bids.copyfiles.copyfile_ctf
+    mne_bids.copyfiles.copyfile_eeglab
+    mne_bids.copyfiles.copyfile_kit
 
     """
     # Ensure source & destination extensions are the same
     fname_src, ext_src = _parse_ext(src)
     fname_dest, ext_dest = _parse_ext(dest)
     if ext_src != ext_dest:
-        raise ValueError(f'Need to move data with same extension'
-                         f' but got "{ext_src}", "{ext_dest}"')
+        raise ValueError(f'Need to move data with same extension, '
+                         f' but got "{ext_src}" and "{ext_dest}"')
 
     # Copy data prior to any anonymization
     sh.copyfile(src, dest)
@@ -407,10 +434,12 @@ def copyfile_edf(src, dest, anonymize=None):
     if anonymize is not None:
         if ext_src == '.bdf':
             raw = read_raw_bdf(dest, preload=False, verbose=0)
-        else:
+        elif ext_src == '.edf':
             raw = read_raw_edf(dest, preload=False, verbose=0)
+        else:
+            raise ValueError('Unsupported file type ({0})'.format(ext_src))
 
-        # Get patient info, recording info, and recording date
+        # Get subject info, recording info, and recording date
         with open(dest, 'rb') as f:
             f.seek(8)  # id_info field starts 8 bytes in
             id_info = f.read(80).decode('ascii').rstrip()
@@ -435,8 +464,8 @@ def copyfile_edf(src, dest, anonymize=None):
         # clause can be removed. See:
         # https://github.com/mne-tools/mne-python/issues/8544
         try:
-            real_year = datetime.strptime(startdate, "%d-%b-%Y").year
-            newdate = raw.info['meas_date'].replace(year=real_year)
+            true_year = datetime.strptime(startdate, '%d-%b-%Y').year
+            newdate = raw.info['meas_date'].replace(year=true_year)
             raw.info['meas_date'] = newdate
         except ValueError as e:
             # We could not parse the "Startdate" field from "local recording
@@ -449,8 +478,8 @@ def copyfile_edf(src, dest, anonymize=None):
                 raise e
         daysback, keep_his = _check_anonymize(anonymize, raw, '.edf')
         info = anonymize_info(raw.info, daysback=daysback, keep_his=keep_his)
-        startdate = datetime.strftime(info['meas_date'], "%d-%b-%Y").upper()
-        meas_date = datetime.strftime(info['meas_date'], "%d.%m.85")
+        startdate = datetime.strftime(info['meas_date'], '%d-%b-%Y').upper()
+        meas_date = datetime.strftime(info['meas_date'], '%d.%m.85')
 
         # Anonymize ID info and write to file
         if keep_his:
@@ -477,10 +506,18 @@ def copyfile_eeglab(src, dest):
 
     Parameters
     ----------
-    src : str
+    src : str | pathlib.Path
         Path to the source raw .set file.
-    dest : str
+    dest : str | pathlib.Path
         Path to the destination of the new .set file.
+
+    See Also
+    --------
+    mne_bids.copyfiles.copyfile_brainvision
+    mne_bids.copyfiles.copyfile_bti
+    mne_bids.copyfiles.copyfile_ctf
+    mne_bids.copyfiles.copyfile_edf
+    mne_bids.copyfiles.copyfile_kit
 
     """
     # Get extenstion of the EEGLAB file
@@ -528,8 +565,16 @@ def copyfile_bti(raw, dest):
     ----------
     raw : instance of Raw
         An MNE-Python raw object of BTi data.
-    dest : str
+    dest : str | pathlib.Path
         Destination to copy the BTi data to.
+
+    See Also
+    --------
+    mne_bids.copyfiles.copyfile_brainvision
+    mne_bids.copyfiles.copyfile_ctf
+    mne_bids.copyfiles.copyfile_edf
+    mne_bids.copyfiles.copyfile_eeglab
+    mne_bids.copyfiles.copyfile_kit
 
     """
     pdf_fname = 'c,rfDC'
