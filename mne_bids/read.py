@@ -589,6 +589,8 @@ def get_head_mri_trans(bids_path, extra_params=None):
     _, ext = _parse_ext(bids_fname)
     if extra_params is None:
         extra_params = dict()
+        if ext == '.fif':
+            extra_params = dict(allow_maxshield=True)
 
     raw = read_raw_bids(bids_path=bids_path, extra_params=extra_params)
     meg_coords_dict = _extract_landmarks(raw.info['dig'])
