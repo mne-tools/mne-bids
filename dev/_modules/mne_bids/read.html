@@ -619,7 +619,7 @@
     <span class="k">return</span> <span class="n">raw</span></div>
 
 
-<div class="viewcode-block" id="get_head_mri_trans"><a class="viewcode-back" href="../../generated/mne_bids.get_head_mri_trans.html#mne_bids.get_head_mri_trans">[docs]</a><span class="k">def</span> <span class="nf">get_head_mri_trans</span><span class="p">(</span><span class="n">bids_path</span><span class="p">):</span>
+<div class="viewcode-block" id="get_head_mri_trans"><a class="viewcode-back" href="../../generated/mne_bids.get_head_mri_trans.html#mne_bids.get_head_mri_trans">[docs]</a><span class="k">def</span> <span class="nf">get_head_mri_trans</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">extra_params</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Produce transformation matrix from MEG and MRI landmark points.</span>
 
 <span class="sd">    Will attempt to read the landmarks of Nasion, LPA, and RPA from the sidecar</span>
@@ -633,6 +633,10 @@
 <span class="sd">        The path of the recording for which to retrieve the transformation. The</span>
 <span class="sd">        :class:`mne_bids.BIDSPath` instance passed here **must** have the</span>
 <span class="sd">        ``.root`` attribute set.</span>
+<span class="sd">    extra_params : None | dict</span>
+<span class="sd">        Extra parameters to be passed to MNE read_raw_* functions when reading</span>
+<span class="sd">        the lankmarks from the MEG file.</span>
+<span class="sd">        If a dict, for example: ``extra_params=dict(allow_maxshield=True)``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -699,9 +703,10 @@
 
     <span class="c1"># Get MEG landmarks from the raw file</span>
     <span class="n">_</span><span class="p">,</span> <span class="n">ext</span> <span class="o">=</span> <span class="n">_parse_ext</span><span class="p">(</span><span class="n">bids_fname</span><span class="p">)</span>
-    <span class="n">extra_params</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="k">if</span> <span class="n">ext</span> <span class="o">==</span> <span class="s1">&#39;.fif&#39;</span><span class="p">:</span>
-        <span class="n">extra_params</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">allow_maxshield</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">extra_params</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">extra_params</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">ext</span> <span class="o">==</span> <span class="s1">&#39;.fif&#39;</span><span class="p">:</span>
+            <span class="n">extra_params</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">allow_maxshield</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="n">raw</span> <span class="o">=</span> <span class="n">read_raw_bids</span><span class="p">(</span><span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">extra_params</span><span class="o">=</span><span class="n">extra_params</span><span class="p">)</span>
     <span class="n">meg_coords_dict</span> <span class="o">=</span> <span class="n">_extract_landmarks</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;dig&#39;</span><span class="p">])</span>
@@ -728,7 +733,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-11-20.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-11-23.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.3.1.<br/>
     </p>
   </div>

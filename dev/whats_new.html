@@ -180,6 +180,7 @@
 <h4><a class="toc-backref" href="#id9">API changes</a><a class="headerlink" href="#api-changes" title="Permalink to this headline">¶</a></h4>
 <ul class="simple">
 <li><p>When passing event IDs to <a class="reference internal" href="generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.write_raw_bids()</span></code></a> via <code class="docutils literal notranslate"><span class="pre">events_data</span></code> without an accompanying event description in <code class="docutils literal notranslate"><span class="pre">event_id</span></code>, we will now raise a <em class="xref py py-obj">ValueError</em>. This ensures that accidentally un-described events won’t get written unnoticed, by <a class="reference external" href="https://github.com/hoechenberger">Richard Höchenberger</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/603">#603</a>)</p></li>
+<li><p>The <a class="reference internal" href="generated/mne_bids.get_head_mri_trans.html#mne_bids.get_head_mri_trans" title="mne_bids.get_head_mri_trans"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.get_head_mri_trans()</span></code></a> now has a parameter <code class="docutils literal notranslate"><span class="pre">extra_params</span></code> to allow passing arguments specific to a file format, by <a class="reference external" href="https://perso.telecom-paristech.fr/mjas/">Mainak Jas</a> (<a class="reference external" href="https://github.com/mne-tools/mne-bids/issues/638">#638</a>)</p></li>
 </ul>
 </div>
 <div class="section" id="requirements">
@@ -206,7 +207,7 @@
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-11-20.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-11-23.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.3.1.<br/>
     </p>
   </div>
