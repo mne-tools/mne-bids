@@ -9,11 +9,14 @@ from mne_bids.read import _from_tsv
 # Set Matplotlib interactive backend
 available_backends = matplotlib.rcsetup.interactive_bk
 if 'Qt5Agg' in available_backends:
-    matplotlib.use('Qt5Agg')
-elif 'Qt4Agg' in available_backends:
-    matplotlib.use('Qt4Agg')
+    try:
+        matplotlib.use('Qt5Agg')
+        have_qt_backend = True
+    except ImportError:
+        pass  # Use the default backend
 else:
     pass  # Use the default backend
+del available_backends
 
 
 def inspect(bids_path, verbose=None):
