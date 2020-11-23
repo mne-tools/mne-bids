@@ -11,7 +11,6 @@ available_backends = matplotlib.rcsetup.interactive_bk
 if 'Qt5Agg' in available_backends:
     try:
         matplotlib.use('Qt5Agg')
-        have_qt_backend = True
     except ImportError:
         pass  # Use the default backend
 else:
