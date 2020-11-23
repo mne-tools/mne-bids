@@ -503,7 +503,7 @@ def read_raw_bids(bids_path, extra_params=None, verbose=True):
     return raw
 
 
-def get_head_mri_trans(bids_path):
+def get_head_mri_trans(bids_path, extra_params=None):
     """Produce transformation matrix from MEG and MRI landmark points.
 
     Will attempt to read the landmarks of Nasion, LPA, and RPA from the sidecar
@@ -517,6 +517,10 @@ def get_head_mri_trans(bids_path):
         The path of the recording for which to retrieve the transformation. The
         :class:`mne_bids.BIDSPath` instance passed here **must** have the
         ``.root`` attribute set.
+    extra_params : None | dict
+        Extra parameters to be passed to MNE read_raw_* functions when reading
+        the lankmarks from the MEG file.
+        If a dict, for example: ``extra_params=dict(allow_maxshield=True)``.
 
     Returns
     -------
@@ -583,9 +587,10 @@ def get_head_mri_trans(bids_path):
 
     # Get MEG landmarks from the raw file
     _, ext = _parse_ext(bids_fname)
-    extra_params = None
-    if ext == '.fif':
-        extra_params = dict(allow_maxshield=True)
+    if extra_params is None:
+        extra_params = dict()
+        if ext == '.fif':
+            extra_params = dict(allow_maxshield=True)
 
     raw = read_raw_bids(bids_path=bids_path, extra_params=extra_params)
     meg_coords_dict = _extract_landmarks(raw.info['dig'])
