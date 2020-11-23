@@ -1,12 +1,10 @@
 from pathlib import Path
-import matplotlib.pyplot as plt
-from matplotlib.widgets import Button
 
 from mne_bids import read_raw_bids, mark_bad_channels
 from mne_bids.read import _from_tsv
 
 
-def inspect(bids_path, verbose=None):
+def inspect_bids(bids_path, block=True, verbose=None):
     """Inspect and annotate BIDS raw data.
 
     This function allows you to browse MEG and EEG raw data stored in a BIDS
@@ -26,21 +24,25 @@ def inspect(bids_path, verbose=None):
         A :class:`mne_bids.BIDSPath` containing enough information to uniquely
         identify the raw data file. If this ``BIDSPath`` is accepted by
         :func:`mne_bids.read_raw_bids`, it will work here.
+    block : bool
+        Whether to halt further code execution until the inspection window has
+        been closed.
     verbose : bool | None
         If a boolean, whether or not to produce verbose output. If ``None``,
         use the default log level.
     """
-    _inspect_raw(bids_path=bids_path, verbose=verbose)
+
+    _inspect_raw(bids_path=bids_path, block=block, verbose=verbose)
 
 
-def _inspect_raw(*, bids_path, verbose=None):
+def _inspect_raw(*, bids_path, block, verbose=None):
     """Raw data inspection."""
     raw = read_raw_bids(bids_path, extra_params=dict(allow_maxshield=True),
                         verbose='error')
     orig_bads = raw.info['bads'].copy()
 
     raw.plot(title=f'{bids_path.root.name}: {bids_path.basename}',
-             show_options=True, block=True)
+             show_options=True, block=block)
     updated_bads = raw.info['bads']
 
     if set(orig_bads) == set(updated_bads):
@@ -48,11 +50,17 @@ def _inspect_raw(*, bids_path, verbose=None):
         return
 
     _save_bads_dialog_box(bads=updated_bads, bids_path=bids_path,
-                          verbose=verbose)
+                          block=block, verbose=verbose)
 
 
-def _save_bads_dialog_box(*, bads, bids_path, verbose):
+def _save_bads_dialog_box(*, bads, bids_path, block, verbose):
     """Display a dialog box asking whether to save the changes."""
+
+    # Delay the imports
+    import matplotlib.pyplot as plt
+    from matplotlib.widgets import Button
+    from mne.viz.utils import figure_nobar
+
     title = 'Save changes?'
     message = (f'You have modified the bad channel selection of\n'
                f'{bids_path.basename}.\n\nWould you like to save these '
@@ -60,8 +68,7 @@ def _save_bads_dialog_box(*, bads, bids_path, verbose):
     icon_fname = Path(__file__).parent / 'assets' / 'help-128px.png'
     icon = plt.imread(icon_fname)
 
-    fig = plt.figure(figsize=(7.5, 2))
-    fig.canvas.toolbar.setVisible(False)  # This only works with QtAgg.
+    fig = figure_nobar(figsize=(7.5, 2))
     fig.canvas.set_window_title('MNE-BIDS Inspector')
     fig.suptitle(title, y=0.95, fontsize='xx-large', fontweight='bold')
 
@@ -97,7 +104,7 @@ def _save_bads_dialog_box(*, bads, bids_path, verbose):
 
     save_button.on_clicked(_save_callback)
     dont_save_button.on_clicked(_dont_save_callback)
-    plt.show(block=True)
+    plt.show(block=block)
 
 
 def _save_bads(*, bads, bids_path, verbose):
