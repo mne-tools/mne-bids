@@ -92,7 +92,7 @@ jobs:
     - name: Run pytest (macOS)
       if: startsWith(matrix.os, 'macos')
       env:
-        - DISPLAY: ":99"
+        DISPLAY: ":99"
       run: |
         export BIDS_VALIDATOR_VERSION=`bids-validator --version`
         echo Using bids-validator $BIDS_VALIDATOR_VERSION
