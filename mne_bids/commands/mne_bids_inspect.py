@@ -2,7 +2,7 @@ r"""Inspect MEG and EEG raw data, and interactively mark channels as bad.
 
 example usage:
 $ mne_bids inspect --subject_id=01 --task=experiment --session=test \
-                   --datatype=meg --suffix=meg --bids_root=bids_root
+--datatype=meg --suffix=meg --bids_root=bids_root
 
 """
 # Authors: Richard Höchenberger <richard.hoechenberger@gmail.com>
