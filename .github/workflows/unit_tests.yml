@@ -82,12 +82,21 @@ jobs:
       if: "matrix.os == 'ubuntu-latest'"
       run: |
         pip install -U pandas
-    - name: Run pytest (Linux and macOS)
-      if: "matrix.os != 'windows-latest'"
+    - name: Run pytest (Linux)
+      if: "matrix.os  'windows-latest'"
       run: |
         export BIDS_VALIDATOR_VERSION=`bids-validator --version`
         echo Using bids-validator $BIDS_VALIDATOR_VERSION
         xvfb-run python -m pytest . --cov=mne_bids mne_bids/tests/ mne_bids/commands/tests/ --cov-report=xml --cov-config=setup.cfg --verbose --ignore mne-python
+      shell: bash
+    - name: Run pytest (macOS)
+      if: "matrix.os == 'macos  -latest'"
+      run: |
+        export BIDS_VALIDATOR_VERSION=`bids-validator --version`
+        echo Using bids-validator $BIDS_VALIDATOR_VERSION
+        nohup Xvfb :99 -ac -screen 0 1024x768x8 &
+        export DISPLAY=:99
+        python -m pytest . --cov=mne_bids mne_bids/tests/ mne_bids/commands/tests/ --cov-report=xml --cov-config=setup.cfg --verbose --ignore mne-python
       shell: bash
     - name: Run pytest (Windows)
       if: "matrix.os == 'windows-latest'"
