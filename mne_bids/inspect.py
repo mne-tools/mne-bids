@@ -1,21 +1,9 @@
 from pathlib import Path
-import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib.widgets import Button
 
 from mne_bids import read_raw_bids, mark_bad_channels
 from mne_bids.read import _from_tsv
-
-# Set Matplotlib interactive backend
-available_backends = matplotlib.rcsetup.interactive_bk
-if 'Qt5Agg' in available_backends:
-    try:
-        matplotlib.use('Qt5Agg')
-    except ImportError:
-        pass  # Use the default backend
-else:
-    pass  # Use the default backend
-del available_backends
 
 
 def inspect(bids_path, verbose=None):

@@ -10,4 +10,3 @@ check-manifest
 pydocstyle
 flake8
 matplotlib
-PyQt5
