@@ -1,7 +1,7 @@
-"""Inspect MEG and EEG raw data, and interactively mark channels as bad.
+r"""Inspect MEG and EEG raw data, and interactively mark channels as bad.
 
 example usage:
-$ mne_bids inspect --subject_id=01 --task=experiment --session=test \\
+$ mne_bids inspect --subject_id=01 --task=experiment --session=test \
                    --datatype=meg --suffix=meg --bids_root=bids_root
 
 """
@@ -12,7 +12,6 @@ $ mne_bids inspect --subject_id=01 --task=experiment --session=test \\
 from mne.utils import logger
 
 import mne_bids
-from mne_bids.config import reader
 from mne_bids import BIDSPath, inspect
 
 
