@@ -45,7 +45,8 @@ def _inspect_raw(*, bids_path, block, verbose=None):
     raw = read_raw_bids(bids_path, extra_params=dict(allow_maxshield=True),
                         verbose='error')
     fig = raw.plot(title=f'{bids_path.root.name}: {bids_path.basename}',
-                   show_options=True, block=False, show=False)
+                   show_options=True, block=False, show=False,
+                   verbose='warning')
 
     def _handle_close(e):
         mne_raw_fig = e.canvas.figure
@@ -110,8 +111,9 @@ def _save_bads_dialog_box(*, bads, bids_path, verbose):
                 multialignment='left')
     ax_msg.axis('off')
 
-    ax_save = plt.axes([0.6, 0.05, 0.3, 0.1])
-    ax_dont_save = plt.axes([0.1, 0.05, 0.3, 0.1])
+    # Buttons.
+    ax_save = fig.add_axes([0.6, 0.05, 0.3, 0.1])
+    ax_dont_save = fig.add_axes([0.1, 0.05, 0.3, 0.1])
 
     save_button = Button(ax=ax_save, label='Save')
     save_button.label.set_fontsize('medium')
@@ -121,6 +123,7 @@ def _save_bads_dialog_box(*, bads, bids_path, verbose):
     dont_save_button.label.set_fontsize('medium')
     dont_save_button.label.set_fontweight('bold')
 
+    # Define callback functions.
     def _save_callback(event):
         plt.close(event.canvas.figure)  # Close dialog
         _save_bads(bads=bads, bids_path=bids_path, verbose=verbose)
@@ -128,9 +131,15 @@ def _save_bads_dialog_box(*, bads, bids_path, verbose):
     def _dont_save_callback(event):
         plt.close(event.canvas.figure)  # Close dialog
 
+    def _keypress_callback(event):
+        if event.key == 'escape':
+            _dont_save_callback(event)
+
+    # Connect events to callback functions.
     save_button.on_clicked(_save_callback)
     dont_save_button.on_clicked(_dont_save_callback)
     fig.canvas.mpl_connect('close_event', _dont_save_callback)
+    fig.canvas.mpl_connect('key_press_event', _keypress_callback)
 
     fig.show()
     # XXX The following line activates the buttons at least in the Qt5Agg
