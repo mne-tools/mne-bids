@@ -48,11 +48,11 @@ def _inspect_raw(*, bids_path, block, verbose=None):
                    show_options=True, block=False, show=False,
                    verbose='warning')
 
-    def _handle_close(e):
-        mne_raw_fig = e.canvas.figure
+    def _handle_close(event):
+        mne_raw_fig = event.canvas.figure
         old_bads = mne_raw_fig.mne.inst.info['bads'].copy()
         new_bads = mne_raw_fig.mne.info['bads'].copy()
-        mne_raw_fig._close(e)
+        mne_raw_fig._close(event)
 
         _save_bads_if_changed(old_bads=old_bads,
                               new_bads=new_bads,
@@ -61,8 +61,7 @@ def _inspect_raw(*, bids_path, block, verbose=None):
 
     # Deactivate Raw Browser's default "close event" handler – we will take
     # care of running the _close() method in our own event handler.
-    fig.canvas.mpl_disconnect(list(fig.
-                                   canvas.
+    fig.canvas.mpl_disconnect(list(fig.canvas.
                                    callbacks.
                                    callbacks['close_event']
                                    .keys())[0])
@@ -100,16 +99,18 @@ def _save_bads_dialog_box(*, bads, bids_path, verbose):
     fig.suptitle(title, y=0.95, fontsize='xx-large', fontweight='bold')
 
     gs = fig.add_gridspec(1, 2, width_ratios=(1.5, 5))
-    ax_icon = fig.add_subplot(gs[0, 0])
+
+    # The dialog box tet.
     ax_msg = fig.add_subplot(gs[0, 1])
-
-    ax_icon.imshow(icon)
-    ax_icon.axis('off')
-
     ax_msg.text(x=0, y=0.8, s=message, fontsize='large',
                 verticalalignment='top', horizontalalignment='left',
                 multialignment='left')
     ax_msg.axis('off')
+
+    # The help icon.
+    ax_icon = fig.add_subplot(gs[0, 0])
+    ax_icon.imshow(icon)
+    ax_icon.axis('off')
 
     # Buttons.
     ax_save = fig.add_axes([0.6, 0.05, 0.3, 0.1])
@@ -141,14 +142,12 @@ def _save_bads_dialog_box(*, bads, bids_path, verbose):
     fig.canvas.mpl_connect('close_event', _dont_save_callback)
     fig.canvas.mpl_connect('key_press_event', _keypress_callback)
 
+    # plt.show(block=True)
     fig.show()
-    # XXX The following line activates the buttons at least in the Qt5Agg
-    # XXX backend. Doesn't work with macosx backend.
-    # fig.canvas.start_event_loop(timeout=0)
 
 
 def _save_bads(*, bads, bids_path, verbose):
-    """Update the set of channels marked as bad in the sidecar."""
+    """Update the set of channels marked as bad."""
     channels_tsv_fname = bids_path.copy().update(suffix='channels',
                                                  extension='.tsv')
     channels_tsv_data = _from_tsv(channels_tsv_fname)
