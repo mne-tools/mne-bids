@@ -6,20 +6,20 @@ import pytest
 import mne
 from mne.datasets import testing
 
-from mne_bids import BIDSPath, write_raw_bids, inspect_bids
+from mne_bids import BIDSPath, read_raw_bids, write_raw_bids, inspect_bids
 
-from test_read import _read_raw_fif, warning_str
+from test_read import warning_str
 
 
 subject_id = '01'
 session_id = '01'
 run = '01'
-acq = None
 task = 'testing'
+datatype = 'meg'
 
 _bids_path = BIDSPath(
-    subject=subject_id, session=session_id, run=run, acquisition=acq,
-    task=task)
+    subject=subject_id, session=session_id, run=run, task=task,
+    datatype=datatype)
 
 
 @pytest.fixture(scope='session')
@@ -52,4 +52,7 @@ def return_bids_test_dir(tmpdir_factory):
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_inspect(return_bids_test_dir):
     bids_path = _bids_path.copy().update(root=return_bids_test_dir)
-    inspect_bids(bids_path, block=False)
+    raw = read_raw_bids(bids_path=bids_path, verbose='error')
+    old_bads = raw.info['bads'].copy()
+    fig = inspect_bids(bids_path, block=True)
+    # XXX actual test still missing

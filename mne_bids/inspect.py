@@ -32,31 +32,57 @@ def inspect_bids(bids_path, block=True, verbose=None):
         use the default log level.
     """
 
-    _inspect_raw(bids_path=bids_path, block=block, verbose=verbose)
+    fig = _inspect_raw(bids_path=bids_path, block=block, verbose=verbose)
+    return fig
 
 
 def _inspect_raw(*, bids_path, block, verbose=None):
     """Raw data inspection."""
+
+    # Delay the import
+    import matplotlib.pyplot as plt
+
     raw = read_raw_bids(bids_path, extra_params=dict(allow_maxshield=True),
                         verbose='error')
-    orig_bads = raw.info['bads'].copy()
+    fig = raw.plot(title=f'{bids_path.root.name}: {bids_path.basename}',
+                   show_options=True, block=False, show=False)
 
-    raw.plot(title=f'{bids_path.root.name}: {bids_path.basename}',
-             show_options=True, block=block)
-    updated_bads = raw.info['bads']
+    def _handle_close(e):
+        mne_raw_fig = e.canvas.figure
+        old_bads = mne_raw_fig.mne.inst.info['bads'].copy()
+        new_bads = mne_raw_fig.mne.info['bads'].copy()
+        mne_raw_fig._close(e)
 
-    if set(orig_bads) == set(updated_bads):
+        _save_bads_if_changed(old_bads=old_bads,
+                              new_bads=new_bads,
+                              bids_path=bids_path,
+                              verbose=verbose)
+
+    # Deactivate Raw Browser's default "close event" handler – we will take
+    # care of running the _close() method in our own event handler.
+    fig.canvas.mpl_disconnect(list(fig.
+                                   canvas.
+                                   callbacks.
+                                   callbacks['close_event']
+                                   .keys())[0])
+    fig.canvas.mpl_connect('close_event', _handle_close)
+
+    plt.show(block=block)
+    return fig
+
+
+def _save_bads_if_changed(*, old_bads, new_bads, bids_path, verbose):
+    if set(old_bads) == set(new_bads):
         # Nothing has changed, so we can just exit.
         return
 
-    _save_bads_dialog_box(bads=updated_bads, bids_path=bids_path,
-                          block=block, verbose=verbose)
+    _save_bads_dialog_box(bads=new_bads, bids_path=bids_path, verbose=verbose)
 
 
-def _save_bads_dialog_box(*, bads, bids_path, block, verbose):
+def _save_bads_dialog_box(*, bads, bids_path, verbose):
     """Display a dialog box asking whether to save the changes."""
 
-    # Delay the imports
+    # # Delay the imports
     import matplotlib.pyplot as plt
     from matplotlib.widgets import Button
     from mne.viz.utils import figure_nobar
@@ -96,15 +122,20 @@ def _save_bads_dialog_box(*, bads, bids_path, block, verbose):
     dont_save_button.label.set_fontweight('bold')
 
     def _save_callback(event):
-        plt.close(fig)
+        plt.close(event.canvas.figure)  # Close dialog
         _save_bads(bads=bads, bids_path=bids_path, verbose=verbose)
 
     def _dont_save_callback(event):
-        plt.close(fig)
+        plt.close(event.canvas.figure)  # Close dialog
 
     save_button.on_clicked(_save_callback)
     dont_save_button.on_clicked(_dont_save_callback)
-    plt.show(block=block)
+    fig.canvas.mpl_connect('close_event', _dont_save_callback)
+
+    fig.show()
+    # XXX The following line activates the buttons at least in the Qt5Agg
+    # XXX backend. Doesn't work with macosx backend.
+    # fig.canvas.start_event_loop(timeout=0)
 
 
 def _save_bads(*, bads, bids_path, verbose):
