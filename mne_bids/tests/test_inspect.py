@@ -2,6 +2,7 @@
 
 import os.path as op
 import pytest
+import matplotlib
 
 import mne
 from mne.datasets import testing
@@ -9,6 +10,8 @@ from mne.datasets import testing
 from mne_bids import BIDSPath, read_raw_bids, write_raw_bids, inspect_bids
 
 from test_read import warning_str
+
+matplotlib.use('Agg')
 
 
 subject_id = '01'
