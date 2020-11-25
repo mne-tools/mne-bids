@@ -264,6 +264,7 @@ def test_count_events(tmpdir):
 
 
 @requires_pandas
+@requires_matplotlib
 def test_inspect(tmpdir):
     """Test mne_bids inspect."""
 
