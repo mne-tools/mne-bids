@@ -17,7 +17,7 @@ from test_read import warning_str
 requires_matplotlib = partial(requires_module, name='matplotlib',
                               call='import matplotlib')
 
-_bids_path = BIDSPath(subject='01', session='01', run='01', task='testing', 
+_bids_path = BIDSPath(subject='01', session='01', run='01', task='testing',
                       datatype='meg')
 
 
