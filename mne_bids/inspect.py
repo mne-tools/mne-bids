@@ -124,6 +124,10 @@ def _save_bads_dialog_box(*, bads, bids_path, verbose):
     dont_save_button.label.set_fontsize('medium')
     dont_save_button.label.set_fontweight('bold')
 
+    # Store references to keep buttons alive.
+    fig.save_button = save_button
+    fig.dont_save_button = dont_save_button
+
     # Define callback functions.
     def _save_callback(event):
         plt.close(event.canvas.figure)  # Close dialog
@@ -142,7 +146,6 @@ def _save_bads_dialog_box(*, bads, bids_path, verbose):
     fig.canvas.mpl_connect('close_event', _dont_save_callback)
     fig.canvas.mpl_connect('key_press_event', _keypress_callback)
 
-    # plt.show(block=True)
     fig.show()
 
 
