@@ -36,53 +36,64 @@ def inspect_bids(bids_path, block=True, verbose=None):
     return fig
 
 
+# XXX This is here for unit tests of the inspector. Should probably be
+# XXX refactored into a class attribute someday.
+_global_vars = dict(dialog_fig=None)
+
+
 def _inspect_raw(*, bids_path, block, verbose=None):
     """Raw data inspection."""
 
     # Delay the import
+    import matplotlib
     import matplotlib.pyplot as plt
 
     raw = read_raw_bids(bids_path, extra_params=dict(allow_maxshield=True),
                         verbose='error')
+    old_bads = raw.info['bads'].copy()
+
     fig = raw.plot(title=f'{bids_path.root.name}: {bids_path.basename}',
                    show_options=True, block=False, show=False,
                    verbose='warning')
 
+    # Add our own event handlers so that when the MNE Raw Browser is being
+    # closed, our dialog box will pop up, asking whether to save changes.
     def _handle_close(event):
         mne_raw_fig = event.canvas.figure
-        old_bads = mne_raw_fig.mne.inst.info['bads'].copy()
         new_bads = mne_raw_fig.mne.info['bads'].copy()
-        mne_raw_fig._close(event)
 
-        _save_bads_if_changed(old_bads=old_bads,
-                              new_bads=new_bads,
-                              bids_path=bids_path,
-                              verbose=verbose)
+        _global_vars['dialog_fig'] = _save_bads_if_changed(
+            old_bads=old_bads,
+            new_bads=new_bads,
+            bids_path=bids_path,
+            verbose=verbose)
 
-    # Deactivate Raw Browser's default "close event" handler – we will take
-    # care of running the _close() method in our own event handler.
-    fig.canvas.mpl_disconnect(list(fig.canvas.
-                                   callbacks.
-                                   callbacks['close_event']
-                                   .keys())[0])
+    def _keypress_callback(event):
+        if event.key == 'escape':
+            _handle_close(event)
+
     fig.canvas.mpl_connect('close_event', _handle_close)
+    fig.canvas.mpl_connect('key_press_event', _keypress_callback)
 
-    plt.show(block=block)
+    if matplotlib.get_backend() != 'agg':
+        plt.show(block=block)
     return fig
 
 
 def _save_bads_if_changed(*, old_bads, new_bads, bids_path, verbose):
     if set(old_bads) == set(new_bads):
         # Nothing has changed, so we can just exit.
-        return
+        return None
 
-    _save_bads_dialog_box(bads=new_bads, bids_path=bids_path, verbose=verbose)
+    return _save_bads_dialog_box(bads=new_bads, bids_path=bids_path,
+                                 verbose=verbose)
 
 
 def _save_bads_dialog_box(*, bads, bids_path, verbose):
     """Display a dialog box asking whether to save the changes."""
 
     # # Delay the imports
+    import matplotlib
     import matplotlib.pyplot as plt
     from matplotlib.widgets import Button
     from mne.viz.utils import figure_nobar
@@ -137,7 +148,9 @@ def _save_bads_dialog_box(*, bads, bids_path, verbose):
         plt.close(event.canvas.figure)  # Close dialog
 
     def _keypress_callback(event):
-        if event.key == 'escape':
+        if event.key == 'return':
+            _save_callback(event)
+        elif event.key == 'escape':
             _dont_save_callback(event)
 
     # Connect events to callback functions.
@@ -146,7 +159,9 @@ def _save_bads_dialog_box(*, bads, bids_path, verbose):
     fig.canvas.mpl_connect('close_event', _dont_save_callback)
     fig.canvas.mpl_connect('key_press_event', _keypress_callback)
 
-    fig.show()
+    if matplotlib.get_backend() != 'agg':
+        fig.show()
+    return fig
 
 
 def _save_bads(*, bads, bids_path, verbose):

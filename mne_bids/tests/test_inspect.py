@@ -6,8 +6,10 @@ import matplotlib
 
 import mne
 from mne.datasets import testing
+from mne.utils._testing import _click_ch_name
 
 from mne_bids import BIDSPath, read_raw_bids, write_raw_bids, inspect_bids
+import mne_bids.inspect
 
 from test_read import warning_str
 
@@ -52,10 +54,34 @@ def return_bids_test_dir(tmpdir_factory):
     return bids_root
 
 
+@pytest.mark.parametrize('save_changes', (True, False))
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
-def test_inspect(return_bids_test_dir):
+def test_inspect(return_bids_test_dir, save_changes):
     bids_path = _bids_path.copy().update(root=return_bids_test_dir)
     raw = read_raw_bids(bids_path=bids_path, verbose='error')
     old_bads = raw.info['bads'].copy()
-    fig = inspect_bids(bids_path, block=True)
-    # XXX actual test still missing
+
+    fig = inspect_bids(bids_path, block=False)
+
+    # Mark some channels as bad by clicking on their name.
+    _click_ch_name(fig, ch_index=0, button=1)
+    _click_ch_name(fig, ch_index=1, button=1)
+    _click_ch_name(fig, ch_index=4, button=1)
+
+    # Closing the window should open a dialog box.
+    fig.canvas.key_press_event(fig.mne.close_key)
+    fig_dialog = mne_bids.inspect._global_vars['dialog_fig']
+
+    if save_changes:
+        key = 'return'
+    else:
+        key = 'escape'
+    fig_dialog.canvas.key_press_event(key)
+
+    raw = read_raw_bids(bids_path=bids_path, verbose='error')
+    new_bads = raw.info['bads'].copy()
+
+    if save_changes:
+        assert len(new_bads) > len(old_bads)
+    else:
+        assert old_bads == new_bads
