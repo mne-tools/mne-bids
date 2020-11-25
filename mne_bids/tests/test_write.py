@@ -1563,6 +1563,17 @@ def test_write_anat(_bids_validate):
         write_anat(t1w_mgh, bids_path=bids_path, deface=True,
                    landmarks=fail_landmarks, verbose=True, overwrite=True)
 
+    # Get the FLASH MRI data file
+    flash_mgh = \
+        op.join(data_path, 'subjects', 'sample', 'mri', 'flash', 'mef05.mgz')
+
+    bids_path = BIDSPath(subject=subject_id, session=session_id,
+                         suffix='FLASH', root=bids_root)
+    write_anat(flash_mgh, bids_path=bids_path,
+               raw=raw, overwrite=True)
+    assert op.exists(op.join(anat_dir, 'sub-01_ses-01_FLASH.nii.gz'))
+    _bids_validate(bids_root)
+
 
 def test_write_raw_pathlike():
     data_path = testing.data_path()

@@ -99,11 +99,12 @@ print(trans)
 # retrieve our transformation matrix :code:`trans`.
 
 # First create the BIDSPath object.
-t1w_bids_path = BIDSPath(subject=sub, session=ses, root=output_path)
+t1w_bids_path = \
+    BIDSPath(subject=sub, session=ses, root=output_path, suffix='T1w')
 
 # We use the write_anat function
 t1w_bids_path = write_anat(
-    t1w=t1_mgh_fname,  # path to the MRI scan
+    image=t1_mgh_fname,  # path to the MRI scan
     bids_path=t1w_bids_path,
     raw=raw,  # the raw MEG data file connected to the MRI
     trans=trans,  # our transformation matrix
@@ -156,9 +157,25 @@ for point_idx, label in enumerate(('LPA', 'NAS', 'RPA')):
 plt.show()
 
 ###############################################################################
+# We can write another types of MRI data such as FLASH images for BEM models
+
+flash_mgh_fname = \
+    op.join(data_path, 'subjects', 'sample', 'mri', 'flash', 'mef05.mgz')
+
+flash_bids_path = \
+    BIDSPath(subject=sub, session=ses, root=output_path, suffix='FLASH')
+
+write_anat(
+    image=flash_mgh_fname,  # path to the MRI scan
+    bids_path=flash_bids_path,
+    raw=raw,  # the raw MEG data file connected to the MRI
+    verbose=True  # this will print out the sidecar file
+)
+
+###############################################################################
 # We can deface the MRI for anonymization by passing ``deface=True``.
 t1w_bids_path = write_anat(
-    t1w=t1_mgh_fname,  # path to the MRI scan
+    image=t1_mgh_fname,  # path to the MRI scan
     bids_path=bids_path,
     raw=raw,  # the raw MEG data file connected to the MRI
     trans=trans,  # our transformation matrix
