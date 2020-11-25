@@ -6,6 +6,7 @@ import matplotlib
 
 import mne
 from mne.datasets import testing
+from mne.utils import requires_version
 from mne.utils._testing import _click_ch_name
 
 from mne_bids import BIDSPath, read_raw_bids, write_raw_bids, inspect_bids
@@ -54,6 +55,7 @@ def return_bids_test_dir(tmpdir_factory):
     return bids_root
 
 
+@requires_version('mne', '0.22')
 @pytest.mark.parametrize('save_changes', (True, False))
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_inspect(return_bids_test_dir, save_changes):
