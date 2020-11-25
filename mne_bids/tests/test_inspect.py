@@ -7,7 +7,7 @@ from functools import partial
 import mne
 from mne.datasets import testing
 from mne.utils import requires_version
-from mne.utils._testing import _click_ch_name, requires_module
+from mne.utils._testing import requires_module
 
 from mne_bids import BIDSPath, read_raw_bids, write_raw_bids, inspect_bids
 import mne_bids.inspect
@@ -53,6 +53,7 @@ def return_bids_test_dir(tmpdir_factory):
 @pytest.mark.parametrize('save_changes', (True, False))
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_inspect(return_bids_test_dir, save_changes):
+    from mne.utils._testing import _click_ch_name
     import matplotlib
     matplotlib.use('Agg')
 
