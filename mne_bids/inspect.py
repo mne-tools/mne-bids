@@ -36,9 +36,9 @@ def inspect_bids(bids_path, block=True, verbose=None):
     return fig
 
 
-# XXX This is here for unit tests of the inspector. Should probably be
-# XXX refactored into a class attribute someday.
-_global_vars = dict(dialog_fig=None)
+# XXX This this should probably be refactored into a class attribute someday.
+_global_vars = dict(dialog_fig=None,
+                    mne_close_key=None)
 
 
 def _inspect_raw(*, bids_path, block, verbose=None):
@@ -55,6 +55,7 @@ def _inspect_raw(*, bids_path, block, verbose=None):
     fig = raw.plot(title=f'{bids_path.root.name}: {bids_path.basename}',
                    show_options=True, block=False, show=False,
                    verbose='warning')
+    _global_vars['mne_close_key'] = fig.mne.close_key
 
     # Add our own event handlers so that when the MNE Raw Browser is being
     # closed, our dialog box will pop up, asking whether to save changes.
@@ -69,7 +70,7 @@ def _inspect_raw(*, bids_path, block, verbose=None):
             verbose=verbose)
 
     def _keypress_callback(event):
-        if event.key == 'escape':
+        if event.key == _global_vars['mne_close_key']:
             _handle_close(event)
 
     fig.canvas.mpl_connect('close_event', _handle_close)
@@ -150,7 +151,7 @@ def _save_bads_dialog_box(*, bads, bids_path, verbose):
     def _keypress_callback(event):
         if event.key == 'return':
             _save_callback(event)
-        elif event.key == 'escape':
+        elif event.key == _global_vars['mne_close_key']:
             _dont_save_callback(event)
 
     # Connect events to callback functions.
