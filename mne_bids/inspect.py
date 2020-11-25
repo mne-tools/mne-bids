@@ -4,7 +4,7 @@ from mne_bids import read_raw_bids, mark_bad_channels
 from mne_bids.read import _from_tsv
 
 
-def inspect_bids(bids_path, block=True, verbose=None):
+def inspect_dataset(bids_path, block=True, verbose=None):
     """Inspect and annotate BIDS raw data.
 
     This function allows you to browse MEG and EEG raw data stored in a BIDS

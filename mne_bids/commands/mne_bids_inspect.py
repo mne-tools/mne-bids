@@ -12,7 +12,7 @@ $ mne_bids inspect --subject_id=01 --task=experiment --session=test \
 from mne.utils import logger
 
 import mne_bids
-from mne_bids import BIDSPath, inspect
+from mne_bids import BIDSPath, inspect_dataset
 
 
 def run():
@@ -75,7 +75,7 @@ def run():
                          root=opt.bids_root)
 
     logger.info(f'Inspecting {bids_path.basename} …')
-    inspect(bids_path=bids_path, verbose=opt.verbose)
+    inspect_dataset(bids_path=bids_path, verbose=opt.verbose)
 
 
 if __name__ == '__main__':  # pragma: no cover

@@ -9,7 +9,7 @@ from mne.datasets import testing
 from mne.utils import requires_version
 from mne.utils._testing import requires_module
 
-from mne_bids import BIDSPath, read_raw_bids, write_raw_bids, inspect_bids
+from mne_bids import BIDSPath, read_raw_bids, write_raw_bids, inspect_dataset
 import mne_bids.inspect
 
 from test_read import warning_str
@@ -61,7 +61,7 @@ def test_inspect(return_bids_test_dir, save_changes):
     raw = read_raw_bids(bids_path=bids_path, verbose='error')
     old_bads = raw.info['bads'].copy()
 
-    fig = inspect_bids(bids_path, block=False)
+    fig = inspect_dataset(bids_path, block=False)
 
     # Mark some channels as bad by clicking on their name.
     _click_ch_name(fig, ch_index=0, button=1)
