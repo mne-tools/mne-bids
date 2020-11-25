@@ -31,7 +31,6 @@ def inspect_bids(bids_path, block=True, verbose=None):
         If a boolean, whether or not to produce verbose output. If ``None``,
         use the default log level.
     """
-
     fig = _inspect_raw(bids_path=bids_path, block=block, verbose=verbose)
     return fig
 
@@ -43,7 +42,6 @@ _global_vars = dict(dialog_fig=None,
 
 def _inspect_raw(*, bids_path, block, verbose=None):
     """Raw data inspection."""
-
     # Delay the import
     import matplotlib
     import matplotlib.pyplot as plt
@@ -92,8 +90,7 @@ def _save_bads_if_changed(*, old_bads, new_bads, bids_path, verbose):
 
 def _save_bads_dialog_box(*, bads, bids_path, verbose):
     """Display a dialog box asking whether to save the changes."""
-
-    # # Delay the imports
+    # Delay the imports
     import matplotlib
     import matplotlib.pyplot as plt
     from matplotlib.widgets import Button
