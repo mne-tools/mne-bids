@@ -1264,7 +1264,7 @@ def write_anat(image, bids_path, raw=None, trans=None, landmarks=None,
         The file to write. The `mne_bids.BIDSPath` instance passed here
         **must** have the ``root`` and ``subject`` attributes set.
         The suffix is assumed to be 'T1w' is not present. It can
-        also be FLASH for example.
+        also be `'FLASH'` for example.
     raw : instance of Raw | None
         The raw data of `subject` corresponding to `t1w`. If `raw` is None,
         `trans` has to be None as well

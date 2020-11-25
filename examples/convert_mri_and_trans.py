@@ -166,10 +166,10 @@ flash_bids_path = \
     BIDSPath(subject=sub, session=ses, root=output_path, suffix='FLASH')
 
 write_anat(
-    image=flash_mgh_fname,  # path to the MRI scan
+    image=flash_mgh_fname,
     bids_path=flash_bids_path,
-    raw=raw,  # the raw MEG data file connected to the MRI
-    verbose=True  # this will print out the sidecar file
+    raw=raw,
+    verbose=True
 )
 
 ###############################################################################
