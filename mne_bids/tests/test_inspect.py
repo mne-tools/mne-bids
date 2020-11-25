@@ -2,30 +2,23 @@
 
 import os.path as op
 import pytest
-import matplotlib
+from functools import partial
 
 import mne
 from mne.datasets import testing
 from mne.utils import requires_version
-from mne.utils._testing import _click_ch_name
+from mne.utils._testing import _click_ch_name, requires_module
 
 from mne_bids import BIDSPath, read_raw_bids, write_raw_bids, inspect_bids
 import mne_bids.inspect
 
 from test_read import warning_str
 
-matplotlib.use('Agg')
+requires_matplotlib = partial(requires_module, name='matplotlib',
+                              call='import matplotlib')
 
-
-subject_id = '01'
-session_id = '01'
-run = '01'
-task = 'testing'
-datatype = 'meg'
-
-_bids_path = BIDSPath(
-    subject=subject_id, session=session_id, run=run, task=task,
-    datatype=datatype)
+_bids_path = BIDSPath(subject='01', session='01', run='01', task='testing', 
+                      datatype='meg')
 
 
 @pytest.fixture(scope='session')
@@ -55,10 +48,14 @@ def return_bids_test_dir(tmpdir_factory):
     return bids_root
 
 
+@requires_matplotlib
 @requires_version('mne', '0.22')
 @pytest.mark.parametrize('save_changes', (True, False))
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
 def test_inspect(return_bids_test_dir, save_changes):
+    import matplotlib
+    matplotlib.use('Agg')
+
     bids_path = _bids_path.copy().update(root=return_bids_test_dir)
     raw = read_raw_bids(bids_path=bids_path, verbose='error')
     old_bads = raw.info['bads'].copy()
