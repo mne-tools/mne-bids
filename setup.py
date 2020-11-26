@@ -47,7 +47,8 @@ if __name__ == "__main__":
               'full': [
                   'nibabel >=2.2',
                   'pybv >=0.4',
-                  'matplotlib'
+                  'matplotlib',
+                  'pandas >=0.23.4'
               ]
           },
           classifiers=[

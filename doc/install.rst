@@ -15,7 +15,7 @@ Dependencies
 * ``scipy`` (>=0.18.1)
 * ``nibabel`` (>=2.2, optional, for processing MRI data)
 * ``pybv`` (>=0.4, optional, for writing BrainVision data)
-* ``pandas`` (>=0.23.4, optional)
+* ``pandas`` (>=0.23.4, optional, for generating event statistics)
 * ``matplotlib`` (optional, for using the interactive data inspector)
 
 
