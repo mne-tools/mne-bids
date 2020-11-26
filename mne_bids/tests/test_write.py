@@ -1376,7 +1376,7 @@ def test_write_anat(_bids_validate):
                    overwrite=False)
 
     # pass some invalid type as T1 MRI
-    with pytest.raises(ValueError, match='must be a path to a T1 weighted'):
+    with pytest.raises(ValueError, match='must be a path to an MRI'):
         write_anat(9999999999999, bids_path=bids_path, raw=raw,
                    trans=trans, verbose=True, deface=False, overwrite=True)
 
@@ -1563,6 +1563,17 @@ def test_write_anat(_bids_validate):
         write_anat(t1w_mgh, bids_path=bids_path, deface=True,
                    landmarks=fail_landmarks, verbose=True, overwrite=True)
 
+    # Get the FLASH MRI data file
+    flash_mgh = \
+        op.join(data_path, 'subjects', 'sample', 'mri', 'flash', 'mef05.mgz')
+
+    bids_path = BIDSPath(subject=subject_id, session=session_id,
+                         suffix='FLASH', root=bids_root)
+    write_anat(flash_mgh, bids_path=bids_path,
+               raw=raw, overwrite=True)
+    assert op.exists(op.join(anat_dir, 'sub-01_ses-01_FLASH.nii.gz'))
+    _bids_validate(bids_root)
+
 
 def test_write_raw_pathlike():
     data_path = testing.data_path()
@@ -1619,7 +1630,7 @@ def test_write_anat_pathlike():
     t1w_mgh_fname = Path(data_path) / 'subjects' / 'sample' / 'mri' / 'T1.mgz'
     bids_path = BIDSPath(subject=subject_id, session=session_id,
                          acquisition=acq, root=bids_root)
-    bids_path = write_anat(t1w=t1w_mgh_fname, bids_path=bids_path, raw=raw,
+    bids_path = write_anat(t1w_mgh_fname, bids_path=bids_path, raw=raw,
                            trans=trans, deface=True, verbose=True,
                            overwrite=True)
 

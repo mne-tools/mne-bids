@@ -103,7 +103,7 @@ ALLOWED_INPUT_EXTENSIONS = \
 # allowed suffixes (i.e. last "_" delimiter in the BIDS filenames before
 # the extension)
 ALLOWED_FILENAME_SUFFIX = [
-    'meg', 'markers', 'eeg', 'ieeg', 'T1w',  # datatype
+    'meg', 'markers', 'eeg', 'ieeg', 'T1w', 'FLASH',  # datatype
     'participants', 'scans',
     'electrodes', 'channels', 'coordsystem', 'events',  # sidecars
     'headshape', 'digitizer',  # meg-specific sidecars

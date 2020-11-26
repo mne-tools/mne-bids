@@ -1245,7 +1245,7 @@ def write_raw_bids(raw, bids_path, events_data=None,
     return bids_path
 
 
-def write_anat(t1w, bids_path, raw=None, trans=None, landmarks=None,
+def write_anat(image, bids_path, raw=None, trans=None, landmarks=None,
                deface=False, overwrite=False, verbose=False):
     """Put anatomical MRI data into a BIDS format.
 
@@ -1256,13 +1256,15 @@ def write_anat(t1w, bids_path, raw=None, trans=None, landmarks=None,
 
     Parameters
     ----------
+    image : str | pathlib.Path | nibabel image object
+        Path to an MRI scan (e.g. T1w) of the subject. Can be in any format
+        readable by nibabel. Can also be a nibabel image object of an
+        MRI scan. Will be written as a .nii.gz file.
     bids_path : BIDSPath
         The file to write. The `mne_bids.BIDSPath` instance passed here
         **must** have the ``root`` and ``subject`` attributes set.
-    t1w : str | pathlib.Path | nibabel image object
-        Path to a T1 weighted MRI scan of the subject. Can be in any format
-        readable by nibabel. Can also be a nibabel image object of a T1
-        weighted MRI scan. Will be written as a .nii.gz file.
+        The suffix is assumed to be 'T1w' is not present. It can
+        also be `'FLASH'` for example.
     raw : instance of Raw | None
         The raw data of `subject` corresponding to `t1w`. If `raw` is None,
         `trans` has to be None as well
@@ -1328,37 +1330,40 @@ def write_anat(t1w, bids_path, raw=None, trans=None, landmarks=None,
         bids_path.update(datatype='anat')
 
     # set extension and suffix hard-coded to T1w and compressed Nifti
-    bids_path.update(suffix='T1w', extension='.nii.gz')
+    if not bids_path.suffix:
+        bids_path.update(suffix='T1w')
 
-    # create the directory for the T1w dataset
+    bids_path.update(task=None, run=None, extension='.nii.gz')
+
+    # create the directory for the MRI data
     bids_path.directory.mkdir(exist_ok=True, parents=True)
 
     # Try to read our T1 file and convert to MGH representation
     try:
-        t1w = _path_to_str(t1w)
+        image = _path_to_str(image)
     except ValueError:
         # t1w -> str conversion failed, so maybe the user passed an nibabel
         # object instead of a path.
-        if type(t1w) not in nib.all_image_classes:
-            raise ValueError('`t1w` must be a path to a T1 weighted MRI data '
+        if type(image) not in nib.all_image_classes:
+            raise ValueError('`image` must be a path to an MRI data '
                              'file , or a nibabel image object, but it is of '
-                             'type "{}"'.format(type(t1w)))
+                             'type "{}"'.format(type(image)))
     else:
         # t1w -> str conversion in the try block was successful, so load the
         # file from the specified location. We do this here and not in the try
         # block to keep the try block as short as possible.
-        t1w = nib.load(t1w)
+        image = nib.load(image)
 
-    t1w = nib.Nifti1Image(t1w.dataobj, t1w.affine)
+    image = nib.Nifti1Image(image.dataobj, image.affine)
     # XYZT_UNITS = NIFT_UNITS_MM (10 in binary or 2 in decimal)
     # seems to be the default for Nifti files
     # https://nifti.nimh.nih.gov/nifti-1/documentation/nifti1fields/nifti1fields_pages/xyzt_units.html
-    if t1w.header['xyzt_units'] == 0:
-        t1w.header['xyzt_units'] = np.array(10, dtype='uint8')
+    if image.header['xyzt_units'] == 0:
+        image.header['xyzt_units'] = np.array(10, dtype='uint8')
 
     # Check if we have necessary conditions for writing a sidecar JSON
     if trans is not None or landmarks is not None:
-        t1_mgh = nib.MGHImage(t1w.dataobj, t1w.affine)
+        img_mgh = nib.MGHImage(image.dataobj, image.affine)
 
         if landmarks is not None:
             if raw is not None:
@@ -1380,7 +1385,7 @@ def write_anat(t1w, bids_path, raw=None, trans=None, landmarks=None,
                 mri_landmarks = _meg_landmarks_to_mri_landmarks(
                     landmarks, trans)
                 mri_landmarks = _mri_landmarks_to_mri_voxels(
-                    mri_landmarks, t1_mgh)
+                    mri_landmarks, img_mgh)
             elif coord_frame in (FIFF.FIFFV_MNE_COORD_MRI_VOXEL,
                                  FIFF.FIFFV_COORD_MRI):
                 if trans is not None:
@@ -1389,7 +1394,7 @@ def write_anat(t1w, bids_path, raw=None, trans=None, landmarks=None,
                                      'only one of these.')
                 if coord_frame == FIFF.FIFFV_COORD_MRI:
                     landmarks = _mri_landmarks_to_mri_voxels(landmarks * 1e3,
-                                                             t1_mgh)
+                                                             img_mgh)
                 mri_landmarks = landmarks
             else:
                 raise ValueError('Coordinate frame not recognized, '
@@ -1411,11 +1416,11 @@ def write_anat(t1w, bids_path, raw=None, trans=None, landmarks=None,
             mri_landmarks = _meg_landmarks_to_mri_landmarks(
                 meg_landmarks, trans)
             mri_landmarks = _mri_landmarks_to_mri_voxels(
-                mri_landmarks, t1_mgh)
+                mri_landmarks, img_mgh)
 
         # Write sidecar.json
-        t1w_json = dict()
-        t1w_json['AnatomicalLandmarkCoordinates'] = \
+        img_json = dict()
+        img_json['AnatomicalLandmarkCoordinates'] = \
             {'LPA': list(mri_landmarks[0, :]),
              'NAS': list(mri_landmarks[1, :]),
              'RPA': list(mri_landmarks[2, :])}
@@ -1424,10 +1429,10 @@ def write_anat(t1w, bids_path, raw=None, trans=None, landmarks=None,
             raise IOError('Wanted to write a file but it already exists and '
                           '`overwrite` is set to False. File: "{}"'
                           .format(fname))
-        _write_json(fname, t1w_json, overwrite, verbose)
+        _write_json(fname, img_json, overwrite, verbose)
 
         if deface:
-            t1w = _deface(t1w, mri_landmarks, deface)
+            image = _deface(image, mri_landmarks, deface)
 
     # Save anatomical data
     if op.exists(bids_path):
@@ -1437,7 +1442,7 @@ def write_anat(t1w, bids_path, raw=None, trans=None, landmarks=None,
             raise IOError(f'Wanted to write a file but it already exists and '
                           f'`overwrite` is set to False. File: "{bids_path}"')
 
-    nib.save(t1w, bids_path.fpath)
+    nib.save(image, bids_path.fpath)
 
     return bids_path
 
