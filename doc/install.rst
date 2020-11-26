@@ -63,7 +63,7 @@ MNE-Python is up-to-date, run:
 
 .. code-block:: bash
 
-   pip install -U mne
+   pip install --user -U mne
 
 Installation via conda
 ----------------------
