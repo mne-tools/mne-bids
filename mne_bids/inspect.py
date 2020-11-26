@@ -8,10 +8,10 @@ from mne_bids.config import ALLOWED_DATATYPE_EXTENSIONS
 def inspect_dataset(bids_path, l_freq=None, h_freq=None, verbose=None):
     """Inspect and annotate BIDS raw data.
 
-    This function allows you to browse MEG and EEG raw data stored in a BIDS
-    dataset. You can toggle the status of a channel (bad or good) by clicking
-    on the traces, and when closing the browse window, you will be asked
-    whether you want to save the changes to the existing BIDS dataset or
+    This function allows you to browse MEG, EEG, and iEEG raw data stored in a
+    BIDS dataset. You can toggle the status of a channel (bad or good) by
+    clicking on the traces, and when closing the browse window, you will be
+    asked whether you want to save the changes to the existing BIDS dataset or
     discard them.
 
     .. warning:: This functionality is still experimental and will be extended
