@@ -18,7 +18,8 @@ with warnings.catch_warnings():
     import mne
 
 from mne.datasets import testing
-from mne.utils import run_tests_if_main, ArgvSetter, requires_pandas
+from mne.utils import (run_tests_if_main, ArgvSetter, requires_pandas,
+                       requires_version)
 from mne.utils._testing import requires_module
 
 from mne_bids.commands import (mne_bids_raw_to_bids,
@@ -263,8 +264,8 @@ def test_count_events(tmpdir):
         mne_bids_count_events.run()
 
 
-@requires_pandas
 @requires_matplotlib
+@requires_version('mne', '0.22')
 def test_inspect(tmpdir):
     """Test mne_bids inspect."""
 
