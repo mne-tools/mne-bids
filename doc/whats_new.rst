@@ -63,6 +63,7 @@ API changes
 ^^^^^^^^^^^
 - When passing event IDs to :func:`mne_bids.write_raw_bids` via ``events_data`` without an accompanying event description in ``event_id``, we will now raise a `ValueError`. This ensures that accidentally un-described events won't get written unnoticed, by `Richard Höchenberger`_ (:gh:`603`)
 - The :func:`mne_bids.get_head_mri_trans` now has a parameter ``extra_params`` to allow passing arguments specific to a file format, by `Mainak Jas`_ (:gh:`638`)
+- The first parameter of :func:`mne_bids.write_anat` is now called ``image`` and not ``t1w``, by `Alexandre Gramfort`_ (:gh:`641`)
 
 Requirements
 ^^^^^^^^^^^^
