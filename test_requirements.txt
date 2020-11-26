@@ -10,3 +10,4 @@ check-manifest
 pydocstyle
 flake8
 matplotlib
+pandas>=0.23.4
