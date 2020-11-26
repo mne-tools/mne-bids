@@ -4,7 +4,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>mne_bids.copyfiles.copyfile_kit &#8212; mne_bids 0.6.dev0 documentation</title>
+    <title>mne_bids.inspect_dataset &#8212; mne_bids 0.6.dev0 documentation</title>
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="stylesheet" href="../_static/bootstrap-sphinx.css" type="text/css" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css" />
@@ -113,47 +113,63 @@
   <div class="row">
     <div class="body col-md-12 content" role="main">
       
-  <div class="section" id="mne-bids-copyfiles-copyfile-kit">
-<h1>mne_bids.copyfiles.copyfile_kit<a class="headerlink" href="#mne-bids-copyfiles-copyfile-kit" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="mne-bids-inspect-dataset">
+<h1>mne_bids.inspect_dataset<a class="headerlink" href="#mne-bids-inspect-dataset" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt id="mne_bids.copyfiles.copyfile_kit">
-<code class="sig-prename descclassname">mne_bids.copyfiles.</code><code class="sig-name descname">copyfile_kit</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">src</span></em>, <em class="sig-param"><span class="n">dest</span></em>, <em class="sig-param"><span class="n">subject_id</span></em>, <em class="sig-param"><span class="n">session_id</span></em>, <em class="sig-param"><span class="n">task</span></em>, <em class="sig-param"><span class="n">run</span></em>, <em class="sig-param"><span class="n">_init_kwargs</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/copyfiles.html#copyfile_kit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.copyfiles.copyfile_kit" title="Permalink to this definition">¶</a></dt>
-<dd><p>Copy and rename KIT files to a new location.</p>
+<dt id="mne_bids.inspect_dataset">
+<code class="sig-prename descclassname">mne_bids.</code><code class="sig-name descname">inspect_dataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">bids_path</span></em>, <em class="sig-param"><span class="n">l_freq</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">h_freq</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/mne_bids/inspect.html#inspect_dataset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#mne_bids.inspect_dataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inspect and annotate BIDS raw data.</p>
+<p>This function allows you to browse MEG, EEG, and iEEG raw data stored in a
+BIDS dataset. You can toggle the status of a channel (bad or good) by
+clicking on the traces, and when closing the browse window, you will be
+asked whether you want to save the changes to the existing BIDS dataset or
+discard them.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This functionality is still experimental and will be extended
+in the future. Its API will likely change. Planned features
+include modification of annotations and automated bad channel
+detection.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Currently, only MEG, EEG, and iEEG data can be inspected.</p>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><dl class="simple">
-<dt><strong>src</strong><span class="classifier">str | pathlib.Path</span></dt><dd><p>Path to the source raw .con or .sqd folder.</p>
+<dt><strong>bids_path</strong><span class="classifier">BIDSPath</span></dt><dd><p>A <a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a> containing at least a <code class="docutils literal notranslate"><span class="pre">root</span></code>. All
+matching files will be inspected. To select only a subset of the data,
+set more <a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a> attributes. If <code class="docutils literal notranslate"><span class="pre">datatype</span></code> is not
+set and multiple datatypes are found, they will be inspected in the
+following order: MEG, EEG, iEEG.
+To read a specific file, set all the <a class="reference internal" href="mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath"><code class="xref py py-class docutils literal notranslate"><span class="pre">mne_bids.BIDSPath</span></code></a>
+attributes required to uniquely identify the file: If this <code class="docutils literal notranslate"><span class="pre">BIDSPath</span></code>
+is accepted by <a class="reference internal" href="mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids"><code class="xref py py-func docutils literal notranslate"><span class="pre">mne_bids.read_raw_bids()</span></code></a>, it will work here.</p>
 </dd>
-<dt><strong>dest</strong><span class="classifier">str | pathlib.Path</span></dt><dd><p>Path to the destination of the new bids folder.</p>
+<dt><strong>l_freq</strong><span class="classifier">float | None</span></dt><dd><p>The high-pass filter cutoff frequency to apply when displaying the
+data. This can be useful when inspecting data with slow drifts. If
+<code class="docutils literal notranslate"><span class="pre">None</span></code>, no high-pass filter will be applied.</p>
 </dd>
-<dt><strong>subject_id</strong><span class="classifier">str | None</span></dt><dd><p>The subject ID. Corresponds to “sub”.</p>
+<dt><strong>h_freq</strong><span class="classifier">float | None</span></dt><dd><p>The low-pass filter cutoff frequency to apply when displaying the
+data. This can be useful when inspecting data with high-frequency
+artifacts. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, no low-pass filter will be applied.</p>
 </dd>
-<dt><strong>session_id</strong><span class="classifier">str | None</span></dt><dd><p>The session identifier. Corresponds to “ses”.</p>
-</dd>
-<dt><strong>task</strong><span class="classifier">str | None</span></dt><dd><p>The task identifier. Corresponds to “task”.</p>
-</dd>
-<dt><strong>run</strong><span class="classifier">int | None</span></dt><dd><p>The run number. Corresponds to “run”.</p>
-</dd>
-<dt><strong>_init_kwargs</strong><span class="classifier">dict</span></dt><dd><p>Extract information of marker and headpoints</p>
+<dt><strong>verbose</strong><span class="classifier">bool | None</span></dt><dd><p>If a boolean, whether or not to produce verbose output. If <code class="docutils literal notranslate"><span class="pre">None</span></code>,
+use the default log level.</p>
 </dd>
 </dl>
 </dd>
 </dl>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<dl class="simple">
-<dt><a class="reference internal" href="mne_bids.copyfiles.copyfile_brainvision.html#mne_bids.copyfiles.copyfile_brainvision" title="mne_bids.copyfiles.copyfile_brainvision"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copyfile_brainvision</span></code></a></dt><dd></dd>
-<dt><a class="reference internal" href="mne_bids.copyfiles.copyfile_bti.html#mne_bids.copyfiles.copyfile_bti" title="mne_bids.copyfiles.copyfile_bti"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copyfile_bti</span></code></a></dt><dd></dd>
-<dt><a class="reference internal" href="mne_bids.copyfiles.copyfile_ctf.html#mne_bids.copyfiles.copyfile_ctf" title="mne_bids.copyfiles.copyfile_ctf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copyfile_ctf</span></code></a></dt><dd></dd>
-<dt><a class="reference internal" href="mne_bids.copyfiles.copyfile_edf.html#mne_bids.copyfiles.copyfile_edf" title="mne_bids.copyfiles.copyfile_edf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copyfile_edf</span></code></a></dt><dd></dd>
-<dt><a class="reference internal" href="mne_bids.copyfiles.copyfile_eeglab.html#mne_bids.copyfiles.copyfile_eeglab" title="mne_bids.copyfiles.copyfile_eeglab"><code class="xref py py-obj docutils literal notranslate"><span class="pre">copyfile_eeglab</span></code></a></dt><dd></dd>
-</dl>
-</div>
 </dd></dl>
 
-<div class="section" id="examples-using-mne-bids-copyfiles-copyfile-kit">
-<span id="sphx-glr-backreferences-mne-bids-copyfiles-copyfile-kit"></span><h2>Examples using <code class="docutils literal notranslate"><span class="pre">mne_bids.copyfiles.copyfile_kit</span></code><a class="headerlink" href="#examples-using-mne-bids-copyfiles-copyfile-kit" title="Permalink to this headline">¶</a></h2>
-<div class="sphx-glr-clear"></div></div>
+<div class="section" id="examples-using-mne-bids-inspect-dataset">
+<span id="sphx-glr-backreferences-mne-bids-inspect-dataset"></span><h2>Examples using <code class="docutils literal notranslate"><span class="pre">mne_bids.inspect_dataset</span></code><a class="headerlink" href="#examples-using-mne-bids-inspect-dataset" title="Permalink to this headline">¶</a></h2>
+<div class="sphx-glr-thumbcontainer" tooltip="You can use MNE-BIDS interactively inspect your  MEG or (i)EEG data. Problematic channels can b..."><div class="figure align-default" id="id1">
+<img alt="03. Interactive data inspection and bad channel selection" src="../_images/sphx_glr_mark_bad_channels_thumb.png" />
+<p class="caption"><span class="caption-text"><a class="reference internal" href="../auto_examples/mark_bad_channels.html#sphx-glr-auto-examples-mark-bad-channels-py"><span class="std std-ref">03. Interactive data inspection and bad channel selection</span></a></span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
+</div><div class="sphx-glr-clear"></div></div>
 </div>
 
 

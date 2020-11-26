@@ -45,6 +45,7 @@ Enhancements
 - New function :func:`mne_bids.stats.count_events` to easily summarize all the events present in a dataset, by `Alexandre Gramfort`_ (:gh:`629`)
 - Add :func:`mne_bids.update_sidecar_json` to allow updating sidecar JSON files with a template, by `Adam Li`_ and `Austin Hurst`_ (:gh:`601`)
 - Add support for anonymizing EDF and BDF files without converting to BrainVision format, by `Austin Hurst`_ (:gh:`636`)
+- Add interactive data inspector :func:`mne_bids.inspect_dataset`, by `Richard Höchenberger`_ (:gh:`561`)
 
 Bug fixes
 ^^^^^^^^^

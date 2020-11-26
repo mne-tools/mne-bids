@@ -9,16 +9,16 @@
     .. _sphx_glr_auto_examples_mark_bad_channels.py:
 
 
-===============================================
-03. Changing which channels are marked as "bad"
-===============================================
+=========================================================
+03. Interactive data inspection and bad channel selection
+=========================================================
 
-You can use MNE-BIDS to mark MEG or (i)EEG recording channels as "bad", for
+You can use MNE-BIDS interactively inspect your  MEG or (i)EEG data.
+Problematic channels can be marked as "bad", for
 example if the connected sensor produced mostly noise – or no signal at
-all.
-
-Similarly, you can declare channels as "good", should you discover they were
-incorrectly marked as bad.
+all. Similarly, you can declare channels as "good", should you discover they
+were incorrectly marked as bad. Bad channel selection can also be performed
+non-interactively.
 
 
 .. code-block:: default
@@ -46,7 +46,8 @@ Let's start by importing the required modules and functions, reading the
 
     import os.path as op
     import mne
-    from mne_bids import BIDSPath, write_raw_bids, read_raw_bids, mark_bad_channels
+    from mne_bids import (BIDSPath, write_raw_bids, read_raw_bids,
+                          inspect_dataset, mark_bad_channels)
 
     data_path = mne.datasets.sample.data_path()
     raw_fname = op.join(data_path, 'MEG', 'sample', 'sample_audvis_raw.fif')
@@ -77,6 +78,117 @@ Let's start by importing the required modules and functions, reading the
     basename: sub-01_ses-01_task-audiovisual_run-01_meg.fif)
 
 
+
+Interactive use
+---------------
+
+Using :func:`mne_bids.inspect_dataset`, we can interactively explore the raw
+data and toggle the channel status – ``bad`` or ``good`` – by clicking on the
+respective traces or channel names. If there are any SSP projectors stored
+with the data, a small popup window will allow you to toggle the projectors
+on and off. If you changed the selection of bad channels, you will be
+prompted whether you would like to save the changes when closing the main
+window.
+
+
+.. code-block:: default
+
+
+    inspect_dataset(bids_path)
+
+
+
+
+.. rst-class:: sphx-glr-horizontal
+
+
+    *
+
+      .. image:: /auto_examples/images/sphx_glr_mark_bad_channels_001.png
+          :alt: mark bad channels
+          :class: sphx-glr-multi-img
+
+    *
+
+      .. image:: /auto_examples/images/sphx_glr_mark_bad_channels_002.png
+          :alt: Projectors marked with "X" are active on the plot.
+          :class: sphx-glr-multi-img
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    Opening raw data file /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif...
+        Read a total of 3 projection items:
+            PCA-v1 (1 x 102)  idle
+            PCA-v2 (1 x 102)  idle
+            PCA-v3 (1 x 102)  idle
+        Range : 25800 ... 192599 =     42.956 ...   320.670 secs
+    Ready.
+    Reading events from /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_events.tsv.
+    Reading channel info from /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_channels.tsv.
+    /home/circleci/project/mne_bids/read.py:337: RuntimeWarning: The unit for channel(s) STI 001, STI 002, STI 003, STI 004, STI 005, STI 006, STI 014, STI 015, STI 016 has changed from V to NA.
+      raw.set_channel_types(channel_type_dict)
+
+
+
+
+You can even apply frequency filters when viewing the data: A high-pass
+filter can remove slow drifts, while a low-pass filter will get rid of
+high-frequency artifacts. This can make visual inspection easier. Let's
+apply filters with a 1-Hz high-pass cutoff, and a 30-Hz low-pass cutoff:
+
+
+.. code-block:: default
+
+
+    inspect_dataset(bids_path, l_freq=1., h_freq=30.)
+
+
+
+
+.. rst-class:: sphx-glr-horizontal
+
+
+    *
+
+      .. image:: /auto_examples/images/sphx_glr_mark_bad_channels_003.png
+          :alt: mark bad channels
+          :class: sphx-glr-multi-img
+
+    *
+
+      .. image:: /auto_examples/images/sphx_glr_mark_bad_channels_004.png
+          :alt: Projectors marked with "X" are active on the plot.
+          :class: sphx-glr-multi-img
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+    Opening raw data file /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif...
+        Read a total of 3 projection items:
+            PCA-v1 (1 x 102)  idle
+            PCA-v2 (1 x 102)  idle
+            PCA-v3 (1 x 102)  idle
+        Range : 25800 ... 192599 =     42.956 ...   320.670 secs
+    Ready.
+    Reading events from /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_events.tsv.
+    Reading channel info from /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_channels.tsv.
+    /home/circleci/project/mne_bids/read.py:337: RuntimeWarning: The unit for channel(s) STI 001, STI 002, STI 003, STI 004, STI 005, STI 006, STI 014, STI 015, STI 016 has changed from V to NA.
+      raw.set_channel_types(channel_type_dict)
+
+
+
+
+Non-interactive (programmatic) bad channel selection
+----------------------------------------------------
 
 Read the (now BIDS-formatted) data and print a list of channels currently
 marked as bad.
@@ -319,7 +431,7 @@ pass an empty list as ``ch_names``, combined with ``overwrite=True``:
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  6.875 seconds)
+   **Total running time of the script:** ( 0 minutes  9.007 seconds)
 
 
 .. _sphx_glr_download_auto_examples_mark_bad_channels.py:

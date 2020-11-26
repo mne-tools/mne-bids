@@ -145,6 +145,51 @@ $ mne_bids crosstalk_to_bids --subject_id=01 --session=test
 
 
 
+.. _gen_mne_bids_inspect:
+
+mne_bids inspect
+================
+
+.. rst-class:: callout
+
+---------------------------------------------------------------------
+Inspect MEG and EEG raw data, and interactively mark channels as bad.
+---------------------------------------------------------------------
+
+Usage: ``mne_bids inspect options args``
+
+Options
+-------
+
+.. rst-class:: field-list cmd-list
+
+  --version             show program's version number and exit
+  -h, --help            show this help message and exit
+  --bids_root=BIDS_ROOT
+                        The path of the folder containing the BIDS dataset
+  --subject_id=SUBJECT  Subject name
+  --session_id=SESSION  Session name
+  --task=TASK           Task name
+  --acq=ACQUISITION     Acquisition parameter
+  --run=RUN             Run number
+  --proc=PROCESSING     Processing label.
+  --rec=RECORDING       Recording name
+  --type=DATATYPE       Recording data type, e.g. meg, ieeg or eeg
+  --suffix=SUFFIX       The filename suffix, i.e. the last part before the
+                        extension
+  --ext=EXTENSION       The filename extension, including the leading period,
+                        e.g. .fif
+  --l_freq=L_FREQ       The high-pass filter cutoff frequency
+  --h_freq=H_FREQ       The low-pass filter cutoff frequency
+  --verbose             Whether do generate additional diagnostic output
+
+example usage:
+$ mne_bids inspect --subject_id=01 --task=experiment --session=test \
+--datatype=meg --suffix=meg --bids_root=bids_root
+
+
+
+
 .. _gen_mne_bids_mark_bad_channels:
 
 mne_bids mark_bad_channels

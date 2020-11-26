@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>mne_bids.inspect &#8212; mne_bids 0.6.dev0 documentation</title>
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/bootstrap-sphinx.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/style.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/gallery.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/gallery-binder.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/gallery-dataframe.css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    <script src="../../_static/clipboard.min.js"></script>
+    <script src="../../_static/copybutton.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+<meta charset='utf-8'>
+<meta http-equiv='X-UA-Compatible' content='IE=edge,chrome=1'>
+<meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1'>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script type="text/javascript" src="../../_static/js/jquery-1.11.0.min.js "></script>
+<script type="text/javascript" src="../../_static/js/jquery-fix.js "></script>
+<script type="text/javascript" src="../../_static/bootstrap-3.3.7/js/bootstrap.min.js "></script>
+<script type="text/javascript" src="../../_static/bootstrap-sphinx.js "></script>
+
+  </head><body>
+
+  <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="../../index.html">
+          MNE-BIDS</a>
+        <span class="navbar-text navbar-version pull-left"><b>0.6.dev0</b></span>
+      </div>
+
+        <div class="collapse navbar-collapse nav-collapse">
+          <ul class="nav navbar-nav">
+            
+                <li><a href="../../whats_new.html">News</a></li>
+                <li><a href="../../install.html">Install</a></li>
+                <li><a href="../../use.html">Use</a></li>
+                <li><a href="../../api.html">API</a></li>
+                <li><a href="../../generated/cli.html">CLI</a></li>
+                <li><a href="../../contribute.html">Contribute!</a></li>
+            
+            
+              <li class="dropdown globaltoc-container">
+  <a role="button"
+     id="dLabelGlobalToc"
+     data-toggle="dropdown"
+     data-target="#"
+     href="../../index.html">Site <b class="caret"></b></a>
+  <ul class="dropdown-menu globaltoc"
+      role="menu"
+      aria-labelledby="dLabelGlobalToc"></ul>
+</li>
+              
+            
+            
+            
+            
+            
+              <li class="hidden-sm"></li>
+            
+          </ul>
+
+          
+<div class="navbar-form navbar-right navbar-btn dropdown btn-group-sm" style="margin-left: 20px; margin-top: 5px; margin-bottom: 5px">
+  <button type="button" class="btn btn-primary navbar-btn dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown">
+    v0.6.dev0
+    <span class="caret"></span>
+  </button>
+  <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+    <li><a href="https://mne.tools/mne-bids/dev/index.html">Development</a></li>
+    <li><a href="https://mne.tools/mne-bids/stable/index.html">Stable</a></li>
+    <li><a href="https://mne.tools/mne-bids/v0.5/index.html">v0.5</a></li>
+    <li><a href="https://mne.tools/mne-bids/v0.4/index.html">v0.4</a></li>
+    <li><a href="https://mne.tools/mne-bids/v0.3/index.html">v0.3</a></li>
+    <li><a href="https://mne.tools/mne-bids/v0.2/index.html">v0.2</a></li>
+    <li><a href="https://mne.tools/mne-bids/v0.1/index.html">v0.1</a></li>
+  </ul>
+</div>
+
+
+            
+<form class="navbar-form navbar-right" action="../../search.html" method="get">
+ <div class="form-group">
+  <input type="text" name="q" class="form-control" placeholder="Search" />
+ </div>
+  <input type="hidden" name="check_keywords" value="yes" />
+  <input type="hidden" name="area" value="default" />
+</form>
+          
+
+        </div>
+    </div>
+  </div>
+
+<div class="container">
+  <div class="row">
+    <div class="body col-md-12 content" role="main">
+      
+  <h1>Source code for mne_bids.inspect</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">from</span> <span class="nn">mne_bids</span> <span class="kn">import</span> <span class="n">read_raw_bids</span><span class="p">,</span> <span class="n">mark_bad_channels</span>
+<span class="kn">from</span> <span class="nn">mne_bids.read</span> <span class="kn">import</span> <span class="n">_from_tsv</span>
+<span class="kn">from</span> <span class="nn">mne_bids.config</span> <span class="kn">import</span> <span class="n">ALLOWED_DATATYPE_EXTENSIONS</span>
+
+
+<div class="viewcode-block" id="inspect_dataset"><a class="viewcode-back" href="../../generated/mne_bids.inspect_dataset.html#mne_bids.inspect_dataset">[docs]</a><span class="k">def</span> <span class="nf">inspect_dataset</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">l_freq</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">h_freq</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Inspect and annotate BIDS raw data.</span>
+
+<span class="sd">    This function allows you to browse MEG, EEG, and iEEG raw data stored in a</span>
+<span class="sd">    BIDS dataset. You can toggle the status of a channel (bad or good) by</span>
+<span class="sd">    clicking on the traces, and when closing the browse window, you will be</span>
+<span class="sd">    asked whether you want to save the changes to the existing BIDS dataset or</span>
+<span class="sd">    discard them.</span>
+
+<span class="sd">    .. warning:: This functionality is still experimental and will be extended</span>
+<span class="sd">                 in the future. Its API will likely change. Planned features</span>
+<span class="sd">                 include modification of annotations and automated bad channel</span>
+<span class="sd">                 detection.</span>
+
+<span class="sd">    .. note:: Currently, only MEG, EEG, and iEEG data can be inspected.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    bids_path : BIDSPath</span>
+<span class="sd">        A :class:`mne_bids.BIDSPath` containing at least a ``root``. All</span>
+<span class="sd">        matching files will be inspected. To select only a subset of the data,</span>
+<span class="sd">        set more :class:`mne_bids.BIDSPath` attributes. If ``datatype`` is not</span>
+<span class="sd">        set and multiple datatypes are found, they will be inspected in the</span>
+<span class="sd">        following order: MEG, EEG, iEEG.</span>
+<span class="sd">        To read a specific file, set all the :class:`mne_bids.BIDSPath`</span>
+<span class="sd">        attributes required to uniquely identify the file: If this ``BIDSPath``</span>
+<span class="sd">        is accepted by :func:`mne_bids.read_raw_bids`, it will work here.</span>
+<span class="sd">    l_freq : float | None</span>
+<span class="sd">        The high-pass filter cutoff frequency to apply when displaying the</span>
+<span class="sd">        data. This can be useful when inspecting data with slow drifts. If</span>
+<span class="sd">        ``None``, no high-pass filter will be applied.</span>
+<span class="sd">    h_freq : float | None</span>
+<span class="sd">        The low-pass filter cutoff frequency to apply when displaying the</span>
+<span class="sd">        data. This can be useful when inspecting data with high-frequency</span>
+<span class="sd">        artifacts. If ``None``, no low-pass filter will be applied.</span>
+<span class="sd">    verbose : bool | None</span>
+<span class="sd">        If a boolean, whether or not to produce verbose output. If ``None``,</span>
+<span class="sd">        use the default log level.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">bids_paths</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">datatype</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;meg&#39;</span><span class="p">,</span> <span class="s1">&#39;eeg&#39;</span><span class="p">,</span> <span class="s1">&#39;ieeg&#39;</span><span class="p">):</span>
+        <span class="n">matches</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">match</span><span class="p">()</span>
+                   <span class="k">if</span> <span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">extension</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span>
+                   <span class="n">p</span><span class="o">.</span><span class="n">extension</span> <span class="ow">in</span> <span class="n">ALLOWED_DATATYPE_EXTENSIONS</span><span class="p">[</span><span class="n">datatype</span><span class="p">])</span> <span class="ow">and</span>
+                   <span class="n">p</span><span class="o">.</span><span class="n">acquisition</span> <span class="o">!=</span> <span class="s1">&#39;crosstalk&#39;</span><span class="p">]</span>
+        <span class="n">bids_paths</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">matches</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">bids_path_</span> <span class="ow">in</span> <span class="n">bids_paths</span><span class="p">:</span>
+        <span class="n">_inspect_raw</span><span class="p">(</span><span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path_</span><span class="p">,</span> <span class="n">l_freq</span><span class="o">=</span><span class="n">l_freq</span><span class="p">,</span> <span class="n">h_freq</span><span class="o">=</span><span class="n">h_freq</span><span class="p">,</span>
+                     <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span></div>
+
+
+<span class="c1"># XXX This this should probably be refactored into a class attribute someday.</span>
+<span class="n">_global_vars</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">raw_fig</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                    <span class="n">dialog_fig</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                    <span class="n">mne_close_key</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_inspect_raw</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">bids_path</span><span class="p">,</span> <span class="n">l_freq</span><span class="p">,</span> <span class="n">h_freq</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Raw data inspection.&quot;&quot;&quot;</span>
+    <span class="c1"># Delay the import</span>
+    <span class="kn">import</span> <span class="nn">matplotlib</span>
+    <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+    <span class="n">raw</span> <span class="o">=</span> <span class="n">read_raw_bids</span><span class="p">(</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">extra_params</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">allow_maxshield</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+                        <span class="n">verbose</span><span class="o">=</span><span class="s1">&#39;error&#39;</span><span class="p">)</span>
+    <span class="n">old_bads</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;bads&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">raw</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">bids_path</span><span class="o">.</span><span class="n">root</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">bids_path</span><span class="o">.</span><span class="n">basename</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+                   <span class="n">highpass</span><span class="o">=</span><span class="n">l_freq</span><span class="p">,</span> <span class="n">lowpass</span><span class="o">=</span><span class="n">h_freq</span><span class="p">,</span> <span class="n">show_options</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                   <span class="n">block</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="s1">&#39;warning&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Add our own event handlers so that when the MNE Raw Browser is being</span>
+    <span class="c1"># closed, our dialog box will pop up, asking whether to save changes.</span>
+    <span class="k">def</span> <span class="nf">_handle_close</span><span class="p">(</span><span class="n">event</span><span class="p">):</span>
+        <span class="n">mne_raw_fig</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">figure</span>
+        <span class="n">new_bads</span> <span class="o">=</span> <span class="n">mne_raw_fig</span><span class="o">.</span><span class="n">mne</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s1">&#39;bads&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="n">_save_bads_if_changed</span><span class="p">(</span><span class="n">old_bads</span><span class="o">=</span><span class="n">old_bads</span><span class="p">,</span>
+                              <span class="n">new_bads</span><span class="o">=</span><span class="n">new_bads</span><span class="p">,</span>
+                              <span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span><span class="p">,</span>
+                              <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+        <span class="n">_global_vars</span><span class="p">[</span><span class="s1">&#39;raw_fig&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">_global_vars</span><span class="p">[</span><span class="s1">&#39;mne_close_key&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">_keypress_callback</span><span class="p">(</span><span class="n">event</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="n">_global_vars</span><span class="p">[</span><span class="s1">&#39;mne_close_key&#39;</span><span class="p">]:</span>
+            <span class="n">_handle_close</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+
+    <span class="n">fig</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">mpl_connect</span><span class="p">(</span><span class="s1">&#39;close_event&#39;</span><span class="p">,</span> <span class="n">_handle_close</span><span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">mpl_connect</span><span class="p">(</span><span class="s1">&#39;key_press_event&#39;</span><span class="p">,</span> <span class="n">_keypress_callback</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">get_backend</span><span class="p">()</span> <span class="o">!=</span> <span class="s1">&#39;agg&#39;</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">_global_vars</span><span class="p">[</span><span class="s1">&#39;raw_fig&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fig</span>
+    <span class="n">_global_vars</span><span class="p">[</span><span class="s1">&#39;mne_close_key&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">mne</span><span class="o">.</span><span class="n">close_key</span>
+
+
+<span class="k">def</span> <span class="nf">_save_bads_if_changed</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">old_bads</span><span class="p">,</span> <span class="n">new_bads</span><span class="p">,</span> <span class="n">bids_path</span><span class="p">,</span> <span class="n">verbose</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">set</span><span class="p">(</span><span class="n">old_bads</span><span class="p">)</span> <span class="o">==</span> <span class="nb">set</span><span class="p">(</span><span class="n">new_bads</span><span class="p">):</span>
+        <span class="c1"># Nothing has changed, so we can just exit.</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="k">return</span> <span class="n">_save_bads_dialog_box</span><span class="p">(</span><span class="n">bads</span><span class="o">=</span><span class="n">new_bads</span><span class="p">,</span> <span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span><span class="p">,</span>
+                                 <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_save_bads_dialog_box</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">bads</span><span class="p">,</span> <span class="n">bids_path</span><span class="p">,</span> <span class="n">verbose</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Display a dialog box asking whether to save the changes.&quot;&quot;&quot;</span>
+    <span class="c1"># Delay the imports</span>
+    <span class="kn">import</span> <span class="nn">matplotlib</span>
+    <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+    <span class="kn">from</span> <span class="nn">matplotlib.widgets</span> <span class="kn">import</span> <span class="n">Button</span>
+    <span class="kn">from</span> <span class="nn">mne.viz.utils</span> <span class="kn">import</span> <span class="n">figure_nobar</span>
+
+    <span class="n">title</span> <span class="o">=</span> <span class="s1">&#39;Save changes?&#39;</span>
+    <span class="n">message</span> <span class="o">=</span> <span class="p">(</span><span class="sa">f</span><span class="s1">&#39;You have modified the bad channel selection of</span><span class="se">\n</span><span class="s1">&#39;</span>
+               <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">bids_path</span><span class="o">.</span><span class="n">basename</span><span class="si">}</span><span class="s1">.</span><span class="se">\n\n</span><span class="s1">Would you like to save these &#39;</span>
+               <span class="sa">f</span><span class="s1">&#39;changes to the</span><span class="se">\n</span><span class="s1">BIDS dataset?&#39;</span><span class="p">)</span>
+    <span class="n">icon_fname</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s1">&#39;assets&#39;</span> <span class="o">/</span> <span class="s1">&#39;help-128px.png&#39;</span>
+    <span class="n">icon</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">icon_fname</span><span class="p">)</span>
+
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">figure_nobar</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mf">7.5</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">set_window_title</span><span class="p">(</span><span class="s1">&#39;MNE-BIDS Inspector&#39;</span><span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mf">0.95</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="s1">&#39;xx-large&#39;</span><span class="p">,</span> <span class="n">fontweight</span><span class="o">=</span><span class="s1">&#39;bold&#39;</span><span class="p">)</span>
+
+    <span class="n">gs</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_gridspec</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">width_ratios</span><span class="o">=</span><span class="p">(</span><span class="mf">1.5</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+
+    <span class="c1"># The dialog box tet.</span>
+    <span class="n">ax_msg</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+    <span class="n">ax_msg</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="n">message</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="s1">&#39;large&#39;</span><span class="p">,</span>
+                <span class="n">verticalalignment</span><span class="o">=</span><span class="s1">&#39;top&#39;</span><span class="p">,</span> <span class="n">horizontalalignment</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">,</span>
+                <span class="n">multialignment</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">)</span>
+    <span class="n">ax_msg</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
+
+    <span class="c1"># The help icon.</span>
+    <span class="n">ax_icon</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="n">gs</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+    <span class="n">ax_icon</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">icon</span><span class="p">)</span>
+    <span class="n">ax_icon</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;off&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Buttons.</span>
+    <span class="n">ax_save</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_axes</span><span class="p">([</span><span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">])</span>
+    <span class="n">ax_dont_save</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_axes</span><span class="p">([</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">])</span>
+
+    <span class="n">save_button</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax_save</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s1">&#39;Save&#39;</span><span class="p">)</span>
+    <span class="n">save_button</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">set_fontsize</span><span class="p">(</span><span class="s1">&#39;medium&#39;</span><span class="p">)</span>
+    <span class="n">save_button</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">set_fontweight</span><span class="p">(</span><span class="s1">&#39;bold&#39;</span><span class="p">)</span>
+
+    <span class="n">dont_save_button</span> <span class="o">=</span> <span class="n">Button</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax_dont_save</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Don&#39;t save&quot;</span><span class="p">)</span>
+    <span class="n">dont_save_button</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">set_fontsize</span><span class="p">(</span><span class="s1">&#39;medium&#39;</span><span class="p">)</span>
+    <span class="n">dont_save_button</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">set_fontweight</span><span class="p">(</span><span class="s1">&#39;bold&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Store references to keep buttons alive.</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">save_button</span> <span class="o">=</span> <span class="n">save_button</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">dont_save_button</span> <span class="o">=</span> <span class="n">dont_save_button</span>
+
+    <span class="c1"># Define callback functions.</span>
+    <span class="k">def</span> <span class="nf">_save_callback</span><span class="p">(</span><span class="n">event</span><span class="p">):</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">figure</span><span class="p">)</span>  <span class="c1"># Close dialog</span>
+        <span class="n">_global_vars</span><span class="p">[</span><span class="s1">&#39;dialog_fig&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">_save_bads</span><span class="p">(</span><span class="n">bads</span><span class="o">=</span><span class="n">bads</span><span class="p">,</span> <span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_dont_save_callback</span><span class="p">(</span><span class="n">event</span><span class="p">):</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">figure</span><span class="p">)</span>  <span class="c1"># Close dialog</span>
+        <span class="n">_global_vars</span><span class="p">[</span><span class="s1">&#39;dialog_fig&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">_keypress_callback</span><span class="p">(</span><span class="n">event</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;return&#39;</span><span class="p">:</span>
+            <span class="n">_save_callback</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="n">_global_vars</span><span class="p">[</span><span class="s1">&#39;mne_close_key&#39;</span><span class="p">]:</span>
+            <span class="n">_dont_save_callback</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+
+    <span class="c1"># Connect events to callback functions.</span>
+    <span class="n">save_button</span><span class="o">.</span><span class="n">on_clicked</span><span class="p">(</span><span class="n">_save_callback</span><span class="p">)</span>
+    <span class="n">dont_save_button</span><span class="o">.</span><span class="n">on_clicked</span><span class="p">(</span><span class="n">_dont_save_callback</span><span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">mpl_connect</span><span class="p">(</span><span class="s1">&#39;close_event&#39;</span><span class="p">,</span> <span class="n">_dont_save_callback</span><span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">mpl_connect</span><span class="p">(</span><span class="s1">&#39;key_press_event&#39;</span><span class="p">,</span> <span class="n">_keypress_callback</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">get_backend</span><span class="p">()</span> <span class="o">!=</span> <span class="s1">&#39;agg&#39;</span><span class="p">:</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+    <span class="n">_global_vars</span><span class="p">[</span><span class="s1">&#39;dialog_fig&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fig</span>
+
+
+<span class="k">def</span> <span class="nf">_save_bads</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">bads</span><span class="p">,</span> <span class="n">bids_path</span><span class="p">,</span> <span class="n">verbose</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Update the set of channels marked as bad.&quot;&quot;&quot;</span>
+    <span class="n">channels_tsv_fname</span> <span class="o">=</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;channels&#39;</span><span class="p">,</span>
+                                                 <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.tsv&#39;</span><span class="p">)</span>
+    <span class="n">channels_tsv_data</span> <span class="o">=</span> <span class="n">_from_tsv</span><span class="p">(</span><span class="n">channels_tsv_fname</span><span class="p">)</span>
+
+    <span class="n">descriptions</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">ch_name</span> <span class="ow">in</span> <span class="n">bads</span><span class="p">:</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">channels_tsv_data</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">ch_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">channels_tsv_data</span><span class="p">[</span><span class="s1">&#39;status&#39;</span><span class="p">][</span><span class="n">idx</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;bad&#39;</span><span class="p">:</span>
+            <span class="c1"># Channel was already marked as bad, retain existing description.</span>
+            <span class="n">description</span> <span class="o">=</span> <span class="n">channels_tsv_data</span><span class="p">[</span><span class="s1">&#39;status_description&#39;</span><span class="p">][</span><span class="n">idx</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Channel has been manually marked as bad during inspection, assign</span>
+            <span class="c1"># default description.</span>
+            <span class="n">description</span> <span class="o">=</span> <span class="s1">&#39;Manual inspection via MNE-BIDS&#39;</span>
+
+        <span class="n">descriptions</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">description</span><span class="p">)</span>
+
+    <span class="c1"># We pass overwrite=True, causing all channels not passed as bad here to</span>
+    <span class="c1"># be marked as good.</span>
+    <span class="n">mark_bad_channels</span><span class="p">(</span><span class="n">ch_names</span><span class="o">=</span><span class="n">bads</span><span class="p">,</span> <span class="n">descriptions</span><span class="o">=</span><span class="n">descriptions</span><span class="p">,</span>
+                      <span class="n">bids_path</span><span class="o">=</span><span class="n">bids_path</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+      
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p class="pull-right">
+      <a href="#">Back to top</a>
+      
+    </p>
+    <p>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-11-26.<br/>
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.3.1.<br/>
+    </p>
+  </div>
+</footer>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-37225609-2"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-37225609-2');
+</script>
+
+  </body>
+</html>
