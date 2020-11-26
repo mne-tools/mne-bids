@@ -39,6 +39,7 @@ mne_bids
    get_entity_vals
    get_datatypes
    update_sidecar_json
+   inspect_dataset
 
 mne_bids.stats
 --------------
@@ -72,6 +73,7 @@ mne_bids.copyfiles
    :toctree: generated/
 
    copyfile_brainvision
+   copyfile_edf
    copyfile_eeglab
    copyfile_ctf
    copyfile_bti

@@ -42,7 +42,8 @@ from mne_bids.utils import (_write_json, _write_tsv, _write_text,
 from mne_bids import read_raw_bids
 from mne_bids.path import BIDSPath, _parse_ext, _mkdir_p, _path_to_str
 from mne_bids.copyfiles import (copyfile_brainvision, copyfile_eeglab,
-                                copyfile_ctf, copyfile_bti, copyfile_kit)
+                                copyfile_ctf, copyfile_bti, copyfile_kit,
+                                copyfile_edf)
 from mne_bids.tsv_handler import (_from_tsv, _drop, _contains_row,
                                   _combine_rows)
 from mne_bids.read import (_get_bads_from_tsv_data, _find_matching_sidecar,
@@ -1112,12 +1113,13 @@ def write_raw_bids(raw, bids_path, events_data=None,
                 warn('Converting to FIF for anonymization')
             convert = True
             bids_path.update(extension='.fif')
-        elif bids_path.datatype in ['eeg', 'ieeg'] and ext != '.vhdr':
-            if verbose:
-                warn('Converting data files to BrainVision format '
-                     'for anonymization')
-            convert = True
-            bids_path.update(extension='.vhdr')
+        elif bids_path.datatype in ['eeg', 'ieeg']:
+            if ext not in ['.vhdr', '.edf', '.bdf']:
+                if verbose:
+                    warn('Converting data files to BrainVision format '
+                         'for anonymization')
+                convert = True
+                bids_path.update(extension='.vhdr')
 
     # Read in Raw object and extract metadata from Raw object if needed
     orient = ORIENTATION.get(ext, 'n/a')
@@ -1210,6 +1212,16 @@ def write_raw_bids(raw, bids_path, events_data=None,
     # BrainVision is multifile, copy over all of them and fix pointers
     elif ext == '.vhdr':
         copyfile_brainvision(raw_fname, bids_path, anonymize=anonymize)
+    elif ext in ['.edf', '.bdf']:
+        if anonymize is not None:
+            warn("EDF/EDF+/BDF files contain two fields for recording dates."
+                 "Due to file format limitations, one of these fields only "
+                 "supports 2-digit years. The date for that field will be "
+                 "set to 85 (i.e., 1985), the earliest possible date. "
+                 "EDF/EDF+/BDF reading software should parse the second "
+                 "field for recording dates, which contains the accurately "
+                 "anonymized date as calculated with `daysback`.")
+        copyfile_edf(raw_fname, bids_path, anonymize=anonymize)
     # EEGLAB .set might be accompanied by a .fdt - find out and copy it too
     elif ext == '.set':
         copyfile_eeglab(raw_fname, bids_path)
