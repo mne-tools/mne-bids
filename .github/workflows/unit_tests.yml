@@ -26,11 +26,13 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
 
+    - name: Install wheel
+      run: conda install -y wheel
     - name: Build sdist
       run: python setup.py sdist
     - name: Install sdist
       run: |
-        pip install dist/mne-bids-*
+        pip install ./dist/mne-bids-*
         python -c 'import mne_bids; print(mne_bids.__version__)'
     - name: Remove sdist install
       run: |
@@ -41,7 +43,7 @@ jobs:
       run: python setup.py bdist_wheel
     - name: Install wheel
       run: |
-        pip install dist/mne-bids-*
+        pip install ./dist/mne-bids-*
         python -c 'import mne_bids; print(mne_bids.__version__)'
     - name: Remove wheel install
       run: |
