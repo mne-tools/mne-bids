@@ -28,31 +28,32 @@ jobs:
 
     - name: Update pip and wheel
       run: python -m pip install --upgrade pip wheel
+
     - name: Build sdist
       run: python setup.py sdist
     - name: Install sdist
       run: |
-        python -m pip install ./dist/mne-bids-*
+        pip install ./dist/mne-bids-*
         python -c 'import mne_bids; print(mne_bids.__version__)'
     - name: Remove sdist install
       run: |
-        python -m pip uninstall -y mne-bids
+        pip uninstall -y mne-bids
         rm -rf build/ dist/
 
     - name: Build wheel
       run: python setup.py bdist_wheel
     - name: Install wheel
       run: |
-        python -m pip install ./dist/mne-bids-*
+       pip install ./dist/mne-bids-*
         python -c 'import mne_bids; print(mne_bids.__version__)'
     - name: Remove wheel install
       run: |
-        python -m pip uninstall -y mne-bids
+        pip uninstall -y mne-bids
         rm -rf build/ dist/
     
     - name: Test extras install
       run: |
-        python -m pip install -y .[full]
+        pip install -y .[full]
         python -c 'import mne_bids; print(mne_bids.__version__)'
         python -c 'import pybv; print(pybv.__version__)'
         python -c 'import nibabel; print(nibabel.__version__)'
