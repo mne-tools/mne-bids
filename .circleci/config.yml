@@ -16,13 +16,13 @@ jobs:
         # Also restore pip cache to speed up installations
         - restore_cache:
             keys:
-              - pip-cache-0-{{ checksum "./requirements.txt" }}
+              - pip-cache-0-{{ checksum "./test_requirements.txt" }}
 
         - run:
             name: Get Python running
             command: |
               python -m pip install --user --upgrade --progress-bar off pip
-              python -m pip install --user --upgrade --progress-bar off -r requirements.txt
+              python -m pip install --user --upgrade --progress-bar off -r test_requirements.txt
               python -m pip install --user --upgrade --progress-bar off -r doc/requirements.txt
               pip install --upgrade --no-deps https://api.github.com/repos/mne-tools/mne-python/zipball/master
               python -m pip install --user -e .
@@ -55,7 +55,7 @@ jobs:
 
         # Store pip cache
         - save_cache:
-            key: pip-cache-0-{{ checksum "./requirements.txt" }}
+            key: pip-cache-0-{{ checksum "./test_requirements.txt" }}
             paths:
               - ~/.cache/pip
 

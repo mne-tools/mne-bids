@@ -24,4 +24,4 @@ recursive-exclude mne_bids *.pyc
 recursive-exclude doc *
 recursive-exclude paper *
 
-exclude requirements.txt
+exclude test_requirements.txt
