@@ -9,3 +9,4 @@ pytest-sugar
 check-manifest
 pydocstyle
 flake8
+matplotlib

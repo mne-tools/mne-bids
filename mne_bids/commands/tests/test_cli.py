@@ -5,6 +5,7 @@
 # License: BSD (3-clause)
 import os.path as op
 from pathlib import Path
+from functools import partial
 
 import pytest
 
@@ -18,13 +19,20 @@ with warnings.catch_warnings():
 
 from mne.datasets import testing
 from mne.utils import run_tests_if_main, ArgvSetter, requires_pandas
+from mne.utils._testing import requires_module
 
-from mne_bids.commands import (mne_bids_raw_to_bids, mne_bids_cp,
+from mne_bids.commands import (mne_bids_raw_to_bids,
+                               mne_bids_cp,
                                mne_bids_mark_bad_channels,
                                mne_bids_calibration_to_bids,
                                mne_bids_crosstalk_to_bids,
-                               mne_bids_count_events)
+                               mne_bids_count_events,
+                               mne_bids_inspect)
+
 from mne_bids import BIDSPath, read_raw_bids, write_raw_bids
+
+requires_matplotlib = partial(requires_module, name='matplotlib',
+                              call='import matplotlib')
 
 
 base_path = op.join(op.dirname(mne.__file__), 'io')
@@ -253,6 +261,41 @@ def test_count_events(tmpdir):
 
     with ArgvSetter(('--bids_root', output_path, '--describe')):
         mne_bids_count_events.run()
+
+
+@requires_pandas
+@requires_matplotlib
+def test_inspect(tmpdir):
+    """Test mne_bids inspect."""
+
+    # Check that help is printed
+    check_usage(mne_bids_inspect)
+
+    # Create test dataset.
+    bids_root = str(tmpdir)
+    data_path = testing.data_path()
+    subject = '01'
+    task = 'test'
+    datatype = 'meg'
+    raw_fname = op.join(data_path, 'MEG', 'sample',
+                        'sample_audvis_trunc_raw.fif')
+
+    raw = mne.io.read_raw(raw_fname)
+    raw.info['line_freq'] = 60.
+
+    bids_path = BIDSPath(subject=subject, task=task, datatype=datatype,
+                         root=bids_root)
+    write_raw_bids(raw, bids_path, overwrite=True, verbose=False)
+
+    import matplotlib
+    matplotlib.use('agg')
+
+    h_freqs = (30.0, 30, '30')
+    for h_freq in h_freqs:
+        args = ('--bids_root', bids_root, '--h_freq', h_freq)
+        with ArgvSetter(args):
+            with pytest.warns(RuntimeWarning, match='The unit for chann*'):
+                mne_bids_inspect.run()
 
 
 run_tests_if_main()
