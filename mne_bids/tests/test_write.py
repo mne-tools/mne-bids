@@ -1376,7 +1376,7 @@ def test_write_anat(_bids_validate):
                    overwrite=False)
 
     # pass some invalid type as T1 MRI
-    with pytest.raises(ValueError, match='must be a path to a MRI'):
+    with pytest.raises(ValueError, match='must be a path to an MRI'):
         write_anat(9999999999999, bids_path=bids_path, raw=raw,
                    trans=trans, verbose=True, deface=False, overwrite=True)
 

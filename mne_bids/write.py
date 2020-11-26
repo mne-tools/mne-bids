@@ -1345,7 +1345,7 @@ def write_anat(image, bids_path, raw=None, trans=None, landmarks=None,
         # t1w -> str conversion failed, so maybe the user passed an nibabel
         # object instead of a path.
         if type(image) not in nib.all_image_classes:
-            raise ValueError('`image` must be a path to a MRI data '
+            raise ValueError('`image` must be a path to an MRI data '
                              'file , or a nibabel image object, but it is of '
                              'type "{}"'.format(type(image)))
     else:
