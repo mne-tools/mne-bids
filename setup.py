@@ -38,6 +38,18 @@ if __name__ == "__main__":
           long_description=open('README.md').read(),
           long_description_content_type='text/markdown',
           python_requires='~=3.6',
+          install_requres=[
+              'mne >=0.21',
+              'numpy >=1.14',
+              'scipy >=0.18.1',
+          ],
+          extras_require={
+              'full': [
+                  'nibabel >=2.2',
+                  'pybv >=0.4',
+                  'matplotlib'
+              ]
+          },
           classifiers=[
               'Intended Audience :: Science/Research',
               'Intended Audience :: Developers',
