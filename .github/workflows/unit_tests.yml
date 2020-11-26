@@ -44,7 +44,7 @@ jobs:
       run: python setup.py bdist_wheel
     - name: Install wheel
       run: |
-       pip install ./dist/mne-bids-*
+        pip install ./dist/mne_bids-*.whl
         python -c 'import mne_bids; print(mne_bids.__version__)'
     - name: Remove wheel install
       run: |
