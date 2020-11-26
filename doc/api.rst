@@ -39,6 +39,7 @@ mne_bids
    get_entity_vals
    get_datatypes
    update_sidecar_json
+   inspect_dataset
 
 mne_bids.stats
 --------------
