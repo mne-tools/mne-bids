@@ -2,9 +2,10 @@ from pathlib import Path
 
 from mne_bids import read_raw_bids, mark_bad_channels
 from mne_bids.read import _from_tsv
+from mne_bids.config import ALLOWED_DATATYPE_EXTENSIONS
 
 
-def inspect_dataset(bids_path, block=True, verbose=None):
+def inspect_dataset(bids_path, verbose=None):
     """Inspect and annotate BIDS raw data.
 
     This function allows you to browse MEG and EEG raw data stored in a BIDS
@@ -18,29 +19,41 @@ def inspect_dataset(bids_path, block=True, verbose=None):
                  include modification of annotations and automated bad channel
                  detection.
 
+    .. note:: Currently, only MEG, EEG, and iEEG data can be inspected.
+
     Parameters
     ----------
     bids_path : BIDSPath
-        A :class:`mne_bids.BIDSPath` containing enough information to uniquely
-        identify the raw data file. If this ``BIDSPath`` is accepted by
-        :func:`mne_bids.read_raw_bids`, it will work here.
-    block : bool
-        Whether to halt further code execution until the inspection window has
-        been closed.
+        A :class:`mne_bids.BIDSPath` containing at least a ``root``. All
+        matching files will be inspected. To select only a subset of the data,
+        set more :class:`mne_bids.BIDSPath` attributes. If ``datatype`` is not
+        set and multiple datatypes are found, they will be inspected in the
+        following order: MEG, EEG, iEEG.
+        To read a specific file, set all the :class:`mne_bids.BIDSPath`
+        attributes required to uniquely identify the file: If this ``BIDSPath``
+        is accepted by :func:`mne_bids.read_raw_bids`, it will work here.
     verbose : bool | None
         If a boolean, whether or not to produce verbose output. If ``None``,
         use the default log level.
     """
-    fig = _inspect_raw(bids_path=bids_path, block=block, verbose=verbose)
-    return fig
+    bids_paths = []
+    for datatype in ('meg', 'eeg', 'ieeg'):
+        matches = [p for p in bids_path.match()
+                   if p.extension is None or
+                   p.extension in ALLOWED_DATATYPE_EXTENSIONS[datatype]]
+        bids_paths.extend(matches)
+
+    for bids_path_ in bids_paths:
+        _inspect_raw(bids_path=bids_path_, verbose=verbose)
 
 
 # XXX This this should probably be refactored into a class attribute someday.
-_global_vars = dict(dialog_fig=None,
+_global_vars = dict(raw_fig=None,
+                    dialog_fig=None,
                     mne_close_key=None)
 
 
-def _inspect_raw(*, bids_path, block, verbose=None):
+def _inspect_raw(*, bids_path, verbose=None):
     """Raw data inspection."""
     # Delay the import
     import matplotlib
@@ -53,7 +66,6 @@ def _inspect_raw(*, bids_path, block, verbose=None):
     fig = raw.plot(title=f'{bids_path.root.name}: {bids_path.basename}',
                    show_options=True, block=False, show=False,
                    verbose='warning')
-    _global_vars['mne_close_key'] = fig.mne.close_key
 
     # Add our own event handlers so that when the MNE Raw Browser is being
     # closed, our dialog box will pop up, asking whether to save changes.
@@ -61,11 +73,12 @@ def _inspect_raw(*, bids_path, block, verbose=None):
         mne_raw_fig = event.canvas.figure
         new_bads = mne_raw_fig.mne.info['bads'].copy()
 
-        _global_vars['dialog_fig'] = _save_bads_if_changed(
-            old_bads=old_bads,
-            new_bads=new_bads,
-            bids_path=bids_path,
-            verbose=verbose)
+        _save_bads_if_changed(old_bads=old_bads,
+                              new_bads=new_bads,
+                              bids_path=bids_path,
+                              verbose=verbose)
+        _global_vars['raw_fig'] = None
+        _global_vars['mne_close_key'] = None
 
     def _keypress_callback(event):
         if event.key == _global_vars['mne_close_key']:
@@ -75,8 +88,10 @@ def _inspect_raw(*, bids_path, block, verbose=None):
     fig.canvas.mpl_connect('key_press_event', _keypress_callback)
 
     if matplotlib.get_backend() != 'agg':
-        plt.show(block=block)
-    return fig
+        plt.show(block=True)
+
+    _global_vars['raw_fig'] = fig
+    _global_vars['mne_close_key'] = fig.mne.close_key
 
 
 def _save_bads_if_changed(*, old_bads, new_bads, bids_path, verbose):
@@ -140,10 +155,12 @@ def _save_bads_dialog_box(*, bads, bids_path, verbose):
     # Define callback functions.
     def _save_callback(event):
         plt.close(event.canvas.figure)  # Close dialog
+        _global_vars['dialog_fig'] = None
         _save_bads(bads=bads, bids_path=bids_path, verbose=verbose)
 
     def _dont_save_callback(event):
         plt.close(event.canvas.figure)  # Close dialog
+        _global_vars['dialog_fig'] = None
 
     def _keypress_callback(event):
         if event.key == 'return':
@@ -159,7 +176,8 @@ def _save_bads_dialog_box(*, bads, bids_path, verbose):
 
     if matplotlib.get_backend() != 'agg':
         fig.show()
-    return fig
+
+    _global_vars['dialog_fig'] = fig
 
 
 def _save_bads(*, bads, bids_path, verbose):

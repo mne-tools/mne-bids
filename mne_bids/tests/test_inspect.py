@@ -52,7 +52,7 @@ def return_bids_test_dir(tmpdir_factory):
 @requires_version('mne', '0.22')
 @pytest.mark.parametrize('save_changes', (True, False))
 @pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
-def test_inspect(return_bids_test_dir, save_changes):
+def test_inspect_single_file(return_bids_test_dir, save_changes):
     from mne.utils._testing import _click_ch_name
     import matplotlib
     matplotlib.use('Agg')
@@ -61,15 +61,16 @@ def test_inspect(return_bids_test_dir, save_changes):
     raw = read_raw_bids(bids_path=bids_path, verbose='error')
     old_bads = raw.info['bads'].copy()
 
-    fig = inspect_dataset(bids_path, block=False)
+    inspect_dataset(bids_path)
+    raw_fig = mne_bids.inspect._global_vars['raw_fig']
 
     # Mark some channels as bad by clicking on their name.
-    _click_ch_name(fig, ch_index=0, button=1)
-    _click_ch_name(fig, ch_index=1, button=1)
-    _click_ch_name(fig, ch_index=4, button=1)
+    _click_ch_name(raw_fig, ch_index=0, button=1)
+    _click_ch_name(raw_fig, ch_index=1, button=1)
+    _click_ch_name(raw_fig, ch_index=4, button=1)
 
     # Closing the window should open a dialog box.
-    fig.canvas.key_press_event(fig.mne.close_key)
+    raw_fig.canvas.key_press_event(raw_fig.mne.close_key)
     fig_dialog = mne_bids.inspect._global_vars['dialog_fig']
 
     if save_changes:
@@ -85,3 +86,24 @@ def test_inspect(return_bids_test_dir, save_changes):
         assert len(new_bads) > len(old_bads)
     else:
         assert old_bads == new_bads
+
+
+@requires_matplotlib
+@requires_version('mne', '0.22')
+@pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+def test_inspect_multiple_files(return_bids_test_dir):
+    import matplotlib
+    matplotlib.use('Agg')
+
+    bids_path = _bids_path.copy().update(root=return_bids_test_dir)
+
+    # Create a second subject
+    raw = read_raw_bids(bids_path=bids_path, verbose='error')
+    write_raw_bids(raw, bids_path.copy().update(subject='02'))
+    del raw
+
+    # Inspection should end with the second subject.
+    inspect_dataset(bids_path.copy().update(subject=None))
+    raw_fig = mne_bids.inspect._global_vars['raw_fig']
+    assert raw_fig.mne.info['subject_info']['participant_id'] == 'sub-02'
+    raw_fig.canvas.key_press_event(raw_fig.mne.close_key)
