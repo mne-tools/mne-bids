@@ -1,14 +1,14 @@
 """
-===============================================
-03. Changing which channels are marked as "bad"
-===============================================
+=========================================================
+03. Interactive data inspection and bad channel selection
+=========================================================
 
-You can use MNE-BIDS to mark MEG or (i)EEG recording channels as "bad", for
+You can use MNE-BIDS interactively inspect your  MEG or (i)EEG data.
+Problematic channels can be marked as "bad", for
 example if the connected sensor produced mostly noise – or no signal at
-all.
-
-Similarly, you can declare channels as "good", should you discover they were
-incorrectly marked as bad.
+all. Similarly, you can declare channels as "good", should you discover they
+were incorrectly marked as bad. Bad channel selection can also be performed
+non-interactively.
 """
 
 # Authors: Richard Höchenberger <richard.hoechenberger@gmail.com>
@@ -23,7 +23,8 @@ incorrectly marked as bad.
 
 import os.path as op
 import mne
-from mne_bids import BIDSPath, write_raw_bids, read_raw_bids, mark_bad_channels
+from mne_bids import (BIDSPath, write_raw_bids, read_raw_bids,
+                      inspect_dataset, mark_bad_channels)
 
 data_path = mne.datasets.sample.data_path()
 raw_fname = op.join(data_path, 'MEG', 'sample', 'sample_audvis_raw.fif')
@@ -36,6 +37,23 @@ raw.info['line_freq'] = 60  # Specify power line frequency as required by BIDS.
 write_raw_bids(raw, bids_path=bids_path, overwrite=True, verbose=False)
 
 ###############################################################################
+# Interactive use
+# ---------------
+#
+# Using :func:`mne_bids.inspect_dataset`, we can interactively explore the raw
+# data and toggle the channel status – ``bad`` or ``good`` – by clicking on the
+# respective traces or channel names. If there are any SSP projectors stored
+# with the data, a small popup window will allow you to toggle the projectors
+# on and off. If you changed the selection of bad channels, you will be
+# prompted whether you would like to save the changes when closing the main
+# window.
+
+inspect_dataset(bids_path)
+
+###############################################################################
+# Non-interactive (programmatic) bad channel selection
+# ----------------------------------------------------
+#
 # Read the (now BIDS-formatted) data and print a list of channels currently
 # marked as bad.
 
