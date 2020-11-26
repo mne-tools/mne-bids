@@ -71,9 +71,11 @@ def run():
                          recording=opt.recording, datatype=opt.datatype,
                          suffix=opt.suffix, extension=opt.extension,
                          root=opt.bids_root)
+    l_freq = None if opt.l_freq is None else float(opt.l_freq)
+    h_freq = None if opt.h_freq is None else float(opt.h_freq)
 
     logger.info(f'Inspecting {bids_path.basename} …')
-    inspect_dataset(bids_path=bids_path, l_freq=opt.l_freq, h_freq=opt.h_freq,
+    inspect_dataset(bids_path=bids_path, l_freq=l_freq, h_freq=h_freq,
                     verbose=opt.verbose)
 
 
