@@ -39,8 +39,9 @@ def inspect_dataset(bids_path, verbose=None):
     bids_paths = []
     for datatype in ('meg', 'eeg', 'ieeg'):
         matches = [p for p in bids_path.match()
-                   if p.extension is None or
-                   p.extension in ALLOWED_DATATYPE_EXTENSIONS[datatype]]
+                   if (p.extension is None or
+                   p.extension in ALLOWED_DATATYPE_EXTENSIONS[datatype]) and
+                   p.acquisition != 'crosstalk']
         bids_paths.extend(matches)
 
     for bids_path_ in bids_paths:

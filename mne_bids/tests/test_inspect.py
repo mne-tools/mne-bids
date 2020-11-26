@@ -9,7 +9,8 @@ from mne.datasets import testing
 from mne.utils import requires_version
 from mne.utils._testing import requires_module
 
-from mne_bids import BIDSPath, read_raw_bids, write_raw_bids, inspect_dataset
+from mne_bids import (BIDSPath, read_raw_bids, write_raw_bids, inspect_dataset,
+                      write_meg_calibration, write_meg_crosstalk)
 import mne_bids.inspect
 
 from test_read import warning_str
@@ -33,6 +34,8 @@ def return_bids_test_dir(tmpdir_factory):
                 'Visual/Right': 4, 'Smiley': 5, 'Button': 32}
     events_fname = op.join(data_path, 'MEG', 'sample',
                            'sample_audvis_trunc_raw-eve.fif')
+    cal_fname = op.join(data_path, 'SSS', 'sss_cal_mgh.dat')
+    crosstalk_fname = op.join(data_path, 'SSS', 'ct_sparse.fif')
 
     raw = mne.io.read_raw_fif(raw_fname)
     raw.info['line_freq'] = 60
@@ -44,6 +47,8 @@ def return_bids_test_dir(tmpdir_factory):
     bids_path = _bids_path.copy().update(root=bids_root)
     write_raw_bids(raw, bids_path=bids_path, events_data=events,
                    event_id=event_id, overwrite=True)
+    write_meg_calibration(cal_fname, bids_path=bids_path)
+    write_meg_crosstalk(crosstalk_fname, bids_path=bids_path)
 
     return bids_root
 
