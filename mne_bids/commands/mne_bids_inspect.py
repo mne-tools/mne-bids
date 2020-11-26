@@ -60,12 +60,6 @@ def run():
     if opt.bids_root is None:
         parser.print_help()
         parser.error('You must specify bids_root')
-    if opt.subject is None:
-        parser.print_help()
-        parser.error('You must specify a subject')
-    if opt.task is None:
-        parser.print_help()
-        parser.error('You must specify a task')
 
     bids_path = BIDSPath(subject=opt.subject, session=opt.session,
                          task=opt.task, acquisition=opt.acquisition,
