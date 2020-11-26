@@ -53,7 +53,7 @@ jobs:
     
     - name: Test extras install
       run: |
-        pip install -y .[full]
+        pip install .[full]
         python -c 'import mne_bids; print(mne_bids.__version__)'
         python -c 'import pybv; print(pybv.__version__)'
         python -c 'import nibabel; print(nibabel.__version__)'
