@@ -15,7 +15,7 @@ Dependencies
 * ``scipy`` (>=0.18.1)
 * ``nibabel`` (>=2.2, optional, for processing MRI data)
 * ``pybv`` (>=0.4, optional, for writing BrainVision data)
-* ``pandas`` (>=0.23.4, optional)
+* ``pandas`` (>=0.23.4, optional, for generating event statistics)
 * ``matplotlib`` (optional, for using the interactive data inspector)
 
 
@@ -28,45 +28,42 @@ You may choose to install ``mne-bids``
 Installation via pip
 --------------------
 
-Besides ``numpy`` and ``scipy`` (which are included in the standard Anaconda
-installation), you will need to install the most recent version of ``MNE``
-using the ``pip`` tool:
+To install MNE-BIDS including all dependencies required to use all features,
+simply run:
 
 .. code-block:: bash
 
-   $ pip install -U mne
+   pip install --user -U mne-bids[full]
 
+This ``pip`` command will also work if you want to upgrade if a newer version
+of ``mne-bids`` is available.
 
-Then install ``mne-bids``\ :
+If you don't require advanced features like interactive visual data inspection,
+you may also install a basic version of MNE-BIDS via
 
 .. code-block:: bash
 
-   $ pip install -U mne-bids
+   pip install --user -U mne-bids
 
+If you want to install a snapshot of the current development version, run:
 
-These ``pip`` commands also work if you want to upgrade if a newer version of
-``mne-bids`` is available. If you do not have administrator privileges on the
-computer, use the ``--user`` flag with ``pip``.
+.. code-block:: bash
+
+   pip install --user -U https://api.github.com/repos/mne-tools/mne-bids/zipball/master
 
 To check if everything worked fine, the following command should not give any
 error messages:
 
 .. code-block:: bash
 
-   $ python -c 'import mne_bids'
+   python -c 'import mne_bids'
 
-For full functionality of ``mne-bids``, you will also need to ``pip install``
-the following packages:
-
-- ``nibabel``, for interacting with MRI data
-- ``pybv``, to convert EEG data to BrainVision if input format is not valid according to EEG BIDS specifications
-
-If you want to use the latest development version of ``mne-bids``, use the
-following command:
+MNE-BIDS works best with the latest stable release of MNE-Python. To ensure
+MNE-Python is up-to-date, run:
 
 .. code-block:: bash
 
-   $ pip install https://api.github.com/repos/mne-tools/mne-bids/zipball/master
+   pip install --user -U mne
 
 Installation via conda
 ----------------------
@@ -80,8 +77,8 @@ Activate the correct ``conda`` environment and install ``mne-bids``:
 
 .. code-block:: bash
 
-   $ conda activate mne
-   $ conda install --channel conda-forge --no-deps mne-bids
+   conda activate mne
+   conda install --channel conda-forge --no-deps mne-bids
 
 This approach ensures that the installation of ``mne-bids`` doesn't alter any
 other packages in your existing ``conda`` environment.
@@ -94,11 +91,11 @@ dependencies) will provide you with a working copy of of both ``mne`` and
 
 .. code-block:: bash
 
-   $ conda create --name mne --channel conda-forge mne-bids
+   conda create --name mne --channel conda-forge mne-bids
 
 After activating the environment, you should be ready to use ``mne-bids``:
 
 .. code-block:: bash
 
-   $ conda activate mne
-   $ python -c 'import mne_bids'
+   conda activate mne
+   python -c 'import mne_bids'

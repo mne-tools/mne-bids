@@ -776,10 +776,9 @@ Let us look at the directory structure
     |------ ses-01/
     |--------- sub-01_ses-01_scans.tsv
     |--------- anat/
+    |------------ sub-01_ses-01_FLASH.nii.gz
     |------------ sub-01_ses-01_T1w.json
     |------------ sub-01_ses-01_T1w.nii.gz
-    |------------ sub-01_ses-01_task-audiovisual_run-01_T1w.json
-    |------------ sub-01_ses-01_task-audiovisual_run-01_T1w.nii.gz
     |--------- meg/
     |------------ sub-01_ses-01_coordsystem.json
     |------------ sub-01_ses-01_task-audiovisual_run-01_channels.tsv
@@ -897,7 +896,7 @@ Finally, we can read the empty room file using
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  3.273 seconds)
+   **Total running time of the script:** ( 0 minutes  3.403 seconds)
 
 
 .. _sphx_glr_download_auto_examples_convert_empty_room.py:

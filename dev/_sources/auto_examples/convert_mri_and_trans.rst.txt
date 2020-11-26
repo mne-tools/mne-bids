@@ -371,11 +371,12 @@ retrieve our transformation matrix :code:`trans`.
 
 
     # First create the BIDSPath object.
-    t1w_bids_path = BIDSPath(subject=sub, session=ses, root=output_path)
+    t1w_bids_path = \
+        BIDSPath(subject=sub, session=ses, root=output_path, suffix='T1w')
 
     # We use the write_anat function
     t1w_bids_path = write_anat(
-        t1w=t1_mgh_fname,  # path to the MRI scan
+        image=t1_mgh_fname,  # path to the MRI scan
         bids_path=t1w_bids_path,
         raw=raw,  # the raw MEG data file connected to the MRI
         trans=trans,  # our transformation matrix
@@ -539,13 +540,50 @@ plot the results.
 
 
 
+We can write another types of MRI data such as FLASH images for BEM models
+
+
+.. code-block:: default
+
+
+    flash_mgh_fname = \
+        op.join(data_path, 'subjects', 'sample', 'mri', 'flash', 'mef05.mgz')
+
+    flash_bids_path = \
+        BIDSPath(subject=sub, session=ses, root=output_path, suffix='FLASH')
+
+    write_anat(
+        image=flash_mgh_fname,
+        bids_path=flash_bids_path,
+        raw=raw,
+        verbose=True
+    )
+
+
+
+
+
+.. rst-class:: sphx-glr-script-out
+
+ Out:
+
+ .. code-block:: none
+
+
+    BIDSPath(
+    root: /home/circleci/mne_data/MNE-sample-data-bids
+    datatype: anat
+    basename: sub-01_ses-01_FLASH.nii.gz)
+
+
+
 We can deface the MRI for anonymization by passing ``deface=True``.
 
 
 .. code-block:: default
 
     t1w_bids_path = write_anat(
-        t1w=t1_mgh_fname,  # path to the MRI scan
+        image=t1_mgh_fname,  # path to the MRI scan
         bids_path=bids_path,
         raw=raw,  # the raw MEG data file connected to the MRI
         trans=trans,  # our transformation matrix
@@ -578,7 +616,7 @@ We can deface the MRI for anonymization by passing ``deface=True``.
  .. code-block:: none
 
 
-    Writing '/home/circleci/mne_data/MNE-sample-data-bids/sub-01/ses-01/anat/sub-01_ses-01_task-audiovisual_run-01_T1w.json'...
+    Writing '/home/circleci/mne_data/MNE-sample-data-bids/sub-01/ses-01/anat/sub-01_ses-01_T1w.json'...
 
     {
         "AnatomicalLandmarkCoordinates": {
@@ -616,7 +654,7 @@ We can deface the MRI for anonymization by passing ``deface=True``.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  15.038 seconds)
+   **Total running time of the script:** ( 0 minutes  19.254 seconds)
 
 
 .. _sphx_glr_download_auto_examples_convert_mri_and_trans.py:

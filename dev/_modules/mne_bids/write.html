@@ -1361,7 +1361,7 @@
     <span class="k">return</span> <span class="n">bids_path</span></div>
 
 
-<div class="viewcode-block" id="write_anat"><a class="viewcode-back" href="../../generated/mne_bids.write_anat.html#mne_bids.write_anat">[docs]</a><span class="k">def</span> <span class="nf">write_anat</span><span class="p">(</span><span class="n">t1w</span><span class="p">,</span> <span class="n">bids_path</span><span class="p">,</span> <span class="n">raw</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">trans</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">landmarks</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<div class="viewcode-block" id="write_anat"><a class="viewcode-back" href="../../generated/mne_bids.write_anat.html#mne_bids.write_anat">[docs]</a><span class="k">def</span> <span class="nf">write_anat</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">bids_path</span><span class="p">,</span> <span class="n">raw</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">trans</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">landmarks</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                <span class="n">deface</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Put anatomical MRI data into a BIDS format.</span>
 
@@ -1372,13 +1372,15 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
+<span class="sd">    image : str | pathlib.Path | nibabel image object</span>
+<span class="sd">        Path to an MRI scan (e.g. T1w) of the subject. Can be in any format</span>
+<span class="sd">        readable by nibabel. Can also be a nibabel image object of an</span>
+<span class="sd">        MRI scan. Will be written as a .nii.gz file.</span>
 <span class="sd">    bids_path : BIDSPath</span>
 <span class="sd">        The file to write. The `mne_bids.BIDSPath` instance passed here</span>
 <span class="sd">        **must** have the ``root`` and ``subject`` attributes set.</span>
-<span class="sd">    t1w : str | pathlib.Path | nibabel image object</span>
-<span class="sd">        Path to a T1 weighted MRI scan of the subject. Can be in any format</span>
-<span class="sd">        readable by nibabel. Can also be a nibabel image object of a T1</span>
-<span class="sd">        weighted MRI scan. Will be written as a .nii.gz file.</span>
+<span class="sd">        The suffix is assumed to be &#39;T1w&#39; is not present. It can</span>
+<span class="sd">        also be `&#39;FLASH&#39;` for example.</span>
 <span class="sd">    raw : instance of Raw | None</span>
 <span class="sd">        The raw data of `subject` corresponding to `t1w`. If `raw` is None,</span>
 <span class="sd">        `trans` has to be None as well</span>
@@ -1444,37 +1446,40 @@
         <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">datatype</span><span class="o">=</span><span class="s1">&#39;anat&#39;</span><span class="p">)</span>
 
     <span class="c1"># set extension and suffix hard-coded to T1w and compressed Nifti</span>
-    <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;T1w&#39;</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.nii.gz&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">suffix</span><span class="p">:</span>
+        <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">suffix</span><span class="o">=</span><span class="s1">&#39;T1w&#39;</span><span class="p">)</span>
 
-    <span class="c1"># create the directory for the T1w dataset</span>
+    <span class="n">bids_path</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">task</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">run</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.nii.gz&#39;</span><span class="p">)</span>
+
+    <span class="c1"># create the directory for the MRI data</span>
     <span class="n">bids_path</span><span class="o">.</span><span class="n">directory</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="c1"># Try to read our T1 file and convert to MGH representation</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="n">t1w</span> <span class="o">=</span> <span class="n">_path_to_str</span><span class="p">(</span><span class="n">t1w</span><span class="p">)</span>
+        <span class="n">image</span> <span class="o">=</span> <span class="n">_path_to_str</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
         <span class="c1"># t1w -&gt; str conversion failed, so maybe the user passed an nibabel</span>
         <span class="c1"># object instead of a path.</span>
-        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">t1w</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">nib</span><span class="o">.</span><span class="n">all_image_classes</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;`t1w` must be a path to a T1 weighted MRI data &#39;</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">image</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">nib</span><span class="o">.</span><span class="n">all_image_classes</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;`image` must be a path to an MRI data &#39;</span>
                              <span class="s1">&#39;file , or a nibabel image object, but it is of &#39;</span>
-                             <span class="s1">&#39;type &quot;</span><span class="si">{}</span><span class="s1">&quot;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">t1w</span><span class="p">)))</span>
+                             <span class="s1">&#39;type &quot;</span><span class="si">{}</span><span class="s1">&quot;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">image</span><span class="p">)))</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="c1"># t1w -&gt; str conversion in the try block was successful, so load the</span>
         <span class="c1"># file from the specified location. We do this here and not in the try</span>
         <span class="c1"># block to keep the try block as short as possible.</span>
-        <span class="n">t1w</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">t1w</span><span class="p">)</span>
+        <span class="n">image</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
 
-    <span class="n">t1w</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">Nifti1Image</span><span class="p">(</span><span class="n">t1w</span><span class="o">.</span><span class="n">dataobj</span><span class="p">,</span> <span class="n">t1w</span><span class="o">.</span><span class="n">affine</span><span class="p">)</span>
+    <span class="n">image</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">Nifti1Image</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">dataobj</span><span class="p">,</span> <span class="n">image</span><span class="o">.</span><span class="n">affine</span><span class="p">)</span>
     <span class="c1"># XYZT_UNITS = NIFT_UNITS_MM (10 in binary or 2 in decimal)</span>
     <span class="c1"># seems to be the default for Nifti files</span>
     <span class="c1"># https://nifti.nimh.nih.gov/nifti-1/documentation/nifti1fields/nifti1fields_pages/xyzt_units.html</span>
-    <span class="k">if</span> <span class="n">t1w</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s1">&#39;xyzt_units&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="n">t1w</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s1">&#39;xyzt_units&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;uint8&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">image</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s1">&#39;xyzt_units&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">image</span><span class="o">.</span><span class="n">header</span><span class="p">[</span><span class="s1">&#39;xyzt_units&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;uint8&#39;</span><span class="p">)</span>
 
     <span class="c1"># Check if we have necessary conditions for writing a sidecar JSON</span>
     <span class="k">if</span> <span class="n">trans</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">landmarks</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">t1_mgh</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">MGHImage</span><span class="p">(</span><span class="n">t1w</span><span class="o">.</span><span class="n">dataobj</span><span class="p">,</span> <span class="n">t1w</span><span class="o">.</span><span class="n">affine</span><span class="p">)</span>
+        <span class="n">img_mgh</span> <span class="o">=</span> <span class="n">nib</span><span class="o">.</span><span class="n">MGHImage</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">dataobj</span><span class="p">,</span> <span class="n">image</span><span class="o">.</span><span class="n">affine</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">landmarks</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">raw</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -1496,7 +1501,7 @@
                 <span class="n">mri_landmarks</span> <span class="o">=</span> <span class="n">_meg_landmarks_to_mri_landmarks</span><span class="p">(</span>
                     <span class="n">landmarks</span><span class="p">,</span> <span class="n">trans</span><span class="p">)</span>
                 <span class="n">mri_landmarks</span> <span class="o">=</span> <span class="n">_mri_landmarks_to_mri_voxels</span><span class="p">(</span>
-                    <span class="n">mri_landmarks</span><span class="p">,</span> <span class="n">t1_mgh</span><span class="p">)</span>
+                    <span class="n">mri_landmarks</span><span class="p">,</span> <span class="n">img_mgh</span><span class="p">)</span>
             <span class="k">elif</span> <span class="n">coord_frame</span> <span class="ow">in</span> <span class="p">(</span><span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_MNE_COORD_MRI_VOXEL</span><span class="p">,</span>
                                  <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_COORD_MRI</span><span class="p">):</span>
                 <span class="k">if</span> <span class="n">trans</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -1505,7 +1510,7 @@
                                      <span class="s1">&#39;only one of these.&#39;</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">coord_frame</span> <span class="o">==</span> <span class="n">FIFF</span><span class="o">.</span><span class="n">FIFFV_COORD_MRI</span><span class="p">:</span>
                     <span class="n">landmarks</span> <span class="o">=</span> <span class="n">_mri_landmarks_to_mri_voxels</span><span class="p">(</span><span class="n">landmarks</span> <span class="o">*</span> <span class="mf">1e3</span><span class="p">,</span>
-                                                             <span class="n">t1_mgh</span><span class="p">)</span>
+                                                             <span class="n">img_mgh</span><span class="p">)</span>
                 <span class="n">mri_landmarks</span> <span class="o">=</span> <span class="n">landmarks</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Coordinate frame not recognized, &#39;</span>
@@ -1527,11 +1532,11 @@
             <span class="n">mri_landmarks</span> <span class="o">=</span> <span class="n">_meg_landmarks_to_mri_landmarks</span><span class="p">(</span>
                 <span class="n">meg_landmarks</span><span class="p">,</span> <span class="n">trans</span><span class="p">)</span>
             <span class="n">mri_landmarks</span> <span class="o">=</span> <span class="n">_mri_landmarks_to_mri_voxels</span><span class="p">(</span>
-                <span class="n">mri_landmarks</span><span class="p">,</span> <span class="n">t1_mgh</span><span class="p">)</span>
+                <span class="n">mri_landmarks</span><span class="p">,</span> <span class="n">img_mgh</span><span class="p">)</span>
 
         <span class="c1"># Write sidecar.json</span>
-        <span class="n">t1w_json</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
-        <span class="n">t1w_json</span><span class="p">[</span><span class="s1">&#39;AnatomicalLandmarkCoordinates&#39;</span><span class="p">]</span> <span class="o">=</span> \
+        <span class="n">img_json</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+        <span class="n">img_json</span><span class="p">[</span><span class="s1">&#39;AnatomicalLandmarkCoordinates&#39;</span><span class="p">]</span> <span class="o">=</span> \
             <span class="p">{</span><span class="s1">&#39;LPA&#39;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">mri_landmarks</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]),</span>
              <span class="s1">&#39;NAS&#39;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">mri_landmarks</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]),</span>
              <span class="s1">&#39;RPA&#39;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">mri_landmarks</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="p">:])}</span>
@@ -1540,10 +1545,10 @@
             <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="s1">&#39;Wanted to write a file but it already exists and &#39;</span>
                           <span class="s1">&#39;`overwrite` is set to False. File: &quot;</span><span class="si">{}</span><span class="s1">&quot;&#39;</span>
                           <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">fname</span><span class="p">))</span>
-        <span class="n">_write_json</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">t1w_json</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
+        <span class="n">_write_json</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">img_json</span><span class="p">,</span> <span class="n">overwrite</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">deface</span><span class="p">:</span>
-            <span class="n">t1w</span> <span class="o">=</span> <span class="n">_deface</span><span class="p">(</span><span class="n">t1w</span><span class="p">,</span> <span class="n">mri_landmarks</span><span class="p">,</span> <span class="n">deface</span><span class="p">)</span>
+            <span class="n">image</span> <span class="o">=</span> <span class="n">_deface</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">mri_landmarks</span><span class="p">,</span> <span class="n">deface</span><span class="p">)</span>
 
     <span class="c1"># Save anatomical data</span>
     <span class="k">if</span> <span class="n">op</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">bids_path</span><span class="p">):</span>
@@ -1553,7 +1558,7 @@
             <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Wanted to write a file but it already exists and &#39;</span>
                           <span class="sa">f</span><span class="s1">&#39;`overwrite` is set to False. File: &quot;</span><span class="si">{</span><span class="n">bids_path</span><span class="si">}</span><span class="s1">&quot;&#39;</span><span class="p">)</span>
 
-    <span class="n">nib</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">t1w</span><span class="p">,</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span><span class="p">)</span>
+    <span class="n">nib</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">bids_path</span><span class="o">.</span><span class="n">fpath</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">bids_path</span></div>
 
