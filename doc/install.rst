@@ -10,12 +10,13 @@ Installation
 Dependencies
 ------------
 
+* ``mne`` (>=0.21)
 * ``numpy`` (>=1.14)
 * ``scipy`` (>=0.18.1)
-* ``mne`` (>=0.21)
-* ``nibabel`` (>=2.2, optional)
-* ``pybv`` (>=0.4, optional)
+* ``nibabel`` (>=2.2, optional, for processing MRI data)
+* ``pybv`` (>=0.4, optional, for writing BrainVision data)
 * ``pandas`` (>=0.23.4, optional)
+* ``matplotlib`` (optional, for using the interactive data inspector)
 
 
 We recommend the `Anaconda <https://www.anaconda.com/download/>`_ Python
