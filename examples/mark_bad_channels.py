@@ -51,6 +51,14 @@ write_raw_bids(raw, bids_path=bids_path, overwrite=True, verbose=False)
 inspect_dataset(bids_path)
 
 ###############################################################################
+# You can even apply frequency filters when viewing the data: A high-pass
+# filter can remove slow drifts, while a low-pass filter will get rid of
+# high-frequency artifacts. This can make visual inspection easier. Let's
+# apply filters with a 1-Hz high-pass cutoff, and a 30-Hz low-pass cutoff:
+
+inspect_dataset(bids_path, l_freq=1., h_freq=30.)
+
+###############################################################################
 # Non-interactive (programmatic) bad channel selection
 # ----------------------------------------------------
 #

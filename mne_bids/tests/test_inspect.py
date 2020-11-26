@@ -112,3 +112,16 @@ def test_inspect_multiple_files(return_bids_test_dir):
     raw_fig = mne_bids.inspect._global_vars['raw_fig']
     assert raw_fig.mne.info['subject_info']['participant_id'] == 'sub-02'
     raw_fig.canvas.key_press_event(raw_fig.mne.close_key)
+
+
+@requires_matplotlib
+@requires_version('mne', '0.22')
+@pytest.mark.parametrize(('l_freq', 'h_freq'),
+                         [(None, None),
+                          (1, None),
+                          (None, 30),
+                          (1, 30)])
+@pytest.mark.filterwarnings(warning_str['channel_unit_changed'])
+def test_inspect_freq_filter(return_bids_test_dir, l_freq, h_freq):
+    bids_path = _bids_path.copy().update(root=return_bids_test_dir)
+    inspect_dataset(bids_path, l_freq=l_freq, h_freq=h_freq)

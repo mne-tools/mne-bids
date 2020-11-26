@@ -48,6 +48,10 @@ def run():
     parser.add_option('--ext', dest='extension',
                       help='The filename extension, including the leading '
                            'period, e.g. .fif')
+    parser.add_option('--l_freq', dest='l_freq',
+                      help='The high-pass filter cutoff frequency')
+    parser.add_option('--h_freq', dest='h_freq',
+                      help='The low-pass filter cutoff frequency')
     parser.add_option('--verbose', dest='verbose', action='store_true',
                       help='Whether do generate additional diagnostic output')
 
@@ -69,7 +73,8 @@ def run():
                          root=opt.bids_root)
 
     logger.info(f'Inspecting {bids_path.basename} …')
-    inspect_dataset(bids_path=bids_path, verbose=opt.verbose)
+    inspect_dataset(bids_path=bids_path, l_freq=opt.l_freq, h_freq=opt.h_freq,
+                    verbose=opt.verbose)
 
 
 if __name__ == '__main__':  # pragma: no cover

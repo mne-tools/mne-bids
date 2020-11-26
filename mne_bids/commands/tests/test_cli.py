@@ -290,7 +290,8 @@ def test_inspect(tmpdir):
     import matplotlib
     matplotlib.use('agg')
 
-    with ArgvSetter(('--bids_root', bids_root)):
+    args = ('--bids_root', bids_root, '--h_freq', 30.0)
+    with ArgvSetter(args):
         with pytest.warns(RuntimeWarning, match='The unit for chann*'):
             mne_bids_inspect.run()
 

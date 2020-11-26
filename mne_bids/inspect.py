@@ -5,7 +5,7 @@ from mne_bids.read import _from_tsv
 from mne_bids.config import ALLOWED_DATATYPE_EXTENSIONS
 
 
-def inspect_dataset(bids_path, verbose=None):
+def inspect_dataset(bids_path, l_freq=None, h_freq=None, verbose=None):
     """Inspect and annotate BIDS raw data.
 
     This function allows you to browse MEG and EEG raw data stored in a BIDS
@@ -32,6 +32,14 @@ def inspect_dataset(bids_path, verbose=None):
         To read a specific file, set all the :class:`mne_bids.BIDSPath`
         attributes required to uniquely identify the file: If this ``BIDSPath``
         is accepted by :func:`mne_bids.read_raw_bids`, it will work here.
+    l_freq : float | None
+        The high-pass filter cutoff frequency to apply when displaying the
+        data. This can be useful when inspecting data with slow drifts. If
+        ``None``, no high-pass filter will be applied.
+    h_freq : float | None
+        The low-pass filter cutoff frequency to apply when displaying the
+        data. This can be useful when inspecting data with high-frequency
+        artifacts. If ``None``, no low-pass filter will be applied.
     verbose : bool | None
         If a boolean, whether or not to produce verbose output. If ``None``,
         use the default log level.
@@ -45,7 +53,8 @@ def inspect_dataset(bids_path, verbose=None):
         bids_paths.extend(matches)
 
     for bids_path_ in bids_paths:
-        _inspect_raw(bids_path=bids_path_, verbose=verbose)
+        _inspect_raw(bids_path=bids_path_, l_freq=l_freq, h_freq=h_freq,
+                     verbose=verbose)
 
 
 # XXX This this should probably be refactored into a class attribute someday.
@@ -54,7 +63,7 @@ _global_vars = dict(raw_fig=None,
                     mne_close_key=None)
 
 
-def _inspect_raw(*, bids_path, verbose=None):
+def _inspect_raw(*, bids_path, l_freq, h_freq, verbose=None):
     """Raw data inspection."""
     # Delay the import
     import matplotlib
@@ -65,8 +74,8 @@ def _inspect_raw(*, bids_path, verbose=None):
     old_bads = raw.info['bads'].copy()
 
     fig = raw.plot(title=f'{bids_path.root.name}: {bids_path.basename}',
-                   show_options=True, block=False, show=False,
-                   verbose='warning')
+                   highpass=l_freq, lowpass=h_freq, show_options=True,
+                   block=False, show=False, verbose='warning')
 
     # Add our own event handlers so that when the MNE Raw Browser is being
     # closed, our dialog box will pop up, asking whether to save changes.
