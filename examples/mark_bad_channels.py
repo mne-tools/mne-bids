@@ -22,6 +22,8 @@ non-interactively.
 # "sample" data, and writing it in the BIDS format.
 
 import os.path as op
+import shutil
+
 import mne
 from mne_bids import (BIDSPath, write_raw_bids, read_raw_bids,
                       inspect_dataset, mark_bad_channels)
@@ -31,6 +33,19 @@ raw_fname = op.join(data_path, 'MEG', 'sample', 'sample_audvis_raw.fif')
 bids_root = op.join(data_path, '..', 'MNE-sample-data-bids')
 bids_path = BIDSPath(subject='01', session='01', task='audiovisual', run='01',
                      root=bids_root)
+
+###############################################################################
+# To ensure the output path doesn't contain any leftover files from previous
+# tests and example runs, we simply delete it.
+#
+# .. warning:: Do not delete directories that may contain important data!
+#
+
+if op.exists(bids_root):
+    shutil.rmtree(bids_root)
+
+###############################################################################
+# Now write the raw data to BIDS.
 
 raw = mne.io.read_raw_fif(raw_fname, verbose=False)
 raw.info['line_freq'] = 60  # Specify power line frequency as required by BIDS.

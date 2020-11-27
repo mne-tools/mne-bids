@@ -35,7 +35,7 @@ See the documentation pages in the MNE docs for more information on
 # We are importing everything we need for this example:
 
 import os.path as op
-import shutil as sh
+import shutil
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -60,8 +60,20 @@ event_id = {'Auditory/Left': 1, 'Auditory/Right': 2, 'Visual/Left': 3,
 raw_fname = op.join(data_path, 'MEG', 'sample', 'sample_audvis_raw.fif')
 events_data = op.join(data_path, 'MEG', 'sample', 'sample_audvis_raw-eve.fif')
 output_path = op.abspath(op.join(data_path, '..', 'MNE-sample-data-bids'))
+
+###############################################################################
+# To ensure the output path doesn't contain any leftover files from previous
+# tests and example runs, we simply delete it.
+#
+# .. warning:: Do not delete directories that may contain important data!
+#
+
 if op.exists(output_path):
-    sh.rmtree(output_path)
+    shutil.rmtree(output_path)
+
+###############################################################################
+# Read the input data and store it as BIDS data.
+
 raw = mne.io.read_raw_fif(raw_fname)
 raw.info['line_freq'] = 60  # specify power line frequency as required by BIDS
 

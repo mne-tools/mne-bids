@@ -20,6 +20,7 @@ checking out this group conversion example: :ref:`ex-convert-mne-sample`
 # Let us import ``mne_bids``
 
 import os.path as op
+import shutil
 
 import mne
 from mne.datasets import eegbci
@@ -59,6 +60,17 @@ data_dir = op.join(mne_data_dir, 'MNE-eegbci-data')
 # Make a path where we can save the data to
 bids_root = op.join(mne_data_dir, 'eegmmidb_bids_group_conversion')
 
+###############################################################################
+# To ensure the output path doesn't contain any leftover files from previous
+# tests and example runs, we simply delete it.
+#
+# .. warning:: Do not delete directories that may contain important data!
+#
+
+if op.exists(bids_root):
+    shutil.rmtree(bids_root)
+
+###############################################################################
 # Get a list of the raw objects for this dataset to use their dates
 # to determine the number of daysback to use to anonymize.
 # While we're looping through the files, also generate the
