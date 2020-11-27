@@ -93,8 +93,8 @@ def _inspect_raw(*, bids_path, l_freq, h_freq, show_annotations, verbose=None):
     # closed, our dialog box will pop up, asking whether to save changes.
     def _handle_close(event):
         mne_raw_fig = event.canvas.figure
-        # XXX Investigate why we need to use .inst in one instance and not in
-        # XXX the other!
+        # Bads alterations are only transferred to `inst` once the figure is
+        # closed; Annotation changes are immediately reflected in `inst`
         new_bads = mne_raw_fig.mne.info['bads'].copy()
         new_annotations = mne_raw_fig.mne.inst.annotations.copy()
 
