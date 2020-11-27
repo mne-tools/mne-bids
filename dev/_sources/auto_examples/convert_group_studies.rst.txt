@@ -43,6 +43,7 @@ Let us import ``mne_bids``
 
 
     import os.path as op
+    import shutil
 
     import mne
     from mne.datasets import eegbci
@@ -102,10 +103,41 @@ Let us loop over the subjects and create BIDS-compatible folder
     # Make a path where we can save the data to
     bids_root = op.join(mne_data_dir, 'eegmmidb_bids_group_conversion')
 
-    # Get a list of the raw objects for this dataset to use their dates
-    # to determine the number of daysback to use to anonymize.
-    # While we're looping through the files, also generate the
-    # BIDS-compatible names that will be used to save the files in BIDS.
+
+
+
+
+
+
+
+To ensure the output path doesn't contain any leftover files from previous
+tests and example runs, we simply delete it.
+
+.. warning:: Do not delete directories that may contain important data!
+
+
+
+.. code-block:: default
+
+
+    if op.exists(bids_root):
+        shutil.rmtree(bids_root)
+
+
+
+
+
+
+
+
+Get a list of the raw objects for this dataset to use their dates
+to determine the number of daysback to use to anonymize.
+While we're looping through the files, also generate the
+BIDS-compatible names that will be used to save the files in BIDS.
+
+
+.. code-block:: default
+
     raw_list = list()
     bids_list = list()
     for subject_id in subject_ids:
@@ -175,11 +207,19 @@ Let us loop over the subjects and create BIDS-compatible folder
     Setting channel info structure...
     Creating raw.info structure...
 
+    Writing '/home/circleci/mne_data/eegmmidb_bids_group_conversion/README'...
+
+    References
+    ----------
+    Appelhoff, S., Sanderson, M., Brooks, T., Vliet, M., Quentin, R., Holdgraf, C., Chaumon, M., Mikulan, E., Tavabi, K., Höchenberger, R., Welke, D., Brunner, C., Rockhill, A., Larson, E., Gramfort, A. and Jas, M. (2019). MNE-BIDS: Organizing electrophysiological data into the BIDS format and facilitating their analysis. Journal of Open Source Software 4: (1896). https://doi.org/10.21105/joss.01896
+
+    Pernet, C. R., Appelhoff, S., Gorgolewski, K. J., Flandin, G., Phillips, C., Delorme, A., Oostenveld, R. (2019). EEG-BIDS, an extension to the brain imaging data structure for electroencephalography. Scientific Data, 6, 103. https://doi.org/10.1038/s41597-019-0104-8
+
+
     Writing '/home/circleci/mne_data/eegmmidb_bids_group_conversion/participants.tsv'...
 
     participant_id  age     sex     hand
     sub-001 n/a     n/a     n/a
-    sub-002 n/a     n/a     n/a
 
     Writing '/home/circleci/mne_data/eegmmidb_bids_group_conversion/participants.json'...
 
@@ -266,8 +306,6 @@ Let us loop over the subjects and create BIDS-compatible folder
 
     filename        acq_time
     eeg/sub-001_ses-01_task-MotorImagery_run-01_eeg.edf     1919-03-16T16:15:00.000000Z
-    eeg/sub-001_ses-01_task-MotorImagery_run-02_eeg.edf     1919-03-16T16:15:00.000000Z
-    eeg/sub-001_ses-01_task-MotorImagery_run-03_eeg.edf     1919-03-16T16:15:00.000000Z
     Wrote /home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-01/sub-001_ses-01_scans.tsv entry with eeg/sub-001_ses-01_task-MotorImagery_run-01_eeg.edf.
     Extracting EDF parameters from /home/circleci/mne_data/MNE-eegbci-data/files/eegmmidb/1.0.0/S001/S001R08.edf...
     EDF file detected
@@ -278,7 +316,6 @@ Let us loop over the subjects and create BIDS-compatible folder
 
     participant_id  age     sex     hand
     sub-001 n/a     n/a     n/a
-    sub-002 n/a     n/a     n/a
 
     Writing '/home/circleci/mne_data/eegmmidb_bids_group_conversion/participants.json'...
 
@@ -366,7 +403,6 @@ Let us loop over the subjects and create BIDS-compatible folder
     filename        acq_time
     eeg/sub-001_ses-01_task-MotorImagery_run-01_eeg.edf     1919-03-16T16:15:00.000000Z
     eeg/sub-001_ses-01_task-MotorImagery_run-02_eeg.edf     1919-03-16T16:15:00.000000Z
-    eeg/sub-001_ses-01_task-MotorImagery_run-03_eeg.edf     1919-03-16T16:15:00.000000Z
     Wrote /home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-001/ses-01/sub-001_ses-01_scans.tsv entry with eeg/sub-001_ses-01_task-MotorImagery_run-02_eeg.edf.
     Extracting EDF parameters from /home/circleci/mne_data/MNE-eegbci-data/files/eegmmidb/1.0.0/S001/S001R12.edf...
     EDF file detected
@@ -377,7 +413,6 @@ Let us loop over the subjects and create BIDS-compatible folder
 
     participant_id  age     sex     hand
     sub-001 n/a     n/a     n/a
-    sub-002 n/a     n/a     n/a
 
     Writing '/home/circleci/mne_data/eegmmidb_bids_group_conversion/participants.json'...
 
@@ -563,8 +598,6 @@ Let us loop over the subjects and create BIDS-compatible folder
 
     filename        acq_time
     eeg/sub-002_ses-01_task-MotorImagery_run-01_eeg.edf     1919-03-16T16:15:00.000000Z
-    eeg/sub-002_ses-01_task-MotorImagery_run-02_eeg.edf     1919-03-16T16:15:00.000000Z
-    eeg/sub-002_ses-01_task-MotorImagery_run-03_eeg.edf     1919-03-16T16:15:00.000000Z
     Wrote /home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/sub-002_ses-01_scans.tsv entry with eeg/sub-002_ses-01_task-MotorImagery_run-01_eeg.edf.
     Extracting EDF parameters from /home/circleci/mne_data/MNE-eegbci-data/files/eegmmidb/1.0.0/S002/S002R08.edf...
     EDF file detected
@@ -663,7 +696,6 @@ Let us loop over the subjects and create BIDS-compatible folder
     filename        acq_time
     eeg/sub-002_ses-01_task-MotorImagery_run-01_eeg.edf     1919-03-16T16:15:00.000000Z
     eeg/sub-002_ses-01_task-MotorImagery_run-02_eeg.edf     1919-03-16T16:15:00.000000Z
-    eeg/sub-002_ses-01_task-MotorImagery_run-03_eeg.edf     1919-03-16T16:15:00.000000Z
     Wrote /home/circleci/mne_data/eegmmidb_bids_group_conversion/sub-002/ses-01/sub-002_ses-01_scans.tsv entry with eeg/sub-002_ses-01_task-MotorImagery_run-02_eeg.edf.
     Extracting EDF parameters from /home/circleci/mne_data/MNE-eegbci-data/files/eegmmidb/1.0.0/S002/S002R12.edf...
     EDF file detected
@@ -972,7 +1004,7 @@ Now let's generate a report on the dataset.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  0.519 seconds)
+   **Total running time of the script:** ( 0 minutes  0.435 seconds)
 
 
 .. _sphx_glr_download_auto_examples_convert_group_studies.py:

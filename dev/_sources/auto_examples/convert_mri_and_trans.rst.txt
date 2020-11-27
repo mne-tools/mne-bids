@@ -57,7 +57,7 @@ We are importing everything we need for this example:
 
 
     import os.path as op
-    import shutil as sh
+    import shutil
 
     import numpy as np
     import matplotlib.pyplot as plt
@@ -92,8 +92,40 @@ BIDS dataset. For more information, you can checkout the respective
     raw_fname = op.join(data_path, 'MEG', 'sample', 'sample_audvis_raw.fif')
     events_data = op.join(data_path, 'MEG', 'sample', 'sample_audvis_raw-eve.fif')
     output_path = op.abspath(op.join(data_path, '..', 'MNE-sample-data-bids'))
+
+
+
+
+
+
+
+
+To ensure the output path doesn't contain any leftover files from previous
+tests and example runs, we simply delete it.
+
+.. warning:: Do not delete directories that may contain important data!
+
+
+
+.. code-block:: default
+
+
     if op.exists(output_path):
-        sh.rmtree(output_path)
+        shutil.rmtree(output_path)
+
+
+
+
+
+
+
+
+Read the input data and store it as BIDS data.
+
+
+.. code-block:: default
+
+
     raw = mne.io.read_raw_fif(raw_fname)
     raw.info['line_freq'] = 60  # specify power line frequency as required by BIDS
 
@@ -654,7 +686,7 @@ We can deface the MRI for anonymization by passing ``deface=True``.
 
 .. rst-class:: sphx-glr-timing
 
-   **Total running time of the script:** ( 0 minutes  19.254 seconds)
+   **Total running time of the script:** ( 0 minutes  13.657 seconds)
 
 
 .. _sphx_glr_download_auto_examples_convert_mri_and_trans.py:

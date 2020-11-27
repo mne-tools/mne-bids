@@ -38,10 +38,10 @@ refer to the iEEG-BIDS specification.
 # Authors: Adam Li <adam2392@gmail.com>
 # License: BSD (3-clause)
 
-import os
+import os.path as op
+import shutil
 from pprint import pprint
 from collections import OrderedDict
-import shutil
 
 import numpy as np
 
@@ -152,10 +152,17 @@ task = 'testresteyes'
 mne_data_dir = mne.get_config('MNE_DATASETS_MISC_PATH')
 
 # There is the root directory for where we will write our data.
-bids_root = os.path.join(mne_data_dir, 'ieegmmidb_bids')
+bids_root = op.join(mne_data_dir, 'ieegmmidb_bids')
 
-# make sure we start w/ an empty bids root
-shutil.rmtree(bids_root, ignore_errors=True)
+###############################################################################
+# To ensure the output path doesn't contain any leftover files from previous
+# tests and example runs, we simply delete it.
+#
+# .. warning:: Do not delete directories that may contain important data!
+#
+
+if op.exists(bids_root):
+    shutil.rmtree(bids_root)
 
 ###############################################################################
 # Now we just need to specify a few iEEG details to make things work:
@@ -185,7 +192,7 @@ print_dir_tree(bids_root)
 # We can see that the appropriate citations are already written in the README.
 # If you are preparing a manuscript, please make sure to also cite MNE-BIDS
 # there.
-readme = os.path.join(bids_root, 'README')
+readme = op.join(bids_root, 'README')
 with open(readme, 'r', encoding='utf-8-sig') as fid:
     text = fid.read()
 print(text)

@@ -26,6 +26,7 @@ In a second step we will read the organized dataset using MNE-BIDS.
 # sample data, and then finally the MNE-BIDS functions we need for this example
 
 import os.path as op
+import shutil
 
 import mne
 from mne.datasets import sample
@@ -48,6 +49,16 @@ event_id = {'Auditory/Left': 1, 'Auditory/Right': 2, 'Visual/Left': 3,
 raw_fname = op.join(data_path, 'MEG', 'sample', 'sample_audvis_raw.fif')
 events_data = op.join(data_path, 'MEG', 'sample', 'sample_audvis_raw-eve.fif')
 output_path = op.join(data_path, '..', 'MNE-sample-data-bids')
+
+###############################################################################
+# To ensure the output path doesn't contain any leftover files from previous
+# tests and example runs, we simply delete it.
+#
+# .. warning:: Do not delete directories that may contain important data!
+#
+
+if op.exists(output_path):
+    shutil.rmtree(output_path)
 
 ###############################################################################
 #

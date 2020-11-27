@@ -148,10 +148,10 @@ refer to the iEEG-BIDS specification.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Authors: Adam Li &lt;adam2392@gmail.com&gt;</span>
 <span class="c1"># License: BSD (3-clause)</span>
 
-<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">os.path</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
 <span class="kn">from</span> <span class="nn">pprint</span> <span class="kn">import</span> <a href="https://docs.python.org/3/library/pprint.html#pprint.pprint" title="pprint.pprint" class="sphx-glr-backref-module-pprint sphx-glr-backref-type-py-function"><span class="n">pprint</span></a>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <a href="https://docs.python.org/3/library/collections.html#collections.OrderedDict" title="collections.OrderedDict" class="sphx-glr-backref-module-collections sphx-glr-backref-type-py-class"><span class="n">OrderedDict</span></a>
-<span class="kn">import</span> <span class="nn">shutil</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
@@ -195,97 +195,85 @@ Downloading archive mne-misc-data-0.7.tar.gz to /home/circleci/mne_data
 Downloading https://codeload.github.com/mne-tools/mne-misc-data/tar.gz/0.7 (0 bytes)
 
   0%|          | Downloading : 0.00/0.00 [00:00&lt;?,        ?B/s]
-  0%|          | Downloading : 56.0k/0.00 [00:00&lt;00:00,    2.57MB/s]
-  0%|          | Downloading : 152k/0.00 [00:00&lt;00:00,    2.62MB/s]
-  0%|          | Downloading : 216k/0.00 [00:00&lt;00:00,    2.64MB/s]
-  0%|          | Downloading : 280k/0.00 [00:00&lt;00:00,    2.49MB/s]
-  0%|          | Downloading : 728k/0.00 [00:00&lt;00:00,    2.60MB/s]
-  0%|          | Downloading : 984k/0.00 [00:00&lt;00:00,    2.71MB/s]
-  0%|          | Downloading : 1.21M/0.00 [00:00&lt;00:00,    2.82MB/s]
-  0%|          | Downloading : 1.46M/0.00 [00:00&lt;00:00,    2.94MB/s]
-  0%|          | Downloading : 1.71M/0.00 [00:00&lt;00:00,    3.06MB/s]
-  0%|          | Downloading : 1.96M/0.00 [00:00&lt;00:00,    3.18MB/s]
-  0%|          | Downloading : 2.21M/0.00 [00:00&lt;00:00,    3.31MB/s]
-  0%|          | Downloading : 2.71M/0.00 [00:00&lt;00:00,    3.45MB/s]
-  0%|          | Downloading : 3.21M/0.00 [00:00&lt;00:00,    3.43MB/s]
-  0%|          | Downloading : 3.34M/0.00 [00:00&lt;00:00,    3.39MB/s]
-  0%|          | Downloading : 3.46M/0.00 [00:00&lt;00:00,    3.25MB/s]
-  0%|          | Downloading : 3.59M/0.00 [00:00&lt;00:00,    3.23MB/s]
-  0%|          | Downloading : 3.71M/0.00 [00:00&lt;00:00,    3.22MB/s]
-  0%|          | Downloading : 3.84M/0.00 [00:00&lt;00:00,    3.11MB/s]
-  0%|          | Downloading : 3.96M/0.00 [00:00&lt;00:00,    3.08MB/s]
-  0%|          | Downloading : 4.09M/0.00 [00:00&lt;00:00,    3.03MB/s]
-  0%|          | Downloading : 4.21M/0.00 [00:00&lt;00:00,    2.95MB/s]
-  0%|          | Downloading : 4.46M/0.00 [00:00&lt;00:00,    3.07MB/s]
-  0%|          | Downloading : 4.96M/0.00 [00:00&lt;00:00,    3.20MB/s]
-  0%|          | Downloading : 5.46M/0.00 [00:00&lt;00:00,    3.34MB/s]
-  0%|          | Downloading : 5.96M/0.00 [00:01&lt;00:00,    3.48MB/s]
-  0%|          | Downloading : 6.46M/0.00 [00:01&lt;00:00,    3.63MB/s]
-  0%|          | Downloading : 6.96M/0.00 [00:01&lt;00:00,    3.78MB/s]
-  0%|          | Downloading : 7.46M/0.00 [00:01&lt;00:00,    3.93MB/s]
-  0%|          | Downloading : 7.96M/0.00 [00:01&lt;00:00,    4.09MB/s]
-  0%|          | Downloading : 8.46M/0.00 [00:01&lt;00:00,    4.26MB/s]
-  0%|          | Downloading : 8.96M/0.00 [00:01&lt;00:00,    4.42MB/s]
-  0%|          | Downloading : 9.46M/0.00 [00:01&lt;00:00,    4.60MB/s]
-  0%|          | Downloading : 9.96M/0.00 [00:01&lt;00:00,    4.76MB/s]
-  0%|          | Downloading : 10.2M/0.00 [00:01&lt;00:00,    4.93MB/s]
-  0%|          | Downloading : 10.5M/0.00 [00:01&lt;00:00,    5.10MB/s]
-  0%|          | Downloading : 10.7M/0.00 [00:01&lt;00:00,    5.28MB/s]
-  0%|          | Downloading : 11.2M/0.00 [00:01&lt;00:00,    5.48MB/s]
-  0%|          | Downloading : 11.7M/0.00 [00:01&lt;00:00,    5.67MB/s]
-  0%|          | Downloading : 12.2M/0.00 [00:01&lt;00:00,    5.87MB/s]
-  0%|          | Downloading : 12.7M/0.00 [00:01&lt;00:00,    6.07MB/s]
-  0%|          | Downloading : 13.2M/0.00 [00:01&lt;00:00,    6.29MB/s]
-  0%|          | Downloading : 13.5M/0.00 [00:01&lt;00:00,    5.61MB/s]
-  0%|          | Downloading : 13.6M/0.00 [00:01&lt;00:00,    5.27MB/s]
-  0%|          | Downloading : 13.7M/0.00 [00:01&lt;00:00,    5.01MB/s]
-  0%|          | Downloading : 13.8M/0.00 [00:01&lt;00:00,    4.58MB/s]
-  0%|          | Downloading : 14.0M/0.00 [00:01&lt;00:00,    4.42MB/s]
-  0%|          | Downloading : 14.1M/0.00 [00:01&lt;00:00,    4.10MB/s]
-  0%|          | Downloading : 14.2M/0.00 [00:01&lt;00:00,    3.96MB/s]
-  0%|          | Downloading : 14.3M/0.00 [00:02&lt;00:00,    3.89MB/s]
-  0%|          | Downloading : 14.5M/0.00 [00:02&lt;00:00,    3.67MB/s]
-  0%|          | Downloading : 14.6M/0.00 [00:02&lt;00:00,    3.66MB/s]
-  0%|          | Downloading : 15.0M/0.00 [00:02&lt;00:00,    3.80MB/s]
-  0%|          | Downloading : 15.5M/0.00 [00:02&lt;00:00,    3.96MB/s]
-  0%|          | Downloading : 16.0M/0.00 [00:02&lt;00:00,    4.12MB/s]
-  0%|          | Downloading : 16.2M/0.00 [00:02&lt;00:00,    4.27MB/s]
-  0%|          | Downloading : 16.5M/0.00 [00:02&lt;00:00,    4.41MB/s]
-  0%|          | Downloading : 17.0M/0.00 [00:02&lt;00:00,    4.59MB/s]
-  0%|          | Downloading : 17.2M/0.00 [00:02&lt;00:00,    4.73MB/s]
-  0%|          | Downloading : 17.5M/0.00 [00:02&lt;00:00,    4.89MB/s]
-  0%|          | Downloading : 17.7M/0.00 [00:02&lt;00:00,    5.06MB/s]
-  0%|          | Downloading : 18.2M/0.00 [00:02&lt;00:00,    5.25MB/s]
-  0%|          | Downloading : 18.5M/0.00 [00:02&lt;00:00,    5.43MB/s]
-  0%|          | Downloading : 19.0M/0.00 [00:02&lt;00:00,    5.62MB/s]
-  0%|          | Downloading : 19.5M/0.00 [00:02&lt;00:00,    5.83MB/s]
-  0%|          | Downloading : 20.0M/0.00 [00:02&lt;00:00,    6.02MB/s]
-  0%|          | Downloading : 20.2M/0.00 [00:02&lt;00:00,    6.21MB/s]
-  0%|          | Downloading : 20.5M/0.00 [00:02&lt;00:00,    6.37MB/s]
-  0%|          | Downloading : 20.7M/0.00 [00:02&lt;00:00,    6.57MB/s]
-  0%|          | Downloading : 21.2M/0.00 [00:02&lt;00:00,    6.79MB/s]
-  0%|          | Downloading : 21.7M/0.00 [00:02&lt;00:00,    6.99MB/s]
-  0%|          | Downloading : 22.0M/0.00 [00:02&lt;00:00,    7.16MB/s]
-  0%|          | Downloading : 22.5M/0.00 [00:02&lt;00:00,    7.38MB/s]
-  0%|          | Downloading : 23.0M/0.00 [00:02&lt;00:00,    7.60MB/s]
-  0%|          | Downloading : 23.5M/0.00 [00:02&lt;00:00,    7.83MB/s]
-  0%|          | Downloading : 23.7M/0.00 [00:02&lt;00:00,    7.81MB/s]
-  0%|          | Downloading : 24.2M/0.00 [00:02&lt;00:00,    8.05MB/s]
-  0%|          | Downloading : 24.7M/0.00 [00:02&lt;00:00,    8.26MB/s]
-  0%|          | Downloading : 25.2M/0.00 [00:02&lt;00:00,    8.50MB/s]
-  0%|          | Downloading : 25.7M/0.00 [00:02&lt;00:00,    8.76MB/s]
-  0%|          | Downloading : 26.2M/0.00 [00:02&lt;00:00,    9.02MB/s]
-  0%|          | Downloading : 26.7M/0.00 [00:02&lt;00:00,    9.33MB/s]
-  0%|          | Downloading : 27.2M/0.00 [00:02&lt;00:00,    9.62MB/s]
-  0%|          | Downloading : 27.7M/0.00 [00:02&lt;00:00,    9.93MB/s]
-  0%|          | Downloading : 28.2M/0.00 [00:02&lt;00:00,    10.2MB/s]
-  0%|          | Downloading : 28.7M/0.00 [00:03&lt;00:00,    10.2MB/s]
-  0%|          | Downloading : 29.2M/0.00 [00:03&lt;00:00,    10.2MB/s]
-  0%|          | Downloading : 29.7M/0.00 [00:03&lt;00:00,    10.2MB/s]
-  0%|          | Downloading : 30.2M/0.00 [00:03&lt;00:00,    10.1MB/s]
-  0%|          | Downloading : 30.7M/0.00 [00:03&lt;00:00,    10.2MB/s]
-  0%|          | Downloading : 30.9M/0.00 [00:03&lt;00:00,    10.2MB/s]
-  0%|          | Downloading : 30.9M/0.00 [00:03&lt;00:00,    10.0MB/s]
+  0%|          | Downloading : 56.0k/0.00 [00:00&lt;00:00,    3.14MB/s]
+  0%|          | Downloading : 152k/0.00 [00:00&lt;00:00,    3.20MB/s]
+  0%|          | Downloading : 216k/0.00 [00:00&lt;00:00,    3.18MB/s]
+  0%|          | Downloading : 280k/0.00 [00:00&lt;00:00,    2.94MB/s]
+  0%|          | Downloading : 728k/0.00 [00:00&lt;00:00,    3.07MB/s]
+  0%|          | Downloading : 1.21M/0.00 [00:00&lt;00:00,    3.20MB/s]
+  0%|          | Downloading : 1.71M/0.00 [00:00&lt;00:00,    3.34MB/s]
+  0%|          | Downloading : 2.21M/0.00 [00:00&lt;00:00,    3.49MB/s]
+  0%|          | Downloading : 2.71M/0.00 [00:00&lt;00:00,    3.63MB/s]
+  0%|          | Downloading : 3.21M/0.00 [00:00&lt;00:00,    3.61MB/s]
+  0%|          | Downloading : 3.34M/0.00 [00:00&lt;00:00,    3.56MB/s]
+  0%|          | Downloading : 3.46M/0.00 [00:00&lt;00:00,    3.44MB/s]
+  0%|          | Downloading : 3.59M/0.00 [00:00&lt;00:00,    3.41MB/s]
+  0%|          | Downloading : 3.71M/0.00 [00:00&lt;00:00,    3.40MB/s]
+  0%|          | Downloading : 3.84M/0.00 [00:00&lt;00:00,    3.27MB/s]
+  0%|          | Downloading : 3.96M/0.00 [00:00&lt;00:00,    3.26MB/s]
+  0%|          | Downloading : 4.09M/0.00 [00:00&lt;00:00,    3.22MB/s]
+  0%|          | Downloading : 4.21M/0.00 [00:00&lt;00:00,    3.15MB/s]
+  0%|          | Downloading : 4.46M/0.00 [00:00&lt;00:00,    3.28MB/s]
+  0%|          | Downloading : 4.96M/0.00 [00:00&lt;00:00,    3.42MB/s]
+  0%|          | Downloading : 5.46M/0.00 [00:00&lt;00:00,    3.56MB/s]
+  0%|          | Downloading : 5.71M/0.00 [00:00&lt;00:00,    3.70MB/s]
+  0%|          | Downloading : 6.46M/0.00 [00:00&lt;00:00,    3.86MB/s]
+  0%|          | Downloading : 6.96M/0.00 [00:00&lt;00:00,    4.02MB/s]
+  0%|          | Downloading : 7.46M/0.00 [00:01&lt;00:00,    4.18MB/s]
+  0%|          | Downloading : 7.96M/0.00 [00:01&lt;00:00,    4.35MB/s]
+  0%|          | Downloading : 8.46M/0.00 [00:01&lt;00:00,    4.52MB/s]
+  0%|          | Downloading : 8.96M/0.00 [00:01&lt;00:00,    4.70MB/s]
+  0%|          | Downloading : 9.46M/0.00 [00:01&lt;00:00,    4.88MB/s]
+  0%|          | Downloading : 9.96M/0.00 [00:01&lt;00:00,    5.07MB/s]
+  0%|          | Downloading : 10.5M/0.00 [00:01&lt;00:00,    5.26MB/s]
+  0%|          | Downloading : 11.0M/0.00 [00:01&lt;00:00,    5.45MB/s]
+  0%|          | Downloading : 11.5M/0.00 [00:01&lt;00:00,    5.66MB/s]
+  0%|          | Downloading : 12.0M/0.00 [00:01&lt;00:00,    5.87MB/s]
+  0%|          | Downloading : 12.5M/0.00 [00:01&lt;00:00,    6.08MB/s]
+  0%|          | Downloading : 13.0M/0.00 [00:01&lt;00:00,    6.29MB/s]
+  0%|          | Downloading : 13.5M/0.00 [00:01&lt;00:00,    6.06MB/s]
+  0%|          | Downloading : 13.7M/0.00 [00:01&lt;00:00,    5.74MB/s]
+  0%|          | Downloading : 14.0M/0.00 [00:01&lt;00:00,    5.37MB/s]
+  0%|          | Downloading : 14.1M/0.00 [00:01&lt;00:00,    4.95MB/s]
+  0%|          | Downloading : 14.2M/0.00 [00:01&lt;00:00,    4.80MB/s]
+  0%|          | Downloading : 14.3M/0.00 [00:01&lt;00:00,    4.68MB/s]
+  0%|          | Downloading : 14.5M/0.00 [00:01&lt;00:00,    4.40MB/s]
+  0%|          | Downloading : 14.6M/0.00 [00:01&lt;00:00,    4.42MB/s]
+  0%|          | Downloading : 14.8M/0.00 [00:01&lt;00:00,    4.57MB/s]
+  0%|          | Downloading : 15.1M/0.00 [00:01&lt;00:00,    4.74MB/s]
+  0%|          | Downloading : 15.6M/0.00 [00:01&lt;00:00,    4.93MB/s]
+  0%|          | Downloading : 16.1M/0.00 [00:02&lt;00:00,    5.12MB/s]
+  0%|          | Downloading : 16.6M/0.00 [00:02&lt;00:00,    5.31MB/s]
+  0%|          | Downloading : 17.1M/0.00 [00:02&lt;00:00,    5.51MB/s]
+  0%|          | Downloading : 17.6M/0.00 [00:02&lt;00:00,    5.71MB/s]
+  0%|          | Downloading : 18.1M/0.00 [00:02&lt;00:00,    5.91MB/s]
+  0%|          | Downloading : 18.6M/0.00 [00:02&lt;00:00,    6.13MB/s]
+  0%|          | Downloading : 19.1M/0.00 [00:02&lt;00:00,    6.34MB/s]
+  0%|          | Downloading : 19.3M/0.00 [00:02&lt;00:00,    6.51MB/s]
+  0%|          | Downloading : 19.6M/0.00 [00:02&lt;00:00,    6.65MB/s]
+  0%|          | Downloading : 20.3M/0.00 [00:02&lt;00:00,    6.89MB/s]
+  0%|          | Downloading : 20.8M/0.00 [00:02&lt;00:00,    7.10MB/s]
+  0%|          | Downloading : 21.3M/0.00 [00:02&lt;00:00,    7.33MB/s]
+  0%|          | Downloading : 21.8M/0.00 [00:02&lt;00:00,    7.55MB/s]
+  0%|          | Downloading : 22.3M/0.00 [00:02&lt;00:00,    7.78MB/s]
+  0%|          | Downloading : 22.8M/0.00 [00:02&lt;00:00,    8.01MB/s]
+  0%|          | Downloading : 23.3M/0.00 [00:02&lt;00:00,    8.23MB/s]
+  0%|          | Downloading : 23.8M/0.00 [00:02&lt;00:00,    8.29MB/s]
+  0%|          | Downloading : 24.3M/0.00 [00:02&lt;00:00,    8.57MB/s]
+  0%|          | Downloading : 24.8M/0.00 [00:02&lt;00:00,    8.88MB/s]
+  0%|          | Downloading : 25.3M/0.00 [00:02&lt;00:00,    9.17MB/s]
+  0%|          | Downloading : 25.8M/0.00 [00:02&lt;00:00,    9.48MB/s]
+  0%|          | Downloading : 26.3M/0.00 [00:02&lt;00:00,    9.79MB/s]
+  0%|          | Downloading : 26.8M/0.00 [00:02&lt;00:00,    10.1MB/s]
+  0%|          | Downloading : 27.3M/0.00 [00:02&lt;00:00,    10.4MB/s]
+  0%|          | Downloading : 27.8M/0.00 [00:02&lt;00:00,    10.7MB/s]
+  0%|          | Downloading : 28.3M/0.00 [00:02&lt;00:00,    11.0MB/s]
+  0%|          | Downloading : 28.8M/0.00 [00:02&lt;00:00,    10.8MB/s]
+  0%|          | Downloading : 29.3M/0.00 [00:02&lt;00:00,    10.8MB/s]
+  0%|          | Downloading : 29.8M/0.00 [00:02&lt;00:00,    10.8MB/s]
+  0%|          | Downloading : 30.3M/0.00 [00:02&lt;00:00,    10.8MB/s]
+  0%|          | Downloading : 30.8M/0.00 [00:02&lt;00:00,    10.6MB/s]
+  0%|          | Downloading : 30.9M/0.00 [00:02&lt;00:00,    11.0MB/s]
 Verifying hash 2b2f2fec9d1197ed459117db1c6341ee.
 Removing old directory: /home/circleci/mne_data/MNE-misc-data
 Decompressing the archive: /home/circleci/mne_data/mne-misc-data-0.7.tar.gz
@@ -543,10 +531,17 @@ There is a subject, and specific task for the dataset.</p>
 <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mne_data_dir</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.get_config.html#mne.get_config" title="mne.get_config" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">get_config</span></a><span class="p">(</span><span class="s1">&#39;MNE_DATASETS_MISC_PATH&#39;</span><span class="p">)</span>
 
 <span class="c1"># There is the root directory for where we will write our data.</span>
-<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/os.path.html#os.path.join" title="os.path.join" class="sphx-glr-backref-module-os-path sphx-glr-backref-type-py-function"><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mne_data_dir</span></a><span class="p">,</span> <span class="s1">&#39;ieegmmidb_bids&#39;</span><span class="p">)</span>
-
-<span class="c1"># make sure we start w/ an empty bids root</span>
-<a href="https://docs.python.org/3/library/shutil.html#shutil.rmtree" title="shutil.rmtree" class="sphx-glr-backref-module-shutil sphx-glr-backref-type-py-function"><span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">,</span> <span class="n">ignore_errors</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/os.path.html#os.path.join" title="os.path.join" class="sphx-glr-backref-module-os-path sphx-glr-backref-type-py-function"><span class="n">op</span><span class="o">.</span><span class="n">join</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">mne_data_dir</span></a><span class="p">,</span> <span class="s1">&#39;ieegmmidb_bids&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To ensure the output path doesn’t contain any leftover files from previous
+tests and example runs, we simply delete it.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Do not delete directories that may contain important data!</p>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <a href="https://docs.python.org/3/library/os.path.html#os.path.exists" title="os.path.exists" class="sphx-glr-backref-module-os-path sphx-glr-backref-type-py-function"><span class="n">op</span><span class="o">.</span><span class="n">exists</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">):</span>
+    <a href="https://docs.python.org/3/library/shutil.html#shutil.rmtree" title="shutil.rmtree" class="sphx-glr-backref-module-shutil sphx-glr-backref-type-py-function"><span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">)</span>
 </pre></div>
 </div>
 <p>Now we just need to specify a few iEEG details to make things work:
@@ -721,7 +716,7 @@ basename: sub-001_task-testresteyes_acq-ecog_ieeg.edf)
 <p>We can see that the appropriate citations are already written in the README.
 If you are preparing a manuscript, please make sure to also cite MNE-BIDS
 there.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">readme</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/os.path.html#os.path.join" title="os.path.join" class="sphx-glr-backref-module-os-path sphx-glr-backref-type-py-function"><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">,</span> <span class="s1">&#39;README&#39;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">readme</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/os.path.html#os.path.join" title="os.path.join" class="sphx-glr-backref-module-os-path sphx-glr-backref-type-py-function"><span class="n">op</span><span class="o">.</span><span class="n">join</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">,</span> <span class="s1">&#39;README&#39;</span><span class="p">)</span>
 <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">readme</span></a><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8-sig&#39;</span><span class="p">)</span> <span class="k">as</span> <a href="https://docs.python.org/3/library/io.html#io.TextIOWrapper" title="io.TextIOWrapper" class="sphx-glr-backref-module-io sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fid</span></a><span class="p">:</span>
     <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">text</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/io.html#io.TextIOWrapper" title="io.TextIOWrapper" class="sphx-glr-backref-module-io sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">fid</span></a><span class="o">.</span><span class="n">read</span><span class="p">()</span>
 <span class="nb">print</span><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">text</span></a><span class="p">)</span>
@@ -803,7 +798,7 @@ The channel coordinates after writing into BIDS:
 &lt;Figure size 640x640 with 1 Axes&gt;
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  3.947 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  3.650 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-convert-ieeg-to-bids-py">
 <div class="binder-badge docutils container">
 <a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/convert_ieeg_to_bids.ipynb"><img alt="Launch binder" src="../_images/binder_badge_logo.svg" width="150px" /></a>
@@ -832,7 +827,7 @@ The channel coordinates after writing into BIDS:
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-11-26.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-11-27.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.3.1.<br/>
     </p>
   </div>

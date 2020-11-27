@@ -134,6 +134,8 @@ non-interactively.</p>
 <p>Let’s start by importing the required modules and functions, reading the
 “sample” data, and writing it in the BIDS format.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os.path</span> <span class="k">as</span> <span class="nn">op</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+
 <span class="kn">import</span> <span class="nn">mne</span>
 <span class="kn">from</span> <span class="nn">mne_bids</span> <span class="kn">import</span> <span class="p">(</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class"><span class="n">BIDSPath</span></a><span class="p">,</span> <a href="../generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">write_raw_bids</span></a><span class="p">,</span> <a href="../generated/mne_bids.read_raw_bids.html#mne_bids.read_raw_bids" title="mne_bids.read_raw_bids" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">read_raw_bids</span></a><span class="p">,</span>
                       <a href="../generated/mne_bids.inspect_dataset.html#mne_bids.inspect_dataset" title="mne_bids.inspect_dataset" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">inspect_dataset</span></a><span class="p">,</span> <a href="../generated/mne_bids.mark_bad_channels.html#mne_bids.mark_bad_channels" title="mne_bids.mark_bad_channels" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">mark_bad_channels</span></a><span class="p">)</span>
@@ -143,8 +145,20 @@ non-interactively.</p>
 <a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a> <span class="o">=</span> <a href="https://docs.python.org/3/library/os.path.html#os.path.join" title="os.path.join" class="sphx-glr-backref-module-os-path sphx-glr-backref-type-py-function"><span class="n">op</span><span class="o">.</span><span class="n">join</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">data_path</span></a><span class="p">,</span> <span class="s1">&#39;..&#39;</span><span class="p">,</span> <span class="s1">&#39;MNE-sample-data-bids&#39;</span><span class="p">)</span>
 <a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a> <span class="o">=</span> <a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class"><span class="n">BIDSPath</span></a><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="s1">&#39;01&#39;</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="s1">&#39;01&#39;</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="s1">&#39;audiovisual&#39;</span><span class="p">,</span> <span class="n">run</span><span class="o">=</span><span class="s1">&#39;01&#39;</span><span class="p">,</span>
                      <span class="n">root</span><span class="o">=</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">)</span>
-
-<a href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw" title="mne.io.Raw" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.io.read_raw_fif.html#mne.io.read_raw_fif" title="mne.io.read_raw_fif" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_raw_fif</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw_fname</span></a><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To ensure the output path doesn’t contain any leftover files from previous
+tests and example runs, we simply delete it.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Do not delete directories that may contain important data!</p>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <a href="https://docs.python.org/3/library/os.path.html#os.path.exists" title="os.path.exists" class="sphx-glr-backref-module-os-path sphx-glr-backref-type-py-function"><span class="n">op</span><span class="o">.</span><span class="n">exists</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">):</span>
+    <a href="https://docs.python.org/3/library/shutil.html#shutil.rmtree" title="shutil.rmtree" class="sphx-glr-backref-module-shutil sphx-glr-backref-type-py-function"><span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_root</span></a><span class="p">)</span>
+</pre></div>
+</div>
+<p>Now write the raw data to BIDS.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><a href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw" title="mne.io.Raw" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span></a> <span class="o">=</span> <a href="https://mne.tools/dev/generated/mne.io.read_raw_fif.html#mne.io.read_raw_fif" title="mne.io.read_raw_fif" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-function"><span class="n">mne</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_raw_fif</span></a><span class="p">(</span><a href="https://docs.python.org/3/library/stdtypes.html#str" title="builtins.str" class="sphx-glr-backref-module-builtins sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw_fname</span></a><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <a href="https://mne.tools/dev/generated/mne.Info.html#mne.Info" title="mne.Info" class="sphx-glr-backref-module-mne sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span><span class="o">.</span><span class="n">info</span></a><span class="p">[</span><span class="s1">&#39;line_freq&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">60</span>  <span class="c1"># Specify power line frequency as required by BIDS.</span>
 <a href="../generated/mne_bids.write_raw_bids.html#mne_bids.write_raw_bids" title="mne_bids.write_raw_bids" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-function"><span class="n">write_raw_bids</span></a><span class="p">(</span><a href="https://mne.tools/dev/generated/mne.io.Raw.html#mne.io.Raw" title="mne.io.Raw" class="sphx-glr-backref-module-mne-io sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">raw</span></a><span class="p">,</span> <a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="o">=</span><a href="../generated/mne_bids.BIDSPath.html#mne_bids.BIDSPath" title="mne_bids.BIDSPath" class="sphx-glr-backref-module-mne_bids sphx-glr-backref-type-py-class sphx-glr-backref-instance"><span class="n">bids_path</span></a><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
@@ -185,7 +199,10 @@ window.</p>
         PCA-v3 (1 x 102)  idle
     Range : 25800 ... 192599 =     42.956 ...   320.670 secs
 Ready.
-Reading events from /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_events.tsv.
+/home/circleci/project/mne_bids/path.py:1065: RuntimeWarning: Did not find any events.tsv associated with sub-01_ses-01_task-audiovisual_run-01.
+
+The search_str was &quot;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/**/sub-01_ses-01*events.tsv&quot;
+  warn(msg)
 Reading channel info from /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_channels.tsv.
 /home/circleci/project/mne_bids/read.py:337: RuntimeWarning: The unit for channel(s) STI 001, STI 002, STI 003, STI 004, STI 005, STI 006, STI 014, STI 015, STI 016 has changed from V to NA.
   raw.set_channel_types(channel_type_dict)
@@ -212,7 +229,10 @@ apply filters with a 1-Hz high-pass cutoff, and a 30-Hz low-pass cutoff:</p>
         PCA-v3 (1 x 102)  idle
     Range : 25800 ... 192599 =     42.956 ...   320.670 secs
 Ready.
-Reading events from /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_events.tsv.
+/home/circleci/project/mne_bids/path.py:1065: RuntimeWarning: Did not find any events.tsv associated with sub-01_ses-01_task-audiovisual_run-01.
+
+The search_str was &quot;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/**/sub-01_ses-01*events.tsv&quot;
+  warn(msg)
 Reading channel info from /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_channels.tsv.
 /home/circleci/project/mne_bids/read.py:337: RuntimeWarning: The unit for channel(s) STI 001, STI 002, STI 003, STI 004, STI 005, STI 006, STI 014, STI 015, STI 016 has changed from V to NA.
   raw.set_channel_types(channel_type_dict)
@@ -236,7 +256,10 @@ marked as bad.</p>
         PCA-v3 (1 x 102)  idle
     Range : 25800 ... 192599 =     42.956 ...   320.670 secs
 Ready.
-Reading events from /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_events.tsv.
+/home/circleci/project/mne_bids/path.py:1065: RuntimeWarning: Did not find any events.tsv associated with sub-01_ses-01_task-audiovisual_run-01.
+
+The search_str was &quot;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/**/sub-01_ses-01*events.tsv&quot;
+  warn(msg)
 Reading channel info from /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_channels.tsv.
 /home/circleci/project/mne_bids/read.py:337: RuntimeWarning: The unit for channel(s) STI 001, STI 002, STI 003, STI 004, STI 005, STI 006, STI 014, STI 015, STI 016 has changed from V to NA.
   raw.set_channel_types(channel_type_dict)
@@ -262,7 +285,10 @@ To do that, we simply add them to a list, which we then pass to
     Range : 25800 ... 192599 =     42.956 ...   320.670 secs
 Ready.
 Reading 0 ... 166799  =      0.000 ...   277.714 secs...
-Reading events from /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_events.tsv.
+/home/circleci/project/mne_bids/path.py:1065: RuntimeWarning: Did not find any events.tsv associated with sub-01_ses-01_task-audiovisual_run-01.
+
+The search_str was &quot;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/**/sub-01_ses-01*events.tsv&quot;
+  warn(msg)
 Reading channel info from /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_channels.tsv.
 /home/circleci/project/mne_bids/read.py:337: RuntimeWarning: The unit for channel(s) STI 001, STI 002, STI 003, STI 004, STI 005, STI 006, STI 014, STI 015, STI 016 has changed from V to NA.
   raw.set_channel_types(channel_type_dict)
@@ -288,7 +314,10 @@ Processing channel MEG 0131:
         PCA-v3 (1 x 102)  idle
     Range : 25800 ... 192599 =     42.956 ...   320.670 secs
 Ready.
-Reading events from /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_events.tsv.
+/home/circleci/project/mne_bids/path.py:1065: RuntimeWarning: Did not find any events.tsv associated with sub-01_ses-01_task-audiovisual_run-01.
+
+The search_str was &quot;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/**/sub-01_ses-01*events.tsv&quot;
+  warn(msg)
 Reading channel info from /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_channels.tsv.
 After marking MEG 0112 and MEG 0131 as bad, the following channels are now marked as bad:
     MEG 0112, MEG 0131, MEG 2443, EEG 053
@@ -322,7 +351,10 @@ entirely, pass the argument <code class="docutils literal notranslate"><span cla
     Range : 25800 ... 192599 =     42.956 ...   320.670 secs
 Ready.
 Reading 0 ... 166799  =      0.000 ...   277.714 secs...
-Reading events from /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_events.tsv.
+/home/circleci/project/mne_bids/path.py:1065: RuntimeWarning: Did not find any events.tsv associated with sub-01_ses-01_task-audiovisual_run-01.
+
+The search_str was &quot;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/**/sub-01_ses-01*events.tsv&quot;
+  warn(msg)
 Reading channel info from /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_channels.tsv.
 Resetting status and description for all channels.
 Processing channel MEG 0112:
@@ -338,7 +370,10 @@ Opening raw data file /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data
         PCA-v3 (1 x 102)  idle
     Range : 25800 ... 192599 =     42.956 ...   320.670 secs
 Ready.
-Reading events from /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_events.tsv.
+/home/circleci/project/mne_bids/path.py:1065: RuntimeWarning: Did not find any events.tsv associated with sub-01_ses-01_task-audiovisual_run-01.
+
+The search_str was &quot;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/**/sub-01_ses-01*events.tsv&quot;
+  warn(msg)
 Reading channel info from /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_channels.tsv.
 After marking MEG 0112 and MEG 0131 as bad and passing `overwrite=True`, the following channels are now marked as bad:
     MEG 0112, MEG 0131
@@ -364,7 +399,10 @@ pass an empty list as <code class="docutils literal notranslate"><span class="pr
     Range : 25800 ... 192599 =     42.956 ...   320.670 secs
 Ready.
 Reading 0 ... 166799  =      0.000 ...   277.714 secs...
-Reading events from /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_events.tsv.
+/home/circleci/project/mne_bids/path.py:1065: RuntimeWarning: Did not find any events.tsv associated with sub-01_ses-01_task-audiovisual_run-01.
+
+The search_str was &quot;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/**/sub-01_ses-01*events.tsv&quot;
+  warn(msg)
 Reading channel info from /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_channels.tsv.
 Resetting status and description for all channels.
 Opening raw data file /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_meg.fif...
@@ -374,12 +412,15 @@ Opening raw data file /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data
         PCA-v3 (1 x 102)  idle
     Range : 25800 ... 192599 =     42.956 ...   320.670 secs
 Ready.
-Reading events from /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_events.tsv.
+/home/circleci/project/mne_bids/path.py:1065: RuntimeWarning: Did not find any events.tsv associated with sub-01_ses-01_task-audiovisual_run-01.
+
+The search_str was &quot;/home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/**/sub-01_ses-01*events.tsv&quot;
+  warn(msg)
 Reading channel info from /home/circleci/mne_data/MNE-sample-data/../MNE-sample-data-bids/sub-01/ses-01/meg/sub-01_ses-01_task-audiovisual_run-01_channels.tsv.
 After passing `ch_names=[]` and `overwrite=True`, the following channels are now marked as bad:
 </pre></div>
 </div>
-<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  9.783 seconds)</p>
+<p class="sphx-glr-timing"><strong>Total running time of the script:</strong> ( 0 minutes  13.430 seconds)</p>
 <div class="sphx-glr-footer class sphx-glr-footer-example docutils container" id="sphx-glr-download-auto-examples-mark-bad-channels-py">
 <div class="binder-badge docutils container">
 <a class="reference external image-reference" href="https://mybinder.org/v2/gh/mne-tools/mne-bids/gh-pages?filepath=dev/notebooks/auto_examples/mark_bad_channels.ipynb"><img alt="Launch binder" src="../_images/binder_badge_logo.svg" width="150px" /></a>
@@ -408,7 +449,7 @@ After passing `ch_names=[]` and `overwrite=True`, the following channels are now
       
     </p>
     <p>
-        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-11-26.<br/>
+        &copy; Copyright 2017-2020, MNE Developers. Last updated on 2020-11-27.<br/>
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 3.3.1.<br/>
     </p>
   </div>
