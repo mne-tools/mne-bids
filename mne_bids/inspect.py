@@ -1,11 +1,16 @@
 from pathlib import Path
 
+import mne
+from mne.utils import logger
+
 from mne_bids import read_raw_bids, mark_bad_channels
-from mne_bids.read import _from_tsv
+from mne_bids.read import _from_tsv, _read_events, _find_matching_sidecar
+from mne_bids.write import _write_raw_brainvision, _events_tsv
 from mne_bids.config import ALLOWED_DATATYPE_EXTENSIONS
 
 
-def inspect_dataset(bids_path, l_freq=None, h_freq=None, verbose=None):
+def inspect_dataset(bids_path, l_freq=None, h_freq=None,
+                    show_annotations=True, verbose=None):
     """Inspect and annotate BIDS raw data.
 
     This function allows you to browse MEG, EEG, and iEEG raw data stored in a
@@ -16,10 +21,12 @@ def inspect_dataset(bids_path, l_freq=None, h_freq=None, verbose=None):
 
     .. warning:: This functionality is still experimental and will be extended
                  in the future. Its API will likely change. Planned features
-                 include modification of annotations and automated bad channel
-                 detection.
+                 include automated bad channel detection and visualization of
+                 MRI images.
 
     .. note:: Currently, only MEG, EEG, and iEEG data can be inspected.
+
+    To add or modify annotations, press ``A`` to toggle annotation mode.
 
     Parameters
     ----------
@@ -40,6 +47,10 @@ def inspect_dataset(bids_path, l_freq=None, h_freq=None, verbose=None):
         The low-pass filter cutoff frequency to apply when displaying the
         data. This can be useful when inspecting data with high-frequency
         artifacts. If ``None``, no low-pass filter will be applied.
+    show_annotations : bool
+        Whether to show annotations (events, bad segments, …) or not. If
+        ``False``, toggling annotations mode by pressing ``A`` will be disabled
+        as well.
     verbose : bool | None
         If a boolean, whether or not to produce verbose output. If ``None``,
         use the default log level.
@@ -54,7 +65,7 @@ def inspect_dataset(bids_path, l_freq=None, h_freq=None, verbose=None):
 
     for bids_path_ in bids_paths:
         _inspect_raw(bids_path=bids_path_, l_freq=l_freq, h_freq=h_freq,
-                     verbose=verbose)
+                     show_annotations=show_annotations, verbose=verbose)
 
 
 # XXX This this should probably be refactored into a class attribute someday.
@@ -63,7 +74,7 @@ _global_vars = dict(raw_fig=None,
                     mne_close_key=None)
 
 
-def _inspect_raw(*, bids_path, l_freq, h_freq, verbose=None):
+def _inspect_raw(*, bids_path, l_freq, h_freq, show_annotations, verbose=None):
     """Raw data inspection."""
     # Delay the import
     import matplotlib
@@ -72,6 +83,7 @@ def _inspect_raw(*, bids_path, l_freq, h_freq, verbose=None):
     raw = read_raw_bids(bids_path, extra_params=dict(allow_maxshield=True),
                         verbose='error')
     old_bads = raw.info['bads'].copy()
+    old_annotations = raw.annotations.copy()
 
     fig = raw.plot(title=f'{bids_path.root.name}: {bids_path.basename}',
                    highpass=l_freq, lowpass=h_freq, show_options=True,
@@ -81,12 +93,24 @@ def _inspect_raw(*, bids_path, l_freq, h_freq, verbose=None):
     # closed, our dialog box will pop up, asking whether to save changes.
     def _handle_close(event):
         mne_raw_fig = event.canvas.figure
+        # XXX Investigate why we need to use .inst in one instance and not in
+        # XXX the other!
         new_bads = mne_raw_fig.mne.info['bads'].copy()
+        new_annotations = mne_raw_fig.mne.inst.annotations.copy()
 
-        _save_bads_if_changed(old_bads=old_bads,
-                              new_bads=new_bads,
-                              bids_path=bids_path,
-                              verbose=verbose)
+        if not new_annotations:
+            # Ensure it's not an empty list, but an empty set of Annotations.
+            new_annotations = (mne_raw_fig.mne.inst.copy()
+                               .set_annotations(None)
+                               .annotations
+                               .copy())
+
+        _save_raw_if_changed(old_bads=old_bads,
+                             new_bads=new_bads,
+                             old_annotations=old_annotations,
+                             new_annotations=new_annotations,
+                             bids_path=bids_path,
+                             verbose=verbose)
         _global_vars['raw_fig'] = None
         _global_vars['mne_close_key'] = None
 
@@ -97,6 +121,18 @@ def _inspect_raw(*, bids_path, l_freq, h_freq, verbose=None):
     fig.canvas.mpl_connect('close_event', _handle_close)
     fig.canvas.mpl_connect('key_press_event', _keypress_callback)
 
+    if not show_annotations:
+        # Remove annotations and kill `_toggle_annotation_fig` method, since
+        # we cannot directly and easily remove the associated `a` keyboard
+        # event callback.
+        fig._clear_annotations()
+        fig._toggle_annotation_fig = lambda x: None
+        # Ensure it's not an empty list, but an empty set of Annotations.
+        old_annotations = (raw.copy()
+                           .set_annotations(None)
+                           .annotations
+                           .copy())
+
     if matplotlib.get_backend() != 'agg':
         plt.show(block=True)
 
@@ -104,16 +140,28 @@ def _inspect_raw(*, bids_path, l_freq, h_freq, verbose=None):
     _global_vars['mne_close_key'] = fig.mne.close_key
 
 
-def _save_bads_if_changed(*, old_bads, new_bads, bids_path, verbose):
+def _save_raw_if_changed(*, old_bads, new_bads,
+                         old_annotations, new_annotations,
+                         bids_path, verbose):
     if set(old_bads) == set(new_bads):
+        bads = None
+    else:
+        bads = new_bads
+
+    if old_annotations == new_annotations:
+        annotations = None
+    else:
+        annotations = new_annotations
+
+    if bads is None and annotations is None:
         # Nothing has changed, so we can just exit.
         return None
 
-    return _save_bads_dialog_box(bads=new_bads, bids_path=bids_path,
-                                 verbose=verbose)
+    return _save_raw_dialog_box(bads=bads, annotations=annotations,
+                                bids_path=bids_path, verbose=verbose)
 
 
-def _save_bads_dialog_box(*, bads, bids_path, verbose):
+def _save_raw_dialog_box(*, bads, annotations, bids_path, verbose):
     """Display a dialog box asking whether to save the changes."""
     # Delay the imports
     import matplotlib
@@ -122,9 +170,18 @@ def _save_bads_dialog_box(*, bads, bids_path, verbose):
     from mne.viz.utils import figure_nobar
 
     title = 'Save changes?'
-    message = (f'You have modified the bad channel selection of\n'
-               f'{bids_path.basename}.\n\nWould you like to save these '
-               f'changes to the\nBIDS dataset?')
+    message = 'You have modified '
+    if bads is not None and annotations is None:
+        message += 'the bad channel selection '
+    elif bads is None and annotations is not None:
+        message += 'the bad segments selection '
+    else:
+        message += 'the bad channel and\nsegments selection '
+
+    message += (f'of\n'
+                f'{bids_path.basename}.\n\n'
+                f'Would you like to save these changes to the\n'
+                f'BIDS dataset?')
     icon_fname = Path(__file__).parent / 'assets' / 'help-128px.png'
     icon = plt.imread(icon_fname)
 
@@ -166,7 +223,12 @@ def _save_bads_dialog_box(*, bads, bids_path, verbose):
     def _save_callback(event):
         plt.close(event.canvas.figure)  # Close dialog
         _global_vars['dialog_fig'] = None
-        _save_bads(bads=bads, bids_path=bids_path, verbose=verbose)
+
+        if bads is not None:
+            _save_bads(bads=bads, bids_path=bids_path, verbose=verbose)
+        if annotations is not None:
+            _save_annotations(annotations=annotations, bids_path=bids_path,
+                              verbose=verbose)
 
     def _dont_save_callback(event):
         plt.close(event.canvas.figure)  # Close dialog
@@ -205,7 +267,7 @@ def _save_bads(*, bads, bids_path, verbose):
         else:
             # Channel has been manually marked as bad during inspection, assign
             # default description.
-            description = 'Manual inspection via MNE-BIDS'
+            description = 'Interactive inspection via MNE-BIDS'
 
         descriptions.append(description)
 
@@ -213,3 +275,45 @@ def _save_bads(*, bads, bids_path, verbose):
     # be marked as good.
     mark_bad_channels(ch_names=bads, descriptions=descriptions,
                       bids_path=bids_path, overwrite=True, verbose=verbose)
+
+
+def _save_annotations(*, annotations, bids_path, verbose):
+    # Read the raw data, set our new Annotations, and convert them to events
+    # which we can then stored in the *_events.tsv sidecar.
+    extra_params = dict(preload=True)
+    if bids_path.extension == '.fif':
+        extra_params['allow_maxshield'] = True
+
+    raw = read_raw_bids(bids_path=bids_path, extra_params=extra_params,
+                        verbose='warning')
+    raw.set_annotations(annotations)
+
+    events, durs, descrs = _read_events(events_data=None, event_id=None,
+                                        raw=raw, verbose=False)
+
+    # Write raw data.
+    if isinstance(raw, mne.io.brainvision.brainvision.RawBrainVision):
+        # XXX We should write durations too, this is supported by pybv.
+        _write_raw_brainvision(raw, bids_path.fpath, events)
+    elif isinstance(raw, mne.io.RawFIF):
+        raw.save(raw.filenames[0], overwrite=True, split_naming='bids',
+                 verbose=False)
+    else:
+        raise RuntimeError('Can only write events / annotations for '
+                           'FIFF and BrainVision files for now. Please '
+                           'mark bad channels manually.')
+
+    # Write sidecar – or remove it if no events are left.
+    events_tsv_fname = (bids_path.copy()
+                        .update(suffix='events',
+                                extension='.tsv')
+                        .fpath)
+
+    if len(events) > 0:
+        _events_tsv(events=events, durations=durs, raw=raw,
+                    fname=events_tsv_fname, trial_type=descrs,
+                    overwrite=True, verbose=verbose)
+    elif events_tsv_fname.exists():
+        logger.info(f'No events remaining after interactive inspection, '
+                    f'removing {events_tsv_fname.name}')
+        events_tsv_fname.unlink()

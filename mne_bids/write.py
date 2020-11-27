@@ -171,11 +171,6 @@ def _events_tsv(events, durations, raw, fname, trial_type, overwrite=False,
         Defaults to False.
     verbose : bool
         Set verbose output to True or False.
-
-    Notes
-    -----
-    The function writes durations of zero for each event.
-
     """
     # Start by filling all data that we know into an ordered dictionary
     first_samp = raw.first_samp
@@ -1596,8 +1591,8 @@ def mark_bad_channels(ch_names, descriptions=None, *, bids_path,
                                     raw=raw, verbose=False)
         _write_raw_brainvision(raw, bids_path.fpath, events)
     elif isinstance(raw, mne.io.RawFIF):
-        # XXX (How) will this handle split files?
-        raw.save(raw.filenames[0], overwrite=True, verbose=False)
+        raw.save(raw.filenames[0], overwrite=True, split_naming='bids',
+                 verbose=False)
     else:
         raise RuntimeError('Can only mark bad channels for '
                            'FIFF and BrainVision files for now. Please '

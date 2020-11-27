@@ -74,7 +74,7 @@ def _read_events(events_data, event_id, raw, verbose=None):
         ``raw.annotations``.
     event_id : dict | None
         The event id dict used to create a 'trial_type' column in events.tsv,
-        mapping a description key to an integer valued event code.
+        mapping a description key to an integer-valued event code.
     raw : instance of Raw
         The data as MNE-Python Raw object.
     verbose : bool | str | int | None
