@@ -10,7 +10,7 @@ channels as "good", should you discover they were incorrectly marked as bad.
 Bad channel selection can also be performed non-interactively.
 
 Furthermore, you can view and edit the experimental events and mark time
-time segments as "bad".
+segments as "bad".
 """
 
 # Authors: Richard Höchenberger <richard.hoechenberger@gmail.com>
