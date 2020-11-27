@@ -88,7 +88,7 @@ inspect_dataset(bids_path, l_freq=1., h_freq=30.)
 # you will be prompted whether you wish to save the changes. Your raw data and
 # the `*_events.tsv` sidecar file will be updated upon saving.
 #
-# .. _MNE-Python Annotations tutorial: https://mne.tools/stable/auto_tutorials/raw/plot_30_annotate_raw.html#annotating-raw-objects-interactively
+# .. _MNE-Python Annotations tutorial: https://mne.tools/stable/auto_tutorials/raw/plot_30_annotate_raw.html#annotating-raw-objects-interactively  # noqa:E501
 
 ###############################################################################
 # Non-interactive (programmatic) bad channel selection
